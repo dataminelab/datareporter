@@ -1,11 +1,6 @@
 ## Dev environment
 
-turnilo
-
-* `npm install`
-* `npm run build:dev`
-* `npm run start:dev:examples`
-* `open http://localhost:9090`
+Run `git submodule init` && `git submodule update` after checking out the repository
 
 redash 
 
@@ -15,3 +10,10 @@ redash
 * `npm run start`
 * `open http://localhost:5000`
 
+turnilo
+
+* `cd turnilo`
+* `npm install`
+* `npm run build:dev`
+* `npm run start:dev:examples`
+* `open http://localhost:9090`

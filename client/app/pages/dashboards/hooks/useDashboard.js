@@ -9,6 +9,7 @@ import recordEvent from "@/services/recordEvent";
 import { QueryResultError } from "@/services/query";
 import AddWidgetDialog from "@/components/dashboards/AddWidgetDialog";
 import TextboxDialog from "@/components/dashboards/TextboxDialog";
+import AddTurniloWidgetDialog from "@/components/dashboards/AddTurniloWidgetDialog.tsx";
 import PermissionsEditorDialog from "@/components/PermissionsEditorDialog";
 import { editableMappingsToParameterMappings, synchronizeWidgetTitles } from "@/components/ParameterMappingInput";
 import ShareDashboardDialog from "../components/ShareDashboardDialog";
@@ -168,6 +169,14 @@ function useDashboard(dashboardData) {
       .onDismiss(handleDialogClose);
   }, [dashboard, hasOnlySafeQueries]);
 
+  const showAddTurniloWidgetDialog = useCallback(() => {
+    AddTurniloWidgetDialog.showModal({
+      isNew: true,
+    }).onClose(text =>
+      dashboard.addWidget(text).then(() => setDashboard(currentDashboard => extend({}, currentDashboard)))
+    );
+  }, [dashboard]);
+
   const showAddTextboxDialog = useCallback(() => {
     TextboxDialog.showModal({
       isNew: true,
@@ -240,6 +249,7 @@ function useDashboard(dashboardData) {
     toggleFullscreen,
     showShareDashboardDialog,
     showAddTextboxDialog,
+    showAddTurniloWidgetDialog,
     showAddWidgetDialog,
     managePermissions,
   };

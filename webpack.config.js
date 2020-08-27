@@ -120,7 +120,7 @@ const config = {
       {
         test: /\.(t|j)sx?$/,
         exclude: /node_modules/,
-        use: ["babel-loader", "eslint-loader"]
+        use: ["babel-loader"]
       },
       {
         test: /\.html$/,
@@ -167,6 +167,17 @@ const config = {
             }
           }
         ]
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          // Creates `style` nodes from JS strings
+          'style-loader',
+          // Translates CSS into CommonJS
+          'css-loader',
+          // Compiles Sass to CSS
+          'sass-loader',
+        ],
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

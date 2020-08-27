@@ -2,3 +2,5 @@ build/*.js
 dist
 config/*.js
 client/dist
+client/**
+client/app

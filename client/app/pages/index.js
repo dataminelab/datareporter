@@ -11,6 +11,8 @@ import "./dashboards/DashboardList";
 import "./dashboards/DashboardPage";
 import "./dashboards/PublicDashboardPage";
 
+import "./turnilo/TurniloPage";
+
 import "./data-sources/DataSourcesList";
 import "./data-sources/EditDataSource";
 

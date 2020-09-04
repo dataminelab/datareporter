@@ -1,0 +1,54 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ * Copyright 2017-2019 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@import '../../imports';
+
+.color-swabs {
+  table-layout: fixed;
+
+  .color-swab {
+    width: 15px;
+    height: 15px;
+    border-radius: 2px;
+  }
+
+  .color-name {
+    @include ellipsis;
+    max-width: 140px;
+    padding-left: 5px;
+    line-height: 18px;
+    text-align: left;
+  }
+
+  .color-previous,
+  .color-value {
+    line-height: 18px;
+    padding-left: 5px;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .color-previous {
+    @include css-variable(color, text-lighterish);
+  }
+
+  .color-delta {
+    line-height: 18px;
+    white-space: nowrap;
+    padding-left: 5px;
+  }
+}
+

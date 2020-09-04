@@ -42,7 +42,7 @@ DashboardSettings.propTypes = {
 };
 
 function AddWidgetContainer({ dashboardOptions, className, ...props }) {
-  const { showAddTextboxDialog, showAddWidgetDialog, showAddTurniloWidgetDialog } = dashboardOptions;
+  const { showAddTextboxDialog, showAddWidgetDialog } = dashboardOptions;
   return (
     <div className={cx("add-widget-container", className)} {...props}>
       <h2>
@@ -53,9 +53,9 @@ function AddWidgetContainer({ dashboardOptions, className, ...props }) {
         </span>
       </h2>
       <div>
-        <Button type="" className="m-r-15 ant-btn-turnilo" onClick={showAddTurniloWidgetDialog} data-test="AddTextboxButton">
+        <a href="/turnilo" className="m-r-15 ant-btn ant-btn-turnilo" data-test="AddTextboxButton">
           Add Turnilo widget
-        </Button>
+        </a>
         <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
           Add Textbox
         </Button>

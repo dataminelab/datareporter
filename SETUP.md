@@ -2,7 +2,7 @@
 
 Run `git submodule init` && `git submodule update` after checking out the repository
 
-redash 
+redash
 
 * `npm install`
 * `make up`

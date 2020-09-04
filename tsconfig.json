@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "declaration": false,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+    "target": "esnext",
+    "module": "esnext",
+    "rootDir": "client",
+    "outDir": "build",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "lib": ["dom", "es6", "es5"],
+    "types": ["mocha", "webpack-env"]
+  },
+  "exclude": [
+    "node_modules",
+    "**/*.mocha.ts",
+    "**/*.mocha.tsx",
+    "**/*.json",
+    "turnilo"
+  ]
+}

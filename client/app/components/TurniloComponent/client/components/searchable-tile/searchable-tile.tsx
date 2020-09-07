@@ -53,6 +53,11 @@ export interface SearchableTileState {
 export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
   public mounted: boolean;
 
+  constructor(props) {
+    super(props);
+    this.stepInput = React.createRef();
+  }
+
   state: SearchableTileState = {
     actionsMenuOpenOn: null
   };

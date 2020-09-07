@@ -221,8 +221,23 @@ const config = {
         ]
       },
       {
+        test: /\.(svg)(\?.*)?$/,
+        exclude: /client\/app\/components\/TurniloComponent/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              context: path.resolve(appPath, "./assets/images/"),
+              outputPath: "images/",
+              name: "[path][name].[ext]"
+            }
+          }
+        ]
+      },
+      {
         test: /\.svg$/,
-        use: ["svg-inline-loader"]
+        use: ["svg-inline-loader"],
+        include: /client\/app\/components\/TurniloComponent/,
       },
       {
         test: /\.geo\.json$/,

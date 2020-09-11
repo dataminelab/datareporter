@@ -21,6 +21,7 @@ import { enterKey, escapeKey, leftKey, rightKey } from "../../utils/dom/dom";
 
 export interface GlobalEventListenerProps {
   resize?: () => void;
+  widgetResize?: () => void;
   scroll?: (e: MouseEvent) => void;
   mouseDown?: (e: MouseEvent) => void;
   mouseMove?: (e: MouseEvent) => void;
@@ -39,6 +40,7 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
   public mounted: boolean;
   private propsToEvents: any = {
     resize: "resize",
+    widgetResize: "widgetResize",
     scroll: "scroll",
     mouseDown: "mousedown",
     mouseMove: "mousemove",
@@ -56,12 +58,18 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
 
   componentDidMount() {
     this.refreshListeners(this.props);
+    window.addEventListener("widgetResize", () => {
+      this.onResize();
+    }, false);
   }
 
   componentWillUnmount() {
     for (let prop in this.propsToEvents) {
       this.removeListener(this.propsToEvents[prop]);
     }
+    window.removeEventListener("widgetResize", () => {
+      this.onResize();
+    }, false);
   }
 
   refreshListeners(nextProps: any, currentProps: any = {}) {
@@ -94,6 +102,10 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
   }
 
   onResize = () => {
+    if (this.props.resize) this.props.resize();
+  };
+
+  onWidgetResize = () => {
     if (this.props.resize) this.props.resize();
   };
 

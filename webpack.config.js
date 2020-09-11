@@ -301,7 +301,8 @@ const config = {
       },
       {
         context: [
-          '/plywood'
+          '/plywood',
+          '/config-turnilo'
         ],
         target: turniloBackend + "/",
         changeOrigin: true,

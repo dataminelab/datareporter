@@ -52,8 +52,9 @@ export interface SearchableTileState {
 
 export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
   public mounted: boolean;
+  private stepInput: React.RefObject<unknown>;
 
-  constructor(props) {
+  constructor(props: Readonly<SearchableTileProps>) {
     super(props);
     this.stepInput = React.createRef();
   }
@@ -81,14 +82,14 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     // Remove search if it looses focus while empty
     if (searchText !== "") return;
 
-    var target = e.target as Element;
+    const target = e.target as Element;
 
-    var searchBoxElement = ReactDOM.findDOMNode(this.refs["search-box"]);
+    const searchBoxElement = ReactDOM.findDOMNode(this.refs["search-box"]);
     if (!searchBoxElement || isInside(target, searchBoxElement)) return;
 
-    var headerRef = this.refs["header"];
+    const headerRef = this.refs["header"];
     if (!headerRef || headerRef instanceof Element) return;
-    var searchButtonElement = ReactDOM.findDOMNode(headerRef.refs["search"]);
+    const searchButtonElement = ReactDOM.findDOMNode(headerRef.refs["search"]);
     if (!searchButtonElement || isInside(target, searchButtonElement)) return;
 
     toggleChangeFn();
@@ -102,7 +103,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   };
 
   onActionsMenuClose = () => {
-    var { actionsMenuOpenOn } = this.state;
+    const { actionsMenuOpenOn } = this.state;
     if (!actionsMenuOpenOn) return;
     this.setState({
       actionsMenuOpenOn: null
@@ -110,7 +111,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   };
 
   onActionsMenuClick = (e: React.MouseEvent<HTMLElement>) => {
-    var { actionsMenuOpenOn } = this.state;
+    const { actionsMenuOpenOn } = this.state;
     if (actionsMenuOpenOn) return this.onActionsMenuClose();
     this.setState({
       actionsMenuOpenOn: e.target as Element
@@ -139,7 +140,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   renderActionsMenu() {
     const { actionsMenuOpenOn, actionsMenuAlignOn } = this.state;
 
-    var stage = Stage.fromSize(180, 200);
+    const stage = Stage.fromSize(180, 200);
 
     return <BubbleMenu
       align="end"
@@ -162,7 +163,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
       children, onDragStart, actions
     } = this.props;
     const { actionsMenuOpenOn } = this.state;
-    var tileIcons = icons;
+    let tileIcons = icons;
 
     if (actions && actions.length > 0) {
       tileIcons = [({
@@ -182,7 +183,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
       onDragStart={onDragStart}
     />;
 
-    var searchBar: JSX.Element = null;
+    let searchBar: JSX.Element = null;
     if (showSearch) {
       searchBar = <div className="search-box" ref="search-box">
         <ClearableInput

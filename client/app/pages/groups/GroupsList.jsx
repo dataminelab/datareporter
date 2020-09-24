@@ -132,7 +132,7 @@ const GroupsListPage = wrapSettingsTab(
     permission: "list_users",
     title: "Groups",
     path: "groups",
-    order: 3,
+    order: 4,
   },
   itemsList(
     GroupsList,

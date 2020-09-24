@@ -197,7 +197,7 @@ const QuerySnippetsListPage = wrapSettingsTab(
     permission: "create_query",
     title: "Query Snippets",
     path: "query_snippets",
-    order: 5,
+    order: 6,
   },
   itemsList(
     QuerySnippetsList,

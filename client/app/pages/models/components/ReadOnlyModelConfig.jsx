@@ -4,7 +4,7 @@ import { UserProfile } from "@/components/proptypes";
 import UserGroups from "./UserGroups";
 import useUserGroups from "../hooks/useUserGroups";
 
-export default function ReadOnlyUserProfile({ user }) {
+export default function ReadOnlyModelConfig({ user }) {
   const { groups, isLoading: isLoadingGroups } = useUserGroups(user);
 
   return (
@@ -24,6 +24,6 @@ export default function ReadOnlyUserProfile({ user }) {
   );
 }
 
-ReadOnlyUserProfile.propTypes = {
+ReadOnlyModelConfig.propTypes = {
   user: UserProfile.isRequired,
 };

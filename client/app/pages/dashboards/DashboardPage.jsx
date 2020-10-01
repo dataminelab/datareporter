@@ -54,8 +54,8 @@ function AddWidgetContainer({dashboardOptions, className, ...props }) {
         </span>
       </h2>
       <div>
-        <a href={`/turnilo?back=${backUrl}&dashboardId=${dashboard.id}`} className="m-r-15 ant-btn ant-btn-turnilo" data-test="AddTextboxButton">
-          Add Turnilo widget
+        <a href={`/report?back=${backUrl}&dashboardId=${dashboard.id}`} className="m-r-15 ant-btn ant-btn-turnilo" data-test="AddTextboxButton">
+          Add Report widget
         </a>
         <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
           Add Textbox

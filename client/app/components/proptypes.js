@@ -87,6 +87,13 @@ export const UserProfile = PropTypes.shape({
   isDisabled: PropTypes.bool,
 });
 
+export const Model = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  connection: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  config: PropTypes.string
+});
+
 export const Destination = PropTypes.shape({
   id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,

@@ -12,6 +12,7 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 const fs = require("fs");
 
 const path = require("path");
+const { CheckerPlugin } = require('awesome-typescript-loader')
 
 function optionalRequire(module, defaultReturn = undefined) {
   try {
@@ -32,6 +33,7 @@ const CONFIG = optionalRequire("./scripts/config", {});
 const isProduction = process.env.NODE_ENV === "production";
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
+const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:9090";
 const staticPath = CONFIG.staticPath || "/static/";
 
 const basePath = path.join(__dirname, "client");
@@ -53,6 +55,16 @@ function maybeApplyOverrides(config) {
   console.info("Custom overrides applied successfully.");
   return newConfig;
 }
+const babelLoader = {
+  loader: "babel-loader",
+  options: {
+    presets: [
+      ["@babel/preset-env", {
+        modules: false
+      }]
+    ]
+  }
+};
 
 const config = {
   mode: isProduction ? "production" : "development",
@@ -78,6 +90,7 @@ const config = {
     }
   },
   plugins: [
+    new CheckerPlugin(),
     new WebpackBuildNotifierPlugin({ title: "Redash" }),
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
@@ -118,9 +131,24 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.(t|j)sx?$/,
+        test: /\.js|jsx?$/,
         exclude: /node_modules/,
-        use: ["babel-loader", "eslint-loader"]
+        use: [
+          babelLoader
+        ]
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: [
+          babelLoader,
+          {
+            loader: 'awesome-typescript-loader?{configFileName: "client/tsconfig.json"}',
+            options: {
+              configFile: "client/tsconfig.json"
+            }
+          }
+        ]
       },
       {
         test: /\.html$/,
@@ -169,7 +197,18 @@ const config = {
         ]
       },
       {
-        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        test: /\.s[ac]ss$/i,
+        use: [
+          // Creates `style` nodes from JS strings
+          'style-loader',
+          // Translates CSS into CommonJS
+          'css-loader',
+          // Compiles Sass to CSS
+          'sass-loader',
+        ],
+      },
+      {
+        test: /\.(png|jpe?g|gif)(\?.*)?$/,
         use: [
           {
             loader: "file-loader",
@@ -180,6 +219,25 @@ const config = {
             }
           }
         ]
+      },
+      {
+        test: /\.(svg)(\?.*)?$/,
+        exclude: /client\/app\/components\/TurniloComponent/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              context: path.resolve(appPath, "./assets/images/"),
+              outputPath: "images/",
+              name: "[path][name].[ext]"
+            }
+          }
+        ]
+      },
+      {
+        test: /\.svg$/,
+        use: ["svg-inline-loader"],
+        include: /client\/app\/components\/TurniloComponent/,
       },
       {
         test: /\.geo\.json$/,
@@ -239,6 +297,15 @@ const config = {
         ],
         target: redashBackend + "/",
         changeOrigin: false,
+        secure: false
+      },
+      {
+        context: [
+          '/plywood',
+          '/config-turnilo'
+        ],
+        target: turniloBackend + "/",
+        changeOrigin: true,
         secure: false
       },
       {

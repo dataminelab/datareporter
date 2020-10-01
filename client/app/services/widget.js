@@ -9,6 +9,7 @@ import { Query } from "./query";
 
 export const WidgetTypeEnum = {
   TEXTBOX: "textbox",
+  TURNILO: "turnilo",
   VISUALIZATION: "visualization",
   RESTRICTED: "restricted",
 };
@@ -101,6 +102,8 @@ class Widget {
   get type() {
     if (this.visualization) {
       return WidgetTypeEnum.VISUALIZATION;
+    } else if (this.text.includes('[turnilo-widget]')) { //TODO add type turnilo widget
+      return WidgetTypeEnum.TURNILO;
     } else if (this.restricted) {
       return WidgetTypeEnum.RESTRICTED;
     }
@@ -188,9 +191,28 @@ class Widget {
     });
   }
 
+  saveTurnilo(key, value) {
+    const data = pick(this, "options", "text", "id", "width", "dashboard_id", "visualization_id");
+    if (key && value) {
+      data[key] = merge({}, data[key], value); // done like this so `this.options` doesn't get updated by side-effect
+    }
+
+    let url = "api/widgets";
+    if (this.id) {
+      url = `${url}/${this.id}`;
+    }
+
+    return axios.post(url, data);
+  }
+
   delete() {
     const url = `api/widgets/${this.id}`;
     return axios.delete(url);
+  }
+
+  get(id) {
+    const url = `api/widgets/${id}`;
+    return axios.get(url);
   }
 
   isStaticParam(param) {

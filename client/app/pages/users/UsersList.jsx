@@ -251,7 +251,7 @@ const UsersListPage = wrapSettingsTab(
     title: "Users",
     path: "users",
     isActive: path => path.startsWith("/users") && path !== "/users/me",
-    order: 2,
+    order: 3,
   },
   itemsList(
     UsersList,

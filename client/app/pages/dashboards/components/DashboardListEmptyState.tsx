@@ -1,8 +1,12 @@
-import * as React from "react";
 import * as PropTypes from "prop-types";
-import BigMessage from "@/components/BigMessage";
-import NoTaggedObjectsFound from "@/components/NoTaggedObjectsFound";
-import EmptyState from "@/components/empty-state/EmptyState";
+import * as React from "react";
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+import BigMessage from "../../../components/BigMessage";
+import EmptyState from "../../../components/empty-state/EmptyState";
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+import NoTaggedObjectsFound from "../../../components/NoTaggedObjectsFound";
 
 export interface DashboardListEmptyStateProps {
   page: string;
@@ -27,7 +31,7 @@ export default function DashboardListEmptyState({ page, searchTerm, selectedTags
           description="See the big picture"
           illustration="dashboard"
           helpLink="https://help.redash.io/category/22-dashboards"
-          showDashboardStep
+          showDashboardStep={true}
         />
       );
   }
@@ -36,5 +40,5 @@ export default function DashboardListEmptyState({ page, searchTerm, selectedTags
 DashboardListEmptyState.propTypes = {
   page: PropTypes.string.isRequired,
   searchTerm: PropTypes.string.isRequired,
-  selectedTags: PropTypes.array.isRequired,
+  selectedTags: PropTypes.array.isRequired
 };

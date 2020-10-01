@@ -107,7 +107,7 @@ const OrganizationSettingsPage = wrapSettingsTab(
     permission: "admin",
     title: "General",
     path: "settings/general",
-    order: 6,
+    order: 7,
   },
   OrganizationSettings
 );

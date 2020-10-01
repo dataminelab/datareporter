@@ -136,7 +136,7 @@ const DestinationsListPage = wrapSettingsTab(
     permission: "admin",
     title: "Alert Destinations",
     path: "destinations",
-    order: 4,
+    order: 5,
   },
   DestinationsList
 );

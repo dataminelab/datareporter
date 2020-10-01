@@ -73,7 +73,7 @@ const UserProfilePage = wrapSettingsTab(
   {
     title: "Account",
     path: "users/me",
-    order: 7,
+    order: 8,
   },
   UserProfile
 );

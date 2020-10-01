@@ -1,0 +1,66 @@
+/*
+ * Copyright 2015-2016 Imply Data, Inc.
+ * Copyright 2017-2019 Allegro.pl
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../imports';
+
+$action-height: 50px;
+$action-width: 58px;
+
+.measure-actions-menu {
+  padding: 8px;
+
+  .action {
+    @include css-variable(color, brand);
+    display: inline-block;
+    width: $action-width;
+    height: $action-height;
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+
+    svg {
+      width: 18px;
+      padding-top: 7px;
+      padding-bottom: 4px;
+
+      path {
+        @include css-variable(fill, brand);
+      }
+    }
+
+    &.disabled {
+      @include css-variable(color, text-light);
+      cursor: default;
+
+      svg path {
+        @include css-variable(fill, text-light);
+      }
+    }
+
+    &:not(.disabled):hover {
+      &::before {
+        @include css-variable(background-color, hover);
+        content: '';
+        position: absolute;
+        top: 3px;
+        bottom: 3px;
+        left: 3px;
+        right: 3px;
+      }
+    }
+  }
+}

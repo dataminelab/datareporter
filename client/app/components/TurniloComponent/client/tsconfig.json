@@ -1,0 +1,17 @@
+{
+  "extends": "../../../../../tsconfig.json",
+
+  "compileOnSave": false,
+  "compilerOptions": {
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "rootDir": "../",
+    "outDir": "../../build",
+    "experimentalDecorators": true
+  },
+
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx"
+  ]
+}

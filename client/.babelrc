@@ -8,13 +8,16 @@
       "useBuiltIns": "usage"
     }],
     "@babel/preset-react",
-    "@babel/preset-typescript"
+    "@babel/preset-typescript",
+    "@babel/preset-flow"
   ],
   "plugins": [
+    "babel-plugin-flow-to-typescript",
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-transform-object-assign",
     ["babel-plugin-transform-builtin-extend", {
       "globals": ["Error"]
-    }]
+    }],
+    "@babel/plugin-transform-runtime"
   ]
 }

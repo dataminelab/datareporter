@@ -1,0 +1,107 @@
+page-report-view {
+  display: flex;
+  flex-grow: 1;
+}
+
+.report-page-wrapper {
+  width: 100%;
+
+  .report-view-content {
+    .report-results {
+      margin: 0px 15px 0px;
+
+      .report-results-footer {
+        position: relative;
+
+        .report-execution-status {
+          position: fixed;
+          min-width: 250px;
+          bottom: 0;
+          right: 0;
+          padding: 15px;
+          z-index: 1000;
+
+          @media (min-width: 768px) {
+            display: flex;
+            min-height: 100%;
+            position: absolute;
+            padding: 3px;
+
+            .ant-alert {
+              flex: 1 1;
+            }
+          }
+        }
+      }
+
+      .report-execution-metadata {
+        border: 1px solid #d9d9d9;
+        border-top-width: 0px;
+        box-sizing: border-box;
+        border-radius: 0px 0px 4px 4px;
+        background: white;
+      }
+
+      .report-parameters-wrapper {
+        margin: 15px 0 5px 0;
+      }
+
+      .report-alerts {
+        margin: 15px 0;
+      }
+
+      .report-results-log {
+        padding: 10px;
+      }
+    }
+  }
+
+  &.report-fixed-layout .report-view-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .report-results {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      overflow: auto;
+    }
+
+    .report-parameters-wrapper {
+      flex: 0 0 auto;
+    }
+
+    .report-alerts {
+      flex: 0 0 auto;
+    }
+
+    .report-results-log {
+      flex: 0 0 auto;
+    }
+
+    .ant-tabs {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+
+      .ant-tabs-bar {
+        flex: 0 0 auto;
+      }
+
+      .ant-tabs-content {
+        flex: 1 1 auto;
+        position: relative;
+
+        .ant-tabs-tabpane {
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          overflow: auto;
+        }
+      }
+    }
+  }
+}

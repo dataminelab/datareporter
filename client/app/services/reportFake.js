@@ -1,6 +1,5 @@
 import { isString, get, find } from "lodash";
 import sanitize from "@/services/sanitize";
-//import { axios } from "@/services/axios";
 import notification from "@/services/notification";
 
 function getErrorMessage(error) {
@@ -22,8 +21,8 @@ function getStorageItem(key, callback) {
 }
 
 function setStorageItem(key, value, callback) {
-  value = JSON.stringify(value);
-  const result = localStorage.setItem(key, value);
+  const newValue = JSON.stringify(value);
+  const result = localStorage.setItem(key, newValue);
 
   if (result instanceof window.Promise && callback) {
     result.then(callback);
@@ -36,9 +35,9 @@ function setStorageItem(key, value, callback) {
 const axios = {
   query:  (params) => {
     return new Promise((resolve, reject) => {
-      getStorageItem('models', (response) => {
-        response = response ? JSON.parse(response) : [];
-        if (response) {
+      getStorageItem('reportDB', (res) => {
+        const response = res ? JSON.parse(res) : [];
+        if (res) {
           resolve({
             count: response.length,
             page: 1,
@@ -58,22 +57,22 @@ const axios = {
   },
   get: (id) => {
     return new Promise((resolve, reject) => {
-      getStorageItem('models', (response) => {
-        response = response ? JSON.parse(response) : [];
+      getStorageItem('reportDB', (res) => {
+        const response = res ? JSON.parse(res) : [];
         resolve(response.find(x => x.id === id));
       })
     });
   },
   create: (item) => {
     return new Promise((resolve, reject) => {
-      getStorageItem('models', (response) => {
-        response = response ? JSON.parse(response) : [];
+      getStorageItem('reportDB', (res) => {
+        const response = res ? JSON.parse(res) : [];
         let data = []
-        if (response) {
+        if (res) {
           data = response;
         }
         data.push(item);
-        setStorageItem('models', data, () => {
+        setStorageItem('reportDB', data, () => {
           resolve(item);
         })
       })
@@ -81,10 +80,10 @@ const axios = {
   },
   save: (item) => {
     return new Promise((resolve, reject) => {
-      getStorageItem('models', (response) => {
-        response = response ? JSON.parse(response) : [];
+      getStorageItem('reportDB', (res) => {
+        const response = res ? JSON.parse(res) : [];
         let data = []
-        if (response) {
+        if (res) {
           data = response;
         }
         data.map((model) => {
@@ -94,7 +93,7 @@ const axios = {
             return model;
           }
         })
-        setStorageItem('models', data, () => {
+        setStorageItem('reportDB', data, () => {
           resolve(item);
         })
       })
@@ -102,11 +101,11 @@ const axios = {
   },
   delete: (model) => {
     return new Promise((resolve, reject) => {
-      getStorageItem('models', (response) => {
-        response = response ? JSON.parse(response) : [];
+      getStorageItem('reportDB', (res) => {
+        let response = res ? JSON.parse(res) : [];
         response = response.filter((item) => model.id === item.connection)
-        console.log(response)
-        setStorageItem('models', response, () => {
+        console.log(res)
+        setStorageItem('reportDB', response, () => {
           resolve(model.id);
         })
       })
@@ -114,12 +113,12 @@ const axios = {
   },
 }
 
-function deleteModel(model) {
+function deleteReport(model) {
   const modelName = sanitize(model.name);
   return axios
-    .delete(`api/models/${model.id}`)
+    .delete(`api/reportDB/${model.id}`)
     .then(data => {
-      notification.warning(`Model ${modelName} has been deleted.`);
+      notification.warning(`Report ${modelName} has been deleted.`);
       return data;
     })
     .catch(error => {
@@ -128,20 +127,20 @@ function deleteModel(model) {
 }
 
 
-/*const Model = {
-  query: params => axios.get("api/models", { params }),
-  get: ({ id }) => axios.get(`api/models/${id}`),
-  create: data => axios.post(`api/models`, data),
-  save: data => axios.post(`api/models/${data.id}`, data),
-  deleteModel,
+/*const Report = {
+  query: params => axios.get("api/reportDB", { params }),
+  get: ({ id }) => axios.get(`api/reportDB/${id}`),
+  create: data => axios.post(`api/reportDB`, data),
+  save: data => axios.post(`api/reportDB/${data.id}`, data),
+  deleteReport,
 };*/
 
-const Model = {
+const Report = {
   query: params => axios.query(params),
   get: ({ id }) => axios.get(id),
   create: data => axios.create(data),
   save: data => axios.save(data),
-  deleteModel: axios.delete,
+  deleteReport: axios.delete,
 };
 
-export default Model;
+export default Report;

@@ -59,6 +59,14 @@ export default function DesktopNavbar() {
             </a>
           </Menu.Item>
         )}
+        {currentUser.hasPermission("view_query") && (
+          <Menu.Item key="reports">
+            <a href="reports">
+              <Icon type="pie-chart" />
+              <span>Reports</span>
+            </a>
+          </Menu.Item>
+        )}
         {currentUser.hasPermission("list_alerts") && (
           <Menu.Item key="alerts">
             <a href="alerts">
@@ -87,6 +95,13 @@ export default function DesktopNavbar() {
               <Menu.Item key="new-query">
                 <a href="queries/new" data-test="CreateQueryMenuItem">
                   New Query
+                </a>
+              </Menu.Item>
+            )}
+            {canCreateQuery && (
+              <Menu.Item key="new-report">
+                <a href="reports/new" data-test="CreateReportMenuItem">
+                  New Report
                 </a>
               </Menu.Item>
             )}

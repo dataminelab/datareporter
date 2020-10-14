@@ -26,7 +26,7 @@ node {
         stage("Build docker image") {
             echo "Build docker image for: ${appName}"
 
-            dockerimage = docker.build("${appName}", "${imageLabel} ${buildArgs}")
+            dockerimage = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
         }
 
         stage("Push docker image") {

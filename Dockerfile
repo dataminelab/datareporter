@@ -10,7 +10,8 @@ RUN if [ "x$skip_frontend_build" = "x" ] ; then npm ci --unsafe-perm; fi
 
 COPY client /frontend/client
 COPY webpack.config.js /frontend/
-RUN if [ "x$skip_frontend_build" = "x" ] ; then npm run build; else mkdir -p /frontend/client/dist && touch /frontend/client/dist/multi_org.html && touch /frontend/client/dist/index.html; fi
+
+RUN if [ "x$skip_frontend_build" = "x" ] ; then set NODE_OPTIONS=--max_old_space_size=8192 && npm run build; else mkdir -p /frontend/client/dist && touch /frontend/client/dist/multi_org.html && touch /frontend/client/dist/index.html; fi
 FROM python:3.7-slim
 
 EXPOSE 5000

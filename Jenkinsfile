@@ -7,6 +7,8 @@ node {
 
     sh("git fetch --tags origin")
 
+    sh("docker --version")
+
     def shortCommit = sh(returnStdout: true, script: 'git rev-parse --short=8 HEAD').trim()
     def latestTagRelease = sh(returnStdout: true, script: "git describe --tags \$(git rev-list --tags --max-count=1) || echo 0.0.0").trim()
 

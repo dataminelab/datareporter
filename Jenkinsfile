@@ -22,7 +22,7 @@ node {
 
     def imageName = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
 
-    docker.withRegistry("https://${registryRegion}/", "datareporter") {
+    docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
         stage("Build docker image",) {
             echo "Build docker image for: ${appName}"

@@ -24,7 +24,7 @@ node {
 
     docker.withRegistry("https://${registryRegion}/") {
 
-        stage("Build docker image") {
+        stage("Build docker image", "datareporter") {
             echo "Build docker image for: ${appName}"
 
             dockerimage = docker.build("${appName}", "${imageLabel} ${buildArgs} .")

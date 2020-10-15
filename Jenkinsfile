@@ -22,9 +22,9 @@ node {
 
     def imageName = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
 
-    docker.withRegistry("https://${registryRegion}/") {
+    docker.withRegistry("https://${registryRegion}/", "datareporter") {
 
-        stage("Build docker image", "datareporter") {
+        stage("Build docker image",) {
             echo "Build docker image for: ${appName}"
 
             dockerimage = docker.build("${appName}", "${imageLabel} ${buildArgs} .")

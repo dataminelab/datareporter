@@ -21,20 +21,16 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: 200m
-            memory: 400Mi
-          limits:
-            cpu: 200m
-            memory: 400Mi
+            memory: 1Gi
         livenessProbe:
           httpGet:
-            path: /health
+            path: /ping
             port: datareporter-port
-          initialDelaySeconds: 30
-          timeoutSeconds: 30
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
         ports:
           - name: datareporter-port
-            containerPort: 80
+            containerPort: 5000
         env:
           # See: https://github.com/getredash/setup/blob/master/setup.sh
           - name: POSTGRES_PASSWORD
@@ -65,3 +61,8 @@ spec:
               secretKeyRef:
                 name: prod-redash-secret-key
                 key: secret-key
+      - name: datareporter-nginx
+        image: {{NGINX_IMAGE_NAME}}
+        ports:
+          - name: nginx
+            containerPort: 80

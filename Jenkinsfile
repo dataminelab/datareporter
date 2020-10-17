@@ -3,6 +3,7 @@ node {
     checkout scm
 
     def appName = 'datareporter/datareporter'
+    def appNginxName = 'datareporter/nginx'
     def registryRegion = 'eu.gcr.io'
     def cluster = 'k8s-1-18-8-do-1-fra1'
 
@@ -24,13 +25,13 @@ node {
 
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
-        stage("Build docker image",) {
+        stage("Build DR docker image",) {
             echo "Build docker image for: ${appName}"
 
-            dockerimage = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
+            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
         }
 
-        stage("Push docker image") {
+        stage("Push DR docker image") {
 
             def imageTags = []
             imageTags.add("${latestTagRelease}-${shortCommit}")
@@ -39,7 +40,26 @@ node {
 
             for (tag in imageTags) {
                 echo("Pushing docker image for ${appName} with tag ${tag}")
-                dockerimage.push(tag)
+                dockerimageDr.push(tag)
+            }
+        }
+
+        stage("Build Nginx docker image",) {
+            echo "Build docker image for: ${appNginxName}"
+
+            dockerimageNginx = docker.build("${appNginxName}", "${imageLabel} ${buildArgs} nginx")
+        }
+
+        stage("Push Nginx docker image") {
+
+            def imageTags = []
+            imageTags.add("${latestTagRelease}-${shortCommit}")
+            imageTags.add("${shortCommit}_${env.BUILD_ID}")
+            imageTags.add("${env.BRANCH_NAME}".replaceAll("/", "."))
+
+            for (tag in imageTags) {
+                echo("Pushing docker image for ${appNginxName} with tag ${tag}")
+                dockerimageNginx.push(tag)
             }
         }
     }
@@ -53,6 +73,7 @@ node {
         //     break
           
           case [ 'develop' ]:
+          //case [ 'k8s' ]: // For testing
             sh("kubectl --context ${cluster} --namespace=staging apply -f ./kubernetes")
             break
   

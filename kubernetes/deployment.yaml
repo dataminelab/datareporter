@@ -25,11 +25,11 @@ spec:
         livenessProbe:
           httpGet:
             path: /ping
-            port: datareporter-port
+            port: dr-port
           initialDelaySeconds: 60
           timeoutSeconds: 60
         ports:
-          - name: datareporter-port
+          - name: dr-port
             containerPort: 5000
         env:
           # See: https://github.com/getredash/setup/blob/master/setup.sh
@@ -71,7 +71,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /ping
-            port: datareporter-port
+            port: dr-port
           initialDelaySeconds: 60
           timeoutSeconds: 60
         env:

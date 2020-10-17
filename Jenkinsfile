@@ -44,21 +44,22 @@ node {
         }
     }
 
-    // stage("Deploy") {
-    //     switch (env.BRANCH_NAME) {
+    stage("Deploy") {
+        switch (env.BRANCH_NAME) {
           
-    //     //   case [ 'master' ]:
-    //     //     sh("kubectl --context ${cluster} --namespace=live apply -f ./kubernetes")
-    //     //     break
+        // TODO: add livespace namespace
+        //   case [ 'master' ]:
+        //     sh("kubectl --context ${cluster} --namespace=live apply -f ./kubernetes")
+        //     break
           
-    //       case [ 'develop' ]:
-    //         sh("kubectl --context ${cluster} --namespace=staging apply -f ./kubernetes")
-    //         break
+          case [ 'develop' ]:
+            sh("kubectl --context ${cluster} --namespace=staging apply -f ./kubernetes")
+            break
   
-    //       default:
-    //         echo "Only master and develop are deployed. ${env.BRANCH_NAME} is not"
-    //         break
-    //     }
-    // }
+          default:
+            echo "Only master and develop are deployed. ${env.BRANCH_NAME} is not"
+            break
+        }
+    }
 
 }

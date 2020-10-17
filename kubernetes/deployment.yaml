@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter  
+spec:
+  selector:
+    matchLabels:
+      app: datareporter  
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 4
+  template:
+    metadata:
+      labels:
+        app: datareporter
+    spec:
+      containers:
+      - name: datareporter
+        image: eu.gcr.io/datareporter/datareporter:_
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 200m
+            memory: 400Mi
+          limits:
+            cpu: 200m
+            memory: 400Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: datareporter-port
+          initialDelaySeconds: 30
+          timeoutSeconds: 30
+        ports:
+          - name: datareporter-port
+            containerPort: 80
+        env:
+          # See: https://github.com/getredash/setup/blob/master/setup.sh
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: prod-db-secret
+                key: postgres-password
+          - name: REDASH_DATABASE_URL
+            value: "postgresql://datareporter-staging:${POSTGRES_PASSWORD}@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: prod-redis-secret
+                key: redis-password
+          - name: REDASH_REDIS_URL
+            value: "rediss://default:${REDIS_PASSWORD}@db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
+          - name: PYTHONUNBUFFERED
+            value: "0"
+          - name: REDASH_LOG_LEVEL
+            value: "INFO"
+          - name: REDASH_COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: prod-cookie-secret
+                key: cookie-secret
+          - name: REDASH_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: prod-redash-secret-key
+                key: secret-key

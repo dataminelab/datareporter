@@ -73,7 +73,7 @@ node {
         //     break
           
           case [ 'develop' ]:
-          //case [ 'k8s' ]: // For testing
+          case [ 'k8s' ]: // For testing
             sh("kubectl --context ${cluster} --namespace=staging apply -f ./kubernetes")
             break
   

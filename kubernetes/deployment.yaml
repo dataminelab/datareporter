@@ -16,7 +16,7 @@ spec:
         app: datareporter
     spec:
       containers:
-      - name: datareporter
+      - name: datareporter-web
         image: eu.gcr.io/datareporter/datareporter:_
         imagePullPolicy: Always
         resources:
@@ -61,8 +61,55 @@ spec:
               secretKeyRef:
                 name: prod-redash-secret-key
                 key: secret-key
+        args: ["server"]
+      - name: datareporter-workers
+        image: eu.gcr.io/datareporter/datareporter:_
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: datareporter-port
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: prod-db-secret
+                key: postgres-password
+          - name: REDASH_DATABASE_URL
+            value: "postgresql://datareporter-staging:${POSTGRES_PASSWORD}@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: prod-redis-secret
+                key: redis-password
+          - name: REDASH_REDIS_URL
+            value: "rediss://default:${REDIS_PASSWORD}@db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
+          - name: PYTHONUNBUFFERED
+            value: "0"
+          - name: REDASH_LOG_LEVEL
+            value: "INFO"
+          - name: REDASH_COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: prod-cookie-secret
+                key: cookie-secret
+          - name: REDASH_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: prod-redash-secret-key
+                key: secret-key
+          - name: WORKERS_COUNT
+            value: "2"
+          - name: QUEUES
+            value:  "queries,scheduled_queries,celery"
+        args: ["scheduler"]
       - name: datareporter-nginx
-        image: {{NGINX_IMAGE_NAME}}
+        image: eu.gcr.io/datareporter/nginx:_
         ports:
           - name: nginx
             containerPort: 80

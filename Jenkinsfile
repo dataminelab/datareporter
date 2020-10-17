@@ -5,7 +5,7 @@ node {
     def appName = 'datareporter/datareporter'
     def appNginxName = 'datareporter/nginx'
     def registryRegion = 'eu.gcr.io'
-    def cluster = 'k8s-1-18-8-do-1-fra1'
+    def cluster = 'do-fra1-k8s-1-18-8-do-1-fra1'
 
     sh("git fetch --tags origin")
 

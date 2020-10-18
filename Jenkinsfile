@@ -45,7 +45,7 @@ node {
             echo "Build docker image for: ${appName}"
 
             docker.build("${appName}", "${imageLabel} ${buildArgs} .")
-            imageNames.add(imageName)
+            imageNames.add(imageNameDr)
         }
 
         stage("Push DR docker image") {

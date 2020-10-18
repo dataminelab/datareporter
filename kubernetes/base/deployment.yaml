@@ -15,6 +15,7 @@ spec:
     metadata:
       labels:
         app: datareporter
+        tier: backend
     spec:
       containers:
       - name: datareporter-web
@@ -127,6 +128,7 @@ spec:
       metadata:
         labels:
           app: datareporter
+          tier: backend
       spec:
         containers:
           - name: datareporter-nginx

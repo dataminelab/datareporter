@@ -4,7 +4,7 @@ metadata:
   name: datareporter
 spec:
   minReplicas: 1
-  maxReplicas: 2
+  maxReplicas: 1
   targetCPUUtilizationPercentage: 60
   scaleTargetRef:
     apiVersion: apps/v1

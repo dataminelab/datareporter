@@ -1,3 +1,19 @@
+def kustomizeAndDeploy(overlay, cluster, imageNames) {
+    echo "Applying kustomize"
+    sh("pushd kubernetes/base && \
+        /usr/local/bin/kustomize edit add resource service.yaml; && \
+        /usr/local/bin/kustomize edit add resource hpa.yaml; && \
+        popd"
+    )
+    for (imageName in imageNames) {
+        echo "Setting imagetag: ${imageName}"
+        sh("pushd kubernetes/overlays/${overlay} && \
+            /usr/local/bin/kustomize edit set imagetag ${imageName} && popd")
+    }
+    echo "Deploying"
+    sh("/usr/local/bin/kustomize build kubernetes/overlays/${overlay} | kubectl --context=${cluster} --namespace=${overlay} apply -f -")
+}
+
 node {
 
     checkout scm
@@ -25,10 +41,13 @@ node {
 
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
+        def imageNames = []
+
         stage("Build DR docker image",) {
             echo "Build docker image for: ${appName}"
 
             dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
+            imageNames.add(dockerimageDr)
         }
 
         stage("Push DR docker image") {
@@ -48,6 +67,7 @@ node {
             echo "Build docker image for: ${appNginxName}"
 
             dockerimageNginx = docker.build("${appNginxName}", "${imageLabel} ${buildArgs} nginx")
+            imageNames.add(dockerimageNginx)
         }
 
         stage("Push Nginx docker image") {
@@ -74,7 +94,8 @@ node {
           
           case [ 'develop' ]:
           case [ 'k8s' ]: // For testing
-            sh("kubectl --context ${cluster} --namespace=staging apply -f ./kubernetes")
+            // sh("kubectl --context ${cluster} --namespace=staging apply -f ./kubernetes")
+            kustomizeAndDeploy("staging", cluster, imageNames)
             break
   
           default:

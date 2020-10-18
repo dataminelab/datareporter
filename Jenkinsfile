@@ -86,15 +86,12 @@ node {
     stage("Deploy") {
         switch (env.BRANCH_NAME) {
           
-        // TODO: add livespace namespace
-        //   case [ 'master' ]:
-        //     sh("kubectl --context ${cluster} --namespace=live apply -f ./kubernetes")
-        //     break
-          
+          case [ 'master' ]:
+            kustomizeAndDeploy("prod", cluster, imageNames)
+            break
+  
           case [ 'develop' ]:
           case [ 'k8s' ]: // For testing
-          case [ 'k8s-lb' ]: // For testing
-            // sh("kubectl --context ${cluster} --namespace=staging apply -f ./kubernetes")
             kustomizeAndDeploy("staging", cluster, imageNames)
             break
   

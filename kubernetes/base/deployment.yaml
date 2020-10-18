@@ -38,17 +38,13 @@ spec:
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: prod-db-secret
+                name: db-secret
                 key: postgres-password
-          - name: REDASH_DATABASE_URL
-            value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: prod-redis-secret
+                name: redis-secret
                 key: redis-password
-          - name: REDASH_REDIS_URL
-            value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
           - name: PYTHONUNBUFFERED
             value: "0"
           - name: REDASH_LOG_LEVEL
@@ -56,12 +52,12 @@ spec:
           - name: REDASH_COOKIE_SECRET
             valueFrom:
               secretKeyRef:
-                name: prod-cookie-secret
+                name: cookie-secret
                 key: cookie-secret
           - name: REDASH_SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: prod-redash-secret-key
+                name: redash-secret-key
                 key: secret-key
         args: ["server"]
       - name: datareporter-workers
@@ -80,17 +76,13 @@ spec:
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: prod-db-secret
+                name: db-secret
                 key: postgres-password
-          - name: REDASH_DATABASE_URL
-            value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: prod-redis-secret
+                name: redis-secret
                 key: redis-password
-          - name: REDASH_REDIS_URL
-            value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
           - name: PYTHONUNBUFFERED
             value: "0"
           - name: REDASH_LOG_LEVEL
@@ -98,12 +90,12 @@ spec:
           - name: REDASH_COOKIE_SECRET
             valueFrom:
               secretKeyRef:
-                name: prod-cookie-secret
+                name: cookie-secret
                 key: cookie-secret
           - name: REDASH_SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: prod-redash-secret-key
+                name: redash-secret-key
                 key: secret-key
           - name: WORKERS_COUNT
             value: "1"

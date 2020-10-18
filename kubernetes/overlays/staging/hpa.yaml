@@ -1,7 +1,15 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: datareporter
+  name: datareporter-frontend
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: datareporter-backend
 spec:
   minReplicas: 1
   maxReplicas: 1

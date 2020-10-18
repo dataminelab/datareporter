@@ -1,0 +1,7 @@
+namespace: live
+bases:
+- ../../base
+patches:
+- service.yaml
+- hpa.yaml
+- deployment.yaml

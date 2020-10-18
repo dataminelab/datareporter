@@ -22,6 +22,7 @@ node {
     def appNginxName = 'datareporter/nginx'
     def registryRegion = 'eu.gcr.io'
     def cluster = 'do-fra1-k8s-1-18-8-do-1-fra1'
+    def imageNames = []
 
     sh("git fetch --tags origin")
 
@@ -40,8 +41,6 @@ node {
     def imageName = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
 
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
-
-        def imageNames = []
 
         stage("Build DR docker image",) {
             echo "Build docker image for: ${appName}"

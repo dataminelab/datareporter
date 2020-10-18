@@ -39,14 +39,14 @@ spec:
                 name: prod-db-secret
                 key: postgres-password
           - name: REDASH_DATABASE_URL
-            value: "postgresql://datareporter-staging:${POSTGRES_PASSWORD}@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
+            value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: prod-redis-secret
                 key: redis-password
           - name: REDASH_REDIS_URL
-            value: "rediss://default:${REDIS_PASSWORD}@db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
+            value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
           - name: PYTHONUNBUFFERED
             value: "0"
           - name: REDASH_LOG_LEVEL
@@ -81,14 +81,14 @@ spec:
                 name: prod-db-secret
                 key: postgres-password
           - name: REDASH_DATABASE_URL
-            value: "postgresql://datareporter-staging:${POSTGRES_PASSWORD}@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
+            value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: prod-redis-secret
                 key: redis-password
           - name: REDASH_REDIS_URL
-            value: "rediss://default:${REDIS_PASSWORD}@db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
+            value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
           - name: PYTHONUNBUFFERED
             value: "0"
           - name: REDASH_LOG_LEVEL

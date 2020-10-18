@@ -28,7 +28,7 @@ node {
 
     sh("docker --version")
 
-    def shortCommit = sh(returnStdout: true, script: 'git rev-parse --short=8 HEAD').trim()
+    def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=8 HEAD").trim()
     def latestTagRelease = sh(returnStdout: true, script: "git describe --tags \$(git rev-list --tags --max-count=1) || echo 0.0.0").trim()
 
     def imageLabel = "\
@@ -36,7 +36,7 @@ node {
     --label git_sha=${shortCommit} \
     --label build_id=${env.BUILD_ID} \
     "
-    def buildArgs = "--build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
+    def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
 
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 

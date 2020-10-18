@@ -1,4 +1,4 @@
-namespace: live
+namespace: staging
 bases:
 - ../../base
 patches:

@@ -1,11 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter  
+  name: datareporter-backend
 spec:
   selector:
     matchLabels:
-      app: datareporter  
+      app: datareporter
+      tier: backend
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -104,12 +105,33 @@ spec:
                 name: prod-redash-secret-key
                 key: secret-key
           - name: WORKERS_COUNT
-            value: "2"
+            value: "1"
           - name: QUEUES
             value:  "queries,scheduled_queries,celery"
         args: ["scheduler"]
-      - name: datareporter-nginx
-        image: eu.gcr.io/datareporter/nginx:_
-        ports:
-          - name: nginx
-            containerPort: 80
+---
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: datareporter-frontend
+  spec:
+    selector:
+      matchLabels:
+        app: datareporter
+        tier: frontend
+    strategy:
+      rollingUpdate:
+        maxUnavailable: 1
+        maxSurge: 4
+    template:
+      metadata:
+        labels:
+          app: datareporter
+      spec:
+        containers:
+          - name: datareporter-nginx
+            image: eu.gcr.io/datareporter/nginx:_
+            ports:
+              - name: nginx
+                containerPort: 80
+    

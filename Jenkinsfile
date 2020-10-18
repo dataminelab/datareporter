@@ -44,7 +44,7 @@ node {
             def imageNameDr = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
             echo "Build docker image for: ${appName}"
 
-            docker.build("${appName}", "${imageLabel} ${buildArgs} .")
+            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
             imageNames.add(imageNameDr)
         }
 
@@ -65,7 +65,7 @@ node {
             echo "Build docker image for: ${appNginxName}"
             def imageNameNginx = "${registryRegion}/${appappNginxNameName}:${latestTagRelease}-${shortCommit}"
 
-            docker.build("${appNginxName}", "${imageLabel} ${buildArgs} nginx")
+            dockerimageNginx = docker.build("${appNginxName}", "${imageLabel} ${buildArgs} nginx")
             imageNames.add(imageNameNginx)
         }
 

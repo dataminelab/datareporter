@@ -3,29 +3,29 @@ kind: Deployment
 metadata:
   name: datareporter-backend
 ---
-  apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: datareporter-frontend
-  spec:
-    template:
-      spec:
-        containers:
-          - name: datareporter-web
-            image: eu.gcr.io/datareporter/datareporter:_
-            env:
-              - name: REDASH_DATABASE_URL
-                value: "postgresql://datareporter-prod:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-prod?sslmode=require"
-              - name: REDASH_REDIS_URL
-                value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/1"
-          - name: datareporter-workers
-            image: eu.gcr.io/datareporter/datareporter:_
-            env:
-              - name: REDASH_DATABASE_URL
-                value: "postgresql://datareporter-prod:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-prod?sslmode=require"
-              - name: REDASH_REDIS_URL
-                value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/1"
-              - name: WORKERS_COUNT
-                value: "1"
-      
-      
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-frontend
+spec:
+  template:
+    spec:
+      containers:
+      - name: datareporter-web
+        image: eu.gcr.io/datareporter/datareporter:_
+        env:
+          - name: REDASH_DATABASE_URL
+            value: "postgresql://datareporter-prod:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-prod?sslmode=require"
+          - name: REDASH_REDIS_URL
+            value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/1"
+      - name: datareporter-workers
+        image: eu.gcr.io/datareporter/datareporter:_
+        env:
+          - name: REDASH_DATABASE_URL
+            value: "postgresql://datareporter-prod:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-prod?sslmode=require"
+          - name: REDASH_REDIS_URL
+            value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/1"
+          - name: WORKERS_COUNT
+            value: "1"
+    
+    

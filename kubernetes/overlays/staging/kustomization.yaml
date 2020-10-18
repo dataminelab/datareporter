@@ -1,0 +1,7 @@
+namespace: staging
+bases:
+- ../../base
+patches:
+- service.yaml
+- hpa.yaml
+- deployment.yaml

@@ -1,8 +1,8 @@
 def kustomizeAndDeploy(overlay, cluster, imageNames) {
     echo "Applying kustomize"
     sh("pushd kubernetes/base && \
-        /usr/local/bin/kustomize edit add resource service.yaml; && \
-        /usr/local/bin/kustomize edit add resource hpa.yaml; && \
+        /usr/local/bin/kustomize edit add resource service.yaml && \
+        /usr/local/bin/kustomize edit add resource hpa.yaml && \
         popd"
     )
     for (imageName in imageNames) {

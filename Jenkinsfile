@@ -63,7 +63,7 @@ node {
 
         stage("Build Nginx docker image",) {
             echo "Build docker image for: ${appNginxName}"
-            def imageNameNginx = "${registryRegion}/${appappNginxNameName}:${latestTagRelease}-${shortCommit}"
+            def imageNameNginx = "${registryRegion}/${appNginxName}:${latestTagRelease}-${shortCommit}"
 
             dockerimageNginx = docker.build("${appNginxName}", "${imageLabel} ${buildArgs} nginx")
             imageNames.add(imageNameNginx)

@@ -1,14 +1,14 @@
 def kustomizeAndDeploy(overlay, cluster, imageNames) {
     echo "Applying kustomize"
-    sh("pushd kubernetes/base && \
+    sh("cd kubernetes/base && \
         /usr/local/bin/kustomize edit add resource service.yaml && \
         /usr/local/bin/kustomize edit add resource hpa.yaml && \
-        popd"
+        cd ../.."
     )
     for (imageName in imageNames) {
         echo "Setting imagetag: ${imageName}"
-        sh("pushd kubernetes/overlays/${overlay} && \
-            /usr/local/bin/kustomize edit set imagetag ${imageName} && popd")
+        sh("cd kubernetes/overlays/${overlay} && \
+            /usr/local/bin/kustomize edit set imagetag ${imageName} && cd ../../..")
     }
     echo "Deploying"
     sh("/usr/local/bin/kustomize build kubernetes/overlays/${overlay} | kubectl --context=${cluster} --namespace=${overlay} apply -f -")

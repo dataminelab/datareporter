@@ -93,6 +93,7 @@ node {
           
           case [ 'develop' ]:
           case [ 'k8s' ]: // For testing
+          case [ 'k8s-lb' ]: // For testing
             // sh("kubectl --context ${cluster} --namespace=staging apply -f ./kubernetes")
             kustomizeAndDeploy("staging", cluster, imageNames)
             break

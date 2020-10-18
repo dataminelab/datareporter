@@ -38,15 +38,14 @@ node {
     "
     def buildArgs = "--build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
 
-    def imageName = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
-
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
         stage("Build DR docker image",) {
+            def imageNameDr = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
             echo "Build docker image for: ${appName}"
 
-            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
-            imageNames.add(dockerimageDr)
+            docker.build("${appName}", "${imageLabel} ${buildArgs} .")
+            imageNames.add(imageName)
         }
 
         stage("Push DR docker image") {
@@ -64,9 +63,10 @@ node {
 
         stage("Build Nginx docker image",) {
             echo "Build docker image for: ${appNginxName}"
+            def imageNameNginx = "${registryRegion}/${appappNginxNameName}:${latestTagRelease}-${shortCommit}"
 
-            dockerimageNginx = docker.build("${appNginxName}", "${imageLabel} ${buildArgs} nginx")
-            imageNames.add(dockerimageNginx)
+            docker.build("${appNginxName}", "${imageLabel} ${buildArgs} nginx")
+            imageNames.add(imageNameNginx)
         }
 
         stage("Push Nginx docker image") {

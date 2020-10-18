@@ -6,7 +6,7 @@ def kustomizeAndDeploy(overlay, cluster, imageNames) {
         cd -"
     )
     for (imageName in imageNames) {
-        echo "Setting imagetag: ${imageName}"
+        echo "Setting image: ${imageName}"
         sh("cd kubernetes/overlays/${overlay} && \
             /usr/local/bin/kustomize edit set image ${imageName} && cd -")
     }

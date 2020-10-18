@@ -1,4 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter  
+  name: datareporter-backend
+---
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: datareporter-frontend
+  

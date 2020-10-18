@@ -8,7 +8,7 @@ def kustomizeAndDeploy(overlay, cluster, imageNames) {
     for (imageName in imageNames) {
         echo "Setting imagetag: ${imageName}"
         sh("cd kubernetes/overlays/${overlay} && \
-            /usr/local/bin/kustomize edit set imagetag ${imageName} && cd -")
+            /usr/local/bin/kustomize edit set image ${imageName} && cd -")
     }
     echo "Deploying"
     sh("/usr/local/bin/kustomize build kubernetes/overlays/${overlay} | kubectl --context=${cluster} --namespace=${overlay} apply -f -")
@@ -45,7 +45,7 @@ node {
             echo "Build docker image for: ${appName}"
 
             dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
-            imageNames.add(imageNameDr)
+            imageNames.add("${registryRegion}/${appName}=" + imageNameDr)
         }
 
         stage("Push DR docker image") {
@@ -66,7 +66,7 @@ node {
             def imageNameNginx = "${registryRegion}/${appNginxName}:${latestTagRelease}-${shortCommit}"
 
             dockerimageNginx = docker.build("${appNginxName}", "${imageLabel} ${buildArgs} nginx")
-            imageNames.add(imageNameNginx)
+            imageNames.add("${registryRegion}/${appNginxName}=" + imageNameNginx)
         }
 
         stage("Push Nginx docker image") {

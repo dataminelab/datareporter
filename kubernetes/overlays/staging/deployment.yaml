@@ -13,9 +13,6 @@ spec:
       containers:
       - name: datareporter-web
         image: eu.gcr.io/datareporter/datareporter:_
-        env:
-          - name: REDASH_DATABASE_URL
-            value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -28,7 +25,5 @@ spec:
       - name: datareporter-worker
         image: eu.gcr.io/datareporter/datareporter:_
         env:
-          - name: REDASH_DATABASE_URL
-            value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
           - name: WORKERS_COUNT
             value: "1"

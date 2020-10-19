@@ -158,4 +158,20 @@ spec:
             ports:
               - name: nginx
                 containerPort: 80
-    
+                env:
+                  - name: POSTGRES_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: db-secret
+                        key: postgres-password
+                  - name: REDIS_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: redis-secret
+                        key: redis-password
+                  - name: REDASH_DATABASE_URL
+                    value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
+                  - name: REDASH_REDIS_URL
+                    value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
+
+            

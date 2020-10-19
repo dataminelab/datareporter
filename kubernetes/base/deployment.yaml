@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter-backend
+  name: datareporter-web
 spec:
   selector:
     matchLabels:
       app: datareporter
-      tier: backend
+      tier: web
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -15,7 +15,7 @@ spec:
     metadata:
       labels:
         app: datareporter
-        tier: backend
+        tier: web
     spec:
       containers:
       - name: datareporter-web
@@ -65,7 +65,28 @@ spec:
                 name: redash-secret-key
                 key: secret-key
         args: ["server"]
-      - name: datareporter-workers
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-worker
+spec:
+  selector:
+    matchLabels:
+      app: datareporter
+      tier: worker
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 4
+  template:
+    metadata:
+      labels:
+        app: datareporter
+        tier: worker
+    spec:
+      containers:
+      - name: datareporter-worker
         image: eu.gcr.io/datareporter/datareporter:_
         imagePullPolicy: Always
         resources:
@@ -116,12 +137,12 @@ spec:
   apiVersion: apps/v1
   kind: Deployment
   metadata:
-    name: datareporter-frontend
+    name: datareporter-lb
   spec:
     selector:
       matchLabels:
         app: datareporter
-        tier: frontend
+        tier: lb
     strategy:
       rollingUpdate:
         maxUnavailable: 1
@@ -130,7 +151,7 @@ spec:
       metadata:
         labels:
           app: datareporter
-          tier: frontend
+          tier: lb
       spec:
         containers:
           - name: datareporter-nginx

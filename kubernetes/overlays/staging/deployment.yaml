@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter-backend
+  name: datareporter-lb
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter-frontend
+  name: datareporter-web
 spec:
   template:
     spec:
@@ -18,7 +18,16 @@ spec:
             value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
           - name: REDASH_REDIS_URL
             value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
-      - name: datareporter-workers
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-worker
+spec:
+  template:
+    spec:
+      containers:
+      - name: datareporter-worker
         image: eu.gcr.io/datareporter/datareporter:_
         env:
           - name: REDASH_DATABASE_URL
@@ -27,5 +36,3 @@ spec:
             value: "rediss://default:$(REDIS_PASSWORD)@private-db-redis-fra1-46025-do-user-3899788-0.b.db.ondigitalocean.com:25061/0"
           - name: WORKERS_COUNT
             value: "1"
-    
-    

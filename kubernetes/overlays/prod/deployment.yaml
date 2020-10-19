@@ -28,7 +28,5 @@ spec:
       - name: datareporter-worker
         image: eu.gcr.io/datareporter/datareporter:_
         env:
-          - name: REDASH_DATABASE_URL
-            value: "postgresql://datareporter-prod:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-prod?sslmode=require"
           - name: WORKERS_COUNT
             value: "1"

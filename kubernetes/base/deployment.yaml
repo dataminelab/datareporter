@@ -45,7 +45,6 @@ spec:
               secretKeyRef:
                 name: redis-secret
                 key: redis-password
-                env:
           - name: REDASH_DATABASE_URL
             value: "postgresql://datareporter-staging:$(POSTGRES_PASSWORD)@private-db-postgresql-fra1-redash-do-user-3899788-0.b.db.ondigitalocean.com:25060/datareporter-staging?sslmode=require"
           - name: REDASH_REDIS_URL

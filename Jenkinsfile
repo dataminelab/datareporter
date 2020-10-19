@@ -92,6 +92,7 @@ node {
   
           case [ 'develop' ]:
           case [ 'k8s' ]: // For testing
+          case [ 'k8s-workers' ]: // For testing
             kustomizeAndDeploy("staging", cluster, imageNames)
             break
   

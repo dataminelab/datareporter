@@ -15,16 +15,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import navigateTo from "@/components/ApplicationArea/navigateTo";
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import location from "@/services/location";
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import Widget from "@/services/widget";
-import Button from "antd/lib/button";
 import { Duration, Timezone } from "chronoshift";
 import { immutableEqual } from "immutable-class";
 import * as React from "react";
@@ -248,49 +238,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   }
 
   private renderRightBar(): JSX.Element {
-    const saveWidget = () => {
-      const { dashboardId, widgetId, back } = location.search;
-      const widget = new Widget({
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        dashboard_id: dashboardId,
-        text: "[turnilo-widget]" + location.hash,
-        options: {
-          isHidden: false,
-          position: {
-            autoHeight: false,
-            col: 0,
-            maxSizeX: 6,
-            maxSizeY: 1000,
-            minSizeX: 1,
-            minSizeY: 1,
-            row: 0,
-            sizeX: 3,
-            sizeY: 3
-          }
-        },
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        visualization_id: null,
-        width: 1
-      });
-      if (widgetId) {
-        widget.get(widgetId).then((item: { id: any; options: any;  width: any }) => {
-          widget.id = item.id;
-          widget.options = item.options;
-          widget.width = item.width;
-          widget.saveTurnilo().then(() => navigateTo(`/dashboards/${back}`));
-        });
-      } else {
-        widget.saveTurnilo().then(() => navigateTo(`/dashboards/${back}`));
-      }
-    };
-    const { back, widgetId } = location.search;
     return <div className="right-bar">
-      <Button className="m-r-15 m-t-5" type={"primary"} onClick={saveWidget} data-test="AddTextboxButton">
-        {widgetId ? "Save" : "Add to Dashboard"}
-      </Button>
-      <a href={ `/dashboards/${back}` } className="m-r-15 ant-btn m-t-5" data-test="AddTextboxButton">
-        Cancel
-      </a>
       <div className="text-button" onClick={this.toggleTimezoneMenu}>
         {this.props.essence.timezone.toString()}
       </div>

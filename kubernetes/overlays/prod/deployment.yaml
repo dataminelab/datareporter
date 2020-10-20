@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-lb
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-web
+spec:
+  template:
+    spec:
+      containers:
+      - name: datareporter-web
+        image: eu.gcr.io/datareporter/datareporter:_
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-worker
+spec:
+  template:
+    spec:
+      containers:
+      - name: datareporter-worker
+        image: eu.gcr.io/datareporter/datareporter:_
+        env:
+          - name: WORKERS_COUNT
+            value: "1"

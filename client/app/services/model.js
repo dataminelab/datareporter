@@ -229,7 +229,7 @@ const axios = {
   query:  (params) => {
     return new Promise((resolve, reject) => {
       getStorageItem('models', (response) => {
-        response = JSON.parse(response);
+        response = response ? JSON.parse(response) : [];
         if (response) {
           resolve({
             count: response.length,
@@ -251,7 +251,7 @@ const axios = {
   get: (id) => {
     return new Promise((resolve, reject) => {
       getStorageItem('models', (response) => {
-        response = JSON.parse(response);
+        response = response ? JSON.parse(response) : [];
         resolve(response.find(x => x.id === id));
       })
     });
@@ -259,7 +259,7 @@ const axios = {
   create: (item) => {
     return new Promise((resolve, reject) => {
       getStorageItem('models', (response) => {
-        response = JSON.parse(response);
+        response = response ? JSON.parse(response) : [];
         let data = []
         if (response) {
           data = response;
@@ -294,7 +294,7 @@ const axios = {
   delete: (model) => {
     return new Promise((resolve, reject) => {
       getStorageItem('models', (response) => {
-        response = JSON.parse(response);
+        response = response ? JSON.parse(response) : [];
         response = response.filter((item) => model.id !== item.id)
         setStorageItem('models', response, () => {
           resolve(model.id);

@@ -28,6 +28,12 @@ import "./queries/QuerySource";
 import "./queries/QueryView";
 import "./queries/VisualizationEmbed";
 
+
+import "./reports-list/ReportsList";
+import "./reports/ReportSource";
+import "./reports/ReportView";
+import "./reports/VisualizationEmbed";
+
 import "./query-snippets/QuerySnippetsList";
 
 import "./settings/OrganizationSettings";

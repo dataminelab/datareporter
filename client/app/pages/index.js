@@ -11,7 +11,7 @@ import "./dashboards/DashboardList";
 import "./dashboards/DashboardPage";
 import "./dashboards/PublicDashboardPage";
 
-import "./turnilo/TurniloPage";
+import "./report/ReportPage";
 
 import "./data-sources/DataSourcesList";
 import "./data-sources/EditDataSource";
@@ -42,3 +42,4 @@ import "./users/UsersList";
 import "./users/UserProfile";
 
 import "./models/ModelsList";
+import "./models/ModelConfig";

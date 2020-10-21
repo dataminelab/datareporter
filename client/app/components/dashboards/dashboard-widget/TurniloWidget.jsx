@@ -17,7 +17,7 @@ function TurniloWidget(props) {
   const editTurnilo = () => {
     // eslint-disable-next-line no-restricted-globals
     let backUrl = location.url.split('/')[2];
-    navigateTo(`/turnilo/?back=${backUrl}&widgetId=${widget.id}&dashboardId=${widget.dashboard_id}${turniloHash}`);
+    navigateTo(`/report/?back=${backUrl}&widgetId=${widget.id}&dashboardId=${widget.dashboard_id}${turniloHash}`);
   };
 
   const TurniloMenuOptions = [

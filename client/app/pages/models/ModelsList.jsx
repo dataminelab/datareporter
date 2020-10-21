@@ -29,12 +29,15 @@ import routes from "@/services/routes";
 import CreateModelDialog from "./components/CreateModelDialog";
 import DataSource from "@/services/data-source";
 
-function ModelsListActions({ model, editModel, deleteModel }) {
+function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
   return <>
-            <Button type="primary" className="w-100 m-2" onClick={event => editModel(event, model)}>
+            <Button type="ghost" icon="setting" className="m-2 inline" onClick={() => editConfigModel(model)}>
+              Edit config
+            </Button>
+            <Button type="primary" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
               Edit
-            </Button> <br/>
-            <Button type="danger" className="w-100 m-2" onClick={event => deleteModel(event, model)}>
+            </Button>
+            <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => deleteModel(event, model)}>
               Delete
             </Button>
           </>;
@@ -42,12 +45,10 @@ function ModelsListActions({ model, editModel, deleteModel }) {
 
 ModelsListActions.propTypes = {
   model: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
     is_invitation_pending: PropTypes.bool,
     is_disabled: PropTypes.bool,
   }).isRequired,
-  enableModel: PropTypes.func.isRequired,
-  disableModel: PropTypes.func.isRequired,
   deleteModel: PropTypes.func.isRequired,
 };
 
@@ -87,13 +88,13 @@ class ModelsList extends React.Component {
       (text, model) => (
         <ModelsListActions
           model={model}
-          enableModel={this.enableModel}
-          disableModel={this.disableModel}
+          editModel={this.editModel}
+          editConfigModel={this.editConfigModel}
           deleteModel={this.deleteModel}
         />
       ),
       {
-        width: "2%",
+        width: "30%",
         isAvailable: () => policy.canCreateDataSource(),
       }
     ),
@@ -115,20 +116,19 @@ class ModelsList extends React.Component {
   createModel = values =>
     Model.create(values)
       .then(model => {
+        console.log(model)
+        navigateTo(`models/${model.id}`);
         notification.success("Saved.");
-        if (model.invite_link) {
-          Modal.warning({
-            title: "Email not sent!",
-            content: (
-              <React.Fragment>
-                <p>
-                  The mail server is not configured, please send the following link to <b>{model.name}</b>:
-                </p>
-                <InputWithCopy value={absoluteUrl(model.invite_link)} readOnly />
-              </React.Fragment>
-            ),
-          });
-        }
+      })
+      .catch(error => {
+        const message = find([get(error, "response.data.message"), get(error, "message"), "Failed saving."], isString);
+        return Promise.reject(new Error(message));
+      });
+
+  saveModel = (values, id) =>
+    Model.save(values, id)
+      .then(model => {
+        notification.success("Saved.");
       })
       .catch(error => {
         const message = find([get(error, "response.data.message"), get(error, "message"), "Failed saving."], isString);
@@ -141,22 +141,35 @@ class ModelsList extends React.Component {
       const goToModelsList = () => {
         navigateTo("models");
       };
+
       CreateModelDialog.showModal({ dataSources })
         .onClose(values =>
           this.createModel(values).then(() => {
             this.props.controller.update();
-            goToModelsList();
           })
         )
         .onDismiss(goToModelsList);
     }
   };
 
-  enableModel = (event, model) => Model.enableModel(model).then(() => this.props.controller.update());
-
-  disableModel = (event, model) => Model.disableModel(model).then(() => this.props.controller.update());
+  editModel = (model) => {
+    const { dataSources } = this.state;
+    if (policy.canCreateDataSource()) {
+      const goToModelsList = () => {
+        navigateTo("models");
+      };
+      CreateModelDialog.showModal({ dataSources, model })
+        .onClose(values =>
+          this.saveModel(values, model.id).then(() => {
+            this.props.controller.update();
+          })
+        )
+        .onDismiss(goToModelsList);
+    }
+  };
 
   deleteModel = (event, model) => Model.deleteModel(model).then(() => this.props.controller.update());
+  editConfigModel = (model) => navigateTo(`models/${model.id}`);
 
   // eslint-disable-next-line class-methods-use-this
   renderPageHeader() {
@@ -220,21 +233,6 @@ const ModelsListPage = wrapSettingsTab(
     ModelsList,
     () =>
       new ResourceItemsSource({
-        getRequest(request, { params: { currentPage } }) {
-          switch (currentPage) {
-            case "active":
-              request.pending = false;
-              break;
-            case "pending":
-              request.pending = true;
-              break;
-            case "disabled":
-              request.disabled = true;
-              break;
-            // no default
-          }
-          return request;
-        },
         getResource() {
           return Model.query.bind(Model);
         },
@@ -259,3 +257,4 @@ routes.register(
     render: pageProps => <ModelsListPage {...pageProps} currentPage="active" />,
   })
 );
+

@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-web
+spec:
+  selector:
+    matchLabels:
+      app: datareporter
+      tier: web
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 4
+  template:
+    metadata:
+      labels:
+        app: datareporter
+        tier: web
+    spec:
+      containers:
+      - name: datareporter-web
+        image: eu.gcr.io/datareporter/datareporter:_
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: dr-port
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
+        ports:
+          - name: dr-port
+            containerPort: 5000
+        env:
+          # See: https://github.com/getredash/setup/blob/master/setup.sh
+          - name: REDASH_DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: connection-string
+          - name: REDASH_REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                name: redis
+                key: connection-string
+          - name: PYTHONUNBUFFERED
+            value: "0"
+          - name: REDASH_LOG_LEVEL
+            value: "INFO"
+          - name: REDASH_COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: cookie-secret
+                key: cookie-secret
+          - name: REDASH_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: redash-secret-key
+                key: secret-key
+        args: ["server"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-worker
+spec:
+  selector:
+    matchLabels:
+      app: datareporter
+      tier: worker
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 4
+  template:
+    metadata:
+      labels:
+        app: datareporter
+        tier: worker
+    spec:
+      containers:
+      - name: datareporter-worker
+        image: eu.gcr.io/datareporter/datareporter:_
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: dr-port
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
+        env:
+          - name: REDASH_REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                name: redis
+                key: connection-string
+          - name: REDASH_DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: connection-string
+          - name: PYTHONUNBUFFERED
+            value: "0"
+          - name: REDASH_LOG_LEVEL
+            value: "INFO"
+          - name: REDASH_COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: cookie-secret
+                key: cookie-secret
+          - name: REDASH_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: redash-secret-key
+                key: secret-key
+          - name: WORKERS_COUNT
+            value: "1"
+          - name: QUEUES
+            value:  "queries,scheduled_queries,celery"
+        args: ["scheduler"]
+---
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: datareporter-lb
+  spec:
+    selector:
+      matchLabels:
+        app: datareporter
+        tier: lb
+    strategy:
+      rollingUpdate:
+        maxUnavailable: 1
+        maxSurge: 4
+    template:
+      metadata:
+        labels:
+          app: datareporter
+          tier: lb
+      spec:
+        containers:
+          - name: datareporter-nginx
+            image: eu.gcr.io/datareporter/nginx:_
+            ports:
+              - name: nginx
+                containerPort: 80

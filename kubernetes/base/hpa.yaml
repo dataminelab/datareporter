@@ -1,0 +1,39 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: datareporter-web
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 60
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: datareporter-web
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: datareporter-worker
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 60
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: datareporter-worker
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: datareporter-lb
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 60
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: datareporter-lb
+

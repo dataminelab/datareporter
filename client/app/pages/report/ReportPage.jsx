@@ -12,7 +12,7 @@ import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 import {axios} from "@/services/axios";
 
-function TurniloPage({ dashboardSlug, dashboardId, onError }) {
+function ReportPage({ dashboardSlug, dashboardId, onError }) {
   const [config, setConfig] = useState({});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect( () => {
@@ -49,13 +49,13 @@ function TurniloPage({ dashboardSlug, dashboardId, onError }) {
   }
 }
 
-TurniloPage.propTypes = {
+ReportPage.propTypes = {
   dashboardSlug: PropTypes.string,
   dashboardId: PropTypes.string,
   onError: PropTypes.func,
 };
 
-TurniloPage.defaultProps = {
+ReportPage.defaultProps = {
   dashboardSlug: null,
   dashboardId: null,
   onError: PropTypes.func,
@@ -65,8 +65,8 @@ TurniloPage.defaultProps = {
 routes.register(
   "Turnilo.LegacyAddOrEdit",
   routeWithUserSession({
-    path: "/turnilo",
-    bodyClass: 'turnilo-widget',
-    render: pageProps => <TurniloPage {...pageProps} />,
+    path: "/report",
+    bodyClass: 'report-widget',
+    render: pageProps => <ReportPage {...pageProps} />,
   })
 );

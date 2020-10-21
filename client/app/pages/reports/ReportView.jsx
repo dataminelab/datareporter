@@ -221,7 +221,7 @@ ReportView.propTypes = { report: PropTypes.object.isRequired }; // eslint-disabl
 const ReportViewPage = wrapReportPage(ReportView);
 
 routes.register(
-  "Queries.View",
+  "Reports.View",
   routeWithUserSession({
     path: "/reports/:queryId",
     render: pageProps => <ReportViewPage {...pageProps} />,

@@ -364,25 +364,52 @@ function setStorageItem(key, value, callback) {
 
 const axiosFaike = {
   query:  (params) => {
+    console.log('ssss', params)
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (response) => {
-        return response = response ? JSON.parse(response) : [];
+        response = response ? JSON.parse(response) : [];
+        const item = {
+          api_key: "drv5jgXMfVAH8ZiAm5tMWHGrGaZSO6Q8pCLtflBZ",
+          created_at: "2020-10-19T17:18:26.208Z",
+          data_source_id: 1,
+          description: null,
+          id: 1,
+          is_archived: false,
+          is_draft: true,
+          is_favorite: false,
+          is_safe: true,
+          last_modified_by_id: 1,
+          latest_query_data_id: 1,
+          options: {parameters: []},
+          query: "select SUM(views), wiki from bigquery-public-data.wikipedia.pageviews_2020 where datehour > '2020-01-01' group by wiki;",
+          query_hash: "12b08c5c845d47d2e8b748a9beb9a2b0",
+          retrieved_at: "2020-10-19T17:18:37.094Z",
+          runtime: 11.4343771934509,
+          schedule: null,
+          tags: [],
+          updated_at: "2020-10-19T17:18:26.208Z",
+          version: 1
+        }
         if (response) {
-          resolve({data:
+          response = response.map((newItem) => {
+
+            return Object.assign({}, item, newItem);
+          })
+          resolve(
               {
                 count: response.length,
                 page: 1,
                 page_size: 20,
                 results: response
-              }});
+              });
         } else {
-          resolve({data:
+          resolve(
               {
                 count: [].length,
                 page: 1,
                 page_size: 20,
                 results: []
-              }});
+              });
         }
       })
     })
@@ -391,7 +418,29 @@ const axiosFaike = {
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (response) => {
         response = response ? JSON.parse(response) : [];
-        resolve(response.find(x => x.id === id));
+        const item = {
+          api_key: "drv5jgXMfVAH8ZiAm5tMWHGrGaZSO6Q8pCLtflBZ",
+          created_at: "2020-10-19T17:18:26.208Z",
+          data_source_id: 1,
+          description: null,
+          id: 1,
+          is_archived: false,
+          is_draft: true,
+          is_favorite: false,
+          is_safe: true,
+          last_modified_by_id: 1,
+          latest_query_data_id: 1,
+          options: {parameters: []},
+          query: "select SUM(views), wiki from bigquery-public-data.wikipedia.pageviews_2020 where datehour > '2020-01-01' group by wiki;",
+          query_hash: "12b08c5c845d47d2e8b748a9beb9a2b0",
+          retrieved_at: "2020-10-19T17:18:37.094Z",
+          runtime: 11.4343771934509,
+          schedule: null,
+          tags: [],
+          updated_at: "2020-10-19T17:18:26.208Z",
+          version: 1
+        }
+        resolve(Object.assign(item, response.find(x => x.id === id)));
       })
     });
   },

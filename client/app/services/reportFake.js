@@ -33,7 +33,7 @@ function setStorageItem(key, value, callback) {
 }
 
 const axios = {
-  query:  (params) => {
+  getList:  (params) => {
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (res) => {
         const response = res ? JSON.parse(res) : [];
@@ -64,14 +64,28 @@ const axios = {
     });
   },
   create: (item) => {
+    console.log(item)
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (res) => {
-        const response = res ? JSON.parse(res) : [];
+        const response = JSON.parse(res);
+        console.log(response)
         let data = []
         if (res) {
           data = response;
         }
-        data.push(item);
+        let itemData = {
+          can_edit: item.can_edit,
+          data_source_id: item.data_source_id,
+          latest_report_data: item.latest_report_data,
+          latest_report_data_id: item.latest_report_data_id,
+          name: item.name,
+          options: item.options,
+          report: item.report,
+          schedule: item.schedule,
+          tags: item.tags,
+          user: item.user
+        }
+        data.push(itemData);
         setStorageItem('reportDB', data, () => {
           resolve(item);
         })
@@ -136,7 +150,7 @@ function deleteReport(model) {
 };*/
 
 const Report = {
-  query: params => axios.query(params),
+  getList: params => axios.getList(params),
   get: ({ id }) => axios.get(id),
   create: data => axios.create(data),
   save: data => axios.save(data),

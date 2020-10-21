@@ -112,6 +112,7 @@ class ReportsList extends React.Component {
 
   render() {
     const { controller } = this.props;
+    console.log('controller', controller);
     return (
       <div className="page-reports-list">
         <div className="container">
@@ -134,7 +135,7 @@ class ReportsList extends React.Component {
                 onChange={controller.updateSearch}
               />
               <Sidebar.Menu items={this.sidebarMenu} selected={controller.params.currentPage} />
-              <Sidebar.Tags url="api/reports/tags" onChange={controller.updateSelectedTags} />
+              <Sidebar.Tags url="api/queries/tags" onChange={controller.updateSelectedTags} />
             </Layout.Sidebar>
             <Layout.Content>
               {controller.isLoaded && controller.isEmpty ? (

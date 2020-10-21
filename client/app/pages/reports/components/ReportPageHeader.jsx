@@ -23,12 +23,12 @@ import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
 
 
 import "./ReportPageHeader.less";
-import Report from "@/services/reportFake";
+import ReportService from "@/services/reportFake";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import notification from "@/services/notification";
 
 function getReportTags() {
-  return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
+  return getTags("api/query/tags").then(tags => map(tags, t => t.name));
 }
 
 function createMenu(menu) {
@@ -66,7 +66,7 @@ function createMenu(menu) {
 }
 
 function saveReport (values) {
-  Report.create(values)
+  ReportService.create(values)
     .then(model => {
       navigateTo('/reports')
       notification.success("Saved.");
@@ -183,7 +183,7 @@ export default function ReportPageHeader({
       </div>
       <div className="header-actions">
         {headerExtra}
-        <Button className="m-r-5" onClick={saveReport}>
+        <Button className="m-r-5" onClick={() => saveReport(report)}>
           <i className="fa fa-paper-plane m-r-5" /> Save
         </Button>
         {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (

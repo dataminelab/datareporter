@@ -43,6 +43,13 @@ function collectParams(parts) {
   return parameters;
 }
 
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 export class Report {
   constructor(report) {
     extend(this, report);
@@ -421,6 +428,7 @@ const axiosFaike = {
         const item = {
           api_key: "drv5jgXMfVAH8ZiAm5tMWHGrGaZSO6Q8pCLtflBZ",
           created_at: "2020-10-19T17:18:26.208Z",
+          last_modified_by: "2020-10-19T17:18:26.208Z",
           data_source_id: 1,
           description: null,
           id: 1,
@@ -440,6 +448,8 @@ const axiosFaike = {
           updated_at: "2020-10-19T17:18:26.208Z",
           version: 1
         }
+        console.log(response, id)
+        console.log(response.find(x => x.id === id))
         resolve(Object.assign(item, response.find(x => x.id === id)));
       })
     });
@@ -452,6 +462,8 @@ const axiosFaike = {
         if (response) {
           data = response;
         }
+        item.id = uuidv4();
+        console.log(item)
         data.push(item);
         setStorageItem('reportDB', data, () => {
           resolve(item);
@@ -533,7 +545,7 @@ const mapResults = data => ({ ...data, results: map(data.results, getReport) });
 
 const ReportService = {
   report: params => axiosFaike.query("api/queries", { params }).then(mapResults),
-  get: data => axiosFaike.get(`api/queries/${data.id}`, data).then(getReport),
+  get: data => axiosFaike.get(data.id, data).then(getReport),
   save: data => axiosFaike.post(saveOrCreateUrl(data), data).then(getReport),
   delete: data => axiosFaike.delete(`api/queries/${data.id}`),
   recent: params => axios.get(`api/queries/recent`, { params }).then(data => map(data, getReport)),

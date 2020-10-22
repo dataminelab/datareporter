@@ -19,6 +19,12 @@ function getStorageItem(key, callback) {
     callback(result);
   }
 }
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 function setStorageItem(key, value, callback) {
   const newValue = JSON.stringify(value);
@@ -59,12 +65,12 @@ const axios = {
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (res) => {
         const response = res ? JSON.parse(res) : [];
+        console.log(response.find(x => x.id === id))
         resolve(response.find(x => x.id === id));
       })
     });
   },
   create: (item) => {
-    console.log(item)
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (res) => {
         const response = JSON.parse(res);
@@ -74,6 +80,7 @@ const axios = {
           data = response;
         }
         let itemData = {
+          id: uuidv4(),
           can_edit: item.can_edit,
           data_source_id: item.data_source_id,
           latest_report_data: item.latest_report_data,

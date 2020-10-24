@@ -42,8 +42,7 @@ DashboardSettings.propTypes = {
 };
 
 function AddWidgetContainer({dashboardOptions, className, ...props }) {
-  const { showAddTextboxDialog, showAddWidgetDialog, dashboard } = dashboardOptions;
-  let backUrl = location.url.split('/')[2];
+  const { showAddTextboxDialog, showAddWidgetDialog, showReportDialog } = dashboardOptions;
   return (
     <div className={cx("add-widget-container", className)} {...props}>
       <h2>
@@ -54,9 +53,9 @@ function AddWidgetContainer({dashboardOptions, className, ...props }) {
         </span>
       </h2>
       <div>
-        <a href={`/report?back=${backUrl}&dashboardId=${dashboard.id}`} className="m-r-15 ant-btn ant-btn-turnilo" data-test="AddTextboxButton">
+        <Button onClick={showReportDialog} className="m-r-15 ant-btn-turnilo"  data-test="AddReportButton">
           Add Report widget
-        </a>
+        </Button>
         <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
           Add Textbox
         </Button>

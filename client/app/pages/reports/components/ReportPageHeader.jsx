@@ -26,6 +26,7 @@ import "./ReportPageHeader.less";
 import ReportService from "@/services/reportFake";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import notification from "@/services/notification";
+import location from "@/services/location";
 
 function getReportTags() {
   return getTags("api/query/tags").then(tags => map(tags, t => t.name));
@@ -66,6 +67,7 @@ function createMenu(menu) {
 }
 
 function saveReport (values) {
+  console.log()
   ReportService.create(values)
     .then(model => {
       navigateTo('/reports')

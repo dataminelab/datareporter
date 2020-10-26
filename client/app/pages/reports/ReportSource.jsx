@@ -202,7 +202,7 @@ function ReportSource(props) {
           </nav>
         </Resizable>
 
-        <div className="content turnilo-widget">
+        <div className="content turnilo-widget report-widget ">
           <div className="flex-fill p-relative">
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"

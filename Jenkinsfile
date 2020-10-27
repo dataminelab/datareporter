@@ -91,6 +91,7 @@ node {
             break
   
           case [ 'develop' ]:
+          case [ 'dr-20' ]:
             kustomizeAndDeploy("staging", cluster, imageNames)
             break
   

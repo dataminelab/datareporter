@@ -18,9 +18,11 @@ node {
 
     checkout scm
 
-    parameters {
-      booleanParam(name: 'DEPLOY', defaultValue: false, description: ' Deploy this branch to staging')
-    }
+    properties([
+        parameters([
+        booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging')
+        ])
+    ])
 
     def appName = 'datareporter/datareporter'
     def appNginxName = 'datareporter/nginx'
@@ -99,7 +101,7 @@ node {
             break
   
           default:
-            if (params.DEPLOY) {
+            if (params.DEPLOY == true) {
                 echo "Deploying because user choose manual release"
                 kustomizeAndDeploy("staging", cluster, imageNames)
             } else {

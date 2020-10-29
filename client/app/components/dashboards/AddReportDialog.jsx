@@ -1,99 +1,26 @@
-import { map, includes, groupBy, first, find } from "lodash";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
-import Select from "antd/lib/select";
 import Modal from "antd/lib/modal";
 import { wrap as wrapDialog, DialogPropType } from "@/components/DialogWrapper";
-import { MappingType, ParameterMappingListInput } from "@/components/ParameterMappingInput";
+import {MappingType, ParameterMappingListInput} from "@/components/ParameterMappingInput";
 import ReportSelector from "@/components/ReportSelector";
 import notification from "@/services/notification";
-import { Query } from "@/services/query";
-
-function VisualizationSelect({ query, visualization, onChange }) {
-  const visualizationGroups = useMemo(() => {
-    return query ? groupBy(query.visualizations, "type") : {};
-  }, [query]);
-
-  const handleChange = useCallback(
-    visualizationId => {
-      const selectedVisualization = query ? find(query.visualizations, { id: visualizationId }) : null;
-      onChange(selectedVisualization || null);
-    },
-    [query, onChange]
-  );
-
-  if (!query) {
-    return null;
-  }
-
-  return (
-    <div>
-      <div className="form-group">
-        <label htmlFor="choose-visualization">Choose Visualization</label>
-        <Select
-          id="choose-visualization"
-          className="w-100"
-          value={visualization ? visualization.id : undefined}
-          onChange={handleChange}>
-          {map(visualizationGroups, (visualizations, groupKey) => (
-            <Select.OptGroup key={groupKey} label={groupKey}>
-              {map(visualizations, visualization => (
-                <Select.Option key={`${visualization.id}`} value={visualization.id}>
-                  {visualization.name}
-                </Select.Option>
-              ))}
-            </Select.OptGroup>
-          ))}
-        </Select>
-      </div>
-    </div>
-  );
-}
-
-VisualizationSelect.propTypes = {
-  query: PropTypes.object,
-  visualization: PropTypes.object,
-  onChange: PropTypes.func,
-};
-
-VisualizationSelect.defaultProps = {
-  query: null,
-  visualization: null,
-  onChange: () => {},
-};
+import {Query} from "@/services/query";
+import {first, includes, map} from "lodash";
+import {Report} from "@/services/report";
 
 function AddReportDialog({ dialog, dashboard }) {
-  const [selectedQuery, setSelectedQuery] = useState(null);
-  const [selectedVisualization, setSelectedVisualization] = useState(null);
+  const [selectedReport, setSelectedReport] = useState(null);
   const [parameterMappings, setParameterMappings] = useState([]);
 
-  const selectQuery = useCallback(
-    queryId => {
-      // Clear previously selected query (if any)
-      setSelectedQuery(null);
-      setSelectedVisualization(null);
-      setParameterMappings([]);
-
-      if (queryId) {
-        Query.get({ id: queryId }).then(query => {
-          if (query) {
-            const existingParamNames = map(dashboard.getParametersDefs(), param => param.name);
-            setSelectedQuery(query);
-            setParameterMappings(
-              map(query.getParametersDefs(), param => ({
-                name: param.name,
-                type: includes(existingParamNames, param.name)
-                  ? MappingType.DashboardMapToExisting
-                  : MappingType.DashboardAddNew,
-                mapTo: param.name,
-                value: param.normalizedValue,
-                title: "",
-                param,
-              }))
-            );
-            if (query.visualizations.length > 0) {
-              setSelectedVisualization(first(query.visualizations));
-            }
+  const selectReport = useCallback(
+    reportId => {
+      // Clear previously selected report (if any)
+      setSelectedReport(null);
+      if (reportId) {
+        Report.get({ id: reportId }).then(report => {
+          if (report) {
+            setSelectedReport(report);
           }
         });
       }
@@ -101,36 +28,28 @@ function AddReportDialog({ dialog, dashboard }) {
     [dashboard]
   );
 
-  const saveWidget = useCallback(() => {
-    dialog.close({ visualization: selectedVisualization, parameterMappings }).catch(() => {
+  const saveWidget = useCallback((report) => {
+    dialog.close("[turnilo-widget]" + report).catch(() => {
       notification.error("Widget could not be added");
     });
-  }, [dialog, selectedVisualization, parameterMappings]);
+  }, [dialog, parameterMappings]);
 
   const existingParams = dashboard.getParametersDefs();
 
   return (
     <Modal
       {...dialog.props}
-      title="Add Widget"
-      onOk={saveWidget}
+      title="Add Report Widget"
+      onOk={() => saveWidget(selectedReport.report) }
       okButtonProps={{
         ...dialog.props.okButtonProps,
-        disabled: !selectedQuery || dialog.props.okButtonProps.disabled,
+        disabled: !selectedReport || dialog.props.okButtonProps.disabled,
       }}
       okText="Add to Dashboard"
       width={700}>
       <div data-test="AddReportDialog">
-        <ReportSelector onChange={query => selectQuery(query ? query.id : null)} />
-
-        {selectedQuery && (
-          <VisualizationSelect
-            query={selectedQuery}
-            visualization={selectedVisualization}
-            onChange={setSelectedVisualization}
-          />
-        )}
-
+        <ReportSelector onChange={report => selectReport(report ? report.id : null)} />
+        {selectedReport ? selectedReport.id : 'noneeeee'}
         {parameterMappings.length > 0 && [
           <label key="parameters-title" htmlFor="parameter-mappings">
             Parameters

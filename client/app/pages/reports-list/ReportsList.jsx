@@ -62,15 +62,9 @@ class ReportsList extends React.Component {
     Columns.custom.sortable(
       (text, item) => (
         <React.Fragment>
-          <a className="table-main-title" href={"reports/" + item.id}>
+          <a className="table-main-title" href={"reports/" + item.id + '/source#' + item.report}>
             {item.name}
           </a>
-          <QueryTagsControl
-            className="d-block"
-            tags={item.tags}
-            isDraft={item.is_draft}
-            isArchived={item.is_archived}
-          />
         </React.Fragment>
       ),
       {
@@ -112,7 +106,6 @@ class ReportsList extends React.Component {
 
   render() {
     const { controller } = this.props;
-    console.log('controller', controller);
     return (
       <div className="page-reports-list">
         <div className="container">

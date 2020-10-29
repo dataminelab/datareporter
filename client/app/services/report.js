@@ -371,7 +371,6 @@ function setStorageItem(key, value, callback) {
 
 const axiosFaike = {
   query:  (params) => {
-    console.log('ssss', params)
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (response) => {
         response = response ? JSON.parse(response) : [];
@@ -448,8 +447,6 @@ const axiosFaike = {
           updated_at: "2020-10-19T17:18:26.208Z",
           version: 1
         }
-        console.log(response, id)
-        console.log(response.find(x => x.id === id))
         resolve(Object.assign(item, response.find(x => x.id === id)));
       })
     });
@@ -463,7 +460,6 @@ const axiosFaike = {
           data = response;
         }
         item.id = uuidv4();
-        console.log(item)
         data.push(item);
         setStorageItem('reportDB', data, () => {
           resolve(item);

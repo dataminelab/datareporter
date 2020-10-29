@@ -67,7 +67,7 @@ function createMenu(menu) {
 }
 
 function saveReport (values) {
-  console.log()
+  values.report = location.hash;
   ReportService.create(values)
     .then(model => {
       navigateTo('/reports')

@@ -65,7 +65,6 @@ const axios = {
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (res) => {
         const response = res ? JSON.parse(res) : [];
-        console.log(response.find(x => x.id === id))
         resolve(response.find(x => x.id === id));
       })
     });
@@ -74,7 +73,6 @@ const axios = {
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (res) => {
         const response = JSON.parse(res);
-        console.log(response)
         let data = []
         if (res) {
           data = response;
@@ -125,7 +123,6 @@ const axios = {
       getStorageItem('reportDB', (res) => {
         let response = res ? JSON.parse(res) : [];
         response = response.filter((item) => model.id === item.connection)
-        console.log(res)
         setStorageItem('reportDB', response, () => {
           resolve(model.id);
         })

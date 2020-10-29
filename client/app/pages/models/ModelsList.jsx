@@ -116,7 +116,6 @@ class ModelsList extends React.Component {
   createModel = values =>
     Model.create(values)
       .then(model => {
-        console.log(model)
         navigateTo(`models/${model.id}`);
         notification.success("Saved.");
       })

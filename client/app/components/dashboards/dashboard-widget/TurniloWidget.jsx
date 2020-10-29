@@ -1,30 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Menu from "antd/lib/menu";
 import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
 import Widget from "./Widget";
 import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
 import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
 import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
-import navigateTo from "@/components/ApplicationArea/navigateTo";
-import location from "@/services/location";
 
 function TurniloWidget(props) {
   const { widget, canEdit, config } = props;
 
   const turniloHash = '#' + widget.text.replace('[turnilo-widget]', '')
-  const editTurnilo = () => {
-    // eslint-disable-next-line no-restricted-globals
-    let backUrl = location.url.split('/')[2];
-    navigateTo(`/report/?back=${backUrl}&widgetId=${widget.id}&dashboardId=${widget.dashboard_id}${turniloHash}`);
-  };
-
-  const TurniloMenuOptions = [
-    <Menu.Item key="edit" onClick={editTurnilo}>
-      Edit
-    </Menu.Item>,
-  ];
+  const TurniloMenuOptions = [];
 
   if (!widget.width) {
     return null;
@@ -52,7 +39,7 @@ function TurniloWidget(props) {
             appSettings={appSettings}
             initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
           />
-        </turnilo-widget>;
+        </turnilo-widget>
       </Widget>
     );
   } else {

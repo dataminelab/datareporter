@@ -17,7 +17,7 @@ function search(term) {
 
   // get recent
   if (!term) {
-    return Report.recent().then(results => results.filter(item => !item.is_draft)); // filter out draft
+    return Report.report().then(({ results }) => results);
   }
 
   // search by report
@@ -68,11 +68,11 @@ export default function ReportSelector(props) {
       <div className="list-group">
         {searchResults.map(q => (
           <a
-            className={cx("report-selector-result", "list-group-item", { inactive: q.is_draft })}
+            className={cx("report-selector-result", "list-group-item")}
             key={q.id}
             onClick={() => selectQuery(q.id)}
             data-test={`QueryId${q.id}`}>
-            {q.name} <QueryTagsControl isDraft={q.is_draft} tags={q.tags} className="inline-tags-control" />
+            {q.name} <QueryTagsControl isDraft={false} tags={q.tags} className="inline-tags-control" />
           </a>
         ))}
       </div>

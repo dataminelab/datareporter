@@ -200,20 +200,8 @@ function useDashboard(dashboardData) {
   const showReportDialog = useCallback(() => {
     AddReportDialog.showModal({
       dashboard,
-    }).onClose(({ visualization, parameterMappings }) =>
-      dashboard
-        .addWidget(visualization, {
-          parameterMappings: editableMappingsToParameterMappings(parameterMappings),
-        })
-        .then(widget => {
-          const widgetsToSave = [
-            widget,
-            ...synchronizeWidgetTitles(widget.options.parameterMappings, dashboard.widgets),
-          ];
-          return Promise.all(widgetsToSave.map(w => w.save())).then(() =>
-            setDashboard(currentDashboard => extend({}, currentDashboard))
-          );
-        })
+    }).onClose((text) =>
+      dashboard.addWidget(text).then(() => setDashboard(currentDashboard => extend({}, currentDashboard)))
     );
   }, [dashboard]);
 

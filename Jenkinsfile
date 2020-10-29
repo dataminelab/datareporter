@@ -88,14 +88,6 @@ node {
     }
 
     stage("Deploy") {
-        when {
-            anyOf {
-                branch "master"
-                branch "develop"
-                expression { return params.DEPLOY }
-            }
-        }
-
         switch (env.BRANCH_NAME) {
           
           case [ 'master' ]:
@@ -107,8 +99,12 @@ node {
             break
   
           default:
-            echo "Deploying because user choose manual release"
-            kustomizeAndDeploy("staging", cluster, imageNames)
+            if (params.DEPLOY) {
+                echo "Deploying because user choose manual release"
+                kustomizeAndDeploy("staging", cluster, imageNames)
+            } else {
+                echo "Only master and develop are deployed. ${env.BRANCH_NAME} is not"
+            }
             break
         }
     }

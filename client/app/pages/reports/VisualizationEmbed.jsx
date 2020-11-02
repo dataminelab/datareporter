@@ -27,7 +27,7 @@ import { Report } from "@/services/report";
 import location from "@/services/location";
 import routes from "@/services/routes";
 
-import logoUrl from "@/assets/images/redash_icon_small.png";
+import logoUrl from "@/assets/images/report_icon_small.png";
 
 function VisualizationEmbedHeader({ queryName, queryDescription, visualization }) {
   return (

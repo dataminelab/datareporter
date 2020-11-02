@@ -7,21 +7,21 @@ import HelpTrigger from "@/components/HelpTrigger";
 import CreateDashboardDialog from "@/components/dashboards/CreateDashboardDialog";
 import { Auth, currentUser } from "@/services/auth";
 import settingsMenu from "@/services/settingsMenu";
-import logoUrl from "@/assets/images/redash_icon_small.png";
+import logoUrl from "@/assets/images/report_icon_small.png";
 
 import VersionInfo from "./VersionInfo";
 import "./DesktopNavbar.less";
 
 function NavbarSection({ inlineCollapsed, children, ...props }) {
   return (
-    <Menu
+    <div
       selectable={false}
       mode={inlineCollapsed ? "inline" : "vertical"}
       inlineCollapsed={inlineCollapsed}
       theme="dark"
       {...props}>
       {children}
-    </Menu>
+    </div>
   );
 }
 
@@ -35,52 +35,52 @@ export default function DesktopNavbar() {
   const canCreateAlert = currentUser.hasPermission("list_alerts");
 
   return (
-    <div className="desktop-navbar">
-      <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-logo">
+    <div className="desktop-navbar-report">
+      <div inlineCollapsed={collapsed} className="desktop-navbar-logo">
         <a href="./">
-          <img src={logoUrl} alt="Redash" />
+          <img src={logoUrl} alt="Redash" width="32" height="33" />
         </a>
-      </NavbarSection>
+      </div>
 
-      <NavbarSection inlineCollapsed={collapsed}>
+      <div inlineCollapsed={collapsed}>
         {currentUser.hasPermission("list_dashboards") && (
-          <Menu.Item key="dashboards">
+          <div key="dashboards">
             <a href="dashboards">
               <Icon type="desktop" />
-              <span>Dashboards</span>
+              {/*<span>Dashboards</span>*/}
             </a>
-          </Menu.Item>
+          </div>
         )}
         {currentUser.hasPermission("view_query") && (
-          <Menu.Item key="queries">
+          <div key="queries">
             <a href="queries">
               <Icon type="code" />
-              <span>Queries</span>
+              {/*<span>Queries</span>*/}
             </a>
-          </Menu.Item>
+          </div>
         )}
         {currentUser.hasPermission("view_query") && (
-          <Menu.Item key="reports">
+          <div key="reports">
             <a href="reports">
               <Icon type="pie-chart" />
-              <span>Reports</span>
+              {/*<span>Reports</span>*/}
             </a>
-          </Menu.Item>
+          </div>
         )}
         {currentUser.hasPermission("list_alerts") && (
-          <Menu.Item key="alerts">
+          <div key="alerts">
             <a href="alerts">
               <Icon type="alert" />
-              <span>Alerts</span>
+              {/*<span>Alerts</span>*/}
             </a>
-          </Menu.Item>
+          </div>
         )}
-      </NavbarSection>
+      </div>
 
-      <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-spacer">
+      <div inlineCollapsed={collapsed} className="desktop-navbar-spacer">
         {(canCreateQuery || canCreateDashboard || canCreateAlert) && <Menu.Divider />}
         {(canCreateQuery || canCreateDashboard || canCreateAlert) && (
-          <Menu.SubMenu
+          <div
             key="create"
             popupClassName="desktop-navbar-submenu"
             title={
@@ -92,57 +92,56 @@ export default function DesktopNavbar() {
               </React.Fragment>
             }>
             {canCreateQuery && (
-              <Menu.Item key="new-query">
+              <div key="new-query">
                 <a href="queries/new" data-test="CreateQueryMenuItem">
                   New Query
                 </a>
-              </Menu.Item>
+              </div>
             )}
             {canCreateQuery && (
-              <Menu.Item key="new-report">
+              <div key="new-report">
                 <a href="reports/new" data-test="CreateReportMenuItem">
                   New Report
                 </a>
-              </Menu.Item>
+              </div>
             )}
             {canCreateDashboard && (
-              <Menu.Item key="new-dashboard">
+              <div key="new-dashboard">
                 <a data-test="CreateDashboardMenuItem" onMouseUp={() => CreateDashboardDialog.showModal()}>
                   New Dashboard
                 </a>
-              </Menu.Item>
+              </div>
             )}
             {canCreateAlert && (
-              <Menu.Item key="new-alert">
+              <div key="new-alert">
                 <a data-test="CreateAlertMenuItem" href="alerts/new">
                   New Alert
                 </a>
-              </Menu.Item>
+              </div>
             )}
-          </Menu.SubMenu>
+          </div>
         )}
-      </NavbarSection>
+      </div>
 
       <NavbarSection inlineCollapsed={collapsed}>
-        <Menu.Item key="help">
+        <div key="help">
           <HelpTrigger showTooltip={false} type="HOME">
             <Icon type="question-circle" />
             <span>Help</span>
           </HelpTrigger>
-        </Menu.Item>
+        </div>
         {firstSettingsTab && (
-          <Menu.Item key="settings">
+          <div key="settings">
             <a href={firstSettingsTab.path} data-test="SettingsLink">
               <Icon type="setting" />
               <span>Settings</span>
             </a>
-          </Menu.Item>
+          </div>
         )}
-        <Menu.Divider />
       </NavbarSection>
 
       <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-profile-menu">
-        <Menu.SubMenu
+        <div
           key="profile"
           popupClassName="desktop-navbar-submenu"
           title={
@@ -151,25 +150,23 @@ export default function DesktopNavbar() {
               <span>{currentUser.name}</span>
             </span>
           }>
-          <Menu.Item key="profile">
+          <div key="profile">
             <a href="users/me">Profile</a>
-          </Menu.Item>
+          </div>
           {currentUser.hasPermission("super_admin") && (
-            <Menu.Item key="status">
+            <div key="status">
               <a href="admin/status">System Status</a>
-            </Menu.Item>
+            </div>
           )}
-          <Menu.Divider />
-          <Menu.Item key="logout">
+          <div key="logout">
             <a data-test="LogOutButton" onClick={() => Auth.logout()}>
               Log out
             </a>
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item key="version" disabled className="version-info">
+          </div>
+          <div key="version" disabled className="version-info">
             <VersionInfo />
-          </Menu.Item>
-        </Menu.SubMenu>
+          </div>
+        </div>
       </NavbarSection>
 
       <Button onClick={() => setCollapsed(!collapsed)} className="desktop-navbar-collapse-button">

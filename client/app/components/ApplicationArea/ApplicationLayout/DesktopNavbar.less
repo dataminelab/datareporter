@@ -4,8 +4,7 @@
 
 .desktop-navbar {
   background: @backgroundColor;
-  display: flex;
-  flex-direction: column;
+  display: block;
   height: 100%;
 
   &-spacer {
@@ -132,6 +131,24 @@
         }
       }
     }
+  }
+}
+
+.desktop-navbar-report {
+  background: #ffffff;
+  height: 60px;
+  line-height: 60px;
+  padding: 0 15px;
+  margin: 0 15px;
+  border-radius: 0 0 5px 5px;
+  .desktop-navbar-logo {
+    img {
+      margin-top: -7px;
+      padding: 7px;
+    }
+  }
+  * {
+    display: inline-block;
   }
 }
 

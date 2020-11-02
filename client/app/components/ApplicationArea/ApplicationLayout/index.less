@@ -4,13 +4,22 @@ body #application-root {
   @topMenuHeight: 49px;
 
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: stretch;
   padding-bottom: 0 !important;
   height: 100vh;
 
   .application-layout-side-menu {
-    height: 100vh;
+    height: 60px;
+    position: relative;
+
+    @media @mobileBreakpoint {
+      display: none;
+    }
+  }
+
+  .application-layout-side-menu-redash {
+    height: auto;
     position: relative;
 
     @media @mobileBreakpoint {
@@ -40,6 +49,7 @@ body #application-root {
 
     flex: 1 1 auto;
     padding-bottom: 15px;
+    margin: 0 17px;
 
     @media @mobileBreakpoint {
       margin-top: @topMenuHeight; // compensate for app header fixed position

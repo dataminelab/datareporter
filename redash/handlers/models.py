@@ -49,6 +49,11 @@ class ModelsListResource(BaseResource):
             serializer=ModelSerializer,
         )
 
+        self.record_event({
+            "action": "list",
+            "object_type": "model"
+        })
+
         return response
 
 

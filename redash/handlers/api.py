@@ -46,6 +46,10 @@ from redash.handlers.groups import (
     GroupMemberResource,
     GroupResource,
 )
+from redash.handlers.models import (
+    ModelsListResource,
+    ModelsResource
+)
 from redash.handlers.permissions import (
     CheckPermissionResource,
     ObjectPermissionsListResource,
@@ -329,3 +333,6 @@ api.add_org_resource(
 api.add_org_resource(
     OrganizationSettings, "/api/settings/organization", endpoint="organization_settings"
 )
+
+api.add_org_resource(ModelsListResource, "/api/models", endpoint="models")
+api.add_org_resource(ModelsResource, "/api/models/<int:model_id>", endpoint="model")

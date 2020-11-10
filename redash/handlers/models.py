@@ -1,0 +1,90 @@
+from flask import request, make_response
+from funcy import project
+
+from redash import models
+from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
+from redash.handlers.queries import order_results
+from redash.models.models import Model
+from redash.permissions import require_admin
+from redash.serializers.model_serializer import ModelSerializer
+
+
+class ModelsListResource(BaseResource):
+    @require_admin
+    def post(self):
+        req = request.get_json(True)
+        require_fields(req, ('name', 'data_source_id'))
+
+        name, data_source_id = req['name'], req['data_source_id']
+
+        data_source = get_object_or_404(
+            models.DataSource.get_by_id_and_org, data_source_id, self.current_org
+        )
+
+        model = Model(name=name, data_source_id=data_source.id, user_id=self.current_user.id, user=self.current_user)
+
+        models.db.session.add(model)
+        models.db.session.commit()
+
+        self.record_event({
+            "action": "create",
+            "object_id": model.id,
+            "object_type": "model",
+        })
+
+        return ModelSerializer(model).serialize()
+
+    @require_admin
+    def get(self):
+        models = Model.get_by_user(self.current_user)
+        ordered_results = order_results(models)
+
+        page = request.args.get("page", 1, type=int)
+        page_size = request.args.get("page_size", 25, type=int)
+
+        response = paginate(
+            ordered_results,
+            page=page,
+            page_size=page_size,
+            serializer=ModelSerializer,
+        )
+
+        return response
+
+
+class ModelsResource(BaseResource):
+    @require_admin
+    def post(self, model_id):
+        model = get_object_or_404(Model.get_by_id_and_user, model_id, self.current_user)
+        model_properties = request.get_json(force=True)
+
+        updates = project(
+            model_properties, ("name", "data_source_id",),
+        )
+
+        self.update_model(model, updates)
+        models.db.session.add(model)
+        models.db.session.commit()
+
+        self.record_event({
+            "action": "edit",
+            "object_id": model.id,
+            "object_type": "model"
+        })
+
+        return ModelSerializer(model).serialize()
+
+    @require_admin
+    def delete(self, model_id):
+        model = get_object_or_404(Model.get_by_id, model_id)
+
+        models.db.session.delete(model)
+        models.db.session.commit()
+
+        self.record_event({
+            "action": "delete",
+            "object_id": model_id,
+            "object_type": "model",
+        })
+
+        return make_response("", 204)

@@ -18,6 +18,12 @@ node {
 
     checkout scm
 
+    properties([
+        parameters([
+        booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging')
+        ])
+    ])
+
     def appName = 'datareporter/datareporter'
     def appNginxName = 'datareporter/nginx'
     def registryRegion = 'eu.gcr.io'
@@ -95,7 +101,12 @@ node {
             break
   
           default:
-            echo "Only master and develop are deployed. ${env.BRANCH_NAME} is not"
+            if (params.DEPLOY == true) {
+                echo "Deploying because user choose manual release"
+                kustomizeAndDeploy("staging", cluster, imageNames)
+            } else {
+                echo "Only master and develop are deployed. ${env.BRANCH_NAME} is not"
+            }
             break
         }
     }

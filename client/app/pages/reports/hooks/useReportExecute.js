@@ -78,7 +78,7 @@ export default function useReportExecute(report) {
           }
 
           if (executionState.loadedInitialResults) {
-            notifications.showNotification("Redash", `${report.name} updated.`);
+            notifications.showNotification("Data reporter", `${report.name} updated.`);
           }
 
           setExecutionState({
@@ -94,7 +94,7 @@ export default function useReportExecute(report) {
       .catch(queryResult => {
         if (queryResultInExecution.current === newReportResult) {
           if (executionState.loadedInitialResults) {
-            notifications.showNotification("Redash", `${report.name} failed to run: ${queryResult.getError()}`);
+            notifications.showNotification("Data reporter", `${report.name} failed to run: ${queryResult.getError()}`);
           }
 
           setExecutionState({

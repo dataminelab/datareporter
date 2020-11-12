@@ -49,12 +49,16 @@ body #application-root {
 
     flex: 1 1 auto;
     padding-bottom: 15px;
-    margin: 0 17px;
+    border-radius: 5px 5px 0 0;
 
     @media @mobileBreakpoint {
       margin-top: @topMenuHeight; // compensate for app header fixed position
     }
   }
+}
+
+.turnilo-application {
+  background-color: transparent;
 }
 
 body.fixed-layout #application-root {

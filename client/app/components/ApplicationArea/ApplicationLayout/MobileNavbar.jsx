@@ -18,7 +18,7 @@ export default function MobileNavbar({ getPopupContainer }) {
     <div className="mobile-navbar">
       <div className="mobile-navbar-logo">
         <a href="./">
-          <img src={logoUrl} alt="Redash" />
+          <img src={logoUrl} alt="Data reporter" />
         </a>
       </div>
       <div>

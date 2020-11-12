@@ -5,12 +5,12 @@ from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 from redash.handlers.queries import order_results
 from redash.models.models import Model
-from redash.permissions import require_admin
+from redash.permissions import require_permission, require_admin_or_owner
 from redash.serializers.model_serializer import ModelSerializer
 
 
 class ModelsListResource(BaseResource):
-    @require_admin
+    @require_permission("create_model")
     def post(self):
         req = request.get_json(True)
         require_fields(req, ('name', 'data_source_id'))
@@ -34,7 +34,7 @@ class ModelsListResource(BaseResource):
 
         return ModelSerializer(model).serialize()
 
-    @require_admin
+    @require_permission("view_model")
     def get(self):
         models = Model.get_by_user(self.current_user)
         ordered_results = order_results(models)
@@ -58,14 +58,30 @@ class ModelsListResource(BaseResource):
 
 
 class ModelsResource(BaseResource):
-    @require_admin
+
+    @require_permission("view_model")
+    def get(self, model_id):
+        model = get_object_or_404(Model.get_by_id, model_id)
+
+        self.record_event({
+            "action": "view",
+            "object_id": model.id,
+            "object_type": "model"
+        })
+
+        return ModelSerializer(model).serialize()
+
+    @require_permission("edit_model")
     def post(self, model_id):
-        model = get_object_or_404(Model.get_by_id_and_user, model_id, self.current_user)
         model_properties = request.get_json(force=True)
+        model = get_object_or_404(Model.get_by_id, model_id)
 
         updates = project(
             model_properties, ("name", "data_source_id",),
         )
+
+        if "data_source_id" in updates:
+            get_object_or_404(models.DataSource.get_by_id_and_org, updates["data_source_id"], self.current_org)
 
         self.update_model(model, updates)
         models.db.session.add(model)
@@ -79,10 +95,10 @@ class ModelsResource(BaseResource):
 
         return ModelSerializer(model).serialize()
 
-    @require_admin
     def delete(self, model_id):
         model = get_object_or_404(Model.get_by_id, model_id)
 
+        require_admin_or_owner(model.user_id)
         models.db.session.delete(model)
         models.db.session.commit()
 

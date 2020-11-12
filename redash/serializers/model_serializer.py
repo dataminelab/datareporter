@@ -6,6 +6,7 @@ def _serialize_query(model: Model):
     d = {
         "id": model.id,
         "name": model.name,
+        "user_id": model.user_id,
         "data_source_id": model.data_source_id,
         "created_at": model.created_at,
         "updated_at": model.updated_at,

@@ -1,4 +1,4 @@
-from . import TimestampMixin, ChangeTrackingMixin, User
+from . import TimestampMixin, ChangeTrackingMixin, User, DataSource
 from .base import db, primary_key, Column, key_type, gfk_type
 
 
@@ -7,6 +7,7 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
     id = primary_key("Model")
     name = Column(db.String(length=255))
     data_source_id = Column(key_type("DataSource"), db.ForeignKey("data_sources.id"))
+    data_source = db.relationship(DataSource, backref="models")
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))
     user = db.relationship(User)
     version = Column(db.Integer)

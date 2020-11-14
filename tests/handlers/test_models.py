@@ -130,6 +130,26 @@ class TestModelsEditResource(BaseTestCase):
 
         self.assertEqual(403, response.status_code)
 
+    def test_requires_owner_or_admin(self):
+        group = self.factory.create_group(permissions=["edit_model"])
+        db.session.commit()
+        owner_user = self.factory.create_admin(group_ids=[group.id])
+        current_user = self.factory.create_admin(group_ids=[group.id])
+
+        model = self.factory.create_model(user=owner_user)
+        db.session.flush()
+
+        response = self.make_request(
+            "post",
+            "/api/models/{}".format(model.id),
+            user=current_user,
+            data={
+                "name": "New Test Model Name"
+            }
+        )
+
+        self.assertEqual(403, response.status_code)
+
     def test_requires_user_with_edit_model(self):
         group = self.factory.create_group(permissions=["edit_model"])
         db.session.commit()

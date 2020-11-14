@@ -5,7 +5,7 @@ from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 from redash.handlers.queries import order_results
 from redash.models.models import Model
-from redash.permissions import require_permission, require_admin_or_owner
+from redash.permissions import require_permission, require_admin_or_owner, require_object_modify_permission
 from redash.serializers.model_serializer import ModelSerializer
 
 
@@ -75,6 +75,7 @@ class ModelsResource(BaseResource):
     def post(self, model_id):
         model_properties = request.get_json(force=True)
         model = get_object_or_404(Model.get_by_id, model_id)
+        require_object_modify_permission(model, self.current_user)
 
         updates = project(
             model_properties, ("name", "data_source_id",),

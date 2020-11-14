@@ -39,6 +39,7 @@ function ModelConfig({ modelId, onError }) {
   }, [modelId, handleError]);
 
   const saveConfig = (model) => {
+
     Model.save(model, model.id)
       .then(() => {
         navigateTo("models");
@@ -79,6 +80,7 @@ const ModelConfigPage = wrapSettingsTab(
     title: "Model config",
     path: "models/config",
     order: 7,
+    isHide: true
   },
   ModelConfig
 );

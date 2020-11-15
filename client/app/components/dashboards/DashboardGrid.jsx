@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { chain, cloneDeep, find } from "lodash";
 import cx from "classnames";
 import { Responsive, WidthProvider } from "react-grid-layout";
-import { VisualizationWidget, TextboxWidget, RestrictedWidget, TurniloWidget } from "@/components/dashboards/dashboard-widget";
+import { VisualizationWidget, TextboxWidget, RestrictedWidget, ReportWidget } from "@/components/dashboards/dashboard-widget";
 import { FiltersType } from "@/components/Filters";
 import cfg from "@/config/dashboard-grid-options";
 import AutoHeightController from "./AutoHeightController";
@@ -11,7 +11,6 @@ import { WidgetTypeEnum } from "@/services/widget";
 
 import "react-grid-layout/css/styles.css";
 import "./dashboard-grid.less";
-import {axios} from "@/services/axios";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -51,17 +50,6 @@ const DashboardWidget = React.memo(
     const onLoad = () => onLoadWidget(widget);
     const onRefresh = () => onRefreshWidget(widget);
     const onDelete = () => onRemoveWidget(widget.id);
-    const [config, setConfig] = useState({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect( () => {
-      async function getConfigTurnilo() {
-        if (!config.appSettings) {
-          const result =  await axios.get('/config-turnilo');
-          setConfig(result);
-        }
-      }
-      getConfigTurnilo()
-    }, []);
 
     if (type === WidgetTypeEnum.VISUALIZATION) {
       return (
@@ -83,7 +71,7 @@ const DashboardWidget = React.memo(
       return <TextboxWidget widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
     }
     if (type === WidgetTypeEnum.TURNILO) {
-      return <TurniloWidget config={config} widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
+      return <ReportWidget widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
     }
     return <RestrictedWidget widget={widget} />;
   },

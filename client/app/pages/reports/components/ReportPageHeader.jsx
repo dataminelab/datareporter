@@ -36,6 +36,7 @@ import getTags from "@/services/getTags";
 import { reportPageStyles } from "./reportPageStyles";
 import FolderOutlinedIcon from "@ant-design/icons/FolderOutlined";
 import FileOutlinedIcon from "@ant-design/icons/FileOutlined";
+import useEmbedDialog from "@/pages/reports/hooks/useEmbedDialog";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
@@ -109,7 +110,7 @@ export default function ReportPageHeader(props) {
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
   const openApiKeyDialog = useApiKeyDialog(report, setReport);
   const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
-  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
+  const openEmbedDialog = useEmbedDialog(report);  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
   const [models, setModels] = useState([]);
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
   const reportFlags = useReportFlags(report, dataSource);
@@ -334,6 +335,20 @@ export default function ReportPageHeader(props) {
     {
       fork: {
         isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+            title: (
+              <a target="_self"  onClick={(e) => {
+                e.preventDefault()
+                openEmbedDialog(report);
+              }} data-test="ShowEmbedDialogButton">
+                <Icon type="share-alt" /> Embed Elsewhere
+              </a>
+            ),
+            onClick: duplicateReport,
+          },
+        },
+        {
+          share: {
+            isEnabled: !queryFlags.isNew,
         title: (
           <React.Fragment>
             Fork <i className="fa fa-external-link m-l-5" aria-hidden="true" />

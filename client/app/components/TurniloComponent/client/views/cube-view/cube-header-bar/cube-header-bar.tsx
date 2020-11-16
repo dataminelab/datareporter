@@ -223,7 +223,12 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     let headerStyle: React.CSSProperties = null;
     if (customization && customization.headerBackground) {
       headerStyle = {
-        background: customization.headerBackground
+        background: customization.headerBackground,
+        display: "none"
+      };
+    } else {
+      headerStyle = {
+        display: "none"
       };
     }
 

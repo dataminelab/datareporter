@@ -13,7 +13,7 @@ export default function ApplicationLayout({ children }) {
 
   return (
     <React.Fragment>
-      <div className="application-layout-side-menu">
+      <div className="application-layout-side-menu-redash">
         <DynamicComponent name="ApplicationDesktopNavbar">
           <DesktopNavbar />
         </DynamicComponent>

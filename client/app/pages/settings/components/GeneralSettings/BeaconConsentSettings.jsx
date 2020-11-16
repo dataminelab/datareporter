@@ -20,7 +20,7 @@ export default function BeaconConsentSettings(props) {
           name="beacon_consent"
           checked={values.beacon_consent}
           onChange={e => onChange({ beacon_consent: e.target.checked })}>
-          Help Redash improve by automatically sending anonymous usage data
+          Help Data reporter improve by automatically sending anonymous usage data
         </Checkbox>
       </Form.Item>
     </DynamicComponent>

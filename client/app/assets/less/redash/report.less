@@ -50,6 +50,7 @@
 }
 
 .report-fullscreen {
+  margin: 0 17px;
   background: #fff;
   padding: 0;
   box-shadow: rgba(102, 136, 153, 0.15) 0 4px 9px -3px;
@@ -332,5 +333,24 @@
 
   .datasource-small {
     visibility: visible;
+  }
+}
+
+.data-source-box {
+  background: #ffffff;
+  min-width: 200px;
+  .ant-select {
+    display: inline-block;
+    width: calc(100% - 37px);
+  }
+  .icon {
+    display: inline-block;
+    margin: 5px 15px;
+    font-size: 16px;
+    top: 3px;
+    position: relative;
+  }
+  .ant-select-selection {
+    border: none;
   }
 }

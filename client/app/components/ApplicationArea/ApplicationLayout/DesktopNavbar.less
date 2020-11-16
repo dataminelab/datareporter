@@ -1,11 +1,11 @@
 @backgroundColor: #001529;
+@text-color: #160f66;
 @dividerColor: rgba(255, 255, 255, 0.5);
-@textColor: rgba(255, 255, 255, 0.75);
+@textColor: #160f66;
 
 .desktop-navbar {
   background: @backgroundColor;
-  display: flex;
-  flex-direction: column;
+  display: block;
   height: 100%;
 
   &-spacer {
@@ -58,7 +58,7 @@
       &.ant-menu-submenu-active,
       &:hover,
       &:active {
-        color: #fff;
+        color:  @text-color;
       }
 
       a,
@@ -81,7 +81,7 @@
 
     &:hover,
     &:active {
-      color: #fff;
+      color:  @text-color;;
     }
 
     &:after {
@@ -90,6 +90,7 @@
   }
 
   .desktop-navbar-profile-menu {
+    float: right !important;
     .desktop-navbar-profile-menu-title {
       display: flex;
       align-items: center;
@@ -135,7 +136,106 @@
   }
 }
 
+.desktop-navbar-report {
+  background: #ffffff;
+  height: 60px;
+  line-height: 60px;
+  padding: 0 15px;
+  margin: 0 15px;
+  border-radius: 0 0 5px 5px;
+  .desktop-navbar-profile-menu, .settings-menu {
+    float: right;
+  }
+  .desktop-navbar-logo {
+    height: 60px;
+    line-height: 60px;
+    padding: 0;
+    margin: 0;
+    img {
+      margin: -6px 18px 0 7px;
+      height: 26px !important;
+      width: 25px;
+    }
+  }
+  a {
+    .icon-ui {
+      font-size: 20px;
+    }
+  }
+  .ant-menu-submenu-title {
+    .icon-ui {
+      font-size: 20px;
+      color: @text-color !important;
+      &.icon-more {
+        font-size: 18px;
+      }
+    }
+  }
+  * {
+    display: inline-block;
+  }
+  .ant-menu-vertical {
+    display: inline-block;
+    vertical-align: top;
+    * {
+      display: inline-block;
+    }
+  }
+  .ant-menu-inline-collapsed {
+    width: auto;
+  }
+  .left-border {
+    position: relative;
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20px;
+      border-left: 1px solid #dfdee8;
+      height: 20px;
+    }
+  }
+  .ant-menu-dark, .ant-menu-sub {
+    background-color: transparent;
+    color: @text-color;
+  }
+  .desktop-navbar-logo.ant-menu.ant-menu-inline-collapsed img {
+    height: 33px;
+  }
+  .ant-menu-item, .ant-menu-item-group-title, .ant-menu-item > a {
+    color: @text-color;
+  }
+  .ant-menu-vertical > .ant-menu-item,
+  .ant-menu-vertical-left > .ant-menu-item,
+  .ant-menu-vertical-right > .ant-menu-item,
+  .ant-menu-inline > .ant-menu-item,
+  .ant-menu-vertical > .ant-menu-submenu > .ant-menu-submenu-title,
+  .ant-menu-vertical-left > .ant-menu-submenu > .ant-menu-submenu-title,
+  .ant-menu-vertical-right > .ant-menu-submenu > .ant-menu-submenu-title,
+  .ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title {
+    height: 60px;
+    line-height: 65px;
+    width: auto;
+    padding: 0 8px !important;
+    margin: 0;
+    vertical-align: top;
+  }
+  .ant-menu-item:hover > a,
+  .ant-menu-item-active > a,
+  .ant-menu-submenu-active > a,
+  .ant-menu-submenu-open > a,
+  .ant-menu-submenu-selected > a,
+  .ant-menu-submenu-title:hover > a {
+    color: @text-color !important;
+  }
+  .ant-menu-submenu-arrow {
+    display: none;
+  }
+}
+
 .desktop-navbar-submenu {
+  margin-left: -36px;
+  margin-top: 60px;
   .ant-menu {
     .ant-menu-item-divider {
       background: @dividerColor;
@@ -147,7 +247,7 @@
 
       &:hover,
       &:active {
-        color: #fff;
+        color: @text-color;
       }
 
       a,
@@ -168,14 +268,41 @@
         padding-bottom: 12px;
 
         a {
-          color: rgba(255, 255, 255, 0.8);
+          color: @text-color;
 
           &:hover,
           &:active {
-            color: rgba(255, 255, 255, 1);
+            color:  @text-color;
           }
         }
       }
     }
   }
+
 }
+
+.ant-menu-vertical .ant-menu-item:not(:last-child),
+.ant-menu-vertical-left .ant-menu-item:not(:last-child),
+.ant-menu-vertical-right .ant-menu-item:not(:last-child),
+.ant-menu-inline .ant-menu-item:not(:last-child) {
+  margin-bottom: 0 !important;
+}
+
+.ant-menu-dark, .ant-menu-sub {
+  background-color: #ffffff !important;
+  color: @text-color !important;
+}
+.ant-menu-item,
+.ant-menu-item-group-title,
+.ant-menu-item > .ver-text,
+.ant-menu-item > a {
+  color: @text-color !important;
+}
+
+.ant-menu-root.ant-menu-vertical,
+.ant-menu-root.ant-menu-vertical-left,
+.ant-menu-root.ant-menu-vertical-right,
+.ant-menu-root.ant-menu-inline {
+  border: none;
+}
+

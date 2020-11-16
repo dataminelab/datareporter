@@ -2,8 +2,6 @@ import { first } from "lodash";
 import React, { useState } from "react";
 import Menu from "antd/lib/menu";
 import Tooltip from "antd/lib/tooltip";
-import Icon from "antd/lib/icon";
-import HelpTrigger from "@/components/HelpTrigger";
 import CreateDashboardDialog from "@/components/dashboards/CreateDashboardDialog";
 import { Auth, currentUser } from "@/services/auth";
 import settingsMenu from "@/services/settingsMenu";
@@ -16,7 +14,7 @@ import "./DesktopNavbar.less";
 
 function NavbarSection({ inlineCollapsed, children, ...props }) {
   return (
-    <Menu {...props}>
+    <Menu selectable={false} {...props}>
       {children}
     </Menu>
   );

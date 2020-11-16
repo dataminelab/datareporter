@@ -158,12 +158,12 @@
     }
   }
   a {
-    .icon {
+    .icon-ui {
       font-size: 20px;
     }
   }
   .ant-menu-submenu-title {
-    .icon {
+    .icon-ui {
       font-size: 20px;
       color: @text-color !important;
       &.icon-more {
@@ -195,14 +195,14 @@
       height: 20px;
     }
   }
-  .ant-menu-dark, .ant-menu-dark .ant-menu-sub {
+  .ant-menu-dark, .ant-menu-sub {
     background-color: transparent;
     color: @text-color;
   }
   .desktop-navbar-logo.ant-menu.ant-menu-inline-collapsed img {
     height: 33px;
   }
-  .ant-menu-dark .ant-menu-item, .ant-menu-dark .ant-menu-item-group-title, .ant-menu-dark .ant-menu-item > a {
+  .ant-menu-item, .ant-menu-item-group-title, .ant-menu-item > a {
     color: @text-color;
   }
   .ant-menu-vertical > .ant-menu-item,
@@ -220,13 +220,16 @@
     margin: 0;
     vertical-align: top;
   }
-  .ant-menu-dark .ant-menu-item:hover > a,
-  .ant-menu-dark .ant-menu-item-active > a,
-  .ant-menu-dark .ant-menu-submenu-active > a,
-  .ant-menu-dark .ant-menu-submenu-open > a,
-  .ant-menu-dark .ant-menu-submenu-selected > a,
-  .ant-menu-dark .ant-menu-submenu-title:hover > a {
+  .ant-menu-item:hover > a,
+  .ant-menu-item-active > a,
+  .ant-menu-submenu-active > a,
+  .ant-menu-submenu-open > a,
+  .ant-menu-submenu-selected > a,
+  .ant-menu-submenu-title:hover > a {
     color: @text-color !important;
+  }
+  .ant-menu-submenu-arrow {
+    display: none;
   }
 }
 
@@ -285,12 +288,21 @@
   margin-bottom: 0 !important;
 }
 
-.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
+.ant-menu-dark, .ant-menu-sub {
   background-color: #ffffff !important;
   color: @text-color !important;
 }
-.ant-menu-dark .ant-menu-item,
-.ant-menu-dark .ant-menu-item-group-title,
-.ant-menu-dark .ant-menu-item > a {
+.ant-menu-item,
+.ant-menu-item-group-title,
+.ant-menu-item > .ver-text,
+.ant-menu-item > a {
   color: @text-color !important;
 }
+
+.ant-menu-root.ant-menu-vertical,
+.ant-menu-root.ant-menu-vertical-left,
+.ant-menu-root.ant-menu-vertical-right,
+.ant-menu-root.ant-menu-inline {
+  border: none;
+}
+

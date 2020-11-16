@@ -1,6 +1,7 @@
 import { first } from "lodash";
 import React, { useState } from "react";
 import Menu from "antd/lib/menu";
+import Tooltip from "antd/lib/tooltip";
 import Icon from "antd/lib/icon";
 import HelpTrigger from "@/components/HelpTrigger";
 import CreateDashboardDialog from "@/components/dashboards/CreateDashboardDialog";
@@ -15,12 +16,7 @@ import "./DesktopNavbar.less";
 
 function NavbarSection({ inlineCollapsed, children, ...props }) {
   return (
-    <Menu
-      selectable={false}
-      mode={"inline"}
-      inlineCollapsed={inlineCollapsed}
-      theme="dark"
-      {...props}>
+    <Menu {...props}>
       {children}
     </Menu>
   );
@@ -48,34 +44,50 @@ export default function DesktopNavbar() {
       <NavbarSection inlineCollapsed={collapsed} className="left-border">
         {currentUser.hasPermission("list_dashboards") && (
           <Menu.Item key="dashboards">
-            <a href="dashboards">
-              <span className="icon icon-dashboard"></span>
-              {/*<span>Dashboards</span>*/}
+            <Tooltip
+              placement="bottom"
+              title="Dashboards"
+            >
+             <a href="dashboards">
+              <i className="icon-ui icon-dashboard"></i>
             </a>
+            </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
           <Menu.Item key="queries">
-            <a href="queries">
-              <span className="icon icon-command-line"></span>
-              {/*<span>Queries</span>*/}
-            </a>
+            <Tooltip
+              placement="bottom"
+              title="Queries"
+            >
+              <a href="queries">
+                  <i className="icon-ui  icon-command-line"></i>
+              </a>
+            </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
           <Menu.Item key="reports">
-            <a href="reports">
-              <span className="icon icon-bar-chart"></span>
-              {/*<span>Reports</span>*/}
-            </a>
+            <Tooltip
+              placement="bottom"
+              title="Reports"
+            >
+              <a href="reports">
+                <i className="icon-ui  icon-bar-chart"></i>
+              </a>
+            </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("list_alerts") && (
           <Menu.Item key="alerts">
-            <a href="alerts">
-              <span className="icon icon-notifications-allerts-bell"></span>
-              {/*<span>Alerts</span>*/}
-            </a>
+            <Tooltip
+              placement="bottom"
+              title="Alerts"
+            >
+              <a href="alerts">
+                <i className="icon-ui  icon-notifications-allerts-bell"></i>
+              </a>
+            </Tooltip>
           </Menu.Item>
         )}
       </NavbarSection>
@@ -88,10 +100,14 @@ export default function DesktopNavbar() {
             popupOffset={[-36, 60]}
             title={
               <React.Fragment>
-                <span data-test="CreateButton">
-                  <span className="icon icon-plus"></span>
-                  {/*<span>Create</span>*/}
-                </span>
+                <Tooltip
+                  placement="bottom"
+                  title="Create"
+                >
+                  <a data-test="CreateButton">
+                    <i className="icon-ui  icon-plus"></i>
+                  </a>
+                </Tooltip>
               </React.Fragment>
             }>
             {canCreateQuery && (
@@ -126,19 +142,24 @@ export default function DesktopNavbar() {
         )}
       </NavbarSection>
       <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-profile-menu">
-        <Menu.Item key="messages">
+       {/* <Menu.Item key="messages">
           <a data-test="Messages" href="#">
-            <span className="icon icon-chat-rect"></span>
+            <i className="icon-ui  icon-chat-rect"></i>
           </a>
-        </Menu.Item>
+        </Menu.Item>*/}
         <Menu.SubMenu
           key="profile-menu"
           popupClassName="desktop-navbar-submenu"
           popupOffset={[-36, 60]}
           title={
-            <span data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
-              <span className="icon icon-more"></span>
-            </span>
+            <Tooltip
+              placement="bottom"
+              title="Settings"
+            >
+              <div data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
+                <i className="icon-ui icon-more"></i>
+              </div>
+            </Tooltip>
           }>
           <Menu.Item key="profile">
             <a href="users/me">Profile</a>
@@ -169,18 +190,13 @@ export default function DesktopNavbar() {
       <NavbarSection inlineCollapsed={collapsed} className="settings-menu">
         <Menu.Item key="refresh">
           <a data-test="Refresh" href="#">
-            <span className="icon icon-refresh"></span>
-          </a>
-        </Menu.Item>
-        <Menu.Item key="expand">
-          <a data-test="Expand" href="#">
-            <span className="icon icon-expand"></span>
+            <i className="icon-ui icon-refresh"></i>
           </a>
         </Menu.Item>
         {firstSettingsTab && (
           <Menu.Item key="settings">
             <a href={firstSettingsTab.path} data-test="SettingsLink">
-              <span className="icon icon-settings"></span>
+              <i className="icon-ui  icon-settings"></i>
             </a>
           </Menu.Item>
         )}

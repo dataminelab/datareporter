@@ -14,8 +14,7 @@ import "./EmbedReportDialog.less";
 class EmbedReportDialog extends React.Component {
   static propTypes = {
     dialog: DialogPropType.isRequired,
-    query: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    visualization: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   };
 
   state = {
@@ -26,27 +25,26 @@ class EmbedReportDialog extends React.Component {
 
   constructor(props) {
     super(props);
-    const { query, visualization } = props;
-    this.embedUrl = `${clientConfig.basePath}embed/query/${query.id}/visualization/${visualization.id}?api_key=${
-      query.api_key
-    }&${query.getParameters().toUrlParams()}`;
+    const { report } = props;
+    this.embedUrl = `${clientConfig.basePath}embed/report/${report.id}
+    }&${report.getParameters().toUrlParams()}`;
 
     if (window.snapshotUrlBuilder) {
-      this.snapshotUrl = window.snapshotUrlBuilder(query, visualization);
+      this.snapshotUrl = window.snapshotUrlBuilder(report);
     }
   }
 
   render() {
-    const { query, dialog } = this.props;
+    const { report, dialog } = this.props;
     const { enableChangeIframeSize, iframeWidth, iframeHeight } = this.state;
 
     return (
       <Modal
         {...dialog.props}
-        className="embed-query-dialog"
+        className="embed-report-dialog"
         title="Embed Report"
         footer={<Button onClick={dialog.dismiss}>Close</Button>}>
-        {query.is_safe ? (
+        {report.is_safe ? (
           <React.Fragment>
             <h5 className="m-t-0">Public URL</h5>
             <div className="m-b-30">

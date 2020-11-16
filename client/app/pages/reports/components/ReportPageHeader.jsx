@@ -27,6 +27,7 @@ import ReportService from "@/services/reportFake";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import notification from "@/services/notification";
 import location from "@/services/location";
+import useEmbedDialog from "@/pages/reports/hooks/useEmbedDialog";
 
 function getReportTags() {
   return getTags("api/query/tags").then(tags => map(tags, t => t.name));
@@ -94,7 +95,7 @@ export default function ReportPageHeader({
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
   const openApiKeyDialog = useApiKeyDialog(report, onChange);
   const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
-
+  const openEmbedDialog = useEmbedDialog(report);
 
   const moreActionsMenu = useMemo(
     () =>
@@ -102,6 +103,20 @@ export default function ReportPageHeader({
         {
           fork: {
             isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+            title: (
+              <a target="_self"  onClick={(e) => {
+                e.preventDefault()
+                openEmbedDialog(report);
+              }} data-test="ShowEmbedDialogButton">
+                <Icon type="share-alt" /> Embed Elsewhere
+              </a>
+            ),
+            onClick: duplicateReport,
+          },
+        },
+        {
+          share: {
+            isEnabled: !queryFlags.isNew,
             title: (
               <React.Fragment>
                 Fork

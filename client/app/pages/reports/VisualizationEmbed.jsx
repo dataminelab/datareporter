@@ -1,5 +1,4 @@
-import { find, has } from "lodash";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import { markdown } from "markdown";
@@ -28,10 +27,13 @@ import { formatDateTime } from "@/lib/utils";
 import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
 import { Report } from "@/services/report";
 import location from "@/services/location";
+import Report as fakeReport from "@/services/reportFake";
 import routes from "@/services/routes";
 
 import logoUrl from "@/assets/images/report_icon_small.png";
+import ReportView from "@/components/ReportView";
 
+function VisualizationEmbed({ reportId, visualizationId, apiKey, onError }) {
 function VisualizationEmbedHeader({ queryName, queryDescription, visualization }) {
   return (
     <div className="embed-heading p-b-10 p-r-15 p-l-15">
@@ -159,15 +161,12 @@ VisualizationEmbedFooter.defaultProps = {
 
 function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
   const [report, setReport] = useState(null);
-  const [error, setError] = useState(null);
-  const [refreshStartedAt, setRefreshStartedAt] = useState(null);
-  const [queryResults, setReportResults] = useState(null);
 
   const handleError = useImmutableCallback(onError);
 
   useEffect(() => {
     let isCancelled = false;
-    Report.get({ id: queryId })
+    Report.get({ id: reportId })
       .then(result => {
         if (!isCancelled) {
           setReport(result);
@@ -178,7 +177,7 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
     return () => {
       isCancelled = true;
     };
-  }, [queryId, handleError]);
+  }, [reportId, handleError]);
 
   const refreshReportResults = useCallback(() => {
     if (report) {
@@ -264,7 +263,7 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
 }
 
 VisualizationEmbed.propTypes = {
-  queryId: PropTypes.string.isRequired,
+  reportId: PropTypes.string.isRequired,
   visualizationId: PropTypes.string,
   apiKey: PropTypes.string.isRequired,
   onError: PropTypes.func,
@@ -277,8 +276,8 @@ VisualizationEmbed.defaultProps = {
 routes.register(
   "Reports.ViewShared",
   routeWithApiKeySession({
-    path: "/embed/report/:queryId/visualization/:visualizationId",
+    path: "/embed/report/:reportId",
     render: pageProps => <VisualizationEmbed {...pageProps} />,
-    getApiKey: () => location.search.api_key,
+    getApiKey: () => 'some key',
   })
 );

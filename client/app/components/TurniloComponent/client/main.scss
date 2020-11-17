@@ -67,9 +67,92 @@ svg {
 
 .report-widget {
   .label {
-    color: #000000;
+    color: #160f66;
     text-align: left;
+    font-weight: bold;
+  }
+  .series-tile .items .measure.series, .overflow-menu .measure.split, .overflow-menu .measure.series, .overflow-menu .measure.filter, .series-tile .measure.overflow {
+    background-color: #160f66 !important;
+    color: #ffffff !important;
+  }
+  .remove {
+    color: #ffffff;
+  }
+  .cube-view .container {
+    top: 0;
+  }
+  .turnilo-application {
+    background-color: #ededf3;
+  }
+  .cube-view .center-panel {
+    top: 0;
+    bottom: 0;
+  }
+  .pinboard-panel {
+    padding: 0 0 0 10px;
+  }
+  .cube-view .center-panel .center-top-bar .pinboard-toggle,
+  .cube-view .center-panel .center-top-bar .dimension-panel-toggle {
+    background-color: #dbd8f6;
+    * {
+      fill: rgb(22, 15, 102);
+    }
+  }
+  .cube-view .center-panel .center-top-bar {
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .dimension-measure-panel {
+    padding: 0 10px 0 0;
   }
 }
+
+.dimension-actions-menu .action, .measure-actions-menu .action {
+  color: rgb(22, 15, 102);
+}
+
+svg path {
+  fill: rgb(22, 15, 102) !important;
+}
+
+.ant-btn {
+ .icon {
+   font-size: 16px;
+   top: 2px;
+   position: relative;
+ }
+}
+
+.filter-split-section .title,
+.tile-header .title,
+.pinboard-measure-tile .title,
+.label {
+  color: #160f66;
+}
+
+.filter-tile .items .dimension.filter, .overflow-menu .dimension.split,
+.overflow-menu .dimension.series, .overflow-menu .dimension.filter, .filter-tile .dimension.overflow {
+  background-color: #ff9b5d;
+  color: #ffffff;
+}
+
+.button.secondary,
+.button.secondary:hover,
+.button.secondary:active,
+.button.secondary:focus {
+  color: #160f66;
+  background-color: #ffffff;
+  border: 1px solid #160f66;
+}
+
+.button.primary,
+.button.primary:hover,
+.button.primary:active,
+.button.primary:focus {
+  color: #ffffff;
+  background-color: #160f66;
+  border: 1px solid #160f66;
+}
+
 
 @import "custom";

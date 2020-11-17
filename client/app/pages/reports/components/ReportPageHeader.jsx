@@ -1,5 +1,5 @@
-import { extend, map, filter, reduce } from "lodash";
-import React, { useMemo } from "react";
+import {extend, map, filter, reduce, find, includes} from "lodash";
+import React, {useCallback, useEffect, useMemo} from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -28,6 +28,11 @@ import navigateTo from "@/components/ApplicationArea/navigateTo";
 import notification from "@/services/notification";
 import location from "@/services/location";
 import useEmbedDialog from "@/pages/reports/hooks/useEmbedDialog";
+import Select from "antd/lib/select";
+import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
+import recordEvent from "@/services/recordEvent";
+import useReport from "@/pages/reports/hooks/useReport";
+import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 
 function getReportTags() {
   return getTags("api/query/tags").then(tags => map(tags, t => t.name));
@@ -76,7 +81,13 @@ function saveReport (values) {
     });
 }
 
-export default function ReportPageHeader({
+function chooseDataSourceId(dataSourceIds, availableDataSources) {
+  dataSourceIds = map(dataSourceIds, v => parseInt(v, 10));
+  availableDataSources = map(availableDataSources, ds => ds.id);
+  return find(dataSourceIds, id => includes(availableDataSources, id)) || null;
+}
+
+export default function ReportPageHeader(/*{
   report,
   dataSource,
   sourceMode,
@@ -84,18 +95,59 @@ export default function ReportPageHeader({
   headerExtra,
   tagsExtra,
   onChange,
-}) {
+}*/props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const queryFlags = useReportFlags(report, dataSource);
-  const updateName = useRenameReport(report, onChange);
-  const updateTags = useUpdateReportTags(report, onChange);
-  const archiveReport = useArchiveReport(report, onChange);
-  const publishReport = usePublishReport(report, onChange);
-  const unpublishReport = useUnpublishReport(report, onChange);
-  const [isDuplicating, duplicateReport] = useDuplicateReport(report);
-  const openApiKeyDialog = useApiKeyDialog(report, onChange);
-  const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
-  const openEmbedDialog = useEmbedDialog(report);
+  const queryFlags = useReportFlags(props.report, props.dataSource);
+  const updateName = useRenameReport(props.report, props.onChange);
+  const updateTags = useUpdateReportTags(props.report, props.onChange);
+  const archiveReport = useArchiveReport(props.report, props.onChange);
+  const publishReport = usePublishReport(props.report, props.onChange);
+  const unpublishReport = useUnpublishReport(props.report, props.onChange);
+  const [isDuplicating, duplicateReport] = useDuplicateReport(props.report);
+  const openApiKeyDialog = useApiKeyDialog(props.report, props.onChange);
+  const openPermissionsEditorDialog = usePermissionsEditorDialog(props.report);
+  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(props.report);
+  const reportFlags = useReportFlags(props.report, dataSource)
+
+  const { report, setReport, saveReport } = useReport(props.report);
+
+  const updateReport = useUpdateReport(report, setReport);
+
+  const handleDataSourceChange = useCallback(
+    dataSourceId => {
+      if (dataSourceId) {
+        try {
+          localStorage.setItem("lastSelectedDataSourceId", dataSourceId);
+        } catch (e) {
+          // `localStorage.setItem` may throw exception if there are no enough space - in this case it could be ignored
+        }
+      }
+      if (report.data_source_id !== dataSourceId) {
+        recordEvent("update_data_source", "report", report.id, { dataSourceId });
+        const updates = {
+          data_source_id: dataSourceId,
+          latest_report_data_id: null,
+          latest_report_data: null,
+        };
+        setReport(extend(report.clone(), updates));
+        updateReport(updates, { successMessage: null }); // show message only on error
+      }
+    },
+    [report, setReport, updateReport]
+  );
+
+  useEffect(() => {
+    // choose data source id for new reports
+    if (dataSourcesLoaded && reportFlags.isNew) {
+      const firstDataSourceId = dataSources.length > 0 ? dataSources[0].id : null;
+      handleDataSourceChange(
+        chooseDataSourceId(
+          [report.data_source_id, localStorage.getItem("lastSelectedDataSourceId"), firstDataSourceId],
+          dataSources
+        )
+      );
+    }
+  }, [report.data_source_id, reportFlags.isNew, dataSourcesLoaded, dataSources, handleDataSourceChange]);
 
   const moreActionsMenu = useMemo(
     () =>
@@ -174,7 +226,7 @@ export default function ReportPageHeader({
 
   return (
     <div className="report-page-header">
-      <div className="title-with-tags">
+      <div className="title-with-tags m-l-5">
         <div className="page-title">
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={report} />}
@@ -191,14 +243,39 @@ export default function ReportPageHeader({
             canEdit={queryFlags.canEdit}
             getAvailableTags={getReportTags}
             onEdit={updateTags}
-            tagsExtra={tagsExtra}
+            tagsExtra={props.tagsExtra}
           />
         </div>
       </div>
       <div className="header-actions">
-        {headerExtra}
+        {props.headerExtra}
+        {dataSourcesLoaded && (
+          <div className="data-source-box m-r-5 ">
+            <span className="icon icon-datasource m-r-5"></span>
+            <Select
+              data-test="SelectDataSource"
+              placeholder="Choose data source..."
+              value={dataSource ? dataSource.id : undefined}
+              disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
+              loading={!dataSourcesLoaded}
+              optionFilterProp="data-name"
+              showSearch
+              onChange={handleDataSourceChange}>
+              {map(dataSources, ds => (
+                <Select.Option
+                  key={`ds-${ds.id}`}
+                  value={ds.id}
+                  data-name={ds.name}
+                  data-test={`SelectDataSource${ds.id}`}>
+                  <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
+                  <span>{ds.name}</span>
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+        )}
         <Button className="m-r-5" onClick={() => saveReport(report)}>
-          <i className="fa fa-paper-plane m-r-5" /> Save
+          <span className="icon icon-save-floppy-disc m-r-5"></span> Save Report
         </Button>
         {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
           <Button className="m-r-5" onClick={publishReport}>
@@ -208,16 +285,16 @@ export default function ReportPageHeader({
 
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
-            {!sourceMode && (
-              <Button className="m-r-5" href={report.getUrl(true, selectedVisualization)}>
+            {!props.sourceMode && (
+              <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
                 <i className="fa fa-pencil-square-o" aria-hidden="true" />
                 <span className="m-l-5">Edit Source</span>
               </Button>
             )}
-            {sourceMode && (
+            {props.sourceMode && (
               <Button
                 className="m-r-5"
-                href={report.getUrl(false, selectedVisualization)}
+                href={report.getUrl(false, props.selectedVisualization)}
                 data-test="ReportPageShowDataOnly">
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Data Only</span>

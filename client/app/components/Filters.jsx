@@ -5,8 +5,8 @@ import PropTypes from "prop-types";
 import Select from "antd/lib/select";
 import { formatColumnValue } from "@/lib/utils";
 
-const ALL_VALUES = "###Redash::Filters::SelectAll###";
-const NONE_VALUES = "###Redash::Filters::Clear###";
+const ALL_VALUES = "###Data reporter::Filters::SelectAll###";
+const NONE_VALUES = "###Data reporter::Filters::Clear###";
 
 export const FilterType = PropTypes.shape({
   name: PropTypes.string.isRequired,

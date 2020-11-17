@@ -26,8 +26,7 @@ class EmbedReportDialog extends React.Component {
   constructor(props) {
     super(props);
     const { report } = props;
-    this.embedUrl = `${clientConfig.basePath}embed/report/${report.id}
-    }&${report.getParameters().toUrlParams()}`;
+    this.embedUrl = `${clientConfig.basePath}embed/report/${report.id}`;
 
     if (window.snapshotUrlBuilder) {
       this.snapshotUrl = window.snapshotUrlBuilder(report);

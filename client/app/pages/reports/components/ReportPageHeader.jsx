@@ -104,14 +104,11 @@ export default function ReportPageHeader({
           fork: {
             isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
             title: (
-              <a target="_self"  onClick={(e) => {
-                e.preventDefault()
-                openEmbedDialog(report);
-              }} data-test="ShowEmbedDialogButton">
+              <React.Fragment>
                 <Icon type="share-alt" /> Embed Elsewhere
-              </a>
+              </React.Fragment>
             ),
-            onClick: duplicateReport,
+            onClick: () => {openEmbedDialog(report)},
           },
         },
         {

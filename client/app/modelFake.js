@@ -1,6 +1,7 @@
+//TODO REMOVE THIS FILE
 import { isString, get, find } from "lodash";
 import sanitize from "@/services/sanitize";
-import { axios } from "@/services/axios";
+//import { axios } from "@/services/axios";
 import notification from "@/services/notification";
 
 function getErrorMessage(error) {
@@ -225,6 +226,84 @@ function uuidv4() {
     return v.toString(16);
   });
 }
+const axios = {
+  query:  (params) => {
+    return new Promise((resolve, reject) => {
+      getStorageItem('models', (response) => {
+        response = response ? JSON.parse(response) : [];
+        if (response) {
+          resolve({
+            count: response.length,
+            page: 1,
+            page_size: 20,
+            results: response
+          });
+        } else {
+          resolve({
+            count: [].length,
+            page: 1,
+            page_size: 20,
+            results: []
+          });
+        }
+      })
+    })
+  },
+  get: (id) => {
+    return new Promise((resolve, reject) => {
+      getStorageItem('models', (response) => {
+        response = response ? JSON.parse(response) : [];
+        resolve(response.find(x => x.id === id));
+      })
+    });
+  },
+  create: (item) => {
+    return new Promise((resolve, reject) => {
+      getStorageItem('models', (response) => {
+        response = response ? JSON.parse(response) : [];
+        let data = []
+        if (response) {
+          data = response;
+        }
+        item.id = uuidv4();
+        item.config = configYAML;
+        data.push(item);
+        setStorageItem('models', data, () => {
+          resolve(item);
+        })
+      })
+    });
+  },
+  save: (item, id) => {
+    return new Promise((resolve, reject) => {
+      getStorageItem('models', (response) => {
+        response = response ? JSON.parse(response) : []
+        let data = []
+        response.forEach((model) => {
+          if (model.id === id) {
+            data.push(Object.assign({}, model, item));
+          } else {
+            data.push(model);
+          }
+        })
+        setStorageItem('models', data, () => {
+          resolve(Object.assign({id}, item));
+        })
+      })
+    });
+  },
+  delete: (model) => {
+    return new Promise((resolve, reject) => {
+      getStorageItem('models', (response) => {
+        response = response ? JSON.parse(response) : [];
+        response = response.filter((item) => model.id !== item.id)
+        setStorageItem('models', response, () => {
+          resolve(model.id);
+        })
+      })
+    });
+  },
+}
 
 function deleteModel(model) {
   const modelName = sanitize(model.name);
@@ -240,12 +319,20 @@ function deleteModel(model) {
 }
 
 
-const Model = {
+/*const Model = {
   query: params => axios.get("api/models", { params }),
   get: ({ id }) => axios.get(`api/models/${id}`),
   create: data => axios.post(`api/models`, data),
   save: data => axios.post(`api/models/${data.id}`, data),
   deleteModel,
+};*/
+
+const Model = {
+  query: params => axios.query(params),
+  get: (id) => axios.get(id),
+  create: data => axios.create(data),
+  save: (data, id) => axios.save(data, id),
+  deleteModel: axios.delete,
 };
 
 export default Model;

@@ -4,20 +4,11 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import { useDebouncedCallback } from "use-debounce";
 import useMedia from "use-media";
-import Button from "antd/lib/button";
-import Select from "antd/lib/select";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
-import Resizable from "@/components/Resizable";
-import Parameters from "@/components/Parameters";
-import EditInPlace from "@/components/EditInPlace";
 import recordEvent from "@/services/recordEvent";
-import { ExecutionStatus } from "@/services/report-result";
 import routes from "@/services/routes";
 
 import ReportPageHeader from "./components/ReportPageHeader";
-import ReportMetadata from "./components/ReportMetadata";
-import ReportVisualizationTabs from "./components/ReportVisualizationTabs";
-import ReportExecutionStatus from "./components/ReportExecutionStatus";
 import ReportSourceAlerts from "./components/ReportSourceAlerts";
 import wrapReportPage from "./components/wrapReportPage";
 import ReportExecutionMetadata from "./components/ReportExecutionMetadata";
@@ -145,63 +136,6 @@ function ReportSource(props) {
         />
       </div>
       <main className="report-fullscreen">
-        <Resizable direction="horizontal" sizeAttribute="flex-basis" toggleShortcut="Alt+Shift+D, Alt+D">
-          <nav>
-            {dataSourcesLoaded && (
-              <div className="editor__left__data-source">
-                <Select
-                  className="w-100"
-                  data-test="SelectDataSource"
-                  placeholder="Choose data source..."
-                  value={dataSource ? dataSource.id : undefined}
-                  disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
-                  loading={!dataSourcesLoaded}
-                  optionFilterProp="data-name"
-                  showSearch
-                  onChange={handleDataSourceChange}>
-                  {map(dataSources, ds => (
-                    <Select.Option
-                      key={`ds-${ds.id}`}
-                      value={ds.id}
-                      data-name={ds.name}
-                      data-test={`SelectDataSource${ds.id}`}>
-                      <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
-                      <span>{ds.name}</span>
-                    </Select.Option>
-                  ))}
-                </Select>
-              </div>
-            )}
-            <div className="editor__left__schema">
-              <SchemaBrowser
-                dataSource={dataSource}
-                options={report.options.schemaOptions}
-                onOptionsUpdate={schemaOptions =>
-                  setReport(extend(report.clone(), { options: { ...report.options, schemaOptions } }))
-                }
-                onSchemaUpdate={setSchema}
-                onItemSelect={handleSchemaItemSelect}
-              />
-            </div>
-
-            {!report.isNew() && (
-              <div className="report-page-report-description">
-                <EditInPlace
-                  isEditable={reportFlags.canEdit}
-                  markdown
-                  ignoreBlanks={false}
-                  placeholder="Add description"
-                  value={report.description}
-                  onDone={updateReportDescription}
-                  multiline
-                />
-              </div>
-            )}
-
-            {!report.isNew() && <ReportMetadata layout="table" report={report} onEditSchedule={editSchedule} />}
-          </nav>
-        </Resizable>
-
         <div className="content turnilo-widget report-widget ">
           <div className="flex-fill p-relative">
             <div
@@ -239,6 +173,7 @@ routes.register(
   routeWithUserSession({
     path: "/reports/new",
     render: pageProps => <ReportSourcePage {...pageProps} />,
+    headerBlock: <h1></h1>,
     bodyClass: "fixed-layout",
   })
 );
@@ -247,6 +182,7 @@ routes.register(
   routeWithUserSession({
     path: "/reports/:reportId/source",
     render: pageProps => <ReportSourcePage {...pageProps} />,
+    headerBlock: <h1></h1>,
     bodyClass: "fixed-layout",
   })
 );

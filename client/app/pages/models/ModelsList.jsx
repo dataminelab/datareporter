@@ -76,7 +76,7 @@ class ModelsList extends React.Component {
     Columns.custom.sortable(
       (text, model) => this.getDataSourceName(model),
       {
-        title: "Connection",
+        title: "Data source",
         field: "connection",
       }
     ),

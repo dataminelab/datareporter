@@ -30,7 +30,7 @@ export function General({ info }) {
 
 export function DatabaseMetrics({ info }) {
   return (
-    <Card title="Redash Database" size="small">
+    <Card title="Data reporter Database" size="small">
       {info.length === 0 && <div className="text-muted text-center">No data</div>}
       {info.length > 0 && (
         <List

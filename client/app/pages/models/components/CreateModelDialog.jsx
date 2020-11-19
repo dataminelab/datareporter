@@ -17,6 +17,9 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     if (formRef.current) {
       formRef.current.validateFieldsAndScroll((err, values) => {
         if (!err) {
+          if (model && model.id) {
+            values.id = model.id;
+          }
           dialog.close(values).catch(setError);
         }
       });
@@ -34,16 +37,16 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     if (model)  {
       return [
         { ...common, name: "name", title: "Name", type: "text", autoFocus: true, initialValue: model.name },
-        { ...common, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection, initialValue: model.connection },
-        { ...common, name: "schemas", title: "Schemas", type: "text", required: false, initialValue: model.schemas },
-        { ...common, name: "ignore_prefixes", title: "Ignore Prefixes", type: "text", required: false, initialValue: model.ignore_prefixes },
+        { ...common, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection, initialValue: model.data_source_id },
+/*        { ...common, name: "schemas", title: "Schemas", type: "text", required: false, initialValue: model.schemas },
+        { ...common, name: "ignore_prefixes", title: "Ignore Prefixes", type: "text", required: false, initialValue: model.ignore_prefixes },*/
       ];
     } else {
       return [
         { ...common, name: "name", title: "Name", type: "text", autoFocus: true },
         { ...common, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection },
-        { ...common, name: "schemas", title: "Schemas", type: "text", required: false },
-        { ...common, name: "ignore_prefixes", title: "Ignore Prefixes", type: "text", required: false },
+/*        { ...common, name: "schemas", title: "Schemas", type: "text", required: false },
+        { ...common, name: "ignore_prefixes", title: "Ignore Prefixes", type: "text", required: false },*/
       ];
     }
 

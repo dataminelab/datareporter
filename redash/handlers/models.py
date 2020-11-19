@@ -10,7 +10,7 @@ from redash.serializers.model_serializer import ModelSerializer
 
 
 class ModelsListResource(BaseResource):
-    @require_permission("create_model")
+    #@require_permission("create_model")
     def post(self):
         req = request.get_json(True)
         require_fields(req, ('name', 'data_source_id'))
@@ -34,7 +34,7 @@ class ModelsListResource(BaseResource):
 
         return ModelSerializer(model).serialize()
 
-    @require_permission("view_model")
+#     @require_permission("view_model")
     def get(self):
         models = Model.get_by_user(self.current_user)
         ordered_results = order_results(models)
@@ -59,7 +59,7 @@ class ModelsListResource(BaseResource):
 
 class ModelsResource(BaseResource):
 
-    @require_permission("view_model")
+    #@require_permission("view_model")
     def get(self, model_id):
         model = get_object_or_404(Model.get_by_id, model_id)
 
@@ -71,7 +71,7 @@ class ModelsResource(BaseResource):
 
         return ModelSerializer(model).serialize()
 
-    @require_permission("edit_model")
+    #@require_permission("edit_model")
     def post(self, model_id):
         model_properties = request.get_json(force=True)
         model = get_object_or_404(Model.get_by_id, model_id)

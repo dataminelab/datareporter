@@ -41,7 +41,7 @@ function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
 
 ModelsListActions.propTypes = {
   model: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.number,
     is_invitation_pending: PropTypes.bool,
     is_disabled: PropTypes.bool,
   }).isRequired,
@@ -155,9 +155,14 @@ class ModelsList extends React.Component {
       };
       CreateModelDialog.showModal({ dataSources, model })
         .onClose(values =>
-          this.saveModel(values, model.id).then(() => {
+        {
+          console.log(values)
+          this.saveModel(values).then(() => {
+
             this.props.controller.update();
           })
+        }
+
         )
         .onDismiss(goToModelsList);
     }

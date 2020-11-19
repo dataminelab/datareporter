@@ -17,12 +17,14 @@ import "./settings.less";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 
 function ModelConfig({ modelId, onError }) {
+  console.log(modelId)
   const [model, setModel] = useState(null);
 
   const handleError = useImmutableCallback(onError);
 
   useEffect(() => {
     let isCancelled = false;
+    console.log(modelId)
     Model.get(modelId)
       .then(res => {
         setModel(res);
@@ -70,7 +72,7 @@ ModelConfig.propTypes = {
 };
 
 ModelConfig.defaultProps = {
-  modelId: null, // defaults to `currentUser.id`
+  modelId: null,
   onError: () => {},
 };
 

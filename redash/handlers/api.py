@@ -46,6 +46,10 @@ from redash.handlers.groups import (
     GroupMemberResource,
     GroupResource,
 )
+from redash.handlers.model_configs import (
+    ModelsConfigResource,
+    ModelsConfigGetResource
+)
 from redash.handlers.models import (
     ModelsListResource,
     ModelsResource
@@ -336,3 +340,5 @@ api.add_org_resource(
 
 api.add_org_resource(ModelsListResource, "/api/models", endpoint="models")
 api.add_org_resource(ModelsResource, "/api/models/<int:model_id>", endpoint="model")
+api.add_org_resource(ModelsConfigResource, "/api/models/<int:model_id>/config", endpoint="model_configs")
+api.add_org_resource(ModelsConfigGetResource, "/api/model_configs/<int:config_id>", endpoint="model_config")

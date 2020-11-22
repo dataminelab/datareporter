@@ -171,6 +171,12 @@ query_snippet_factory = ModelFactory(
     snippet="snippet",
 )
 
+model_config_factory = ModelFactory(
+    redash.models.models.ModelConfig,
+    user=user_factory.create,
+    content=Sequence("key: {}"),
+)
+
 model_factory = ModelFactory(
     redash.models.models.Model,
     user=user_factory.create,
@@ -348,6 +354,11 @@ class Factory(object):
         args = {"user": self.user, "org": self.org}
         args.update(kwargs)
         return query_snippet_factory.create(**args)
+
+    def create_model_config(self, **kwargs):
+        args = {"user": self.user}
+        args.update(kwargs)
+        return model_config_factory.create(**args)
 
     def create_model(self, **kwargs):
         args = {"user": self.user}

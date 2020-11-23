@@ -4,9 +4,10 @@ from funcy import project
 from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 from redash.handlers.queries import order_results
-from redash.models.models import Model
+from redash.models.models import Model, ModelConfig
 from redash.permissions import require_permission, require_admin_or_owner, require_object_modify_permission
 from redash.serializers.model_serializer import ModelSerializer
+from redash.services.model_config_generator import ModelConfigGenerator
 
 
 class ModelsListResource(BaseResource):
@@ -22,8 +23,11 @@ class ModelsListResource(BaseResource):
         )
 
         model = Model(name=name, data_source_id=data_source.id, user_id=self.current_user.id, user=self.current_user)
+        content = ModelConfigGenerator.generate(data_source)
+        model_config = ModelConfig(user=self.current_user, model=model, content=content)
 
         models.db.session.add(model)
+        models.db.session.add(model_config)
         models.db.session.commit()
 
         self.record_event({
@@ -100,6 +104,9 @@ class ModelsResource(BaseResource):
         model = get_object_or_404(Model.get_by_id, model_id)
 
         require_admin_or_owner(model.user_id)
+
+        if model.config is not None:
+            models.db.session.delete(model.config)
         models.db.session.delete(model)
         models.db.session.commit()
 

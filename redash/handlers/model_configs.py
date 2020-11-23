@@ -24,6 +24,15 @@ def _validate_yml(content: str):
             )
 
 
+def _validate_length(content):
+    length = len(content)
+    if length > ModelConfig.CONTENT_LENGTH:
+        abort(
+            400,
+            message="Maximum content length is {}, actual {}".format(ModelConfig.CONTENT_LENGTH, length),
+        )
+
+
 class ModelsConfigResource(BaseResource):
     @require_permission("edit_model_config")
     def post(self, model_id):
@@ -31,6 +40,7 @@ class ModelsConfigResource(BaseResource):
         require_fields(req, ('content',))
         content = req['content']
 
+        _validate_length(content)
         _validate_yml(content)
 
         model = get_object_or_404(Model.get_by_id, model_id)

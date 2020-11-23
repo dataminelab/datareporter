@@ -34,10 +34,12 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
 
 @gfk_type
 class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
+    CONTENT_LENGTH = 6_000
+
     id = primary_key("ModelConfig")
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))
     user = db.relationship(User)
-    content = Column(db.String(length=6_000))
+    content = Column(db.String(length=CONTENT_LENGTH))
     model = db.relationship("Model", back_populates="config")
     model_id = Column(db.Integer, db.ForeignKey("models.id"))
 

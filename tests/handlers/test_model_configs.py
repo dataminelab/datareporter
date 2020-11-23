@@ -23,6 +23,38 @@ class TestModelsConfigCreateResource(BaseTestCase):
 
         self.assertEqual(403, response.status_code)
 
+    def test_content_length_greater_than_6000(self):
+        group = self.factory.create_group(permissions=["edit_model_config"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        response = self.make_request(
+            "post",
+            "/api/models/100/config",
+            data={"content": "\n".join(["key: {}".format(key) for key in range(680)])},
+            user=user
+        )
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('Maximum content length is 6000, actual 6009', response.json['message'])
+
+    def test_not_valid_content(self):
+        group = self.factory.create_group(permissions=["edit_model_config"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        response = self.make_request(
+            "post",
+            "/api/models/100/config",
+            data={"content": "dataCube: 12\n key: 1"},
+            user=user
+        )
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('Your config has an issue on line 1 at position 4', response.json['message'])
+
     def test_not_existing_model(self):
         group = self.factory.create_group(permissions=["edit_model_config"])
         db.session.commit()

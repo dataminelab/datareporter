@@ -13,7 +13,7 @@ Body:
 
 Response Types:
 
-Status: 400 (Bad Request) either one of the required fields have not been sent or content is not json
+Status: 400 (Bad Request) either one of the required fields have not been sent or content is not json. If content is not a valid JSON or length is greater than 6000.
 
 Status: 403 (Unauthorized) if user doesn't have a edit_model_config permission
 

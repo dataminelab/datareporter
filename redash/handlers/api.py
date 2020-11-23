@@ -82,6 +82,7 @@ from redash.handlers.query_snippets import (
     QuerySnippetListResource,
     QuerySnippetResource,
 )
+from redash.handlers.reports import ReportsResource
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
     UserDisableResource,
@@ -342,3 +343,5 @@ api.add_org_resource(ModelsListResource, "/api/models", endpoint="models")
 api.add_org_resource(ModelsResource, "/api/models/<int:model_id>", endpoint="model")
 api.add_org_resource(ModelsConfigResource, "/api/models/<int:model_id>/config", endpoint="model_configs")
 api.add_org_resource(ModelsConfigGetResource, "/api/model_configs/<int:config_id>", endpoint="model_config")
+
+api.add_org_resource(ReportsResource, "/api/reports/<int:model_id>", endpoint="report")

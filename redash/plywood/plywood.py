@@ -1,11 +1,18 @@
 import requests
+import logging
+
+from redash.settings import PLYWOOD_SERVER_URL
+
+logger = logging.getLogger(__name__)
 
 
 class PlywoodApi(object):
-    PLYWOOD_URL = "http://0.0.0.0:3000/api/v1/plywood"
+    PLYWOOD_URL = "{}/api/v1/plywood".format(PLYWOOD_SERVER_URL)
 
     @classmethod
-    def convert_to_sql(cls, body=None):
-        if body is None:
-            body = {}
-        return requests.post(url=cls.PLYWOOD_URL, data=body)
+    def convert_to_sql(cls, body):
+        try:
+            return requests.post(url=cls.PLYWOOD_URL, data=body)
+        except Exception as e:
+            logger.error("Error occurred during sending request to Plywood Server", e)
+            raise e

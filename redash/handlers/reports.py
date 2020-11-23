@@ -1,33 +1,39 @@
-from redash import models
-from redash.handlers.base import BaseResource, require_fields
-from redash.permissions import require_admin
 from flask import request
 
+from redash.handlers.base import BaseResource, require_fields, get_object_or_404
+from redash.models.models import Model
+from redash.permissions import require_permission
 from redash.plywood.plywood import PlywoodApi
 
 
 class ReportsResource(BaseResource):
-    @require_admin
-    def post(self):
+    @require_permission("generate_report")
+    def get(self, model_id):
         req = request.get_json(True)
-        require_fields(req, ('config_id', 'expression'))
-        raw_sql_queries = PlywoodApi.convert_to_sql(body=self._build_plywood_request(req))
+        require_fields(req, ('model_id', 'expression'))
+        model = get_object_or_404(Model.get_by_id, model_id)
+        raw_sql_queries = PlywoodApi.convert_to_sql(body=self._build_plywood_request(req, model))
+        # TODO: use workers to execute sql queries
         return []
 
     @staticmethod
-    def _build_plywood_request(req):
-        config_id = req['config_id']
-        context = ReportsResource._build_context(config_id)
-
+    def _build_plywood_request(req, model: Model):
+        context = ReportsResource._build_context(model)
         expression = req['expression']
 
         return {
-            'dataCube': 'some-data-cube',
+            'dataCube': '',
             'context': context,
             'expression': expression
         }
 
     @staticmethod
-    def _build_context(config_id):
-        configuration = models.Configuration.get_by_id(config_id)
-        return {}
+    def _build_context(model: Model):
+        engine = ReportsResource._get_engine(model)
+        return {
+            'engine': engine
+        }
+
+    @staticmethod
+    def _get_engine(model):
+        return model.data_source.type

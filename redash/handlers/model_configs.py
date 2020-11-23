@@ -19,7 +19,7 @@ def _validate_yml(content: str):
         except yaml.MarkedYAMLError as e:
             pm = e.problem_mark
             abort(
-                400,
+                http_status_code=400,
                 message="Your config has an issue on line {} at position {}".format(pm.line, pm.column),
             )
 
@@ -28,7 +28,7 @@ def _validate_length(content):
     length = len(content)
     if length > ModelConfig.CONTENT_LENGTH:
         abort(
-            400,
+            http_status_code=400,
             message="Maximum content length is {}, actual {}".format(ModelConfig.CONTENT_LENGTH, length),
         )
 

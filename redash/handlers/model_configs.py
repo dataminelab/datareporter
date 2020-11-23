@@ -33,6 +33,7 @@ def _validate_length(content):
         )
 
 
+
 class ModelsConfigResource(BaseResource):
     @require_permission("edit_model_config")
     def post(self, model_id):

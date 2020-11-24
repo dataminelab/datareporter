@@ -1,0 +1,8 @@
+apiVersion: extensions/v1
+kind: Ingress
+metadata:
+  name: datareporter-worker
+spec:
+  backend:
+    serviceName: datareporter-worker
+    servicePort: 5000

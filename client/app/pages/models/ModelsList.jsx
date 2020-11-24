@@ -156,7 +156,6 @@ class ModelsList extends React.Component {
       CreateModelDialog.showModal({ dataSources, model })
         .onClose(values =>
         {
-          console.log(values)
           this.saveModel(values).then(() => {
 
             this.props.controller.update();

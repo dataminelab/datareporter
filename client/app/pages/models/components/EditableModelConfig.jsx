@@ -7,30 +7,11 @@ import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-textmate";
 import {ButtonTooltip} from "@/components/queries/QueryEditor/QueryEditorControls";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
-import {filter, fromPairs, isFunction, map, noop} from "lodash";
+import {fromPairs, map} from "lodash";
 import KeyboardShortcuts from "@/services/KeyboardShortcuts";
+import ModelService from "@/services/model";
 
 export default function EditableModelConfig({model, saveConfig}) {
-  const [item, setItem] = useState(model);
-
-  useEffect(() => {
-    setItem(model);
-    let buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(item)}];
-    const shortcuts = fromPairs(map(buttons, b => [b.shortcut, b.onClick]));
-    KeyboardShortcuts.bind(shortcuts);
-    return () => {
-      KeyboardShortcuts.unbind(shortcuts);
-    };
-  }, [model, saveConfig]);
-
-  const onChange = (config) => {
-    const newModel = Object.assign({}, item, {config})
-    setItem(newModel);
-  }
-
-  const backToList = () => {
-    navigateTo('models')
-  }
   const configYAML = "customization:\n" +
     "  urlShortener: |\n" +
     "    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))\n" +
@@ -218,6 +199,35 @@ export default function EditableModelConfig({model, saveConfig}) {
     "        title: Unique Users\n" +
     "        formula: $main.countDistinct($user)\n"
 
+  const [item, setItem] = useState(configYAML);
+
+  const getConfigModel = async () => {
+    const modelConfig = await ModelService.getConfig(model.model_config_id);
+    setItem(modelConfig.content);
+  }
+
+  useEffect( () => {
+    if (model.model_config_id) {
+      getConfigModel();
+    }
+    setItem('ddd');
+    let buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(item)}];
+    const shortcuts = fromPairs(map(buttons, b => [b.shortcut, b.onClick]));
+    KeyboardShortcuts.bind(shortcuts);
+    return () => {
+      KeyboardShortcuts.unbind(shortcuts);
+    };
+  }, [model, saveConfig]);
+
+  const onChange = (config) => {
+    setItem(config);
+  }
+
+  const backToList = () => {
+    navigateTo('models')
+  }
+
+
   return (
     <div className="col-md-12">
       <div className="editor-yaml">
@@ -225,7 +235,7 @@ export default function EditableModelConfig({model, saveConfig}) {
           <ButtonTooltip title={'Cmd + S'} shortcut={'mod+s'}>
             <Button
               className="query-editor-controls-button m-l-5 right"
-              onClick={() => saveConfig(item)}
+              onClick={() => saveConfig(model.id, item)}
               type={'primary'}
               data-test="SaveButton">
               <span className="fa fa-floppy-o" />&nbsp;Save
@@ -240,7 +250,8 @@ export default function EditableModelConfig({model, saveConfig}) {
         <AceEditor
           mode="yaml"
           width="800px"
-          defaultValue={configYAML}
+          defaultValue={item}
+          value={item}
           height="700px"
           theme="textmate"
           onChange={onChange}

@@ -17,14 +17,12 @@ import "./settings.less";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 
 function ModelConfig({ modelId, onError }) {
-  console.log(modelId)
   const [model, setModel] = useState(null);
 
   const handleError = useImmutableCallback(onError);
 
   useEffect(() => {
     let isCancelled = false;
-    console.log(modelId)
     Model.get(modelId)
       .then(res => {
         setModel(res);
@@ -40,9 +38,8 @@ function ModelConfig({ modelId, onError }) {
     };
   }, [modelId, handleError]);
 
-  const saveConfig = (model) => {
-
-    Model.save(model, model.id)
+  const saveConfig = (id, content) => {
+    Model.saveConfig(id, content)
       .then(() => {
         navigateTo("models");
       })

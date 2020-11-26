@@ -77,7 +77,7 @@ class ModelsList extends React.Component {
       (text, model) => this.getDataSourceName(model),
       {
         title: "Data source",
-        field: "connection",
+        field: "data_source_name",
       }
     ),
     Columns.custom(

@@ -199,7 +199,7 @@ export default function EditableModelConfig({model, saveConfig}) {
     "        title: Unique Users\n" +
     "        formula: $main.countDistinct($user)\n"
 
-  const [item, setItem] = useState(configYAML);
+  const [item, setItem] = useState('');
 
   const getConfigModel = async () => {
     const modelConfig = await ModelService.getConfig(model.model_config_id);
@@ -209,8 +209,9 @@ export default function EditableModelConfig({model, saveConfig}) {
   useEffect( () => {
     if (model.model_config_id) {
       getConfigModel();
+    } else {
+      setItem(configYAML);
     }
-    setItem('ddd');
     let buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(item)}];
     const shortcuts = fromPairs(map(buttons, b => [b.shortcut, b.onClick]));
     KeyboardShortcuts.bind(shortcuts);

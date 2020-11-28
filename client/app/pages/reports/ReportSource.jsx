@@ -1,8 +1,9 @@
-import { isEmpty, find, map, extend, includes } from "lodash";
+import { find, map, extend, includes } from "lodash";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { useDebouncedCallback } from "use-debounce";
+
 import useMedia from "use-media";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import recordEvent from "@/services/recordEvent";
@@ -46,6 +47,7 @@ function ReportSource(props) {
   const [selectedVisualization, setSelectedVisualization] = useVisualizationTabHandler(report.visualizations);
   const { SchemaBrowser } = getEditorComponents(dataSource && dataSource.type);
   const isMobile = !useMedia({ minWidth: 768 });
+  const [colors, setColors] = useState({text: '', body: ''})
 
   useUnsavedChangesAlert(isDirty);
 

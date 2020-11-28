@@ -270,6 +270,8 @@ class Group(db.Model, BelongsToOrgMixin):
         "list_dashboards",
         "list_alerts",
         "list_data_sources",
+        "view_model",
+        "edit_model",
     ]
 
     BUILTIN_GROUP = "builtin"

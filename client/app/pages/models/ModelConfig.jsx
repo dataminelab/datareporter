@@ -38,9 +38,8 @@ function ModelConfig({ modelId, onError }) {
     };
   }, [modelId, handleError]);
 
-  const saveConfig = (model) => {
-
-    Model.save(model, model.id)
+  const saveConfig = (id, content) => {
+    Model.saveConfig(id, content)
       .then(() => {
         navigateTo("models");
       })
@@ -70,7 +69,7 @@ ModelConfig.propTypes = {
 };
 
 ModelConfig.defaultProps = {
-  modelId: null, // defaults to `currentUser.id`
+  modelId: null,
   onError: () => {},
 };
 

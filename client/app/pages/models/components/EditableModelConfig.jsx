@@ -206,19 +206,24 @@ export default function EditableModelConfig({model, saveConfig}) {
     setItem(modelConfig.content);
   }
 
+  const save = () => saveConfig(model.id, item)
+
   useEffect( () => {
     if (model.model_config_id) {
       getConfigModel();
     } else {
       setItem(configYAML);
     }
-    let buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(item)}];
+  }, [model]);
+
+  useEffect( () => {
+    let buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(model.id, item)}];
     const shortcuts = fromPairs(map(buttons, b => [b.shortcut, b.onClick]));
     KeyboardShortcuts.bind(shortcuts);
     return () => {
       KeyboardShortcuts.unbind(shortcuts);
     };
-  }, [model, saveConfig]);
+  }, [item, saveConfig]);
 
   const onChange = (config) => {
     setItem(config);
@@ -236,7 +241,7 @@ export default function EditableModelConfig({model, saveConfig}) {
           <ButtonTooltip title={'Cmd + S'} shortcut={'mod+s'}>
             <Button
               className="query-editor-controls-button m-l-5 right"
-              onClick={() => saveConfig(model.id, item)}
+              onClick={save}
               type={'primary'}
               data-test="SaveButton">
               <span className="fa fa-floppy-o" />&nbsp;Save

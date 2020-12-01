@@ -84,9 +84,6 @@ spec:
       - name: datareporter-scheduled-worker
         image: eu.gcr.io/datareporter/datareporter:_
         imagePullPolicy: Always
-        resources:
-          requests:
-            memory: 1Gi
         livenessProbe:
           httpGet:
             path: /ping
@@ -147,9 +144,6 @@ spec:
       - name: datareporter-ad-hoc-worker
         image: eu.gcr.io/datareporter/datareporter:_
         imagePullPolicy: Always
-        resources:
-          requests:
-            memory: 1Gi
         livenessProbe:
           httpGet:
             path: /ping
@@ -210,9 +204,6 @@ spec:
       - name: datareporter-scheduler
         image: eu.gcr.io/datareporter/datareporter:_
         imagePullPolicy: Always
-        resources:
-          requests:
-            memory: 1Gi
         livenessProbe:
           httpGet:
             path: /ping

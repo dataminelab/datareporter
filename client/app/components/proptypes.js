@@ -88,10 +88,12 @@ export const UserProfile = PropTypes.shape({
 });
 
 export const Model = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  connection: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  config: PropTypes.string
+  id: PropTypes.number.isRequired,
+  name: PropTypes.string,
+  user_id: PropTypes.number.isRequired,
+  data_source_id: PropTypes.number.isRequired,
+  created_at: PropTypes.string,
+  updated_at: PropTypes.string
 });
 
 export const Destination = PropTypes.shape({

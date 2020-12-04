@@ -114,7 +114,22 @@ export default function ReportPageHeader({
     b: '19',
     a: '1',
   });
-
+  const updateReport = useUpdateReport(report, setReport);
+  const [displayColorPicker, setDisplayColorPicker] = useState(null);
+  const [colorBody, setColorBody] = useState(
+    {
+      r: '241',
+      g: '112',
+      b: '19',
+      a: '1',
+     }
+  );
+  const [colorText, setColorText] = useState({
+    r: '241',
+    g: '112',
+    b: '19',
+    a: '1',
+  });
   const styles = reactCSS({
     'default': {
       color: {
@@ -255,6 +270,8 @@ export default function ReportPageHeader({
       openApiKeyDialog,
     ]
   );
+
+  console.log(displayColorPicker)
 
   return (
     <div className="report-page-header">

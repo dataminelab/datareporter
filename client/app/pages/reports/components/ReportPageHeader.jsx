@@ -279,14 +279,12 @@ export default function ReportPageHeader({
         { displayColorPicker === 1 ? <div style={ styles.popover }>
           <div style={ styles.cover } onClick={ handleClose }/>
           <SketchPicker color={ colorText } onChangeComplete={ (color) => handleColorChange(color, 1) } />
-          <button onClick={ handleClose }>Apply</button>
-          <button onClick={ handleClose }>Cancel</button>
+          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
         </div> : null }
         { displayColorPicker === 2 ? <div style={ styles.popover }>
           <div style={ styles.cover } onClick={ handleClose }/>
           <SketchPicker color={ colorBody } onChangeComplete={ (color) => handleColorChange(color, 2) } />
-          <button onClick={ handleClose }>Apply</button>
-          <button onClick={ handleClose }>Cancel</button>
+          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
         </div> : null }
         {dataSourcesLoaded && (
           <div className="data-source-box m-r-5 ">

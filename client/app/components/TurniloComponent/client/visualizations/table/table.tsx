@@ -217,7 +217,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   protected renderInternals() {
-    const { essence, stage } = this.props;
+    const { essence, stage, report } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const collapseRows = this.shouldCollapseRows();
 
@@ -263,6 +263,7 @@ export class Table extends BaseVisualization<TableState> {
         }
 
         leftGutter={<SplitRows
+          color={report.colorText}
           collapseRows={collapseRows}
           highlightedRowIndex={highlightedRowIndex}
           visibleRowsIndexRange={visibleRowsRange}
@@ -276,6 +277,7 @@ export class Table extends BaseVisualization<TableState> {
 
         body={flatData &&
         <MeasureRows
+          report={report}
           hoverRow={hoverRow}
           visibleRowsIndexRange={visibleRowsRange}
           essence={essence}

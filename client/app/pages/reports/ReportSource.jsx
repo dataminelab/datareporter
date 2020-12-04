@@ -133,6 +133,7 @@ function ReportSource(props) {
           sourceMode
           selectedVisualization={selectedVisualization}
           onChange={setReport}
+          onChangeDataSource={handleDataSourceChange}
         />
       </div>
       <main className="report-fullscreen">
@@ -141,7 +142,7 @@ function ReportSource(props) {
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
               style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
-              <ReportEditor />
+              <ReportEditor report={report} />
             </div>
           </div>
           {reportResult && !reportResult.getError() && (

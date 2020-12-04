@@ -26,11 +26,12 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
   protected className = TOTALS_MANIFEST.name;
 
   renderTotals(dataset: Dataset): JSX.Element[] {
-    const { essence } = this.props;
+    const { essence, report } = this.props;
     const series = essence.getConcreteSeries().toArray();
     const datum = dataset.data[0];
     return series.map(series =>
       <Total
+        color={report.colorText}
         key={series.reactKey()}
         series={series}
         datum={datum}

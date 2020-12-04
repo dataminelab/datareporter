@@ -30,10 +30,11 @@ interface MeasureRowsProps {
   hoverRow?: Datum;
   cellWidth: number;
   rowWidth: number;
+  report: object;
 }
 
 export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
-  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex } = props;
+  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex, report } = props;
 
   return <VisibleRows
     visibleRowsIndexRange={visibleRowsIndexRange}
@@ -47,6 +48,7 @@ export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
       return <MeasureRow
         key={`row_${index}`}
         essence={essence}
+        report={report}
         highlight={highlight}
         dimmed={dimmed}
         style={rowStyle}

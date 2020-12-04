@@ -9,7 +9,7 @@ import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 import {axios} from "@/services/axios";
 
-function TurniloPage({ dashboardSlug, dashboardId, onError }) {
+function ReportEditor({ report }) {
   const [config, setConfig] = useState({});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect( () => {
@@ -35,6 +35,7 @@ function TurniloPage({ dashboardSlug, dashboardId, onError }) {
     return <turnilo-widget>
       <TurniloApplication
         version={version}
+        report={report}
         appSettings={appSettings}
         initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
       />
@@ -46,16 +47,16 @@ function TurniloPage({ dashboardSlug, dashboardId, onError }) {
   }
 }
 
-TurniloPage.propTypes = {
+ReportEditor.propTypes = {
   dashboardSlug: PropTypes.string,
   dashboardId: PropTypes.string,
   onError: PropTypes.func,
 };
 
-TurniloPage.defaultProps = {
+ReportEditor.defaultProps = {
   dashboardSlug: null,
   dashboardId: null,
   onError: PropTypes.func,
 };
 
-export default TurniloPage;
+export default ReportEditor;

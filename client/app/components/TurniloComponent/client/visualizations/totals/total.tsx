@@ -44,12 +44,13 @@ export interface TotalProps {
   showPrevious: boolean;
   datum: Datum;
   series: ConcreteSeries;
+  color: string;
 }
 
-export const Total: React.SFC<TotalProps> = ({ showPrevious, datum, series }) => {
+export const Total: React.SFC<TotalProps> = ({ showPrevious, datum, series, color }) => {
   return <div className="total">
     <div className="measure-name" title={series.title()}>{series.title()}</div>
-    <div className="measure-value">{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>
+    <div className="measure-value" style={{ color }}>{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>
     {showPrevious && <Difference series={series} datum={datum} />}
   </div>;
 };

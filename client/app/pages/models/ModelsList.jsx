@@ -1,12 +1,10 @@
-import { isString, map, get, find } from "lodash";
+import { isString, get, find } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 
 import Button from "antd/lib/button";
-import Modal from "antd/lib/modal";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import Paginator from "@/components/Paginator";
-import InputWithCopy from "@/components/InputWithCopy";
 
 import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
@@ -18,12 +16,10 @@ import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTab
 
 import wrapSettingsTab from "@/components/SettingsWrapper";
 
-import { currentUser } from "@/services/auth";
 import { policy } from "@/services/policy";
 import Model from "@/services/model";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import notification from "@/services/notification";
-import { absoluteUrl } from "@/services/utils";
 import routes from "@/services/routes";
 
 import CreateModelDialog from "./components/CreateModelDialog";
@@ -45,7 +41,7 @@ function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
 
 ModelsListActions.propTypes = {
   model: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.number,
     is_invitation_pending: PropTypes.bool,
     is_disabled: PropTypes.bool,
   }).isRequired,
@@ -78,10 +74,10 @@ class ModelsList extends React.Component {
       width: null,
     }),
     Columns.custom.sortable(
-      (text, model) => this.getDataSourceName(model),
+      (text, model) => model.data_source_name,
       {
         title: "Data source",
-        field: "connection",
+        field: "data_source_name",
       }
     ),
     Columns.custom(
@@ -159,9 +155,13 @@ class ModelsList extends React.Component {
       };
       CreateModelDialog.showModal({ dataSources, model })
         .onClose(values =>
-          this.saveModel(values, model.id).then(() => {
+        {
+          this.saveModel(values).then(() => {
+
             this.props.controller.update();
           })
+        }
+
         )
         .onDismiss(goToModelsList);
     }

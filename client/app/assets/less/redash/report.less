@@ -377,14 +377,38 @@
 }
 
 .ant-dropdown-menu.mobile-navbar-menu.ant-dropdown-menu-light.ant-dropdown-menu-root.ant-dropdown-menu-vertical {
-  margin: 0 10px;
+  padding: 0 10px;
   background: #ffffff;
+  margin-right: -15px;
+  margin-top: 5px;
+  -moz-box-shadow: 2px 8px 8px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 2px 8px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 2px 8px 8px rgba(0, 0, 0, 0.15);
   .icon-ui {
     position: relative;
+    opacity: 0.50;
     top: 1px;
+  }
+  &:hover {
+    .icon-ui {
+      opacity: 1;
+    }
   }
 }
 
 .mobile-navbar-menu .ant-dropdown-menu-item {
-  color: #1b1465
+  color: #1b1465;
+}
+
+.mobile-navbar-toggle-button {
+  border-color: transparent !important;
+  &.ant-dropdown-open {
+    opacity: 0.50;
+  }
+}
+
+.ant-btn-primary, .ant-btn-danger {
+  svg path {
+    fill: #ffffff !important;
+  }
 }

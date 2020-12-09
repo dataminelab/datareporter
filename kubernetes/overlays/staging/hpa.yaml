@@ -9,7 +9,23 @@ spec:
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: datareporter-worker
+  name: datareporter-ad-hoc-worker
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: datareporter-scheduled-worker
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: datareporter-scheduler
 spec:
   minReplicas: 1
   maxReplicas: 1

@@ -1,5 +1,5 @@
 import {extend, map, filter, reduce, find, includes} from "lodash";
-import React, {useCallback, useEffect, useMemo} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -9,6 +9,9 @@ import useMedia from "use-media";
 import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
 import { ReportTagsControl } from "@/components/tags-control/TagsControl";
+import reactCSS from 'reactcss'
+import { SketchPicker } from 'react-color'
+import CusromPicker from '../CusromPicker'
 import getTags from "@/services/getTags";
 import { clientConfig } from "@/services/auth";
 import useReportFlags from "../hooks/useReportFlags";
@@ -111,6 +114,83 @@ export default function ReportPageHeader(/*{
   const { report, setReport, saveReport } = useReport(props.report);
 
   const updateReport = useUpdateReport(report, setReport);
+  const [displayColorPicker, setDisplayColorPicker] = useState(null);
+  const [colorBody, setColorBody] = useState(
+    {
+                r: '241',
+                g: '112',
+                b: '19',
+                a: '1',
+               }
+  );
+  const [colorText, setColorText] = useState({
+    r: '241',
+    g: '112',
+    b: '19',
+    a: '1',
+  });
+
+  const styles = reactCSS({
+    'default': {
+      color: {
+        width: '36px',
+        height: '14px',
+        display: 'inline-block',
+        borderRadius: '2px',
+        background: `rgba(${ colorText.r }, ${ colorText.g }, ${ colorText.b }, ${ colorText.a })`,
+        position: 'relative',
+        marginRight: '10px',
+        top: '3px',
+      },
+      colorBody: {
+        width: '36px',
+        height: '14px',
+        display: 'inline-block',
+        borderRadius: '2px',
+        background: `rgba(${ colorBody.r }, ${ colorBody.g }, ${ colorBody.b }, ${ colorBody.a })`,
+        position: 'relative',
+        top: '3px',
+      },
+      swatch: {
+        padding: '5px',
+        background: '#fff',
+        borderRadius: '1px',
+        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+        display: 'inline-block',
+        marginRight: '10px',
+        cursor: 'pointer',
+      },
+      popover: {
+        position: 'absolute',
+        zIndex: '2',
+      },
+      cover: {
+        position: 'fixed',
+        top: '0px',
+        right: '0px',
+        bottom: '0px',
+        left: '0px',
+      },
+    },
+  });
+
+  const handleClick = (type) => {
+    console.log(type)
+    setDisplayColorPicker(type)
+  };
+
+  const handleClose = () => {
+    setDisplayColorPicker(0)
+  };
+
+  const handleChange = (color) => {
+    console.log('handleChange', displayColorPicker)
+    if (displayColorPicker === 2) {
+      setColorBody(color.rgb)
+    } else {
+      setColorText(color.rgb)
+    }
+  };
 
   const handleDataSourceChange = useCallback(
     dataSourceId => {
@@ -212,6 +292,8 @@ export default function ReportPageHeader(/*{
     ]
   );
 
+  console.log(displayColorPicker)
+
   return (
     <div className="report-page-header">
       <div className="title-with-tags m-l-5">
@@ -237,6 +319,18 @@ export default function ReportPageHeader(/*{
       </div>
       <div className="header-actions">
         {props.headerExtra}
+        <div style={ styles.swatch } onClick={ () => handleClick(1) }>
+          Text chart color: <div style={ styles.color } />
+        </div>
+        <div style={ styles.swatch } onClick={ () => handleClick(2) }>
+          Chart color: <div style={ styles.colorBody } />
+        </div>
+        { displayColorPicker ? <div style={ styles.popover }>
+          <div style={ styles.cover } onClick={ handleClose }/>
+          <SketchPicker color={ colorBody } onChangeComplete={ (color, type) => handleChange(color, type) } />
+          <button onClick={ handleClose }>Apply</button>
+          <button onClick={ handleClose }>Cancel</button>
+        </div> : null }
         {dataSourcesLoaded && (
           <div className="data-source-box m-r-5 ">
             <span className="icon icon-datasource m-r-5"></span>
@@ -314,6 +408,7 @@ ReportPageHeader.propTypes = {
   selectedVisualization: PropTypes.number,
   headerExtra: PropTypes.node,
   tagsExtra: PropTypes.node,
+  onChangeColor: PropTypes.func,
   onChange: PropTypes.func,
 };
 
@@ -323,5 +418,6 @@ ReportPageHeader.defaultProps = {
   selectedVisualization: null,
   headerExtra: null,
   tagsExtra: null,
+  onChangeColor: () => {},
   onChange: () => {},
 };

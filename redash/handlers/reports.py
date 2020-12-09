@@ -18,9 +18,9 @@ class ReportsResource(BaseResource):
         max_age = req.get('max_age', -1)
         query_id = "adhoc"
 
-        return [self.method_name(query, max_age, model, query_id) for query in queries]
+        return [self.execute_query(query, max_age, model, query_id) for query in queries]
 
-    def method_name(self, query: str, max_age: int, model: Model, query_id: str):
+    def execute_query(self, query: str, max_age: int, model: Model, query_id: str):
         parameterized_query = ParameterizedQuery(query, org=self.current_org)
         parameters = {}
 

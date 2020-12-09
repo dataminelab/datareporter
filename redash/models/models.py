@@ -11,6 +11,8 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))
     user = db.relationship(User)
     version = Column(db.Integer)
+    table = Column(db.String(length=255), nullable=True)
+    table_columns = db.relationship("TableColumn", lazy="dynamic")
     config = db.relationship("ModelConfig", back_populates="model", uselist=False)
 
     __tablename__ = "models"
@@ -51,3 +53,13 @@ class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
     @classmethod
     def get_by_id(cls, _id):
         return cls.query.filter(cls.id == _id).one()
+
+
+class TableColumn(db.Model):
+    id = primary_key("TableColumn")
+    name = Column(db.String(length=255))
+    type = Column(db.String(length=255))
+    model_id = Column(key_type("Model"), db.ForeignKey("models.id"))
+    model = db.relationship(Model, back_populates="table_columns")
+
+    __tablename__ = "table_columns"

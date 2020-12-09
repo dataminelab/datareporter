@@ -4,7 +4,7 @@ from funcy import project
 from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 from redash.handlers.queries import order_results
-from redash.models.models import Model, ModelConfig
+from redash.models.models import Model, ModelConfig, TableColumn
 from redash.permissions import require_permission, require_admin_or_owner, require_object_modify_permission
 from redash.serializers.model_serializer import ModelSerializer
 from redash.services.model_config_generator import ModelConfigGenerator
@@ -14,20 +14,35 @@ class ModelsListResource(BaseResource):
     @require_permission("create_model")
     def post(self):
         req = request.get_json(True)
-        require_fields(req, ('name', 'data_source_id'))
+        require_fields(req, ('name', 'data_source_id', 'table'))
 
-        name, data_source_id = req['name'], req['data_source_id']
+        name, data_source_id, table = req['name'], req['data_source_id'], req['table']
 
         data_source = get_object_or_404(
             models.DataSource.get_by_id_and_org, data_source_id, self.current_org
         )
 
-        model = Model(name=name, data_source_id=data_source.id, user_id=self.current_user.id, user=self.current_user)
+        schemas = data_source.get_schema(refresh=True)
+        tables = [table['name'] for table in schemas]
+
+        require_fields(tables, (table,))
+
+        schema = next((schema for schema in schemas if schema['name'] == table), None)
+
+        model = Model(name=name,
+                      data_source_id=data_source.id,
+                      user_id=self.current_user.id,
+                      user=self.current_user,
+                      table=table)
+
         content = ModelConfigGenerator.generate(data_source)
         model_config = ModelConfig(user=self.current_user, model=model, content=content)
+        tables_columns = [TableColumn(name=column['name'], type=column['type'], model=model) for column in
+                          schema['columns']]
 
         models.db.session.add(model)
         models.db.session.add(model_config)
+        models.db.session.add_all(tables_columns)
         models.db.session.commit()
 
         self.record_event({
@@ -82,14 +97,31 @@ class ModelsResource(BaseResource):
         require_object_modify_permission(model, self.current_user)
 
         updates = project(
-            model_properties, ("name", "data_source_id",),
+            model_properties, ("name", "data_source_id", "table"),
         )
 
         if "data_source_id" in updates:
             get_object_or_404(models.DataSource.get_by_id_and_org, updates["data_source_id"], self.current_org)
 
+        tables_columns = []
+        if "table" in updates:
+            data_source_id = updates["data_source_id"] if "data_source_id" in updates else model.data_source_id
+            data_source = models.DataSource.get_by_id_and_org(data_source_id, self.current_org)
+            schemas = data_source.get_schema(refresh=True)
+            tables = [table['name'] for table in schemas]
+            require_fields(tables, (updates["table"],))
+            schema = next((schema for schema in schemas if schema['name'] == updates["table"]), None)
+
+            for table_column in model.table_columns:
+                models.db.session.delete(table_column)
+
+            tables_columns = [TableColumn(name=column['name'], type=column['type'], model=model) for column in
+                              schema['columns']]
+
         self.update_model(model, updates)
         models.db.session.add(model)
+        if tables_columns:
+            models.db.session.add_all(tables_columns)
         models.db.session.commit()
 
         self.record_event({

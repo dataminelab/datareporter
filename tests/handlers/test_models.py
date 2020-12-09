@@ -1,4 +1,6 @@
 from redash.models import db
+from redash.models.models import Model, TableColumn
+from redash.utils.configuration import ConfigurationContainer
 from tests import BaseTestCase
 
 
@@ -23,7 +25,7 @@ class TestModelsCreateResource(BaseTestCase):
 
         self.assertEqual(403, response.status_code)
 
-    def test_not_existing_data_source(self):
+    def test_without_table(self):
         group = self.factory.create_group(permissions=["create_model"])
         db.session.commit()
         user = self.factory.create_admin(group_ids=[group.id])
@@ -36,10 +38,9 @@ class TestModelsCreateResource(BaseTestCase):
             user=user
         )
 
-        self.assertEqual(404, response.status_code)
+        self.assertEqual(400, response.status_code)
 
-    def test_with_existing_data_source(self):
-        data_source = self.factory.create_data_source()
+    def test_not_existing_data_source(self):
         group = self.factory.create_group(permissions=["create_model"])
         db.session.commit()
         user = self.factory.create_admin(group_ids=[group.id])
@@ -48,7 +49,26 @@ class TestModelsCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/models",
-            data={"name": "Test Model", "data_source_id": data_source.id},
+            data={"name": "Test Model", "data_source_id": 1000, "table": "wikitracker"},
+            user=user
+        )
+
+        self.assertEqual(404, response.status_code)
+
+    def test_with_existing_data_source(self):
+        data_source = self.factory.create_data_source(
+            options=lambda: ConfigurationContainer.from_json(
+                '{"dbname": "postgres", "user": "postgres", "host": "localhost", "port": 5432}'))
+
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        response = self.make_request(
+            "post",
+            "/api/models",
+            data={"name": "Test Model", "data_source_id": data_source.id, "table": "models"},
             user=user
         )
 
@@ -63,7 +83,7 @@ class TestModelsListResource(BaseTestCase):
         self.assertEqual(403, response.status_code)
 
     def test_user_without_view_model_permission(self):
-        response = self.make_request("get", "/api/models", user=self.factory.create_user())
+        response = self.make_request("get", "/api/models", user=self.factory.create_user(group_ids=[3]))
 
         self.assertEqual(403, response.status_code)
 
@@ -211,6 +231,34 @@ class TestModelsEditResource(BaseTestCase):
         )
 
         self.assertEqual(200, response.status_code)
+
+    def test_update_table(self):
+        group = self.factory.create_group(permissions=["edit_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+        model = self.factory.create_model(user=user,
+                                          table_columns=[TableColumn(name="Some cool column", type="INTEGER")])
+        data_source = self.factory.create_data_source(
+            options=lambda: ConfigurationContainer.from_json(
+                '{"dbname": "postgres", "user": "postgres", "host": "localhost", "port": 5432}'))
+
+        db.session.flush()
+
+        response = self.make_request(
+            "post",
+            "/api/models/{}".format(model.id),
+            user=user,
+            data={
+                "name": "New Test Model Name",
+                "data_source_id": data_source.id,
+                "table": "models"
+            }
+        )
+
+        previous_table_column = Model.get_by_id(model.id).table_columns.filter_by(name="Some cool column").first()
+        self.assertEqual(200, response.status_code)
+        self.assertIsNone(previous_table_column)
 
 
 class TestModelsDeleteResource(BaseTestCase):

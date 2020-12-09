@@ -177,11 +177,18 @@ model_config_factory = ModelFactory(
     content=Sequence("key: {}"),
 )
 
+table_column_factory = ModelFactory(
+    redash.models.models.TableColumn,
+    name=Sequence("Name {}"),
+    type=Sequence("Type {}"),
+)
+
 model_factory = ModelFactory(
     redash.models.models.Model,
     user=user_factory.create,
     name=Sequence("Model {}"),
     data_source=data_source_factory.create,
+    table_columns=table_column_factory.create
 )
 
 

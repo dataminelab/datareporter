@@ -1,6 +1,8 @@
 from flask import request
 
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404
+from redash.handlers.query_results import run_query
+from redash.models import ParameterizedQuery
 from redash.models.models import Model
 from redash.permissions import require_permission
 from redash.plywood.plywood import PlywoodApi
@@ -8,31 +10,51 @@ from redash.plywood.plywood import PlywoodApi
 
 class ReportsResource(BaseResource):
     @require_permission("generate_report")
-    def get(self, model_id):
+    def post(self, model_id):
         req = request.get_json(True)
-        require_fields(req, ('model_id', 'expression'))
+        require_fields(req, ('dataCube', 'expression',))
         model = get_object_or_404(Model.get_by_id, model_id)
-        raw_sql_queries = PlywoodApi.convert_to_sql(body=self._build_plywood_request(req, model))
-        # TODO: use workers to execute sql queries
-        return []
+        queries = PlywoodApi.convert_to_sql(body=self._build_plywood_request(req, model))
+        max_age = req.get('max_age', -1)
+        query_id = "adhoc"
+
+        return [self.method_name(query, max_age, model, query_id) for query in queries]
+
+    def method_name(self, query: str, max_age: int, model: Model, query_id: str):
+        parameterized_query = ParameterizedQuery(query, org=self.current_org)
+        parameters = {}
+
+        return run_query(
+            parameterized_query, parameters, model.data_source, query_id, max_age
+        )
 
     @staticmethod
     def _build_plywood_request(req, model: Model):
         context = ReportsResource._build_context(model)
         expression = req['expression']
+        data_cube = req['dataCube']
 
         return {
-            'dataCube': '',
+            'dataCube': data_cube,
             'context': context,
             'expression': expression
         }
 
     @staticmethod
     def _build_context(model: Model):
-        engine = ReportsResource._get_engine(model)
         return {
-            'engine': engine
+            'engine': ReportsResource._get_engine(model),
+            'source': ReportsResource._get_source_name(model),
+            "attributes": ReportsResource._get_table_columns(model)
         }
+
+    @staticmethod
+    def _get_source_name(model: Model):
+        return model.table
+
+    @staticmethod
+    def _get_table_columns(model: Model):
+        return [{"name": column.name, "type": column.type} for column in model.table_columns.all()]
 
     @staticmethod
     def _get_engine(model):

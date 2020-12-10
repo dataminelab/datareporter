@@ -846,7 +846,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     def parameters(self):
         return self.options.get("parameters", [])
 
-    @property
+    @propertydata_source_tables.py
     def parameterized(self):
         return ParameterizedQuery(self.query_text, self.parameters, self.org)
 

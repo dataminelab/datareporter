@@ -3,6 +3,9 @@ from redash.models.models import Model, TableColumn
 from redash.utils.configuration import ConfigurationContainer
 from tests import BaseTestCase
 
+database_configuration = lambda: ConfigurationContainer.from_json(
+    '{"dbname": "postgres", "user": "postgres", "host": "localhost", "port": 5432}')
+
 
 class TestModelsCreateResource(BaseTestCase):
 
@@ -56,9 +59,7 @@ class TestModelsCreateResource(BaseTestCase):
         self.assertEqual(404, response.status_code)
 
     def test_with_existing_data_source(self):
-        data_source = self.factory.create_data_source(
-            options=lambda: ConfigurationContainer.from_json(
-                '{"dbname": "postgres", "user": "postgres", "host": "localhost", "port": 5432}'))
+        data_source = self.factory.create_data_source(options=database_configuration)
 
         group = self.factory.create_group(permissions=["create_model"])
         db.session.commit()
@@ -239,9 +240,7 @@ class TestModelsEditResource(BaseTestCase):
         db.session.commit()
         model = self.factory.create_model(user=user,
                                           table_columns=[TableColumn(name="Some cool column", type="INTEGER")])
-        data_source = self.factory.create_data_source(
-            options=lambda: ConfigurationContainer.from_json(
-                '{"dbname": "postgres", "user": "postgres", "host": "localhost", "port": 5432}'))
+        data_source = self.factory.create_data_source(options=database_configuration)
 
         db.session.flush()
 

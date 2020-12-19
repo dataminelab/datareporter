@@ -20,12 +20,12 @@ schema = {
                 },
                 "title": {
                     "type": "string",
-                    "maxlength": 100,
+                    "maxlength": 120,
                     "required": True,
                 },
                 "description": {
                     "type": "string",
-                    "maxlength": 100,
+                    "maxlength": 256,
                     "required": False
                 },
                 "timeAttribute": {
@@ -90,6 +90,10 @@ schema = {
                                 "maxlength": 100,
                                 "required": False
                             },
+                            "multiValue": {
+                                "type": "boolean",
+                                "required": False
+                            }
                         }
                     }
                 },
@@ -116,6 +120,27 @@ schema = {
                                 "maxlength": 100,
                                 "required": False
                             },
+                            "units": {
+                                "type": "string",
+                                "required": False
+                            },
+                            "lowerIsBetter": {
+                                "type": "boolean",
+                                "required": False
+                            },
+                            "format": {
+                                "type": "string",
+                                "required": False
+                            },
+                            "transformation": {
+                                "type": "string",
+                                "required": False,
+                                "allowed": [
+                                    "none",
+                                    "percent-of-parent",
+                                    "percent-of-total"
+                                ]
+                            }
                         }
                     }
                 }

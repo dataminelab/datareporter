@@ -1,5 +1,3 @@
-from enum import Enum
-
 import yaml
 from flask import request
 
@@ -10,10 +8,8 @@ from redash.permissions import require_permission, require_admin_or_owner
 from redash.serializers.model_serializer import ModelConfigSerializer
 from redash.services.model_config_validator import ModelConfigValidator
 
-
-class EventAction(Enum):
-    UPDATE = "update"
-    CREATE = "create"
+UPDATE_ACTION = "update"
+CREATE_ACTION = "create"
 
 
 class ModelsConfigResource(BaseResource):
@@ -29,10 +25,10 @@ class ModelsConfigResource(BaseResource):
         model = get_object_or_404(Model.get_by_id, model_id)
         require_admin_or_owner(model.user_id)
 
-        action = EventAction.UPDATE
+        action = UPDATE_ACTION
         config = model.config
         if config is None:
-            action = EventAction.CREATE
+            action = CREATE_ACTION
             config = ModelConfig(user=self.current_user, model=model, content=content)
         else:
             config.content = content

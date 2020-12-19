@@ -7,6 +7,8 @@ from redash.models.models import Model
 
 from redash.settings import IGNORED_DATA_SOURCE_TYPES, DATA_SOURCE_TYPE_MAPPINGS
 
+INDENT_LEVELS = [3, 4]
+
 
 class Types(Enum):
     BOOLEAN = "boolean"
@@ -22,7 +24,7 @@ TIME_ATTRIBUTE_TYPES = (Types.TIME,)
 class ConfigDumper(yaml.SafeDumper):
     def write_line_break(self, data=None):
         super(ConfigDumper, self).write_line_break(data)
-        if len(self.indents) in [3, 4]:
+        if len(self.indents) in INDENT_LEVELS:
             super(ConfigDumper, self).write_line_break()
 
     def increase_indent(self, flow=False, indentless=False):

@@ -30,7 +30,7 @@ class ModelsListResource(BaseResource):
             table=table
         )
 
-        content = ModelConfigGenerator.yaml(data_source)
+        content = ModelConfigGenerator.yaml(model)
         model_config = ModelConfig(user=self.current_user, model=model, content=content)
 
         models.db.session.add(model)
@@ -96,7 +96,7 @@ class ModelsResource(BaseResource):
         models.db.session.add(model)
         models.db.session.commit()
 
-        content = ModelConfigGenerator.yaml(model.data_source)
+        content = ModelConfigGenerator.yaml(model)
         self.update_model(model.config, {"content": content})
         models.db.session.commit()
 

@@ -2,7 +2,7 @@ from flask import request
 
 from redash.handlers.base import BaseResource, get_object_or_404
 from redash.models import models
-from redash.permissions import is_admin_or_owner
+from redash.permissions import require_access, view_only
 from redash.serializers.data_source_serializer import TableSerializer
 
 
@@ -14,7 +14,7 @@ class DataSourceTablesResource(BaseResource):
             models.DataSource.get_by_id_and_org, data_source_id, self.current_org
         )
 
-        is_admin_or_owner(data_source)
+        require_access(data_source, self.current_user, view_only)
 
         schema = data_source.get_schema(refresh=refresh)
 

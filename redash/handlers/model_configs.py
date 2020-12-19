@@ -54,9 +54,7 @@ class ModelsConfigResource(BaseResource):
         config = yaml.load(model.config.content)
 
         return {
-            "appSettings": {
-                config
-            }
+            "appSettings": config
         }
 
 

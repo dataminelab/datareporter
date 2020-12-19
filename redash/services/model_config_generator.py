@@ -7,6 +7,7 @@ from redash.settings import IGNORED_DATA_SOURCE_TYPES, DATA_SOURCE_TYPE_MAPPINGS
 
 DIMENSION_KINDS = ("boolean", "number", "time")
 MEASURE_TYPES = ("number",)
+TIME_ATTRIBUTE_TYPES = ("time",)
 
 
 class ConfigDumper(yaml.SafeDumper):
@@ -35,7 +36,7 @@ class Attribute(BaseConfig):
     def to_json(self):
         return {
             "name": self.name,
-            "type": self.kind
+            "type": self.kind.upper()
         }
 
 
@@ -80,6 +81,8 @@ class ModelConfigAttributes(BaseConfig):
         data_cube_config = {
             "name": self.name,
             "title": titleize(self.name),
+            "timeAttribute": self._find_time_attribute(),
+            "clusterName": "native",
             "defaultSortMeasure": self._find_default_sort_measure(),
             "defaultSelectedMeasures": self._find_default_selected_measures(),
             "attributes": [attribute.to_json() for attribute in self.attributes],
@@ -104,6 +107,12 @@ class ModelConfigAttributes(BaseConfig):
     def _find_default_pinned_dimensions(self):
         first_dimension = next(iter(self.dimensions), None)
         return [first_dimension.name] if first_dimension else []
+
+    def _find_time_attribute(self):
+        for attribute in self.attributes:
+            if attribute.kind in TIME_ATTRIBUTE_TYPES:
+                return attribute.name
+        return None
 
 
 class ModelConfigGenerator(object):

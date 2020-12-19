@@ -53,8 +53,12 @@ class ModelsConfigResource(BaseResource):
         model = get_object_or_404(Model.get_by_id, model_id)
         config = yaml.load(model.config.content)
 
+        config["clusters"] = []
+        config["customization"] = {}
+
         return {
-            "appSettings": config
+            "appSettings": config,
+            "timekeeper": {}
         }
 
 

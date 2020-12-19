@@ -35,7 +35,7 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
 
 @gfk_type
 class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
-    MAX_CONTENT_LENGTH = 6_000
+    MAX_CONTENT_LENGTH = 20_000
 
     id = primary_key("ModelConfig")
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))

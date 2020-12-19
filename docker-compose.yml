@@ -47,6 +47,8 @@ services:
   redis:
     image: redis:3-alpine
     restart: unless-stopped
+    ports:
+      - "6379:6379"
   postgres:
     image: postgres:9.5-alpine
     # The following turns the DB into less durable, but gains significant performance improvements for the tests run (x3
@@ -54,6 +56,7 @@ services:
     # tests.
     ports:
       - "15432:5432"
+      - "5432:5432"
     restart: unless-stopped
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"

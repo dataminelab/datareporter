@@ -30,7 +30,7 @@ schema = {
                 },
                 "timeAttribute": {
                     "type": "string",
-                    "required": False,
+                    "required": True,
                 },
                 "defaultSortMeasure": {
                     "type": "string",
@@ -42,6 +42,10 @@ schema = {
                     "schema": {
                         "type": "string"
                     }
+                },
+                "clusterName": {
+                    "type": "string",
+                    "required": True
                 },
                 "attributes": {
                     "type": "list",

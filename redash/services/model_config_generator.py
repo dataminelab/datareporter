@@ -104,10 +104,6 @@ class ModelConfigAttributes(BaseConfig):
         measure = self._find_default_sort_measure()
         return [measure] if measure else []
 
-    def _find_default_pinned_dimensions(self):
-        first_dimension = next(iter(self.dimensions), None)
-        return [first_dimension.name] if first_dimension else []
-
     def _find_time_attribute(self):
         for attribute in self.attributes:
             if attribute.kind in TIME_ATTRIBUTE_TYPES:

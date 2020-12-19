@@ -1,3 +1,4 @@
+import yaml
 from flask import request
 
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404
@@ -36,7 +37,7 @@ class ReportsResource(BaseResource):
     def _build_plywood_request(req, model: Model):
         context = ReportsResource._build_context(model)
         return {
-            DATA_CUBE: req[DATA_CUBE],
+            DATA_CUBE: "main",
             CONTEXT: context,
             EXPRESSION: req[EXPRESSION]
         }
@@ -55,7 +56,10 @@ class ReportsResource(BaseResource):
 
     @staticmethod
     def _get_table_columns(model: Model):
-        return [{"name": column.name, "type": column.type} for column in model.table_columns.all()]
+        config = yaml.load(model.config.content)
+        data_cube = next(iter(config["dataCubes"]), None)
+        attributes = data_cube["attributes"] if data_cube else []
+        return attributes
 
     @staticmethod
     def _get_engine(model):

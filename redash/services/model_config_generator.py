@@ -1,3 +1,5 @@
+from enum import Enum
+
 import yaml
 from inflection import titleize
 
@@ -5,9 +7,16 @@ from redash.models.models import Model
 
 from redash.settings import IGNORED_DATA_SOURCE_TYPES, DATA_SOURCE_TYPE_MAPPINGS
 
-DIMENSION_KINDS = ("boolean", "number", "time")
-MEASURE_TYPES = ("number",)
-TIME_ATTRIBUTE_TYPES = ("time",)
+
+class Types(Enum):
+    BOOLEAN = "boolean"
+    NUMBER = "number"
+    TIME = "time"
+
+
+DIMENSION_KINDS = (Types.BOOLEAN, Types.NUMBER, Types.TIME)
+MEASURE_TYPES = (Types.NUMBER,)
+TIME_ATTRIBUTE_TYPES = (Types.TIME,)
 
 
 class ConfigDumper(yaml.SafeDumper):

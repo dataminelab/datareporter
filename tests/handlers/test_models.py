@@ -1,5 +1,5 @@
 from redash.models import db
-from redash.models.models import Model, TableColumn
+from redash.models.models import Model
 from redash.utils.configuration import ConfigurationContainer
 from tests import BaseTestCase
 
@@ -238,8 +238,7 @@ class TestModelsEditResource(BaseTestCase):
         db.session.commit()
         user = self.factory.create_admin(group_ids=[group.id])
         db.session.commit()
-        model = self.factory.create_model(user=user,
-                                          table_columns=[TableColumn(name="Some cool column", type="INTEGER")])
+        model = self.factory.create_model(user=user)
         data_source = self.factory.create_data_source(options=database_configuration)
 
         db.session.flush()

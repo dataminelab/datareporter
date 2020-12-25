@@ -175,7 +175,6 @@ export default function ReportPageHeader(/*{
   });
 
   const handleClick = (type) => {
-    console.log(type)
     setDisplayColorPicker(type)
   };
 
@@ -184,7 +183,6 @@ export default function ReportPageHeader(/*{
   };
 
   const handleChange = (color) => {
-    console.log('handleChange', displayColorPicker)
     if (displayColorPicker === 2) {
       setColorBody(color.rgb)
     } else {
@@ -331,6 +329,31 @@ export default function ReportPageHeader(/*{
           <button onClick={ handleClose }>Apply</button>
           <button onClick={ handleClose }>Cancel</button>
         </div> : null }
+        {dataSourcesLoaded && (
+          <div className="data-source-box m-r-5 ">
+            <span className="icon icon-datasource m-r-5"></span>
+            <Select
+              data-test="SelectDataSource"
+              placeholder="Choose data source..."
+              value={dataSource ? dataSource.id : undefined}
+              disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
+              loading={!dataSourcesLoaded}
+              optionFilterProp="data-name"
+              showSearch
+              onChange={handleDataSourceChange}>
+              {map(dataSources, ds => (
+                <Select.Option
+                  key={`ds-${ds.id}`}
+                  value={ds.id}
+                  data-name={ds.name}
+                  data-test={`SelectDataSource${ds.id}`}>
+                  <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
+                  <span>{ds.name}</span>
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+        )}
         {dataSourcesLoaded && (
           <div className="data-source-box m-r-5 ">
             <span className="icon icon-datasource m-r-5"></span>

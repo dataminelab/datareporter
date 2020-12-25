@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import axios from "axios";
+import { axios } from "@/services/axios";
 import { ChainableExpression, Dataset, DatasetJS, Environment, Executor, Expression, SplitExpression } from "plywood";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
@@ -95,9 +95,10 @@ export class Ajax {
     const timeout = clientTimeout(cluster);
     return (ex: Expression, env: Environment = {}) => {
       const method = "POST";
-      const url = `plywood?by=${getSplitsDescription(ex)}`;
+      const url = `api/reports/7?by=${getSplitsDescription(ex)}`;
       const timezone = env ? env.timezone : null;
       const data = { dataCube: name, expression: ex.toJS(), timezone };
+      console.log(data);
       return Ajax.query<{result: DatasetJS}>({ method, url, timeout, data })
         .then(res => Dataset.fromJS(res.result));
     };

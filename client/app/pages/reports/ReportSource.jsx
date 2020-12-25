@@ -124,7 +124,7 @@ function ReportSource(props) {
 
 
   const editVisualization = useEditVisualizationDialog(report, reportResult, newReport => setReport(newReport));
-
+  console.log(report)
   return (
     <div className={cx("report-page-wrapper", { "report-fixed-layout": !isMobile })}>
       <ReportSourceAlerts report={report} dataSourcesAvailable={!dataSourcesLoaded || dataSources.length > 0} />
@@ -143,7 +143,7 @@ function ReportSource(props) {
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
               style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
-              <ReportEditor />
+              {report.data_source_id ? <ReportEditor dataSource={7} /> : null}
             </div>
           </div>
           {reportResult && !reportResult.getError() && (

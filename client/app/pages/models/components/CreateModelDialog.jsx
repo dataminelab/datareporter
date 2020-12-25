@@ -4,14 +4,30 @@ import Alert from "antd/lib/alert";
 import DynamicForm from "@/components/dynamic-form/DynamicForm";
 import { wrap as wrapDialog, DialogPropType } from "@/components/DialogWrapper";
 import recordEvent from "@/services/recordEvent";
+import DataSources from "@/services/data-source";
 
 function CreateModelDialog({ dialog, dataSources, model }) {
   const [error, setError] = useState(null);
+  const [dataTable, setDataTable] = useState([]);
+  const [statusDataTable, setStatusDataTable] = useState(true);
   const formRef = useRef();
 
   useEffect(() => {
     recordEvent("view", "page", "model/new");
   }, []);
+
+  const getDataTables = async (id) => {
+    try {
+      setStatusDataTable(true)
+      const response = await DataSources.getTables(id);
+      setDataTable(response);
+      setStatusDataTable(false);
+    } catch (e) {
+      setStatusDataTable(false);
+    }
+
+
+  }
 
   const createModel = useCallback(() => {
     if (formRef.current) {
@@ -34,25 +50,68 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           value: item.id
         }
       })
+    const optionsTable = dataTable.map((item) => {
+        return {
+          name: item.name,
+          value: item.name
+        }
+      })
     if (model)  {
       return [
         { ...common, name: "name", title: "Name", type: "text", autoFocus: true, initialValue: model.name },
-        { ...common, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection, initialValue: model.data_source_id },
-/*        { ...common, name: "schemas", title: "Schemas", type: "text", required: false, initialValue: model.schemas },
-        { ...common, name: "ignore_prefixes", title: "Ignore Prefixes", type: "text", required: false, initialValue: model.ignore_prefixes },*/
+        { ...common,
+          name: "data_source_id",
+          title: "Connection",
+          type: "select",
+          props: {
+            ...common.props,
+            onSelect: (selected) => getDataTables(selected),
+            loading: statusDataTable
+          },
+          options: optionsConnection,
+          initialValue: model.data_source_id
+        },
+        { ...common,
+          name: "table",
+          title: "Table",
+          type: "select",
+          options: optionsTable,
+          props: {
+            ...common.props,
+            loading: statusDataTable
+          },
+          initialValue: model.table }
       ];
     } else {
       return [
         { ...common, name: "name", title: "Name", type: "text", autoFocus: true },
-        { ...common, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection },
-/*        { ...common, name: "schemas", title: "Schemas", type: "text", required: false },
-        { ...common, name: "ignore_prefixes", title: "Ignore Prefixes", type: "text", required: false },*/
+        { ...common,
+          name: "data_source_id",
+          title: "Connection",
+          type: "select",
+          props: {
+            ...common.props,
+            onSelect: (e) => getDataTables(e),
+            loading: statusDataTable
+          },
+          options: optionsConnection
+        },
+        { ...common,
+          name: "table",
+          title: "Table",
+          type: "select",
+          props: {
+            ...common.props,
+            loading: statusDataTable
+          },
+          options: optionsTable }
       ];
     }
 
 
-  }, [createModel]);
-
+  }, [createModel, dataTable, statusDataTable]);
+  console.log('333333')
+  console.log(dataTable)
   return (
     <Modal {...dialog.props} title={ !model ? 'Create a New Model' : 'Edit a Model'}
            okText={!model ? 'Create' : 'Save'} onOk={createModel}>

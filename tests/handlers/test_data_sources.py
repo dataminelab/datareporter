@@ -239,3 +239,32 @@ class TestDataSourcePauseDelete(BaseTestCase):
             "delete", "/api/data_sources/{}/pause".format(self.factory.data_source.id)
         )
         self.assertEqual(rv.status_code, 403)
+
+
+class TestDataSourceModelsResource(BaseTestCase):
+    def test_requires_access_to_data_source(self):
+        user = self.factory.create_user()
+        data_source = self.factory.create_data_source()
+
+        rv = self.make_request(
+            "get",
+            "/api/data_sources/{}/models".format(data_source.id),
+            user=user
+        )
+        self.assertEqual(rv.status_code, 403)
+
+    def test_returns_user_models(self):
+        user_1 = self.factory.create_user()
+        user_2 = self.factory.create_user()
+        model_1 = self.factory.create_model(user=user_1, data_source=self.factory.data_source)
+        model_2 = self.factory.create_model(user=user_1, data_source=self.factory.data_source)
+        model_3 = self.factory.create_model(user=user_2, data_source=self.factory.data_source)
+
+        rv = self.make_request(
+            "get",
+            "/api/data_sources/{}/models".format(self.factory.data_source.id),
+            user=user_1
+        )
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertListEqual(list(map(lambda r: r['id'], rv.json)), [model_1.id, model_2.id])

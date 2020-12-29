@@ -26,7 +26,7 @@ from redash.handlers.data_sources import (
     DataSourceSchemaResource,
     DataSourceTestResource,
     DataSourceTypeListResource,
-)
+    DataSourceModelsResource)
 from redash.handlers.databricks import (
     DatabricksDatabaseListResource,
     DatabricksSchemaResource,
@@ -346,5 +346,6 @@ api.add_org_resource(ModelsConfigResource, "/api/models/<int:model_id>/config", 
 api.add_org_resource(ModelsConfigGetResource, "/api/model_configs/<int:config_id>", endpoint="model_config")
 
 api.add_org_resource(DataSourceTablesResource, "/api/data_sources/<int:data_source_id>/tables")
+api.add_org_resource(DataSourceModelsResource, "/api/data_sources/<int:data_source_id>/models")
 
 api.add_org_resource(ReportsResource, "/api/reports/<int:model_id>", endpoint="report")

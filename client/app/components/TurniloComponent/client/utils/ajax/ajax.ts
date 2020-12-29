@@ -91,11 +91,11 @@ export class Ajax {
       });
   }
 
-  static queryUrlExecutorFactory({ name, cluster }: DataCube): Executor {
+  static queryUrlExecutorFactory({ name, cluster, modelId }: DataCube): Executor {
     const timeout = clientTimeout(cluster);
     return (ex: Expression, env: Environment = {}) => {
       const method = "POST";
-      const url = `api/reports/7?by=${getSplitsDescription(ex)}`;
+      const url = `api/reports/${modelId}?by=${getSplitsDescription(ex)}`;
       const timezone = env ? env.timezone : null;
       const data = { dataCube: name, expression: ex.toJS(), timezone };
       console.log(data);

@@ -78,6 +78,7 @@ export type Source = string | string[];
 
 export interface DataCubeValue {
   name: string;
+  modeIs: number;
   title?: string;
   description?: string;
   extendedDescription?: string;
@@ -313,6 +314,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     let value: DataCubeValue = {
       executor: null,
+      name: parameters.name,
       name: parameters.name,
       title: parameters.title,
       description: parameters.description,

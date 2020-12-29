@@ -8,22 +8,17 @@ import Icon from "antd/lib/icon";
 import useMedia from "use-media";
 import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
-import { ReportTagsControl } from "@/components/tags-control/TagsControl";
 import reactCSS from 'reactcss'
 import { SketchPicker } from 'react-color'
-import CusromPicker from '../CusromPicker'
-import getTags from "@/services/getTags";
 import { clientConfig } from "@/services/auth";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
-import useUpdateReportTags from "../hooks/useUpdateReportTags";
 import useRenameReport from "../hooks/useRenameReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
-
 
 import "./ReportPageHeader.less";
 import ReportService from "@/services/reportFake";
@@ -32,13 +27,10 @@ import notification from "@/services/notification";
 import location from "@/services/location";
 import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
+import useReportModel from "@/pages/reports/hooks/useReportModel";
 import recordEvent from "@/services/recordEvent";
-import useReport from "@/pages/reports/hooks/useReport";
 import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 
-function getReportTags() {
-  return getTags("api/query/tags").then(tags => map(tags, t => t.name));
-}
 
 function createMenu(menu) {
   const handlers = {};
@@ -89,40 +81,40 @@ function chooseDataSourceId(dataSourceIds, availableDataSources) {
   return find(dataSourceIds, id => includes(availableDataSources, id)) || null;
 }
 
-export default function ReportPageHeader(/*{
+function chooseModelId(modelIds, availableModels) {
+  modelIds = map(modelIds, v => parseInt(v, 10));
+  availableModels = map(availableModels, ds => ds.id);
+  return find(modelIds, id => includes(availableModels, id)) || null;
+}
+
+export default function ReportPageHeader({
   report,
-  dataSource,
   sourceMode,
   selectedVisualization,
   headerExtra,
-  tagsExtra,
   onChange,
-}*/props) {
+}) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const queryFlags = useReportFlags(props.report, props.dataSource);
-  const updateName = useRenameReport(props.report, props.onChange);
-  const updateTags = useUpdateReportTags(props.report, props.onChange);
-  const archiveReport = useArchiveReport(props.report, props.onChange);
-  const publishReport = usePublishReport(props.report, props.onChange);
-  const unpublishReport = useUnpublishReport(props.report, props.onChange);
-  const [isDuplicating, duplicateReport] = useDuplicateReport(props.report);
-  const openApiKeyDialog = useApiKeyDialog(props.report, props.onChange);
-  const openPermissionsEditorDialog = usePermissionsEditorDialog(props.report);
-  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(props.report);
-  const reportFlags = useReportFlags(props.report, dataSource)
-
-  const { report, setReport, saveReport } = useReport(props.report);
-
-  const updateReport = useUpdateReport(report, setReport);
+  const queryFlags = useReportFlags(report, dataSource);
+  const updateName = useRenameReport(report, onChange);
+  const archiveReport = useArchiveReport(report, onChange);
+  const publishReport = usePublishReport(report, onChange);
+  const unpublishReport = useUnpublishReport(report, onChange);
+  const [isDuplicating, duplicateReport] = useDuplicateReport(report);
+  const openApiKeyDialog = useApiKeyDialog(report, onChange);
+  const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
+  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
+  const { getModels ,modelLoaded, models, model } = useReportModel(report);
+  const reportFlags = useReportFlags(report, dataSource)
+  console.log(models);
+  const updateReport = useUpdateReport(report, onChange);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
-  const [colorBody, setColorBody] = useState(
-    {
-                r: '241',
-                g: '112',
-                b: '19',
-                a: '1',
-               }
-  );
+  const [colorBody, setColorBody] = useState({
+    r: '241',
+    g: '112',
+    b: '19',
+    a: '1',
+  });
   const [colorText, setColorText] = useState({
     r: '241',
     g: '112',
@@ -206,11 +198,32 @@ export default function ReportPageHeader(/*{
           latest_report_data_id: null,
           latest_report_data: null,
         };
-        setReport(extend(report.clone(), updates));
         updateReport(updates, { successMessage: null }); // show message only on error
       }
     },
-    [report, setReport, updateReport]
+    [report, updateReport]
+  );
+
+  const handleModelChange = useCallback(
+    modelId => {
+      if (modelId) {
+        try {
+          localStorage.setItem("lastSelectedModelId", modelId);
+        } catch (e) {
+          // `localStorage.setItem` may throw exception if there are no enough space - in this case it could be ignored
+        }
+      }
+      if (report.modelId !== modelId) {
+        recordEvent("update_model", "report", report.id, { modelId });
+        const updates = {
+          modelId: modelId,
+          latest_report_model_id: null,
+          latest_report_data: null,
+        };
+        updateReport(updates, { successMessage: null }); // show message only on error
+      }
+    },
+    [report, updateReport]
   );
 
   useEffect(() => {
@@ -223,8 +236,31 @@ export default function ReportPageHeader(/*{
           dataSources
         )
       );
+      if (firstDataSourceId) {
+        console.log('getModels')
+        getModels(firstDataSourceId);
+      }
     }
-  }, [report.data_source_id, reportFlags.isNew, dataSourcesLoaded, dataSources, handleDataSourceChange]);
+    // choose model id for new reports
+    if (modelLoaded && reportFlags.isNew) {
+      const firstModelId = models.length > 0 ? models[0].id : null;
+      handleModelChange(
+        chooseModelId(
+          [report.modelId, localStorage.getItem("lastSelectedModelId"), firstModelId],
+          models
+        )
+      );
+    }
+  }, [
+    report.data_source_id,
+    reportFlags.isNew,
+    dataSourcesLoaded,
+    dataSources,
+    handleDataSourceChange,
+    modelLoaded,
+    models,
+    handleModelChange
+  ]);
 
   const moreActionsMenu = useMemo(
     () =>
@@ -290,7 +326,6 @@ export default function ReportPageHeader(/*{
     ]
   );
 
-  console.log(displayColorPicker)
 
   return (
     <div className="report-page-header">
@@ -303,20 +338,9 @@ export default function ReportPageHeader(/*{
             </h3>
           </div>
         </div>
-        <div className="report-tags">
-          <ReportTagsControl
-            tags={report.tags}
-            isDraft={queryFlags.isDraft}
-            isArchived={queryFlags.isArchived}
-            canEdit={queryFlags.canEdit}
-            getAvailableTags={getReportTags}
-            onEdit={updateTags}
-            tagsExtra={props.tagsExtra}
-          />
-        </div>
       </div>
       <div className="header-actions">
-        {props.headerExtra}
+        {headerExtra}
         <div style={ styles.swatch } onClick={ () => handleClick(1) }>
           Text chart color: <div style={ styles.color } />
         </div>
@@ -335,7 +359,7 @@ export default function ReportPageHeader(/*{
             <Select
               data-test="SelectDataSource"
               placeholder="Choose data source..."
-              value={dataSource ? dataSource.id : undefined}
+              value={report.data_source_id}
               disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
               loading={!dataSourcesLoaded}
               optionFilterProp="data-name"
@@ -354,19 +378,19 @@ export default function ReportPageHeader(/*{
             </Select>
           </div>
         )}
-        {dataSourcesLoaded && (
+        {(dataSourcesLoaded && modelLoaded) && (
           <div className="data-source-box m-r-5 ">
-            <span className="icon icon-datasource m-r-5"></span>
+            <span className="icon icon-text m-r-5"></span>
             <Select
-              data-test="SelectDataSource"
-              placeholder="Choose data source..."
-              value={dataSource ? dataSource.id : undefined}
-              disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
-              loading={!dataSourcesLoaded}
+              data-test="SelectModel"
+              placeholder="Choose model..."
+              value={report.model_id}
+              disabled={!reportFlags.canEdit || !modelLoaded || models.length === 0}
+              loading={!modelLoaded}
               optionFilterProp="data-name"
               showSearch
-              onChange={handleDataSourceChange}>
-              {map(dataSources, ds => (
+              onChange={handleModelChange}>
+              {map(models, ds => (
                 <Select.Option
                   key={`ds-${ds.id}`}
                   value={ds.id}
@@ -390,16 +414,16 @@ export default function ReportPageHeader(/*{
 
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
-            {!props.sourceMode && (
-              <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
+            {!sourceMode && (
+              <Button className="m-r-5" href={report.getUrl(true, selectedVisualization)}>
                 <i className="fa fa-pencil-square-o" aria-hidden="true" />
                 <span className="m-l-5">Edit Source</span>
               </Button>
             )}
-            {props.sourceMode && (
+            {sourceMode && (
               <Button
                 className="m-r-5"
-                href={report.getUrl(false, props.selectedVisualization)}
+                href={report.getUrl(false, selectedVisualization)}
                 data-test="ReportPageShowDataOnly">
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Data Only</span>

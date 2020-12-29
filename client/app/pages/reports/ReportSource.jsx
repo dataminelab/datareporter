@@ -41,11 +41,8 @@ function chooseDataSourceId(dataSourceIds, availableDataSources) {
 function ReportSource(props) {
   const { report, setReport, isDirty, saveReport } = useReport(props.report);
   const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
-  const [schema, setSchema] = useState([]);
   const reportFlags = useReportFlags(report, dataSource);
-  const [parameters, areParametersDirty, updateParametersDirtyFlag] = useReportParameters(report);
   const [selectedVisualization, setSelectedVisualization] = useVisualizationTabHandler(report.visualizations);
-  const { SchemaBrowser } = getEditorComponents(dataSource && dataSource.type);
   const isMobile = !useMedia({ minWidth: 768 });
   const [colors, setColors] = useState({text: '', body: ''})
 
@@ -56,14 +53,7 @@ function ReportSource(props) {
     isExecuting: isReportExecuting,
   } = useReportExecute(report);
 
-  const reportResultData = useReportResultData(reportResult);
-
   const editorRef = useRef(null);
-  const [autocompleteAvailable, autocompleteEnabled, toggleAutocomplete] = useAutocompleteFlags(schema);
-
-  const [handleReportEditorChange] = useDebouncedCallback(reportText => {
-    setReport(extend(report.clone(), { report: reportText }));
-  }, 100);
 
   useEffect(() => {
     // TODO: ignore new pages?
@@ -75,7 +65,6 @@ function ReportSource(props) {
   }, [report.name]);
 
   const updateReport = useUpdateReport(report, setReport);
-  const updateReportDescription = useUpdateReportDescription(report, setReport);
 
   const handleDataSourceChange = useCallback(
     dataSourceId => {
@@ -113,16 +102,6 @@ function ReportSource(props) {
     }
   }, [report.data_source_id, reportFlags.isNew, dataSourcesLoaded, dataSources, handleDataSourceChange]);
 
-  const editSchedule = useEditScheduleDialog(report, setReport);
-
-
-  const handleSchemaItemSelect = useCallback(schemaItem => {
-    if (editorRef.current) {
-      editorRef.current.paste(schemaItem);
-    }
-  }, []);
-
-
   const editVisualization = useEditVisualizationDialog(report, reportResult, newReport => setReport(newReport));
   console.log(report)
   return (
@@ -143,7 +122,7 @@ function ReportSource(props) {
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
               style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
-              {report.data_source_id ? <ReportEditor dataSource={7} /> : null}
+              {report.modelId ? <ReportEditor modelId={report.modelId} /> : 'Please select model'}
             </div>
           </div>
           {reportResult && !reportResult.getError() && (

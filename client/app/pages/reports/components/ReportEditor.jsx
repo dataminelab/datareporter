@@ -9,12 +9,12 @@ import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 import {axios} from "@/services/axios";
 
-function TurniloPage({ dataSource }) {
+function TurniloPage({ modelId }) {
   const [config, setConfig] = useState({});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect( () => {
     async function getConfigTurnilo() {
-      const result =  await axios.get(`/api/models/${dataSource}/config`);
+      const result =  await axios.get(`/api/models/${modelId}/config`);
       setConfig(result);
     }
     getConfigTurnilo()
@@ -29,7 +29,7 @@ function TurniloPage({ dataSource }) {
     Ajax.version = version;
 
     const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory
+      executorFactory: (arg) => Ajax.queryUrlExecutorFactory(Object.assign(arg, {modelId}) )
     });
 
     return <turnilo-widget>

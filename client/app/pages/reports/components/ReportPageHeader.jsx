@@ -199,6 +199,7 @@ export default function ReportPageHeader({
           latest_report_data: null,
         };
         updateReport(updates, { successMessage: null }); // show message only on error
+        getModels(dataSourceId);
       }
     },
     [report, updateReport]
@@ -236,10 +237,6 @@ export default function ReportPageHeader({
           dataSources
         )
       );
-      if (firstDataSourceId) {
-        console.log('getModels')
-        getModels(firstDataSourceId);
-      }
     }
     // choose model id for new reports
     if (modelLoaded && reportFlags.isNew) {
@@ -253,6 +250,7 @@ export default function ReportPageHeader({
     }
   }, [
     report.data_source_id,
+    report.modelId,
     reportFlags.isNew,
     dataSourcesLoaded,
     dataSources,
@@ -384,7 +382,7 @@ export default function ReportPageHeader({
             <Select
               data-test="SelectModel"
               placeholder="Choose model..."
-              value={report.model_id}
+              value={report.modelId}
               disabled={!reportFlags.canEdit || !modelLoaded || models.length === 0}
               loading={!modelLoaded}
               optionFilterProp="data-name"
@@ -392,11 +390,10 @@ export default function ReportPageHeader({
               onChange={handleModelChange}>
               {map(models, ds => (
                 <Select.Option
-                  key={`ds-${ds.id}`}
+                  key={`ms-${ds.id}`}
                   value={ds.id}
                   data-name={ds.name}
-                  data-test={`SelectDataSource${ds.id}`}>
-                  <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
+                  data-test={`SelectModel${ds.id}`}>
                   <span>{ds.name}</span>
                 </Select.Option>
               ))}

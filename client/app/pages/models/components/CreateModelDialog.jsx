@@ -9,7 +9,7 @@ import DataSources from "@/services/data-source";
 function CreateModelDialog({ dialog, dataSources, model }) {
   const [error, setError] = useState(null);
   const [dataTable, setDataTable] = useState([]);
-  const [statusDataTable, setStatusDataTable] = useState(true);
+  const [statusDataTable, setStatusDataTable] = useState(false);
   const formRef = useRef();
 
   useEffect(() => {
@@ -25,8 +25,6 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     } catch (e) {
       setStatusDataTable(false);
     }
-
-
   }
 
   const createModel = useCallback(() => {
@@ -40,7 +38,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
         }
       });
     }
-  }, [dialog]);
+  }, [dialog, statusDataTable]);
 
   const formFields = useMemo(() => {
     const common = { required: true, props: { onPressEnter: createModel } };
@@ -65,8 +63,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           type: "select",
           props: {
             ...common.props,
-            onSelect: (selected) => getDataTables(selected),
-            loading: statusDataTable
+            onSelect: (selected) => getDataTables(selected)
           },
           options: optionsConnection,
           initialValue: model.data_source_id
@@ -91,8 +88,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           type: "select",
           props: {
             ...common.props,
-            onSelect: (e) => getDataTables(e),
-            loading: statusDataTable
+            onSelect: (e) => getDataTables(e)
           },
           options: optionsConnection
         },
@@ -107,11 +103,9 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           options: optionsTable }
       ];
     }
-
-
   }, [createModel, dataTable, statusDataTable]);
-  console.log('333333')
-  console.log(dataTable)
+  console.log('CreateModelDialog', statusDataTable);
+  console.log('CreateModelDialog', formFields);
   return (
     <Modal {...dialog.props} title={ !model ? 'Create a New Model' : 'Edit a Model'}
            okText={!model ? 'Create' : 'Save'} onOk={createModel}>

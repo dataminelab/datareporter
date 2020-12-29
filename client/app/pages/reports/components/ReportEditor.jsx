@@ -18,7 +18,7 @@ function TurniloPage({ modelId }) {
       setConfig(result);
     }
     getConfigTurnilo()
-  }, []);
+  }, [modelId]);
   if (config.appSettings) {
     if (config.appSettings.customization.sentryDSN) {
       errorReporterInit(config.appSettings.customization.sentryDSN, config.version);

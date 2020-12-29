@@ -122,6 +122,7 @@ function ReportSource(props) {
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
               style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
+              {report.modelId}
               {report.modelId ? <ReportEditor modelId={report.modelId} /> : 'Please select model'}
             </div>
           </div>

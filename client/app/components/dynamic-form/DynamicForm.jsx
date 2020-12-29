@@ -172,7 +172,6 @@ class DynamicForm extends React.Component {
       <Select
         {...props}
         optionFilterProp="children"
-        loading={loading || false}
         mode={mode}
         getPopupContainer={trigger => trigger.parentNode}>
         {options &&

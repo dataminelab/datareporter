@@ -35,6 +35,7 @@ function getSplitsDescription(ex: Expression): string {
 }
 
 const CLIENT_TIMEOUT_DELTA = 5000;
+const POLL_INTERVAL = 3000;
 
 function clientTimeout(cluster: Cluster): number {
   const clusterTimeout = cluster ? cluster.getTimeout() : 0;
@@ -89,6 +90,38 @@ export class Ajax {
           throw new Error(error.message);
         }
       });
+  }
+
+  static execute(reportId) {
+    const poll = async ({ fn, validate, interval, maxAttempts }) => {
+      console.log('Start poll...');
+      let attempts = 0;
+
+      const executePoll = async (resolve, reject) => {
+        console.log('- poll');
+        const result = await fn();
+        attempts++;
+
+        if (validate(result)) {
+          return resolve(result);
+        } else if (maxAttempts && attempts === maxAttempts) {
+          return reject(new Error('Exceeded max attempts'));
+        } else {
+          setTimeout(executePoll, interval, resolve, reject);
+        }
+      };
+
+      return new Promise(executePoll);
+    };
+
+    const validateResults = result => !!result;
+    return poll({
+      fn: axios.get(`/api/query_results/${reportId}`),
+      validate: validateResults,
+      interval: POLL_INTERVAL,
+    })
+        .then(result => console.log(result))
+        .catch(err => console.error(err));
   }
 
   static queryUrlExecutorFactory({ name, cluster, modelId }: DataCube): Executor {

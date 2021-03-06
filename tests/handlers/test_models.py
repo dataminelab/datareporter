@@ -1,10 +1,7 @@
-from redash.models import db
-from redash.models.models import Model
-from redash.utils.configuration import ConfigurationContainer
-from tests import BaseTestCase
+from unittest import mock
 
-database_configuration = lambda: ConfigurationContainer.from_json(
-    '{"dbname": "postgres", "user": "postgres", "host": "localhost", "port": 5432}')
+from tests import BaseTestCase
+from redash.models import db
 
 
 class TestModelsCreateResource(BaseTestCase):
@@ -58,8 +55,9 @@ class TestModelsCreateResource(BaseTestCase):
 
         self.assertEqual(404, response.status_code)
 
-    def test_with_existing_data_source(self):
-        data_source = self.factory.create_data_source(options=database_configuration)
+    @mock.patch("redash.services.model_config_generator.ModelConfigGenerator.yaml", return_value="")
+    def test_with_existing_data_source(self, content):
+        data_source = self.factory.create_data_source()
 
         group = self.factory.create_group(permissions=["create_model"])
         db.session.commit()
@@ -77,11 +75,6 @@ class TestModelsCreateResource(BaseTestCase):
 
 
 class TestModelsListResource(BaseTestCase):
-
-    def test_without_user(self):
-        response = self.make_request("get", "/api/models")
-
-        self.assertEqual(403, response.status_code)
 
     def test_user_without_view_model_permission(self):
         response = self.make_request("get", "/api/models", user=self.factory.create_user(group_ids=[3]))
@@ -102,17 +95,6 @@ class TestModelsListResource(BaseTestCase):
 
 
 class TestModelsGetResource(BaseTestCase):
-    def test_without_user(self):
-        response = self.make_request("get", "/api/models/{}".format(1))
-
-        self.assertEqual(403, response.status_code)
-
-    def test_user_without_view_model_permission(self):
-        user = self.factory.create_user()
-
-        response = self.make_request("get", "/api/models/{}".format(1), user=user)
-
-        self.assertEqual(403, response.status_code)
 
     def test_requires_user_with_view_model(self):
         group = self.factory.create_group(permissions=["view_model"])
@@ -139,17 +121,6 @@ class TestModelsGetResource(BaseTestCase):
 
 
 class TestModelsEditResource(BaseTestCase):
-    def test_without_user(self):
-        response = self.make_request("post", "/api/models/{}".format(1))
-
-        self.assertEqual(403, response.status_code)
-
-    def test_user_without_view_model_permission(self):
-        user = self.factory.create_user()
-
-        response = self.make_request("post", "/api/models/{}".format(1), user=user)
-
-        self.assertEqual(403, response.status_code)
 
     def test_requires_owner_or_admin(self):
         group = self.factory.create_group(permissions=["edit_model"])
@@ -171,7 +142,8 @@ class TestModelsEditResource(BaseTestCase):
 
         self.assertEqual(403, response.status_code)
 
-    def test_requires_user_with_edit_model(self):
+    @mock.patch("redash.services.model_config_generator.ModelConfigGenerator.yaml", return_value="")
+    def test_requires_user_with_edit_model(self, content):
         group = self.factory.create_group(permissions=["edit_model"])
         db.session.commit()
         user = self.factory.create_admin(group_ids=[group.id])
@@ -192,27 +164,8 @@ class TestModelsEditResource(BaseTestCase):
         self.assertEqual(model.id, response.json["id"])
         self.assertEqual("New Test Model Name", response.json["name"])
 
-    def test_requires_existing_data_source(self):
-        group = self.factory.create_group(permissions=["edit_model"])
-        db.session.commit()
-        user = self.factory.create_admin(group_ids=[group.id])
-        db.session.commit()
-        model = self.factory.create_model(user=user)
-        db.session.flush()
-
-        response = self.make_request(
-            "post",
-            "/api/models/{}".format(model.id),
-            user=user,
-            data={
-                "name": "New Test Model Name",
-                "data_source_id": 1212
-            }
-        )
-
-        self.assertEqual(404, response.status_code)
-
-    def test_with_existing_data_source(self):
+    @mock.patch("redash.services.model_config_generator.ModelConfigGenerator.yaml", return_value="")
+    def test_with_existing_data_source(self, content):
         group = self.factory.create_group(permissions=["edit_model"])
         db.session.commit()
         user = self.factory.create_admin(group_ids=[group.id])
@@ -232,31 +185,6 @@ class TestModelsEditResource(BaseTestCase):
         )
 
         self.assertEqual(200, response.status_code)
-
-    def test_update_table(self):
-        group = self.factory.create_group(permissions=["edit_model"])
-        db.session.commit()
-        user = self.factory.create_admin(group_ids=[group.id])
-        db.session.commit()
-        model = self.factory.create_model(user=user)
-        data_source = self.factory.create_data_source(options=database_configuration)
-
-        db.session.flush()
-
-        response = self.make_request(
-            "post",
-            "/api/models/{}".format(model.id),
-            user=user,
-            data={
-                "name": "New Test Model Name",
-                "data_source_id": data_source.id,
-                "table": "models"
-            }
-        )
-
-        previous_table_column = Model.get_by_id(model.id).table_columns.filter_by(name="Some cool column").first()
-        self.assertEqual(200, response.status_code)
-        self.assertIsNone(previous_table_column)
 
 
 class TestModelsDeleteResource(BaseTestCase):

@@ -56,7 +56,7 @@ node {
 
         stage("Run tests") {
             sh("docker-compose build")
-            sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"create database tests\"")
+            sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS dbname; create database tests;\"")
             sh("docker-compose run server tests")
         }
 

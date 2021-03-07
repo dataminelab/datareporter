@@ -36,7 +36,6 @@ node {
 
     def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=8 HEAD").trim()
     def latestTagRelease = sh(returnStdout: true, script: "git describe --tags \$(git rev-list --tags --max-count=1) || echo 0.0.0").trim()
-    def postgresName = "postgres-testing-${shortCommit}"
 
     def imageLabel = "\
     --label branch=${env.BRANCH_NAME} \

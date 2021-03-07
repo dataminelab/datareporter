@@ -56,13 +56,9 @@ node {
         }
 
         stage("Run tests") {
-            sh("make tests")
-            //docker.image('postgres:9.5-alpine').run("--name ${postgresName} -e POSTGRES_HOST_AUTH_METHOD=trust --hostname postgres")
-            // REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
-
-            // Stop and remove postgres container
-            //sh("docker stop ${postgresName} || true")
-            //sh("docker rm ${postgresName} || true")
+            sh("docker-compose build")
+            sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"create database tests\"")
+            sh("docker-compose run server tests")
         }
 
         stage("Push DR docker image") {

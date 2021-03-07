@@ -36,6 +36,7 @@ node {
 
     def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=8 HEAD").trim()
     def latestTagRelease = sh(returnStdout: true, script: "git describe --tags \$(git rev-list --tags --max-count=1) || echo 0.0.0").trim()
+    def postgresName = "postgres-testing-${shortCommit}"
 
     def imageLabel = "\
     --label branch=${env.BRANCH_NAME} \
@@ -52,6 +53,16 @@ node {
 
             dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
             imageNames.add("${registryRegion}/${appName}=" + imageNameDr)
+        }
+
+        stage("Run tests") {
+            sh("make tests")
+            //docker.image('postgres:9.5-alpine').run("--name ${postgresName} -e POSTGRES_HOST_AUTH_METHOD=trust --hostname postgres")
+            // REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
+
+            // Stop and remove postgres container
+            //sh("docker stop ${postgresName} || true")
+            //sh("docker rm ${postgresName} || true")
         }
 
         stage("Push DR docker image") {

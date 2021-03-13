@@ -56,8 +56,8 @@ services:
     # improvement on my personal machine). We should consider moving this into a dedicated Docker Compose configuration for
     # tests.
     ports:
-      - "15432:5432"
-      - "5432:5432"
+      - "15422:5422"
+      - "5422:5422"
     restart: unless-stopped
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"

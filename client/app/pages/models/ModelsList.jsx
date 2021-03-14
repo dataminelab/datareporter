@@ -130,7 +130,8 @@ class ModelsList extends React.Component {
         return Promise.reject(new Error(message));
       });
 
-  showCreateModelDialog = () => {
+  showCreateModelDialog = (e) => {
+    e.preventDefault();
     const { dataSources } = this.state;
     if (policy.canCreateDataSource()) {
       const goToModelsList = () => {
@@ -187,12 +188,13 @@ class ModelsList extends React.Component {
 
   render() {
     const { controller } = this.props;
+    const emptyMessage = <span>There are no models yet. Click <a className="underline-link" onClick={this.showCreateModelDialog}>here</a> to add one.</span>
     return (
       <React.Fragment>
         {this.renderPageHeader()}
         <div>
           {!controller.isLoaded && <LoadingState className="" />}
-          {controller.isLoaded && controller.isEmpty && <EmptyState className="" />}
+          {controller.isLoaded && controller.isEmpty && <EmptyState message={emptyMessage} className="" />}
           {controller.isLoaded && !controller.isEmpty && (
             <div className="table-responsive" data-test="ModelList">
               <ItemsTable

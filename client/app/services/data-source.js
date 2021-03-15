@@ -13,6 +13,7 @@ function mapSchemaColumnsToObject(columns) {
 const DataSource = {
   query: () => axios.get("api/data_sources"),
   get: ({ id }) => axios.get(`api/data_sources/${id}`),
+  getTables: (id) => axios.get(`api/data_sources/${id}/tables?refresh=True`),
   types: () => axios.get("api/data_sources/types"),
   create: data => axios.post(`api/data_sources`, data),
   save: data => axios.post(`api/data_sources/${data.id}`, data),

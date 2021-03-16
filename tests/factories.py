@@ -181,7 +181,7 @@ model_factory = ModelFactory(
     redash.models.models.Model,
     user=user_factory.create,
     name=Sequence("Model {}"),
-    data_source=data_source_factory.create,
+    data_source=data_source_factory.create
 )
 
 

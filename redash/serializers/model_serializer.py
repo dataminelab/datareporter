@@ -9,6 +9,7 @@ def _serialize_model(model: Model):
         "user_id": model.user_id,
         "data_source_id": model.data_source_id,
         "data_source_name": model.data_source.name,
+        "table": model.table,
         "model_config_id": model.config.id if model.config else None,
         "created_at": model.created_at,
         "updated_at": model.updated_at,

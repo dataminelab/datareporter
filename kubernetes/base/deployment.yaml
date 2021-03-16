@@ -64,12 +64,12 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter-worker
+  name: datareporter-scheduled-worker
 spec:
   selector:
     matchLabels:
       app: datareporter
-      tier: worker
+      tier: scheduled-worker
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -78,15 +78,12 @@ spec:
     metadata:
       labels:
         app: datareporter
-        tier: worker
+        tier: scheduled-worker
     spec:
       containers:
-      - name: datareporter-worker
+      - name: datareporter-scheduled-worker
         image: eu.gcr.io/datareporter/datareporter:_
         imagePullPolicy: Always
-        resources:
-          requests:
-            memory: 1Gi
         livenessProbe:
           httpGet:
             path: /ping
@@ -121,7 +118,127 @@ spec:
           - name: WORKERS_COUNT
             value: "1"
           - name: QUEUES
-            value:  "queries,scheduled_queries,celery"
+            value:  "scheduled_queries,schemas"
+        args: ["worker"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-ad-hoc-worker
+spec:
+  selector:
+    matchLabels:
+      app: datareporter
+      tier: ad-hoc-worker
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 4
+  template:
+    metadata:
+      labels:
+        app: datareporter
+        tier: ad-hoc-worker
+    spec:
+      containers:
+      - name: datareporter-ad-hoc-worker
+        image: eu.gcr.io/datareporter/datareporter:_
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: dr-port
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
+        env:
+          - name: REDASH_REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                name: redis
+                key: connection-string
+          - name: REDASH_DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: connection-string
+          - name: PYTHONUNBUFFERED
+            value: "0"
+          - name: REDASH_LOG_LEVEL
+            value: "INFO"
+          - name: REDASH_COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: cookie-secret
+                key: cookie-secret
+          - name: REDASH_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: redash-secret-key
+                key: secret-key
+          - name: WORKERS_COUNT
+            value: "2"
+          - name: QUEUES
+            value:  "queries"
+        args: ["worker"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-scheduler
+spec:
+  selector:
+    matchLabels:
+      app: datareporter
+      tier: scheduler
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 4
+  template:
+    metadata:
+      labels:
+        app: datareporter
+        tier: scheduler
+    spec:
+      containers:
+      - name: datareporter-scheduler
+        image: eu.gcr.io/datareporter/datareporter:_
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: dr-port
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
+        env:
+          - name: REDASH_REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                name: redis
+                key: connection-string
+          - name: REDASH_DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: connection-string
+          - name: PYTHONUNBUFFERED
+            value: "0"
+          - name: REDASH_LOG_LEVEL
+            value: "INFO"
+          - name: REDASH_COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: cookie-secret
+                key: cookie-secret
+          - name: REDASH_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: redash-secret-key
+                key: secret-key
+          - name: WORKERS_COUNT
+            value: "1"
+          - name: QUEUES
+            value:  "celery"
         args: ["scheduler"]
 ---
   apiVersion: apps/v1

@@ -11,6 +11,7 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))
     user = db.relationship(User)
     version = Column(db.Integer)
+    table = Column(db.String(length=255), nullable=True)
     config = db.relationship("ModelConfig", back_populates="model", uselist=False)
 
     __tablename__ = "models"
@@ -24,6 +25,10 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
         return cls.query.filter(cls.id == _id).one()
 
     @classmethod
+    def get_by_data_source(cls, data_source_id):
+        return cls.query.filter(cls.data_source_id == data_source_id).all()
+
+    @classmethod
     def get_by_user(cls, user):
         return cls.query.filter(cls.user_id == user.id)
 
@@ -34,12 +39,12 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
 
 @gfk_type
 class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
-    CONTENT_LENGTH = 6_000
+    MAX_CONTENT_LENGTH = 20_000
 
     id = primary_key("ModelConfig")
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))
     user = db.relationship(User)
-    content = Column(db.String(length=CONTENT_LENGTH))
+    content = Column(db.String(length=MAX_CONTENT_LENGTH))
     model = db.relationship("Model", back_populates="config")
     model_id = Column(db.Integer, db.ForeignKey("models.id"))
 

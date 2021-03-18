@@ -14,16 +14,23 @@ class ModelsListResource(BaseResource):
     @require_permission("create_model")
     def post(self):
         req = request.get_json(True)
-        require_fields(req, ('name', 'data_source_id'))
+        require_fields(req, ("name", "data_source_id", "table"))
 
-        name, data_source_id = req['name'], req['data_source_id']
+        name, data_source_id, table = req["name"], req["data_source_id"], req["table"]
 
         data_source = get_object_or_404(
             models.DataSource.get_by_id_and_org, data_source_id, self.current_org
         )
 
-        model = Model(name=name, data_source_id=data_source.id, user_id=self.current_user.id, user=self.current_user)
-        content = ModelConfigGenerator.generate(data_source)
+        model = Model(
+            name=name,
+            data_source_id=data_source.id,
+            user_id=self.current_user.id,
+            user=self.current_user,
+            table=table
+        )
+
+        content = ModelConfigGenerator.yaml(model=model, refresh=True)
         model_config = ModelConfig(user=self.current_user, model=model, content=content)
 
         models.db.session.add(model)
@@ -82,14 +89,16 @@ class ModelsResource(BaseResource):
         require_object_modify_permission(model, self.current_user)
 
         updates = project(
-            model_properties, ("name", "data_source_id",),
+            model_properties, ("name", "data_source_id", "table"),
         )
-
-        if "data_source_id" in updates:
-            get_object_or_404(models.DataSource.get_by_id_and_org, updates["data_source_id"], self.current_org)
 
         self.update_model(model, updates)
         models.db.session.add(model)
+        models.db.session.commit()
+
+        content = ModelConfigGenerator.yaml(model=model, refresh=True)
+
+        self.update_model(model.config, {"content": content})
         models.db.session.commit()
 
         self.record_event({

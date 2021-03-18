@@ -18,6 +18,7 @@ from redash.handlers.dashboards import (
     DashboardTagsResource,
     PublicDashboardResource,
 )
+from redash.handlers.data_source_tables import DataSourceTablesResource
 from redash.handlers.data_sources import (
     DataSourceListResource,
     DataSourcePauseResource,
@@ -25,7 +26,7 @@ from redash.handlers.data_sources import (
     DataSourceSchemaResource,
     DataSourceTestResource,
     DataSourceTypeListResource,
-)
+    DataSourceModelsResource)
 from redash.handlers.databricks import (
     DatabricksDatabaseListResource,
     DatabricksSchemaResource,
@@ -82,6 +83,7 @@ from redash.handlers.query_snippets import (
     QuerySnippetListResource,
     QuerySnippetResource,
 )
+from redash.handlers.reports import ReportsResource
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
     UserDisableResource,
@@ -342,3 +344,8 @@ api.add_org_resource(ModelsListResource, "/api/models", endpoint="models")
 api.add_org_resource(ModelsResource, "/api/models/<int:model_id>", endpoint="model")
 api.add_org_resource(ModelsConfigResource, "/api/models/<int:model_id>/config", endpoint="model_configs")
 api.add_org_resource(ModelsConfigGetResource, "/api/model_configs/<int:config_id>", endpoint="model_config")
+
+api.add_org_resource(DataSourceTablesResource, "/api/data_sources/<int:data_source_id>/tables")
+api.add_org_resource(DataSourceModelsResource, "/api/data_sources/<int:data_source_id>/models")
+
+api.add_org_resource(ReportsResource, "/api/reports/<int:model_id>", endpoint="report")

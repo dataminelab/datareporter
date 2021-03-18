@@ -14,5 +14,6 @@ class TestModelSerializer(BaseTestCase):
                              "data_source_id",
                              "data_source_name",
                              "model_config_id",
+                             "table",
                              "created_at",
                              "updated_at"}, set(serialized.keys()))

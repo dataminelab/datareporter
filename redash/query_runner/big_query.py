@@ -255,15 +255,16 @@ class BigQuery(BaseQueryRunner):
         columns = []
         if column["type"] == "RECORD":
             for field in column["fields"]:
-                columns.append("{}.{}".format(column["name"], field["name"]))
+                columns.append({"name": "{}.{}".format(column["name"], field["name"]), "type": field["type"]})
         else:
-            columns.append(column["name"])
+            columns.append({"name": column["name"], "type": column["type"]})
 
         return columns
 
     def get_schema(self, get_stats=False):
-        if not self.configuration.get("loadSchema", False):
-            return []
+        # TODO think about how to change config easily
+        # if not self.configuration.get("loadSchema", False):
+        #     return []
 
         service = self._get_bigquery_service()
         project_id = self._get_project_id()
@@ -273,19 +274,19 @@ class BigQuery(BaseQueryRunner):
             dataset_id = dataset["datasetReference"]["datasetId"]
             tables = (
                 service.tables()
-                .list(projectId=project_id, datasetId=dataset_id)
-                .execute()
+                    .list(projectId=project_id, datasetId=dataset_id)
+                    .execute()
             )
             while True:
                 for table in tables.get("tables", []):
                     table_data = (
                         service.tables()
-                        .get(
+                            .get(
                             projectId=project_id,
                             datasetId=dataset_id,
                             tableId=table["tableReference"]["tableId"],
                         )
-                        .execute()
+                            .execute()
                     )
                     table_schema = self._get_columns_schema(table_data)
                     schema.append(table_schema)
@@ -296,10 +297,10 @@ class BigQuery(BaseQueryRunner):
 
                 tables = (
                     service.tables()
-                    .list(
+                        .list(
                         projectId=project_id, datasetId=dataset_id, pageToken=next_token
                     )
-                    .execute()
+                        .execute()
                 )
 
         return schema

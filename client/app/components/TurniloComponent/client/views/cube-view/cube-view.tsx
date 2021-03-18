@@ -485,7 +485,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       ...layout,
       pinboard: {
         ...pinboard,
-        hidden: !pinboard.hidden
+        hidden: true
       }
     });
   };

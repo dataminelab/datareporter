@@ -109,13 +109,6 @@ function EmptyState({
             />
           )}
           <Step
-            show={isAvailable.query}
-            completed={isCompleted.query}
-            url="queries/new"
-            urlText="Create"
-            text="your first Query"
-          />
-          <Step
             show={isAvailable.alert}
             completed={isCompleted.alert}
             url="alerts/new"

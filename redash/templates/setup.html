@@ -1,6 +1,6 @@
 {% extends "layouts/signed_out.html" %}
 
-{% block title %}Redash Initial Setup{% endblock %}
+{% block title %}Data reporter Initial Setup{% endblock %}
 
 {% macro render_field_errors(field) -%}
   {% if field.errors %}
@@ -24,7 +24,7 @@
 {% block content %}
 <div class="fixed-width-page">
   <div class="bg-white tiled">
-    <h4 class="m-t-0">Welcome to Redash!</h4>
+    <h4 class="m-t-0">Welcome to Data reporter!</h4>
     <div>Before you can use your instance, you need to do a quick setup.</div>
 
     {% with messages = get_flashed_messages() %}

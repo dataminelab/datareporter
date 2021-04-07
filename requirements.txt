@@ -68,3 +68,4 @@ werkzeug==0.16.1
 # It is not included by default because of the GPL license conflict.
 # ldap3==2.2.4
 greenlet==0.4.16
+mailchimp-marketing==3.0.36

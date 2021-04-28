@@ -272,6 +272,9 @@ class Group(db.Model, BelongsToOrgMixin):
         "list_data_sources",
         "view_model",
         "edit_model",
+        "create_model",
+        "edit_model_config",
+        "view_model_config"
     ]
 
     BUILTIN_GROUP = "builtin"

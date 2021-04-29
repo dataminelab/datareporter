@@ -319,7 +319,7 @@ class GroupCommandTests(BaseTestCase):
         Name: default
         Type: builtin
         Organization: default
-        Permissions: [create_dashboard,create_query,edit_dashboard,edit_query,view_query,view_source,execute_query,list_users,schedule_query,list_dashboards,list_alerts,list_data_sources]
+        Permissions: [create_dashboard,create_query,edit_dashboard,edit_query,view_query,view_source,execute_query,list_users,schedule_query,list_dashboards,list_alerts,list_data_sources,view_model,edit_model]
         Users: Fred Foobar
         --------------------
         Id: 3

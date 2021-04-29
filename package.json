@@ -85,6 +85,7 @@
     "react": "^16.8.3",
     "react-ace": "^9.1.4",
     "react-color": "^2.19.3",
+    "react-cookie-consent": "^6.2.3",
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.8.3",
     "react-grid-layout": "^0.18.2",

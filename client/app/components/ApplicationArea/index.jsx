@@ -3,6 +3,7 @@ import routes from "@/services/routes";
 import Router from "./Router";
 import handleNavigationIntent from "./handleNavigationIntent";
 import ErrorMessage from "./ErrorMessage";
+import CookieConsent from "react-cookie-consent";
 
 export default function ApplicationArea() {
   const [currentRoute, setCurrentRoute] = useState(null);
@@ -33,5 +34,22 @@ export default function ApplicationArea() {
     return <ErrorMessage error={unhandledError} />;
   }
 
-  return <Router routes={routes.items} onRouteChange={setCurrentRoute} />;
+  return <>
+    <Router routes={routes.items} onRouteChange={setCurrentRoute} />
+    <CookieConsent
+      location="bottom"
+      buttonText="Accept"
+      cookieName="myAwesomeCookieName2"
+      style={{ background: "#ffffff", color: "#000000" }}
+      buttonStyle={{background: "#1e006f", color: "#ffffff"}}
+      containerClasses="consent-box"
+      buttonWrapperClasses="consent-buttons"
+      buttonClasses="ant-btn ant-btn-primary ant-btn-block"
+      expires={150}
+    >
+      This website uses cookies to offer you a better browsing experience.
+      <a href="#">Find out more about how we use cookies and how you can change your settings.</a>
+    </CookieConsent>
+  </>;
+
 }

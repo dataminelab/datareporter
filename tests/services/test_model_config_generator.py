@@ -1,7 +1,8 @@
 import unittest
 
 import mock
-
+import yaml
+import json
 from redash.services.model_config_generator import ModelConfigGenerator
 
 
@@ -49,88 +50,91 @@ class TestModelConfigGenerator(unittest.TestCase):
 
     title: Wikiticker
 
+    timeAttribute: time
+
+    clusterName: native
+
     defaultSortMeasure: deltaByTen
 
     defaultSelectedMeasures:
-
       - deltaByTen
 
     attributes:
 
       - name: deltaByTen
-        type: number
+        type: NUMBER
 
       - name: deleted
-        type: number
+        type: NUMBER
 
       - name: regionName
-        type: string
+        type: STRING
 
       - name: user
-        type: string
+        type: STRING
 
       - name: regionIsoCode
-        type: string
+        type: STRING
 
       - name: metroCode
-        type: number
+        type: NUMBER
 
       - name: namespace
-        type: string
+        type: STRING
 
       - name: isNew
-        type: boolean
+        type: BOOLEAN
 
       - name: deltaBucket100
-        type: number
+        type: NUMBER
 
       - name: page
-        type: string
+        type: STRING
 
       - name: time
-        type: time
+        type: TIME
 
       - name: comment
-        type: string
+        type: STRING
 
       - name: isMinor
-        type: boolean
+        type: BOOLEAN
 
       - name: countryIsoCode
-        type: string
+        type: STRING
 
       - name: delta
-        type: number
+        type: NUMBER
 
       - name: countryName
-        type: string
+        type: STRING
 
       - name: isUnpatrolled
-        type: boolean
+        type: BOOLEAN
 
       - name: isRobot
-        type: boolean
+        type: BOOLEAN
 
       - name: commentLength
-        type: number
+        type: NUMBER
 
       - name: isAnonymous
-        type: boolean
+        type: BOOLEAN
 
       - name: cityName
-        type: string
+        type: STRING
 
       - name: added
-        type: number
+        type: NUMBER
 
       - name: userChars
-        type: string
+        type: STRING
 
       - name: channel
-        type: string
+        type: STRING
 
       - name: sometimeLater
-        type: time
+        type: TIME
 
     dimensions:
 
@@ -244,7 +248,10 @@ class TestModelConfigGenerator(unittest.TestCase):
         formula: $main.sum($added)
 '''
 
-        self.assertEqual(expected_yaml, actual_yaml)
+        expected_obj = yaml.safe_load(expected_yaml)
+        actual_obj = yaml.safe_load(actual_yaml)
+
+        self.assertDictEqual(expected_obj, actual_obj)
 
     @mock.patch("redash.models.models.Model")
     def test_json(self, mock_model):
@@ -287,108 +294,110 @@ class TestModelConfigGenerator(unittest.TestCase):
                 {
                     'name': 'wikiticker',
                     'title': 'Wikiticker',
+                    'clusterName' : "native",
+                    'timeAttribute' : 'time',
                     'defaultSortMeasure': 'deltaByTen',
                     'defaultSelectedMeasures': ['deltaByTen'],
                     'attributes': [
                         {
                             'name': 'deltaByTen',
-                            'type': 'number'
+                            'type': 'NUMBER'
                         },
                         {
                             'name': 'deleted',
-                            'type': 'number'
+                            'type': 'NUMBER'
                         },
                         {
                             'name': 'regionName',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'user',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'regionIsoCode',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'metroCode',
-                            'type': 'number'
+                            'type': 'NUMBER'
                         },
                         {
                             'name': 'namespace',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'isNew',
-                            'type': 'boolean'
+                            'type': 'BOOLEAN'
                         },
                         {
                             'name': 'deltaBucket100',
-                            'type': 'number'
+                            'type': 'NUMBER'
                         },
                         {
                             'name': 'page',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'time',
-                            'type': 'time'
+                            'type': 'TIME'
                         },
                         {
                             'name': 'comment',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'isMinor',
-                            'type': 'boolean'
+                            'type': 'BOOLEAN'
                         },
                         {
                             'name': 'countryIsoCode',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'delta',
-                            'type': 'number'
+                            'type': 'NUMBER'
                         },
                         {
                             'name': 'countryName',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'isUnpatrolled',
-                            'type': 'boolean'
+                            'type': 'BOOLEAN'
                         },
                         {
                             'name': 'isRobot',
-                            'type': 'boolean'
+                            'type': 'BOOLEAN'
                         },
                         {
                             'name': 'commentLength',
-                            'type': 'number'
+                            'type': 'NUMBER'
                         },
                         {
                             'name': 'isAnonymous',
-                            'type': 'boolean'
+                            'type': 'BOOLEAN'
                         },
                         {
                             'name': 'cityName',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'added',
-                            'type': 'number'
+                            'type': 'NUMBER'
                         },
                         {
                             'name': 'userChars',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'channel',
-                            'type': 'string'
+                            'type': 'STRING'
                         },
                         {
                             'name': 'sometimeLater',
-                            'type': 'time'}
+                            'type': 'TIME'}
                     ],
                     'dimensions': [
                         {
@@ -529,5 +538,4 @@ class TestModelConfigGenerator(unittest.TestCase):
                 }
             ]
         }
-
-        self.assertEqual(exptected_json, actual_json)
+        self.assertDictEqual(exptected_json, actual_json)

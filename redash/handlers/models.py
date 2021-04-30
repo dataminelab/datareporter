@@ -93,13 +93,13 @@ class ModelsResource(BaseResource):
         )
 
         self.update_model(model, updates)
-        models.db.session.add(model)
         models.db.session.commit()
 
         content = ModelConfigGenerator.yaml(model=model, refresh=True)
 
-        self.update_model(model.config, {"content": content})
-        models.db.session.commit()
+        if model.config:
+            self.update_model(model.config, {"content": content})
+            models.db.session.commit()
 
         self.record_event({
             "action": "edit",

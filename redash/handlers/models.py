@@ -12,8 +12,10 @@ from redash.services.model_config_validator import ModelConfigValidator
 
 
 class ModelsListResource(BaseResource):
+
     @require_permission("create_model")
     def post(self):
+
         req = request.get_json(True)
 
         require_fields(req, ("name", "data_source_id", "table"))

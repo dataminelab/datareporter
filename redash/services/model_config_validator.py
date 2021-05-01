@@ -174,7 +174,7 @@ class ModelConfigValidator(object):
     def _validate_yml(self):
         with io.StringIO(self.content) as f:
             try:
-                yaml.load(f)
+                yaml.load(f,Loader=yaml.FullLoader)
             except yaml.MarkedYAMLError as e:
                 pm = e.problem_mark
                 abort(
@@ -184,7 +184,7 @@ class ModelConfigValidator(object):
 
     def _validate_schema(self):
         with io.StringIO(self.content) as f:
-            config = yaml.load(f)
+            config = yaml.load(f,Loader=yaml.FullLoader)
             validator = Validator(schema)
             validator.validate(config)
 

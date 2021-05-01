@@ -152,6 +152,15 @@ schema = {
 
 class ModelConfigValidator(object):
     def __init__(self, content: str):
+        self._set_content(content)
+
+    def _set_content(self, content: str):
+        if not isinstance(content, str):
+            abort(
+                http_status_code=400,
+                message=f"Expected type string got {type(content)}",
+            )
+
         self.content = content
 
     def _validate_length(self):

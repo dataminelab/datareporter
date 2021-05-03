@@ -35,6 +35,7 @@ node {
     sh("docker --version")
 
     def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=8 HEAD").trim()
+    def postgresName = "postgres-testing-${shortCommit}_${env.BUILD_ID}"
     def latestTagRelease = sh(returnStdout: true, script: "git describe --tags \$(git rev-list --tags --max-count=1) || echo 0.0.0").trim()
 
     def imageLabel = "\
@@ -55,10 +56,20 @@ node {
         }
 
         stage("Run tests") {
-            sh("docker-compose build")
-            sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS tests\"")
-            sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"CREATE DATABASE tests\"")
-            sh("docker-compose run server tests")
+            try {
+                sh("docker-compose build")
+                sh("docker-compose run -d --name ${postgresName} postgres")
+                sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS tests\"")
+                sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"CREATE DATABASE tests\"")
+                sh("docker-compose run server tests")
+            }  catch (err) {
+                echo "Failed with error: ${err}"
+                sh 'false'
+            } finally {
+                // Remove postgres container
+                sh("docker stop ${postgresName} || true")
+                sh("docker rm ${postgresName} || true")
+            }
         }
 
         stage("Push DR docker image") {

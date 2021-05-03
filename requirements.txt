@@ -70,3 +70,5 @@ werkzeug==0.16.1
 greenlet==0.4.16
 inflection==0.5.1
 mock==4.0.3
+lzstring==1.0.4
+

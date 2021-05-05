@@ -2,13 +2,14 @@ import yaml
 import lzstring
 import json
 from flask import request, make_response
+from flask_restful import abort
 from funcy import project
-
+from sqlalchemy.orm.exc import NoResultFound
 from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 from redash.handlers.queries import order_results
 from redash.handlers.query_results import run_query
-from redash.models import ParameterizedQuery
+from redash.models import ParameterizedQuery, db
 from redash.models.models import Model, Report
 from redash.permissions import require_permission, require_object_view_permission, require_object_modify_permission, \
     require_object_delete_permission
@@ -139,6 +140,7 @@ class ReportsListResource(BaseResource):
 
 # /api/reports/<int:report_id>
 class ReportResource(BaseResource):
+
     @require_permission("view_report")
     def get(self, report_id: int):
         report = get_object_or_404(Report.get_by_id, report_id)
@@ -167,8 +169,15 @@ class ReportResource(BaseResource):
         updates = project(
             report_properties, (NAME, MODEL_ID, EXPRESSION),
         )
+
         if MODEL_ID in updates:
-            get_object_or_404(Model.get_by_id, updates[MODEL_ID])
+            try:
+                model = Model.get_by_id(updates[MODEL_ID])
+                if model.user_id != self.current_user.id:
+                    abort(403)
+
+            except NoResultFound:
+                abort(400, message=f"The Model with id {MODEL_ID} does not exists")
 
         if EXPRESSION in updates:
             # decodes base64 that turnillo uses to plain json

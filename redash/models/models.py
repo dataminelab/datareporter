@@ -86,3 +86,4 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     @classmethod
     def get_by_user_and_id(cls, user: User, _id: int):
         return cls.query.filter(and_(cls.user_id == user.id, cls.id == _id)).one()
+

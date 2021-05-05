@@ -11,10 +11,10 @@ parser = lzstring.LZString()
 def _serialize_report(report: Report, formatting):
     # to have the same base64 as the one we had we need to remove spaces that json.dumps() adds
 
-    expression = parser.compressToBase64(json.dumps(report.expression, separators=(',', ':')))
-
     if formatting == 'json':
         expression = report.expression
+    else:
+        expression = parser.compressToBase64(json.dumps(report.expression, separators=(',', ':')))
 
     d = {
         "id": report.id,

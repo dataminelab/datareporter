@@ -83,7 +83,7 @@ class ReportsListResource(BaseResource):
     def post(self):
         req = request.get_json(True)
         require_fields(req, (NAME, MODEL_ID, EXPRESSION))
-
+        formatting = request.args.get('format', 'base64')
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
 
         model = get_object_or_404(
@@ -109,11 +109,13 @@ class ReportsListResource(BaseResource):
             "object_type": "report",
         })
 
-        return ReportSerializer(report).serialize()
+        return ReportSerializer(report, formatting=formatting).serialize()
 
     @require_permission("view_report")
     def get(self):
         reports = Report.get_by_user(self.current_user)
+
+        formatting = request.args.get('format', 'base64')
 
         ordered_results = order_results(reports)
 
@@ -125,6 +127,7 @@ class ReportsListResource(BaseResource):
             page=page,
             page_size=page_size,
             serializer=ReportSerializer,
+            formatting=formatting
         )
 
         self.record_event({
@@ -140,6 +143,8 @@ class ReportResource(BaseResource):
     def get(self, report_id: int):
         report = get_object_or_404(Report.get_by_id, report_id)
 
+        formatting = request.args.get('format', 'base64')
+
         require_object_view_permission(report, self.current_user)
 
         self.record_event({
@@ -148,14 +153,15 @@ class ReportResource(BaseResource):
             "object_type": "report"
         })
 
-        return ReportSerializer(report).serialize()
+        return ReportSerializer(report, formatting=formatting).serialize()
 
     @require_permission("edit_report")
     def post(self, report_id: int):
         report_properties = request.get_json(force=True)
 
-        report = get_object_or_404(Report.get_by_id, report_id)
+        formatting = request.args.get('format', 'base64')
 
+        report = get_object_or_404(Report.get_by_id, report_id)
         require_object_modify_permission(report, self.current_user)
 
         updates = project(
@@ -178,7 +184,7 @@ class ReportResource(BaseResource):
             "object_type": "report"
         })
 
-        return ReportSerializer(report).serialize()
+        return ReportSerializer(report, formatting=formatting).serialize()
 
     @require_permission("edit_report")
     def delete(self, report_id):

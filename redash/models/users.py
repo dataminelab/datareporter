@@ -277,7 +277,7 @@ class Group(db.Model, BelongsToOrgMixin):
         "view_model_config",
         "view_report",
         "edit_report",
-        'create_report'
+        "create_report"
     ]
 
     BUILTIN_GROUP = "builtin"

@@ -4,6 +4,7 @@ import lzstring
 
 from redash.models.models import Report
 from redash.serializers import Serializer
+from redash.services.expression import ExpressionBase64Parser
 
 parser = lzstring.LZString()
 
@@ -14,7 +15,7 @@ def _serialize_report(report: Report, formatting):
     if formatting == 'json':
         expression = report.expression
     else:
-        expression = parser.compressToBase64(json.dumps(report.expression, separators=(',', ':')))
+        expression = ExpressionBase64Parser.parse_dict_to_base64(report.expression)
 
     d = {
         "id": report.id,

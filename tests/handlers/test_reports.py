@@ -77,11 +77,11 @@ EXPRESSION_OBJ = {
 }
 
 ANOTHER_BASE_64_OBJ = {
-    'name': 'John'
+    "name": "John"
 }
 parser = lzstring.LZString()
 
-ANOTHER_BASE_64 = parser.compressToBase64(json.dumps(ANOTHER_BASE_64_OBJ, separators=(',', ':')))
+ANOTHER_BASE_64 = parser.compressToBase64(json.dumps(ANOTHER_BASE_64_OBJ, separators=(",", ":")))
 
 NAME = "Test report"
 
@@ -95,7 +95,7 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports",
-            data={"name": NAME, "model_id": 1, 'expression': EXPRESSION_BASE64},
+            data={"name": NAME, "model_id": 1, "expression": EXPRESSION_BASE64},
             user=user
         )
 
@@ -107,7 +107,7 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports",
-            data={"model_id": 1, 'expression': EXPRESSION_BASE64},
+            data={"model_id": 1, "expression": EXPRESSION_BASE64},
             user=user
         )
 
@@ -119,8 +119,23 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports",
-            data={"name": NAME, "model_id": 1, 'expression': EXPRESSION_BASE64},
+            data={"name": NAME, "model_id": 1, "expression": EXPRESSION_BASE64},
             user=user
+        )
+
+        self.assertEqual(404, response.status_code)
+
+    def test_create_another_user_model(self):
+        user1 = self.factory.create_user()
+        user2 = self.factory.create_user()
+
+        model = self.factory.create_model(user=user1)
+
+        response = self.make_request(
+            "post",
+            "/api/reports",
+            data={"name": NAME, "model_id": model.id, "expression": EXPRESSION_BASE64},
+            user=user2
         )
 
         self.assertEqual(404, response.status_code)
@@ -132,14 +147,18 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports",
-            data={"name": NAME, "model_id": model.id, 'expression': EXPRESSION_BASE64},
+            data={"name": NAME, "model_id": model.id, "expression": EXPRESSION_BASE64},
             user=user
         )
         data = response.json
+
+        report = Report.get_by_id(data["id"])
+
         self.assertEqual(200, response.status_code)
-        self.assertTrue('id' in data)
-        self.assertEqual(model.id, data['model_id'])
-        self.assertEqual(EXPRESSION_BASE64, data['expression'])
+        self.assertTrue("id" in data)
+        self.assertEqual(model.id, data["model_id"])
+        self.assertEqual(EXPRESSION_BASE64, data["expression"])
+        self.assertEqual(report.model_id, data["model_id"])
 
     def test_create_success_formatting(self):
         user = self.factory.create_user()
@@ -148,15 +167,15 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports?format=json",
-            data={"name": NAME, "model_id": model.id, 'expression': EXPRESSION_BASE64},
+            data={"name": NAME, "model_id": model.id, "expression": EXPRESSION_BASE64},
             user=user
         )
         data = response.json
         self.assertEqual(200, response.status_code)
-        self.assertTrue('id' in data)
-        self.assertEqual(model.id, data['model_id'])
-        self.assertTrue(isinstance(data['expression'], dict))
-        self.assertDictEqual(EXPRESSION_OBJ, data['expression'])
+        self.assertTrue("id" in data)
+        self.assertEqual(model.id, data["model_id"])
+        self.assertTrue(isinstance(data["expression"], dict))
+        self.assertDictEqual(EXPRESSION_OBJ, data["expression"])
 
 
 class TestReportListGetResource(BaseTestCase):
@@ -180,15 +199,32 @@ class TestReportListGetResource(BaseTestCase):
         model = self.factory.create_model(user=user)
         report = self.factory.create_report(user=user, model=model)
 
-        response = self.make_request('get', '/api/reports', user=user)
+        response = self.make_request("get", "/api/reports", user=user)
         data = response.json
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(len(data['results']), 1)
+        self.assertEqual(len(data["results"]), 1)
 
-        [self.assertEqual(x['id'], report.id) for x in data['results']]
-        [self.assertEqual(x['model_id'], model.id) for x in data['results']]
-        [self.assertTrue(isinstance(x['expression'], str)) for x in data['results']]
+        [self.assertEqual(x["id"], report.id) for x in data["results"]]
+        [self.assertEqual(x["model_id"], model.id) for x in data["results"]]
+        [self.assertTrue(isinstance(x["expression"], str)) for x in data["results"]]
+
+    def test_view_other_people(self):
+        user1 = self.factory.create_user()
+        user2 = self.factory.create_user()
+
+        self.factory.create_report(user=user2)
+        self.factory.create_report(user=user2)
+        self.factory.create_report(user=user1)
+
+        response = self.make_request(
+            "get",
+            "/api/reports",
+            user=user1
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(len(response.json["results"]), 1)
 
     def test_get_success_formatting(self):
         user = self.factory.create_user()
@@ -197,15 +233,15 @@ class TestReportListGetResource(BaseTestCase):
 
         report = self.factory.create_report(user=user, model=model)
 
-        response = self.make_request('get', '/api/reports?format=json', user=user)
+        response = self.make_request("get", "/api/reports?format=json", user=user)
         data = response.json
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(len(data['results']), 1)
+        self.assertEqual(len(data["results"]), 1)
 
-        [self.assertEqual(x['id'], report.id) for x in data['results']]
-        [self.assertEqual(x['model_id'], model.id) for x in data['results']]
-        [self.assertTrue(isinstance(x['expression'], dict)) for x in data['results']]
+        [self.assertEqual(x["id"], report.id) for x in data["results"]]
+        [self.assertEqual(x["model_id"], model.id) for x in data["results"]]
+        [self.assertTrue(isinstance(x["expression"], dict)) for x in data["results"]]
 
 
 class TestReportGetResource(BaseTestCase):
@@ -215,32 +251,41 @@ class TestReportGetResource(BaseTestCase):
         user = self.factory.create_user(group_ids=[group1.id])
         report = self.factory.create_report(user=user)
 
-        response = self.make_request('get', f'/api/reports/{report.id}')
+        response = self.make_request("get", f"/api/reports/{report.id}")
 
         self.assertEqual(403, response.status_code)
 
     def test_get_report_does_not_exist(self):
-        response = self.make_request('get', f'/api/reports/{20}')
+        response = self.make_request("get", f"/api/reports/{20}")
 
         self.assertEqual(404, response.status_code)
+
+    def test_get_report_another_user(self):
+        user1 = self.factory.create_user()
+        user2 = self.factory.create_user()
+        report = self.factory.create_report(user=user1)
+
+        response = self.make_request("get", f"/api/reports/{report.id}", user=user2)
+
+        self.assertEqual(403, response.status_code)
 
     def test_get_report_success(self):
         report = self.factory.create_report()
 
-        response = self.make_request('get', f'/api/reports/{report.id}')
+        response = self.make_request("get", f"/api/reports/{report.id}")
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(report.id, response.json['id'])
-        self.assertTrue(isinstance(response.json['expression'], str))
+        self.assertEqual(report.id, response.json["id"])
+        self.assertTrue(isinstance(response.json["expression"], str))
 
     def test_get_report_success_formatting(self):
         report = self.factory.create_report()
 
-        response = self.make_request('get', f'/api/reports/{report.id}?format=json')
+        response = self.make_request("get", f"/api/reports/{report.id}?format=json")
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(report.id, response.json['id'])
-        self.assertTrue(isinstance(response.json['expression'], dict))
+        self.assertEqual(report.id, response.json["id"])
+        self.assertTrue(isinstance(response.json["expression"], dict))
 
 
 class TestReportEditResource(BaseTestCase):
@@ -250,9 +295,9 @@ class TestReportEditResource(BaseTestCase):
         report = self.factory.create_report(user=user)
 
         response = self.make_request(
-            'post',
-            f'/api/reports/{report.id}',
-            data={"name": f'new {NAME}'},
+            "post",
+            f"/api/reports/{report.id}",
+            data={"name": f"new {NAME}"},
             user=user
         )
 
@@ -265,9 +310,9 @@ class TestReportEditResource(BaseTestCase):
         report = self.factory.create_report(user=user1)
 
         response = self.make_request(
-            'post',
-            f'/api/reports/{report.id}',
-            data={"name": f'new {NAME}'},
+            "post",
+            f"/api/reports/{report.id}",
+            data={"name": f"new {NAME}"},
             user=user2
         )
 
@@ -277,9 +322,9 @@ class TestReportEditResource(BaseTestCase):
         user = self.factory.create_user()
 
         response = self.make_request(
-            'post',
-            f'/api/reports/{100}',
-            data={"name": f'new {NAME}'},
+            "post",
+            f"/api/reports/{100}",
+            data={"name": f"new {NAME}"},
             user=user
         )
 
@@ -290,9 +335,9 @@ class TestReportEditResource(BaseTestCase):
         report = self.factory.create_report(user=user)
 
         response = self.make_request(
-            'post',
-            f'/api/reports/{report.id}',
-            data={'model_id': 200},
+            "post",
+            f"/api/reports/{report.id}",
+            data={"model_id": 200},
             user=user
         )
 
@@ -306,9 +351,9 @@ class TestReportEditResource(BaseTestCase):
         report = self.factory.create_report(user=user2, model=model)
 
         response = self.make_request(
-            'post',
-            f'/api/reports/{report.id}',
-            data={'model_id': model.id},
+            "post",
+            f"/api/reports/{report.id}",
+            data={"model_id": model.id},
             user=user2
         )
 
@@ -322,9 +367,9 @@ class TestReportEditResource(BaseTestCase):
         report = self.factory.create_report(user=user, model=model1)
 
         response = self.make_request(
-            'post',
-            f'/api/reports/{report.id}',
-            data={'model_id': model2.id, 'name': f'new name', 'expression': ANOTHER_BASE_64},
+            "post",
+            f"/api/reports/{report.id}",
+            data={"model_id": model2.id, "name": f"new name", "expression": ANOTHER_BASE_64},
             user=user
         )
 
@@ -333,14 +378,14 @@ class TestReportEditResource(BaseTestCase):
         data = response.json
         self.assertEqual(200, response.status_code)
 
-        self.assertEqual(report.id, data['id'])
-        self.assertEqual(report.id, data['id'])
-        self.assertEqual(model2.id, data['model_id'])
-        self.assertEqual('new name', data['name'])
-        self.assertEqual(ANOTHER_BASE_64, data['expression'])
+        self.assertEqual(report.id, data["id"])
+        self.assertEqual(report.id, data["id"])
+        self.assertEqual(model2.id, data["model_id"])
+        self.assertEqual("new name", data["name"])
+        self.assertEqual(ANOTHER_BASE_64, data["expression"])
 
         self.assertEqual(refreshed_report.model_id, model2.id)
-        self.assertEqual(refreshed_report.name, 'new name')
+        self.assertEqual(refreshed_report.name, "new name")
         self.assertEqual(refreshed_report.expression, ANOTHER_BASE_64_OBJ)
 
     def test_edit_model_success_formatting(self):
@@ -351,14 +396,14 @@ class TestReportEditResource(BaseTestCase):
         report = self.factory.create_report(user=user, model=model1)
 
         response = self.make_request(
-            'post',
-            f'/api/reports/{report.id}?format=json',
-            data={'model_id': model2.id, 'name': f'new name'},
+            "post",
+            f"/api/reports/{report.id}?format=json",
+            data={"model_id": model2.id, "name": f"new name"},
             user=user
         )
 
         self.assertEqual(200, response.status_code)
-        self.assertTrue(isinstance(response.json['expression'], dict))
+        self.assertTrue(isinstance(response.json["expression"], dict))
 
 
 class TestReportDeleteResource(BaseTestCase):
@@ -367,7 +412,7 @@ class TestReportDeleteResource(BaseTestCase):
         user = self.factory.create_user(group_ids=[group.id])
         report = self.factory.create_report(user=user)
 
-        response = self.make_request('delete', f'/api/reports/{report.id}', user=user)
+        response = self.make_request("delete", f"/api/reports/{report.id}", user=user)
 
         self.assertEqual(403, response.status_code)
 
@@ -377,14 +422,14 @@ class TestReportDeleteResource(BaseTestCase):
 
         report = self.factory.create_report(user=user1)
 
-        response = self.make_request('delete', f'/api/reports/{report.id}', user=user2)
+        response = self.make_request("delete", f"/api/reports/{report.id}", user=user2)
 
         self.assertEqual(403, response.status_code)
 
     def test_delete_does_not_exists(self):
         user = self.factory.create_user()
 
-        response = self.make_request('delete', f'/api/reports/{100}', user=user)
+        response = self.make_request("delete", f"/api/reports/{100}", user=user)
 
         self.assertEqual(404, response.status_code)
 
@@ -392,7 +437,7 @@ class TestReportDeleteResource(BaseTestCase):
         user = self.factory.create_user()
         report = self.factory.create_report(user=user)
 
-        response = self.make_request('delete', f'/api/reports/{report.id}', user=user)
+        response = self.make_request("delete", f"/api/reports/{report.id}", user=user)
 
         with self.assertRaises(NoResultFound) as _:
             Report.get_by_id(report.id)

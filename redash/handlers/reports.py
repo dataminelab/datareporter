@@ -15,12 +15,13 @@ from redash.permissions import require_permission, require_object_view_permissio
     require_object_delete_permission
 from redash.plywood.plywood import PlywoodApi
 from redash.serializers.report_serializer import ReportSerializer
+from redash.services.expression import ExpressionBase64Parser
 
 CONTEXT = "context"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
-NAME = 'name'
-MODEL_ID = 'model_id'
+NAME = "name"
+MODEL_ID = "model_id"
 
 parser = lzstring.LZString()
 
@@ -84,7 +85,7 @@ class ReportsListResource(BaseResource):
     def post(self):
         req = request.get_json(True)
         require_fields(req, (NAME, MODEL_ID, EXPRESSION))
-        formatting = request.args.get('format', 'base64')
+        formatting = request.args.get("format", "base64")
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
 
         model = get_object_or_404(
@@ -92,7 +93,7 @@ class ReportsListResource(BaseResource):
         )
 
         # decodes base64 that turnillo uses to plain json
-        expression_obj = json.loads(parser.decompressFromBase64(expression))
+        expression_obj = ExpressionBase64Parser.parse_base64_to_dict(expression)
 
         report = Report(
             name=name,
@@ -116,7 +117,7 @@ class ReportsListResource(BaseResource):
     def get(self):
         reports = Report.get_by_user(self.current_user)
 
-        formatting = request.args.get('format', 'base64')
+        formatting = request.args.get("format", "base64")
 
         ordered_results = order_results(reports)
 
@@ -145,7 +146,7 @@ class ReportResource(BaseResource):
     def get(self, report_id: int):
         report = get_object_or_404(Report.get_by_id, report_id)
 
-        formatting = request.args.get('format', 'base64')
+        formatting = request.args.get("format", "base64")
 
         require_object_view_permission(report, self.current_user)
 
@@ -161,7 +162,7 @@ class ReportResource(BaseResource):
     def post(self, report_id: int):
         report_properties = request.get_json(force=True)
 
-        formatting = request.args.get('format', 'base64')
+        formatting = request.args.get("format", "base64")
 
         report = get_object_or_404(Report.get_by_id, report_id)
         require_object_modify_permission(report, self.current_user)

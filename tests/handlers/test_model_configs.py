@@ -4,21 +4,21 @@ from redash.models import db
 
 class TestModelsConfigCreateResource(BaseTestCase):
 
-    def test_without_user(self):
-        response = self.make_request(
-            "post",
-            "/api/models/1/config",
-            data={"content": "dataCube: 12"},
-        )
-
-        self.assertEqual(403, response.status_code)
-
     def test_user_without_model_permission(self):
+        group1 = self.factory.create_group(
+            org=self.factory.create_org(), permissions=[""]
+        )
+        db.session.flush()
+        user = self.factory.create_user(
+            group_ids=[group1.id]
+        )
+        db.session.flush()
+
         response = self.make_request(
             "post",
             "/api/models/1/config",
             data={"content": "dataCube: 12"},
-            user=self.factory.create_user()
+            user=user
         )
 
         self.assertEqual(403, response.status_code)

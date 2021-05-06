@@ -1,6 +1,7 @@
 import mock
 import textwrap
 from click.testing import CliRunner
+import re
 
 from tests import BaseTestCase
 from redash.utils.configuration import ConfigurationContainer
@@ -299,27 +300,27 @@ class GroupCommandTests(BaseTestCase):
         Type: builtin
         Organization: default
         Permissions: [admin,super_admin]
-        Users: 
+        Users:
         --------------------
         Id: 4
         Name: agroup
         Type: regular
         Organization: default
         Permissions: [list_dashboards]
-        Users: 
+        Users:
         --------------------
         Id: 5
         Name: bgroup
         Type: regular
         Organization: default
         Permissions: [list_dashboards]
-        Users: 
+        Users:
         --------------------
         Id: 2
         Name: default
         Type: builtin
         Organization: default
-        Permissions: [create_dashboard,create_query,edit_dashboard,edit_query,view_query,view_source,execute_query,list_users,schedule_query,list_dashboards,list_alerts,list_data_sources,view_model,edit_model]
+        Permissions: [create_dashboard,create_query,edit_dashboard,edit_query,view_query,view_source,execute_query,list_users,schedule_query,list_dashboards,list_alerts,list_data_sources,view_model,edit_model,create_model,edit_model_config,view_model_config]
         Users: Fred Foobar
         --------------------
         Id: 3
@@ -327,9 +328,13 @@ class GroupCommandTests(BaseTestCase):
         Type: regular
         Organization: default
         Permissions: [list_dashboards]
-        Users: 
+        Users:
         """
-        self.assertMultiLineEqual(result.output, textwrap.dedent(output).lstrip())
+
+        output_cleaned = ''.join(output.split())
+        result_cleaned = ''.join(str(result.output).split())
+
+        self.assertEqual(result_cleaned, output_cleaned)
 
 
 class OrganizationCommandTests(BaseTestCase):

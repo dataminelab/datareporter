@@ -1,26 +1,26 @@
 from unittest import mock
 
+from redash.models.models import ModelConfig
 from tests import BaseTestCase
 from redash.models import db
 
 
 class TestModelsCreateResource(BaseTestCase):
 
-    def test_without_user(self):
-        response = self.make_request(
-            "post",
-            "/api/models",
-            data={"name": "Test Model", "data_source_id": 1},
-        )
-
-        self.assertEqual(403, response.status_code)
-
     def test_user_without_model_permission(self):
+        group1 = self.factory.create_group(
+            org=self.factory.create_org(), permissions=[""]
+        )
+        db.session.flush()
+        user = self.factory.create_user(
+            group_ids=[group1.id]
+        )
+        db.session.flush()
         response = self.make_request(
             "post",
             "/api/models",
-            data={"name": "Test Model", "data_source_id": 1},
-            user=self.factory.create_user()
+            data={"name": "Test Model", "data_source_id": 1, 'table': 'users'},
+            user=user
         )
 
         self.assertEqual(403, response.status_code)
@@ -39,6 +39,101 @@ class TestModelsCreateResource(BaseTestCase):
         )
 
         self.assertEqual(400, response.status_code)
+
+    def test_with_context_provided(self):
+        data_source = self.factory.create_data_source()
+        db.session.commit()
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_user(group_ids=[group.id])
+        db.session.commit()
+
+        content = """
+        dataCubes:
+          - name: users
+            title: Users
+            timeAttribute: time
+            clusterName: native
+            defaultSortMeasure: id
+            defaultSelectedMeasures:
+              - id
+            attributes:
+              - name: api_key
+                type: CHARACTER VARYING
+              - name: created_at
+                type: TIMESTAMP WITH TIME ZONE
+              - name: details
+                type: JSON
+              - name: disabled_at
+                type: TIMESTAMP WITH TIME ZONE
+              - name: email
+                type: CHARACTER VARYING
+              - name: groups
+                type: ARRAY
+              - name: id
+                type: NUMBER
+              - name: name
+                type: CHARACTER VARYING
+              - name: org_id
+                type: NUMBER
+              - name: password_hash
+                type: CHARACTER VARYING
+              - name: profile_image_url
+                type: CHARACTER VARYING
+              - name: updated_at
+                type: TIMESTAMP WITH TIME ZONE
+            dimensions:
+              - name: api_key
+                title: Api Key
+                formula: $api_key
+              - name: created_at
+                title: Created At
+                formula: $created_at
+              - name: details
+                title: Details
+                formula: $details
+              - name: disabled_at
+                title: Disabled At
+                formula: $disabled_at
+              - name: email
+                title: Email
+                formula: $email
+              - name: groups
+                title: Groups
+                formula: $groups
+              - name: name
+                title: Name
+                formula: $name
+              - name: password_hash
+                title: Password Hash
+                formula: $password_hash
+              - name: profile_image_url
+                title: Profile Image Url
+                formula: $profile_image_url
+              - name: updated_at
+                title: Updated At
+                formula: $updated_at
+            measures:
+              - name: id
+                title: Id
+                formula: $main.sum($id)
+              - name: org_id
+                title: Org
+                formula: $main.sum($org_id)
+
+        """
+
+        response = self.make_request(
+            "post",
+            "/api/models",
+            data={"name": "Test Model", "data_source_id": data_source.id, "table": "models", 'content': content},
+            user=user
+        )
+        config_id = response.json['model_config_id']
+        config:ModelConfig = ModelConfig.query.get(config_id)
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(config.content, content)
 
     def test_not_existing_data_source(self):
         group = self.factory.create_group(permissions=["create_model"])

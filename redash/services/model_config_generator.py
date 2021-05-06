@@ -130,7 +130,7 @@ class ModelConfigGenerator(object):
         return config_attributes.to_json()
 
     @staticmethod
-    def _build(model, refresh):
+    def _build(model: Model, refresh):
         schemas = model.data_source.get_schema(refresh=refresh)
         table_schema = next((schema for schema in schemas if schema["name"] == model.table), None)
         if table_schema is None:

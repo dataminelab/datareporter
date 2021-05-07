@@ -19,8 +19,8 @@ Default:'base64'
 `Request`
 ```json
 {
-    "name" : "Report name", // [required] <- Name for the mode,
-    "model_id" : 1,  // [required] <- ID of the Model from which the report is created,
+    "name" : "Report name",
+    "model_id" : 1,  
     "expression" : "N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvg+fqq+ZAAKjlgAJi6gMTAO6Fi4BBEAjAAiVlD2wvgAtBmqnt5C9nkgSgC6Km5lwcSYAmRwuNQBQQTQAHJkUlZgiDBkLmgOozXU2Jho+AoIytMgUMJIaPGEjQR5DhCcVjHh2FCpwfww2BPuAJJQmLmYDvN4oF3BcDExZDFWHl5gmJ9mMjhAArxGGkQD8oLwyNhjodqF59pg/gRqtQkGoIK8AKwABnq20BuwmBw4YI0p3OPSgAEFZth3GpMDBuNQHi8eCAPgQvj8/qUyatoqDqMcIVDgrD4YjKVZUbFgliQDi8fh8bUueKtl1HAj4Z9vr8rHJnmp0LyAd4fgoYHYhiNvGrbcENHBYAFqithAdsL8siczjgXCBeAALdqBhBWbBwDRrODG6jQSTNeZ+gO/JjPV4gQVmpRAA=" // [required] <- BASE64 string taken from turnillo query
 }
 ```

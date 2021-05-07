@@ -80,7 +80,7 @@ Status: `403` (Unauthorized) if user doesn't have a view_report permission
 Status `200`
 ```json
 {
-    "count": 33,
+    "count": 3,
     "page": 1,
     "page_size": 25,
     "results": [

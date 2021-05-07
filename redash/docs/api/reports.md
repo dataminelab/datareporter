@@ -185,7 +185,7 @@ Status: `403` (Unauthorized) if user doesn't have a edit_report permission
 
 Status: `403` (Unauthorized) If user is not owner of new model object
 
-Status: `400` (Unauthorized) if model_id can not be found in database
+Status: `400` (Bad request) if model_id can not be found in database
 
 Status: `200`
 
@@ -209,10 +209,10 @@ Required Permission: __edit_report__
 
 Status `404` (Not found) If the report is not found
 
-Status `403` (Not found) If there is no edit_report permission
+Status `403` (Unauthorized) If there is no edit_report permission
 
-Status `403` (Not found) If the object is not the owner
+Status `403` (Unauthorized) If the object is not the owner
 
 
-Status `204` Deleted, all went well.
+Status `204` (No content)  Deleted, all went well.
 

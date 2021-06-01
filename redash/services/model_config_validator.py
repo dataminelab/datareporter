@@ -60,6 +60,9 @@ schema = {
                             "type": {
                                 "type": "string",
                                 "required": True
+                            }, "nativeType": {
+                                "type": "string",
+                                "required": False
                             }
                         }
                     }
@@ -174,7 +177,7 @@ class ModelConfigValidator(object):
     def _validate_yml(self):
         with io.StringIO(self.content) as f:
             try:
-                yaml.load(f,Loader=yaml.FullLoader)
+                yaml.load(f, Loader=yaml.FullLoader)
             except yaml.MarkedYAMLError as e:
                 pm = e.problem_mark
                 abort(
@@ -184,7 +187,7 @@ class ModelConfigValidator(object):
 
     def _validate_schema(self):
         with io.StringIO(self.content) as f:
-            config = yaml.load(f,Loader=yaml.FullLoader)
+            config = yaml.load(f, Loader=yaml.FullLoader)
             validator = Validator(schema)
             validator.validate(config)
 

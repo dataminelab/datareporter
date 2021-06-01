@@ -32,7 +32,8 @@ class ReportGenerateResource(BaseResource):
         req = request.get_json(True)
         require_fields(req, (DATA_CUBE, EXPRESSION,))
         model = get_object_or_404(Model.get_by_id, model_id)
-        queries = PlywoodApi.convert_to_sql(body=self._build_plywood_request(req, model))
+        plywood_request = self._build_plywood_request(req, model)
+        queries = PlywoodApi.convert_to_sql(body=plywood_request)
         max_age = req.get("max_age", -1)
         query_id = "adhoc"
 

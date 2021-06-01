@@ -258,8 +258,8 @@ RQ_WORKER_JOB_LOG_FORMAT = os.environ.get(
     "REDASH_RQ_WORKER_JOB_LOG_FORMAT",
     (
         LOG_PREFIX + "[%(asctime)s][PID:%(process)d][%(levelname)s][%(name)s] "
-        "job.func_name=%(job_func_name)s "
-        "job.id=%(job_id)s %(message)s"
+                     "job.func_name=%(job_func_name)s "
+                     "job.id=%(job_id)s %(message)s"
     ),
 )
 
@@ -508,18 +508,3 @@ REQUESTS_ALLOW_REDIRECTS = parse_boolean(
 ENFORCE_CSRF = parse_boolean(
     os.environ.get("REDASH_ENFORCE_CSRF", "false")
 )
-
-# Ignored data source types
-IGNORED_DATA_SOURCE_TYPES = {
-    "bigquery": ["BYTE", "GEOGRAPHY", "RECORD"]
-}
-
-DATA_SOURCE_TYPE_MAPPINGS = {
-    "TIMESTAMP": "TIME",
-    "DATE": "TIME",
-    "DATETIME": "TIME",
-    "INTEGER": "NUMBER",
-    "FLOAT": "NUMBER",
-    "NUMERIC": "NUMBER",
-    "BIGNUMERIC": "NUMBER",
-}

@@ -2,6 +2,7 @@ import itertools
 
 import requests
 import logging
+from typing import List
 
 from redash.settings import PLYWOOD_SERVER_URL
 
@@ -17,6 +18,44 @@ class PlywoodApi(object):
             response = requests.post(url=cls.PLYWOOD_URL, json=body)
             queries = response.json()['queries']
             return list(itertools.chain.from_iterable(queries))
+        except Exception as e:
+            logger.error("Error occurred during sending request to Plywood Server", e)
+            raise e
+
+    @classmethod
+    def get_supported_engines(cls) -> List[str]:
+        url = cls.PLYWOOD_URL + '/attributes/engines'
+        try:
+            response = requests.get(url=url)
+            return response.json()['supportedEngines']
+        except Exception as e:
+            logger.error("Error occurred during sending request to Plywood Server", e)
+            raise e
+
+    @staticmethod
+    def _convert_redash_db_type_to_plywood_engine(redash_db_type: str):
+        if redash_db_type.lower() == 'pg':
+            return 'postgres'
+
+        if redash_db_type.lower() == 'bigquery':
+            return 'bigquery'
+
+        if redash_db_type.lower() == 'mysql':
+            return 'mysql'
+
+        return redash_db_type
+
+    @classmethod
+    def convert_attributes(cls, redash_db_type: str, attributes: list) -> List[dict]:
+        engine = cls._convert_redash_db_type_to_plywood_engine(redash_db_type)
+        print('engine',engine)
+        url = cls.PLYWOOD_URL + '/attributes'
+        body = dict(engine=engine, attributes=attributes)
+        try:
+            response = requests.post(url=url, json=body)
+
+            attributes = response.json()['attributes']
+            return attributes
         except Exception as e:
             logger.error("Error occurred during sending request to Plywood Server", e)
             raise e

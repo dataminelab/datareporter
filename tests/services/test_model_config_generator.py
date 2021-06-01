@@ -11,6 +11,7 @@ class TestModelConfigGenerator(unittest.TestCase):
     @mock.patch("redash.models.models.Model")
     def test_yaml(self, mock_model):
         mock_model.table = "wikiticker"
+        mock_model.data_source.type = 'bigquery'
         mock_model.data_source.get_schema = lambda refresh: [{
             "name": "wikiticker",
             "columns": [
@@ -63,78 +64,104 @@ class TestModelConfigGenerator(unittest.TestCase):
 
       - name: deltaByTen
         type: NUMBER
+        nativeType: FLOAT
 
       - name: deleted
         type: NUMBER
+        nativeType: INTEGER
 
       - name: regionName
         type: STRING
+        nativeType: STRING
 
       - name: user
         type: STRING
+        nativeType: STRING
 
       - name: regionIsoCode
         type: STRING
+        nativeType: STRING
 
       - name: metroCode
         type: NUMBER
+        nativeType: INTEGER
 
       - name: namespace
         type: STRING
+        nativeType: STRING
 
       - name: isNew
         type: BOOLEAN
+        nativeType: BOOLEAN
 
       - name: deltaBucket100
         type: NUMBER
+        nativeType: INTEGER
 
       - name: page
         type: STRING
+        nativeType: STRING
 
       - name: time
         type: TIME
+        nativeType: TIMESTAMP
 
       - name: comment
         type: STRING
+        nativeType: STRING
 
       - name: isMinor
         type: BOOLEAN
+        nativeType: BOOLEAN
 
       - name: countryIsoCode
         type: STRING
+        nativeType: STRING
 
       - name: delta
         type: NUMBER
+        nativeType: INTEGER
 
       - name: countryName
         type: STRING
+        nativeType: STRING
 
       - name: isUnpatrolled
         type: BOOLEAN
+        nativeType: BOOLEAN
 
       - name: isRobot
         type: BOOLEAN
+        nativeType: BOOLEAN
 
       - name: commentLength
         type: NUMBER
+        nativeType: INTEGER
 
       - name: isAnonymous
         type: BOOLEAN
+        nativeType: BOOLEAN
 
       - name: cityName
         type: STRING
+        nativeType: STRING
+
 
       - name: added
         type: NUMBER
+        nativeType: INTEGER
 
       - name: userChars
         type: STRING
+        nativeType: STRING
 
       - name: channel
         type: STRING
+        nativeType: STRING
 
       - name: sometimeLater
         type: TIME
+        nativeType: TIMESTAMP
 
     dimensions:
 
@@ -157,7 +184,7 @@ class TestModelConfigGenerator(unittest.TestCase):
       - name: isNew
         title: Is New
         formula: $isNew
-        kind: boolean
+        kind: BOOLEAN
 
       - name: page
         title: Page
@@ -166,7 +193,7 @@ class TestModelConfigGenerator(unittest.TestCase):
       - name: time
         title: Time
         formula: $time
-        kind: time
+        kind: TIME
 
       - name: comment
         title: Comment
@@ -175,7 +202,7 @@ class TestModelConfigGenerator(unittest.TestCase):
       - name: isMinor
         title: Is Minor
         formula: $isMinor
-        kind: boolean
+        kind: BOOLEAN
 
       - name: countryIsoCode
         title: Country Iso Code
@@ -188,17 +215,17 @@ class TestModelConfigGenerator(unittest.TestCase):
       - name: isUnpatrolled
         title: Is Unpatrolled
         formula: $isUnpatrolled
-        kind: boolean
+        kind: BOOLEAN
 
       - name: isRobot
         title: Is Robot
         formula: $isRobot
-        kind: boolean
+        kind: BOOLEAN
 
       - name: isAnonymous
         title: Is Anonymous
         formula: $isAnonymous
-        kind: boolean
+        kind: BOOLEAN
 
       - name: cityName
         title: City Name
@@ -215,7 +242,7 @@ class TestModelConfigGenerator(unittest.TestCase):
       - name: sometimeLater
         title: Sometime Later
         formula: $sometimeLater
-        kind: time
+        kind: TIME
 
     measures:
 
@@ -256,6 +283,7 @@ class TestModelConfigGenerator(unittest.TestCase):
     @mock.patch("redash.models.models.Model")
     def test_json(self, mock_model):
         mock_model.table = "wikiticker"
+        mock_model.data_source.type = 'bigquery'
         mock_model.data_source.get_schema = lambda refresh: [{
             "name": "wikiticker",
             "columns": [
@@ -294,110 +322,139 @@ class TestModelConfigGenerator(unittest.TestCase):
                 {
                     'name': 'wikiticker',
                     'title': 'Wikiticker',
-                    'clusterName' : "native",
-                    'timeAttribute' : 'time',
+                    'clusterName': "native",
+                    'timeAttribute': 'time',
                     'defaultSortMeasure': 'deltaByTen',
                     'defaultSelectedMeasures': ['deltaByTen'],
                     'attributes': [
                         {
                             'name': 'deltaByTen',
-                            'type': 'NUMBER'
+                            'type': 'NUMBER',
+                            'nativeType': 'FLOAT'
                         },
                         {
                             'name': 'deleted',
-                            'type': 'NUMBER'
+                            'type': 'NUMBER',
+                            'nativeType': 'INTEGER'
                         },
                         {
                             'name': 'regionName',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'user',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
+
                         },
                         {
                             'name': 'regionIsoCode',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'metroCode',
-                            'type': 'NUMBER'
+                            'type': 'NUMBER',
+                            'nativeType': 'INTEGER'
                         },
                         {
                             'name': 'namespace',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'isNew',
-                            'type': 'BOOLEAN'
+                            'type': 'BOOLEAN',
+                            'nativeType': 'BOOLEAN'
                         },
                         {
                             'name': 'deltaBucket100',
-                            'type': 'NUMBER'
+                            'type': 'NUMBER',
+                            'nativeType': 'INTEGER'
                         },
                         {
                             'name': 'page',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'time',
-                            'type': 'TIME'
+                            'type': 'TIME',
+                            'nativeType': 'TIMESTAMP'
                         },
                         {
                             'name': 'comment',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'isMinor',
-                            'type': 'BOOLEAN'
+                            'type': 'BOOLEAN',
+                            'nativeType': 'BOOLEAN'
                         },
                         {
                             'name': 'countryIsoCode',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'delta',
-                            'type': 'NUMBER'
+                            'type': 'NUMBER',
+                            'nativeType': 'INTEGER'
                         },
                         {
                             'name': 'countryName',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'isUnpatrolled',
-                            'type': 'BOOLEAN'
+                            'type': 'BOOLEAN',
+                            'nativeType': 'BOOLEAN',
+
                         },
                         {
                             'name': 'isRobot',
-                            'type': 'BOOLEAN'
+                            'type': 'BOOLEAN',
+                            'nativeType': 'BOOLEAN',
+
                         },
                         {
                             'name': 'commentLength',
-                            'type': 'NUMBER'
+                            'type': 'NUMBER',
+                            'nativeType': 'INTEGER'
                         },
                         {
                             'name': 'isAnonymous',
-                            'type': 'BOOLEAN'
+                            'type': 'BOOLEAN',
+                            'nativeType': 'BOOLEAN'
                         },
                         {
                             'name': 'cityName',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'added',
-                            'type': 'NUMBER'
+                            'type': 'NUMBER',
+                            'nativeType': 'INTEGER',
                         },
                         {
                             'name': 'userChars',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'channel',
-                            'type': 'STRING'
+                            'type': 'STRING',
+                            'nativeType': 'STRING'
                         },
                         {
                             'name': 'sometimeLater',
-                            'type': 'TIME'}
+                            'type': 'TIME',
+                            'nativeType': 'TIMESTAMP',
+                        }
                     ],
                     'dimensions': [
                         {
@@ -424,7 +481,7 @@ class TestModelConfigGenerator(unittest.TestCase):
                             'name': 'isNew',
                             'title': 'Is New',
                             'formula': '$isNew',
-                            'kind': 'boolean'
+                            'kind': 'BOOLEAN'
                         },
                         {
                             'name': 'page',
@@ -435,7 +492,7 @@ class TestModelConfigGenerator(unittest.TestCase):
                             'name': 'time',
                             'title': 'Time',
                             'formula': '$time',
-                            'kind': 'time'
+                            'kind': 'TIME'
                         },
                         {
                             'name': 'comment',
@@ -446,7 +503,7 @@ class TestModelConfigGenerator(unittest.TestCase):
                             'name': 'isMinor',
                             'title': 'Is Minor',
                             'formula': '$isMinor',
-                            'kind': 'boolean'
+                            'kind': 'BOOLEAN'
                         },
                         {
                             'name': 'countryIsoCode',
@@ -462,19 +519,19 @@ class TestModelConfigGenerator(unittest.TestCase):
                             'name': 'isUnpatrolled',
                             'title': 'Is Unpatrolled',
                             'formula': '$isUnpatrolled',
-                            'kind': 'boolean'
+                            'kind': 'BOOLEAN'
                         },
                         {
                             'name': 'isRobot',
                             'title': 'Is Robot',
                             'formula': '$isRobot',
-                            'kind': 'boolean'
+                            'kind': 'BOOLEAN'
                         },
                         {
                             'name': 'isAnonymous',
                             'title': 'Is Anonymous',
                             'formula': '$isAnonymous',
-                            'kind': 'boolean'
+                            'kind': 'BOOLEAN'
                         },
                         {
                             'name': 'cityName',
@@ -495,7 +552,7 @@ class TestModelConfigGenerator(unittest.TestCase):
                             'name': 'sometimeLater',
                             'title': 'Sometime Later',
                             'formula': '$sometimeLater',
-                            'kind': 'time'
+                            'kind': 'TIME'
                         }
                     ],
                     'measures': [

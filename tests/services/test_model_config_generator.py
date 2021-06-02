@@ -7,43 +7,196 @@ from redash.services.model_config_generator import ModelConfigGenerator
 
 
 class TestModelConfigGenerator(unittest.TestCase):
-
     @mock.patch("redash.models.models.Model")
     def test_yaml(self, mock_model):
-        mock_model.table = "wikiticker"
-        mock_model.data_source.type = 'bigquery'
-        mock_model.data_source.get_schema = lambda refresh: [{
-            "name": "wikiticker",
-            "columns": [
-                {"name": "deltaByTen", "type": "FLOAT"},
-                {"name": "deleted", "type": "INTEGER"},
-                {"name": "regionName", "type": "STRING"},
-                {"name": "user", "type": "STRING"},
-                {"name": "regionIsoCode", "type": "STRING"},
-                {"name": "metroCode", "type": "INTEGER"},
-                {"name": "namespace", "type": "STRING"},
-                {"name": "isNew", "type": "BOOLEAN"},
-                {"name": "deltaBucket100", "type": "INTEGER"},
-                {"name": "page", "type": "STRING"},
-                {"name": "time", "type": "TIMESTAMP"},
-                {"name": "comment", "type": "STRING"},
-                {"name": "isMinor", "type": "BOOLEAN"},
-                {"name": "countryIsoCode", "type": "STRING"},
-                {"name": "delta", "type": "INTEGER"},
-                {"name": "countryName", "type": "STRING"},
-                {"name": "isUnpatrolled", "type": "BOOLEAN"},
-                {"name": "isRobot", "type": "BOOLEAN"},
-                {"name": "commentLength", "type": "INTEGER"},
-                {"name": "isAnonymous", "type": "BOOLEAN"},
-                {"name": "cityName", "type": "STRING"},
-                {"name": "added", "type": "INTEGER"},
-                {"name": "userChars", "type": "STRING"},
-                {"name": "channel", "type": "STRING"},
-                {"name": "sometimeLater", "type": "TIMESTAMP"}
+        with mock.patch("redash.plywood.plywood.PlywoodApi.convert_attributes") as parser:
+            parser.return_value = [
+                {
+                    "nativeType": "FLOAT",
+                    "name": "deltaByTen",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "deleted",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "regionName",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "user",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "regionIsoCode",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "metroCode",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "namespace",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "name": "isNew",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "deltaBucket100",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "page",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "TIMESTAMP",
+                    "name": "time",
+                    "type": "TIME",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "comment",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "name": "isMinor",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "countryIsoCode",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "delta",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "countryName",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "name": "isUnpatrolled",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "name": "isRobot",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "commentLength",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "name": "isAnonymous",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "cityName",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "added",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "userChars",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "channel",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "TIMESTAMP",
+                    "name": "sometimeLater",
+                    "type": "TIME",
+                    "isSupported": True
+                }
             ]
-        }]
 
-        actual_yaml = ModelConfigGenerator.yaml(model=mock_model, refresh=True)
+            mock_model.table = "wikiticker"
+            mock_model.data_source.type = 'bigquery'
+            mock_model.data_source.get_schema = lambda refresh: [{
+                "name": "wikiticker",
+                "columns": [
+                    {"name": "deltaByTen", "type": "FLOAT"},
+                    {"name": "deleted", "type": "INTEGER"},
+                    {"name": "regionName", "type": "STRING"},
+                    {"name": "user", "type": "STRING"},
+                    {"name": "regionIsoCode", "type": "STRING"},
+                    {"name": "metroCode", "type": "INTEGER"},
+                    {"name": "namespace", "type": "STRING"},
+                    {"name": "isNew", "type": "BOOLEAN"},
+                    {"name": "deltaBucket100", "type": "INTEGER"},
+                    {"name": "page", "type": "STRING"},
+                    {"name": "time", "type": "TIMESTAMP"},
+                    {"name": "comment", "type": "STRING"},
+                    {"name": "isMinor", "type": "BOOLEAN"},
+                    {"name": "countryIsoCode", "type": "STRING"},
+                    {"name": "delta", "type": "INTEGER"},
+                    {"name": "countryName", "type": "STRING"},
+                    {"name": "isUnpatrolled", "type": "BOOLEAN"},
+                    {"name": "isRobot", "type": "BOOLEAN"},
+                    {"name": "commentLength", "type": "INTEGER"},
+                    {"name": "isAnonymous", "type": "BOOLEAN"},
+                    {"name": "cityName", "type": "STRING"},
+                    {"name": "added", "type": "INTEGER"},
+                    {"name": "userChars", "type": "STRING"},
+                    {"name": "channel", "type": "STRING"},
+                    {"name": "sometimeLater", "type": "TIMESTAMP"}
+                ]
+            }]
+
+            actual_yaml = ModelConfigGenerator.yaml(model=mock_model, refresh=True)
 
         expected_yaml = \
             '''dataCubes:
@@ -282,40 +435,194 @@ class TestModelConfigGenerator(unittest.TestCase):
 
     @mock.patch("redash.models.models.Model")
     def test_json(self, mock_model):
-        mock_model.table = "wikiticker"
-        mock_model.data_source.type = 'bigquery'
-        mock_model.data_source.get_schema = lambda refresh: [{
-            "name": "wikiticker",
-            "columns": [
-                {"name": "deltaByTen", "type": "FLOAT"},
-                {"name": "deleted", "type": "INTEGER"},
-                {"name": "regionName", "type": "STRING"},
-                {"name": "user", "type": "STRING"},
-                {"name": "regionIsoCode", "type": "STRING"},
-                {"name": "metroCode", "type": "INTEGER"},
-                {"name": "namespace", "type": "STRING"},
-                {"name": "isNew", "type": "BOOLEAN"},
-                {"name": "deltaBucket100", "type": "INTEGER"},
-                {"name": "page", "type": "STRING"},
-                {"name": "time", "type": "TIMESTAMP"},
-                {"name": "comment", "type": "STRING"},
-                {"name": "isMinor", "type": "BOOLEAN"},
-                {"name": "countryIsoCode", "type": "STRING"},
-                {"name": "delta", "type": "INTEGER"},
-                {"name": "countryName", "type": "STRING"},
-                {"name": "isUnpatrolled", "type": "BOOLEAN"},
-                {"name": "isRobot", "type": "BOOLEAN"},
-                {"name": "commentLength", "type": "INTEGER"},
-                {"name": "isAnonymous", "type": "BOOLEAN"},
-                {"name": "cityName", "type": "STRING"},
-                {"name": "added", "type": "INTEGER"},
-                {"name": "userChars", "type": "STRING"},
-                {"name": "channel", "type": "STRING"},
-                {"name": "sometimeLater", "type": "TIMESTAMP"}
+        with mock.patch("redash.plywood.plywood.PlywoodApi.convert_attributes") as parser:
+            parser.return_value = [
+                {
+                    "nativeType": "FLOAT",
+                    "name": "deltaByTen",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "deleted",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "regionName",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "user",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "regionIsoCode",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "metroCode",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "namespace",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "name": "isNew",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "deltaBucket100",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "page",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "TIMESTAMP",
+                    "name": "time",
+                    "type": "TIME",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "comment",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "name": "isMinor",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "countryIsoCode",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "delta",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "countryName",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "name": "isUnpatrolled",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "name": "isRobot",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "commentLength",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "name": "isAnonymous",
+                    "type": "BOOLEAN",
+                    "nativeType": "BOOLEAN",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "cityName",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "INTEGER",
+                    "name": "added",
+                    "type": "NUMBER",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "userChars",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "STRING",
+                    "name": "channel",
+                    "type": "STRING",
+                    "isSupported": True
+                },
+                {
+                    "nativeType": "TIMESTAMP",
+                    "name": "sometimeLater",
+                    "type": "TIME",
+                    "isSupported": True
+                }
             ]
-        }]
 
-        actual_json = ModelConfigGenerator.json(model=mock_model, refresh=True)
+            mock_model.table = "wikiticker"
+            mock_model.data_source.type = 'bigquery'
+            mock_model.data_source.get_schema = lambda refresh: [{
+                "name": "wikiticker",
+                "columns": [
+                    {"name": "deltaByTen", "type": "FLOAT"},
+                    {"name": "deleted", "type": "INTEGER"},
+                    {"name": "regionName", "type": "STRING"},
+                    {"name": "user", "type": "STRING"},
+                    {"name": "regionIsoCode", "type": "STRING"},
+                    {"name": "metroCode", "type": "INTEGER"},
+                    {"name": "namespace", "type": "STRING"},
+                    {"name": "isNew", "type": "BOOLEAN"},
+                    {"name": "deltaBucket100", "type": "INTEGER"},
+                    {"name": "page", "type": "STRING"},
+                    {"name": "time", "type": "TIMESTAMP"},
+                    {"name": "comment", "type": "STRING"},
+                    {"name": "isMinor", "type": "BOOLEAN"},
+                    {"name": "countryIsoCode", "type": "STRING"},
+                    {"name": "delta", "type": "INTEGER"},
+                    {"name": "countryName", "type": "STRING"},
+                    {"name": "isUnpatrolled", "type": "BOOLEAN"},
+                    {"name": "isRobot", "type": "BOOLEAN"},
+                    {"name": "commentLength", "type": "INTEGER"},
+                    {"name": "isAnonymous", "type": "BOOLEAN"},
+                    {"name": "cityName", "type": "STRING"},
+                    {"name": "added", "type": "INTEGER"},
+                    {"name": "userChars", "type": "STRING"},
+                    {"name": "channel", "type": "STRING"},
+                    {"name": "sometimeLater", "type": "TIMESTAMP"}
+                ]
+            }]
+
+            actual_json = ModelConfigGenerator.json(model=mock_model, refresh=True)
 
         exptected_json = {
             'dataCubes': [

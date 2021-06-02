@@ -171,8 +171,6 @@ class ModelConfigGenerator(object):
 
         table_schema = next((schema for schema in schemas if schema["name"] == model.table), None)
 
-        print(json.dumps(table_schema, indent=2))
-
         if table_schema is None:
             raise ValueError("Data source {} doesn't contain {} table".format(model.data_source, model.table))
 
@@ -187,8 +185,10 @@ class ModelConfigGenerator(object):
 
     @staticmethod
     def convert_attributes(model: Model, attributes: List[Attribute]) -> List[PlywoodAttribute]:
+
         db_type = model.data_source.type
         plywood_attributes = PlywoodApi.convert_attributes(db_type, [a.to_json() for a in attributes])
+        print('atribits', plywood_attributes)
         res = []
 
         for attribute in plywood_attributes:

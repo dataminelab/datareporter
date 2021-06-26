@@ -94,7 +94,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     }
 
     const viewHash = this.getViewHashFromHash(hash);
-
+    console.debug("View hash",viewHash);
     let selectedItem: DataCube;
 
     if (this.viewTypeNeedsAnItem(viewType)) {
@@ -104,6 +104,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     viewType = CUBE;
     selectedItem = dataCubes[0];
 
+    console.debug("View selectedItem",selectedItem);
     this.setState({
       viewType,
       viewHash,

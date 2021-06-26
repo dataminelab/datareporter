@@ -2,7 +2,6 @@ import unittest
 
 import mock
 import yaml
-import json
 from redash.services.model_config_generator import ModelConfigGenerator
 
 

@@ -1,3 +1,5 @@
+from typing import List, Union
+
 import yaml
 import lzstring
 import json
@@ -9,35 +11,84 @@ from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 from redash.handlers.queries import order_results
 from redash.handlers.query_results import run_query
-from redash.models import ParameterizedQuery, db
+from redash.models import ParameterizedQuery
 from redash.models.models import Model, Report
 from redash.permissions import require_permission, require_object_view_permission, require_object_modify_permission, \
     require_object_delete_permission
 from redash.plywood.plywood import PlywoodApi
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
+from redash.plywood.query_parser import PlywoodQueryParser
 
 CONTEXT = "context"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
+HASH = "hash"
 NAME = "name"
 MODEL_ID = "model_id"
 
+MAX_AGE = 60
+
 parser = lzstring.LZString()
+
+
+def lower_kind(obj: dict):
+    for v in obj['dimensions']:
+        if 'kind' in v:
+            v['kind'] = v['kind'].lower()
 
 
 class ReportGenerateResource(BaseResource):
     @require_permission("generate_report")
     def post(self, model_id):
         req = request.get_json(True)
-        require_fields(req, (DATA_CUBE, EXPRESSION,))
+
         model = get_object_or_404(Model.get_by_id, model_id)
         plywood_request = self._build_plywood_request(req, model)
         queries = PlywoodApi.convert_to_sql(body=plywood_request)
-        max_age = req.get("max_age", -1)
+
+        max_age = req.get("max_age", MAX_AGE)
         query_id = "adhoc"
 
-        return [self.execute_query(query, max_age, model, query_id) for query in queries]
+        queries_result = [self.execute_query(query, max_age, model, query_id) for query in queries]
+
+        return self._parse_result(queries_result, req, model)
+
+    @staticmethod
+    def _jobs_status(data: List[dict]) -> Union[None, int]:
+        status = None
+
+        for res in data:
+            if 'job' in res:
+                status = res['job']['status']
+
+        return status
+
+    def _get_shape(self, req, model: Model):
+        req = self._build_plywood_request(req=req, model=model)
+        shape = PlywoodApi.get_shape(req)
+        return shape['shape']
+
+    def _parse_result(self, data: List[dict], req, model: Model):
+        """
+        Redash caches result, after second+ request it will be possible
+        to get result from cache it, parse and return full data
+        """
+        if len(data) == 0:
+            abort(400, message='Error with query')
+
+        is_fetching = ReportGenerateResource._jobs_status(data)
+
+        if is_fetching:
+            return dict(data=None, status=is_fetching, query=data)
+
+        context = ReportGenerateResource._build_context(model)
+        shape = self._get_shape(req=req, model=model)
+        query_parser = PlywoodQueryParser(query_result=data, data_cube_name=context.get('source', 'main'), shape=shape)
+
+        res = query_parser.parse_ply(ReportGenerateResource._get_ply_engine(model))
+
+        return dict(data=res, status=200, query=data, shape=shape)
 
     def execute_query(self, query: str, max_age: int, model: Model, query_id: str):
         parameterized_query = ParameterizedQuery(query, org=self.current_org)
@@ -48,18 +99,45 @@ class ReportGenerateResource(BaseResource):
         )
 
     @staticmethod
+    def _get_expression_from_req(req, model: Model):
+        config = yaml.load(model.config.content, Loader=yaml.FullLoader)
+
+        data_cube = next(iter(config["dataCubes"]), None)
+
+        lower_kind(data_cube)
+        expression = req.get(EXPRESSION, None)
+        hash_string = req.get(HASH, None)
+
+        if expression and hash_string:
+            abort(400, message=f"Expression and hash both were passed, only one is allowed")
+
+        if not expression and not hash_string:
+            abort(400, message=f"Expression or hash was not passed. Please send expression or hash.")
+
+        if hash_string:
+            expression = PlywoodApi.convert_hash_to_expression(hash=hash_string, data_cube=data_cube)
+
+        return expression
+
+    @staticmethod
+    def _get_ply_engine(model: Model):
+        return PlywoodApi.convert_redash_db_type_to_plywood_engine(ReportGenerateResource._get_engine(model))
+
+    @staticmethod
     def _build_plywood_request(req, model: Model):
         context = ReportGenerateResource._build_context(model)
+        real_ex = ReportGenerateResource._get_expression_from_req(req, model)
+
         return {
-            DATA_CUBE: "main",
+            DATA_CUBE: context.get('source', 'main'),
             CONTEXT: context,
-            EXPRESSION: req[EXPRESSION]
+            EXPRESSION: real_ex
         }
 
     @staticmethod
     def _build_context(model: Model):
         return {
-            "engine": ReportGenerateResource._get_engine(model),
+            "engine": ReportGenerateResource._get_ply_engine(model),
             "source": ReportGenerateResource._get_source_name(model),
             "attributes": ReportGenerateResource._get_table_columns(model)
         }

@@ -79,6 +79,9 @@ export function getHashSegments(hash: string): HashSegments {
 
 export const urlHashConverter: UrlHashConverter = {
   essenceFromHash(hash: string, dataCube: DataCube): Essence {
+
+
+    console.log('called');
     const { version, encodedModel, visualization } = getHashSegments(hash);
 
     const urlEncoder = definitionUrlEncoders[version];

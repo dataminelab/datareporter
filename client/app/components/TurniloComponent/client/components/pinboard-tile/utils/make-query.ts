@@ -26,8 +26,6 @@ const TOP_N = 100;
 
 function filterExpression({ essence, searchText, timekeeper, dimension }: QueryParams): Expression {
 
-  console.log('called');
-
   const expression = essence
     .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
     .toExpression(essence.dataCube);

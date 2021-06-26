@@ -233,7 +233,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   updateEssenceFromHashOrDataCube(hash: string, dataCube: DataCube) {
-    console.log(`Hash is   ${hash}`);
     let essence: Essence;
     try {
       essence = this.getEssenceFromHash(hash, dataCube);
@@ -242,7 +241,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       essence = this.getEssenceFromDataCube(dataCube);
       changeEssence(essence, true);
     }
-    console.log('Essense is ',JSON.stringify(essence));
     this.setState({ essence });
   }
 

@@ -72,7 +72,7 @@ class ReportGenerateResource(BaseResource):
     def _parse_result(self, data: List[dict], req, model: Model):
         """
         Redash caches result, after second+ request it will be possible
-        to get result from cache it, parse and return full data
+        to get result from cache, parse and return full data
         """
         if len(data) == 0:
             abort(400, message='Error with query')

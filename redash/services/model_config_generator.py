@@ -188,7 +188,6 @@ class ModelConfigGenerator(object):
 
         db_type = model.data_source.type
         plywood_attributes = PlywoodApi.convert_attributes(db_type, [a.to_json() for a in attributes])
-        print('atribits', plywood_attributes)
         res = []
 
         for attribute in plywood_attributes:

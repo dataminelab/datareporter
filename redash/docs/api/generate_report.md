@@ -9,7 +9,6 @@ POST http://{host}/api/reports/generate/:modelID
 Current API works only with 1 split, 1 measure, and does not support time shift.
 It's not yet handled so it will just throw.
 
-
 `Body`
 
 | Key          | Type     | Description                                                      |

@@ -1,7 +1,7 @@
 from typing import Callable
+import json
 
 import lzstring
-import json
 
 from redash.plywood.data_cube_handler import DataCube
 from redash.plywood.plywood import PlywoodApi
@@ -11,6 +11,17 @@ parser = lzstring.LZString()
 CONTEXT = "context"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
+
+SUPPORTED_VISUALIZATION = ['table']
+SUPPORTED_MAX_FILTER_LENGTH = 1
+SUPPORTED_MAX_SPLIT_LENGTH = 1
+SUPPORTED_MAX_MEASURE_LENGTH = 1
+SUPPORTED_MAX_SERIES = 1
+
+
+class ExpressionNotSupported(Exception):
+    def __init__(self, message):
+        self.message = message
 
 
 class Expression:
@@ -48,8 +59,46 @@ class Expression:
             func=lambda: json.loads(parser.decompressFromBase64(self._hash))
         )
 
+    def _visualization_validation(self):
+        visualization = self.filter['visualization']
+        if visualization not in SUPPORTED_VISUALIZATION:
+            raise ExpressionNotSupported(message=f'{visualization} is not supported')
+
+    def _filters_validations(self):
+        filters = self.filter['filters']
+
+        if len(filters) > SUPPORTED_MAX_FILTER_LENGTH:
+            raise ExpressionNotSupported(
+                message=f'Filter length is not supported, max is {SUPPORTED_MAX_FILTER_LENGTH}'
+            )
+
+    def _splits_validation(self):
+        splits = self.filter['splits']
+
+        if len(splits) > SUPPORTED_MAX_SPLIT_LENGTH:
+            raise ExpressionNotSupported(
+                message=f'Split length is not supported, max is {SUPPORTED_MAX_SPLIT_LENGTH}'
+            )
+
+    def _series_validation(self):
+        series = self.filter['series']
+
+        if len(series) > SUPPORTED_MAX_SERIES:
+            raise ExpressionNotSupported(
+                message=f'Series length is not supported, max is {SUPPORTED_MAX_SERIES}'
+            )
+
+    def _supported_validation(self):
+        """Supported validation breakpoint"""
+
+        self._visualization_validation()
+        self._filters_validations()
+        self._splits_validation()
+        self._series_validation()
+
     @property
     def expression(self):
+        self._supported_validation()
         return self._get_from_cache_or_set(
             name="expression",
             func=lambda: PlywoodApi.convert_hash_to_expression(

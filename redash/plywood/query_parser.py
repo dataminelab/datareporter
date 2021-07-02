@@ -1,12 +1,10 @@
 import copy
 from typing import List
 
-from redash.plywood.data_cube_handler import DataCube
+from redash.plywood.expression_handler import ExpressionNotSupported
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
-
 TIME_SHIFT_ATTRS = '_delta__'
-
 supported_engines = ['postgres', 'mysql', 'bigquery']
 
 
@@ -22,7 +20,7 @@ class PlywoodQueryParserV1:
         if engine in supported_engines:
             return self.query_to_ply_data()
 
-        raise AttributeError("Engine not supported")
+        raise ExpressionNotSupported(message=f'{engine} is not supported')
 
     @staticmethod
     def _contains_time_shift(columns: list):

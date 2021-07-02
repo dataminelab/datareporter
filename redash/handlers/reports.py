@@ -16,7 +16,7 @@ from redash.models.models import Model, Report
 from redash.permissions import require_permission, require_object_view_permission, require_object_modify_permission, \
     require_object_delete_permission
 from redash.plywood.data_cube_handler import DataCube
-from redash.plywood.expression_handler import Expression
+from redash.plywood.expression_handler import Expression, ExpressionNotSupported
 from redash.plywood.plywood import PlywoodApi
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
@@ -77,8 +77,10 @@ class ReportGenerateResource(BaseResource):
         query_parser = PlywoodQueryParserV1(query_result=queries,
                                             data_cube_name=data_cube.source_name,
                                             shape=expression.shape)
-
-        return query_parser.parse_ply(data_cube.ply_engine)
+        try:
+            return query_parser.parse_ply(data_cube.ply_engine)
+        except ExpressionNotSupported as e:
+            abort(400, message=e.message)
 
     @staticmethod
     def _jobs_status(data: List[dict]) -> Union[None, int]:

@@ -40,8 +40,8 @@ class PlywoodApi(object):
             raise e
 
     @staticmethod
-    def convert_redash_db_type_to_plywood_engine(redash_db_type: str):
-        redash = redash_db_type.lower()
+    def redash_db_name_to_plywood(redash_db_name: str):
+        redash = redash_db_name.lower()
         return REDASH_PLYWOOD_DB.get(redash, redash)
 
     @classmethod
@@ -60,7 +60,7 @@ class PlywoodApi(object):
     @classmethod
     def convert_attributes(cls, redash_db_type: str, attributes: list) -> List[dict]:
         url = cls.PLYWOOD_URL + '/attributes'
-        engine = cls.convert_redash_db_type_to_plywood_engine(redash_db_type)
+        engine = cls.redash_db_name_to_plywood(redash_db_type)
 
         body = dict(engine=engine, attributes=attributes)
         try:

@@ -1,6 +1,8 @@
 import copy
 from typing import List
 
+from redash.plywood.data_cube_handler import DataCube
+
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 
 TIME_SHIFT_ATTRS = '_delta__'
@@ -8,13 +10,13 @@ TIME_SHIFT_ATTRS = '_delta__'
 supported_engines = ['postgres', 'mysql', 'bigquery']
 
 
-class PlywoodQueryParser:
+class PlywoodQueryParserV1:
 
     def __init__(self, query_result: List, data_cube_name: str, shape: dict, visualization='table'):
-        self.query_result = query_result
-        self.data_cube_name = data_cube_name
-        self.shape = shape
-        self.visualization = visualization
+        self._query_result = query_result
+        self._data_cube_name = data_cube_name
+        self._shape = shape
+        self._visualization = visualization
 
     def parse_ply(self, engine: str):
         if engine in supported_engines:
@@ -30,20 +32,20 @@ class PlywoodQueryParser:
         return False
 
     def query_to_ply_data(self):
-        res = copy.deepcopy(self.shape)
+        res = copy.deepcopy(self._shape)
 
         def recursive_fill(data: dict, depth=0):
             change_attrs = list(
-                filter(lambda x: (x['name'] not in SYSTEM_FIELDS and x['name'] != self.data_cube_name),
+                filter(lambda x: (x['name'] not in SYSTEM_FIELDS and x['name'] != self._data_cube_name),
                        data['attributes']))
 
-            rows: list = self.query_result[depth]['query_result']['data']['rows']
-            columns: list = self.query_result[depth]['query_result']['data']['columns']
+            rows: list = self._query_result[depth]['query_result']['data']['rows']
+            columns: list = self._query_result[depth]['query_result']['data']['columns']
 
             for value in change_attrs:
                 key = value['name']
 
-                if PlywoodQueryParser._contains_time_shift(columns) and len(rows) == 1:
+                if PlywoodQueryParserV1._contains_time_shift(columns) and len(rows) == 1:
                     row = next(iter(rows), None)
                     data['data'][0][key] = row[key]
 
@@ -68,3 +70,7 @@ class PlywoodQueryParser:
         recursive_fill(res)
 
         return res
+
+
+class QueryMaker:
+    pass

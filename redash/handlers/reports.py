@@ -29,9 +29,10 @@ HASH = "hash"
 NAME = "name"
 MODEL_ID = "model_id"
 
-MAX_AGE = 60
+MAX_AGE = -1
 
 parser = lzstring.LZString()
+QUERY_ID = 'adhoc'
 
 
 def lower_kind(obj: dict):
@@ -43,25 +44,26 @@ def lower_kind(obj: dict):
 class ReportGenerateResource(BaseResource):
     @require_permission("generate_report")
     def post(self, model_id):
+
         req = request.get_json(True)
 
         require_fields(req, (HASH,))
         hash_string = req[HASH]
 
         model = get_object_or_404(Model.get_by_id, model_id)
+        try:
+            data_cube = DataCube(model=model)
+            expression = Expression(hash=hash_string, data_cube=data_cube)
 
-        data_cube = DataCube(model=model)
-        expression = Expression(hash=hash_string, data_cube=data_cube)
+            max_age = req.get("max_age", MAX_AGE)
 
-        max_age = req.get("max_age", MAX_AGE)
-        query_id = "adhoc"
+            queries_result = [self.execute_query(query, max_age, model, QUERY_ID) for query in expression.queries]
 
-        queries_result = [self.execute_query(query, max_age, model, query_id) for query in expression.queries]
+            return self._parse_result(queries=queries_result, data_cube=data_cube, expression=expression, model=model)
+        except ExpressionNotSupported as e:
+            abort(400, message=e.message)
 
-        return self._parse_result(queries=queries_result, data_cube=data_cube, expression=expression)
-
-    @staticmethod
-    def _parse_result(queries: List[dict], data_cube: DataCube, expression: Expression):
+    def _parse_result(self, queries: List[dict], data_cube: DataCube, expression: Expression, model: Model):
         """
         Redash caches result and returns query in the same endpoint
         So we poll this url and if jobs are ready we transform it
@@ -74,13 +76,25 @@ class ReportGenerateResource(BaseResource):
         if is_fetching:
             return dict(data=None, status=is_fetching, query=queries)
 
+        if expression.is_2_splits():
+            queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
+
+            queries = [self.execute_query(query, MAX_AGE, model, QUERY_ID) for query in queries_2_splits]
+
+            is_fetching = ReportGenerateResource._jobs_status(queries)
+
+            if is_fetching:
+                return dict(data=None, status=is_fetching, query=queries)
+
         query_parser = PlywoodQueryParserV1(query_result=queries,
                                             data_cube_name=data_cube.source_name,
                                             shape=expression.shape)
-        try:
-            return query_parser.parse_ply(data_cube.ply_engine)
-        except ExpressionNotSupported as e:
-            abort(400, message=e.message)
+
+        return dict(data=query_parser.parse_ply(data_cube.ply_engine),
+                    status=is_fetching,
+                    query=queries,
+                    shape=expression.shape
+                    )
 
     @staticmethod
     def _jobs_status(data: List[dict]) -> Union[None, int]:

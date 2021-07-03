@@ -23,6 +23,8 @@ class PlywoodApi(object):
         try:
             response = requests.post(url=cls.PLYWOOD_URL, json=body)
             queries = response.json()['queries']
+
+            print(queries)
             return list(itertools.chain.from_iterable(queries))
         except Exception as e:
             logger.error("Error occurred during sending request to Plywood Server", e)

@@ -14,9 +14,9 @@ EXPRESSION = "expression"
 
 SUPPORTED_VISUALIZATION = ['table']
 SUPPORTED_MAX_FILTER_LENGTH = 1
-SUPPORTED_MAX_SPLIT_LENGTH = 1
+SUPPORTED_MAX_SPLIT_LENGTH = 3
 SUPPORTED_MAX_MEASURE_LENGTH = 1
-SUPPORTED_MAX_SERIES = 1
+SUPPORTED_MAX_SERIES = 2
 
 
 class ExpressionNotSupported(Exception):
@@ -30,11 +30,12 @@ class Expression:
     *Hash to expression conversion
     *Supported filter checker
     """
-    _mem_cache = {}
+    _mem_cache: dict = None
 
     def __init__(self, hash: str, data_cube: DataCube):
         self._data_cube = data_cube
         self._hash = hash
+        self._mem_cache = dict()
 
     def _get_from_cache_or_set(self, name: str, func: Callable, refresh=False):
         if name in self._mem_cache and refresh is False:
@@ -115,8 +116,36 @@ class Expression:
         )
 
     @property
-    def queries(self):
+    def queries(self) -> list:
         return self._get_from_cache_or_set(
             name="queries",
             func=lambda: PlywoodApi.convert_to_sql(body=self._get_plywood_request())
         )
+
+    def is_2_splits(self):
+        return len(self.filter['splits']) == 2
+
+    def get_2_splits_queries(self, prev_result: list) -> list:
+        queries = self.queries
+
+        if len(queries) != 3:
+            print(f'Might not work as expected')
+
+        last_query: str = queries[len(queries) - 1]
+        second_result = prev_result[1]
+        column_name = self.filter["splits"][0]["dimension"]
+        some_column_name = f'some_{column_name}'
+
+        if some_column_name not in last_query:
+            print('last query', last_query)
+            print('some', some_column_name)
+            raise Exception(f'{some_column_name} is not present in query')
+
+        two_splits_queries = []
+
+        for row in second_result['query_result']['data']['rows']:
+            print(row)
+            query = last_query.replace(some_column_name, row[column_name])
+            two_splits_queries.append(query)
+
+        return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]

@@ -37,33 +37,39 @@ class PlywoodQueryParserV1:
                 filter(lambda x: (x['name'] not in SYSTEM_FIELDS and x['name'] != self._data_cube_name),
                        data['attributes']))
 
-            rows: list = self._query_result[depth]['query_result']['data']['rows']
-            columns: list = self._query_result[depth]['query_result']['data']['columns']
+            if depth <= 1:
 
-            for value in change_attrs:
-                key = value['name']
+                rows: list = self._query_result[depth]['query_result']['data']['rows']
+                columns: list = self._query_result[depth]['query_result']['data']['columns']
 
-                if PlywoodQueryParserV1._contains_time_shift(columns) and len(rows) == 1:
-                    row = next(iter(rows), None)
-                    data['data'][0][key] = row[key]
+                for value in change_attrs:
+                    key = value['name']
 
-                elif len(columns) == 1:
-                    row = next(iter(rows), None)
-                    # handle only __VALUE__ case
-                    if columns[0]['name'] == '__VALUE__':
-                        if row is None:
-                            data['data'][0][key] = 0
+                    if PlywoodQueryParserV1._contains_time_shift(columns) and len(rows) == 1:
+                        row = next(iter(rows), None)
+                        data['data'][0][key] = row[key]
+
+                    elif len(columns) == 1:
+                        row = next(iter(rows), None)
+                        # handle only __VALUE__ case
+                        if columns[0]['name'] == '__VALUE__':
+                            if row is None:
+                                data['data'][0][key] = 0
+                            else:
+                                data['data'][0][key] = row.get('__VALUE__', 0)
+
+                        # REST LATER
                         else:
-                            data['data'][0][key] = row.get('__VALUE__', 0)
-
-                    # REST LATER
+                            pass
                     else:
-                        pass
-                else:
-                    data['data'] = rows
+                        data['data'] = rows
 
-            if len(data['data']) >= 1 and 'SPLIT' in data['data'][0]:
-                recursive_fill(data['data'][0]['SPLIT'], depth=depth + 1)
+                if len(data['data']) >= 1 and 'SPLIT' in data['data'][0]:
+                    recursive_fill(data['data'][0]['SPLIT'], depth=depth + 1)
+            else:
+                print('other')
+
+                pass
 
         recursive_fill(res)
 

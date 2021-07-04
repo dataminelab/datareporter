@@ -77,6 +77,7 @@ class ReportGenerateResource(BaseResource):
             return dict(data=None, status=is_fetching, query=queries)
 
         if expression.is_2_splits():
+            print('is 2s splits')
             queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
 
             queries = [self.execute_query(query, MAX_AGE, model, QUERY_ID) for query in queries_2_splits]
@@ -91,7 +92,7 @@ class ReportGenerateResource(BaseResource):
                                             shape=expression.shape)
 
         return dict(data=query_parser.parse_ply(data_cube.ply_engine),
-                    status=is_fetching,
+                    status=200,
                     query=queries,
                     shape=expression.shape
                     )

@@ -137,14 +137,11 @@ class Expression:
         some_column_name = f'some_{column_name}'
 
         if some_column_name not in last_query:
-            print('last query', last_query)
-            print('some', some_column_name)
             raise Exception(f'{some_column_name} is not present in query')
 
         two_splits_queries = []
 
         for row in second_result['query_result']['data']['rows']:
-            print(row)
             query = last_query.replace(some_column_name, row[column_name])
             two_splits_queries.append(query)
 

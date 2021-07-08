@@ -12,7 +12,6 @@ class PlywoodQueryParserV2:
     version = 2
 
     def __init__(self, query_result: List, data_cube_name: str, shape: dict, visualization='table'):
-        print(f'USING VERSION {self.version}')
         self._query_result = query_result
         self._data_cube_name = data_cube_name
         self._shape = shape
@@ -69,30 +68,34 @@ class PlywoodQueryParserV2:
         return rows
 
     def _build_first_split(self, shape: dict):
+        split_data = shape['data'][0]['SPLIT']
         data = self._get_first_split()
-        sample = copy.deepcopy(shape['data'][0]['SPLIT']['data'][0])
-        shape['data'][0]['SPLIT']['data'] = list()
+        sample = copy.deepcopy(split_data['data'][0])
+        split_data['data'] = list()
 
         for value in data:
             sample_copy = copy.deepcopy(sample)
             sample_copy.update(value)
-            shape['data'][0]['SPLIT']['data'].append(sample_copy)
+            split_data['data'].append(sample_copy)
 
     def _build_second_split(self, shape: dict):
-        column_name = next(iter(shape['data'][0]['SPLIT']['keys']))
 
-        for value in shape['data'][0]['SPLIT']['data']:
+        split = shape['data'][0]['SPLIT']
+
+        column_name = next(iter(split['keys']))
+
+        for value in split['data']:
             column_value = value[column_name]
 
             query = next((item for item in self._query_result if column_value in item['query_result']['query']), None)
             if query is None:
                 continue
 
-            index = next((index for (index, d) in enumerate(shape['data'][0]['SPLIT']['data']) if
+            index = next((index for (index, d) in enumerate(split['data']) if
                           d[column_name] == column_value), None)
 
             row = next(iter(query['query_result']['data']['rows']), None)
-            shape['data'][0]['SPLIT']['data'][index]['SPLIT']['data'][0].update(row)
+            split['data'][index]['SPLIT']['data'][0].update(row)
 
     def _query_to_ply_data(self):
         shape = copy.deepcopy(self._shape)

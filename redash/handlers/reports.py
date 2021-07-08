@@ -18,6 +18,7 @@ from redash.permissions import require_permission, require_object_view_permissio
 from redash.plywood.data_cube_handler import DataCube
 from redash.plywood.expression_handler import Expression, ExpressionNotSupported
 from redash.plywood.plywood import PlywoodApi
+from redash.plywood.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
 from redash.plywood.query_parser import PlywoodQueryParserV1
@@ -49,6 +50,7 @@ class ReportGenerateResource(BaseResource):
 
         require_fields(req, (HASH,))
         hash_string = req[HASH]
+        version = req.get('version', 'v2')
 
         model = get_object_or_404(Model.get_by_id, model_id)
         try:
@@ -59,11 +61,22 @@ class ReportGenerateResource(BaseResource):
 
             queries_result = [self.execute_query(query, max_age, model, QUERY_ID) for query in expression.queries]
 
-            return self._parse_result(queries=queries_result, data_cube=data_cube, expression=expression, model=model)
+            return self._parse_result(queries=queries_result,
+                                      data_cube=data_cube,
+                                      expression=expression,
+                                      model=model,
+                                      version=version)
         except ExpressionNotSupported as e:
             abort(400, message=e.message)
 
-    def _parse_result(self, queries: List[dict], data_cube: DataCube, expression: Expression, model: Model):
+    def _parse_result(
+        self,
+        queries: List[dict],
+        data_cube: DataCube,
+        expression: Expression,
+        model: Model,
+        version='v1',
+    ):
         """
         Redash caches result and returns query in the same endpoint
         So we poll this url and if jobs are ready we transform it
@@ -77,7 +90,6 @@ class ReportGenerateResource(BaseResource):
             return dict(data=None, status=is_fetching, query=queries)
 
         if expression.is_2_splits():
-            print('is 2s splits')
             queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
 
             queries = [self.execute_query(query, MAX_AGE, model, QUERY_ID) for query in queries_2_splits]
@@ -87,9 +99,15 @@ class ReportGenerateResource(BaseResource):
             if is_fetching:
                 return dict(data=None, status=is_fetching, query=queries)
 
-        query_parser = PlywoodQueryParserV1(query_result=queries,
-                                            data_cube_name=data_cube.source_name,
-                                            shape=expression.shape)
+        if version == 'v1':
+            query_parser = PlywoodQueryParserV1(query_result=queries,
+                                                data_cube_name=data_cube.source_name,
+                                                shape=expression.shape)
+
+        else:
+            query_parser = PlywoodQueryParserV2(query_result=queries,
+                                                data_cube_name=data_cube.source_name,
+                                                shape=expression.shape)
 
         return dict(data=query_parser.parse_ply(data_cube.ply_engine),
                     status=200,

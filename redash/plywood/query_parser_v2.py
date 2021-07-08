@@ -9,8 +9,10 @@ supported_engines = ['postgres', 'mysql', 'bigquery']
 
 
 class PlywoodQueryParserV2:
+    version = 2
 
     def __init__(self, query_result: List, data_cube_name: str, shape: dict, visualization='table'):
+        print(f'USING VERSION {self.version}')
         self._query_result = query_result
         self._data_cube_name = data_cube_name
         self._shape = shape
@@ -37,13 +39,15 @@ class PlywoodQueryParserV2:
         return change_attrs
 
     def _get_zero_value(self, attributes: list):
+        """First query is always about count"""
         res = {}
+
+        rows: list = self._query_result[0]['query_result']['data']['rows']
+        columns: list = self._query_result[0]['query_result']['data']['columns']
 
         for value in attributes:
             key = value['name']
 
-            rows: list = self._query_result[0]['query_result']['data']['rows']
-            columns: list = self._query_result[0]['query_result']['data']['columns']
             if PlywoodQueryParserV2._contains_time_shift(columns):
                 row = next(iter(rows))
                 res[key] = row[key]
@@ -54,11 +58,41 @@ class PlywoodQueryParserV2:
                         res[key] = 0
                     else:
                         res[key] = row.get('__VALUE__', 0)
+                else:
+                    res[key] = row.get(key, 0)
+
         return res
 
     def _get_first_split(self):
+        """if only one split it's safe change to copy result"""
         rows: list = self._query_result[1]['query_result']['data']['rows']
         return rows
+
+    def _build_first_split(self, shape: dict):
+        data = self._get_first_split()
+        sample = copy.deepcopy(shape['data'][0]['SPLIT']['data'][0])
+        shape['data'][0]['SPLIT']['data'] = list()
+
+        for value in data:
+            sample_copy = copy.deepcopy(sample)
+            sample_copy.update(value)
+            shape['data'][0]['SPLIT']['data'].append(sample_copy)
+
+    def _build_second_split(self, shape: dict):
+        column_name = next(iter(shape['data'][0]['SPLIT']['keys']))
+
+        for value in shape['data'][0]['SPLIT']['data']:
+            column_value = value[column_name]
+
+            query = next((item for item in self._query_result if column_value in item['query_result']['query']), None)
+            if query is None:
+                continue
+
+            index = next((index for (index, d) in enumerate(shape['data'][0]['SPLIT']['data']) if
+                          d[column_name] == column_value), None)
+
+            row = next(iter(query['query_result']['data']['rows']), None)
+            shape['data'][0]['SPLIT']['data'][index]['SPLIT']['data'][0].update(row)
 
     def _query_to_ply_data(self):
         shape = copy.deepcopy(self._shape)
@@ -72,7 +106,10 @@ class PlywoodQueryParserV2:
 
         # If exists second query, means it's 1 split
 
-        if len(self._query_result) == 2:
-            data = self._get_first_split()
-            shape['data'][0]['SPLIT']['data'] = data
+        if len(self._query_result) >= 2:
+            self._build_first_split(shape=shape)
+
+        if len(self._query_result) >= 3:
+            self._build_second_split(shape=shape)
+
         return shape

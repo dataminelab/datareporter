@@ -1,4 +1,5 @@
 import copy
+import json
 from typing import List
 
 from redash.plywood.expression_handler import ExpressionNotSupported
@@ -9,6 +10,7 @@ supported_engines = ['postgres', 'mysql', 'bigquery']
 
 
 class PlywoodQueryParserV1:
+    version = 1
 
     def __init__(self, query_result: List, data_cube_name: str, shape: dict, visualization='table'):
         self._query_result = query_result
@@ -31,6 +33,8 @@ class PlywoodQueryParserV1:
 
     def query_to_ply_data(self):
         res = copy.deepcopy(self._shape)
+        print('SHAPE', (self._shape))
+        print('QUERY', (self._query_result))
 
         def recursive_fill(data: dict, depth=0):
             change_attrs = list(
@@ -67,7 +71,7 @@ class PlywoodQueryParserV1:
                     if contains_split is False:
                         data['data'] = rows
                     else:
-                        print('data', data)
+                        print('DATA KEYS', data)
                         sample = next(iter(data['data']))
                         column_name = next(iter(data['keys']))
 

@@ -1,5 +1,4 @@
 import copy
-import json
 from typing import List
 
 from redash.plywood.expression_handler import ExpressionNotSupported

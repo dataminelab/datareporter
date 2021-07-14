@@ -1,3 +1,4 @@
+import json
 import unittest
 
 from redash.plywood.query_parser import PlywoodQueryParserV1
@@ -17,7 +18,6 @@ from tests.plywood.fixtures.test_data_2_splits_1_measure_1_filter import POSTGRE
 
 CUSTOMER_DATA_CUBE = 'customer'
 CUSTOMER_DATA_CUBE_BIG_QUERY = 'public.wikiticker'
-
 
 ENGINE = 'postgres'
 ENGINE_BIG_QUERY = 'bigquery'
@@ -142,5 +142,4 @@ class TestPostgresParseV2(unittest.TestCase):
         )
 
         data = parser.parse_ply(ENGINE_BIG_QUERY)
-
         self.assertDictEqual(data, POSTGRES_2_SPLIT_RESULT_BIG_QUERY)

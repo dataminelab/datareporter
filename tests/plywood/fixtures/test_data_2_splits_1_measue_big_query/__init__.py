@@ -390,6 +390,10 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                                 {
                                     "isMinor": False,
                                     "added": 7525182
+                                },
+                                {
+                                    "isMinor": True,
+                                    "added": 1236334
                                 }
                             ]
                         }
@@ -488,9 +492,8 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                             ],
                             "data": [
                                 {
-                                    "isMinor": True,
-                                    "added": 8761516,
-                                    "countryIsoCode": None
+                                    "isMinor": False,
+                                    "added": 41073
                                 }
                             ]
                         }

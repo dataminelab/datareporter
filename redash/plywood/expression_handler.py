@@ -8,6 +8,8 @@ from redash.plywood.plywood import PlywoodApi
 
 parser = lzstring.LZString()
 
+REPLACE_DATA_CUBE_NAME = 'MAIN_NO_REPEAT_NAME'
+
 CONTEXT = "context"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
@@ -22,6 +24,15 @@ SUPPORTED_MAX_SERIES = 2
 class ExpressionNotSupported(Exception):
     def __init__(self, message):
         self.message = message
+
+
+def replace_value_in_dict(obj: dict, value: str, replace: str):
+    for k, v in obj.items():
+        if isinstance(v, str):
+            if v == value:
+                obj[k] = replace
+        elif isinstance(v, dict):
+            replace_value_in_dict(v, value, replace)
 
 
 class Expression:
@@ -100,13 +111,19 @@ class Expression:
     @property
     def expression(self):
         self._supported_validation()
-        return self._get_from_cache_or_set(
+        cube = self._data_cube.data_cube
+        old_name = cube['name']
+        cube['name'] = REPLACE_DATA_CUBE_NAME
+
+        res = self._get_from_cache_or_set(
             name="expression",
             func=lambda: PlywoodApi.convert_hash_to_expression(
                 hash=self._hash,
-                data_cube=self._data_cube.data_cube
+                data_cube=cube
             )
         )
+        replace_value_in_dict(res, REPLACE_DATA_CUBE_NAME, old_name)
+        return res
 
     @property
     def shape(self):
@@ -168,7 +185,6 @@ class Expression:
         last_query: str = queries[len(queries) - 1]
 
         if self._is_last_query_boolean(last_query):
-            print("BOOLEAN")
             return self._get_boolean_queries(last_query=last_query)
         else:
             return self._get_string_queries(last_query=last_query, prev_result=prev_result)

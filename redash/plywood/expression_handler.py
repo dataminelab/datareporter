@@ -125,14 +125,18 @@ class Expression:
     def is_2_splits(self):
         return len(self.filter['splits']) == 2
 
-    def get_2_splits_queries(self, prev_result: list) -> list:
-        queries = self.queries
+    @staticmethod
+    def _is_last_query_boolean(query: str):
+        return 'true' in query.lower()
 
-        if len(queries) != 3:
-            print(f'Might not work as expected')
+    def _get_boolean_queries(self, last_query):
+        res = [last_query]
+        false_query = last_query.replace('TRUE', 'FALSE')
 
-        last_query: str = queries[len(queries) - 1]
+        r = [*self.queries[0:len(self.queries) - 1], *res, false_query]
+        return r
 
+    def _get_string_queries(self, last_query, prev_result):
         second_result = prev_result[1]
         column_name = self.filter["splits"][0]["dimension"]
         some_column_name = f'some_{column_name}'
@@ -154,3 +158,17 @@ class Expression:
             two_splits_queries.append(query)
 
         return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]
+
+    def get_2_splits_queries(self, prev_result: list) -> list:
+        queries = self.queries
+
+        if len(queries) != 3:
+            print(f'Might not work as expected')
+
+        last_query: str = queries[len(queries) - 1]
+
+        if self._is_last_query_boolean(last_query):
+            print("BOOLEAN")
+            return self._get_boolean_queries(last_query=last_query)
+        else:
+            return self._get_string_queries(last_query=last_query, prev_result=prev_result)

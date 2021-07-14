@@ -1,7 +1,6 @@
 import copy
 import logging
 from typing import List
-
 import pydash
 
 from redash.plywood.data_cube_handler import DataCube
@@ -104,7 +103,7 @@ class PlywoodQueryParserV2:
         column_name = pydash.head(split['keys'])
 
         for value in split['data']:
-            search_column_name = self.null if value[column_name] is None else value[column_name]
+            search_column_name = self.null if value[column_name] is None else f"'{value[column_name]}'"
 
             query = pydash.find(self._query_result, lambda v: search_column_name in v['query_result']['query'])
             if query is None: continue
@@ -112,10 +111,7 @@ class PlywoodQueryParserV2:
             index = pydash.find_index(split['data'], lambda v: v[column_name] == value[column_name])
             if index == -1: continue
 
-            row = pydash.head(query['query_result']['data']['rows'])
-            if row is None: continue
-
-            split['data'][index]['SPLIT']['data'][0].update(row)
+            split['data'][index]['SPLIT']['data'] = query['query_result']['data']['rows']
 
     def _query_to_ply_data(self, engine: str):
         shape = copy.deepcopy(self._shape)
@@ -128,7 +124,6 @@ class PlywoodQueryParserV2:
             shape['data'][0].update(first_replace)
 
         # If exists second query, means it's 1 split
-
         if len(self._query_result) >= 2:
             self._build_first_split(shape=shape)
 

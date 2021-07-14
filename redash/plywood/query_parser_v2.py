@@ -1,21 +1,42 @@
 import copy
+import logging
 from typing import List
 
+import pydash
+
+from redash.plywood.data_cube_handler import DataCube
 from redash.plywood.expression_handler import ExpressionNotSupported
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 TIME_SHIFT_ATTRS = '_delta__'
 supported_engines = ['postgres', 'mysql', 'bigquery']
 
+logger = logging.getLogger(__name__)
+
 
 class PlywoodQueryParserV2:
     version = 2
 
-    def __init__(self, query_result: List, data_cube_name: str, shape: dict, visualization='table'):
+    def __init__(
+        self,
+        query_result: List,
+        data_cube_name: str,
+        shape: dict,
+        visualization='table',
+        data_cube: DataCube = None
+    ):
         self._query_result = query_result
         self._data_cube_name = data_cube_name
         self._shape = shape
         self._visualization = visualization
+        self._data_cube = data_cube
+
+    @property
+    def null(self):
+        if self._data_cube:
+            return self._data_cube.null_value
+        else:
+            return 'IS NULL'
 
     def parse_ply(self, engine: str):
         if engine in supported_engines:
@@ -47,11 +68,11 @@ class PlywoodQueryParserV2:
         for value in attributes:
             key = value['name']
 
+            row = pydash.head(rows)
+
             if PlywoodQueryParserV2._contains_time_shift(columns):
-                row = next(iter(rows))
                 res[key] = row[key]
             else:
-                row = next(iter(rows), None)
                 if columns[0]['name'] == '__VALUE__':
                     if row is None:
                         res[key] = 0
@@ -79,22 +100,21 @@ class PlywoodQueryParserV2:
             split_data['data'].append(sample_copy)
 
     def _build_second_split(self, shape: dict):
-
         split = shape['data'][0]['SPLIT']
-
-        column_name = next(iter(split['keys']))
+        column_name = pydash.head(split['keys'])
 
         for value in split['data']:
-            column_value = value[column_name]
+            search_column_name = self.null if value[column_name] is None else value[column_name]
 
-            query = next((item for item in self._query_result if column_value in item['query_result']['query']), None)
-            if query is None:
-                continue
+            query = pydash.find(self._query_result, lambda v: search_column_name in v['query_result']['query'])
+            if query is None: continue
 
-            index = next((index for (index, d) in enumerate(split['data']) if
-                          d[column_name] == column_value), None)
+            index = pydash.find_index(split['data'], lambda v: v[column_name] == value[column_name])
+            if index == -1: continue
 
-            row = next(iter(query['query_result']['data']['rows']), None)
+            row = pydash.head(query['query_result']['data']['rows'])
+            if row is None: continue
+
             split['data'][index]['SPLIT']['data'][0].update(row)
 
     def _query_to_ply_data(self):

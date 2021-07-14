@@ -1,5 +1,7 @@
 import yaml
 
+import pydash
+
 from redash.models.models import Model
 from redash.plywood.plywood import PlywoodApi
 
@@ -60,6 +62,17 @@ class DataCube:
         self._model = model
 
     @property
+    def null_value(self):
+        if self.ply_engine == 'postgres':
+            return "IS NULL"
+        elif self.ply_engine == 'bigquery':
+            return "IS NULL"
+        elif self.ply_engine == 'mysql':
+            return "IS NULL"
+
+        return "IS NULL"
+
+    @property
     def redash_engine(self):
         """Returns redash database name"""
         return self._model.data_source.type
@@ -73,7 +86,7 @@ class DataCube:
     def attributes(self):
         """Returns DataCube attributes"""
         config = yaml.load(self._model.config.content, Loader=yaml.FullLoader)
-        data_cube = next(iter(config["dataCubes"]), None)
+        data_cube = pydash.head(config["dataCubes"])
         attributes = data_cube["attributes"] if data_cube else []
         return attributes
 
@@ -91,7 +104,7 @@ class DataCube:
 
     @property
     def data_cube(self, lower_case_kind=True):
-        data_cube = next(iter(self.config['dataCubes']))
+        data_cube = pydash.head(self.config["dataCubes"])
 
         if lower_case_kind:
             lower_kind(data_cube)

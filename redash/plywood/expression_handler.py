@@ -14,7 +14,7 @@ EXPRESSION = "expression"
 
 SUPPORTED_VISUALIZATION = ['table']
 SUPPORTED_MAX_FILTER_LENGTH = 1
-SUPPORTED_MAX_SPLIT_LENGTH = 3
+SUPPORTED_MAX_SPLIT_LENGTH = 2
 SUPPORTED_MAX_MEASURE_LENGTH = 1
 SUPPORTED_MAX_SERIES = 2
 
@@ -132,6 +132,7 @@ class Expression:
             print(f'Might not work as expected')
 
         last_query: str = queries[len(queries) - 1]
+
         second_result = prev_result[1]
         column_name = self.filter["splits"][0]["dimension"]
         some_column_name = f'some_{column_name}'
@@ -142,7 +143,14 @@ class Expression:
         two_splits_queries = []
 
         for row in second_result['query_result']['data']['rows']:
-            query = last_query.replace(some_column_name, row[column_name])
+
+            value = row[column_name]
+            if value is None:
+                value = self._data_cube.null_value
+                query = last_query.replace(f"='{some_column_name}'", f" {value}")
+            else:
+                query = last_query.replace(some_column_name, value)
+
             two_splits_queries.append(query)
 
         return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]

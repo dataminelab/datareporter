@@ -40,7 +40,7 @@ class PlywoodQueryParserV2:
 
     def parse_ply(self, engine: str):
         if engine in supported_engines:
-            return self._query_to_ply_data()
+            return self._query_to_ply_data(engine=engine)
 
         raise ExpressionNotSupported(message=f'{engine} is not supported')
 
@@ -117,7 +117,7 @@ class PlywoodQueryParserV2:
 
             split['data'][index]['SPLIT']['data'][0].update(row)
 
-    def _query_to_ply_data(self):
+    def _query_to_ply_data(self, engine: str):
         shape = copy.deepcopy(self._shape)
 
         # First query

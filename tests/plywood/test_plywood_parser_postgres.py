@@ -75,7 +75,6 @@ class TestPostgresParseV2(unittest.TestCase):
             data_cube_name=CUSTOMER_DATA_CUBE,
             query_result=POSTGRES_0_SPLIT_JOBS,
             shape=POSTGRES_0_SPLIT_SHAPE,
-
         )
 
         data = parser.parse_ply(ENGINE)

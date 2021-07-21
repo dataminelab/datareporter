@@ -19,8 +19,8 @@ Default:'base64'
 `Request`
 ```json
 {
-    "name" : "Report name", // [required] <- Name for the mode,
-    "model_id" : 1,  // [required] <- ID of the Model from which the report is created,
+    "name" : "Report name",
+    "model_id" : 1,  
     "expression" : "N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvg+fqq+ZAAKjlgAJi6gMTAO6Fi4BBEAjAAiVlD2wvgAtBmqnt5C9nkgSgC6Km5lwcSYAmRwuNQBQQTQAHJkUlZgiDBkLmgOozXU2Jho+AoIytMgUMJIaPGEjQR5DhCcVjHh2FCpwfww2BPuAJJQmLmYDvN4oF3BcDExZDFWHl5gmJ9mMjhAArxGGkQD8oLwyNhjodqF59pg/gRqtQkGoIK8AKwABnq20BuwmBw4YI0p3OPSgAEFZth3GpMDBuNQHi8eCAPgQvj8/qUyatoqDqMcIVDgrD4YjKVZUbFgliQDi8fh8bUueKtl1HAj4Z9vr8rHJnmp0LyAd4fgoYHYhiNvGrbcENHBYAFqithAdsL8siczjgXCBeAALdqBhBWbBwDRrODG6jQSTNeZ+gO/JjPV4gQVmpRAA=" // [required] <- BASE64 string taken from turnillo query
 }
 ```
@@ -80,7 +80,7 @@ Status: `403` (Unauthorized) if user doesn't have a view_report permission
 Status `200`
 ```json
 {
-    "count": 33,
+    "count": 3,
     "page": 1,
     "page_size": 25,
     "results": [
@@ -173,8 +173,8 @@ Default:'base64'
 `Request`
 ```json
 {
-    "name" : "Report name", // [required] <- Name for the mode,
-    "model_id" : 4,  // [required] <- ID of the Model from which the report is created,
+    "name" : "Report name", 
+    "model_id" : 4, 
     "expression" : "N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvg+fqq+ZAAKjlgAJi6gMTAO6Fi4BBEAjAAiVlD2wvgAtBmqnt5C9nkgSgC6Km5lwcSYAmRwuNQBQQTQAHJkUlZgiDBkLmgOozXU2Jho+AoIytMgUMJIaPGEjQR5DhCcVjHh2FCpwfww2BPuAJJQmLmYDvN4oF3BcDExZDFWHl5gmJ9mMjhAArxGGkQD8oLwyNhjodqF59pg/gRqtQkGoIK8AKwABnq20BuwmBw4YI0p3OPSgAEFZth3GpMDBuNQHi8eCAPgQvj8/qUyatoqDqMcIVDgrD4YjKVZUbFgliQDi8fh8bUueKtl1HAj4Z9vr8rHJnmp0LyAd4fgoYHYhiNvGrbcENHBYAFqithAdsL8siczjgXCBeAALdqBhBWbBwDRrODG6jQSTNeZ+gO/JjPV4gQVmpRAA=" // [required] <- BASE64 string taken from turnillo query
 }
 ```
@@ -185,7 +185,7 @@ Status: `403` (Unauthorized) if user doesn't have a edit_report permission
 
 Status: `403` (Unauthorized) If user is not owner of new model object
 
-Status: `400` (Unauthorized) if model_id can not be found in database
+Status: `400` (Bad request) if model_id can not be found in database
 
 Status: `200`
 
@@ -209,10 +209,10 @@ Required Permission: __edit_report__
 
 Status `404` (Not found) If the report is not found
 
-Status `403` (Not found) If there is no edit_report permission
+Status `403` (Unauthorized) If there is no edit_report permission
 
-Status `403` (Not found) If the object is not the owner
+Status `403` (Unauthorized) If the object is not the owner
 
 
-Status `204` Deleted, all went well.
+Status `204` (No content)  Deleted, all went well.
 

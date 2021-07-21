@@ -33,11 +33,15 @@ class PlywoodQueryParserV1:
 
     def query_to_ply_data(self):
         res = copy.deepcopy(self._shape)
+        print('SHAPE', (self._shape))
+        print('QUERY', (self._query_result))
 
         def recursive_fill(data: dict, depth=0):
             change_attrs = list(
                 filter(lambda x: (x['name'] not in SYSTEM_FIELDS and x['name'] != self._data_cube_name),
                        data['attributes']))
+
+            print(f'Change attr {change_attrs} depth is {depth}')
 
             rows: list = self._query_result[depth]['query_result']['data']['rows']
             columns: list = self._query_result[depth]['query_result']['data']['columns']
@@ -67,10 +71,13 @@ class PlywoodQueryParserV1:
                     if contains_split is False:
                         data['data'] = rows
                     else:
+                        print('DATA KEYS', data)
                         sample = next(iter(data['data']))
                         column_name = next(iter(data['keys']))
 
                         data['data'] = list()
+
+                        print(len(self._query_result))
 
                         first_query, second_query, *rest_queries = self._query_result
 
@@ -82,6 +89,7 @@ class PlywoodQueryParserV1:
                             if result is None:
                                 continue
 
+                            print('sample', sample)
                             change_attrs = list(
                                 filter(lambda x: (x['name'] not in SYSTEM_FIELDS and x['name'] != self._data_cube_name),
                                        data['attributes']))
@@ -92,10 +100,14 @@ class PlywoodQueryParserV1:
                             if second_query_result is None:
                                 continue
 
+                            print('second', second_query_result)
                             for change_attribute in change_attrs:
                                 name = change_attribute['name']
 
                                 sample_copy[name] = second_query_result[name]
+
+                            print('CHANGE', change_attrs)
+                            print(f'sample {sample}')
 
                             # one level down
                             down_change_attrs = list(
@@ -104,6 +116,10 @@ class PlywoodQueryParserV1:
 
                             inner_row = next(iter(result['query_result']['data']['rows']))
                             sample_copy['SPLIT']['data'] = [inner_row]
+
+                            print('result', result)
+                            print('down chanage attr', down_change_attrs)
+                            print(f'sample copy', sample_copy)
 
                             data['data'].append(sample_copy)
                         return

@@ -13,8 +13,12 @@ from redash.handlers.queries import order_results
 from redash.handlers.query_results import run_query
 from redash.models import ParameterizedQuery
 from redash.models.models import Model, Report
-from redash.permissions import require_permission, require_object_view_permission, require_object_modify_permission, \
+from redash.permissions import (
+    require_permission,
+    require_object_view_permission,
+    require_object_modify_permission,
     require_object_delete_permission
+)
 from redash.plywood.data_cube_handler import DataCube
 from redash.plywood.expression_handler import Expression, ExpressionNotSupported
 from redash.plywood.plywood import PlywoodApi

@@ -8,6 +8,8 @@ x-redash-service: &redash-service
       skip_frontend_build: "true"
   volumes:
     - .:/app
+  networks: 
+    - drnetwork  
 x-redash-environment: &redash-environment
   REDASH_LOG_LEVEL: "INFO"
   REDASH_REDIS_URL: "redis://redis:6379/0"
@@ -30,6 +32,8 @@ services:
       <<: *redash-environment
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://localhost:3000"
+    networks: 
+      - drnetwork  
   scheduler:
     <<: *redash-service
     command: dev_scheduler
@@ -37,6 +41,8 @@ services:
       - server
     environment:
       <<: *redash-environment
+    networks: 
+      - drnetwork  
   worker:
     <<: *redash-service
     command: dev_worker
@@ -45,11 +51,15 @@ services:
     environment:
       <<: *redash-environment
       PYTHONUNBUFFERED: 0
+    networks: 
+      - drnetwork  
   redis:
     image: redis:3-alpine
     restart: unless-stopped
     ports:
       - "6379:6379"
+    networks: 
+      - drnetwork
   postgres:
     image: postgres:9.5-alpine
     # The following turns the DB into less durable, but gains significant performance improvements for the tests run (x3
@@ -61,8 +71,15 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"
+    networks: 
+      - drnetwork
   email:
     image: djfarrelly/maildev
     ports:
       - "1080:80"
     restart: unless-stopped
+    networks: 
+      - drnetwork
+networks:
+  drnetwork:
+      driver: bridge

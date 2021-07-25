@@ -58,8 +58,15 @@ class ModelsListResource(BaseResource):
 
     @require_permission("view_model")
     def get(self):
-        models = Model.get_by_user(self.current_user)
-        ordered_results = order_results(models)
+
+        data_source = request.args.get('data_source', None)
+
+        if data_source:
+            found_models = Model.get_by_user_and_data_source(self.current_user, int(data_source))
+        else:
+            found_models = Model.get_by_user(self.current_user)
+
+        ordered_results = order_results(found_models)
 
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)

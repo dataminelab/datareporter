@@ -36,6 +36,10 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
         return cls.query.filter(cls.user_id == user.id)
 
     @classmethod
+    def get_by_user_and_data_source(cls, user, data_source_id):
+        return cls.query.filter(cls.user_id == user.id, cls.data_source_id == data_source_id)
+
+    @classmethod
     def get_by_id_and_user(cls, _id, user):
         return cls.query.filter(cls.id == _id, cls.user_id == user.id).one()
 
@@ -86,4 +90,3 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     @classmethod
     def get_by_user_and_id(cls, user: User, _id: int):
         return cls.query.filter(and_(cls.user_id == user.id, cls.id == _id)).one()
-

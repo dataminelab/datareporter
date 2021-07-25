@@ -130,7 +130,7 @@ class TestModelsCreateResource(BaseTestCase):
             user=user
         )
         config_id = response.json['model_config_id']
-        config:ModelConfig = ModelConfig.query.get(config_id)
+        config: ModelConfig = ModelConfig.query.get(config_id)
 
         self.assertEqual(200, response.status_code)
         self.assertEqual(config.content, content)
@@ -187,6 +187,31 @@ class TestModelsListResource(BaseTestCase):
 
         assert len(response.json["results"]) == 1
         assert set([result["id"] for result in response.json["results"]]) == {model.id}
+
+    def test_user_with_data_source_id(self):
+        group = self.factory.create_group(permissions=["view_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+        model_1 = self.factory.create_model(user=user)
+        model_2 = self.factory.create_model(user=user)
+        db.session.commit()
+
+        response = self.make_request("get", f"/api/models?data_source={model_1.data_source_id}", user=user)
+
+        assert len(response.json["results"]) == 1
+
+    def test_user_with_data_source_id_does_not_exists(self):
+        group = self.factory.create_group(permissions=["view_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+        self.factory.create_model(user=user)
+        self.factory.create_model(user=user)
+        db.session.commit()
+        response = self.make_request("get", f"/api/models?data_source=10", user=user)
+
+        assert len(response.json["results"]) == 0
 
 
 class TestModelsGetResource(BaseTestCase):

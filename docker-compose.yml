@@ -62,11 +62,7 @@ services:
       - drnetwork
   postgres:
     image: postgres:9.6-alpine
-    # The following turns the DB into less durable, but gains significant performance improvements for the tests run (x3
-    # improvement on my personal machine). We should consider moving this into a dedicated Docker Compose configuration for
-    # tests.
     ports:
-      - "15432:5432"
       - "5432:5432"
     restart: unless-stopped
     environment:

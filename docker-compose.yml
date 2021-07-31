@@ -21,6 +21,10 @@ x-redash-environment: &redash-environment
 services:
   server:
     <<: *redash-service
+    build:
+      context: .
+      args:
+        skip_frontend_build: ""
     command: dev_server
     depends_on:
       - postgres

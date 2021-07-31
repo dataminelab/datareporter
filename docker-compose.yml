@@ -4,8 +4,6 @@ version: "2.2"
 x-redash-service: &redash-service
   build:
     context: .
-    args:
-      skip_frontend_build: "true"
   volumes:
     - .:/app
   networks: 
@@ -21,10 +19,6 @@ x-redash-environment: &redash-environment
 services:
   server:
     <<: *redash-service
-    build:
-      context: .
-      args:
-        skip_frontend_build: ""
     command: dev_server
     depends_on:
       - postgres

@@ -14,4 +14,3 @@ venv/
 /netlify.toml
 /setup/
 Jenkinsfile
-docker-compose.yml

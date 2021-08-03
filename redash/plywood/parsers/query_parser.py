@@ -1,8 +1,7 @@
 import copy
-import json
 from typing import List
 
-from redash.plywood.expression_handler import ExpressionNotSupported
+from redash.plywood.objects.expression import ExpressionNotSupported
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 TIME_SHIFT_ATTRS = '_delta__'

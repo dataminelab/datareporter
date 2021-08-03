@@ -1,6 +1,5 @@
 from typing import List, Union
 
-import yaml
 import lzstring
 import json
 from flask import request, make_response
@@ -19,13 +18,13 @@ from redash.permissions import (
     require_object_modify_permission,
     require_object_delete_permission
 )
-from redash.plywood.data_cube_handler import DataCube
-from redash.plywood.expression_handler import Expression, ExpressionNotSupported
-from redash.plywood.plywood import PlywoodApi
-from redash.plywood.query_parser_v2 import PlywoodQueryParserV2
+from redash.plywood.objects.data_cube import DataCube
+from redash.plywood.objects.expression import Expression, ExpressionNotSupported
+from redash.plywood.parsers.filter_parser import PlywoodFilterParser
+from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
-from redash.plywood.query_parser import PlywoodQueryParserV1
+from redash.plywood.parsers.query_parser import PlywoodQueryParserV1
 
 CONTEXT = "context"
 DATA_CUBE = "dataCube"
@@ -40,10 +39,46 @@ parser = lzstring.LZString()
 QUERY_ID = 'adhoc'
 
 
-def lower_kind(obj: dict):
-    for v in obj['dimensions']:
-        if 'kind' in v:
-            v['kind'] = v['kind'].lower()
+def jobs_status(data: List[dict]) -> Union[None, int]:
+    status = None
+
+    for res in data:
+        if 'job' in res:
+            status = res['job']['status']
+
+    return status
+
+
+def execute_query(query, max_age, model, query_id, org):
+    parameterized_query = ParameterizedQuery(query, org=org)
+    parameters = {}
+
+    return run_query(parameterized_query, parameters, model.data_source, query_id, max_age)
+
+
+class ReportFilter(BaseResource):
+    @require_permission("view_report")
+    def post(self, model_id: int):
+        req = request.get_json(True)
+        require_fields(req, (EXPRESSION,))
+        model = get_object_or_404(Model.get_by_id, model_id)
+
+        data_cube = DataCube(model=model)
+
+        queries = Expression.get_queries_from_prepared_expression(data_cube=data_cube, expression=req[EXPRESSION])
+
+        queries_result = [execute_query(query, MAX_AGE, model, QUERY_ID, self.current_org) for query in queries]
+
+        is_fetching = jobs_status(queries_result)
+
+        if is_fetching:
+            return dict(data=None, status=is_fetching, query=queries_result)
+
+        shape = Expression.get_shape_from_prepared_expression(data_cube=data_cube, expression=req[EXPRESSION])
+
+        data = PlywoodFilterParser(result=queries_result, data_cube=data_cube, shape=shape)
+
+        return dict(data=data.get_plywood_value(), status=200, query=queries_result)
 
 
 class ReportGenerateResource(BaseResource):
@@ -88,7 +123,7 @@ class ReportGenerateResource(BaseResource):
         if len(queries) == 0:
             abort(400, message='Error with query')
 
-        is_fetching = ReportGenerateResource._jobs_status(queries)
+        is_fetching = jobs_status(queries)
 
         if is_fetching:
             return dict(data=None, status=is_fetching, query=queries)
@@ -96,9 +131,9 @@ class ReportGenerateResource(BaseResource):
         if expression.is_2_splits():
             queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
 
-            queries = [self.execute_query(query, MAX_AGE, model, QUERY_ID) for query in queries_2_splits]
+            queries = [execute_query(query, MAX_AGE, model, QUERY_ID, self.current_org) for query in queries_2_splits]
 
-            is_fetching = ReportGenerateResource._jobs_status(queries)
+            is_fetching = jobs_status(queries)
 
             if is_fetching:
                 return dict(data=None, status=is_fetching, query=queries)
@@ -118,24 +153,6 @@ class ReportGenerateResource(BaseResource):
                     query=queries,
                     shape=expression.shape
                     )
-
-    @staticmethod
-    def _jobs_status(data: List[dict]) -> Union[None, int]:
-        status = None
-
-        for res in data:
-            if 'job' in res:
-                status = res['job']['status']
-
-        return status
-
-    def execute_query(self, query: str, max_age: int, model: Model, query_id: str):
-        parameterized_query = ParameterizedQuery(query, org=self.current_org)
-        parameters = {}
-
-        return run_query(
-            parameterized_query, parameters, model.data_source, query_id, max_age
-        )
 
 
 # /api/reports

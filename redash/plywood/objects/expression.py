@@ -3,7 +3,7 @@ import json
 
 import lzstring
 
-from redash.plywood.data_cube_handler import DataCube
+from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.plywood import PlywoodApi
 
 parser = lzstring.LZString()
@@ -132,12 +132,30 @@ class Expression:
             func=lambda: PlywoodApi.get_shape(self._get_plywood_request())['shape']
         )
 
+    @staticmethod
+    def get_shape_from_prepared_expression(data_cube: DataCube, expression: dict):
+        return PlywoodApi.get_shape(
+            {
+                DATA_CUBE: data_cube.source_name,
+                CONTEXT: data_cube.context,
+                EXPRESSION: expression
+            }
+        )['shape']
+
     @property
     def queries(self) -> list:
         return self._get_from_cache_or_set(
             name="queries",
             func=lambda: PlywoodApi.convert_to_sql(body=self._get_plywood_request())
         )
+
+    @staticmethod
+    def get_queries_from_prepared_expression(data_cube: DataCube, expression: dict) -> list:
+        return PlywoodApi.convert_to_sql({
+            DATA_CUBE: data_cube.source_name,
+            CONTEXT: data_cube.context,
+            EXPRESSION: expression
+        })
 
     def is_2_splits(self):
         return len(self.filter['splits']) == 2

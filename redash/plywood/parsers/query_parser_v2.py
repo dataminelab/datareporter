@@ -3,8 +3,9 @@ import logging
 from typing import List
 import pydash
 
-from redash.plywood.data_cube_handler import DataCube
-from redash.plywood.expression_handler import ExpressionNotSupported
+from redash.plywood.objects.data_cube import DataCube
+from redash.plywood.objects.expression import ExpressionNotSupported
+from redash.plywood.objects.plywood_value import PlywoodValue
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 TIME_SHIFT_ATTRS = '_delta__'
@@ -113,7 +114,7 @@ class PlywoodQueryParserV2:
 
             split['data'][index]['SPLIT']['data'] = query['query_result']['data']['rows']
 
-    def _query_to_ply_data(self, engine: str):
+    def _query_to_ply_data(self, engine: str) -> PlywoodValue:
         shape = copy.deepcopy(self._shape)
 
         # First query
@@ -130,4 +131,5 @@ class PlywoodQueryParserV2:
         if len(self._query_result) >= 3:
             self._build_second_split(shape=shape)
 
-        return shape
+
+        return PlywoodValue.from_json(shape).dict()

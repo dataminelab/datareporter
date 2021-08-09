@@ -44,9 +44,8 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
 
     for res in data:
         if 'job' in res:
-            status = res['job']['status']
+            return res['job']['status']
 
-    return status
 
 
 def execute_query(query, max_age, model, query_id, org):

@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from redash.plywood.query_parser import PlywoodQueryParserV1
-from redash.plywood.query_parser_v2 import PlywoodQueryParserV2
+from redash.plywood.parsers.query_parser import PlywoodQueryParserV1
+from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from tests.plywood.fixtures.test_data_0_split_1_measure_1_filter.sample_1 import POSTGRES_0_SPLIT_JOBS, \
     POSTGRES_0_SPLIT_SHAPE, POSTGRES_0_SPLIT_RESULT
 from tests.plywood.fixtures.test_data_0_split_1_measure_1_filter_timeshift.sample_1 import \

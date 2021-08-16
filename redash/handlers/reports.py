@@ -47,7 +47,6 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
             return res['job']['status']
 
 
-
 def execute_query(query, max_age, model, query_id, org):
     parameterized_query = ParameterizedQuery(query, org=org)
     parameters = {}
@@ -97,7 +96,8 @@ class ReportGenerateResource(BaseResource):
 
             max_age = req.get("max_age", MAX_AGE)
 
-            queries_result = [self.execute_query(query, max_age, model, QUERY_ID) for query in expression.queries]
+            queries_result = [execute_query(query, max_age, model, QUERY_ID, self.current_org)
+                              for query in expression.queries]
 
             return self._parse_result(queries=queries_result,
                                       data_cube=data_cube,

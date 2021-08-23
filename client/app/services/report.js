@@ -153,7 +153,7 @@ export class Report {
   }
 
   getUrl(source, hash) {
-    let url = `queries/${this.id}`;
+    let url = `reports/${this.id}`;
 
     if (source) {
       url += "/source";
@@ -536,25 +536,25 @@ export class ReportResultError {
 }
 
 const getReport = report => new Report(report);
-const saveOrCreateUrl = data => (data.id ? `api/queries/${data.id}` : "api/queries");
+const saveOrCreateUrl = data => (data.id ? `api/reports/${data.id}` : "api/reports");
 const mapResults = data => ({ ...data, results: map(data.results, getReport) });
 
 const ReportService = {
-  report: params => axiosFaike.query("api/queries", { params }).then(mapResults),
-  get: data => axiosFaike.get(data.id, data).then(getReport),
-  save: data => axiosFaike.post(saveOrCreateUrl(data), data).then(getReport),
-  delete: data => axiosFaike.delete(`api/queries/${data.id}`),
-  recent: params => axios.get(`api/queries/recent`, { params }).then(data => map(data, getReport)),
-  archive: params => axios.get(`api/queries/archive`, { params }).then(mapResults),
-  myReports: params => axios.get("api/queries/my", { params }).then(mapResults),
-  fork: ({ id }) => axios.post(`api/queries/${id}/fork`, { id }).then(getReport),
-  resultById: data => axios.get(`api/queries/${data.id}/results.json`),
-  asDropdown: data => axios.get(`api/queries/${data.id}/dropdown`),
+  report: params => axios.query("api/reports", { params }).then(mapResults),
+  get: data => axios.get(data.id, data).then(getReport),
+  save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
+  delete: data => axios.delete(`api/reports/${data.id}`),
+  recent: params => axios.get(`api/reports/recent`, { params }).then(data => map(data, getReport)),
+  archive: params => axios.get(`api/reports/archive`, { params }).then(mapResults),
+  myReports: params => axios.get("api/reports/my", { params }).then(mapResults),
+  fork: ({ id }) => axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
+  resultById: data => axios.get(`api/reports/${data.id}/results.json`),
+  asDropdown: data => axios.get(`api/reports/${data.id}/dropdown`),
   associatedDropdown: ({ reportId, dropdownReportId }) =>
-    axios.get(`api/queries/${reportId}/dropdowns/${dropdownReportId}`),
-  favorites: params => axios.get("api/queries/favorites", { params }).then(mapResults),
-  favorite: data => axios.post(`api/queries/${data.id}/favorite`),
-  unfavorite: data => axios.delete(`api/queries/${data.id}/favorite`),
+    axios.get(`api/reports/${reportId}/dropdowns/${dropdownReportId}`),
+  favorites: params => axios.get("api/reports/favorites", { params }).then(mapResults),
+  favorite: data => axios.post(`api/reports/${data.id}/favorite`),
+  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),
 };
 
 ReportService.newReport = function newReport() {
@@ -578,7 +578,7 @@ ReportService.format = function formatReport(syntax, report) {
       return Promise.reject(String(err));
     }
   } else if (syntax === "sql") {
-    return axios.post("api/queries/format", { report }).then(data => data.report);
+    return axios.post("api/reports/format", { report }).then(data => data.report);
   } else {
     return Promise.reject("Report formatting is not supported for your data source syntax.");
   }

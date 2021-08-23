@@ -25,6 +25,7 @@ const Model = {
   query: params => axios.get("api/models", { params }),
   get: (id) => axios.get(`api/models/${id}`),
   getConfig: (config_id) => axios.get(`api/model_configs/${config_id}`),
+  getReporterConfig: (config_id) => axios.get(`api/models/${config_id}/config`),
   create: data => axios.post(`api/models`, data),
   save: data => axios.post(`api/models/${data.id}`, data),
   saveConfig: (id, content) => axios.post(`api/models/${id}/config`, {content}),

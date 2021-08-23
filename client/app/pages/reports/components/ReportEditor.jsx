@@ -9,34 +9,32 @@ import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 import {axios} from "@/services/axios";
 
-function TurniloPage({ dashboardSlug, dashboardId, onError }) {
-  const [config, setConfig] = useState({});
+function ReportPage({ report }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect( () => {
     async function getConfigTurnilo() {
-      const result =  await axios.get('/config-turnilo');
-      setConfig(result);
+      await axios.get('/config-turnilo');
     }
     getConfigTurnilo()
   }, []);
-  if (config.appSettings) {
-    if (config.appSettings.customization.sentryDSN) {
-      errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
+  if (report.appSettings) {
+    if (report.appSettings.customization.sentryDSN) {
+      errorReporterInit(report.appSettings.customization.sentryDSN, report.version);
     }
 
-    const version = config.version;
+    const version = report.version;
 
     Ajax.version = version;
 
-    const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory
+    const appSettings = AppSettings.fromJS(report.appSettings, {
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(report)
     });
 
     return <turnilo-widget>
       <TurniloApplication
         version={version}
         appSettings={appSettings}
-        initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+        initTimekeeper={Timekeeper.fromJS(report.timekeeper)}
       />
     </turnilo-widget>;
   } else {
@@ -46,16 +44,16 @@ function TurniloPage({ dashboardSlug, dashboardId, onError }) {
   }
 }
 
-TurniloPage.propTypes = {
+ReportPage.propTypes = {
   dashboardSlug: PropTypes.string,
   dashboardId: PropTypes.string,
   onError: PropTypes.func,
 };
 
-TurniloPage.defaultProps = {
+ReportPage.defaultProps = {
   dashboardSlug: null,
   dashboardId: null,
   onError: PropTypes.func,
 };
 
-export default TurniloPage;
+export default ReportPage;

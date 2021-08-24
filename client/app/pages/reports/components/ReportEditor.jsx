@@ -1,4 +1,4 @@
-import React,  {  useState,  useEffect }  from 'react';
+import React  from 'react';
 import PropTypes from "prop-types";
 import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application";
@@ -7,16 +7,8 @@ import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
 import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
 import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
-import {axios} from "@/services/axios";
 
 function ReportPage({ report }) {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect( () => {
-    async function getConfigTurnilo() {
-      await axios.get('/config-turnilo');
-    }
-    getConfigTurnilo()
-  }, []);
   if (report.appSettings) {
     if (report.appSettings.customization.sentryDSN) {
       errorReporterInit(report.appSettings.customization.sentryDSN, report.version);

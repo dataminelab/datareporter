@@ -33,7 +33,7 @@ const CONFIG = optionalRequire("./scripts/config", {});
 const isProduction = process.env.NODE_ENV === "production";
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
-const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:9090";
+const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
 const staticPath = CONFIG.staticPath || "/static/";
 
 const basePath = path.join(__dirname, "client");

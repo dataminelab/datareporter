@@ -694,7 +694,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.addAttributes(external.attributes).attachExecutor(executor);
   }
 
-  public attachExecutor(executor: Executor): DataCube {
+  public attachExecutor(executor: any): DataCube {
     let value = this.valueOf();
     value.executor = executor;
     return new DataCube(value);

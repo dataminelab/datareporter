@@ -203,10 +203,16 @@ export default function ReportPageHeader(props) {
     [report, setReport, updateReport]
   );
 
-  const onChangeDataSource = useCallback(async (id) => {
+  const onChangeDataSource = useCallback(async (dataSourceId) => {
     setLoadModelsLoaded(true)
+    const updates = {
+      data_source_id: dataSourceId,
+      latest_report_data_id: null,
+      latest_report_data: null,
+    };
+    setReport(extend(report.clone(), updates));
     try {
-      const res = await Model.query({data_source: id});
+      const res = await Model.query({data_source: dataSourceId});
       setModels(res.results);
       setLoadModelsLoaded(false);
     } catch(err) {
@@ -238,25 +244,6 @@ export default function ReportPageHeader(props) {
     [report, props.onChange, updateReport]
   );
 
-  useEffect(() => {
-    // choose data source id for new reports
-    if (dataSourcesLoaded && reportFlags.isNew) {
-      const firstDataSourceId = dataSources.length > 0 ? dataSources[0].id : null;
-      handleDataSourceChange(
-        chooseDataSourceId(
-          [report.data_source_id, localStorage.getItem("lastSelectedDataSourceId"), firstDataSourceId],
-          dataSources
-        )
-      );
-    }
-  }, [
-    report.data_source_id,
-    report.model,
-    reportFlags.isNew,
-    dataSourcesLoaded,
-    dataSources,
-    handleDataSourceChange,
-    handleModelChange]);
 
   const moreActionsMenu = useMemo(
     () =>

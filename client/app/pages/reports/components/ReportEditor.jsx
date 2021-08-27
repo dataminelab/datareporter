@@ -30,8 +30,8 @@ function ReportPage({ report }) {
       />
     </turnilo-widget>;
   } else {
-    return <div>
-            Loading...
+    return <div style={{margin: '20px'}}>
+            Please select data source and model...
           </div>
   }
 }

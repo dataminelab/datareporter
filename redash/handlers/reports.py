@@ -1,3 +1,4 @@
+import hashlib
 from typing import List, Union
 
 import lzstring
@@ -6,7 +7,7 @@ from flask import request, make_response
 from flask_restful import abort
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
-from redash import models
+from redash import models, redis_connection
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 from redash.handlers.queries import order_results
 from redash.handlers.query_results import run_query
@@ -25,6 +26,11 @@ from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
 from redash.plywood.parsers.query_parser import PlywoodQueryParserV1
+from redash.tasks import Job
+
+from redash.serializers import (
+    serialize_job
+)
 
 CONTEXT = "context"
 DATA_CUBE = "dataCube"
@@ -32,26 +38,54 @@ EXPRESSION = "expression"
 HASH = "hash"
 NAME = "name"
 MODEL_ID = "model_id"
-
-MAX_AGE = -1
-
+PLYWOOD_PREFIX = 'PLYWOOD_QUERIES'
+MAX_AGE = 400
+REDASH_QUERY_CACHE = 0
 parser = lzstring.LZString()
 QUERY_ID = 'adhoc'
 
 
 def jobs_status(data: List[dict]) -> Union[None, int]:
-    status = None
-
     for res in data:
         if 'job' in res:
             return res['job']['status']
 
 
-def execute_query(query, max_age, model, query_id, org):
+def parse_job(job_id: str, current_org):
+    job_data = serialize_job(Job.fetch(job_id))
+
+    if job_data['job']['status'] == 3:
+        query_result_id = job_data['job']['query_result_id']
+        query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query_result_id, current_org)
+        return dict(query_result=query_result.to_dict())
+
+    return job_data
+
+
+def cache_or_get(hash_string: str, queries: list, current_org, model: Model, split: int = 1):
+    smaller_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+    key = PLYWOOD_PREFIX + smaller_hash + str(split)
+    exists = redis_connection.exists(key)
+
+    if exists:
+        data = redis_connection.get(key)
+        return [parse_job(job_id, current_org) for job_id in json.loads(data)]
+    else:
+
+        queries_result = [execute_query(query, model, QUERY_ID, current_org) for query in queries]
+        print("QUERY RESULT", queries_result)
+        job_ids = [q['job']['id'] for q in queries_result]
+
+        redis_connection.setex(key, MAX_AGE, json.dumps(job_ids))
+
+        return cache_or_get(hash_string=hash_string, queries=queries, current_org=current_org, model=model, split=split)
+
+
+def execute_query(query, model, query_id, org):
     parameterized_query = ParameterizedQuery(query, org=org)
     parameters = {}
 
-    return run_query(parameterized_query, parameters, model.data_source, query_id, max_age)
+    return run_query(parameterized_query, parameters, model.data_source, query_id, REDASH_QUERY_CACHE)
 
 
 class ReportFilter(BaseResource):
@@ -65,7 +99,7 @@ class ReportFilter(BaseResource):
 
         queries = Expression.get_queries_from_prepared_expression(data_cube=data_cube, expression=req[EXPRESSION])
 
-        queries_result = [execute_query(query, MAX_AGE, model, QUERY_ID, self.current_org) for query in queries]
+        queries_result = [execute_query(query, model, QUERY_ID, self.current_org) for query in queries]
 
         is_fetching = jobs_status(queries_result)
 
@@ -87,28 +121,33 @@ class ReportGenerateResource(BaseResource):
 
         require_fields(req, (HASH,))
         hash_string = req[HASH]
-        version = req.get('version', 'v2')
 
         model = get_object_or_404(Model.get_by_id, model_id)
+
         try:
             data_cube = DataCube(model=model)
             expression = Expression(hash=hash_string, data_cube=data_cube)
 
-            max_age = req.get("max_age", MAX_AGE)
+            queries_result = cache_or_get(hash_string=hash_string,
+                                          queries=expression.queries,
+                                          current_org=self.current_org,
+                                          model=model,
+                                          )
 
-            queries_result = [execute_query(query, max_age, model, QUERY_ID, self.current_org)
-                              for query in expression.queries]
+            return self._parse_result(
+                hash_string=hash_string,
+                queries=queries_result,
+                data_cube=data_cube,
+                expression=expression,
+                model=model,
+            )
 
-            return self._parse_result(queries=queries_result,
-                                      data_cube=data_cube,
-                                      expression=expression,
-                                      model=model,
-                                      version=version)
         except ExpressionNotSupported as e:
             abort(400, message=e.message)
 
     def _parse_result(
         self,
+        hash_string: str,
         queries: List[dict],
         data_cube: DataCube,
         expression: Expression,
@@ -129,29 +168,26 @@ class ReportGenerateResource(BaseResource):
 
         if expression.is_2_splits():
             queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
-
-            queries = [execute_query(query, MAX_AGE, model, QUERY_ID, self.current_org) for query in queries_2_splits]
+            queries = cache_or_get(hash_string=hash_string,
+                                   queries=queries_2_splits,
+                                   current_org=self.current_org,
+                                   model=model,
+                                   split=2
+                                   )
 
             is_fetching = jobs_status(queries)
 
             if is_fetching:
                 return dict(data=None, status=is_fetching, query=queries)
 
-        if version == 'v1':
-            query_parser = PlywoodQueryParserV1(query_result=queries,
-                                                data_cube_name=data_cube.source_name,
-                                                shape=expression.shape)
-
-        else:
-            query_parser = PlywoodQueryParserV2(query_result=queries,
-                                                data_cube_name=data_cube.source_name,
-                                                shape=expression.shape)
+        query_parser = PlywoodQueryParserV2(query_result=queries,
+                                            data_cube_name=data_cube.source_name,
+                                            shape=expression.shape)
 
         return dict(data=query_parser.parse_ply(data_cube.ply_engine),
                     status=200,
                     query=queries,
-                    shape=expression.shape
-                    )
+                    shape=expression.shape)
 
 
 # /api/reports

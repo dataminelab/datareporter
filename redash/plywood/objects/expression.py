@@ -14,7 +14,7 @@ CONTEXT = "context"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
 
-SUPPORTED_VISUALIZATION = ['table', 'totals']
+SUPPORTED_VISUALIZATION = ['table', 'totals', 'bar-chart']
 SUPPORTED_MAX_FILTER_LENGTH = 1
 SUPPORTED_MAX_SPLIT_LENGTH = 2
 SUPPORTED_MAX_MEASURE_LENGTH = 1
@@ -74,6 +74,7 @@ class Expression:
     def _visualization_validation(self):
         visualization = self.filter['visualization']
         if visualization not in SUPPORTED_VISUALIZATION:
+            print(f'{visualization} is not supported')
             raise ExpressionNotSupported(message=f'{visualization} is not supported')
 
     def _filters_validations(self):

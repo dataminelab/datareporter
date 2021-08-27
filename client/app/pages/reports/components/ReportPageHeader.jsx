@@ -180,7 +180,6 @@ export default function ReportPageHeader(props) {
       setModels(res.results);
       setLoadModelsLoaded(false);
     } catch(err) {
-      //setError(err);
       setLoadModelsLoaded(false);
     }
 

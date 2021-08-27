@@ -1,5 +1,5 @@
-import {extend, map, filter, reduce, find, includes} from "lodash";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import {extend, map, filter, reduce} from "lodash";
+import React, {useCallback, useMemo, useState} from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -31,7 +31,6 @@ import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
 import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 import Model from "@/services/model";
-import DataSource from "@/services/data-source";
 
 function getReportTags() {
   return getTags("api/query/tags").then(tags => map(tags, t => t.name));
@@ -69,18 +68,6 @@ function createMenu(menu) {
       )}
     </Menu>
   );
-}
-
-function chooseDataSourceId(dataSourceIds, availableDataSources) {
-  dataSourceIds = map(dataSourceIds, v => parseInt(v, 10));
-  availableDataSources = map(availableDataSources, ds => ds.id);
-  return find(dataSourceIds, id => includes(availableDataSources, id)) || null;
-}
-
-function chooseModelId(modelIds, availableModels) {
-  modelIds = map(modelIds, v => parseInt(v, 10));
-  availableModels = map(availableModels, ds => ds.id);
-  return find(modelIds, id => includes(availableModels, id)) || null;
 }
 
 export default function ReportPageHeader(props) {
@@ -179,29 +166,6 @@ export default function ReportPageHeader(props) {
       setColorText(color.rgb)
     }
   };
-
-  const handleDataSourceChange = useCallback(
-    async dataSourceId => {
-      if (dataSourceId) {
-        try {
-          localStorage.setItem("lastSelectedDataSourceId", dataSourceId);
-        } catch (e) {
-          // `localStorage.setItem` may throw exception if there are no enough space - in this case it could be ignored
-        }
-      }
-      if (report.data_source_id !== dataSourceId) {
-        recordEvent("update_data_source", "report", report.id, { dataSourceId });
-        const updates = {
-          data_source_id: dataSourceId,
-          latest_report_data_id: null,
-          latest_report_data: null,
-        };
-        setReport(extend(report.clone(), updates));
-        updateReport(updates, { successMessage: null }); // show message only on error
-      }
-    },
-    [report, setReport, updateReport]
-  );
 
   const onChangeDataSource = useCallback(async (dataSourceId) => {
     setLoadModelsLoaded(true)

@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
-import { useDebouncedCallback } from "use-debounce";
 
 import useMedia from "use-media";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
@@ -9,7 +8,6 @@ import recordEvent from "@/services/recordEvent";
 import routes from "@/services/routes";
 
 import ReportPageHeader from "./components/ReportPageHeader";
-import ReportSourceAlerts from "./components/ReportSourceAlerts";
 import wrapReportPage from "./components/wrapReportPage";
 import ReportExecutionMetadata from "./components/ReportExecutionMetadata";
 import ReportEditor from "./components/ReportEditor";
@@ -51,7 +49,6 @@ function ReportSource(props) {
 
   return (
     <div className={cx("report-page-wrapper", { "report-fixed-layout": !isMobile })}>
-      {/*<ReportSourceAlerts report={report} dataSourcesAvailable={!dataSourcesLoaded || dataSources.length > 0} />*/}
       <div className="container w-100 p-b-10">
         <ReportPageHeader
           report={report}

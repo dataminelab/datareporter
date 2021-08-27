@@ -25,7 +25,6 @@ import { DimensionOrGroupVisitor } from "./dimension-group";
 export type DimensionKind = "string" | "boolean" | "time" | "number";
 
 function readKind(kind: string): DimensionKind {
-  kind = kind.toLocaleLowerCase();
   if (kind === "string" || kind === "boolean" || kind === "time" || kind === "number") return kind;
   throw new Error(`Unrecognized kind: ${kind}`);
 }

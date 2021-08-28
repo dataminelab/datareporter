@@ -116,10 +116,6 @@ class PlywoodQueryParserV1:
                             inner_row = next(iter(result['query_result']['data']['rows']))
                             sample_copy['SPLIT']['data'] = [inner_row]
 
-                            print('result', result)
-                            print('down chanage attr', down_change_attrs)
-                            print(f'sample copy', sample_copy)
-
                             data['data'].append(sample_copy)
                         return
             if len(data['data']) >= 1 and 'SPLIT' in data['data'][0]:

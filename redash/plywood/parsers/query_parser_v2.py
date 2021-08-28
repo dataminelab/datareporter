@@ -6,7 +6,6 @@ import pydash
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.plywood.objects.plywood_value import PlywoodValue
-import json
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 TIME_SHIFT_ATTRS = '_delta__'
@@ -133,9 +132,6 @@ class PlywoodQueryParserV2:
         if len(self._query_result) >= 3:
             self._build_second_split(shape=shape)
 
-        print("QURIES", json.dumps(self._query_result, default=default))
-        print("INITAL SHAPE", json.dumps(self._shape))
-        print("SHAPE", json.dumps(shape))
         return PlywoodValue.from_json(shape).dict()
 
 

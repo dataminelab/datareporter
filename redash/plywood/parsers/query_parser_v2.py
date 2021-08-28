@@ -77,9 +77,11 @@ class PlywoodQueryParserV2:
                     if row is None:
                         res[key] = 0
                     else:
-                        res[key] = row.get('__VALUE__', 0)
+                        row_value = row.get('__VALUE__', 0)
+                        res[key] = row_value if row_value else 0
                 else:
-                    res[key] = row.get(key, 0)
+                    row_value = row.get(key, 0)
+                    res[key] = row_value if row_value else 0
 
         return res
 
@@ -116,7 +118,6 @@ class PlywoodQueryParserV2:
 
     def _query_to_ply_data(self, engine: str) -> PlywoodValue:
         shape = copy.deepcopy(self._shape)
-
         # First query
         first_change_attributes = self._get_change_attrs(shape)
         first_replace = self._get_zero_value(first_change_attributes)
@@ -131,5 +132,19 @@ class PlywoodQueryParserV2:
         if len(self._query_result) >= 3:
             self._build_second_split(shape=shape)
 
-
         return PlywoodValue.from_json(shape).dict()
+
+
+def default(obj):
+    """Default JSON serializer."""
+    import calendar, datetime
+
+    if isinstance(obj, datetime.datetime):
+        if obj.utcoffset() is not None:
+            obj = obj - obj.utcoffset()
+        millis = int(
+            calendar.timegm(obj.timetuple()) * 1000 +
+            obj.microsecond / 1000
+        )
+        return millis
+    raise TypeError('Not sure how to serialize %s' % (obj,))

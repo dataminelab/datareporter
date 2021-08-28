@@ -63,12 +63,9 @@ export class Ajax {
 
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
+  private static model: number;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
-    if (data) {
-      if (Ajax.version) data.version = Ajax.version;
-      if (Ajax.settingsVersionGetter) data.settingsVersion = Ajax.settingsVersionGetter();
-    }
 
     return axios({ method, url, data, timeout, validateStatus })
       .then(res => {
@@ -91,15 +88,54 @@ export class Ajax {
       });
   }
 
-  static queryUrlExecutorFactory({ name, cluster }: DataCube): Executor {
-    const timeout = clientTimeout(cluster);
-    return (ex: Expression, env: Environment = {}) => {
+  static queryUrlExecutorFactory(dataCube: DataCube): Executor {
+    const timeout = clientTimeout(dataCube.cluster);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    function timeoutQuery(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    async function subscribe(hash: string, modelId: number) {
       const method = "POST";
-      const url = `plywood?by=${getSplitsDescription(ex)}`;
-      const timezone = env ? env.timezone : null;
-      const data = { dataCube: name, expression: ex.toJS(), timezone };
-      return Ajax.query<{result: DatasetJS}>({ method, url, timeout, data })
-        .then(res => Dataset.fromJS(res.result));
+      const url = `api/reports/generate/${modelId}`;
+      const data = { hash };
+      let res = await Ajax.query<{
+        status: number;
+        data: DatasetJS; }>({ method, url, timeout, data });
+      switch (res.status) {
+        // 1 == PENDING (waiting to be executed)
+        case 1:
+          await timeoutQuery(2000);
+          res = await subscribe(hash, modelId);
+          return res;
+        // 2 == STARTED (executing)
+        case 2:
+          await timeoutQuery(1500);
+          res = await subscribe(hash, modelId);
+          return res;
+        // 3 == SUCCESS
+        case 3:
+          return res;
+        // 200 == SUCCESS
+        case 200:
+          return res;
+        // 4 == FAILURE
+        case 4:
+          return res;
+        // 5 == CANCELLED
+        case 5:
+          return res;
+        default:
+          return res;
+      }
+    }
+    return async (ex: Expression, env: Environment = {}) => {
+      const modeId = this.model;
+      const hash = window.location.hash.split("4/");
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      const sub = await subscribe(hash[1], modeId);
+      return Dataset.fromJS(sub.data);
     };
   }
 }

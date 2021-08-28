@@ -1,3 +1,4 @@
+import copy
 import hashlib
 from typing import List, Union
 
@@ -26,7 +27,7 @@ from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
 from redash.tasks import Job
-
+import pydash
 from redash.serializers import (
     serialize_job
 )
@@ -44,10 +45,44 @@ parser = lzstring.LZString()
 QUERY_ID = 'adhoc'
 
 
+def clean_errored(queries: list):
+    errored = []
+
+    for index, query in enumerate(queries):
+        if 'job' in query:
+            errored.append(query)
+            del queries[index]
+
+    return errored
+
+
+def has_pending(array):
+    if len(array) == 0:
+        return False
+    no_duplicates = list(set(array))
+    try:
+        no_duplicates.remove(4)
+    except ValueError:
+        pass
+    if len(no_duplicates) > 0:
+        return True
+    return False
+
+
 def jobs_status(data: List[dict]) -> Union[None, int]:
+    all_statuses = []
     for res in data:
         if 'job' in res:
-            return res['job']['status']
+            all_statuses.append(res['job']['status'])
+
+
+    if len(all_statuses) == 0:
+        return None
+
+    if has_pending(all_statuses):
+        return 1
+
+    return None
 
 
 def parse_job(job_id: str, current_org):
@@ -101,7 +136,6 @@ class ReportFilter(BaseResource):
         queries_result = [execute_query(query, model, QUERY_ID, self.current_org) for query in queries]
 
         is_fetching = jobs_status(queries_result)
-
         if is_fetching:
             return dict(data=None, status=is_fetching, query=queries_result)
 
@@ -160,6 +194,7 @@ class ReportGenerateResource(BaseResource):
             abort(400, message='Error with query')
 
         is_fetching = jobs_status(queries)
+        print("IS FETCINH FIRST", is_fetching)
 
         if is_fetching:
             return dict(data=None, status=is_fetching, query=queries)
@@ -174,10 +209,11 @@ class ReportGenerateResource(BaseResource):
                                    )
 
             is_fetching = jobs_status(queries)
-
+            print("IS FETICHNG", is_fetching)
             if is_fetching:
                 return dict(data=None, status=is_fetching, query=queries)
 
+        errored = clean_errored(queries)
         query_parser = PlywoodQueryParserV2(query_result=queries,
                                             data_cube_name=data_cube.source_name,
                                             shape=expression.shape)
@@ -185,7 +221,9 @@ class ReportGenerateResource(BaseResource):
         return dict(data=query_parser.parse_ply(data_cube.ply_engine),
                     status=200,
                     query=queries,
-                    shape=expression.shape)
+                    shape=expression.shape,
+                    failed=errored,
+                    )
 
 
 # /api/reports

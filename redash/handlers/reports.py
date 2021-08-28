@@ -25,7 +25,6 @@ from redash.plywood.parsers.filter_parser import PlywoodFilterParser
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
-from redash.plywood.parsers.query_parser import PlywoodQueryParserV1
 from redash.tasks import Job
 
 from redash.serializers import (
@@ -152,7 +151,6 @@ class ReportGenerateResource(BaseResource):
         data_cube: DataCube,
         expression: Expression,
         model: Model,
-        version='v1',
     ):
         """
         Redash caches result and returns query in the same endpoint

@@ -8,21 +8,23 @@ from sqlalchemy.exc import IntegrityError
 
 from redash import models
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
+from redash.models import DataSource
+from redash.models.models import Model
 from redash.permissions import (
     require_access,
     require_admin,
     require_permission,
     view_only,
-)
+    has_permission_or_owner)
 from redash.query_runner import (
     get_configuration_schema_for_query_runner_type,
     query_runners,
-    NotSupported,
 )
+from redash.serializers import serialize_job
+from redash.serializers.model_serializer import ModelSerializer
+from redash.tasks.general import test_connection, get_schema
 from redash.utils import filter_none
 from redash.utils.configuration import ConfigurationContainer, ValidationError
-from redash.tasks.general import test_connection, get_schema
-from redash.serializers import serialize_job
 
 
 class DataSourceTypeListResource(BaseResource):
@@ -275,3 +277,15 @@ class DataSourceTestResource(BaseResource):
             }
         )
         return response
+
+
+class DataSourceModelsResource(BaseResource):
+    def get(self, data_source_id):
+        data_source = get_object_or_404(
+            DataSource.get_by_id_and_org, data_source_id, self.current_org
+        )
+        require_access(data_source, self.current_user, view_only)
+        data_source_models = Model.get_by_data_source(data_source_id=data_source_id)
+        filtered_models = filter(lambda model: has_permission_or_owner("generate_report", model.user_id),
+                                 data_source_models)
+        return ModelSerializer(filtered_models).serialize()

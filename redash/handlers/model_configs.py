@@ -1,36 +1,16 @@
-import io
-
 import yaml
 from flask import request
-from flask_restful import abort
 
 from redash import models
-
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
 from redash.models.models import Model, ModelConfig
 from redash.permissions import require_permission, require_admin_or_owner
+from redash.plywood.objects.data_cube import lower_kind, DataCube
 from redash.serializers.model_serializer import ModelConfigSerializer
+from redash.services.model_config_validator import ModelConfigValidator
 
-
-def _validate_yml(content: str):
-    with io.StringIO(content) as f:
-        try:
-            yaml.load(f)
-        except yaml.MarkedYAMLError as e:
-            pm = e.problem_mark
-            abort(
-                http_status_code=400,
-                message="Your config has an issue on line {} at position {}".format(pm.line, pm.column),
-            )
-
-
-def _validate_length(content):
-    length = len(content)
-    if length > ModelConfig.CONTENT_LENGTH:
-        abort(
-            http_status_code=400,
-            message="Maximum content length is {}, actual {}".format(ModelConfig.CONTENT_LENGTH, length),
-        )
+UPDATE_ACTION = "update"
+CREATE_ACTION = "create"
 
 
 class ModelsConfigResource(BaseResource):
@@ -40,16 +20,16 @@ class ModelsConfigResource(BaseResource):
         require_fields(req, ('content',))
         content = req['content']
 
-        _validate_length(content)
-        _validate_yml(content)
+        validator = ModelConfigValidator(content=content)
+        validator.validate()
 
         model = get_object_or_404(Model.get_by_id, model_id)
         require_admin_or_owner(model.user_id)
 
-        action = "update"
+        action = UPDATE_ACTION
         config = model.config
         if config is None:
-            action = "create"
+            action = CREATE_ACTION
             config = ModelConfig(user=self.current_user, model=model, content=content)
         else:
             config.content = content
@@ -64,6 +44,21 @@ class ModelsConfigResource(BaseResource):
         })
 
         return ModelConfigSerializer(model.config).serialize()
+
+    @require_permission("view_model")
+    def get(self, model_id):
+        model = get_object_or_404(Model.get_by_id, model_id)
+        data_cube = DataCube(model)
+        return {
+            "appSettings": {
+                "dataCubes": [
+                    data_cube.data_cube
+                ],
+                "clusters": [],
+                "customization": {}
+            },
+            "timekeeper": {}
+        }
 
 
 class ModelsConfigGetResource(BaseResource):

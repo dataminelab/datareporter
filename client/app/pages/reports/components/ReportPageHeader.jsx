@@ -1,5 +1,5 @@
-import {extend, map, filter, reduce, find, includes} from "lodash";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import {extend, map, filter, reduce} from "lodash";
+import React, {useCallback, useMemo, useState} from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -8,25 +8,33 @@ import Icon from "antd/lib/icon";
 import useMedia from "use-media";
 import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
+import { ReportTagsControl } from "@/components/tags-control/TagsControl";
 import reactCSS from 'reactcss'
 import { SketchPicker } from 'react-color'
+import getTags from "@/services/getTags";
 import { clientConfig } from "@/services/auth";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
+import useUpdateReportTags from "../hooks/useUpdateReportTags";
 import useRenameReport from "../hooks/useRenameReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
+
+
 import "./ReportPageHeader.less";
-import ReportService from "@/services/reportFake";
-import navigateTo from "@/components/ApplicationArea/navigateTo";
-import notification from "@/services/notification";
-import location from "@/services/location";
 import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
-import useColorsReport from "@/pages/reports/hooks/useColorsReport";
+import recordEvent from "@/services/recordEvent";
+import useReport from "@/pages/reports/hooks/useReport";
+import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
+import Model from "@/services/model";
+
+function getReportTags() {
+  return getTags("api/query/tags").then(tags => map(tags, t => t.name));
+}
 
 function createMenu(menu) {
   const handlers = {};
@@ -62,41 +70,23 @@ function createMenu(menu) {
   );
 }
 
-function saveReport (values) {
-  values.report = location.hash;
-  ReportService.create(values)
-    .then(model => {
-      navigateTo('/reports')
-      notification.success("Saved.");
-    });
-}
-
-function chooseDataSourceId(dataSourceIds, availableDataSources) {
-  dataSourceIds = map(dataSourceIds, v => parseInt(v, 10));
-  availableDataSources = map(availableDataSources, ds => ds.id);
-  return find(dataSourceIds, id => includes(availableDataSources, id)) || null;
-}
-
-export default function ReportPageHeader({
-  report,
-  sourceMode,
-  selectedVisualization,
-  headerExtra,
-  onChangeDataSource,
-  onChange,
-}) {
+export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const queryFlags = useReportFlags(report, dataSource);
-  const updateName = useRenameReport(report, onChange);
-  const updateColors = useColorsReport(report, onChange);
-  const archiveReport = useArchiveReport(report, onChange);
-  const publishReport = usePublishReport(report, onChange);
-  const unpublishReport = useUnpublishReport(report, onChange);
-  const [isDuplicating, duplicateReport] = useDuplicateReport(report);
-  const openApiKeyDialog = useApiKeyDialog(report, onChange);
-  const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
-  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
-  const reportFlags = useReportFlags(report, dataSource)
+  const queryFlags = useReportFlags(props.report, props.dataSource);
+  const updateName = useRenameReport(props.report, props.onChange);
+  const updateTags = useUpdateReportTags(props.report, props.onChange);
+  const archiveReport = useArchiveReport(props.report, props.onChange);
+  const publishReport = usePublishReport(props.report, props.onChange);
+  const unpublishReport = useUnpublishReport(props.report, props.onChange);
+  const [isDuplicating, duplicateReport] = useDuplicateReport(props.report);
+  const openApiKeyDialog = useApiKeyDialog(props.report, props.onChange);
+  const openPermissionsEditorDialog = usePermissionsEditorDialog(props.report);
+  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(props.report);
+  const [models, setModels] = useState([]);
+  const [modelsLoaded, setLoadModelsLoaded] = useState(false);
+  const [modelConfig, setModelConfig] = useState({});
+  const [modelConfigLoaded, setLoadModelConfigLoaded] = useState(false);
+  const reportFlags = useReportFlags(props.report, dataSource)
 
   //const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
@@ -160,6 +150,7 @@ export default function ReportPageHeader({
   });
 
   const handleClick = (type) => {
+    console.log(type)
     setDisplayColorPicker(type)
   };
 
@@ -179,18 +170,41 @@ export default function ReportPageHeader({
     },[report, updateColors]
   );
 
+  const handleDataSourceChange = useCallback(
+    dataSourceId => {
+      if (dataSourceId) {
+        try {
+          localStorage.setItem("lastSelectedDataSourceId", dataSourceId);
+        } catch (e) {
+          // `localStorage.setItem` may throw exception if there are no enough space - in this case it could be ignored
+        }
+      }
+      if (report.data_source_id !== dataSourceId) {
+        recordEvent("update_data_source", "report", report.id, { dataSourceId });
+        const updates = {
+          data_source_id: dataSourceId,
+          latest_report_data_id: null,
+          latest_report_data: null,
+        };
+        setReport(extend(report.clone(), updates));
+        updateReport(updates, { successMessage: null }); // show message only on error
+      }
+    },
+    [report, setReport, updateReport]
+  );
+
   useEffect(() => {
     // choose data source id for new reports
     if (dataSourcesLoaded && reportFlags.isNew) {
       const firstDataSourceId = dataSources.length > 0 ? dataSources[0].id : null;
-      onChangeDataSource(
+      handleDataSourceChange(
         chooseDataSourceId(
           [report.data_source_id, localStorage.getItem("lastSelectedDataSourceId"), firstDataSourceId],
           dataSources
         )
       );
     }
-  }, [report.data_source_id, reportFlags.isNew, dataSourcesLoaded, dataSources, onChangeDataSource]);
+  }, [report.data_source_id, reportFlags.isNew, dataSourcesLoaded, dataSources, handleDataSourceChange]);
 
   const moreActionsMenu = useMemo(
     () =>
@@ -269,7 +283,7 @@ export default function ReportPageHeader({
         </div>
       </div>
       <div className="header-actions">
-        {headerExtra}
+        {props.headerExtra}
         <div style={ styles.swatch } onClick={ () => handleClick(1) }>
           Text chart color: <div style={ styles.color } />
         </div>
@@ -292,7 +306,7 @@ export default function ReportPageHeader({
             <Select
               data-test="SelectDataSource"
               placeholder="Choose data source..."
-              value={report.data_source_id}
+              value={report ? report.data_source_id : undefined}
               disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
               loading={!dataSourcesLoaded}
               optionFilterProp="data-name"
@@ -311,6 +325,28 @@ export default function ReportPageHeader({
             </Select>
           </div>
         )}
+        <div className="data-source-box m-r-5 ">
+          <span className="icon icon-datasource m-r-5"></span>
+          <Select
+            data-test="SelectModel"
+            placeholder="Choose data source..."
+            value={report.model}
+            disabled={!reportFlags.canEdit || modelsLoaded || models.length === 0}
+            loading={modelsLoaded}
+            optionFilterProp="data-name"
+            showSearch
+            onChange={handleModelChange}>
+            {map(models, m => (
+              <Select.Option
+                key={`ds-${m.id}`}
+                value={m.id}
+                data-name={m.name}
+                data-test={`SelectModel${m.id}`}>
+                <span>{m.name}</span>
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
         <Button className="m-r-5" onClick={() => saveReport(report)}>
           <span className="icon icon-save-floppy-disc m-r-5"></span> Save Report
         </Button>
@@ -322,16 +358,16 @@ export default function ReportPageHeader({
 
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
-            {!sourceMode && (
-              <Button className="m-r-5" href={report.getUrl(true, selectedVisualization)}>
+            {!props.sourceMode && (
+              <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
                 <i className="fa fa-pencil-square-o" aria-hidden="true" />
                 <span className="m-l-5">Edit Source</span>
               </Button>
             )}
-            {sourceMode && (
+            {props.sourceMode && (
               <Button
                 className="m-r-5"
-                href={report.getUrl(false, selectedVisualization)}
+                href={report.getUrl(false, props.selectedVisualization)}
                 data-test="ReportPageShowDataOnly">
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Data Only</span>
@@ -358,14 +394,12 @@ ReportPageHeader.propTypes = {
     name: PropTypes.string,
     tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
-  dataSource: PropTypes.object,
+  dataSource: PropTypes.array,
   sourceMode: PropTypes.bool,
   selectedVisualization: PropTypes.number,
   headerExtra: PropTypes.node,
   tagsExtra: PropTypes.node,
-  onChangeColor: PropTypes.func,
-  onChangeDataSource: PropTypes.func,
-  onChange: PropTypes.func,
+  onChangeColor: PropTypes.func
 };
 
 ReportPageHeader.defaultProps = {
@@ -374,7 +408,5 @@ ReportPageHeader.defaultProps = {
   selectedVisualization: null,
   headerExtra: null,
   tagsExtra: null,
-  onChangeColor: () => {},
-  onChangeDataSource: () => {},
-  onChange: () => {},
+  onChangeColor: () => {}
 };

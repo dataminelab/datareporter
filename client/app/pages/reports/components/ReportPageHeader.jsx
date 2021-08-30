@@ -8,10 +8,8 @@ import Icon from "antd/lib/icon";
 import useMedia from "use-media";
 import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
-import { ReportTagsControl } from "@/components/tags-control/TagsControl";
 import reactCSS from 'reactcss'
 import { SketchPicker } from 'react-color'
-import getTags from "@/services/getTags";
 import { clientConfig } from "@/services/auth";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
@@ -22,6 +20,7 @@ import useRenameReport from "../hooks/useRenameReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
+import useColorsReport from "@/pages/reports/hooks/useColorsReport";
 
 
 import "./ReportPageHeader.less";
@@ -31,10 +30,6 @@ import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
 import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 import Model from "@/services/model";
-
-function getReportTags() {
-  return getTags("api/query/tags").then(tags => map(tags, t => t.name));
-}
 
 function createMenu(menu) {
   const handlers = {};
@@ -74,7 +69,6 @@ export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
   const queryFlags = useReportFlags(props.report, props.dataSource);
   const updateName = useRenameReport(props.report, props.onChange);
-  const updateTags = useUpdateReportTags(props.report, props.onChange);
   const archiveReport = useArchiveReport(props.report, props.onChange);
   const publishReport = usePublishReport(props.report, props.onChange);
   const unpublishReport = useUnpublishReport(props.report, props.onChange);
@@ -88,15 +82,17 @@ export default function ReportPageHeader(props) {
   const [modelConfigLoaded, setLoadModelConfigLoaded] = useState(false);
   const reportFlags = useReportFlags(props.report, dataSource)
 
-  //const updateReport = useUpdateReport(report, setReport);
+  const { report, setReport, saveReport } = useReport(props.report);
+  const updateColors = useColorsReport(report, props.onChange);
+  const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
   const [colorBody, setColorBody] = useState(
     {
-                r: '241',
-                g: '112',
-                b: '19',
-                a: '1',
-               }
+      r: '241',
+      g: '112',
+      b: '19',
+      a: '1',
+    }
   );
   const [colorText, setColorText] = useState({
     r: '241',
@@ -150,7 +146,6 @@ export default function ReportPageHeader(props) {
   });
 
   const handleClick = (type) => {
-    console.log(type)
     setDisplayColorPicker(type)
   };
 
@@ -170,41 +165,46 @@ export default function ReportPageHeader(props) {
     },[report, updateColors]
   );
 
-  const handleDataSourceChange = useCallback(
-    dataSourceId => {
-      if (dataSourceId) {
-        try {
-          localStorage.setItem("lastSelectedDataSourceId", dataSourceId);
-        } catch (e) {
-          // `localStorage.setItem` may throw exception if there are no enough space - in this case it could be ignored
-        }
-      }
-      if (report.data_source_id !== dataSourceId) {
-        recordEvent("update_data_source", "report", report.id, { dataSourceId });
+  const onChangeDataSource = useCallback(async (dataSourceId) => {
+    setLoadModelsLoaded(true)
+    const updates = {
+      data_source_id: dataSourceId,
+      latest_report_data_id: null,
+      latest_report_data: null,
+    };
+    setReport(extend(report.clone(), updates));
+    try {
+      const res = await Model.query({data_source: dataSourceId});
+      setModels(res.results);
+      setLoadModelsLoaded(false);
+    } catch(err) {
+      setLoadModelsLoaded(false);
+    }
+
+  }, [models, modelsLoaded])
+
+  const handleModelChange = useCallback(
+    async modelId => {
+      setLoadModelConfigLoaded(true)
+      try {
+        const res = await Model.getReporterConfig(modelId);
+        setModelConfig(res);
+        setLoadModelConfigLoaded(false);
+        recordEvent("update_report_config", "report", report.id, { modelId });
         const updates = {
-          data_source_id: dataSourceId,
-          latest_report_data_id: null,
-          latest_report_data: null,
+          model: modelId,
+          appSettings: res.appSettings,
+          timekeeper: res.timekeeper,
         };
-        setReport(extend(report.clone(), updates));
+        props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage: null }); // show message only on error
+      } catch(err) {
+        setLoadModelConfigLoaded(false);
       }
     },
-    [report, setReport, updateReport]
+    [report, props.onChange, updateReport]
   );
 
-  useEffect(() => {
-    // choose data source id for new reports
-    if (dataSourcesLoaded && reportFlags.isNew) {
-      const firstDataSourceId = dataSources.length > 0 ? dataSources[0].id : null;
-      handleDataSourceChange(
-        chooseDataSourceId(
-          [report.data_source_id, localStorage.getItem("lastSelectedDataSourceId"), firstDataSourceId],
-          dataSources
-        )
-      );
-    }
-  }, [report.data_source_id, reportFlags.isNew, dataSourcesLoaded, dataSources, handleDataSourceChange]);
 
   const moreActionsMenu = useMemo(
     () =>

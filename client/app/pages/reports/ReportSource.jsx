@@ -56,7 +56,6 @@ function ReportSource(props) {
           sourceMode
           selectedVisualization={selectedVisualization}
           onChange={setReport}
-          onChangeDataSource={handleDataSourceChange}
         />
       </div>
       <main className="report-fullscreen">

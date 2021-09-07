@@ -75,7 +75,6 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
         if 'job' in res:
             all_statuses.append(res['job']['status'])
 
-
     if len(all_statuses) == 0:
         return None
 

@@ -39,7 +39,7 @@ HASH = "hash"
 NAME = "name"
 MODEL_ID = "model_id"
 PLYWOOD_PREFIX = 'PLYWOOD_QUERIES'
-MAX_AGE = 400
+MAX_AGE = 800
 REDASH_QUERY_CACHE = 0
 parser = lzstring.LZString()
 QUERY_ID = 'adhoc'
@@ -107,7 +107,6 @@ def cache_or_get(hash_string: str, queries: list, current_org, model: Model, spl
     else:
 
         queries_result = [execute_query(query, model, QUERY_ID, current_org) for query in queries]
-        print("QUERY RESULT", queries_result)
         job_ids = [q['job']['id'] for q in queries_result]
 
         redis_connection.setex(key, MAX_AGE, json.dumps(job_ids))
@@ -194,7 +193,6 @@ class ReportGenerateResource(BaseResource):
             abort(400, message='Error with query')
 
         is_fetching = jobs_status(queries)
-        print("IS FETCINH FIRST", is_fetching)
 
         if is_fetching:
             return dict(data=None, status=is_fetching, query=queries)
@@ -209,7 +207,6 @@ class ReportGenerateResource(BaseResource):
                                    )
 
             is_fetching = jobs_status(queries)
-            print("IS FETICHNG", is_fetching)
             if is_fetching:
                 return dict(data=None, status=is_fetching, query=queries)
 

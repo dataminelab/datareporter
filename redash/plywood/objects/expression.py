@@ -189,7 +189,10 @@ class Expression:
                 value = self._data_cube.null_value
                 query = last_query.replace(f"='{some_column_name}'", f" {value}")
             else:
-                query = last_query.replace(some_column_name, value)
+                if self._data_cube.ply_engine == 'bigquery':
+                    query = last_query.replace(f"'{some_column_name}'", f'"{value}"')
+                else:
+                    query = last_query.replace(some_column_name, value)
 
             two_splits_queries.append(query)
 

@@ -107,8 +107,9 @@ class PlywoodQueryParserV2:
 
         for value in split['data']:
             search_column_name = self.null if value[column_name] is None else f"'{value[column_name]}'"
+            query = pydash.find(self._query_result,
+                                lambda v: search_column_name[1:-1].lower() in v['query_result']['query'].lower())
 
-            query = pydash.find(self._query_result, lambda v: search_column_name in v['query_result']['query'])
             if query is None: continue
 
             index = pydash.find_index(split['data'], lambda v: v[column_name] == value[column_name])
@@ -129,6 +130,7 @@ class PlywoodQueryParserV2:
         if len(self._query_result) >= 2:
             self._build_first_split(shape=shape)
 
+        # If exists second query, means it's 2 split
         if len(self._query_result) >= 3:
             self._build_second_split(shape=shape)
 

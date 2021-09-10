@@ -25,6 +25,7 @@ function ReportPage({ report }) {
     return <turnilo-widget>
       <TurniloApplication
         version={version}
+        report={report}
         appSettings={appSettings}
         initTimekeeper={Timekeeper.fromJS(report.timekeeper)}
       />

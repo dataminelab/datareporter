@@ -29,12 +29,12 @@ interface MeasureRowProps {
   style: React.CSSProperties;
   datum: Datum;
   cellWidth: number;
+  report: object;
   scales: Array<d3.scale.Linear<number, number>>;
 }
 
 export const MeasureRow: React.SFC<MeasureRowProps> = props => {
-  const { datum, scales, cellWidth, highlight, dimmed, style, essence } = props;
-
+  const { datum, scales, cellWidth, highlight, dimmed, style, essence, report } = props;
   const concreteSeries = essence.getConcreteSeries().toArray();
   const splitLength = essence.splits.length();
 
@@ -46,6 +46,7 @@ export const MeasureRow: React.SFC<MeasureRowProps> = props => {
       return <MeasureValue
         key={series.reactKey()}
         series={series}
+        report={report}
         datum={datum}
         highlight={highlight}
         scale={scales[i]}

@@ -27,14 +27,15 @@ interface SplitRowsProps {
   data: PseudoDatum[];
   hoverRow?: Datum;
   segmentWidth: number;
+  color: string;
   highlightedRowIndex: number | null;
 }
 
 export const SplitRows: React.SFC<SplitRowsProps> = props => {
-  const { collapseRows, ...rest } = props;
+  const { collapseRows,  color, ...rest } = props;
   const { data } = rest;
   if (!data) return null;
   return collapseRows ?
     <FlattenedSplits {...rest} /> :
-    <NestedSplits {...rest} />;
+    <NestedSplits color={color} {...rest} />;
 };

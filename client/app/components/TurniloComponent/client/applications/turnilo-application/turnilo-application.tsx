@@ -35,6 +35,7 @@ import "./turnilo-application.scss";
 
 export interface TurniloApplicationProps {
   version: string;
+  report: object;
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
@@ -256,7 +257,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   renderView() {
-    const { maxFilters } = this.props;
+    const { maxFilters, report } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { dataCubes, customization } = appSettings;
 
@@ -281,6 +282,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
           dataCube={selectedItem}
           appSettings={appSettings}
           initTimekeeper={timekeeper}
+          report={report}
           hash={viewHash}
           changeEssence={this.updateEssenceInHash}
           changeDataCubeAndEssence={this.changeDataCubeWithEssence}

@@ -9,7 +9,6 @@ import {AppSettings} from "@/components/TurniloComponent/common/models/app-setti
 
 function TurniloWidget(props) {
   const { widget, canEdit, config } = props;
-
   const turniloHash = '#' + widget.text.replace('[turnilo-widget]', '')
   const TurniloMenuOptions = [];
 

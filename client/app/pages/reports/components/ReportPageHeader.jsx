@@ -8,10 +8,8 @@ import Icon from "antd/lib/icon";
 import useMedia from "use-media";
 import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
-import { ReportTagsControl } from "@/components/tags-control/TagsControl";
 import reactCSS from 'reactcss'
 import { SketchPicker } from 'react-color'
-import getTags from "@/services/getTags";
 import { clientConfig } from "@/services/auth";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
@@ -22,6 +20,7 @@ import useRenameReport from "../hooks/useRenameReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
+import useColorsReport from "@/pages/reports/hooks/useColorsReport";
 
 
 import "./ReportPageHeader.less";
@@ -31,10 +30,6 @@ import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
 import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 import Model from "@/services/model";
-
-function getReportTags() {
-  return getTags("api/query/tags").then(tags => map(tags, t => t.name));
-}
 
 function createMenu(menu) {
   const handlers = {};
@@ -74,7 +69,6 @@ export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
   const queryFlags = useReportFlags(props.report, props.dataSource);
   const updateName = useRenameReport(props.report, props.onChange);
-  const updateTags = useUpdateReportTags(props.report, props.onChange);
   const archiveReport = useArchiveReport(props.report, props.onChange);
   const publishReport = usePublishReport(props.report, props.onChange);
   const unpublishReport = useUnpublishReport(props.report, props.onChange);
@@ -89,16 +83,16 @@ export default function ReportPageHeader(props) {
   const reportFlags = useReportFlags(props.report, dataSource)
 
   const { report, setReport, saveReport } = useReport(props.report);
-
+  const updateColors = useColorsReport(report, props.onChange);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
   const [colorBody, setColorBody] = useState(
     {
-                r: '241',
-                g: '112',
-                b: '19',
-                a: '1',
-               }
+      r: '241',
+      g: '112',
+      b: '19',
+      a: '1',
+    }
   );
   const [colorText, setColorText] = useState({
     r: '241',
@@ -159,13 +153,17 @@ export default function ReportPageHeader(props) {
     setDisplayColorPicker(0)
   };
 
-  const handleChange = (color) => {
-    if (displayColorPicker === 2) {
-      setColorBody(color.rgb)
-    } else {
-      setColorText(color.rgb)
-    }
-  };
+  const handleColorChange = useCallback(
+    (color, type) => {
+      if (type === 2) {
+        setColorBody(color.rgb)
+        updateColors('colorBody', color.hex);
+      } else {
+        setColorText(color.rgb)
+        updateColors('colorText', color.hex);
+      }
+    },[report, updateColors]
+  );
 
   const onChangeDataSource = useCallback(async (dataSourceId) => {
     setLoadModelsLoaded(true)
@@ -283,17 +281,6 @@ export default function ReportPageHeader(props) {
             </h3>
           </div>
         </div>
-        <div className="report-tags">
-          <ReportTagsControl
-            tags={report.tags}
-            isDraft={queryFlags.isDraft}
-            isArchived={queryFlags.isArchived}
-            canEdit={queryFlags.canEdit}
-            getAvailableTags={getReportTags}
-            onEdit={updateTags}
-            tagsExtra={props.tagsExtra}
-          />
-        </div>
       </div>
       <div className="header-actions">
         {props.headerExtra}
@@ -303,11 +290,15 @@ export default function ReportPageHeader(props) {
         <div style={ styles.swatch } onClick={ () => handleClick(2) }>
           Chart color: <div style={ styles.colorBody } />
         </div>
-        { displayColorPicker ? <div style={ styles.popover }>
+        { displayColorPicker === 1 ? <div style={ styles.popover }>
           <div style={ styles.cover } onClick={ handleClose }/>
-          <SketchPicker color={ colorBody } onChangeComplete={ (color, type) => handleChange(color, type) } />
-          <button onClick={ handleClose }>Apply</button>
-          <button onClick={ handleClose }>Cancel</button>
+          <SketchPicker color={ colorText } onChangeComplete={ (color) => handleColorChange(color, 1) } />
+          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
+        </div> : null }
+        { displayColorPicker === 2 ? <div style={ styles.popover }>
+          <div style={ styles.cover } onClick={ handleClose }/>
+          <SketchPicker color={ colorBody } onChangeComplete={ (color) => handleColorChange(color, 2) } />
+          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
         </div> : null }
         {dataSourcesLoaded && (
           <div className="data-source-box m-r-5 ">

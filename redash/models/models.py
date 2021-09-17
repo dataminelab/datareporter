@@ -1,6 +1,9 @@
+import json
+
 from . import TimestampMixin, ChangeTrackingMixin, User, DataSource
 from .base import db, primary_key, Column, key_type, gfk_type
 from sqlalchemy import and_
+from ..services.expression import ExpressionBase64Parser
 
 
 @gfk_type
@@ -74,6 +77,9 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     model_id = Column(db.Integer, db.ForeignKey("models.id"))
     model = db.relationship("Model", back_populates="reports")
 
+    color_1 = Column(db.String(length=32))
+    color_2 = Column(db.String(length=32))
+
     version = Column(db.Integer)
 
     __tablename__ = "reports"
@@ -90,3 +96,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     @classmethod
     def get_by_user_and_id(cls, user: User, _id: int):
         return cls.query.filter(and_(cls.user_id == user.id, cls.id == _id)).one()
+
+    @property
+    def hash(self):
+        return ExpressionBase64Parser.parse_dict_to_base64(self.expression)

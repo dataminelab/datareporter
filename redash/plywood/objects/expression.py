@@ -74,7 +74,6 @@ class Expression:
     def _visualization_validation(self):
         visualization = self.filter['visualization']
         if visualization not in SUPPORTED_VISUALIZATION:
-            print(f'{visualization} is not supported')
             raise ExpressionNotSupported(message=f'{visualization} is not supported')
 
     def _filters_validations(self):

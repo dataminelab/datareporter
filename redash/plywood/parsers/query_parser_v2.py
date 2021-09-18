@@ -107,8 +107,13 @@ class PlywoodQueryParserV2:
 
         for value in split['data']:
             search_column_name = self.null if value[column_name] is None else f"'{value[column_name]}'"
+
             query = pydash.find(self._query_result,
-                                lambda v: search_column_name[1:-1].lower() in v['query_result']['query'].lower())
+                                lambda v: f'"{search_column_name[1:-1]}"' in v['query_result']['query'])
+
+            if query is None:
+                query = pydash.find(self._query_result,
+                                    lambda v: search_column_name[1:-1] in v['query_result']['query'])
 
             if query is None: continue
 

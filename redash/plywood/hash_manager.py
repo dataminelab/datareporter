@@ -22,6 +22,9 @@ REDASH_QUERY_CACHE = 0
 parser = lzstring.LZString()
 QUERY_ID = 'adhoc'
 
+SUCCESS_CODE = 3
+FAILED_QUERY_CODE = 4
+
 
 def execute_query(query, model, query_id, org):
     parameterized_query = ParameterizedQuery(query, org=org)
@@ -33,7 +36,7 @@ def execute_query(query, model, query_id, org):
 def parse_job(job_id: str, current_org):
     job_data = serialize_job(Job.fetch(job_id))
 
-    if job_data['job']['status'] == 3:
+    if job_data['job']['status'] == SUCCESS_CODE:
         query_result_id = job_data['job']['query_result_id']
         query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query_result_id, current_org)
         return dict(query_result=query_result.to_dict())
@@ -70,7 +73,7 @@ def has_pending(array):
         return False
     no_duplicates = list(set(array))
     try:
-        no_duplicates.remove(4)
+        no_duplicates.remove(FAILED_QUERY_CODE)
     except ValueError:
         pass
     if len(no_duplicates) > 0:

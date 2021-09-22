@@ -72,6 +72,7 @@ class Expression:
         )
 
     def _visualization_validation(self):
+
         visualization = self.filter['visualization']
         if visualization not in SUPPORTED_VISUALIZATION:
             raise ExpressionNotSupported(message=f'{visualization} is not supported')
@@ -110,7 +111,7 @@ class Expression:
 
     @property
     def expression(self):
-        self._supported_validation()
+
         cube = self._data_cube.data_cube
         old_name = cube['name']
         cube['name'] = REPLACE_DATA_CUBE_NAME

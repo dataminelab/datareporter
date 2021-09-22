@@ -23,6 +23,7 @@ class PlywoodApi(object):
         try:
             response = requests.post(url=cls.PLYWOOD_URL, json=body)
             data = response.json()
+            print("DATA", data)
             queries = data['queries']
 
             return list(itertools.chain.from_iterable(queries))

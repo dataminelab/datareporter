@@ -84,9 +84,16 @@ class DataCube:
 
     @property
     def attributes(self):
+        print("GETTING ATTRIBUTES")
         """Returns DataCube attributes"""
+        print(self._model)
+        print(type(self._model))
+        print(self._model.config)
         config = yaml.load(self._model.config.content, Loader=yaml.FullLoader)
+        print(config)
         data_cube = pydash.head(config["dataCubes"])
+
+        print("DATA_CUBE", data_cube)
         attributes = data_cube["attributes"] if data_cube else []
         return attributes
 

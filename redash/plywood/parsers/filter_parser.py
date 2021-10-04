@@ -11,6 +11,5 @@ class PlywoodFilterParser:
 
     def get_plywood_value(self) -> dict:
         shape_copy = copy.deepcopy(self.shape)
-        print(self.result)
         shape_copy['data'] = self.result['data']['rows']
         return shape_copy

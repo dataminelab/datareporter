@@ -10,7 +10,7 @@ from redash.models.models import Model, Report
 from redash.permissions import (
     require_permission,
     require_object_modify_permission,
-    require_object_delete_permission
+    require_object_delete_permission, require_object_view_permission
 )
 from redash.plywood.hash_manager import hash_to_result, filter_expression_to_result
 from redash.plywood.objects.expression import ExpressionNotSupported
@@ -122,6 +122,7 @@ class ReportResource(BaseResource):
     @require_permission("view_report")
     def get(self, report_id: int):
         report: Report = get_object_or_404(Report.get_by_id, report_id)
+        require_object_view_permission(report, self.current_user)
 
         self.record_event({
             "action": "view",

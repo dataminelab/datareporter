@@ -344,8 +344,6 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
     ],
     "data": [
         {
-            "MillisecondsInInterval": 630720000000,
-            "added": 9385573,
             "SPLIT": {
                 "keys": [
                     "countryIsoCode"
@@ -370,8 +368,6 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                 ],
                 "data": [
                     {
-                        "countryIsoCode": None,
-                        "added": 8761516,
                         "SPLIT": {
                             "keys": [
                                 "isMinor"
@@ -396,11 +392,11 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                                     "added": 1236334
                                 }
                             ]
-                        }
+                        },
+                        "countryIsoCode": None,
+                        "added": 8761516
                     },
                     {
-                        "countryIsoCode": "CO",
-                        "added": 60398,
                         "SPLIT": {
                             "keys": [
                                 "isMinor"
@@ -421,11 +417,11 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                                     "added": 60398
                                 }
                             ]
-                        }
+                        },
+                        "countryIsoCode": "CO",
+                        "added": 60398
                     },
                     {
-                        "countryIsoCode": "RU",
-                        "added": 50561,
                         "SPLIT": {
                             "keys": [
                                 "isMinor"
@@ -446,11 +442,11 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                                     "added": 50561
                                 }
                             ]
-                        }
+                        },
+                        "countryIsoCode": "RU",
+                        "added": 50561
                     },
                     {
-                        "countryIsoCode": "US",
-                        "added": 44433,
                         "SPLIT": {
                             "keys": [
                                 "isMinor"
@@ -471,11 +467,11 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                                     "added": 44433
                                 }
                             ]
-                        }
+                        },
+                        "countryIsoCode": "US",
+                        "added": 44433
                     },
                     {
-                        "countryIsoCode": "IT",
-                        "added": 41073,
                         "SPLIT": {
                             "keys": [
                                 "isMinor"
@@ -492,14 +488,34 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                             ],
                             "data": [
                                 {
-                                    "isMinor": False,
+                                    "countryIsoCode": None,
+                                    "added": 8761516
+                                },
+                                {
+                                    "countryIsoCode": "CO",
+                                    "added": 60398
+                                },
+                                {
+                                    "countryIsoCode": "RU",
+                                    "added": 50561
+                                },
+                                {
+                                    "countryIsoCode": "US",
+                                    "added": 44433
+                                },
+                                {
+                                    "countryIsoCode": "IT",
                                     "added": 41073
                                 }
                             ]
-                        }
+                        },
+                        "countryIsoCode": "IT",
+                        "added": 41073
                     }
                 ]
-            }
+            },
+            "MillisecondsInInterval": 630720000000,
+            "added": 9385573
         }
     ]
 }

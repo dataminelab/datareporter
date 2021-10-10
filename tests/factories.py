@@ -372,6 +372,12 @@ class Factory(object):
         return model_factory.create(**args)
 
     def create_report(self, **kwargs):
-        args = {"user": self.user, 'model': self.create_model(), 'expression': {'name': 'John'}}
+        args = {
+            "user": self.user,
+            'model': self.create_model(),
+            'expression': {'name': 'John'},
+            'color_1': 'color_1',
+            'color_2': 'color_2'
+        }
         args.update(kwargs)
         return report_factory.create(**args)

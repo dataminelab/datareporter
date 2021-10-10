@@ -1,23 +1,19 @@
 import json
-
-import lzstring
 from flask import request, make_response
 from flask_restful import abort
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
-from redash import models, redis_connection
+from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 from redash.handlers.queries import order_results
 from redash.models.models import Model, Report
 from redash.permissions import (
     require_permission,
     require_object_modify_permission,
-    require_object_delete_permission
+    require_object_delete_permission, require_object_view_permission
 )
-from redash.plywood.hash_manager import hash_to_result
-from redash.plywood.objects.data_cube import DataCube
-from redash.plywood.objects.expression import Expression, ExpressionNotSupported
-from redash.plywood.parsers.filter_parser import PlywoodFilterParser
+from redash.plywood.hash_manager import hash_to_result, filter_expression_to_result
+from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
 
@@ -30,33 +26,15 @@ MODEL_ID = "model_id"
 COLOR_1 = 'color_1'
 COLOR_2 = 'color_2'
 
-parser = lzstring.LZString()
-
 
 class ReportFilter(BaseResource):
     @require_permission("view_report")
     def post(self, model_id: int):
-        # req = request.get_json(True)
-        # require_fields(req, (EXPRESSION,))
-        # model = get_object_or_404(Model.get_by_id, model_id)
-        #
-        # data_cube = DataCube(model=model)
-        #
-        # queries = Expression.get_queries_from_prepared_expression(data_cube=data_cube, expression=req[EXPRESSION])
-        #
-        # queries_result = [execute_query(query, model, QUERY_ID, self.current_org) for query in queries]
-        #
-        # is_fetching = jobs_status(queries_result)
-        # if is_fetching:
-        #     return dict(data=None, status=is_fetching, query=queries_result)
-        #
-        # shape = Expression.get_shape_from_prepared_expression(data_cube=data_cube, expression=req[EXPRESSION])
-        #
-        # data = PlywoodFilterParser(result=queries_result, data_cube=data_cube, shape=shape)
+        req = request.get_json(True)
+        require_fields(req, (EXPRESSION,))
+        model = get_object_or_404(Model.get_by_id, model_id)
 
-        # return dict(data=data.get_plywood_value(), status=200, query=queries_result)
-
-        return dict()
+        return filter_expression_to_result(expression=req[EXPRESSION], model=model, organisation=self.current_org)
 
 
 class ReportGenerateResource(BaseResource):
@@ -144,6 +122,7 @@ class ReportResource(BaseResource):
     @require_permission("view_report")
     def get(self, report_id: int):
         report: Report = get_object_or_404(Report.get_by_id, report_id)
+        require_object_view_permission(report, self.current_user)
 
         self.record_event({
             "action": "view",
@@ -174,7 +153,7 @@ class ReportResource(BaseResource):
 
         if EXPRESSION in updates:
             # decodes base64 that turnillo uses to plain json
-            updates[EXPRESSION] = json.loads(parser.decompressFromBase64(updates[EXPRESSION]))
+            updates[EXPRESSION] = ExpressionBase64Parser.parse_base64_to_dict(updates[EXPRESSION])
 
         self.update_model(report, updates)
 

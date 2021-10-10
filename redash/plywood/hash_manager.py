@@ -1,6 +1,6 @@
 import hashlib
 import json
-from typing import List, Union
+from typing import List, Union, Any
 
 import lzstring
 from flask_restful import abort
@@ -12,8 +12,10 @@ from redash.models.models import Model
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
 from redash import models, redis_connection
+from redash.plywood.parsers.filter_parser import PlywoodFilterParser
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers import serialize_job
+from redash.services.expression import ExpressionBase64Parser
 from redash.tasks import Job
 
 PLYWOOD_PREFIX = 'PLYWOOD_QUERIES'
@@ -24,6 +26,19 @@ QUERY_ID = 'adhoc'
 
 SUCCESS_CODE = 3
 FAILED_QUERY_CODE = 4
+
+
+def replace_item(obj, value, replace_value):
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            obj[k] = replace_item(v, value, replace_value)
+
+    for k, v in obj.items():
+        if isinstance(v, str):
+            if v == value:
+                obj[k] = replace_value
+
+    return obj
 
 
 def execute_query(query, model, query_id, org):
@@ -143,6 +158,7 @@ def parse_result(
         query=queries,
         shape=expression.shape,
         failed=errored,
+        message='',
     )
 
 
@@ -176,3 +192,28 @@ def hash_to_result(hash_string: str, model: Model, organisation):
         model=model,
         current_org=organisation,
     )
+
+
+def filter_expression_to_result(expression: dict, model: Model, organisation):
+    data_cube = DataCube(model=model)
+    expression = replace_item(expression, 'main', data_cube.source_name)
+
+    queries = Expression.get_queries_from_prepared_expression(data_cube=data_cube, expression=expression)
+
+    queries_result = cache_or_get(
+        hash_string=ExpressionBase64Parser.parse_dict_to_base64(expression),
+        queries=queries,
+        current_org=organisation,
+        model=model,
+    )
+
+    is_fetching = jobs_status(queries_result)
+
+    if is_fetching:
+        return dict(data=None, status=is_fetching, query=queries_result)
+
+    shape = Expression.get_shape_from_prepared_expression(data_cube=data_cube, expression=expression)
+
+    data = PlywoodFilterParser(result=queries_result, data_cube=data_cube, shape=shape)
+
+    return dict(data=data.get_plywood_value(), status=200, query=queries_result)

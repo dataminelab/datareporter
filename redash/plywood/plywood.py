@@ -1,10 +1,9 @@
 import itertools
 import logging
 from typing import List
-
-import requests
-
 from redash.settings import PLYWOOD_SERVER_URL
+import requests
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +50,7 @@ class PlywoodApi(object):
         url = cls.PLYWOOD_URL + '/expression'
 
         body = dict(hash=hash, dataCube=data_cube)
+
         try:
             response = requests.post(url=url, json=body)
             response.raise_for_status()

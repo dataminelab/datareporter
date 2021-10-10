@@ -1,11 +1,321 @@
 import json
+
+import mock
 from sqlalchemy.orm.exc import NoResultFound
 from redash.models import db
-from redash.models.models import Report
+from redash.models.models import Report, ModelConfig
 from tests import BaseTestCase
 import lzstring
+from redash import models
 
 EXPRESSION_BASE64 = "N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvg+fqq+ZAAKjlgAJi6gMTAO6Fi4BBEAjAAiVlD2wvgAtBmqnt5C9nkgSgC6Km5lwcSYAmRwuNQBQQTQAHJkUlZgiDBkLmgOozXU2Jho+AoIytMgUMJIaPGEjQR5DhCcVjHh2FCpwfww2BPuAJJQmLmYDvN4oF3BcDExZDFWHl5gmJ9mMjhAArxGGkQD8oLwyNhjodqF59pg/gRqtQkGoIK8AKwABnq20BuwmBw4YI0p3OPSgAEFZth3GpMDBuNQHi8eCAPgQvj8/qUyatoqDqMcIVDgrD4YjKVZUbFgliQDi8fh8bUueKtl1HAj4Z9vr8rHJnmp0LyAd4fgoYHYhiNvGrbcENHBYAFqithAdsL8siczjgXCBeAALdqBhBWbBwDRrODG6jQSTNeZ+gO/JjPV4gQVmpRAA="
+
+FAKE_QUERIES = {
+    "queries": [
+        [
+            "SELECT SUM(`added`) AS `__VALUE__` FROM public.`wikiticker` AS t WHERE (TIMESTAMP('2001-07-14T09:29:00.000Z')<=`sometimeLater` AND `sometimeLater`<TIMESTAMP('2021-07-14T09:29:00.000Z'))",
+            "SELECT `isMinor` AS `isMinor`, SUM(`added`) AS `added` FROM public.`wikiticker` AS t WHERE (TIMESTAMP('2001-07-14T09:29:00.000Z')<=`sometimeLater` AND `sometimeLater`<TIMESTAMP('2021-07-14T09:29:00.000Z')) GROUP BY 1 ORDER BY `added` DESC LIMIT 5"
+        ],
+        [
+            "SELECT `countryIsoCode` AS `countryIsoCode`, SUM(`added`) AS `added` FROM public.`wikiticker` AS t WHERE ((TIMESTAMP('2001-07-14T09:29:00.000Z')<=`sometimeLater` AND `sometimeLater`<TIMESTAMP('2021-07-14T09:29:00.000Z')) AND (`isMinor`=TRUE)) GROUP BY 1 ORDER BY `added` DESC LIMIT 5"
+        ]
+    ]
+}
+
+FAKE_EXPERSSION = {
+    "op": "apply",
+    "operand": {
+        "op": "apply",
+        "operand": {
+            "op": "apply",
+            "operand": {
+                "op": "literal",
+                "value": {
+                    "attributes": [],
+                    "data": [
+                        {}
+                    ]
+                },
+                "type": "DATASET"
+            },
+            "expression": {
+                "op": "filter",
+                "operand": {
+                    "op": "ref",
+                    "name": "public.wikiticker"
+                },
+                "expression": {
+                    "op": "overlap",
+                    "operand": {
+                        "op": "ref",
+                        "name": "sometimeLater"
+                    },
+                    "expression": {
+                        "op": "literal",
+                        "value": {
+                            "setType": "TIME_RANGE",
+                            "elements": [
+                                {
+                                    "start": "2001-07-13T11:01:00.000Z",
+                                    "end": "2021-07-13T11:01:00.000Z"
+                                }
+                            ]
+                        },
+                        "type": "SET"
+                    }
+                }
+            },
+            "name": "public.wikiticker"
+        },
+        "expression": {
+            "op": "literal",
+            "value": 630720000000
+        },
+        "name": "MillisecondsInInterval"
+    },
+    "expression": {
+        "op": "sum",
+        "operand": {
+            "op": "ref",
+            "name": "public.wikiticker"
+        },
+        "expression": {
+            "op": "ref",
+            "name": "added"
+        }
+    },
+    "name": "added"
+}
+
+YAML_CONFIG = """
+dataCubes:
+  - name: public.wikiticker
+
+    title: Public.Wikiticker
+
+    timeAttribute: sometimeLater
+
+    clusterName: native
+
+    defaultSortMeasure: added
+
+    defaultSelectedMeasures:
+
+      - added
+
+    attributes:
+
+      - name: added
+        type: NUMBER
+        nativeType: INTEGER
+
+      - name: channel
+        type: STRING
+        nativeType: STRING
+
+      - name: cityName
+        type: STRING
+        nativeType: STRING
+
+      - name: comment
+        type: STRING
+        nativeType: STRING
+
+      - name: commentLength
+        type: NUMBER
+        nativeType: INTEGER
+
+      - name: countryIsoCode
+        type: STRING
+        nativeType: STRING
+
+      - name: countryName
+        type: STRING
+        nativeType: STRING
+
+      - name: deleted
+        type: NUMBER
+        nativeType: INTEGER
+
+      - name: delta
+        type: NUMBER
+        nativeType: INTEGER
+
+      - name: deltaBucket100
+        type: NUMBER
+        nativeType: INTEGER
+
+      - name: deltaByTen
+        type: NUMBER
+        nativeType: FLOAT
+
+      - name: isAnonymous
+        type: BOOLEAN
+        nativeType: BOOLEAN
+
+      - name: isMinor
+        type: BOOLEAN
+        nativeType: BOOLEAN
+
+      - name: isNew
+        type: BOOLEAN
+        nativeType: BOOLEAN
+
+      - name: isRobot
+        type: BOOLEAN
+        nativeType: BOOLEAN
+
+      - name: isUnpatrolled
+        type: BOOLEAN
+        nativeType: BOOLEAN
+
+      - name: metroCode
+        type: NUMBER
+        nativeType: INTEGER
+
+      - name: namespace
+        type: STRING
+        nativeType: STRING
+
+      - name: page
+        type: STRING
+        nativeType: STRING
+
+      - name: regionIsoCode
+        type: STRING
+        nativeType: STRING
+
+      - name: regionName
+        type: STRING
+        nativeType: STRING
+
+      - name: sometimeLater
+        type: TIME
+        nativeType: TIMESTAMP
+
+      - name: time
+        type: TIME
+        nativeType: TIMESTAMP
+
+      - name: user
+        type: STRING
+        nativeType: STRING
+
+      - name: userChars
+        type: STRING
+        nativeType: STRING
+
+    dimensions:
+
+      - name: channel
+        title: Channel
+        formula: $channel
+
+      - name: cityName
+        title: City Name
+        formula: $cityName
+
+      - name: comment
+        title: Comment
+        formula: $comment
+
+      - name: countryIsoCode
+        title: Country Iso Code
+        formula: $countryIsoCode
+
+      - name: countryName
+        title: Country Name
+        formula: $countryName
+
+      - name: isAnonymous
+        title: Is Anonymous
+        formula: $isAnonymous
+        kind: BOOLEAN
+
+      - name: isMinor
+        title: Is Minor
+        formula: $isMinor
+        kind: BOOLEAN
+
+      - name: isNew
+        title: Is New
+        formula: $isNew
+        kind: BOOLEAN
+
+      - name: isRobot
+        title: Is Robot
+        formula: $isRobot
+        kind: BOOLEAN
+
+      - name: isUnpatrolled
+        title: Is Unpatrolled
+        formula: $isUnpatrolled
+        kind: BOOLEAN
+
+      - name: namespace
+        title: Namespace
+        formula: $namespace
+
+      - name: page
+        title: Page
+        formula: $page
+
+      - name: regionIsoCode
+        title: Region Iso Code
+        formula: $regionIsoCode
+
+      - name: regionName
+        title: Region Name
+        formula: $regionName
+
+      - name: sometimeLater
+        title: Sometime Later
+        formula: $sometimeLater
+        kind: TIME
+
+      - name: time
+        title: Time
+        formula: $time
+        kind: TIME
+
+      - name: user
+        title: User
+        formula: $user
+
+      - name: userChars
+        title: User Chars
+        formula: $userChars
+
+    measures:
+
+      - name: added
+        title: Added
+        formula: $main.sum($added)
+
+      - name: commentLength
+        title: Comment Length
+        formula: $main.sum($commentLength)
+
+      - name: deleted
+        title: Deleted
+        formula: $main.sum($deleted)
+
+      - name: delta
+        title: Delta
+        formula: $main.sum($delta)
+
+      - name: deltaBucket100
+        title: Delta Bucket100
+        formula: $main.sum($deltaBucket100)
+
+      - name: deltaByTen
+        title: Delta By Ten
+        formula: $main.sum($deltaByTen)
+
+      - name: metroCode
+        title: Metro Code
+        formula: $main.sum($metroCode)
+"""
 
 EXPRESSION_OBJ = {
     "visualization": "table",
@@ -119,7 +429,13 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports",
-            data={"name": NAME, "model_id": 1, "expression": EXPRESSION_BASE64},
+            data={
+                "name": NAME,
+                "model_id": 1,
+                "expression": EXPRESSION_BASE64,
+                'color_1': 'color_2',
+                'color_2': 'color_2'
+            },
             user=user
         )
 
@@ -134,7 +450,13 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports",
-            data={"name": NAME, "model_id": model.id, "expression": EXPRESSION_BASE64},
+            data={
+                "name": NAME,
+                "model_id": model.id,
+                "expression": EXPRESSION_BASE64,
+                'color_1': 'color_2',
+                'color_2': 'color_2'
+            },
             user=user2
         )
 
@@ -147,7 +469,13 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports",
-            data={"name": NAME, "model_id": model.id, "expression": EXPRESSION_BASE64},
+            data={
+                "name": NAME,
+                "model_id": model.id,
+                "expression": EXPRESSION_BASE64,
+                'color_1': 'color_2',
+                'color_2': 'color_2'
+            },
             user=user
         )
         data = response.json
@@ -167,7 +495,13 @@ class TestReportListCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/reports?format=json",
-            data={"name": NAME, "model_id": model.id, "expression": EXPRESSION_BASE64},
+            data={
+                "name": NAME,
+                "model_id": model.id,
+                "expression": EXPRESSION_BASE64,
+                'color_1': 'color_2',
+                'color_2': 'color_2'
+            },
             user=user
         )
         data = response.json
@@ -246,15 +580,6 @@ class TestReportListGetResource(BaseTestCase):
 
 class TestReportGetResource(BaseTestCase):
 
-    def test_get_report_without_permission(self):
-        group1 = self.factory.create_group(permissions=[""])
-        user = self.factory.create_user(group_ids=[group1.id])
-        report = self.factory.create_report(user=user)
-
-        response = self.make_request("get", f"/api/reports/{report.id}")
-
-        self.assertEqual(403, response.status_code)
-
     def test_get_report_does_not_exist(self):
         response = self.make_request("get", f"/api/reports/{20}")
 
@@ -270,22 +595,48 @@ class TestReportGetResource(BaseTestCase):
         self.assertEqual(403, response.status_code)
 
     def test_get_report_success(self):
-        report = self.factory.create_report()
+        model = self.factory.create_model()
+        user = self.factory.create_user()
 
-        response = self.make_request("get", f"/api/reports/{report.id}")
+        model_config = ModelConfig(user=user, model=model, content=YAML_CONFIG)
+
+        models.db.session.add(model)
+        models.db.session.add(model_config)
+        models.db.session.commit()
+
+        report = self.factory.create_report(model=model)
+
+        with mock.patch('redash.plywood.plywood.PlywoodApi.convert_hash_to_expression') as mock_res:
+            with mock.patch('redash.plywood.plywood.PlywoodApi.convert_to_sql') as second_mock:
+                mock_res.return_value = FAKE_EXPERSSION
+                second_mock.return_value = FAKE_QUERIES
+                response = self.make_request("get", f"/api/reports/{report.id}")
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(report.id, response.json["id"])
-        self.assertTrue(isinstance(response.json["expression"], str))
+        self.assertEqual(response.json['data'], None)
+        self.assertEqual(response.json['status'], 1)
 
     def test_get_report_success_formatting(self):
-        report = self.factory.create_report()
+        model = self.factory.create_model()
+        user = self.factory.create_user()
 
-        response = self.make_request("get", f"/api/reports/{report.id}?format=json")
+        model_config = ModelConfig(user=user, model=model, content=YAML_CONFIG)
+
+        models.db.session.add(model)
+        models.db.session.add(model_config)
+        models.db.session.commit()
+
+        report = self.factory.create_report(model=model)
+
+        with mock.patch('redash.plywood.plywood.PlywoodApi.convert_hash_to_expression') as mock_res:
+            with mock.patch('redash.plywood.plywood.PlywoodApi.convert_to_sql') as second_mock:
+                mock_res.return_value = FAKE_EXPERSSION
+                second_mock.return_value = FAKE_QUERIES
+                response = self.make_request("get", f"/api/reports/{report.id}?format=json")
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(report.id, response.json["id"])
-        self.assertTrue(isinstance(response.json["expression"], dict))
+        self.assertEqual(response.json['status'], 1)
+        self.assertEqual(response.json['data'], None)
 
 
 class TestReportEditResource(BaseTestCase):

@@ -71,11 +71,13 @@ class Expression:
             func=lambda: json.loads(parser.decompressFromBase64(self._hash))
         )
 
-    def _visualization_validation(self):
+    @property
+    def visualization(self):
+        return self.filter['visualization']
 
-        visualization = self.filter['visualization']
-        if visualization not in SUPPORTED_VISUALIZATION:
-            raise ExpressionNotSupported(message=f'{visualization} is not supported')
+    def _visualization_validation(self):
+        if self.visualization not in SUPPORTED_VISUALIZATION:
+            raise ExpressionNotSupported(message=f'{self.visualization} is not supported')
 
     def _filters_validations(self):
         filters = self.filter['filters']

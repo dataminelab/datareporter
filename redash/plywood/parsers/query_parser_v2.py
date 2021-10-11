@@ -1,8 +1,8 @@
 import copy
+import datetime
 import logging
 from typing import List
 import pydash
-
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.plywood.objects.plywood_value import PlywoodValue
@@ -121,6 +121,18 @@ class PlywoodQueryParserV2:
             if index == -1: continue
 
             split['data'][index]['SPLIT']['data'] = query['query_result']['data']['rows']
+
+            if self._visualization == 'line-chart':
+                split['data'][index]['SPLIT']['attributes'].append(
+                    dict(name=self._data_cube.source_name, type='DATASET')
+                )
+
+                for item in split['data'][index]['SPLIT']['data']:
+                    tmp_value = copy.deepcopy(item['date'])
+                    real_date = datetime.datetime.strptime(tmp_value, '%Y-%m-%dT%H:%M:%SZ')
+                    str_date = real_date.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+
+                    item['date'] = dict(start=str_date, end=str_date)
 
     def _query_to_ply_data(self, engine: str) -> PlywoodValue:
         shape = copy.deepcopy(self._shape)

@@ -151,6 +151,7 @@ def parse_result(
         data_cube_name=data_cube.source_name,
         shape=expression.shape,
         visualization=expression.visualization,
+        data_cube=data_cube,
     )
 
     return dict(

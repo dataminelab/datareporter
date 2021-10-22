@@ -203,8 +203,6 @@ class Expression:
     def get_2_splits_queries(self, prev_result: list) -> list:
         queries = self.queries
 
-        print(queries)
-
         if len(queries) != 3:
             print(f'Might not work as expected')
 

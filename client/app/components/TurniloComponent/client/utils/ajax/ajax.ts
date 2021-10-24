@@ -96,7 +96,6 @@ export class Ajax {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
     async function subscribe(hash: string, modelId: number) {
-      console.log("HASH  IS ", hash);
       const method = "POST";
       const url = `api/reports/generate/${modelId}`;
       const data = { hash };

@@ -6,6 +6,7 @@ import pydash
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.plywood.objects.plywood_value import PlywoodValue
+from dateutil import parser
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 TIME_SHIFT_ATTRS = '_delta__'
@@ -116,25 +117,29 @@ class PlywoodQueryParserV2:
         split['data'][top_index]['SPLIT']['attributes'].append(
             dict(name=self._data_cube.source_name, type='DATASET')
         )
+
         size = len(split['data'][top_index]['SPLIT']['data'])
+        column_name = split['data'][top_index]['SPLIT']['keys'][0]
+
         for inner_index, item in enumerate(split['data'][top_index]['SPLIT']['data']):
-            tmp_value = copy.deepcopy(item['date'])
-            real_date = datetime.datetime.strptime(tmp_value, '%Y-%m-%dT%H:%M:%SZ')
+            tmp_value = copy.deepcopy(item[column_name])
+            real_date = parser.parse(tmp_value)  # datetime.datetime(1999, 8, 28, 0, 0)
+            # datetime.datetime.strptime(tmp_value, '%Y-%m-%dT%H:%M:%SZ')
 
             str_date = iso_format(real_date)
             if inner_index + 1 < size:
 
                 next_value = split['data'][top_index]['SPLIT']['data'][inner_index + 1]
-                next_tmp_value = copy.deepcopy(next_value['date'])
-                real_date_next = datetime.datetime.strptime(next_tmp_value, '%Y-%m-%dT%H:%M:%SZ')
+                next_tmp_value = copy.deepcopy(next_value[column_name])
+                real_date_next = parser.parse(next_tmp_value)
                 str_date_next = iso_format(real_date_next)
 
-                item['date'] = dict(start=str_date, end=str_date_next)
+                item[column_name] = dict(start=str_date, end=str_date_next)
 
             else:
                 end_date = real_date + datetime.timedelta(seconds=1)
                 end_date_str = iso_format(end_date)
-                item['date'] = dict(start=str_date, end=end_date_str)
+                item[column_name] = dict(start=str_date, end=end_date_str)
 
     def _build_second_split(self, shape: dict):
         split = shape['data'][0]['SPLIT']

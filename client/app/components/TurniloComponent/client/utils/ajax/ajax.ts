@@ -96,6 +96,7 @@ export class Ajax {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
     async function subscribe(hash: string, modelId: number) {
+      console.log("HASH  IS ", hash);
       const method = "POST";
       const url = `api/reports/generate/${modelId}`;
       const data = { hash };
@@ -131,10 +132,8 @@ export class Ajax {
     }
     return async (ex: Expression, env: Environment = {}) => {
       const modeId = this.model;
-      const hash = window.location.hash.split("4/");
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      const sub = await subscribe(hash[1], modeId);
+      const hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
+      const sub = await subscribe(hash, modeId);
       return Dataset.fromJS(sub.data);
     };
   }

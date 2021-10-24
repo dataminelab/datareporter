@@ -149,7 +149,9 @@ def parse_result(
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
         data_cube_name=data_cube.source_name,
-        shape=expression.shape
+        shape=expression.shape,
+        visualization=expression.visualization,
+        data_cube=data_cube,
     )
 
     return dict(

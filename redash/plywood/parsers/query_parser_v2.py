@@ -1,8 +1,8 @@
 import copy
+import datetime
 import logging
 from typing import List
 import pydash
-
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.plywood.objects.plywood_value import PlywoodValue
@@ -12,6 +12,15 @@ TIME_SHIFT_ATTRS = '_delta__'
 supported_engines = ['postgres', 'mysql', 'bigquery']
 
 logger = logging.getLogger(__name__)
+
+
+def iso_format(dt):
+    try:
+        utc = dt + dt.utcoffset()
+    except TypeError as e:
+        utc = dt
+    isostring = datetime.datetime.strftime(utc, '%Y-%m-%dT%H:%M:%S.{0}Z')
+    return isostring.format(int(round(utc.microsecond / 1000.0)))
 
 
 class PlywoodQueryParserV2:
@@ -101,6 +110,32 @@ class PlywoodQueryParserV2:
             sample_copy.update(value)
             split_data['data'].append(sample_copy)
 
+    def _prepare_line_chart(self, shape, top_index):
+        split = shape['data'][0]['SPLIT']
+
+        split['data'][top_index]['SPLIT']['attributes'].append(
+            dict(name=self._data_cube.source_name, type='DATASET')
+        )
+        size = len(split['data'][top_index]['SPLIT']['data'])
+        for inner_index, item in enumerate(split['data'][top_index]['SPLIT']['data']):
+            tmp_value = copy.deepcopy(item['date'])
+            real_date = datetime.datetime.strptime(tmp_value, '%Y-%m-%dT%H:%M:%SZ')
+
+            str_date = iso_format(real_date)
+            if inner_index + 1 < size:
+
+                next_value = split['data'][top_index]['SPLIT']['data'][inner_index + 1]
+                next_tmp_value = copy.deepcopy(next_value['date'])
+                real_date_next = datetime.datetime.strptime(next_tmp_value, '%Y-%m-%dT%H:%M:%SZ')
+                str_date_next = iso_format(real_date_next)
+
+                item['date'] = dict(start=str_date, end=str_date_next)
+
+            else:
+                end_date = real_date + datetime.timedelta(seconds=1)
+                end_date_str = iso_format(end_date)
+                item['date'] = dict(start=str_date, end=end_date_str)
+
     def _build_second_split(self, shape: dict):
         split = shape['data'][0]['SPLIT']
         column_name = pydash.head(split['keys'])
@@ -121,6 +156,9 @@ class PlywoodQueryParserV2:
             if index == -1: continue
 
             split['data'][index]['SPLIT']['data'] = query['query_result']['data']['rows']
+
+            if self._visualization == 'line-chart':
+                self._prepare_line_chart(shape=shape, top_index=index)
 
     def _query_to_ply_data(self, engine: str) -> PlywoodValue:
         shape = copy.deepcopy(self._shape)

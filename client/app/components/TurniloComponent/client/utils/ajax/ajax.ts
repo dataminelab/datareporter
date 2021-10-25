@@ -16,12 +16,26 @@
  */
 
 import axios from "axios";
-import { ChainableExpression, Dataset, DatasetJS, Environment, Executor, Expression, SplitExpression } from "plywood";
+import {
+  ChainableExpression,
+  Dataset,
+  DatasetJS,
+  Environment,
+  Executor,
+  Expression,
+  LimitExpression,
+  SplitExpression
+} from "plywood";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 
+interface APIResponse {
+    status: number;
+    data: DatasetJS;
+}
+
 function getSplitsDescription(ex: Expression): string {
-  var splits: string[] = [];
+  const splits: string[] = [];
   ex.forEach(ex => {
     if (ex instanceof ChainableExpression) {
       ex.getArgumentExpressions().forEach(action => {
@@ -41,13 +55,14 @@ function clientTimeout(cluster: Cluster): number {
   return clusterTimeout + CLIENT_TIMEOUT_DELTA;
 }
 
-var reloadRequested = false;
+let reloadRequested = false;
 
 function reload() {
   if (reloadRequested) return;
   reloadRequested = true;
   window.location.reload(true);
 }
+
 
 export interface AjaxOptions {
   method: "GET" | "POST";
@@ -95,44 +110,38 @@ export class Ajax {
     function timeoutQuery(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
-    async function subscribe(hash: string, modelId: number) {
+
+    async function subscribe(input: AjaxOptions): Promise<APIResponse> {
+        const { data, method, timeout , url } = input;
+        const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
+
+        if ([1, 2].indexOf(res.status) >= 0 ) {
+            await timeoutQuery(2000);
+            return await subscribe(input);
+       } else return res;
+    }
+
+    async function  subscribeToFilter(ex: LimitExpression, modelId: number) {
+      const method = "POST";
+      const url = `api/reports/generate/${modelId}/filter`;
+      const data = { expression : ex.toJS() };
+      return subscribe({ method, url, timeout, data });
+    }
+    async function  subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}`;
       const data = { hash };
-      let res = await Ajax.query<{
-        status: number;
-        data: DatasetJS; }>({ method, url, timeout, data });
-      switch (res.status) {
-        // 1 == PENDING (waiting to be executed)
-        case 1:
-          await timeoutQuery(2000);
-          res = await subscribe(hash, modelId);
-          return res;
-        // 2 == STARTED (executing)
-        case 2:
-          await timeoutQuery(1500);
-          res = await subscribe(hash, modelId);
-          return res;
-        // 3 == SUCCESS
-        case 3:
-          return res;
-        // 200 == SUCCESS
-        case 200:
-          return res;
-        // 4 == FAILURE
-        case 4:
-          return res;
-        // 5 == CANCELLED
-        case 5:
-          return res;
-        default:
-          return res;
-      }
+      return subscribe({ method, url, timeout, data });
     }
+
     return async (ex: Expression, env: Environment = {}) => {
-      const modeId = this.model;
+      const modelId = this.model;
+      if (ex instanceof  LimitExpression) {
+        const sub = await subscribeToFilter(ex, modelId);
+        return Dataset.fromJS(sub.data);
+      }
       const hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
-      const sub = await subscribe(hash, modeId);
+      const sub = await subscribeToSplit(hash, modelId);
       return Dataset.fromJS(sub.data);
     };
   }

@@ -23,7 +23,6 @@ from .types import json_cast_property, MutableDict, MutableList
 
 logger = logging.getLogger(__name__)
 
-
 LAST_ACTIVE_KEY = "users:last_active_at"
 
 
@@ -277,7 +276,8 @@ class Group(db.Model, BelongsToOrgMixin):
         "view_model_config",
         "view_report",
         "edit_report",
-        "create_report"
+        "create_report",
+        "generate_report",
     ]
 
     BUILTIN_GROUP = "builtin"

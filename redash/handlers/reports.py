@@ -49,8 +49,8 @@ class ReportGenerateResource(BaseResource):
         model = get_object_or_404(Model.get_by_id, model_id)
 
         try:
-            return hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org)
-
+            result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org)
+            return result.serialized()
         except ExpressionNotSupported as e:
             abort(400, message=e.message)
 

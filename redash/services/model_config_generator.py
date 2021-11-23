@@ -167,10 +167,9 @@ class ModelConfigGenerator(object):
 
     @staticmethod
     def _build(model: Model, refresh):
+
         schemas = model.data_source.get_schema(refresh=refresh)
-
         table_schema = next((schema for schema in schemas if schema["name"] == model.table), None)
-
         if table_schema is None:
             raise ValueError("Data source {} doesn't contain {} table".format(model.data_source, model.table))
 
@@ -200,9 +199,9 @@ class ModelConfigGenerator(object):
 
     @staticmethod
     def find_attributes(_model, table_schema) -> List[Attribute]:
-
+        columns = table_schema['typed_columns'] if 'typed_columns' in table_schema else table_schema['columns']
         attributes = []
-        for column in table_schema["columns"]:
+        for column in columns:
             name, kind = column["name"], column["type"].lower()
 
             attributes.append(Attribute(name=name, kind=kind))

@@ -1,6 +1,6 @@
 import hashlib
 import json
-from typing import List, Union, Any
+from typing import List, Union
 
 import lzstring
 from flask_restful import abort
@@ -12,6 +12,7 @@ from redash.models.models import Model
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
 from redash import models, redis_connection
+from redash.plywood.objects.report_serializer import ReportSerializer, ReportMetaData
 from redash.plywood.parsers.filter_parser import PlywoodFilterParser
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers import serialize_job
@@ -74,7 +75,6 @@ def cache_or_get(
         data = redis_connection.get(key)
         return [parse_job(job_id, current_org) for job_id in json.loads(data)]
     else:
-
         queries_result = [execute_query(query, model, QUERY_ID, current_org) for query in queries]
         job_ids = [q['job']['id'] for q in queries_result]
 
@@ -118,7 +118,7 @@ def parse_result(
     expression: Expression,
     model: Model,
     current_org,
-):
+) -> ReportSerializer:
     """
     Redash caches result and returns query in the same endpoint
     So we poll this url and if jobs are ready we transform it
@@ -129,7 +129,10 @@ def parse_result(
     is_fetching = jobs_status(queries)
 
     if is_fetching:
-        return dict(data=None, status=is_fetching, query=queries)
+        return ReportSerializer(
+            status=is_fetching,
+            queries=queries,
+        )
 
     if expression.is_2_splits():
         queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
@@ -143,9 +146,10 @@ def parse_result(
 
         is_fetching = jobs_status(queries)
         if is_fetching:
-            return dict(data=None, status=is_fetching, query=queries)
+            return ReportSerializer(status=is_fetching, queries=queries)
 
     errored = clean_errored(queries)
+
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
         data_cube_name=data_cube.source_name,
@@ -154,14 +158,25 @@ def parse_result(
         data_cube=data_cube,
     )
 
-    return dict(
-        data=query_parser.parse_ply(data_cube.ply_engine),
-        status=200,
-        query=queries,
-        shape=expression.shape,
+    meta = ReportMetaData()
+
+    for query in queries:
+        meta_data = query['query_result']['data']['metadata']
+
+        if 'query_cost' in meta_data:
+            meta.price += meta_data['query_cost']
+        if 'data_scanned' in meta_data:
+            meta.proceed_data += meta_data['data_scanned']
+
+    serializer = ReportSerializer(
+        queries=queries,
         failed=errored,
-        message='',
+        data=query_parser.parse_ply(data_cube.ply_engine),
+        meta=meta if meta.has_data else None,
+        shape=expression.shape,
     )
+
+    return serializer
 
 
 def clean_errored(queries: list):
@@ -212,10 +227,16 @@ def filter_expression_to_result(expression: dict, model: Model, organisation):
     is_fetching = jobs_status(queries_result)
 
     if is_fetching:
-        return dict(data=None, status=is_fetching, query=queries_result)
+        return ReportSerializer(
+            status=is_fetching,
+            queries=queries_result,
+        )
 
     shape = Expression.get_shape_from_prepared_expression(data_cube=data_cube, expression=expression)
 
     data = PlywoodFilterParser(result=queries_result, data_cube=data_cube, shape=shape)
 
-    return dict(data=data.get_plywood_value(), status=200, query=queries_result)
+    return ReportSerializer(
+        data=data.get_plywood_value(),
+        queries=queries_result,
+    )

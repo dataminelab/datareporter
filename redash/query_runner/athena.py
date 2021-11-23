@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -22,7 +23,6 @@ try:
     enabled = True
 except ImportError:
     enabled = False
-
 
 _TYPE_MAPPINGS = {
     "boolean": TYPE_BOOLEAN,
@@ -185,7 +185,11 @@ class Athena(BaseQueryRunner):
                             columns["Name"]
                             for columns in table["StorageDescriptor"]["Columns"]
                         ]
-                        schema[table_name] = {"name": table_name, "columns": column}
+                        typed_columns = [
+                            {'name': columns["Name"], 'type': columns['Type']}
+                            for columns in table["StorageDescriptor"]["Columns"]
+                        ]
+                        schema[table_name] = {"name": table_name, "columns": column, 'typed_columns': typed_columns}
                         for partition in table.get("PartitionKeys", []):
                             schema[table_name]["columns"].append(partition["Name"])
         return list(schema.values())

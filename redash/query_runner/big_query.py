@@ -14,13 +14,15 @@ from redash.utils import json_dumps, json_loads
 logger = logging.getLogger(__name__)
 
 try:
+
     import apiclient.errors
     from apiclient.discovery import build
     from apiclient.errors import HttpError
     from oauth2client.service_account import ServiceAccountCredentials
 
     enabled = True
-except ImportError:
+except ImportError as e:
+    print(e)
     enabled = False
 
 types_map = {

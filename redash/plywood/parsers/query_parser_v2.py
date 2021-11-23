@@ -10,7 +10,7 @@ from dateutil import parser
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 TIME_SHIFT_ATTRS = '_delta__'
-supported_engines = ['postgres', 'mysql', 'bigquery']
+supported_engines = ['postgres', 'mysql', 'bigquery', 'athena']
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class PlywoodQueryParserV2:
                 return True
         return False
 
-    def _get_change_attrs(self, attributes: list) -> List[dict]:
+    def _get_change_attrs(self, attributes: dict) -> List[dict]:
         change_attrs = list(
             filter(lambda x: (x['name'] not in SYSTEM_FIELDS and x['name'] != self._data_cube_name),
                    attributes['attributes']))
@@ -144,28 +144,28 @@ class PlywoodQueryParserV2:
     def _build_second_split(self, shape: dict):
         split = shape['data'][0]['SPLIT']
         column_name = pydash.head(split['keys'])
-
         for value in split['data']:
             search_column_name = self.null if value[column_name] is None else f"'{value[column_name]}'"
-
             query = pydash.find(self._query_result,
                                 lambda v: f'"{search_column_name[1:-1]}"' in v['query_result']['query'])
 
             if query is None:
                 query = pydash.find(self._query_result,
-                                    lambda v: search_column_name[1:-1] in v['query_result']['query'])
+                                    lambda v: f"'{search_column_name[1:-1]}'" in v['query_result']['query'])
 
+            if query is None:
+                query = pydash.find(self._query_result,
+                                    lambda v: search_column_name[1:-1] in v['query_result']['query'])
             if query is None: continue
 
             index = pydash.find_index(split['data'], lambda v: v[column_name] == value[column_name])
             if index == -1: continue
 
             split['data'][index]['SPLIT']['data'] = query['query_result']['data']['rows']
-
             if self._visualization == 'line-chart':
                 self._prepare_line_chart(shape=shape, top_index=index)
 
-    def _query_to_ply_data(self, engine: str) -> PlywoodValue:
+    def _query_to_ply_data(self, engine: str):
         shape = copy.deepcopy(self._shape)
         # First query
         first_change_attributes = self._get_change_attrs(shape)
@@ -182,7 +182,7 @@ class PlywoodQueryParserV2:
         if len(self._query_result) >= 3:
             self._build_second_split(shape=shape)
 
-        return PlywoodValue.from_json(shape).dict()
+        return PlywoodValue.from_json(shape)
 
 
 def default(obj):

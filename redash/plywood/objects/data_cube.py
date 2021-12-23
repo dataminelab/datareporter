@@ -1,9 +1,13 @@
+from typing import List
+
 import yaml
 
 import pydash
 
 from redash.models.models import Model
+from redash.plywood.objects.report_serializer import ReportMetaData
 from redash.plywood.plywood import PlywoodApi
+from redash.utils.big_query_utils import get_price_for_query
 
 """
 Example config
@@ -71,6 +75,32 @@ class DataCube:
             return "IS NULL"
 
         return "IS NULL"
+
+    def get_meta(self, queries: List[dict]) -> ReportMetaData:
+        meta = ReportMetaData()
+        if self.ply_engine == 'athena':
+            for query in queries:
+
+                meta_data = query['query_result']['data']['metadata']
+
+                if 'query_cost' in meta_data:
+                    meta.price += meta_data['query_cost']
+                if 'data_scanned' in meta_data:
+                    meta.proceed_data += meta_data['data_scanned']
+
+        if self.ply_engine == 'bigquery':
+            for query in queries:
+                meta_data = query['query_result']['data']['metadata']
+
+                cache_hit = meta_data.get('cache_hit', False)
+
+                if cache_hit is False:
+                    if 'data_scanned' in meta_data:
+                        meta.proceed_data += meta_data['data_scanned']
+
+            price = get_price_for_query(meta.proceed_data)
+            meta.price = price
+        return meta if meta.has_data else None
 
     @property
     def redash_engine(self):

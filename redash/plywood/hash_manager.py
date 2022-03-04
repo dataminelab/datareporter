@@ -158,21 +158,11 @@ def parse_result(
         data_cube=data_cube,
     )
 
-    meta = ReportMetaData()
-
-    for query in queries:
-        meta_data = query['query_result']['data']['metadata']
-
-        if 'query_cost' in meta_data:
-            meta.price += meta_data['query_cost']
-        if 'data_scanned' in meta_data:
-            meta.proceed_data += meta_data['data_scanned']
-
     serializer = ReportSerializer(
         queries=queries,
         failed=errored,
         data=query_parser.parse_ply(data_cube.ply_engine),
-        meta=meta if meta.has_data else None,
+        meta=data_cube.get_meta(queries),
         shape=expression.shape,
     )
 

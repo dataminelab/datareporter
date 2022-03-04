@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import sys
 import time
@@ -239,7 +240,7 @@ class BigQuery(BaseQueryRunner):
         data = {
             "columns": columns,
             "rows": rows,
-            "metadata": {"data_scanned": int(query_reply["totalBytesProcessed"])},
+            "metadata": {"data_scanned": int(query_reply["totalBytesProcessed"]), 'cache_hit': query_reply['cacheHit']},
         }
 
         return data

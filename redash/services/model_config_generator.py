@@ -199,7 +199,10 @@ class ModelConfigGenerator(object):
 
     @staticmethod
     def find_attributes(_model, table_schema) -> List[Attribute]:
-        columns = table_schema['typed_columns'] if 'typed_columns' in table_schema else table_schema['columns']
+        columns =  table_schema['columns']
+        if 'typed_columns' in table_schema and table_schema['typed_columns']:
+            columns = table_schema['typed_columns']
+
         attributes = []
         for column in columns:
             name, kind = column["name"], column["type"].lower()

@@ -4,13 +4,13 @@ from redash.plywood.objects.plywood_value import PlywoodValue
 
 
 class ReportMetaData:
-    def __init__(self, price: float = 0, proceed_data: float = 0):
+    def __init__(self, price: float = 0, proceed_data: int = 0):
         self.price = price
         self.proceed_data = proceed_data
 
     @property
     def has_data(self):
-        return self.price != 0 and self.proceed_data != 0
+        return self.price != 0 or self.proceed_data != 0
 
     def to_dict(self):
         return {

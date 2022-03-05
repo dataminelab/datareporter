@@ -18,7 +18,7 @@ worker() {
 
   export WORKERS_COUNT=${WORKERS_COUNT:-2}
   export QUEUES=${QUEUES:-}
-  
+
   supervisord -c worker.conf
 }
 
@@ -96,6 +96,7 @@ case "$1" in
     echo "DEPRECATED: Celery has been replaced with RQ and now performs healthchecks autonomously as part of the 'worker' entrypoint."
     ;;
   dev_server)
+    echo "Starting dev server"
     export FLASK_DEBUG=1
     exec /app/manage.py runserver --debugger --reload -h 0.0.0.0
     ;;

@@ -4,13 +4,20 @@ FROM node:12 as frontend-builder
 ARG skip_frontend_build
 
 WORKDIR /frontend
-COPY . /frontend/
-
-RUN if [ "x$skip_frontend_build" = "x" ] ; then npm ci --unsafe-perm; fi
-RUN if [ "x$skip_frontend_build" = "x" ] ; then cd viz-lib; npm ci --unsafe-perm; fi
-
-RUN if [ "x$skip_frontend_build" = "x" ] ; then npm run build; else mkdir -p /frontend/client/dist && touch /frontend/client/dist/multi_org.html && touch /frontend/client/dist/index.html; fi
-FROM python:3.7-slim
+COPY bin/build_frontend.sh .
+COPY redash-client/ /frontend/redash-client
+COPY viz-lib/ /frontend/viz-lib
+RUN if [ "x$skip_frontend_build" = "x" ] ; then \
+    echo "Building frontend";\
+    ./build_frontend.sh;\
+    else \
+    echo "Skipping frontend  build" &&\
+    mkdir -p /frontend/redash-client/dist &&\
+    touch /frontend/redash-client/dist/multi_org.html &&\
+    touch /frontend/redash-client/dist/index.html;\
+    fi
+RUN find /frontend/redash-client/dist
+FROM python:3.7-slim-buster
 
 EXPOSE 5000
 
@@ -73,10 +80,12 @@ COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements
 RUN if [ "x$skip_dev_deps" = "x" ] ; then pip install -r requirements.txt -r requirements_dev.txt; else pip install -r requirements.txt; fi
 RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
+RUN apt-get update && apt-get install -y gdb
 COPY . /app
-COPY --from=frontend-builder /frontend/client/dist /app/client/dist
+COPY --from=frontend-builder /frontend/redash-client/dist /app/client/dist
 RUN chown -R redash /app
 USER redash
-
+ENV PYTHONFAULTHANDLER=1
+ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
 CMD ["server"]

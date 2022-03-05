@@ -36,11 +36,11 @@ const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
 const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
 const staticPath = CONFIG.staticPath || "/static/";
 
-const basePath = path.join(__dirname, "client");
-const appPath = path.join(__dirname, "client", "app");
+const basePath = path.join(__dirname);
+const appPath = path.join(__dirname, "app");
 
 const extensionsRelativePath =
-  process.env.EXTENSIONS_DIRECTORY || path.join("client", "app", "extensions");
+  process.env.EXTENSIONS_DIRECTORY || path.join("app", "extensions");
 const extensionPath = path.join(__dirname, extensionsRelativePath);
 
 // Function to apply configuration overrides (see scripts/README)
@@ -70,11 +70,11 @@ const config = {
   mode: isProduction ? "production" : "development",
   entry: {
     app: [
-      "./client/app/index.js",
-      "./client/app/assets/less/main.less",
-      "./client/app/assets/less/ant.less"
+      "./app/index.js",
+      "./app/assets/less/main.less",
+      "./app/assets/less/ant.less"
     ],
-    server: ["./client/app/assets/less/server.less"]
+    server: ["./app/assets/less/server.less"]
   },
   output: {
     path: path.join(basePath, "./dist"),
@@ -95,14 +95,14 @@ const config = {
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
     new HtmlWebpackPlugin({
-      template: "./client/app/index.html",
+      template: "./app/index.html",
       filename: "index.html",
       excludeChunks: ["server"],
       release: process.env.BUILD_VERSION || "dev",
       staticPath
     }),
     new HtmlWebpackPlugin({
-      template: "./client/app/multi_org.html",
+      template: "./app/multi_org.html",
       filename: "multi_org.html",
       excludeChunks: ["server"]
     }),
@@ -114,11 +114,11 @@ const config = {
       publicPath: ""
     }),
     new CopyWebpackPlugin([
-      { from: "client/app/assets/robots.txt" },
-      { from: "client/app/unsupported.html" },
-      { from: "client/app/unsupportedRedirect.js" },
-      { from: "client/app/assets/css/*.css", to: "styles/", flatten: true },
-      { from: "client/app/assets/fonts", to: "fonts/" }
+      { from: "app/assets/robots.txt" },
+      { from: "app/unsupported.html" },
+      { from: "app/unsupportedRedirect.js" },
+      { from: "app/assets/css/*.css", to: "styles/", flatten: true },
+      { from: "app/assets/fonts", to: "fonts/" }
     ])
   ],
   optimization: {
@@ -143,9 +143,9 @@ const config = {
         use: [
           babelLoader,
           {
-            loader: 'awesome-typescript-loader?{configFileName: "client/tsconfig.json"}',
+            loader: 'awesome-typescript-loader?{configFileName: "tsconfig.json"}',
             options: {
-              configFile: "client/tsconfig.json"
+              configFile: "tsconfig.json"
             }
           }
         ]
@@ -222,7 +222,7 @@ const config = {
       },
       {
         test: /\.(svg)(\?.*)?$/,
-        exclude: /client\/app\/components\/TurniloComponent/,
+        exclude: /app\/components\/TurniloComponent/,
         use: [
           {
             loader: "file-loader",
@@ -237,7 +237,7 @@ const config = {
       {
         test: /\.svg$/,
         use: ["svg-inline-loader"],
-        include: /client\/app\/components\/TurniloComponent/,
+        include: /app\/components\/TurniloComponent/,
       },
       {
         test: /\.geo\.json$/,

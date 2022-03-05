@@ -67,7 +67,10 @@ services:
       - "1080:80"
     restart: unless-stopped
   plywood:
-    build:
-      context: ./plywood
-
+    image: node:12.18.3-alpine
+    command: node /app/dist/server.js
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./plywood:/app
 

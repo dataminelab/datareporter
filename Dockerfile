@@ -80,12 +80,10 @@ COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements
 RUN if [ "x$skip_dev_deps" = "x" ] ; then pip install -r requirements.txt -r requirements_dev.txt; else pip install -r requirements.txt; fi
 RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
-RUN apt-get update && apt-get install -y gdb
 COPY . /app
 COPY --from=frontend-builder /frontend/redash-client/dist /app/client/dist
 RUN chown -R redash /app
 USER redash
-ENV PYTHONFAULTHANDLER=1
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
 CMD ["server"]

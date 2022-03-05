@@ -47,7 +47,7 @@ import scrollerLayout from "./utils/scroller-layout";
 
 interface LabelledHeatmapProps {
   stage: Stage;
-  report?: object;
+  report: any;
   essence: Essence;
   dataset: Datum[];
   xScale: LinearScale;

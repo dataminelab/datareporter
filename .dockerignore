@@ -1,6 +1,8 @@
 redash-client/.tmp/
 redash-client/dist/
 redash-client/node_modules/
+plywood
+.dockerignore
 node_modules/
 viz-lib/node_modules/
 .tmp/

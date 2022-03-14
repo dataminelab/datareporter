@@ -59,7 +59,9 @@ node {
             lock("tests"){
                 sh("docker-compose up -d postgres")
                 try{
-                    sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS tests\"")
+                    retry(5){
+                        sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS tests\"")
+                    }
                     sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"CREATE DATABASE tests\"")
                     sh("docker-compose run server tests")
                 }finally{

@@ -1,6 +1,6 @@
-redash-client/.tmp/
-redash-client/dist/
-redash-client/node_modules/
+client/.tmp/
+client/dist/
+client/node_modules/
 plywood
 .dockerignore
 node_modules/

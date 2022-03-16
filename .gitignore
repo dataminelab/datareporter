@@ -7,7 +7,7 @@ venv/
 *.pyc
 .coverage
 coverage.xml
-redash-client/dist
+client/dist
 .DS_Store
 .#*
 \#*#
@@ -23,6 +23,6 @@ node_modules
 .sass-cache
 npm-debug.log
 
-redash-client/cypress/screenshots
-redash-client/cypress/videos
+client/cypress/screenshots
+client/cypress/videos
 *.iml

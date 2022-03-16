@@ -229,7 +229,7 @@ LDAP_SEARCH_DN = os.environ.get(
 )
 
 STATIC_ASSETS_PATH = fix_assets_path(
-    os.environ.get("REDASH_STATIC_ASSETS_PATH", "../redash-client/dist/")
+    os.environ.get("REDASH_STATIC_ASSETS_PATH", "../client/dist/")
 )
 FLASK_TEMPLATE_PATH = fix_assets_path(
     os.environ.get("REDASH_FLASK_TEMPLATE_PATH", STATIC_ASSETS_PATH)

@@ -30,7 +30,7 @@ interface MeasureValueProps {
   lastLevel: boolean;
   showPrevious: boolean;
   highlight: boolean;
-  report: object;
+  report: any;
 }
 
 export const MeasureValue: React.SFC<MeasureValueProps> = props => {

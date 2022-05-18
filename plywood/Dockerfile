@@ -1,10 +1,18 @@
-FROM node:12.18.3-alpine
+FROM node:12.18.3-alpine as frontend-builder
 RUN apk update
 RUN apk add git
-WORKDIR /usr/src/app
-COPY package*.json ./
-COPY . .
+WORKDIR /app
+COPY package*.json /app/
 RUN npm install
+COPY . /app/
 RUN npm run build
+
+FROM node:12.18.3-alpine
+
+RUN addgroup -S plywood && adduser -S plywood
+COPY --from=frontend-builder --chown=plywood /app/dist/ /app/dist/
+COPY --from=frontend-builder  --chown=plywood /app/node_modules/ /app/node_modules/
 EXPOSE 3000
-CMD npm start
+WORKDIR /app
+USER plywood
+CMD node dist/server.js

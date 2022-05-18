@@ -30,7 +30,7 @@ interface MeasureRowsProps {
   hoverRow?: Datum;
   cellWidth: number;
   rowWidth: number;
-  report: object;
+  report: any;
 }
 
 export const MeasureRows: React.SFC<MeasureRowsProps> = props => {

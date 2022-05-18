@@ -6,29 +6,29 @@
   "scripts": {
     "start": "npm-run-all --parallel watch:viz webpack-dev-server",
     "bundle": "bin/bundle-extensions",
-    "clean": "rm -rf ./client/dist/",
-    "build:viz": "(cd viz-lib && export NODE_OPTIONS=--max_old_space_size=4096 && npm run build:babel)",
+    "clean": "rm -rf ./dist/",
+    "build:viz": "(cd ../viz-lib && export NODE_OPTIONS=--max_old_space_size=4096 && npm run build:babel)",
     "build": "npm run clean && npm run build:viz && export NODE_OPTIONS=--max_old_space_size=4096 && NODE_ENV=production webpack",
     "build:old-node-version": "npm run clean && NODE_ENV=production node --max-old-space-size=4096 node_modules/.bin/webpack",
     "watch:app": "webpack --watch --progress --colors -d",
-    "watch:viz": "(cd viz-lib && npm run watch:babel)",
+    "watch:viz": "(cd ../viz-lib && npm run watch:babel)",
     "watch": "npm-run-all --parallel watch:*",
     "webpack-dev-server": "webpack-dev-server",
     "analyze": "npm run clean && BUNDLE_ANALYZER=on webpack",
     "analyze:build": "npm run clean && NODE_ENV=production BUNDLE_ANALYZER=on webpack",
-    "lint": "npm run lint:base -- --ext .js --ext .jsx --ext .ts --ext .tsx ./client",
-    "lint:fix": "npm run lint:base  -- --fix --ext .js --ext .jsx --ext .ts --ext .tsx ./client",
-    "lint:base": "eslint --config ./client/.eslintrc.js --ignore-path ./client/.eslintignore",
+    "lint": "npm run lint:base -- --ext .js --ext .jsx --ext .ts --ext .tsx .",
+    "lint:fix": "npm run lint:base  -- --fix --ext .js --ext .jsx --ext .ts --ext .tsx .",
+    "lint:base": "eslint --config ./.eslintrc.js --ignore-path ./.eslintignore",
     "lint:ci": "npm run lint -- --max-warnings 0 --format junit --output-file /tmp/test-results/eslint/results.xml",
-    "prettier": "prettier --write 'client/app/**/*.{js,jsx,ts,tsx}' 'client/cypress/**/*.{js,jsx,ts,tsx}'",
+    "prettier": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' 'cypress/**/*.{js,jsx,ts,tsx}'",
     "type-check": "tsc --noEmit --project tsconfig.json",
     "type-check:watch": "npm run type-check -- --watch",
     "jest": "TZ=Africa/Khartoum jest",
     "test": "run-s type-check jest",
     "test:watch": "jest --watch",
     "cypress:install": "npm install --no-save cypress@~4.5.0 @percy/agent@0.26.2 @percy/cypress@^2.2.0 atob@2.1.2 lodash@^4.17.10 request-cookies@^1.1.0",
-    "cypress": "node client/cypress/cypress.js",
-    "postinstall": "(cd viz-lib && npm ci && npm run build:babel)"
+    "cypress": "node cypress/cypress.js",
+    "postinstall": "(cd ../viz-lib && npm ci && npm run build:babel)"
   },
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
   "homepage": "https://redash.io/",
   "dependencies": {
     "@babel/runtime": "^7.11.2",
-    "@redash/viz": "file:viz-lib",
+    "@redash/viz": "file:../viz-lib",
     "@sentry/browser": "^5.21.4",
     "@uiw/react-monacoeditor": "^2.2.2",
     "@vx/heatmap": "0.0.198",
@@ -98,7 +98,8 @@
     "universal-router": "^8.3.0",
     "use-debounce": "^3.1.0",
     "use-media": "^1.4.0",
-    "webpack-merge": "^5.1.2"
+    "webpack-merge": "^5.1.2",
+    "datareporter-plywood": "^0.23.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",
@@ -217,7 +218,7 @@
     "fsevents": "^1.2.9"
   },
   "jest": {
-    "rootDir": "./client",
+    "rootDir": ".",
     "setupFiles": [
       "./app/__tests__/enzyme_setup.js",
       "./app/__tests__/mocks.js"

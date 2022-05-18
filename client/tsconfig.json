@@ -11,7 +11,7 @@
     "skipLibCheck": true,
     "target": "esnext",
     "module": "esnext",
-    "rootDir": "client",
+    "rootDir": ".",
     "outDir": "build",
     "moduleResolution": "node",
     "jsx": "react",

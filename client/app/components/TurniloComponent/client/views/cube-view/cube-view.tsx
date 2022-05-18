@@ -89,7 +89,7 @@ const defaultLayout: CubeViewLayout = {
 export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
-  report?: object;
+  report: any;
   hash: string;
   changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
   changeEssence: Binary<Essence, boolean, void>;

@@ -35,7 +35,7 @@ import "./turnilo-application.scss";
 
 export interface TurniloApplicationProps {
   version: string;
-  report: object;
+  report?: any;
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;

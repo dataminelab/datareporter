@@ -7,6 +7,11 @@ https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-
 
 datareporter
 
+Consider using `nodenv`, see for more info:
+https://joshmorel.ca/post/node-virtual-environments-with-nodenv/
+
+Requirements:
+* Data reported builds correctly with Node 12
 
 * Build UI - Required to build ui for
     * Enter project root directory

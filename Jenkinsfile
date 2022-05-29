@@ -14,6 +14,17 @@ def kustomizeAndDeploy(overlay, cluster, imageNames) {
     sh("/usr/local/bin/kustomize build kubernetes/overlays/${overlay} | kubectl --context=${cluster} --namespace=${overlay} apply -f -")
 }
 
+ def buildImage(context ){
+        def asDockerImageLabels(labels){
+             return labels.collect { "--label $it.key=$it.value" }.join(" ")
+        }
+
+        def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${context.tag}'"
+        def imageNameDr = "${context.registry}/${context.image}:${context.tag}"
+        echo "Build docker image for: ${context.image}"
+       return docker.build("${context.image}", "${context.labels} ${buildArgs} .")
+
+ }
 node {
 
     checkout scm
@@ -36,22 +47,12 @@ node {
     def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=8 HEAD").trim()
     def latestTagRelease = sh(returnStdout: true, script: "git describe --tags \$(git rev-list --tags --max-count=1) || echo 0.0.0").trim()
 
-    def buildImage(context ){
-        def asDockerImageLabels(labels){
-             return labels.collect { "--label $it.key=$it.value" }.join(" ")
-        }
 
-        def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${context.tag}'"
-        def imageNameDr = "${context.registry}/${context.image}:${context.tag}"
-        echo "Build docker image for: ${context.image}"
-        dockerimage = docker.build("${context.image}", "${context.labels} ${buildArgs} .")
-        images.add(dockerimage)
-    }
 
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
         stage("Build DR docker images",) {
-            buildImage([
+            images << buildImage([
                 registry: registryRegion,
                 image: "datareporter/datareporter",
                 tag: "${latestTagRelease}-${shortCommit}",
@@ -62,7 +63,7 @@ node {
                 ]
             ])
             dir("plywood"){
-                buildImage(
+               images << buildImage(
                 [
                     registry: registryRegion,
                     image: "datareporter/plywood",

@@ -8,7 +8,7 @@ def buildImage(context ){
     def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${context.tag}'"
     def imageNameDr = "${context.registry}/${context.image}:${context.tag}"
     echo "Build docker image for: ${context.image}"
-   return docker.build("${context.image}", "${context.labels} ${buildArgs} .")
+   return docker.build("${context.image}", "${ asDockerImageLabels(context.labels)} ${buildArgs} .")
 
 }
 node {

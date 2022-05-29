@@ -1,30 +1,16 @@
-def kustomizeAndDeploy(overlay, cluster, imageNames) {
-    echo "Applying kustomize"
-    sh("cd kubernetes/base && \
-        /usr/local/bin/kustomize edit add resource service.yaml && \
-        /usr/local/bin/kustomize edit add resource hpa.yaml && \
-        cd -"
-    )
-    for (imageName in imageNames) {
-        echo "Setting image: ${imageName}"
-        sh("cd kubernetes/overlays/${overlay} && \
-            /usr/local/bin/kustomize edit set image ${imageName} && cd -")
-    }
-    echo "Deploying"
-    sh("/usr/local/bin/kustomize build kubernetes/overlays/${overlay} | kubectl --context=${cluster} --namespace=${overlay} apply -f -")
+
+def asDockerImageLabels(labels){
+     return labels.collect { "--label $it.key=$it.value" }.join(" ")
 }
+def buildImage(context ){
 
- def buildImage(context ){
-        def asDockerImageLabels(labels){
-             return labels.collect { "--label $it.key=$it.value" }.join(" ")
-        }
 
-        def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${context.tag}'"
-        def imageNameDr = "${context.registry}/${context.image}:${context.tag}"
-        echo "Build docker image for: ${context.image}"
-       return docker.build("${context.image}", "${context.labels} ${buildArgs} .")
+    def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${context.tag}'"
+    def imageNameDr = "${context.registry}/${context.image}:${context.tag}"
+    echo "Build docker image for: ${context.image}"
+   return docker.build("${context.image}", "${context.labels} ${buildArgs} .")
 
- }
+}
 node {
 
     checkout scm

@@ -38,7 +38,7 @@ node {
 
     def buildImage(context ){
         def asDockerImageLabels(labels){
-             return labels.collect { "--label $it.key=$it.value" }.join " "
+             return labels.collect { "--label $it.key=$it.value" }.join(" ")
         }
 
         def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${context.tag}'"

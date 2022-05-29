@@ -25,10 +25,9 @@ node {
     ])
 
     def appName = 'datareporter/datareporter'
-    def appNginxName = 'datareporter/nginx'
     def registryRegion = 'eu.gcr.io'
     def cluster = 'do-fra1-k8s-1-18-8-do-1-fra1'
-    def imageNames = []
+    def images = []
 
     sh("git fetch --tags origin")
 
@@ -37,21 +36,45 @@ node {
     def shortCommit = sh(returnStdout: true, script: "git rev-parse --short=8 HEAD").trim()
     def latestTagRelease = sh(returnStdout: true, script: "git describe --tags \$(git rev-list --tags --max-count=1) || echo 0.0.0").trim()
 
-    def imageLabel = "\
-    --label branch=${env.BRANCH_NAME} \
-    --label git_sha=${shortCommit} \
-    --label build_id=${env.BUILD_ID} \
-    "
-    def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
+    def buildImage(context ){
+        def asDockerImageLabels(labels){
+             return labels.collect { "--label $it.key=$it.value" }.join " "
+        }
+
+        def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${context.tag}'"
+        def imageNameDr = "${context.registry}/${context.image}:${context.tag}"
+        echo "Build docker image for: ${context.image}"
+        dockerimage = docker.build("${context.image}", "${context.labels} ${buildArgs} .")
+        images.add(dockerimage)
+    }
 
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
-        stage("Build DR docker image",) {
-            def imageNameDr = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
-            echo "Build docker image for: ${appName}"
-
-            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
-            imageNames.add("${registryRegion}/${appName}=" + imageNameDr)
+        stage("Build DR docker images",) {
+            buildImage([
+                registry: registryRegion,
+                image: "datareporter/datareporter",
+                tag: "${latestTagRelease}-${shortCommit}",
+                labels: [
+                    branch : env.BRANCH_NAME,
+                    git_sha: shortCommit,
+                    build_id: env.BUILD_ID
+                ]
+            ])
+            dir("plywood"){
+                buildImage(
+                [
+                    registry: registryRegion,
+                    image: "datareporter/plywood",
+                    tag: "${latestTagRelease}-${shortCommit}",
+                    labels: [
+                        branch : env.BRANCH_NAME,
+                        git_sha: shortCommit,
+                        build_id: env.BUILD_ID
+                    ]
+                ]
+                )
+            }
         }
 // Test stage skipped as tests are not passing !!
 //         stage("Run tests") {
@@ -79,9 +102,11 @@ node {
             imageTags.add("${shortCommit}_${env.BUILD_ID}")
             imageTags.add("${env.BRANCH_NAME}".replaceAll("/", "."))
 
-            for (tag in imageTags) {
-                echo("Pushing docker image for ${appName} with tag ${tag}")
-                dockerimageDr.push(tag)
+            for (image in images){
+                for (tag in imageTags) {
+                    echo("Pushing docker image for ${image} with tag ${tag}")
+                    image.push(tag)
+                }
             }
         }
 

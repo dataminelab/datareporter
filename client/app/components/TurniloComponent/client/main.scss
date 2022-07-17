@@ -77,6 +77,9 @@ svg {
   }
   .remove {
     color: #ffffff;
+    svg path {
+      fill: #ffffff !important;
+    }
   }
   .cube-view .container {
     top: 0;
@@ -113,6 +116,10 @@ svg {
 
 svg path {
   fill: rgb(22, 15, 102) !important;
+}
+
+.remove svg path {
+  fill: #ffffff !important;
 }
 
 .ant-btn {

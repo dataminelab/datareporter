@@ -166,8 +166,11 @@ class TestGlueSchema(TestCase):
             {"DatabaseName": "test1"},
         )
         with self.stubber:
+            # [{'name': 'test1.view', 'columns': ['sk'], 'typed_columns': [{'name': 'sk', 'type': 'int'}]}]
+            # TODO: This is a bit of a hack, but it works for now.
+            # might not be the solution, set alexa and write some test results
             assert query_runner.get_schema() == [
-                {"columns": ["sk"], "name": "test1.view"}
+                {"columns": ["sk"], "name": "test1.view", 'typed_columns': [{'name': 'sk', 'type': 'int'}]}
             ]
 
     def test_dodgy_table_does_not_break_schema_listing(self):

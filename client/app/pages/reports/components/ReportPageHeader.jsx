@@ -123,13 +123,14 @@ export default function ReportPageHeader(props) {
         top: '3px',
       },
       swatch: {
-        padding: '5px',
+        padding: '5px 15px',
         background: '#fff',
         borderRadius: '1px',
         boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
         display: 'inline-block',
         marginRight: '10px',
         cursor: 'pointer',
+        lineHeight: '25px'
       },
       popover: {
         position: 'absolute',
@@ -301,7 +302,7 @@ export default function ReportPageHeader(props) {
           <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
         </div> : null }
         {dataSourcesLoaded && (
-          <div className="data-source-box m-r-5 ">
+          <div className="data-source-box m-r-10">
             <span className="icon icon-datasource m-r-5"></span>
             <Select
               data-test="SelectDataSource"
@@ -325,7 +326,7 @@ export default function ReportPageHeader(props) {
             </Select>
           </div>
         )}
-        <div className="data-source-box m-r-5 ">
+        <div className="data-source-box m-r-10">
           <span className="icon icon-datasource m-r-5"></span>
           <Select
             data-test="SelectModel"

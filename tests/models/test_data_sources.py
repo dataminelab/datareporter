@@ -8,7 +8,7 @@ from redash.utils.configuration import ConfigurationContainer
 
 class DataSourceTest(BaseTestCase):
     def test_get_schema(self):
-        return_value = [{"name": "table", "columns": []}]
+        return_value = [{"typed_columns": [],"name": "table", "columns": []}]
 
         with mock.patch(
             "redash.query_runner.pg.PostgreSQL.get_schema"
@@ -20,7 +20,7 @@ class DataSourceTest(BaseTestCase):
             self.assertEqual(return_value, schema)
 
     def test_get_schema_uses_cache(self):
-        return_value = [{"name": "table", "columns": []}]
+        return_value = [{"typed_columns": [],"name": "table", "columns": []}]
         with mock.patch(
             "redash.query_runner.pg.PostgreSQL.get_schema"
         ) as patched_get_schema:
@@ -32,7 +32,7 @@ class DataSourceTest(BaseTestCase):
             self.assertEqual(patched_get_schema.call_count, 1)
 
     def test_get_schema_skips_cache_with_refresh_true(self):
-        return_value = [{"name": "table", "columns": []}]
+        return_value = [{"typed_columns": [],"name": "table", "columns": []}]
         with mock.patch(
             "redash.query_runner.pg.PostgreSQL.get_schema"
         ) as patched_get_schema:
@@ -61,7 +61,7 @@ class DataSourceTest(BaseTestCase):
                 "name": "all_terain_vehicle",
                 "columns": ["has_all_wheel_drive", "has_engine", "has_wheels"],
             },
-            {"name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
+            {"typed_columns": [],"name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
         ]
 
         real_output = self.factory.data_source._sort_schema(input_data)
@@ -84,11 +84,11 @@ class DataSourceTest(BaseTestCase):
             # for i in sorted(schema, key=lambda x: x["name"])
 
         sorted_schema = [
-            {
+            {   "typed_columns": [],
                 "name": "all_terain_vehicle",
                 "columns": ["has_all_wheel_drive", "has_engine", "has_wheels"],
             },
-            {
+            {   "typed_columns": [],
                 "name": "zoo", 
                 "columns": ["is_cow", "is_snake", "is_zebra"]
             },

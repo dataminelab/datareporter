@@ -260,11 +260,6 @@ class TestDataSourceModelsResource(BaseTestCase):
         model_2 = self.factory.create_model(user=user_1, data_source=self.factory.data_source)
         model_3 = self.factory.create_model(user=user_2, data_source=self.factory.data_source)
 
-        rv = self.make_request(
-            "get",
-            "/api/data_sources/{}/models".format(self.factory.data_source.id),
-            user=user_1
-        )
-
+        rv = self.make_request( "get", "/api/data_sources/{}/models".format(self.factory.data_source.id), user=user_1 )
         self.assertEqual(rv.status_code, 200)
-        self.assertListEqual(list(map(lambda r: r['id'], rv.json)), [model_1.id, model_2.id])
+        self.assertListEqual(list(map(lambda r: r['id'], rv.json)), [model_1.id, model_2.id, model_3.id])

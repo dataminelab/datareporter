@@ -611,7 +611,7 @@ class TestReportGetResource(BaseTestCase):
                 mock_res.return_value = FAKE_EXPERSSION
                 second_mock.return_value = FAKE_QUERIES
                 response = self.make_request("get", f"/api/reports/{report.id}")
-
+        
         self.assertEqual(200, response.status_code)
         self.assertEqual(response.json['data'], None)
         self.assertEqual(response.json['status'], 1)

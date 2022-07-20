@@ -34,7 +34,7 @@ class TestPostgresParseV2(unittest.TestCase):
 
         data = parser.parse_ply(ENGINE)
 
-        self.assertDictEqual(data, POSTGRES_0_SPLIT_RESULT)
+        self.assertDictEqual(data.dict(), POSTGRES_0_SPLIT_RESULT)
 
     def test_0_split_1_measure_1_filter_time_shift(self):
         parser = PlywoodQueryParserV2(
@@ -45,7 +45,7 @@ class TestPostgresParseV2(unittest.TestCase):
 
         data = parser.parse_ply(ENGINE)
 
-        self.assertDictEqual(data, POSTGRES_0_SPLIT_RESULT_TIMESHIFT)
+        self.assertDictEqual(data.dict(), POSTGRES_0_SPLIT_RESULT_TIMESHIFT)
 
     def test_1_split_1_measure_1_filter(self):
         parser = PlywoodQueryParserV2(
@@ -56,7 +56,7 @@ class TestPostgresParseV2(unittest.TestCase):
         )
 
         data = parser.parse_ply(ENGINE)
-        self.assertDictEqual(data, POSTGRES_1_SPLIT_RESULT)
+        self.assertDictEqual(data.dict(), POSTGRES_1_SPLIT_RESULT)
 
     def test_1_split_1_measure_1filter_time_shift(self):
         parser = PlywoodQueryParserV2(
@@ -68,7 +68,7 @@ class TestPostgresParseV2(unittest.TestCase):
 
         data = parser.parse_ply(ENGINE)
 
-        self.assertDictEqual(data, POSTGRES_1_SPLIT_RESULT_TIMESHIFT)
+        self.assertDictEqual(data.dict(), POSTGRES_1_SPLIT_RESULT_TIMESHIFT)
 
     def test_2_split_1_measure_1_filter(self):
         parser = PlywoodQueryParserV2(
@@ -80,7 +80,7 @@ class TestPostgresParseV2(unittest.TestCase):
 
         data = parser.parse_ply(ENGINE)
 
-        self.assertDictEqual(data, POSTGRES_2_SPLIT_RESULT)
+        self.assertDictEqual(data.dict(), POSTGRES_2_SPLIT_RESULT)
 
     def test_2_split_1_measure_1_filter_big_query(self):
         parser = PlywoodQueryParserV2(
@@ -91,7 +91,9 @@ class TestPostgresParseV2(unittest.TestCase):
         )
 
         data = parser.parse_ply(ENGINE_BIG_QUERY)
-        self.assertDictEqual(data, POSTGRES_2_SPLIT_RESULT_BIG_QUERY)
+        # POSTGRES_LINE_CHART_RESULT_TO_COMPARE is diffirent than data.dict
+        # probbaly POSTGRES_2_SPLIT_RESULT_BIG_QUERY need to change
+        self.assertDictEqual(data.dict(), POSTGRES_2_SPLIT_RESULT_BIG_QUERY)
 
     def test_chart_line(self):
         parser = PlywoodQueryParserV2(
@@ -101,4 +103,6 @@ class TestPostgresParseV2(unittest.TestCase):
             visualization='line-chart'
         )
         data = parser.parse_ply(ENGINE_BIG_QUERY)
-        self.assertDictEqual(data, POSTGRES_LINE_CHART_RESULT_TO_COMPARE)
+        # POSTGRES_LINE_CHART_RESULT_TO_COMPARE is diffirent than data.dict
+        # probbaly POSTGRES_2_SPLIT_RESULT_BIG_QUERY need to change        
+        self.assertDictEqual(data.dict(), POSTGRES_LINE_CHART_RESULT_TO_COMPARE)

@@ -113,7 +113,7 @@ class PlywoodQueryParserV2:
 
     def _prepare_line_chart(self, shape, top_index):
         split = shape['data'][0]['SPLIT']
-
+        #breakpoint()
         split['data'][top_index]['SPLIT']['attributes'].append(
             dict(name=self._data_cube.source_name, type='DATASET')
         )

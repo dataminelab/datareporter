@@ -8,7 +8,7 @@ from redash.utils.configuration import ConfigurationContainer
 
 class DataSourceTest(BaseTestCase):
     def test_get_schema(self):
-        return_value = [{"typed_columns": [],"name": "table", "columns": []}]
+        return_value = [{"name": "table", "columns": []}]
 
         with mock.patch(
             "redash.query_runner.pg.PostgreSQL.get_schema"
@@ -17,32 +17,34 @@ class DataSourceTest(BaseTestCase):
 
             schema = self.factory.data_source.get_schema(refresh=True)
 
-            self.assertEqual(return_value, schema)
+            new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
+            self.assertEqual(new_return_value, schema)
+            self.assertEqual(patched_get_schema.call_count, 1)
 
     def test_get_schema_uses_cache(self):
-        return_value = [{"typed_columns": [],"name": "table", "columns": []}]
+        return_value = [{"name": "table", "columns": []}]
         with mock.patch(
             "redash.query_runner.pg.PostgreSQL.get_schema"
         ) as patched_get_schema:
             patched_get_schema.return_value = return_value
 
             self.factory.data_source.get_schema(refresh=True)
+            new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
             schema = self.factory.data_source.get_schema(refresh=True)
-            self.assertEqual(return_value, schema)
+            self.assertEqual(new_return_value, schema)
             self.assertEqual(patched_get_schema.call_count, 1)
 
     def test_get_schema_skips_cache_with_refresh_true(self):
-        return_value = [{"typed_columns": [],"name": "table", "columns": []}]
+        return_value = [{"name": "table", "columns": []}]
         with mock.patch(
             "redash.query_runner.pg.PostgreSQL.get_schema"
         ) as patched_get_schema:
             patched_get_schema.return_value = return_value
 
             self.factory.data_source.get_schema(refresh=True)
-            new_return_value = [{"name": "new_table", "columns": []}]
+            new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
             patched_get_schema.return_value = new_return_value
             schema = self.factory.data_source.get_schema(refresh=True)
-
             self.assertEqual(new_return_value, schema)
             self.assertEqual(patched_get_schema.call_count, 2)
 
@@ -65,11 +67,7 @@ class DataSourceTest(BaseTestCase):
         ]
 
         real_output = self.factory.data_source._sort_schema(input_data)
-        #breakpoint()
         self.assertEqual(real_output, expected_output)
-        # why inserting typed_columns in the schema?
-        # E # [{'name': 'all_terain_vehicle', 'columns': ['has_all_wheel_drive', 'has_engine', 'has_wheels']}, {'name': 'zoo', 'columns': ['is_cow', 'is_snake', 'is_zebra']}]
-        # R # [{'typed_columns': [], 'name': 'all_terain_vehicle', 'columns': ['has_all_wheel_drive', 'has_engine', 'has_wheels']}, {'typed_columns': [], 'name': 'zoo', 'columns': ['is_cow', 'is_snake', 'is_zebra']}]
 
     def test_model_uses_schema_sorter(self):
         orig_schema = [
@@ -79,9 +77,6 @@ class DataSourceTest(BaseTestCase):
                 "columns": ["has_wheels", "has_engine", "has_all_wheel_drive"],
             },
         ]
-            # {"typed_columns": i['typed_columns'] if 'typed_columns' in i else [], "name": i["name"],
-            #  "columns": sorted(i["columns"], key=lambda x: x["name"] if isinstance(x, dict) else x)}
-            # for i in sorted(schema, key=lambda x: x["name"])
 
         sorted_schema = [
             {   "typed_columns": [],
@@ -100,11 +95,6 @@ class DataSourceTest(BaseTestCase):
             patched_get_schema.return_value = orig_schema
 
             out_schema = self.factory.data_source.get_schema(refresh=True)
-            # ask redek about this typed_columns
-            # for index in range(len(out_schema)):
-            #     if 'typed_columns' in out_schema[index].keys():
-            #         sorted_schema[index]['typed_columns'] = []
-            #breakpoint()
             self.assertEqual(out_schema, sorted_schema)
 
 

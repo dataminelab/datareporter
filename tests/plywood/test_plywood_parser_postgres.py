@@ -105,4 +105,5 @@ class TestPostgresParseV2(unittest.TestCase):
         data = parser.parse_ply(ENGINE_BIG_QUERY)
         # POSTGRES_LINE_CHART_RESULT_TO_COMPARE is diffirent than data.dict
         # probbaly POSTGRES_2_SPLIT_RESULT_BIG_QUERY need to change        
+        breakpoint()
         self.assertDictEqual(data.dict(), POSTGRES_LINE_CHART_RESULT_TO_COMPARE)

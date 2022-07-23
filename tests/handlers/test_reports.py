@@ -604,14 +604,16 @@ class TestReportGetResource(BaseTestCase):
         models.db.session.add(model_config)
         models.db.session.commit()
 
-        report = self.factory.create_report(model=model)
+        report = self.factory.create_report(model=model, user=user)
 
         with mock.patch('redash.plywood.plywood.PlywoodApi.convert_hash_to_expression') as mock_res:
             with mock.patch('redash.plywood.plywood.PlywoodApi.convert_to_sql') as second_mock:
                 mock_res.return_value = FAKE_EXPERSSION
                 second_mock.return_value = FAKE_QUERIES
-                response = self.make_request("get", f"/api/reports/{report.id}")
-        
+                # breakpoint()
+                # below does not responde with 200 gives 500
+                response = self.make_request("get", f"/api/reports/{report.id}", user=user)
+                # response = self.make_request("get", f"/api/reports/{report.id}")
         self.assertEqual(200, response.status_code)
         self.assertEqual(response.json['data'], None)
         self.assertEqual(response.json['status'], 1)
@@ -626,14 +628,15 @@ class TestReportGetResource(BaseTestCase):
         models.db.session.add(model_config)
         models.db.session.commit()
 
-        report = self.factory.create_report(model=model)
+        report = self.factory.create_report(model=model, user=user)
 
         with mock.patch('redash.plywood.plywood.PlywoodApi.convert_hash_to_expression') as mock_res:
             with mock.patch('redash.plywood.plywood.PlywoodApi.convert_to_sql') as second_mock:
                 mock_res.return_value = FAKE_EXPERSSION
                 second_mock.return_value = FAKE_QUERIES
-                response = self.make_request("get", f"/api/reports/{report.id}?format=json")
-
+                # also gives 500
+                response = self.make_request("get", f"/api/reports/{report.id}?format=json", user=user)
+        # breakpoint()
         self.assertEqual(200, response.status_code)
         self.assertEqual(response.json['status'], 1)
         self.assertEqual(response.json['data'], None)

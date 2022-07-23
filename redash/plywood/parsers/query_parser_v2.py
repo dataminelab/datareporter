@@ -113,10 +113,7 @@ class PlywoodQueryParserV2:
 
     def _prepare_line_chart(self, shape, top_index):
         split = shape['data'][0]['SPLIT']
-        #breakpoint()
-        split['data'][top_index]['SPLIT']['attributes'].append(
-            dict(name=self._data_cube.source_name, type='DATASET')
-        )
+        split['data'][top_index]['SPLIT']['attributes'].append( dict(name=self._data_cube_name, type='DATASET') ) # _data_cube.source_name
 
         size = len(split['data'][top_index]['SPLIT']['data'])
         column_name = split['data'][top_index]['SPLIT']['keys'][0]
@@ -140,6 +137,7 @@ class PlywoodQueryParserV2:
                 end_date = real_date + datetime.timedelta(seconds=1)
                 end_date_str = iso_format(end_date)
                 item[column_name] = dict(start=str_date, end=end_date_str)
+        breakpoint()
 
     def _build_second_split(self, shape: dict):
         split = shape['data'][0]['SPLIT']

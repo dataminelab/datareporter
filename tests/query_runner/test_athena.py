@@ -78,7 +78,7 @@ class TestGlueSchema(TestCase):
         )
         with self.stubber:
             assert query_runner.get_schema() == [
-                {"columns": ["row_id"], "name": "test1.jdbc_table"}
+                {"columns": ["row_id"], "name": "test1.jdbc_table", 'typed_columns': [{'name': 'row_id', 'type': 'int'}]}
             ]
 
     def test_partitioned_table(self):
@@ -130,8 +130,9 @@ class TestGlueSchema(TestCase):
             {"DatabaseName": "test1"},
         )
         with self.stubber:
+            # breakpoint()
             assert query_runner.get_schema() == [
-                {"columns": ["sk", "category"], "name": "test1.partitioned_table"}
+                {"columns": ["sk", "category"], "name": "test1.partitioned_table", 'typed_columns': [{'name': 'sk', 'type': 'int'}]}
             ]
 
     def test_view(self):
@@ -166,9 +167,6 @@ class TestGlueSchema(TestCase):
             {"DatabaseName": "test1"},
         )
         with self.stubber:
-            # [{'name': 'test1.view', 'columns': ['sk'], 'typed_columns': [{'name': 'sk', 'type': 'int'}]}]
-            # TODO: This is a bit of a hack, but it works for now.
-            # might not be the solution, set alexa and write some test results
             assert query_runner.get_schema() == [
                 {"columns": ["sk"], "name": "test1.view", 'typed_columns': [{'name': 'sk', 'type': 'int'}]}
             ]
@@ -214,5 +212,5 @@ class TestGlueSchema(TestCase):
         )
         with self.stubber:
             assert query_runner.get_schema() == [
-                {"columns": ["region"], "name": "test1.csv"}
+                {"columns": ["region"], "name": "test1.csv", 'typed_columns': [{'name': 'region', 'type': 'string'}]}
             ]

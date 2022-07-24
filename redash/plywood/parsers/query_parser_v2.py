@@ -137,7 +137,6 @@ class PlywoodQueryParserV2:
                 end_date = real_date + datetime.timedelta(seconds=1)
                 end_date_str = iso_format(end_date)
                 item[column_name] = dict(start=str_date, end=end_date_str)
-        breakpoint()
 
     def _build_second_split(self, shape: dict):
         split = shape['data'][0]['SPLIT']

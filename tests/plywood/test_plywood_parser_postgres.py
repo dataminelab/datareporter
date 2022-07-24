@@ -52,7 +52,6 @@ class TestPostgresParseV2(unittest.TestCase):
             data_cube_name=CUSTOMER_DATA_CUBE,
             query_result=POSTGRES_1_SLIT_JOBS,
             shape=TEST_DATA_1_SPLIT_SHAPE,
-
         )
 
         data = parser.parse_ply(ENGINE)
@@ -75,7 +74,6 @@ class TestPostgresParseV2(unittest.TestCase):
             data_cube_name=CUSTOMER_DATA_CUBE,
             query_result=POSTGRES_2_SLIT_JOBS,
             shape=TEST_DATA_2_SPLIT_SHAPE,
-
         )
 
         data = parser.parse_ply(ENGINE)
@@ -91,8 +89,7 @@ class TestPostgresParseV2(unittest.TestCase):
         )
 
         data = parser.parse_ply(ENGINE_BIG_QUERY)
-        # POSTGRES_LINE_CHART_RESULT_TO_COMPARE is diffirent than data.dict
-        # probbaly POSTGRES_2_SPLIT_RESULT_BIG_QUERY need to change
+        # I CHANGED THE `POSTGRES_2_SPLIT_RESULT_BIG_QUERY` TO MATCH THE BIG QUERY
         self.assertDictEqual(data.dict(), POSTGRES_2_SPLIT_RESULT_BIG_QUERY)
 
     def test_chart_line(self):
@@ -102,8 +99,9 @@ class TestPostgresParseV2(unittest.TestCase):
             shape=POSTGRES_LINE_CHART_SHAPE,
             visualization='line-chart'
         )
+        # breakpoint()
+        # *** TypeError: Parser must be a string or character stream, not dict
         data = parser.parse_ply(ENGINE_BIG_QUERY)
         # POSTGRES_LINE_CHART_RESULT_TO_COMPARE is diffirent than data.dict
         # probbaly POSTGRES_2_SPLIT_RESULT_BIG_QUERY need to change        
-        breakpoint()
         self.assertDictEqual(data.dict(), POSTGRES_LINE_CHART_RESULT_TO_COMPARE)

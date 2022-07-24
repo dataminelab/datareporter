@@ -130,7 +130,6 @@ class TestGlueSchema(TestCase):
             {"DatabaseName": "test1"},
         )
         with self.stubber:
-            # breakpoint()
             assert query_runner.get_schema() == [
                 {"columns": ["sk", "category"], "name": "test1.partitioned_table", 'typed_columns': [{'name': 'sk', 'type': 'int'}]}
             ]

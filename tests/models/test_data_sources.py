@@ -18,6 +18,7 @@ class DataSourceTest(BaseTestCase):
             schema = self.factory.data_source.get_schema(refresh=True)
 
             new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
+            
             self.assertEqual(new_return_value, schema)
             self.assertEqual(patched_get_schema.call_count, 1)
 
@@ -27,10 +28,10 @@ class DataSourceTest(BaseTestCase):
             "redash.query_runner.pg.PostgreSQL.get_schema"
         ) as patched_get_schema:
             patched_get_schema.return_value = return_value
-
-            self.factory.data_source.get_schema(refresh=True)
+            
             new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
             schema = self.factory.data_source.get_schema(refresh=True)
+            
             self.assertEqual(new_return_value, schema)
             self.assertEqual(patched_get_schema.call_count, 1)
 

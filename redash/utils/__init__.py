@@ -100,7 +100,6 @@ class JSONEncoder(simplejson.JSONEncoder):
         elif isinstance(o, bytes):
             result = binascii.hexlify(o).decode()
         else:
-            # breakpoint()
             result = super(JSONEncoder, self).default(o)
         return result
 

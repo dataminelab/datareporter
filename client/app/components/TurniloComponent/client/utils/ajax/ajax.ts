@@ -60,7 +60,7 @@ let reloadRequested = false;
 function reload() {
   if (reloadRequested) return;
   reloadRequested = true;
-  window.location.reload(true);
+  window.location.reload();
 }
 
 

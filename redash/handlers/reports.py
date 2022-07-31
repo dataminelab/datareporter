@@ -50,6 +50,7 @@ class ReportGenerateResource(BaseResource):
 
         try:
             result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org)
+            print(result.serialized())
             return result.serialized()
         except ExpressionNotSupported as e:
             abort(400, message=e.message)
@@ -59,8 +60,10 @@ class ReportGenerateResource(BaseResource):
 class ReportsListResource(BaseResource):
     @require_permission("create_report")
     def post(self):
+        print("here, cant create a report")
         req = request.get_json(True)
-        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
+        request_ = request;
+        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2)) # throws error here on report creating 
 
         formatting = request.args.get("format", "base64")
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
@@ -108,7 +111,7 @@ class ReportsListResource(BaseResource):
             serializer=ReportSerializer,
             formatting=formatting
         )
-
+        
         self.record_event({
             "action": "list",
             "object_type": "report"

@@ -100,7 +100,7 @@ class JSONEncoder(simplejson.JSONEncoder):
         elif isinstance(o, bytes):
             result = binascii.hexlify(o).decode()
         else:
-            result = super(JSONEncoder, self).default(o)
+            result = super(JSONEncoder, self).default(o) # TypeError: Object of type ReportSerializer is not JSON serializable
         return result
 
 

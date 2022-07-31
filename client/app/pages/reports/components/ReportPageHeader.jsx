@@ -158,9 +158,15 @@ export default function ReportPageHeader(props) {
       if (type === 2) {
         setColorBody(color.rgb)
         updateColors('colorBody', color.hex);
+        let updates = { color_1: color.hex }
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage: null });
       } else {
         setColorText(color.rgb)
         updateColors('colorText', color.hex);
+        let updates = { color_2: color.hex }
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage: null });
       }
     },[report, updateColors]
   );
@@ -193,6 +199,7 @@ export default function ReportPageHeader(props) {
         recordEvent("update_report_config", "report", report.id, { modelId });
         const updates = {
           model: modelId,
+          model_id: modelId,
           appSettings: res.appSettings,
           timekeeper: res.timekeeper,
         };
@@ -203,6 +210,24 @@ export default function ReportPageHeader(props) {
       }
     },
     [report, props.onChange, updateReport]
+  );
+
+  const handleSaveReport = useCallback(
+    async modelId => {
+      recordEvent("save_report", "report", report.id, { modelId });
+      let updates = {
+        expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
+      };
+      console.log("pre-updates", updates);
+      console.log("pre-report", report);
+      props.onChange(extend(report.clone(), updates));
+      updateReport(updates, { successMessage: null });
+      console.log("report", report);
+      console.log("updates", updates);
+      // props.onChange(extend(report.save(report)));
+      //await report.save(report)
+      saveReport(extend(report.save(report)));
+    },[report, props.onChange, updateReport, saveReport]
   );
 
 
@@ -269,6 +294,7 @@ export default function ReportPageHeader(props) {
       openApiKeyDialog,
     ]
   );
+  console.log("report inside component", report)
 
   return (
     <div className="report-page-header">
@@ -347,7 +373,7 @@ export default function ReportPageHeader(props) {
             ))}
           </Select>
         </div>
-        <Button className="m-r-5" onClick={() => saveReport(report)}>
+        <Button className="m-r-5" onClick={handleSaveReport}>
           <span className="icon icon-save-floppy-disc m-r-5"></span> Save Report
         </Button>
         {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (

@@ -404,13 +404,22 @@ export class ReportResultError {
 }
 
 const getReport = report => new Report(report);
-const saveOrCreateUrl = data => (data.id ? `api/reports/${data.id}` : "api/reports");
+const saveOrCreateUrl = function (data) {
+  console.log("inside saveOrCreateUrl", data);
+  if (data.id) {
+    return `api/reports/${data.id}` 
+  } else {
+    return "api/reports"
+  }    
+}
 const mapResults = data => ({ ...data, results: map(data.results, getReport) });
 
 const ReportService = {
   report: params => axios.get("api/reports", { params }).then(mapResults),
   get: data => axios.get(data.id, data).then(getReport),
-  save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
+  save: data => axios.post(saveOrCreateUrl(data), {
+    ...data
+  }).then(getReport),
   delete: data => axios.delete(`api/reports/${data.id}`),
   recent: params => axios.get(`api/reports/recent`, { params }).then(data => map(data, getReport)),
   archive: params => axios.get(`api/reports/archive`, { params }).then(mapResults),

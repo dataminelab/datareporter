@@ -97,6 +97,10 @@ export default function useUpdateReport(report, onChange) {
           "options",
           "latest_query_data_id",
           "is_draft",
+          "color_1",
+          "color_2",
+          "expression",
+          "model_id",
         ]);
       }
 

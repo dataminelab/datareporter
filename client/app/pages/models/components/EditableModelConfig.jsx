@@ -10,6 +10,7 @@ import navigateTo from "@/components/ApplicationArea/navigateTo";
 import {fromPairs, map} from "lodash";
 import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 import ModelService from "@/services/model";
+import ModelConfigDocs from "./ModelConfigDocs";
 
 export default function EditableModelConfig({model, saveConfig}) {
   const configYAML = "customization:\n" +
@@ -236,35 +237,40 @@ export default function EditableModelConfig({model, saveConfig}) {
 
   return (
     <div className="col-md-12">
-      <div className="editor-yaml">
-        <h1>Edit config
-          <ButtonTooltip title={'Cmd + S'} shortcut={'mod+s'}>
+      <div className="editor-yaml-box">
+        <div className="editor-yaml">
+          <h1>Edit config
+            <ButtonTooltip title={'Cmd + S'} shortcut={'mod+s'}>
+              <Button
+                className="query-editor-controls-button m-l-5 right"
+                onClick={save}
+                type={'primary'}
+                data-test="SaveButton">
+                <span className="fa fa-floppy-o" />&nbsp;Save
+              </Button>
+            </ButtonTooltip>
             <Button
               className="query-editor-controls-button m-l-5 right"
-              onClick={save}
-              type={'primary'}
+              onClick={backToList}
               data-test="SaveButton">
-              <span className="fa fa-floppy-o" />&nbsp;Save
-            </Button>
-          </ButtonTooltip>
-          <Button
-            className="query-editor-controls-button m-l-5 right"
-            onClick={backToList}
-            data-test="SaveButton">
-            Cancel
-          </Button></h1>
-        <AceEditor
-          mode="yaml"
-          width="800px"
-          defaultValue={item}
-          value={item}
-          height="700px"
-          theme="textmate"
-          onChange={onChange}
-          wrapEnabled={true}
-          name="yaml_editor"
-          editorProps={{ $blockScrolling: true }}
-        />
+              Cancel
+            </Button></h1>
+          <AceEditor
+            mode="yaml"
+            width="800px"
+            defaultValue={item}
+            value={item}
+            height="700px"
+            theme="textmate"
+            onChange={onChange}
+            wrapEnabled={true}
+            name="yaml_editor"
+            editorProps={{ $blockScrolling: true }}
+          />
+        </div>
+        <div className="editor-yaml-docs">
+          <ModelConfigDocs />
+        </div>
       </div>
     </div>
   );

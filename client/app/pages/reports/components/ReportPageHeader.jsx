@@ -208,27 +208,48 @@ export default function ReportPageHeader(props) {
       } catch(err) {
         setLoadModelConfigLoaded(false);
       }
-    },
-    [report, props.onChange, updateReport]
+    }, [report, props.onChange, updateReport]
   );
 
-  const handleSaveReport = useCallback(
+  const handleUpdateName = useCallback(
     async modelId => {
-      recordEvent("save_report", "report", report.id, { modelId });
-      let updates = {
-        expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
-      };
-      console.log("pre-updates", updates);
-      console.log("pre-report", report);
-      props.onChange(extend(report.clone(), updates));
-      updateReport(updates, { successMessage: null });
-      console.log("report", report);
-      console.log("updates", updates);
-      // props.onChange(extend(report.save(report)));
-      //await report.save(report)
-      saveReport(extend(report.save(report)));
-    },[report, props.onChange, updateReport, saveReport]
-  );
+      setLoadModelConfigLoaded(true)
+      try {
+        const res = await Model.getReporterConfig(modelId);
+        setModelConfig(res);
+        setLoadModelConfigLoaded(false);
+        recordEvent("update_report_config", "report", report.id, { modelId });
+        let _name = document.querySelector("#_reportNameInput")
+        console.log("_name", _name, _name.value)
+        const updates = {
+          name: "123"
+        };
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage: null }); // show message only on error
+      } catch(err) {
+        setLoadModelConfigLoaded(false);
+      }
+    }, [report, props.onChange, updateReport]
+  )
+
+  const handleSaveReport = () => {
+    let updates = {
+      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
+      color_1: report.color_1 || "#fff",
+      color_2: report.color_2 || "#fff",
+    };
+    props.onChange(extend(report.clone(), updates));
+    updateReport(updates, { successMessage: null });
+    console.log("report", report);
+    if (!report.expression) {
+      setTimeout(()=>{
+        console.log("clicking lol")
+        document.querySelector("#_handleSaveReport").click();
+      }, 3333);
+      return 0;
+    }
+    return saveReport(report);
+  }
 
 
   const moreActionsMenu = useMemo(
@@ -303,7 +324,7 @@ export default function ReportPageHeader(props) {
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={report} />}
             <h3>
-              <EditInPlace isEditable={queryFlags.canEdit} onDone={updateName} ignoreBlanks value={report.name} />
+              <EditInPlace id="_reportNameInput" isEditable={queryFlags.canEdit} onDone={updateName} ignoreBlanks value={report.name} />
             </h3>
           </div>
         </div>
@@ -373,7 +394,7 @@ export default function ReportPageHeader(props) {
             ))}
           </Select>
         </div>
-        <Button className="m-r-5" onClick={handleSaveReport}>
+        <Button className="m-r-5" id="_handleSaveReport" onClick={handleSaveReport}>
           <span className="icon icon-save-floppy-disc m-r-5"></span> Save Report
         </Button>
         {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (

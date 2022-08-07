@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm-run-all --parallel watch:viz webpack-dev-server",
+    "dev": "nodemon -x \"npm run start\"",
     "bundle": "bin/bundle-extensions",
     "clean": "rm -rf ./dist/",
     "build:start": "npm run build && npm run start",
@@ -59,6 +60,7 @@
     "bootstrap": "^3.3.7",
     "classnames": "^2.2.6",
     "d3": "^3.5.17",
+    "datareporter-plywood": "^0.23.5",
     "debug": "^3.1.0",
     "dompurify": "^2.0.7",
     "file-saver": "^2.0.2",
@@ -77,6 +79,7 @@
     "moment": "^2.19.3",
     "mousetrap": "^1.6.1",
     "mustache": "^2.3.0",
+    "nodemon": "^2.0.19",
     "numbro": "^2.3.1",
     "numeral": "^2.0.6",
     "path-to-regexp": "^3.1.0",
@@ -99,8 +102,7 @@
     "universal-router": "^8.3.0",
     "use-debounce": "^3.1.0",
     "use-media": "^1.4.0",
-    "webpack-merge": "^5.1.2",
-    "datareporter-plywood": "^0.23.5"
+    "webpack-merge": "^5.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",

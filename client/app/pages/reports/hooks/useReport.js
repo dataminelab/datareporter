@@ -13,8 +13,6 @@ export default function useReport(originalReport) {
       // Don't reload page when saving new report
       navigateTo(updatedReport.getUrl(true), true);
     }
-    console.log("in updateReport report", report)
-    console.log("in updateReport updatedReport", updatedReport)
     setReport(updatedReport);
     setOriginalReportSource(updatedReport.report);
   });

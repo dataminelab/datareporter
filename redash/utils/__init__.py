@@ -99,6 +99,20 @@ class JSONEncoder(simplejson.JSONEncoder):
             result = binascii.hexlify(o).decode()
         elif isinstance(o, bytes):
             result = binascii.hexlify(o).decode()
+        elif "queries" in dir(o):
+            # ReportSerializer
+            result = str(o.queries)
+        elif "expression" in dir(o):
+            result = {
+                "color_1": o.color_1,
+                "color_2": o.color_2,
+                "expression": o.expression,
+                "hash": o.hash,
+                "name": o.name,
+                "model_id": o.model_id,
+                "can_edit": True,
+                "data_source_id": o.model.data_source.id,
+            }
         else:
             result = super(JSONEncoder, self).default(o) # TypeError: Object of type ReportSerializer is not JSON serializable
         return result

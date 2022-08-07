@@ -62,7 +62,6 @@ class ReportsListResource(BaseResource):
     def post(self):
         print("here, cant create a report")
         req = request.get_json(True)
-        request_ = request;
         require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2)) # throws error here on report creating 
 
         formatting = request.args.get("format", "base64")
@@ -95,6 +94,7 @@ class ReportsListResource(BaseResource):
 
     @require_permission("view_report")
     def get(self):
+        print("get report function here")
         reports = Report.get_by_user(self.current_user)
 
         formatting = request.args.get("format", "base64")
@@ -132,6 +132,7 @@ class ReportResource(BaseResource):
             "object_id": report.id,
             "object_type": "report"
         })
+        return report
         return hash_to_result(hash_string=report.hash, model=report.model, organisation=self.current_org)
 
     @require_permission("edit_report")

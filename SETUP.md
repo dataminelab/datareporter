@@ -35,7 +35,6 @@ Requirements:
     * Enter project root directory
     * `cd client`
     * `npm run start`  Starts babel and webpack dev server which  will proxy  redash and turnillo backend
-    * `npm run dev` to use client working with nodemon so that you whenever you change a line it will automatically recompile
 
 * `open http://localhost:5000`
 

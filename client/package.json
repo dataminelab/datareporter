@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "npm-run-all --parallel watch:viz webpack-dev-server",
-    "dev": "nodemon -x \"npm run start\"",
     "bundle": "bin/bundle-extensions",
     "clean": "rm -rf ./dist/",
     "build:start": "npm run build && npm run start",
@@ -79,7 +78,6 @@
     "moment": "^2.19.3",
     "mousetrap": "^1.6.1",
     "mustache": "^2.3.0",
-    "nodemon": "^2.0.19",
     "numbro": "^2.3.1",
     "numeral": "^2.0.6",
     "path-to-regexp": "^3.1.0",

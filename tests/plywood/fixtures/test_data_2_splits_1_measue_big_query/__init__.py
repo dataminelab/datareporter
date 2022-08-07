@@ -2317,12 +2317,8 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                             ],
                             "data": [
                                 {
-                                    "isMinor": False,
-                                    "added": 7525182
-                                },
-                                {
                                     "isMinor": True,
-                                    "added": 1236334
+                                    "added": 4
                                 }
                             ]
                         },
@@ -2419,27 +2415,9 @@ POSTGRES_2_SPLIT_RESULT_BIG_QUERY = {
                                     "type": "NUMBER"
                                 }
                             ],
-                            "data": [
-                                {
-                                    "countryIsoCode": None,
-                                    "added": 8761516
-                                },
-                                {
-                                    "countryIsoCode": "CO",
-                                    "added": 60398
-                                },
-                                {
-                                    "countryIsoCode": "RU",
-                                    "added": 50561
-                                },
-                                {
-                                    "countryIsoCode": "US",
-                                    "added": 44433
-                                },
-                                {
-                                    "countryIsoCode": "IT",
-                                    "added": 41073
-                                }
+                            "data": [{
+                                'added': 41073,
+                                'isMinor': False}
                             ]
                         },
                         "countryIsoCode": "IT",

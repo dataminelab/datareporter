@@ -5,9 +5,11 @@ import { clientConfig } from "@/services/auth";
 
 export default function useRenameReport(report, onChange) {
   const updateReport = useUpdateReport(report, onChange);
+  // this component doesnt work
+  // had to write same one for ReportPageHeader.jsx
 
   return useCallback(
-    name => {
+    async name => {
       recordEvent("edit_name", "report", report.id);
       const changes = { name };
       const options = {};

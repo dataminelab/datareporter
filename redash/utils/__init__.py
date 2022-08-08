@@ -101,8 +101,10 @@ class JSONEncoder(simplejson.JSONEncoder):
             result = binascii.hexlify(o).decode()
         elif "queries" in dir(o):
             # ReportSerializer
-            result = str(o.queries)
+            result = o.queries
         elif "expression" in dir(o):
+            # single report
+            # api/report/<int>
             result = {
                 "color_1": o.color_1,
                 "color_2": o.color_2,

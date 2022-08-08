@@ -216,9 +216,6 @@ class Athena(BaseQueryRunner):
                 schema[table_name] = {"name": table_name, "columns": []}
             schema[table_name]["columns"].append(row["column_name"])
 
-        
-        # breakpoint()
-
         return list(schema.values())
 
     def run_query(self, query, user):

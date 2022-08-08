@@ -45,7 +45,7 @@ function ReportView(props) {
   const isFixedLayout = useMedia({ minHeight: 500 }) && isDesktop;
   const [fullscreen, toggleFullscreen] = useFullscreenHandler(isDesktop);
   const [addingDescription, setAddingDescription] = useState(false);
-
+  
   const {
     queryResult,
     loadedInitialResults,
@@ -80,7 +80,12 @@ function ReportView(props) {
   );
 
   useEffect(() => {
+    console.log("inside useEffect", report)
     document.title = report.name;
+    // let updates = {name: document.title}
+    // props.onChange(extend(report.clone(), updates));
+    // updateReport(updates, { successMessage: null });
+    // document.getElementsByClassName("editable")[0].innerText = document.title
   }, [report.name]);
 
   useEffect(() => {

@@ -212,25 +212,23 @@ export default function ReportPageHeader(props) {
   );
 
   const handleUpdateName = useCallback(
-    async modelId => {
-      setLoadModelConfigLoaded(true)
-      try {
-        const res = await Model.getReporterConfig(modelId);
-        setModelConfig(res);
-        setLoadModelConfigLoaded(false);
-        recordEvent("update_report_config", "report", report.id, { modelId });
-        let _name = document.querySelector("#_reportNameInput")
-        console.log("_name", _name, _name.value)
-        const updates = {
-          name: "123"
-        };
-        props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage: null }); // show message only on error
-      } catch(err) {
-        setLoadModelConfigLoaded(false);
+    name => {
+      // updateName
+      // useRenameReport.js doesnt work for some reason
+      // also when you change data_source_id name restarts itself
+      recordEvent("edit_name", "report", report.id);
+      const changes = { name };
+      const options = {};
+
+      if (report.is_draft && clientConfig.autoPublishNamedQueries && name !== "New Report") {
+        changes.is_draft = false;
+        options.successMessage = "Report saved and published";
       }
-    }, [report, props.onChange, updateReport]
-  )
+      props.onChange(extend(report.clone(), changes));
+      updateReport(changes, { successMessage: null });
+    },
+    [report.id, report.is_draft, updateReport]
+  );
 
   const handleSaveReport = () => {
     let updates = {
@@ -315,7 +313,18 @@ export default function ReportPageHeader(props) {
       openApiKeyDialog,
     ]
   );
-  console.log("report inside component", report)
+  console.log("ReportPageHeader", report)
+  // if (document.title != report.name && document.title != "Data reporter") {
+  //   console.log("document.title != report.name", report)
+  //   let updates = {name: document.title}
+  //   props.onChange(extend(report.clone(), updates));
+  //   updateReport(updates, { successMessage: null });
+  //   //document.getElementsByClassName("editable")[0].innerText = document.title
+  // }
+
+  // useEffect(() => {
+  //   document.title = report.name;
+  // }, [report.name]);
 
   return (
     <div className="report-page-header">
@@ -324,7 +333,7 @@ export default function ReportPageHeader(props) {
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={report} />}
             <h3>
-              <EditInPlace id="_reportNameInput" isEditable={queryFlags.canEdit} onDone={updateName} ignoreBlanks value={report.name} />
+              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={report.name} />
             </h3>
           </div>
         </div>

@@ -132,7 +132,9 @@ class ReportResource(BaseResource):
             "object_id": report.id,
             "object_type": "report"
         })
-        return report
+        # here need more work
+        # after you create a report, it returns front-end as a nonsence serializer
+        # return report
         return hash_to_result(hash_string=report.hash, model=report.model, organisation=self.current_org)
 
     @require_permission("edit_report")

@@ -72,5 +72,5 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./plywood:/app
+      - ./plywood/server:/app
 

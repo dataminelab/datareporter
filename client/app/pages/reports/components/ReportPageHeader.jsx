@@ -171,32 +171,38 @@ export default function ReportPageHeader(props) {
     },[report, updateColors]
   );
 
-  const onChangeDataSource = useCallback(async (dataSourceId) => {
+  const onChangeDataSource = useCallback( async dataSourceId => {
     setLoadModelsLoaded(true)
-    const updates = {
-      data_source_id: dataSourceId,
-      latest_report_data_id: null,
-      latest_report_data: null,
-    };
-    setReport(extend(report.clone(), updates));
     try {
-      const res = await Model.query({data_source: dataSourceId});
-      setModels(res.results);
-      setLoadModelsLoaded(false);
+        const res = await Model.query({data_source: dataSourceId});
+        console.log("on onChangeDataSource:res", res);
+        console.log("on onChangeDataSource:res.results", res.results);
+        recordEvent("set_report:dataSourceId", "report", report.id, { dataSourceId });
+        const updates = {
+          data_source_id: dataSourceId,
+          //   latest_report_data_id: null,
+          //   latest_report_data: null,
+        };
+        setModels(res.results);
+        props.onChange(extend(report.clone(), updates));
+        // setReport(extend(report.clone(), updates));
+        recordEvent("update_report_config:dataSourceId", "report", report.id, { dataSourceId });
+        updateReport(updates, { successMessage: null });
+        //updateReport(res.results);
+        setLoadModelsLoaded(false);
     } catch(err) {
-      setLoadModelsLoaded(false);
+        console.err("*ERR",err);
+        setLoadModelsLoaded(false);
     }
 
-  }, [models, modelsLoaded])
+  }, [report, props.onChange, updateReport])
 
-  const handleModelChange = useCallback(
-    async modelId => {
+  const handleModelChange = useCallback( async modelId => {
       setLoadModelConfigLoaded(true)
       try {
         const res = await Model.getReporterConfig(modelId);
         setModelConfig(res);
-        setLoadModelConfigLoaded(false);
-        recordEvent("update_report_config", "report", report.id, { modelId });
+        recordEvent("update_report_config:modelId", "report", report.id, { modelId });
         const updates = {
           model: modelId,
           model_id: modelId,
@@ -205,6 +211,7 @@ export default function ReportPageHeader(props) {
         };
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage: null }); // show message only on error
+        setLoadModelConfigLoaded(false);
       } catch(err) {
         setLoadModelConfigLoaded(false);
       }

@@ -4,16 +4,17 @@
 
 [![Documentation](https://img.shields.io/badge/docs-redash.io/help-brightgreen.svg)](https://redash.io/help/)
 
-Data Reporter is a business intelligence, data exploration and visualization web application for SQL databases. DataReporter is a fork of Turnilo which is currently available under Apache 2.0 license. DataReporter is also a fork of Redash, which is currently available under BSD-2-Clause license. DataReporter core is released under Apache 2.0 license.
+Data Reporter is a business intelligence, data exploration and visualization web application. 
+Harness the power of data big and small and explore, query, visualize, and share data from SQL data sources.
 
-Data Reporter is designed to enable anyone, regardless of the level of technical sophistication, to harness the power of data big and small. SQL users are not needed in order to leverage DataReporter to explore, query, visualize, and share data from SQL data sources.
+DataReporter is a fork of Turnilo which is currently available under Apache 2.0 license. DataReporter is also a fork of Redash, which is currently available under BSD-2-Clause license. DataReporter core is released under Apache 2.0 license.
 
 DataReporter manifesto:
-
 
 * High usability for non-technical users over sophisticated but rarely used features.
 * Self-describing reports for users without deep domain expertise.
 * Data cubes configuration as a code.
+* Focus on the "big data" cloud databases
 * Browser-based: Everything in your browser, with a shareable URL.
 * Ease-of-use: Become immediately productive with data without the need to master complex software.
 4. **Visualization and dashboards**: Create [beautiful visualizations](https://redash.io/help/user-guide/visualizations/visualization-types) with drag and drop, and combine them into a single dashboard.

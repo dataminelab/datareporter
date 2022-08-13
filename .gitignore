@@ -4,6 +4,8 @@ venv/
 .coverage.*
 .coveralls.yml
 .idea
+*iml
+dist/
 *.pyc
 .coverage
 coverage.xml

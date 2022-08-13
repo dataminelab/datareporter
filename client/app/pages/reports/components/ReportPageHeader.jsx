@@ -1,5 +1,5 @@
 import {extend, map, filter, reduce} from "lodash";
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useMemo, useState, useEffect} from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -174,21 +174,19 @@ export default function ReportPageHeader(props) {
   const onChangeDataSource = useCallback( async dataSourceId => {
     setLoadModelsLoaded(true)
     try {
+        console.log("*** SET DATA OF model data source onChangeDataSource:")
         const res = await Model.query({data_source: dataSourceId});
-        console.log("on onChangeDataSource:res", res);
-        console.log("on onChangeDataSource:res.results", res.results);
         recordEvent("set_report:dataSourceId", "report", report.id, { dataSourceId });
         const updates = {
           data_source_id: dataSourceId,
+          isJustLanded: false,
           //   latest_report_data_id: null,
           //   latest_report_data: null,
         };
         setModels(res.results);
         props.onChange(extend(report.clone(), updates));
-        // setReport(extend(report.clone(), updates));
         recordEvent("update_report_config:dataSourceId", "report", report.id, { dataSourceId });
         updateReport(updates, { successMessage: null });
-        //updateReport(res.results);
         setLoadModelsLoaded(false);
     } catch(err) {
         console.err("*ERR",err);
@@ -329,9 +327,11 @@ export default function ReportPageHeader(props) {
   //   //document.getElementsByClassName("editable")[0].innerText = document.title
   // }
 
-  // useEffect(() => {
-  //   document.title = report.name;
-  // }, [report.name]);
+  useEffect(() => {
+    if (report.isJustLanded) {
+      onChangeDataSource();
+    }
+  }, [report.name]);
 
   return (
     <div className="report-page-header">
@@ -368,7 +368,7 @@ export default function ReportPageHeader(props) {
             <span className="icon icon-datasource m-r-5"></span>
             <Select
               data-test="SelectDataSource"
-              placeholder="Choose data source..."
+              placeholder="Choose base data source..."
               value={report ? report.data_source_id : undefined}
               disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
               loading={!dataSourcesLoaded}
@@ -392,7 +392,7 @@ export default function ReportPageHeader(props) {
           <span className="icon icon-datasource m-r-5"></span>
           <Select
             data-test="SelectModel"
-            placeholder="Choose data source..."
+            placeholder="Choose model data source..."
             value={report.model}
             disabled={!reportFlags.canEdit || modelsLoaded || models.length === 0}
             loading={modelsLoaded}

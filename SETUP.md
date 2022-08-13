@@ -8,6 +8,11 @@ Requirements:
 Consider using `nodenv`, see for more info:
 https://joshmorel.ca/post/node-virtual-environments-with-nodenv/
 
+Requirements:
+* Data reported builds correctly with Node 12
+* Install node 12.22.12 with nodenv and ensure shims are added to PATH
+see for more info: https://github.com/nodenv/nodenv#how-it-works
+
 ```
 nodenv install 12.22.12
 nodenv local 12.22.12
@@ -23,7 +28,7 @@ nodenv local 12.22.12
     * Enter project root directory
     * `cd plywood`
     * `npm install` Installs all node dependencies to for plywood
-    * `npm run build` Builds plywood server end to  the folder `plywood/dist/`
+    * `npm run build` Builds plywood server end to the folder `plywood/dist/`
 
 * Setup docker compose
     * `make up` or `docker-compose up -d --build`  to start required services like postgres app server

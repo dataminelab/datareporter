@@ -33,12 +33,28 @@
     "printWidth": 100,
     "endOfLine": "lf"
   },
+  "watch": {
+    "compile": {
+      "patterns": [
+        "src/**/*js",
+        "src/**/*ts",
+        "typings",
+        "*.json"
+      ]
+    }
+  },
   "scripts": {
+    "watch": "nodemon",
     "prepare": "./compile && tdi -q",
     "compile": "./compile",
     "pretest": "./compile",
     "test": "./travis-test",
     "full-test": "./run-tests"
+  },
+  "nodemonConfig": {
+    "ext": "*.ts,*.json,*.js",
+    "exec": "npm run compile",
+    "ignore": ["build/"]
   },
   "tonicExampleFilename": "docs/examples/tonic.js",
   "dependencies": {
@@ -65,6 +81,7 @@
     "imonit": "0.2.0",
     "istanbul": "0.4.5",
     "mocha": "5.2.0",
+    "nodemon": "^2.0.4",
     "pegjs": "0.10.0",
     "plywood-druid-requester": "2.6.2",
     "plywood-mysql-requester": "2.3.0",

@@ -1,0 +1,59 @@
+#!/bin/bash -eu
+
+if grep -rq 'describe\.only' ./test
+  then
+    echo "describe.only found. Please update your test"
+    exit 1
+fi
+
+if grep -rq 'it\.only' ./test
+  then
+    echo "it.only found. Please update your test"
+    exit 1
+fi
+
+./compile
+
+PLYWOOD_PATH="build/plywood"
+node_modules/.bin/mocha \
+  test/dialect/* \
+  test/datatypes/* \
+  test/expression/* \
+  test/external/* \
+  test/helper/* \
+  test/overall/* \
+  test/parser/* \
+  test/simulate/* \
+  ;
+
+PLYWOOD_PATH="package/plywood"
+node_modules/.bin/mocha \
+  test/datatypes/* \
+  test/expression/* \
+  test/external/* \
+  test/helper/* \
+  test/overall/* \
+  test/parser/* \
+  test/simulate/* \
+  ;
+
+PLYWOOD_PATH="package/plywood.min"
+node_modules/.bin/mocha \
+  test/datatypes/* \
+  test/expression/* \
+  test/external/* \
+  test/helper/* \
+  test/overall/* \
+  test/parser/* \
+  test/simulate/* \
+  ;
+
+PLYWOOD_PATH="build/plywood-lite"
+node_modules/.bin/mocha \
+  test/overall/compute.mocha.js \
+  ;
+
+PLYWOOD_PATH="package/plywood-lite"
+node_modules/.bin/mocha \
+  test/overall/compute.mocha.js \
+  ;

@@ -80,13 +80,8 @@ function ReportView(props) {
   );
 
   useEffect(() => {
-    console.log("inside useEffect", report)
     document.title = report.name;
-    // let updates = {name: document.title}
-    // props.onChange(extend(report.clone(), updates));
-    // updateReport(updates, { successMessage: null });
-    // document.getElementsByClassName("editable")[0].innerText = document.title
-  }, [report.name]);
+ }, [report.name]);
 
   useEffect(() => {
     DataSource.get({ id: report.data_source_id }).then(setDataSource);

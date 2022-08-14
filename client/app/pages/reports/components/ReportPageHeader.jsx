@@ -174,7 +174,6 @@ export default function ReportPageHeader(props) {
   const onChangeDataSource = useCallback( async dataSourceId => {
     setLoadModelsLoaded(true)
     try {
-        console.log("*** SET DATA OF model data source onChangeDataSource:")
         const res = await Model.query({data_source: dataSourceId});
         recordEvent("set_report:dataSourceId", "report", report.id, { dataSourceId });
         const updates = {
@@ -189,7 +188,7 @@ export default function ReportPageHeader(props) {
         updateReport(updates, { successMessage: null });
         setLoadModelsLoaded(false);
     } catch(err) {
-        console.err("*ERR",err);
+        console.error("*ERR",err);
         setLoadModelsLoaded(false);
     }
 
@@ -218,9 +217,6 @@ export default function ReportPageHeader(props) {
 
   const handleUpdateName = useCallback(
     name => {
-      // updateName
-      // useRenameReport.js doesnt work for some reason
-      // also when you change data_source_id name restarts itself
       recordEvent("edit_name", "report", report.id);
       const changes = { name };
       const options = {};
@@ -243,12 +239,12 @@ export default function ReportPageHeader(props) {
     };
     props.onChange(extend(report.clone(), updates));
     updateReport(updates, { successMessage: null });
-    console.log("report", report);
     if (!report.expression) {
       setTimeout(()=>{
+        // need to render itself again with recent changes
         console.log("clicking lol")
         document.querySelector("#_handleSaveReport").click();
-      }, 3333);
+      }, 4333);
       return 0;
     }
     return saveReport(report);
@@ -318,18 +314,14 @@ export default function ReportPageHeader(props) {
       openApiKeyDialog,
     ]
   );
-  console.log("ReportPageHeader", report)
-  // if (document.title != report.name && document.title != "Data reporter") {
-  //   console.log("document.title != report.name", report)
-  //   let updates = {name: document.title}
-  //   props.onChange(extend(report.clone(), updates));
-  //   updateReport(updates, { successMessage: null });
-  //   //document.getElementsByClassName("editable")[0].innerText = document.title
-  // }
+  console.log("ReportPageHeader", report);
 
   useEffect(() => {
     if (report.isJustLanded) {
-      onChangeDataSource();
+      onChangeDataSource(report.data_source_id);
+      handleModelChange(report.model);
+      console.log("report.expression",report.expression)
+      window.location.hash = report.source_name + "/4/" + report.hash
     }
   }, [report.name]);
 

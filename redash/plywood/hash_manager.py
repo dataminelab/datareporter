@@ -180,6 +180,11 @@ def clean_errored(queries: list):
     return errored
 
 
+def get_data_cube(model: Model):
+    data_cube = DataCube(model=model)#lower_case_kind=True
+    return data_cube
+
+
 def hash_to_result(hash_string: str, model: Model, organisation):
     data_cube = DataCube(model=model)
     expression = Expression(hash=hash_string, data_cube=data_cube)

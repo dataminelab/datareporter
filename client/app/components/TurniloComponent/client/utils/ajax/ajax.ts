@@ -79,6 +79,7 @@ export class Ajax {
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
   private static model: number;
+  static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
 
@@ -140,8 +141,14 @@ export class Ajax {
         const sub = await subscribeToFilter(ex, modelId);
         return Dataset.fromJS(sub.data);
       }
-      const hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
+      var hash;
+      if (window.location.hash) {
+        hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2) ;
+      } else {
+        hash = this.hash;
+      }
       const sub = await subscribeToSplit(hash, modelId);
+      console.log("sub",sub)
       return Dataset.fromJS(sub.data);
     };
   }

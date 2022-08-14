@@ -112,8 +112,31 @@ class JSONEncoder(simplejson.JSONEncoder):
                 "hash": o.hash,
                 "name": o.name,
                 "model_id": o.model_id,
-                "can_edit": True,
+                "model": o.model_id,
+                "can_edit": False,
+                "source_name": o.data_cube.source_name,
                 "data_source_id": o.model.data_source.id,
+                "report": "",
+                "schedule": None,
+                "tags":[],
+                "user":{
+                    "id": o.user.id,
+                    "name": o.user.name,
+                    "profile_image_url": o.user.profile_image_url,
+                    "permissions": o.user.permissions,
+                    "isAdmin": None,
+                },
+                "isJustLanded": True,
+                "isCreatedReport": True,
+                "appSettings": {
+                    "dataCubes": [o.data_cube.data_cube],
+                    "customization": {},
+                    "clusters": [],
+                    #     "attributes": o.data_cube.attributes,
+                    #     "dimensions": o.data_cube.data_cube,
+
+                    # }]
+                }
             }
         else:
             result = super(JSONEncoder, self).default(o) # TypeError: Object of type ReportSerializer is not JSON serializable

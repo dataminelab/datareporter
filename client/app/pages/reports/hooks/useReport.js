@@ -5,7 +5,6 @@ import navigateTo from "@/components/ApplicationArea/navigateTo";
 export default function useReport(originalReport) {
   const [report, setReport] = useState(originalReport);
   const [originalReportSource, setOriginalReportSource] = useState(originalReport.report);
-  console.log("originalReport:useReport:report", report)
 
   const updateReport = useUpdateReport(report, updatedReport => {
     // It's important to update URL first, and only then update state

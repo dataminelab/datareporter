@@ -128,9 +128,10 @@ class DataCube:
         return self._get_table_name()
 
     @property
-    def config(self) -> dict:
+    def config(self, lower_case_kind=False) -> dict:
         """Returns full config for model the example if above the file"""
-        return yaml.load(self._model.config.content, Loader=yaml.FullLoader)
+        loaded_file = yaml.load(self._model.config.content, Loader=yaml.FullLoader)
+        return loaded_file
 
     @property
     def data_cube(self, lower_case_kind=True):

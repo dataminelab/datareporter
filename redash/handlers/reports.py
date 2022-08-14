@@ -12,7 +12,7 @@ from redash.permissions import (
     require_object_modify_permission,
     require_object_delete_permission, require_object_view_permission
 )
-from redash.plywood.hash_manager import hash_to_result, filter_expression_to_result
+from redash.plywood.hash_manager import get_data_cube, hash_to_result, filter_expression_to_result
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
@@ -50,7 +50,6 @@ class ReportGenerateResource(BaseResource):
 
         try:
             result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org)
-            print(result.serialized())
             return result.serialized()
         except ExpressionNotSupported as e:
             abort(400, message=e.message)
@@ -94,7 +93,6 @@ class ReportsListResource(BaseResource):
 
     @require_permission("view_report")
     def get(self):
-        print("get report function here")
         reports = Report.get_by_user(self.current_user)
 
         formatting = request.args.get("format", "base64")
@@ -134,8 +132,11 @@ class ReportResource(BaseResource):
         })
         # here need more work
         # after you create a report, it returns front-end as a nonsence serializer
-        # return report
-        return hash_to_result(hash_string=report.hash, model=report.model, organisation=self.current_org)
+        # return hash_to_result(hash_string=report.hash, model=report.model, organisation=self.current_org)(hash_string=report.hash, model=report.model, organisation=self.current_org)
+        data_cube = get_data_cube(report.model)
+        report.data_cube = data_cube
+        return report
+        # return hash_to_result(hash_string=report.hash, model=report.model, organisation=self.current_org)
 
     @require_permission("edit_report")
     def post(self, report_id: int):

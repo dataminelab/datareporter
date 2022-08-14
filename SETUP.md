@@ -26,9 +26,9 @@ nodenv local 12.22.12
 
 * Build Plywood
     * Enter project root directory
-    * `cd plywood`
+    * `cd plywood/server`
     * `npm install` Installs all node dependencies to for plywood
-    * `npm run build` Builds plywood server end to the folder `plywood/dist/`
+    * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
 
 * Setup docker compose
     * `make up` or `docker-compose up -d --build`  to start required services like postgres app server
@@ -39,6 +39,6 @@ nodenv local 12.22.12
 * Start UI proxy
     * Enter project root directory
     * `cd client`
-    * `npm run start`  Starts babel and webpack dev server which  will proxy  redash and turnillo backend
+    * `npm run start`  Starts babel and webpack dev server which  will proxy  redash and plywood backend
 
 * `open http://localhost:5000`

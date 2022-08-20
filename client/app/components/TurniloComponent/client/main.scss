@@ -77,6 +77,9 @@ svg {
   }
   .remove {
     color: #ffffff;
+    svg path {
+      fill: #ffffff !important;
+    }
   }
   .cube-view .container {
     top: 0;
@@ -113,6 +116,10 @@ svg {
 
 svg path {
   fill: rgb(22, 15, 102) !important;
+}
+
+.remove svg path {
+  fill: #ffffff !important;
 }
 
 .ant-btn {
@@ -152,6 +159,42 @@ svg path {
   color: #ffffff;
   background-color: #160f66;
   border: 1px solid #160f66;
+}
+
+.editor-yaml-box {
+  display: flex;
+  justify-content: space-between;
+  .editor-yaml-docs {
+    margin-left: 40px;
+    h1 {
+      margin-bottom: 20px;
+    }
+    * {
+      color: #000000;
+    }
+    p {
+      margin: 15px 0;
+    }
+    strong {
+      font-weight: bold;
+      color: #160f66;
+    }
+    a span {
+      cursor: pointer;
+      color: #0000EE;
+    }
+    a:visited span { color: #551A8B; }
+  }
+}
+
+@media only screen and (max-width: 1300px) {
+  .editor-yaml-box {
+    display: block;
+    .editor-yaml-docs {
+      margin-left: 0;
+      margin-top: 30px;
+    }
+  }
 }
 
 

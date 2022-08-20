@@ -7,11 +7,15 @@
     "start": "npm-run-all --parallel watch:viz webpack-dev-server",
     "bundle": "bin/bundle-extensions",
     "clean": "rm -rf ./dist/",
+    "clean-install:viz": "cd ../viz-lib && npm ci",
+    "clean-install:plywood": "cd ../plywood/client  && npm i ",
     "build:start": "npm run build && npm run start",
     "build:viz": "(cd ../viz-lib && export NODE_OPTIONS=--max_old_space_size=4096 && npm run build:babel)",
-    "build": "npm run clean && npm run build:viz && export NODE_OPTIONS=--max_old_space_size=4096 && NODE_ENV=production webpack",
+    "build:plywood": "(cd ../plywood/client && export NODE_OPTIONS=--max_old_space_size=4096 && npm run compile)",
+    "build": "export NODE_OPTIONS=--max_old_space_size=4096 && npm run clean && npm run build:viz  && npm run build:plywood && NODE_ENV=production webpack",
     "build:old-node-version": "npm run clean && NODE_ENV=production node --max-old-space-size=4096 node_modules/.bin/webpack",
     "watch:app": "webpack --watch --progress --colors -d",
+    "watch:plywood": "(cd ../plywood/client && npm run watch)",
     "watch:viz": "(cd ../viz-lib && npm run watch:babel)",
     "watch": "npm-run-all --parallel watch:*",
     "webpack-dev-server": "webpack-dev-server",
@@ -29,7 +33,8 @@
     "test:watch": "jest --watch",
     "cypress:install": "npm install --no-save cypress@~4.5.0 @percy/agent@0.26.2 @percy/cypress@^2.2.0 atob@2.1.2 lodash@^4.17.10 request-cookies@^1.1.0",
     "cypress": "node cypress/cypress.js",
-    "postinstall": "(cd ../viz-lib && npm ci && npm run build:babel)"
+    "preinstall": " npm run clean-install:plywood",
+    "postinstall": "npm run clean-install:viz && npm run build:viz "
   },
   "repository": {
     "type": "git",

@@ -83,7 +83,7 @@ export interface CubeViewLayout {
 
 const defaultLayout: CubeViewLayout = {
   factPanel: { width: 240 },
-  pinboard: { width: 240 }
+  pinboard: { width: 240, hidden: true }
 };
 
 export interface CubeViewProps {
@@ -486,7 +486,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       ...layout,
       pinboard: {
         ...pinboard,
-        hidden: !pinboard.hidden
+        hidden: true
       }
     });
   };

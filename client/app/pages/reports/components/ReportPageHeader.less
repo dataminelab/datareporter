@@ -49,7 +49,13 @@
   .header-actions {
     display: flex;
     flex-wrap: nowrap;
-
+    .ant-btn {
+      height: 35px;
+      border: 1px solid white;
+      &:hover {
+        border-color: #33147d;
+      }
+    }
     @media (max-width: 515px) {
       flex-basis: 100%;
     }

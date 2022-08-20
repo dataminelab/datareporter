@@ -154,7 +154,13 @@ export default function ReportPageHeader(props) {
   };
 
   const hexToRgb = (hex) => {
-    var result = /^#?([a-f\d]{1,2})([a-f\d]{1,2})([a-f\d]{1,2})$/i.exec(hex);
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+      return r + r + g + g + b + b;
+    });
+  
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
       r: parseInt(result[1], 16),
       g: parseInt(result[2], 16),
@@ -167,9 +173,12 @@ export default function ReportPageHeader(props) {
     (color, type) => {
       if (!color.rgb && color.startsWith("#")) {
         color = {
-          rgb: hexToRgb(color) || {r:1,g:1,b:1,a:1},
+          rgb: hexToRgb(color),
           hex: color,
         }
+      }
+      if (!color.rgb || !color.hex) {
+        return 0
       }
       if (type === 2) {
         setColorBody(color.rgb)
@@ -178,7 +187,6 @@ export default function ReportPageHeader(props) {
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage: null });
       } else {
-        // Text chart color
         setColorText(color.rgb)
         updateColors('colorText', color.hex);
         let updates = { color_2: color.hex }
@@ -257,8 +265,8 @@ export default function ReportPageHeader(props) {
   const handleSaveReport = () => {
     let updates = {
       expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
-      color_1: report.color_1 || "#fff",
-      color_2: report.color_2 || "#000",
+      color_1: report.color_1 || "#f17013",
+      color_2: report.color_2 || "#f17013",
     };
     props.onChange(extend(report.clone(), updates));
     updateReport(updates, { successMessage: null });

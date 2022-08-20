@@ -68,7 +68,6 @@ function createMenu(menu) {
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
   const queryFlags = useReportFlags(props.report, props.dataSource);
-  // const updateName = useRenameReport(props.report, props.onChange);
   const archiveReport = useArchiveReport(props.report, props.onChange);
   const publishReport = usePublishReport(props.report, props.onChange);
   const unpublishReport = useUnpublishReport(props.report, props.onChange);

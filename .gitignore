@@ -8,6 +8,7 @@ venv/
 .coverage
 coverage.xml
 client/dist
+plywood/dist
 .DS_Store
 .#*
 \#*#

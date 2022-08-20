@@ -64,7 +64,7 @@
     "bootstrap": "^3.3.7",
     "classnames": "^2.2.6",
     "d3": "^3.5.17",
-    "datareporter-plywood": "^0.23.5",
+    "datareporter-plywood": "file:../plywood/client",
     "debug": "^3.1.0",
     "dompurify": "^2.0.7",
     "file-saver": "^2.0.2",

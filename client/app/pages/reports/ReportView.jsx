@@ -81,7 +81,7 @@ function ReportView(props) {
 
   useEffect(() => {
     document.title = report.name;
- }, [report.name]);
+  }, [report.name]);
 
   useEffect(() => {
     DataSource.get({ id: report.data_source_id }).then(setDataSource);

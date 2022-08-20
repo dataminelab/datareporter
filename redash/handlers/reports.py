@@ -12,7 +12,7 @@ from redash.permissions import (
     require_object_modify_permission,
     require_object_delete_permission, require_object_view_permission
 )
-from redash.plywood.hash_manager import get_data_cube, hash_report, hash_to_result, filter_expression_to_result
+from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expression_to_result
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
@@ -60,7 +60,7 @@ class ReportsListResource(BaseResource):
     @require_permission("create_report")
     def post(self):
         req = request.get_json(True)
-        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2)) # throws error here on report creating 
+        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2)) 
 
         formatting = request.args.get("format", "base64")
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
@@ -108,7 +108,7 @@ class ReportsListResource(BaseResource):
             serializer=ReportSerializer,
             formatting=formatting
         )
-        
+
         self.record_event({
             "action": "list",
             "object_type": "report"

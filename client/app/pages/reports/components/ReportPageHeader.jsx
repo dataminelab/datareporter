@@ -203,9 +203,7 @@ export default function ReportPageHeader(props) {
         recordEvent("set_report:dataSourceId", "report", report.id, { dataSourceId });
         const updates = {
           data_source_id: dataSourceId,
-          isJustLanded: false,
-          // latest_report_data_id: null,
-          // latest_report_data: null,
+          isJustLanded: false
         };
         setModels(res.results);
         props.onChange(extend(report.clone(), updates));
@@ -231,6 +229,7 @@ export default function ReportPageHeader(props) {
         setModelConfig(res);
         recordEvent("update_report_config:modelId", "report", report.id, { modelId });
         const updates = {
+          // test below line only one model id is enough
           model: modelId,
           model_id: modelId,
           appSettings: res.appSettings,

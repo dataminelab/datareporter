@@ -45,7 +45,7 @@ function ReportView(props) {
   const isFixedLayout = useMedia({ minHeight: 500 }) && isDesktop;
   const [fullscreen, toggleFullscreen] = useFullscreenHandler(isDesktop);
   const [addingDescription, setAddingDescription] = useState(false);
-  
+
   const {
     queryResult,
     loadedInitialResults,

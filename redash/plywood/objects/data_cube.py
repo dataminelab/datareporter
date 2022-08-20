@@ -130,8 +130,7 @@ class DataCube:
     @property
     def config(self) -> dict:
         """Returns full config for model the example if above the file"""
-        loaded_file = yaml.load(self._model.config.content, Loader=yaml.FullLoader)
-        return loaded_file
+        return yaml.load(self._model.config.content, Loader=yaml.FullLoader)
 
     @property
     def data_cube(self, lower_case_kind=True):

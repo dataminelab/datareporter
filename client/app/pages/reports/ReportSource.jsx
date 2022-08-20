@@ -29,7 +29,7 @@ function ReportSource(props) {
   const isMobile = !useMedia({ minWidth: 768 });
 
   useUnsavedChangesAlert(isDirty);
-  
+
   const {
     reportResult,
     isExecuting: isReportExecuting,

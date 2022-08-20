@@ -60,7 +60,7 @@ class ReportsListResource(BaseResource):
     @require_permission("create_report")
     def post(self):
         req = request.get_json(True)
-        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2)) 
+        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
 
         formatting = request.args.get("format", "base64")
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]

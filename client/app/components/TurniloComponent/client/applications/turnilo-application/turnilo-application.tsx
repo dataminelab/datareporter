@@ -102,7 +102,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       });
 
       return;
-    } 
+    }
 
     const viewHash = this.getViewHashFromHash(hash);
 

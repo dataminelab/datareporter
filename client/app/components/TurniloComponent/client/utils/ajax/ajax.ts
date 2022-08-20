@@ -78,7 +78,7 @@ export class Ajax {
 
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
-  private static model: number;
+  private static model_id: number;
   static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
@@ -137,7 +137,7 @@ export class Ajax {
     }
 
     return async (ex: Expression, env: Environment = {}) => {
-      const modelId = this.model;
+      const modelId = this.model_id;
       if (ex instanceof  LimitExpression) {
         const sub = await subscribeToFilter(ex, modelId);
         return Dataset.fromJS(sub.data);
@@ -149,7 +149,6 @@ export class Ajax {
         hash = this.hash;
       }
       const sub = await subscribeToSplit(hash, modelId);
-      console.log("sub",sub);
       return Dataset.fromJS(sub.data);
     };
   }

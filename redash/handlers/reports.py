@@ -59,7 +59,6 @@ class ReportGenerateResource(BaseResource):
 class ReportsListResource(BaseResource):
     @require_permission("create_report")
     def post(self):
-        print("here, cant create a report")
         req = request.get_json(True)
         require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2)) # throws error here on report creating 
 

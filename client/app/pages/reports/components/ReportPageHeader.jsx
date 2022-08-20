@@ -342,12 +342,10 @@ export default function ReportPageHeader(props) {
 
   useEffect(() => {
     if (report.isJustLanded) {
-      // window.location.hash = report.source_name + "/4/" + report.hash;
-      handleColorChange(report.color_1, 1);
-      handleColorChange(report.color_2, 2);
+      handleColorChange(report.color_1, 2);
+      handleColorChange(report.color_2, 1);
       onChangeDataSource(report.data_source_id);
-      handleModelChange(report.model);
-      console.log("report.expression",report.expression)
+      handleModelChange(report.model_id);
     }
   }, [report.name]);
 
@@ -411,7 +409,7 @@ export default function ReportPageHeader(props) {
           <Select
             data-test="SelectModel"
             placeholder="Choose model data source..."
-            value={report.model}
+            value={report.model_id}
             disabled={!reportFlags.canEdit || modelsLoaded || models.length === 0}
             loading={modelsLoaded}
             optionFilterProp="data-name"

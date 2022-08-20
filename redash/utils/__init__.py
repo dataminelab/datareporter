@@ -108,12 +108,10 @@ class JSONEncoder(simplejson.JSONEncoder):
             result = {
                 "color_1": o.color_1,
                 "color_2": o.color_2,
-                "expression": o.expression,
                 "hash": o.hash,
                 "name": o.name,
                 "model_id": o.model_id,
-                "model": o.model_id,
-                "can_edit": False,
+                "can_edit": False, # not working on front-end
                 "source_name": o.data_cube.source_name,
                 "data_source_id": o.model.data_source.id,
                 "report": "",
@@ -131,10 +129,6 @@ class JSONEncoder(simplejson.JSONEncoder):
                     "dataCubes": [o.data_cube.data_cube],
                     "customization": {},
                     "clusters": [],
-                    #     "attributes": o.data_cube.attributes,
-                    #     "dimensions": o.data_cube.data_cube,
-
-                    # }]
                 }
             }
         else:

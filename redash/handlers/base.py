@@ -98,7 +98,7 @@ def paginate(query_set, page, page_size, serializer, **kwargs):
         items = serializer(results.items, **kwargs).serialize()
     else:
         items = [serializer(result) for result in results.items]
-        
+
     return {"count": count, "page": page, "page_size": page_size, "results": items}
 
 

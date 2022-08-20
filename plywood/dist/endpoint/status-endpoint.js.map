@@ -1,1 +1,0 @@
-{"version":3,"file":"status-endpoint.js","sourceRoot":"","sources":["../../src/endpoint/status-endpoint.ts"],"names":[],"mappings":";;;;;;AACA,8DAAqC;AAE9B,MAAM,cAAc,GAAG,CAAC,IAAa,EAAE,GAAa,EAAE,EAAE;IAC3D,GAAG;SACE,MAAM,CAAC,qBAAU,CAAC,EAAE,CAAC;SACrB,IAAI,CAAC,EAAC,MAAM,EAAE,IAAI,EAAC,CAAC,CAAC;AAC9B,CAAC,CAAC;AAJW,QAAA,cAAc,kBAIzB"}

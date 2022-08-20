@@ -171,7 +171,6 @@ export default function ReportPageHeader(props) {
           hex: color,
         }
       }
-      console.log(color, type)
       if (type === 2) {
         setColorBody(color.rgb)
         updateColors('colorBody', color.hex);
@@ -338,7 +337,6 @@ export default function ReportPageHeader(props) {
       openApiKeyDialog,
     ]
   );
-  console.log("ReportPageHeader", report);
 
   useEffect(() => {
     if (report.isJustLanded) {

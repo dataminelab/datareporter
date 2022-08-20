@@ -184,9 +184,38 @@ def get_data_cube(model: Model):
     data_cube = DataCube(model=model)#lower_case_kind=True
     return data_cube
 
+def hash_report(o):
+    data_cube = get_data_cube(o.model)
+    result = {
+        "color_1": o.color_1,
+        "color_2": o.color_2,
+        "hash": o.hash,
+        "name": o.name,
+        "model_id": o.model_id,
+        "can_edit": False, # not working on front-end
+        "source_name": data_cube.source_name,
+        "data_source_id": o.model.data_source.id,
+        "report": "",
+        "schedule": None,
+        "tags":[],
+        "user":{
+            "id": o.user.id,
+            "name": o.user.name,
+            "profile_image_url": o.user.profile_image_url,
+            "permissions": o.user.permissions,
+            "isAdmin": None,
+        },
+        "isJustLanded": True,
+        "appSettings": {
+            "dataCubes": [data_cube.data_cube],
+            "customization": {},
+            "clusters": [],
+        }
+    }
+    return result
 
 def hash_to_result(hash_string: str, model: Model, organisation):
-    data_cube = DataCube(model=model)
+    data_cube = get_data_cube(model)
     expression = Expression(hash=hash_string, data_cube=data_cube)
 
     queries_result = cache_or_get(

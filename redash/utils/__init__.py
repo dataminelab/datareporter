@@ -102,35 +102,9 @@ class JSONEncoder(simplejson.JSONEncoder):
         elif "queries" in dir(o):
             # ReportSerializer
             result = o.queries
-        elif "expression" in dir(o):
-            # single report
-            # api/report/<int>
-            result = {
-                "color_1": o.color_1,
-                "color_2": o.color_2,
-                "hash": o.hash,
-                "name": o.name,
-                "model_id": o.model_id,
-                "can_edit": False, # not working on front-end
-                "source_name": o.data_cube.source_name,
-                "data_source_id": o.model.data_source.id,
-                "report": "",
-                "schedule": None,
-                "tags":[],
-                "user":{
-                    "id": o.user.id,
-                    "name": o.user.name,
-                    "profile_image_url": o.user.profile_image_url,
-                    "permissions": o.user.permissions,
-                    "isAdmin": None,
-                },
-                "isJustLanded": True,
-                "appSettings": {
-                    "dataCubes": [o.data_cube.data_cube],
-                    "customization": {},
-                    "clusters": [],
-                }
-            }
+        elif "isJustLanded" in dir(o):
+            # single report | api/report/<int>
+            return o
         else:
             result = super(JSONEncoder, self).default(o) # TypeError: Object of type ReportSerializer is not JSON serializable
         return result

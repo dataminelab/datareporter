@@ -83,7 +83,6 @@ export default class EditInPlace extends React.Component {
   renderEdit = () => {
     const { multiline, value, editorProps } = this.props;
     const InputComponent = multiline ? Input.TextArea : Input;
-    console.log("this.props", this.props);
     return (
       <InputComponent
         defaultValue={value}

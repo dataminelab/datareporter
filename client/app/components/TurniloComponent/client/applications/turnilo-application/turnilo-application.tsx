@@ -81,10 +81,16 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   componentWillMount() {
-    const { appSettings, initTimekeeper } = this.props;
+    const { appSettings, initTimekeeper, report } = this.props;
     const { dataCubes } = appSettings;
 
-    const hash = window.location.hash;
+    var hash 
+    if (report.hash && report.source_name) {
+      hash = report.source_name + "/4/" + report.hash 
+    } else {
+      hash = window.location.hash;
+    }
+    console.log("componentWillMount", hash)
     let viewType = this.getViewTypeFromHash(hash);
 
     if (!dataCubes.length) {
@@ -97,7 +103,10 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       });
 
       return;
-    }
+    } 
+    // else {
+    //   window.location.hash = hash;
+    // }
 
     const viewHash = this.getViewHashFromHash(hash);
 
@@ -146,6 +155,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
   globalHashChangeListener = () => {
     if (this.hashUpdating) return;
+    console.log("or here on globalHashChangeListener", window.location.hash)
     this.hashToState(window.location.hash);
   };
 

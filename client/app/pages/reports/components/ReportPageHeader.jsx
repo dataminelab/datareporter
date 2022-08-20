@@ -15,8 +15,8 @@ import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
-import useUpdateReportTags from "../hooks/useUpdateReportTags";
-import useRenameReport from "../hooks/useRenameReport";
+//import useUpdateReportTags from "../hooks/useUpdateReportTags";
+//import useRenameReport from "../hooks/useRenameReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
@@ -68,7 +68,7 @@ function createMenu(menu) {
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
   const queryFlags = useReportFlags(props.report, props.dataSource);
-  const updateName = useRenameReport(props.report, props.onChange);
+  // const updateName = useRenameReport(props.report, props.onChange);
   const archiveReport = useArchiveReport(props.report, props.onChange);
   const publishReport = usePublishReport(props.report, props.onChange);
   const unpublishReport = useUnpublishReport(props.report, props.onChange);
@@ -153,8 +153,25 @@ export default function ReportPageHeader(props) {
     setDisplayColorPicker(0)
   };
 
+  const hexToRgb = (hex) => {
+    var result = /^#?([a-f\d]{1,2})([a-f\d]{1,2})([a-f\d]{1,2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+      a: 1
+    } : null;
+  }
+
   const handleColorChange = useCallback(
     (color, type) => {
+      if (!color.rgb && color.startsWith("#")) {
+        color = {
+          rgb: hexToRgb(color) || {r:1,g:1,b:1,a:1},
+          hex: color,
+        }
+      }
+      console.log(color, type)
       if (type === 2) {
         setColorBody(color.rgb)
         updateColors('colorBody', color.hex);
@@ -162,6 +179,7 @@ export default function ReportPageHeader(props) {
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage: null });
       } else {
+        // Text chart color
         setColorText(color.rgb)
         updateColors('colorText', color.hex);
         let updates = { color_2: color.hex }
@@ -179,8 +197,8 @@ export default function ReportPageHeader(props) {
         const updates = {
           data_source_id: dataSourceId,
           isJustLanded: false,
-          //   latest_report_data_id: null,
-          //   latest_report_data: null,
+          // latest_report_data_id: null,
+          // latest_report_data: null,
         };
         setModels(res.results);
         props.onChange(extend(report.clone(), updates));
@@ -197,7 +215,12 @@ export default function ReportPageHeader(props) {
   const handleModelChange = useCallback( async modelId => {
       setLoadModelConfigLoaded(true)
       try {
-        const res = await Model.getReporterConfig(modelId);
+        var res
+        if (report.isJustLanded) {
+          res = {appSettings: report.appSettings, timekeeper:{}}
+        } else {
+          res = await Model.getReporterConfig(modelId);
+        }
         setModelConfig(res);
         recordEvent("update_report_config:modelId", "report", report.id, { modelId });
         const updates = {
@@ -205,6 +228,7 @@ export default function ReportPageHeader(props) {
           model_id: modelId,
           appSettings: res.appSettings,
           timekeeper: res.timekeeper,
+          isJustLanded: false,
         };
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage: null }); // show message only on error
@@ -235,7 +259,7 @@ export default function ReportPageHeader(props) {
     let updates = {
       expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
       color_1: report.color_1 || "#fff",
-      color_2: report.color_2 || "#fff",
+      color_2: report.color_2 || "#000",
     };
     props.onChange(extend(report.clone(), updates));
     updateReport(updates, { successMessage: null });
@@ -318,10 +342,12 @@ export default function ReportPageHeader(props) {
 
   useEffect(() => {
     if (report.isJustLanded) {
+      // window.location.hash = report.source_name + "/4/" + report.hash;
+      handleColorChange(report.color_1, 1);
+      handleColorChange(report.color_2, 2);
       onChangeDataSource(report.data_source_id);
       handleModelChange(report.model);
       console.log("report.expression",report.expression)
-      window.location.hash = report.source_name + "/4/" + report.hash
     }
   }, [report.name]);
 

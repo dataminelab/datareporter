@@ -116,7 +116,7 @@ export class Ajax {
         const { data, method, timeout , url } = input;
         const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
 
-        if ([1, 2].indexOf(res.status) >= 0 ) {
+        if ([1, 2].indexOf(res.status) >= 0) {
             await timeoutQuery(2000);
             return await subscribe(input);
        } else return res;
@@ -128,6 +128,7 @@ export class Ajax {
       const data = { expression : ex.toJS() };
       return subscribe({ method, url, timeout, data });
     }
+
     async function  subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}`;
@@ -143,12 +144,12 @@ export class Ajax {
       }
       var hash;
       if (window.location.hash) {
-        hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2) ;
+        hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
       } else {
         hash = this.hash;
       }
       const sub = await subscribeToSplit(hash, modelId);
-      console.log("sub",sub)
+      console.log("sub",sub);
       return Dataset.fromJS(sub.data);
     };
   }

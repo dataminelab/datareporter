@@ -127,7 +127,6 @@ class JSONEncoder(simplejson.JSONEncoder):
                     "isAdmin": None,
                 },
                 "isJustLanded": True,
-                "isCreatedReport": True,
                 "appSettings": {
                     "dataCubes": [o.data_cube.data_cube],
                     "customization": {},

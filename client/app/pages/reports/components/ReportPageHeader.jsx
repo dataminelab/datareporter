@@ -15,14 +15,10 @@ import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
-//import useUpdateReportTags from "../hooks/useUpdateReportTags";
-//import useRenameReport from "../hooks/useRenameReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
 import useColorsReport from "@/pages/reports/hooks/useColorsReport";
-
-
 import "./ReportPageHeader.less";
 import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
@@ -272,12 +268,11 @@ export default function ReportPageHeader(props) {
     if (!report.expression) {
       setTimeout(()=>{
         // need to render itself again with recent changes
-        console.log("clicking lol")
         document.querySelector("#_handleSaveReport").click();
-      }, 4333);
+      }, 333);
       return 0;
     }
-    return saveReport(report);
+    return saveReport();
   }
 
 

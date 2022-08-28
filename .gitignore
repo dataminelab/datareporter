@@ -7,8 +7,6 @@ venv/
 *.pyc
 .coverage
 coverage.xml
-client/dist
-plywood/dist
 .DS_Store
 .#*
 \#*#
@@ -27,3 +25,7 @@ npm-debug.log
 client/cypress/screenshots
 client/cypress/videos
 *.iml
+
+# dist folders
+client/dist
+plywood/dist

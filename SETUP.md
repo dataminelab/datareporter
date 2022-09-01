@@ -42,3 +42,36 @@ nodenv local 12.22.12
     * `npm run start`  Starts babel and webpack dev server which  will proxy  redash and plywood backend
 
 * `open http://localhost:5000`
+
+## Local Development
+
+### Components
+
+#### Datareporter server
+* **directory**: `redash`
+* **debug**: Please follow the instruction from (https://redash.io/help/open-source/dev-guide/debugging)[redash]
+* **changes:**
+  * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
+#### Datareporter frontend
+  * **submodules** - for debug and changes they follow root fronted app:
+    * Lib viz
+      * **directory:** `viz-lib`
+    * Plywood client
+      * **directory:** `plywood/client`
+  * **directory:** `client`
+  * **debug:** Can be debugged from browser open application at `http://localhost:5000` and use browser debugger.
+  * **changes:**
+    * By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.
+    That will start watched for source code changes for Datareporter frontend and all submodules.
+    * At liniux system you may face problem of too many file system watchers. That will result in error message
+    ```Error: ENOSPC: System limit for number of file watchers reached, watch ```
+    To solve it you need to increase the number of available watches by :
+    ```sudo sysctl -w fs.inotify.max_user_watches=512000```
+
+#### Plywood server
+* **directory:** `plywood/server`
+* **debug:** connect nodejs debugger to `localhost:9231`
+* **changes:**
+  * All changes should be reflected automatically. The server is running in watch mode with incremental build support
+    and should rebuild at any source code change.
+  * To see details/logs of build go into repo root dir and run `docker-compose logs plywood`

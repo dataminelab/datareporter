@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "watch-ts": "tsc -w",
-    "watch-node": "nodemon dist/server.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"yarn run watch-ts\" \"yarn run watch-node\"",
+    "watch-node": "nodemon --inspect dist/server.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "test": "mocha -r ts-node/register src/*.spec.ts",
     "build": "tsc -p .",
     "start": "node dist/server.js"
@@ -16,7 +16,7 @@
     "body-parser": "^1.19.0",
     "concurrently": "^5.3.0",
     "d3": "^6.7.0",
-    "datareporter-plywood": "^0.23.5",
+    "datareporter-plywood": "file:../client",
     "express": "^4.17.1",
     "http-status": "^1.4.2",
     "immer": "^9.0.3",

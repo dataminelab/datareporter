@@ -184,7 +184,7 @@ def get_data_cube(model: Model):
     data_cube = DataCube(model=model)#lower_case_kind=True
     return data_cube
 
-def hash_report(o):
+def hash_report(o, can_edit):
     data_cube = get_data_cube(o.model)
     result = {
         "color_1": o.color_1,
@@ -192,7 +192,7 @@ def hash_report(o):
         "hash": o.hash,
         "name": o.name,
         "model_id": o.model_id,
-        "can_edit": False, # not working on front-end
+        "can_edit": can_edit,
         "source_name": data_cube.source_name,
         "data_source_id": o.model.data_source.id,
         "report": "",

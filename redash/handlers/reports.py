@@ -129,7 +129,19 @@ class ReportResource(BaseResource):
             "object_id": report.id,
             "object_type": "report"
         })
-        return hash_report(report)
+        report_user_email = report.user.email if report.user else None
+        current_user = self.current_user.email
+        if report_user_email != current_user:
+            self.record_event({
+                "action": "view",
+                "object_id": report.id,
+                "object_type": "report",
+                "message": "Report viewed by another user"
+            })
+            can_edit = False
+        else:
+            can_edit = True
+        return hash_report(report, can_edit=can_edit)
 
     @require_permission("edit_report")
     def post(self, report_id: int):

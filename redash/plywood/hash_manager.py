@@ -210,7 +210,8 @@ def hash_report(o, can_edit):
             "dataCubes": [data_cube.data_cube],
             "customization": {},
             "clusters": [],
-        }
+        },
+        "id": o.id,
     }
     return result
 

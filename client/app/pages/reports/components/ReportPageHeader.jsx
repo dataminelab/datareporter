@@ -194,16 +194,15 @@ export default function ReportPageHeader(props) {
 
   const onChangeDataSource = useCallback( async dataSourceId => {
     setLoadModelsLoaded(true)
+    recordEvent("update on dataSourceId", "report", report.id, { dataSourceId });
     try {
         const res = await Model.query({data_source: dataSourceId});
-        recordEvent("set_report:dataSourceId", "report", report.id, { dataSourceId });
         const updates = {
           data_source_id: dataSourceId,
           isJustLanded: false
         };
         setModels(res.results);
         props.onChange(extend(report.clone(), updates));
-        recordEvent("update_report_config:dataSourceId", "report", report.id, { dataSourceId });
         updateReport(updates, { successMessage: null });
         setLoadModelsLoaded(false);
     } catch(err) {
@@ -223,7 +222,7 @@ export default function ReportPageHeader(props) {
           res = await Model.getReporterConfig(modelId);
         }
         setModelConfig(res);
-        recordEvent("update_report_config:modelId", "report", report.id, { modelId });
+        recordEvent("update on modelId", "report", report.id, { modelId });
         const updates = {
           // test below line only one model id is enough
           model: modelId,
@@ -240,10 +239,14 @@ export default function ReportPageHeader(props) {
       }
     }, [report, props.onChange, updateReport]
   );
+  const handleIdChange = useCallback( async id => {
+    recordEvent("update on report's id", "report", report.id, { id });
+    props.onChange(extend(report.clone(), { id }));
+    updateReport({ id }, { successMessage: null });
+  });
 
-  const handleUpdateName = useCallback(
-    name => {
-      recordEvent("edit_name", "report", report.id);
+  const handleUpdateName = useCallback( name => {
+      recordEvent("update report's name", "report", report.id, {name});
       const changes = { name };
       const options = {};
 
@@ -258,6 +261,11 @@ export default function ReportPageHeader(props) {
   );
 
   const handleSaveReport = () => {
+    if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
+      recordEvent("save", "report", report.id, { id: report.id });
+      updateReport({ is_draft: false }, { successMessage: "Report saved" });
+      return saveReport();
+    }
     let updates = {
       expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
       color_1: report.color_1 || "#f17013",
@@ -269,7 +277,7 @@ export default function ReportPageHeader(props) {
       setTimeout(()=>{
         // need to render itself again with recent changes
         document.querySelector("#_handleSaveReport").click();
-      }, 333);
+      }, 466);
       return 0;
     }
     return saveReport();
@@ -346,6 +354,7 @@ export default function ReportPageHeader(props) {
       handleColorChange(report.color_2, 1);
       onChangeDataSource(report.data_source_id);
       handleModelChange(report.model_id);
+      handleIdChange(report.id);
     }
   }, [report.name]);
 

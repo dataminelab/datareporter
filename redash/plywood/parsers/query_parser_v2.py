@@ -120,15 +120,20 @@ class PlywoodQueryParserV2:
 
         for inner_index, item in enumerate(split['data'][top_index]['SPLIT']['data']):
             tmp_value = copy.deepcopy(item[column_name])
-            real_date = parser.parse(tmp_value)  # datetime.datetime(1999, 8, 28, 0, 0)
-            # datetime.datetime.strptime(tmp_value, '%Y-%m-%dT%H:%M:%SZ')
+            if isinstance(tmp_value, str) or isinstance(tmp_value, datetime.datetime):
+                real_date = parser.parse(tmp_value)
+            elif isinstance(tmp_value, dict):
+                real_date = parser.parse(tmp_value["start"])
 
             str_date = iso_format(real_date)
             if inner_index + 1 < size:
 
                 next_value = split['data'][top_index]['SPLIT']['data'][inner_index + 1]
                 next_tmp_value = copy.deepcopy(next_value[column_name])
-                real_date_next = parser.parse(next_tmp_value)
+                if isinstance(tmp_value, str) or isinstance(tmp_value, datetime.datetime):
+                    real_date_next = parser.parse(next_tmp_value)
+                elif isinstance(tmp_value, dict):
+                    real_date_next = parser.parse(next_tmp_value["start"])
                 str_date_next = iso_format(real_date_next)
 
                 item[column_name] = dict(start=str_date, end=str_date_next)

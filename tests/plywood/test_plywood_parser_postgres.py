@@ -12,7 +12,7 @@ from tests.plywood.fixtures.test_data_1_split_1_mesture_1_filter.sample_1 import
     TEST_DATA_1_SPLIT_SHAPE, POSTGRES_1_SPLIT_RESULT
 from tests.plywood.fixtures.test_data_2_splits_1_measue_big_query import POSTGRES_2_SLIT_JOBS_BIG_QUERY, \
     TEST_DATA_2_SPLIT_SHAPE_BIG_QUERY, POSTGRES_2_SPLIT_RESULT_BIG_QUERY, POSTGRES_LINE_CHART_RESULT, \
-    POSTGRES_LINE_CHART_SHAPE, POSTGRES_LINE_CHART_RESULT_TO_COMPARE
+    POSTGRES_LINE_CHART_SHAPE, BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE, POSTGRES_LINE_CHART_RESULT_TO_COMPARE
 from tests.plywood.fixtures.test_data_2_splits_1_measure_1_filter import POSTGRES_2_SLIT_JOBS, TEST_DATA_2_SPLIT_SHAPE, \
     POSTGRES_2_SPLIT_RESULT
 
@@ -89,7 +89,6 @@ class TestPostgresParseV2(unittest.TestCase):
         )
 
         data = parser.parse_ply(ENGINE_BIG_QUERY)
-        # I CHANGED THE `POSTGRES_2_SPLIT_RESULT_BIG_QUERY` TO MATCH THE BIG QUERY
         self.assertDictEqual(data.dict(), POSTGRES_2_SPLIT_RESULT_BIG_QUERY)
 
     def test_chart_line(self):
@@ -99,9 +98,5 @@ class TestPostgresParseV2(unittest.TestCase):
             shape=POSTGRES_LINE_CHART_SHAPE,
             visualization='line-chart'
         )
-        # breakpoint()
-        # *** TypeError: Parser must be a string or character stream, not dict
-        data = parser.parse_ply(ENGINE_BIG_QUERY)
-        # POSTGRES_LINE_CHART_RESULT_TO_COMPARE is diffirent than data.dict
-        # probbaly POSTGRES_2_SPLIT_RESULT_BIG_QUERY need to change        
-        self.assertDictEqual(data.dict(), POSTGRES_LINE_CHART_RESULT_TO_COMPARE)
+        data = parser.parse_ply(ENGINE_BIG_QUERY) 
+        self.assertDictEqual(data.dict(), BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE)

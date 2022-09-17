@@ -610,13 +610,10 @@ class TestReportGetResource(BaseTestCase):
             with mock.patch('redash.plywood.plywood.PlywoodApi.convert_to_sql') as second_mock:
                 mock_res.return_value = FAKE_EXPERSSION
                 second_mock.return_value = FAKE_QUERIES
-                # breakpoint()
-                # below does not responde with 200 gives 500
                 response = self.make_request("get", f"/api/reports/{report.id}", user=user)
-                # response = self.make_request("get", f"/api/reports/{report.id}")
         self.assertEqual(200, response.status_code)
-        self.assertEqual(response.json['data'], None)
-        self.assertEqual(response.json['status'], 1)
+        self.assertNotEqual(response.json['id'], None)
+        self.assertNotEqual(response.json['hash'], None)  
 
     def test_get_report_success_formatting(self):
         model = self.factory.create_model()
@@ -634,12 +631,10 @@ class TestReportGetResource(BaseTestCase):
             with mock.patch('redash.plywood.plywood.PlywoodApi.convert_to_sql') as second_mock:
                 mock_res.return_value = FAKE_EXPERSSION
                 second_mock.return_value = FAKE_QUERIES
-                # also gives 500
                 response = self.make_request("get", f"/api/reports/{report.id}?format=json", user=user)
-        # breakpoint()
         self.assertEqual(200, response.status_code)
-        self.assertEqual(response.json['status'], 1)
-        self.assertEqual(response.json['data'], None)
+        self.assertNotEqual(response.json['id'], None)
+        self.assertNotEqual(response.json['hash'], None)        
 
 
 class TestReportEditResource(BaseTestCase):

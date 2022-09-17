@@ -46,11 +46,6 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
     def get_by_id_and_user(cls, _id, user):
         return cls.query.filter(cls.id == _id, cls.user_id == user.id).one()
 
-    @classmethod
-    def all(cls, org):
-        return cls.get_by_org(org).filter(cls.disabled_at.is_(None))
-
-
 
 @gfk_type
 class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):

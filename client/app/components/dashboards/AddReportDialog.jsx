@@ -49,7 +49,7 @@ function AddReportDialog({ dialog, dashboard }) {
       width={700}>
       <div data-test="AddReportDialog">
         <ReportSelector onChange={report => selectReport(report ? report.id : null)} />
-        {selectedReport ? selectedReport.id : 'noneeeee'}
+        {selectedReport ? selectedReport.id : ''}
         {parameterMappings.length > 0 && [
           <label key="parameters-title" htmlFor="parameter-mappings">
             Parameters

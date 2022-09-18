@@ -65,6 +65,9 @@ function doSaveReport(data, { canOverwrite = false } = {}) {
           .catch(() => Promise.reject(new SaveReportConflictError()));
       }
       return Promise.reject(new SaveReportConflictError());
+    } else if (get(error, "response.status") === 400) {
+      let message = get(error, "response.data.message")
+      return Promise.reject(new SaveReportError(message));
     }
     return Promise.reject(new SaveReportError("Report could not be saved"));
   });

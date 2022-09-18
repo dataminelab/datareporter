@@ -166,7 +166,7 @@ export default function ReportPageHeader(props) {
   }
 
   const handleColorChange = useCallback(
-    (color, type) => {
+    (color, type, successMessage) => {
       if (!color.rgb && color.startsWith("#")) {
         color = {
           rgb: hexToRgb(color),
@@ -178,16 +178,16 @@ export default function ReportPageHeader(props) {
       }
       if (type === 2) {
         setColorBody(color.rgb)
-        updateColors('colorBody', color.hex);
+        updateColors('colorBody', color.hex, { successMessage });
         let updates = { color_1: color.hex }
         props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage: null });
+        updateReport(updates, { successMessage });
       } else {
         setColorText(color.rgb)
-        updateColors('colorText', color.hex);
+        updateColors('colorText', color.hex, { successMessage });
         let updates = { color_2: color.hex }
         props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage: null });
+        updateReport(updates, { successMessage });
       }
     },[report, updateColors]
   );
@@ -240,13 +240,13 @@ export default function ReportPageHeader(props) {
     }, [report, props.onChange, updateReport]
   );
   const handleIdChange = useCallback( async id => {
-    recordEvent("update on report's id", "report", report.id, { id });
+    recordEvent("edit_report_id", "report", report.id, { id });
     props.onChange(extend(report.clone(), { id }));
     updateReport({ id }, { successMessage: null });
   });
 
   const handleUpdateName = useCallback( name => {
-      recordEvent("update report's name", "report", report.id, {name});
+      recordEvent("edit_report_name", "report", report.id, {name});
       const changes = { name };
       const options = {};
 
@@ -350,8 +350,8 @@ export default function ReportPageHeader(props) {
 
   useEffect(() => {
     if (report.isJustLanded) {
-      handleColorChange(report.color_1, 2);
-      handleColorChange(report.color_2, 1);
+      handleColorChange(report.color_1, 2, null);
+      handleColorChange(report.color_2, 1, null);
       onChangeDataSource(report.data_source_id);
       handleModelChange(report.model_id);
       handleIdChange(report.id);

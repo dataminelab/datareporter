@@ -147,13 +147,18 @@ class ReportResource(BaseResource):
     @require_permission("edit_report")
     def post(self, report_id: int):
         report_properties = request.get_json(force=True)
+        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
+        report = get_object_or_404(Report.get_by_id, report_id)
+        counter = 0
+        for key, value in updates.items():
+            if value == report.__getattribute__(key):
+                counter+=1
+        if counter == len(updates):
+            return make_response(json.dumps({"message": "No changes made"}), 204)
 
         formatting = request.args.get("format", "base64")
 
-        report = get_object_or_404(Report.get_by_id, report_id)
         require_object_modify_permission(report, self.current_user)
-
-        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
 
         if MODEL_ID in updates:
             try:

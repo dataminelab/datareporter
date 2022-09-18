@@ -184,6 +184,11 @@ def get_data_cube(model: Model):
     data_cube = DataCube(model=model)#lower_case_kind=True
     return data_cube
 
+def is_admin(user):
+    if 'admin' in user.permissions or 'super_admin' in user.permissions or 'edit_report' in user.permissions:
+        return True
+    return False
+
 def hash_report(o, can_edit):
     data_cube = get_data_cube(o.model)
     result = {
@@ -203,7 +208,7 @@ def hash_report(o, can_edit):
             "name": o.user.name,
             "profile_image_url": o.user.profile_image_url,
             "permissions": o.user.permissions,
-            "isAdmin": None,
+            "isAdmin": is_admin(o.user),
         },
         "isJustLanded": True,
         "appSettings": {

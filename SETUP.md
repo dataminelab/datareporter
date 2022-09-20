@@ -31,12 +31,12 @@ nodenv local 12.22.12
     * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
 
 * Setup docker compose
-    * `make up` or `docker-compose up -d --build`  to start required services like postgres app server
+    * `make up` or `docker-compose up --build`  to start required services like postgres app server
     * `docker-compose run --rm server create_db`  Will start server and run. exec /app/manage.py database create_tables.
       This step is required **only once**.
 
 
-* Start UI proxy
+* Not needed anymore, might be useful for local development: start UI proxy
     * Enter project root directory
     * `cd client`
     * `npm run start`  Starts babel and webpack dev server which  will proxy  redash and plywood backend
@@ -44,6 +44,54 @@ nodenv local 12.22.12
 * `open http://localhost:5000`
 
 ## Local Development
+
+Consider using (https://github.com/pyenv/pyenv#installation)[pyenv] for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7
+
+```
+# install necessary python version
+pyenv install 3.8.7 
+# make sure you run below command in the datareported folder
+# automatically select whenever you are in the current directory (or its subdirectories)
+pyenv local 3.8.7
+# note that on certani linux distros you might need to also run
+# $ git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+# create virtualenv
+pyenv virtualenv 3.8.7 .venv
+source ./.venv/bin/activate
+# note that in some system .venv might be created in your home folder: /.pyenv/versions/.venv
+# $ source ~/.pyenv/versions/.venv/bin/activate
+```
+
+Installation in Linux using virtualenvwrapper:
+```
+
+sudo pacman -S yay 
+yay -S python38
+mkvirtualenv -p /usr/bin/python3.8 python38
+```
+
+If working with Visual Studio Code
+
+Follow the tutorial: https://redash.io/help/open-source/dev-guide/debugging
+
+And run the debugging session:
+```
+pip install ptvsd
+# and start debugging session
+docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
+```
+
+### Running tests locally
+
+First ensure that the "tests" database is created:
+```
+docker-compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
+```
+
+Then run the tests:
+```
+docker-compose run --rm server tests
+```
 
 ### Components
 

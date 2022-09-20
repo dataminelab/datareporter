@@ -71,7 +71,7 @@ class Athena(BaseQueryRunner):
                     "title": "Schema Name",
                     "default": "default",
                 },
-                "glue": {"type": "boolean", "title": "Use Glue Data Catalog"},
+                "glue": {"type": "boolean", "title": "Use Glue Data Catalog", "default": True},
                 "work_group": {
                     "type": "string",
                     "title": "Athena Work Group",

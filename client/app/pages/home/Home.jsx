@@ -15,6 +15,7 @@ import { messages } from "@/services/auth";
 import notification from "@/services/notification";
 import { Dashboard } from "@/services/dashboard";
 import { Query } from "@/services/query";
+import { Report } from "@/services/report";
 import routes from "@/services/routes";
 
 import "./Home.less";
@@ -132,15 +133,15 @@ function DashboardAndQueryFavoritesList() {
           </div>
           <div className="col-sm-6 m-t-20">
             <FavoriteList
-              title="Favorite Queries"
-              resource={Query}
-              itemUrl={query => `queries/${query.id}`}
+              title="Favorite Reports"
+              resource={Report}
+              itemUrl={report => `reports/${report.id}`}
               emptyState={
                 <p>
                   <span className="btn-favourite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <a href="queries">Queries</a> will appear here
+                  Favorite <a href="queries">Reports</a> will appear here
                 </p>
               }
             />

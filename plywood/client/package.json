@@ -54,7 +54,9 @@
   "nodemonConfig": {
     "ext": "*.ts,*.json,*.js",
     "exec": "npm run compile",
-    "ignore": ["build/"]
+    "ignore": [
+      "build/"
+    ]
   },
   "tonicExampleFilename": "docs/examples/tonic.js",
   "dependencies": {

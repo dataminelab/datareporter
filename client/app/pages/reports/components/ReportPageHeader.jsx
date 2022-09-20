@@ -263,7 +263,7 @@ export default function ReportPageHeader(props) {
   const handleSaveReport = () => {
     if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
       recordEvent("save", "report", report.id, { id: report.id });
-      updateReport({ is_draft: false }, { successMessage: "Report saved" });
+      updateReport({ is_draft: false }, { successMessage: null });
       return saveReport();
     }
     let updates = {
@@ -452,7 +452,7 @@ export default function ReportPageHeader(props) {
                 <span className="m-l-5">Edit Source</span>
               </Button>
             )}
-            {props.sourceMode && (
+            {/* {props.sourceMode && (
               <Button
                 className="m-r-5"
                 href={report.getUrl(false, props.selectedVisualization)}
@@ -460,7 +460,7 @@ export default function ReportPageHeader(props) {
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Data Only</span>
               </Button>
-            )}
+            )} */}
           </span>
         )}
 

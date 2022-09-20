@@ -205,7 +205,7 @@ class ModelConfigGenerator(object):
 
         attributes = []
         for column in columns:
-            name, kind = column["name"], column["type"].lower()
+            name, kind = column["name"], column["type"]
 
             attributes.append(Attribute(name=name, kind=kind))
         return attributes

@@ -1,5 +1,5 @@
 import {extend, map, filter, reduce} from "lodash";
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useMemo, useState, useEffect} from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -15,14 +15,10 @@ import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
-import useUpdateReportTags from "../hooks/useUpdateReportTags";
-import useRenameReport from "../hooks/useRenameReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
 import useColorsReport from "@/pages/reports/hooks/useColorsReport";
-
-
 import "./ReportPageHeader.less";
 import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
@@ -68,7 +64,6 @@ function createMenu(menu) {
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
   const queryFlags = useReportFlags(props.report, props.dataSource);
-  const updateName = useRenameReport(props.report, props.onChange);
   const archiveReport = useArchiveReport(props.report, props.onChange);
   const publishReport = usePublishReport(props.report, props.onChange);
   const unpublishReport = useUnpublishReport(props.report, props.onChange);
@@ -154,57 +149,139 @@ export default function ReportPageHeader(props) {
     setDisplayColorPicker(0)
   };
 
+  const hexToRgb = (hex) => {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+      return r + r + g + g + b + b;
+    });
+  
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+      a: 1
+    } : null;
+  }
+
   const handleColorChange = useCallback(
-    (color, type) => {
+    (color, type, successMessage) => {
+      if (!color.rgb && color.startsWith("#")) {
+        color = {
+          rgb: hexToRgb(color),
+          hex: color,
+        }
+      }
+      if (!color.rgb || !color.hex) {
+        return 0
+      }
       if (type === 2) {
         setColorBody(color.rgb)
-        updateColors('colorBody', color.hex);
+        updateColors('colorBody', color.hex, { successMessage });
+        let updates = { color_1: color.hex }
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage });
       } else {
         setColorText(color.rgb)
-        updateColors('colorText', color.hex);
+        updateColors('colorText', color.hex, { successMessage });
+        let updates = { color_2: color.hex }
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage });
       }
     },[report, updateColors]
   );
 
-  const onChangeDataSource = useCallback(async (dataSourceId) => {
+  const onChangeDataSource = useCallback( async dataSourceId => {
     setLoadModelsLoaded(true)
-    const updates = {
-      data_source_id: dataSourceId,
-      latest_report_data_id: null,
-      latest_report_data: null,
-    };
-    setReport(extend(report.clone(), updates));
+    recordEvent("update on dataSourceId", "report", report.id, { dataSourceId });
     try {
-      const res = await Model.query({data_source: dataSourceId});
-      setModels(res.results);
-      setLoadModelsLoaded(false);
+        const res = await Model.query({data_source: dataSourceId});
+        const updates = {
+          data_source_id: dataSourceId,
+          isJustLanded: false
+        };
+        setModels(res.results);
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage: null });
+        setLoadModelsLoaded(false);
     } catch(err) {
-      setLoadModelsLoaded(false);
+        console.error("*ERR",err);
+        setLoadModelsLoaded(false);
     }
 
-  }, [models, modelsLoaded])
+  }, [report, props.onChange, updateReport])
 
-  const handleModelChange = useCallback(
-    async modelId => {
+  const handleModelChange = useCallback( async modelId => {
       setLoadModelConfigLoaded(true)
       try {
-        const res = await Model.getReporterConfig(modelId);
+        var res
+        if (report.isJustLanded) {
+          res = {appSettings: report.appSettings, timekeeper:{}}
+        } else {
+          res = await Model.getReporterConfig(modelId);
+        }
         setModelConfig(res);
-        setLoadModelConfigLoaded(false);
-        recordEvent("update_report_config", "report", report.id, { modelId });
+        recordEvent("update on modelId", "report", report.id, { modelId });
         const updates = {
+          // test below line only one model id is enough
           model: modelId,
+          model_id: modelId,
           appSettings: res.appSettings,
           timekeeper: res.timekeeper,
+          isJustLanded: false,
         };
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage: null }); // show message only on error
+        setLoadModelConfigLoaded(false);
       } catch(err) {
         setLoadModelConfigLoaded(false);
       }
-    },
-    [report, props.onChange, updateReport]
+    }, [report, props.onChange, updateReport]
   );
+  const handleIdChange = useCallback( async id => {
+    recordEvent("edit_report_id", "report", report.id, { id });
+    props.onChange(extend(report.clone(), { id }));
+    updateReport({ id }, { successMessage: null });
+  });
+
+  const handleUpdateName = useCallback( name => {
+      recordEvent("edit_report_name", "report", report.id, {name});
+      const changes = { name };
+      const options = {};
+
+      if (report.is_draft && clientConfig.autoPublishNamedQueries && name !== "New Report") {
+        changes.is_draft = false;
+        options.successMessage = "Report saved and published";
+      }
+      props.onChange(extend(report.clone(), changes));
+      updateReport(changes, { successMessage: null });
+    },
+    [report.id, report.is_draft, updateReport]
+  );
+
+  const handleSaveReport = () => {
+    if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
+      recordEvent("save", "report", report.id, { id: report.id });
+      updateReport({ is_draft: false }, { successMessage: null });
+      return saveReport();
+    }
+    let updates = {
+      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
+      color_1: report.color_1 || "#f17013",
+      color_2: report.color_2 || "#f17013",
+    };
+    props.onChange(extend(report.clone(), updates));
+    updateReport(updates, { successMessage: null });
+    if (!report.expression) {
+      setTimeout(()=>{
+        // need to render itself again with recent changes
+        document.querySelector("#_handleSaveReport").click();
+      }, 466);
+      return 0;
+    }
+    return saveReport();
+  }
 
 
   const moreActionsMenu = useMemo(
@@ -271,6 +348,16 @@ export default function ReportPageHeader(props) {
     ]
   );
 
+  useEffect(() => {
+    if (report.isJustLanded) {
+      handleColorChange(report.color_1, 2, null);
+      handleColorChange(report.color_2, 1, null);
+      onChangeDataSource(report.data_source_id);
+      handleModelChange(report.model_id);
+      handleIdChange(report.id);
+    }
+  }, [report.name]);
+
   return (
     <div className="report-page-header">
       <div className="title-with-tags m-l-5">
@@ -278,7 +365,7 @@ export default function ReportPageHeader(props) {
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={report} />}
             <h3>
-              <EditInPlace isEditable={queryFlags.canEdit} onDone={updateName} ignoreBlanks value={report.name} />
+              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={report.name} />
             </h3>
           </div>
         </div>
@@ -306,7 +393,7 @@ export default function ReportPageHeader(props) {
             <span className="icon icon-datasource m-r-5"></span>
             <Select
               data-test="SelectDataSource"
-              placeholder="Choose data source..."
+              placeholder="Choose base data source..."
               value={report ? report.data_source_id : undefined}
               disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
               loading={!dataSourcesLoaded}
@@ -330,8 +417,8 @@ export default function ReportPageHeader(props) {
           <span className="icon icon-datasource m-r-5"></span>
           <Select
             data-test="SelectModel"
-            placeholder="Choose data source..."
-            value={report.model}
+            placeholder="Choose model data source..."
+            value={report.model_id}
             disabled={!reportFlags.canEdit || modelsLoaded || models.length === 0}
             loading={modelsLoaded}
             optionFilterProp="data-name"
@@ -348,7 +435,7 @@ export default function ReportPageHeader(props) {
             ))}
           </Select>
         </div>
-        <Button className="m-r-5" onClick={() => saveReport(report)}>
+        <Button className="m-r-5" id="_handleSaveReport" onClick={handleSaveReport}>
           <span className="icon icon-save-floppy-disc m-r-5"></span> Save Report
         </Button>
         {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
@@ -365,7 +452,7 @@ export default function ReportPageHeader(props) {
                 <span className="m-l-5">Edit Source</span>
               </Button>
             )}
-            {props.sourceMode && (
+            {/* {props.sourceMode && (
               <Button
                 className="m-r-5"
                 href={report.getUrl(false, props.selectedVisualization)}
@@ -373,7 +460,7 @@ export default function ReportPageHeader(props) {
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Data Only</span>
               </Button>
-            )}
+            )} */}
           </span>
         )}
 

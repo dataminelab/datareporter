@@ -60,7 +60,7 @@ let reloadRequested = false;
 function reload() {
   if (reloadRequested) return;
   reloadRequested = true;
-  window.location.reload(true);
+  window.location.reload();
 }
 
 
@@ -78,7 +78,8 @@ export class Ajax {
 
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
-  private static model: number;
+  private static model_id: number;
+  static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
 
@@ -115,7 +116,7 @@ export class Ajax {
         const { data, method, timeout , url } = input;
         const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
 
-        if ([1, 2].indexOf(res.status) >= 0 ) {
+        if ([1, 2].indexOf(res.status) >= 0) {
             await timeoutQuery(2000);
             return await subscribe(input);
        } else return res;
@@ -127,6 +128,7 @@ export class Ajax {
       const data = { expression : ex.toJS() };
       return subscribe({ method, url, timeout, data });
     }
+
     async function  subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}`;
@@ -135,12 +137,17 @@ export class Ajax {
     }
 
     return async (ex: Expression, env: Environment = {}) => {
-      const modelId = this.model;
+      const modelId = this.model_id;
       if (ex instanceof  LimitExpression) {
         const sub = await subscribeToFilter(ex, modelId);
         return Dataset.fromJS(sub.data);
       }
-      const hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
+      var hash;
+      if (window.location.hash) {
+        hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
+      } else {
+        hash = this.hash;
+      }
       const sub = await subscribeToSplit(hash, modelId);
       return Dataset.fromJS(sub.data);
     };

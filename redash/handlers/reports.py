@@ -12,7 +12,7 @@ from redash.permissions import (
     require_object_modify_permission,
     require_object_delete_permission, require_object_view_permission
 )
-from redash.plywood.hash_manager import hash_to_result, filter_expression_to_result
+from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expression_to_result
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
@@ -118,6 +118,7 @@ class ReportsListResource(BaseResource):
 
 # /api/reports/<int:report_id>
 class ReportResource(BaseResource):
+    ''' A resource for a single report creation, editing and deleting '''
 
     @require_permission("view_report")
     def get(self, report_id: int):
@@ -129,18 +130,35 @@ class ReportResource(BaseResource):
             "object_id": report.id,
             "object_type": "report"
         })
-        return hash_to_result(hash_string=report.hash, model=report.model, organisation=self.current_org)
+        report_user_email = report.user.email if report.user else None
+        current_user = self.current_user.email
+        if report_user_email != current_user:
+            self.record_event({
+                "action": "view",
+                "object_id": report.id,
+                "object_type": "report",
+                "message": "Report viewed by another user"
+            })
+            can_edit = False
+        else:
+            can_edit = True
+        return hash_report(report, can_edit=can_edit)
 
     @require_permission("edit_report")
     def post(self, report_id: int):
         report_properties = request.get_json(force=True)
+        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
+        report = get_object_or_404(Report.get_by_id, report_id)
+        counter = 0
+        for key, value in updates.items():
+            if value == report.__getattribute__(key):
+                counter+=1
+        if counter == len(updates):
+            return make_response(json.dumps({"message": "No changes made"}), 204)
 
         formatting = request.args.get("format", "base64")
 
-        report = get_object_or_404(Report.get_by_id, report_id)
         require_object_modify_permission(report, self.current_user)
-
-        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
 
         if MODEL_ID in updates:
             try:

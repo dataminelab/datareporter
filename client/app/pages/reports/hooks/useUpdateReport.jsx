@@ -65,6 +65,9 @@ function doSaveReport(data, { canOverwrite = false } = {}) {
           .catch(() => Promise.reject(new SaveReportConflictError()));
       }
       return Promise.reject(new SaveReportConflictError());
+    } else if (get(error, "response.status") === 400) {
+      let message = get(error, "response.data.message")
+      return Promise.reject(new SaveReportError(message));
     }
     return Promise.reject(new SaveReportError("Report could not be saved"));
   });
@@ -97,6 +100,10 @@ export default function useUpdateReport(report, onChange) {
           "options",
           "latest_query_data_id",
           "is_draft",
+          "color_1",
+          "color_2",
+          "expression",
+          "model_id",
         ]);
       }
 

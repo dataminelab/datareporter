@@ -23,8 +23,6 @@ export class PostgresAttributeParser extends AttributeParser {
             return result;
         });
 
-        console.log(columns);
-
         const newAttributes = PostgresExternal.postProcessIntrospect(columns).map(atr => {
             if (!atr) return;
             return {

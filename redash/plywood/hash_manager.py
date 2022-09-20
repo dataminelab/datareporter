@@ -180,8 +180,48 @@ def clean_errored(queries: list):
     return errored
 
 
+def get_data_cube(model: Model):
+    data_cube = DataCube(model=model)#lower_case_kind=True
+    return data_cube
+
+def is_admin(user):
+    if 'admin' in user.permissions or 'super_admin' in user.permissions or 'edit_report' in user.permissions:
+        return True
+    return False
+
+def hash_report(o, can_edit):
+    data_cube = get_data_cube(o.model)
+    result = {
+        "color_1": o.color_1,
+        "color_2": o.color_2,
+        "hash": o.hash,
+        "name": o.name,
+        "model_id": o.model_id,
+        "can_edit": can_edit,
+        "source_name": data_cube.source_name,
+        "data_source_id": o.model.data_source.id,
+        "report": "",
+        "schedule": None,
+        "tags":[],
+        "user":{
+            "id": o.user.id,
+            "name": o.user.name,
+            "profile_image_url": o.user.profile_image_url,
+            "permissions": o.user.permissions,
+            "isAdmin": is_admin(o.user),
+        },
+        "isJustLanded": True,
+        "appSettings": {
+            "dataCubes": [data_cube.data_cube],
+            "customization": {},
+            "clusters": [],
+        },
+        "id": o.id,
+    }
+    return result
+
 def hash_to_result(hash_string: str, model: Model, organisation):
-    data_cube = DataCube(model=model)
+    data_cube = get_data_cube(model)
     expression = Expression(hash=hash_string, data_cube=data_cube)
 
     queries_result = cache_or_get(

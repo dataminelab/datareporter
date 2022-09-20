@@ -204,7 +204,7 @@ class Expression:
         queries = self.queries
 
         if len(queries) != 3:
-            print(f'Might not work as expected')
+            print('Might not work as expected')
 
         last_query: str = queries[len(queries) - 1]
 

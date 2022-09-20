@@ -115,6 +115,7 @@ const config = {
     }),
     new CopyWebpackPlugin([
       { from: "app/assets/robots.txt" },
+      { from: "app/assets/manifest.json" },
       { from: "app/unsupported.html" },
       { from: "app/unsupportedRedirect.js" },
       { from: "app/assets/css/*.css", to: "styles/", flatten: true },

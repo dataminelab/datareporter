@@ -81,10 +81,15 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   componentWillMount() {
-    const { appSettings, initTimekeeper } = this.props;
+    const { appSettings, initTimekeeper, report } = this.props;
     const { dataCubes } = appSettings;
 
-    const hash = window.location.hash;
+    var hash 
+    if (report.hash && report.source_name) {
+      hash = report.source_name + "/4/" + report.hash 
+    } else {
+      hash = window.location.hash;
+    }
     let viewType = this.getViewTypeFromHash(hash);
 
     if (!dataCubes.length) {

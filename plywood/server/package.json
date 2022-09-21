@@ -20,7 +20,7 @@
     "express": "^4.17.1",
     "http-status": "^1.4.2",
     "immer": "^9.0.3",
-    "immutable": "*",
+    "immutable": "^4.0.0-rc.14",
     "immutable-class-tester": "^0.7.2",
     "l": "^0.6.0",
     "lz-string": "^1.4.4",

@@ -72,16 +72,29 @@ function getFilterRange(essence: Essence, timekeeper: Timekeeper): PlywoodRange 
 }
 
 function safeRangeSum(a: PlywoodRange | null, b: PlywoodRange | null): PlywoodRange | null {
-  return (a && b) ? a.extend(b) : (a || b);
+  if (a && b) {
+    return (a as PlywoodRange).extend(b);
+  }
+  return (a || b);
 }
 
 function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange | null {
   const continuousDimensionKey = continuousDimension.name;
   const flatDataset = dataset.flatten();
-  return flatDataset
-    .data
-    .map(datum => datum[continuousDimensionKey] as PlywoodRange)
-    .reduce(safeRangeSum, null);
+  // ["21-05-2022:HH:MM:SS", ...]
+  var _start: number | Date = new Date(flatDataset.data[0][continuousDimensionKey].toString());
+  var _end: number | Date = new Date(flatDataset.data[0][continuousDimensionKey].toString());
+  flatDataset.data.map(datum => {
+      // find the range of the continuous dimension
+      let currentDate = new Date(datum[continuousDimensionKey].toString());
+      if (currentDate < _start) {
+        _start = currentDate;
+      }
+      if (currentDate > _end) {
+        _end = currentDate;
+      }
+    });
+  return Range.fromJS({ start: _start, end: _end });
 }
 
 export function calculateXRange(essence: Essence, timekeeper: Timekeeper, dataset: Dataset): ContinuousRange | null {

@@ -19,7 +19,7 @@ export default function MobileNavbar({ getPopupContainer }) {
     <div className="mobile-navbar">
       <div className="mobile-navbar-logo">
         <a href="./">
-          <img class="logo" src={logoUrl} alt="Data reporter" />
+          <img class="logo" src={logoUrl} alt="Datareporter" />
         </a>
       </div>
       <div>

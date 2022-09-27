@@ -1,15 +1,13 @@
 ## Dev environment
 
-DataReporter
+This file describes how to setup development environment with Datareporter
 
 Requirements:
-* DataReporter builds correctly with Node 12
+* Datareporter requires Node 12
 
 Consider using `nodenv`, see for more info:
 https://joshmorel.ca/post/node-virtual-environments-with-nodenv/
 
-Requirements:
-* Data reported builds correctly with Node 12
 * Install node 12.22.12 with nodenv and ensure shims are added to PATH
 see for more info: https://github.com/nodenv/nodenv#how-it-works
 
@@ -21,13 +19,15 @@ nodenv local 12.22.12
 * Build UI - Required to build ui for
     * Enter project root directory
     * `cd client`
-    * `npm install` Installs all node dependencies to for redash
+    * `npm ci` Re-installs all node dependencies to for redash
+    * (alternatively) `npm install` Installs all node dependencies to for redash, might rebuild package-lock.json
     * `npm run build` Builds front end to  the folder `client/dist/`
 
-* Build Plywood
+* Build Plywood 
     * Enter project root directory
     * `cd plywood/server`
-    * `npm install` Installs all node dependencies to for plywood
+    * `npm ci` Re-installs all node dependencies to for plywood (using package-lock.json) 
+    * (alternatively) `npm install`, but note this might pull latest versions of subpackages and could generate new package-lock.json
     * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
 
 * Setup docker compose

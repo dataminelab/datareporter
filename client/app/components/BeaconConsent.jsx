@@ -42,12 +42,12 @@ function BeaconConsent() {
         <Card
           title={
             <>
-              Would you be ok with sharing anonymous usage data with the Data reporter team?{" "}
+              Would you be ok with sharing anonymous usage data with the Datareporter team?{" "}
               <HelpTrigger type="USAGE_DATA_SHARING" />
             </>
           }
           bordered={false}>
-          <Text>Help Data reporter improve by automatically sending anonymous usage data:</Text>
+          <Text>Help Datareporter improve by automatically sending anonymous usage data:</Text>
           <div className="m-t-5">
             <ul>
               <li> Number of users, queries, dashboards, alerts, widgets and visualizations.</li>

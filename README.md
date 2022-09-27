@@ -1,15 +1,15 @@
 <p align="center">
-  <img title="DataReporter" src='https://datareporter.com/assets/images/logo.png' width="200px"/>
+  <img title="Datareporter" src='https://datareporter.com/assets/images/logo.png' width="200px"/>
 </p>
 
 [![Documentation](https://img.shields.io/badge/docs-redash.io/help-brightgreen.svg)](https://redash.io/help/)
 
-Data Reporter is a business intelligence, data exploration and visualization web application. 
+Datareporter is a business intelligence, data exploration and visualization web application. 
 Harness the power of data big and small and explore, query, visualize, and share data from SQL data sources.
 
-DataReporter is a fork of Turnilo which is currently available under Apache 2.0 license. DataReporter is also a fork of Redash, which is currently available under BSD-2-Clause license. DataReporter core is released under Apache 2.0 license.
+Datareporter is a fork of Turnilo which is currently available under Apache 2.0 license. Datareporter is also a fork of Redash, which is currently available under BSD-2-Clause license. Datareporter core is released under Apache 2.0 license.
 
-DataReporter manifesto:
+Datareporter manifesto:
 
 * High usability for non-technical users over sophisticated but rarely used features.
 * Self-describing reports for users without deep domain expertise.

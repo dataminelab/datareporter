@@ -61,7 +61,7 @@ function ModelConfigDocs() {
         <span style={{ fontWeight: 400 }}>dataCubes:</span>
         <span style={{ fontWeight: 400 }}>
       {" "}
-          key that holds the data cubes that will be loaded into Data reporter. The
+          key that holds the data cubes that will be loaded into Datareporter. The
       order of the data cubes in the config will define the ordering seen in the
       UI.
     </span>
@@ -80,7 +80,7 @@ function ModelConfigDocs() {
       </p>
       <p>
         <strong>
-          The name of the data cube as used internally in Data reporter and used in
+          The name of the data cube as used internally in Datareporter and used in
           the URLs. This should be a URL safe string. Changing this property for a
           given data cube will break any URLs that someone might have generated for
           that data cube in the past.
@@ -131,7 +131,7 @@ function ModelConfigDocs() {
       </h2>
       <p>
         <strong>
-          While a Data reporter tries to learn as much as it can from your data cube
+          While a Datareporter tries to learn as much as it can from your data cube
           from a data source. It can not (yet) do a perfect job. The{" "}
         </strong>
         <strong>attributeOverrides:</strong>

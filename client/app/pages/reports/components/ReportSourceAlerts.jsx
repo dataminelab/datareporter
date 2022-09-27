@@ -22,7 +22,7 @@ export default function ReportSourceAlerts({ report, dataSourcesAvailable }) {
         <p>
           <Typography.Text type="secondary">
             You can either <a href="reports">browse existing reports</a>, or ask for additional permissions from your
-            Data reporter admin.
+            Datareporter admin.
           </Typography.Text>
         </p>
       </React.Fragment>
@@ -55,7 +55,7 @@ export default function ReportSourceAlerts({ report, dataSourcesAvailable }) {
             Looks like no data sources were created yet or none of them available to the group(s) you're member of.
           </Typography.Title>
           <p>
-            <Typography.Text type="secondary">Please ask your Data reporter admin to create one first.</Typography.Text>
+            <Typography.Text type="secondary">Please ask your Datareporter admin to create one first.</Typography.Text>
           </p>
         </React.Fragment>
       );

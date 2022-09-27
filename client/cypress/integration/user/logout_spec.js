@@ -12,6 +12,6 @@ describe("Logout", () => {
       .should("be.visible")
       .click();
 
-    cy.title().should("eq", "Login to Data reporter");
+    cy.title().should("eq", "Login to Datareporter");
   });
 });

@@ -35,7 +35,7 @@ export default function DesktopNavbar() {
     <div className="desktop-navbar-report">
       <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-logo">
         <a href="./">
-          <img class="logo" src={logoUrl} alt="Data reporter" width="25" height="26" />
+          <img class="logo" src={logoUrl} alt="Datareporter" width="25" height="26" />
         </a>
       </NavbarSection>
 

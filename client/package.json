@@ -34,7 +34,7 @@
     "cypress:install": "npm install --no-save cypress@~4.5.0 @percy/agent@0.26.2 @percy/cypress@^2.2.0 atob@2.1.2 lodash@^4.17.10 request-cookies@^1.1.0",
     "cypress": "node cypress/cypress.js",
     "preinstall": " npm run clean-install:plywood",
-    "postinstall": "npm run clean-install:viz && npm run build:viz "
+    "postinstall": "npm run clean-install:viz && npm run build:viz && ./node_modules/.bin/local-link"
   },
   "repository": {
     "type": "git",
@@ -64,6 +64,7 @@
     "bootstrap": "^3.3.7",
     "classnames": "^2.2.6",
     "d3": "^3.5.17",
+    "datareporter-plywood": "file:../plywood/client",
     "debug": "^3.1.0",
     "dompurify": "^2.0.7",
     "file-saver": "^2.0.2",
@@ -104,8 +105,7 @@
     "universal-router": "^8.3.0",
     "use-debounce": "^3.1.0",
     "use-media": "^1.4.0",
-    "webpack-merge": "^5.1.2",
-    "datareporter-plywood": "file:../plywood/client"
+    "webpack-merge": "^5.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",
@@ -193,6 +193,7 @@
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
     "less-plugin-autoprefix": "^1.5.1",
+    "lib-manager": "0.0.7",
     "mini-css-extract-plugin": "^0.4.4",
     "mockdate": "^2.0.2",
     "monaco-editor-esm-webpack-plugin": "^1.0.4",

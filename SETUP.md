@@ -36,7 +36,7 @@ nodenv local 12.22.12
       This step is required **only once**.
 
 
-* Not needed anymore but useful for local development to start the UI proxy
+* Not needed anymore, might be useful for local development: start UI proxy
     * Enter project root directory
     * `cd client`
     * `npm run start`  Starts babel and webpack dev server which  will proxy  redash and plywood backend
@@ -64,6 +64,7 @@ source ./.venv/bin/activate
 
 Installation in Linux using virtualenvwrapper:
 ```
+
 sudo pacman -S yay 
 yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38

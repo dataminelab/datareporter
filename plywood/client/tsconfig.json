@@ -16,10 +16,16 @@
     "outDir": "build",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true
+    "baseUrl": ".",
+    "paths": {
+      "@project/app/modules/*": [
+          "../client/app/components/TurniloComponent/client/*"
+      ],
+  },
   },
   "include": [
     "typings/private.d.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../client/app/components/TurniloComponent/client/**/*.ts"
   ]
 }

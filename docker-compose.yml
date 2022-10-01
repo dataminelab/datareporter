@@ -8,6 +8,8 @@ x-redash-service: &redash-service
       skip_frontend_build: "true"
   volumes:
     - .:/app
+  networks:
+    - datareporter
 x-redash-environment: &redash-environment
   REDASH_LOG_LEVEL: "INFO"
   REDASH_REDIS_URL: "redis://redis:6379/0"
@@ -29,7 +31,9 @@ services:
     environment:
       <<: *redash-environment
       PYTHONUNBUFFERED: 0
-      PLYWOOD_SERVER_URL: "http://plywood:3000"
+      PLYWOOD_SERVER_URL: "http://host.docker.internal:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   scheduler:
     <<: *redash-service
     command: dev_scheduler
@@ -50,6 +54,8 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+    networks:
+      - datareporter
   postgres:
     image: postgres:9.5-alpine
     # The following turns the DB into less durable, but gains significant performance improvements for the tests run (x3
@@ -61,18 +67,25 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"
+    networks:
+      - datareporter
   email:
     image: djfarrelly/maildev
     ports:
       - "1080:80"
     restart: unless-stopped
-  plywood:
-    image: node:12.22.12-alpine
-    working_dir: /app
-    command: npm run watch-node
-    ports:
-      - "3000:3000"
-      - "9231:9229"
-    volumes:
-      - ./plywood/server:/app
+    networks:
+      - datareporter
+  # plywood:
+  #   image: node:12.22.12-alpine
+  #   working_dir: /app
+  #   command: npm run watch-node
+  #   ports:
+  #     - "3000:3000"
+  #     - "9231:9229"
+  #   volumes:
+  #     - ./plywood/server:/app
 
+networks:
+  datareporter:
+    external: true

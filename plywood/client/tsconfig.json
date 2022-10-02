@@ -11,21 +11,25 @@
     "importHelpers": true,
     "lib": ["es2016", "dom"],
     "target": "es5",
-    "module": "es6",
+    "module": "CommonJS",
     "rootDir": "src",
     "outDir": "build",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
     "baseUrl": ".",
+    //"allowJs": true,
     "paths": {
-      "@project/app/modules/*": [
-          "../client/app/components/TurniloComponent/client/*"
-      ],
-  },
-  },
+      "utils": ["dist/src/helper/utils/"],
+    },
+    },
   "include": [
     "typings/private.d.ts",
     "src/**/*.ts",
-    "../client/app/components/TurniloComponent/client/**/*.ts"
-  ]
+    "../client/app/components/TurniloComponent/client/"
+  ],
+  "tsc-alias": {
+    "verbose": false,
+    "resolveFullPaths": true
+  }
 }

@@ -3,4 +3,4 @@
 mkdir -p build
 
 node_modules/.bin/tsc
-./rrollup
+/bin/sh ./rrollup

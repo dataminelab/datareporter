@@ -45,9 +45,9 @@
   },
   "scripts": {
     "watch": "nodemon",
-    "prepare": "./compile && tdi -q",
-    "compile": "./compile",
-    "pretest": "./compile",
+    "prepare": "/bin/sh ./compile && tdi -q",
+    "compile": "/bin/sh ./compile",
+    "pretest": "/bin/sh ./compile",
     "test": "./travis-test",
     "full-test": "./run-tests"
   },
@@ -71,7 +71,9 @@
     "plywood-base-api": "^0.2.8",
     "readable-stream": "^3.0.3",
     "stream-to-array": "^2.3.0",
-    "tslib": "^1.10.0"
+    "tsc-alias": "^1.7.0",
+    "tslib": "^1.10.0",
+    "tspath": "^1.3.7"
   },
   "devDependencies": {
     "@types/readable-stream": "^2.3.9",

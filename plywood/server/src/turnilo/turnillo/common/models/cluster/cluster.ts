@@ -16,7 +16,7 @@
  */
 
 import { BackCompat, BaseImmutable, Property } from "immutable-class";
-import { External } from "datareporter-plywood";
+import { External } from "@dataminelab/datareporter-plywood";
 import { URL } from "url";
 import { isTruthy, verifyUrlSafeName } from "../../utils/general/general";
 

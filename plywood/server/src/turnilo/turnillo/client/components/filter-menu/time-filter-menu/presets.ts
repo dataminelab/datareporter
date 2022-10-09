@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Expression } from "datareporter-plywood";
+import { $, Expression } from "@dataminelab/datareporter-plywood";
 import { TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
 import { TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../../../../common/models/time/time";

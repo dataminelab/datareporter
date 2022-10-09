@@ -17,7 +17,7 @@
 
 import { List, OrderedSet } from "immutable";
 import { immutableArraysEqual } from "immutable-class";
-import { Expression } from "datareporter-plywood";
+import { Expression } from "@dataminelab/datareporter-plywood";
 import { complement } from "../../utils/functional/functional";
 import { isNil, isTruthy, quoteNames } from "../../utils/general/general";
 import { SeriesDerivation } from "../series/concrete-series";

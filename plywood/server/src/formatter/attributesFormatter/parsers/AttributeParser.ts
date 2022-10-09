@@ -1,5 +1,5 @@
 import { InputAttribute, OutputAttribute } from "../types/types";
-import { RefExpression } from "datareporter-plywood";
+import { RefExpression } from "@dataminelab/datareporter-plywood";
 
 
 

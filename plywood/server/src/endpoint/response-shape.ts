@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
-import { Expression, External } from "datareporter-plywood";
+import { Expression, External } from "@dataminelab/datareporter-plywood";
 
 export const responseShape = (req: Request, res: Response) => {
 

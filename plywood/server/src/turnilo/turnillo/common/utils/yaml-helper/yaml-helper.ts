@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { AttributeInfo } from "datareporter-plywood";
+import { AttributeInfo } from "@dataminelab/datareporter-plywood";
 import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../../common/models/labels";
 import { AppSettings } from "../../models/app-settings/app-settings";
 import { Cluster } from "../../models/cluster/cluster";

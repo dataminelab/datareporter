@@ -15,7 +15,7 @@
  */
 
 import { Duration } from "chronoshift";
-import { Expression } from "datareporter-plywood";
+import { Expression } from "@dataminelab/datareporter-plywood";
 
 type FilterExpression = Expression;
 

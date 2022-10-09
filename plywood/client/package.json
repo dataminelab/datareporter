@@ -1,6 +1,6 @@
 {
-  "name": "datareporter-plywood",
-  "version": "0.23.6",
+  "name": "@dataminelab/datareporter-plywood",
+  "version": "0.23.7",
   "description": "A query planner and executor",
   "keywords": [
     "split",
@@ -16,7 +16,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "http://github.com/implydata/plywood.git"
+    "url": "http://github.com/dataminelab/datareporter.git"
   },
   "main": "build/plywood.js",
   "typings": "build/index.d.ts",

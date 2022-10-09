@@ -32,7 +32,7 @@ import {
   TimeFloorExpression,
   TimeRange,
   TimeRangeExpression
-} from "datareporter-plywood";
+} from "@dataminelab/datareporter-plywood";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";

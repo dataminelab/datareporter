@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { basicExecutorFactory, Dataset } from "datareporter-plywood";
+import { basicExecutorFactory, Dataset } from "@dataminelab/datareporter-plywood";
 import { MANIFESTS } from "../../visualization-manifests/index";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";

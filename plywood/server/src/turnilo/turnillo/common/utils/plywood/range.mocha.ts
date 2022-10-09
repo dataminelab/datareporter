@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { PlywoodRange, Range } from "datareporter-plywood";
+import { PlywoodRange, Range } from "@dataminelab/datareporter-plywood";
 import { union } from "./range";
 
 describe("Plywood Range", () => {

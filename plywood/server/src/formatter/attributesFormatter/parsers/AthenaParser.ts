@@ -1,6 +1,6 @@
 import { InputAttribute, OutputAttribute } from "../types/types";
 import { AttributeParser } from "./AttributeParser";
-import { AthenaColumn, AwsAthenaExternal } from "datareporter-plywood";
+import { AthenaColumn, AwsAthenaExternal } from "@dataminelab/datareporter-plywood";
 
 
 export class AthenaParse extends AttributeParser {

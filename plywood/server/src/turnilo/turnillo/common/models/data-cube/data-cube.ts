@@ -38,7 +38,7 @@ import {
   r,
   RefExpression,
   SimpleFullType
-} from "datareporter-plywood";
+} from "@dataminelab/datareporter-plywood";
 import { shallowEqualArrays } from "../../utils/array/array";
 import { hasOwnProperty, isTruthy, makeUrlSafeName, quoteNames, verifyUrlSafeName } from "../../utils/general/general";
 import { Cluster } from "../cluster/cluster";

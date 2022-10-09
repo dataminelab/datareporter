@@ -1,6 +1,6 @@
 import { InputAttribute, OutputAttribute } from "../types/types";
 import { AttributeParser } from "./AttributeParser";
-import { BigQueryColumn, BigQueryExternal } from "datareporter-plywood";
+import { BigQueryColumn, BigQueryExternal } from "@dataminelab/datareporter-plywood";
 
 
 export class BigQueryParser extends AttributeParser {

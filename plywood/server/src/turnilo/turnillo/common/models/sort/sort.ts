@@ -15,7 +15,7 @@
  */
 
 import { Record } from "immutable";
-import { $, Direction, SortExpression } from "datareporter-plywood";
+import { $, Direction, SortExpression } from "@dataminelab/datareporter-plywood";
 import { RequireOnly } from "../../utils/functional/functional";
 import { SeriesDerivation } from "../series/concrete-series";
 import { MeasureSeries } from "../series/measure-series";

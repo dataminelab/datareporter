@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, ApplyExpression, Datum, Expression, RefExpression } from "datareporter-plywood";
+import { $, ApplyExpression, Datum, Expression, RefExpression } from "@dataminelab/datareporter-plywood";
 import { Unary } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
 import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";

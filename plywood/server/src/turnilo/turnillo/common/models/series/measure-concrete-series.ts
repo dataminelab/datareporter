@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApplyExpression, Expression } from "datareporter-plywood";
+import { ApplyExpression, Expression } from "@dataminelab/datareporter-plywood";
 import { Measure } from "../measure/measure";
 import { ConcreteSeries } from "./concrete-series";
 import { MeasureSeries } from "./measure-series";

@@ -63,7 +63,7 @@ node {
                         sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS tests\"")
                     }
                     sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"CREATE DATABASE tests\"")
-                    sh("docker-compose run server tests --junitxml=/app/result.xml ")
+                    sh("docker-compose run server tests --junitxml=./result.xml")
                     sh "find . -name *.xml"
                     junit skipPublishingChecks: true, testResults: 'result.xml'
                 }finally{

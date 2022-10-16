@@ -11,6 +11,7 @@ def kustomizeAndDeploy(overlay, cluster, imageNames) {
             /usr/local/bin/kustomize edit set image ${imageName} && cd -")
     }
     echo "Deploying"
+    sh("kubectl config get-contexts")
     sh("/usr/local/bin/kustomize build kubernetes/overlays/${overlay} | kubectl --context=${cluster} --namespace=${overlay} apply -f -")
 }
 

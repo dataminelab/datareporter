@@ -28,6 +28,7 @@ node {
 
     def appName = 'datareporter/datareporter'
     def appNginxName = 'datareporter/nginx'
+    def appPlywoodServerName = 'datareporter/plywood-server'
     def registryRegion = 'eu.gcr.io'
     def cluster = 'do-fra1-k8s-1-24-4-do-0-fra1-1665788974923'
     def imageNames = []
@@ -87,6 +88,27 @@ node {
             for (tag in imageTags) {
                 echo("Pushing docker image for ${appName} with tag ${tag}")
                 dockerimageDr.push(tag)
+            }
+        }
+
+        stage("Build plywood-server docker image",) {
+            echo "Build docker image for: ${appPlywoodServerName}"
+            def imageNamePlywoodServer = "${registryRegion}/${appPlywoodServerName}:${latestTagRelease}-${shortCommit}"
+
+            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} plywood/server")
+            imageNames.add("${registryRegion}/${appPlywoodServerName}=" + imageNamePlywoodServer)
+        }
+
+        stage("Push plywood-server docker image") {
+
+            def imageTags = []
+            imageTags.add("${latestTagRelease}-${shortCommit}")
+            imageTags.add("${shortCommit}_${env.BUILD_ID}")
+            imageTags.add("${env.BRANCH_NAME}".replaceAll("/", "."))
+
+            for (tag in imageTags) {
+                echo("Pushing docker image for ${appPlywoodServerName} with tag ${tag}")
+                dockerimagePlywoodServer.push(tag)
             }
         }
 

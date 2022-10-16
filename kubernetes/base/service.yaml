@@ -66,7 +66,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: datareporter-plywood-server
+  name: plywood-server
 spec:
   type: NodePort
   selector:

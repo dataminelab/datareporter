@@ -32,10 +32,10 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter-plywood-server
+  name: plywood-server
 spec:
   template:
     spec:
       containers:
-      - name: datareporter-plywood-server
+      - name: plywood-server
         image: eu.gcr.io/datareporter/plywood-server:_

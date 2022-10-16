@@ -270,7 +270,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter-plywood-server
+  name: plywood-server
 spec:
   selector:
     matchLabels:
@@ -287,7 +287,7 @@ spec:
         tier: plywood-server
     spec:
       containers:
-      - name: datareporter-plywood-server
+      - name: plywood-server
         image: eu.gcr.io/datareporter/plywood-server:_
         imagePullPolicy: Always
         resources:

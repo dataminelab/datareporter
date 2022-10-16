@@ -22,3 +22,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: datareporter-lb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datareporter-plywood-server

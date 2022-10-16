@@ -22,3 +22,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: datareporter-scheduler
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-plywood-server

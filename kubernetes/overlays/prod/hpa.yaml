@@ -37,4 +37,11 @@ spec:
   spec:
     minReplicas: 1
     maxReplicas: 1
-  
+---
+  apiVersion: autoscaling/v1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: datareporter-plywood-server
+  spec:
+    minReplicas: 1
+    maxReplicas: 1

@@ -66,8 +66,8 @@ node {
                     sh("mkdir -p ./logs && touch ./logs/results.xml && chmod 666 ./logs/results.xml")
                     sh("docker-compose run server tests --junitxml=/app/logs/results.xml")
                     sh("find . -name *.xml")
-                    junit skipPublishingChecks: true, testResults: './logs/results.xml'
-                }finally{
+                    junit allowEmptyResults: true, skipPublishingChecks: true, testResults: './logs/results.xml'
+                } finally {
                     sh("docker-compose down")
                 }
             }

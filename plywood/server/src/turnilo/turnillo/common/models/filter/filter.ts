@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import { List, Record } from "immutable";
-import { Expression } from "datareporter-plywood";
+import { Expression } from "reporter-plywood";
 import { Unary } from "../../utils/functional/functional";
 import { DataCube } from "../data-cube/data-cube";
 import { Dimension } from "../dimension/dimension";

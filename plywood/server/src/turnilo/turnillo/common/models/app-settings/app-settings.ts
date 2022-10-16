@@ -16,7 +16,7 @@
  */
 
 import { Class, immutableArraysEqual, immutableEqual, Instance, NamedArray } from "immutable-class";
-import { Executor } from "datareporter-plywood";
+import { Executor } from "reporter-plywood";
 import { hasOwnProperty } from "../../utils/general/general";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { Cluster, ClusterJS } from "../cluster/cluster";

@@ -16,7 +16,7 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { Record } from "immutable";
-import { Range } from "datareporter-plywood";
+import { Range } from "reporter-plywood";
 
 interface DateRangeDefinition {
   start: Date;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApplyExpression, Expression as PlywoodExpression } from "datareporter-plywood";
+import { ApplyExpression, Expression as PlywoodExpression } from "reporter-plywood";
 import { ArithmeticExpression } from "./concreteArithmeticOperation";
 import { PercentExpression } from "./percent";
 

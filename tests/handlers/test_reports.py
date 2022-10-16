@@ -664,7 +664,6 @@ class TestReportEditResource(BaseTestCase):
             data={"name": f"new {NAME}"},
             user=user2
         )
-
         self.assertEqual(403, response.status_code)
 
     def test_edit_report_does_not_exist(self):
@@ -706,7 +705,7 @@ class TestReportEditResource(BaseTestCase):
             user=user2
         )
 
-        self.assertEqual(403, response.status_code)
+        self.assertEqual(204, response.status_code)
 
     def test_edit_model_success(self):
         user = self.factory.create_user()

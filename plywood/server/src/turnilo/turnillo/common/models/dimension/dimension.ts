@@ -16,7 +16,7 @@
  */
 
 import { Class, Instance } from "immutable-class";
-import { $, Expression } from "datareporter-plywood";
+import { $, Expression } from "reporter-plywood";
 import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
 import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
 import { Bucket } from "../split/split";

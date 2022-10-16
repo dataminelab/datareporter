@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { expect } from "chai";
-import { $, CountDistinctExpression, Expression, RefExpression } from "datareporter-plywood";
+import { $, CountDistinctExpression, Expression, RefExpression } from "reporter-plywood";
 import some from "./some";
 
 const isRefExp = (e: Expression) => e instanceof RefExpression;

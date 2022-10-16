@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { ApplyExpression, Expression, QuantileExpression } from "datareporter-plywood";
+import { ApplyExpression, Expression, QuantileExpression } from "reporter-plywood";
 import { Measure } from "../measure/measure";
 import { SeriesDerivation } from "./concrete-series";
 import { QuantileConcreteSeries } from "./quantile-concrete-series";

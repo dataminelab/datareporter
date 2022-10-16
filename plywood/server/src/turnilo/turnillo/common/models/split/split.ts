@@ -17,7 +17,7 @@
 
 import { Duration } from "chronoshift";
 import { Record } from "immutable";
-import { Expression, NumberBucketExpression, TimeBucketExpression } from "datareporter-plywood";
+import { Expression, NumberBucketExpression, TimeBucketExpression } from "reporter-plywood";
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { Dimension } from "../dimension/dimension";

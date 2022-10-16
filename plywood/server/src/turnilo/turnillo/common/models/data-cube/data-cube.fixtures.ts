@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { basicExecutorFactory, Dataset } from "datareporter-plywood";
+import { basicExecutorFactory, Dataset } from "reporter-plywood";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
 import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
 import { MeasuresFixtures } from "../measure/measures.fixtures";

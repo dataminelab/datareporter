@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
-import { Expression, External } from "datareporter-plywood";
+import { Expression, External } from "reporter-plywood";
 import { responseFormatter } from "../formatter/response-formatter";
 
 export const plywoodEndpoint = (req: Request, res: Response) => {

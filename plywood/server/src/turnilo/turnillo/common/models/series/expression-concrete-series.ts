@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApplyExpression, Expression as PlywoodExpression } from "datareporter-plywood";
+import { ApplyExpression, Expression as PlywoodExpression } from "reporter-plywood";
 import { ConcreteExpression } from "../expression/expression";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";

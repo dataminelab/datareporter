@@ -17,7 +17,7 @@
 
 import { List } from "immutable";
 import { BaseImmutable, Property } from "immutable-class";
-import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "datareporter-plywood";
+import { $, AttributeInfo, CountDistinctExpression, deduplicateSort, Expression, QuantileExpression, RefExpression } from "reporter-plywood";
 import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
 import some from "../../utils/plywood/some";
 import { formatFnFactory, measureDefaultFormat } from "../series/series-format";

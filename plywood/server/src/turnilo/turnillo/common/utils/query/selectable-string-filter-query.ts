@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Expression, r, SortExpression } from "datareporter-plywood";
+import { $, Expression, r, SortExpression } from "reporter-plywood";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";

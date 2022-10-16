@@ -1,6 +1,6 @@
 import { DataCube, DataCubeJS } from "../turnillo/common/models/data-cube/data-cube";
 import { urlHashConverter } from "../turnillo/common/utils/url-hash-converter/url-hash-converter";
-import { $, Expression, LimitExpression, ply, RefExpression } from "@dataminelab/datareporter-plywood";
+import { $, Expression, LimitExpression, ply, RefExpression } from "reporter-plywood";
 import { Timekeeper } from "../turnillo/common/models/timekeeper/timekeeper";
 import { List } from "immutable";
 import { Dimension } from "../turnillo/common/models/dimension/dimension";

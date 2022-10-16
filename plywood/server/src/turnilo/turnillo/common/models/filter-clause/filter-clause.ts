@@ -17,7 +17,7 @@
 
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
-import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "@dataminelab/datareporter-plywood";
+import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "reporter-plywood";
 import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
 
 import { DateRange } from "../date-range/date-range";

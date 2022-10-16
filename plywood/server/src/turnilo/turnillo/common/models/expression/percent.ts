@@ -15,7 +15,7 @@
  */
 
 import { Record } from "immutable";
-import { $, ApplyExpression, Expression } from "@dataminelab/datareporter-plywood";
+import { $, ApplyExpression, Expression } from "reporter-plywood";
 import { Measures } from "../measure/measures";
 import { ConcreteExpression, ExpressionSeriesOperation, ExpressionValue } from "./expression";
 

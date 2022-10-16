@@ -15,7 +15,7 @@
  */
 
 import { List } from "immutable";
-import { $, Expression, LimitExpression, ply } from "@dataminelab/datareporter-plywood";
+import { $, Expression, LimitExpression, ply } from "reporter-plywood";
 import { SPLIT } from "../../../client/config/constants";
 import { Split, toExpression as splitToExpression } from "../../../common/models/split/split";
 import { DataCube } from "../../models/data-cube/data-cube";

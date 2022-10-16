@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Dataset } from "@dataminelab/datareporter-plywood";
+import { Dataset } from "reporter-plywood";
 import { Clicker } from "../clicker/clicker";
 import { Essence } from "../essence/essence";
 import { Stage } from "../stage/stage";

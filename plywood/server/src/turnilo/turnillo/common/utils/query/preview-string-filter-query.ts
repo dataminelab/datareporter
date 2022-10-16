@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { $, Expression, r, SortExpression } from "@dataminelab/datareporter-plywood";
+import { $, Expression, r, SortExpression } from "reporter-plywood";
 //@ts-ignore
 import { PreviewFilterMode } from "../../../client/components/preview-string-filter-menu/preview-string-filter-menu";
 import { Dimension } from "../../models/dimension/dimension";

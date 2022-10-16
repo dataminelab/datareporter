@@ -15,7 +15,7 @@
  */
 
 import { Record } from "immutable";
-import { QuantileExpression, RefExpression } from "@dataminelab/datareporter-plywood";
+import { QuantileExpression, RefExpression } from "reporter-plywood";
 import { RequireOnly } from "../../utils/functional/functional";
 import { Measure } from "../measure/measure";
 import { getNameWithDerivation, SeriesDerivation } from "./concrete-series";

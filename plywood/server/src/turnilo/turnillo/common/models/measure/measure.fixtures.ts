@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExpressionJS } from "@dataminelab/datareporter-plywood";
+import { ExpressionJS } from "reporter-plywood";
 import { Measure, MeasureJS } from "./measure";
 
 export class MeasureFixtures {

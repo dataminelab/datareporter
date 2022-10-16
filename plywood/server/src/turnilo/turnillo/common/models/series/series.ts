@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { QuantileExpression } from "@dataminelab/datareporter-plywood";
+import { QuantileExpression } from "reporter-plywood";
 import { isTruthy } from "../../utils/general/general";
 import { Measure } from "../measure/measure";
 import { SeriesDerivation } from "./concrete-series";

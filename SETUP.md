@@ -123,3 +123,14 @@ docker-compose run --rm server tests
   * All changes should be reflected automatically. The server is running in watch mode with incremental build support
     and should rebuild at any source code change.
   * To see details/logs of build go into repo root dir and run `docker-compose logs plywood`
+
+### Publishing NPM reporter-plywood package
+
+First make sure to authenticate with `npm login` then build and publish the package:
+
+```
+cd plywood/client
+npm install
+npm run compile
+npm publish
+```

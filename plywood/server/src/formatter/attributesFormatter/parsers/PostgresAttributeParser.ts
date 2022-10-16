@@ -1,5 +1,5 @@
 
-import { PostgresExternal, PostgresSQLDescribeRow } from "@dataminelab/datareporter-plywood";
+import { PostgresExternal, PostgresSQLDescribeRow } from "reporter-plywood";
 import { InputAttribute, OutputAttribute } from "../types/types";
 import { AttributeParser } from "./AttributeParser";
 

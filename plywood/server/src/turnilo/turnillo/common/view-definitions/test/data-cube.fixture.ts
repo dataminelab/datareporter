@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RefExpression } from "@dataminelab/datareporter-plywood";
+import { RefExpression } from "reporter-plywood";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimensions } from "../../models/dimension/dimensions";
 import { dimensions, timeDimension } from "./dimension";

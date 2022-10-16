@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Expression } from "@dataminelab/datareporter-plywood";
+import { Expression } from "reporter-plywood";
 import { Unary } from "../functional/functional";
 
 export default function some(ex: Expression, predicate: Unary<Expression, boolean>) {

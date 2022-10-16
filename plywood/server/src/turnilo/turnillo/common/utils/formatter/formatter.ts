@@ -16,7 +16,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import { NumberRange, TimeRange } from "@dataminelab/datareporter-plywood";
+import { NumberRange, TimeRange } from "reporter-plywood";
 import { STRINGS } from "../../../client/config/constants";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";

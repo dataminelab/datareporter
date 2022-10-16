@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApplyExpression, Expression as PlywoodExpression, QuantileExpression } from "@dataminelab/datareporter-plywood";
+import { ApplyExpression, Expression as PlywoodExpression, QuantileExpression } from "reporter-plywood";
 import { Measure } from "../measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
 import { QuantileSeries } from "./quantile-series";

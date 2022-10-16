@@ -16,7 +16,7 @@
 
 import { List } from "immutable";
 import { immutableArraysEqual } from "immutable-class";
-import { Expression } from "@dataminelab/datareporter-plywood";
+import { Expression } from "reporter-plywood";
 import { quoteNames } from "../../utils/general/general";
 import { Dimension } from "./dimension";
 import { DimensionGroup, DimensionOrGroup, dimensionOrGroupFromJS, DimensionOrGroupJS, DimensionOrGroupVisitor } from "./dimension-group";

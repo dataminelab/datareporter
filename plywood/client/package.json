@@ -1,5 +1,5 @@
 {
-  "name": "@dataminelab/datareporter-plywood",
+  "name": "reporter-plywood",
   "version": "0.23.7",
   "description": "A query planner and executor",
   "keywords": [
@@ -7,7 +7,8 @@
     "apply",
     "combine",
     "druid",
-    "query planner"
+    "query planner",
+    "data reporter"
   ],
   "author": {
     "name": "Vadim Ogievetsky",

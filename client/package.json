@@ -105,7 +105,7 @@
     "use-debounce": "^3.1.0",
     "use-media": "^1.4.0",
     "webpack-merge": "^5.1.2",
-    "@dataminelab/datareporter-plywood": "0.23.7"
+    "reporter-plywood": "0.23.7"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",

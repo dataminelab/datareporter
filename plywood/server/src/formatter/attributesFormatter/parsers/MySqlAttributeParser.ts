@@ -1,4 +1,4 @@
-import { MySQLDescribeRow, MySQLExternal } from "@dataminelab/datareporter-plywood";
+import { MySQLDescribeRow, MySQLExternal } from "reporter-plywood";
 import { InputAttribute, OutputAttribute } from "../types/types";
 import { AttributeParser } from "./AttributeParser";
 

@@ -61,5 +61,7 @@ spec:
     tier: lb
   ports:
     - name: dr-lb
-      port: 80
+      protocol: TCP
+      port: 443
+      targetPort: 80
 

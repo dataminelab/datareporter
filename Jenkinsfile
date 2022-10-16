@@ -28,7 +28,7 @@ node {
     def appName = 'datareporter/datareporter'
     def appNginxName = 'datareporter/nginx'
     def registryRegion = 'eu.gcr.io'
-    def cluster = 'k8s-1-24-4-do-0-fra1-1665788974923'
+    def cluster = 'do-fra1-k8s-1-24-4-do-0-fra1-1665788974923'
     def imageNames = []
 
     sh("git fetch --tags origin")

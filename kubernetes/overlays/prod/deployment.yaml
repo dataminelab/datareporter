@@ -27,3 +27,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: datareporter-plywood-server
+spec:
+  template:
+    spec:
+      containers:
+      - name: datareporter-plywood-server
+        image: eu.gcr.io/datareporter/plywood-server:_

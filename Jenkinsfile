@@ -20,14 +20,15 @@ node {
 
     properties([
         parameters([
-        booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging')
+            booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging'),
+            booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip unit and integration tests')
         ])
     ])
 
     def appName = 'datareporter/datareporter'
     def appNginxName = 'datareporter/nginx'
     def registryRegion = 'eu.gcr.io'
-    def cluster = 'do-fra1-k8s-1-18-8-do-1-fra1'
+    def cluster = 'k8s-1-24-4-do-0-fra1-1665788974923'
     def imageNames = []
 
     sh("git fetch --tags origin")
@@ -56,19 +57,21 @@ node {
 
         stage("Run tests") {
             sh("docker-compose build")
-            lock("tests"){
-                sh("docker-compose up -d postgres")
-                try{
-                    retry(5){
-                        sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS tests\"")
+            if (params.SKIP_TESTS == false) {
+                lock("tests"){
+                    sh("docker-compose up -d postgres")
+                    try{
+                        retry(5){
+                            sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS tests\"")
+                        }
+                        sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"CREATE DATABASE tests\"")
+                        sh("mkdir -p ./logs && touch ./logs/results.xml && chmod 666 ./logs/results.xml")
+                        sh("docker-compose run server tests --junitxml=/app/logs/results.xml")
+                        sh("find . -name *.xml")
+                        junit allowEmptyResults: true, skipPublishingChecks: true, testResults: './logs/results.xml'
+                    } finally {
+                        sh("docker-compose down")
                     }
-                    sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"CREATE DATABASE tests\"")
-                    sh("mkdir -p ./logs && touch ./logs/results.xml && chmod 666 ./logs/results.xml")
-                    sh("docker-compose run server tests --junitxml=/app/logs/results.xml")
-                    sh("find . -name *.xml")
-                    junit allowEmptyResults: true, skipPublishingChecks: true, testResults: './logs/results.xml'
-                } finally {
-                    sh("docker-compose down")
                 }
             }
         }

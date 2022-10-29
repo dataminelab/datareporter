@@ -107,7 +107,7 @@ docker-compose run --rm server tests
     * Plywood client
       * **directory:** `plywood/client`
   * **directory:** `client`
-  * **debug:** Can be debugged from browser open application at `http://localhost:5000` and use browser debugger.
+  * **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
   * **changes:**
     * By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.
     That will start watched for source code changes for Datareporter frontend and all submodules.

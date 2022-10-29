@@ -38,13 +38,8 @@ app.use('/api/v1/plywood/hash-to-filter', hashToFilter)
 app.use('/api/v1/plywood/response-shape', responseShape)
 app.use('/api/v1/plywood', plywoodEndpoint);
 
-
-
-
 app.use((err, req, res, next) => {
     handleError(err, req, res, next);
 });
 
 export default app;
-
-

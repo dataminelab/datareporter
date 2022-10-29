@@ -386,12 +386,12 @@ export default function ReportPageHeader(props) {
           <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={handlePriceReport}>
             <span className="icon icon-ribbon m-r-5"></span>Meta
           </Button>
-          <ul id="meta-modal" class="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical" role="menu"
+          <ul id="meta-modal" className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical" role="menu"
             onClick={(e) => e.stopPropagation()}>
-            <li class="ant-menu-item modal-left" role="menuitem">
+            <li className="ant-menu-item modal-left" role="menuitem">
               <p id="_price" alt="0">Price: 0</p>         
             </li>
-            <li class="ant-menu-item modal-right" role="menuitem">
+            <li className="ant-menu-item modal-right" role="menuitem">
               <p id="_proceed_data" alt="0">Bytes: 0</p>
             </li>
           </ul>

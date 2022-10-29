@@ -392,7 +392,7 @@ export default function ReportPageHeader(props) {
               <p id="_price" alt="0">Price: 0</p>         
             </li>
             <li class="ant-menu-item modal-right" role="menuitem">
-              <p id="_proceed_data"  alt="0">Bytes: 0</p>
+              <p id="_proceed_data" alt="0">Bytes: 0</p>
             </li>
           </ul>
         </div>

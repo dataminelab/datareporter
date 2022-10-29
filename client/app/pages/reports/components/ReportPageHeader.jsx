@@ -260,6 +260,16 @@ export default function ReportPageHeader(props) {
     [report.id, report.is_draft, updateReport]
   );
 
+  const handlePriceReport = () => {
+    if (document.querySelector("#meta-modal").style.opacity === "1") {
+      document.querySelector("#meta-modal").style.opacity = "0";
+      document.querySelector("#meta-modal").style['z-index'] = "-1";
+    } else {
+      document.querySelector("#meta-modal").style.opacity = "1";
+      document.querySelector("#meta-modal").style['z-index'] = "10";
+    }
+  }
+
   const handleSaveReport = () => {
     if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
       recordEvent("save", "report", report.id, { id: report.id });
@@ -372,6 +382,20 @@ export default function ReportPageHeader(props) {
       </div>
       <div className="header-actions">
         {props.headerExtra}
+        <div>
+          <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={handlePriceReport}>
+            <span className="icon icon-ribbon m-r-5"></span>Meta
+          </Button>
+          <ul id="meta-modal" class="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical" role="menu"
+            onClick={(e) => e.stopPropagation()}>
+            <li class="ant-menu-item modal-left" role="menuitem">
+              <p id="_price" alt="0">Price: 0</p>         
+            </li>
+            <li class="ant-menu-item modal-right" role="menuitem">
+              <p id="_proceed_data"  alt="0">Bytes: 0</p>
+            </li>
+          </ul>
+        </div>
         <div style={ styles.swatch } onClick={ () => handleClick(1) }>
           Text chart color: <div style={ styles.color } />
         </div>
@@ -452,15 +476,6 @@ export default function ReportPageHeader(props) {
                 <span className="m-l-5">Edit Source</span>
               </Button>
             )}
-            {/* {props.sourceMode && (
-              <Button
-                className="m-r-5"
-                href={report.getUrl(false, props.selectedVisualization)}
-                data-test="ReportPageShowDataOnly">
-                <i className="fa fa-table" aria-hidden="true" />
-                <span className="m-l-5">Show Data Only</span>
-              </Button>
-            )} */}
           </span>
         )}
 

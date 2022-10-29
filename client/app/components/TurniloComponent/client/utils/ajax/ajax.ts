@@ -73,6 +73,23 @@ export interface AjaxOptions {
 
 const validateStatus = (s: number) => 200 <= s && s < 300 || s === 304;
 
+var buttonVisible = false;
+function setPriceButton(meta: any) {
+  if (!buttonVisible) {
+    buttonVisible = true;
+    document.getElementById("meta-button").style.display = "block";
+  }
+  let priceDiv = document.querySelector("#_price");
+  let currentPrice = meta.price + parseInt(priceDiv.getAttribute("alt"))
+  priceDiv.setAttribute("alt", currentPrice);
+  priceDiv.innerHTML = "Price: " + currentPrice.toString().slice(0,5) + " $";     
+  let bytesDiv = document.querySelector("#_proceed_data");
+  let currentBytes = meta.proceed_data + parseInt(bytesDiv.getAttribute("alt"))
+  bytesDiv.setAttribute("alt", currentBytes);
+  let gbType = currentBytes * 1e-9;
+  bytesDiv.innerHTML = "Bytes: " + gbType.toString().slice(0,5) + " GB";
+}
+
 export class Ajax {
   static version: string;
 
@@ -149,6 +166,8 @@ export class Ajax {
         hash = this.hash;
       }
       const sub = await subscribeToSplit(hash, modelId);
+      // @ts-ignore
+      setPriceButton(sub.meta);
       return Dataset.fromJS(sub.data);
     };
   }

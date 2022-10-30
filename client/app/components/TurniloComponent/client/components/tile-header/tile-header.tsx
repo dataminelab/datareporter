@@ -45,9 +45,16 @@ class IconDiv extends React.Component<TileHeaderIcon, TileHeaderState> {
   }
   render() {
     const { name, svg, onClick, active } = this.props;
-    return <div className={classNames("icon", name, { active })} onClick={onClick} ref={this.ref} title={name}>
-      <SvgIcon svg={svg}/>
-    </div>;
+    return (
+      <div 
+        className={classNames("icon", name, { active })} 
+        onClick={onClick} 
+        ref={this.ref} 
+        key={name}
+      >
+        <SvgIcon svg={svg}/>
+      </div>
+    );
   }
 }
 

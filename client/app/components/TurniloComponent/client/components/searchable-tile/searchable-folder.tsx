@@ -36,7 +36,7 @@ export interface SearchableFolderState {
 
 export class SearchableFolder extends PureComponent<SearchableFolderProps, SearchableFolderState> {
 
-  readonly state: SearchableFolderState;
+  readonly folderState: SearchableFolderState;
 
   private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />;
   private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />;
@@ -45,11 +45,11 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
     super(props);
 
     const { inSearchMode, hasItemsWithSearchText, shouldBeOpened } = this.props;
-    this.state = { opened: inSearchMode && hasItemsWithSearchText || shouldBeOpened };
+    this.folderState = { opened: inSearchMode && hasItemsWithSearchText || shouldBeOpened };
   }
 
   componentWillReceiveProps(nextProps: Readonly<SearchableFolderProps>) {
-    const { opened } = this.state;
+    const { opened } = this.folderState;
     const { shouldBeOpened } = this.props;
 
     const shouldOpen = !opened && !shouldBeOpened && nextProps.shouldBeOpened;
@@ -64,7 +64,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
 
   render() {
     const { title, description, inSearchMode, hasItemsWithSearchText, children } = this.props;
-    const { opened } = this.state;
+    const { opened } = this.folderState;
 
     const isGroupOpen = opened || inSearchMode && hasItemsWithSearchText;
     const hidden = inSearchMode && !hasItemsWithSearchText;

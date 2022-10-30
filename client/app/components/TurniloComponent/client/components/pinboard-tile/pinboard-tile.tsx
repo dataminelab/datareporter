@@ -140,7 +140,7 @@ export class PinboardTile extends React.Component<PinboardTileProps, PinboardTil
   };
 
   setSearchText = (text: string) => {
-    const searchText = text.substr(0, MAX_SEARCH_LENGTH);
+    const searchText = text.slice(0, MAX_SEARCH_LENGTH);
     this.setState({ searchText });
   };
 

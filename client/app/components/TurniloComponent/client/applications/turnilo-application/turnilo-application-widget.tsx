@@ -156,7 +156,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   parseHash(hash: string): string[] {
-    if (hash[0] === "#") hash = hash.substr(1);
+    if (hash[0] === "#") hash = hash.slice(1);
     return hash.split("/");
   }
 

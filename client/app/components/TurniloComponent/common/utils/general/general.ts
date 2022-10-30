@@ -105,16 +105,19 @@ export function arraySum(inputArray: number[]) {
 
 export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
   if (!elementToFind) return -1;
+  //@ts-ignore
   return List(array).findIndex(g => valueOf(g) > valueOf(elementToFind));
 }
 
 export function findBiggerClosestToIdeal<T>(array: T[], elementToFind: T, ideal: T, valueOf: (input: T) => number) {
+  //@ts-ignore
   var biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
   var biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
   return biggerArrayOrEqual.reduce((pV, cV, i, arr) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
 }
 
 export function findExactIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
+  //@ts-ignore
   return List(array).findIndex(g => valueOf(g) === valueOf(elementToFind));
 }
 
@@ -146,11 +149,11 @@ export function getNumberOfWholeDigits(n: number) {
 // replaces things like %{PORT_NAME}% with the value of vs.PORT_NAME
 export function inlineVars(obj: any, vs: Record<string, string>): any {
   return JSON.parse(JSON.stringify(obj).replace(/%\{[\w\-]+\}%/g, varName => {
-    varName = varName.substr(2, varName.length - 4);
+    varName = varName.slice(2, varName.length - 2);
     var v = vs[varName];
     if (typeof v !== "string") throw new Error(`could not find variable '${varName}'`);
     var v = JSON.stringify(v);
-    return v.substr(1, v.length - 2);
+    return v.slice(1, v.length);
   }));
 }
 

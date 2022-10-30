@@ -37,23 +37,26 @@ export interface TileHeaderProps {
 export interface TileHeaderState {
 }
 
-export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState> {
+class IconDiv extends React.Component<TileHeaderIcon, TileHeaderState> {
+  private ref: React.RefObject<any>;
+  constructor(props: Readonly<any>) {
+    super(props);
+    this.ref = React.createRef();
+  }
+  render() {
+    const { name, svg, onClick, active } = this.props;
+    return <div className={classNames("icon", name, { active })} onClick={onClick} ref={this.ref} title={name}>
+      <SvgIcon svg={svg}/>
+    </div>;
+  }
+}
 
+export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState> {
   renderIcons() {
     const { icons } = this.props;
     if (!icons || !icons.length) return null;
 
-    var iconElements = icons.map(icon => {
-      return <div
-        className={classNames("icon", icon.name, { active: icon.active })}
-        key={icon.name}
-        onClick={icon.onClick}
-        ref={icon.ref}
-      >
-        <SvgIcon svg={icon.svg} />
-      </div>;
-    });
-
+    var iconElements = icons.map(icon => {return <IconDiv {...icon}/>});
     return <div className="icons">{iconElements}</div>;
   }
 

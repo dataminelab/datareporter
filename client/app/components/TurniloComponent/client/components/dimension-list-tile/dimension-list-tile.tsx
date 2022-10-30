@@ -77,6 +77,11 @@ const isSelectedDimensionPredicate = (menuDimension: Dimension) => (dimension: D
 };
 
 export class DimensionListTile extends Component<DimensionListTileProps, DimensionListTileState> {
+  private item: React.RefObject<any>;
+  constructor(props: DimensionListTileProps) {
+    super(props);
+    this.item = React.createRef();
+  }
   state: DimensionListTileState = {
     menuOpenOn: null,
     menuDimension: null,
@@ -131,7 +136,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
 
   onSearchChange = (text: string) => {
     const { searchText } = this.state;
-    const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
+    const newSearchText = text.slice(0, MAX_SEARCH_LENGTH);
 
     if (searchText === newSearchText) return; // nothing to do;
 
@@ -204,7 +209,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       icons={icons}
       className="dimension-list-tile"
     >
-      <div className="rows" ref="items">
+      <div className="rows" ref={this.item}>
         {items}
         {message}
       </div>

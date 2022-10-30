@@ -113,7 +113,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
   onSearchChange = (text: string) => {
     const { searchText } = this.state;
-    const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
+    const newSearchText = text.slice(0, MAX_SEARCH_LENGTH);
 
     if (searchText === newSearchText) return; // nothing to do;
 

@@ -153,7 +153,7 @@ export function inlineVars(obj: any, vs: Record<string, string>): any {
     var v = vs[varName];
     if (typeof v !== "string") throw new Error(`could not find variable '${varName}'`);
     var v = JSON.stringify(v);
-    return v.slice(1, v.length);
+    return v.slice(1, -1);
   }));
 }
 

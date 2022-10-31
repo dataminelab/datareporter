@@ -50,7 +50,6 @@ class IconDiv extends React.Component<TileHeaderIcon, TileHeaderState> {
         className={classNames("icon", name, { active })} 
         onClick={onClick} 
         ref={this.ref} 
-        key={name}
       >
         <SvgIcon svg={svg}/>
       </div>
@@ -62,8 +61,7 @@ export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState
   renderIcons() {
     const { icons } = this.props;
     if (!icons || !icons.length) return null;
-
-    var iconElements = icons.map(icon => {return <IconDiv {...icon}/>});
+    var iconElements = icons.map((icon, index) => <IconDiv key={index} {...icon}/>);
     return <div className="icons">{iconElements}</div>;
   }
 

@@ -66,7 +66,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
   componentDidMount() {
     this.mounted = true;
-    this.setState({ actionsMenuAlignOn: ReactDOM.findDOMNode(this.header.current) as Element });
+    this.setState({ actionsMenuAlignOn: (this.header.current) as Element });
     window.addEventListener("mousedown", this.globalMouseDownListener);
     window.addEventListener("keydown", this.globalKeyDownListener);
   }
@@ -85,12 +85,12 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
     const target = e.target as Element;
 
-    const searchBoxElement = ReactDOM.findDOMNode(this.searchBox.current);
+    const searchBoxElement = this.searchBox.current;
     if (!searchBoxElement || isInside(target, searchBoxElement)) return;
     
     const headerRef = this.header.current;
     if (!headerRef || headerRef instanceof Element) return;
-    const searchButtonElement = ReactDOM.findDOMNode(headerRef.refs["search"]);
+    const searchButtonElement = this.searchBox.current;
     if (!searchButtonElement || isInside(target, searchButtonElement)) return;
 
     toggleChangeFn();

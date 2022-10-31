@@ -7,4 +7,4 @@ def get_price_for_query(data_scanned: float) -> float:
         return 0
 
     value = data_scanned * ONE_BYTE_OF_TERRABYTE * 5
-    return round(value, 4)
+    return round(value, 6)

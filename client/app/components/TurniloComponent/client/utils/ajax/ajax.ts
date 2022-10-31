@@ -167,7 +167,10 @@ export class Ajax {
       }
       const sub = await subscribeToSplit(hash, modelId);
       // @ts-ignore
-      setPriceButton(sub.meta);
+      if (sub.meta) {
+        // @ts-ignore
+        setPriceButton(sub.meta);
+      }
       return Dataset.fromJS(sub.data);
     };
   }

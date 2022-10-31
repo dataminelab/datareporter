@@ -104,8 +104,7 @@
     "universal-router": "^8.3.0",
     "use-debounce": "^3.1.0",
     "use-media": "^1.4.0",
-    "webpack-merge": "^5.1.2",
-    "reporter-plywood": "0.23.7"
+    "webpack-merge": "^5.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",

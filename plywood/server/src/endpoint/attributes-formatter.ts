@@ -7,8 +7,6 @@ import { AttributeParserFactory } from "../formatter/attributesFormatter/factory
 import { InputAttribute } from "../formatter/attributesFormatter/types/types";
 
 
-
-
 interface Input {
     engine: string,
     attributes: InputAttribute[]

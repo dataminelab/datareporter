@@ -201,8 +201,9 @@ function useDashboard(dashboardData) {
     AddReportDialog.showModal({
       dashboard,
     }).onClose((text) =>
-      dashboard.addWidget(text).then(() => setDashboard(currentDashboard => extend({}, currentDashboard)))
-    );
+      dashboard.addWidget(text).then(() => {
+        setDashboard(currentDashboard => extend({}, currentDashboard))
+      }, [dashboard]));
   }, [dashboard]);
 
   const [refreshRate, setRefreshRate, disableRefreshRate] = useRefreshRateHandler(refreshDashboard);

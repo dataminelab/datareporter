@@ -31,7 +31,7 @@ export class Totals extends BaseVisualization<BaseVisualizationState> {
     const datum = dataset.data[0];
     return series.map(series =>
       <Total
-        color={report.colorText}
+        color={report ? report.colorText: null}
         key={series.reactKey()}
         series={series}
         datum={datum}

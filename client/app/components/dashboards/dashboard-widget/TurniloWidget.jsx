@@ -6,10 +6,11 @@ import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper
 import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
 import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
 import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
+// import {Report} from "@/services/report";
 
 function TurniloWidget(props) {
   const { widget, canEdit, config } = props;
-  const turniloHash = '#' + widget.text.replace('[turnilo-widget]', '')
+  const turniloHash = '#' + widget.text.replace('[turnilo-widget]', '').split('/4/')[1];
   const TurniloMenuOptions = [];
 
   if (!widget.width) {
@@ -26,7 +27,7 @@ function TurniloWidget(props) {
     Ajax.version = version;
 
     const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(config)
     });
 
     return (
@@ -36,7 +37,7 @@ function TurniloWidget(props) {
             version={version}
             hashWidget={turniloHash}
             appSettings={appSettings}
-            initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+            initTimekeeper={config.timekeeper ? Timekeeper.fromJS(config.timekeeper) : new Timekeeper({ timeTags: [] })}
           />
         </turnilo-widget>
       </Widget>

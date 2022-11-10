@@ -194,7 +194,7 @@ export default function ReportPageHeader(props) {
 
   const onChangeDataSource = useCallback( async dataSourceId => {
     setLoadModelsLoaded(true)
-    recordEvent("update on dataSourceId", "report", report.id, { dataSourceId });
+    recordEvent("update", "report", report.id, { dataSourceId });
     try {
         const res = await Model.query({data_source: dataSourceId});
         const updates = {
@@ -222,9 +222,9 @@ export default function ReportPageHeader(props) {
           res = await Model.getReporterConfig(modelId);
         }
         setModelConfig(res);
-        recordEvent("update on modelId", "report", report.id, { modelId });
-        const updates = {
-          // test below line only one model id is enough
+        recordEvent("update", "report", report.id, { modelId });
+        var updates = {
+          // fix below line only one model id is enough
           model: modelId,
           model_id: modelId,
           appSettings: res.appSettings,
@@ -240,13 +240,13 @@ export default function ReportPageHeader(props) {
     }, [report, props.onChange, updateReport]
   );
   const handleIdChange = useCallback( async id => {
-    recordEvent("edit_report_id", "report", report.id, { id });
+    recordEvent("update", "report", report.id, { id });
     props.onChange(extend(report.clone(), { id }));
     updateReport({ id }, { successMessage: null });
   });
 
   const handleUpdateName = useCallback( name => {
-      recordEvent("edit_report_name", "report", report.id, {name});
+      recordEvent("update", "report", report.id, {name});
       const changes = { name };
       const options = {};
 
@@ -272,18 +272,18 @@ export default function ReportPageHeader(props) {
 
   const handleSaveReport = () => {
     if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
-      recordEvent("save", "report", report.id, { id: report.id });
+      recordEvent("create", report.id, { id: report.id });
       updateReport({ is_draft: false }, { successMessage: null });
       return saveReport();
     }
-    let updates = {
+    var updates = {
       expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
       color_1: report.color_1 || "#f17013",
       color_2: report.color_2 || "#f17013",
     };
     props.onChange(extend(report.clone(), updates));
     updateReport(updates, { successMessage: null });
-    if (!report.expression) {
+    if (!report.expression && !report.appSettings) {
       setTimeout(()=>{
         // need to render itself again with recent changes
         document.querySelector("#_handleSaveReport").click();

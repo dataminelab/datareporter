@@ -75,9 +75,11 @@ const validateStatus = (s: number) => 200 <= s && s < 300 || s === 304;
 
 var buttonVisible = false;
 function setPriceButton(meta: any) {
+  const mediaButton = document.getElementById("meta-button");
+  if (!mediaButton) return;
   if (!buttonVisible) {
     buttonVisible = true;
-    document.getElementById("meta-button").style.display = "block";
+    mediaButton.style.display = "block";
   }
   let priceDiv = document.querySelector("#_price");
   let currentPrice = meta.price + parseInt(priceDiv.getAttribute("alt"))

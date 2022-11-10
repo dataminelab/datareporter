@@ -283,7 +283,7 @@ export default function ReportPageHeader(props) {
     };
     props.onChange(extend(report.clone(), updates));
     updateReport(updates, { successMessage: null });
-    if (!report.expression && !report.appSettings) {
+    if (!report.expression || !report.appSettings) {
       setTimeout(()=>{
         // need to render itself again with recent changes
         document.querySelector("#_handleSaveReport").click();

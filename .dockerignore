@@ -1,6 +1,6 @@
 client/.tmp/
-client/dist/
-client/node_modules/
+#client/dist/
+#client/node_modules/
 plywood/server
 .dockerignore
 node_modules/

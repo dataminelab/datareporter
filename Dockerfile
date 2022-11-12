@@ -81,8 +81,7 @@ RUN if [ "x$skip_dev_deps" = "x" ] ; then pip install -r requirements.txt -r req
 RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
 COPY . /app
-COPY --from=frontend-builder /frontend/client/dist /app/client/dist
-RUN chown -R redash /app
+COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
 RUN find /app
 USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python

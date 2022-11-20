@@ -83,18 +83,15 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     let viewType = this.getViewTypeFromHash(hash);
 
     if (!dataCubes.length) {
-
       this.setState({
         viewType: NO_DATA,
         viewHash: "",
         appSettings
       });
-
       return;
     }
 
     const viewHash = this.getViewHashFromHash(hash);
-
     let selectedItem: DataCube;
 
     if (this.viewTypeNeedsAnItem(viewType)) {
@@ -103,21 +100,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
     viewType = CUBE;
     selectedItem = dataCubes[0];
-    selectedItem.defaultSortMeasure = "total_votes";
-    selectedItem.defaultSelectedMeasures = selectedItem.defaultSelectedMeasures.add("total_votes")
-    selectedItem.defaultSelectedMeasures = selectedItem.defaultSelectedMeasures.add("helpful_votes")
-    selectedItem.defaultSelectedMeasures = selectedItem.defaultSelectedMeasures.add("year")
-    // selectedItem.defaultSplitDimensions = selectedItem.defaultSplitDimensions.update(["marketplace", "customer_id", "review_id"])//
-
-    // let split = selectedItem.getDefaultSplits();
-    // //@ts-ignore
-    // split.splits.set(0, "marketplace")
-    // selectedItem.getDefaultSplits = () => split;
-
-    
-
-    console.log("selectedItem", selectedItem);
-    console.log("selectedItem.defaultSortMeasure", selectedItem.defaultSortMeasure);
 
     this.setState({
       viewType,

@@ -31,7 +31,6 @@ function AddReportDialog({ dialog, dashboard }) {
     dialog.close(`[turnilo-widget]${selectedReport.id}/4/${selectedReport.hash}`)
       .then(() => {
         notification.success("Report added to dashboard.");
-        // set widget's data source to the given one in the dashboard
       })    
       .catch(() => {
         notification.error("Widget could not be added");

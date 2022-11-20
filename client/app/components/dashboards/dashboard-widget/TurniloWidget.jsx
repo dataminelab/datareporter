@@ -6,11 +6,10 @@ import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper
 import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
 import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
 import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
-// import {Report} from "@/services/report";
 
 function TurniloWidget(props) {
   const { widget, canEdit, config } = props;
-  const turniloHash = '#' + widget.text.replace('[turnilo-widget]', '').split('/4/')[1];
+  const turniloHash = widget.text.replace('[turnilo-widget]', '');
   const TurniloMenuOptions = [];
 
   if (!widget.width) {

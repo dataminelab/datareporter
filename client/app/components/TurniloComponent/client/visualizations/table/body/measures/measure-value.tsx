@@ -35,15 +35,16 @@ interface MeasureValueProps {
 
 export const MeasureValue: React.SFC<MeasureValueProps> = props => {
   const { series, datum, scale, highlight, showPrevious, cellWidth, lastLevel, report } = props;
+  const colorText = report ? report.colorText : null
   const currentValue = series.selectValue(datum);
 
   const currentCell = <MeasureCell
-    color={report.colorText}
+    color={colorText}
     key={series.reactKey()}
     width={cellWidth}
     value={series.formatValue(datum)}
   >
-    {lastLevel && <MeasureBackground backgroundColor={report.colorBody}  highlight={highlight} width={scale(currentValue)} />}
+    {lastLevel && <MeasureBackground backgroundColor={colorText}  highlight={highlight} width={scale(currentValue)} />}
   </MeasureCell>;
 
   if (!showPrevious) {

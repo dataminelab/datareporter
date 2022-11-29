@@ -9,7 +9,9 @@ export class BigQueryDialect extends SQLDialect {
     PT1H: '%Y-%m-%d %H:00:00Z',
     P1D: '%Y-%m-%d 00:00:00Z',
     P1M: '%Y-%m-01 00:00:00Z',
-    P1Y: '%Y-01-01 00:00:00Z'
+    P1Y: '%Y-01-01 00:00:00Z',
+    P1W: '%Y-%m-%d 00:00:00Z',
+    P3M: '%Y-%m-%d 00:00:00Z',
   };
 
   static CAST_TO_FUNCTION: Record<string, Record<string, string>> = {
@@ -91,11 +93,26 @@ export class BigQueryDialect extends SQLDialect {
 
   public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
     let bucketFormat = BigQueryDialect.TIME_BUCKETING[duration.toString()];
+    var format;
+    console.log("timeFloorExpression", duration.toString());
+    console.log("operand", operand);
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
-    return this.walltimeToUTC(
-      `FORMAT_DATETIME('${bucketFormat}', CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
-      timezone,
-    );
+    if (duration.toString() == "P1W") {
+      format = this.walltimeToUTC(
+        `2008-12-25 00:00:00Z`,
+        // DATE_TRUNC(${this.utcToWalltime(operand, timezone)}, WEEK))`, 
+        timezone,      
+      );
+    } else {
+      format = this.walltimeToUTC(
+        `FORMAT_DATETIME('${bucketFormat}', 
+          CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
+        timezone,
+      );
+    }
+    console.log("format", format)
+    // FORMAT_DATETIME('%Y-%m-%d %H:%M:00Z', CAST(`time` AS DATETIME))
+    return format
   }
 
   public timePartExpression(operand: string, part: string, timezone: Timezone): string {

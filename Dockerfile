@@ -7,7 +7,7 @@ WORKDIR /frontend
 COPY bin/build_frontend.sh .
 COPY client/ /frontend/client
 COPY viz-lib/ /frontend/viz-lib
-COPY plywood/client /frontend/plywood/client
+# COPY plywood/client /frontend/plywood/client
 RUN if [ "x$skip_frontend_build" = "x" ] ; then \
     echo "Building frontend";\
     ./build_frontend.sh;\

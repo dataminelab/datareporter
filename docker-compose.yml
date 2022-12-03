@@ -77,6 +77,3 @@ services:
       - "9231:9229"
     volumes:
       - ./plywood/server:/app
-# networks:
-#   my-network:
-#     external: true

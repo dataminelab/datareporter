@@ -3,8 +3,6 @@ import importlib
 import ssl
 from funcy import distinct, remove
 from flask_talisman import talisman
-# import dotenv
-# dotenv.load_dotenv()
 
 from .helpers import (
     fix_assets_path,
@@ -68,7 +66,6 @@ INVITATION_TOKEN_MAX_AGE = int(
 
 # The secret key to use in the Flask app for various cryptographic features
 SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET", "c292a0a3aa32397cdb050e233733900f")
-print("SECRET_KEY", SECRET_KEY)
 # The secret key to use when encrypting data source options
 DATASOURCE_SECRET_KEY = os.environ.get("REDASH_SECRET_KEY", SECRET_KEY)
 

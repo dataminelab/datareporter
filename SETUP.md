@@ -134,3 +134,14 @@ npm install
 npm run compile
 npm publish
 ```
+### Debugging notes
+
+cd client
+npm start
+
+visit http://localhost:8080/ instead of using port 5050
+
+To run Python debugger:
+docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
+
+

@@ -94,13 +94,23 @@ export class BigQueryDialect extends SQLDialect {
   public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
     let bucketFormat = BigQueryDialect.TIME_BUCKETING[duration.toString()];
     var format;
-    console.log("timeFloorExpression", duration.toString());
-    console.log("operand", operand);
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     if (duration.toString() == "P1W") {
       format = this.walltimeToUTC(
-        `2008-12-25 00:00:00Z`,
-        // DATE_TRUNC(${this.utcToWalltime(operand, timezone)}, WEEK))`, 
+        `FORMAT_DATETIME('${bucketFormat}',
+          DATETIME_TRUNC(
+            CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
+          , WEEK)
+        )`,
+        timezone,      
+      );
+    } else if (duration.toString() == "P3M") {
+      format = this.walltimeToUTC(
+        `FORMAT_DATETIME('${bucketFormat}',
+          DATETIME_TRUNC(
+            CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
+          , QUARTER)
+        )`,
         timezone,      
       );
     } else {
@@ -110,8 +120,6 @@ export class BigQueryDialect extends SQLDialect {
         timezone,
       );
     }
-    console.log("format", format)
-    // FORMAT_DATETIME('%Y-%m-%d %H:%M:00Z', CAST(`time` AS DATETIME))
     return format
   }
 

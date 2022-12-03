@@ -93,10 +93,9 @@ export class BigQueryDialect extends SQLDialect {
 
   public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
     let bucketFormat = BigQueryDialect.TIME_BUCKETING[duration.toString()];
-    var format;
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     if (duration.toString() == "P1W") {
-      format = this.walltimeToUTC(
+      return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}',
           DATETIME_TRUNC(
             CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
@@ -105,7 +104,7 @@ export class BigQueryDialect extends SQLDialect {
         timezone,      
       );
     } else if (duration.toString() == "P3M") {
-      format = this.walltimeToUTC(
+      return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}',
           DATETIME_TRUNC(
             CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
@@ -114,7 +113,7 @@ export class BigQueryDialect extends SQLDialect {
         timezone,      
       );
     } else {
-      format = this.walltimeToUTC(
+      return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', 
           CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
         timezone,

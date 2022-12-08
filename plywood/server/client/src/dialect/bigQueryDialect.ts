@@ -119,7 +119,6 @@ export class BigQueryDialect extends SQLDialect {
         timezone,
       );
     }
-    return format
   }
 
   public timePartExpression(operand: string, part: string, timezone: Timezone): string {

@@ -1,5 +1,5 @@
 import { Duration, Timezone } from 'chronoshift';
-import { PlyType, PlyTypeSimple } from '../types';
+import { PlyType } from '../types';
 import { SQLDialect } from './baseDialect';
 
 export class BigQueryDialect extends SQLDialect {
@@ -9,7 +9,9 @@ export class BigQueryDialect extends SQLDialect {
     PT1H: '%Y-%m-%d %H:00:00Z',
     P1D: '%Y-%m-%d 00:00:00Z',
     P1M: '%Y-%m-01 00:00:00Z',
-    P1Y: '%Y-01-01 00:00:00Z'
+    P1Y: '%Y-01-01 00:00:00Z',
+    P1W: '%Y-%m-%d 00:00:00Z',
+    P3M: '%Y-%m-%d 00:00:00Z',
   };
 
   static CAST_TO_FUNCTION: Record<string, Record<string, string>> = {
@@ -92,10 +94,31 @@ export class BigQueryDialect extends SQLDialect {
   public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
     let bucketFormat = BigQueryDialect.TIME_BUCKETING[duration.toString()];
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
-    return this.walltimeToUTC(
-      `FORMAT_DATETIME('${bucketFormat}', CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
-      timezone,
-    );
+    if (duration.toString() == "P1W") {
+      return this.walltimeToUTC(
+        `FORMAT_DATETIME('${bucketFormat}',
+          DATETIME_TRUNC(
+            CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
+          , WEEK)
+        )`,
+        timezone,      
+      );
+    } else if (duration.toString() == "P3M") {
+      return this.walltimeToUTC(
+        `FORMAT_DATETIME('${bucketFormat}',
+          DATETIME_TRUNC(
+            CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
+          , QUARTER)
+        )`,
+        timezone,      
+      );
+    } else {
+      return this.walltimeToUTC(
+        `FORMAT_DATETIME('${bucketFormat}', 
+          CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
+        timezone,
+      );
+    }
   }
 
   public timePartExpression(operand: string, part: string, timezone: Timezone): string {

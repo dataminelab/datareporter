@@ -20,9 +20,7 @@ AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
 const app = express();
 
-//@ts-ignore
 app.use(express.urlencoded({ extended: true }));
-//@ts-ignore
 app.use(express.json());
 
 app.use((req: Request, _res, next: NextFunction) => {

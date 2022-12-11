@@ -47,6 +47,7 @@
   "scripts": {
     "watch": "nodemon",
     "prepare": "./compile && tdi -q",
+    "build": "./compile && tdi -q",
     "compile": "./compile",
     "pretest": "./compile",
     "test": "./travis-test",

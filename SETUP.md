@@ -53,7 +53,7 @@ pyenv install 3.8.7
 # make sure you run below command in the datareported folder
 # automatically select whenever you are in the current directory (or its subdirectories)
 pyenv local 3.8.7
-# note that on certani linux distros you might need to also run
+# note that on certani linux distros you might need to also run below command
 # $ git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
 # create virtualenv
 pyenv virtualenv 3.8.7 .venv

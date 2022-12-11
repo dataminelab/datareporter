@@ -41,13 +41,17 @@ export class TimeBucketExpression extends ChainableExpression {
     this.timezone = parameters.timezone;
     this._ensureOp('timeBucket');
     this._checkOperandTypes('TIME');
-    if (!(duration instanceof Duration)) {
+    if (!this.isDuration(duration)) {
       throw new Error('`duration` must be a Duration');
     }
     if (!duration.isFloorable()) {
       throw new Error(`duration '${duration.toString()}' is not floorable`);
     }
     this.type = 'TIME_RANGE';
+  }
+
+  private isDuration(o: any): o is Duration {
+    return o.constructor.name === 'Duration';
   }
 
   public valueOf(): ExpressionValue {

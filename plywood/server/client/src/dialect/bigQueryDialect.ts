@@ -1,5 +1,5 @@
 import { Duration, Timezone } from 'chronoshift';
-import { PlyType, PlyTypeSimple } from '../types';
+import { PlyType } from '../types';
 import { SQLDialect } from './baseDialect';
 
 export class BigQueryDialect extends SQLDialect {

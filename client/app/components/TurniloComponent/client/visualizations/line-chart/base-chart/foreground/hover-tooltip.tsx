@@ -35,8 +35,8 @@ interface HoverTooltipProps {
 export const HoverTooltip: React.SFC<HoverTooltipProps> = props => {
   const { content, interaction, xScale, timezone, stage } = props;
   const { range } = interaction;
-  const x = xScale(range.midpoint());
-
+  //@ts-ignore
+  const x = xScale(new Date(range));
   return <TooltipWithinStage key={x} top={60} left={x} stage={stage}>
     <SegmentBubbleContent
       title={formatValue(range, timezone)}

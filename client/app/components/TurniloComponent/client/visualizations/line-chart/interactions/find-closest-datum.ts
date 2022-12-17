@@ -16,7 +16,7 @@
 
 const MAX_HOVER_DIST = 50;
 
-import { Dataset, Datum, NumberRange, Range, TimeRange, PlywoodRange } from "plywood";
+import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";

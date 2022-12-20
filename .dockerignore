@@ -18,6 +18,7 @@ venv/
 /.circleci/
 /.github/
 /netlify.toml
-/setup/
+/.idea/
+Jenkinsfile
 Dockerfile
-.build/server.Dockerfile
+.build/

@@ -1,0 +1,3 @@
+with-contenv
+s6-envuidgid redash
+/app/bin/docker-entrypoint create_db

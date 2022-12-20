@@ -1,33 +1,35 @@
-ARG NODE_VERSION=14.17.3
+ARG NODE_VERSION=12.22.12
+# Datareporter plywood client
+#FROM node:${NODE_VERSION} as plywood-client-builder
+#COPY plywood/client/ /plywood/client/
+#WORKDIR  /plywood/client/
+#RUN npm install
+# Datareporter web client
 FROM node:${NODE_VERSION} as frontend-builder
-
-
 WORKDIR /frontend
 COPY bin/build_frontend.sh .
 COPY client/ /frontend/client
 COPY viz-lib/ /frontend/viz-lib
-RUN echo "Building frontend";\
-    ./build_frontend.sh;
+#COPY --from=plywood-client-builder  /plywood/client /frontend/plywood/client
+RUN ./build_frontend.sh;
 
+# Datareporter plywood server
 FROM node:${NODE_VERSION} as plywood-builder
-RUN apk update
-RUN apk add git
-WORKDIR /plywood
-COPY package*.json /plywood
-RUN npm install
-COPY plywood /plywood
-RUN npm run build
+ARG NODE_VERSION=12.22.12 #requires to be repeated as it needs to be avilable as env variable
+COPY plywood/server/ /plywood/server/
+COPY --from=plywood-client-builder  /plywood/client /plywood/client
+COPY bin/build_plywood.sh .
+RUN ./build_plywood.sh
 
+# Datareporter app
 FROM python:3.7-slim-buster
-
 EXPOSE 5000
-
+ARG NODE_VERSION=12.22.12 #requires to be repeated as it needs to be avilable as env variable
 # Controls whether to install extra dependencies needed for all data sources.
 ARG skip_ds_deps
+ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 ARG S6_OVERLAY_VERSION=3.1.0.1
-ARG NODE_VERSION=14.17.3
-ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 RUN apt-get update
 RUN apt-get install xz-utils
 RUN apt-get -y install curl
@@ -54,7 +56,7 @@ RUN apt-get update && \
     build-essential \
     pwgen \
     libffi-dev \
-    sudo \
+#    sudo \
     git-core \
     wget \
     # Postgres client
@@ -67,6 +69,7 @@ RUN apt-get update && \
     libssl-dev \
     default-libmysqlclient-dev \
     freetds-dev \
+    nginx \
     libsasl2-dev \
     unzip \
     libsasl2-modules-gssapi-mit && \
@@ -92,17 +95,18 @@ WORKDIR /app
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PIP_NO_CACHE_DIR=1
 
+RUN useradd --create-home nginx
 # We first copy only the requirements file, to avoid rebuilding on every file
 # change.
 COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements_all_ds.txt ./
 RUN  pip install -r requirements.txt;
 RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
+ENV PLYWOOD_SERVER_URL="http://localhost:3000"
 COPY --chown=redash .  /app
 COPY --from=frontend-builder --chown=redash /frontend/client/dist /app/client/dist
-COPY --from=plywood-builder --chown=redash /plowood/dist /app/plywood/dist
-COPY --from=plywood-builder --chown=redash   /plowood/node_modules/ /app/plywood/node_modules/
-RUN find /app
-USER redash
-ENTRYPOINT ["/app/bin/docker-entrypoint"]
-CMD ["server"]
+COPY --from=plywood-builder --chown=redash /plywood/server/dist /app/plywood/dist
+COPY --from=plywood-builder --chown=redash   /plywood/server/node_modules/ /app/plywood/node_modules/
+COPY bin/etc /etc
+USER root
+CMD ["/init"]

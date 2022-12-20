@@ -1,0 +1,20 @@
+[project]
+id = "com.datareporter.server"
+name = "Datareporter Server"
+version = "0.0.1"
+
+exclude = [
+    ".build",
+    "tests",
+    "kubernetes",
+]
+
+[[build.builder]]
+uri = ".build/python"
+[[build.buildpacks]]
+uri = ".build/python"
+
+[[build.env]]
+MAX_REQUESTS=1000
+MAX_REQUESTS_JITTER=100
+GOOGLE_ENTRYPOINT='gunicorn -b 0.0.0.0:5000 --name redash -w${REDASH_WEB_WORKERS:-4} redash.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER'

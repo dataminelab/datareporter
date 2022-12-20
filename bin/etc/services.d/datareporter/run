@@ -1,0 +1,5 @@
+#!/command/execlineb -P
+with-contenv
+s6-envuidgid nginx
+cd /app
+/app/bin/docker-entrypoint server

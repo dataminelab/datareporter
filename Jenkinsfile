@@ -47,14 +47,14 @@ node {
     --label build_id=${env.BUILD_ID} \
     "
     def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
-
+    def noCache = params.DOCKER_NO_CACHE ? "--no-cache" : ""
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
         stage("Build DR docker image",) {
             def imageNameDr = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
             echo "Build docker image for: ${appName}"
 
-            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
+            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} ${noCache} .")
             imageNames.add("${registryRegion}/${appName}=" + imageNameDr)
         }
 
@@ -95,12 +95,7 @@ node {
         stage("Build plywood-server docker image",) {
             echo "Build docker image for: ${appPlywoodServerName}"
             def imageNamePlywoodServer = "${registryRegion}/${appPlywoodServerName}:${latestTagRelease}-${shortCommit}"
-            def noCache = ""
-            if (params.DOCKER_NO_CACHE == true) {
-                noCache = "--no-cache"
-            }
-
-            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} plywood/server", "${noCache}")
+            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} ${noCache} plywood/server")
             imageNames.add("${registryRegion}/${appPlywoodServerName}=" + imageNamePlywoodServer)
         }
 

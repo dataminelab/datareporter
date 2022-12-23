@@ -96,7 +96,7 @@ node {
             echo "Build docker image for: ${appPlywoodServerName}"
             def imageNamePlywoodServer = "${registryRegion}/${appPlywoodServerName}:${latestTagRelease}-${shortCommit}"
             def noCache = ""
-            if (params.DOCKER_NO_CACHE) {
+            if (params.DOCKER_NO_CACHE == true) {
                 noCache = "--no-cache"
             }
 

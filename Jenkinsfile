@@ -22,7 +22,7 @@ node {
     properties([
         parameters([
             booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging'),
-            booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip unit and integration tests')
+            booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip unit and integration tests'),
             booleanParam(name: 'DOCKER_NO_CACHE', defaultValue: false, description: 'Force docker build with no cache')
         ])
     ])

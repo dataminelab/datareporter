@@ -23,6 +23,7 @@ node {
         parameters([
             booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging'),
             booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip unit and integration tests')
+            booleanParam(name: 'DOCKER_NO_CACHE', defaultValue: false, description: 'Force docker build with no cache')
         ])
     ])
 
@@ -94,8 +95,12 @@ node {
         stage("Build plywood-server docker image",) {
             echo "Build docker image for: ${appPlywoodServerName}"
             def imageNamePlywoodServer = "${registryRegion}/${appPlywoodServerName}:${latestTagRelease}-${shortCommit}"
+            def noCache = ""
+            if (params.DOCKER_NO_CACHE) {
+                noCache = "--no-cache"
+            }
 
-            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} plywood/server")
+            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} plywood/server", "${noCache}")
             imageNames.add("${registryRegion}/${appPlywoodServerName}=" + imageNamePlywoodServer)
         }
 

@@ -24,7 +24,7 @@ jobs:
           image_tag: test-${{ github.sha }}, ${{ github.sha }}
           dockerfile: ./Dockerfile
           context: ./
-          target: build
+          # target: build
   # test-images:
   #   name: Test images from registry
   #   needs: 

@@ -11,6 +11,9 @@ jobs:
     name: Build & push - with service account
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
       - name: Building and pushing the image
         uses: RafikFarhad/push-to-gcr-github-action@v5-beta
         with:

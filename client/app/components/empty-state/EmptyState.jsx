@@ -51,7 +51,8 @@ function EmptyState({
   const isAvailable = {
     dataSource: true,
     model: true,
-    query: true,
+    // query: true,
+    reports: true,
     alert: showAlertStep,
     dashboard: showDashboardStep,
     inviteUsers: showInviteStep,
@@ -60,7 +61,8 @@ function EmptyState({
   const isCompleted = {
     dataSource: organizationStatus.objectCounters.data_sources > 0,
     model: organizationStatus.objectCounters.models > 0,
-    query: organizationStatus.objectCounters.queries > 0,
+    // query: organizationStatus.objectCounters.queries > 0,
+    reports: organizationStatus.objectCounters.reports > 0,
     alert: organizationStatus.objectCounters.alerts > 0,
     dashboard: organizationStatus.objectCounters.dashboards > 0,
     inviteUsers: organizationStatus.objectCounters.users > 1,
@@ -127,8 +129,8 @@ function EmptyState({
             />
           )}
           <Step
-            show={isAvailable.query}
-            completed={isCompleted.query}
+            show={isAvailable.reports}
+            completed={isCompleted.reports}
             url="reports/new"
             urlText="Create"
             text="your first Report"

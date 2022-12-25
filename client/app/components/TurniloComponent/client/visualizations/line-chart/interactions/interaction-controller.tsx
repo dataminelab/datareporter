@@ -76,9 +76,11 @@ export class InteractionController extends React.Component<InteractionController
       have exact type as object. Because we move union type into covariant position, typescript
       would expect that `hoverRange` has type NumberRange & TimeRange which is impossible.
       Plywood handles mismatched types correctly.
-     */
-    // @ts-ignore
-    if (isHover(interaction) && interaction.range.equals(hoverRange)) return;
+    */
+    if (interaction && typeof interaction.range !== "string") {
+      // @ts-ignore
+      if (isHover(interaction) && interaction.range.equals(hoverRange)) return;
+    }
     this.setState({ interaction: createHover(chartId, hoverRange) });
   };
 

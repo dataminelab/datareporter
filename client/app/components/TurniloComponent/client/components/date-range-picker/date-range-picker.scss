@@ -38,6 +38,8 @@
     padding-right: 4px;
 
     .calendar-nav {
+      display: flex;
+      justify-content: space-between;
       margin-top: 18px;
       margin-bottom: 12px;
       text-align: center;
@@ -45,10 +47,14 @@
       user-select: none;
 
       .caret {
-        position: absolute;
+        display: contents;
         top: 0;
         padding: 3px 3px;
         cursor: pointer;
+
+        .caret-svg {
+          padding: 3px;
+        }
 
         svg {
           width: 19px;

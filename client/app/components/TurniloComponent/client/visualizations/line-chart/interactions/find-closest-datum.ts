@@ -16,7 +16,7 @@
 
 const MAX_HOVER_DIST = 50;
 
-import { Dataset, Datum, NumberRange, Range, TimeRange } from "plywood";
+import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
@@ -28,8 +28,8 @@ function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousSc
   let minDist = Infinity;
   for (const datum of data) {
     const continuousSegmentValue = datum[continuousDimension.name] as (TimeRange | NumberRange);
-    if (!continuousSegmentValue || !Range.isRange(continuousSegmentValue)) continue; // !Range.isRange => temp solution for non-bucketed reaching here
-    const mid = continuousSegmentValue.midpoint();
+    if (!continuousSegmentValue) continue;
+    const mid = new Date(continuousSegmentValue.toString());
     const dist = Math.abs(mid.valueOf() - value.valueOf());
     const distPx = Math.abs(scaleX(mid) - scaleX(value));
     if ((!closestDatum || dist < minDist) && distPx < MAX_HOVER_DIST) { // Make sure it is not too far way

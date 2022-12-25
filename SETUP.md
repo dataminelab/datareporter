@@ -125,7 +125,7 @@ docker-compose run --rm server tests
   * To see details/logs of build go into repo root dir and run `docker-compose logs plywood`
 
 ### Publishing NPM reporter-plywood package
-
+This is depricated but still available for backward compatibility.
 First make sure to authenticate with `npm login` then build and publish the package:
 
 ```
@@ -145,3 +145,9 @@ To run Python debugger:
 docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
 
 
+### Docker installation issues
+
+if you are having issue building docker images, try to remove ~/.docker/config.json file
+```bash
+rm  ~/.docker/config.json
+```

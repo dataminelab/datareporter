@@ -1,9 +1,8 @@
-import json
-
 from . import TimestampMixin, ChangeTrackingMixin, User, DataSource
 from .base import db, primary_key, Column, key_type, gfk_type
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from ..services.expression import ExpressionBase64Parser
+from redash.models import Favorite
 
 
 @gfk_type
@@ -100,3 +99,41 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     @property
     def hash(self):
         return ExpressionBase64Parser.parse_dict_to_base64(self.expression)
+
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    def all(self, org, groups_ids, user_id):
+        return self.query.filter(
+            or_(
+                self.user_id == user_id,
+                and_(
+                    # self.user.has(org=org)
+                ),
+            )
+        )
+
+    @classmethod
+    def search(self, org, groups_ids, user_id, search_term):
+        return self.all(org, groups_ids, user_id).filter(
+            self.name.ilike("%{}%".format(search_term))
+        )
+
+    @classmethod
+    def favorites(self, user, base_query=None):
+        if base_query is None:
+            base_query = self.all(user.org, user.group_ids, user.id)
+        return base_query.join(
+            (
+                Favorite,
+                and_(
+                    Favorite.object_type == "Report",
+                    Favorite.object_id == Report.id,
+                ),
+            )
+        ).filter(Favorite.user_id == user.id)
+
+    @classmethod
+    def is_favorite(cls, user, object):
+        return cls.query.filter(cls.object == object, cls.user_id == user).count() > 0

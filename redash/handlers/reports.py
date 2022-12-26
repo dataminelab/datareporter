@@ -4,7 +4,13 @@ from flask_restful import abort
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
 from redash import models
-from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
+from redash.handlers.base import (
+    BaseResource,
+    require_fields,
+    get_object_or_404,
+    paginate
+)
+
 from redash.handlers.queries import order_results
 from redash.models.models import Model, Report
 from redash.permissions import (
@@ -199,3 +205,44 @@ class ReportResource(BaseResource):
         })
 
         return make_response("", 204)
+
+class ReportFavoriteListResource(BaseResource):
+    def get(self):
+        search_term = request.args.get("q")
+
+        if search_term:
+            base_query = models.models.Report.search(
+                self.current_org,
+                self.current_user.group_ids,
+                self.current_user.id,
+                search_term,
+            )
+            favorites = models.models.Report.favorites(
+                self.current_user, base_query=base_query
+            )
+        else:
+            favorites = models.models.Report.favorites(self.current_user)
+
+        # favorites = filter_by_tags(favorites, models.models.Report.tags)
+
+        # order results according to passed order parameter,
+        # special-casing search queries where the database
+        # provides an order by search rank
+        favorites = order_results(favorites, fallback=not bool(search_term))
+
+        page = request.args.get("page", 1, type=int)
+        page_size = request.args.get("page_size", 25, type=int)
+        response = paginate(favorites, page, page_size, ReportSerializer)
+        self.record_event(
+            {
+                "action": "load_favorites",
+                "object_type": "report",
+                "params": {
+                    "q": search_term,
+                    "tags": request.args.getlist("tags"),
+                    "page": page,
+                },
+            }
+        )
+
+        return response

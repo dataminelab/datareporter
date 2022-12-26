@@ -38,7 +38,7 @@ from redash.handlers.destinations import (
     DestinationTypeListResource,
 )
 from redash.handlers.events import EventsResource
-from redash.handlers.favorites import DashboardFavoriteResource, QueryFavoriteResource
+from redash.handlers.favorites import DashboardFavoriteResource, QueryFavoriteResource, ReportFavoriteResource
 from redash.handlers.groups import (
     GroupDataSourceListResource,
     GroupDataSourceResource,
@@ -83,7 +83,13 @@ from redash.handlers.query_snippets import (
     QuerySnippetListResource,
     QuerySnippetResource,
 )
-from redash.handlers.reports import ReportsListResource, ReportGenerateResource, ReportResource, ReportFilter
+from redash.handlers.reports import (
+    ReportsListResource,
+    ReportGenerateResource,
+    ReportResource,
+    ReportFilter,
+    ReportFavoriteListResource,
+)
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
     UserDisableResource,
@@ -354,3 +360,15 @@ api.add_org_resource(ReportGenerateResource, "/api/reports/generate/<int:model_i
 api.add_org_resource(ReportsListResource, "/api/reports", endpoint="reports")
 
 api.add_org_resource(ReportResource, "/api/reports/<int:report_id>", endpoint="report")
+
+api.add_org_resource(
+    ReportFavoriteResource,
+    "/api/reports/<report_id>/favorite",
+    endpoint="report_favorite"
+)
+
+api.add_org_resource(
+    ReportFavoriteListResource,
+    "/api/reports/favorites",
+    endpoint="report_favorites",
+)

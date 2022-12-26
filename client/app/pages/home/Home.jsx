@@ -134,7 +134,7 @@ function DashboardAndQueryFavoritesList() {
             <FavoriteList
               title="Favorite Reports"
               resource={Report}
-              itemUrl={report => `reports/${report.id}`}
+              itemUrl={report => `reports/${report.id}/source`}
               emptyState={
                 <p>
                   <span className="btn-favourite m-r-5">

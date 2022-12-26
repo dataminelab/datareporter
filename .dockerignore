@@ -18,7 +18,6 @@ venv/
 /.circleci/
 /.github/
 /netlify.toml
-/.idea/
 Jenkinsfile
 Dockerfile
 .build/

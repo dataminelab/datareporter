@@ -14,7 +14,6 @@ import recordEvent from "@/services/recordEvent";
 import { messages } from "@/services/auth";
 import notification from "@/services/notification";
 import { Dashboard } from "@/services/dashboard";
-import { Query } from "@/services/query";
 import { Report } from "@/services/report";
 import routes from "@/services/routes";
 
@@ -126,7 +125,7 @@ function DashboardAndQueryFavoritesList() {
                   <span className="btn-favourite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <a href="dashboards">Dashboards</a> will appear here
+                  Favorite <a className="will-appear-a-tag" href="dashboards">Dashboards</a> will appear here
                 </p>
               }
             />
@@ -141,7 +140,7 @@ function DashboardAndQueryFavoritesList() {
                   <span className="btn-favourite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <a href="queries">Reports</a> will appear here
+                  Favorite <a className="will-appear-a-tag" href="reports">Reports</a> will appear here
                 </p>
               }
             />

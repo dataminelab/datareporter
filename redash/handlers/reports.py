@@ -211,19 +211,19 @@ class ReportFavoriteListResource(BaseResource):
         search_term = request.args.get("q")
 
         if search_term:
-            base_query = models.models.Report.search(
+            base_query = Report.search(
                 self.current_org,
                 self.current_user.group_ids,
                 self.current_user.id,
                 search_term,
             )
-            favorites = models.models.Report.favorites(
+            favorites = Report.favorites(
                 self.current_user, base_query=base_query
             )
         else:
-            favorites = models.models.Report.favorites(self.current_user)
+            favorites = Report.favorites(self.current_user)
 
-        # favorites = filter_by_tags(favorites, models.models.Report.tags)
+        # favorites = filter_by_tags(favorites, Report.tags)
 
         # order results according to passed order parameter,
         # special-casing search queries where the database

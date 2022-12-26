@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 echo "Build plywood client "
-cd plywood/client
+cd plywood/server/client
 npm i || ( cat /root/.npm/_logs/* && exit 1)
 npm run compile || ( cat /root/.npm/_logs/* && exit 1)
 cd -

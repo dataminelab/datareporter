@@ -91,7 +91,9 @@ function FavoriteList({ title, resource, itemUrl, emptyState }) {
               <span className="btn-favourite m-r-5">
                 <i className="fa fa-star" aria-hidden="true" />
               </span>
-              {item.name}
+              <span className="name-favourite">
+                {item.name}
+              </span>
               {item.is_draft && <span className="label label-default m-l-5">Unpublished</span>}
             </a>
           ))}

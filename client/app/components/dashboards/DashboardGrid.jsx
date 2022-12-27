@@ -63,7 +63,6 @@ const DashboardWidget = React.memo(
             const version = text.split("/")[1];
             const hash = text.split("/").slice(2).join("");
             const result =  await axios.get('/api/reports/' + reportId);
-            console.log(`config-turnilo-${reportId}`, result);
             setConfig(result);
           }
         }

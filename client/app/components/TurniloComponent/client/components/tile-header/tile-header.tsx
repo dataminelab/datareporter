@@ -24,7 +24,7 @@ export interface TileHeaderIcon {
   name: string;
   svg: string;
   onClick: React.MouseEventHandler<HTMLElement>;
-  ref?: string;
+  ref?: string | React.RefObject<any>;
   active?: boolean;
 }
 

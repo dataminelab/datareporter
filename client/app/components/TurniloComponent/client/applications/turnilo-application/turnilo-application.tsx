@@ -307,13 +307,15 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   render() {
-    return <React.StrictMode>
+    // React.StrictMode is giving us a lot of warnings about deprecated lifecycle methods
+    // and the project is too old to change everything to hooks
+    return <>
       <main className="turnilo-application">
         {this.renderView()}
         {this.renderAboutModal()}
         <Notifications />
         <Questions />
       </main>
-    </React.StrictMode>;
+    </>;
   }
 }

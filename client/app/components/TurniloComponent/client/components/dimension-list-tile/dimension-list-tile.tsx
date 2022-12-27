@@ -78,9 +78,11 @@ const isSelectedDimensionPredicate = (menuDimension: Dimension) => (dimension: D
 
 export class DimensionListTile extends Component<DimensionListTileProps, DimensionListTileState> {
   private item: React.RefObject<any>;
+  private search: React.RefObject<any>;
   constructor(props: DimensionListTileProps) {
     super(props);
     this.item = React.createRef();
+    this.search = React.createRef();
   }
   state: DimensionListTileState = {
     menuOpenOn: null,
@@ -192,7 +194,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     var icons: TileHeaderIcon[] = [
       {
         name: "search",
-        ref: "search",
+        ref: this.search,
         onClick: this.toggleSearch,
         svg: require("../../icons/full-search.svg"),
         active: showSearch

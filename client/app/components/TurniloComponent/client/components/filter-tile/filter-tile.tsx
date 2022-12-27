@@ -76,6 +76,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   private overflowMenuDeferred: Deferred<Element>;
   private items = React.createRef<HTMLDivElement>();
   private overflow = React.createRef<HTMLDivElement>();
+  private dimensionRef = React.createRef<HTMLDivElement>();  
 
   constructor(props: FilterTileProps) {
     super(props);
@@ -453,7 +454,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       return <div
         className={className}
         key={dimensionName}
-        ref={dimensionName}
+        ref={this.dimensionRef}
         draggable={true}
         onClick={this.clickDimension.bind(this, dimension)}
         onDragStart={this.dragStart.bind(this, dimension, clause)}

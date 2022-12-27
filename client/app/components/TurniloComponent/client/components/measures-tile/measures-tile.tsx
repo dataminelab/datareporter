@@ -60,6 +60,11 @@ const isSelectedMeasurePredicate = (seriesList: SeriesList) => (measure: Measure
 };
 
 export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
+  private searchRef: React.RefObject<any>;
+  constructor(props: Readonly<any>) {
+    super(props);
+    this.searchRef = React.createRef();
+  }
   readonly state: MeasuresTileState = {
     showSearch: false,
     searchText: "",
@@ -146,7 +151,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
     const icons = [{
       name: "search",
-      ref: "search",
+      ref: this.searchRef,
       onClick: this.toggleSearch,
       svg: require("../../icons/full-search.svg"),
       active: showSearch

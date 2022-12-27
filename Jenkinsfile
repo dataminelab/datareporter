@@ -46,7 +46,7 @@ node {
     --label git_sha=${shortCommit} \
     --label build_id=${env.BUILD_ID} \
     "
-    def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
+    def buildArgs = "--build-arg skip_dev_deps=true --build-arg skip_frontend_build=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
     def noCache = params.DOCKER_NO_CACHE ? "--no-cache" : ""
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 

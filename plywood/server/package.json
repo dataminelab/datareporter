@@ -9,6 +9,7 @@
     "test": "mocha -r ts-node/register src/*.spec.ts",
     "build": "tsc -p .",
     "full-build": "npm install && tsc -p .",
+    "build:client": "cd client && npm install && npm run build",
     "start": "node dist/server.js",
     "dev": "nodemon --watch \"src/***\" --ext \"ts,json\" --exec \"ts-node src/server.ts\"",
     "ts-start": "ts-node src/server.ts",

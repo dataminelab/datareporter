@@ -5,6 +5,9 @@ WORKDIR /app
 COPY package*.json /app/
 RUN npm install
 COPY . /app/
+echo "Building client before building and starting server"
+RUN npm run build:client
+echo "Now build server"
 RUN npm run build
 
 FROM node:12.18.3-alpine

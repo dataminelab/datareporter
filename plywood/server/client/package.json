@@ -20,6 +20,7 @@
     "url": "http://github.com/dataminelab/datareporter.git"
   },
   "main": "build/plywood.js",
+  "types": "build/index.d.ts",
   "typings": "build/index.d.ts",
   "files": [
     "build/",

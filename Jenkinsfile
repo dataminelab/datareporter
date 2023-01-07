@@ -22,7 +22,8 @@ node {
     properties([
         parameters([
             booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging'),
-            booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip unit and integration tests')
+            booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip unit and integration tests'),
+            booleanParam(name: 'DOCKER_NO_CACHE', defaultValue: false, description: 'Force docker build with no cache')
         ])
     ])
 
@@ -45,15 +46,15 @@ node {
     --label git_sha=${shortCommit} \
     --label build_id=${env.BUILD_ID} \
     "
-    def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
-
+    def buildArgs = "--build-arg skip_dev_deps=true --build-arg skip_frontend_build=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
+    def noCache = params.DOCKER_NO_CACHE ? "--no-cache" : ""
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
         stage("Build DR docker image",) {
             def imageNameDr = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
             echo "Build docker image for: ${appName}"
 
-            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
+            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} ${noCache} .")
             imageNames.add("${registryRegion}/${appName}=" + imageNameDr)
         }
 
@@ -94,8 +95,7 @@ node {
         stage("Build plywood-server docker image",) {
             echo "Build docker image for: ${appPlywoodServerName}"
             def imageNamePlywoodServer = "${registryRegion}/${appPlywoodServerName}:${latestTagRelease}-${shortCommit}"
-
-            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} plywood/server")
+            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} ${noCache} plywood/server")
             imageNames.add("${registryRegion}/${appPlywoodServerName}=" + imageNamePlywoodServer)
         }
 

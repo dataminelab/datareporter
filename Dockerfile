@@ -70,6 +70,7 @@ RUN apt-get update && \
 #  && rm -rf /tmp/SimbaSparkODBC*
 
 WORKDIR /app
+USER redash
 
 # Disalbe PIP Cache and Version Check
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -83,8 +84,6 @@ RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt 
 
 COPY . /app
 COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
-RUN find /app
-USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
 CMD ["server"]

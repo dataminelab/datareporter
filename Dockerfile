@@ -7,17 +7,16 @@ WORKDIR /frontend
 COPY bin/build_frontend.sh .
 COPY client/ /frontend/client
 COPY viz-lib/ /frontend/viz-lib
-# below line not needed anymore as we are using the pre-built assets inside plywood server folder
-# COPY plywood/client /frontend/plywood/client
+COPY plywood/server/client /frontend/plywood/server/client
 RUN if [ "x$skip_frontend_build" = "x" ] ; then \
     echo "Building frontend";\
     ./build_frontend.sh;\
-    else \
+  else \
     echo "Skipping frontend build" &&\
     mkdir -p /frontend/client/dist &&\
     touch /frontend/client/dist/multi_org.html &&\
     touch /frontend/client/dist/index.html;\
-    fi
+  fi
 FROM python:3.7-slim-buster
 
 EXPOSE 5000

@@ -1,6 +1,7 @@
 FROM node:12.18.3-alpine as frontend-builder
 RUN apk update
 RUN apk add git
+RUN apk add bash
 WORKDIR /app
 RUN echo "this folder is empty right now"
 COPY package*.json /app/

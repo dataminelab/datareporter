@@ -13,7 +13,7 @@ RUN if [ "x$skip_frontend_build" = "x" ] ; then \
     echo "Building frontend";\
     ./build_frontend.sh;\
     else \
-    echo "Skipping frontend  build" &&\
+    echo "Skipping frontend build" &&\
     mkdir -p /frontend/client/dist &&\
     touch /frontend/client/dist/multi_org.html &&\
     touch /frontend/client/dist/index.html;\

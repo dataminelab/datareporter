@@ -137,7 +137,7 @@ function readNumberFilterClause(selection: LiteralExpression, dimension: Dimensi
   const { name: reference } = dimension;
 
   if (isNumberFilterSelection(selection) && selection.value instanceof PlywoodSet) {
-    const values = List(selection.value.elements.map((range: NumberRange) => new NumberRange(range)));
+    const values = List<NumberRange>(selection.value.elements.map((range: NumberRange) => new NumberRange(range)));
     return new NumberFilterClause({ reference, not, values });
   } else {
     throw new Error(`Number filterClause expected, found: ${selection}. Dimension: ${reference}`);

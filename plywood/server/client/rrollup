@@ -1,4 +1,4 @@
-#!/bin/sh -eu
+#!/bin/bash -eu
 
 # Add the version information
 export PLYWOOD_VERSION=`node ./extra/get-version.js`

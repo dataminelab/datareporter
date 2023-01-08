@@ -7,21 +7,14 @@ COPY package*.json /app/
 COPY . /app/
 COPY client /app/client
 WORKDIR /app/client
-RUN ls
-RUN npm install
-# I can see the file with cat on below line
-RUN cat ./compile
-# but this or the below line is needed to build the client
-# RUN /usr/bin/bash /app/client/compile
-RUN ./compile
-# above is not working as well
-RUN npm run build
 RUN echo "Building client before building and starting server"
+RUN npm install
+RUN npm run build
 WORKDIR /app
-RUN ls client
 RUN echo "Now build server"
 RUN npm install
 RUN npm run build
+
 FROM node:12.18.3-alpine
 RUN addgroup -S plywood && adduser -S plywood
 COPY --from=frontend-builder --chown=plywood /app/dist/ /app/dist/

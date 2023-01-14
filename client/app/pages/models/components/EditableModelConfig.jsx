@@ -208,6 +208,17 @@ export default function EditableModelConfig({model, saveConfig}) {
   }
 
   const save = () => saveConfig(model.id, item)
+  const handleSaveConfig = (callback) => {
+    const yamlContent =  document.querySelector("#yaml_editor > div.ace_scroller > div").textContent;
+    if (yamlContent.includes("timeAttribute: null")) {
+      const prompt = window.confirm("timeAttribute is null. Are you sure you want to save?");
+      if (prompt) {
+        callback();
+      }
+      return;
+    }
+    callback();
+  }
 
   useEffect( () => {
     if (model.model_config_id) {
@@ -243,7 +254,7 @@ export default function EditableModelConfig({model, saveConfig}) {
             <ButtonTooltip title={'Cmd + S'} shortcut={'mod+s'}>
               <Button
                 className="query-editor-controls-button m-l-5 right"
-                onClick={save}
+                onClick={handleSaveConfig.bind(this, save)}
                 type={'primary'}
                 data-test="SaveButton">
                 <span className="fa fa-floppy-o" />&nbsp;Save

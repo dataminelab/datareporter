@@ -74,6 +74,7 @@
     "plywood-base-api": "^0.2.8",
     "readable-stream": "^3.0.3",
     "stream-to-array": "^2.3.0",
+    "tdi": "0.6.5",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
@@ -91,7 +92,6 @@
     "plywood-druid-requester": "2.6.2",
     "plywood-mysql-requester": "2.3.0",
     "plywood-postgres-requester": "1.4.0",
-    "tdi": "0.6.5",
     "tslint": "5.18.0",
     "typescript": "^4.0.3"
   }

@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import Modal from "antd/lib/modal";
 import { wrap as wrapDialog, DialogPropType } from "@/components/DialogWrapper";
-import {MappingType, ParameterMappingListInput} from "@/components/ParameterMappingInput";
+import {ParameterMappingListInput} from "@/components/ParameterMappingInput";
 import ReportSelector from "@/components/ReportSelector";
 import notification from "@/services/notification";
-import {Query} from "@/services/query";
-import {first, includes, map} from "lodash";
 import {Report} from "@/services/report";
 
 function AddReportDialog({ dialog, dashboard }) {
@@ -15,8 +13,9 @@ function AddReportDialog({ dialog, dashboard }) {
 
   const selectReport = useCallback(
     reportId => {
-      // Clear previously selected report (if any)
-      setSelectedReport(null);
+      if (selectedReport) {
+        setSelectedReport(null);
+      }
       if (reportId) {
         Report.get({ id: reportId }).then(report => {
           if (report) {
@@ -28,11 +27,15 @@ function AddReportDialog({ dialog, dashboard }) {
     [dashboard]
   );
 
-  const saveWidget = useCallback((report) => {
-    dialog.close("[turnilo-widget]" + report).catch(() => {
-      notification.error("Widget could not be added");
-    });
-  }, [dialog, parameterMappings]);
+  const saveWidget = useCallback(() => {
+    dialog.close(`[turnilo-widget]${selectedReport.id}/4/${selectedReport.hash}`)
+      .then(() => {
+        notification.success("Report added to dashboard.");
+      })    
+      .catch(() => {
+        notification.error("Widget could not be added");
+      });
+  }, [dialog, selectedReport]);
 
   const existingParams = dashboard.getParametersDefs();
 
@@ -40,7 +43,7 @@ function AddReportDialog({ dialog, dashboard }) {
     <Modal
       {...dialog.props}
       title="Add Report Widget"
-      onOk={() => saveWidget(selectedReport.report) }
+      onOk={() => saveWidget()}
       okButtonProps={{
         ...dialog.props.okButtonProps,
         disabled: !selectedReport || dialog.props.okButtonProps.disabled,
@@ -49,7 +52,7 @@ function AddReportDialog({ dialog, dashboard }) {
       width={700}>
       <div data-test="AddReportDialog">
         <ReportSelector onChange={report => selectReport(report ? report.id : null)} />
-        {selectedReport ? selectedReport.id : 'noneeeee'}
+        {selectedReport ? selectedReport.id : ''}
         {parameterMappings.length > 0 && [
           <label key="parameters-title" htmlFor="parameter-mappings">
             Parameters

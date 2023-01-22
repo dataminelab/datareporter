@@ -47,7 +47,7 @@ function AddToDashboardDialog({ dialog, visualization }) {
         dialog.close();
         const key = `notification-${Math.random()
           .toString(36)
-          .substr(2, 10)}`;
+          .slice(2, 12)}`;
         notification.success(
           "Widget added to dashboard",
           <React.Fragment>

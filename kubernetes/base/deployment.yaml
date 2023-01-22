@@ -266,3 +266,39 @@ spec:
             ports:
               - name: nginx
                 containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plywood-server
+spec:
+  selector:
+    matchLabels:
+      app: datareporter
+      tier: plywood-server
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 4
+  template:
+    metadata:
+      labels:
+        app: datareporter
+        tier: plywood-server
+    spec:
+      containers:
+      - name: plywood-server
+        image: eu.gcr.io/datareporter/plywood-server:_
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /api/v1/status
+            port: dr-plywood
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
+        ports:
+          - name: dr-plywood
+            containerPort: 3000

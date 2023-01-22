@@ -26,6 +26,7 @@ interface HeatmapLabelsProps {
   hoveredLabel: number;
   highlightedLabel: number;
   labelSize?: number;
+  colorLabel?: string;
 
   onMaxLabelSize?(maxLabelSize: number): void;
 }
@@ -49,10 +50,10 @@ export class HeatmapLabels extends React.Component<HeatmapLabelsProps> {
   }
 
   render() {
-    const { labels, orientation, hoveredLabel, highlightedLabel, labelSize } = this.props;
-
+    const { labels, orientation, hoveredLabel, highlightedLabel, labelSize, colorLabel }  = this.props;
+    const color = colorLabel ? colorLabel : "inherit";
     return (
-      <div ref={this.container} className={`${orientation}-labels`}>
+      <div ref={this.container} className={`${orientation}-labels`} style={{ color }}>
         {labels.map((label, index) => {
           const highlight = highlightedLabel === index;
           const hover = !highlight && hoveredLabel === index;

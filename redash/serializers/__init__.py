@@ -299,6 +299,7 @@ class DashboardSerializer(Serializer):
 
 def serialize_job(job):
     # TODO: this is mapping to the old Job class statuses. Need to update the client side and remove this
+    # pylint: disable=no-member
     STATUSES = {
         JobStatus.QUEUED: 1,
         JobStatus.STARTED: 2,

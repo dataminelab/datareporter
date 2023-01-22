@@ -9,8 +9,7 @@ import {AppSettings} from "@/components/TurniloComponent/common/models/app-setti
 
 function TurniloWidget(props) {
   const { widget, canEdit, config } = props;
-
-  const turniloHash = '#' + widget.text.replace('[turnilo-widget]', '')
+  const turniloHash = widget.text.replace('[turnilo-widget]', '');
   const TurniloMenuOptions = [];
 
   if (!widget.width) {
@@ -27,7 +26,7 @@ function TurniloWidget(props) {
     Ajax.version = version;
 
     const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(config)
     });
 
     return (
@@ -37,7 +36,7 @@ function TurniloWidget(props) {
             version={version}
             hashWidget={turniloHash}
             appSettings={appSettings}
-            initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+            initTimekeeper={config.timekeeper ? Timekeeper.fromJS(config.timekeeper) : new Timekeeper({ timeTags: [] })}
           />
         </turnilo-widget>
       </Widget>

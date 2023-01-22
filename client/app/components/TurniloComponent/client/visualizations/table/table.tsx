@@ -202,6 +202,7 @@ export class Table extends BaseVisualization<TableState> {
 
   private shouldCollapseRows(): boolean {
     const { essence: { visualizationSettings } } = this.props;
+    //@ts-ignore
     const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
     return collapseRows;
   }
@@ -217,7 +218,7 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   protected renderInternals() {
-    const { essence, stage } = this.props;
+    const { essence, stage, report } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const collapseRows = this.shouldCollapseRows();
 
@@ -263,6 +264,7 @@ export class Table extends BaseVisualization<TableState> {
         }
 
         leftGutter={<SplitRows
+          color={report ? report.colorText: null}
           collapseRows={collapseRows}
           highlightedRowIndex={highlightedRowIndex}
           visibleRowsIndexRange={visibleRowsRange}
@@ -276,6 +278,7 @@ export class Table extends BaseVisualization<TableState> {
 
         body={flatData &&
         <MeasureRows
+          report={report || null}
           hoverRow={hoverRow}
           visibleRowsIndexRange={visibleRowsRange}
           essence={essence}

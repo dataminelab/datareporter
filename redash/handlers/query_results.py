@@ -120,6 +120,7 @@ def run_query(query, parameters, data_source, query_id, max_age=0):
                 "Query ID": query_id,
             },
         )
+
         return serialize_job(job)
 
 

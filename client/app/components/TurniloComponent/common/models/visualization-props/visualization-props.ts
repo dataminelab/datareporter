@@ -26,6 +26,7 @@ export interface VisualizationProps {
   essence: Essence;
   timekeeper: Timekeeper;
   stage: Stage;
+  report?: any;
   registerDownloadableDataset?: (dataset: Dataset) => void;
   refreshRequestTimestamp: number;
 }

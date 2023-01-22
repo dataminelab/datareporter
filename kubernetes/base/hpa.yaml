@@ -62,4 +62,16 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: datareporter-lb
-
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: plywood-server
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 60
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: plywood-server

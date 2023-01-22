@@ -171,7 +171,7 @@ describe("DataCube", () => {
             },
             {
               name: "articleName",
-              formula: "$articleName.substr(0,2)"
+              formula: "$articleName.slice(0,2)"
             }
           ],
           measures: [

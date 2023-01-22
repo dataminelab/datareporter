@@ -153,7 +153,7 @@ export class Report {
   }
 
   getUrl(source, hash) {
-    let url = `queries/${this.id}`;
+    let url = `reports/${this.id}`;
 
     if (source) {
       url += "/source";
@@ -369,138 +369,6 @@ function setStorageItem(key, value, callback) {
   }
 }
 
-const axiosFaike = {
-  query:  (params) => {
-    return new Promise((resolve, reject) => {
-      getStorageItem('reportDB', (response) => {
-        response = response ? JSON.parse(response) : [];
-        const item = {
-          api_key: "drv5jgXMfVAH8ZiAm5tMWHGrGaZSO6Q8pCLtflBZ",
-          created_at: "2020-10-19T17:18:26.208Z",
-          data_source_id: 1,
-          description: null,
-          id: 1,
-          is_archived: false,
-          is_draft: true,
-          is_favorite: false,
-          is_safe: true,
-          last_modified_by_id: 1,
-          latest_query_data_id: 1,
-          options: {parameters: []},
-          query: "select SUM(views), wiki from bigquery-public-data.wikipedia.pageviews_2020 where datehour > '2020-01-01' group by wiki;",
-          query_hash: "12b08c5c845d47d2e8b748a9beb9a2b0",
-          retrieved_at: "2020-10-19T17:18:37.094Z",
-          runtime: 11.4343771934509,
-          schedule: null,
-          tags: [],
-          updated_at: "2020-10-19T17:18:26.208Z",
-          version: 1
-        }
-        if (response) {
-          response = response.map((newItem) => {
-
-            return Object.assign({}, item, newItem);
-          })
-          resolve(
-              {
-                count: response.length,
-                page: 1,
-                page_size: 20,
-                results: response
-              });
-        } else {
-          resolve(
-              {
-                count: [].length,
-                page: 1,
-                page_size: 20,
-                results: []
-              });
-        }
-      })
-    })
-  },
-  get: (id) => {
-    return new Promise((resolve, reject) => {
-      getStorageItem('reportDB', (response) => {
-        response = response ? JSON.parse(response) : [];
-        const item = {
-          api_key: "drv5jgXMfVAH8ZiAm5tMWHGrGaZSO6Q8pCLtflBZ",
-          created_at: "2020-10-19T17:18:26.208Z",
-          last_modified_by: "2020-10-19T17:18:26.208Z",
-          data_source_id: 1,
-          description: null,
-          id: 1,
-          is_archived: false,
-          is_draft: true,
-          is_favorite: false,
-          is_safe: true,
-          last_modified_by_id: 1,
-          latest_query_data_id: 1,
-          options: {parameters: []},
-          query: "select SUM(views), wiki from bigquery-public-data.wikipedia.pageviews_2020 where datehour > '2020-01-01' group by wiki;",
-          query_hash: "12b08c5c845d47d2e8b748a9beb9a2b0",
-          retrieved_at: "2020-10-19T17:18:37.094Z",
-          runtime: 11.4343771934509,
-          schedule: null,
-          tags: [],
-          updated_at: "2020-10-19T17:18:26.208Z",
-          version: 1
-        }
-        resolve(Object.assign(item, response.find(x => x.id === id)));
-      })
-    });
-  },
-  create: (item) => {
-    return new Promise((resolve, reject) => {
-      getStorageItem('reportDB', (response) => {
-        response = response ? JSON.parse(response) : [];
-        let data = []
-        if (response) {
-          data = response;
-        }
-        item.id = uuidv4();
-        data.push(item);
-        setStorageItem('reportDB', data, () => {
-          resolve(item);
-        })
-      })
-    });
-  },
-  save: (item) => {
-    return new Promise((resolve, reject) => {
-      getStorageItem('reportDB', (response) => {
-        response = response ? JSON.parse(response) : [];
-        let data = []
-        if (response) {
-          data = response;
-        }
-        data.map((model) => {
-          if (model.id === item.id) {
-            return Object.assign({}, model, item);
-          } else {
-            return model;
-          }
-        })
-        setStorageItem('reportDB', data, () => {
-          resolve(item);
-        })
-      })
-    });
-  },
-  delete: (model) => {
-    return new Promise((resolve, reject) => {
-      getStorageItem('reportDB', (response) => {
-        response = response ? JSON.parse(response) : [];
-        response = response.filter((item) => model.id === item.connection)
-        setStorageItem('reportDB', response, () => {
-          resolve(model.id);
-        })
-      })
-    });
-  },
-}
-
 export class ReportResultError {
   constructor(errorMessage) {
     this.errorMessage = errorMessage;
@@ -536,25 +404,31 @@ export class ReportResultError {
 }
 
 const getReport = report => new Report(report);
-const saveOrCreateUrl = data => (data.id ? `api/queries/${data.id}` : "api/queries");
+const saveOrCreateUrl = function (data) {
+  if (data.id) {
+    return `api/reports/${data.id}` 
+  } else {
+    return "api/reports"
+  }    
+}
 const mapResults = data => ({ ...data, results: map(data.results, getReport) });
 
 const ReportService = {
-  report: params => axiosFaike.query("api/queries", { params }).then(mapResults),
-  get: data => axiosFaike.get(data.id, data).then(getReport),
-  save: data => axiosFaike.post(saveOrCreateUrl(data), data).then(getReport),
-  delete: data => axiosFaike.delete(`api/queries/${data.id}`),
-  recent: params => axios.get(`api/queries/recent`, { params }).then(data => map(data, getReport)),
-  archive: params => axios.get(`api/queries/archive`, { params }).then(mapResults),
-  myReports: params => axios.get("api/queries/my", { params }).then(mapResults),
-  fork: ({ id }) => axios.post(`api/queries/${id}/fork`, { id }).then(getReport),
-  resultById: data => axios.get(`api/queries/${data.id}/results.json`),
-  asDropdown: data => axios.get(`api/queries/${data.id}/dropdown`),
+  report: params => axios.get("api/reports", { params }).then(mapResults),
+  get: data => axios.get("api/reports/" + data.id).then(getReport),
+  save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
+  delete: data => axios.delete(`api/reports/${data.id}`),
+  recent: params => axios.get(`api/reports/recent`, { params }).then(data => map(data, getReport)),
+  archive: params => axios.get(`api/reports/archive`, { params }).then(mapResults),
+  myReports: params => axios.get("api/reports/my", { params }).then(mapResults),
+  fork: ({ id }) => axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
+  resultById: data => axios.get(`api/reports/${data.id}/results.json`),
+  asDropdown: data => axios.get(`api/reports/${data.id}/dropdown`),
   associatedDropdown: ({ reportId, dropdownReportId }) =>
-    axios.get(`api/queries/${reportId}/dropdowns/${dropdownReportId}`),
-  favorites: params => axios.get("api/queries/favorites", { params }).then(mapResults),
-  favorite: data => axios.post(`api/queries/${data.id}/favorite`),
-  unfavorite: data => axios.delete(`api/queries/${data.id}/favorite`),
+    axios.get(`api/reports/${reportId}/dropdowns/${dropdownReportId}`),
+  favorites: params => axios.get("api/reports/favorites", { params }).then(mapResults),
+  favorite: data => axios.post(`api/reports/${data.id}/favorite`),
+  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),
 };
 
 ReportService.newReport = function newReport() {
@@ -578,7 +452,7 @@ ReportService.format = function formatReport(syntax, report) {
       return Promise.reject(String(err));
     }
   } else if (syntax === "sql") {
-    return axios.post("api/queries/format", { report }).then(data => data.report);
+    return axios.post("api/reports/format", { report }).then(data => data.report);
   } else {
     return Promise.reject("Report formatting is not supported for your data source syntax.");
   }

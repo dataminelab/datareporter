@@ -52,9 +52,10 @@ export const ChartLine: React.SFC<ChartLineProps> = props => {
   const scaledPoints = points.map(([x, y]) => [xScale(x), yScale(y)] as [number, number]);
   const hasMultiplePoints = points.length > 1;
   const hasSinglePoint = points.length === 1;
-
   return <g className="chart-line" transform={stage.getTransform()}>
-    {hasMultiplePoints && <path className="line" d={line(scaledPoints)} style={stroke(color, dashed)} />}
+    {hasMultiplePoints && <path ref={node => {
+        if (node) node.style.setProperty("fill", "transparent", "important");
+    }} className="line" d={line(scaledPoints)}  style={stroke(color, dashed)} />}
     {hasMultiplePoints && showArea && <path className="area" d={area(scaledPoints)} />}
     {hasSinglePoint && <circle
       className="singleton"

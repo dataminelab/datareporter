@@ -8,15 +8,21 @@ from redash.models.models import Model, ModelConfig
 from redash.permissions import require_permission, require_admin_or_owner, require_object_modify_permission
 from redash.serializers.model_serializer import ModelSerializer
 from redash.services.model_config_generator import ModelConfigGenerator
+from redash.services.model_config_validator import ModelConfigValidator
 
 
 class ModelsListResource(BaseResource):
+
     @require_permission("create_model")
     def post(self):
+
         req = request.get_json(True)
+
         require_fields(req, ("name", "data_source_id", "table"))
 
         name, data_source_id, table = req["name"], req["data_source_id"], req["table"]
+
+        content = req.get('content', None)
 
         data_source = get_object_or_404(
             models.DataSource.get_by_id_and_org, data_source_id, self.current_org
@@ -30,7 +36,12 @@ class ModelsListResource(BaseResource):
             table=table
         )
 
-        content = ModelConfigGenerator.yaml(model=model, refresh=True)
+        if content is None:
+            content = ModelConfigGenerator.yaml(model=model, refresh=True)
+        else:
+            validator = ModelConfigValidator(content=content)
+            validator.validate()
+
         model_config = ModelConfig(user=self.current_user, model=model, content=content)
 
         models.db.session.add(model)
@@ -47,8 +58,15 @@ class ModelsListResource(BaseResource):
 
     @require_permission("view_model")
     def get(self):
-        models = Model.get_by_user(self.current_user)
-        ordered_results = order_results(models)
+
+        data_source = request.args.get('data_source', None)
+
+        if data_source:
+            found_models = Model.get_by_user_and_data_source(self.current_user, int(data_source))
+        else:
+            found_models = Model.get_by_user(self.current_user)
+
+        ordered_results = order_results(found_models)
 
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)
@@ -93,13 +111,13 @@ class ModelsResource(BaseResource):
         )
 
         self.update_model(model, updates)
-        models.db.session.add(model)
         models.db.session.commit()
 
         content = ModelConfigGenerator.yaml(model=model, refresh=True)
 
-        self.update_model(model.config, {"content": content})
-        models.db.session.commit()
+        if model.config:
+            self.update_model(model.config, {"content": content})
+            models.db.session.commit()
 
         self.record_event({
             "action": "edit",

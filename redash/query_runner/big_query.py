@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import sys
 import time
@@ -14,13 +15,15 @@ from redash.utils import json_dumps, json_loads
 logger = logging.getLogger(__name__)
 
 try:
+
     import apiclient.errors
     from apiclient.discovery import build
     from apiclient.errors import HttpError
     from oauth2client.service_account import ServiceAccountCredentials
 
     enabled = True
-except ImportError:
+except ImportError as e:
+    print(e)
     enabled = False
 
 types_map = {
@@ -237,7 +240,7 @@ class BigQuery(BaseQueryRunner):
         data = {
             "columns": columns,
             "rows": rows,
-            "metadata": {"data_scanned": int(query_reply["totalBytesProcessed"])},
+            "metadata": {"data_scanned": int(query_reply["totalBytesProcessed"]), 'cache_hit': query_reply['cacheHit']},
         }
 
         return data

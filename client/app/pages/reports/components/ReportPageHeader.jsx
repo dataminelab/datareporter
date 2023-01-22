@@ -1,5 +1,5 @@
-import {extend, map, filter, reduce, find, includes} from "lodash";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import {extend, map, filter, reduce} from "lodash";
+import React, {useCallback, useMemo, useState, useEffect} from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -8,37 +8,24 @@ import Icon from "antd/lib/icon";
 import useMedia from "use-media";
 import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
-import { ReportTagsControl } from "@/components/tags-control/TagsControl";
 import reactCSS from 'reactcss'
 import { SketchPicker } from 'react-color'
-import CusromPicker from '../CusromPicker'
-import getTags from "@/services/getTags";
 import { clientConfig } from "@/services/auth";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
-import useUpdateReportTags from "../hooks/useUpdateReportTags";
-import useRenameReport from "../hooks/useRenameReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
-
-
+import useColorsReport from "@/pages/reports/hooks/useColorsReport";
 import "./ReportPageHeader.less";
-import ReportService from "@/services/reportFake";
-import navigateTo from "@/components/ApplicationArea/navigateTo";
-import notification from "@/services/notification";
-import location from "@/services/location";
 import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
 import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
 import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
-
-function getReportTags() {
-  return getTags("api/query/tags").then(tags => map(tags, t => t.name));
-}
+import Model from "@/services/model";
 
 function createMenu(menu) {
   const handlers = {};
@@ -74,34 +61,9 @@ function createMenu(menu) {
   );
 }
 
-function saveReport (values) {
-  values.report = location.hash;
-  ReportService.create(values)
-    .then(model => {
-      navigateTo('/reports')
-      notification.success("Saved.");
-    });
-}
-
-function chooseDataSourceId(dataSourceIds, availableDataSources) {
-  dataSourceIds = map(dataSourceIds, v => parseInt(v, 10));
-  availableDataSources = map(availableDataSources, ds => ds.id);
-  return find(dataSourceIds, id => includes(availableDataSources, id)) || null;
-}
-
-export default function ReportPageHeader(/*{
-  report,
-  dataSource,
-  sourceMode,
-  selectedVisualization,
-  headerExtra,
-  tagsExtra,
-  onChange,
-}*/props) {
+export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
   const queryFlags = useReportFlags(props.report, props.dataSource);
-  const updateName = useRenameReport(props.report, props.onChange);
-  const updateTags = useUpdateReportTags(props.report, props.onChange);
   const archiveReport = useArchiveReport(props.report, props.onChange);
   const publishReport = usePublishReport(props.report, props.onChange);
   const unpublishReport = useUnpublishReport(props.report, props.onChange);
@@ -109,19 +71,23 @@ export default function ReportPageHeader(/*{
   const openApiKeyDialog = useApiKeyDialog(props.report, props.onChange);
   const openPermissionsEditorDialog = usePermissionsEditorDialog(props.report);
   const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(props.report);
+  const [models, setModels] = useState([]);
+  const [modelsLoaded, setLoadModelsLoaded] = useState(false);
+  const [modelConfig, setModelConfig] = useState({});
+  const [modelConfigLoaded, setLoadModelConfigLoaded] = useState(false);
   const reportFlags = useReportFlags(props.report, dataSource)
 
   const { report, setReport, saveReport } = useReport(props.report);
-
+  const updateColors = useColorsReport(report, props.onChange);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
   const [colorBody, setColorBody] = useState(
     {
-                r: '241',
-                g: '112',
-                b: '19',
-                a: '1',
-               }
+      r: '241',
+      g: '112',
+      b: '19',
+      a: '1',
+    }
   );
   const [colorText, setColorText] = useState({
     r: '241',
@@ -152,13 +118,14 @@ export default function ReportPageHeader(/*{
         top: '3px',
       },
       swatch: {
-        padding: '5px',
+        padding: '5px 15px',
         background: '#fff',
         borderRadius: '1px',
         boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
         display: 'inline-block',
         marginRight: '10px',
         cursor: 'pointer',
+        lineHeight: '25px'
       },
       popover: {
         position: 'absolute',
@@ -175,7 +142,6 @@ export default function ReportPageHeader(/*{
   });
 
   const handleClick = (type) => {
-    console.log(type)
     setDisplayColorPicker(type)
   };
 
@@ -183,50 +149,150 @@ export default function ReportPageHeader(/*{
     setDisplayColorPicker(0)
   };
 
-  const handleChange = (color) => {
-    console.log('handleChange', displayColorPicker)
-    if (displayColorPicker === 2) {
-      setColorBody(color.rgb)
-    } else {
-      setColorText(color.rgb)
-    }
-  };
+  const hexToRgb = (hex) => {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+      return r + r + g + g + b + b;
+    });
+  
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+      a: 1
+    } : null;
+  }
 
-  const handleDataSourceChange = useCallback(
-    dataSourceId => {
-      if (dataSourceId) {
-        try {
-          localStorage.setItem("lastSelectedDataSourceId", dataSourceId);
-        } catch (e) {
-          // `localStorage.setItem` may throw exception if there are no enough space - in this case it could be ignored
+  const handleColorChange = useCallback(
+    (color, type, successMessage) => {
+      if (!color.rgb && color.startsWith("#")) {
+        color = {
+          rgb: hexToRgb(color),
+          hex: color,
         }
       }
-      if (report.data_source_id !== dataSourceId) {
-        recordEvent("update_data_source", "report", report.id, { dataSourceId });
-        const updates = {
-          data_source_id: dataSourceId,
-          latest_report_data_id: null,
-          latest_report_data: null,
-        };
-        setReport(extend(report.clone(), updates));
-        updateReport(updates, { successMessage: null }); // show message only on error
+      if (!color.rgb || !color.hex) {
+        return 0
       }
-    },
-    [report, setReport, updateReport]
+      if (type === 2) {
+        setColorBody(color.rgb)
+        updateColors('colorBody', color.hex, { successMessage });
+        let updates = { color_1: color.hex }
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage });
+      } else {
+        setColorText(color.rgb)
+        updateColors('colorText', color.hex, { successMessage });
+        let updates = { color_2: color.hex }
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage });
+      }
+    },[report, updateColors]
   );
 
-  useEffect(() => {
-    // choose data source id for new reports
-    if (dataSourcesLoaded && reportFlags.isNew) {
-      const firstDataSourceId = dataSources.length > 0 ? dataSources[0].id : null;
-      handleDataSourceChange(
-        chooseDataSourceId(
-          [report.data_source_id, localStorage.getItem("lastSelectedDataSourceId"), firstDataSourceId],
-          dataSources
-        )
-      );
+  const onChangeDataSource = useCallback( async dataSourceId => {
+    setLoadModelsLoaded(true)
+    recordEvent("update", "report", report.id, { dataSourceId });
+    try {
+        const res = await Model.query({data_source: dataSourceId});
+        const updates = {
+          data_source_id: dataSourceId,
+          isJustLanded: false
+        };
+        setModels(res.results);
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage: null });
+        setLoadModelsLoaded(false);
+    } catch(err) {
+        console.error("*ERR",err);
+        setLoadModelsLoaded(false);
     }
-  }, [report.data_source_id, reportFlags.isNew, dataSourcesLoaded, dataSources, handleDataSourceChange]);
+
+  }, [report, props.onChange, updateReport])
+
+  const handleModelChange = useCallback( async modelId => {
+      setLoadModelConfigLoaded(true)
+      try {
+        var res
+        if (report.isJustLanded) {
+          res = {appSettings: report.appSettings, timekeeper:{}}
+        } else {
+          res = await Model.getReporterConfig(modelId);
+        }
+        setModelConfig(res);
+        recordEvent("update", "report", report.id, { modelId });
+        var updates = {
+          // fix below line only one model id is enough
+          model: modelId,
+          model_id: modelId,
+          appSettings: res.appSettings,
+          timekeeper: res.timekeeper,
+          isJustLanded: false,
+        };
+        props.onChange(extend(report.clone(), updates));
+        updateReport(updates, { successMessage: null }); // show message only on error
+        setLoadModelConfigLoaded(false);
+      } catch(err) {
+        setLoadModelConfigLoaded(false);
+      }
+    }, [report, props.onChange, updateReport]
+  );
+  const handleIdChange = useCallback( async id => {
+    recordEvent("update", "report", report.id, { id });
+    props.onChange(extend(report.clone(), { id }));
+    updateReport({ id }, { successMessage: null });
+  });
+
+  const handleUpdateName = useCallback( name => {
+      recordEvent("update", "report", report.id, {name});
+      const changes = { name };
+      const options = {};
+
+      if (report.is_draft && clientConfig.autoPublishNamedQueries && name !== "New Report") {
+        changes.is_draft = false;
+        options.successMessage = "Report saved and published";
+      }
+      props.onChange(extend(report.clone(), changes));
+      updateReport(changes, { successMessage: null });
+    },
+    [report.id, report.is_draft, updateReport]
+  );
+
+  const handlePriceReport = () => {
+    if (document.querySelector("#meta-modal").style.opacity === "1") {
+      document.querySelector("#meta-modal").style.opacity = "0";
+      document.querySelector("#meta-modal").style['z-index'] = "-1";
+    } else {
+      document.querySelector("#meta-modal").style.opacity = "1";
+      document.querySelector("#meta-modal").style['z-index'] = "10";
+    }
+  }
+
+  const handleSaveReport = () => {
+    if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
+      recordEvent("create", report.id, { id: report.id });
+      updateReport({ is_draft: false }, { successMessage: null });
+      return saveReport();
+    }
+    var updates = {
+      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
+      color_1: report.color_1 || "#f17013",
+      color_2: report.color_2 || "#f17013",
+    };
+    props.onChange(extend(report.clone(), updates));
+    updateReport(updates, { successMessage: null });
+    if (!report.expression || !report.appSettings) {
+      setTimeout(()=>{
+        // need to render itself again with recent changes
+        document.querySelector("#_handleSaveReport").click();
+      }, 466);
+      return 0;
+    }
+    return saveReport();
+  }
+
 
   const moreActionsMenu = useMemo(
     () =>
@@ -292,7 +358,15 @@ export default function ReportPageHeader(/*{
     ]
   );
 
-  console.log(displayColorPicker)
+  useEffect(() => {
+    if (report.isJustLanded) {
+      handleColorChange(report.color_1, 2, null);
+      handleColorChange(report.color_2, 1, null);
+      onChangeDataSource(report.data_source_id);
+      handleModelChange(report.model_id);
+      handleIdChange(report.id);
+    }
+  }, [report.name]);
 
   return (
     <div className="report-page-header">
@@ -301,48 +375,55 @@ export default function ReportPageHeader(/*{
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={report} />}
             <h3>
-              <EditInPlace isEditable={queryFlags.canEdit} onDone={updateName} ignoreBlanks value={report.name} />
+              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={report.name} />
             </h3>
           </div>
-        </div>
-        <div className="report-tags">
-          <ReportTagsControl
-            tags={report.tags}
-            isDraft={queryFlags.isDraft}
-            isArchived={queryFlags.isArchived}
-            canEdit={queryFlags.canEdit}
-            getAvailableTags={getReportTags}
-            onEdit={updateTags}
-            tagsExtra={props.tagsExtra}
-          />
         </div>
       </div>
       <div className="header-actions">
         {props.headerExtra}
+        <div>
+          <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={handlePriceReport}>
+            <span className="icon icon-ribbon m-r-5"></span>Meta
+          </Button>
+          <ul id="meta-modal" className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical" role="menu"
+            onClick={(e) => e.stopPropagation()}>
+            <li className="ant-menu-item modal-left" role="menuitem">
+              <p id="_price" alt="0">Price: 0</p>         
+            </li>
+            <li className="ant-menu-item modal-right" role="menuitem">
+              <p id="_proceed_data" alt="0">Bytes: 0</p>
+            </li>
+          </ul>
+        </div>
         <div style={ styles.swatch } onClick={ () => handleClick(1) }>
           Text chart color: <div style={ styles.color } />
         </div>
         <div style={ styles.swatch } onClick={ () => handleClick(2) }>
           Chart color: <div style={ styles.colorBody } />
         </div>
-        { displayColorPicker ? <div style={ styles.popover }>
+        { displayColorPicker === 1 ? <div style={ styles.popover }>
           <div style={ styles.cover } onClick={ handleClose }/>
-          <SketchPicker color={ colorBody } onChangeComplete={ (color, type) => handleChange(color, type) } />
-          <button onClick={ handleClose }>Apply</button>
-          <button onClick={ handleClose }>Cancel</button>
+          <SketchPicker color={ colorText } onChangeComplete={ (color) => handleColorChange(color, 1) } />
+          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
+        </div> : null }
+        { displayColorPicker === 2 ? <div style={ styles.popover }>
+          <div style={ styles.cover } onClick={ handleClose }/>
+          <SketchPicker color={ colorBody } onChangeComplete={ (color) => handleColorChange(color, 2) } />
+          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
         </div> : null }
         {dataSourcesLoaded && (
-          <div className="data-source-box m-r-5 ">
+          <div className="data-source-box m-r-10">
             <span className="icon icon-datasource m-r-5"></span>
             <Select
               data-test="SelectDataSource"
-              placeholder="Choose data source..."
-              value={dataSource ? dataSource.id : undefined}
+              placeholder="Choose base data source..."
+              value={report ? report.data_source_id : undefined}
               disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
               loading={!dataSourcesLoaded}
               optionFilterProp="data-name"
               showSearch
-              onChange={handleDataSourceChange}>
+              onChange={onChangeDataSource}>
               {map(dataSources, ds => (
                 <Select.Option
                   key={`ds-${ds.id}`}
@@ -356,7 +437,29 @@ export default function ReportPageHeader(/*{
             </Select>
           </div>
         )}
-        <Button className="m-r-5" onClick={() => saveReport(report)}>
+        <div className="data-source-box m-r-10">
+          <span className="icon icon-datasource m-r-5"></span>
+          <Select
+            data-test="SelectModel"
+            placeholder="Choose model data source..."
+            value={report.model_id}
+            disabled={!reportFlags.canEdit || modelsLoaded || models.length === 0}
+            loading={modelsLoaded}
+            optionFilterProp="data-name"
+            showSearch
+            onChange={handleModelChange}>
+            {map(models, m => (
+              <Select.Option
+                key={`ds-${m.id}`}
+                value={m.id}
+                data-name={m.name}
+                data-test={`SelectModel${m.id}`}>
+                <span>{m.name}</span>
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+        <Button className="m-r-5" id="_handleSaveReport" onClick={handleSaveReport}>
           <span className="icon icon-save-floppy-disc m-r-5"></span> Save Report
         </Button>
         {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
@@ -371,15 +474,6 @@ export default function ReportPageHeader(/*{
               <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
                 <i className="fa fa-pencil-square-o" aria-hidden="true" />
                 <span className="m-l-5">Edit Source</span>
-              </Button>
-            )}
-            {props.sourceMode && (
-              <Button
-                className="m-r-5"
-                href={report.getUrl(false, props.selectedVisualization)}
-                data-test="ReportPageShowDataOnly">
-                <i className="fa fa-table" aria-hidden="true" />
-                <span className="m-l-5">Show Data Only</span>
               </Button>
             )}
           </span>
@@ -399,17 +493,16 @@ export default function ReportPageHeader(/*{
 
 ReportPageHeader.propTypes = {
   report: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.string | PropTypes.number,
     name: PropTypes.string,
     tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
-  dataSource: PropTypes.object,
+  dataSource: PropTypes.array,
   sourceMode: PropTypes.bool,
   selectedVisualization: PropTypes.number,
   headerExtra: PropTypes.node,
   tagsExtra: PropTypes.node,
-  onChangeColor: PropTypes.func,
-  onChange: PropTypes.func,
+  onChangeColor: PropTypes.func
 };
 
 ReportPageHeader.defaultProps = {
@@ -418,6 +511,5 @@ ReportPageHeader.defaultProps = {
   selectedVisualization: null,
   headerExtra: null,
   tagsExtra: null,
-  onChangeColor: () => {},
-  onChange: () => {},
+  onChangeColor: () => {}
 };

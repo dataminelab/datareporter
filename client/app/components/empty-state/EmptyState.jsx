@@ -50,7 +50,9 @@ function EmptyState({
 }) {
   const isAvailable = {
     dataSource: true,
-    query: true,
+    model: true,
+    // query: true,
+    reports: true,
     alert: showAlertStep,
     dashboard: showDashboardStep,
     inviteUsers: showInviteStep,
@@ -58,7 +60,9 @@ function EmptyState({
 
   const isCompleted = {
     dataSource: organizationStatus.objectCounters.data_sources > 0,
-    query: organizationStatus.objectCounters.queries > 0,
+    model: organizationStatus.objectCounters.models > 0,
+    // query: organizationStatus.objectCounters.queries > 0,
+    reports: organizationStatus.objectCounters.reports > 0,
     alert: organizationStatus.objectCounters.alerts > 0,
     dashboard: organizationStatus.objectCounters.dashboards > 0,
     inviteUsers: organizationStatus.objectCounters.users > 1,
@@ -105,15 +109,31 @@ function EmptyState({
             <Step
               show={isAvailable.dataSource}
               completed={isCompleted.dataSource}
-              text="Ask an account admin to connect a data source"
+              text="Ask an account admin to connect a Data Source"
+            />
+          )}
+          {currentUser.isAdmin && (
+            <Step
+              show={isAvailable.model}
+              completed={isCompleted.model}
+              url="models"
+              urlText="Create"
+              text="your first Model"
+            />
+          )}
+          {!currentUser.isAdmin && (
+            <Step
+              show={isAvailable.model}
+              completed={isCompleted.model}
+              text="Ask an account admin to create a Model"
             />
           )}
           <Step
-            show={isAvailable.query}
-            completed={isCompleted.query}
-            url="queries/new"
+            show={isAvailable.reports}
+            completed={isCompleted.reports}
+            url="reports/new"
             urlText="Create"
-            text="your first Query"
+            text="your first Report"
           />
           <Step
             show={isAvailable.alert}

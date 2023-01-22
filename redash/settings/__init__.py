@@ -524,14 +524,8 @@ DATA_SOURCE_TYPE_MAPPINGS = {
     "BIGNUMERIC": "NUMBER",
 }
 
-MAILCHIMP_SERVER = os.environ.get(
-    "MAILCHIMP_SERVER", os.environ.get("MAILCHIMP_SERVER")
-)
+MAILCHIMP_SERVER = os.environ.get("MAILCHIMP_SERVER")
 
-MAILCHIMP_API_KEY = os.environ.get(
-    "MAILCHIMP_API_KEY", os.environ.get("MAILCHIMP_API_KEY")
-)
+MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY")
 
-MAILCHIMP_LIST_ID = os.environ.get(
-    "MAILCHIMP_LIST_ID", os.environ.get("MAILCHIMP_LIST_ID")
-)
+MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")

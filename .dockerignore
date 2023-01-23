@@ -8,6 +8,7 @@ helm/
 nginx/
 node_modules/
 viz-lib/node_modules/
+dist/
 .tmp/
 .venv/
 venv/

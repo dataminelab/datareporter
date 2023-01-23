@@ -26,7 +26,7 @@ nodenv local 12.22.12
 
 * Build Plywood
     * Enter project root directory
-    * `cd plywood/server`
+      * `cd plywood/server`
     * `npm install` Installs all node dependencies to for plywood
     * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
 
@@ -49,7 +49,7 @@ Consider using (https://github.com/pyenv/pyenv#installation)[pyenv] for installi
 
 ```
 # install necessary python version
-pyenv install 3.8.7 
+pyenv install 3.8.7
 # make sure you run below command in the datareported folder
 # automatically select whenever you are in the current directory (or its subdirectories)
 pyenv local 3.8.7
@@ -65,7 +65,7 @@ source ./.venv/bin/activate
 Installation in Linux using virtualenvwrapper:
 ```
 
-sudo pacman -S yay 
+sudo pacman -S yay
 yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38
 ```

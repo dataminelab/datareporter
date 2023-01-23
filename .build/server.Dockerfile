@@ -1,16 +1,16 @@
 ARG NODE_VERSION=12.22.12
 # Datareporter plywood client
-#FROM node:${NODE_VERSION} as plywood-client-builder
-#COPY plywood/client/ /plywood/client/
-#WORKDIR  /plywood/client/
-#RUN npm install
+FROM node:${NODE_VERSION} as plywood-client-builder
+COPY plywood/server/client/ /plywood/client/
+WORKDIR  /plywood/client/
+RUN npm install
 # Datareporter web client
 FROM node:${NODE_VERSION} as frontend-builder
 WORKDIR /frontend
 COPY bin/build_frontend.sh .
 COPY client/ /frontend/client
 COPY viz-lib/ /frontend/viz-lib
-#COPY --from=plywood-client-builder  /plywood/client /frontend/plywood/client
+COPY --from=plywood-client-builder  /plywood/client /frontend/plywood/client
 RUN ./build_frontend.sh;
 
 # Datareporter plywood server

@@ -508,8 +508,6 @@ REQUESTS_ALLOW_REDIRECTS = parse_boolean(
 ENFORCE_CSRF = parse_boolean(
     os.environ.get("REDASH_ENFORCE_CSRF", "false")
 )
-<<<<<<< HEAD
-
 # Ignored data source types
 IGNORED_DATA_SOURCE_TYPES = {
     "bigquery": ["BYTE", "GEOGRAPHY", "RECORD"]
@@ -530,5 +528,3 @@ MAILCHIMP_SERVER = os.environ.get("MAILCHIMP_SERVER")
 MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY")
 
 MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
-=======
->>>>>>> ee244963f33b11fe6593460d9a5dd28e36ae3f1e

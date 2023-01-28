@@ -17,7 +17,7 @@ x-redash-environment: &redash-environment
   REDASH_MAIL_MAX_EMAILS: 100
   REDASH_MAIL_SERVER: "smtp.sendgrid.net"
   REDASH_MAIL_PORT: 465
-  REDASH_ENFORCE_CSRF: "true"
+  REDASH_ENFORCE_CSRF: "false"
   REDASH_MAIL_USERNAME: "apikey"
   MAIL_USE_TLS: "false"
   MAIL_USE_SSL: "true"

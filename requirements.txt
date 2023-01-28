@@ -68,12 +68,9 @@ werkzeug==0.16.1
 # It is not included by default because of the GPL license conflict.
 # ldap3==2.2.4
 greenlet==0.4.16
-<<<<<<< HEAD
 mailchimp-marketing==3.0.36
-=======
 inflection==0.5.1
 mock==4.0.3
 lzstring==1.0.4
 pydash==5.0.1
 python-dotenv>=0.21.0
->>>>>>> ee244963f33b11fe6593460d9a5dd28e36ae3f1e

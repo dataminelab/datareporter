@@ -49,7 +49,7 @@ Consider using (https://github.com/pyenv/pyenv#installation)[pyenv] for installi
 
 ```
 # install necessary python version
-pyenv install 3.8.7 
+pyenv install 3.8.7
 # make sure you run below command in the datareported folder
 # automatically select whenever you are in the current directory (or its subdirectories)
 pyenv local 3.8.7
@@ -65,7 +65,7 @@ source ./.venv/bin/activate
 Installation in Linux using virtualenvwrapper:
 ```
 
-sudo pacman -S yay 
+sudo pacman -S yay
 yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38
 ```
@@ -150,4 +150,5 @@ docker-compose stop server && docker-compose run --rm --service-ports server deb
 if you are having issue building docker images, try to remove ~/.docker/config.json file
 ```bash
 rm  ~/.docker/config.json
+rm  ~/.docker -r
 ```

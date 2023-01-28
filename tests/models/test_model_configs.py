@@ -4,7 +4,8 @@ from tests import BaseTestCase
 
 class TestModelConfigs(BaseTestCase):
     def test_returns_by_id(self):
-        config = self.factory.create_model_config()
+        model = self.factory.create_model()
+        config = self.factory.create_model_config(model=model)
 
         actual_config = ModelConfig.get_by_id(config.id)
 

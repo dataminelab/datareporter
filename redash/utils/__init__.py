@@ -99,8 +99,14 @@ class JSONEncoder(simplejson.JSONEncoder):
             result = binascii.hexlify(o).decode()
         elif isinstance(o, bytes):
             result = binascii.hexlify(o).decode()
+        elif "queries" in dir(o):
+            # ReportSerializer
+            result = o.queries
+        elif "isJustLanded" in dir(o):
+            # single report | api/report/<int>
+            return o
         else:
-            result = super(JSONEncoder, self).default(o)
+            result = super(JSONEncoder, self).default(o) # TypeError: Object of type ReportSerializer is not JSON serializable
         return result
 
 

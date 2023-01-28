@@ -167,6 +167,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const seriesRefs = Set(series.series.map(series => series.key()));
     const defaultSort = dataCube.getDefaultSortMeasure();
     if (seriesRefs.has(defaultSort)) return defaultSort;
+    //@ts-ignore
     return seriesRefs.first();
   }
 

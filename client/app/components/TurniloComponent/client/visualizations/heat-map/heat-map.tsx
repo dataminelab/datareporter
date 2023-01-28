@@ -46,7 +46,7 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
   }
 
   renderInternals() {
-    const { essence, stage } = this.props;
+    const { essence, stage, report } = this.props;
 
     const { preparedDataset: dataset } = this.state;
 
@@ -56,6 +56,7 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
       <LabelledHeatmap
         stage={stage}
         dataset={dataset.data}
+        report={report}
         xScale={x}
         yScale={y}
         colorScale={color}

@@ -38,7 +38,7 @@ function BeaconConsent() {
 
   return (
     <DynamicComponent name="BeaconConsent">
-      <div className="m-t-10 tiled">
+      {/* <div className="m-t-10 tiled">
         <Card
           title={
             <>
@@ -70,7 +70,7 @@ function BeaconConsent() {
             </Text>
           </div>
         </Card>
-      </div>
+      </div> */}
     </DynamicComponent>
   );
 }

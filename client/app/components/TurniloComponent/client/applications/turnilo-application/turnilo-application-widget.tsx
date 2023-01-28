@@ -83,18 +83,15 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     let viewType = this.getViewTypeFromHash(hash);
 
     if (!dataCubes.length) {
-
       this.setState({
         viewType: NO_DATA,
         viewHash: "",
         appSettings
       });
-
       return;
     }
 
     const viewHash = this.getViewHashFromHash(hash);
-
     let selectedItem: DataCube;
 
     if (this.viewTypeNeedsAnItem(viewType)) {
@@ -156,7 +153,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   parseHash(hash: string): string[] {
-    if (hash[0] === "#") hash = hash.substr(1);
+    if (hash[0] === "#") hash = hash.slice(1);
     return hash.split("/");
   }
 
@@ -259,10 +256,12 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   render() {
-    return <React.StrictMode>
+    // React.StrictMode is giving us a lot of warnings about deprecated lifecycle methods
+    // and the project is too old to change everything to hooks
+    return <>
       <main className="turnilo-application">
         {this.renderView()}
       </main>
-    </React.StrictMode>;
+    </>;
   }
 }

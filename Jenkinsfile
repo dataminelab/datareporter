@@ -11,6 +11,7 @@ def kustomizeAndDeploy(overlay, cluster, imageNames) {
             /usr/local/bin/kustomize edit set image ${imageName} && cd -")
     }
     echo "Deploying"
+    sh("kubectl config get-contexts")
     sh("/usr/local/bin/kustomize build kubernetes/overlays/${overlay} | kubectl --context=${cluster} --namespace=${overlay} apply -f -")
 }
 
@@ -20,14 +21,17 @@ node {
 
     properties([
         parameters([
-        booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging')
+            booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Deploy this branch to staging'),
+            booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip unit and integration tests'),
+            booleanParam(name: 'DOCKER_NO_CACHE', defaultValue: false, description: 'Force docker build with no cache')
         ])
     ])
 
     def appName = 'datareporter/datareporter'
     def appNginxName = 'datareporter/nginx'
+    def appPlywoodServerName = 'datareporter/plywood-server'
     def registryRegion = 'eu.gcr.io'
-    def cluster = 'do-fra1-k8s-1-18-8-do-1-fra1'
+    def cluster = 'do-fra1-k8s-1-24-4-do-0-fra1-1665788974923'
     def imageNames = []
 
     sh("git fetch --tags origin")
@@ -42,16 +46,37 @@ node {
     --label git_sha=${shortCommit} \
     --label build_id=${env.BUILD_ID} \
     "
-    def buildArgs = "--build-arg skip_dev_deps=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
-
+    def buildArgs = "--build-arg skip_dev_deps=true --build-arg skip_frontend_build=true --build-arg APP_VERSION='${latestTagRelease}-${shortCommit}'"
+    def noCache = params.DOCKER_NO_CACHE ? "--no-cache" : ""
     docker.withRegistry("https://${registryRegion}/", "gcr:datareporter") {
 
         stage("Build DR docker image",) {
             def imageNameDr = "${registryRegion}/${appName}:${latestTagRelease}-${shortCommit}"
             echo "Build docker image for: ${appName}"
 
-            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} .")
+            dockerimageDr = docker.build("${appName}", "${imageLabel} ${buildArgs} ${noCache} .")
             imageNames.add("${registryRegion}/${appName}=" + imageNameDr)
+        }
+
+        stage("Run tests") {
+            sh("docker-compose build")
+            if (params.SKIP_TESTS == false) {
+                lock("tests"){
+                    sh("docker-compose up -d postgres")
+                    try{
+                        retry(5){
+                            sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"DROP DATABASE IF EXISTS tests\"")
+                        }
+                        sh("docker-compose run --rm postgres psql -h postgres -U postgres -c \"CREATE DATABASE tests\"")
+                        sh("mkdir -p ./logs && touch ./logs/results.xml && chmod 666 ./logs/results.xml")
+                        sh("docker-compose run server tests --junitxml=/app/logs/results.xml")
+                        sh("find . -name *.xml")
+                        junit allowEmptyResults: true, skipPublishingChecks: true, testResults: './logs/results.xml'
+                    } finally {
+                        sh("docker-compose down")
+                    }
+                }
+            }
         }
 
         stage("Push DR docker image") {
@@ -64,6 +89,26 @@ node {
             for (tag in imageTags) {
                 echo("Pushing docker image for ${appName} with tag ${tag}")
                 dockerimageDr.push(tag)
+            }
+        }
+
+        stage("Build plywood-server docker image",) {
+            echo "Build docker image for: ${appPlywoodServerName}"
+            def imageNamePlywoodServer = "${registryRegion}/${appPlywoodServerName}:${latestTagRelease}-${shortCommit}"
+            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} ${noCache} plywood/server")
+            imageNames.add("${registryRegion}/${appPlywoodServerName}=" + imageNamePlywoodServer)
+        }
+
+        stage("Push plywood-server docker image") {
+
+            def imageTags = []
+            imageTags.add("${latestTagRelease}-${shortCommit}")
+            imageTags.add("${shortCommit}_${env.BUILD_ID}")
+            imageTags.add("${env.BRANCH_NAME}".replaceAll("/", "."))
+
+            for (tag in imageTags) {
+                echo("Pushing docker image for ${appPlywoodServerName} with tag ${tag}")
+                dockerimagePlywoodServer.push(tag)
             }
         }
 
@@ -91,15 +136,15 @@ node {
 
     stage("Deploy") {
         switch (env.BRANCH_NAME) {
-          
+
           case [ 'master' ]:
             kustomizeAndDeploy("prod", cluster, imageNames)
             break
-  
+
           case [ 'develop' ]:
             kustomizeAndDeploy("staging", cluster, imageNames)
             break
-  
+
           default:
             if (params.DEPLOY == true) {
                 echo "Deploying because user choose manual release"

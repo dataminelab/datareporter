@@ -1,5 +1,6 @@
 import logging
 import time
+import json
 
 from flask import make_response, request
 from flask_restful import abort
@@ -78,15 +79,9 @@ class DataSourceResource(BaseResource):
 
         try:
             models.db.session.commit()
-        except IntegrityError as e:
-            if req["name"] in str(e):
-                abort(
-                    400,
-                    message="Data source with the name {} already exists.".format(
-                        req["name"]
-                    ),
-                )
-
+        except IntegrityError as err:
+            if req["name"] in str(err):
+                abort(400, message=f"Data source with the name {req['name']} already exists.")
             abort(400)
 
         self.record_event(
@@ -168,15 +163,9 @@ class DataSourceListResource(BaseResource):
             )
 
             models.db.session.commit()
-        except IntegrityError as e:
-            if req["name"] in str(e):
-                abort(
-                    400,
-                    message="Data source with the name {} already exists.".format(
-                        req["name"]
-                    ),
-                )
-
+        except IntegrityError as err:
+            if req["name"] in str(err):
+                abort(400, message=f"Data source with the name {req['name']} already exists.")
             abort(400)
 
         self.record_event(
@@ -264,7 +253,19 @@ class DataSourceTestResource(BaseResource):
             job.refresh()
 
         if isinstance(job.result, Exception):
-            response = {"message": str(job.result), "ok": False}
+            message = str(job.result)
+            if len(job.result.args):
+                first_arg = job.result.args[0]
+                if isinstance(first_arg, bytes):
+                    # BigQuery returns big json object as binary string, so we need to decode it
+                    json_object = json.loads(first_arg.decode("utf-8"))
+                    if "error" in json_object:
+                        message = json_object["error"]
+                        if "message" in json_object:
+                            message = json_object["error"]['message']
+                elif isinstance(first_arg, str):
+                    message = first_arg
+            response = {"message": message, "ok": False}
         else:
             response = {"message": "success", "ok": True}
 

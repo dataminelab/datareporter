@@ -28,3 +28,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: datareporter-scheduler
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plywood-server
+spec:
+  template:
+    spec:
+      containers:
+      - name: plywood-server
+        image: eu.gcr.io/datareporter/plywood-server:_

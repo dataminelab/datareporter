@@ -21,6 +21,9 @@ import { ContinuousRange } from "../utils/continuous-types";
 type DataPoint = [number, number];
 
 function areDetached(a: PlywoodRange | null, b: PlywoodRange | null): boolean {
+  if (!a.end || !b.start) {
+    return false;
+  }
   return a && b && a.end.valueOf() !== b.start.valueOf();
 }
 
@@ -50,9 +53,15 @@ function shouldInsertNextPoint(dataset: Datum[], currentIndex: number, getX: Una
 
 export function prepareDataPoints(dataset: Datum[], getX: Unary<Datum, ContinuousRange>, getY: Unary<Datum, number>): DataPoint[] {
   return flatMap(dataset, (datum, index) => {
-    const range = getX(datum);
-    const x = range.midpoint().valueOf();
-    const maybeY = getY(datum);
+    const range = getX(datum) as ContinuousRange;
+    var x;
+    try {
+      x = range.midpoint().valueOf();
+    } catch (e) {
+      // hard coding this to instead of using the range.midpoint() function
+      x = new Date(range.toString()).valueOf();
+    }
+    const maybeY = getY(datum) as number;
     const y = isNaN(maybeY) ? 0 : maybeY;
 
     return concatTruthy<DataPoint>(

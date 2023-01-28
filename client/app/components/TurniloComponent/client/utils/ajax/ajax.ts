@@ -16,12 +16,26 @@
  */
 
 import axios from "axios";
-import { ChainableExpression, Dataset, DatasetJS, Environment, Executor, Expression, SplitExpression } from "plywood";
+import {
+  ChainableExpression,
+  Dataset,
+  DatasetJS,
+  Environment,
+  Executor,
+  Expression,
+  LimitExpression,
+  SplitExpression
+} from "plywood";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 
+interface APIResponse {
+    status: number;
+    data: DatasetJS;
+}
+
 function getSplitsDescription(ex: Expression): string {
-  var splits: string[] = [];
+  const splits: string[] = [];
   ex.forEach(ex => {
     if (ex instanceof ChainableExpression) {
       ex.getArgumentExpressions().forEach(action => {
@@ -41,13 +55,14 @@ function clientTimeout(cluster: Cluster): number {
   return clusterTimeout + CLIENT_TIMEOUT_DELTA;
 }
 
-var reloadRequested = false;
+let reloadRequested = false;
 
 function reload() {
   if (reloadRequested) return;
   reloadRequested = true;
-  window.location.reload(true);
+  window.location.reload();
 }
+
 
 export interface AjaxOptions {
   method: "GET" | "POST";
@@ -58,17 +73,34 @@ export interface AjaxOptions {
 
 const validateStatus = (s: number) => 200 <= s && s < 300 || s === 304;
 
+var buttonVisible = false;
+function setPriceButton(meta: any) {
+  const mediaButton = document.getElementById("meta-button");
+  if (!mediaButton) return;
+  if (!buttonVisible) {
+    buttonVisible = true;
+    mediaButton.style.display = "block";
+  }
+  let priceDiv = document.querySelector("#_price");
+  let currentPrice = meta.price + parseInt(priceDiv.getAttribute("alt"))
+  priceDiv.setAttribute("alt", currentPrice);
+  priceDiv.innerHTML = "Price: " + currentPrice.toString().slice(0,5) + " $";     
+  let bytesDiv = document.querySelector("#_proceed_data");
+  let currentBytes = meta.proceed_data + parseInt(bytesDiv.getAttribute("alt"))
+  bytesDiv.setAttribute("alt", currentBytes);
+  let gbType = currentBytes * 1e-9;
+  bytesDiv.innerHTML = "Bytes: " + gbType.toString().slice(0,5) + " GB";
+}
+
 export class Ajax {
   static version: string;
 
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
+  private static model_id: number;
+  static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
-    if (data) {
-      if (Ajax.version) data.version = Ajax.version;
-      if (Ajax.settingsVersionGetter) data.settingsVersion = Ajax.settingsVersionGetter();
-    }
 
     return axios({ method, url, data, timeout, validateStatus })
       .then(res => {
@@ -91,15 +123,57 @@ export class Ajax {
       });
   }
 
-  static queryUrlExecutorFactory({ name, cluster }: DataCube): Executor {
-    const timeout = clientTimeout(cluster);
-    return (ex: Expression, env: Environment = {}) => {
+  static queryUrlExecutorFactory(dataCube: DataCube): Executor {
+    const timeout = clientTimeout(dataCube.cluster);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    function timeoutQuery(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function subscribe(input: AjaxOptions): Promise<APIResponse> {
+        const { data, method, timeout , url } = input;
+        const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
+
+        if ([1, 2].indexOf(res.status) >= 0) {
+            await timeoutQuery(2000);
+            return await subscribe(input);
+       } else return res;
+    }
+
+    async function  subscribeToFilter(ex: LimitExpression, modelId: number) {
       const method = "POST";
-      const url = `plywood?by=${getSplitsDescription(ex)}`;
-      const timezone = env ? env.timezone : null;
-      const data = { dataCube: name, expression: ex.toJS(), timezone };
-      return Ajax.query<{result: DatasetJS}>({ method, url, timeout, data })
-        .then(res => Dataset.fromJS(res.result));
+      const url = `api/reports/generate/${modelId}/filter`;
+      const data = { expression : ex.toJS() };
+      return subscribe({ method, url, timeout, data });
+    }
+
+    async function  subscribeToSplit(hash: string, modelId: number) {
+      const method = "POST";
+      const url = `api/reports/generate/${modelId}`;
+      const data = { hash };
+      return subscribe({ method, url, timeout, data });
+    }
+
+    return async (ex: Expression, env: Environment = {}) => {
+      const modelId = this.model_id;
+      if (ex instanceof  LimitExpression) {
+        const sub = await subscribeToFilter(ex, modelId);
+        return Dataset.fromJS(sub.data);
+      }
+      var hash;
+      if (window.location.hash) {
+        hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
+      } else {
+        hash = this.hash;
+      }
+      const sub = await subscribeToSplit(hash, modelId);
+      // @ts-ignore
+      if (sub.meta) {
+        // @ts-ignore
+        setPriceButton(sub.meta);
+      }
+      return Dataset.fromJS(sub.data);
     };
   }
 }

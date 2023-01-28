@@ -258,8 +258,8 @@ RQ_WORKER_JOB_LOG_FORMAT = os.environ.get(
     "REDASH_RQ_WORKER_JOB_LOG_FORMAT",
     (
         LOG_PREFIX + "[%(asctime)s][PID:%(process)d][%(levelname)s][%(name)s] "
-        "job.func_name=%(job_func_name)s "
-        "job.id=%(job_id)s %(message)s"
+                     "job.func_name=%(job_func_name)s "
+                     "job.id=%(job_id)s %(message)s"
     ),
 )
 
@@ -508,6 +508,7 @@ REQUESTS_ALLOW_REDIRECTS = parse_boolean(
 ENFORCE_CSRF = parse_boolean(
     os.environ.get("REDASH_ENFORCE_CSRF", "false")
 )
+<<<<<<< HEAD
 
 # Ignored data source types
 IGNORED_DATA_SOURCE_TYPES = {
@@ -529,3 +530,5 @@ MAILCHIMP_SERVER = os.environ.get("MAILCHIMP_SERVER")
 MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY")
 
 MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
+=======
+>>>>>>> ee244963f33b11fe6593460d9a5dd28e36ae3f1e

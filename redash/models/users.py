@@ -23,7 +23,6 @@ from .types import json_cast_property, MutableDict, MutableList
 
 logger = logging.getLogger(__name__)
 
-
 LAST_ACTIVE_KEY = "users:last_active_at"
 
 
@@ -233,7 +232,7 @@ class User(
         return cls.query.filter(cls.email == email)
 
     def hash_password(self, password):
-        self.password_hash = pwd_context.encrypt(password)
+        self.password_hash = pwd_context.hash(password)
 
     def verify_password(self, password):
         return self.password_hash and pwd_context.verify(password, self.password_hash)
@@ -272,6 +271,13 @@ class Group(db.Model, BelongsToOrgMixin):
         "list_data_sources",
         "view_model",
         "edit_model",
+        "create_model",
+        "edit_model_config",
+        "view_model_config",
+        "view_report",
+        "edit_report",
+        "create_report",
+        "generate_report",
     ]
 
     BUILTIN_GROUP = "builtin"

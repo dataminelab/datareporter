@@ -162,19 +162,28 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
   renderCalendarNav(startDate: Date): JSX.Element {
     const { timezone } = this.props;
 
+    const handleParentClick = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation();
+      e.currentTarget.parentElement.click();      
+    };
+
     return <div className="calendar-nav">
       <div
         className="caret left"
         onClick={this.goToPreviousMonth}
-      >
-        <SvgIcon svg={require("../../icons/full-caret-left.svg")} />
+      > 
+        <div className="caret-svg" onClick={handleParentClick}>
+          <SvgIcon svg={require("../../icons/full-caret-left.svg")}/>
+        </div>
       </div>
       {formatYearMonth(startDate, timezone)}
       <div
         className="caret right"
         onClick={this.goToNextMonth}
-      >
-        <SvgIcon svg={require("../../icons/full-caret-right.svg")} />
+      > 
+        <div className="caret-svg" onClick={handleParentClick}>
+          <SvgIcon svg={require("../../icons/full-caret-right.svg")}/>
+        </div>
       </div>
     </div>;
   }

@@ -1,0 +1,6 @@
+#!/bin/bash -eu
+
+mkdir -p build
+
+# Expression parser, SQL parser
+node extra/pegjs.js

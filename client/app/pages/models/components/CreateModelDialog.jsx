@@ -4,9 +4,13 @@ import Alert from "antd/lib/alert";
 import DynamicForm from "@/components/dynamic-form/DynamicForm";
 import { wrap as wrapDialog, DialogPropType } from "@/components/DialogWrapper";
 import recordEvent from "@/services/recordEvent";
+import DataSource from "@/services/data-source";
 
 function CreateModelDialog({ dialog, dataSources, model }) {
   const [error, setError] = useState(null);
+  const [tables, setTables] = useState([]);
+  const [loadTables, setLoadTables] = useState(false);
+
   const formRef = useRef();
 
   useEffect(() => {
@@ -26,32 +30,52 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     }
   }, [dialog]);
 
+  const onChangeConnection = useCallback(async (id) => {
+    setLoadTables(true)
+    try {
+      const res = await DataSource.getTables(id);
+      setTables(res);
+      setLoadTables(false);
+    } catch(err) {
+      setError(err);
+      setLoadTables(false);
+    }
+
+  }, [tables])
+
+
   const formFields = useMemo(() => {
     const common = { required: true, props: { onPressEnter: createModel } };
+    const dataSourceProps = { required: true, props: { onPressEnter: createModel, onSelect: (id) => onChangeConnection(id) } };
+    const tableProps = { required: true, props: {disabled: tables.length === 0, loading: loadTables, onPressEnter: createModel } };
     const optionsConnection = dataSources.map((item) => {
         return {
           name: item.name,
           value: item.id
         }
-      })
+    })
+    const optionsTable = tables.map((item) => {
+        return {
+          name: item.name,
+          value: item.name
+        }
+    })
     if (model)  {
       return [
         { ...common, name: "name", title: "Name", type: "text", autoFocus: true, initialValue: model.name },
-        { ...common, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection, initialValue: model.data_source_id },
-/*        { ...common, name: "schemas", title: "Schemas", type: "text", required: false, initialValue: model.schemas },
-        { ...common, name: "ignore_prefixes", title: "Ignore Prefixes", type: "text", required: false, initialValue: model.ignore_prefixes },*/
+        {...dataSourceProps, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection, initialValue: model.data_source_id },
+        { ...tableProps, name: "table", title: "Table", type: "select", options: optionsTable, initialValue: model.table },
       ];
     } else {
       return [
         { ...common, name: "name", title: "Name", type: "text", autoFocus: true },
-        { ...common, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection },
-/*        { ...common, name: "schemas", title: "Schemas", type: "text", required: false },
-        { ...common, name: "ignore_prefixes", title: "Ignore Prefixes", type: "text", required: false },*/
+        { ...dataSourceProps, name: "data_source_id", title: "Connection", type: "select", onChange: onChangeConnection, options: optionsConnection },
+        { ...tableProps, name: "table", title: "Table", type: "select", options: optionsTable }
       ];
     }
 
 
-  }, [createModel]);
+  }, [createModel, onChangeConnection]);
 
   return (
     <Modal {...dialog.props} title={ !model ? 'Create a New Model' : 'Edit a Model'}

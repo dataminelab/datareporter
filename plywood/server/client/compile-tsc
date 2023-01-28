@@ -1,0 +1,6 @@
+#!/bin/bash -eu
+
+mkdir -p build
+
+node_modules/.bin/tsc
+./rrollup

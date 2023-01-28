@@ -35,6 +35,7 @@ import "./turnilo-application.scss";
 
 export interface TurniloApplicationProps {
   version: string;
+  report?: any;
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
@@ -80,10 +81,15 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   componentWillMount() {
-    const { appSettings, initTimekeeper } = this.props;
+    const { appSettings, initTimekeeper, report } = this.props;
     const { dataCubes } = appSettings;
 
-    const hash = window.location.hash;
+    var hash 
+    if (report.hash && report.source_name) {
+      hash = report.source_name + "/4/" + report.hash 
+    } else {
+      hash = window.location.hash;
+    }
     let viewType = this.getViewTypeFromHash(hash);
 
     if (!dataCubes.length) {
@@ -169,7 +175,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   parseHash(hash: string): string[] {
-    if (hash[0] === "#") hash = hash.substr(1);
+    if (hash[0] === "#") hash = hash.slice(1);
     return hash.split("/");
   }
 
@@ -256,7 +262,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   renderView() {
-    const { maxFilters } = this.props;
+    const { maxFilters, report } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { dataCubes, customization } = appSettings;
 
@@ -281,6 +287,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
           dataCube={selectedItem}
           appSettings={appSettings}
           initTimekeeper={timekeeper}
+          report={report}
           hash={viewHash}
           changeEssence={this.updateEssenceInHash}
           changeDataCubeAndEssence={this.changeDataCubeWithEssence}
@@ -300,13 +307,15 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   render() {
-    return <React.StrictMode>
+    // React.StrictMode is giving us a lot of warnings about deprecated lifecycle methods
+    // and the project is too old to change everything to hooks
+    return <>
       <main className="turnilo-application">
         {this.renderView()}
         {this.renderAboutModal()}
         <Notifications />
         <Questions />
       </main>
-    </React.StrictMode>;
+    </>;
   }
 }

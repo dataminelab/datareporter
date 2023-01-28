@@ -8,7 +8,8 @@ from redash.models import Group, Organization, User, db
 from redash.tasks.general import subscribe
 from wtforms import BooleanField, Form, PasswordField, StringField, validators
 from wtforms.fields.html5 import EmailField
-
+import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing.api_client import ApiClientError
 
 class SetupForm(Form):
     name = StringField("Name", validators=[validators.InputRequired()])
@@ -50,6 +51,18 @@ def create_org(org_name, user_name, email, password):
 
     return default_org, user
 
+def add_member_mailchimp(email, name, org_name):
+    try:
+      client = MailchimpMarketing.Client()
+      client.set_config({
+        "api_key": settings.MAILCHIMP_API_KEY,
+        "server": settings.MAILCHIMP_SERVER
+      })
+
+      response = client.lists.add_list_member(settings.MAILCHIMP_LIST_ID, {"email_address": email, "merge_fields": {"FNAME": name, "ONAME": org_name}, "status": "subscribed"})
+    except ApiClientError as error:
+      raise Exception("Error: {}".format(error.text))
+
 
 @routes.route("/setup", methods=["GET", "POST"])
 def setup():
@@ -70,7 +83,7 @@ def setup():
 
         # signup to newsletter if needed
         if form.newsletter.data or form.security_notifications:
-            subscribe.delay(form.data)
+            add_member_mailchimp(form.email.data, form.name.data, form.org_name.data)
 
         return redirect(url_for("redash.index", org_slug=None))
 

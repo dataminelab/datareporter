@@ -16,6 +16,10 @@ x-redash-environment: &redash-environment
   REDASH_MAIL_DEFAULT_SENDER: "redash@example.com"
   REDASH_MAIL_SERVER: "email"
   REDASH_ENFORCE_CSRF: "false"
+  # REDASH_ENFORCE_CSRF: "true"
+  MAILCHIMP_SERVER: "us1"
+  MAILCHIMP_API_KEY: "e4c804be8fbd3c445a0fef9d05b6fc27"
+  MAILCHIMP_LIST_ID: "e48180787b"
 services:
   server:
     <<: *redash-service

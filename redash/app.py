@@ -49,6 +49,8 @@ def create_app():
     request_metrics.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    app.config['MAIL_USE_TLS'] = False
+    app.config['MAIL_USE_SSL'] = True
     mail.init_app(app)
     authentication.init_app(app)
     limiter.init_app(app)

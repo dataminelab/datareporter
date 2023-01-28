@@ -13,9 +13,15 @@ x-redash-environment: &redash-environment
   REDASH_REDIS_URL: "redis://redis:6379/0"
   REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
-  REDASH_MAIL_DEFAULT_SENDER: "redash@example.com"
-  REDASH_MAIL_SERVER: "email"
+  REDASH_MAIL_DEFAULT_SENDER: "mirkanbaba1@gmail.com"
+  REDASH_MAIL_MAX_EMAILS: 100
+  REDASH_MAIL_SERVER: "smtp.sendgrid.net"
+  REDASH_MAIL_PORT: 465
   REDASH_ENFORCE_CSRF: "true"
+  REDASH_MAIL_USERNAME: "apikey"
+  MAIL_USE_TLS: "false"
+  MAIL_USE_SSL: "true"
+  REDASH_MAIL_PASSWORD: "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"
   MAILCHIMP_SERVER: "us1"
   MAILCHIMP_API_KEY: "e4c804be8fbd3c445a0fef9d05b6fc27"
   MAILCHIMP_LIST_ID: "e48180787b"

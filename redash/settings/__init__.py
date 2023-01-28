@@ -528,7 +528,3 @@ MAILCHIMP_SERVER = os.environ.get("MAILCHIMP_SERVER")
 MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY")
 
 MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
-
-MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
-
-MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")

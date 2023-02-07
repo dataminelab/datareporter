@@ -1,30 +1,36 @@
-ARG NODE_VERSION=12.22.12
-# Datareporter plywood client
-FROM node:${NODE_VERSION} as plywood-client-builder
-COPY plywood/server/client/ /plywood/client/
-WORKDIR  /plywood/client/
-RUN npm install
+ARG NODE_VERSION=12.18.3
+
 # Datareporter web client
 FROM node:${NODE_VERSION} as frontend-builder
 WORKDIR /frontend
 COPY bin/build_frontend.sh .
 COPY client/ /frontend/client
 COPY viz-lib/ /frontend/viz-lib
-COPY --from=plywood-client-builder  /plywood/client /frontend/plywood/client
+COPY plywood/server/client /frontend/plywood/server/client
 RUN ./build_frontend.sh;
 
 # Datareporter plywood server
-FROM node:${NODE_VERSION} as plywood-builder
-ARG NODE_VERSION=12.22.12 #requires to be repeated as it needs to be avilable as env variable
-COPY plywood/server/ /plywood/server/
-COPY --from=plywood-client-builder  /plywood/client /plywood/client
-COPY bin/build_plywood.sh .
-RUN ./build_plywood.sh
+FROM node:${NODE_VERSION}-alpine as plywood-builder
+ARG NODE_VERSION=12.18.3 #requires to be repeated as it needs to be avilable as env variable
+RUN apk update
+RUN apk add git
+RUN apk add bash
+WORKDIR /app
+RUN echo "this folder is empty right now"
+COPY  plywood/server/ /app/
+WORKDIR /app/client
+RUN echo "Building client before building and starting server"
+RUN npm install
+RUN npm run build
+WORKDIR /app
+RUN echo "Now build server"
+RUN npm install
+RUN npm run build
 
 # Datareporter app
 FROM python:3.7-slim-buster
 EXPOSE 5000
-ARG NODE_VERSION=12.22.12 #requires to be repeated as it needs to be avilable as env variable
+ARG NODE_VERSION=12.18.3 #requires to be repeated as it needs to be avilable as env variable
 # Controls whether to install extra dependencies needed for all data sources.
 ARG skip_ds_deps
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
@@ -103,10 +109,17 @@ RUN  pip install -r requirements.txt;
 RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
 ENV PLYWOOD_SERVER_URL="http://localhost:3000"
-COPY --chown=redash .  /app
-COPY --from=frontend-builder --chown=redash /frontend/client/dist /app/client/dist
-COPY --from=plywood-builder --chown=redash /plywood/server/dist /app/plywood/dist
-COPY --from=plywood-builder --chown=redash   /plywood/server/node_modules/ /app/plywood/node_modules/
+COPY --chown=redash redash  /app/redash
+COPY --chown=redash bin  /app/bin
+COPY --chown=redash tests  /app/tests
+COPY --chown=redash migrations  /app/migrations/
+COPY --chown=redash requirements.txt /app
+COPY --chown=redash *.cfg py* *py /app
+COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
+COPY --from=plywood-builder --chown=redash /app/dist /app/plywood/dist
+COPY --from=plywood-builder --chown=redash   /app/node_modules/ /app/plywood/node_modules/
+COPY --from=plywood-builder --chown=redash   /app/client/build /app/plywood/client/build
+COPY --from=plywood-builder --chown=redash   /app/client/package.json /app/plywood/client/package.json
 COPY bin/etc /etc
 USER root
 CMD ["/init"]

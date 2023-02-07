@@ -6,8 +6,9 @@ client/.tmp/
 .idea/
 helm/
 nginx/
-node_modules/
-viz-lib/node_modules/
+/client/node_modules
+/plywood/server/node_modules
+/plywood/server/client/node_modules
 dist/
 .tmp/
 .venv/

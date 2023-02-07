@@ -29,3 +29,6 @@ client/cypress/videos
 # dist folders
 client/dist
 plywood/dist
+
+#build pack dir
+image

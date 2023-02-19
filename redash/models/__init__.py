@@ -122,6 +122,8 @@ class DataSource(BelongsToOrgMixin, db.Model):
             "syntax": self.query_runner.syntax,
             "paused": self.paused,
             "pause_reason": self.pause_reason,
+            "tables": [i.table for i in self.models],
+            "table_ids": [i.id for i in self.models],
         }
 
         if all:

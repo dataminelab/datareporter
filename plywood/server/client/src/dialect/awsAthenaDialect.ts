@@ -68,7 +68,7 @@ export class AwsAthenaDialect extends SQLDialect {
   public castExpression(inputType: PlyType, operand: string, cast: string): string {
     let castFunction = AwsAthenaDialect.CAST_TO_FUNCTION[cast][inputType];
     if (!castFunction)
-      throw new Error(`unsupported cast from ${inputType} to ${cast} in BigQuery dialect`);
+      throw new Error(`unsupported cast from ${inputType} to ${cast} in Amazon Athena dialect`);
     return castFunction.replace(/\$\$/g, operand);
   }
 

@@ -1,0 +1,8 @@
+# Buildpacks to include in builder
+
+
+# Stack that will be used by the builder
+[stack]
+id = "com.dataminelab.datareporter"
+run-image = "dataminelab/datareporter-run:latest"
+build-image = "dataminelab/datareporter-build:latest"

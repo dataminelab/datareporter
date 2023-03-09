@@ -1,4 +1,5 @@
 #!/command/execlineb -P
 with-contenv
 s6-envuidgid redash
-node /app/plywood/dist/server.js
+cd /app/plywood/
+node dist/server.js

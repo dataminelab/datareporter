@@ -20,6 +20,9 @@ FROM node:12.18.3-alpine
 RUN addgroup -S plywood && adduser -S plywood
 COPY --from=frontend-builder --chown=plywood /app/dist/ /app/dist/
 COPY --from=frontend-builder  --chown=plywood /app/node_modules/ /app/node_modules/
+COPY --from=frontend-builder --chown=plywood /app/package.json /app/package.json
+COPY --from=frontend-builder --chown=plywood   /app/client/build /app/client/build
+COPY --from=frontend-builder --chown=plywood   /app/client/package.json /app/client/package.json
 EXPOSE 3000
 WORKDIR /app
 USER plywood

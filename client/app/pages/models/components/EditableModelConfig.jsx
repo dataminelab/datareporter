@@ -216,6 +216,12 @@ export default function EditableModelConfig({model, saveConfig}) {
         callback();
       }
       return;
+    } else if (!yamlContent.includes("timeAttribute")) {
+      const prompt = window.confirm("timeAttribute not found. Are you sure you want to save?");
+      if (prompt) {
+        callback();
+      }
+      return;
     }
     callback();
   }

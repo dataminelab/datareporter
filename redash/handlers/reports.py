@@ -39,8 +39,8 @@ class ReportFilter(BaseResource):
         req = request.get_json(True)
         require_fields(req, (EXPRESSION,))
         model = get_object_or_404(Model.get_by_id, model_id)
-
-        return filter_expression_to_result(expression=req[EXPRESSION], model=model, organisation=self.current_org)
+        filtered_result = filter_expression_to_result(req[EXPRESSION], model, self.current_org)
+        return filtered_result.serialized()
 
 
 class ReportGenerateResource(BaseResource):

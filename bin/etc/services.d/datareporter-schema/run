@@ -1,7 +1,0 @@
-#!/command/execlineb -P
-with-contenv
-s6-envuidgid redash
-echo "creating schema"
-cd /app
-./bin/docker-entrypoint status
-./bin/docker-entrypoint create_db

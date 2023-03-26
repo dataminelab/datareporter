@@ -2,4 +2,5 @@
 with-contenv
 s6-envuidgid redash
 cd /app
+./bin/docker-entrypoint create_db
 ./bin/docker-entrypoint server

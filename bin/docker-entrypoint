@@ -29,12 +29,17 @@ dev_worker() {
 }
 
 server() {
+  create_db
+  start_server
+}
+
+start_server(){
   echo "Starting web server ..."
-  # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
-  MAX_REQUESTS=${MAX_REQUESTS:-1000}
-  MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
-  REDASH_WEB_WORKER_TIMOUT=${REDASH_WEB_WORKER_TIMOUT-180}
-  exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name redash -w${REDASH_WEB_WORKERS:-4} redash.wsgi:app --max-requests $MAX_REQUESTS --timeout $REDASH_WEB_WORKER_TIMOUT  --max-requests-jitter $MAX_REQUESTS_JITTER
+    # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
+    MAX_REQUESTS=${MAX_REQUESTS:-1000}
+    MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
+    REDASH_WEB_WORKER_TIMOUT=${REDASH_WEB_WORKER_TIMOUT-180}
+    exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name redash -w${REDASH_WEB_WORKERS:-4} redash.wsgi:app --max-requests $MAX_REQUESTS --timeout $REDASH_WEB_WORKER_TIMOUT  --max-requests-jitter $MAX_REQUESTS_JITTER
 }
 
 create_db() {
@@ -74,6 +79,8 @@ tests() {
 }
 
 case "$1" in
+
+
   worker)
     shift
     worker

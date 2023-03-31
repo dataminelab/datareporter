@@ -1,5 +1,5 @@
 {
-  "name": "foo-app",
+  "name": "datareporter-server",
   "env": {
     "REDASH_REDIS_URL": {
       "generator": "secret",

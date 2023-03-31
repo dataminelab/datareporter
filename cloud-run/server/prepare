@@ -1,0 +1,10 @@
+#!/bin/sh
+cp ../client .
+cp ../migrations .
+cp ../plywood .
+cp ../redash .
+cp ../viz-lib .
+cp ../bin .
+cp ../*py .
+cp ../*txt .
+cp ../*cfg .

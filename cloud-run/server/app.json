@@ -1,0 +1,31 @@
+{
+  "name": "foo-app",
+  "env": {
+    "REDASH_REDIS_URL": {
+      "generator": "secret",
+      "description": "connection url to redis. e.g. redis://user:pass@10.20.4.1:6379/0"
+    },
+    "REDASH_DATABASE_URL": {
+      "generator": "secret",
+      "description": "connection url to sql database. e.g. postgresql://user:pass@10.20.4.2:5432/database"
+    }
+  },
+  "options": {
+    "allow-unauthenticated": true,
+    "memory": "512Mi",
+    "cpu": "1",
+    "port": 80,
+    "concurrency": 10,
+    "max-instances": 10
+  },
+  "build": {
+    "skip": false,
+  },
+  "hooks": {
+    "prebuild": {
+      "commands": [
+        "./prepare"
+      ]
+    }
+  }
+}

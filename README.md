@@ -4,7 +4,7 @@
 
 [![Documentation](https://img.shields.io/badge/docs-redash.io/help-brightgreen.svg)](https://redash.io/help/)
 
-Data Reporter is a business intelligence, data exploration and visualization web application. 
+Data Reporter is a business intelligence, data exploration and visualization web application.
 Harness the power of data big and small and explore, query, visualize, and share data from SQL data sources.
 
 DataReporter is a fork of Turnilo which is currently available under Apache 2.0 license. DataReporter is also a fork of Redash, which is currently available under BSD-2-Clause license. DataReporter core is released under Apache 2.0 license.
@@ -26,6 +26,12 @@ DataReporter manifesto:
 
 * [Setting up DataReporter instance](SETUP.md)
 * [Documentation](TBD).
+*
+## Cloud Run Deploy Server
+### Server
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?subDir=cloud-run/server&branch=feature/DR-102/datareporter-at-cloud-run)
+### Worker
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?subDir=cloud-run/worker&branch=feature/DR-102/datareporter-at-cloud-run)
 
 ## Supported Data Sources
 
@@ -49,7 +55,7 @@ DataReporter supports initially 5 SQL. It can also be extended to support more. 
 
 ## Security
 
-Please email security@datareporter.com to report any security vulnerabilities. We will acknowledge receipt of your vulnerability and strive to send you regular updates about our progress. If you're curious about the status of your disclosure please feel free to email us again. 
+Please email security@datareporter.com to report any security vulnerabilities. We will acknowledge receipt of your vulnerability and strive to send you regular updates about our progress. If you're curious about the status of your disclosure please feel free to email us again.
 
 ## License
 

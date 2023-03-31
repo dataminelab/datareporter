@@ -29,7 +29,7 @@ DataReporter manifesto:
 *
 ## Cloud Run Deploy Server
 ### Server
-[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?subDir=cloud-run/server&branch=feature/DR-102/datareporter-at-cloud-run)
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?subDir=cloud-run%2Fserver&branch=feature%2FDR-102%2Fdatareporter-at-cloud-run)
 ### Worker
 [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?subDir=cloud-run/worker&branch=feature/DR-102/datareporter-at-cloud-run)
 

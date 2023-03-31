@@ -29,7 +29,7 @@ DataReporter manifesto:
 *
 ## Cloud Run Deploy Server
 ### Server
-[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?git_repo=https%3A%2F%2Fgithub.com%2Fdataminelab%2Fdatareporter&dir=cloud-run%2Fserver&revision=feature%2FDR-102%2Fdatareporter-at-cloud-run)
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?git_repo=git%40github.com%3Adataminelab%2Fdatareporter.git&dir=cloud-run%2Fserver&revision=feature%2FDR-102%2Fdatareporter-at-cloud-run)
 ### Worker
 [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run?subDir=cloud-run/worker&branch=feature/DR-102/datareporter-at-cloud-run)
 

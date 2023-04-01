@@ -139,6 +139,12 @@ export default function ReportPageHeader(props) {
     },
   });
 
+  const restartHash = (table, hash) => {
+    window.location.hash = "#" + table + "/4/" + hash;
+    // reload
+    return window.location.reload()
+  }
+
   const handleClick = type => {
     setDisplayColorPicker(type);
   };
@@ -224,6 +230,13 @@ export default function ReportPageHeader(props) {
           res = { appSettings: report.appSettings, timekeeper: {} };
         } else {
           res = await Model.getReporterConfig(modelId);
+        }
+        if (report.model) {
+          // get model name from model id
+          const model = models.find(m => m.id === modelId);
+          if (model && model.id !== report.model) {
+            return restartHash(model.table, window.location.hash.split("/4/")[1]);        
+          }
         }
         setModelConfig(res);
         recordEvent("update", "report", report.id, { modelId });

@@ -2,7 +2,7 @@ import express, { NextFunction, Request } from "express";
 import { statusEndpoint } from "./endpoint/status-endpoint";
 import { plywoodEndpoint } from "./endpoint/plywood-endpoint";
 import { handleError } from "./middlewares/errorHandler";
-import { handleLogs } from "./middlewares/requestLogs";
+import { logRequestAndResponse } from "./middlewares/requestLogs";
 import { attributesFormatterEndpoint } from './endpoint/attributes-formatter'
 import { AttributeParserFactory } from "./formatter/attributesFormatter/factory/AttributeParserFactory";
 import { PostgresAttributeParser } from './formatter/attributesFormatter/parsers/PostgresAttributeParser';
@@ -23,9 +23,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use((req: Request, _res, next: NextFunction) => {
-    handleLogs(req, next)
-});
+app.use(logRequestAndResponse);
 
 app.use('/api/v1/status', statusEndpoint);
 app.use('/api/v1/plywood/attributes/engines', requestSupportedEngines)

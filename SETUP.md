@@ -22,7 +22,7 @@ nodenv local 12.22.12
     * Enter project root directory
     * `cd client`
     * `npm install` Installs all node dependencies to for redash
-    * `npm run build` Builds front end to  the folder `client/dist/`
+    * `npm run build` Builds front end to the folder `client/dist/`
 
 * Build Plywood
     * Enter project root directory

@@ -31,7 +31,7 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     @classmethod
     def get_by_data_source(cls, data_source_id):
-        return cls.query.filter(cls.data_source_id == data_source_id).all()
+        return cls.query.filter(cls.data_source_id == data_source_id)
 
     @classmethod
     def get_by_user(cls, user):

@@ -36,6 +36,6 @@ class TestModels(BaseTestCase):
         model_3 = self.factory.create_model(user=user_2, data_source=data_source_1)
         model_4 = self.factory.create_model(user=user_2, data_source=data_source_2)
 
-        models = Model.get_by_data_source(data_source_id=data_source_1.id)
+        models = Model.get_by_data_source(data_source_id=data_source_1.id).all()
 
         self.assertListEqual(models, [model_1, model_2, model_3])

@@ -62,7 +62,7 @@ class ModelsListResource(BaseResource):
         data_source = request.args.get('data_source', None)
 
         if data_source:
-            found_models = Model.get_by_user_and_data_source(self.current_user, int(data_source))
+            found_models = Model.get_by_data_source(int(data_source))
         else:
             found_models = Model.get_by_user(self.current_user)
 

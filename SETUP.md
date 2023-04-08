@@ -12,6 +12,7 @@ Requirements:
 * Data reported builds correctly with Node 12
 * Install node 12.22.12 with nodenv and ensure shims are added to PATH
 see for more info: https://github.com/nodenv/nodenv#how-it-works
+see https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl for windows-wsl2-nvm
 
 ```
 nodenv install 12.22.12

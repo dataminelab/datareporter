@@ -141,7 +141,6 @@ export default function ReportPageHeader(props) {
 
   const restartHash = (table, hash) => {
     window.location.hash = "#" + table + "/4/" + hash;
-    // reload
     return window.location.reload()
   }
 
@@ -199,12 +198,13 @@ export default function ReportPageHeader(props) {
     [report, updateColors]
   );
 
-  const handleDataSourceChange = useCallback(
-    async dataSourceId => {
+  const handleDataSourceChange  = useCallback(
+    async (dataSourceId, signal) => {
       setLoadModelsLoaded(true);
       recordEvent("update", "report", report.id, { dataSourceId });
       try {
         const res = await Model.query({ data_source: dataSourceId });
+        if (signal.aborted) return;
         const updates = {
           data_source_id: dataSourceId,
           isJustLanded: false,
@@ -401,9 +401,15 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     if (!currentHash) return;
     if (!dataSources) return;
+
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
     const setData = async (dataSourceId, model_id) => {
-      await handleDataSourceChange(dataSourceId);
-      await handleModelChange(model_id, parseInt(dataSourceId))
+      if (signal.aborted) return;
+      await handleDataSourceChange(dataSourceId, signal);
+      if (signal.aborted) return;
+      await handleModelChange(model_id, parseInt(dataSourceId), signal)
         // setHash
         .then(() =>
           setTimeout(() => {
@@ -411,7 +417,8 @@ export default function ReportPageHeader(props) {
             setCurrentHash(null);
           }, 133)
         );
-    };
+    }
+
     const baseDataSource = currentHash.split("/")[0].replace("#", "");
     for (let i = 0; i < dataSources.length; i++) {
       const dataSource = dataSources[i];
@@ -423,6 +430,10 @@ export default function ReportPageHeader(props) {
           return;
         }
       }
+    }
+
+    return () => {
+      abortController.abort();
     }
   }, [dataSourcesLoaded]);
 

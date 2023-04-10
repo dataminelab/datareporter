@@ -235,7 +235,7 @@ export default function ReportPageHeader(props) {
           // get model name from model id
           const model = models.find(m => m.id === modelId);
           if (model && model.id !== report.model) {
-            return restartHash(model.table, window.location.hash.split("/4/")[1]);        
+            return restartHash(model.table, window.location.hash.split("/4/")[1]);
           }
         }
         setModelConfig(res);
@@ -412,6 +412,7 @@ export default function ReportPageHeader(props) {
       await handleModelChange(model_id, parseInt(dataSourceId), signal)
         // setHash
         .then(() =>
+          if (signal.aborted) return;
           setTimeout(() => {
             window.location.hash = currentHash;
             setCurrentHash(null);

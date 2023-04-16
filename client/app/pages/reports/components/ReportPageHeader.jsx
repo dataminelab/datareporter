@@ -1,5 +1,5 @@
-import {extend, map, filter, reduce} from "lodash";
-import React, {useCallback, useMemo, useState, useEffect} from "react";
+import { extend, map, filter, reduce } from "lodash";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -8,8 +8,8 @@ import Icon from "antd/lib/icon";
 import useMedia from "use-media";
 import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
-import reactCSS from 'reactcss'
-import { SketchPicker } from 'react-color'
+import reactCSS from "reactcss";
+import { SketchPicker } from "react-color";
 import { clientConfig } from "@/services/auth";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
@@ -75,95 +75,100 @@ export default function ReportPageHeader(props) {
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
   const [modelConfig, setModelConfig] = useState({});
   const [modelConfigLoaded, setLoadModelConfigLoaded] = useState(false);
-  const reportFlags = useReportFlags(props.report, dataSource)
-
+  const reportFlags = useReportFlags(props.report, dataSource);
+  const [currentHash, setCurrentHash] = useState(null);
   const { report, setReport, saveReport } = useReport(props.report);
   const updateColors = useColorsReport(report, props.onChange);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
-  const [colorBody, setColorBody] = useState(
-    {
-      r: '241',
-      g: '112',
-      b: '19',
-      a: '1',
-    }
-  );
+  const [colorBody, setColorBody] = useState({
+    r: "241",
+    g: "112",
+    b: "19",
+    a: "1",
+  });
   const [colorText, setColorText] = useState({
-    r: '241',
-    g: '112',
-    b: '19',
-    a: '1',
+    r: "241",
+    g: "112",
+    b: "19",
+    a: "1",
   });
 
   const styles = reactCSS({
-    'default': {
+    default: {
       color: {
-        width: '36px',
-        height: '14px',
-        display: 'inline-block',
-        borderRadius: '2px',
-        background: `rgba(${ colorText.r }, ${ colorText.g }, ${ colorText.b }, ${ colorText.a })`,
-        position: 'relative',
-        marginRight: '10px',
-        top: '3px',
+        width: "36px",
+        height: "14px",
+        display: "inline-block",
+        borderRadius: "2px",
+        background: `rgba(${colorText.r}, ${colorText.g}, ${colorText.b}, ${colorText.a})`,
+        position: "relative",
+        marginRight: "10px",
+        top: "3px",
       },
       colorBody: {
-        width: '36px',
-        height: '14px',
-        display: 'inline-block',
-        borderRadius: '2px',
-        background: `rgba(${ colorBody.r }, ${ colorBody.g }, ${ colorBody.b }, ${ colorBody.a })`,
-        position: 'relative',
-        top: '3px',
+        width: "36px",
+        height: "14px",
+        display: "inline-block",
+        borderRadius: "2px",
+        background: `rgba(${colorBody.r}, ${colorBody.g}, ${colorBody.b}, ${colorBody.a})`,
+        position: "relative",
+        top: "3px",
       },
       swatch: {
-        padding: '5px 15px',
-        background: '#fff',
-        borderRadius: '1px',
-        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-        display: 'inline-block',
-        marginRight: '10px',
-        cursor: 'pointer',
-        lineHeight: '25px'
+        padding: "5px 15px",
+        background: "#fff",
+        borderRadius: "1px",
+        boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+        display: "inline-block",
+        marginRight: "10px",
+        cursor: "pointer",
+        lineHeight: "25px",
       },
       popover: {
-        position: 'absolute',
-        zIndex: '2',
+        position: "absolute",
+        zIndex: "2",
       },
       cover: {
-        position: 'fixed',
-        top: '0px',
-        right: '0px',
-        bottom: '0px',
-        left: '0px',
+        position: "fixed",
+        top: "0px",
+        right: "0px",
+        bottom: "0px",
+        left: "0px",
       },
     },
   });
 
-  const handleClick = (type) => {
-    setDisplayColorPicker(type)
+  const restartHash = (table, hash) => {
+    window.location.hash = "#" + table + "/4/" + hash;
+    return window.location.reload()
+  }
+
+  const handleClick = type => {
+    setDisplayColorPicker(type);
   };
 
   const handleClose = () => {
-    setDisplayColorPicker(0)
+    setDisplayColorPicker(0);
   };
 
-  const hexToRgb = (hex) => {
+  const hexToRgb = hex => {
     // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
     var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
     hex = hex.replace(shorthandRegex, function(m, r, g, b) {
       return r + r + g + g + b + b;
     });
-  
+
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16),
-      a: 1
-    } : null;
-  }
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+          a: 1,
+        }
+      : null;
+  };
 
   const handleColorChange = useCallback(
     (color, type, successMessage) => {
@@ -171,55 +176,67 @@ export default function ReportPageHeader(props) {
         color = {
           rgb: hexToRgb(color),
           hex: color,
-        }
+        };
       }
       if (!color.rgb || !color.hex) {
-        return 0
+        return 0;
       }
       if (type === 2) {
-        setColorBody(color.rgb)
-        updateColors('colorBody', color.hex, { successMessage });
-        let updates = { color_1: color.hex }
+        setColorBody(color.rgb);
+        updateColors("colorBody", color.hex, { successMessage });
+        let updates = { color_1: color.hex };
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage });
       } else {
-        setColorText(color.rgb)
-        updateColors('colorText', color.hex, { successMessage });
-        let updates = { color_2: color.hex }
+        setColorText(color.rgb);
+        updateColors("colorText", color.hex, { successMessage });
+        let updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage });
       }
-    },[report, updateColors]
+    },
+    [report, updateColors]
   );
 
-  const onChangeDataSource = useCallback( async dataSourceId => {
-    setLoadModelsLoaded(true)
-    recordEvent("update", "report", report.id, { dataSourceId });
-    try {
-        const res = await Model.query({data_source: dataSourceId});
+  const handleDataSourceChange  = useCallback(
+    async (dataSourceId, signal) => {
+      setLoadModelsLoaded(true);
+      recordEvent("update", "report", report.id, { dataSourceId });
+      try {
+        const res = await Model.query({ data_source: dataSourceId });
+        if (signal.aborted) return;
         const updates = {
           data_source_id: dataSourceId,
-          isJustLanded: false
+          isJustLanded: false,
         };
         setModels(res.results);
-        props.onChange(extend(report.clone(), updates));
+        props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null });
         setLoadModelsLoaded(false);
-    } catch(err) {
-        console.error("*ERR",err);
+      } catch (err) {
+        updateReport({}, { successMessage: err });
         setLoadModelsLoaded(false);
-    }
+      }
+    },
+    [report, props.onChange, updateReport]
+  );
 
-  }, [report, props.onChange, updateReport])
-
-  const handleModelChange = useCallback( async modelId => {
-      setLoadModelConfigLoaded(true)
+  const handleModelChange = useCallback(
+    async (modelId, data_source_id) => {
+      setLoadModelConfigLoaded(true);
       try {
-        var res
+        var res;
         if (report.isJustLanded) {
-          res = {appSettings: report.appSettings, timekeeper:{}}
+          res = { appSettings: report.appSettings, timekeeper: {} };
         } else {
           res = await Model.getReporterConfig(modelId);
+        }
+        if (report.model) {
+          // get model name from model id
+          const model = models.find(m => m.id === modelId);
+          if (model && model.id !== report.model) {
+            return restartHash(model.table, window.location.hash.split("/4/")[1]);
+          }
         }
         setModelConfig(res);
         recordEvent("update", "report", report.id, { modelId });
@@ -231,22 +248,29 @@ export default function ReportPageHeader(props) {
           timekeeper: res.timekeeper,
           isJustLanded: false,
         };
-        props.onChange(extend(report.clone(), updates));
+        if (typeof data_source_id == "number") {
+          updates.data_source_id = data_source_id;
+        }
+        props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null }); // show message only on error
         setLoadModelConfigLoaded(false);
-      } catch(err) {
+      } catch (err) {
+        updateReport({}, { successMessage: "failed to load the model" }); // show message only on error
         setLoadModelConfigLoaded(false);
       }
-    }, [report, props.onChange, updateReport]
+    },
+    [report, props.onChange, updateReport]
   );
-  const handleIdChange = useCallback( async id => {
+
+  const handleIdChange = useCallback(async id => {
     recordEvent("update", "report", report.id, { id });
     props.onChange(extend(report.clone(), { id }));
     updateReport({ id }, { successMessage: null });
   });
 
-  const handleUpdateName = useCallback( name => {
-      recordEvent("update", "report", report.id, {name});
+  const handleUpdateName = useCallback(
+    name => {
+      recordEvent("update", "report", report.id, { name });
       const changes = { name };
       const options = {};
 
@@ -263,12 +287,12 @@ export default function ReportPageHeader(props) {
   const handlePriceReport = () => {
     if (document.querySelector("#meta-modal").style.opacity === "1") {
       document.querySelector("#meta-modal").style.opacity = "0";
-      document.querySelector("#meta-modal").style['z-index'] = "-1";
+      document.querySelector("#meta-modal").style["z-index"] = "-1";
     } else {
       document.querySelector("#meta-modal").style.opacity = "1";
-      document.querySelector("#meta-modal").style['z-index'] = "10";
+      document.querySelector("#meta-modal").style["z-index"] = "10";
     }
-  }
+  };
 
   const handleSaveReport = () => {
     if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
@@ -284,15 +308,14 @@ export default function ReportPageHeader(props) {
     props.onChange(extend(report.clone(), updates));
     updateReport(updates, { successMessage: null });
     if (!report.expression || !report.appSettings) {
-      setTimeout(()=>{
+      setTimeout(() => {
         // need to render itself again with recent changes
         document.querySelector("#_handleSaveReport").click();
       }, 466);
       return 0;
     }
     return saveReport();
-  }
-
+  };
 
   const moreActionsMenu = useMemo(
     () =>
@@ -362,11 +385,58 @@ export default function ReportPageHeader(props) {
     if (report.isJustLanded) {
       handleColorChange(report.color_1, 2, null);
       handleColorChange(report.color_2, 1, null);
-      onChangeDataSource(report.data_source_id);
+      handleDataSourceChange(report.data_source_id);
       handleModelChange(report.model_id);
       handleIdChange(report.id);
     }
   }, [report.name]);
+
+  useEffect(() => {
+    // copy-pasted url landing
+    if (window.location.href.indexOf("4/") > -1) {
+      setCurrentHash(window.location.hash);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!currentHash) return;
+    if (!dataSources) return;
+
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
+    const setData = async (dataSourceId, model_id) => {
+      if (signal.aborted) return;
+      await handleDataSourceChange(dataSourceId, signal);
+      if (signal.aborted) return;
+      await handleModelChange(model_id, parseInt(dataSourceId), signal)
+        // setHash
+        .then(() => {
+          if (signal.aborted) return;
+          setTimeout(() => {
+              window.location.hash = currentHash;
+              setCurrentHash(null);
+            }, 133);
+        });
+    }
+
+    const baseDataSource = currentHash.split("/")[0].replace("#", "");
+    for (let i = 0; i < dataSources.length; i++) {
+      const dataSource = dataSources[i];
+      const tables = dataSource.tables;
+      const table_ids = dataSource.table_ids;
+      for (let i = 0; i < tables.length; i++) {
+        if (tables[i] === baseDataSource) {
+          setData(dataSource.id, table_ids[i]);
+          return;
+        }
+      }
+    }
+
+    return () => {
+      abortController.abort();
+    }
+  }, [dataSourcesLoaded]);
 
   return (
     <div className="report-page-header">
@@ -386,32 +456,47 @@ export default function ReportPageHeader(props) {
           <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={handlePriceReport}>
             <span className="icon icon-ribbon m-r-5"></span>Meta
           </Button>
-          <ul id="meta-modal" className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical" role="menu"
-            onClick={(e) => e.stopPropagation()}>
+          <ul
+            id="meta-modal"
+            className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+            role="menu"
+            onClick={e => e.stopPropagation()}>
             <li className="ant-menu-item modal-left" role="menuitem">
-              <p id="_price" alt="0">Price: 0</p>         
+              <p id="_price" alt="0">
+                Price: 0
+              </p>
             </li>
             <li className="ant-menu-item modal-right" role="menuitem">
-              <p id="_proceed_data" alt="0">Bytes: 0</p>
+              <p id="_proceed_data" alt="0">
+                Bytes: 0
+              </p>
             </li>
           </ul>
         </div>
-        <div style={ styles.swatch } onClick={ () => handleClick(1) }>
-          Text chart color: <div style={ styles.color } />
+        <div style={styles.swatch} onClick={() => handleClick(1)}>
+          Text chart color: <div style={styles.color} />
         </div>
-        <div style={ styles.swatch } onClick={ () => handleClick(2) }>
-          Chart color: <div style={ styles.colorBody } />
+        <div style={styles.swatch} onClick={() => handleClick(2)}>
+          Chart color: <div style={styles.colorBody} />
         </div>
-        { displayColorPicker === 1 ? <div style={ styles.popover }>
-          <div style={ styles.cover } onClick={ handleClose }/>
-          <SketchPicker color={ colorText } onChangeComplete={ (color) => handleColorChange(color, 1) } />
-          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
-        </div> : null }
-        { displayColorPicker === 2 ? <div style={ styles.popover }>
-          <div style={ styles.cover } onClick={ handleClose }/>
-          <SketchPicker color={ colorBody } onChangeComplete={ (color) => handleColorChange(color, 2) } />
-          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
-        </div> : null }
+        {displayColorPicker === 1 ? (
+          <div style={styles.popover}>
+            <div style={styles.cover} onClick={handleClose} />
+            <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
+            <button style={{ margin: "10px" }} onClick={handleClose}>
+              Close
+            </button>
+          </div>
+        ) : null}
+        {displayColorPicker === 2 ? (
+          <div style={styles.popover}>
+            <div style={styles.cover} onClick={handleClose} />
+            <SketchPicker color={colorBody} onChangeComplete={color => handleColorChange(color, 2)} />
+            <button style={{ margin: "10px" }} onClick={handleClose}>
+              Close
+            </button>
+          </div>
+        ) : null}
         {dataSourcesLoaded && (
           <div className="data-source-box m-r-10">
             <span className="icon icon-datasource m-r-5"></span>
@@ -423,7 +508,7 @@ export default function ReportPageHeader(props) {
               loading={!dataSourcesLoaded}
               optionFilterProp="data-name"
               showSearch
-              onChange={onChangeDataSource}>
+              onChange={handleDataSourceChange}>
               {map(dataSources, ds => (
                 <Select.Option
                   key={`ds-${ds.id}`}
@@ -449,11 +534,7 @@ export default function ReportPageHeader(props) {
             showSearch
             onChange={handleModelChange}>
             {map(models, m => (
-              <Select.Option
-                key={`ds-${m.id}`}
-                value={m.id}
-                data-name={m.name}
-                data-test={`SelectModel${m.id}`}>
+              <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
                 <span>{m.name}</span>
               </Select.Option>
             ))}
@@ -502,7 +583,7 @@ ReportPageHeader.propTypes = {
   selectedVisualization: PropTypes.number,
   headerExtra: PropTypes.node,
   tagsExtra: PropTypes.node,
-  onChangeColor: PropTypes.func
+  onChangeColor: PropTypes.func,
 };
 
 ReportPageHeader.defaultProps = {
@@ -511,5 +592,5 @@ ReportPageHeader.defaultProps = {
   selectedVisualization: null,
   headerExtra: null,
   tagsExtra: null,
-  onChangeColor: () => {}
+  onChangeColor: () => {},
 };

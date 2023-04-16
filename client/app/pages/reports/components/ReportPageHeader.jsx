@@ -411,13 +411,13 @@ export default function ReportPageHeader(props) {
       if (signal.aborted) return;
       await handleModelChange(model_id, parseInt(dataSourceId), signal)
         // setHash
-        .then(() =>
+        .then(() => {
           if (signal.aborted) return;
           setTimeout(() => {
-            window.location.hash = currentHash;
-            setCurrentHash(null);
-          }, 133)
-        );
+              window.location.hash = currentHash;
+              setCurrentHash(null);
+            }, 133);
+        });
     }
 
     const baseDataSource = currentHash.split("/")[0].replace("#", "");

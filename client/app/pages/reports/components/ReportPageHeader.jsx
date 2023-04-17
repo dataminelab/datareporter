@@ -1,5 +1,5 @@
 import { extend, map, filter, reduce } from "lodash";
-import React, { useCallback, useMemo, useState, useEffect } from "react";
+import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -81,6 +81,8 @@ export default function ReportPageHeader(props) {
   const updateColors = useColorsReport(report, props.onChange);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
+  const modelSelectElement = useRef();
+  const modelSelectElementText = useRef("");
   const [colorBody, setColorBody] = useState({
     r: "241",
     g: "112",
@@ -198,8 +200,19 @@ export default function ReportPageHeader(props) {
     [report, updateColors]
   );
 
-  const handleDataSourceChange  = useCallback(
+  const changeModelDataText = (text) => {
+    const elem = document.querySelector("#model-data-source").querySelector("span");
+    if (elem.innerText === text) return;
+    if (elem.innerText !== modelSelectElement.current.props.placeholder) {
+      modelSelectElementText.current = elem.innerText;
+    }
+    elem.innerText = text;
+    modelSelectElement.current.focus();
+  }
+
+  const handleDataSourceChange = useCallback(
     async (dataSourceId, signal) => {
+      changeModelDataText(modelSelectElement.current.props.placeholder);
       setLoadModelsLoaded(true);
       recordEvent("update", "report", report.id, { dataSourceId });
       try {
@@ -220,6 +233,8 @@ export default function ReportPageHeader(props) {
     },
     [report, props.onChange, updateReport]
   );
+
+  const handleModelOnSelect = () => changeModelDataText(modelSelectElementText.current);
 
   const handleModelChange = useCallback(
     async (modelId, data_source_id) => {
@@ -527,11 +542,14 @@ export default function ReportPageHeader(props) {
           <Select
             data-test="SelectModel"
             placeholder="Choose model data source..."
+            id="model-data-source"
+            ref={modelSelectElement}
             value={report.model_id}
             disabled={!reportFlags.canEdit || modelsLoaded || models.length === 0}
             loading={modelsLoaded}
             optionFilterProp="data-name"
             showSearch
+            onSelect={handleModelOnSelect}
             onChange={handleModelChange}>
             {map(models, m => (
               <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>

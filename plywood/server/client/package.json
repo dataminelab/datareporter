@@ -52,7 +52,8 @@
     "compile": "./compile",
     "pretest": "./compile",
     "test": "./travis-test",
-    "full-test": "./run-tests"
+    "full-test": "./run-tests",
+    "clear": "rm -rf ./dist/"
   },
   "nodemonConfig": {
     "ext": "*.ts,*.json,*.js",

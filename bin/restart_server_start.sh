@@ -1,3 +1,6 @@
+#docker stop datareporter-server-1
+docker rm datareporter-server-1
+docker rmi datareporter-server
 export skip_dev_deps="do not update dev dependencies"
 export skip_ds_deps="do not update dev dependencies"
 docker-compose up -d

@@ -217,7 +217,7 @@ export default function ReportPageHeader(props) {
       recordEvent("update", "report", report.id, { dataSourceId });
       try {
         const res = await Model.query({ data_source: dataSourceId });
-        if (signal.aborted) return;
+        if (signal && signal.aborted) return;
         const updates = {
           data_source_id: dataSourceId,
           isJustLanded: false,
@@ -425,7 +425,6 @@ export default function ReportPageHeader(props) {
       await handleDataSourceChange(dataSourceId, signal);
       if (signal.aborted) return;
       await handleModelChange(model_id, parseInt(dataSourceId), signal)
-        // setHash
         .then(() => {
           if (signal.aborted) return;
           setTimeout(() => {

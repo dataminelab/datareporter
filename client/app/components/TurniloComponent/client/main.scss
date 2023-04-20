@@ -54,11 +54,6 @@ svg {
   border-radius: 3px;
 }
 
-//.drag-mask { // uncomment if you want to see the drag masks
-//  background: $brand;
-//  opacity: 0.2;
-//}
-
 :root {
   @each $var, $val in $theme-colors {
     #{'--' + $var}: #{$val};
@@ -80,6 +75,9 @@ svg {
     svg path {
       fill: #ffffff !important;
     }
+  }
+  .cube-view {
+    color: var(--text-default-color);
   }
   .cube-view .container {
     top: 0;

@@ -61,6 +61,24 @@ function createMenu(menu) {
   );
 }
 
+export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
+  if (chartTextColor) {
+    document.documentElement.style.setProperty("--text-default-color", chartTextColor);
+  } else if (chartTextColor === undefined) {
+    document.documentElement.style.removeProperty("--text-default-color");
+  }
+  if (chartColor) {
+    document.documentElement.style.setProperty("--background-brand-light", chartColor);
+  } else if (chartColor === undefined) {
+    document.documentElement.style.removeProperty("--background-brand-light");
+  }
+  if (chartBorderColor) {
+    document.documentElement.style.setProperty("--highlight-border", chartBorderColor);
+  } else if (chartBorderColor === undefined) {
+    document.documentElement.style.removeProperty("--highlight-border");
+  }
+}
+
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
   const queryFlags = useReportFlags(props.report, props.dataSource);
@@ -189,12 +207,21 @@ export default function ReportPageHeader(props) {
         let updates = { color_1: color.hex };
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage });
+        // ligten color
+        const amount = 20;
+        const lightenedRed = Math.min(255, Math.round(color.rgb.r + (amount / 100) * (255 - color.rgb.r)));
+        const lightenedGreen = Math.min(255, Math.round(color.rgb.g + (amount / 100) * (255 - color.rgb.g)));
+        const lightenedBlue = Math.min(255, Math.round(color.rgb.b + (amount / 100) * (255 - color.rgb.b)));
+        // Convert RGB components back to hex color string
+        const lightenedHexColor = `#${lightenedRed.toString(16)}${lightenedGreen.toString(16)}${lightenedBlue.toString(16)}`;
+        setColorElements(false, color.hex, lightenedHexColor);
       } else {
         setColorText(color.rgb);
         updateColors("colorText", color.hex, { successMessage });
         let updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
         updateReport(updates, { successMessage });
+        setColorElements(color.hex, false, false);     
       }
     },
     [report, updateColors]

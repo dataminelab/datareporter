@@ -52,8 +52,8 @@ class ReportGenerateResource(BaseResource):
         require_fields(req, (HASH,))
         hash_string = req[HASH]
         model = get_object_or_404(Model.get_by_id, model_id)
-        result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org)
         try:
+            result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org)
             return result.serialized()
         except ExpressionNotSupported as err:
             abort(400, message=err.message)

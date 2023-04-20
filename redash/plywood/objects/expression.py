@@ -183,6 +183,8 @@ class Expression:
             raise Exception(f'{some_column_name} is not present in query')
 
         two_splits_queries = []
+        if "job" in second_result and second_result["job"]["error"]:
+            raise Exception(f'Error in job: {second_result["job"]["error"]}')
 
         for row in second_result['query_result']['data']['rows']:
 

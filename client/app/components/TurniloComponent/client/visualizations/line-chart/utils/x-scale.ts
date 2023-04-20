@@ -71,30 +71,34 @@ function getFilterRange(essence: Essence, timekeeper: Timekeeper): PlywoodRange 
   return includeMaxTimeBucket(filterRange, maxTime, continuousSplit, essence.timezone);
 }
 
-function safeRangeSum(a: PlywoodRange | null, b: PlywoodRange | null): PlywoodRange | null {
-  if (a && b) {
-    return (a as PlywoodRange).extend(b);
-  }
-  return (a || b);
+function safeRangeSum(a: PlywoodRange | Range | null, b: PlywoodRange | Range | null): PlywoodRange | Range | null {
+  return (a && b) ? a.extend(b) : (a || b);
 }
 
-function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange | null {
+function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange | Range | null {
   const continuousDimensionKey = continuousDimension.name;
-  const flatDataset = dataset.flatten();
-  // ["21-05-2022:HH:MM:SS", ...]
-  var _start: number | Date = new Date(flatDataset.data[0][continuousDimensionKey].toString());
-  var _end: number | Date = new Date(flatDataset.data[0][continuousDimensionKey].toString());
-  flatDataset.data.map(datum => {
+  const flatDataset = dataset.flatten()
+    .data
+    .map(datum => datum[continuousDimensionKey] as Range);
+  if (typeof flatDataset[0] === "object") {
+    return flatDataset
+      .reduce(safeRangeSum, null);
+  } else if (typeof flatDataset[0] === "string") {
+    // ["21-05-2022:HH:MM:SS", ...]
+    var start: number | Date = new Date(flatDataset[0]);
+    var end: number | Date = new Date(flatDataset[0]);
+    flatDataset.map(datum => {
       // find the range of the continuous dimension
-      let currentDate = new Date(datum[continuousDimensionKey].toString());
-      if (currentDate < _start) {
-        _start = currentDate;
+      let currentDate = new Date(datum);
+      if (currentDate < start) {
+        start = currentDate;
       }
-      if (currentDate > _end) {
-        _end = currentDate;
+      if (currentDate > end) {
+        end = currentDate;
       }
     });
-  return Range.fromJS({ start: _start, end: _end });
+    return Range.fromJS({ start: start, end: end });
+  }
 }
 
 export function calculateXRange(essence: Essence, timekeeper: Timekeeper, dataset: Dataset): ContinuousRange | null {

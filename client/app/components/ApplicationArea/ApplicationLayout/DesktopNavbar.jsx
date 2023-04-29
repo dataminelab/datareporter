@@ -187,7 +187,7 @@ export default function DesktopNavbar() {
 
       <NavbarSection inlineCollapsed={collapsed} className="settings-menu">
         <Menu.Item key="refresh">
-          <a data-test="Refresh" href="#">
+          <a data-test="Refresh" href="#" onClick={() => window.location.reload()}>
             <i className="icon-ui icon-refresh"></i>
           </a>
         </Menu.Item>

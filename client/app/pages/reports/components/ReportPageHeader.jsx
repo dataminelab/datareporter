@@ -101,6 +101,9 @@ export default function ReportPageHeader(props) {
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
+  const [colorBodyHex, setColorBodyHex] = useState("#f17013");
+  const [colorTextHex, setColorTextHex] = useState("#f17013");
+  
   const [colorBody, setColorBody] = useState({
     r: "241",
     g: "112",
@@ -203,10 +206,10 @@ export default function ReportPageHeader(props) {
       }
       if (type === 2) {
         setColorBody(color.rgb);
-        updateColors("colorBody", color.hex, { successMessage });
+        setColorBodyHex(color.hex);
+        updateColors("colorBody", color.hex, { successMessage:null });
         let updates = { color_1: color.hex };
         props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage });
         // ligten color
         const amount = 20;
         const lightenedRed = Math.min(255, Math.round(color.rgb.r + (amount / 100) * (255 - color.rgb.r)));
@@ -217,10 +220,10 @@ export default function ReportPageHeader(props) {
         setColorElements(false, color.hex, lightenedHexColor);
       } else {
         setColorText(color.rgb);
-        updateColors("colorText", color.hex, { successMessage });
+        setColorTextHex(color.hex);
+        updateColors("colorText", color.hex, { successMessage:null });
         let updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage });
         setColorElements(color.hex, false, false);     
       }
     },
@@ -339,19 +342,20 @@ export default function ReportPageHeader(props) {
   const handleSaveReport = () => {
     if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
       recordEvent("create", report.id, { id: report.id });
-      updateReport({ is_draft: false }, { successMessage: null });
+      updateReport({
+        color_1: colorBodyHex || report.color_1,
+        color_2: colorTextHex || report.color_2,
+        is_draft: false
+      }, { successMessage: null });
       return saveReport();
     }
-    var updates = {
+    updateReport({
       expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
-      color_1: report.color_1 || "#f17013",
-      color_2: report.color_2 || "#f17013",
-    };
-    props.onChange(extend(report.clone(), updates));
-    updateReport(updates, { successMessage: null });
+      color_1: colorBodyHex || report.color_1,
+      color_2: colorTextHex || report.color_2
+    }, { successMessage: null });
     if (!report.expression || !report.appSettings) {
       setTimeout(() => {
-        // need to render itself again with recent changes
         document.querySelector("#_handleSaveReport").click();
       }, 466);
       return 0;
@@ -478,7 +482,6 @@ export default function ReportPageHeader(props) {
       abortController.abort();
     }
   }, [dataSourcesLoaded]);
-
   return (
     <div className="report-page-header">
       <div className="title-with-tags m-l-5">

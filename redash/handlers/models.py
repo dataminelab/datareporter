@@ -134,6 +134,8 @@ class ModelsResource(BaseResource):
 
         if model.config is not None:
             models.db.session.delete(model.config)
+        for report in model.reports:
+            models.db.session.delete(report)
         models.db.session.delete(model)
         models.db.session.commit()
 

@@ -48,6 +48,8 @@ steps:
       - plywood.image.tag=$COMMIT_SHA
       - '--set'
       - datareporter.image.tag=$COMMIT_SHA
+      - --timeout=15m
+      - --atomic 
     id: Deploy
     volumes:
       - name: config

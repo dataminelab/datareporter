@@ -1,0 +1,63 @@
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - '-c'
+      - >-
+        gcloud secrets versions access latest
+        --secret=kubeconfig-k8s-1-25-4-do-0-fra1-1678526047017  >
+        /config/kubeconfig.conf
+    entrypoint: bash
+    volumes:
+      - name: config
+        path: /config
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - '-c'
+      - >-
+        gcloud secrets versions access latest --secret=values-pinadventures > 
+        /config/values.yaml
+    entrypoint: bash
+    volumes:
+      - name: config
+        path: /config
+  - name: 'alpine/helm:3.11.1'
+    env:
+      - KUBECONFIG=/config/kubeconfig.conf
+    args:
+      - repo
+      - add
+      - datareporter
+      - 'https://dataminelab.github.io/contrib-helm-chart/'
+    id: Add-repo
+    volumes:
+      - name: config
+        path: /config
+  - name: 'alpine/helm:3.11.1'
+    env:
+      - KUBECONFIG=/config/kubeconfig.conf
+    args:
+      - '-n'
+      - pinadventures
+      - upgrade
+      - '--install'
+      - '-f'
+      - /config/values.yaml
+      - datareporter
+      - datareporter/datareporter
+      - '--set'
+      - plywood.image.tag=$COMMIT_SHA
+      - '--set'
+      - datareporter.image.tag=$COMMIT_SHA
+    id: Deploy
+    volumes:
+      - name: config
+        path: /config
+images:
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/datareporter:$COMMIT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/plywood:$COMMIT_SHA'
+options:
+  substitutionOption: ALLOW_LOOSE
+substitutions:
+  _GCR_HOSTNAME: eu.gcr.io
+tags:
+  - datareporter-server-pinadventures

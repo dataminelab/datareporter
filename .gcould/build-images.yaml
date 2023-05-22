@@ -1,0 +1,68 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - pull
+      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
+    id: Pull-Data-Reporter-Latest
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - pull
+      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
+    id: Pull-Plywood-Latest
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - buildx
+      - build
+      - '--cache-from'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
+      - '-t'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
+      - '-t'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
+      - .
+      - '-f'
+      - Dockerfile
+      - '-o'
+      - type=image
+    id: Build-Data-Reporter
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - buildx
+      - build
+      - '--cache-from'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
+      - '-t'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
+      - '-t'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
+      - .
+      - '-f'
+      - Dockerfile
+      - '-o'
+      - type=image
+    dir: plywood/server
+    id: Build-Plywood
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
+    id: Push-Data-Reporter
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
+    id: Push-Plywood
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
+    id: Push-Data-Reporter-Latest
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
+    id: Push-Plywood-Latest
+options:
+  substitutionOption: ALLOW_LOOSE
+substitutions:
+  _GCR_HOSTNAME: eu.gcr.io

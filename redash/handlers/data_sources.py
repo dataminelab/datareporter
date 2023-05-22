@@ -141,8 +141,15 @@ class DataSourceListResource(BaseResource):
                 "object_type": "datasource",
             }
         )
+        sorted_results = sorted(list(response.values()), key=lambda d: d["name"].lower())
 
-        return sorted(list(response.values()), key=lambda d: d["name"].lower())
+        source = request.args.get('source', False)
+        if source == "plywood":
+            plywood_arr = ["athena", "bigquery"]
+            for result in sorted_results:
+                if result["type"] not in plywood_arr:
+                    sorted_results.remove(result)
+        return sorted_results
 
     @require_admin
     def post(self):

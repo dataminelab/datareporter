@@ -11,7 +11,7 @@ function mapSchemaColumnsToObject(columns) {
 }
 
 const DataSource = {
-  query: () => axios.get("api/data_sources"),
+  query: () => axios.get("api/data_sources?source=plywood"),
   get: ({ id }) => axios.get(`api/data_sources/${id}`),
   getTables: (id) => axios.get(`api/data_sources/${id}/tables?refresh=True`),
   types: () => axios.get("api/data_sources/types"),

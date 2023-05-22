@@ -50,9 +50,12 @@ steps:
     id: Push-Plywood-Latest
   - name: gcr.io/cloud-builders/gcloud
     args:
-      - >- 
-        builds triggers  run datareporter-deploy-pinadventures --sha=$COMMIT_SHA
-    id: Trigger deploy
+      - '-c'
+      - >-
+        gcloud builds triggers  run datareporter-deploy-pinadventures
+        --sha=$COMMIT_SHA
+    id: Deploy-Pinadventures
+    entrypoint: bash
 options:
   substitutionOption: ALLOW_LOOSE
 substitutions:

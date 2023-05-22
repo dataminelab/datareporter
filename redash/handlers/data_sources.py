@@ -26,6 +26,7 @@ from redash.serializers.model_serializer import ModelSerializer
 from redash.tasks.general import test_connection, get_schema
 from redash.utils import filter_none
 from redash.utils.configuration import ConfigurationContainer, ValidationError
+from redash.plywood.parsers.query_parser_v2 import supported_engines 
 
 
 class DataSourceTypeListResource(BaseResource):
@@ -145,9 +146,8 @@ class DataSourceListResource(BaseResource):
 
         source = request.args.get('source', False)
         if source == "plywood":
-            plywood_arr = ["athena", "bigquery"]
             for result in sorted_results:
-                if result["type"] not in plywood_arr:
+                if result["type"] not in supported_engines:
                     sorted_results.remove(result)
         return sorted_results
 

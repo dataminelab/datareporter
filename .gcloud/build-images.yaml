@@ -1,20 +1,8 @@
 steps:
   - name: gcr.io/cloud-builders/docker
     args:
-      - pull
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
-    id: Pull-Data-Reporter-Latest
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - pull
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
-    id: Pull-Plywood-Latest
-  - name: gcr.io/cloud-builders/docker
-    args:
       - buildx
       - build
-      - '--cache-from'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
       - '-t'
@@ -29,8 +17,6 @@ steps:
     args:
       - buildx
       - build
-      - '--cache-from'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
       - '-t'

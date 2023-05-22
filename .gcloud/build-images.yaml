@@ -56,6 +56,9 @@ steps:
         --sha=$COMMIT_SHA
     id: Deploy-Pinadventures
     entrypoint: bash
+images:
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/datareporter:$COMMIT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/plywood:$COMMIT_SHA'
 options:
   substitutionOption: ALLOW_LOOSE
 substitutions:

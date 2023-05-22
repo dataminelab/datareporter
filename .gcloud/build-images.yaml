@@ -48,6 +48,11 @@ steps:
       - push
       - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
     id: Push-Plywood-Latest
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - >- 
+        builds triggers  run datareporter-deploy-pinadventures --sha=$COMMIT_SHA
+    id: Trigger deploy
 options:
   substitutionOption: ALLOW_LOOSE
 substitutions:

@@ -30,6 +30,10 @@ export default function DesktopNavbar() {
   const canCreateDashboard = currentUser.hasPermission("create_dashboard");
   const canCreateAlert = currentUser.hasPermission("list_alerts");
 
+  const handleDeepRefresh = () => {
+    window.location.hash+="&bypass_cache=true";
+    window.location.reload();
+  };
 
   return (
     <div className="desktop-navbar-report">
@@ -187,7 +191,7 @@ export default function DesktopNavbar() {
 
       <NavbarSection inlineCollapsed={collapsed} className="settings-menu">
         <Menu.Item key="refresh">
-          <a data-test="Refresh" href="#" onClick={() => window.location.reload()}>
+          <a data-test="Refresh" href="#" onClick={handleDeepRefresh}>
             <i className="icon-ui icon-refresh"></i>
           </a>
         </Menu.Item>

@@ -92,6 +92,35 @@ function setPriceButton(meta: any) {
   bytesDiv.innerHTML = "Bytes: " + gbType.toString().slice(0,5) + " GB";
 }
 
+function bypass_cache_needed() {
+  // Get the URL hash
+  var urlHash = window.location.hash;
+
+  // Remove the leading '#' character
+  var hashWithoutPrefix = urlHash.substr(1);
+
+  // Split the hash into key-value pairs
+  var keyValuePairs = hashWithoutPrefix.split('&');
+
+  // Loop through each key-value pair to find the bypass_cache parameter
+  var bypassCacheValue = null;
+  for (var i = 0; i < keyValuePairs.length; i++) {
+    var pair = keyValuePairs[i].split('=');
+    var key = pair[0];
+    var value = pair[1];
+    
+    if (key === 'bypass_cache') {
+      bypassCacheValue = value;
+      break;
+    }
+  }
+  // clean bypass_cache parameter from hash
+  window.location.hash = urlHash.replace("&bypass_cache=" + bypassCacheValue, "");
+  if (bypassCacheValue && bypassCacheValue == "true") {
+    return true
+  }
+  return false
+}
 export class Ajax {
   static version: string;
 
@@ -101,7 +130,6 @@ export class Ajax {
   static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
-
     return axios({ method, url, data, timeout, validateStatus })
       .then(res => {
         if (res && res.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
@@ -125,7 +153,6 @@ export class Ajax {
 
   static queryUrlExecutorFactory(dataCube: DataCube): Executor {
     const timeout = clientTimeout(dataCube.cluster);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     function timeoutQuery(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -134,31 +161,32 @@ export class Ajax {
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
         const { data, method, timeout , url } = input;
         const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
-
         if ([1, 2].indexOf(res.status) >= 0) {
             await timeoutQuery(2000);
+            input.data.bypass_cache = false;
             return await subscribe(input);
        } else return res;
     }
 
-    async function  subscribeToFilter(ex: LimitExpression, modelId: number) {
+    async function  subscribeToFilter(ex: LimitExpression, modelId: number, bypass_cache: boolean) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}/filter`;
-      const data = { expression : ex.toJS() };
+      const data = { expression : ex.toJS(), bypass_cache };
       return subscribe({ method, url, timeout, data });
     }
 
-    async function  subscribeToSplit(hash: string, modelId: number) {
+    async function  subscribeToSplit(hash: string, modelId: number, bypass_cache: boolean) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}`;
-      const data = { hash };
+      const data = { hash, bypass_cache };
       return subscribe({ method, url, timeout, data });
     }
 
     return async (ex: Expression, env: Environment = {}) => {
       const modelId = this.model_id;
+      const bypass_cache = bypass_cache_needed();
       if (ex instanceof  LimitExpression) {
-        const sub = await subscribeToFilter(ex, modelId);
+        const sub = await subscribeToFilter(ex, modelId, bypass_cache);
         return Dataset.fromJS(sub.data);
       }
       var hash;
@@ -167,7 +195,7 @@ export class Ajax {
       } else {
         hash = this.hash;
       }
-      const sub = await subscribeToSplit(hash, modelId);
+      const sub = await subscribeToSplit(hash, modelId, bypass_cache);
       // @ts-ignore
       if (sub.meta) {
         // @ts-ignore

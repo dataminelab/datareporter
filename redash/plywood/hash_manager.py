@@ -83,6 +83,21 @@ def cache_or_get(
         return cache_or_get(hash_string=hash_string, queries=queries, current_org=current_org, model=model, split=split)
 
 
+def clear_cache_and_get(
+    hash_string: str,
+    queries: list,
+    current_org,
+    model: Model,
+    split: int = 1
+):
+    smaller_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+    key = PLYWOOD_PREFIX + smaller_hash + str(split)
+    exists = redis_connection.exists(key)
+    if exists:
+        redis_connection.delete(key)
+    return cache_or_get(hash_string=hash_string, queries=queries, current_org=current_org, model=model, split=split)
+
+
 def has_pending(array):
     if len(array) == 0:
         return False
@@ -181,7 +196,7 @@ def clean_errored(queries: list):
 
 
 def get_data_cube(model: Model):
-    data_cube = DataCube(model=model)#lower_case_kind=True
+    data_cube = DataCube(model=model)
     return data_cube
 
 def is_admin(user):
@@ -220,16 +235,23 @@ def hash_report(o, can_edit):
     }
     return result
 
-def hash_to_result(hash_string: str, model: Model, organisation):
+def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: bool = False):
     data_cube = get_data_cube(model)
     expression = Expression(hash=hash_string, data_cube=data_cube)
-
-    queries_result = cache_or_get(
-        hash_string=hash_string,
-        queries=expression.queries,
-        current_org=organisation,
-        model=model,
-    )
+    if bypass_cache:
+        queries_result = clear_cache_and_get(
+            hash_string=hash_string,
+            queries=expression.queries,
+            current_org=organisation,
+            model=model,
+        )
+    else:
+        queries_result = cache_or_get( 
+            hash_string=hash_string,
+            queries=expression.queries,
+            current_org=organisation,
+            model=model,
+        )
 
     return parse_result(
         hash_string=hash_string,

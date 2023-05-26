@@ -251,7 +251,7 @@ export default function ReportPageHeader(props) {
         const updates = {
           data_source_id: dataSourceId,
           isJustLanded: false,
-        };
+        }
         setModels(res.results);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null });
@@ -330,13 +330,15 @@ export default function ReportPageHeader(props) {
   );
 
   const handlePriceReport = () => {
-    if (document.querySelector("#meta-modal").style.opacity === "1") {
-      document.querySelector("#meta-modal").style.opacity = "0";
-      document.querySelector("#meta-modal").style["z-index"] = "-1";
-    } else {
-      document.querySelector("#meta-modal").style.opacity = "1";
-      document.querySelector("#meta-modal").style["z-index"] = "10";
-    }
+    try {
+      if (document.querySelector("#meta-modal").style.opacity === "1") {
+        document.querySelector("#meta-modal").style.opacity = "0";
+        document.querySelector("#meta-modal").style["z-index"] = "-1";
+      } else {
+        document.querySelector("#meta-modal").style.opacity = "1";
+        document.querySelector("#meta-modal").style["z-index"] = "10";
+      }
+    } catch {console.warn("price modal doesnt exist on this page.")}
   };
 
   const handleSaveReport = () => {

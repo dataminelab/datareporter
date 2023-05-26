@@ -145,11 +145,12 @@ class DataSourceListResource(BaseResource):
         sorted_results = sorted(list(response.values()), key=lambda d: d["name"].lower())
 
         source = request.args.get('source', False)
+        results = []
         if source == "plywood":
             for result in sorted_results:
-                if result["type"] not in supported_engines:
-                    sorted_results.remove(result)
-        return sorted_results
+                if result["type"] in supported_engines:
+                    results.append(result)
+        return results
 
     @require_admin
     def post(self):

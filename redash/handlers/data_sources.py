@@ -208,6 +208,7 @@ class DataSourceSchemaResource(BaseResource):
         data = dict(data_source_id=data_source_id, refresh=refresh)
         message = dict(type="schemas", fn="refresh_schema", data=data)
         pubsub.send_message_to_topic(json.dumps(message))
+        # TODO: make response with pubsub result?
 
         job = get_schema.delay(data_source.id, refresh)
         pubsub.send_message_to_topic("schemas")

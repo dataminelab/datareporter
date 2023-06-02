@@ -216,6 +216,9 @@ def refresh_schemas():
                 u"task=refresh_schema state=skip ds_id=%s reason=org_disabled", ds.id
             )
         else:
+            message = dict(type="schemas", fn="refresh_schema", data=ds.id)
+            pubsub.send_message_to_topic(json.dumps(message))
+
             refresh_schema.delay(ds.id)
             pubsub.send_message_to_topic("schemas")
 

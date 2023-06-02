@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import json
 import logging
 import time
 from urllib.parse import urlsplit, urlunsplit
@@ -9,6 +10,7 @@ from flask_login import LoginManager, login_user, logout_user, user_logged_in
 from redash import models, settings
 from redash.authentication import jwt_auth
 from redash.authentication.org_resolving import current_org
+from redash.gcloud import pubsub
 from redash.settings.organization import settings as org_settings
 from redash.tasks import record_event
 from sqlalchemy.orm.exc import NoResultFound
@@ -209,6 +211,9 @@ def log_user_logged_in(app, user):
         "user_agent": request.user_agent.string,
         "ip": request.remote_addr,
     }
+
+    message = dict(type="default", fn="record_event", data=event)
+    pubsub.send_message_to_topic(json.dumps(message))
 
     record_event.delay(event)
 

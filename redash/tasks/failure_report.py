@@ -1,6 +1,9 @@
 import datetime
+import json
 import re
 from collections import Counter
+
+from redash.gcloud import pubsub
 from redash.tasks.general import send_mail
 from redash import redis_connection, settings, models
 from redash.utils import json_dumps, json_loads, base_url, render_template
@@ -60,6 +63,10 @@ def send_failure_report(user_id):
             render_template("emails/failures.{}".format(f), context)
             for f in ["html", "txt"]
         ]
+
+        data = dict(to=[user.email], subject=subject, html=html, text=text)
+        message = dict(type="email", fn="send_email", data=data)
+        pubsub.send_message_to_topic(json.dumps(message))
 
         send_mail.delay([user.email], subject, html, text)
 

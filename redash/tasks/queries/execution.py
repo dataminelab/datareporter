@@ -1,3 +1,4 @@
+import json
 import signal
 import time
 import redis
@@ -8,6 +9,7 @@ from rq.timeouts import JobTimeoutException
 from rq.exceptions import NoSuchJobError
 
 from redash import models, redis_connection, settings
+from redash.gcloud import pubsub
 from redash.query_runner import InterruptException
 from redash.tasks.worker import Queue, Job
 from redash.tasks.alerts import check_alerts_for_query
@@ -232,6 +234,9 @@ class QueryExecutor(object):
             models.db.session.commit()  # make sure that alert sees the latest query result
             self._log_progress("checking_alerts")
             for query_id in updated_query_ids:
+                message = dict(type="default", fn="check_alerts_for_query", data=query_id)
+                pubsub.send_message_to_topic(json.dumps(message))
+
                 check_alerts_for_query.delay(query_id)
             self._log_progress("finished")
 

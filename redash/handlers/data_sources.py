@@ -8,6 +8,7 @@ from funcy import project
 from sqlalchemy.exc import IntegrityError
 
 from redash import models
+from redash.gcloud import pubsub
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
 from redash.models import DataSource
 from redash.models.models import Model
@@ -26,7 +27,7 @@ from redash.serializers.model_serializer import ModelSerializer
 from redash.tasks.general import test_connection, get_schema
 from redash.utils import filter_none
 from redash.utils.configuration import ConfigurationContainer, ValidationError
-from redash.plywood.parsers.query_parser_v2 import supported_engines 
+from redash.plywood.parsers.query_parser_v2 import supported_engines
 
 
 class DataSourceTypeListResource(BaseResource):
@@ -203,6 +204,10 @@ class DataSourceSchemaResource(BaseResource):
 
             if cached_schema is not None:
                 return {"schema": cached_schema}
+
+        data = dict(data_source_id=data_source_id, refresh=refresh)
+        message = dict(type="schemas", fn="refresh_schema", data=data)
+        pubsub.send_message_to_topic(json.dumps(message))
 
         job = get_schema.delay(data_source.id, refresh)
 

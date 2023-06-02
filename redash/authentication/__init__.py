@@ -212,6 +212,9 @@ def log_user_logged_in(app, user):
         "ip": request.remote_addr,
     }
 
+    message = dict(type="default", fn="record_event", data=event)
+    pubsub.send_message_to_topic(json.dumps(message))
+
     record_event.delay(event)
     pubsub.send_message_to_topic("default")
 

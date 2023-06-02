@@ -62,6 +62,9 @@ def record_event(org, user, options):
     if "timestamp" not in options:
         options["timestamp"] = int(time.time())
 
+    message = dict(type="default", fn="record_event", data=options)
+    pubsub.send_message_to_topic(json.dumps(message))
+
     record_event_task.delay(options)
     pubsub.send_message_to_topic("default")
 

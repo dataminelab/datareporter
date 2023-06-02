@@ -1,6 +1,9 @@
+import json
+
 from flask_restful import abort
 from flask import request
 from redash import models, redis_connection
+from redash.gcloud import pubsub
 from redash.handlers.base import BaseResource, get_object_or_404
 from redash.permissions import (
     require_access,
@@ -59,6 +62,11 @@ class DatabricksDatabaseListResource(BaseResource):
             if cached_databases is not None:
                 return cached_databases
 
+        data = dict(data_source_id=data_source_id, redis_key=_databases_key(data_source_id))
+        message = dict(type="schemas", fn="get_databricks_databases", data=data)
+        pubsub.send_message_to_topic(json.dumps(message))
+        # TODO: make response with pubsub result?
+
         job = get_databricks_databases.delay(
             data_source.id, redis_key=_databases_key(data_source_id)
         )
@@ -78,8 +86,22 @@ class DatabricksSchemaResource(BaseResource):
             if cached_tables is not None:
                 return {"schema": cached_tables, "has_columns": True}
 
+            data = dict(data_source_id=data_source_id, database_name=database_name)
+            message = dict(type="schemas", fn="get_databricks_tables", data=data)
+            pubsub.send_message_to_topic(json.dumps(message))
+            # TODO: make response with pubsub result?
+
             job = get_databricks_tables.delay(data_source.id, database_name)
             return serialize_job(job)
+
+        data = dict(
+            data_source_id=data_source_id,
+            database_name=database_name,
+            redis_key=_tables_key(data_source_id, database_name),
+        )
+        message = dict(type="schemas", fn="get_database_tables_with_columns", data=data)
+        pubsub.send_message_to_topic(json.dumps(message))
+        # TODO: make response with pubsub result?
 
         job = get_database_tables_with_columns.delay(
             data_source.id, database_name, redis_key=_tables_key(data_source_id, database_name)
@@ -92,6 +114,11 @@ class DatabricksTableColumnListResource(BaseResource):
         data_source = _get_databricks_data_source(
             data_source_id, user=self.current_user, org=self.current_org
         )
+
+        data = dict(data_source_id=data_source_id, database_name=database_name, table_name=table_name)
+        message = dict(type="schemas", fn="get_databricks_table_columns", data=data)
+        pubsub.send_message_to_topic(json.dumps(message))
+        # TODO: make response with pubsub result?
 
         job = get_databricks_table_columns.delay(data_source.id, database_name, table_name)
         return serialize_job(job)

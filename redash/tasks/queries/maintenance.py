@@ -217,9 +217,9 @@ def refresh_schemas():
             )
         else:
             message = dict(type="schemas", fn="refresh_schema", data=ds.id)
-            pubsub.send_message_to_topic(json.dumps(message))
-
-            refresh_schema.delay(ds.id)
+            result = pubsub.send_message_to_topic(json.dumps(message))
+            if not result:
+                refresh_schema.delay(ds.id)
 
     logger.info(
         u"task=refresh_schemas state=finish total_runtime=%.2f",

@@ -63,9 +63,9 @@ def record_event(org, user, options):
         options["timestamp"] = int(time.time())
 
     message = dict(type="default", fn="record_event", data=options)
-    pubsub.send_message_to_topic(json.dumps(message))
-
-    record_event_task.delay(options)
+    result = pubsub.send_message_to_topic(json.dumps(message))
+    if not result:
+        record_event_task.delay(options)
 
 
 def require_fields(req, fields):

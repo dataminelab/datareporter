@@ -207,12 +207,14 @@ class DataSourceSchemaResource(BaseResource):
 
         data = dict(data_source_id=data_source_id, refresh=refresh)
         message = dict(type="schemas", fn="refresh_schema", data=data)
-        pubsub.send_message_to_topic(json.dumps(message))
-        # TODO: make response with pubsub result?
+        result = pubsub.send_message_to_topic(json.dumps(message))
+        if result:
+            # TODO: make response with pubsub result?
+            return
+        else:
+            job = get_schema.delay(data_source.id, refresh)
 
-        job = get_schema.delay(data_source.id, refresh)
-
-        return serialize_job(job)
+            return serialize_job(job)
 
 
 class DataSourcePauseResource(BaseResource):

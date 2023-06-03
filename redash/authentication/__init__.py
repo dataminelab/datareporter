@@ -213,9 +213,9 @@ def log_user_logged_in(app, user):
     }
 
     message = dict(type="default", fn="record_event", data=event)
-    pubsub.send_message_to_topic(json.dumps(message))
-
-    record_event.delay(event)
+    result = pubsub.send_message_to_topic(json.dumps(message))
+    if not result:
+        record_event.delay(event)
 
 
 @login_manager.unauthorized_handler

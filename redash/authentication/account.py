@@ -52,9 +52,9 @@ def send_verify_email(user, org):
 
     data = dict(to=[user.email], subject=subject, html=html_content, text=text_content)
     message = dict(type="email", fn="send_email", data=data)
-    pubsub.send_message_to_topic(json.dumps(message))
-
-    send_mail.delay([user.email], subject, html_content, text_content)
+    result = pubsub.send_message_to_topic(json.dumps(message))
+    if not result:
+        send_mail.delay([user.email], subject, html_content, text_content)
 
 
 def send_invite_email(inviter, invited, invite_url, org):
@@ -65,9 +65,9 @@ def send_invite_email(inviter, invited, invite_url, org):
 
     data = dict(to=[invited.email], subject=subject, html=html_content, text=text_content)
     message = dict(type="email", fn="send_email", data=data)
-    pubsub.send_message_to_topic(json.dumps(message))
-
-    send_mail.delay([invited.email], subject, html_content, text_content)
+    result = pubsub.send_message_to_topic(json.dumps(message))
+    if not result:
+        send_mail.delay([invited.email], subject, html_content, text_content)
 
 
 def send_password_reset_email(user):
@@ -79,9 +79,9 @@ def send_password_reset_email(user):
 
     data = dict(to=[user.email], subject=subject, html=html_content, text=text_content)
     message = dict(type="email", fn="send_email", data=data)
-    pubsub.send_message_to_topic(json.dumps(message))
-
-    send_mail.delay([user.email], subject, html_content, text_content)
+    result = pubsub.send_message_to_topic(json.dumps(message))
+    if not result:
+        send_mail.delay([user.email], subject, html_content, text_content)
     return reset_link
 
 
@@ -92,6 +92,6 @@ def send_user_disabled_email(user):
 
     data = dict(to=[user.email], subject=subject, html=html_content, text=text_content)
     message = dict(type="email", fn="send_email", data=data)
-    pubsub.send_message_to_topic(json.dumps(message))
-
-    send_mail.delay([user.email], subject, html_content, text_content)
+    result = pubsub.send_message_to_topic(json.dumps(message))
+    if not result:
+        send_mail.delay([user.email], subject, html_content, text_content)

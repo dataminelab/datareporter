@@ -64,13 +64,15 @@ class DatabricksDatabaseListResource(BaseResource):
 
         data = dict(data_source_id=data_source_id, redis_key=_databases_key(data_source_id))
         message = dict(type="schemas", fn="get_databricks_databases", data=data)
-        pubsub.send_message_to_topic(json.dumps(message))
-        # TODO: make response with pubsub result?
-
-        job = get_databricks_databases.delay(
-            data_source.id, redis_key=_databases_key(data_source_id)
-        )
-        return serialize_job(job)
+        result = pubsub.send_message_to_topic(json.dumps(message))
+        if result:
+            # TODO: make response with pubsub result?
+            return
+        else:
+            job = get_databricks_databases.delay(
+                data_source.id, redis_key=_databases_key(data_source_id)
+            )
+            return serialize_job(job)
 
 
 class DatabricksSchemaResource(BaseResource):
@@ -88,11 +90,13 @@ class DatabricksSchemaResource(BaseResource):
 
             data = dict(data_source_id=data_source_id, database_name=database_name)
             message = dict(type="schemas", fn="get_databricks_tables", data=data)
-            pubsub.send_message_to_topic(json.dumps(message))
-            # TODO: make response with pubsub result?
-
-            job = get_databricks_tables.delay(data_source.id, database_name)
-            return serialize_job(job)
+            result = pubsub.send_message_to_topic(json.dumps(message))
+            if result:
+                # TODO: make response with pubsub result?
+                return
+            else:
+                job = get_databricks_tables.delay(data_source.id, database_name)
+                return serialize_job(job)
 
         data = dict(
             data_source_id=data_source_id,
@@ -100,13 +104,15 @@ class DatabricksSchemaResource(BaseResource):
             redis_key=_tables_key(data_source_id, database_name),
         )
         message = dict(type="schemas", fn="get_database_tables_with_columns", data=data)
-        pubsub.send_message_to_topic(json.dumps(message))
-        # TODO: make response with pubsub result?
-
-        job = get_database_tables_with_columns.delay(
-            data_source.id, database_name, redis_key=_tables_key(data_source_id, database_name)
-        )
-        return serialize_job(job)
+        result = pubsub.send_message_to_topic(json.dumps(message))
+        if result:
+            # TODO: make response with pubsub result?
+            return
+        else:
+            job = get_database_tables_with_columns.delay(
+                data_source.id, database_name, redis_key=_tables_key(data_source_id, database_name)
+            )
+            return serialize_job(job)
 
 
 class DatabricksTableColumnListResource(BaseResource):
@@ -117,8 +123,10 @@ class DatabricksTableColumnListResource(BaseResource):
 
         data = dict(data_source_id=data_source_id, database_name=database_name, table_name=table_name)
         message = dict(type="schemas", fn="get_databricks_table_columns", data=data)
-        pubsub.send_message_to_topic(json.dumps(message))
-        # TODO: make response with pubsub result?
-
-        job = get_databricks_table_columns.delay(data_source.id, database_name, table_name)
-        return serialize_job(job)
+        result = pubsub.send_message_to_topic(json.dumps(message))
+        if result:
+            # TODO: make response with pubsub result?
+            return
+        else:
+            job = get_databricks_table_columns.delay(data_source.id, database_name, table_name)
+            return serialize_job(job)

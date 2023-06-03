@@ -66,9 +66,9 @@ def send_failure_report(user_id):
 
         data = dict(to=[user.email], subject=subject, html=html, text=text)
         message = dict(type="email", fn="send_email", data=data)
-        pubsub.send_message_to_topic(json.dumps(message))
-
-        send_mail.delay([user.email], subject, html, text)
+        result = pubsub.send_message_to_topic(json.dumps(message))
+        if not result:
+            send_mail.delay([user.email], subject, html, text)
 
     redis_connection.delete(key(user_id))
 

@@ -7,6 +7,8 @@ from redash.settings import GOOGLE_PRODUCT_ID, GOOGLE_PUBSUB_WORKER_TOPIC_ID
 
 
 def send_message_to_topic(message: str):
+    if not GOOGLE_PRODUCT_ID or not GOOGLE_PUBSUB_WORKER_TOPIC_ID:
+        return None
     publisher = pubsub_v1.PublisherClient()
     # The `topic_path` method creates a fully qualified identifier
     # in the form `projects/{project_id}/topics/{topic_id}`

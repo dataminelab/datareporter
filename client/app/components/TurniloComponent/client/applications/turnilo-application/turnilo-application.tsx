@@ -214,6 +214,8 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     // Hash initialization, no need to add the intermediary url in the history
     if (window.location.hash === `#${hash.split("/")[0]}`) {
       replaceHash("#" + hash);
+    }else {
+      window.location.hash = `#${hash}`;
     }
 
     setTimeout(() => this.hashUpdating = false, 5);

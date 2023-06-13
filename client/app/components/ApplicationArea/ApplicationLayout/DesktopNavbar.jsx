@@ -30,8 +30,9 @@ export default function DesktopNavbar() {
   const canCreateDashboard = currentUser.hasPermission("create_dashboard");
   const canCreateAlert = currentUser.hasPermission("list_alerts");
 
-  const handleDeepRefresh = () => {
-    window.location.hash+="&bypass_cache=true";
+  const handleDeepRefresh = (event) => {
+    event.stopPropagation();
+    window.localStorage.bypass_cache = true;
     window.location.reload();
   };
 

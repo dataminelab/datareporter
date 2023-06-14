@@ -81,14 +81,19 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
     this.setState({ open: false });
   };
 
+  handleOnSelect = (item: T) => {
+    const { onSelect } = this.props;
+    if (onSelect) onSelect(item);
+  };
+
   renderMenu() {
-    const { items, renderItem = String, keyItem = renderItem, selectedItem, equal = simpleEqual, onSelect, menuClassName } = this.props;
+    const { items, renderItem = String, keyItem = renderItem, selectedItem, equal = simpleEqual, menuClassName } = this.props;
     if (!items || !items.length) return null;
     const itemElements = items.map(item => {
       return <div
         className={classNames("dropdown-item", { selected: selectedItem && equal(item, selectedItem) })}
         key={keyItem(item) as string}
-        onClick={() => onSelect(item)}>
+        onClick={() => this.handleOnSelect(item)}>
         {renderItem(item)}
       </div>;
     });

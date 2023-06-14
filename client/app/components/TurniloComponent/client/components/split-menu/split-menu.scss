@@ -27,6 +27,9 @@ $title-margin: 6px;
   }
 
   .sort-direction {
+    .dropdown {
+      margin-right: 38px;
+    }
 
     .direction {
       @extend %input-cont;

@@ -41,13 +41,11 @@ export interface DropdownProps<T> {
 
 export interface DropdownState {
   open: boolean;
-  selectedItem: any;
 }
 
 export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState> {
   state: DropdownState = {
-    open: false,
-    selectedItem: undefined
+    open: false
   };
 
   componentDidMount() {
@@ -63,35 +61,6 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   onClick = () => {
     this.setState(({ open }) => ({ open: !open }));
   };
-
-  handleInsideDropdown = (state: string, items: any, selectedItem: any) => {
-    if (typeof selectedItem === "object") {
-      selectedItem = selectedItem.title;
-      items = items.map((item: any) => item.title)
-    }
-    
-    if (state === "left") {
-      for (let i=0; i < items.length; i++) {
-        if (items[i] === selectedItem) {
-          if (i === 0) {
-            return items[items.length-1]
-          } else {
-            return items[i-1]
-          }
-        }
-      }
-    } else if (state === "right") {
-      for (let i=items.length-1; i > -1; i--) {
-        if (items[i] === selectedItem) {
-          if (items.length-1 === i) {
-            return items[0]
-          } else {
-            return items[i+1]
-          }
-        }
-      }
-    }
-  }
 
   globalMouseDownListener = (e: MouseEvent) => {
     const { open } = this.state;
@@ -130,48 +99,15 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   }
 
   render() {
-    const { items, label, renderItem = String, selectedItem, direction = "down", renderSelectedItem = renderItem, className } = this.props;
+    const { label, renderItem = String, selectedItem, direction = "down", renderSelectedItem = renderItem, className } = this.props;
     const { open } = this.state;
-    const onSelect = this.props.onSelect || (() => null);
 
     const labelElement = label && <div className="dropdown-label">{label}</div>;
 
     return <div className={classNames("dropdown", direction, className)} onClick={this.onClick}>
       {labelElement}
-      <div className={classNames("selected-item", { active: open })}>
-        {renderSelectedItem(this.state.selectedItem || selectedItem)}
-        <div style={{display:"flex"}}>
-          <div onClick={() => {
-            var c = this.handleInsideDropdown("left", items, this.state.selectedItem || selectedItem);
-            if (typeof c === "number") {
-              //@ts-ignore
-              onSelect(c);
-            } else {
-              c = items.filter((item: any) => item.title === c);
-              this.setState({selectedItem: c[0]});
-              onSelect(c[0]);
-            }
-          }}>
-            <SvgIcon style={{position:"inherit",right:"15px"}}
-              className="caret-icon" svg={require("../../icons/full-caret-left.svg")}
-              />
-          </div>
-          <div onClick={() => {
-            var c = this.handleInsideDropdown("right", items, this.state.selectedItem || selectedItem);
-            if (typeof c === "number") {
-              //@ts-ignore
-              onSelect(c);
-            } else {
-              c = items.filter((item: any) => item.title === c);
-              this.setState({selectedItem: c[0]});
-              onSelect(c[0]);
-            }
-          }}>
-            <SvgIcon style={{position:"inherit"}}
-              className="caret-icon" svg={require("../../icons/full-caret-right.svg")} 
-            />
-          </div>
-        </div>
+      <div className={classNames("selected-item", { active: open })}>{renderSelectedItem(selectedItem)}
+        <SvgIcon className="caret-icon" svg={require("../../icons/dropdown-caret.svg")} />
       </div>
       {open ? this.renderMenu() : null}
     </div>;

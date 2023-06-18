@@ -33,10 +33,12 @@
   .selected-item {
     @extend %input-cont;
     @include ellipsis;
-    display: block;
     pointer-events: auto;
     height: $input-height;
-    padding: 8px 22px 0 6px;
+    padding: 8px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .dropdown-label {

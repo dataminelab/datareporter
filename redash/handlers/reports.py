@@ -70,7 +70,7 @@ class ReportsListResource(BaseResource):
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
         color_1, color_2 = req.get(COLOR_1, 'color'), req.get(COLOR_2, 'color')
 
-        model = get_object_or_404(Model.get_by_id_and_user, model_id, self.current_user)
+        model = get_object_or_404(Model.get_by_id_and_user, model_id, self.current_org)
 
         expression_obj = ExpressionBase64Parser.parse_base64_to_dict(expression)
 

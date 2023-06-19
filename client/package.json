@@ -39,18 +39,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/getredash/redash.git"
+    "url": "git+https://github.com/dataminelab/datareporter.git"
   },
   "engines": {
     "node": "^12.0.0",
     "npm": "^6.0.0"
   },
-  "author": "Redash Contributors",
+  "author": "Dataminelab Contributors",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/getredash/redash/issues"
+    "url": "https://github.com/dataminelab/datareporter/issues"
   },
-  "homepage": "https://redash.io/",
+  "homepage": "https://datareporter.com",
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "@redash/viz": "file:../viz-lib",

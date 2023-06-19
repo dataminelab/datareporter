@@ -101,7 +101,6 @@ export class Ajax {
   static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
-
     return axios({ method, url, data, timeout, validateStatus })
       .then(res => {
         if (res && res.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
@@ -125,7 +124,6 @@ export class Ajax {
 
   static queryUrlExecutorFactory(dataCube: DataCube): Executor {
     const timeout = clientTimeout(dataCube.cluster);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     function timeoutQuery(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -133,8 +131,14 @@ export class Ajax {
 
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
         const { data, method, timeout , url } = input;
+        const bypass_cache = window.localStorage.getItem("bypass_cache") === "true" || false;
+        if (bypass_cache) {
+          data.bypass_cache = true;
+          window.localStorage.removeItem("bypass_cache");
+        } else {
+          data.bypass_cache = false;
+        }
         const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
-
         if ([1, 2].indexOf(res.status) >= 0) {
             await timeoutQuery(2000);
             return await subscribe(input);

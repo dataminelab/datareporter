@@ -53,7 +53,7 @@ steps:
       - '-c'
       - >-
         gcloud builds triggers  run datareporter-deploy-pinadventures
-        --sha=$COMMIT_SHA
+        --branch=staging --substitutions=_IMAGE_TAG="$COMMIT_SHA"
     id: Deploy-Pinadventures
     entrypoint: bash
 images:

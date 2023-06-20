@@ -46,7 +46,7 @@ server:
       cpu: 500m
       memory: 486Mi
     limits:
-      memory: 486Mi
+      memory: 1Gi
   env:
     REDASH_LOG_LEVEL: "DEBUG"
     REDASH_WEB_WORKERS: 2

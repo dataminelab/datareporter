@@ -1,5 +1,5 @@
 redash:
-  existingSecret: datareporter
+  existingSecret: datareporter-secrets
 postgresql:
   enabled: false
 redis:
@@ -44,9 +44,9 @@ server:
   resources:
     requests:
       cpu: 1
-      memory: 512Mi
+      memory: 486Mi
     limits:
-      memory: 512Mi
+      memory: 486Mi
   env:
     REDASH_LOG_LEVEL: "DEBUG"
     REDASH_WEB_WORKERS: 2

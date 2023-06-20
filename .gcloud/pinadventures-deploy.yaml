@@ -14,7 +14,7 @@ steps:
     args:
       - '-c'
       - >-
-        gcloud secrets versions access latest --secret=values-pinadventures > 
+        gcloud secrets versions access latest --secret=values-pinadventures >
         /config/values.yaml
     entrypoint: bash
     volumes:
@@ -45,18 +45,16 @@ steps:
       - datareporter
       - datareporter/datareporter
       - '--set'
-      - plywood.image.tag=$COMMIT_SHA
+      - plywood.image.tag=$_IMAGE_TAG
       - '--set'
-      - datareporter.image.tag=$COMMIT_SHA
+      - datareporter.image.tag=$_IMAGE_TAG
       - --timeout=15m
-      - --atomic 
+      - --atomic
     id: Deploy
     volumes:
       - name: config
         path: /config
-options:
-  substitutionOption: ALLOW_LOOSE
 substitutions:
-  _GCR_HOSTNAME: eu.gcr.io
+  _IMAGE_TAG: $COMMIT_SHA
 tags:
   - datareporter-server-pinadventures

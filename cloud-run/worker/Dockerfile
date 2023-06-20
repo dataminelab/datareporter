@@ -31,15 +31,9 @@ RUN npm run build
 FROM python:3.7-slim-buster
 EXPOSE 5000
 ARG NODE_VERSION=12.18.3 #requires to be repeated as it needs to be avilable as env variable
+# Controls whether to install extra dependencies needed for all data sources.
+ARG skip_ds_deps
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-ENV PYTHONUNBUFFERED True
-ENV REDASH_WEB_WORKERS=1
-ENV REDASH_WEB_WORKER_TIMOUT=0
-ENV REDASH_WEB_WORKER_THREADS=8
-ENV PLYWOOD_SERVER_URL="http://localhost:3000"
-# Disalbe PIP Cache and Version Check
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-ENV PIP_NO_CACHE_DIR=1
 
 ARG S6_OVERLAY_VERSION=3.1.0.1
 RUN apt-get update
@@ -103,14 +97,19 @@ RUN apt-get update && \
 
 WORKDIR /app
 
+# Disalbe PIP Cache and Version Check
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PIP_NO_CACHE_DIR=1
+ENV REDASH_WEB_WORKERS=2
 
 RUN useradd --create-home nginx
 # We first copy only the requirements file, to avoid rebuilding on every file
 # change.
-COPY requirements.txt requirements_all_ds.txt ./
-RUN pip install -r requirements.txt -r requirements_all_ds.txt;
+COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements_all_ds.txt ./
+RUN  pip install -r requirements.txt;
+RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
-
+ENV PLYWOOD_SERVER_URL="http://localhost:3000"
 COPY --chown=redash redash  /app/redash
 COPY --chown=redash bin  /app/bin
 COPY --chown=redash tests  /app/tests

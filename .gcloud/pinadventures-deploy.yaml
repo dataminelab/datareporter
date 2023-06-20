@@ -41,7 +41,7 @@ steps:
       - upgrade
       - '--install'
       - '-f'
-      - /config/values.yaml
+      - ./.gcloud/env/pinadventures/values.yaml
       - datareporter
       - datareporter/datareporter
       - '--set'

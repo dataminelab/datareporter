@@ -21,8 +21,6 @@ plywood:
     requests:
       cpu: 100m
       memory: 256Mi
-    limits:
-      memory: 256Mi
 
 datareporter:
   image:
@@ -43,7 +41,7 @@ ingress:
 server:
   resources:
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 486Mi
   env:
     REDASH_LOG_LEVEL: "DEBUG"
@@ -51,22 +49,22 @@ server:
 adhocWorker:
   resources:
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 486Mi
 
 genericWorker:
   resources:
     requests:
-      cpu: 100m
-      memory: 312Mi
+      cpu: 250m
+      memory: 486Mi
 scheduledWorker:
   replicaCount: 1
   resources:
     requests:
-      cpu: 100m
-      memory: 312Mi
+      cpu: 250m
+      memory: 486Mi
 scheduler:
   resources:
     requests:
-      cpu: 100m
-      memory: 312Mi
+      cpu: 250m
+      memory: 486Mi

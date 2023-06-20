@@ -43,7 +43,7 @@ ingress:
 server:
   resources:
     requests:
-      cpu: 1
+      cpu: 500m
       memory: 486Mi
     limits:
       memory: 486Mi

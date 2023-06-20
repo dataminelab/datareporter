@@ -56,7 +56,7 @@ adhocWorker:
       cpu: 500m
       memory: 486Mi
     limits:
-      memory: 486Mi
+      memory: 1Gi
 
 genericWorker:
   resources:
@@ -64,7 +64,7 @@ genericWorker:
       cpu: 100m
       memory: 312Mi
     limits:
-      memory: 312Mi
+      memory: 1Gi
 scheduledWorker:
   replicaCount: 1
   resources:
@@ -72,11 +72,11 @@ scheduledWorker:
       cpu: 100m
       memory: 312Mi
     limits:
-      memory: 312Mi
+      memory: 1Gi
 scheduler:
   resources:
     requests:
       cpu: 100m
       memory: 312Mi
     limits:
-      memory: 312Mi
+      memory: 1Gi

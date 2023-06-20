@@ -45,8 +45,6 @@ server:
     requests:
       cpu: 500m
       memory: 486Mi
-    limits:
-      memory: 1Gi
   env:
     REDASH_LOG_LEVEL: "DEBUG"
     REDASH_WEB_WORKERS: 2
@@ -55,28 +53,20 @@ adhocWorker:
     requests:
       cpu: 500m
       memory: 486Mi
-    limits:
-      memory: 1Gi
 
 genericWorker:
   resources:
     requests:
       cpu: 100m
       memory: 312Mi
-    limits:
-      memory: 1Gi
 scheduledWorker:
   replicaCount: 1
   resources:
     requests:
       cpu: 100m
       memory: 312Mi
-    limits:
-      memory: 1Gi
 scheduler:
   resources:
     requests:
       cpu: 100m
       memory: 312Mi
-    limits:
-      memory: 1Gi

@@ -386,6 +386,21 @@ export default function ReportPageHeader(props) {
             title: "Archive",
             onClick: archiveReport,
           },
+          displayRawData: {
+            isAvailable: true,
+            title: "Display raw data",
+            onClick: () => {document.querySelector("#raw-data-button").click()},
+          },
+          downloadCSV: {
+            isAvailable: true,
+            title: "Download as CSV",
+            onClick: () => {document.querySelector("#export-data-csv").click()},
+          },
+          downloadTSV: {
+            isAvailable: true,
+            title: "Download as TSV",
+            onClick: () => {document.querySelector("#export-data-tsv").click()},
+          },
           managePermissions: {
             isAvailable:
               !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,

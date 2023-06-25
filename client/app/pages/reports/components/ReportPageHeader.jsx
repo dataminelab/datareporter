@@ -368,29 +368,29 @@ export default function ReportPageHeader(props) {
   const moreActionsMenu = useMemo(
     () =>
       createMenu([
+        // {
+        //   fork: {
+        //     isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+        //     title: (
+        //       <React.Fragment>
+        //         Fork
+        //         <i className="fa fa-external-link m-l-5" />
+        //       </React.Fragment>
+        //     ),
+        //     onClick: duplicateReport,
+        //   },
+        // },
         {
-          fork: {
-            isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
-            title: (
-              <React.Fragment>
-                Fork
-                <i className="fa fa-external-link m-l-5" />
-              </React.Fragment>
-            ),
-            onClick: duplicateReport,
-          },
-        },
-        {
-          archive: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Archive",
-            onClick: archiveReport,
-          },
-          displayRawData: {
-            isAvailable: true,
-            title: "Display raw data",
-            onClick: () => {document.querySelector("#raw-data-button").click()},
-          },
+          // archive: {
+          //   isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+          //   title: "Archive",
+          //   onClick: archiveReport,
+          // },
+          // displayRawData: {
+          //   isAvailable: true,
+          //   title: "Display raw data",
+          //   onClick: () => {document.querySelector("#raw-data-button").click()},
+          // },
           downloadCSV: {
             isAvailable: true,
             title: "Download as CSV",
@@ -401,31 +401,31 @@ export default function ReportPageHeader(props) {
             title: "Download as TSV",
             onClick: () => {document.querySelector("#export-data-tsv").click()},
           },
-          managePermissions: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
-            title: "Manage Permissions",
-            onClick: openPermissionsEditorDialog,
-          },
-          publish: {
-            isAvailable:
-              !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
-            title: "Publish",
-            onClick: publishReport,
-          },
-          unpublish: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
-            title: "Unpublish",
-            onClick: unpublishReport,
-          },
+          // managePermissions: {
+          //   isAvailable:
+          //     !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
+          //   title: "Manage Permissions",
+          //   onClick: openPermissionsEditorDialog,
+          // },
+          // publish: {
+          //   isAvailable:
+          //     !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
+          //   title: "Publish",
+          //   onClick: publishReport,
+          // },
+          // unpublish: {
+          //   isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
+          //   title: "Unpublish",
+          //   onClick: unpublishReport,
+          // },
         },
-        {
-          showAPIKey: {
-            isAvailable: !queryFlags.isNew,
-            title: "Show API Key",
-            onClick: openApiKeyDialog,
-          },
-        },
+        // {
+        //   showAPIKey: {
+        //     isAvailable: !queryFlags.isNew,
+        //     title: "Show API Key",
+        //     onClick: openApiKeyDialog,
+        //   },
+        // },
       ]),
     [
       queryFlags.isNew,

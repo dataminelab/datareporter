@@ -59,7 +59,6 @@ RUN apt-get update && \
     libssl-dev \
     default-libmysqlclient-dev \
     freetds-dev \
-    nginx \
     libsasl2-dev \
     unzip \
     libsasl2-modules-gssapi-mit && \
@@ -71,13 +70,7 @@ RUN apt-get update && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-#ARG databricks_odbc_driver_url=https://databricks.com/wp-content/uploads/2.6.10.1010-2/SimbaSparkODBC-2.6.10.1010-2-Debian-64bit.zip
-#ADD $databricks_odbc_driver_url /tmp/simba_odbc.zip
-#RUN unzip /tmp/simba_odbc.zip -d /tmp/ \
-#  && dpkg -i /tmp/SimbaSparkODBC-*/*.deb \
-#  && echo "[Simba]\nDriver = /opt/simba/spark/lib/64/libsparkodbc_sb64.so" >> /etc/odbcinst.ini \
-#  && rm /tmp/simba_odbc.zip \
-#  && rm -rf /tmp/SimbaSparkODBC*
+
 
 WORKDIR /app
 
@@ -86,7 +79,6 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PIP_NO_CACHE_DIR=1
 ENV REDASH_WEB_WORKERS=2
 
-RUN useradd --create-home nginx
 # We first copy only the requirements file, to avoid rebuilding on every file
 # change.
 COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements_all_ds.txt ./
@@ -100,6 +92,6 @@ COPY --chown=redash tests  /app/tests
 COPY --chown=redash migrations  /app/migrations/
 COPY --chown=redash requirements.txt /app
 COPY --chown=redash *.cfg py* *py /app
-COPY bin/etc /etc
+COPY bin/etc/worker /etc
 USER root
 CMD ["/init"]

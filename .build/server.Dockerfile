@@ -122,6 +122,6 @@ COPY --from=plywood-builder --chown=redash /app/dist /app/plywood/dist
 COPY --from=plywood-builder --chown=redash   /app/node_modules/ /app/plywood/node_modules/
 COPY --from=plywood-builder --chown=redash   /app/client/build /app/plywood/client/build
 COPY --from=plywood-builder --chown=redash   /app/client/package.json /app/plywood/client/package.json
-COPY bin/etc /etc
+COPY bin/etc/server /etc
 USER root
 CMD ["/init"]

@@ -12,6 +12,8 @@ import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 import ModelService from "@/services/model";
 import ModelConfigDocs from "./ModelConfigDocs";
 
+import axios from "axios";
+
 export default function EditableModelConfig({model, saveConfig}) {
   const configYAML = "customization:\n" +
     "  urlShortener: |\n" +
@@ -209,18 +211,22 @@ export default function EditableModelConfig({model, saveConfig}) {
 
   const save = () => saveConfig(model.id, item)
   const handleSaveConfig = (callback) => {
-    const yamlContent =  document.querySelector("#yaml_editor > div.ace_scroller > div").textContent;
-    if (yamlContent.includes("timeAttribute: null")) {
-      const prompt = window.confirm("timeAttribute is null. Are you sure you want to save?");
-      if (prompt) {
-        callback();
-      }
+    const yamlContent =  item;
+    if (!yamlContent.includes("timeAttribute") || yamlContent.includes("timeAttribute: null")) {
+      alert("your time attribute variable is null");
       return;
-    } else if (!yamlContent.includes("timeAttribute")) {
-      const prompt = window.confirm("timeAttribute not found. Are you sure you want to save?");
-      if (prompt) {
-        callback();
-      }
+    }
+    const timeAttribute = yamlContent.split("timeAttribute: ")[1].split("\n")[0];
+    const attributes = yamlContent.split("attributes:")[1].split("measures:")[0];
+    // if timeAttribute is not in attributes, then alert
+    if (!attributes.includes(timeAttribute)) {
+      alert("your time attribute variable is not in attributes list");
+      return;
+    }
+    // if timeAttribute's type is not TIME then alert
+    const timeAttributeType = attributes.split(timeAttribute)[1].split("type: ")[1].split("\n")[0];
+    if (timeAttributeType !== "TIME") {
+      alert("your time attribute variable's type is not a time or timestamp");
       return;
     }
     callback();

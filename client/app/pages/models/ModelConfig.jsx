@@ -50,7 +50,6 @@ function ModelConfig({ modelId, onError }) {
 
   return (
     <React.Fragment>
-      <EmailSettingsWarning featureName="invite emails" className="m-b-20" adminOnly />
       <div className="row">
         {!model && <LoadingState className="" />}
         {model && (

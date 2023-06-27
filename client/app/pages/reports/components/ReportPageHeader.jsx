@@ -565,7 +565,7 @@ export default function ReportPageHeader(props) {
               data-test="SelectDataSource"
               placeholder="Choose base data source..."
               value={report ? report.data_source_id : undefined}
-              disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
+              disabled={report.id || (!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0)}
               loading={!dataSourcesLoaded}
               optionFilterProp="data-name"
               showSearch
@@ -591,7 +591,7 @@ export default function ReportPageHeader(props) {
             id="model-data-source"
             ref={modelSelectElement}
             value={report.model_id}
-            disabled={!reportFlags.canEdit || modelsLoaded || models.length === 0}
+            disabled={report.id || (!reportFlags.canEdit || modelsLoaded || models.length === 0)}
             loading={modelsLoaded}
             optionFilterProp="data-name"
             showSearch

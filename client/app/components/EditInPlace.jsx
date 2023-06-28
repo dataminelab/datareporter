@@ -3,6 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import Input from "antd/lib/input";
+import FullEditLogo from "@/components/FullEditLogo.jsx"
 
 export default class EditInPlace extends React.Component {
   static propTypes = {
@@ -72,7 +73,8 @@ export default class EditInPlace extends React.Component {
         onFocus={this.startEditing}
         onClick={this.startEditing}
         className={this.props.isEditable ? "editable" : ""}>
-        {this.props.value}
+          {this.props.value}   
+          <FullEditLogo />
       </span>
     ) : (
       <a className="clickable" onClick={this.startEditing}>

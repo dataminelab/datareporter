@@ -130,8 +130,6 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
       parameters.formula = (typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString());
     }
 
-    console.log(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters), 'BaseImmutable.jsToValue(Measure.PROPERTIES, parameters)')
-
     return new Measure(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters));
   }
 

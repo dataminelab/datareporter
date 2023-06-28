@@ -631,7 +631,7 @@ export default function ReportPageHeader(props) {
           </span>
         )}
 
-        {!queryFlags.isNew && (
+        {report.model && (
           <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
             <Button>
               <Icon type="ellipsis" rotate={90} />

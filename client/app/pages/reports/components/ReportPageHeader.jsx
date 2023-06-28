@@ -153,11 +153,14 @@ export default function ReportPageHeader(props) {
       },
       popover: {
         position: "absolute",
+        top: "115px",
         zIndex: "2",
       },
       popoverSecond: {
         position: "absolute",
+        top: "115px",
         zIndex: "2",
+        marginLeft: "15vw",
       },
       cover: {
         position: "fixed",
@@ -554,9 +557,7 @@ export default function ReportPageHeader(props) {
         {displayColorPicker === 1 ? (
           <div style={styles.popover}>
             <div style={styles.cover} onClick={handleClose} />
-            <div style={{backgroundColor:"black"}}>
-              <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
-            </div>
+            <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
           </div>
         ) : null}
         {displayColorPicker === 2 ? (

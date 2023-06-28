@@ -129,6 +129,9 @@ export default function ReportPageHeader(props) {
         marginRight: "10px",
         top: "3px",
       },
+      colorSpanElement: {
+        marginRight: "6px",
+      },
       colorBody: {
         width: "36px",
         height: "14px",
@@ -149,6 +152,10 @@ export default function ReportPageHeader(props) {
         lineHeight: "25px",
       },
       popover: {
+        position: "absolute",
+        zIndex: "2",
+      },
+      popoverSecond: {
         position: "absolute",
         zIndex: "2",
       },
@@ -534,28 +541,28 @@ export default function ReportPageHeader(props) {
             </li>
           </ul>
         </div>
-        <div style={styles.swatch} onClick={() => handleClick(1)}>
-          Text chart color: <div style={styles.color} />
-        </div>
-        <div style={styles.swatch} onClick={() => handleClick(2)}>
-          Chart color: <div style={styles.colorBody} />
-        </div>
+        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
+          <span className="icon icon-save-floppy-disc m-r-5"></span>
+          <span style={styles.colorSpanElement}>Text chart color:</span>
+          <div style={styles.color} />
+        </Button>
+        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(2)}>
+          <span className="icon icon-save-floppy-disc m-r-5"></span>
+          <span style={styles.colorSpanElement}>Chart color:</span>
+          <div style={styles.colorBody} />
+        </Button>
         {displayColorPicker === 1 ? (
           <div style={styles.popover}>
             <div style={styles.cover} onClick={handleClose} />
-            <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
-            <button style={{ margin: "10px" }} onClick={handleClose}>
-              Close
-            </button>
+            <div style={{backgroundColor:"black"}}>
+              <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
+            </div>
           </div>
         ) : null}
         {displayColorPicker === 2 ? (
-          <div style={styles.popover}>
+          <div style={styles.popoverSecond}>
             <div style={styles.cover} onClick={handleClose} />
             <SketchPicker color={colorBody} onChangeComplete={color => handleColorChange(color, 2)} />
-            <button style={{ margin: "10px" }} onClick={handleClose}>
-              Close
-            </button>
           </div>
         ) : null}
         {dataSourcesLoaded && (

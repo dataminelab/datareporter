@@ -2,8 +2,8 @@ import { trim } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
-import Input from "antd/lib/input";
-import FullEditLogo from "@/components/FullEditLogo.jsx"
+import Input from "antd/lib/input"; 
+import { SvgIcon } from "@/components/TurniloComponent/client/components/svg-icon/svg-icon.tsx";
 
 export default class EditInPlace extends React.Component {
   static propTypes = {
@@ -73,8 +73,8 @@ export default class EditInPlace extends React.Component {
         onFocus={this.startEditing}
         onClick={this.startEditing}
         className={this.props.isEditable ? "editable" : ""}>
-          {this.props.value}   
-          <FullEditLogo />
+          {this.props.value}
+          <SvgIcon className="svg" svg={require("@/components/TurniloComponent/client/icons/full-edit.svg")} />
       </span>
     ) : (
       <a className="clickable" onClick={this.startEditing}>

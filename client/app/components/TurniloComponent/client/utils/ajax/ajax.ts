@@ -84,12 +84,12 @@ function setPriceButton(meta: any) {
   let priceDiv = document.querySelector("#_price");
   let currentPrice = meta.price + parseInt(priceDiv.getAttribute("alt"))
   priceDiv.setAttribute("alt", currentPrice);
-  priceDiv.innerHTML = "Price: " + currentPrice.toString().slice(0,5) + " $";     
+  priceDiv.innerHTML = "Price: " + currentPrice.toString().slice(0,6) + " $";     
   let bytesDiv = document.querySelector("#_proceed_data");
   let currentBytes = meta.proceed_data + parseInt(bytesDiv.getAttribute("alt"))
   bytesDiv.setAttribute("alt", currentBytes);
-  let gbType = currentBytes * 1e-9;
-  bytesDiv.innerHTML = "Bytes: " + gbType.toString().slice(0,5) + " GB";
+  let gbType = (currentBytes / 8) / 1024 / 1024 / 1024;
+  bytesDiv.innerHTML = "Bytes: " + gbType.toString().slice(0,6) + " GB";
 }
 
 export class Ajax {

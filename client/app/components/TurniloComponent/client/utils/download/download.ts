@@ -48,9 +48,9 @@ export function download({ dataset, options }: DataSetWithTabOptions, fileFormat
 
 export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, options?: TabulatorOptions): string {
   if (fileFormat === "csv") {
-    return dataset.toCSV();
+    return dataset.toCSV(options);
   } else if (fileFormat === "tsv") {
-    return dataset.toTSV();
+    return dataset.toTSV(options);
   } else {
     const datasetJS = dataset.toJS() as DatasetJSFull;
     return JSON.stringify(datasetJS.data, null, 2);

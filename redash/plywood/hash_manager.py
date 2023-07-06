@@ -172,11 +172,17 @@ def parse_result(
         visualization=expression.visualization,
         data_cube=data_cube,
     )
+    # not found in the selected model's region fix
+    # IndexError: list index out of range
+    if errored:
+        data = None
+    else:
+        data = query_parser.parse_ply(data_cube.ply_engine)
 
     serializer = ReportSerializer(
         queries=queries,
         failed=errored,
-        data=query_parser.parse_ply(data_cube.ply_engine),
+        data=data,
         meta=data_cube.get_meta(queries),
         shape=expression.shape,
     )

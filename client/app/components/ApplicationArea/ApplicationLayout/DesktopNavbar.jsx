@@ -34,7 +34,18 @@ export default function DesktopNavbar() {
     event.stopPropagation();
     window.localStorage.bypass_cache = true;
     window.location.reload();
-  };
+  }
+
+  const handleNewReportButton = (event) => {
+    event.preventDefault();
+    const currentUrl = window.location.pathname;
+    debugger;
+    if (currentUrl !== "/reports/new") {
+      window.location.pathname = "/reports/new";
+    } else {
+      window.location.reload();
+    }
+  }
 
   return (
     <div className="desktop-navbar-report">
@@ -122,7 +133,7 @@ export default function DesktopNavbar() {
             )}
             {canCreateQuery && (
               <Menu.Item key="new-report">
-                <a href="reports/new" data-test="CreateReportMenuItem">
+                <a href="#" onClick={handleNewReportButton} data-test="CreateReportMenuItem">
                   New Report
                 </a>
               </Menu.Item>

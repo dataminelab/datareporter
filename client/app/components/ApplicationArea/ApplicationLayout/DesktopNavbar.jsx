@@ -39,7 +39,6 @@ export default function DesktopNavbar() {
   const handleNewReportButton = (event) => {
     event.preventDefault();
     const currentUrl = window.location.pathname;
-    debugger;
     if (currentUrl !== "/reports/new") {
       window.location.pathname = "/reports/new";
     } else {

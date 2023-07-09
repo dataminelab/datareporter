@@ -42,6 +42,7 @@ export default function DesktopNavbar() {
     if (currentUrl !== "/reports/new") {
       window.location.pathname = "/reports/new";
     } else {
+      window.location.hash = "#";
       window.location.reload();
     }
   }

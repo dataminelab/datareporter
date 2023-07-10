@@ -8,6 +8,8 @@ steps:
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
       - .
+      - '--build-arg'
+      - 'skip_dev_deps=true'
       - '-f'
       - Dockerfile
       - '-o'

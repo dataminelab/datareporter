@@ -133,7 +133,7 @@ export default function DesktopNavbar() {
             )}
             {canCreateQuery && (
               <Menu.Item key="new-report">
-                <a href="#" onClick={handleNewReportButton} data-test="CreateReportMenuItem">
+                <a href="reports/new" onClick={handleNewReportButton} data-test="CreateReportMenuItem">
                   New Report
                 </a>
               </Menu.Item>

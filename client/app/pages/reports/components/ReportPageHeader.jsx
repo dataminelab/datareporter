@@ -1,6 +1,6 @@
 import { extend, map, filter, reduce } from "lodash";
 import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
+import PropTypes, { any } from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
@@ -10,7 +10,6 @@ import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
-import { clientConfig } from "@/services/auth";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
@@ -95,7 +94,7 @@ export default function ReportPageHeader(props) {
   const [modelConfigLoaded, setLoadModelConfigLoaded] = useState(false);
   const reportFlags = useReportFlags(props.report, dataSource);
   const [currentHash, setCurrentHash] = useState(null);
-  const { report, setReport, saveReport } = useReport(props.report);
+  const { report, setReport, saveReport, saveAsReport } = useReport(props.report);
   const updateColors = useColorsReport(report, props.onChange);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
@@ -103,7 +102,10 @@ export default function ReportPageHeader(props) {
   const modelSelectElementText = useRef("");
   const [colorBodyHex, setColorBodyHex] = useState("#f17013");
   const [colorTextHex, setColorTextHex] = useState("#f17013");
-  
+  const reportChanged = props.reportChanged;
+  const setReportChanged = props.setReportChanged;
+  const [reportName, setReportName] = useState(report.name);
+
   const [colorBody, setColorBody] = useState({
     r: "241",
     g: "112",
@@ -265,11 +267,11 @@ export default function ReportPageHeader(props) {
         setModels(res.results);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null });
-        setLoadModelsLoaded(false);
+        setReportChanged(true);
       } catch (err) {
         updateReport({}, { successMessage: err });
-        setLoadModelsLoaded(false);
       }
+      setLoadModelsLoaded(false);
     },
     [report, props.onChange, updateReport]
   );
@@ -308,11 +310,11 @@ export default function ReportPageHeader(props) {
         }
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null }); // show message only on error
-        setLoadModelConfigLoaded(false);
+        setReportChanged(true);
       } catch (err) {
         updateReport({}, { successMessage: "failed to load the model" }); // show message only on error
-        setLoadModelConfigLoaded(false);
       }
+      setLoadModelConfigLoaded(false);
     },
     [report, props.onChange, updateReport]
   );
@@ -321,22 +323,13 @@ export default function ReportPageHeader(props) {
     recordEvent("update", "report", report.id, { id });
     props.onChange(extend(report.clone(), { id }));
     updateReport({ id }, { successMessage: null });
+    setReportChanged(true);
   });
 
-  const handleUpdateName = useCallback(
-    name => {
-      recordEvent("update", "report", report.id, { name });
-      const changes = { name };
-      const options = {};
-
-      if (report.is_draft && clientConfig.autoPublishNamedQueries && name !== "New Report") {
-        changes.is_draft = false;
-        options.successMessage = "Report saved and published";
-      }
-      props.onChange(extend(report.clone(), changes));
-      updateReport(changes, { successMessage: null });
-    },
-    [report.id, report.is_draft, updateReport]
+  const handleUpdateName = useCallback( name => {
+      setReportName(name);
+      setReportChanged(true);
+    },[report.id, report.is_draft]
   );
 
   const handlePriceReport = () => {
@@ -351,45 +344,39 @@ export default function ReportPageHeader(props) {
     } catch {console.warn("price modal doesnt exist on this page.")}
   };
 
-  const handleSaveReport = () => {
-    if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
-      recordEvent("create", report.id, { id: report.id });
+  const handleSaveReport = (save_as) => {
+    if (window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
       updateReport({
+        expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
-        is_draft: false
+        name: save_as ? report.name : reportName,
       }, { successMessage: null });
-      return saveReport();
+
+      if (!report.expression || !report.appSettings) {
+        setTimeout(() => {
+          if (save_as) {
+            document.querySelector("#_handleSaveAs").click();
+          } else {
+            document.querySelector("#_handleSaveReport").click();
+          }
+        }, 466);
+        return 0;
+      }
     }
+    recordEvent("create", report.id, { id: report.id });
     updateReport({
-      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
       color_1: colorBodyHex || report.color_1,
-      color_2: colorTextHex || report.color_2
+      color_2: colorTextHex || report.color_2,
+      is_draft: false,
     }, { successMessage: null });
-    if (!report.expression || !report.appSettings) {
-      setTimeout(() => {
-        document.querySelector("#_handleSaveReport").click();
-      }, 466);
-      return 0;
-    }
-    return saveReport();
+    setReportChanged(false);
+    return save_as ? saveAsReport(reportName) : saveReport();
   };
 
   const moreActionsMenu = useMemo(
     () =>
       createMenu([
-        // {
-        //   fork: {
-        //     isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
-        //     title: (
-        //       <React.Fragment>
-        //         Fork
-        //         <i className="fa fa-external-link m-l-5" />
-        //       </React.Fragment>
-        //     ),
-        //     onClick: duplicateReport,
-        //   },
-        // },
         {
           // archive: {
           //   isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
@@ -461,11 +448,14 @@ export default function ReportPageHeader(props) {
       handleDataSourceChange(report.data_source_id);
       handleModelChange(report.model_id);
       handleIdChange(report.id);
+      setReportName(report.name);
+      setTimeout(() => {
+        setReportChanged(false);
+      }, 333);
     }
   }, [report.name]);
 
   useEffect(() => {
-    // copy-pasted url landing
     if (window.location.href.indexOf("4/") > -1) {
       setCurrentHash(window.location.hash);
     }
@@ -516,7 +506,7 @@ export default function ReportPageHeader(props) {
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={report} />}
             <h3>
-              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={report.name} />
+              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={reportName} />
             </h3>
           </div>
         </div>
@@ -612,9 +602,6 @@ export default function ReportPageHeader(props) {
             ))}
           </Select>
         </div>
-        <Button className="m-r-5" id="_handleSaveReport" onClick={handleSaveReport}>
-          <span className="icon icon-save-floppy-disc m-r-5"></span> Save Report
-        </Button>
         {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
           <Button className="m-r-5" onClick={publishReport}>
             <i className="fa fa-paper-plane m-r-5" /> Publish
@@ -632,7 +619,23 @@ export default function ReportPageHeader(props) {
           </span>
         )}
 
-        {(report.id || report.model) && (
+        {reportChanged ? (
+          <Button className="m-r-5" id="_handleSaveReport" onClick={() => handleSaveReport(false)}>
+            <span className="icon icon-save-floppy-disc m-r-5"></span> Save
+          </Button>
+        ) : (
+          <Button disabled={true} className="m-r-5" id="_handleSaveReport" onClick={() => recordEvent("update", "report", report.id, {report})}>
+            <span className="icon icon-save-floppy-disc m-r-5"></span> Save
+          </Button>
+        )}
+
+        {(report.id) && (
+          <Button className="m-r-5" id="_handleSaveAs" onClick={() => handleSaveReport(true)}>
+            Save as...
+          </Button>
+        )}
+
+        {(report.id || report.model) && (          
           <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
             <Button>
               <Icon type="ellipsis" rotate={90} />
@@ -656,6 +659,8 @@ ReportPageHeader.propTypes = {
   headerExtra: PropTypes.node,
   tagsExtra: PropTypes.node,
   onChangeColor: PropTypes.func,
+  reportChanged: any,
+  setReportChanged: PropTypes.func,
 };
 
 ReportPageHeader.defaultProps = {
@@ -665,4 +670,6 @@ ReportPageHeader.defaultProps = {
   headerExtra: null,
   tagsExtra: null,
   onChangeColor: () => {},
+  reportChanged: null,
+  setReportChanged: () => {},
 };

@@ -49,7 +49,6 @@ function confirmOverwrite() {
 }
 
 function doSaveReport(data, { canOverwrite = false } = {}) {
-  // omit parameter properties that don't need to be stored
   if (isObject(data.options) && data.options.parameters) {
     data.options = {
       ...data.options,

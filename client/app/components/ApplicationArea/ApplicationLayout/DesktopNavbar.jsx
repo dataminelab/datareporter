@@ -38,11 +38,10 @@ export default function DesktopNavbar() {
 
   const handleNewReportButton = (event) => {
     event.preventDefault();
-    const currentUrl = window.location.pathname;
-    if (currentUrl !== "/reports/new") {
+    window.location.hash = "#";
+    if (window.location.pathname !== "/reports/new") {
       window.location.pathname = "/reports/new";
     } else {
-      window.location.hash = "#";
       window.location.reload();
     }
   }

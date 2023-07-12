@@ -25,6 +25,7 @@ import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
 import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 import Model from "@/services/model";
+import { restartHash, hexToRgb } from "../components/ReportPageHeaderUtils";
 
 function createMenu(menu) {
   const handlers = {};
@@ -90,8 +91,6 @@ export default function ReportPageHeader(props) {
   const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(props.report);
   const [models, setModels] = useState([]);
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
-  const [modelConfig, setModelConfig] = useState({});
-  const [modelConfigLoaded, setLoadModelConfigLoaded] = useState(false);
   const reportFlags = useReportFlags(props.report, dataSource);
   const [currentHash, setCurrentHash] = useState(null);
   const { report, setReport, saveReport, saveAsReport } = useReport(props.report);
@@ -105,6 +104,18 @@ export default function ReportPageHeader(props) {
   const reportChanged = props.reportChanged;
   const setReportChanged = props.setReportChanged;
   const [reportName, setReportName] = useState(report.name);
+  const [newName, setNewName] = useState(report.name);
+
+  const handleReportChanged = (state) => {
+    if (!report.data_source_id) return;
+    if (!report.model) return;
+    setReportChanged(state);
+  }
+
+
+  const handleNewNameChange = (event) => {
+    setNewName(event.target.value);
+  }
 
   const [colorBody, setColorBody] = useState({
     r: "241",
@@ -112,6 +123,7 @@ export default function ReportPageHeader(props) {
     b: "19",
     a: "1",
   });
+
   const [colorText, setColorText] = useState({
     r: "241",
     g: "112",
@@ -174,35 +186,12 @@ export default function ReportPageHeader(props) {
     },
   });
 
-  const restartHash = (table, hash) => {
-    window.location.hash = "#" + table + "/4/" + hash;
-    return window.location.reload()
-  }
-
   const handleClick = type => {
     setDisplayColorPicker(type);
   };
 
   const handleClose = () => {
     setDisplayColorPicker(0);
-  };
-
-  const hexToRgb = hex => {
-    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
-      return r + r + g + g + b + b;
-    });
-
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
-          a: 1,
-        }
-      : null;
   };
 
   const handleColorChange = useCallback(
@@ -219,7 +208,7 @@ export default function ReportPageHeader(props) {
       if (type === 2) {
         setColorBody(color.rgb);
         setColorBodyHex(color.hex);
-        updateColors("colorBody", color.hex, { successMessage:null });
+        updateColors("colorBody", color.hex, { successMessage });
         let updates = { color_1: color.hex };
         props.onChange(extend(report.clone(), updates));
         // ligten color
@@ -233,7 +222,7 @@ export default function ReportPageHeader(props) {
       } else {
         setColorText(color.rgb);
         setColorTextHex(color.hex);
-        updateColors("colorText", color.hex, { successMessage:null });
+        updateColors("colorText", color.hex, { successMessage });
         let updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
         setColorElements(color.hex, false, false);     
@@ -267,7 +256,7 @@ export default function ReportPageHeader(props) {
         setModels(res.results);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null });
-        setReportChanged(true);
+        handleReportChanged(true);
       } catch (err) {
         updateReport({}, { successMessage: err });
       }
@@ -280,7 +269,6 @@ export default function ReportPageHeader(props) {
 
   const handleModelChange = useCallback(
     async (modelId, data_source_id) => {
-      setLoadModelConfigLoaded(true);
       try {
         var res;
         if (report.isJustLanded) {
@@ -295,7 +283,6 @@ export default function ReportPageHeader(props) {
             return restartHash(model.table, window.location.hash.split("/4/")[1]);
           }
         }
-        setModelConfig(res);
         recordEvent("update", "report", report.id, { modelId });
         var updates = {
           // fix below line only one model id is enough
@@ -310,11 +297,10 @@ export default function ReportPageHeader(props) {
         }
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null }); // show message only on error
-        setReportChanged(true);
+        handleReportChanged(true);
       } catch (err) {
         updateReport({}, { successMessage: "failed to load the model" }); // show message only on error
       }
-      setLoadModelConfigLoaded(false);
     },
     [report, props.onChange, updateReport]
   );
@@ -323,26 +309,27 @@ export default function ReportPageHeader(props) {
     recordEvent("update", "report", report.id, { id });
     props.onChange(extend(report.clone(), { id }));
     updateReport({ id }, { successMessage: null });
-    setReportChanged(true);
+    handleReportChanged(true);
   });
 
   const handleUpdateName = useCallback( name => {
       setReportName(name);
-      setReportChanged(true);
+      setNewName(name);
+      handleReportChanged(true);
     },[report.id, report.is_draft]
   );
 
-  const handlePriceReport = () => {
+  const handleGivenModal = (id) => {
     try {
-      if (document.querySelector("#meta-modal").style.opacity === "1") {
-        document.querySelector("#meta-modal").style.opacity = "0";
-        document.querySelector("#meta-modal").style["z-index"] = "-1";
+      if (document.getElementById(id).style.opacity === "1") {
+        document.getElementById(id).style.opacity = "0";
+        document.getElementById(id).style["z-index"] = "-1";
       } else {
-        document.querySelector("#meta-modal").style.opacity = "1";
-        document.querySelector("#meta-modal").style["z-index"] = "10";
+        document.getElementById(id).style.opacity = "1";
+        document.getElementById(id).style["z-index"] = "10";
       }
     } catch {console.warn("price modal doesnt exist on this page.")}
-  };
+  }
 
   const handleSaveReport = (save_as) => {
     if (window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
@@ -350,7 +337,7 @@ export default function ReportPageHeader(props) {
         expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
-        name: save_as ? report.name : reportName,
+        name: save_as ? newName : reportName,
       }, { successMessage: null });
 
       if (!report.expression || !report.appSettings) {
@@ -370,9 +357,9 @@ export default function ReportPageHeader(props) {
       color_2: colorTextHex || report.color_2,
       is_draft: false,
     }, { successMessage: null });
-    setReportChanged(false);
-    return save_as ? saveAsReport(reportName) : saveReport();
-  };
+    handleReportChanged(false);
+    return save_as ? saveAsReport(newName) : saveReport();
+  }
 
   const moreActionsMenu = useMemo(
     () =>
@@ -450,7 +437,7 @@ export default function ReportPageHeader(props) {
       handleIdChange(report.id);
       setReportName(report.name);
       setTimeout(() => {
-        setReportChanged(false);
+        handleReportChanged(false);
       }, 333);
     }
   }, [report.name]);
@@ -476,9 +463,9 @@ export default function ReportPageHeader(props) {
         .then(() => {
           if (signal.aborted) return;
           setTimeout(() => {
-              window.location.hash = currentHash;
-              setCurrentHash(null);
-            }, 133);
+            window.location.hash = currentHash;
+            setCurrentHash(null);
+          }, 133);
         });
     }
 
@@ -499,152 +486,164 @@ export default function ReportPageHeader(props) {
       abortController.abort();
     }
   }, [dataSourcesLoaded]);
-  return (
-    <div className="report-page-header">
-      <div className="title-with-tags m-l-5">
-        <div className="page-title">
-          <div className="d-flex align-items-center">
-            {!queryFlags.isNew && <FavoritesControl item={report} />}
-            <h3>
-              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={reportName} />
-            </h3>
+    return (
+      <div className="report-page-header">
+        <div className="title-with-tags m-l-5">
+          <div className="page-title">
+            <div className="d-flex align-items-center">
+              {!queryFlags.isNew && <FavoritesControl item={report} />}
+              <h3>
+                <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={reportName} />
+              </h3>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="header-actions">
-        {props.headerExtra}
-        <div>
-          <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={handlePriceReport}>
-            <span className="icon icon-ribbon m-r-5"></span>Meta
+        <div className="header-actions">
+          {props.headerExtra}
+          <div>
+            <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={() => handleGivenModal("meta-modal")}>
+              <span className="icon icon-ribbon m-r-5"></span>Meta
+            </Button>
+            <ul
+              id="meta-modal"
+              className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+              role="menu"
+              onClick={e => e.stopPropagation()}>
+              <li className="ant-menu-item modal-left" role="menuitem">
+                <p id="_price" alt="0">
+                  Price: 0
+                </p>
+              </li>
+              <li className="ant-menu-item modal-right" role="menuitem">
+                <p id="_proceed_data" alt="0">
+                  Bytes: 0
+                </p>
+              </li>
+            </ul>
+          </div>
+          <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
+            <span className="icon icon-save-floppy-disc m-r-5"></span>
+            <span style={styles.colorSpanElement}>Text chart color:</span>
+            <div style={styles.color} />
           </Button>
-          <ul
-            id="meta-modal"
-            className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
-            role="menu"
-            onClick={e => e.stopPropagation()}>
-            <li className="ant-menu-item modal-left" role="menuitem">
-              <p id="_price" alt="0">
-                Price: 0
-              </p>
-            </li>
-            <li className="ant-menu-item modal-right" role="menuitem">
-              <p id="_proceed_data" alt="0">
-                Bytes: 0
-              </p>
-            </li>
-          </ul>
-        </div>
-        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
-          <span className="icon icon-save-floppy-disc m-r-5"></span>
-          <span style={styles.colorSpanElement}>Text chart color:</span>
-          <div style={styles.color} />
-        </Button>
-        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(2)}>
-          <span className="icon icon-save-floppy-disc m-r-5"></span>
-          <span style={styles.colorSpanElement}>Chart color:</span>
-          <div style={styles.colorBody} />
-        </Button>
-        {displayColorPicker === 1 ? (
-          <div style={styles.popover}>
-            <div style={styles.cover} onClick={handleClose} />
-            <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
-          </div>
-        ) : null}
-        {displayColorPicker === 2 ? (
-          <div style={styles.popoverSecond}>
-            <div style={styles.cover} onClick={handleClose} />
-            <SketchPicker color={colorBody} onChangeComplete={color => handleColorChange(color, 2)} />
-          </div>
-        ) : null}
-        {dataSourcesLoaded && (
+          <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(2)}>
+            <span className="icon icon-save-floppy-disc m-r-5"></span>
+            <span style={styles.colorSpanElement}>Chart color:</span>
+            <div style={styles.colorBody} />
+          </Button>
+          {displayColorPicker === 1 ? (
+            <div style={styles.popover}>
+              <div style={styles.cover} onClick={handleClose} />
+              <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
+            </div>
+          ) : null}
+          {displayColorPicker === 2 ? (
+            <div style={styles.popoverSecond}>
+              <div style={styles.cover} onClick={handleClose} />
+              <SketchPicker color={colorBody} onChangeComplete={color => handleColorChange(color, 2)} />
+            </div>
+          ) : null}
+          {dataSourcesLoaded && (
+            <div className="data-source-box m-r-10">
+              <span className="icon icon-datasource m-r-5"></span>
+              <Select
+                data-test="SelectDataSource"
+                placeholder="Choose base data source..."
+                value={report ? report.data_source_id : undefined}
+                disabled={report.id || (!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
+                loading={!dataSourcesLoaded}
+                optionFilterProp="data-name"
+                showSearch
+                onChange={handleDataSourceChange}>
+                {map(dataSources, ds => (
+                  <Select.Option
+                    key={`ds-${ds.id}`}
+                    value={ds.id}
+                    data-name={ds.name}
+                    data-test={`SelectDataSource${ds.id}`}>
+                    <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
+                    <span>{ds.name}</span>
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
+          )}
           <div className="data-source-box m-r-10">
             <span className="icon icon-datasource m-r-5"></span>
             <Select
-              data-test="SelectDataSource"
-              placeholder="Choose base data source..."
-              value={report ? report.data_source_id : undefined}
-              disabled={report.id || (!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
-              loading={!dataSourcesLoaded}
+              data-test="SelectModel"
+              placeholder="Choose model data source..."
+              id="model-data-source"
+              ref={modelSelectElement}
+              value={report.model_id}
+              disabled={(report.id || (!reportFlags.canEdit || modelsLoaded || models.length === 0)) ? true : false}
+              loading={modelsLoaded}
               optionFilterProp="data-name"
               showSearch
-              onChange={handleDataSourceChange}>
-              {map(dataSources, ds => (
-                <Select.Option
-                  key={`ds-${ds.id}`}
-                  value={ds.id}
-                  data-name={ds.name}
-                  data-test={`SelectDataSource${ds.id}`}>
-                  <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
-                  <span>{ds.name}</span>
+              onSelect={handleModelOnSelect}
+              onChange={handleModelChange}>
+              {map(models, m => (
+                <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
+                  <span>{m.name}</span>
                 </Select.Option>
               ))}
             </Select>
           </div>
-        )}
-        <div className="data-source-box m-r-10">
-          <span className="icon icon-datasource m-r-5"></span>
-          <Select
-            data-test="SelectModel"
-            placeholder="Choose model data source..."
-            id="model-data-source"
-            ref={modelSelectElement}
-            value={report.model_id}
-            disabled={(report.id || (!reportFlags.canEdit || modelsLoaded || models.length === 0)) ? true : false}
-            loading={modelsLoaded}
-            optionFilterProp="data-name"
-            showSearch
-            onSelect={handleModelOnSelect}
-            onChange={handleModelChange}>
-            {map(models, m => (
-              <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
-                <span>{m.name}</span>
-              </Select.Option>
-            ))}
-          </Select>
-        </div>
-        {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
-          <Button className="m-r-5" onClick={publishReport}>
-            <i className="fa fa-paper-plane m-r-5" /> Publish
-          </Button>
-        )}
-
-        {!queryFlags.isNew && queryFlags.canViewSource && (
-          <span>
-            {!props.sourceMode && (
-              <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
-                <i className="fa fa-pencil-square-o" aria-hidden="true" />
-                <span className="m-l-5">Edit Source</span>
-              </Button>
-            )}
-          </span>
-        )}
-
-        {reportChanged ? (
-          <Button className="m-r-5" id="_handleSaveReport" onClick={() => handleSaveReport(false)}>
-            <span className="icon icon-save-floppy-disc m-r-5"></span> Save
-          </Button>
-        ) : (
-          <Button disabled={true} className="m-r-5" id="_handleSaveReport" onClick={() => recordEvent("update", "report", report.id, {report})}>
-            <span className="icon icon-save-floppy-disc m-r-5"></span> Save
-          </Button>
-        )}
-
-        {(report.id) && (
-          <Button className="m-r-5" id="_handleSaveAs" onClick={() => handleSaveReport(true)}>
-            Save as...
-          </Button>
-        )}
-
-        {(report.id || report.model) && (          
-          <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
-            <Button>
-              <Icon type="ellipsis" rotate={90} />
+          {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
+            <Button className="m-r-5" onClick={publishReport}>
+              <i className="fa fa-paper-plane m-r-5" /> Publish
             </Button>
-          </Dropdown>
-        )}
+          )}
+
+          {!queryFlags.isNew && queryFlags.canViewSource && (
+            <span>
+              {!props.sourceMode && (
+                <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
+                  <i className="fa fa-pencil-square-o" aria-hidden="true" />
+                  <span className="m-l-5">Edit Source</span>
+                </Button>
+              )}
+            </span>
+          )}
+
+          {reportChanged ? (
+            <Button className="m-r-5" id="_handleSaveReport" onClick={() => handleSaveReport(false)}>
+              <span className="icon icon-save-floppy-disc m-r-5"></span> Save
+            </Button>
+          ) : (
+            <Button disabled={true} className="m-r-5" id="_handleSaveReport" onClick={() => recordEvent("update", "report", report.id, {report})}>
+              <span className="icon icon-save-floppy-disc m-r-5"></span> Save
+            </Button>
+          )}
+
+          {(report.id) && (
+            <>
+              <Button className="m-r-5" id="_handleSaveAs" onClick={() => handleGivenModal("save-as-ul")}>
+                Save as...
+              </Button>
+              <ul
+                id="save-as-ul"
+                className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+                role="menu"
+                onClick={e => e.stopPropagation()}
+              >
+                <p className="new-name-label">name</p>
+                <input className="new-name-input" type="text" value={newName} onChange={handleNewNameChange} />
+                <Button className="ant-menu-item-group-title" onClick={() => handleSaveReport(true)}>Save now</Button>
+              </ul>
+            </>
+          )}
+
+          {(report.id || report.model) && (          
+            <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
+              <Button>
+                <Icon type="ellipsis" rotate={90} />
+              </Button>
+            </Dropdown>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
 }
 
 ReportPageHeader.propTypes = {
@@ -661,7 +660,7 @@ ReportPageHeader.propTypes = {
   onChangeColor: PropTypes.func,
   reportChanged: any,
   setReportChanged: PropTypes.func,
-};
+}
 
 ReportPageHeader.defaultProps = {
   dataSource: null,
@@ -672,4 +671,4 @@ ReportPageHeader.defaultProps = {
   onChangeColor: () => {},
   reportChanged: null,
   setReportChanged: () => {},
-};
+}

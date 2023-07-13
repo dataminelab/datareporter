@@ -50,11 +50,8 @@ def send_verify_email(user, org):
     text_content = render_template("emails/verify.txt", **context)
     subject = "{}, please verify your email address".format(user.name)
 
-    data = dict(to=[user.email], subject=subject, html=html_content, text=text_content)
-    message = dict(type="email", fn="send_email", data=data)
-    result = pubsub.send_message_to_topic(json.dumps(message))
-    if not result:
-        send_mail.delay([user.email], subject, html_content, text_content)
+    send_mail.delay([user.email], subject, html_content, text_content)
+    pubsub.send_message_to_topic("email")
 
 
 def send_invite_email(inviter, invited, invite_url, org):
@@ -63,11 +60,8 @@ def send_invite_email(inviter, invited, invite_url, org):
     text_content = render_template("emails/invite.txt", **context)
     subject = "{} invited you to join Redash".format(inviter.name)
 
-    data = dict(to=[invited.email], subject=subject, html=html_content, text=text_content)
-    message = dict(type="email", fn="send_email", data=data)
-    result = pubsub.send_message_to_topic(json.dumps(message))
-    if not result:
-        send_mail.delay([invited.email], subject, html_content, text_content)
+    send_mail.delay([invited.email], subject, html_content, text_content)
+    pubsub.send_message_to_topic("email")
 
 
 def send_password_reset_email(user):
@@ -77,11 +71,9 @@ def send_password_reset_email(user):
     text_content = render_template("emails/reset.txt", **context)
     subject = "Reset your password"
 
-    data = dict(to=[user.email], subject=subject, html=html_content, text=text_content)
-    message = dict(type="email", fn="send_email", data=data)
-    result = pubsub.send_message_to_topic(json.dumps(message))
-    if not result:
-        send_mail.delay([user.email], subject, html_content, text_content)
+    send_mail.delay([user.email], subject, html_content, text_content)
+    pubsub.send_message_to_topic("email")
+
     return reset_link
 
 
@@ -90,8 +82,5 @@ def send_user_disabled_email(user):
     text_content = render_template("emails/reset_disabled.txt", user=user)
     subject = "Your Redash account is disabled"
 
-    data = dict(to=[user.email], subject=subject, html=html_content, text=text_content)
-    message = dict(type="email", fn="send_email", data=data)
-    result = pubsub.send_message_to_topic(json.dumps(message))
-    if not result:
-        send_mail.delay([user.email], subject, html_content, text_content)
+    send_mail.delay([user.email], subject, html_content, text_content)
+    pubsub.send_message_to_topic("email")

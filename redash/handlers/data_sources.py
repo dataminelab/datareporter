@@ -205,16 +205,10 @@ class DataSourceSchemaResource(BaseResource):
             if cached_schema is not None:
                 return {"schema": cached_schema}
 
-        data = dict(data_source_id=data_source_id, refresh=refresh)
-        message = dict(type="schemas", fn="refresh_schema", data=data)
-        result = pubsub.send_message_to_topic(json.dumps(message))
-        if result:
-            # TODO: make response with pubsub result?
-            return
-        else:
-            job = get_schema.delay(data_source.id, refresh)
+        job = get_schema.delay(data_source.id, refresh)
+        pubsub.send_message_to_topic("schemas")
 
-            return serialize_job(job)
+        return serialize_job(job)
 
 
 class DataSourcePauseResource(BaseResource):

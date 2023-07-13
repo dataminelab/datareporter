@@ -314,7 +314,7 @@ export default function ReportPageHeader(props) {
 
   const handleUpdateName = useCallback( name => {
       setReportName(name);
-      setNewName(name);
+      setNewName("Copy of " + name);
       handleReportChanged(true);
     },[report.id, report.is_draft]
   );

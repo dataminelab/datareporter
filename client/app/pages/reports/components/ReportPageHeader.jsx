@@ -104,7 +104,7 @@ export default function ReportPageHeader(props) {
   const reportChanged = props.reportChanged;
   const setReportChanged = props.setReportChanged;
   const [reportName, setReportName] = useState(report.name);
-  const [newName, setNewName] = useState(report.name);
+  const [newName, setNewName] = useState("Copy of " + report.name);
 
   const handleReportChanged = (state) => {
     if (!report.data_source_id) return;

@@ -4,7 +4,7 @@ import sys
 import datetime
 from itertools import chain
 
-from click import argument
+from click import argument, option
 from flask.cli import AppGroup
 from rq import Connection
 from rq.worker import WorkerStatus
@@ -33,7 +33,8 @@ def scheduler():
 
 @manager.command()
 @argument("queues", nargs=-1)
-def worker(queues):
+@option("--burst", "burst", is_flag=True, default=False, help="run worker with burst mode")
+def worker(queues, burst=False):
     # Configure any SQLAlchemy mappers loaded until now so that the mapping configuration
     # will already be available to the forked work horses and they won't need
     # to spend valuable time re-doing that on every fork.
@@ -46,7 +47,7 @@ def worker(queues):
 
     with Connection(rq_redis_connection):
         w = Worker(queues, log_job_description=False, job_monitoring_interval=5)
-        w.work()
+        w.work(burst=burst)
 
 
 class WorkerHealthcheck(base.BaseCheck):

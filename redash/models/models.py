@@ -137,3 +137,9 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     @classmethod
     def is_favorite(cls, user, object):
         return cls.query.filter(cls.object == object, cls.user_id == user).count() > 0
+
+    @classmethod
+    def is_favorite_v2(cls, user, object):
+        for favorite in user.favorites:
+            if favorite.object_type == "Report" and favorite.object_id == object.id:
+                return True

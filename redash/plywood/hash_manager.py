@@ -214,6 +214,7 @@ def is_admin(user):
 
 def hash_report(o, can_edit):
     data_cube = get_data_cube(o.model)
+    is_favorite = o.is_favorite_v2(o.user, o)
     result = {
         "color_1": o.color_1,
         "color_2": o.color_2,
@@ -233,6 +234,7 @@ def hash_report(o, can_edit):
             "permissions": o.user.permissions,
             "isAdmin": is_admin(o.user),
         },
+        "is_favorite": is_favorite,
         "isJustLanded": True,
         "appSettings": {
             "dataCubes": [data_cube.data_cube],

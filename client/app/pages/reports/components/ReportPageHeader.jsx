@@ -365,16 +365,6 @@ export default function ReportPageHeader(props) {
     () =>
       createMenu([
         {
-          // archive: {
-          //   isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-          //   title: "Archive",
-          //   onClick: archiveReport,
-          // },
-          // displayRawData: {
-          //   isAvailable: true,
-          //   title: "Display raw data",
-          //   onClick: () => {document.querySelector("#raw-data-button").click()},
-          // },
           downloadCSV: {
             isAvailable: true,
             title: "Download as CSV",
@@ -385,31 +375,7 @@ export default function ReportPageHeader(props) {
             title: "Download as TSV",
             onClick: () => {document.querySelector("#export-data-tsv").click()},
           },
-          // managePermissions: {
-          //   isAvailable:
-          //     !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
-          //   title: "Manage Permissions",
-          //   onClick: openPermissionsEditorDialog,
-          // },
-          // publish: {
-          //   isAvailable:
-          //     !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
-          //   title: "Publish",
-          //   onClick: publishReport,
-          // },
-          // unpublish: {
-          //   isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
-          //   title: "Unpublish",
-          //   onClick: unpublishReport,
-          // },
         },
-        // {
-        //   showAPIKey: {
-        //     isAvailable: !queryFlags.isNew,
-        //     title: "Show API Key",
-        //     onClick: openApiKeyDialog,
-        //   },
-        // },
       ]),
     [
       queryFlags.isNew,
@@ -447,6 +413,13 @@ export default function ReportPageHeader(props) {
       setCurrentHash(window.location.hash);
     }
   }, []);
+
+  useEffect(() => {
+    console.log(dataSourcesLoaded, dataSources, dataSource);
+    if (dataSources.length) {
+      handleDataSourceChange(dataSources[0].id);
+    }
+  }, [dataSourcesLoaded]);
 
   useEffect(() => {
     if (!currentHash) return;
@@ -550,7 +523,7 @@ export default function ReportPageHeader(props) {
                 data-test="SelectDataSource"
                 placeholder="Choose base data source..."
                 value={report ? report.data_source_id : undefined}
-                disabled={report.id || (!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
+                disabled={(!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
                 loading={!dataSourcesLoaded}
                 optionFilterProp="data-name"
                 showSearch

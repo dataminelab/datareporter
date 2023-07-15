@@ -19,7 +19,7 @@ steps:
       - .
       - '-o'
       - type=image
-    dif: .pip-cache-build
+    dir: .pip-cache-build
     id: Build-Pip-Cache
 
   - name: gcr.io/cloud-builders/docker

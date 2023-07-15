@@ -16,8 +16,6 @@ steps:
       - '$_GCR_HOSTNAME/$PROJECT_ID/pip-cache:$COMMIT_SHA'
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/pip-cache:latest'
-      - '-f'
-      - pip-cache.Dockerfile
       - .
       - '-o'
       - type=image
@@ -32,24 +30,13 @@ steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
-    id: Push-Data-Reporter-Latest
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
-    id: Push-Plywood-Latest
-  - name: gcr.io/cloud-builders/gcloud
-    args:
-      - '-c'
-      - >-
-        gcloud builds triggers  run datareporter-deploy-pinadventures
-        --sha=$COMMIT_SHA --substitutions=_IMAGE_TAG="$COMMIT_SHA"
-    id: Deploy-Pinadventures
-    entrypoint: bash
+      - '$_GCR_HOSTNAME/$PROJECT_ID/pip-cache:latest'
+    id: Push-Pip-Cache-Latest
+
+
 images:
-  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
-  - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/pip-cache:$COMMIT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/pip-cache:latest'
 options:
   substitutionOption: ALLOW_LOOSE
 substitutions:

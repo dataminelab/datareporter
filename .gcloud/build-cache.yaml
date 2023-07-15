@@ -6,6 +6,7 @@ steps:
       mkdir .pip-cache-build
       cp .gcloud/pip-cache.Dockerfile .pip-cache-build/Dockerfile
       cp requirements*txt .pip-cache-build/
+      ls -l .pip-cache-build/
 
   - name: gcr.io/cloud-builders/docker
     args:

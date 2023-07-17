@@ -39,6 +39,8 @@ export interface TurniloApplicationProps {
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
+  setReportChanged?: (reportChanged: boolean) => void;
+  reportChanged?: boolean;
 }
 
 export interface TurniloApplicationState {
@@ -50,6 +52,7 @@ export interface TurniloApplicationState {
   viewHash?: string;
   showAboutModal?: boolean;
   errorId?: string;
+  reportChanged?: boolean;
 }
 
 export type ViewType = "home" | "cube" | "no-data" | "general-error";
@@ -69,7 +72,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     viewType: null,
     viewHash: null,
     showAboutModal: false,
-    errorId: null
+    errorId: null,
   };
 
   componentDidCatch(error: Error) {
@@ -208,6 +211,12 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return parts.join("/");
   }
 
+  setReportChanged = (reportChanged: boolean) => {
+    const { setReportChanged } = this.props;
+    if (setReportChanged) setReportChanged(reportChanged);
+    this.setState({ reportChanged });
+  };
+
   changeHash(hash: string, force = false): void {
     this.hashUpdating = true;
 
@@ -225,6 +234,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   updateEssenceInHash = (essence: Essence, force = false) => {
     const newHash = `${this.state.selectedItem.name}/${this.convertEssenceToHash(essence)}`;
     this.changeHash(newHash, force);
+    this.setReportChanged(true);
   };
 
   changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null) => {

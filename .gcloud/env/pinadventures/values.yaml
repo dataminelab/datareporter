@@ -1,0 +1,70 @@
+redash:
+  existingSecret: datareporter-secrets
+postgresql:
+  enabled: false
+redis:
+  enabled: false
+
+externalPostgreSQLSecret:
+  name: database
+  key: postgres-url
+externalRedisSecret:
+  name: database
+  key: redis-url
+imagePullSecrets:
+  - name: datareporter-gcr
+
+plywood:
+  image:
+    tag: latest
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+datareporter:
+  image:
+    tag: latest
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+  ingressClassName: nginx
+  hosts:
+    - host: pinadventures.datareporter.com
+      paths: [ "/" ]
+  tls:
+    - hosts:
+        - pinadventures.datareporter.com
+      secretName: datareporter-pinadventures-cert
+server:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 486Mi
+  env:
+    REDASH_LOG_LEVEL: "DEBUG"
+    REDASH_WEB_WORKERS: 2
+adhocWorker:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 486Mi
+
+genericWorker:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 486Mi
+scheduledWorker:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 486Mi
+scheduler:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 486Mi

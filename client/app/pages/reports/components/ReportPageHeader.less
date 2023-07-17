@@ -62,11 +62,11 @@
   }
 }
 
-#meta-button {
+#meta-button, #save-as-ul {
   display: none
 }
 
-#meta-modal {
+#meta-modal, #save-as-ul {
   display: block;
   z-index: -1;
   opacity: 0;
@@ -77,6 +77,22 @@
   top: 115px;
   background: #cfcfcf;
   padding: 12px;
+}
+
+#save-as-ul {
+  right: 50px;
+  width: auto;
+  height: 60px;
+}
+
+.new-name-label {
+  cursor: default;
+  position: absolute;
+  z-index: 100;
+}
+
+.new-name-input {
+  height: 100%;
 }
 
 .modal-left, .modal-right {

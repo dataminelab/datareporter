@@ -165,13 +165,12 @@ class Expression:
 
     @staticmethod
     def _is_last_query_boolean(query: str):
-        return 'true' in query.lower()
+        return 'true' in query.lower() or 'false' in query.lower()
 
     def _get_boolean_queries(self, last_query):
         res = [last_query]
-        false_query = last_query.replace('TRUE', 'FALSE')
 
-        r = [*self.queries[0:len(self.queries) - 1], *res, false_query]
+        r = [*self.queries[0:len(self.queries) - 1], *res, last_query]
         return r
 
     def _get_string_queries(self, last_query, prev_result):
@@ -204,9 +203,6 @@ class Expression:
 
     def get_2_splits_queries(self, prev_result: list) -> list:
         queries = self.queries
-
-        # if len(queries) != 3:
-        #     print('Might not work as expected')
 
         last_query: str = queries[len(queries) - 1]
 

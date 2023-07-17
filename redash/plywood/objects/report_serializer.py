@@ -25,10 +25,11 @@ class Progress:
         self.results = results
 
     def dict(self):
+        total = self.jobs + self.results or 1
         return {
             'all': self.jobs + self.results,
             'results': self.results,
-            'progress': int(self.results / (self.jobs + self.results) * 100),
+            'progress': int(self.results / total * 100),
         }
 
 

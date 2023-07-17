@@ -113,7 +113,8 @@ export class Ajax {
           } else if (error.response.data.action === "update" && Ajax.onUpdate) {
             Ajax.onUpdate();
           }
-          throw new Error("error with response: " + error.response.status + ", " + error.message);
+          var message =  error.response.data.message || error.message;
+          throw new Error("error with response: " + error.response.status + ", " + message);
         } else if (error.request) {
           throw new Error("no response received, " + error.message);
         } else {
@@ -154,7 +155,7 @@ export class Ajax {
 
     async function  subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
-      const url = `api/reports/generate/${modelId}`;
+      const url = `api/reports/generate/${modelId}`; 
       const data = { hash };
       return subscribe({ method, url, timeout, data });
     }

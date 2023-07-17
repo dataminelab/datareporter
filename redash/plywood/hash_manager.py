@@ -164,6 +164,8 @@ def parse_result(
             return ReportSerializer(status=is_fetching, queries=queries)
 
     errored = clean_errored(queries)
+    if len(errored):
+        abort(400, message=errored[0]['job']['error'])
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
@@ -172,14 +174,8 @@ def parse_result(
         visualization=expression.visualization,
         data_cube=data_cube,
     )
-    # not found in the selected model's region fix
-    # IndexError: list index out of range
-    if errored:
-        data = None
-        meta = None
-    else:
-        data = query_parser.parse_ply(data_cube.ply_engine)
-        meta = data_cube.get_meta(queries)
+    data = query_parser.parse_ply(data_cube.ply_engine)
+    meta = data_cube.get_meta(queries)
 
     serializer = ReportSerializer(
         queries=queries,
@@ -207,10 +203,12 @@ def get_data_cube(model: Model):
     data_cube = DataCube(model=model)
     return data_cube
 
+
 def is_admin(user):
     if 'admin' in user.permissions or 'super_admin' in user.permissions or 'edit_report' in user.permissions:
         return True
     return False
+
 
 def hash_report(o, can_edit):
     data_cube = get_data_cube(o.model)
@@ -244,6 +242,7 @@ def hash_report(o, can_edit):
         "id": o.id
     }
     return result
+
 
 def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: bool = False):
     data_cube = get_data_cube(model)

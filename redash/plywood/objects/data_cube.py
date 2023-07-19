@@ -22,14 +22,14 @@ class DataCube:
 
     @property
     def null_value(self):
-        # if self.ply_engine == 'postgres':
-        #     return "IS NULL"
-        # elif self.ply_engine == 'bigquery':
-        #     return "IS NULL"
-        # elif self.ply_engine == 'mysql':
-        #     return "IS NULL"
-        # elif self.ply_engine == 'athena':
-        #     return "IS NULL"
+        if self.ply_engine == 'postgres':
+            return "IS NULL"
+        elif self.ply_engine == 'bigquery':
+            return "IS NULL"
+        elif self.ply_engine == 'mysql':
+            return "IS NULL"
+        elif self.ply_engine == 'athena':
+            return "IS NULL"
         return "IS NULL"
 
     def get_meta(self, queries: List[dict]) -> ReportMetaData:

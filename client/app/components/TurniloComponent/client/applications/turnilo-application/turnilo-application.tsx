@@ -167,9 +167,13 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       drawerOpen: false
     };
 
+    const appSettings = AppSettings.fromJS(this.props.report.appSettings, {
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(this.props.report)
+    });
+
     if (this.viewTypeNeedsAnItem(viewType)) {
-      const item = this.getSelectedDataCubeFromHash(dataCubes, hash);
-      newState.selectedItem = item ? item : dataCubes[0];
+      const item = this.getSelectedDataCubeFromHash(appSettings.dataCubes, hash);
+      newState.selectedItem = item ? item : dataCubes[0]; 
     } else {
       newState.selectedItem = null;
     }

@@ -1,6 +1,6 @@
-export const restartHash = (table, hash) => {
+export const replaceHash = (model, hash) => {
+  const { table } = model;
   window.location.hash = "#" + table + "/4/" + hash;
-  return window.location.reload()
 }
 
 export const hexToRgb = hex => {

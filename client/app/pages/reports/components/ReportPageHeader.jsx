@@ -25,7 +25,7 @@ import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
 import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 import Model from "@/services/model";
-import { restartHash, hexToRgb } from "../components/ReportPageHeaderUtils";
+import { replaceHash, hexToRgb } from "../components/ReportPageHeaderUtils";
 
 function createMenu(menu) {
   const handlers = {};
@@ -97,8 +97,8 @@ export default function ReportPageHeader(props) {
   const updateColors = useColorsReport(report, props.onChange);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
-  const modelSelectElement = useRef();
-  const modelSelectElementText = useRef("");
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedDataSource, setSelectedDataSource] = useState(null);
   const [colorBodyHex, setColorBodyHex] = useState("#f17013");
   const [colorTextHex, setColorTextHex] = useState("#f17013");
   const reportChanged = props.reportChanged;
@@ -111,7 +111,6 @@ export default function ReportPageHeader(props) {
     if (!report.model) return;
     setReportChanged(state);
   }
-
 
   const handleNewNameChange = (event) => {
     setNewName(event.target.value);
@@ -231,41 +230,33 @@ export default function ReportPageHeader(props) {
     [report, updateColors]
   );
 
-  const changeModelDataText = (text) => {
-    const elem = document.querySelector("#model-data-source").querySelector("span");
-    if (elem.innerText === text) return;
-    if (elem.innerText !== modelSelectElement.current.props.placeholder) {
-      modelSelectElementText.current = elem.innerText;
-    }
-    elem.innerText = text;
-    modelSelectElement.current.focus();
-  }
-
   const handleDataSourceChange = useCallback(
     async (dataSourceId, signal) => {
-      changeModelDataText(modelSelectElement.current.props.placeholder);
-      setLoadModelsLoaded(true);
+      setLoadModelsLoaded(false);
       recordEvent("update", "report", report.id, { dataSourceId });
+      var newModels = [];
       try {
         const res = await Model.query({ data_source: dataSourceId });
+        newModels = res.results;
         if (signal && signal.aborted) return;
         const updates = {
           data_source_id: dataSourceId,
           isJustLanded: false,
+          model: null,
+          model_id: null,
         }
-        setModels(res.results);
+        setModels(newModels);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null });
         handleReportChanged(true);
       } catch (err) {
         updateReport({}, { successMessage: err });
       }
-      setLoadModelsLoaded(false);
+      setLoadModelsLoaded(true);
+      setSelectedDataSource(dataSourceId);
     },
     [report, props.onChange, updateReport]
   );
-
-  const handleModelOnSelect = () => changeModelDataText(modelSelectElementText.current);
 
   const handleModelChange = useCallback(
     async (modelId, data_source_id) => {
@@ -276,12 +267,9 @@ export default function ReportPageHeader(props) {
         } else {
           res = await Model.getReporterConfig(modelId);
         }
-        if (report.model) {
-          // get model name from model id
-          const model = models.find(m => m.id === modelId);
-          if (model && model.id !== report.model) {
-            return restartHash(model.table, window.location.hash.split("/4/")[1]);
-          }
+        const model = models.find(m => m.id === modelId);
+        if (model && model.id !== report.model) {
+          replaceHash(model, window.location.hash.split("/4/")[1]);
         }
         recordEvent("update", "report", report.id, { modelId });
         var updates = {
@@ -298,6 +286,7 @@ export default function ReportPageHeader(props) {
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null }); // show message only on error
         handleReportChanged(true);
+        setSelectedModel(modelId);
       } catch (err) {
         updateReport({}, { successMessage: "failed to load the model" }); // show message only on error
       }
@@ -407,19 +396,12 @@ export default function ReportPageHeader(props) {
       }, 333);
     }
   }, [report.name]);
-
+  
   useEffect(() => {
     if (window.location.href.indexOf("4/") > -1) {
       setCurrentHash(window.location.hash);
     }
   }, []);
-
-  useEffect(() => {
-    console.log(dataSourcesLoaded, dataSources, dataSource);
-    if (dataSources.length) {
-      handleDataSourceChange(dataSources[0].id);
-    }
-  }, [dataSourcesLoaded]);
 
   useEffect(() => {
     if (!currentHash) return;
@@ -459,6 +441,24 @@ export default function ReportPageHeader(props) {
       abortController.abort();
     }
   }, [dataSourcesLoaded]);
+
+  useEffect(() => {
+    if (dataSourcesLoaded && !selectedDataSource) {
+      if (dataSources.length) {
+        handleDataSourceChange(dataSources[0].id);
+      }
+    }
+  }, [dataSourcesLoaded]);
+
+  useEffect(() => {
+    if (modelsLoaded && !selectedModel) {
+      if (models.length) {
+        handleModelChange(models[0].id);      
+        replaceHash(models[0], window.location.hash.split("/4/")[1]);
+      }
+    }
+  }, [modelsLoaded]);
+
     return (
       <div className="report-page-header">
         <div className="title-with-tags m-l-5">
@@ -516,45 +516,41 @@ export default function ReportPageHeader(props) {
               <SketchPicker color={colorBody} onChangeComplete={color => handleColorChange(color, 2)} />
             </div>
           ) : null}
-          {dataSourcesLoaded && (
-            <div className="data-source-box m-r-10">
-              <span className="icon icon-datasource m-r-5"></span>
-              <Select
-                data-test="SelectDataSource"
-                placeholder="Choose base data source..."
-                value={report ? report.data_source_id : undefined}
-                disabled={(!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
-                loading={!dataSourcesLoaded}
-                optionFilterProp="data-name"
-                showSearch
-                onChange={handleDataSourceChange}>
-                {map(dataSources, ds => (
-                  <Select.Option
-                    key={`ds-${ds.id}`}
-                    value={ds.id}
-                    data-name={ds.name}
-                    data-test={`SelectDataSource${ds.id}`}>
-                    <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
-                    <span>{ds.name}</span>
-                  </Select.Option>
-                ))}
-              </Select>
-            </div>
-          )}
+          <div className="data-source-box m-r-10">
+            <span className="icon icon-datasource m-r-5"></span>
+            <Select
+              data-test="SelectDataSource"
+              placeholder="Choose base data source..."
+              value={report ? report.data_source_id : undefined}
+              disabled={(!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
+              loading={!dataSourcesLoaded}
+              optionFilterProp="data-name"
+              showSearch
+              onChange={handleDataSourceChange}>
+              {map(dataSources, ds => (
+                <Select.Option
+                  key={`ds-${ds.id}`}
+                  value={ds.id}
+                  data-name={ds.name}
+                  data-test={`SelectDataSource${ds.id}`}>
+                  <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
+                  <span>{ds.name}</span>
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
           <div className="data-source-box m-r-10">
             <span className="icon icon-datasource m-r-5"></span>
             <Select
               data-test="SelectModel"
               placeholder="Choose model data source..."
               id="model-data-source"
-              ref={modelSelectElement}
-              value={report.model_id}
-              disabled={(report.id || (!reportFlags.canEdit || modelsLoaded || models.length === 0)) ? true : false}
-              loading={modelsLoaded}
+              value={report ? report.model_id : undefined} 
+              disabled={(report.id || (!reportFlags.canEdit || !modelsLoaded || models.length === 0)) ? true : false}
+              loading={!modelsLoaded}
               optionFilterProp="data-name"
               showSearch
-              onSelect={handleModelOnSelect}
-              onChange={handleModelChange}>
+              onChange={handleModelChange}> 
               {map(models, m => (
                 <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
                   <span>{m.name}</span>
@@ -578,17 +574,9 @@ export default function ReportPageHeader(props) {
               )}
             </span>
           )}
-
-          {reportChanged ? (
-            <Button className="m-r-5" id="_handleSaveReport" onClick={() => handleSaveReport(false)}>
+            <Button disabled={!reportChanged} className="m-r-5" id="_handleSaveReport" onClick={() => recordEvent("update", "report", report.id, {report})}>
               <span className="icon icon-save-floppy-disc m-r-5"></span> Save
             </Button>
-          ) : (
-            <Button disabled={true} className="m-r-5" id="_handleSaveReport" onClick={() => recordEvent("update", "report", report.id, {report})}>
-              <span className="icon icon-save-floppy-disc m-r-5"></span> Save
-            </Button>
-          )}
-
           {(report.id) && (
             <>
               <Button className="m-r-5" id="_handleSaveAs" onClick={() => handleGivenModal("save-as-ul")}>
@@ -605,15 +593,12 @@ export default function ReportPageHeader(props) {
                 <Button className="ant-menu-item-group-title" onClick={() => handleSaveReport(true)}>Save now</Button>
               </ul>
             </>
-          )}
-
-          {(report.id || report.model) && (          
-            <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
-              <Button>
-                <Icon type="ellipsis" rotate={90} />
-              </Button>
-            </Dropdown>
-          )}
+          )}         
+          <Dropdown disabled={(report.id || report.model) ? false : true} overlay={moreActionsMenu} trigger={["click"]}>
+            <Button>
+              <Icon type="ellipsis" rotate={90} />
+            </Button>
+          </Dropdown>
         </div>
       </div>
     );

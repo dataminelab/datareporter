@@ -239,7 +239,7 @@ def hash_report(o, can_edit):
             "customization": {},
             "clusters": [],
         },
-        "id": o.id
+        "id": o.id,
     }
     return result
 

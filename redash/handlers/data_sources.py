@@ -261,6 +261,7 @@ class DataSourceTestResource(BaseResource):
         response = {}
 
         job = test_connection.delay(data_source.id)
+        pubsub.send_message_to_topic("default")
         while not (job.is_finished or job.is_failed):
             time.sleep(1)
             job.refresh()

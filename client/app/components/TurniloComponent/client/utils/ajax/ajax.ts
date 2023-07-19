@@ -155,7 +155,7 @@ export class Ajax {
 
     async function  subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
-      const url = `api/reports/generate/${modelId}`; 
+      const url = `api/reports/generate/${modelId}`;
       const data = { hash };
       return subscribe({ method, url, timeout, data });
     }

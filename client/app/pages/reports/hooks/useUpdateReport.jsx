@@ -92,7 +92,7 @@ export default function useUpdateReport(report, onChange) {
           "report",
           "description",
           "name",
-          "model",
+          "model_id",
           "appSettings",
           "timekeeper",
           "data_source_id",
@@ -102,7 +102,6 @@ export default function useUpdateReport(report, onChange) {
           "color_1",
           "color_2",
           "expression",
-          "model_id",
         ]);
       }
 

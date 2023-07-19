@@ -105,10 +105,12 @@ export default function ReportPageHeader(props) {
   const setReportChanged = props.setReportChanged;
   const [reportName, setReportName] = useState(report.name);
   const [newName, setNewName] = useState("Copy of " + report.name);
+  const modelSelectElement = useRef();
+  const modelSelectElementText = useRef("");
 
   const handleReportChanged = (state) => {
     if (!report.data_source_id) return;
-    if (!report.model) return;
+    if (!report.model_id) return;
     setReportChanged(state);
   }
 
@@ -230,8 +232,19 @@ export default function ReportPageHeader(props) {
     [report, updateColors]
   );
 
+  const changeModelDataText = (text) => {
+    const elem = document.querySelector("#model-data-source").querySelector("span");
+    if (elem.innerText === text) return;
+    if (elem.innerText !== modelSelectElement.current.props.placeholder) {
+      modelSelectElementText.current = elem.innerText;
+    }
+    elem.innerText = text;
+    modelSelectElement.current.focus();
+  }
+
   const handleDataSourceChange = useCallback(
     async (dataSourceId, signal) => {
+      changeModelDataText(modelSelectElement.current.props.placeholder);
       setLoadModelsLoaded(false);
       recordEvent("update", "report", report.id, { dataSourceId });
       var newModels = [];
@@ -242,8 +255,6 @@ export default function ReportPageHeader(props) {
         const updates = {
           data_source_id: dataSourceId,
           isJustLanded: false,
-          model: null,
-          model_id: null,
         }
         setModels(newModels);
         props.onChange(extend(report.clone(), { ...updates }));
@@ -259,7 +270,7 @@ export default function ReportPageHeader(props) {
   );
 
   const handleModelChange = useCallback(
-    async (modelId, data_source_id) => {
+    async (modelId, signal) => {
       try {
         var res;
         if (report.isJustLanded) {
@@ -268,23 +279,22 @@ export default function ReportPageHeader(props) {
           res = await Model.getReporterConfig(modelId);
         }
         const model = models.find(m => m.id === modelId);
-        if (model && model.id !== report.model) {
+        if (model && model.id !== report.model_id) {
           replaceHash(model, window.location.hash.split("/4/")[1]);
         }
         recordEvent("update", "report", report.id, { modelId });
         var updates = {
-          // fix below line only one model id is enough
-          model: modelId,
           model_id: modelId,
           appSettings: res.appSettings,
           timekeeper: res.timekeeper,
           isJustLanded: false,
         };
-        if (typeof data_source_id == "number") {
-          updates.data_source_id = data_source_id;
+        if (report.data_source_id || selectedDataSource) {
+          updates.data_source_id = report.data_source_id || selectedDataSource
         }
+        if (signal && signal.aborted) return;
         props.onChange(extend(report.clone(), { ...updates }));
-        updateReport(updates, { successMessage: null }); // show message only on error
+        updateReport({...report.clone(), ...updates}, { successMessage: null }); // show message only on error
         handleReportChanged(true);
         setSelectedModel(modelId);
       } catch (err) {
@@ -414,7 +424,7 @@ export default function ReportPageHeader(props) {
       if (signal.aborted) return;
       await handleDataSourceChange(dataSourceId, signal);
       if (signal.aborted) return;
-      await handleModelChange(model_id, parseInt(dataSourceId), signal)
+      await handleModelChange(model_id, signal)
         .then(() => {
           if (signal.aborted) return;
           setTimeout(() => {
@@ -457,151 +467,152 @@ export default function ReportPageHeader(props) {
         replaceHash(models[0], window.location.hash.split("/4/")[1]);
       }
     }
-  }, [modelsLoaded]);
+  }, [modelsLoaded]);  
 
-    return (
-      <div className="report-page-header">
-        <div className="title-with-tags m-l-5">
-          <div className="page-title">
-            <div className="d-flex align-items-center">
-              {!queryFlags.isNew && <FavoritesControl item={report} />}
-              <h3>
-                <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={reportName} />
-              </h3>
-            </div>
+  return (
+    <div className="report-page-header">
+      <div className="title-with-tags m-l-5">
+        <div className="page-title">
+          <div className="d-flex align-items-center">
+            {!queryFlags.isNew && <FavoritesControl item={report} />}
+            <h3>
+              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={reportName} />
+            </h3>
           </div>
-        </div>
-        <div className="header-actions">
-          {props.headerExtra}
-          <div>
-            <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={() => handleGivenModal("meta-modal")}>
-              <span className="icon icon-ribbon m-r-5"></span>Meta
-            </Button>
-            <ul
-              id="meta-modal"
-              className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
-              role="menu"
-              onClick={e => e.stopPropagation()}>
-              <li className="ant-menu-item modal-left" role="menuitem">
-                <p id="_price" alt="0">
-                  Price: 0
-                </p>
-              </li>
-              <li className="ant-menu-item modal-right" role="menuitem">
-                <p id="_proceed_data" alt="0">
-                  Bytes: 0
-                </p>
-              </li>
-            </ul>
-          </div>
-          <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
-            <span className="icon icon-save-floppy-disc m-r-5"></span>
-            <span style={styles.colorSpanElement}>Text chart color:</span>
-            <div style={styles.color} />
-          </Button>
-          <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(2)}>
-            <span className="icon icon-save-floppy-disc m-r-5"></span>
-            <span style={styles.colorSpanElement}>Chart color:</span>
-            <div style={styles.colorBody} />
-          </Button>
-          {displayColorPicker === 1 ? (
-            <div style={styles.popover}>
-              <div style={styles.cover} onClick={handleClose} />
-              <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
-            </div>
-          ) : null}
-          {displayColorPicker === 2 ? (
-            <div style={styles.popoverSecond}>
-              <div style={styles.cover} onClick={handleClose} />
-              <SketchPicker color={colorBody} onChangeComplete={color => handleColorChange(color, 2)} />
-            </div>
-          ) : null}
-          <div className="data-source-box m-r-10">
-            <span className="icon icon-datasource m-r-5"></span>
-            <Select
-              data-test="SelectDataSource"
-              placeholder="Choose base data source..."
-              value={report ? report.data_source_id : undefined}
-              disabled={(!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
-              loading={!dataSourcesLoaded}
-              optionFilterProp="data-name"
-              showSearch
-              onChange={handleDataSourceChange}>
-              {map(dataSources, ds => (
-                <Select.Option
-                  key={`ds-${ds.id}`}
-                  value={ds.id}
-                  data-name={ds.name}
-                  data-test={`SelectDataSource${ds.id}`}>
-                  <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
-                  <span>{ds.name}</span>
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
-          <div className="data-source-box m-r-10">
-            <span className="icon icon-datasource m-r-5"></span>
-            <Select
-              data-test="SelectModel"
-              placeholder="Choose model data source..."
-              id="model-data-source"
-              value={report ? report.model_id : undefined} 
-              disabled={(report.id || (!reportFlags.canEdit || !modelsLoaded || models.length === 0)) ? true : false}
-              loading={!modelsLoaded}
-              optionFilterProp="data-name"
-              showSearch
-              onChange={handleModelChange}> 
-              {map(models, m => (
-                <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
-                  <span>{m.name}</span>
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
-          {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
-            <Button className="m-r-5" onClick={publishReport}>
-              <i className="fa fa-paper-plane m-r-5" /> Publish
-            </Button>
-          )}
-
-          {!queryFlags.isNew && queryFlags.canViewSource && (
-            <span>
-              {!props.sourceMode && (
-                <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
-                  <i className="fa fa-pencil-square-o" aria-hidden="true" />
-                  <span className="m-l-5">Edit Source</span>
-                </Button>
-              )}
-            </span>
-          )}
-            <Button disabled={!reportChanged} className="m-r-5" id="_handleSaveReport" onClick={() => recordEvent("update", "report", report.id, {report})}>
-              <span className="icon icon-save-floppy-disc m-r-5"></span> Save
-            </Button>
-          {(report.id) && (
-            <>
-              <Button className="m-r-5" id="_handleSaveAs" onClick={() => handleGivenModal("save-as-ul")}>
-                Save as...
-              </Button>
-              <ul
-                id="save-as-ul"
-                className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
-                role="menu"
-                onClick={e => e.stopPropagation()}
-              >
-                <p className="new-name-label">name</p>
-                <input className="new-name-input" type="text" value={newName} onChange={handleNewNameChange} />
-                <Button className="ant-menu-item-group-title" onClick={() => handleSaveReport(true)}>Save now</Button>
-              </ul>
-            </>
-          )}         
-          <Dropdown disabled={(report.id || report.model) ? false : true} overlay={moreActionsMenu} trigger={["click"]}>
-            <Button>
-              <Icon type="ellipsis" rotate={90} />
-            </Button>
-          </Dropdown>
         </div>
       </div>
-    );
+      <div className="header-actions">
+        {props.headerExtra}
+        <div>
+          <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={() => handleGivenModal("meta-modal")}>
+            <span className="icon icon-ribbon m-r-5"></span>Meta
+          </Button>
+          <ul
+            id="meta-modal"
+            className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+            role="menu"
+            onClick={e => e.stopPropagation()}>
+            <li className="ant-menu-item modal-left" role="menuitem">
+              <p id="_price" alt="0">
+                Price: 0
+              </p>
+            </li>
+            <li className="ant-menu-item modal-right" role="menuitem">
+              <p id="_proceed_data" alt="0">
+                Bytes: 0
+              </p>
+            </li>
+          </ul>
+        </div>
+        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
+          <span className="icon icon-save-floppy-disc m-r-5"></span>
+          <span style={styles.colorSpanElement}>Text chart color:</span>
+          <div style={styles.color} />
+        </Button>
+        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(2)}>
+          <span className="icon icon-save-floppy-disc m-r-5"></span>
+          <span style={styles.colorSpanElement}>Chart color:</span>
+          <div style={styles.colorBody} />
+        </Button>
+        {displayColorPicker === 1 ? (
+          <div style={styles.popover}>
+            <div style={styles.cover} onClick={handleClose} />
+            <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
+          </div>
+        ) : null}
+        {displayColorPicker === 2 ? (
+          <div style={styles.popoverSecond}>
+            <div style={styles.cover} onClick={handleClose} />
+            <SketchPicker color={colorBody} onChangeComplete={color => handleColorChange(color, 2)} />
+          </div>
+        ) : null}
+        <div className="data-source-box m-r-10">
+          <span className="icon icon-datasource m-r-5"></span>
+          <Select
+            data-test="SelectDataSource"
+            placeholder="Choose base data source..."
+            value={selectedDataSource}
+            disabled={(!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
+            loading={!dataSourcesLoaded}
+            optionFilterProp="data-name"
+            showSearch
+            onChange={handleDataSourceChange}>
+            {map(dataSources, ds => (
+              <Select.Option
+                key={`ds-${ds.id}`}
+                value={ds.id}
+                data-name={ds.name}
+                data-test={`SelectDataSource${ds.id}`}>
+                <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
+                <span>{ds.name}</span>
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+        <div className="data-source-box m-r-10">
+          <span className="icon icon-datasource m-r-5"></span>
+          <Select
+            data-test="SelectModel"
+            placeholder="Choose model data source..."
+            id="model-data-source"
+            value={report ? report.model_id : undefined} 
+            disabled={(report.id || (!reportFlags.canEdit || !modelsLoaded || models.length === 0)) ? true : false}
+            loading={!modelsLoaded}
+            optionFilterProp="data-name"
+            showSearch
+            ref={modelSelectElement}
+            onChange={handleModelChange}> 
+            {map(models, m => (
+              <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
+                <span>{m.name}</span>
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+        {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
+          <Button className="m-r-5" onClick={publishReport}>
+            <i className="fa fa-paper-plane m-r-5" /> Publish
+          </Button>
+        )}
+
+        {!queryFlags.isNew && queryFlags.canViewSource && (
+          <span>
+            {!props.sourceMode && (
+              <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
+                <i className="fa fa-pencil-square-o" aria-hidden="true" />
+                <span className="m-l-5">Edit Source</span>
+              </Button>
+            )}
+          </span>
+        )}
+          <Button disabled={!reportChanged} className="m-r-5" id="_handleSaveReport" onClick={() => handleSaveReport()}>
+            <span className="icon icon-save-floppy-disc m-r-5"></span> Save
+          </Button>
+        {(report.id) && (
+          <>
+            <Button className="m-r-5" id="_handleSaveAs" onClick={() => handleGivenModal("save-as-ul")}>
+              Save as...
+            </Button>
+            <ul
+              id="save-as-ul"
+              className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+              role="menu"
+              onClick={e => e.stopPropagation()}
+            >
+              <p className="new-name-label">name</p>
+              <input className="new-name-input" type="text" value={newName} onChange={handleNewNameChange} />
+              <Button className="ant-menu-item-group-title" onClick={() => handleSaveReport(true)}>Save now</Button>
+            </ul>
+          </>
+        )}         
+        <Dropdown disabled={(report.id || report.model_id) ? false : true} overlay={moreActionsMenu} trigger={["click"]}>
+          <Button>
+            <Icon type="ellipsis" rotate={90} />
+          </Button>
+        </Dropdown>
+      </div>
+    </div>
+  );
 }
 
 ReportPageHeader.propTypes = {

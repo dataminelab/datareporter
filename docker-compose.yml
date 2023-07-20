@@ -77,6 +77,6 @@ services:
     command: npm run watch-node
     ports:
       - "3000:3000"
-      - "9231:9229"
+      - "9229:9229"
     volumes:
       - ./plywood/server:/app

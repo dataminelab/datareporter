@@ -1,5 +1,6 @@
 import yaml
 from flask import request
+from typing import List
 
 from redash import models
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
@@ -49,7 +50,7 @@ class ModelsConfigResource(BaseResource):
     def get(self, model_id):
         model: Model = get_object_or_404(Model.get_by_id, model_id)
         models: list(Model) = Model.query.filter(Model.data_source_id==model.data_source_id).all()
-        data_cubes: list(DataCube.data_cube) = []
+        data_cubes: List[DataCube.data_cube] = []
         table_names: list(str) = []
         for model in models:
             cube = DataCube(model).data_cube

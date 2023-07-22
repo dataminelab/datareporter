@@ -216,7 +216,6 @@ def log_user_logged_in(app, user):
     pubsub.send_message_to_topic(json.dumps(message))
 
     record_event.delay(event)
-    pubsub.send_message_to_topic("default")
 
 
 @login_manager.unauthorized_handler

@@ -206,7 +206,6 @@ class DataSourceSchemaResource(BaseResource):
                 return {"schema": cached_schema}
 
         job = get_schema.delay(data_source.id, refresh)
-        pubsub.send_message_to_topic("schemas")
 
         return serialize_job(job)
 
@@ -261,7 +260,6 @@ class DataSourceTestResource(BaseResource):
         response = {}
 
         job = test_connection.delay(data_source.id)
-        pubsub.send_message_to_topic("queries")
         while not (job.is_finished or job.is_failed):
             time.sleep(1)
             job.refresh()

@@ -65,7 +65,6 @@ def send_failure_report(user_id):
         ]
 
         send_mail.delay([user.email], subject, html, text)
-        pubsub.send_message_to_topic("email")
 
     redis_connection.delete(key(user_id))
 

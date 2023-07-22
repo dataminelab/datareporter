@@ -51,7 +51,6 @@ def send_verify_email(user, org):
     subject = "{}, please verify your email address".format(user.name)
 
     send_mail.delay([user.email], subject, html_content, text_content)
-    pubsub.send_message_to_topic("email")
 
 
 def send_invite_email(inviter, invited, invite_url, org):
@@ -61,7 +60,6 @@ def send_invite_email(inviter, invited, invite_url, org):
     subject = "{} invited you to join Redash".format(inviter.name)
 
     send_mail.delay([invited.email], subject, html_content, text_content)
-    pubsub.send_message_to_topic("email")
 
 
 def send_password_reset_email(user):
@@ -72,7 +70,6 @@ def send_password_reset_email(user):
     subject = "Reset your password"
 
     send_mail.delay([user.email], subject, html_content, text_content)
-    pubsub.send_message_to_topic("email")
 
     return reset_link
 
@@ -83,4 +80,3 @@ def send_user_disabled_email(user):
     subject = "Your Redash account is disabled"
 
     send_mail.delay([user.email], subject, html_content, text_content)
-    pubsub.send_message_to_topic("email")

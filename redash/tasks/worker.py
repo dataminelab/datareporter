@@ -8,6 +8,15 @@ from rq.utils import utcnow
 from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
 from rq.job import Job as BaseJob, JobStatus
 
+import base64
+import json
+import logging
+from google.cloud import pubsub_v1
+
+from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID
+
+logger = logging.getLogger("pubsub")
+
 
 class CancellableJob(BaseJob):
     def cancel(self, pipeline=None):
@@ -21,6 +30,29 @@ class CancellableJob(BaseJob):
     @property
     def is_cancelled(self):
         return self.meta.get("cancelled", False)
+
+
+class PubsubTask(BaseQueue):
+    publisher = pubsub_v1.PublisherClient()
+
+    def enqueue_job(self, *args, **kwargs):
+        self.send_message_to_topic(self.name)
+        job = super().enqueue_job(*args, **kwargs)
+        return job
+
+    def send_message_to_topic(self, message: str):
+        if not GOOGLE_PUBSUB_WORKER_TOPIC_ID:
+            logger.debug("skipping send message to pub sub")
+            return None
+
+        # Data must be a bytestring
+        data = message.encode("utf-8")
+        # When you publish a message, the client returns a future.
+        logger.info(f"publishing {GOOGLE_PUBSUB_WORKER_TOPIC_ID} : {data}")
+        future = self.publisher.publish(GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
+
+        return future.result()
+
 
 
 class StatsdRecordingQueue(BaseQueue):
@@ -38,7 +70,7 @@ class CancellableQueue(BaseQueue):
     job_class = CancellableJob
 
 
-class RedashQueue(StatsdRecordingQueue, CancellableQueue):
+class RedashQueue(PubsubTask, StatsdRecordingQueue, CancellableQueue):
     pass
 
 
@@ -160,7 +192,7 @@ class HardLimitingWorker(BaseWorker):
             self.handle_job_failure(
                 job,
                 exc_string="Work-horse process was terminated unexpectedly "
-                "(waitpid returned %s)" % ret_val,
+                           "(waitpid returned %s)" % ret_val,
             )
 
 

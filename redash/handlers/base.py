@@ -8,7 +8,6 @@ from flask_login import current_user, login_required
 from flask_restful import Resource, abort
 from redash import settings
 from redash.authentication import current_org
-from redash.gcloud import pubsub
 from redash.models import db
 from redash.tasks import record_event as record_event_task
 from redash.utils import json_dumps
@@ -63,7 +62,6 @@ def record_event(org, user, options):
         options["timestamp"] = int(time.time())
 
     record_event_task.delay(options)
-    pubsub.send_message_to_topic("default")
 
 
 def require_fields(req, fields):

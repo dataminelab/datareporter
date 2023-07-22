@@ -217,7 +217,6 @@ def refresh_schemas():
             )
         else:
             refresh_schema.delay(ds.id)
-            pubsub.send_message_to_topic("schemas")
 
     logger.info(
         u"task=refresh_schemas state=finish total_runtime=%.2f",

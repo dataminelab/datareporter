@@ -235,7 +235,6 @@ class QueryExecutor(object):
             self._log_progress("checking_alerts")
             for query_id in updated_query_ids:
                 check_alerts_for_query.delay(query_id)
-                pubsub.send_message_to_topic("default")
             self._log_progress("finished")
 
             result = query_result.id

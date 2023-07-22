@@ -15,7 +15,7 @@ dev_scheduler() {
 ensure_schema() {
   if [[ "$DATAREPORTER_ENSURE_SCHEMA" == "true" ]]; then
     echo "starting schema creation"
-    /app/bin/ensure_schema.sh
+    /app/bin/ensure_schema.sh &
   fi
 }
 worker() {

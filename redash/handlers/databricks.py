@@ -65,7 +65,6 @@ class DatabricksDatabaseListResource(BaseResource):
         job = get_databricks_databases.delay(
                 data_source.id, redis_key=_databases_key(data_source_id)
             )
-        pubsub.send_message_to_topic("schemas")
 
         return serialize_job(job)
 
@@ -84,14 +83,12 @@ class DatabricksSchemaResource(BaseResource):
                 return {"schema": cached_tables, "has_columns": True}
 
             job = get_databricks_tables.delay(data_source.id, database_name)
-            pubsub.send_message_to_topic("schemas")
 
             return serialize_job(job)
 
         job = get_database_tables_with_columns.delay(
             data_source.id, database_name, redis_key=_tables_key(data_source_id, database_name)
         )
-        pubsub.send_message_to_topic("schemas")
 
         return serialize_job(job)
 
@@ -103,6 +100,5 @@ class DatabricksTableColumnListResource(BaseResource):
         )
 
         job = get_databricks_table_columns.delay(data_source.id, database_name, table_name)
-        pubsub.send_message_to_topic("schemas")
 
         return serialize_job(job)

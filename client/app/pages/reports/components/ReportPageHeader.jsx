@@ -100,7 +100,7 @@ export default function ReportPageHeader(props) {
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedDataSource, setSelectedDataSource] = useState(null);
   const [colorBodyHex, setColorBodyHex] = useState("#f17013");
-  const [colorTextHex, setColorTextHex] = useState("#f17013");
+  const [colorTextHex, setColorTextHex] = useState("#000");
   const reportChanged = props.reportChanged;
   const setReportChanged = props.setReportChanged;
   const [reportName, setReportName] = useState(report.name);
@@ -117,21 +117,6 @@ export default function ReportPageHeader(props) {
   const handleNewNameChange = (event) => {
     setNewName(event.target.value);
   }
-
-  const [colorBody, setColorBody] = useState({
-    r: "241",
-    g: "112",
-    b: "19",
-    a: "1",
-  });
-
-  const [colorText, setColorText] = useState({
-    r: "241",
-    g: "112",
-    b: "19",
-    a: "1",
-  });
-
   const styles = reactCSS({
     default: {
       color: {
@@ -139,7 +124,7 @@ export default function ReportPageHeader(props) {
         height: "14px",
         display: "inline-block",
         borderRadius: "2px",
-        background: `rgba(${colorText.r}, ${colorText.g}, ${colorText.b}, ${colorText.a})`,
+        background: `${colorTextHex}`,
         position: "relative",
         marginRight: "10px",
         top: "3px",
@@ -152,7 +137,7 @@ export default function ReportPageHeader(props) {
         height: "14px",
         display: "inline-block",
         borderRadius: "2px",
-        background: `rgba(${colorBody.r}, ${colorBody.g}, ${colorBody.b}, ${colorBody.a})`,
+        background: `${colorBodyHex}`,
         position: "relative",
         top: "3px",
       },
@@ -207,7 +192,6 @@ export default function ReportPageHeader(props) {
         return 0;
       }
       if (type === 2) {
-        setColorBody(color.rgb);
         setColorBodyHex(color.hex);
         updateColors("colorBody", color.hex, { successMessage });
         let updates = { color_1: color.hex };
@@ -221,12 +205,11 @@ export default function ReportPageHeader(props) {
         const lightenedHexColor = `#${lightenedRed.toString(16)}${lightenedGreen.toString(16)}${lightenedBlue.toString(16)}`;
         setColorElements(false, color.hex, lightenedHexColor);
       } else {
-        setColorText(color.rgb);
         setColorTextHex(color.hex);
         updateColors("colorText", color.hex, { successMessage });
         let updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
-        setColorElements(color.hex, false, false);     
+        setColorElements(color.hex, false, false); 
       }
     },
     [report, updateColors]
@@ -517,13 +500,13 @@ export default function ReportPageHeader(props) {
         {displayColorPicker === 1 ? (
           <div style={styles.popover}>
             <div style={styles.cover} onClick={handleClose} />
-            <SketchPicker color={colorText} onChangeComplete={color => handleColorChange(color, 1)} />
+            <SketchPicker color={colorTextHex} onChangeComplete={color => handleColorChange(color, 1)} />
           </div>
         ) : null}
         {displayColorPicker === 2 ? (
           <div style={styles.popoverSecond}>
             <div style={styles.cover} onClick={handleClose} />
-            <SketchPicker color={colorBody} onChangeComplete={color => handleColorChange(color, 2)} />
+            <SketchPicker color={colorBodyHex} onChangeComplete={color => handleColorChange(color, 2)} />
           </div>
         ) : null}
         <div className="data-source-box m-r-10">

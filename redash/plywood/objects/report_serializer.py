@@ -64,7 +64,6 @@ class ReportSerializer:
         return Progress(jobs=jobs, results=query_result)
 
     def serialized(self) -> dict:
-        progress = self._get_progress()
         data = None
 
         if self.data:
@@ -73,6 +72,7 @@ class ReportSerializer:
             else:
                 data = self.data.dict()
 
+        progress = self._get_progress()
         return {
             'data': data,
             'status': self.status,
@@ -80,5 +80,5 @@ class ReportSerializer:
             'failed': self.failed,
             'meta': self.meta.to_dict() if self.meta else None,
             'shape': self.shape,
-            'progress': self._get_progress().dict(),
+            'progress': progress.dict(),
         }

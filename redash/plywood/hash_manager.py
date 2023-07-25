@@ -149,16 +149,25 @@ def parse_result(
             queries=queries,
         )
 
-    if expression.is_2_splits():
-        queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
-        queries = cache_or_get(
-            hash_string=hash_string,
-            queries=queries_2_splits,
-            current_org=current_org,
-            model=model,
-            split=2
-        )
-
+    split = len(expression.filter['splits'])
+    if split > 1:
+        if split == 2:
+            queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
+            queries = cache_or_get(
+                hash_string=hash_string,
+                queries=queries_2_splits,
+                current_org=current_org,
+                model=model,
+                split=2)
+        elif split == 3:
+            queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
+            queries_3_splits = expression.get_3_splits_queries(prev_result=queries, prev_queries=queries_2_splits)
+            queries = cache_or_get(
+                hash_string=hash_string,
+                queries=queries_3_splits,
+                current_org=current_org,
+                model=model,
+                split=3)
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)

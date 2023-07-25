@@ -2,6 +2,7 @@ from typing import Callable
 import json
 
 import lzstring
+from flask_restful import abort
 
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.plywood import PlywoodApi
@@ -160,17 +161,29 @@ class Expression:
             EXPRESSION: expression
         })
 
-    def is_2_splits(self):
-        return len(self.filter['splits']) == 2
+    def has_multiple_splits(self):
+        return len(self.filter['splits']) >= 2
 
     @staticmethod
     def _is_last_query_boolean(query: str):
-        return 'true' in query.lower() or 'false' in query.lower()
+        return 'where true' in query.lower()
+    
+    @staticmethod
+    def _is_last_query_boolean_false(query: str):
+        return 'where false' in query.lower()
+
+    def get_where_statement(self, last_query: str, prev_query: str, column_name: str, some_column_name: str):
+        where = prev_query.split('WHERE')[1].split("GROUP BY")[0]
+        if self._data_cube.ply_engine == 'bigquery':
+            where = "(" + where + "AND (`" + column_name + "` = '" + some_column_name + "')) "
+        else:
+            where = "(" + where + "AND (`" + column_name + "` = " + some_column_name + ")) "
+        return last_query.replace("WHERE FALSE ", "WHERE" + where)
 
     def _get_boolean_queries(self, last_query):
         res = [last_query]
-
-        r = [*self.queries[0:len(self.queries) - 1], *res, last_query]
+        false_query = last_query.replace('TRUE', 'FALSE')
+        r = [*self.queries[0:len(self.queries) - 1], *res, false_query]
         return r
 
     def _get_string_queries(self, last_query, prev_result):
@@ -178,28 +191,67 @@ class Expression:
         column_name = self.filter["splits"][0]["dimension"]
         some_column_name = f'some_{column_name}'
 
-        if some_column_name not in last_query:
-            raise Exception(f'{some_column_name} is not present in query')
-
         two_splits_queries = []
         if "job" in second_result and second_result["job"]["error"]:
-            raise Exception(f'Error in job: {second_result["job"]["error"]}')
+            return abort(400, message=second_result["job"]["error"])
+
+        if some_column_name not in last_query:
+            if self._is_last_query_boolean_false(last_query):
+                # this line can be removed after plywood query fix
+                prev_query = second_result['query_result']['query']
+                last_query = self.get_where_statement(last_query, prev_query, column_name, some_column_name)
+            else:
+                raise Exception(f'{some_column_name} is not present in query')
 
         for row in second_result['query_result']['data']['rows']:
-
             value = row[column_name]
             if value is None:
                 value = self._data_cube.null_value
-                query = last_query.replace(f"='{some_column_name}'", f" {value}")
+                query = last_query.replace(f"='{some_column_name}'", f" {self._data_cube.null_value}")
             else:
                 if self._data_cube.ply_engine == 'bigquery':
                     query = last_query.replace(f"'{some_column_name}'", f'"{value}"')
                 else:
                     query = last_query.replace(some_column_name, value)
-
             two_splits_queries.append(query)
-
         return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]
+
+    def _get_string_queries_3(self, last_query: str, prev_result: list, prev_queries: list) -> list:
+        ## TODO FINISH THIS
+        second_result = prev_result[1]
+        column_name = self.filter["splits"][0]["dimension"]
+        some_column_name = f'some_{column_name}'
+
+        third_result = prev_result[2]
+        third_result_query = third_result['query_result']['query']
+
+        if some_column_name not in last_query:
+            raise Exception(f'{some_column_name} is not present in query')
+
+        two_splits_queries = []
+        if "job" in third_result and third_result["job"]["error"]:
+            raise Exception(f'Error in job: {third_result["job"]["error"]}')
+
+        for row in second_result['query_result']['data']['rows']:
+            value = row[column_name]
+            if value is None:
+                value = self._data_cube.null_value
+                query = last_query.replace(f"='{some_column_name}'", f" {self._data_cube.null_value}")
+            else:
+                if self._data_cube.ply_engine == 'bigquery':
+                    query = last_query.replace(f"'{some_column_name}'", f'"{value}"')
+                else:
+                    query = last_query.replace(some_column_name, value)
+            two_splits_queries.append(query)
+        return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]
+
+    def get_3_splits_queries(self, prev_result: list, prev_queries: list) -> list:
+        queries = self.queries
+        last_query: str = queries[len(queries) - 1]
+        second_part = self._get_string_queries_3(last_query. prev_result, prev_queries)
+        return [*prev_queries, *second_part]
+        # return self._get_string_queries(last_query=last_query, prev_result=prev_result)
+        # return self.get_3_splits_queries(last_query=last_query, prev_result=prev_result)
 
     def get_2_splits_queries(self, prev_result: list) -> list:
         queries = self.queries

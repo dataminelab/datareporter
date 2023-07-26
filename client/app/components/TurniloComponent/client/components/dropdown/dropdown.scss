@@ -35,7 +35,7 @@
     @include ellipsis;
     display: block;
     pointer-events: auto;
-    height: $input-height;
+    height: 100%;
     padding: 8px 22px 0 6px;
   }
 

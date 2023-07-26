@@ -39,7 +39,7 @@ class PlywoodQueryParserV2:
         self._data_cube_name = data_cube_name
         self._shape = shape
         self._visualization = visualization
-        self._data_cube = data_cube
+        self._data_cube = data_cube # XX
 
     @property
     def null(self):

@@ -1552,11 +1552,11 @@ export abstract class External {
     });
   }
 
-  public getQueryFilter(): Expression {
+  public getQueryFilter(): Expression { 
     let filter = this.inlineDerivedAttributes(this.filter).simplify();
 
-    if (filter instanceof RefExpression && !this.capability('filter-on-attribute')) {
-      filter = filter.is(true);
+    if (filter instanceof RefExpression) {
+      filter = filter.is(true).simplify(); 
     }
 
     return filter;

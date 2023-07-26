@@ -80,3 +80,5 @@ services:
       - "9231:9229"
     volumes:
       - ./plywood/server:/app
+    environment:
+      - LOG_MODE=request_and_response

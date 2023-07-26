@@ -125,6 +125,8 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
 
     return None
 
+def is_yoy_query(query):
+    return query.count("SUM") > 3
 
 def parse_result(
     hash_string: str,
@@ -175,6 +177,69 @@ def parse_result(
     errored = clean_errored(queries)
     if len(errored):
         abort(400, message=errored[0]['job']['error'])
+
+    first_query = queries[0]['query_result']['query']
+    if len(queries) == 1 and is_yoy_query(first_query):
+        ## doesnt work on two or more results
+        "SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    (SELECT SUM(`item_price`) AS `item_price`, SUM(`item_price`) AS `_previous__item_price`, (SUM(`item_price`)-SUM(`item_price`)) AS `_delta__item_price`, SUM(`total_value`) AS `total_value`, SUM(`total_value`) AS `_previous__total_value`, (SUM(`total_value`)-SUM(`total_value`)) AS `_delta__total_value` FROM demo.`orders`  As t  WHERE (TIMESTAMP('2023-06-26T20:27:00.000Z')<=`completed_date` AND `completed_date`<TIMESTAMP('2023-07-26T20:27:00.000Z')) ) AS curr JOIN    (SELECT SUM(`item_price`) AS `item_price`, SUM(`item_price`) AS `_previous__item_price`, (SUM(`item_price`)-SUM(`item_price`)) AS `_delta__item_price`, SUM(`total_value`) AS `total_value`, SUM(`total_value`) AS `_previous__total_value`, (SUM(`total_value`)-SUM(`total_value`)) AS `_delta__total_value` FROM demo.`orders`  As t WHERE  (TIMESTAMP('2023-03-26T20:27:00.000Z')<=`completed_date` AND `completed_date`<TIMESTAMP('2023-04-26T20:27:00.000Z'))) AS prev ON    1=1"
+        query = first_query
+        select, where = query.split("AS t")
+        where1, where2 = where.split("OR")
+        query = f"""SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    ({select} As t {where1}) AS curr JOIN    ({select} As t WHERE {where2}) AS prev ON    1=1"""
+        # prev result
+        """SELECT 
+            SUM(`item_price`) AS `item_price`, 
+            SUM(`item_price`) AS `_previous__item_price`, 
+            (SUM(`item_price`)-SUM(`item_price`)) AS `_delta__item_price` 
+        FROM demo.`orders` AS t 
+        WHERE (
+            TIMESTAMP('2023-06-26T17:41:00.000Z')<=`completed_date` 
+            AND 
+            `completed_date`<TIMESTAMP('2023-07-26T17:41:00.000Z')
+        ) 
+        OR 
+        (
+            TIMESTAMP('2023-03-26T17:41:00.000Z')<=`completed_date` 
+            AND 
+            `completed_date`<TIMESTAMP('2023-04-26T17:41:00.000Z')
+        )
+        """
+        # after result
+        '''
+        SELECT
+        curr.item_price AS `item_price`,
+        prev.item_price AS `_previous__item_price`,
+        (curr.item_price - prev.item_price) AS `_delta__item_price`,
+        FROM
+        (SELECT
+            1 AS `Key`,
+            SUM(`item_price`) AS `item_price`
+        FROM
+            demo.`orders` AS t
+        WHERE 
+            TIMESTAMP('2023-06-26T17:00:00.000Z') <= `completed_date` AND `completed_date` < TIMESTAMP('2023-07-26T17:00:00.000Z') 
+        ) AS curr
+        JOIN
+        (SELECT
+            1 AS `Key`,
+            SUM(`item_price`) AS `item_price`
+        FROM 
+            demo.`orders` AS t
+        WHERE 
+            TIMESTAMP('2023-03-26T17:00:00.000Z') <= `completed_date` AND `completed_date` < TIMESTAMP('2023-04-26T17:00:00.000Z')
+        ) AS prev
+        ON
+            curr.Key = prev.Key
+        '''
+        queries = cache_or_get(
+                hash_string=hash_string,
+                queries=[query],
+                current_org=current_org,
+                model=model,
+                split=-1)
+        is_fetching = jobs_status(queries)
+        if is_fetching:
+            return ReportSerializer(status=is_fetching, queries=queries)
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,

@@ -100,7 +100,7 @@ export abstract class SQLExternal extends External {
   }
 
   public getQueryAndPostTransform(): QueryAndPostTransform<string> {
-    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery } = this;
+    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, source } = this;
 
     let query = [];
     if (withQuery) {
@@ -116,11 +116,17 @@ export abstract class SQLExternal extends External {
 
     //dialect.setTable(null);
     let from = this.getFrom();
-    //dialect.setTable(source as string);
+    // dialect.setTable(source as string);
 
     let filter = this.getQueryFilter();
     if (!filter.equals(Expression.TRUE)) {
       from += '\nWHERE ' + filter.getSQL(dialect);
+      // const extra_ = filter.getSQL(dialect);
+      // if (extra_.toLowerCase().includes("false")) {
+      //   from += "\nWHERE ((TIMESTAMP('2003-07-17T15:17:00.000Z')<=`sometimeLater` AND `sometimeLater`<TIMESTAMP('2023-07-17T15:17:00.000Z')) AND `some_countryName` IN ('United States','Canada')";
+      // } else {
+      //   from += '\nWHERE ' + extra_;
+      // }
     }
 
     let selectedAttributes = this.getSelectedAttributes();
@@ -220,7 +226,7 @@ export abstract class SQLExternal extends External {
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-
+    console.log(query.join('\n'));
     return {
       query: this.sqlToQuery(query.join('\n')),
       postTransform:

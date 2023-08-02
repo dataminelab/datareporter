@@ -184,8 +184,11 @@ def parse_result(
         "SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    (SELECT SUM(`item_price`) AS `item_price`, SUM(`item_price`) AS `_previous__item_price`, (SUM(`item_price`)-SUM(`item_price`)) AS `_delta__item_price`, SUM(`total_value`) AS `total_value`, SUM(`total_value`) AS `_previous__total_value`, (SUM(`total_value`)-SUM(`total_value`)) AS `_delta__total_value` FROM demo.`orders`  As t  WHERE (TIMESTAMP('2023-06-26T20:27:00.000Z')<=`completed_date` AND `completed_date`<TIMESTAMP('2023-07-26T20:27:00.000Z')) ) AS curr JOIN    (SELECT SUM(`item_price`) AS `item_price`, SUM(`item_price`) AS `_previous__item_price`, (SUM(`item_price`)-SUM(`item_price`)) AS `_delta__item_price`, SUM(`total_value`) AS `total_value`, SUM(`total_value`) AS `_previous__total_value`, (SUM(`total_value`)-SUM(`total_value`)) AS `_delta__total_value` FROM demo.`orders`  As t WHERE  (TIMESTAMP('2023-03-26T20:27:00.000Z')<=`completed_date` AND `completed_date`<TIMESTAMP('2023-04-26T20:27:00.000Z'))) AS prev ON    1=1"
         query = first_query
         select, where = query.split("AS t")
-        where1, where2 = where.split("OR")
-        query = f"""SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    ({select} As t {where1}) AS curr JOIN    ({select} As t WHERE {where2}) AS prev ON    1=1"""
+        try:
+            where1, where2 = where.split("OR")
+        except ValueError:
+            where1, where2 = where.split("AND")
+        query = f"""SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    ({select} AS t {where1}) AS curr JOIN    ({select} AS t WHERE {where2}) AS prev ON    1=1"""
         # prev result
         """SELECT 
             SUM(`item_price`) AS `item_price`, 

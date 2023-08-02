@@ -96,7 +96,10 @@ class DataSourceResource(BaseResource):
         data_source = models.DataSource.get_by_id_and_org(
             data_source_id, self.current_org
         )
-        data_source.delete()
+        try:
+            data_source.delete()
+        except IntegrityError:
+            abort(400, message=f"Data source has attached models.")
 
         self.record_event(
             {

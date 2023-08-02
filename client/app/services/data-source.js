@@ -18,7 +18,9 @@ const DataSource = {
   create: data => axios.post(`api/data_sources`, data),
   save: data => axios.post(`api/data_sources/${data.id}`, data),
   test: data => axios.post(`api/data_sources/${data.id}/test`),
-  delete: ({ id }) => axios.delete(`api/data_sources/${id}`),
+  delete: ({ id }) => axios
+    .delete(`api/data_sources/${id}`)
+    .catch(error => Promise.reject(error.response.data.message)),
   fetchSchema: (data, refresh = false) => {
     const params = {};
 

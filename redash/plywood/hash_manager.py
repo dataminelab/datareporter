@@ -188,7 +188,7 @@ def parse_result(
             where1, where2 = where.split("OR")
         except ValueError:
             where1, where2 = where.split("AND")
-        query = f"""SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    ({select} AS t {where1}) AS curr JOIN    ({select} AS t WHERE {where2}) AS prev ON    1=1"""
+        query = f"""SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    ({select} AS t {where1})) AS curr JOIN    ({select} AS t WHERE ({where2}) AS prev ON    1=1"""
         # prev result
         """SELECT 
             SUM(`item_price`) AS `item_price`, 
@@ -239,7 +239,7 @@ def parse_result(
                 queries=[query],
                 current_org=current_org,
                 model=model,
-                split=-1)
+                split=11234)
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)

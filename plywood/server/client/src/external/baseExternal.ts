@@ -1556,7 +1556,7 @@ export abstract class External {
     let filter = this.inlineDerivedAttributes(this.filter).simplify();
 
     if (filter instanceof RefExpression) {
-      filter = filter.is(true).simplify(); 
+      filter = filter.is(true)
     }
 
     return filter;

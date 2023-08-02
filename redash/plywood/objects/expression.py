@@ -248,7 +248,7 @@ class Expression:
     def get_3_splits_queries(self, prev_result: list, prev_queries: list) -> list:
         queries = self.queries
         last_query: str = queries[len(queries) - 1]
-        second_part = self._get_string_queries_3(last_query. prev_result, prev_queries)
+        second_part = self._get_string_queries_3(last_query, prev_result, prev_queries)
         return [*prev_queries, *second_part]
         # return self._get_string_queries(last_query=last_query, prev_result=prev_result)
         # return self.get_3_splits_queries(last_query=last_query, prev_result=prev_result)

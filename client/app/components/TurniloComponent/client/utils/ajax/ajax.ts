@@ -162,10 +162,8 @@ export class Ajax {
 
     return async (ex: Expression, env: Environment = {}) => {
       const modelId = this.model_id;
-      console.log("here");
       if (ex instanceof  LimitExpression) {
         const sub = await subscribeToFilter(ex, modelId);
-        console.log(sub.data);
         return Dataset.fromJS(sub.data);
       }
       var hash;
@@ -180,7 +178,6 @@ export class Ajax {
         // @ts-ignore
         setPriceButton(sub.meta);
       }
-      console.log("or here?")
       return Dataset.fromJS(sub.data);
     };
   }

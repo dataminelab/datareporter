@@ -37,7 +37,6 @@ export const plywoodEndpoint = (req: Request, res: Response) => {
 
     const sqlQueries = expression.simulateQueryPlan({ [dataCube]: external });
     const formattedQueries = responseFormatter(sqlQueries);
-    console.log("formattedQueries", formattedQueries);
 
     res
         .json({ queries: formattedQueries })

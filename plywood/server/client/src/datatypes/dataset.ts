@@ -441,8 +441,6 @@ export class Dataset implements Instance<DatasetValue, DatasetJS> {
       parameters = { data: parameters };
     }
 
-    console.log(parameters.data)
-
     if (!Array.isArray(parameters.data)) {
       throw new Error('must have data');
     }

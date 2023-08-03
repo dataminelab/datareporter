@@ -114,9 +114,11 @@ export class SortExpression extends ChainableUnaryExpression {
   }
 
   public toggleDirection(): SortExpression {
-    // descenting is not working
-    console.log("toggleDirection")
-    return this.changeDirection(SortExpression.ASCENDING);
+    return this.changeDirection(
+      this.direction === SortExpression.ASCENDING
+        ? SortExpression.DESCENDING
+        : SortExpression.ASCENDING,
+    );
   }
 
   public specialSimplify(): Expression {

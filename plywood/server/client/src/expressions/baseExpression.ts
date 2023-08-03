@@ -954,7 +954,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * If no simplification can be done will return itself.
    */
   public simplify(): Expression {
-    return this; // Default is to do nothing
+    return this;
   }
 
   /**

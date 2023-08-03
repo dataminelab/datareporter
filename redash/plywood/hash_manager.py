@@ -1,6 +1,7 @@
 import hashlib
 import json
 from typing import List, Union
+import re
 
 import lzstring
 from flask_restful import abort
@@ -125,6 +126,8 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
 
     return None
 
+def is_yoy_query(query):
+    return query.count("SUM") > 3
 
 def parse_result(
     hash_string: str,
@@ -175,6 +178,36 @@ def parse_result(
     errored = clean_errored(queries)
     if len(errored):
         abort(400, message=errored[0]['job']['error'])
+
+    first_query = queries[0]['query_result']['query']
+    model_type = model.data_source.type
+    if len(queries) == 1 and is_yoy_query(first_query) and model_type == "bigquery":
+        # only works for bigquery rignth now, plywood need to be updated
+        select, where = first_query.split("AS t")
+        pattern = r'SUM\([\`,\",\'](.*?)[\`,\",\']\)'
+        matches = re.findall(pattern, select)
+        unique_matches = set(matches)
+        yoy_queries = " ".join([f"curr.{i} AS `{i}`, prev.{i} AS `_previous__{i}`, (curr.{i} - prev.{i}) AS `_delta__{i}`," for i in unique_matches])
+        try:
+            where1, where2 = where.split("OR")
+        except ValueError:
+            where1, where2 = where.split("AND")
+        if not where1.strip().endswith(")"):
+            where1+=")"
+        if not where2.strip().startswith("("):
+            where2 = "(" + where2
+        query = f"""SELECT {yoy_queries} FROM    ({select} AS t {where1}) AS curr  JOIN    ({select} AS t WHERE {where2}) AS prev ON    1=1"""
+        # if model.data_source.type == 'athena':
+        #     query = query.replace("`",'"')
+        queries = cache_or_get(
+                hash_string=hash_string,
+                queries=[query],
+                current_org=current_org,
+                model=model,
+                split=11234)
+        is_fetching = jobs_status(queries)
+        if is_fetching:
+            return ReportSerializer(status=is_fetching, queries=queries)
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,

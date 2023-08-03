@@ -100,7 +100,7 @@ export abstract class SQLExternal extends External {
   }
 
   public getQueryAndPostTransform(): QueryAndPostTransform<string> {
-    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery } = this;
+    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, source } = this;
 
     let query = [];
     if (withQuery) {
@@ -116,7 +116,7 @@ export abstract class SQLExternal extends External {
 
     //dialect.setTable(null);
     let from = this.getFrom();
-    //dialect.setTable(source as string);
+    // dialect.setTable(source as string);
 
     let filter = this.getQueryFilter();
     if (!filter.equals(Expression.TRUE)) {
@@ -220,7 +220,6 @@ export abstract class SQLExternal extends External {
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-
     return {
       query: this.sqlToQuery(query.join('\n')),
       postTransform:

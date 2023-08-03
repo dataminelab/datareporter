@@ -198,8 +198,6 @@ export interface SplitDefinitionConverter {
 
 export const splitConverter: SplitDefinitionConverter = {
   toSplitCombine(split: SplitDefinition): Split {
-    console.log('--- to split combine')
-    console.log(split);
     return splitConversions[split.type].toSplitCombine(split);
   },
 

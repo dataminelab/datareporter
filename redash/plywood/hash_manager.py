@@ -1,6 +1,7 @@
 import hashlib
 import json
 from typing import List, Union
+import re
 
 import lzstring
 from flask_restful import abort
@@ -179,61 +180,25 @@ def parse_result(
         abort(400, message=errored[0]['job']['error'])
 
     first_query = queries[0]['query_result']['query']
-    if len(queries) == 1 and is_yoy_query(first_query):
-        ## doesnt work on two or more results
-        "SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    (SELECT SUM(`item_price`) AS `item_price`, SUM(`item_price`) AS `_previous__item_price`, (SUM(`item_price`)-SUM(`item_price`)) AS `_delta__item_price`, SUM(`total_value`) AS `total_value`, SUM(`total_value`) AS `_previous__total_value`, (SUM(`total_value`)-SUM(`total_value`)) AS `_delta__total_value` FROM demo.`orders`  As t  WHERE (TIMESTAMP('2023-06-26T20:27:00.000Z')<=`completed_date` AND `completed_date`<TIMESTAMP('2023-07-26T20:27:00.000Z')) ) AS curr JOIN    (SELECT SUM(`item_price`) AS `item_price`, SUM(`item_price`) AS `_previous__item_price`, (SUM(`item_price`)-SUM(`item_price`)) AS `_delta__item_price`, SUM(`total_value`) AS `total_value`, SUM(`total_value`) AS `_previous__total_value`, (SUM(`total_value`)-SUM(`total_value`)) AS `_delta__total_value` FROM demo.`orders`  As t WHERE  (TIMESTAMP('2023-03-26T20:27:00.000Z')<=`completed_date` AND `completed_date`<TIMESTAMP('2023-04-26T20:27:00.000Z'))) AS prev ON    1=1"
-        query = first_query
-        select, where = query.split("AS t")
+    model_type = model.data_source.type
+    if len(queries) == 1 and is_yoy_query(first_query) and model_type == "bigquery":
+        # only works for bigquery rignth now, plywood need to be updated
+        select, where = first_query.split("AS t")
+        pattern = r'SUM\([\`,\",\'](.*?)[\`,\",\']\)'
+        matches = re.findall(pattern, select)
+        unique_matches = set(matches)
+        yoy_queries = " ".join([f"curr.{i} AS `{i}`, prev.{i} AS `_previous__{i}`, (curr.{i} - prev.{i}) AS `_delta__{i}`," for i in unique_matches])
         try:
             where1, where2 = where.split("OR")
         except ValueError:
             where1, where2 = where.split("AND")
-        query = f"""SELECT    curr.item_price AS `item_price`,    prev.item_price AS `_previous__item_price`,    (curr.item_price - prev.item_price) AS `_delta__item_price`, FROM    ({select} AS t {where1})) AS curr JOIN    ({select} AS t WHERE ({where2}) AS prev ON    1=1"""
-        # prev result
-        """SELECT 
-            SUM(`item_price`) AS `item_price`, 
-            SUM(`item_price`) AS `_previous__item_price`, 
-            (SUM(`item_price`)-SUM(`item_price`)) AS `_delta__item_price` 
-        FROM demo.`orders` AS t 
-        WHERE (
-            TIMESTAMP('2023-06-26T17:41:00.000Z')<=`completed_date` 
-            AND 
-            `completed_date`<TIMESTAMP('2023-07-26T17:41:00.000Z')
-        ) 
-        OR 
-        (
-            TIMESTAMP('2023-03-26T17:41:00.000Z')<=`completed_date` 
-            AND 
-            `completed_date`<TIMESTAMP('2023-04-26T17:41:00.000Z')
-        )
-        """
-        # after result
-        '''
-        SELECT
-        curr.item_price AS `item_price`,
-        prev.item_price AS `_previous__item_price`,
-        (curr.item_price - prev.item_price) AS `_delta__item_price`,
-        FROM
-        (SELECT
-            1 AS `Key`,
-            SUM(`item_price`) AS `item_price`
-        FROM
-            demo.`orders` AS t
-        WHERE 
-            TIMESTAMP('2023-06-26T17:00:00.000Z') <= `completed_date` AND `completed_date` < TIMESTAMP('2023-07-26T17:00:00.000Z') 
-        ) AS curr
-        JOIN
-        (SELECT
-            1 AS `Key`,
-            SUM(`item_price`) AS `item_price`
-        FROM 
-            demo.`orders` AS t
-        WHERE 
-            TIMESTAMP('2023-03-26T17:00:00.000Z') <= `completed_date` AND `completed_date` < TIMESTAMP('2023-04-26T17:00:00.000Z')
-        ) AS prev
-        ON
-            curr.Key = prev.Key
-        '''
+        if not where1.strip().endswith(")"):
+            where1+=")"
+        if not where2.strip().startswith("("):
+            where2 = "(" + where2
+        query = f"""SELECT {yoy_queries} FROM    ({select} AS t {where1}) AS curr  JOIN    ({select} AS t WHERE {where2}) AS prev ON    1=1"""
+        # if model.data_source.type == 'athena':
+        #     query = query.replace("`",'"')
         queries = cache_or_get(
                 hash_string=hash_string,
                 queries=[query],

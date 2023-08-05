@@ -101,7 +101,7 @@ export class BigQueryDialect extends SQLDialect {
       );
     } else if (duration.toString() == "P3M") {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME) , QUARTER) )`,
+        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), QUARTER))`,
         timezone,      
       );
     } else {

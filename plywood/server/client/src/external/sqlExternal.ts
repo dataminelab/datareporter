@@ -27,6 +27,7 @@ import {
   SortExpression,
   SplitExpression,
   TimeBucketExpression,
+  YearOverYearExpression,
 } from '../expressions/index';
 import { External, ExternalJS, ExternalValue, Inflater, QueryAndPostTransform } from './baseExternal';
 import { PlywoodRequester } from 'plywood-base-api';
@@ -100,7 +101,7 @@ export abstract class SQLExternal extends External {
   }
 
   public getQueryAndPostTransform(): QueryAndPostTransform<string> {
-    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, source } = this;
+    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, engine } = this;
 
     let query = [];
     if (withQuery) {
@@ -114,9 +115,7 @@ export abstract class SQLExternal extends External {
     let keys: string[] = null;
     let zeroTotalApplies: ApplyExpression[] = null;
 
-    //dialect.setTable(null);
     let from = this.getFrom();
-    // dialect.setTable(source as string);
 
     let filter = this.getQueryFilter();
     if (!filter.equals(Expression.TRUE)) {
@@ -167,12 +166,10 @@ export abstract class SQLExternal extends External {
           query.push(limit.getSQL(dialect));
         }
         break;
-
       case 'value':
         query.push(this.toValueApply().getSQL(dialect), from, dialect.constantGroupBy());
         postTransform = External.valuePostTransformFactory();
         break;
-
       case 'total':
         zeroTotalApplies = applies;
         inflaters = applies
@@ -189,7 +186,6 @@ export abstract class SQLExternal extends External {
           dialect.constantGroupBy(),
         );
         break;
-
       case 'split':
         let split = this.getQuerySplit();
         keys = split.mapSplits(name => name);
@@ -216,12 +212,17 @@ export abstract class SQLExternal extends External {
         }
         inflaters = getSplitInflaters(split);
         break;
-
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
+    if (YearOverYearExpression.isYoyQuery(query[1])) {
+      let yoyExpression = new YearOverYearExpression(engine, query, mode);
+      query = yoyExpression.getQuery();
+    } else {
+      query = this.sqlToQuery(query.join('\n'));
+    }
     return {
-      query: this.sqlToQuery(query.join('\n')),
+      query,
       postTransform:
         postTransform ||
         External.postTransformFactory(inflaters, selectedAttributes, keys, zeroTotalApplies),

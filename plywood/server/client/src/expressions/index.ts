@@ -74,3 +74,4 @@ export * from './timeRangeExpression';
 export * from './timeShiftExpression';
 export * from './transformCaseExpression';
 export * from './thenExpression';
+export * from './yearOverYearExpression';

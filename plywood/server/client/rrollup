@@ -62,7 +62,6 @@ cat \
   build/expressions/inExpression.js \
   build/expressions/isExpression.js \
   build/expressions/joinExpression.js \
-  build/expressions/yearOverYearExpression.js \
   build/expressions/lengthExpression.js \
   build/expressions/lessThanExpression.js \
   build/expressions/lessThanOrEqualExpression.js \

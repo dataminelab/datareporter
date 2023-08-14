@@ -96,17 +96,26 @@ export class BigQueryDialect extends SQLDialect {
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     if (duration.toString() == "P1W") {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), WEEK))`, 
-        timezone
+        `FORMAT_DATETIME('${bucketFormat}',
+          DATETIME_TRUNC(
+            CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
+          , WEEK)
+        )`,
+        timezone,      
       );
     } else if (duration.toString() == "P3M") {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), QUARTER))`,
+        `FORMAT_DATETIME('${bucketFormat}',
+          DATETIME_TRUNC(
+            CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
+          , QUARTER)
+        )`,
         timezone,      
       );
     } else {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}', CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
+        `FORMAT_DATETIME('${bucketFormat}', 
+          CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
         timezone,
       );
     }
@@ -188,6 +197,7 @@ export class BigQueryDialect extends SQLDialect {
   }
 
   public walltimeToUTC(operand: string, timezone: Timezone): string {
+    // todo figure out timezone witchcraft
     return operand;
   }
 }

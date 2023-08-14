@@ -97,12 +97,14 @@ export class YearOverYearExpression {
         } else {
             throw new Error("WHERE clause must contain AND or OR")
         }
-        if (this.engine === 'athena') {
+        if (!where2.includes("AND")) {
             where2 = where2.slice(0, -1)
+        }
+        if (!where1.endsWith(")")) {
             where1+=")"
-            console.log("pre formattedSumQueries", formattedSumQueries)
+        }
+        if (this.engine === 'athena') {
             formattedSumQueries=formattedSumQueries.slice(0, -1)
-            console.log("post formattedSumQueries", formattedSumQueries)
         }
         return [formattedSumQueries, fromQuery, where1, where2];
     }
@@ -127,7 +129,7 @@ export class YearOverYearExpression {
                 }
                 formattedColumnQueries = columnNames
                     .filter((value, index, self) => self.indexOf(value) === index)
-                    .map(i => `curr.${i} AS \`${i}\`,`).join(' ');
+                    .map(i => `COALESCE(curr.${i}, prev.${i}) AS \`${i}\`,`).join(' ');
         
                 while ((sumMatch = sumPattern.exec(this.queries[1])) !== null) {
                     sumColumnNames.push(sumMatch[1] || sumMatch[2]);

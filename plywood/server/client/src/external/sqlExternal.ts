@@ -159,12 +159,6 @@ export abstract class SQLExternal extends External {
             .join(', '),
           from,
         );
-        if (sort) {
-          query.push(sort.getSQL(dialect));
-        }
-        if (limit) {
-          query.push(limit.getSQL(dialect));
-        }
         break;
       case 'value':
         query.push(this.toValueApply().getSQL(dialect), from, dialect.constantGroupBy());
@@ -204,25 +198,24 @@ export abstract class SQLExternal extends External {
         if (!this.havingFilter.equals(Expression.TRUE)) {
           query.push('HAVING ' + this.havingFilter.getSQL(dialect));
         }
-        if (sort) {
-          query.push(sort.getSQL(dialect));
-        }
-        if (limit) {
-          query.push(limit.getSQL(dialect));
-        }
         inflaters = getSplitInflaters(split);
         break;
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-    if (YearOverYearExpression.isYoyQuery(query[1])) {
+    const isYoyQuery = YearOverYearExpression.isYoyQuery(query[1]); // first pushed query string is always SELECT
+    if (isYoyQuery) {
       let yoyExpression = new YearOverYearExpression(engine, query, mode);
-      query = yoyExpression.getQuery();
-    } else {
-      query = this.sqlToQuery(query.join('\n'));
+      query = [yoyExpression.getQuery()];
+    }
+    if (sort) {
+      query.push(sort.getSQL(dialect));
+    }
+    if (limit) {
+      query.push(limit.getSQL(dialect));
     }
     return {
-      query,
+      query: this.sqlToQuery(query.join('\n')),
       postTransform:
         postTransform ||
         External.postTransformFactory(inflaters, selectedAttributes, keys, zeroTotalApplies),

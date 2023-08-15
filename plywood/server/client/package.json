@@ -48,7 +48,7 @@
   "scripts": {
     "watch": "nodemon",
     "prepare": "./compile && tdi -q",
-    "build": "./compile && tdi -q",
+    "build": "./compile && tdi -q && echo \"Plywood Client Built!\"",
     "compile": "./compile",
     "pretest": "./compile",
     "test": "./travis-test",

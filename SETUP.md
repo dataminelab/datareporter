@@ -145,6 +145,7 @@ visit http://localhost:8080/ instead of using port 5050
 To run Python debugger:
 docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
 
+To log messages to/from Plywood add to the Plywood env (in docker-compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
 
 ### Docker installation issues
 

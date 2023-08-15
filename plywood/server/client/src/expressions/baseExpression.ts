@@ -313,13 +313,19 @@ function getString(param: string | Expression): string {
   if (param instanceof RefExpression && param.nest === 0) {
     return param.name;
   }
+  if (typeof param === 'object' && param !== null) {
+    return param.toString();
+  }
   throw new Error('could not extract a string out of ' + String(param));
 }
 
-function getNumber(param: number | Expression): number {
+function getNumber(param: number | Expression | Duration): number {
   if (typeof param === 'number') return param;
   if (param instanceof LiteralExpression && param.type === 'NUMBER') {
     return param.value;
+  }
+  if (param instanceof Duration && param.spans) {
+    return parseInt(param.spans.year.toString());
   }
   throw new Error('could not extract a number out of ' + String(param));
 }

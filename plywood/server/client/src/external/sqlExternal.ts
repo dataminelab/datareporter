@@ -102,7 +102,8 @@ export abstract class SQLExternal extends External {
 
   public getQueryAndPostTransform(): QueryAndPostTransform<string> {
     const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, engine } = this;
-
+    console.log("derivedAttributes", derivedAttributes)
+    console.log("this is this and I need params", this)
     let query = [];
     if (withQuery) {
       query.push(`WITH __with__ AS (${withQuery})\n`);
@@ -114,6 +115,7 @@ export abstract class SQLExternal extends External {
     let inflaters: Inflater[] = [];
     let keys: string[] = null;
     let zeroTotalApplies: ApplyExpression[] = null;
+    let split;
 
     let from = this.getFrom();
 
@@ -181,7 +183,7 @@ export abstract class SQLExternal extends External {
         );
         break;
       case 'split':
-        let split = this.getQuerySplit();
+        split = this.getQuerySplit();
         keys = split.mapSplits(name => name);
         query.push(
           split
@@ -203,10 +205,33 @@ export abstract class SQLExternal extends External {
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
+    const avaiableKeys = selectedAttributes.map(a => a.name);
+    //  selectedAttributes after map [
+    //     'country',
+    //     'item_price',
+    //     '_previous__item_price',
+    //     'item_shipping',
+    //     '_previous__item_shipping',
+    //     '_delta__item_price',
+    //     '_delta__item_shipping'
+    //   ]
+    console.log("previous query", this.sqlToQuery(query.join('\n')))
     const isYoyQuery = YearOverYearExpression.isYoyQuery(query[1]); // first pushed query string is always SELECT
     if (isYoyQuery) {
       let yoyExpression = new YearOverYearExpression(engine, query, mode);
-      query = [yoyExpression.getQuery()];
+      yoyExpression.setKeys(keys)
+      if (split) {
+        yoyExpression.setGroupBy(
+          (this.capability('shortcut-group-by')
+            ? split.getShortGroupBySQL()
+            : split.getGroupBySQL(dialect)
+          ).join(',')
+        );
+      }
+      yoyExpression.process()
+      query = [
+        yoyExpression.getQuery()
+      ];
     }
     if (sort) {
       query.push(sort.getSQL(dialect));
@@ -214,6 +239,8 @@ export abstract class SQLExternal extends External {
     if (limit) {
       query.push(limit.getSQL(dialect));
     }
+    console.log("query", this.sqlToQuery(query.join('\n')))
+    //console.log("keys", keys)
     return {
       query: this.sqlToQuery(query.join('\n')),
       postTransform:

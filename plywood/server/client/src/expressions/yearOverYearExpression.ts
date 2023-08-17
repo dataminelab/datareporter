@@ -14,11 +14,15 @@ import { SplitExpression } from './splitExpression';
 
 export class YearOverYearExpression {
     static op = 'YearOverYear';
-    queries: string[];
+    queries: string[] = [];
     engine: string;
     mode: string;
     query: string;
     type: string;
+    columns: string[] = [];
+    sumColumns: string[] = [];
+    keys: string[] = [];
+    groupBy: string;
 
     constructor(engine?: string, queries?: string[], mode?: string) {
         if (engine) {
@@ -30,10 +34,10 @@ export class YearOverYearExpression {
         if (mode) {
             this.setMode(mode);
         }
-        this._checkExpressionTypes('DATASET');
+        this._setExpressionTypes('DATASET');
     }
 
-    private _checkExpressionTypes(arg0: string) {
+    private _setExpressionTypes(arg0: string) {
         this.type = arg0;
     }
 
@@ -46,6 +50,10 @@ export class YearOverYearExpression {
 
     public setMode(mode: string) {
         this.mode = mode;
+    }
+
+    public setKeys(keys: string[]) {
+        this.keys = keys
     }
 
     public calc(datum: Datum): PlywoodValue {
@@ -62,6 +70,18 @@ export class YearOverYearExpression {
 
     public getFn(): ComputeFn {
         return null;
+    }
+
+    private setQuery(query: string) {
+        this.query = query;
+    }
+
+    private delQuery() {
+        delete this.query;
+    }
+
+    public getQuery() {
+        return this.query
     }
 
     public toString(indent?: int): string {
@@ -109,52 +129,55 @@ export class YearOverYearExpression {
         return [formattedSumQueries, fromQuery, where1, where2];
     }
 
+    public setGroupBy(groupBy: string) {
+        this.groupBy = groupBy;
+    }
 
-    public getQuery(): any {
+    public process() {
         const sumPattern = /SUM\([`",']([^`",']*)[`",']\)/g;
         const columnPattern = /[`",']([^`",']*)[`",']\sAS/g;
         var formattedSumQueries: string;
         var formattedColumnQueries: string;
         let sumMatch;
         let columnMatch;
-        let uniqueColumnMatches;
-        let sumColumnNames = [];  
-        let columnNames = [];
         switch (this.mode) {
             case "raw":
                 break;
             case "split":
-                while ((columnMatch = columnPattern.exec(this.queries[1])) !== null) {
-                    columnNames.push(columnMatch[1] || columnMatch[2]);
+                if (!this.keys.length) {
+                    while ((columnMatch = columnPattern.exec(this.queries[1])) !== null) {
+                        this.keys.push(columnMatch[1] || columnMatch[2]);
+                    }
                 }
-                formattedColumnQueries = columnNames
+                // console.log("this.keys", this.keys)
+                formattedColumnQueries = this.keys
                     .filter((value, index, self) => self.indexOf(value) === index)
-                    .map(i => `COALESCE(curr.${i}, prev.${i}) AS \`${i}\`,`).join(' ');
-        
+                    .map(i => `COALESCE(curr.${i}, prev.${i}) AS \`${i}\`,`).join(' ');        
                 while ((sumMatch = sumPattern.exec(this.queries[1])) !== null) {
-                    sumColumnNames.push(sumMatch[1] || sumMatch[2]);
+                    this.sumColumns.push(sumMatch[1] || sumMatch[2]);
                 }
-                uniqueColumnMatches = sumColumnNames
-                    .filter((value, index, self) => self.indexOf(value) === index);
-                formattedSumQueries = uniqueColumnMatches
-                    .map(i => `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`)
-                    .join(' ');
-
-                var [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(formattedSumQueries);
+                var [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(
+                    this.sumColumns
+                        .filter((value, index, self) => self.indexOf(value) === index)
+                        .map(i => `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`)
+                        .join(' ')
+                );
+                const onQuery = this.keys.length ? `curr.${this.keys[0]} = prev.${this.keys[0]}` : "1=1";
                 this.query = `
                     SELECT ${formattedColumnQueries} ${formattedSumQueries}
-                    FROM ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where1} GROUP BY ${columnNames[0]}) AS curr
-                    FULL OUTER JOIN ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where2} GROUP BY ${columnNames[0]}) AS prev
-                    ON curr.${columnNames[0]} = prev.${columnNames[0]}
+                    FROM ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where1} GROUP BY ${this.groupBy}) AS curr
+                    FULL OUTER JOIN ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where2} GROUP BY ${this.groupBy}) AS prev
+                    ON ${onQuery}
                 `
                 break;
             case "total":
                 let match;
+                console.log("this.sumColumns", this.sumColumns)
                 while ((match = sumPattern.exec(this.queries[1])) !== null) {
                     const columnName = match[1] || match[2];
-                    sumColumnNames.push(columnName);
+                    this.sumColumns.push(columnName);
                 }                
-                formattedSumQueries = sumColumnNames
+                formattedSumQueries = this.sumColumns
                     .filter((value, index, self) => {
                         return self.indexOf(value) === index;
                     })
@@ -173,7 +196,14 @@ export class YearOverYearExpression {
             default:
                 throw new Error("Invalid mode");
         }
+        if (this.engine==="bigquery") {
+        this.setQuery(
+            this.query
+            .replace(/DATETIME_ADD\(([^,]+),\s*INTERVAL\s*(\d+)\s*YEAR\)/g, "TIMESTAMP(DATE_ADD(DATE($1), INTERVAL $2 YEAR))")
+            )
+        } else if (this.engine==="bigquery") {
+            this.setQuery(this.query)
+        }
         this.fixEscapeNames();
-        return this.query
     }
 }

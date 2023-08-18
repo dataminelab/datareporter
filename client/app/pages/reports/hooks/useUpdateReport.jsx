@@ -68,6 +68,9 @@ function doSaveReport(data, { canOverwrite = false } = {}) {
       let message = get(error, "response.data.message")
       return Promise.reject(new SaveReportError(message));
     }
+    if (error.name == "TypeError") {
+      return Promise.reject();
+    }
     return Promise.reject(new SaveReportError("Report could not be saved"));
   });
 }

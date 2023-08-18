@@ -196,14 +196,7 @@ export class YearOverYearExpression {
             default:
                 throw new Error("Invalid mode");
         }
-        if (this.engine==="bigquery") {
-        this.setQuery(
-            this.query
-            .replace(/DATETIME_ADD\(([^,]+),\s*INTERVAL\s*(\d+)\s*YEAR\)/g, "TIMESTAMP(DATE_ADD(DATE($1), INTERVAL $2 YEAR))")
-            )
-        } else if (this.engine==="bigquery") {
-            this.setQuery(this.query)
-        }
+        this.setQuery(this.query)
         this.fixEscapeNames();
     }
 }

@@ -144,7 +144,7 @@ export class BigQueryDialect extends SQLDialect {
     if (step === 0) return operand;
 
     // https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime_add
-    let sqlFn = step > 0 ? 'TIMESTAMP(DATE_ADD(DATE(' : 'TIMESTAMP(DATE_ADD(DATE(';
+    let sqlFn = step > 0 ? 'TIMESTAMP(DATE_ADD(DATE(' : 'TIMESTAMP(DATE_SUB(DATE(';
     let spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
       operand = sqlFn + operand + "), INTERVAL " + String(spans.week) + " WEEK))";

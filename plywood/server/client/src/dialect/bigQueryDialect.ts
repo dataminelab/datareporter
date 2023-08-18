@@ -144,34 +144,34 @@ export class BigQueryDialect extends SQLDialect {
     if (step === 0) return operand;
 
     // https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime_add
-    let sqlFn = step > 0 ? 'DATETIME_ADD(' : 'DATETIME_SUB(';
+    let sqlFn = step > 0 ? 'TIMESTAMP(DATE_ADD(DATE(' : 'TIMESTAMP(DATE_ADD(DATE(';
     let spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
-      operand = sqlFn + operand + ', INTERVAL ' + String(spans.week) + ' WEEK)';
+      operand = sqlFn + operand + "), INTERVAL " + String(spans.week) + " WEEK))";
     }
     if (spans.month) {
       let expr = String(spans.month);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " MONTH)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " MONTH))";
     }
     if (spans.year) {
       let expr = String(spans.year);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " YEAR)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " YEAR))";
     }
     if (spans.day) {
       let expr = String(spans.day);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " DAY)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " DAY))";
     }
     if (spans.hour) {
       let expr = String(spans.hour);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " HOUR)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " HOUR))";
     }
     if (spans.minute) {
       let expr = String(spans.minute);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " MINUTE)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " MINUTE))";
     }
     if (spans.second) {
       let expr = spans.second;
-      operand = sqlFn + operand + ", INTERVAL " + expr + " SECOND)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " SECOND))";
     }
     return operand;
   }

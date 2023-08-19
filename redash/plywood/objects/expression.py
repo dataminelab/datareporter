@@ -186,33 +186,25 @@ class Expression:
         r = [*self.queries[0:len(self.queries) - 1], *res, false_query]
         return r
 
-    def _get_string_queries(self, last_query, prev_result):
+    def _get_string_queries(self, last_query: str, prev_result: object) -> list:
         second_result = prev_result[1]
-        column_name = self.filter["splits"][0]["dimension"]
-        some_column_name = f'some_{column_name}'
-
-        two_splits_queries = []
         if "job" in second_result and second_result["job"]["error"]:
             return abort(400, message=second_result["job"]["error"])
-
+        for i in self.filter["splits"]:
+            column_name = i["dimension"]
+            some_column_name = f'some_{column_name}'
+            if some_column_name in last_query:
+                break
+        two_splits_queries = []
         if some_column_name not in last_query:
-            if self._is_last_query_boolean_false(last_query):
-                # this line can be removed after plywood query fix
-                prev_query = second_result['query_result']['query']
-                last_query = self.get_where_statement(last_query, prev_query, column_name, some_column_name)
-            else:
-                raise Exception(f'{some_column_name} is not present in query')
+            raise Exception(f'{some_column_name} is not present in query')
 
         for row in second_result['query_result']['data']['rows']:
             value = row[column_name]
             if value is None:
-                value = self._data_cube.null_value
                 query = last_query.replace(f"='{some_column_name}'", f" {self._data_cube.null_value}")
             else:
-                if self._data_cube.ply_engine == 'bigquery':
-                    query = last_query.replace(f"'{some_column_name}'", f'"{value}"')
-                else:
-                    query = last_query.replace(some_column_name, value)
+                query = last_query.replace(some_column_name, value)
             two_splits_queries.append(query)
         return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]
 
@@ -259,6 +251,6 @@ class Expression:
         last_query: str = queries[len(queries) - 1]
 
         if self._is_last_query_boolean(last_query):
-            return self._get_boolean_queries(last_query=last_query)
+            return self._get_boolean_queries(last_query)
         else:
-            return self._get_string_queries(last_query=last_query, prev_result=prev_result)
+            return self._get_string_queries(last_query, prev_result)

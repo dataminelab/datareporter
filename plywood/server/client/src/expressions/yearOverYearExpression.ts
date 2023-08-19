@@ -111,17 +111,30 @@ export class YearOverYearExpression {
         //@ts-ignore
         const [fromQuery, whereQuery] = this.queries[2].split("WHERE");
         if (whereQuery.includes("OR")) {
-            var [where1, where2] = whereQuery.split(" OR ");
+            var [where1, where2, ...theRest] = whereQuery.split(" OR ");
         } else if (whereQuery.includes("AND")) {
-            var [where1, where2] = whereQuery.split(" AND ");
+            var [where1, where2, ...theRest] = whereQuery.split(" AND ");
         } else {
             throw new Error("WHERE clause must contain AND or OR")
         }
         if (!where2.includes("AND")) {
             where2 = where2.slice(0, -1)
         }
-        if (!where1.endsWith(")")) {
+        theRest.forEach((item) => {
+            where1 += " AND " + item;
+            where2 += " AND " + item;
+        });
+        while (where1.split("(").length > where1.split(")").length) {
             where1+=")"
+        }
+        while (where1.split(")").length > where1.split("(").length) {
+            where1="("+where1
+        }
+        while (where2.split("(").length > where2.split(")").length) {
+            where2+=")"
+        }
+        while (where2.split(")").length > where2.split("(").length) {
+            where2="("+where2
         }
         if (this.engine === 'athena') {
             formattedSumQueries=formattedSumQueries.slice(0, -1)

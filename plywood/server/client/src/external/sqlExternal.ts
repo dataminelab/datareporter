@@ -102,8 +102,6 @@ export abstract class SQLExternal extends External {
 
   public getQueryAndPostTransform(): QueryAndPostTransform<string> {
     const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, engine } = this;
-    console.log("derivedAttributes", derivedAttributes)
-    console.log("this is this and I need params", this)
     let query = [];
     if (withQuery) {
       query.push(`WITH __with__ AS (${withQuery})\n`);
@@ -205,7 +203,7 @@ export abstract class SQLExternal extends External {
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-    const avaiableKeys = selectedAttributes.map(a => a.name);
+    const avaiableKeys = selectedAttributes?.map(a => a.name);
     //  selectedAttributes after map [
     //     'country',
     //     'item_price',

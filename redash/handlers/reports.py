@@ -22,7 +22,7 @@ from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expr
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
-
+from redash.settings import REDASH_DEBUG
 HASH = "hash"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
@@ -57,7 +57,10 @@ class ReportGenerateResource(BaseResource):
             result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=bypass_cache)
             return result.serialized()
         except ExpressionNotSupported as err:
-            abort(400, message=err.message)
+            if REDASH_DEBUG:
+                abort(400, message=err.message)
+            else:
+                abort(400, message="An error occurred while generating the report. Please contact support.")
 
 
 # /api/reports

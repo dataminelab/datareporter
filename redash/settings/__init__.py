@@ -528,3 +528,5 @@ MAILCHIMP_SERVER = os.environ.get("MAILCHIMP_SERVER")
 MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY")
 
 MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
+
+REDASH_DEBUG = parse_boolean(os.environ.get("REDASH_DEBUG", "False"))

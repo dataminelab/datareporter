@@ -86,10 +86,10 @@ class PlywoodQueryParserV2:
             else:
                 if columns[0]['name'] == '__VALUE__':
                     row_value = row.get('__VALUE__', 0)
-                    res[key] = float(row_value) if _type == "NUMBER" else row_value
                 else:
                     row_value = row.get(key, 0)
-                    res[key] = float(row_value) if _type == "NUMBER" else row_value
+                res[key] = float(row_value) if _type == "NUMBER" and row_value else (row_value if row_value else 0)
+
             
         return res
 

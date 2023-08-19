@@ -77,22 +77,20 @@ class PlywoodQueryParserV2:
 
         for value in attributes:
             key = value['name']
+            _type = value['type']
 
             row = pydash.head(rows)
-
             if PlywoodQueryParserV2._contains_time_shift(columns):
-                res[key] = row[key]
+                row_value = row.get(key, 0)
+                res[key] = float(row_value) if _type == "NUMBER" else row_value
             else:
                 if columns[0]['name'] == '__VALUE__':
-                    if row is None:
-                        res[key] = 0
-                    else:
-                        row_value = row.get('__VALUE__', 0)
-                        res[key] = row_value if row_value else 0
+                    row_value = row.get('__VALUE__', 0)
+                    res[key] = float(row_value) if _type == "NUMBER" else row_value
                 else:
                     row_value = row.get(key, 0)
-                    res[key] = row_value if row_value else 0
-
+                    res[key] = float(row_value) if _type == "NUMBER" else row_value
+            
         return res
 
     def _get_first_split(self):

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import useUpdateReport from "./useUpdateReport";
 import useSaveReport from "./useSaveReport";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
+import { Report } from "@/services/report";
 
 export default function useReport(originalReport) {
   const [report, setReport] = useState(originalReport);
@@ -29,6 +30,19 @@ export default function useReport(originalReport) {
     useSaveReport(data);
   };
 
+  const doDeleteReport = (report) => {
+    // use this for delete submissions
+    return Report.delete({ id: report.id })
+      .then(() => {
+        notification.success("Report Deleted.");
+        return extend(report.clone(), { is_archived: true, schedule: null });
+      })
+      .catch(error => {
+        notification.error("Report could not be deleted.");
+        return Promise.reject(error);
+      });
+  }
+
   return useMemo(
     () => ({
       report,
@@ -36,6 +50,7 @@ export default function useReport(originalReport) {
       isDirty: report.report !== originalReportSource,
       saveReport: () => updateReport(),
       saveAsReport: (name) => saveAsReport(name),
+      deleteReport: (report) => doDeleteReport(report),
     }),
     [report, originalReportSource, updateReport]
   );

@@ -65,6 +65,12 @@ class ReportsList extends React.Component {
           <a className="table-main-title" href={"reports/" + item.id + '/source#' + item.report}>
             {item.name}
           </a>
+          <QueryTagsControl
+            className="d-block"
+            tags={item.tags}
+            isDraft={item.is_draft}
+            isArchived={item.is_archived}
+          />
         </React.Fragment>
       ),
       {

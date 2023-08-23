@@ -80,9 +80,17 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     color_2 = Column(db.String(length=32))
 
     version = Column(db.Integer)
+    is_archived = Column(db.Boolean, default=False, index=True)
 
     __tablename__ = "reports"
     __mapper_args__ = {"version_id_col": version}
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+    def archive(self):
+        db.session.add(self)
+        self.is_archived = True
 
     @classmethod
     def get_by_id(cls, _id):
@@ -100,9 +108,6 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     def hash(self):
         return ExpressionBase64Parser.parse_dict_to_base64(self.expression)
 
-    def __str__(self):
-        return self.name
-
     @classmethod
     def all(self, org, groups_ids, user_id):
         return self.query.filter(
@@ -119,6 +124,23 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         return self.all(org, groups_ids, user_id).filter(
             self.name.ilike("%{}%".format(search_term))
         )
+        
+    @classmethod
+    def search_archived_reports(
+        self,
+        term,
+        org,
+        group_ids,
+        user_id=None,
+        include_drafts=False,
+        limit=None,
+        multi_byte_search=False,
+    ):
+        if term:
+            archives = self.search(org, group_ids, user_id, term)
+        else:
+            archives = self.all(org, group_ids, user_id)
+        return archives.filter(Report.is_archived.is_(True))
 
     @classmethod
     def favorites(self, user, base_query=None):
@@ -132,7 +154,11 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
                     Favorite.object_id == Report.id,
                 ),
             )
-        ).filter(Favorite.user_id == user.id)
+        ).filter(
+            Favorite.user_id == user.id
+        ).filter(
+            Report.is_archived.is_(False)
+        )
 
     @classmethod
     def is_favorite(cls, user, object):

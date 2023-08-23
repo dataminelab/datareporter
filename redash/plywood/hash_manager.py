@@ -245,6 +245,7 @@ def hash_report(o, can_edit):
             "isAdmin": is_admin(o.user),
         },
         "is_favorite": is_favorite,
+        "is_archived": o.is_archived,
         "isJustLanded": True,
         "appSettings": {
             "dataCubes": [data_cube.data_cube],

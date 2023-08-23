@@ -89,6 +89,7 @@ from redash.handlers.reports import (
     ReportResource,
     ReportFilter,
     ReportFavoriteListResource,
+    ReportsArchiveResource
 )
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
@@ -357,9 +358,10 @@ api.add_org_resource(DataSourceModelsResource, "/api/data_sources/<int:data_sour
 api.add_org_resource(ReportFilter, "/api/reports/generate/<int:model_id>/filter", endpoint="report_model_filter")
 api.add_org_resource(ReportGenerateResource, "/api/reports/generate/<int:model_id>", endpoint="report_model")
 
-api.add_org_resource(ReportsListResource, "/api/reports", endpoint="reports")
-
 api.add_org_resource(ReportResource, "/api/reports/<int:report_id>", endpoint="report")
+
+api.add_org_resource(ReportsListResource, "/api/reports", endpoint="reports")
+api.add_org_resource(ReportsArchiveResource, "/api/reports/archive", endpoint="reports_archive")
 
 api.add_org_resource(
     ReportFavoriteResource,

@@ -36,16 +36,6 @@ export default function DesktopNavbar() {
     window.location.reload();
   }
 
-  const handleNewReportButton = (event) => {
-    event.preventDefault();
-    window.location.hash = "#";
-    if (window.location.pathname !== "/reports/new") {
-      window.location.pathname = "/reports/new";
-    } else {
-      window.location.reload();
-    }
-  }
-
   return (
     <div className="desktop-navbar-report">
       <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-logo">
@@ -132,7 +122,7 @@ export default function DesktopNavbar() {
             )}
             {canCreateQuery && (
               <Menu.Item key="new-report">
-                <a href="reports/new" onClick={handleNewReportButton} data-test="CreateReportMenuItem">
+                <a href="reports/new" data-test="CreateReportMenuItem">
                   New Report
                 </a>
               </Menu.Item>

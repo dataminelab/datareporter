@@ -411,9 +411,17 @@ const ReportService = {
   get: data => axios.get("api/reports/" + data.id).then(getReport),
   save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
   saveAs: data => axios.post("api/reports", data).then(getReport),
-  delete: data => axios.delete(`api/reports/${data.id}`),
+  delete: data => axios.delete(`api/reports/${data.id}`)
+    .then(() => {
+      window.location.href = '/reports';
+    }),
   recent: params => axios.get(`api/reports/recent`, { params }).then(data => map(data, getReport)),
-  archive: params => axios.get(`api/reports/archive`, { params }).then(mapResults),
+  archive: params => axios.get(`api/reports/archive`, { params })
+    .then(mapResults),
+  archiveReport: params => axios.delete(`api/reports/archive`, { params })
+    .then(() => {
+      window.location.href = '/reports/archive';
+    }),
   myReports: params => axios.get("api/reports/my", { params }).then(mapResults),
   fork: ({ id }) => axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
   resultById: data => axios.get(`api/reports/${data.id}/results.json`),

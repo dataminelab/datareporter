@@ -24,6 +24,7 @@ def _serialize_report(report: Report, formatting):
         "expression": expression,
         "created_at": report.created_at,
         "updated_at": report.updated_at,
+        "is_archived": report.is_archived,
         "user": {
             "name":report.user.name
         }

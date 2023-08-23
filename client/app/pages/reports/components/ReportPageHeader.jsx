@@ -93,7 +93,7 @@ export default function ReportPageHeader(props) {
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
   const reportFlags = useReportFlags(props.report, dataSource);
   const [currentHash, setCurrentHash] = useState(null);
-  const { report, setReport, saveReport, saveAsReport } = useReport(props.report);
+  const { report, setReport, saveReport, saveAsReport, deleteReport } = useReport(props.report);
   const updateColors = useColorsReport(report, props.onChange);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
@@ -117,6 +117,7 @@ export default function ReportPageHeader(props) {
   const handleNewNameChange = (event) => {
     setNewName(event.target.value);
   }
+  // delete spesific color
   const styles = reactCSS({
     default: {
       color: {
@@ -171,15 +172,15 @@ export default function ReportPageHeader(props) {
       },
     },
   });
-
+  // delete
   const handleClick = type => {
     setDisplayColorPicker(type);
   };
-
+  // delete
   const handleClose = () => {
     setDisplayColorPicker(0);
   };
-
+  // delete
   const handleColorChange = useCallback(
     (color, type, successMessage) => {
       if (!color.rgb && color.startsWith("#")) {
@@ -311,6 +312,16 @@ export default function ReportPageHeader(props) {
         document.getElementById(id).style["z-index"] = "10";
       }
     } catch {console.warn("price modal doesnt exist on this page.")}
+  }
+
+  const handleDeleteReport = () => {
+    const report = props.report;
+    if (report.id) {
+      recordEvent("delete", "report", report.id, { name: report.name });
+      deleteReport(report);
+    } else {
+      props.onChange(null);
+    }
   }
 
   const handleSaveReport = (save_as) => {
@@ -446,11 +457,11 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     if (modelsLoaded && !selectedModel) {
       if (models.length) {
-        handleModelChange(models[0].id);      
+        handleModelChange(models[0].id);
         replaceHash(models[0], window.location.hash.split("/4/")[1]);
       }
     }
-  }, [modelsLoaded]);  
+  }, [modelsLoaded]);
 
   return (
     <div className="report-page-header">
@@ -487,7 +498,7 @@ export default function ReportPageHeader(props) {
             </li>
           </ul>
         </div>
-        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
+        {/* <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
           <span className="icon icon-save-floppy-disc m-r-5"></span>
           <span style={styles.colorSpanElement}>Text chart color:</span>
           <div style={styles.color} />
@@ -496,7 +507,7 @@ export default function ReportPageHeader(props) {
           <span className="icon icon-save-floppy-disc m-r-5"></span>
           <span style={styles.colorSpanElement}>Chart color:</span>
           <div style={styles.colorBody} />
-        </Button>
+        </Button> */}
         {displayColorPicker === 1 ? (
           <div style={styles.popover}>
             <div style={styles.cover} onClick={handleClose} />
@@ -552,13 +563,18 @@ export default function ReportPageHeader(props) {
             ))}
           </Select>
         </div>
-        {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
-          <Button className="m-r-5" onClick={publishReport}>
-            <i className="fa fa-paper-plane m-r-5" /> Publish
+        {isDesktop && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
+            <Button className="m-r-5" onClick={archiveReport}>
+              <i className="fa fa-paper-plane m-r-5" /> Archive
+            </Button>
+        )}
+        {!queryFlags.isNew && queryFlags.canEdit && (
+          <Button className="m-r-5" onClick={handleDeleteReport}>
+            <i className="fa fa-trash m-r-5" /> Delete
           </Button>
         )}
 
-        {!queryFlags.isNew && queryFlags.canViewSource && (
+        {!queryFlags.isNew && (
           <span>
             {!props.sourceMode && (
               <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>

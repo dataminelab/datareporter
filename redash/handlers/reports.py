@@ -63,6 +63,59 @@ class ReportGenerateResource(BaseResource):
                 abort(400, message="An error occurred while generating the report. Please contact support.")
 
 
+# /api/reports/archive
+class ReportsArchiveResource(BaseResource):
+    def get(self):
+        search_term = request.args.get("q")
+        archives = Report.search_archived_reports(
+            search_term,
+            self.current_user.group_ids,
+            self.current_org,
+            self.current_user.id,
+            include_drafts=False,
+            multi_byte_search=self.current_org.get_setting("multi_byte_search_enabled"),
+        )
+        page = request.args.get("page", 1, type=int)
+        page_size = request.args.get("page_size", 25, type=int)
+        response = paginate(archives, page, page_size, ReportSerializer)
+        self.record_event(
+            {
+                "action": "load_archives",
+                "object_type": "report",
+                "params": {
+                    "q": search_term,
+                    "tags": request.args.getlist("tags"),
+                    "page": page,
+                },
+            }
+        )
+
+        return response
+
+    def delete(self):
+        """ 
+            Archives a report. 
+        """
+        report_id = request.args.get("id")
+        if not report_id:
+            abort(400, message="Missing report id")
+        report_id = int(report_id)
+
+        report = get_object_or_404(Report.get_by_id, report_id)
+
+        require_object_delete_permission(report, self.current_user)
+
+        report.archive()
+        models.db.session.commit()
+
+        self.record_event({
+            "action": "archive",
+            "object_id": report.id,
+            "object_type": "report",
+        })
+
+        return make_response("", 204)
+
 # /api/reports
 class ReportsListResource(BaseResource):
     @require_permission("create_report")
@@ -100,7 +153,11 @@ class ReportsListResource(BaseResource):
 
     @require_permission("view_report")
     def get(self):
-        reports = Report.get_by_user(self.current_user)
+        reports = Report.get_by_user(
+            self.current_user
+        ).filter(
+            Report.is_archived.is_(False)
+        )
 
         formatting = request.args.get("format", "base64")
 
@@ -123,6 +180,21 @@ class ReportsListResource(BaseResource):
         })
         return response
 
+    def delete(self, report_id):
+        report = get_object_or_404(Report.get_by_id, report_id)
+
+        require_object_delete_permission(report, self.current_user)
+
+        report.archive()
+        models.db.session.commit()
+
+        self.record_event({
+            "action": "archive",
+            "object_id": report.id,
+            "object_type": "report",
+        })
+
+        return make_response("", 204)
 
 # /api/reports/<int:report_id>
 class ReportResource(BaseResource):

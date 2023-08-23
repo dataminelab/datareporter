@@ -1,5 +1,5 @@
-#docker stop datareporter-server-1
-#docker stop datareporter-postgres-1
+docker stop datareporter-postgres-1
+docker stop datareporter-server-1
 docker rm datareporter-server-1
 docker rm datareporter-postgres-1
 docker rmi datareporter-server

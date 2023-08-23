@@ -1,9 +1,7 @@
-import json
 import logging
 from flask import render_template
 
 from redash import settings
-from redash.gcloud import pubsub
 from redash.tasks import send_mail
 from redash.utils import base_url
 

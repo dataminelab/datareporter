@@ -1,17 +1,13 @@
 import errno
 import os
 import signal
-import time
 from redash import statsd_client
 from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
 from rq.utils import utcnow
 from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
 from rq.job import Job as BaseJob, JobStatus
 
-import base64
-import json
 import logging
-from google.cloud import pubsub_v1
 
 from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID
 
@@ -33,7 +29,7 @@ class CancellableJob(BaseJob):
 
 
 class PubsubTask(BaseQueue):
-    publisher = pubsub_v1.PublisherClient()
+    publisher = None
 
     def enqueue_job(self, *args, **kwargs):
         self.send_message_to_topic(self.name)
@@ -44,7 +40,9 @@ class PubsubTask(BaseQueue):
         if not GOOGLE_PUBSUB_WORKER_TOPIC_ID:
             logger.debug("skipping send message to pub sub")
             return None
-
+        if self.publisher is None:
+            from google.cloud import pubsub_v1
+            self.publisher = pubsub_v1.PublisherClient()
         # Data must be a bytestring
         data = message.encode("utf-8")
         # When you publish a message, the client returns a future.

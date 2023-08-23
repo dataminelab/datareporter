@@ -14,7 +14,6 @@ from redash.worker import job, get_job_logger
 from redash.monitor import rq_job_ids
 
 from .execution import enqueue_query
-from ...gcloud import pubsub
 
 logger = get_job_logger(__name__)
 

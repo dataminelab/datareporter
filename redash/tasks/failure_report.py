@@ -1,9 +1,8 @@
 import datetime
-import json
 import re
 from collections import Counter
 
-from redash.gcloud import pubsub
+
 from redash.tasks.general import send_mail
 from redash import redis_connection, settings, models
 from redash.utils import json_dumps, json_loads, base_url, render_template

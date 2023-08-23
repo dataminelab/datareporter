@@ -8,7 +8,6 @@ from funcy import project
 from sqlalchemy.exc import IntegrityError
 
 from redash import models
-from redash.gcloud import pubsub
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
 from redash.models import DataSource
 from redash.models.models import Model

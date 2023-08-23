@@ -3,7 +3,6 @@ import json
 from flask_restful import abort
 from flask import request
 from redash import models, redis_connection
-from redash.gcloud import pubsub
 from redash.handlers.base import BaseResource, get_object_or_404
 from redash.permissions import (
     require_access,

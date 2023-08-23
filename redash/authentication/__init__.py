@@ -1,6 +1,4 @@
 import hashlib
-import hmac
-import json
 import logging
 import time
 from urllib.parse import urlsplit, urlunsplit
@@ -8,9 +6,7 @@ from urllib.parse import urlsplit, urlunsplit
 from flask import jsonify, redirect, request, url_for
 from flask_login import LoginManager, login_user, logout_user, user_logged_in
 from redash import models, settings
-from redash.authentication import jwt_auth
 from redash.authentication.org_resolving import current_org
-from redash.gcloud import pubsub
 from redash.settings.organization import settings as org_settings
 from redash.tasks import record_event
 from sqlalchemy.orm.exc import NoResultFound
@@ -37,6 +33,7 @@ def sign(key, path, expires):
     if not key:
         return None
 
+    import hmac
     h = hmac.new(key.encode(), msg=path.encode(), digestmod=hashlib.sha1)
     h.update(str(expires).encode())
 
@@ -65,6 +62,7 @@ def load_user(user_id_with_identity):
 def request_loader(request):
     user = None
     if settings.AUTH_TYPE == "hmac":
+        import hmac
         user = hmac_load_user_from_request(request)
     elif settings.AUTH_TYPE == "api_key":
         user = api_key_load_user_from_request(request)
@@ -74,6 +72,7 @@ def request_loader(request):
                 settings.AUTH_TYPE
             )
         )
+        import hmac
         user = hmac_load_user_from_request(request)
 
     if org_settings["auth_jwt_login_enabled"] and user is None:
@@ -180,6 +179,7 @@ def jwt_token_load_user_from_request(request):
         return None
 
     if jwt_token:
+        from redash.authentication import jwt_auth
         payload, token_is_valid = jwt_auth.verify_jwt_token(
             jwt_token,
             expected_issuer=org_settings["auth_jwt_auth_issuer"],

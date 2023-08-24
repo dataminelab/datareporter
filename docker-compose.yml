@@ -19,7 +19,7 @@ x-redash-environment: &redash-environment
   MAILCHIMP_SERVER: "us1"
   MAILCHIMP_API_KEY: "e4c804be8fbd3c445a0fef9d05b6fc27"
   MAILCHIMP_LIST_ID: "e48180787b"
-  REDASH_DEBUG: False
+  REDASH_DEBUG: "false"
 services:
   server:
     <<: *redash-service
@@ -35,7 +35,7 @@ services:
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
     volumes:
-      - ./logs:/app/logs/
+      - .:/app
   scheduler:
     <<: *redash-service
     command: dev_scheduler

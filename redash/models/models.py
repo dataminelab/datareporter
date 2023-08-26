@@ -1,8 +1,11 @@
 from . import TimestampMixin, ChangeTrackingMixin, User, DataSource
 from .base import db, primary_key, Column, key_type, gfk_type
-from sqlalchemy import and_, or_
+from sqlalchemy.orm import load_only
+from sqlalchemy import and_, or_, func
+from sqlalchemy.dialects.postgresql import ARRAY
 from ..services.expression import ExpressionBase64Parser
 from redash.models import Favorite
+from .types import MutableList
 
 
 @gfk_type
@@ -81,6 +84,10 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     version = Column(db.Integer)
     is_archived = Column(db.Boolean, default=False, index=True)
+    
+    tags = Column(
+        "tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True
+    )
 
     __tablename__ = "reports"
     __mapper_args__ = {"version_id_col": version}
@@ -91,6 +98,21 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     def archive(self):
         db.session.add(self)
         self.is_archived = True
+
+    @classmethod
+    def all_tags(self, user, include_drafts=False):
+        reports = self.all(user.org, user.group_ids, user.id)
+        
+        tag_column = func.unnest(self.tags).label("tag")
+        usage_count = func.count(1).label("usage_count")
+
+        report = (
+            db.session.query(tag_column, usage_count)
+            .group_by(tag_column)
+            .filter(Report.id.in_(reports.options(load_only("id"))))
+            .order_by(usage_count.desc())
+        )
+        return report
 
     @classmethod
     def get_by_id(cls, _id):
@@ -111,13 +133,15 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     @classmethod
     def all(self, org, groups_ids, user_id):
         return self.query.filter(
-            or_(
-                self.user_id == user_id,
-                and_(
-                    # self.user.has(org=org)
-                ),
-            )
+                self.user_id == user_id
         )
+    # change queries so a better result can come, also filter by organisation
+    # or_(
+    #     self.user_id == user_id,
+    #     and_(
+    #         # self.user.has(org=org)
+    #     ),
+    # )
 
     @classmethod
     def search(self, org, groups_ids, user_id, search_term):

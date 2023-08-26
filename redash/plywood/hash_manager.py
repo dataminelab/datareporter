@@ -236,7 +236,7 @@ def hash_report(o, can_edit):
         "data_source_id": o.model.data_source.id,
         "report": "",
         "schedule": None,
-        "tags":[],
+        "tags": o.tags,
         "user":{
             "id": o.user.id,
             "name": o.user.name,

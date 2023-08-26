@@ -15,6 +15,7 @@ import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
+import useUpdateReportTags from "../hooks/useUpdateReportTags";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
 import useColorsReport from "@/pages/reports/hooks/useColorsReport";
@@ -25,7 +26,13 @@ import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
 import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 import Model from "@/services/model";
+import { QueryTagsControl } from "@/components/tags-control/TagsControl";
 import { replaceHash, hexToRgb } from "../components/ReportPageHeaderUtils";
+import getTags from "@/services/getTags";
+
+function getQueryTags() {
+  return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
+}
 
 function createMenu(menu) {
   const handlers = {};
@@ -81,19 +88,20 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const queryFlags = useReportFlags(props.report, props.dataSource);
-  const archiveReport = useArchiveReport(props.report, props.onChange);
-  const publishReport = usePublishReport(props.report, props.onChange);
-  const unpublishReport = useUnpublishReport(props.report, props.onChange);
-  const [isDuplicating, duplicateReport] = useDuplicateReport(props.report);
-  const openApiKeyDialog = useApiKeyDialog(props.report, props.onChange);
-  const openPermissionsEditorDialog = usePermissionsEditorDialog(props.report);
-  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(props.report);
+  const { report, setReport, saveReport, saveAsReport, deleteReport } = useReport(props.report);
+  const queryFlags = useReportFlags(report, props.dataSource);
+  const updateTags = useUpdateReportTags(report, props.onChange);
+  const archiveReport = useArchiveReport(report, props.onChange);
+  const publishReport = usePublishReport(report, props.onChange);
+  const unpublishReport = useUnpublishReport(report, props.onChange);
+  const [isDuplicating, duplicateReport] = useDuplicateReport(report);
+  const openApiKeyDialog = useApiKeyDialog(report, props.onChange);
+  const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
+  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
   const [models, setModels] = useState([]);
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
-  const reportFlags = useReportFlags(props.report, dataSource);
+  const reportFlags = useReportFlags(report, dataSource);
   const [currentHash, setCurrentHash] = useState(null);
-  const { report, setReport, saveReport, saveAsReport, deleteReport } = useReport(props.report);
   const updateColors = useColorsReport(report, props.onChange);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
@@ -473,6 +481,17 @@ export default function ReportPageHeader(props) {
               <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={reportName} />
             </h3>
           </div>
+        </div>
+        <div className="query-tags">
+          <QueryTagsControl
+            tags={report.tags}
+            isDraft={queryFlags.isDraft}
+            isArchived={queryFlags.isArchived}
+            canEdit={queryFlags.canEdit}
+            getAvailableTags={getQueryTags}
+            onEdit={updateTags}
+            tagsExtra={props.tagsExtra}
+          />
         </div>
       </div>
       <div className="header-actions">

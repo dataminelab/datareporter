@@ -31,6 +31,7 @@ NAME = "name"
 MODEL_ID = "model_id"
 COLOR_1 = 'color_1'
 COLOR_2 = 'color_2'
+TAGS = 'tags'
 
 
 class ReportFilter(BaseResource):
@@ -227,7 +228,7 @@ class ReportResource(BaseResource):
     @require_permission("edit_report")
     def post(self, report_id: int):
         report_properties = request.get_json(force=True)
-        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
+        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
         report = get_object_or_404(Report.get_by_id, report_id)
         counter = 0
         for key, value in updates.items():
@@ -281,6 +282,14 @@ class ReportResource(BaseResource):
         })
 
         return make_response("", 204)
+
+class ReportTagsResource(BaseResource):
+    def get(self):
+        """
+        Returns all query tags including those for drafts.
+        """
+        tags = Report.all_tags(self.current_user, include_drafts=True)
+        return {"tags": [{"name": name, "count": count} for name, count in tags]}
 
 class ReportFavoriteListResource(BaseResource):
     def get(self):

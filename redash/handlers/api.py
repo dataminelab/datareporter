@@ -89,6 +89,7 @@ from redash.handlers.reports import (
     ReportResource,
     ReportFilter,
     ReportFavoriteListResource,
+    ReportTagsResource,
     ReportsArchiveResource
 )
 from redash.handlers.settings import OrganizationSettings
@@ -227,6 +228,7 @@ api.add_org_resource(
 )
 
 api.add_org_resource(QueryTagsResource, "/api/queries/tags", endpoint="query_tags")
+api.add_org_resource(ReportTagsResource, "/api/reports/tags", endpoint="report_tags")
 api.add_org_resource(
     DashboardTagsResource, "/api/dashboards/tags", endpoint="dashboard_tags"
 )

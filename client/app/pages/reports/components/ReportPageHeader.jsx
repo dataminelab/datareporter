@@ -15,6 +15,7 @@ import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
+import useUpdateReport from "../hooks/useUpdateReport";
 import useUpdateReportTags from "../hooks/useUpdateReportTags";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
@@ -24,7 +25,6 @@ import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
 import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
-import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 import Model from "@/services/model";
 import { QueryTagsControl } from "@/components/tags-control/TagsControl";
 import { replaceHash, hexToRgb } from "../components/ReportPageHeaderUtils";
@@ -90,19 +90,19 @@ export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
   const { report, setReport, saveReport, saveAsReport, deleteReport } = useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
-  const updateTags = useUpdateReportTags(report, props.onChange);
-  const archiveReport = useArchiveReport(report, props.onChange);
-  const publishReport = usePublishReport(report, props.onChange);
-  const unpublishReport = useUnpublishReport(report, props.onChange);
+  const updateTags = useUpdateReportTags(report, setReport);
+  const archiveReport = useArchiveReport(report, setReport);
+  const publishReport = usePublishReport(report, setReport);
+  const unpublishReport = useUnpublishReport(report, setReport);
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
-  const openApiKeyDialog = useApiKeyDialog(report, props.onChange);
+  const openApiKeyDialog = useApiKeyDialog(report, setReport);
   const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
   const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
   const [models, setModels] = useState([]);
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
   const reportFlags = useReportFlags(report, dataSource);
   const [currentHash, setCurrentHash] = useState(null);
-  const updateColors = useColorsReport(report, props.onChange);
+  const updateColors = useColorsReport(report, setReport);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
@@ -221,7 +221,7 @@ export default function ReportPageHeader(props) {
         setColorElements(color.hex, false, false); 
       }
     },
-    [report, updateColors]
+    [report, props.onChange, updateColors]
   );
 
   const changeModelDataText = (text) => {
@@ -298,7 +298,7 @@ export default function ReportPageHeader(props) {
 
   const handleIdChange = useCallback(async id => {
     recordEvent("update", "report", report.id, { id });
-    props.onChange(extend(report.clone(), { id }));
+    setReport(extend(report.clone(), { id }));
     updateReport({ id }, { successMessage: null });
     handleReportChanged(true);
   });
@@ -328,7 +328,7 @@ export default function ReportPageHeader(props) {
       recordEvent("delete", "report", report.id, { name: report.name });
       deleteReport(report);
     } else {
-      props.onChange(null);
+      setReport(null);
     }
   }
 

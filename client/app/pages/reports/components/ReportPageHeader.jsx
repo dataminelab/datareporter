@@ -27,7 +27,7 @@ import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
 import Model from "@/services/model";
 import { QueryTagsControl } from "@/components/tags-control/TagsControl";
-import { replaceHash, hexToRgb } from "../components/ReportPageHeaderUtils";
+import { replaceHash, hexToRgb, setPriceButton } from "../components/ReportPageHeaderUtils";
 import getTags from "@/services/getTags";
 
 function getQueryTags() {
@@ -403,6 +403,10 @@ export default function ReportPageHeader(props) {
       handleModelChange(report.model_id);
       handleIdChange(report.id);
       setReportName(report.name);
+      setPriceButton(
+        Number(localStorage.getItem(`${window.location.pathname}-price`)), 
+        Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 
+        false);
       setTimeout(() => {
         handleReportChanged(false);
       }, 333);

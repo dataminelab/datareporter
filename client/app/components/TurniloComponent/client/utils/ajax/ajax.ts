@@ -28,8 +28,16 @@ import {
 } from "plywood";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { setPriceButton } from "../../../../../pages/reports/components/ReportPageHeaderUtils"; 
+
+interface Meta {
+  // Inner response object that returns two parameters:
+  price: number;
+  proceed_data: number;
+}
 
 interface APIResponse {
+    meta: Meta;
     status: number;
     data: DatasetJS;
 }
@@ -72,25 +80,6 @@ export interface AjaxOptions {
 }
 
 const validateStatus = (s: number) => 200 <= s && s < 300 || s === 304;
-
-var buttonVisible = false;
-function setPriceButton(meta: any) {
-  const mediaButton = document.getElementById("meta-button");
-  if (!mediaButton) return;
-  if (!buttonVisible) {
-    buttonVisible = true;
-    mediaButton.style.display = "block";
-  }
-  let priceDiv = document.querySelector("#_price");
-  let currentPrice = meta.price + parseInt(priceDiv.getAttribute("alt"))
-  priceDiv.setAttribute("alt", currentPrice);
-  priceDiv.innerHTML = "Price: " + currentPrice.toString().slice(0,6) + " $";     
-  let bytesDiv = document.querySelector("#_proceed_data");
-  let currentBytes = meta.proceed_data + parseInt(bytesDiv.getAttribute("alt"))
-  bytesDiv.setAttribute("alt", currentBytes);
-  let gbType = (currentBytes / 8) / 1024 / 1024 / 1024;
-  bytesDiv.innerHTML = "Bytes: " + gbType.toString().slice(0,6) + " GB";
-}
 
 export class Ajax {
   static version: string;
@@ -164,6 +153,10 @@ export class Ajax {
       const modelId = this.model_id;
       if (ex instanceof  LimitExpression) {
         const sub = await subscribeToFilter(ex, modelId);
+        setPriceButton(
+          Number(sub.meta.price), 
+          Number(sub.meta.proceed_data),
+          false);
         return Dataset.fromJS(sub.data);
       }
       var hash;
@@ -173,11 +166,10 @@ export class Ajax {
         hash = this.hash;
       }
       const sub = await subscribeToSplit(hash, modelId);
-      // @ts-ignore
-      if (sub.meta) {
-        // @ts-ignore
-        setPriceButton(sub.meta);
-      }
+      setPriceButton(
+        Number(sub.meta.price), 
+        Number(sub.meta.proceed_data),
+        false);
       return Dataset.fromJS(sub.data);
     };
   }

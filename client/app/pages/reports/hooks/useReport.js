@@ -35,6 +35,10 @@ export default function useReport(originalReport) {
     return Report.delete({ id: report.id })
       .then(() => {
         notification.success("Report Deleted.");
+        // clear saved meta price data
+        localStorage.removeItem(`${window.location.pathname}-proceed_data`);
+        localStorage.removeItem(`${window.location.pathname}-price`);
+
         return extend(report.clone(), { is_archived: true, schedule: null });
       })
       .catch(error => {

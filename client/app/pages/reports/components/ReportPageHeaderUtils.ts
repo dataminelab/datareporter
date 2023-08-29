@@ -27,7 +27,7 @@ export function setPriceButton(price: number, proceedData: number, set: boolean 
   // set:
   //    TRUE means set given data into local storage
   //    FALSE means only set data into the divs, 
-  //      so FALSE also means it is initial construction of the page
+  //      so FALSE also means it is initial construction of this function
   const mediaButton = document.getElementById("meta-button");
   if (!mediaButton) return;
   if (!buttonVisible) {

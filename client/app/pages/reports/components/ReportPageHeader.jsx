@@ -151,12 +151,11 @@ export default function ReportPageHeader(props) {
         top: "3px",
       },
       swatch: {
-        padding: "5px 15px",
+        padding: "4px 8px",
         background: "#fff",
         borderRadius: "1px",
         boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
         display: "inline-block",
-        marginRight: "10px",
         cursor: "pointer",
         lineHeight: "25px",
       },
@@ -504,33 +503,32 @@ export default function ReportPageHeader(props) {
           <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={() => handleGivenModal("meta-modal")}>
             <span className="icon icon-ribbon m-r-5"></span>Meta
           </Button>
-          <ul
-            id="meta-modal"
-            className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
-            role="menu"
-            onClick={e => e.stopPropagation()}>
-            <li className="ant-menu-item modal-left" role="menuitem">
-              <p id="_price" alt="0">
-                Price: 0
-              </p>
-            </li>
-            <li className="ant-menu-item modal-right" role="menuitem">
-              <p id="_proceed_data" alt="0">
-                Bytes: 0
-              </p>
-            </li>
-          </ul>
-        </div>
-        {/* <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
-          <span className="icon icon-save-floppy-disc m-r-5"></span>
-          <span style={styles.colorSpanElement}>Text chart color:</span>
+              <ul
+                id="meta-modal"
+                className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+                role="menu"
+                onClick={e => e.stopPropagation()}>
+                <div style={styles.cover} onClick={() => handleGivenModal("meta-modal")} />
+                <li className="ant-menu-item modal-left" role="menuitem">
+                  <p id="_price" alt="0">
+                    Price: 0
+                  </p>
+                </li>
+                <li className="ant-menu-item modal-right" role="menuitem">
+                  <p id="_proceed_data" alt="0">
+                    Bytes: 0
+                  </p>
+                </li>
+              </ul>
+          </div>
+        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
+          <span style={styles.colorSpanElement}>Text</span>
           <div style={styles.color} />
         </Button>
         <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(2)}>
-          <span className="icon icon-save-floppy-disc m-r-5"></span>
-          <span style={styles.colorSpanElement}>Chart color:</span>
+          <span style={styles.colorSpanElement}>Chart</span>
           <div style={styles.colorBody} />
-        </Button> */}
+        </Button>
         {displayColorPicker === 1 ? (
           <div style={styles.popover}>
             <div style={styles.cover} onClick={handleClose} />

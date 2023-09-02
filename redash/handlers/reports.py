@@ -23,6 +23,7 @@ from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
 from redash.settings import REDASH_DEBUG
+from redash.plywood.hash_manager import get_data_cube
 HASH = "hash"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
@@ -41,6 +42,9 @@ class ReportFilter(BaseResource):
         require_fields(req, (EXPRESSION,))
         model = get_object_or_404(Model.get_by_id, model_id)
         filtered_result = filter_expression_to_result(req[EXPRESSION], model, self.current_org)
+        data_cube = get_data_cube(model)
+        if filtered_result.data:
+            filtered_result.meta = data_cube.get_meta(filtered_result.queries)
         return filtered_result.serialized()
 
 

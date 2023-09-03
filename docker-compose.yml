@@ -20,6 +20,7 @@ x-redash-environment: &redash-environment
   MAILCHIMP_API_KEY: "e4c804be8fbd3c445a0fef9d05b6fc27"
   MAILCHIMP_LIST_ID: "e48180787b"
   REDASH_DEBUG: "false"
+  CLIENT_TIMEOUT_DELTA: 30000
 services:
   server:
     <<: *redash-service

@@ -10,7 +10,7 @@
 
   .title-with-tags {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     flex: 1 1;
     margin: -5px 0;
@@ -48,7 +48,9 @@
 
   .header-actions {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    row-gap: 5px;
+    align-content: center;
     .ant-btn {
       height: 35px;
       border: 1px solid white;

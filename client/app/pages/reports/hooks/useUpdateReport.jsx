@@ -110,6 +110,7 @@ export default function useUpdateReport(report, onChange) {
 
       return doSaveReport(data, { canOverwrite: report.can_edit })
         .then(updatedReport => {
+          if (!updatedReport || updatedReport.message === 'No changes made') return;
           if (!isNil(successMessage)) {
             notification.success(successMessage);
           }
@@ -127,6 +128,7 @@ export default function useUpdateReport(report, onChange) {
           if (error instanceof SaveReportConflictError) {
             notificationOptions.duration = null;
           }
+          if (!error || error.message === 'No changes made') return;
           notification.error(error.message, error.detailedMessage, notificationOptions);
         });
     },

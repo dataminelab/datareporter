@@ -153,10 +153,12 @@ export class Ajax {
       const modelId = this.model_id;
       if (ex instanceof  LimitExpression) {
         const sub = await subscribeToFilter(ex, modelId);
-        setPriceButton(
-          Number(sub.meta.price), 
-          Number(sub.meta.proceed_data),
-          false);
+        if (sub.meta) {
+          setPriceButton(
+            Number(sub.meta.price), 
+            Number(sub.meta.proceed_data),
+            false);
+        }
         return Dataset.fromJS(sub.data);
       }
       var hash;
@@ -166,10 +168,12 @@ export class Ajax {
         hash = this.hash;
       }
       const sub = await subscribeToSplit(hash, modelId);
-      setPriceButton(
-        Number(sub.meta.price), 
-        Number(sub.meta.proceed_data),
-        false);
+      if (sub.meta) {
+        setPriceButton(
+          Number(sub.meta.price), 
+          Number(sub.meta.proceed_data),
+          false);
+      }
       return Dataset.fromJS(sub.data);
     };
   }

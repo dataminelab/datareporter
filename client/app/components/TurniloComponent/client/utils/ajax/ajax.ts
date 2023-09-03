@@ -56,11 +56,23 @@ function getSplitsDescription(ex: Expression): string {
   return splits.join(";");
 }
 
-const CLIENT_TIMEOUT_DELTA = 5000;
+const CLIENT_TIMEOUT_DELTA:number = 30000;
+
+async function getDefaultTimeout() {
+  const method = "GET";
+  const url = `api/timeout`;
+  return axios({ method, url })
+    .then(res => {
+      console.log("timeout", res.data)
+      return res.data;
+    }
+  )
+}
 
 function clientTimeout(cluster: Cluster): number {
+  const defaultTimeout = localStorage.getItem("CLIENT_TIMEOUT_DELTA") ? Number(localStorage.getItem("CLIENT_TIMEOUT_DELTA")) : CLIENT_TIMEOUT_DELTA;
   const clusterTimeout = cluster ? cluster.getTimeout() : 0;
-  return clusterTimeout + CLIENT_TIMEOUT_DELTA;
+  return clusterTimeout + defaultTimeout;
 }
 
 let reloadRequested = false;
@@ -121,13 +133,8 @@ export class Ajax {
 
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
         const { data, method, timeout , url } = input;
-        const bypass_cache = window.localStorage.getItem("bypass_cache") === "true" || false;
-        if (bypass_cache) {
-          data.bypass_cache = true;
-          window.localStorage.removeItem("bypass_cache");
-        } else {
-          data.bypass_cache = false;
-        }
+        data.bypass_cache = localStorage.getItem("bypass_cache") === "true";
+        localStorage.removeItem("bypass_cache");
         const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
         if ([1, 2].indexOf(res.status) >= 0) {
             await timeoutQuery(2000);
@@ -135,14 +142,14 @@ export class Ajax {
        } else return res;
     }
 
-    async function  subscribeToFilter(ex: LimitExpression, modelId: number) {
+    async function subscribeToFilter(ex: LimitExpression, modelId: number) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}/filter`;
       const data = { expression : ex.toJS() };
       return subscribe({ method, url, timeout, data });
     }
 
-    async function  subscribeToSplit(hash: string, modelId: number) {
+    async function subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}`;
       const data = { hash };

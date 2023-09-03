@@ -32,8 +32,8 @@ export default function DesktopNavbar() {
 
   const handleDeepRefresh = (event) => {
     event.stopPropagation();
-    window.localStorage.bypass_cache = true;
-    window.location.reload();
+    localStorage.setItem("bypass_cache", true);
+    location.reload();
   }
 
   return (

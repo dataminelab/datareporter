@@ -36,6 +36,7 @@ function updateSession(sessionData) {
   extend(currentUser, session.user);
   extend(clientConfig, session.client_config);
   extend(messages, session.messages);
+  localStorage.setItem("CLIENT_TIMEOUT_DELTA", session.timeout);
 }
 
 export const Auth = {

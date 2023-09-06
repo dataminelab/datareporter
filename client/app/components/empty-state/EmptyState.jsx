@@ -42,6 +42,8 @@ function EmptyState({
   header,
   description,
   illustration,
+  illustrationType=".svg",
+  illustrationWidth="75%",
   helpLink,
   onboardingMode,
   showAlertStep,
@@ -88,9 +90,11 @@ function EmptyState({
         </h2>
         <p>{description}</p>
         <img
-          src={"/static/images/illustrations/" + illustration + ".svg"}
+          src={"/static/images/illustrations/" + illustration + illustrationType}
           alt={illustration + " Illustration"}
-          width="75%"
+          style={{
+            width: illustrationWidth
+          }}
         />
       </div>
       <div className="empty-state__steps">

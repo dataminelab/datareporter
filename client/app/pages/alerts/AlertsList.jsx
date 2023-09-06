@@ -88,6 +88,7 @@ class AlertsList extends React.Component {
               <EmptyState
                 icon="fa fa-bell-o"
                 illustration="alert"
+                illustrationType=".png"
                 description="Get notified on certain events"
                 helpLink="https://redash.io/help/user-guide/alerts/"
                 showAlertStep

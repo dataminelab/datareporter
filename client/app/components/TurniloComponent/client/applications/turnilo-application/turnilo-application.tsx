@@ -87,26 +87,24 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     const { appSettings, initTimekeeper, report } = this.props;
     const { dataCubes } = appSettings;
 
-    var hash 
+    var hash;
     if (report.hash && report.source_name) {
-      hash = report.source_name + "/4/" + report.hash 
+      hash = report.source_name + "/4/" + report.hash;
     } else {
       hash = window.location.hash;
     }
-    let viewType = this.getViewTypeFromHash(hash);
 
     if (!dataCubes.length) {
       window.location.hash = "";
-
       this.setState({
         viewType: NO_DATA,
         viewHash: "",
         appSettings
       });
-
       return;
     }
 
+    let viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
 
     let selectedItem: DataCube;
@@ -222,6 +220,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   };
 
   changeHash(hash: string, force = false): void {
+    console.log("USE THIS METHOD TO CHANGE THE HASH")
     this.hashUpdating = true;
 
     // Hash initialization, no need to add the intermediary url in the history
@@ -326,7 +325,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return <>
       <main className="turnilo-application">
         {this.renderView()}
-        {this.renderAboutModal()}
         <Notifications />
         <Questions />
       </main>

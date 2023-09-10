@@ -10,16 +10,6 @@ steps:
     volumes:
       - name: config
         path: /config
-  - name: gcr.io/cloud-builders/gcloud
-    args:
-      - '-c'
-      - >-
-        gcloud secrets versions access latest --secret=values-pinadventures >
-        /config/values.yaml
-    entrypoint: bash
-    volumes:
-      - name: config
-        path: /config
   - name: 'alpine/helm:3.11.1'
     env:
       - KUBECONFIG=/config/kubeconfig.conf
@@ -37,11 +27,10 @@ steps:
       - KUBECONFIG=/config/kubeconfig.conf
     args:
       - '-n'
-      - pinadventures
-      - upgrade
+      - $_ENVIRONMENT
+      - 'upgrade'
       - '--install'
-      - '-f'
-      - ./.gcloud/env/pinadventures/values.yaml
+      - '--reuse-values'
       - datareporter
       - datareporter/datareporter
       - '--set'
@@ -56,5 +45,6 @@ steps:
         path: /config
 substitutions:
   _IMAGE_TAG: $COMMIT_SHA
+  _ENVIRONMENT: $ENVIRONMENT
 tags:
-  - datareporter-server-pinadventures
+  - datareporter-server-$_ENVIRONMENT

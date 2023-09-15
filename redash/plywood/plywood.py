@@ -18,26 +18,14 @@ class PlywoodApi(object):
 
     @classmethod
     def convert_to_sql(cls, body):
-        try:
-            response = requests.post(url=cls.PLYWOOD_URL, json=body)
-            data = response.json()
-            queries = data['queries']
-
-            return list(itertools.chain.from_iterable(queries))
-        except Exception as err:
-            logger.error(f"Error occurred during sending request to Plywood Server\n\t{err}")
-            raise err
+        data = cls.execute(cls.PLYWOOD_URL, body)
+        queries = data['queries']
+        return list(itertools.chain.from_iterable(queries))
 
     @classmethod
     def get_supported_engines(cls) -> List[str]:
         url = cls.PLYWOOD_URL + '/attributes/engines'
-
-        try:
-            response = requests.get(url=url)
-            return response.json()['supportedEngines']
-        except Exception as err:
-            logger.error(f"Error occurred during sending request to Plywood Server\n\t{err}")
-            raise err
+        return cls.execute(url)['supportedEngines']
 
     @staticmethod
     def redash_db_name_to_plywood(redash_db_name: str):
@@ -47,10 +35,13 @@ class PlywoodApi(object):
     @classmethod
     def convert_hash_to_expression(cls, hash: str, data_cube: dict) -> str:
         url = cls.PLYWOOD_URL + '/expression'
-
         body = dict(hash=hash, dataCube=data_cube)
+        return cls.execute(url, body)
 
+    @classmethod
+    def execute(cls, url: str, body: any = None):
         try:
+            logger.info(f"Sending request url: {url} body: {body}")
             response = requests.post(url=url, json=body)
             response.raise_for_status()
             return response.json()
@@ -64,22 +55,10 @@ class PlywoodApi(object):
         engine = cls.redash_db_name_to_plywood(redash_db_type)
 
         body = dict(engine=engine, attributes=attributes)
-        try:
-            response = requests.post(url=url, json=body)
-            attributes = response.json()['attributes']
-            return attributes
-        except Exception as err:
-            logger.error(f"Error occurred during sending request to Plywood Server\n\t{err}")
-            raise err
+        attributes = cls.execute(url, body)['attributes']
+        return attributes
 
     @classmethod
     def get_shape(cls, body: dict) -> str:
         url = cls.PLYWOOD_URL + '/response-shape'
-
-        try:
-            response = requests.post(url=url, json=body)
-            response.raise_for_status()
-            return response.json()
-        except Exception as err:
-            logger.error(f"Error occurred during sending request to Plywood Server\n\t{err}")
-            raise err
+        return cls.execute(url, body)

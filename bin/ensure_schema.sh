@@ -27,10 +27,6 @@ while ((ATTEMPTS < MAX_ATTEMPTS)); do
   timeout $UPGRADE_TIMEOUT /app/manage.py db upgrade
   echo "Upgrade complete"
 
-  echo "Running Redash database migrations:"
-  timeout $UPGRADE_TIMEOUT /app/manage.py db upgrade
-  echo "Upgrade complete"
-
   STATUS=$(timeout $STATUS_TIMEOUT /app/manage.py status 2>&1)
   RETCODE=$?
   echo "Return code: ${RETCODE}"

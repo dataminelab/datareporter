@@ -35,21 +35,29 @@ steps:
       - push
       - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
     id: Push-Data-Reporter
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
-    id: Push-Plywood
+    waitFor:
+      - Build-Data-Reporter
   - name: gcr.io/cloud-builders/docker
     args:
       - push
       - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
     id: Push-Data-Reporter-Latest
+    waitFor:
+      - Build-Data-Reporter
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
+    id: Push-Plywood
+    waitFor:
+      - Build-Plywood
   - name: gcr.io/cloud-builders/docker
     args:
       - push
       - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
     id: Push-Plywood-Latest
+    waitFor:
+      - Build-Data-Reporter
   - name: gcr.io/cloud-builders/gcloud
     args:
       - '-c'
@@ -58,6 +66,9 @@ steps:
         --region=$LOCATION --sha=$COMMIT_SHA --substitutions=_IMAGE_TAG="$COMMIT_SHA",_ENVIRONMENT=$_ENVIRONMENT
     id: Deploy-$_ENVIRONMENT
     entrypoint: bash
+    waitFor:
+      - Push-Data-Reporter
+      - Push-Plywood
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
   - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'

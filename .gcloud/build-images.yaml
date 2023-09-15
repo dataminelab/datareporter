@@ -15,6 +15,7 @@ steps:
       - '-o'
       - type=image
     id: Build-Data-Reporter
+    waitFor: ['-']
   - name: gcr.io/cloud-builders/docker
     args:
       - buildx
@@ -30,6 +31,7 @@ steps:
       - type=image
     dir: plywood/server
     id: Build-Plywood
+    waitFor: ['-']
   - name: gcr.io/cloud-builders/docker
     args:
       - push

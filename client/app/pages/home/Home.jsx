@@ -166,7 +166,8 @@ function Home() {
         <EmptyState
           header="Welcome to Data reporter 👋"
           description="Connect to any data source, easily visualize and share your data"
-          illustration="dashboard"
+          illustration="empty-queries2"
+          illustrationType=".png"
           helpLink="https://redash.io/help/user-guide/getting-started"
           showDashboardStep
           showInviteStep

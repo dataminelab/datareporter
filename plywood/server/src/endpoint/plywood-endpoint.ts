@@ -35,7 +35,7 @@ export const plywoodEndpoint = (req: Request, res: Response) => {
 
     const external: External = External.fromJS(context);
 
-    const sqlQueries = expression.simulateQueryPlan({ [dataCube]: external });
+    const sqlQueries = expression.simulateQueryPlan({ [dataCube]: external}, {others: expressionQuery});
     const formattedQueries = responseFormatter(sqlQueries);
 
     res

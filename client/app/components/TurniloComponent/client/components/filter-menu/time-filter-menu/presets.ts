@@ -61,7 +61,8 @@ export const COMPARISON_PRESETS: ShiftPreset[] = [
   { label: "D", shift: TimeShift.fromJS("P1D") },
   { label: "W", shift: TimeShift.fromJS("P1W") },
   { label: "M", shift: TimeShift.fromJS("P1M") },
-  { label: "Q", shift: TimeShift.fromJS("P3M") }
+  { label: "Q", shift: TimeShift.fromJS("P3M") },
+  { label: "Y", shift: TimeShift.fromJS("P1Y") },
 ];
 
 export function constructFilter(period: TimeFilterPeriod, duration: string): Expression {

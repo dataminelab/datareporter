@@ -100,7 +100,7 @@ export abstract class SQLExternal extends External {
     }
   }
 
-  public getQueryAndPostTransform(): QueryAndPostTransform<string> {
+  public getQueryAndPostTransform(timeRanges:any=null): QueryAndPostTransform<string> {
     const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, engine } = this;
     let query = [];
     if (withQuery) {
@@ -203,17 +203,6 @@ export abstract class SQLExternal extends External {
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-    const avaiableKeys = selectedAttributes?.map(a => a.name);
-    //  selectedAttributes after map [
-    //     'country',
-    //     'item_price',
-    //     '_previous__item_price',
-    //     'item_shipping',
-    //     '_previous__item_shipping',
-    //     '_delta__item_price',
-    //     '_delta__item_shipping'
-    //   ]
-    console.log("previous query", this.sqlToQuery(query.join('\n')))
     const isYoyQuery = YearOverYearExpression.isYoyQuery(query[1]); // first pushed query string is always SELECT
     if (isYoyQuery) {
       let yoyExpression = new YearOverYearExpression(engine, query, mode);
@@ -226,6 +215,9 @@ export abstract class SQLExternal extends External {
           ).join(',')
         );
       }
+      if (timeRanges) {
+        yoyExpression.setTimeRanges(timeRanges)
+      }
       yoyExpression.process()
       query = [
         yoyExpression.getQuery()
@@ -237,8 +229,6 @@ export abstract class SQLExternal extends External {
     if (limit) {
       query.push(limit.getSQL(dialect));
     }
-    console.log("query", this.sqlToQuery(query.join('\n')))
-    //console.log("keys", keys)
     return {
       query: this.sqlToQuery(query.join('\n')),
       postTransform:

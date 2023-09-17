@@ -12,6 +12,19 @@ import { RefExpression } from './refExpression';
 import { SortExpression } from './sortExpression';
 import { SplitExpression } from './splitExpression';
 
+interface timeRangeElement {
+    start: string;
+    end: string;
+}
+
+interface timeRangeType {
+    op:string;
+    currElement: timeRangeElement;
+    prevElement: timeRangeElement;
+    operand: [ [Object] ];
+    expression: [ [Expression] ];
+    name:string;
+}
 export class YearOverYearExpression {
     static op = 'YearOverYear';
     queries: string[] = [];
@@ -23,6 +36,12 @@ export class YearOverYearExpression {
     sumColumns: string[] = [];
     keys: string[] = [];
     groupBy: string;
+    timeRanges?:timeRangeType;
+    _whereRegex: RegExp;
+    private timestampRegex = /TIMESTAMP\('([\d-T:.Z]+)'\)/g;
+    private globalDateRangeRegex = /\([\"\'\`](\d+.{1,24})[\"\'\`]\)/g;;
+    private sumPattern = /SUM\([`",']([^`",']*)[`",']\)/g;
+    private columnPattern = /[`",']([^`",']*)[`",']\sAS/g;
 
     constructor(engine?: string, queries?: string[], mode?: string) {
         if (engine) {
@@ -35,10 +54,20 @@ export class YearOverYearExpression {
             this.setMode(mode);
         }
         this._setExpressionTypes('DATASET');
+        this._setRegexSettings();
     }
 
     private _setExpressionTypes(arg0: string) {
         this.type = arg0;
+    }
+
+    private _setRegexSettings() {
+        if (this.engine === 'bigquery') {
+            this._whereRegex = this.globalDateRangeRegex;
+        }
+        else if (this.engine === 'athena') {
+            this._whereRegex = this.globalDateRangeRegex;
+        }
     }
 
     public setQueries(queries: string[]) {
@@ -107,34 +136,37 @@ export class YearOverYearExpression {
         }
     }
 
+    
+    public setTimeRanges(timeRanges:timeRangeType) {
+        this.timeRanges = timeRanges;
+    }
+    
+    
+    public getTimeRanges() {
+        return this.timeRanges;
+    }
+
     private splitFromAndWhereQueries(formattedSumQueries: string): string[] {
-        //@ts-ignore
-        const [fromQuery, whereQuery] = this.queries[2].split("WHERE");
-        if (whereQuery.includes("OR")) {
-            var [where1, where2, ...theRest] = whereQuery.split(" OR ");
-        } else if (whereQuery.includes("AND")) {
-            var [where1, where2, ...theRest] = whereQuery.split(" AND ");
+        const { currElement, prevElement } = this.timeRanges;
+        var [fromQuery, whereQuery] = this.queries[2].split("WHERE");
+        const matches = whereQuery.match(this._whereRegex);
+        var where1 = whereQuery;
+        var where2 = whereQuery;
+        if (matches) {
+            var i = 0;
+            for (const match of matches) {
+                if (match.length < 2) continue;
+                if (i%2==0) {
+                    where1 = where1.replace(match, `('${prevElement.start}')`)
+                    where2 = where2.replace(match, `('${currElement.start}')`)
+                } else {
+                    where1 = where1.replace(match, `('${prevElement.end}')`)
+                    where2 = where2.replace(match, `('${currElement.end}')`)
+                }
+                i++
+            }
         } else {
-            throw new Error("WHERE clause must contain AND or OR")
-        }
-        if (!where2.includes("AND")) {
-            where2 = where2.slice(0, -1)
-        }
-        theRest.forEach((item) => {
-            where1 += " AND " + item;
-            where2 += " AND " + item;
-        });
-        while (where1.split("(").length > where1.split(")").length) {
-            where1+=")"
-        }
-        while (where1.split(")").length > where1.split("(").length) {
-            where1="("+where1
-        }
-        while (where2.split("(").length > where2.split(")").length) {
-            where2+=")"
-        }
-        while (where2.split(")").length > where2.split("(").length) {
-            where2="("+where2
+            throw new Error("No matches found");
         }
         if (this.engine === 'athena') {
             formattedSumQueries=formattedSumQueries.slice(0, -1)
@@ -147,8 +179,6 @@ export class YearOverYearExpression {
     }
 
     public process() {
-        const sumPattern = /SUM\([`",']([^`",']*)[`",']\)/g;
-        const columnPattern = /[`",']([^`",']*)[`",']\sAS/g;
         var formattedSumQueries: string;
         var formattedColumnQueries: string;
         let sumMatch;
@@ -158,15 +188,15 @@ export class YearOverYearExpression {
                 break;
             case "split":
                 if (!this.keys.length) {
-                    while ((columnMatch = columnPattern.exec(this.queries[1])) !== null) {
+                    while ((columnMatch = this.columnPattern.exec(this.queries[1])) !== null) {
                         this.keys.push(columnMatch[1] || columnMatch[2]);
                     }
                 }
-                // console.log("this.keys", this.keys)
+
                 formattedColumnQueries = this.keys
                     .filter((value, index, self) => self.indexOf(value) === index)
                     .map(i => `COALESCE(curr.${i}, prev.${i}) AS \`${i}\`,`).join(' ');        
-                while ((sumMatch = sumPattern.exec(this.queries[1])) !== null) {
+                while ((sumMatch = this.sumPattern.exec(this.queries[1])) !== null) {
                     this.sumColumns.push(sumMatch[1] || sumMatch[2]);
                 }
                 var [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(
@@ -185,8 +215,7 @@ export class YearOverYearExpression {
                 break;
             case "total":
                 let match;
-                console.log("this.sumColumns", this.sumColumns)
-                while ((match = sumPattern.exec(this.queries[1])) !== null) {
+                while ((match = this.sumPattern.exec(this.queries[1])) !== null) {
                     const columnName = match[1] || match[2];
                     this.sumColumns.push(columnName);
                 }                

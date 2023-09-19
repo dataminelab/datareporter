@@ -6,7 +6,7 @@ from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
 from rq.utils import utcnow
 from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
 from rq.job import Job as BaseJob, JobStatus
-
+from google.cloud import pubsub_v1
 import logging
 
 from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID
@@ -41,7 +41,6 @@ class PubsubTask(BaseQueue):
             logger.debug("skipping send message to pub sub")
             return None
         if self.publisher is None:
-            from google.cloud import pubsub_v1
             self.publisher = pubsub_v1.PublisherClient()
         # Data must be a bytestring
         data = message.encode("utf-8")

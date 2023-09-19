@@ -422,7 +422,7 @@ const ReportService = {
     .then(() => {
       window.location.href = '/reports/archive';
     }),
-  myReports: params => axios.get("api/reports/my", { params }).then(mapResults),
+  myReports: params => axios.get("api/reports?type=my", { params }).then(mapResults),
   fork: ({ id }) => axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
   resultById: data => axios.get(`api/reports/${data.id}/results.json`),
   asDropdown: data => axios.get(`api/reports/${data.id}/dropdown`),

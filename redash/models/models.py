@@ -123,6 +123,10 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         return cls.query.filter(cls.user_id == user.id)
 
     @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.query.filter(cls.user_id == user_id)
+
+    @classmethod
     def get_by_user_and_id(cls, user: User, _id: int):
         return cls.query.filter(and_(cls.user_id == user.id, cls.id == _id)).one()
 
@@ -132,23 +136,26 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     @classmethod
     def all(self, org, groups_ids, user_id):
-        return self.query.filter(
-                self.user_id == user_id
-        )
-    # change queries so a better result can come, also filter by organisation
-    # or_(
-    #     self.user_id == user_id,
-    #     and_(
-    #         # self.user.has(org=org)
-    #     ),
-    # )
+        return self.query.filter(self.user.has(org=org))
 
     @classmethod
     def search(self, org, groups_ids, user_id, search_term):
         return self.all(org, groups_ids, user_id).filter(
             self.name.ilike("%{}%".format(search_term))
         )
-        
+
+    @classmethod
+    def get_my_archived_reports(self, term, user_id):
+        my_archives = self.get_by_user_id(user_id).filter(
+            Report.is_archived.is_(True))
+        if term:
+            return my_archives.filter(
+                self.name.ilike("%{}%".format(term))
+            )
+        return my_archives
+    
+    # TODO: this method is not used anywhere
+    # requires admin privilage to use
     @classmethod
     def search_archived_reports(
         self,

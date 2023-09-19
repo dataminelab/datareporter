@@ -72,14 +72,7 @@ class ReportGenerateResource(BaseResource):
 class ReportsArchiveResource(BaseResource):
     def get(self):
         search_term = request.args.get("q")
-        archives = Report.search_archived_reports(
-            search_term,
-            self.current_user.group_ids,
-            self.current_org,
-            self.current_user.id,
-            include_drafts=False,
-            multi_byte_search=self.current_org.get_setting("multi_byte_search_enabled"),
-        )
+        archives = Report.get_my_archived_reports(search_term, self.current_user.id)
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)
         response = paginate(archives, page, page_size, ReportSerializer)
@@ -158,13 +151,30 @@ class ReportsListResource(BaseResource):
 
     @require_permission("view_report")
     def get(self):
-        reports = Report.get_by_user(
-            self.current_user
-        ).filter(
-            Report.is_archived.is_(False)
-        )
+        _type = request.args.get("type", "all", type=str)
+        reports = []
+        if _type == "my":
+            reports = Report.get_by_user(
+                self.current_user
+            ).filter(
+                Report.is_archived.is_(False)
+            )
+        elif _type == "all":
+            reports = Report.all(
+                self.current_user.org,
+                self.current_user.group_ids,
+                self.current_user.id,
+            ).filter(
+                Report.is_archived.is_(False)
+            )
 
         formatting = request.args.get("format", "base64")
+
+        # limiting by group
+        for i in reports:
+            if any(item in i.user.group_ids for item in self.current_user.group_ids):
+                continue
+            reports.remove(i)
 
         ordered_results = order_results(reports)
 

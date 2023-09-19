@@ -52,7 +52,7 @@ class ReportsList extends React.Component {
     {
       key: "archive",
       href: "reports/archive",
-      title: "Archived",
+      title: "My Archived Reports",
       icon: () => <Sidebar.MenuIcon icon="fa fa-archive" />,
     },
   ];

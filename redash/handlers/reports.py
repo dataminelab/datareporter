@@ -170,11 +170,11 @@ class ReportsListResource(BaseResource):
 
         formatting = request.args.get("format", "base64")
 
-        # limiting by group
-        for i in reports:
-            if any(item in i.user.group_ids for item in self.current_user.group_ids):
-                continue
-            reports.remove(i)
+        if "admin" not in self.current_user.permissions:
+            for i in reports:
+                if any(item in i.user.group_ids for item in self.current_user.group_ids):
+                    continue
+                reports.remove(i)
 
         ordered_results = order_results(reports)
 

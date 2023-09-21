@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { day, Duration, hour, minute } from "chronoshift";
+import { day, Duration, hour, minute, month } from "chronoshift";
 import { STRINGS } from "../../../client/config/constants";
 import {
   findBiggerClosestToIdeal,
@@ -85,6 +85,10 @@ function makeNumberBuckets(centerAround: number, count: number, coarse?: boolean
   return granularities;
 }
 
+function months(count: number) {
+  return count * month.canonicalLength;
+}
+
 function days(count: number) {
   return count * day.canonicalLength;
 }
@@ -113,10 +117,12 @@ export class TimeHelper {
   }
 
   static checkers = [
-    makeCheckpoint(days(95), Duration.fromJS("P1W")),
-    makeCheckpoint(days(8), Duration.fromJS("P1D")),
-    makeCheckpoint(hours(8), Duration.fromJS("PT1H")),
-    makeCheckpoint(hours(3), Duration.fromJS("PT5M"))];
+    makeCheckpoint(months(3), Duration.fromJS("P3M")),
+    makeCheckpoint(months(1), Duration.fromJS("P1M")),
+    makeCheckpoint(days(7), Duration.fromJS("P1W")),
+    makeCheckpoint(days(1), Duration.fromJS("P1D")),
+    makeCheckpoint(hours(1), Duration.fromJS("PT1H")),
+  ];
 
   static coarseCheckers = [
     makeCheckpoint(days(95), Duration.fromJS("P1M")),
@@ -128,7 +134,7 @@ export class TimeHelper {
     makeCheckpoint(minutes(30), Duration.fromJS("PT5M"))
   ];
 
-  static defaultGranularities = TimeHelper.checkers.map(c => c.returnValue).concat(TimeHelper.minGranularity).reverse();
+  static defaultGranularities = TimeHelper.checkers.map(c => c.returnValue).reverse();
   static coarseGranularities = TimeHelper.coarseCheckers.map(c => c.returnValue).concat(TimeHelper.minGranularity).reverse();
 }
 
@@ -138,11 +144,11 @@ export class NumberHelper {
   static defaultGranularity = 10;
 
   static checkers = [
-    makeCheckpoint(5000, 1000),
-    makeCheckpoint(500, 100),
-    makeCheckpoint(100, 10),
-    makeCheckpoint(1, 1),
-    makeCheckpoint(0.1, 0.1)
+    makeCheckpoint(hours(1), Duration.fromJS("PT1H")),
+    makeCheckpoint(days(8), Duration.fromJS("P1D")),
+    makeCheckpoint(days(95), Duration.fromJS("P1W")),
+    makeCheckpoint(months(1), Duration.fromJS("P1M")),
+    makeCheckpoint(months(3), Duration.fromJS("P3M"))
   ];
 
   static defaultGranularities = NumberHelper.checkers.map((c: any) => c.returnValue).reverse();
@@ -245,7 +251,7 @@ export function granularityToJS(input: Bucket): GranularityJS {
 export function getGranularities(kind: ContinuousDimensionKind, bucketedBy?: Bucket, coarse?: boolean): Bucket[] {
   const kindHelper = getHelperForKind(kind);
   const coarseGranularities = kindHelper.coarseGranularities;
-  if (!bucketedBy) return coarse && coarseGranularities ? coarseGranularities : kindHelper.defaultGranularities;
+  if (!bucketedBy) return kindHelper.defaultGranularities;
   // make list that makes most sense with bucket
   const allGranularities: Bucket[] = kindHelper.supportedGranularities(bucketedBy);
   return generateGranularitySet(allGranularities, bucketedBy);

@@ -19,6 +19,17 @@ import { DateRange } from "../../../../common/models/date-range/date-range";
 import { FilterClause, FixedTimeFilterClause, NumberFilterClause, NumberRange, StringFilterAction, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { SplitType } from "../../../../common/models/split/split";
 import { Splits } from "../../../../common/models/splits/splits";
+import { day, Timezone } from "chronoshift";
+
+function createDateRange(start: any, end: any): DateRange | null {
+  if (!start) return null;
+  start = new Date(start);
+  // TODO get timezone from somewhere
+  const timezone = new Timezone("UTC");
+  end = end || day.shift(start, timezone, 1);
+  if (start >= end) return null;
+  return new DateRange({ start, end });
+}
 
 export function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List<FilterClause> {
   const splitNesting = flatDatum["__nest"];
@@ -35,7 +46,8 @@ export function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List
         case SplitType.number:
           return new NumberFilterClause({ reference, values: List.of(new NumberRange(segment)) });
         case SplitType.time:
-          return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(segment)) });
+          const newDate = createDateRange(segment, undefined);
+          return new FixedTimeFilterClause({ reference, values: List.of(newDate) });
         case SplitType.string:
           return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
       }

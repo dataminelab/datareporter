@@ -1,6 +1,7 @@
 import hashlib
 import logging
 import time
+import json
 from urllib.parse import urlsplit, urlunsplit
 
 from flask import jsonify, redirect, request, url_for
@@ -9,6 +10,7 @@ from redash import models, settings
 from redash.authentication.org_resolving import current_org
 from redash.settings.organization import settings as org_settings
 from redash.tasks import record_event
+from redash.worker import RedashQueue as pubsub
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import Unauthorized
 
@@ -213,7 +215,7 @@ def log_user_logged_in(app, user):
     }
 
     message = dict(type="default", fn="record_event", data=event)
-    pubsub.send_message_to_topic(json.dumps(message))
+    pubsub().send_message_to_topic(json.dumps(message))
 
     record_event.delay(event)
 

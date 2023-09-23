@@ -188,6 +188,7 @@ class Expression:
 
     def _get_string_queries(self, last_query: str, prev_result: object) -> list:
         second_result = prev_result[1]
+        second_query = self.queries[1]
         if "job" in second_result and second_result["job"]["error"]:
             return abort(400, message=second_result["job"]["error"])
         for i in self.filter["splits"]:
@@ -195,8 +196,10 @@ class Expression:
             some_column_name = f'some_{column_name}'
             if some_column_name in last_query:
                 break
+            elif column_name in second_query:
+                break
         two_splits_queries = []
-        if some_column_name not in last_query:
+        if some_column_name not in last_query and column_name not in second_query:
             raise Exception(f'{some_column_name} is not present in query')
 
         for row in second_result['query_result']['data']['rows']:

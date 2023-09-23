@@ -10,7 +10,6 @@ from redash import models, settings
 from redash.authentication.org_resolving import current_org
 from redash.settings.organization import settings as org_settings
 from redash.tasks import record_event
-from redash.worker import RedashQueue as pubsub
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import Unauthorized
 
@@ -213,10 +212,6 @@ def log_user_logged_in(app, user):
         "user_agent": request.user_agent.string,
         "ip": request.remote_addr,
     }
-
-    message = dict(type="default", fn="record_event", data=event)
-    pubsub().send_message_to_topic(json.dumps(message))
-
     record_event.delay(event)
 
 

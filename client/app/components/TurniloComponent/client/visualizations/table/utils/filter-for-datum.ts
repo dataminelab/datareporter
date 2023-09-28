@@ -41,6 +41,9 @@ export function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List
     .take(splitNesting)
     .map(({ reference, type }) => {
       const segment: any = flatDatum[reference];
+      // if (!segment && segment !== 0) {
+      //   segment = reference;
+      // }
 
       switch (type) {
         case SplitType.number:

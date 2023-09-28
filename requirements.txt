@@ -70,5 +70,5 @@ mailchimp-marketing==3.0.36
 inflection==0.5.1
 mock==4.0.3
 lzstring==1.0.4
-pydash==5.0.1
+pydash==6.0.0
 python-dotenv>=0.21.0

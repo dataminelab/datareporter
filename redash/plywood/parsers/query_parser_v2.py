@@ -98,6 +98,10 @@ class PlywoodQueryParserV2:
         rows: list = self._query_result[1]['query_result']['data']['rows']
         return rows
 
+    def _get_last_split(self):
+        rows: list = self._query_result[-1]['query_result']['data']['rows']
+        return rows
+
     def _build_first_split(self, shape: dict):
         split_data = shape['data'][0]['SPLIT']
         data = self._get_first_split()
@@ -144,24 +148,26 @@ class PlywoodQueryParserV2:
     def _build_second_split(self, shape: dict):
         split = shape['data'][0]['SPLIT']
         column_name = pydash.head(split['keys'])
+        last_query_split = self._get_last_split()
         for value in split['data']:
             search_column_name = self.null if value[column_name] is None else f"'{value[column_name]}'"
             query = pydash.find(self._query_result,
                                 lambda v: f'"{search_column_name[1:-1]}"' in v['query_result']['query'])
-
             if query is None:
                 query = pydash.find(self._query_result,
-                                    lambda v: f"'{search_column_name[1:-1]}'" in v['query_result']['query'])
-
+                    lambda v: f"'{search_column_name[1:-1]}'" in v['query_result']['query'])
             if query is None:
                 query = pydash.find(self._query_result,
-                                    lambda v: search_column_name[1:-1] in v['query_result']['query'])
-            if query is None: continue
-
+                    lambda v: search_column_name[1:-1] in v['query_result']['query'])
+            if query is None:
+                continue
             index = pydash.find_index(split['data'], lambda v: v[column_name] == value[column_name])
             if index == -1: continue
-
-            split['data'][index]['SPLIT']['data'] = query['query_result']['data']['rows']
+            selected_query_split = query['query_result']['data']['rows']
+            if len(last_query_split) > len(selected_query_split):
+                split['data'][index]['SPLIT']['data'] = last_query_split
+            else:
+                split['data'][index]['SPLIT']['data'] = selected_query_split
             if self._visualization == 'line-chart':
                 self._prepare_line_chart(shape=shape, top_index=index)
 

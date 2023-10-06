@@ -167,24 +167,38 @@ class Expression:
     @staticmethod
     def _is_last_query_boolean(query: str):
         return 'where true' in query.lower()
-    
+
     @staticmethod
     def _is_last_query_boolean_false(query: str):
         return 'where false' in query.lower()
 
-    def get_where_statement(self, last_query: str, prev_query: str, column_name: str, some_column_name: str):
-        where = prev_query.split('WHERE')[1].split("GROUP BY")[0]
-        if self._data_cube.ply_engine == 'bigquery':
-            where = "(" + where + "AND (`" + column_name + "` = '" + some_column_name + "')) "
-        else:
-            where = "(" + where + "AND (`" + column_name + "` = " + some_column_name + ")) "
-        return last_query.replace("WHERE FALSE ", "WHERE" + where)
+    def get_where_statement(self, query: str):
+        return query.split('WHERE')[1].split("GROUP BY")[0]
 
     def _get_boolean_queries(self, last_query):
         res = [last_query]
         false_query = last_query.replace('TRUE', 'FALSE')
         r = [*self.queries[0:len(self.queries) - 1], *res, false_query]
         return r
+
+    def _get_boolean_queries_true(self, last_query):
+        true_query = last_query.replace('FALSE', 'TRUE')
+        r = [*self.queries[0:len(self.queries) - 1], true_query]
+        return r
+
+    def get_filter_ref(self):
+        ref = ""
+        for i in self.filter["filters"]:
+            _type = i["type"]
+            if "values" not in i:
+                continue
+            elif not _type == "string":
+                continue
+            ref = i["ref"]
+            break
+        if not ref:
+            raise Exception("No string filter found")
+        return ref
 
     def _get_string_queries(self, last_query: str, prev_result: object) -> list:
         second_result = prev_result[1]
@@ -195,11 +209,11 @@ class Expression:
             some_column_name = f'some_{column_name}'
             if some_column_name in last_query:
                 break
-        two_splits_queries = []
         if some_column_name not in last_query:
-            return self.queries
-            # raise Exception(f'{some_column_name} is not present in query')
+            last_query = self.fix_string_filter(last_query)
+            return self._get_string_queries(last_query, prev_result)
 
+        two_splits_queries = []
         for row in second_result['query_result']['data']['rows']:
             value = row[column_name]
             if value is None:
@@ -208,6 +222,24 @@ class Expression:
                 query = last_query.replace(some_column_name, value)
             two_splits_queries.append(query)
         return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]
+
+    def fix_string_filter(self, last_query):
+        # if same data name found on both split and filter
+        where = self.get_where_statement(self.queries[0])
+        # delete last paranthesis
+        where = where[0:len(where)-1]
+        ref = self.get_filter_ref()
+        some_ref = f"some_{ref}"
+        # delete last paranthesis back
+        where_ref = f"(`{ref}`='{some_ref}'))"
+        where = f"{where} AND {where_ref}"
+        if self._is_last_query_boolean_false(last_query):
+            last_query = last_query.replace('FALSE', where)
+        else:
+            select, _ = last_query.split('WHERE')
+            _, group_by = _.split('GROUP BY')
+            return select + " WHERE " + where + " GROUP BY " + group_by
+        return last_query
 
     def _get_string_queries_3(self, last_query: str, prev_result: list, prev_queries: list) -> list:
         ## TODO FINISH THIS

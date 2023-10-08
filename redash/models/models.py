@@ -1,7 +1,7 @@
 from . import TimestampMixin, ChangeTrackingMixin, User, DataSource
 from .base import db, primary_key, Column, key_type, gfk_type
 from sqlalchemy.orm import load_only
-from sqlalchemy import and_, or_, func
+from sqlalchemy import and_, or_, func, any_
 from sqlalchemy.dialects.postgresql import ARRAY
 from ..services.expression import ExpressionBase64Parser
 from redash.models import Favorite
@@ -200,3 +200,20 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         for favorite in user.favorites:
             if favorite.object_type == "Report" and favorite.object_id == object.id:
                 return True
+
+    @classmethod
+    def remove(self):
+        Report.query.filter(
+            Report.id == self.id
+        ).delete()
+        db.session.commit()
+
+    @classmethod
+    def get_by_group_ids(self, user):
+        return self.query.join(User).filter(
+            and_(
+                Report.is_archived.is_(False),
+                User.org_id == user.org.id,  # Replace with the appropriate value
+                User.group_ids.contains(user.group_ids)  # Check if 3 is in the array of group_ids
+            )
+        )

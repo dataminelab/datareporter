@@ -117,8 +117,7 @@ def can_modify(obj, user):
 
 def can_view(obj, user):
     return is_admin_or_owner(obj.user_id) or user.has_access(obj, ACCESS_TYPE_VIEW) or \
-        [id for id in obj.user.group_ids if id in user.group_ids] # or group ids matches
-
+        any(id in obj.user.group_ids for id in user.group_ids)
 
 def can_delete(obj, user):
     return is_admin_or_owner(obj.user_id) or user.has_access(obj, ACCESS_TYPE_DELETE)

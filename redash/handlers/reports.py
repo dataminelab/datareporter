@@ -160,22 +160,9 @@ class ReportsListResource(BaseResource):
                 Report.is_archived.is_(False)
             )
         elif _type == "all":
-            reports = Report.all(
-                self.current_user.org,
-                self.current_user.group_ids,
-                self.current_user.id,
-            ).filter(
-                Report.is_archived.is_(False)
-            )
+            reports = Report.get_by_group_ids(self.current_user)
 
         formatting = request.args.get("format", "base64")
-
-        if "admin" not in self.current_user.permissions:
-            for i in reports:
-                if any(item in i.user.group_ids for item in self.current_user.group_ids):
-                    continue
-                reports.remove(i)
-
         ordered_results = order_results(reports)
 
         page = request.args.get("page", 1, type=int)

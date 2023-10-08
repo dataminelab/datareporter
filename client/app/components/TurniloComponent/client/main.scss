@@ -112,7 +112,7 @@ svg {
   color: rgb(22, 15, 102);
 }
 
-svg path {
+svg path:not(.line, .area) {
   fill: rgb(22, 15, 102) !important;
 }
 

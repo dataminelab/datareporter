@@ -1,7 +1,6 @@
 import hashlib
 import logging
 import time
-import json
 from urllib.parse import urlsplit, urlunsplit
 
 from flask import jsonify, redirect, request, url_for

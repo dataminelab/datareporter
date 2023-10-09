@@ -186,9 +186,7 @@ class ReportsListResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
-
         report.archive()
-        models.db.session.commit()
 
         self.record_event({
             "action": "archive",
@@ -272,9 +270,7 @@ class ReportResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
-
-        models.db.session.delete(report)
-        models.db.session.commit()
+        report.remove()
 
         self.record_event({
             "action": "delete",

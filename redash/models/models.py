@@ -98,6 +98,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     def archive(self):
         db.session.add(self)
         self.is_archived = True
+        db.session.commit()
 
     @classmethod
     def all_tags(self, user, include_drafts=False):
@@ -201,7 +202,6 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
             if favorite.object_type == "Report" and favorite.object_id == object.id:
                 return True
 
-    @classmethod
     def remove(self):
         Report.query.filter(
             Report.id == self.id

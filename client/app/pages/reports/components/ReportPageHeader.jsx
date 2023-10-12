@@ -339,26 +339,15 @@ export default function ReportPageHeader(props) {
         color_2: colorTextHex || report.color_2,
         name: save_as ? newName : reportName,
       }, { successMessage: null });
-
-      if (!report.expression || !report.appSettings) {
-        setTimeout(() => {
-          if (save_as) {
-            document.querySelector("#_handleSaveAs").click();
-          } else {
-            document.querySelector("#_handleSaveReport").click();
-          }
-        }, 466);
-        return 0;
-      }
+      recordEvent("update", "report", report.id);
+    } else {
+      updateReport({
+        color_1: colorBodyHex || report.color_1,
+        color_2: colorTextHex || report.color_2,
+        is_draft: false,
+      }, { successMessage: null });
+      recordEvent("create", "report", report.id);
     }
-    recordEvent("create", report.id, { id: report.id });
-    updateReport({
-      color_1: colorBodyHex || report.color_1,
-      color_2: colorTextHex || report.color_2,
-      is_draft: false,
-    }, { successMessage: null });
-    handleReportChanged(false);
-    return save_as ? saveAsReport(newName) : saveReport();
   }
 
   const moreActionsMenu = useMemo(
@@ -393,6 +382,10 @@ export default function ReportPageHeader(props) {
       openApiKeyDialog,
     ]
   );
+
+  useEffect(() => {
+    saveReport();
+  }, [report.expression])
 
   useEffect(() => {
     if (report.isJustLanded) {
@@ -621,7 +614,7 @@ export default function ReportPageHeader(props) {
             >
               <p className="new-name-label">name</p>
               <input className="new-name-input" type="text" value={newName} onChange={handleNewNameChange} />
-              <Button className="ant-menu-item-group-title" onClick={() => handleSaveReport(true)}>Save now</Button>
+              <Button className="ant-menu-item-group-title" onClick={() => saveAsReport(newName)}>Save now</Button>
             </ul>
           </>
         )}         

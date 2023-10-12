@@ -107,7 +107,7 @@ export default function useUpdateReport(report, onChange) {
           "expression",
         ]);
       }
-
+      if (!report.expression && !report.hash) return 0;
       return doSaveReport(data, { canOverwrite: report.can_edit })
         .then(updatedReport => {
           if (!updatedReport || updatedReport.message === 'No changes made') return;

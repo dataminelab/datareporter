@@ -243,9 +243,8 @@ class ReportResource(BaseResource):
         if MODEL_ID in updates:
             try:
                 model = Model.get_by_id(updates[MODEL_ID])
-                if model.user_id != self.current_user.id:
+                if not any(id in model.user.group_ids for id in self.current_user.group_ids):
                     abort(403)
-
             except NoResultFound:
                 abort(400, message=f"The Model with id {MODEL_ID} does not exists")
 

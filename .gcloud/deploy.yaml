@@ -2,6 +2,7 @@ substitutions:
   _GCR_HOSTNAME: eu.gcr.io
   _IMAGE_TAG: $COMMIT_SHA
   _ENVIRONMENT: $ENVIRONMENT
+  _REGION: europe-west1
 steps:
   - name: gcr.io/cloud-builders/gcloud
     args:
@@ -50,17 +51,17 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: Upgrade-Datareporter-Server
     entrypoint: gcloud
-    args: [ 'run', 'deploy', '$_ENVIRONMENT-datareporter-server', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$_IMAGE_TAG' ]
+    args: [ 'run', 'deploy', '$_ENVIRONMENT-datareporter-server', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$_IMAGE_TAG' ,'--region',"$_REGION"]
     waitFor: [ '-' ]
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: Upgrade-Datareporter-Worker
     entrypoint: gcloud
-    args: [ 'run', 'deploy', '$_ENVIRONMENT-datareporter-worker', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$_IMAGE_TAG' ]
+    args: [ 'run', 'deploy', '$_ENVIRONMENT-datareporter-worker', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$_IMAGE_TAG' ,'--region',"$_REGION"]
     waitFor: [ '-' ]
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: Upgrade-Plywood-Server
     entrypoint: gcloud
-    args: [ 'run', 'deploy', '$_ENVIRONMENT-plywood-server', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$_IMAGE_TAG' ]
+    args: [ 'run', 'deploy', '$_ENVIRONMENT-plywood-server', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$_IMAGE_TAG','--region',"$_REGION" ]
     waitFor: [ '-' ]
 tags:
   - datareporter-server-$_ENVIRONMENT

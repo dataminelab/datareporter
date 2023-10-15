@@ -59,8 +59,8 @@ steps:
     id: Deploy-$_ENVIRONMENT
     entrypoint: bash
     waitFor:
-      - Push-Data-Reporter
-      - Push-Plywood
+      - Build-Data-Reporter
+      - Build-Plywood
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
   - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'

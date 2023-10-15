@@ -23,7 +23,7 @@ export default function useReport(originalReport) {
     const data = {
       name: name,
       model_id: report.model_id,
-      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
+      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2) || report.hash,
       color_1: report.color_1,
       color_2: report.color_2,
     }

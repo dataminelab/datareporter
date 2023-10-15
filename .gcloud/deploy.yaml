@@ -44,7 +44,7 @@ steps:
       - datareporter.image.tag=$_IMAGE_TAG
       - --timeout=15m
       - --atomic
-    id: Deploy
+    id: K8s-Deploy
     volumes:
       - name: config
         path: /config
@@ -52,16 +52,16 @@ steps:
     id: Upgrade-Datareporter-Server
     entrypoint: gcloud
     args: [ 'run', 'deploy', '$_ENVIRONMENT-datareporter-server', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$_IMAGE_TAG' ,'--region',"$_REGION"]
-    waitFor: [ '-' ]
+    waitFor: [ 'K8s-Deploy' ]
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: Upgrade-Datareporter-Worker
     entrypoint: gcloud
     args: [ 'run', 'deploy', '$_ENVIRONMENT-datareporter-worker', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$_IMAGE_TAG' ,'--region',"$_REGION"]
-    waitFor: [ '-' ]
+    waitFor: [ 'K8s-Deploy' ]
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: Upgrade-Plywood-Server
     entrypoint: gcloud
     args: [ 'run', 'deploy', '$_ENVIRONMENT-plywood-server', '--image', '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$_IMAGE_TAG','--region',"$_REGION" ]
-    waitFor: [ '-' ]
+    waitFor: [ 'K8s-Deploy' ]
 tags:
   - datareporter-server-$_ENVIRONMENT

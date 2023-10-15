@@ -1,7 +1,7 @@
 from . import TimestampMixin, ChangeTrackingMixin, User, DataSource
 from .base import db, primary_key, Column, key_type, gfk_type
 from sqlalchemy.orm import load_only
-from sqlalchemy import and_, or_, func, any_
+from sqlalchemy import and_, or_, func, text
 from sqlalchemy.dialects.postgresql import ARRAY
 from ..services.expression import ExpressionBase64Parser
 from redash.models import Favorite
@@ -213,7 +213,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         return self.query.join(User).filter(
             and_(
                 Report.is_archived.is_(False),
-                User.org_id == user.org.id,  # Replace with the appropriate value
-                User.group_ids.contains(user.group_ids)  # Check if 3 is in the array of group_ids
+                User.org_id == user.org.id,
+                User.group_ids.overlap(user.group_ids)
             )
         )

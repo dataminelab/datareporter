@@ -152,6 +152,7 @@ class ReportsListResource(BaseResource):
     @require_permission("view_report")
     def get(self):
         _type = request.args.get("type", "all", type=str)
+        search_query = request.args.get("q", "", type=str)
         reports = []
         if _type == "my":
             reports = Report.get_by_user(
@@ -161,6 +162,8 @@ class ReportsListResource(BaseResource):
             )
         elif _type == "all":
             reports = Report.get_by_group_ids(self.current_user)
+        if search_query:
+            reports = reports.filter(Report.name.ilike(f"%{search_query}%"))
 
         formatting = request.args.get("format", "base64")
         ordered_results = order_results(reports)

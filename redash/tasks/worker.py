@@ -3,9 +3,7 @@ import base64
 import errno
 import os
 import signal
-
 import requests
-
 from redash import statsd_client
 from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
 from rq.utils import utcnow
@@ -63,6 +61,7 @@ class GooglePubSubNotifier:
     publisher = None
 
     def notify(self, message):
+
         if self.publisher is None:
             from google.cloud import pubsub_v1
             self.publisher = pubsub_v1.PublisherClient()

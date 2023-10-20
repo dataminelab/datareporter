@@ -9,7 +9,7 @@ steps:
       - '-c'
       - >-
         gcloud secrets versions access latest
-        --secret=kubeconfig-k8s-1-25-4-do-0-fra1-1678526047017  >
+        --secret=kubeconfig-digitalocean-k8s  >
         /config/kubeconfig.conf
     entrypoint: bash
     volumes:

@@ -1,7 +1,8 @@
 client/.tmp/
 #client/dist/
-#client/node_modules/
-#plywood/server
+client/node_modules/
+plywood/server/node_modules/
+plywood/server/client/node_modules
 .dockerignore
 node_modules/
 viz-lib/node_modules/

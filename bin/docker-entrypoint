@@ -108,8 +108,7 @@ dev_worker_server)
   REDASH_WEB_WORKER_TIMOUT=180
   REDASH_WEB_WORKER_THREADS=1
 
-  exec /app/dev_worker_server.py runserver --debugger --no-reload -h 0.0.0.0 --without-threads
-#  exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name worker -w${REDASH_WEB_WORKERS:-4} --reload   --check-config  --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT worker.wsgi:app   --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
+  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive --  /app/dev_worker_server.py runserver --debugger --no-reload -h 0.0.0.0 --without-threads
   ;;
 worker_server)
   shift

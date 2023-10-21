@@ -22,6 +22,7 @@ AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
 const app = express();
 if (env.SENTRY_DSN != undefined) {
+    console.log("Sentry enabled");
     Sentry.init({
         dsn: env.SENTRY_DSN,
         environment: env.SENTRY_ENVIRONMENT,

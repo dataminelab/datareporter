@@ -1,5 +1,4 @@
 import express, { NextFunction, Request } from "express";
-import * as Sentry from "@sentry/node";
 import { statusEndpoint } from "./endpoint/status-endpoint";
 import { plywoodEndpoint } from "./endpoint/plywood-endpoint";
 import { handleError } from "./middlewares/errorHandler";
@@ -14,24 +13,13 @@ import { hashConverterRequest } from "./endpoint/hash-converter";
 import { filterToHash, hashToFilter } from './endpoint/filter-to-hash-converter';
 import { responseShape } from './endpoint/response-shape';
 import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParser";
-import { env }from "process";
 
 AttributeParserFactory.register(PostgresAttributeParser);
 AttributeParserFactory.register(MySqlAttributeParser);
 AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
 const app = express();
-if (env.SENTRY_DSN != undefined) {
-    console.log("Sentry enabled");
-    Sentry.init({
-        dsn: env.SENTRY_DSN,
-        environment: env.SENTRY_ENVIRONMENT,
-        attachStacktrace: true,
-        sampleRate: parseFloat(env.SENTRY_SAMPLE_RATE || "100.0",),
-        tracesSampleRate: parseFloat(env.SENTRY_TRACES_SAMPLE_RATE || "100.0",),
-    });
-    app.use(Sentry.Handlers.requestHandler());
-}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

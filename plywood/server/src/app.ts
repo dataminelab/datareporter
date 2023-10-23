@@ -14,7 +14,7 @@ import { hashConverterRequest } from "./endpoint/hash-converter";
 import { filterToHash, hashToFilter } from './endpoint/filter-to-hash-converter';
 import { responseShape } from './endpoint/response-shape';
 import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParser";
-import { env } from "process";
+import { env }from "process";
 
 AttributeParserFactory.register(PostgresAttributeParser);
 AttributeParserFactory.register(MySqlAttributeParser);

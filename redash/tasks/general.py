@@ -17,6 +17,7 @@ logger = get_job_logger(__name__)
 
 @job("default")
 def record_event(raw_event):
+    logger.info("raw event recieved: %s", raw_event)
     event = models.Event.record(raw_event)
     models.db.session.commit()
 

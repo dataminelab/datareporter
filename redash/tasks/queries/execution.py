@@ -267,7 +267,7 @@ class QueryExecutor(object):
 
 # user_id is added last as a keyword argument for backward compatability -- to support executing previously submitted
 # jobs before the upgrade to this version.
-def execute_query(
+def execute_query( # xxx
     query,
     data_source_id,
     metadata,
@@ -275,6 +275,7 @@ def execute_query(
     scheduled_query_id=None,
     is_api_key=False,
 ):
+    logger.info("Executing query id=%s user_id=%s", metadata.get("Query ID"), user_id)
     if scheduled_query_id is not None:
         scheduled_query = models.Query.query.get(scheduled_query_id)
     else:

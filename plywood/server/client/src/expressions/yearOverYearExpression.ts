@@ -126,9 +126,7 @@ export class YearOverYearExpression {
     }
 
     static isYoyQuery(query : string): boolean {
-        if (this.iSFalseQuery(query)) {
-            return false;
-        }
+        if (this.iSFalseQuery(query)) return false;
         return query.includes("_previous__") && query.includes("_delta__");
     }
 

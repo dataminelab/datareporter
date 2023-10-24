@@ -1,6 +1,6 @@
 from typing import Callable
 import json
-
+import re
 import lzstring
 from flask_restful import abort
 
@@ -173,7 +173,8 @@ class Expression:
         return 'where false' in query.lower()
 
     def get_where_statement(self, query: str):
-        return query.split('WHERE')[1].split("GROUP BY")[0]
+        where = query.split('WHERE')[-1]
+        return re.sub(r"\s{1}\w{1,2}\s{1}\w{1,4}.*", "", where)
 
     def _get_boolean_queries(self, last_query):
         res = [last_query]
@@ -231,6 +232,9 @@ class Expression:
         ref = self.get_filter_ref()
         some_ref = f"some_{ref}"
         # delete last paranthesis back
+        # XXX test below next week
+        if where.endswith("))"):
+            where = where[0:len(where)-1]
         where_ref = f"(`{ref}`='{some_ref}'))"
         where = f"{where} AND {where_ref}"
         if self._is_last_query_boolean_false(last_query):

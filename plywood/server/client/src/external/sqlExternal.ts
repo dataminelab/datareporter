@@ -203,7 +203,7 @@ export abstract class SQLExternal extends External {
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-    const isYoyQuery = YearOverYearExpression.isYoyQuery(query[1]); // first pushed query string is always SELECT
+    const isYoyQuery = YearOverYearExpression.isYoyQuery(query.join('\n'));
     if (isYoyQuery) {
       let yoyExpression = new YearOverYearExpression(engine, query, mode);
       yoyExpression.setKeys(keys)

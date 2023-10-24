@@ -74,8 +74,13 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
 
   onGlobalMouseMove = (event: MouseEvent) => {
     const { anchor } = this.state;
-    const currentValue = this.constrainValue(this.getCoordinate(event) - anchor);
-    if (!!this.props.onResize) this.props.onResize(currentValue);
+    if (150 > anchor) {
+      const currentValue = this.constrainValue(this.getCoordinate(event)-150);
+      if (!!this.props.onResize) this.props.onResize(currentValue);
+    } else {
+      const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
+      if (!!this.props.onResize) this.props.onResize(currentValue);
+    }
   };
 
   private getValue(event: MouseEvent | React.MouseEvent<HTMLElement>): number {

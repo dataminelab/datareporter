@@ -48,6 +48,15 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
     def get_by_id_and_user(cls, _id, user):
         return cls.query.filter(cls.id == _id, cls.user_id == user.id).one()
 
+    @classmethod
+    def get_by_group_ids(self, user):
+        return self.query.join(User).filter(
+            and_(
+                User.org_id == user.org.id,
+                User.group_ids.overlap(user.group_ids)
+            )
+        )
+
 
 @gfk_type
 class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):

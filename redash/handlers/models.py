@@ -63,6 +63,8 @@ class ModelsListResource(BaseResource):
 
         if data_source:
             found_models = Model.get_by_data_source(int(data_source))
+        elif self.current_user.has_permission("admin"):
+            found_models = Model.get_by_group_ids(self.current_user)
         else:
             found_models = Model.get_by_user(self.current_user)
 

@@ -234,28 +234,29 @@ export default function ReportPageHeader(props) {
   }
 
   const handleDataSourceChange = useCallback(
-    async (dataSourceId, signal) => {
+    async (data_source_id, signal) => {
       changeModelDataText(modelSelectElement.current.props.placeholder);
       setLoadModelsLoaded(false);
-      recordEvent("update", "report", report.id, { dataSourceId });
       var newModels = [];
       try {
-        const res = await Model.query({ data_source: dataSourceId });
+        const res = await Model.query({ data_source: data_source_id });
         newModels = res.results;
         if (signal && signal.aborted) return;
         const updates = {
-          data_source_id: dataSourceId,
+          data_source_id,
           isJustLanded: false,
         }
         setModels(newModels);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null });
         handleReportChanged(true);
+        recordEvent("update", "report", report.id, { data_source_id });
       } catch (err) {
         updateReport({}, { successMessage: err });
+        recordEvent("error", "report", report.id, { data_source_id });
       }
       setLoadModelsLoaded(true);
-      setSelectedDataSource(dataSourceId);
+      setSelectedDataSource(data_source_id);
     },
     [report, props.onChange, updateReport]
   );
@@ -384,7 +385,7 @@ export default function ReportPageHeader(props) {
   );
 
   useEffect(() => {
-    saveReport();
+    updateReport(report, { successMessage: null });
   }, [report.expression])
 
   useEffect(() => {

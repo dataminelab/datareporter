@@ -44,6 +44,7 @@ steps:
       - datareporter.image.tag=$_IMAGE_TAG
       - --timeout=15m
       - --atomic
+      - --debug
     id: K8s-Deploy
     volumes:
       - name: config

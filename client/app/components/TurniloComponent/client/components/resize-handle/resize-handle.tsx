@@ -83,9 +83,11 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
           const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
           if (!!this.props.onResize) this.props.onResize(currentValue);
         }
+        break;
       default:
         const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
         if (!!this.props.onResize) this.props.onResize(currentValue);
+        break;
     }
   };
 

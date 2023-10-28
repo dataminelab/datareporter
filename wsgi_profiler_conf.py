@@ -10,7 +10,7 @@ import time
 PROFILE_LIMIT = int(os.environ.get("PROFILE_LIMIT", 30))
 PROFILER = bool(int(os.environ.get("PROFILER", 1)))
 
-print """
+print("""
 
 # ** USAGE:
 $ PROFILE_LIMIT=100 gunicorn -c ./wsgi_profiler_conf.py wsgi
@@ -18,7 +18,7 @@ $ PROFILE_LIMIT=100 gunicorn -c ./wsgi_profiler_conf.py wsgi
 # ** TIME MEASUREMENTS ONLY:
 $ PROFILER=0 gunicorn -c ./wsgi_profiler_conf.py wsgi
 
-"""
+""")
 
 
 def profiler_enable(worker, req):
@@ -34,7 +34,7 @@ def profiler_summary(worker, req):
     ps.print_stats(PROFILE_LIMIT)
 
     logging.error("\n[%d] [INFO] [%s] URI %s" % (worker.pid, req.method, req.uri))
-    logging.error("[%d] [INFO] %s" % (worker.pid, unicode(s.getvalue())))
+    logging.error("[%d] [INFO] %s" % (worker.pid, str(s.getvalue())))
 
 
 def pre_request(worker, req):

@@ -203,8 +203,8 @@ class Expression:
 
     def _get_string_queries(self, last_query: str, prev_result: object) -> list:
         second_result = prev_result[1]
-        if "job" in second_result and second_result["job"]["error"]:
-            return abort(400, message=second_result["job"]["error"])
+        if "job" in second_result and "error" in second_result["job"]:
+            return abort(400, message=second_result["job"]["error"] or "Error in job")
         for i in self.filter["splits"]:
             column_name = i["dimension"]
             some_column_name = f'some_{column_name}'
@@ -273,14 +273,6 @@ class Expression:
                     query = last_query.replace(some_column_name, value)
             two_splits_queries.append(query)
         return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]
-
-    def get_3_splits_queries(self, prev_result: list, prev_queries: list) -> list:
-        queries = self.queries
-        last_query: str = queries[len(queries) - 1]
-        second_part = self._get_string_queries_3(last_query, prev_result, prev_queries)
-        return [*prev_queries, *second_part]
-        # return self._get_string_queries(last_query=last_query, prev_result=prev_result)
-        # return self.get_3_splits_queries(last_query=last_query, prev_result=prev_result)
 
     def get_2_splits_queries(self, prev_result: list) -> list:
         queries = self.queries

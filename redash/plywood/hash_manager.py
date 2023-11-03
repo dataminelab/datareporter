@@ -162,6 +162,12 @@ def parse_result(
         )
 
     split = len(expression.filter['splits']) or 1
+
+    errored = clean_errored(queries)
+    if len(errored):
+        clear_cache(hash_string, split)
+        abort(400, message=errored[0]['job']['error'])
+
     if split > 1:
         if split == 2:
             queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
@@ -174,11 +180,6 @@ def parse_result(
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
-
-    errored = clean_errored(queries)
-    if len(errored):
-        clear_cache(hash_string, split)
-        abort(400, message=errored[0]['job']['error'])
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,

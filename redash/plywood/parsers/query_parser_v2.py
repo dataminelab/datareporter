@@ -71,9 +71,10 @@ class PlywoodQueryParserV2:
     def _get_zero_value(self, attributes: list):
         """First query is always about count"""
         res = {}
+        query_results = self._query_result
 
-        rows: list = self._query_result[0]['query_result']['data']['rows']
-        columns: list = self._query_result[0]['query_result']['data']['columns']
+        rows: list = query_results[0]['query_result']['data']['rows']
+        columns: list = query_results[0]['query_result']['data']['columns']
 
         for value in attributes:
             key = value['name']

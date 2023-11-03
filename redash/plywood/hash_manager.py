@@ -194,7 +194,6 @@ def parse_result(
         data=data,
         meta=meta,
         shape=expression.shape,
-        failed=errored,
     )
 
     return serializer

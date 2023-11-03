@@ -234,6 +234,8 @@ class ReportResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
         counter = 0
         for key, value in updates.items():
+            if key == "expression" and isinstance(value, dict):
+                counter+=1
             if value == report.__getattribute__(key):
                 counter+=1
         if counter == len(updates):

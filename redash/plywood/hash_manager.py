@@ -185,8 +185,13 @@ def parse_result(
         visualization=expression.visualization,
         data_cube=data_cube,
     )
-    data = query_parser.parse_ply(data_cube.ply_engine)
-    meta = data_cube.get_meta(queries)
+
+    if errored:
+        data = None
+        meta = None
+    else:
+        data = query_parser.parse_ply(data_cube.ply_engine)
+        meta = data_cube.get_meta(queries)
 
     serializer = ReportSerializer(
         queries=queries,

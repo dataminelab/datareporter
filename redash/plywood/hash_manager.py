@@ -166,7 +166,7 @@ def parse_result(
     errored = clean_errored(queries)
     if len(errored):
         clear_cache(hash_string, split)
-        abort(400, message=errored[0]['job']['error'])
+        abort(400, message=errored[0]['job']['error'] or "Undefined error")
 
     if split > 1:
         if split == 2:

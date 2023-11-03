@@ -6,6 +6,7 @@ from rq import get_current_job
 from rq.job import JobStatus
 from rq.timeouts import JobTimeoutException
 from rq.exceptions import NoSuchJobError
+from sqlalchemy.orm.exc import NoResultFound
 
 from redash import models, redis_connection, settings
 from redash.query_runner import InterruptException
@@ -28,7 +29,7 @@ def _unlock(query_hash, data_source_id):
 
 
 def enqueue_query(
-    query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata={}
+    query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata={}, calcel=False
 ):
     query_hash = gen_query_hash(query)
     logger.info("Inserting job for %s with metadata=%s", query_hash, metadata)
@@ -142,10 +143,11 @@ def _resolve_user(user_id, is_api_key, query_id):
                 q = models.Query.by_api_key(api_key)
 
             return models.ApiUser(api_key, q.org, q.groups)
-        else:
+        try:
             return models.User.get_by_id(user_id)
-    else:
-        return None
+        except NoResultFound:
+            return models.User.find_by_email(user_id).one()
+    return None
 
 
 class QueryExecutor(object):

@@ -203,8 +203,6 @@ class Expression:
 
     def _get_string_queries(self, last_query: str, prev_result: object) -> list:
         second_result = prev_result[1]
-        if "job" in second_result and "error" in second_result["job"]:
-            return abort(400, message=second_result["job"]["error"] or "Error in job")
         for i in self.filter["splits"]:
             column_name = i["dimension"]
             some_column_name = f'some_{column_name}'

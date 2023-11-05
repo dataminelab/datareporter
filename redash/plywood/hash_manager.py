@@ -188,6 +188,7 @@ def parse_result(
     if len(errored) == len(queries):
         data = None
         meta = None
+        clear_cache(hash_string, split)
     else:
         data = query_parser.parse_ply(data_cube.ply_engine)
         meta = data_cube.get_meta(queries)

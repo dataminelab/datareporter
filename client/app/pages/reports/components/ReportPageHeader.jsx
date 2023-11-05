@@ -349,6 +349,7 @@ export default function ReportPageHeader(props) {
       }, { successMessage: null });
       recordEvent("create", "report", report.id);
     }
+    saveReport();
   }
 
   const moreActionsMenu = useMemo(

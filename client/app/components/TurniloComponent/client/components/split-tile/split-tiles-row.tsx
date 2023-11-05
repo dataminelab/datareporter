@@ -154,6 +154,8 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
       } else {
         this.replaceSplit(split, dragPosition.replace);
       }
+    } else if (split.type !== "time") {
+      this.insertSplit(split, 0);
     } else {
       this.insertSplit(split, dragPosition.insert);
     }

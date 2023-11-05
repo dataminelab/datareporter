@@ -525,7 +525,12 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         };
       });
 
-    return <AddTile<Dimension> containerStage={menuStage} onSelect={this.appendFilter} tiles={tiles} />;
+    return <AddTile<Dimension> 
+      containerStage={menuStage} 
+      insertSplit={this.appendFilter} 
+      appendSplit={this.appendFilter} 
+      tiles={tiles} 
+    />;
   }
 
   render() {

@@ -32,7 +32,7 @@ export interface Tile<T> {
 interface AddTileProps<T> {
   tiles: Array<Tile<T>>;
   appendSplit: Unary<T, void>;
-  insertSplit: Binary<any, int, void>;
+  insertSplit: Binary<any, int, void> | Unary<T, void>;
   containerStage: Stage;
 }
 

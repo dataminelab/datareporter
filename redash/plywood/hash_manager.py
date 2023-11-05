@@ -163,15 +163,14 @@ def parse_result(
 
     split = len(expression.filter['splits']) or 1
 
-    if split > 1:
-        if split == 2:
-            queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
-            queries = cache_or_get(
-                hash_string,
-                queries_2_splits,
-                current_org,
-                model,
-                split)
+    if split == 2:
+        queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
+        queries = cache_or_get(
+            hash_string,
+            queries_2_splits,
+            current_org,
+            model,
+            split)
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
@@ -186,7 +185,7 @@ def parse_result(
         data_cube=data_cube,
     )
 
-    if errored:
+    if len(errored) == len(queries):
         data = None
         meta = None
     else:

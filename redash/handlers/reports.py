@@ -236,7 +236,7 @@ class ReportResource(BaseResource):
         for key, value in updates.items():
             if key == "expression" and isinstance(value, dict):
                 counter+=1
-            if value == report.__getattribute__(key):
+            elif value == report.__getattribute__(key):
                 counter+=1
         if counter == len(updates):
             return make_response(json.dumps({"message": "No changes made"}), 204)

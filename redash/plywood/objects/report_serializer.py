@@ -43,6 +43,7 @@ class ReportSerializer:
         status: int = 200,
         data: Optional[Union[PlywoodValue, dict]] = None,
         meta: Optional[ReportMetaData] = None,
+        expression_queries: Optional[List[dict]] = None,
     ):
         self.queries = queries
         self.failed = failed
@@ -50,6 +51,7 @@ class ReportSerializer:
         self.status = status
         self.data = data
         self.meta = meta
+        self.expression_queries = expression_queries
 
     def _get_progress(self) -> Progress:
         jobs = 0
@@ -81,4 +83,5 @@ class ReportSerializer:
             'meta': self.meta.to_dict() if self.meta else None,
             'shape': self.shape,
             'progress': progress.dict(),
+            "expression_queries": self.expression_queries,
         }

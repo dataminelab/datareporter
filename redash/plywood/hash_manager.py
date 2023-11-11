@@ -145,6 +145,7 @@ def parse_result(
     expression: Expression,
     model: Model,
     current_org,
+    expression_queries: List[dict] = None,
 ) -> ReportSerializer:
     """
     Redash caches result and returns query in the same endpoint
@@ -199,6 +200,7 @@ def parse_result(
         data=data,
         meta=meta,
         shape=expression.shape,
+        expression_queries=expression_queries,
     )
 
     return serializer
@@ -286,6 +288,7 @@ def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: b
         expression,
         model,
         organisation,
+        expression.queries
     )
 
 

@@ -243,35 +243,6 @@ class Expression:
             return select + " WHERE " + where + " GROUP BY " + group_by
         return last_query
 
-    def _get_string_queries_3(self, last_query: str, prev_result: list, prev_queries: list) -> list:
-        ## TODO FINISH THIS
-        second_result = prev_result[1]
-        column_name = self.filter["splits"][0]["dimension"]
-        some_column_name = f'some_{column_name}'
-
-        third_result = prev_result[2]
-        third_result_query = third_result['query_result']['query']
-
-        if some_column_name not in last_query:
-            raise Exception(f'{some_column_name} is not present in query')
-
-        two_splits_queries = []
-        if "job" in third_result and third_result["job"]["error"]:
-            raise Exception(f'Error in job: {third_result["job"]["error"]}')
-
-        for row in second_result['query_result']['data']['rows']:
-            value = row[column_name]
-            if value is None:
-                value = self._data_cube.null_value
-                query = last_query.replace(f"='{some_column_name}'", f" {self._data_cube.null_value}")
-            else:
-                if self._data_cube.ply_engine == 'bigquery':
-                    query = last_query.replace(f"'{some_column_name}'", f'"{value}"')
-                else:
-                    query = last_query.replace(some_column_name, value)
-            two_splits_queries.append(query)
-        return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]
-
     def get_2_splits_queries(self, prev_result: list) -> list:
         queries = self.queries
 

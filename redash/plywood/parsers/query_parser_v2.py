@@ -50,7 +50,7 @@ class PlywoodQueryParserV2:
 
     def parse_ply(self, engine: str):
         if engine in supported_engines:
-            return self._query_to_ply_data(engine=engine)
+            return self._query_to_ply_data(engine)
 
         raise ExpressionNotSupported(message=f'{engine} is not supported')
 
@@ -91,7 +91,6 @@ class PlywoodQueryParserV2:
                     row_value = row.get(key) or 0
                 res[key] = float(row_value) if _type == "NUMBER" else row_value
 
-            
         return res
 
     def _get_first_split(self):
@@ -116,7 +115,9 @@ class PlywoodQueryParserV2:
 
     def _prepare_line_chart(self, shape, top_index):
         split = shape['data'][0]['SPLIT']
-        split['data'][top_index]['SPLIT']['attributes'].append( dict(name=self._data_cube_name, type='DATASET') ) # _data_cube.source_name
+        split['data'][top_index]['SPLIT']['attributes'].append(
+            dict(name=self._data_cube_name, type='DATASET')
+        )
 
         size = len(split['data'][top_index]['SPLIT']['data'])
         column_name = split['data'][top_index]['SPLIT']['keys'][0]
@@ -153,7 +154,7 @@ class PlywoodQueryParserV2:
         for value in split['data']:
             search_column_name = self.null if value[column_name] is None else f"'{value[column_name]}'"
             query = pydash.find(self._query_result,
-                                lambda v: f'"{search_column_name[1:-1]}"' in v['query_result']['query'])
+                lambda v: f'"{search_column_name[1:-1]}"' in v['query_result']['query'])
             if query is None:
                 query = pydash.find(self._query_result,
                     lambda v: f"'{search_column_name[1:-1]}'" in v['query_result']['query'])
@@ -163,7 +164,8 @@ class PlywoodQueryParserV2:
             if query is None:
                 continue
             index = pydash.find_index(split['data'], lambda v: v[column_name] == value[column_name])
-            if index == -1: continue
+            if index == -1:
+                continue
             selected_query_split = query['query_result']['data']['rows']
             if len(last_query_split) >= len(selected_query_split):
                 split['data'][index]['SPLIT']['data'] = last_query_split

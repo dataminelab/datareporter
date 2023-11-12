@@ -210,7 +210,7 @@ def clean_errored(queries: list):
     errored = []
 
     for index, query in enumerate(queries):
-        if 'job' in query:
+        if 'job' in query and query['job']['status'] == FAILED_QUERY_CODE:# and query['job']['error']:
             errored.append(query)
             del queries[index]
 

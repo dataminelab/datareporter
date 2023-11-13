@@ -1,8 +1,16 @@
+substitutions:
+  _GCR_HOSTNAME: eu.gcr.io
+  _ENVIRONMENT:
+
+
 steps:
   - name: gcr.io/cloud-builders/docker
     args:
       - buildx
       - build
+      - --build-arg
+      - version=$COMMIT_SHA
+      - --push
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
       - '-t'
@@ -15,11 +23,14 @@ steps:
       - '-o'
       - type=image
     id: Build-Data-Reporter
-    waitFor: ['-']
+    waitFor: [ '-' ]
   - name: gcr.io/cloud-builders/docker
     args:
       - buildx
       - build
+      - --build-arg
+      - version=$COMMIT_SHA
+      - --push
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
       - '-t'
@@ -31,7 +42,7 @@ steps:
       - type=image
     dir: plywood/server
     id: Build-Plywood
-    waitFor: ['-']
+    waitFor: [ '-' ]
   - name: gcr.io/cloud-builders/docker
     args:
       - push
@@ -39,43 +50,21 @@ steps:
     id: Push-Data-Reporter
     waitFor:
       - Build-Data-Reporter
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
-    id: Push-Data-Reporter-Latest
-    waitFor:
-      - Build-Data-Reporter
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
-    id: Push-Plywood
-    waitFor:
-      - Build-Plywood
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
-    id: Push-Plywood-Latest
-    waitFor:
-      - Build-Data-Reporter
   - name: gcr.io/cloud-builders/gcloud
     args:
       - '-c'
       - >-
-        gcloud builds triggers  run datareporter-deploy-$_ENVIRONMENT
-        --region=$LOCATION --sha=$COMMIT_SHA --substitutions=_IMAGE_TAG="$COMMIT_SHA",_ENVIRONMENT=$_ENVIRONMENT
-    id: Deploy-$_ENVIRONMENT
+        gcloud builds triggers  run datareporter-deploy-$BRANCH_NAME
+        --region=$LOCATION --sha=$COMMIT_SHA --substitutions=_IMAGE_TAG="$COMMIT_SHA"
+    id: Deploy-$BRANCH_NAME
     entrypoint: bash
     waitFor:
-      - Push-Data-Reporter
-      - Push-Plywood
+      - Build-Data-Reporter
+      - Build-Plywood
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
   - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
 options:
   substitutionOption: ALLOW_LOOSE
-substitutions:
-  _GCR_HOSTNAME: eu.gcr.io
-  _ENVIRONMENT:

@@ -54,9 +54,9 @@ steps:
     args:
       - '-c'
       - >-
-        gcloud builds triggers  run datareporter-deploy-$_ENVIRONMENT
-        --region=$LOCATION --sha=$COMMIT_SHA --substitutions=_IMAGE_TAG="$COMMIT_SHA",_ENVIRONMENT=$_ENVIRONMENT
-    id: Deploy-$_ENVIRONMENT
+        gcloud builds triggers  run datareporter-deploy-$BRANCH_NAME
+        --region=$LOCATION --sha=$COMMIT_SHA --substitutions=_IMAGE_TAG="$COMMIT_SHA"
+    id: Deploy-$BRANCH_NAME
     entrypoint: bash
     waitFor:
       - Build-Data-Reporter

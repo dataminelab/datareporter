@@ -391,12 +391,12 @@ export default function ReportPageHeader(props) {
 
   useEffect(() => {
     if (report.isJustLanded) {
-      handleColorChange(report.color_1, 2, null);
-      handleColorChange(report.color_2, 1, null);
-      handleDataSourceChange(report.data_source_id);
-      handleModelChange(report.model_id);
-      handleIdChange(report.id);
-      setReportName(report.name);
+      if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1, null);
+      if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2, null);
+      if (report.data_source_id !== selectedDataSource) handleDataSourceChange(report.data_source_id);
+      if (report.model_id !== selectedModel) handleModelChange(report.model_id);
+      if (report.name !== reportName) setReportName(report.name);
+      if (report.id !== props.report.id) handleIdChange(report.id);
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)), 
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 

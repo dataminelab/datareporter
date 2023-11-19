@@ -9,7 +9,7 @@ steps:
       - buildx
       - build
       - --build-arg
-      - version=$COMMIT_SHA
+      - version=$BRANCH_NAME-$COMMIT_SHA
       - --push
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
@@ -29,7 +29,7 @@ steps:
       - buildx
       - build
       - --build-arg
-      - version=$COMMIT_SHA
+      - version=$BRANCH_NAME-$COMMIT_SHA
       - --push
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'

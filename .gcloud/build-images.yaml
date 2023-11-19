@@ -5,6 +5,12 @@ substitutions:
 
 steps:
   - name: gcr.io/cloud-builders/docker
+    id: 'worker'
+    args:
+      - buildx
+      - create
+      - --use
+  - name: gcr.io/cloud-builders/docker
     args:
       - buildx
       - build
@@ -27,7 +33,7 @@ steps:
       - '-o'
       - type=image
     id: Build-Data-Reporter
-    waitFor: [ '-' ]
+    waitFor: [ 'worker' ]
   - name: gcr.io/cloud-builders/docker
     args:
       - buildx
@@ -50,7 +56,7 @@ steps:
       - type=image
     dir: plywood/server
     id: Build-Plywood
-    waitFor: [ '-' ]
+    waitFor: [ 'worker' ]
   - name: gcr.io/cloud-builders/docker
     args:
       - push

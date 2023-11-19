@@ -6,6 +6,11 @@ substitutions:
 steps:
 
   - name: gcr.io/cloud-builders/docker
+    env:
+      - 'COMMIT_SHA=$COMMIT_SHA'
+      - 'PROJECT_ID=$PROJECT_ID'
+      - '_GCR_HOSTNAME=$_GCR_HOSTNAME'
+      - 'BRANCH_NAME=$BRANCH_NAME'
     script: |
        #!/usr/bin/env bash
        docker buildx build \
@@ -14,12 +19,17 @@ steps:
        -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest \
        --build-arg version=$BRANCH_NAME-$COMMIT_SHA \
        --build-arg skip_dev_deps=true \
-       -f Dockerfile -o  type=image \
+       -f Dockerfile -o type=image \
        .
 
     id: Build-Data-Reporter
     waitFor: [ '-' ]
   - name: gcr.io/cloud-builders/docker
+    env:
+      - 'COMMIT_SHA=$COMMIT_SHA'
+      - 'PROJECT_ID=$PROJECT_ID'
+      - '_GCR_HOSTNAME=$_GCR_HOSTNAME'
+      - 'BRANCH_NAME=$BRANCH_NAME'
     script: |
       #!/usr/bin/env bash
       docker buildx build \

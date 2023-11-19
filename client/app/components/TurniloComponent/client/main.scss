@@ -112,7 +112,7 @@ svg {
   color: rgb(22, 15, 102);
 }
 
-svg path:not(.line, .area) {
+svg path:not(.line, .area, .surface, .legendpie) {
   fill: rgb(22, 15, 102) !important;
 }
 

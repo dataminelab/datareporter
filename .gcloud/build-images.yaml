@@ -7,7 +7,7 @@ steps:
 
   - name: gcr.io/cloud-builders/docker
     script: >
-       docker buildx create --use
+       docker buildx create --use \
        docker buildx build \
        --build-arg version=$BRANCH_NAME-$COMMIT_SHA \
        --cache-from type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME \
@@ -16,7 +16,8 @@ steps:
        -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest \
        --build-arg skip_dev_deps=true \
        -f Dockerfile -o  type=image \
-      .
+       .
+
     id: Build-Data-Reporter
     waitFor: [ '-' ]
   - name: gcr.io/cloud-builders/docker
@@ -30,6 +31,7 @@ steps:
       -t $_GCR_HOSTNAME/$PROJECT_ID/plywood:latest \
       -f Dockerfile -o  type=image \
       .
+
     dir: plywood/server
     id: Build-Plywood
     waitFor: [ '-' ]

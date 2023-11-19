@@ -339,7 +339,7 @@ export default function ReportPageHeader(props) {
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
         name: save_as ? newName : reportName,
-      }, { successMessage: null });
+      }, { successMessage: "Report updated" });
       recordEvent("update", "report", report.id);
     } else {
       updateReport({
@@ -349,7 +349,9 @@ export default function ReportPageHeader(props) {
       }, { successMessage: null });
       recordEvent("create", "report", report.id);
     }
-    saveReport();
+    if (!report.id) {
+      saveReport();
+    }
   }
 
   const moreActionsMenu = useMemo(
@@ -387,7 +389,7 @@ export default function ReportPageHeader(props) {
 
   useEffect(() => {
     updateReport(report, { successMessage: null });
-  }, [report.expression])
+  }, [report.expression, window.location.hash]);
 
   useEffect(() => {
     if (report.isJustLanded) {

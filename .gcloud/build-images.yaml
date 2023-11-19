@@ -4,59 +4,35 @@ substitutions:
 
 
 steps:
+
   - name: gcr.io/cloud-builders/docker
-    id: 'worker'
-    args:
-      - buildx
-      - create
-      - --use
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - buildx
-      - build
-      - --build-arg
-      - version=$BRANCH_NAME-$COMMIT_SHA
-      - --cache-from
-      - 'type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME'
-      - --cache-to
-      - 'type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME'
-      - --push
-      - '-t'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
-      - '-t'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
-      - .
-      - '--build-arg'
-      - 'skip_dev_deps=true'
-      - '-f'
-      - Dockerfile
-      - '-o'
-      - type=image
+    script: >
+       docker buildx create --use
+       docker buildx build \
+       --build-arg version=$BRANCH_NAME-$COMMIT_SHA \
+       --cache-from type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME \
+       --cache-to type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME \
+       --push -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA \
+       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest \
+       --build-arg skip_dev_deps=true \
+       -f Dockerfile -o  type=image \
+      .
     id: Build-Data-Reporter
-    waitFor: [ 'worker' ]
+    waitFor: [ '-' ]
   - name: gcr.io/cloud-builders/docker
-    args:
-      - buildx
-      - build
-      - --build-arg
-      - version=$BRANCH_NAME-$COMMIT_SHA
-      - --cache-from
-      - 'type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/plywood:cache-$BRANCH_NAME'
-      - --cache-to
-      - 'type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/plywood:cache-$BRANCH_NAME'
-      - --push
-      - '-t'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
-      - '-t'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
-      - .
-      - '-f'
-      - Dockerfile
-      - '-o'
-      - type=image
+    script: >
+      docker buildx create --use
+      docker buildx build \
+      --build-arg version=$BRANCH_NAME-$COMMIT_SHA \
+      --cache-from type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/plywood:cache-$BRANCH_NAME \
+      --cache-to type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/plywood:cache-$BRANCH_NAME \
+      --push -t $_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA \
+      -t $_GCR_HOSTNAME/$PROJECT_ID/plywood:latest \
+      -f Dockerfile -o  type=image \
+      .
     dir: plywood/server
     id: Build-Plywood
-    waitFor: [ 'worker' ]
+    waitFor: [ '-' ]
   - name: gcr.io/cloud-builders/docker
     args:
       - push

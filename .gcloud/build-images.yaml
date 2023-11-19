@@ -10,12 +10,12 @@ steps:
        #!/usr/bin/env bash
        docker buildx create --use \
        docker buildx build \
-       --build-arg version=$BRANCH_NAME-$COMMIT_SHA \
        --cache-from "type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME" \
        --cache-to "type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME" \
        --push \
        -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA \
        -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest \
+       --build-arg version=$BRANCH_NAME-$COMMIT_SHA \
        --build-arg skip_dev_deps=true \
        -f Dockerfile -o  type=image \
        .
@@ -27,12 +27,12 @@ steps:
       #!/usr/bin/env bash
       docker buildx create --use \
       docker buildx build \
-      --build-arg "version=$BRANCH_NAME-$COMMIT_SHA" \
       --cache-from "type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/plywood:cache-$BRANCH_NAME" \
       --cache-to "type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/plywood:cache-$BRANCH_NAME" \
       --push \
       -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA" \
       -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest" \
+      --build-arg "version=$BRANCH_NAME-$COMMIT_SHA" \
       -f Dockerfile -o type=image \
       .
 

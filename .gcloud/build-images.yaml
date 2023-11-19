@@ -10,6 +10,10 @@ steps:
       - build
       - --build-arg
       - version=$BRANCH_NAME-$COMMIT_SHA
+      - --cache-from
+      - 'type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME'
+      - --cache-to
+      - 'type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/datareporter:cache-$BRANCH_NAME'
       - --push
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
@@ -30,6 +34,10 @@ steps:
       - build
       - --build-arg
       - version=$BRANCH_NAME-$COMMIT_SHA
+      - --cache-from
+      - 'type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/plywood:cache-$BRANCH_NAME'
+      - --cache-to
+      - 'type=registry,ref=$_GCR_HOSTNAME/$PROJECT_ID/plywood:cache-$BRANCH_NAME'
       - --push
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'

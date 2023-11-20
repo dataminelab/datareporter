@@ -2,7 +2,6 @@ FROM node:14.17 as frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
-ARG version
 
 WORKDIR /frontend
 COPY bin/build_frontend.sh .
@@ -26,6 +25,8 @@ EXPOSE 5000
 ARG skip_ds_deps
 # Controls whether to install dev dependencies.
 ARG skip_dev_deps
+
+ARG version
 
 RUN useradd --create-home redash
 

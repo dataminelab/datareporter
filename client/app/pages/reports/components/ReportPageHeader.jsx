@@ -234,28 +234,29 @@ export default function ReportPageHeader(props) {
   }
 
   const handleDataSourceChange = useCallback(
-    async (dataSourceId, signal) => {
+    async (data_source_id, signal) => {
       changeModelDataText(modelSelectElement.current.props.placeholder);
       setLoadModelsLoaded(false);
-      recordEvent("update", "report", report.id, { dataSourceId });
       var newModels = [];
       try {
-        const res = await Model.query({ data_source: dataSourceId });
+        const res = await Model.query({ data_source: data_source_id });
         newModels = res.results;
         if (signal && signal.aborted) return;
         const updates = {
-          data_source_id: dataSourceId,
+          data_source_id,
           isJustLanded: false,
         }
         setModels(newModels);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null });
         handleReportChanged(true);
+        recordEvent("update", "report", report.id, { data_source_id });
       } catch (err) {
         updateReport({}, { successMessage: err });
+        recordEvent("error", "report", report.id, { data_source_id });
       }
       setLoadModelsLoaded(true);
-      setSelectedDataSource(dataSourceId);
+      setSelectedDataSource(data_source_id);
     },
     [report, props.onChange, updateReport]
   );
@@ -338,27 +339,19 @@ export default function ReportPageHeader(props) {
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
         name: save_as ? newName : reportName,
+      }, { successMessage: "Report updated" });
+      recordEvent("update", "report", report.id);
+    } else {
+      updateReport({
+        color_1: colorBodyHex || report.color_1,
+        color_2: colorTextHex || report.color_2,
+        is_draft: false,
       }, { successMessage: null });
-
-      if (!report.expression || !report.appSettings) {
-        setTimeout(() => {
-          if (save_as) {
-            document.querySelector("#_handleSaveAs").click();
-          } else {
-            document.querySelector("#_handleSaveReport").click();
-          }
-        }, 466);
-        return 0;
-      }
+      recordEvent("create", "report", report.id);
     }
-    recordEvent("create", report.id, { id: report.id });
-    updateReport({
-      color_1: colorBodyHex || report.color_1,
-      color_2: colorTextHex || report.color_2,
-      is_draft: false,
-    }, { successMessage: null });
-    handleReportChanged(false);
-    return save_as ? saveAsReport(newName) : saveReport();
+    if (!report.id) {
+      saveReport();
+    }
   }
 
   const moreActionsMenu = useMemo(
@@ -395,13 +388,17 @@ export default function ReportPageHeader(props) {
   );
 
   useEffect(() => {
+    updateReport(report, { successMessage: null });
+  }, [report.expression, window.location.hash]);
+
+  useEffect(() => {
     if (report.isJustLanded) {
-      handleColorChange(report.color_1, 2, null);
-      handleColorChange(report.color_2, 1, null);
-      handleDataSourceChange(report.data_source_id);
-      handleModelChange(report.model_id);
-      handleIdChange(report.id);
-      setReportName(report.name);
+      if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1, null);
+      if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2, null);
+      if (report.data_source_id !== selectedDataSource) handleDataSourceChange(report.data_source_id);
+      if (report.model_id !== selectedModel) handleModelChange(report.model_id);
+      if (report.name !== reportName) setReportName(report.name);
+      if (report.id !== props.report.id) handleIdChange(report.id);
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)), 
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 
@@ -621,7 +618,7 @@ export default function ReportPageHeader(props) {
             >
               <p className="new-name-label">name</p>
               <input className="new-name-input" type="text" value={newName} onChange={handleNewNameChange} />
-              <Button className="ant-menu-item-group-title" onClick={() => handleSaveReport(true)}>Save now</Button>
+              <Button className="ant-menu-item-group-title" onClick={() => saveAsReport(newName)}>Save now</Button>
             </ul>
           </>
         )}         

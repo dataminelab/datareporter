@@ -185,6 +185,7 @@ def serialize_widget(object):
         "text": object.text,
         "updated_at": object.updated_at,
         "created_at": object.created_at,
+        "report_id": models.Widget.get_id_from_text(object.text)
     }
 
     if object.visualization and object.visualization.id:

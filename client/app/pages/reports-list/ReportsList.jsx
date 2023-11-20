@@ -52,7 +52,7 @@ class ReportsList extends React.Component {
     {
       key: "archive",
       href: "reports/archive",
-      title: "Archived",
+      title: "My Archived Reports",
       icon: () => <Sidebar.MenuIcon icon="fa fa-archive" />,
     },
   ];
@@ -81,17 +81,6 @@ class ReportsList extends React.Component {
     ),
     Columns.custom((text, item) => item.user.name, { title: "Created By", width: "1%" }),
     Columns.dateTime.sortable({ title: "Created At", field: "created_at", width: "1%" }),
-    Columns.dateTime.sortable({
-      title: "Last Executed At",
-      field: "retrieved_at",
-      orderByField: "executed_at",
-      width: "1%",
-    }),
-    Columns.custom.sortable((text, item) => <SchedulePhrase schedule={item.schedule} isNew={item.isNew()} />, {
-      title: "Refresh Schedule",
-      field: "schedule",
-      width: "1%",
-    }),
   ];
 
   componentDidMount() {

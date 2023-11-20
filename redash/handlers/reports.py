@@ -72,14 +72,7 @@ class ReportGenerateResource(BaseResource):
 class ReportsArchiveResource(BaseResource):
     def get(self):
         search_term = request.args.get("q")
-        archives = Report.search_archived_reports(
-            search_term,
-            self.current_user.group_ids,
-            self.current_org,
-            self.current_user.id,
-            include_drafts=False,
-            multi_byte_search=self.current_org.get_setting("multi_byte_search_enabled"),
-        )
+        archives = Report.get_my_archived_reports(search_term, self.current_user.id)
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)
         response = paginate(archives, page, page_size, ReportSerializer)
@@ -158,14 +151,21 @@ class ReportsListResource(BaseResource):
 
     @require_permission("view_report")
     def get(self):
-        reports = Report.get_by_user(
-            self.current_user
-        ).filter(
-            Report.is_archived.is_(False)
-        )
+        _type = request.args.get("type", "all", type=str)
+        search_query = request.args.get("q", "", type=str)
+        reports = []
+        if _type == "my":
+            reports = Report.get_by_user(
+                self.current_user
+            ).filter(
+                Report.is_archived.is_(False)
+            )
+        elif _type == "all":
+            reports = Report.get_by_group_ids(self.current_user)
+        if search_query:
+            reports = reports.filter(Report.name.ilike(f"%{search_query}%"))
 
         formatting = request.args.get("format", "base64")
-
         ordered_results = order_results(reports)
 
         page = request.args.get("page", 1, type=int)
@@ -189,9 +189,7 @@ class ReportsListResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
-
         report.archive()
-        models.db.session.commit()
 
         self.record_event({
             "action": "archive",
@@ -236,7 +234,9 @@ class ReportResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
         counter = 0
         for key, value in updates.items():
-            if value == report.__getattribute__(key):
+            if key == "expression" and isinstance(value, dict):
+                counter+=1
+            elif value == report.__getattribute__(key):
                 counter+=1
         if counter == len(updates):
             return make_response(json.dumps({"message": "No changes made"}), 204)
@@ -248,9 +248,8 @@ class ReportResource(BaseResource):
         if MODEL_ID in updates:
             try:
                 model = Model.get_by_id(updates[MODEL_ID])
-                if model.user_id != self.current_user.id:
+                if not any(id in model.user.group_ids for id in self.current_user.group_ids):
                     abort(403)
-
             except NoResultFound:
                 abort(400, message=f"The Model with id {MODEL_ID} does not exists")
 
@@ -275,9 +274,7 @@ class ReportResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
-
-        models.db.session.delete(report)
-        models.db.session.commit()
+        report.remove()
 
         self.record_event({
             "action": "delete",

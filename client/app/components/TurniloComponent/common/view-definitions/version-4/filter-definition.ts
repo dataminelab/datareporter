@@ -193,6 +193,7 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     return {
       type: FilterType.time,
       ref: reference,
+      //@ts-ignore
       timeRanges: values.map(value => ({ start: value.start.toISOString(), end: value.end.toISOString() })).toArray()
     };
   }

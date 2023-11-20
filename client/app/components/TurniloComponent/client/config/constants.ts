@@ -106,7 +106,7 @@ export const STRINGS: any = {
   generalSettings: "General settings",
   goToUrl: "Go to URL",
   granularity: "Granularity",
-  home: "Turnilo",
+  home: "Datareporter-turnilo",
   include: "Include",
   infoAndFeedback: "Info & Feedback",
   intersection: "Intersection",

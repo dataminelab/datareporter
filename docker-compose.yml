@@ -9,7 +9,7 @@ x-redash-service: &redash-service
   volumes:
     - .:/app
 x-redash-environment: &redash-environment
-  REDASH_LOG_LEVEL: "INFO"
+  REDASH_LOG_LEVEL: "DEBUG"
   REDASH_REDIS_URL: "redis://redis:6379/0"
   REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
@@ -33,6 +33,7 @@ services:
       - "5678:5678"
     environment:
       <<: *redash-environment
+      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
     volumes:
@@ -44,9 +45,12 @@ services:
       - server
     environment:
       <<: *redash-environment
-  worker:
+  worker-server:
     <<: *redash-service
-    command: dev_worker
+    command: dev_worker_server
+    ports:
+      - "5001:5000"
+      - "5679:5678"
     depends_on:
       - server
     environment:

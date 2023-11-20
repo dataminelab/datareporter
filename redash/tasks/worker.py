@@ -1,6 +1,9 @@
+import base64
+
 import errno
 import os
 import signal
+import requests
 from redash import statsd_client
 from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
 from rq.utils import utcnow
@@ -9,7 +12,7 @@ from rq.job import Job as BaseJob, JobStatus
 
 import logging
 
-from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID
+from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
 
 logger = logging.getLogger("pubsub")
 
@@ -28,18 +31,37 @@ class CancellableJob(BaseJob):
         return self.meta.get("cancelled", False)
 
 
-class PubsubTask(BaseQueue):
+class NoopNotifier:
+    def notify(self, message):
+        logger.debug("skipping notify worker for {}", message)
+
+
+class HttpNotifier:
     publisher = None
 
-    def enqueue_job(self, *args, **kwargs):
-        self.send_message_to_topic(self.name)
-        job = super().enqueue_job(*args, **kwargs)
-        return job
+    def notify(self, message):
+        resp = requests.post(WORKER_NOTIFY_URL,
+                             headers={
+                                 "Accept": "application/json",
+                                 "Content-Type": "application/json"
+                             },
+                             json={
+                                 "message": {
+                                     "data": base64.b64encode(message.encode('ascii')).decode('ascii')
+                                 }
+                             })
+        try:
+            resp.raise_for_status()
+        except requests.HTTPError as e:
+            logger.error("Request failed: {}", e.response.text, e)
+            raise e
 
-    def send_message_to_topic(self, message: str):
-        if not GOOGLE_PUBSUB_WORKER_TOPIC_ID:
-            logger.debug("skipping send message to pub sub")
-            return None
+
+class GooglePubSubNotifier:
+    publisher = None
+
+    def notify(self, message):
+
         if self.publisher is None:
             from google.cloud import pubsub_v1
             self.publisher = pubsub_v1.PublisherClient()
@@ -48,9 +70,24 @@ class PubsubTask(BaseQueue):
         # When you publish a message, the client returns a future.
         logger.info(f"publishing {GOOGLE_PUBSUB_WORKER_TOPIC_ID} : {data}")
         future = self.publisher.publish(GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
-
         return future.result()
 
+
+class NotifyWorkerQueue(BaseQueue):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if GOOGLE_PUBSUB_WORKER_TOPIC_ID:
+            self.worker_notifier = GooglePubSubNotifier()
+        elif WORKER_NOTIFY_URL:
+            self.worker_notifier = HttpNotifier()
+        else:
+            self.worker_notifier = NoopNotifier()
+
+    def enqueue_job(self, *args, **kwargs):
+        job = super().enqueue_job(*args, **kwargs)
+        self.worker_notifier.notify(self.name)
+        return job
 
 
 class StatsdRecordingQueue(BaseQueue):
@@ -68,7 +105,7 @@ class CancellableQueue(BaseQueue):
     job_class = CancellableJob
 
 
-class RedashQueue(PubsubTask, StatsdRecordingQueue, CancellableQueue):
+class RedashQueue(NotifyWorkerQueue, StatsdRecordingQueue, CancellableQueue):
     pass
 
 

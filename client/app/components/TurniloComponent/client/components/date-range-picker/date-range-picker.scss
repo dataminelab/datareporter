@@ -116,27 +116,21 @@
             }
           }
 
-          &:hover:not(.selectable) {
+          &:hover:not(.selectable, .bubble-menu) {
+            background: rgba($black, 0.06);
             &::after {
               @include pin-full;
               content: '';
               pointer-events: none;
-              background: rgba($black, 0.06);
-            }
-
-            &.beyond-max-range {
-              &::after {
-                background: rgba($black, 0.1);
-              }
             }
           }
-
+          
           &.beyond-max-range {
+            text-decoration: line-through;
             &::after {
               @include pin-full;
               content: '';
               pointer-events: none;
-              background: rgba($black, 0.05);
             }
           }
 

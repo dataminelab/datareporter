@@ -6,6 +6,7 @@ from rq import get_current_job
 from rq.job import JobStatus
 from rq.timeouts import JobTimeoutException
 from rq.exceptions import NoSuchJobError
+from sqlalchemy.orm.exc import NoResultFound
 
 from redash import models, redis_connection, settings
 from redash.query_runner import InterruptException
@@ -28,7 +29,7 @@ def _unlock(query_hash, data_source_id):
 
 
 def enqueue_query(
-    query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata={}
+    query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata={}, calcel=False
 ):
     query_hash = gen_query_hash(query)
     logger.info("Inserting job for %s with metadata=%s", query_hash, metadata)
@@ -132,20 +133,33 @@ class QueryExecutionError(Exception):
     pass
 
 
-def _resolve_user(user_id, is_api_key, query_id):
+def _resolve_user(user_id, is_api_key, metadata):
+    """ Resolves user from user_id or api_key or metadata if exists
+
+    Args:
+        user_id (_type_): user id, int
+        is_api_key (bool): string api key from content creator
+        metadata (_type_): neccessary metadata
+
+    Returns:
+        _type_: User or ApiUser or None
+    """
     if user_id is not None:
         if is_api_key:
             api_key = user_id
+            query_id = metadata.get("Query ID")
             if query_id is not None:
                 q = models.Query.get_by_id(query_id)
             else:
                 q = models.Query.by_api_key(api_key)
 
             return models.ApiUser(api_key, q.org, q.groups)
-        else:
+        try:
             return models.User.get_by_id(user_id)
-    else:
-        return None
+        except NoResultFound:
+            user_email = metadata.get("Username")
+            return models.User.find_by_email(user_email)
+    return None
 
 
 class QueryExecutor(object):
@@ -157,7 +171,7 @@ class QueryExecutor(object):
         self.data_source_id = data_source_id
         self.metadata = metadata
         self.data_source = self._load_data_source()
-        self.user = _resolve_user(user_id, is_api_key, metadata.get("Query ID"))
+        self.user = _resolve_user(user_id, is_api_key, metadata)
 
         # Close DB connection to prevent holding a connection for a long time while the query is executing.
         models.db.session.close()
@@ -267,7 +281,7 @@ class QueryExecutor(object):
 
 # user_id is added last as a keyword argument for backward compatability -- to support executing previously submitted
 # jobs before the upgrade to this version.
-def execute_query(
+def execute_query( # xxx
     query,
     data_source_id,
     metadata,
@@ -275,6 +289,7 @@ def execute_query(
     scheduled_query_id=None,
     is_api_key=False,
 ):
+    logger.info("Executing query id=%s user_id=%s", metadata.get("Query ID"), user_id)
     if scheduled_query_id is not None:
         scheduled_query = models.Query.query.get(scheduled_query_id)
     else:

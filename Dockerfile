@@ -2,6 +2,7 @@ FROM node:14.17 as frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
+ARG version
 
 WORKDIR /frontend
 COPY bin/build_frontend.sh .
@@ -85,5 +86,6 @@ COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/di
 RUN find /app
 USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+ENV DATAREPORTER_VERSION=$version
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
 CMD ["server"]

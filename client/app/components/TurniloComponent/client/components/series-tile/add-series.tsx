@@ -41,7 +41,7 @@ export const AddSeries: React.SFC<AddSeriesProps> = props => {
 
   return <AddTile<Measure>
     containerStage={menuStage}
-    onSelect={appendMeasureSeries}
+    insertSplit={appendMeasureSeries}
+    appendSplit={appendMeasureSeries}
     tiles={tiles} />;
-
 };

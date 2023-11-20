@@ -145,7 +145,7 @@ function useDashboard(dashboardData) {
     updatedParameters => {
       if (!refreshing) {
         setRefreshing(true);
-        loadDashboard(true, updatedParameters).finally(() => setRefreshing(false));
+        setTimeout(() => document.querySelector("a[data-test='Refresh']").click(), 333);
       }
     },
     [refreshing, loadDashboard]

@@ -544,6 +544,9 @@ class TestReportListGetResource(BaseTestCase):
         [self.assertTrue(isinstance(x["expression"], str)) for x in data["results"]]
 
     def test_view_other_people(self):
+        '''
+          A recent given priviladge for new users to see reports of other users
+        '''
         user1 = self.factory.create_user()
         user2 = self.factory.create_user()
 
@@ -556,9 +559,8 @@ class TestReportListGetResource(BaseTestCase):
             "/api/reports",
             user=user1
         )
-
         self.assertEqual(200, response.status_code)
-        self.assertEqual(len(response.json["results"]), 1)
+        self.assertEqual(len(response.json["results"]), 3)
 
     def test_get_success_formatting(self):
         user = self.factory.create_user()
@@ -586,13 +588,16 @@ class TestReportGetResource(BaseTestCase):
         self.assertEqual(404, response.status_code)
 
     def test_get_report_another_user(self):
+        """
+          default_group is able to see reports of other users
+        """
         user1 = self.factory.create_user()
         user2 = self.factory.create_user()
         report = self.factory.create_report(user=user1)
 
         response = self.make_request("get", f"/api/reports/{report.id}", user=user2)
 
-        self.assertEqual(403, response.status_code)
+        self.assertEqual(200, response.status_code)
 
     def test_get_report_success(self):
         model = self.factory.create_model()
@@ -791,3 +796,12 @@ class TestReportDeleteResource(BaseTestCase):
             Report.get_by_id(report.id)
 
         self.assertEqual(204, response.status_code)
+
+    def test_archive_success(self):
+        user = self.factory.create_user()
+        report = self.factory.create_report(user=user)
+
+        response = self.make_request("delete", f"/api/reports/archive?id={report.id}", user=user)
+        archives = self.make_request("get", "/api/reports/archive", user=user)
+        self.assertEqual(204, response.status_code)
+        self.assertEqual(1, len(archives.json['results']))

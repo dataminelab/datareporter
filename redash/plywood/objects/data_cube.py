@@ -89,6 +89,8 @@ class DataCube:
 
     @property
     def data_cube(self, lower_case_kind=True):
+        if not self._model.config:
+            return None
         data_cube = pydash.head(self.config["dataCubes"])
 
         if lower_case_kind:

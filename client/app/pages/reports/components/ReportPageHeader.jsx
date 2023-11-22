@@ -368,6 +368,11 @@ export default function ReportPageHeader(props) {
             title: "Download as TSV",
             onClick: () => {document.querySelector("#export-data-tsv").click()},
           },
+          showAPIKey: {
+            isAvailable: !queryFlags.isNew,
+            title: "Show API Key",
+            onClick: openApiKeyDialog,
+          },
         },
       ]),
     [

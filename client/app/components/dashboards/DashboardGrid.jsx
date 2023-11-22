@@ -55,10 +55,16 @@ const DashboardWidget = React.memo(
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect( () => {
       async function getConfigTurnilo() {
+        console.log("setting config")
         if (config.appSettings) return;
         if (!widget.report_id) return;
-          const result =  await axios.get('/api/reports/' + widget.report_id);
-          setConfig(result);
+        if (widget.is_public) {
+          const report_config =  await axios.get('/api/reports/' + widget.report_id + '/public');
+          setConfig(report_config);
+        } else {
+          const report_config =  await axios.get('/api/reports/' + widget.report_id);
+          setConfig(report_config);
+        }
       }
       getConfigTurnilo();
     }, [widget]);
@@ -255,6 +261,7 @@ class DashboardGrid extends React.Component {
       isPublic,
       widgets,
     } = this.props;
+    console.log("grid is good")
     return (
       <div className={className}>
         <ResponsiveGridLayout

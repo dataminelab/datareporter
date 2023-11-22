@@ -8,6 +8,7 @@ import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
 import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
 
 function TurniloWidget(props) {
+  console.log("why we still loading sir?")
   const { widget, canEdit, config } = props;
   const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
   const TurniloMenuOptions = [];

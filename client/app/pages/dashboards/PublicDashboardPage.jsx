@@ -22,6 +22,7 @@ function PublicDashboard({ dashboard }) {
   const { globalParameters, filters, setFilters, refreshDashboard, loadWidget, refreshWidget } = useDashboard(
     dashboard
   );
+  console.log("here")
 
   return (
     <div className="container p-t-10 p-b-20">
@@ -78,6 +79,8 @@ class PublicDashboardPage extends React.Component {
 
   render() {
     const { loading, dashboard } = this.state;
+    console.log("dashboard", dashboard)
+    console.log("loading", loading)
     return (
       <div className="public-dashboard-page">
         {loading ? (
@@ -93,7 +96,7 @@ class PublicDashboardPage extends React.Component {
               <img alt="Data reporter Logo" src={logoUrl} width="38" />
             </a>
           </div>
-          Powered by <a href="https://redash.io/?ref=public-dashboard">Data reporter</a>
+          Powered by <a href="https://dataminelab.com/">Data reporter</a>
         </div>
       </div>
     );

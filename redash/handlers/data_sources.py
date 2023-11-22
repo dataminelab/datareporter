@@ -153,6 +153,8 @@ class DataSourceListResource(BaseResource):
             for result in sorted_results:
                 if result["type"] in supported_engines:
                     results.append(result)
+        else:
+            results = sorted_results
         return results
 
     @require_admin

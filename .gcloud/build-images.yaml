@@ -13,7 +13,6 @@ steps:
       - 'BRANCH_NAME=$BRANCH_NAME'
     script: |
        #!/usr/bin/env bash
-       docker buildx create --name datarepoter --bootstrap --use; \
        docker buildx build \
        --push \
        -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA \
@@ -33,7 +32,6 @@ steps:
       - 'BRANCH_NAME=$BRANCH_NAME'
     script: |
       #!/usr/bin/env bash
-      docker buildx create --name plywood --bootstrap --use; \
       docker buildx build \
       --push \
       -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA" \

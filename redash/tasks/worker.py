@@ -33,7 +33,10 @@ class CancellableJob(BaseJob):
 
 class NoopNotifier:
     def notify(self, message):
-        logger.debug("skipping notify worker for {}", message)
+        try:
+            logger.debug("skipping notify worker for {}", message)
+        except Exception as error:
+            logger.warning(error)
 
 
 class HttpNotifier:
@@ -61,7 +64,6 @@ class GooglePubSubNotifier:
     publisher = None
 
     def notify(self, message):
-
         if self.publisher is None:
             from google.cloud import pubsub_v1
             self.publisher = pubsub_v1.PublisherClient()

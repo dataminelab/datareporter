@@ -8,6 +8,7 @@ from sentry_sdk.integrations.rq import RqIntegration
 from redash import settings, __version__
 
 TRACES_SAMPLE_RATE = float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0.0'))
+PROFILE_SAMPLE_RATE = float(os.environ.get('SENTRY_PROFILE_SAMPLE_RATE', '0.0'))
 
 NON_REPORTED_EXCEPTIONS = ["QueryExecutionError"]
 
@@ -36,6 +37,7 @@ def init():
                 RqIntegration(),
             ],
             traces_sample_rate=TRACES_SAMPLE_RATE,
+            profiles_sample_rate=PROFILE_SAMPLE_RATE,
         )
 
 

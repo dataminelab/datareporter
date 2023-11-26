@@ -55,8 +55,12 @@ def parse_job(job_id: str, current_org):
 
     if job_data['job']['status'] == SUCCESS_CODE:
         query_result_id = job_data['job']['query_result_id']
-        query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query_result_id, current_org)
-        return dict(query_result=query_result.to_dict())
+        try:
+            query_result = models.QueryResult.get_by_id_and_org(query_result_id, current_org)
+            return dict(query_result=query_result.to_dict())
+        except Exception as e:
+            print("eee", e)
+            pass
 
     return job_data
 

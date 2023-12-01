@@ -1,7 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import useUpdateReport from "./useUpdateReport";
 import useSaveReport from "./useSaveReport";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
+import ShareReportDialog from "../components/ShareReportDialog";
 import { Report } from "@/services/report";
 
 export default function useReport(originalReport) {
@@ -30,6 +31,17 @@ export default function useReport(originalReport) {
     useSaveReport(data);
   };
 
+  const showShareReportDialog = useCallback(() => {
+    const handleDialogClose = () => setReport(currentReport => extend({}, currentReport, { is_draft: false }));
+
+    ShareReportDialog.showModal({
+      report,
+      hasOnlySafeQueries:true,
+    })
+      .onClose(handleDialogClose)
+      .onDismiss(handleDialogClose);
+  }, [report]);
+
   const doDeleteReport = (report) => {
     // use this for delete submissions
     return Report.delete({ id: report.id })
@@ -55,6 +67,7 @@ export default function useReport(originalReport) {
       saveReport: () => updateReport(),
       saveAsReport: (name) => saveAsReport(name),
       deleteReport: (report) => doDeleteReport(report),
+      showShareReportDialog,
     }),
     [report, originalReportSource, updateReport]
   );

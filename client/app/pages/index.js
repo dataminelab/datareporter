@@ -33,6 +33,7 @@ import "./reports-list/ReportsList";
 import "./reports/ReportSource";
 import "./reports/ReportView";
 import "./reports/VisualizationEmbed";
+import "./reports/PublicReportPage";
 
 import "./query-snippets/QuerySnippetsList";
 

@@ -358,61 +358,63 @@ class ReportFavoriteListResource(BaseResource):
 class PublicReportResource(BaseResource):
     decorators = BaseResource.decorators + [csp_allows_embeding]
 
-    def get(self, report_id):
+    def get(self, token):
         """
         Retrieve a public dashboard.
 
         :param token: An API key for a public dashboard.
-        :>json array widgets: An array of arrays of :ref:`public widgets <public-widget-label>`, corresponding to the rows and columns the widgets are displayed in
         """
         if not isinstance(self.current_user, models.ApiUser):
-            abort(405)
-        report: Report = get_object_or_404(Report.get_by_id, report_id)
+            api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
+            report = api_key.object
+        else:
+            report_id = request.args.get("report_id", None)
+            report = get_object_or_404(Report.get_by_id, report_id or self.current_user.object)
         return hash_report(report, can_edit=False)
 
 
 class ReportShareResource(BaseResource):
-    def post(self, dashboard_id):
-        # XXX TODO IT'S A COPY OF DASHBOARD SHARE
+    def post(self, report_id):
         """
-        Allow anonymous access to a dashboard.
+        Allow anonymous access to a report.
 
-        :param dashboard_id: The numeric ID of the dashboard to share.
-        :>json string public_url: The URL for anonymous access to the dashboard.
+        :param report_id: The numeric ID of the report to share.
+        :>json string public_url: The URL for anonymous access to the report.
         :>json api_key: The API key to use when accessing it.
         """
-        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
-        require_admin_or_owner(dashboard.user_id)
-        api_key = models.ApiKey.create_for_object(dashboard, self.current_user)
+        report: Report = get_object_or_404(Report.get_by_id, report_id)
+        require_admin_or_owner(report.user_id)
+        api_key = models.ApiKey.create_for_object(report, self.current_user)
         models.db.session.flush()
         models.db.session.commit()
 
         public_url = url_for(
-            "redash.public_dashboard",
+            "redash.public_report",
             token=api_key.api_key,
             org_slug=self.current_org.slug,
-            _external=True,
+            _external=True
         )
 
         self.record_event(
             {
                 "action": "activate_api_key",
-                "object_id": dashboard.id,
-                "object_type": "dashboard",
+                "object_id": report.id,
+                "object_type": "report",
             }
         )
 
         return {"public_url": public_url, "api_key": api_key.api_key}
 
-    def delete(self, dashboard_id):
+    def delete(self, report_id):
+        # XXX TODO IT'S A COPY OF DASHBOARD SHARE
         """
-        Disable anonymous access to a dashboard.
+        Disable anonymous access to a report.
 
-        :param dashboard_id: The numeric ID of the dashboard to unshare.
+        :param report_id: The numeric ID of the report to unshare.
         """
-        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
-        require_admin_or_owner(dashboard.user_id)
-        api_key = models.ApiKey.get_by_object(dashboard)
+        report: Report = get_object_or_404(Report.get_by_id, report_id)
+        require_admin_or_owner(report.user_id)
+        api_key = models.ApiKey.get_by_object(report)
 
         if api_key:
             api_key.active = False
@@ -422,7 +424,7 @@ class ReportShareResource(BaseResource):
         self.record_event(
             {
                 "action": "deactivate_api_key",
-                "object_id": dashboard.id,
-                "object_type": "dashboard",
+                "object_id": report.id,
+                "object_type": "report",
             }
         )

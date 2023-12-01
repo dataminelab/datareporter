@@ -17,7 +17,7 @@ import {
   each,
   some,
   clone,
-  find, get, isString,
+  find, get, isString, merge
 } from "lodash";
 import location from "@/services/location";
 
@@ -405,6 +405,19 @@ const saveOrCreateUrl = function (data) {
   }    
 }
 const mapResults = data => ({ ...data, results: map(data.results, getReport) });
+const normalizeCondition = {
+  "greater than": ">",
+  "less than": "<",
+  equals: "=",
+};
+const transformResponse = data => {
+  console.log("data", data)
+  merge({}, data, {
+    options: {
+      op: normalizeCondition[data.options.op] || data.options.op,
+    },
+  });
+}
 
 const ReportService = {
   report: params => axios.get("api/reports", { params }).then(mapResults),
@@ -430,7 +443,8 @@ const ReportService = {
     axios.get(`api/reports/${reportId}/dropdowns/${dropdownReportId}`),
   favorites: params => axios.get("api/reports/favorites", { params }).then(mapResults),
   favorite: data => axios.post(`api/reports/${data.id}/favorite`),
-  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),
+  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),  
+  getByToken: ({ token }) => axios.get(`api/reports/public/${token}`),
 };
 
 ReportService.newReport = function newReport() {

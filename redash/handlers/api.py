@@ -92,7 +92,7 @@ from redash.handlers.reports import (
     ReportTagsResource,
     ReportsArchiveResource,
     PublicReportResource,
-    ReportShareResource
+    ReportShareResource,
 )
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
@@ -382,10 +382,12 @@ api.add_org_resource(
 api.add_org_resource(
     PublicReportResource,
     "/api/reports/<report_id>/public",
+    "/api/reports/public/<token>",
     endpoint="public_report",
 )
-# api.add_org_resource(
-#     ReportShareResource,
-#     "/api/reports/<report_id>/share",
-#     endpoint="report_share",
-# )
+
+api.add_org_resource(
+    ReportShareResource,
+    "/api/reports/<report_id>/share",
+    endpoint="report_share",
+)

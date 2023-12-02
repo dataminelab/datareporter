@@ -14,7 +14,7 @@ services:
       REDASH_REDIS_URL: "redis://redis:6379/0"
       REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   redis:
-    image: redis:7.2-alpine
+    image: redis:7-alpine
     restart: unless-stopped
   postgres:
     image: postgres:9.5.6-alpine

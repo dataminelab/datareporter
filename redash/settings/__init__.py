@@ -83,25 +83,20 @@ ENFORCE_PRIVATE_ADDRESS_BLOCK = parse_boolean(
 )
 
 # Whether to use secure cookies by default.
-COOKIES_SECURE = parse_boolean(
-    os.environ.get("REDASH_COOKIES_SECURE", str(ENFORCE_HTTPS))
-)
+COOKIES_SECURE = parse_boolean(os.environ.get("REDASH_COOKIES_SECURE", str(ENFORCE_HTTPS)))
 # Whether the session cookie is set to secure.
-SESSION_COOKIE_SECURE = parse_boolean(
-    os.environ.get("REDASH_SESSION_COOKIE_SECURE") or str(COOKIES_SECURE)
-)
+SESSION_COOKIE_SECURE = parse_boolean(os.environ.get("REDASH_SESSION_COOKIE_SECURE") or str(COOKIES_SECURE))
 # Whether the session cookie is set HttpOnly.
-SESSION_COOKIE_HTTPONLY = parse_boolean(
-    os.environ.get("REDASH_SESSION_COOKIE_HTTPONLY", "true")
-)
+SESSION_COOKIE_HTTPONLY = parse_boolean(os.environ.get("REDASH_SESSION_COOKIE_HTTPONLY", "true"))
+SESSION_EXPIRY_TIME = int(os.environ.get("REDASH_SESSION_EXPIRY_TIME", 60 * 60 * 6))
+
 # Whether the session cookie is set to secure.
-REMEMBER_COOKIE_SECURE = parse_boolean(
-    os.environ.get("REDASH_REMEMBER_COOKIE_SECURE") or str(COOKIES_SECURE)
-)
+REMEMBER_COOKIE_SECURE = parse_boolean(os.environ.get("REDASH_REMEMBER_COOKIE_SECURE") or str(COOKIES_SECURE))
 # Whether the remember cookie is set HttpOnly.
-REMEMBER_COOKIE_HTTPONLY = parse_boolean(
-    os.environ.get("REDASH_REMEMBER_COOKIE_HTTPONLY", "true")
-)
+REMEMBER_COOKIE_HTTPONLY = parse_boolean(os.environ.get("REDASH_REMEMBER_COOKIE_HTTPONLY", "true"))
+# The amount of time before the remember cookie expires.
+REMEMBER_COOKIE_DURATION = int(os.environ.get("REDASH_REMEMBER_COOKIE_DURATION", 60 * 60 * 24 * 31))
+
 
 # Doesn't set X-Frame-Options by default since it's highly dependent
 # on the specific deployment.

@@ -11,14 +11,11 @@ force-exclude = '''
 '''
 
 [tool.poetry]
-name = "redash"
-version = "23.11.0-dev"
-description = "Make Your Company Data Driven. Connect to any data source, easily visualize, dashboard and share your data."
-authors = ["Arik Fraimovich <arik@redash.io>"]
-# to be added to/removed from the mailing list, please reach out to Arik via the above email or Discord
-maintainers = [
-    "Redash maintainers and contributors <maintainers@redash.io>",
-]
+name = "datareporter"
+version = "0.1.0"
+description = ""
+authors = ["renas <mirkanbaba1@gmail.com>"]
+license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -86,6 +83,11 @@ werkzeug = "2.3.8"
 wtforms = "2.2.1"
 xlsxwriter = "1.2.2"
 tzlocal = "4.3.1"
+mailchimp-marketing = "3.0.36"
+inflection = "0.5.1"
+lzstring = "1.0.4"
+pydash = "5.0.1"
+Cerberus = "1.3.2"
 
 [tool.poetry.group.all_ds]
 optional = true
@@ -175,3 +177,4 @@ max-complexity = 15
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
+

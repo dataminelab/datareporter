@@ -1,95 +1,37 @@
-import base64
-
 import errno
 import os
 import signal
-import requests
-from redash import statsd_client
-from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
+import sys
+
+from rq import Queue as BaseQueue
+from rq.job import Job as BaseJob
+from rq.job import JobStatus
+from rq.timeouts import HorseMonitorTimeoutException, UnixSignalDeathPenalty
 from rq.utils import utcnow
-from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
-from rq.job import Job as BaseJob, JobStatus
+from rq.worker import (
+    HerokuWorker,  # HerokuWorker implements graceful shutdown on SIGTERM
+    Worker,
+)
 
-import logging
+from redash import statsd_client
 
-from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
-
-logger = logging.getLogger("pubsub")
+# HerokuWorker does not work in OSX https://github.com/getredash/redash/issues/5413
+if sys.platform == "darwin":
+    BaseWorker = Worker
+else:
+    BaseWorker = HerokuWorker
 
 
 class CancellableJob(BaseJob):
     def cancel(self, pipeline=None):
-        # TODO - add tests that verify that queued jobs are removed from queue and running jobs are actively cancelled
-        if self.is_started:
-            self.meta["cancelled"] = True
-            self.save_meta()
+        self.meta["cancelled"] = True
+        self.save_meta()
 
         super().cancel(pipeline=pipeline)
 
     @property
     def is_cancelled(self):
         return self.meta.get("cancelled", False)
-
-
-class NoopNotifier:
-    def notify(self, message):
-        try:
-            logger.debug("skipping notify worker for {}", message)
-        except Exception as error:
-            logger.warning(error)
-
-
-class HttpNotifier:
-    publisher = None
-
-    def notify(self, message):
-        resp = requests.post(WORKER_NOTIFY_URL,
-                             headers={
-                                 "Accept": "application/json",
-                                 "Content-Type": "application/json"
-                             },
-                             json={
-                                 "message": {
-                                     "data": base64.b64encode(message.encode('ascii')).decode('ascii')
-                                 }
-                             })
-        try:
-            resp.raise_for_status()
-        except requests.HTTPError as e:
-            logger.error("Request failed: {}", e.response.text, e)
-            raise e
-
-
-class GooglePubSubNotifier:
-    publisher = None
-
-    def notify(self, message):
-        if self.publisher is None:
-            from google.cloud import pubsub_v1
-            self.publisher = pubsub_v1.PublisherClient()
-        # Data must be a bytestring
-        data = message.encode("utf-8")
-        # When you publish a message, the client returns a future.
-        logger.info(f"publishing {GOOGLE_PUBSUB_WORKER_TOPIC_ID} : {data}")
-        future = self.publisher.publish(GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
-        return future.result()
-
-
-class NotifyWorkerQueue(BaseQueue):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if GOOGLE_PUBSUB_WORKER_TOPIC_ID:
-            self.worker_notifier = GooglePubSubNotifier()
-        elif WORKER_NOTIFY_URL:
-            self.worker_notifier = HttpNotifier()
-        else:
-            self.worker_notifier = NoopNotifier()
-
-    def enqueue_job(self, *args, **kwargs):
-        job = super().enqueue_job(*args, **kwargs)
-        self.worker_notifier.notify(self.name)
-        return job
 
 
 class StatsdRecordingQueue(BaseQueue):
@@ -107,7 +49,7 @@ class CancellableQueue(BaseQueue):
     job_class = CancellableJob
 
 
-class RedashQueue(NotifyWorkerQueue, StatsdRecordingQueue, CancellableQueue):
+class RedashQueue(StatsdRecordingQueue, CancellableQueue):
     pass
 
 
@@ -145,7 +87,7 @@ class HardLimitingWorker(BaseWorker):
     """
 
     grace_period = 15
-    queue_class = CancellableQueue
+    queue_class = RedashQueue
     job_class = CancellableJob
 
     def stop_executing_job(self, job):
@@ -171,17 +113,16 @@ class HardLimitingWorker(BaseWorker):
         )
         self.kill_horse()
 
-    def monitor_work_horse(self, job):
+    def monitor_work_horse(self, job, queue):
         """The worker will monitor the work horse and make sure that it
         either executes successfully or the status of the job is set to
         failed
         """
         self.monitor_started = utcnow()
+        job.started_at = utcnow()
         while True:
             try:
-                with UnixSignalDeathPenalty(
-                    self.job_monitoring_interval, HorseMonitorTimeoutException
-                ):
+                with UnixSignalDeathPenalty(self.job_monitoring_interval, HorseMonitorTimeoutException):
                     retpid, ret_val = os.waitpid(self._horse_pid, 0)
                 break
             except HorseMonitorTimeoutException:
@@ -214,7 +155,6 @@ class HardLimitingWorker(BaseWorker):
         if job_status is None:  # Job completed and its ttl has expired
             return
         if job_status not in [JobStatus.FINISHED, JobStatus.FAILED]:
-
             if not job.ended_at:
                 job.ended_at = utcnow()
 
@@ -222,14 +162,15 @@ class HardLimitingWorker(BaseWorker):
             self.log.warning(
                 (
                     "Moving job to FailedJobRegistry "
-                    "(work-horse terminated unexpectedly; waitpid returned {})"
+                    "(work-horse terminated unexpectedly; waitpid returned {})"  # fmt: skip
                 ).format(ret_val)
             )
 
             self.handle_job_failure(
                 job,
+                queue=queue,
                 exc_string="Work-horse process was terminated unexpectedly "
-                           "(waitpid returned %s)" % ret_val,
+                "(waitpid returned %s)" % ret_val,  # fmt: skip
             )
 
 

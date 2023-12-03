@@ -1,19 +1,19 @@
 import errno
+import base64
 import os
 import signal
-import sys
-
-from rq import Queue as BaseQueue
-from rq.job import Job as BaseJob
-from rq.job import JobStatus
-from rq.timeouts import HorseMonitorTimeoutException, UnixSignalDeathPenalty
-from rq.utils import utcnow
-from rq.worker import (
-    HerokuWorker,  # HerokuWorker implements graceful shutdown on SIGTERM
-    Worker,
-)
-
+import requests
 from redash import statsd_client
+from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
+from rq.utils import utcnow
+from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
+from rq.job import Job as BaseJob, JobStatus
+
+import logging
+
+from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
+
+logger = logging.getLogger("pubsub")
 
 # HerokuWorker does not work in OSX https://github.com/getredash/redash/issues/5413
 if sys.platform == "darwin":
@@ -33,6 +33,65 @@ class CancellableJob(BaseJob):
     def is_cancelled(self):
         return self.meta.get("cancelled", False)
 
+class NoopNotifier:
+    def notify(self, message):
+        try:
+            logger.debug("skipping notify worker for {}", message)
+        except Exception as error:
+            logger.warning(error)
+
+
+class HttpNotifier:
+    publisher = None
+
+    def notify(self, message):
+        resp = requests.post(WORKER_NOTIFY_URL,
+                             headers={
+                                 "Accept": "application/json",
+                                 "Content-Type": "application/json"
+                             },
+                             json={
+                                 "message": {
+                                     "data": base64.b64encode(message.encode('ascii')).decode('ascii')
+                                 }
+                             })
+        try:
+            resp.raise_for_status()
+        except requests.HTTPError as e:
+            logger.error("Request failed: {}", e.response.text, e)
+            raise e
+
+
+class GooglePubSubNotifier:
+    publisher = None
+
+    def notify(self, message):
+        if self.publisher is None:
+            from google.cloud import pubsub_v1
+            self.publisher = pubsub_v1.PublisherClient()
+        # Data must be a bytestring
+        data = message.encode("utf-8")
+        # When you publish a message, the client returns a future.
+        logger.info(f"publishing {GOOGLE_PUBSUB_WORKER_TOPIC_ID} : {data}")
+        future = self.publisher.publish(GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
+        return future.result()
+
+
+class NotifyWorkerQueue(BaseQueue):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if GOOGLE_PUBSUB_WORKER_TOPIC_ID:
+            self.worker_notifier = GooglePubSubNotifier()
+        elif WORKER_NOTIFY_URL:
+            self.worker_notifier = HttpNotifier()
+        else:
+            self.worker_notifier = NoopNotifier()
+
+    def enqueue_job(self, *args, **kwargs):
+        job = super().enqueue_job(*args, **kwargs)
+        self.worker_notifier.notify(self.name)
+        return job
 
 class StatsdRecordingQueue(BaseQueue):
     """
@@ -49,7 +108,7 @@ class CancellableQueue(BaseQueue):
     job_class = CancellableJob
 
 
-class RedashQueue(StatsdRecordingQueue, CancellableQueue):
+class RedashQueue(NotifyWorkerQueue, CancellableQueue):
     pass
 
 

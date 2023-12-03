@@ -61,7 +61,6 @@ def create_app():
 
 def create_worker():
     from . import (
-        extensions,
         mail,
         tasks,
     )
@@ -73,7 +72,6 @@ def create_worker():
 
     db.init_app(app)
     mail.init_app(app)
-    extensions.init_app(app)
     tasks.init_app(app)
     worker.init_app(app)
 

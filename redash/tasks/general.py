@@ -97,7 +97,7 @@ def sync_user_details():
     users.sync_last_active_at()
 
 
-def purge_failed_jobs():
+def purge_failed_jobs(): # noqa
     with Connection(rq_redis_connection):
         queues = [q for q in Queue.all() if q.name not in default_operational_queues]
         for queue in queues:

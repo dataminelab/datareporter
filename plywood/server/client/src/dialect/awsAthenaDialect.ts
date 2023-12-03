@@ -106,7 +106,7 @@ export class AwsAthenaDialect extends SQLDialect {
 
   public timePartExpression(operand: string, part: string, timezone: Timezone): string {
     let timePartFunction = AwsAthenaDialect.TIME_PART_TO_FUNCTION[part];
-    if (!timePartFunction) throw new Error(`unsupported part ${part} in BigQuery dialect`);
+    if (!timePartFunction) throw new Error(`unsupported part ${part} in Athena dialect`);
     return timePartFunction.replace(/\$\$/g, this.utcToWalltime(operand, timezone));
   }
 

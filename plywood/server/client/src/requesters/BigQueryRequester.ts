@@ -12,7 +12,8 @@ interface BigQueryRequesterParams {
  */
 export function BigQueryRequester(parameters: BigQueryRequesterParams): PlywoodRequester<string> {
   const client = new BigQuery({
-    keyFilename: parameters.keyFilename
+    keyFilename: parameters.keyFilename,
+    // useQueryAnnotation: false
   });
 
   return (request): Readable => {

@@ -40,7 +40,7 @@ class CancellableJob(BaseJob):
 class NoopNotifier:
     def notify(self, message):
         try:
-            logger.debug("skipping notify worker for {}", message)
+            logger.debug(f"skipping notify worker for {message}")
         except Exception as error:
             logger.warning(error)
 

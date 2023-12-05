@@ -1,4 +1,5 @@
 import errno
+import sys
 import base64
 import os
 import signal
@@ -8,7 +9,10 @@ from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
 from rq.utils import utcnow
 from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
 from rq.job import Job as BaseJob, JobStatus
-
+from rq.worker import (
+    HerokuWorker,  # HerokuWorker implements graceful shutdown on SIGTERM
+    Worker,
+)
 import logging
 
 from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL

@@ -58,14 +58,8 @@ class ReportGenerateResource(BaseResource):
         hash_string = req[HASH]
         bypass_cache = req.get("bypass_cache", False)
         model = get_object_or_404(Model.get_by_id, model_id)
-        try:
-            result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=bypass_cache)
-            return result.serialized()
-        except ExpressionNotSupported as err:
-            if REDASH_DEBUG:
-                abort(400, message=err.message)
-            else:
-                abort(400, message="An error occurred while generating the report. Please contact support.")
+        result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=bypass_cache)
+        return result.serialized()
 
 
 # /api/reports/archive

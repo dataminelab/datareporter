@@ -171,6 +171,11 @@ def parse_result(
             status=is_fetching,
             queries=queries,
         )
+        
+    # errored = clean_errored(queries)
+    # if len(errored):
+    #     clear_cache(hash_string, split)
+    #     abort(400, message=errored[0]['job']['error'] or "Undefined error")
 
     split = len(expression.filter['splits']) or 1
 
@@ -186,8 +191,6 @@ def parse_result(
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
 
-    errored = clean_errored(queries)
-
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
         data_cube_name=data_cube.source_name,
@@ -196,13 +199,8 @@ def parse_result(
         data_cube=data_cube,
     )
 
-    if errored:
-        data = None
-        meta = None
-        # clear_cache(hash_string, split)
-    else:
-        data = query_parser.parse_ply(data_cube.ply_engine)
-        meta = data_cube.get_meta(queries)
+    data = query_parser.parse_ply(data_cube.ply_engine)
+    meta = data_cube.get_meta(queries)
 
     serializer = ReportSerializer(
         queries=queries,

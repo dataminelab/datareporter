@@ -7,7 +7,7 @@ import "@/assets/images/avatar.svg";
 // Register visualizations
 import "@redash/viz/lib";
 
-// Register routes before registering extensions as they may want to override some
+// Register routes before registering extensions as they may want to override some https://staging-app.datareporter.com/reports/new#demo.orders/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvgg/GrC5PYAJgD6kegUqr5kAAqOWJEuoJEwDuhYuATJAIwAmlZQ9sL4ALRFqp7eQvYVIEoAuipuDcEVDhCc/oHB/AiYDlZwvIwFIP1WYIgwZC7YMIJt1NiYaPhoDkvt1FDhEGiZhN0Evf0cVpFJ2FD5wwJj5WM7eKABQQSnZGposI+rwEhcvD00ss7hAAlNngRIstQdh7gNqF4+phIsFWtQkGpTvgAKwABk64O86jB9w0jwRIQC8RicXsVg4uVWQj6HmCyQAzABZd4OT7fIYEXhMqKxeJWDwQxEPJ44GFw6bBOBQFFo24qEAEol4LkIQ4gMR9aF4VwgH6OMjYUHBf6A4EQJ3UORjNToHiU4JIhRrHbUBYIJa4/UK7waLU5CgUu0BR3eF3RACOvM93t9X39iMCcGD80W3jx+ZAsdgAVaGxAwn62DIkQAIsr8i46w3sE3IkwPs77K6QQmgA
 import "@/pages";
 
 import "./antd-spinner";

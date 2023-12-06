@@ -35,6 +35,7 @@ def worker(queues):
     # Configure any SQLAlchemy mappers loaded until now so that the mapping configuration
     # will already be available to the forked work horses and they won't need
     # to spend valuable time re-doing that on every fork.
+    print("queues", queues)
     configure_mappers()
 
     if not queues:

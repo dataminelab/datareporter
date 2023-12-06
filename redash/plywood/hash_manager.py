@@ -27,6 +27,7 @@ parser = lzstring.LZString()
 QUERY_ID = 'adhoc'
 
 SUCCESS_CODE = 3
+QUEUED_CODE = 1
 FAILED_QUERY_CODE = 4
 
 
@@ -128,8 +129,15 @@ def has_pending(array):
         return True
     return False
 
+def has_failed(array):
+    pass
+    
+    
 
 def jobs_status(data: List[dict]) -> Union[None, int]:
+    """
+        this function also cleans failed queries from the list
+    """
     all_statuses = []
     for res in data:
         if 'job' in res:
@@ -204,7 +212,6 @@ def parse_result(
 
     serializer = ReportSerializer(
         queries=queries,
-        failed=errored,
         data=data,
         meta=meta,
         shape=expression.shape,

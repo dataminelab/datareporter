@@ -10,4 +10,3 @@ working_extension = redash_dummy.extension:extension
 
 [redash.periodic_jobs]
 dummy_periodic_job = redash_dummy.jobs:periodic_job
-

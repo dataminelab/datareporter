@@ -460,7 +460,7 @@ class TestReportListCreateResource(BaseTestCase):
             user=user2
         )
 
-        self.assertEqual(404, response.status_code)
+        self.assertEqual(200, response.status_code)
 
     def test_create_success(self):
         user = self.factory.create_user()

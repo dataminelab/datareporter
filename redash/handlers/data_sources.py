@@ -254,9 +254,7 @@ class DataSourcePauseResource(BaseResource):
 class DataSourceTestResource(BaseResource):
     @require_admin
     def post(self, data_source_id):
-        data_source = get_object_or_404(
-            models.DataSource.get_by_id_and_org, data_source_id, self.current_org
-        )
+        data_source = get_object_or_404(models.DataSource.get_by_id_and_org, data_source_id, self.current_org)
 
         response = {}
 
@@ -266,19 +264,7 @@ class DataSourceTestResource(BaseResource):
             job.refresh()
 
         if isinstance(job.result, Exception):
-            message = str(job.result)
-            if len(job.result.args):
-                first_arg = job.result.args[0]
-                if isinstance(first_arg, bytes):
-                    # BigQuery returns big json object as binary string, so we need to decode it
-                    json_object = json.loads(first_arg.decode("utf-8"))
-                    if "error" in json_object:
-                        message = json_object["error"]
-                        if "message" in json_object:
-                            message = json_object["error"]['message']
-                elif isinstance(first_arg, str):
-                    message = first_arg
-            response = {"message": message, "ok": False}
+            response = {"message": str(job.result), "ok": False}
         else:
             response = {"message": "success", "ok": True}
 

@@ -14,6 +14,7 @@ x-redash-environment: &redash-environment
   REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
   REDASH_MAIL_DEFAULT_SENDER: "datareporter@example.com"
+  REDASH_AUTH_TYPE: "api_key"
   REDASH_MAIL_SERVER: "email"
   REDASH_ENFORCE_CSRF: "false"
   MAILCHIMP_SERVER: "us1"
@@ -62,7 +63,7 @@ services:
     ports:
       - "6379:6379"
   postgres:
-    image: postgres:9.5-alpine
+    image: pgautoupgrade/pgautoupgrade:15-alpine3.8
     # The following turns the DB into less durable, but gains significant performance improvements for the tests run (x3
     # improvement on my personal machine). We should consider moving this into a dedicated Docker Compose configuration for
     # tests.

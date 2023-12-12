@@ -65,7 +65,7 @@ def request_loader(request):
         user = hmac_load_user_from_request(request)
     elif settings.AUTH_TYPE == "api_key":
         user = api_key_load_user_from_request(request)
-    elif settings.AUTH_TYPE == "jwt":
+    elif settings.AUTH_TYPE == "jwt" or org_settings["auth_jwt_login_enabled"]:
         user = jwt_token_load_user_from_request(request)
     else:
         logger.warning(

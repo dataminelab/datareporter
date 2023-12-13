@@ -1,7 +1,6 @@
 import hashlib
 import json
 from typing import List, Union
-import re
 
 import lzstring
 from flask_restful import abort
@@ -134,7 +133,15 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
     return None
 
 
-def is_yoy_query(query):
+def is_yoy_query(query:str) -> bool:
+    """This function predicts if the query is a YoY query
+
+    Args:
+        query (str): query text
+
+    Returns:
+        bool: Currently tested for BIGQUERY, ATHENA
+    """
     return query.count("SUM") > 3
 
 

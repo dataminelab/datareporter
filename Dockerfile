@@ -17,7 +17,7 @@ RUN if [ "x$skip_frontend_build" = "x" ] ; then \
     touch /frontend/client/dist/multi_org.html &&\
     touch /frontend/client/dist/index.html;\
   fi
-FROM python:3.7-slim-buster
+FROM python:3.8-slim-bookworm
 
 EXPOSE 5000
 
@@ -71,18 +71,21 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Disalbe PIP Cache and Version Check
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-ENV PIP_NO_CACHE_DIR=1
+ENV POETRY_VERSION=1.6.1
+ENV POETRY_HOME=/etc/poetry
+ENV POETRY_VIRTUALENVS_CREATE=false
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
-# We first copy only the requirements file, to avoid rebuilding on every file
-# change.
-COPY requirements.txt requirements_bundles.txt  requirements_dev.txt  ./
-RUN if [ "x$skip_dev_deps" = "x" ] ; then pip install -r requirements.txt -r requirements_dev.txt; else echo "Skipping pip install dev dependencies" ; pip install -r requirements.txt; fi
-COPY  requirements_all_ds.txt ./
-RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
+COPY pyproject.toml ./
+# poetry.lock ./
 
-COPY . /app
+ARG POETRY_OPTIONS="--no-root --no-interaction --no-ansi"
+# for LDAP authentication, install with `ldap3` group
+# disabled by default due to GPL license conflict
+ARG install_groups="main,all_ds,dev"
+RUN /etc/poetry/bin/poetry install --only $install_groups $POETRY_OPTIONS
+
+COPY --chown=redash . /app
 COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
 RUN find /app
 USER redash

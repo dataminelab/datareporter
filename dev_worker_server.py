@@ -20,6 +20,7 @@ def create(group):
     @app.shell_context_processor
     def shell_context():
         from redash import models, settings
+
         return {"models": models, "settings": settings}
 
     return app

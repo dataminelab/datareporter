@@ -33,6 +33,7 @@ worker_server() {
 
   ensure_schema
 
+
   # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
   MAX_REQUESTS=${MAX_REQUESTS:-1000}
   MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
@@ -50,12 +51,12 @@ server() {
 
   ensure_schema
 
-  # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
-  MAX_REQUESTS=${MAX_REQUESTS:-1000}
-  MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
-  REDASH_WEB_WORKER_TIMOUT=${REDASH_WEB_WORKER_TIMOUT-180}
-  REDASH_WEB_WORKER_THREADS=${REDASH_WEB_WORKER_THREADS-8}
-  exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name redash -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT redash.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
+    # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
+    MAX_REQUESTS=${MAX_REQUESTS:-1000}
+    MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
+    REDASH_WEB_WORKER_TIMOUT=${REDASH_WEB_WORKER_TIMOUT-180}
+    REDASH_WEB_WORKER_THREADS=${REDASH_WEB_WORKER_THREADS-8}
+    exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name redash -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT redash.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
 }
 
 create_db() {
@@ -101,13 +102,7 @@ worker)
 dev_worker_server)
   echo "Starting dev worker server"
   export FLASK_DEBUG=1
-  # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
-  MAX_REQUESTS=${MAX_REQUESTS:-1000}
-  MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
-  REDASH_WEB_WORKERS=1
-  REDASH_WEB_WORKER_TIMOUT=180
-  REDASH_WEB_WORKER_THREADS=1
-  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive -- /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name worker -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT worker.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
+  exec /app/dev_worker_server.py runserver --debugger --reload -h 0.0.0.0
   ;;
 worker_server)
   shift

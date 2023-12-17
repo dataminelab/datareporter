@@ -34,7 +34,6 @@ services:
       - "5678:5678"
     environment:
       <<: *redash-environment
-      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
     volumes:
@@ -46,12 +45,19 @@ services:
       - server
     environment:
       <<: *redash-environment
-  worker-server:
+#  worker-server:
+#    <<: *redash-service
+#    command: dev_worker_server
+#    ports:
+#      - "5001:5000"
+#    depends_on:
+#      - server
+#    environment:
+#      <<: *redash-environment
+#      PYTHONUNBUFFERED: 0
+  worker:
     <<: *redash-service
-    command: dev_worker_server
-    ports:
-      - "5001:5000"
-      - "5679:5678"
+    command: dev_worker
     depends_on:
       - server
     environment:

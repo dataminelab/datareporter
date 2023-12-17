@@ -40,9 +40,15 @@ class NoopNotifier:
 
 
 class HttpNotifier:
-    publisher = None
+    worker = None
 
     def notify(self, message):
+        if self.worker is None:
+            import concurrent.futures
+            self.worker = concurrent.futures.ThreadPoolExecutor(max_workers=2)
+        self.worker.submit(self._send, message)
+
+    def _send(self, message):
         resp = requests.post(WORKER_NOTIFY_URL,
                              headers={
                                  "Accept": "application/json",

@@ -21,7 +21,6 @@ steps:
        --build-arg skip_dev_deps=true \
        -f Dockerfile -o type=image \
        .
-
     id: Build-Data-Reporter
     waitFor: [ '-' ]
   - name: gcr.io/cloud-builders/docker
@@ -39,16 +38,32 @@ steps:
       --build-arg "version=$BRANCH_NAME-$COMMIT_SHA" \
       -f Dockerfile -o type=image \
       .;
-
     dir: plywood/server
     id: Build-Plywood
     waitFor: [ '-' ]
+  - name: gcr.io/cloud-builders/docker
+    env:
+        - 'COMMIT_SHA=$COMMIT_SHA'
+        - 'PROJECT_ID=$PROJECT_ID'
+        - '_GCR_HOSTNAME=$_GCR_HOSTNAME'
+        - 'BRANCH_NAME=$BRANCH_NAME'
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
+    id: Push-Data-Reporter
+    waitFor:
+      - Build-Data-Reporter
   - name: gcr.io/cloud-builders/gcloud
+    env:
+        - 'COMMIT_SHA=$COMMIT_SHA'
+        - 'PROJECT_ID=$PROJECT_ID'
+        - '_GCR_HOSTNAME=$_GCR_HOSTNAME'
+        - 'BRANCH_NAME=$BRANCH_NAME'
     args:
       - '-c'
       - >-
-        gcloud builds triggers  run datareporter-deploy-$BRANCH_NAME
-        --region=$LOCATION --branch=$BRANCH_NAME  --substitutions=_IMAGE_TAG="$COMMIT_SHA",
+        gcloud builds triggers run datareporter-deploy-$BRANCH_NAME
+        --region=$LOCATION --sha=$COMMIT_SHA --substitutions=_IMAGE_TAG="$COMMIT_SHA"
     id: Deploy-$BRANCH_NAME
     entrypoint: bash
     waitFor:

@@ -47,7 +47,7 @@ services:
       <<: *redash-environment
   worker:
     <<: *redash-service
-    command: dev_worker
+    command: worker
     depends_on:
       - server
     environment:

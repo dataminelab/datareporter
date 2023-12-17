@@ -45,24 +45,24 @@ services:
       - server
     environment:
       <<: *redash-environment
-#  worker-server:
-#    <<: *redash-service
-#    command: dev_worker_server
-#    ports:
-#      - "5001:5000"
-#    depends_on:
-#      - server
-#    environment:
-#      <<: *redash-environment
-#      PYTHONUNBUFFERED: 0
-  worker:
+  worker-server:
     <<: *redash-service
-    command: dev_worker
+    command: dev_worker_server
+    ports:
+      - "5001:5000"
     depends_on:
       - server
     environment:
       <<: *redash-environment
       PYTHONUNBUFFERED: 0
+#  worker:
+#    <<: *redash-service
+#    command: dev_worker
+#    depends_on:
+#      - server
+#    environment:
+#      <<: *redash-environment
+#      PYTHONUNBUFFERED: 0
   redis:
     image: redis:3-alpine
     restart: unless-stopped

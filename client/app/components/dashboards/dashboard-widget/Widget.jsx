@@ -15,7 +15,7 @@ function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete
     <Menu data-test="WidgetDropdownButtonMenu">
       {extraOptions}
       {showDeleteOption && extraOptions && <Menu.Divider />}
-      {showDeleteOption && <Menu.Item onClick={()=> window.location.href=`/reports/${report.id}/source`}>Edit</Menu.Item>}
+      {showDeleteOption && report && <Menu.Item onClick={()=> window.location.href=`/reports/${report.id}/source`}>Edit</Menu.Item>}
       {showDeleteOption && <Menu.Item onClick={onDelete}>Remove from Dashboard</Menu.Item>}
     </Menu>
   );

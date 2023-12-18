@@ -4,6 +4,7 @@ import errno
 import os
 import signal
 import requests
+from concurrent.futures import ThreadPoolExecutor
 from redash import statsd_client
 from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
 from rq.utils import utcnow
@@ -43,6 +44,11 @@ class HttpNotifier:
     publisher = None
 
     def notify(self, message):
+        if self.publisher is None:
+            self.publisher = ThreadPoolExecutor(max_workers=2)
+        self.publisher.submit(self._send, message)
+
+    def _send(self, message):
         resp = requests.post(WORKER_NOTIFY_URL,
                              headers={
                                  "Accept": "application/json",

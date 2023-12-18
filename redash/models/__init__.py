@@ -1246,6 +1246,8 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
     def get_id_from_text(self, text):
         if not text:
             return None
+        elif len(text.split("/")) < 2:
+            return None
         return text.replace("[turnilo-widget]", "").split("/")[0]
 
 

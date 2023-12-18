@@ -18,6 +18,7 @@ from redash.handlers.dashboards import (
     DashboardTagsResource,
     PublicDashboardResource,
 )
+from redash.handlers.data_source_tables import DataSourceTablesResource
 from redash.handlers.data_sources import (
     DataSourceListResource,
     DataSourcePauseResource,
@@ -25,7 +26,7 @@ from redash.handlers.data_sources import (
     DataSourceSchemaResource,
     DataSourceTestResource,
     DataSourceTypeListResource,
-)
+    DataSourceModelsResource)
 from redash.handlers.databricks import (
     DatabricksDatabaseListResource,
     DatabricksSchemaResource,
@@ -37,7 +38,7 @@ from redash.handlers.destinations import (
     DestinationTypeListResource,
 )
 from redash.handlers.events import EventsResource
-from redash.handlers.favorites import DashboardFavoriteResource, QueryFavoriteResource
+from redash.handlers.favorites import DashboardFavoriteResource, QueryFavoriteResource, ReportFavoriteResource
 from redash.handlers.groups import (
     GroupDataSourceListResource,
     GroupDataSourceResource,
@@ -45,6 +46,14 @@ from redash.handlers.groups import (
     GroupMemberListResource,
     GroupMemberResource,
     GroupResource,
+)
+from redash.handlers.model_configs import (
+    ModelsConfigResource,
+    ModelsConfigGetResource
+)
+from redash.handlers.models import (
+    ModelsListResource,
+    ModelsResource
 )
 from redash.handlers.permissions import (
     CheckPermissionResource,
@@ -73,6 +82,15 @@ from redash.handlers.query_results import (
 from redash.handlers.query_snippets import (
     QuerySnippetListResource,
     QuerySnippetResource,
+)
+from redash.handlers.reports import (
+    ReportsListResource,
+    ReportGenerateResource,
+    ReportResource,
+    ReportFilter,
+    ReportFavoriteListResource,
+    ReportTagsResource,
+    ReportsArchiveResource
 )
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
@@ -210,6 +228,7 @@ api.add_org_resource(
 )
 
 api.add_org_resource(QueryTagsResource, "/api/queries/tags", endpoint="query_tags")
+api.add_org_resource(ReportTagsResource, "/api/reports/tags", endpoint="report_tags")
 api.add_org_resource(
     DashboardTagsResource, "/api/dashboards/tags", endpoint="dashboard_tags"
 )
@@ -328,4 +347,32 @@ api.add_org_resource(
 
 api.add_org_resource(
     OrganizationSettings, "/api/settings/organization", endpoint="organization_settings"
+)
+
+api.add_org_resource(ModelsListResource, "/api/models", endpoint="models")
+api.add_org_resource(ModelsResource, "/api/models/<int:model_id>", endpoint="model")
+api.add_org_resource(ModelsConfigResource, "/api/models/<int:model_id>/config", endpoint="model_configs")
+api.add_org_resource(ModelsConfigGetResource, "/api/model_configs/<int:config_id>", endpoint="model_config")
+
+api.add_org_resource(DataSourceTablesResource, "/api/data_sources/<int:data_source_id>/tables")
+api.add_org_resource(DataSourceModelsResource, "/api/data_sources/<int:data_source_id>/models")
+
+api.add_org_resource(ReportFilter, "/api/reports/generate/<int:model_id>/filter", endpoint="report_model_filter")
+api.add_org_resource(ReportGenerateResource, "/api/reports/generate/<int:model_id>", endpoint="report_model")
+
+api.add_org_resource(ReportResource, "/api/reports/<int:report_id>", endpoint="report")
+
+api.add_org_resource(ReportsListResource, "/api/reports", endpoint="reports")
+api.add_org_resource(ReportsArchiveResource, "/api/reports/archive", endpoint="reports_archive")
+
+api.add_org_resource(
+    ReportFavoriteResource,
+    "/api/reports/<report_id>/favorite",
+    endpoint="report_favorite"
+)
+
+api.add_org_resource(
+    ReportFavoriteListResource,
+    "/api/reports/favorites",
+    endpoint="report_favorites",
 )

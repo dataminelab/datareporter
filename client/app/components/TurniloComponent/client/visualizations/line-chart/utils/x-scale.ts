@@ -26,7 +26,6 @@ import { union } from "../../../../common/utils/plywood/range";
 import { toPlywoodRange } from "../../../utils/highlight-clause/highlight-clause";
 import { ContinuousRange, ContinuousScale } from "./continuous-types";
 import { getContinuousDimension, getContinuousSplit } from "./splits";
-
 // This function is responsible for aligning d3 types with our domain types.
 export function createContinuousScale(essence: Essence, domainRange: PlywoodRange, width: number): ContinuousScale {
   const continuousDimension = getContinuousDimension(essence);
@@ -49,7 +48,7 @@ function includeMaxTimeBucket(filterRange: PlywoodRange, maxTime: Date, continuo
   /*
     Special treatment for realtime data:
     Max time could be inside last bucket of time filter.
-   */
+  */
   if (maxTime && continuousBucket instanceof Duration) {
     const filterRangeEnd = filterRange.end as Date;
     const filterRangeEndFloored = continuousBucket.floor(filterRangeEnd, timezone);
@@ -71,17 +70,37 @@ function getFilterRange(essence: Essence, timekeeper: Timekeeper): PlywoodRange 
   return includeMaxTimeBucket(filterRange, maxTime, continuousSplit, essence.timezone);
 }
 
-function safeRangeSum(a: PlywoodRange | null, b: PlywoodRange | null): PlywoodRange | null {
+function safeRangeSum(a: PlywoodRange | null, b: PlywoodRange | null): PlywoodRange {
   return (a && b) ? a.extend(b) : (a || b);
 }
 
 function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange | null {
   const continuousDimensionKey = continuousDimension.name;
-  const flatDataset = dataset.flatten();
-  return flatDataset
+  const flatDataset = dataset.flatten()
     .data
-    .map(datum => datum[continuousDimensionKey] as PlywoodRange)
-    .reduce(safeRangeSum, null);
+    .map(datum => datum[continuousDimensionKey] as PlywoodRange);
+  if (typeof flatDataset[0] === "object") {
+    return flatDataset
+      .reduce(safeRangeSum, null);
+  } else if (typeof flatDataset[0] === "string") {
+    // ["21-05-2022:HH:MM:SS", ...]
+    //@ts-ignore
+    var start = new Date(flatDataset[0]);
+    //@ts-ignore
+    var end = new Date(flatDataset[0]);
+    flatDataset.map(datum => {
+      let currentDate = new Date(datum.toString());
+      if (currentDate < start) {
+        start = currentDate;
+      }
+      if (currentDate > end) {
+        end = currentDate;
+      }
+    });
+    return Range.fromJS({ start: start, end: end });
+  } else {
+    return null;
+  }
 }
 
 export function calculateXRange(essence: Essence, timekeeper: Timekeeper, dataset: Dataset): ContinuousRange | null {

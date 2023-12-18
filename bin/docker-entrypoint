@@ -12,16 +12,34 @@ dev_scheduler() {
 
   exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive -- ./manage.py rq scheduler
 }
-
+ensure_schema() {
+  if [[ "$DATAREPORTER_ENSURE_SCHEMA" == "true" ]]; then
+    echo "starting schema creation"
+    /app/bin/ensure_schema.sh &
+  fi
+}
 worker() {
+
+  ensure_schema
+
   echo "Starting RQ worker..."
 
   export WORKERS_COUNT=${WORKERS_COUNT:-2}
   export QUEUES=${QUEUES:-}
-  
+
   supervisord -c worker.conf
 }
+worker_server() {
 
+  ensure_schema
+
+  # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
+  MAX_REQUESTS=${MAX_REQUESTS:-1000}
+  MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
+  REDASH_WEB_WORKER_TIMOUT=${REDASH_WEB_WORKER_TIMOUT-180}
+  REDASH_WEB_WORKER_THREADS=${REDASH_WEB_WORKER_THREADS-8}
+  exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name worker -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT worker.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
+}
 dev_worker() {
   echo "Starting dev RQ worker..."
 
@@ -29,10 +47,15 @@ dev_worker() {
 }
 
 server() {
+
+  ensure_schema
+
   # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
   MAX_REQUESTS=${MAX_REQUESTS:-1000}
   MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
-  exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name redash -w${REDASH_WEB_WORKERS:-4} redash.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
+  REDASH_WEB_WORKER_TIMOUT=${REDASH_WEB_WORKER_TIMOUT-180}
+  REDASH_WEB_WORKER_THREADS=${REDASH_WEB_WORKER_THREADS-8}
+  exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name redash -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT redash.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
 }
 
 create_db() {
@@ -71,58 +94,75 @@ tests() {
 }
 
 case "$1" in
-  worker)
-    shift
-    worker
-    ;;
-  server)
-    shift
-    server
-    ;;
-  scheduler)
-    shift
-    scheduler
-    ;;
-  dev_scheduler)
-    shift
-    dev_scheduler
-    ;;
-  dev_worker)
-    shift
-    dev_worker
-    ;;
-  celery_healthcheck)
-    shift
-    echo "DEPRECATED: Celery has been replaced with RQ and now performs healthchecks autonomously as part of the 'worker' entrypoint."
-    ;;
-  dev_server)
-    export FLASK_DEBUG=1
-    exec /app/manage.py runserver --debugger --reload -h 0.0.0.0
-    ;;
-  debug)
-    export FLASK_DEBUG=1
-    export REMOTE_DEBUG=1
-    exec /app/manage.py runserver --debugger --no-reload -h 0.0.0.0
-    ;;
-  shell)
-    exec /app/manage.py shell
-    ;;
-  create_db)
-    create_db
-    ;;
-  manage)
-    shift
-    exec /app/manage.py $*
-    ;;
-  tests)
-    shift
-    tests $@
-    ;;
-  help)
-    shift
-    help
-    ;;
-  *)
-    exec "$@"
-    ;;
+worker)
+  shift
+  worker
+  ;;
+dev_worker_server)
+  echo "Starting dev worker server"
+  export FLASK_DEBUG=1
+  # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
+  MAX_REQUESTS=${MAX_REQUESTS:-1000}
+  MAX_REQUESTS_JITTER=${MAX_REQUESTS_JITTER:-100}
+  REDASH_WEB_WORKERS=1
+  REDASH_WEB_WORKER_TIMOUT=180
+  REDASH_WEB_WORKER_THREADS=1
+  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive -- /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name worker -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT worker.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
+  ;;
+worker_server)
+  shift
+  worker_server
+  ;;
+server)
+  shift
+  server
+  ;;
+scheduler)
+  shift
+  scheduler
+  ;;
+dev_scheduler)
+  shift
+  dev_scheduler
+  ;;
+
+dev_worker)
+  shift
+  dev_worker
+  ;;
+celery_healthcheck)
+  shift
+  echo "DEPRECATED: Celery has been replaced with RQ and now performs healthchecks autonomously as part of the 'worker' entrypoint."
+  ;;
+dev_server)
+  echo "Starting dev server"
+  export FLASK_DEBUG=1
+  exec /app/manage.py runserver --debugger --reload -h 0.0.0.0
+  ;;
+debug)
+  export FLASK_DEBUG=1
+  export REMOTE_DEBUG=1
+  exec /app/manage.py runserver --debugger --no-reload -h 0.0.0.0
+  ;;
+shell)
+  exec /app/manage.py shell
+  ;;
+create_db)
+  create_db
+  ;;
+manage)
+  shift
+  exec /app/manage.py $*
+  ;;
+tests)
+  shift
+  tests $@
+  ;;
+help)
+  shift
+  help
+  ;;
+*)
+  exec "$@"
+  ;;
 esac

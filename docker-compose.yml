@@ -1,21 +1,27 @@
 # This configuration file is for the **development** setup.
-# For a production example please refer to getredash/setup repository on GitHub.
+# For a production example please refer to kubernetes or CloudRun setups
 version: "2.2"
 x-redash-service: &redash-service
   build:
     context: .
     args:
-      skip_frontend_build: "true"
+      skip_frontend_build: "false"
   volumes:
     - .:/app
 x-redash-environment: &redash-environment
-  REDASH_LOG_LEVEL: "INFO"
+  REDASH_LOG_LEVEL: "DEBUG"
   REDASH_REDIS_URL: "redis://redis:6379/0"
   REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
-  REDASH_MAIL_DEFAULT_SENDER: "redash@example.com"
+  REDASH_MAIL_DEFAULT_SENDER: ""
+  REDASH_AUTH_TYPE: "api_key"
   REDASH_MAIL_SERVER: "email"
-  REDASH_ENFORCE_CSRF: "true"
+  REDASH_ENFORCE_CSRF: "false"
+  MAILCHIMP_SERVER: "us1"
+  MAILCHIMP_API_KEY: "e4c804be8fbd3c445a0fef9d05b6fc27"
+  MAILCHIMP_LIST_ID: "e48180787b"
+  REDASH_DEBUG: "false"
+  CLIENT_TIMEOUT_DELTA: 100000
 services:
   server:
     <<: *redash-service
@@ -28,7 +34,11 @@ services:
       - "5678:5678"
     environment:
       <<: *redash-environment
+      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
       PYTHONUNBUFFERED: 0
+      PLYWOOD_SERVER_URL: "http://plywood:3000"
+    volumes:
+      - .:/app
   scheduler:
     <<: *redash-service
     command: dev_scheduler
@@ -36,9 +46,12 @@ services:
       - server
     environment:
       <<: *redash-environment
-  worker:
+  worker-server:
     <<: *redash-service
-    command: dev_worker
+    command: dev_worker_server
+    ports:
+      - "5001:5000"
+      - "5679:5678"
     depends_on:
       - server
     environment:
@@ -47,14 +60,16 @@ services:
   redis:
     image: redis:3-alpine
     restart: unless-stopped
+    ports:
+      - "6379:6379"
   postgres:
-    image: postgres:9.5-alpine
+    image: postgres:12-alpine
     # The following turns the DB into less durable, but gains significant performance improvements for the tests run (x3
     # improvement on my personal machine). We should consider moving this into a dedicated Docker Compose configuration for
     # tests.
     ports:
       - "15432:5432"
-    command: "postgres -c fsync=off -c full_page_writes=off -c synchronous_commit=OFF"
+      - "5432:5432"
     restart: unless-stopped
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"
@@ -63,3 +78,14 @@ services:
     ports:
       - "1080:80"
     restart: unless-stopped
+  plywood:
+    image: node:14.5.0-alpine
+    working_dir: /app
+    command: npm run watch-node
+    ports:
+      - "3000:3000"
+      - "9231:9229"
+    volumes:
+      - ./plywood/server:/app
+    environment:
+      - LOG_MODE=request_and_response

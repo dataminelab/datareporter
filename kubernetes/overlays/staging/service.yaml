@@ -6,9 +6,24 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  name: datareporter-worker
+  name: datareporter-ad-hoc-worker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datareporter-scheduled-worker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datareporter-scheduler
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: datareporter-lb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plywood-server

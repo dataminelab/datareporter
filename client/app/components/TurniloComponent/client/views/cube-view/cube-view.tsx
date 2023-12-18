@@ -83,12 +83,13 @@ export interface CubeViewLayout {
 
 const defaultLayout: CubeViewLayout = {
   factPanel: { width: 240 },
-  pinboard: { width: 240 }
+  pinboard: { width: 240, hidden: true }
 };
 
 export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
+  report: any;
   hash: string;
   changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
   changeEssence: Binary<Essence, boolean, void>;
@@ -485,7 +486,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       ...layout,
       pinboard: {
         ...pinboard,
-        hidden: !pinboard.hidden
+        hidden: true
       }
     });
   };
@@ -722,6 +723,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   private visElement() {
     const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
+    const { report } = this.props;
     if (!(essence.visResolve.isReady() && stage)) return null;
     const visProps: VisualizationProps = {
       refreshRequestTimestamp: lastRefreshRequestTimestamp,
@@ -729,6 +731,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       clicker: this.clicker,
       timekeeper: this.state.timekeeper,
       stage,
+      report,
       registerDownloadableDataset: (dataset: Dataset) => {
         this.downloadableDataset = { dataset, options: tabularOptions(essence) };
       }

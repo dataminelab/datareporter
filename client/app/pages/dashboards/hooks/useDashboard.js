@@ -15,6 +15,7 @@ import ShareDashboardDialog from "../components/ShareDashboardDialog";
 import useFullscreenHandler from "../../../lib/hooks/useFullscreenHandler";
 import useRefreshRateHandler from "./useRefreshRateHandler";
 import useEditModeHandler from "./useEditModeHandler";
+import AddReportDialog from "@/components/dashboards/AddReportDialog";
 
 export { DashboardStatusEnum } from "./useEditModeHandler";
 
@@ -144,7 +145,7 @@ function useDashboard(dashboardData) {
     updatedParameters => {
       if (!refreshing) {
         setRefreshing(true);
-        loadDashboard(true, updatedParameters).finally(() => setRefreshing(false));
+        setTimeout(() => document.querySelector("a[data-test='Refresh']").click(), 333);
       }
     },
     [refreshing, loadDashboard]
@@ -196,6 +197,15 @@ function useDashboard(dashboardData) {
     );
   }, [dashboard]);
 
+  const showReportDialog = useCallback(() => {
+    AddReportDialog.showModal({
+      dashboard,
+    }).onClose((text) =>
+      dashboard.addWidget(text).then(() => {
+        setDashboard(currentDashboard => extend({}, currentDashboard))
+      }, [dashboard]));
+  }, [dashboard]);
+
   const [refreshRate, setRefreshRate, disableRefreshRate] = useRefreshRateHandler(refreshDashboard);
   const [fullscreen, toggleFullscreen] = useFullscreenHandler();
   const editModeHandler = useEditModeHandler(!gridDisabled && canEditDashboard, dashboard.widgets);
@@ -241,6 +251,7 @@ function useDashboard(dashboardData) {
     showShareDashboardDialog,
     showAddTextboxDialog,
     showAddWidgetDialog,
+    showReportDialog,
     managePermissions,
   };
 }

@@ -1,4 +1,4 @@
-import { isString, isObject, filter, sortBy } from "lodash";
+import { isString, isObject, filter, sortBy, find } from "lodash";
 import pathToRegexp from "path-to-regexp";
 
 function getRouteParamsCount(path) {
@@ -29,6 +29,10 @@ class Routes {
       this._items = [...this._items, { ...route, id }];
       this._sorted = false;
     }
+  }
+
+  getRoute(path) {
+    return find(this._items, ['path', path]);
   }
 
   unregister(id) {

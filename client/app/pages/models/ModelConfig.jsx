@@ -38,8 +38,8 @@ function ModelConfig({ modelId, onError }) {
     };
   }, [modelId, handleError]);
 
-  const saveConfig = (model) => {
-    Model.save(model, model.id)
+  const saveConfig = (id, content) => {
+    Model.saveConfig(id, content)
       .then(() => {
         navigateTo("models");
       })
@@ -50,7 +50,6 @@ function ModelConfig({ modelId, onError }) {
 
   return (
     <React.Fragment>
-      <EmailSettingsWarning featureName="invite emails" className="m-b-20" adminOnly />
       <div className="row">
         {!model && <LoadingState className="" />}
         {model && (
@@ -69,7 +68,7 @@ ModelConfig.propTypes = {
 };
 
 ModelConfig.defaultProps = {
-  modelId: null, // defaults to `currentUser.id`
+  modelId: null,
   onError: () => {},
 };
 
@@ -79,6 +78,7 @@ const ModelConfigPage = wrapSettingsTab(
     title: "Model config",
     path: "models/config",
     order: 7,
+    isHide: true
   },
   ModelConfig
 );

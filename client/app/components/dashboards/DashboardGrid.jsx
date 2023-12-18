@@ -56,12 +56,12 @@ const DashboardWidget = React.memo(
     useEffect( () => {
       async function getConfigTurnilo() {
         if (!config.appSettings) {
-          const result =  await axios.get('/config-turnilo');
-          setConfig(result);
+          const report_config =  await axios.get('/api/reports/' + widget.report_id);
+          setConfig(report_config);
         }
       }
       getConfigTurnilo()
-    }, []);
+    }, [widget]);
 
     if (type === WidgetTypeEnum.VISUALIZATION) {
       return (

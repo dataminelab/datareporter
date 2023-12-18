@@ -37,7 +37,8 @@ function findSeriesAndDerivation(name: string, concreteSeriesList: List<Concrete
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
     formatter: {
-      TIME_RANGE: (range: TimeRange) => range.start.toISOString()
+      //@ts-ignore
+      TIME_RANGE: (range: TimeRange) => range.start ? range.start.toISOString() : range
     },
     attributeFilter: ({ name }: AttributeInfo) => {
       return findSeriesAndDerivation(name, essence.getConcreteSeries()) !== null

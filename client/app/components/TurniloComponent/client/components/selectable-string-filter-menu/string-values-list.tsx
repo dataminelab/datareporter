@@ -53,7 +53,7 @@ export const StringValuesList: React.SFC<RowsListProps> = props => {
   const rows = dataset.data.slice(0, limit).map(d => d[dimension.name] as string);
   const matchingRows = filterRows(rows, searchText);
   if (searchText && matchingRows.length === 0) {
-    return <div className="no-string-values">{`No results for "${searchText}"`}</div>;
+    return <div className="no-string-values no-result">{`No results for "${searchText}"`}</div>;
   }
   const sortedRows = sortRows(matchingRows, promotedValues);
   const checkboxStyle = filterMode === FilterMode.EXCLUDE ? "cross" : "check";

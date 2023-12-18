@@ -1,5 +1,10 @@
 client/.tmp/
-client/dist/
+#client/dist/
+client/node_modules/
+#plywood/server
+.dockerignore
+plywood/server/node_modules/
+plywood/server/client/node_modules/
 node_modules/
 viz-lib/node_modules/
 .tmp/
@@ -13,3 +18,5 @@ venv/
 /.github/
 /netlify.toml
 /setup/
+scripts
+setup

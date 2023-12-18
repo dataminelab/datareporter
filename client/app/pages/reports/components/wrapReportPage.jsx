@@ -5,14 +5,14 @@ import { Report } from "@/services/report";
 import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
 
 export default function wrapReportPage(WrappedComponent) {
-  function ReportPageWrapper({ queryId, onError, ...props }) {
+  function ReportPageWrapper({ reportId, onError, ...props }) {
     const [report, setReport] = useState(null);
 
     const handleError = useImmutableCallback(onError);
 
     useEffect(() => {
       let isCancelled = false;
-      const promise = queryId ? Report.get({ id: queryId }) : Promise.resolve(Report.newReport());
+      const promise = reportId ? Report.get({ id: reportId }) : Promise.resolve(Report.newReport());
       promise
         .then(result => {
           if (!isCancelled) {
@@ -24,7 +24,7 @@ export default function wrapReportPage(WrappedComponent) {
       return () => {
         isCancelled = true;
       };
-    }, [queryId, handleError]);
+    }, [reportId, handleError]);
 
     if (!report) {
       return <LoadingState className="flex-fill" />;
@@ -34,11 +34,11 @@ export default function wrapReportPage(WrappedComponent) {
   }
 
   ReportPageWrapper.propTypes = {
-    queryId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    reportId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
   ReportPageWrapper.defaultProps = {
-    queryId: null,
+    reportId: null,
   };
 
   return ReportPageWrapper;

@@ -18,8 +18,8 @@ export default function useReportDataSources(report) {
     let cancelDataSourceLoading = false;
     DataSource.query().then(data => {
       if (!cancelDataSourceLoading) {
-        setDataSourcesLoaded(true);
         setAllDataSources(data);
+        setDataSourcesLoaded(true);
       }
     });
 

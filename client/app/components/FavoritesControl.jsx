@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 export default class FavoritesControl extends React.Component {
   static propTypes = {
     item: PropTypes.shape({
-      is_favorite: PropTypes.bool.isRequired,
+      is_favorite: PropTypes.bool.isRequired | null,
     }).isRequired,
     onChange: PropTypes.func,
   };

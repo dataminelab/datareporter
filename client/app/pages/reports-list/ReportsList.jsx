@@ -52,7 +52,7 @@ class ReportsList extends React.Component {
     {
       key: "archive",
       href: "reports/archive",
-      title: "Archived",
+      title: "My Archived Reports",
       icon: () => <Sidebar.MenuIcon icon="fa fa-archive" />,
     },
   ];
@@ -62,7 +62,7 @@ class ReportsList extends React.Component {
     Columns.custom.sortable(
       (text, item) => (
         <React.Fragment>
-          <a className="table-main-title" href={"reports/" + item.id}>
+          <a className="table-main-title" href={"reports/" + item.id + '/source#' + item.report}>
             {item.name}
           </a>
           <QueryTagsControl
@@ -81,17 +81,6 @@ class ReportsList extends React.Component {
     ),
     Columns.custom((text, item) => item.user.name, { title: "Created By", width: "1%" }),
     Columns.dateTime.sortable({ title: "Created At", field: "created_at", width: "1%" }),
-    Columns.dateTime.sortable({
-      title: "Last Executed At",
-      field: "retrieved_at",
-      orderByField: "executed_at",
-      width: "1%",
-    }),
-    Columns.custom.sortable((text, item) => <SchedulePhrase schedule={item.schedule} isNew={item.isNew()} />, {
-      title: "Refresh Schedule",
-      field: "schedule",
-      width: "1%",
-    }),
   ];
 
   componentDidMount() {
@@ -134,7 +123,7 @@ class ReportsList extends React.Component {
                 onChange={controller.updateSearch}
               />
               <Sidebar.Menu items={this.sidebarMenu} selected={controller.params.currentPage} />
-              <Sidebar.Tags url="api/reports/tags" onChange={controller.updateSelectedTags} />
+              <Sidebar.Tags url="api/queries/tags" onChange={controller.updateSelectedTags} />
             </Layout.Sidebar>
             <Layout.Content>
               {controller.isLoaded && controller.isEmpty ? (

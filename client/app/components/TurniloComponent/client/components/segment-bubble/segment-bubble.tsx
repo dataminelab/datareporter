@@ -44,9 +44,11 @@ export interface SegmentBubbleContentProps {
   content?: ReactNode;
 }
 
-export const SegmentBubbleContent: React.SFC<SegmentBubbleContentProps> = ({ title, content }: SegmentBubbleContentProps) => (
-  <div className="segment-bubble-text">
-    <BubbleTitle title={title} />
-    {content ? <div className="content">{content}</div> : null}
-  </div>
-);
+export const SegmentBubbleContent: React.SFC<SegmentBubbleContentProps> = ({ title, content }: SegmentBubbleContentProps) => {
+  return (
+    <div className="segment-bubble-text">
+      <BubbleTitle title={title} />
+      {content ? <div>{content}</div> : null}
+    </div>
+  );
+};

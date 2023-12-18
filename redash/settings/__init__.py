@@ -14,6 +14,8 @@ from .helpers import (
 )
 from .organization import DATE_FORMAT, TIME_FORMAT  # noqa
 
+PLYWOOD_SERVER_URL = os.environ.get("PLYWOOD_SERVER_URL", "http://plywood-server:3000")
+
 # _REDIS_URL is the unchanged REDIS_URL we get from env vars, to be used later with RQ
 _REDIS_URL = os.environ.get(
     "REDASH_REDIS_URL", os.environ.get("REDIS_URL", "redis://localhost:6379/0")
@@ -29,7 +31,7 @@ STATSD_USE_TAGS = parse_boolean(os.environ.get("REDASH_STATSD_USE_TAGS", "false"
 
 # Connection settings for Redash's own database (where we store the queries, results, etc)
 SQLALCHEMY_DATABASE_URI = os.environ.get(
-    "REDASH_DATABASE_URL", os.environ.get("DATABASE_URL", "postgresql:///postgres")
+    "REDASH_DATABASE_URL", os.environ.get("DATABASE_URL", "postgresql://postgres@localhost:5432/postgres")
 )
 SQLALCHEMY_MAX_OVERFLOW = int_or_none(os.environ.get("SQLALCHEMY_MAX_OVERFLOW"))
 SQLALCHEMY_POOL_SIZE = int_or_none(os.environ.get("SQLALCHEMY_POOL_SIZE"))
@@ -160,6 +162,10 @@ GOOGLE_CLIENT_ID = os.environ.get("REDASH_GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("REDASH_GOOGLE_CLIENT_SECRET", "")
 GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
 
+GOOGLE_PRODUCT_ID = os.environ.get("REDASH_GOOGLE_PROJECT_ID", "")
+GOOGLE_PUBSUB_WORKER_TOPIC_ID = os.environ.get("REDASH_GOOGLE_PUBSUB_WORKER_TOPIC_ID", "")
+WORKER_NOTIFY_URL = os.environ.get("REDASH_WORKER_NOTIFY_URL", "")
+
 # If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
 # even if your actual Redash URL scheme is HTTPS. This will cause Flask to build
 # the SAML redirect URL incorrect thus failing auth. This is especially common if
@@ -256,8 +262,8 @@ RQ_WORKER_JOB_LOG_FORMAT = os.environ.get(
     "REDASH_RQ_WORKER_JOB_LOG_FORMAT",
     (
         LOG_PREFIX + "[%(asctime)s][PID:%(process)d][%(levelname)s][%(name)s] "
-        "job.func_name=%(job_func_name)s "
-        "job.id=%(job_id)s %(message)s"
+                     "job.func_name=%(job_func_name)s "
+                     "job.id=%(job_id)s %(message)s"
     ),
 )
 
@@ -506,3 +512,27 @@ REQUESTS_ALLOW_REDIRECTS = parse_boolean(
 ENFORCE_CSRF = parse_boolean(
     os.environ.get("REDASH_ENFORCE_CSRF", "false")
 )
+# Ignored data source types
+IGNORED_DATA_SOURCE_TYPES = {
+    "bigquery": ["BYTE", "GEOGRAPHY", "RECORD"]
+}
+
+DATA_SOURCE_TYPE_MAPPINGS = {
+    "TIMESTAMP": "TIME",
+    "DATE": "TIME",
+    "DATETIME": "TIME",
+    "INTEGER": "NUMBER",
+    "FLOAT": "NUMBER",
+    "NUMERIC": "NUMBER",
+    "BIGNUMERIC": "NUMBER",
+}
+
+MAILCHIMP_SERVER = os.environ.get("MAILCHIMP_SERVER")
+
+MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY")
+
+MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
+
+REDASH_DEBUG = parse_boolean(os.environ.get("REDASH_DEBUG", "False"))
+
+CLIENT_TIMEOUT_DELTA = int(os.environ.get("CLIENT_TIMEOUT_DELTA", 0))

@@ -184,7 +184,7 @@ export default function QueryPageHeader({
                 <span className="m-l-5">Edit Source</span>
               </Button>
             )}
-            {sourceMode && (
+            {/* {sourceMode && (
               <Button
                 className="m-r-5"
                 href={query.getUrl(false, selectedVisualization)}
@@ -192,7 +192,7 @@ export default function QueryPageHeader({
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Data Only</span>
               </Button>
-            )}
+            )} */}
           </span>
         )}
 

@@ -73,5 +73,5 @@ export function makeFileName(...nameComponents: string[]): string {
     .filter(complement(isBlank))
     .map(name => name.toLowerCase())
     .join("_")
-    .substr(0, 200);
+    .slice(0, 200);
 }

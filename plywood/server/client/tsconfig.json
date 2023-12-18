@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "declaration": true,
+    "declarationMap": true,
+    "removeComments": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": false,
+    "skipLibCheck": false,
+    "importHelpers": true,
+    "lib": ["es2016", "dom"],
+    "target": "es5",
+    "module": "es6",
+    "rootDir": "src",
+    "outDir": "build",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": false,
+  },
+  "include": [
+    "typings/private.d.ts",
+    "src/**/*.ts"
+  ]
+}

@@ -1,5 +1,6 @@
 import logging
 import time
+import json
 
 from flask import make_response, request
 from flask_restful import abort
@@ -8,21 +9,24 @@ from sqlalchemy.exc import IntegrityError
 
 from redash import models
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
+from redash.models import DataSource
+from redash.models.models import Model
 from redash.permissions import (
     require_access,
     require_admin,
     require_permission,
     view_only,
-)
+    has_permission_or_owner)
 from redash.query_runner import (
     get_configuration_schema_for_query_runner_type,
     query_runners,
-    NotSupported,
 )
+from redash.serializers import serialize_job
+from redash.serializers.model_serializer import ModelSerializer
+from redash.tasks.general import test_connection, get_schema
 from redash.utils import filter_none
 from redash.utils.configuration import ConfigurationContainer, ValidationError
-from redash.tasks.general import test_connection, get_schema
-from redash.serializers import serialize_job
+from redash.plywood.parsers.query_parser_v2 import supported_engines
 
 
 class DataSourceTypeListResource(BaseResource):
@@ -76,15 +80,9 @@ class DataSourceResource(BaseResource):
 
         try:
             models.db.session.commit()
-        except IntegrityError as e:
-            if req["name"] in str(e):
-                abort(
-                    400,
-                    message="Data source with the name {} already exists.".format(
-                        req["name"]
-                    ),
-                )
-
+        except IntegrityError as err:
+            if req["name"] in str(err):
+                abort(400, message=f"Data source with the name {req['name']} already exists.")
             abort(400)
 
         self.record_event(
@@ -98,7 +96,10 @@ class DataSourceResource(BaseResource):
         data_source = models.DataSource.get_by_id_and_org(
             data_source_id, self.current_org
         )
-        data_source.delete()
+        try:
+            data_source.delete()
+        except IntegrityError:
+            abort(400, message=f"Data source has attached models.")
 
         self.record_event(
             {
@@ -144,8 +145,17 @@ class DataSourceListResource(BaseResource):
                 "object_type": "datasource",
             }
         )
+        sorted_results = sorted(list(response.values()), key=lambda d: d["name"].lower())
 
-        return sorted(list(response.values()), key=lambda d: d["name"].lower())
+        source = request.args.get('source', False)
+        results = []
+        if source == "plywood":
+            for result in sorted_results:
+                if result["type"] in supported_engines:
+                    results.append(result)
+        else:
+            results = sorted_results
+        return results
 
     @require_admin
     def post(self):
@@ -166,15 +176,9 @@ class DataSourceListResource(BaseResource):
             )
 
             models.db.session.commit()
-        except IntegrityError as e:
-            if req["name"] in str(e):
-                abort(
-                    400,
-                    message="Data source with the name {} already exists.".format(
-                        req["name"]
-                    ),
-                )
-
+        except IntegrityError as err:
+            if req["name"] in str(err):
+                abort(400, message=f"Data source with the name {req['name']} already exists.")
             abort(400)
 
         self.record_event(
@@ -250,9 +254,7 @@ class DataSourcePauseResource(BaseResource):
 class DataSourceTestResource(BaseResource):
     @require_admin
     def post(self, data_source_id):
-        data_source = get_object_or_404(
-            models.DataSource.get_by_id_and_org, data_source_id, self.current_org
-        )
+        data_source = get_object_or_404(models.DataSource.get_by_id_and_org, data_source_id, self.current_org)
 
         response = {}
 
@@ -275,3 +277,15 @@ class DataSourceTestResource(BaseResource):
             }
         )
         return response
+
+
+class DataSourceModelsResource(BaseResource):
+    def get(self, data_source_id):
+        data_source = get_object_or_404(
+            DataSource.get_by_id_and_org, data_source_id, self.current_org
+        )
+        require_access(data_source, self.current_user, view_only)
+        data_source_models = Model.get_by_data_source(data_source_id=data_source_id)
+        filtered_models = filter(lambda model: has_permission_or_owner("generate_report", model.user_id),
+                                 data_source_models)
+        return ModelSerializer(filtered_models).serialize()

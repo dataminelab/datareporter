@@ -471,9 +471,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
     splitIndex = 0,
     path: Datum[] = []
   ): { bars: JSX.Element[], highlight: JSX.Element } {
-    const { essence } = this.props;
+    const { essence, report } = this.props;
     const { timezone } = essence;
-
+    const colorBar = report.colorBody;
     let bars: JSX.Element[] = [];
     let highlight: JSX.Element;
 
@@ -531,6 +531,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
             height={roundToPx(Math.abs(height))}
             x={barOffset}
             y={roundToPx(y)}
+            style={{fill: colorBar}}
           />
           {bubble}
         </g>;
@@ -562,7 +563,8 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   renderXAxis(data: Datum[], coordinates: BarCoordinates[], xAxisStage: Stage): JSX.Element {
-    const { essence } = this.props;
+    const { essence, report } = this.props;
+    const colorTextBar = report.colorText;
     const xScale = this.getPrimaryXScale();
     const xTicks = xScale.domain();
 
@@ -583,7 +585,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
         labels.push(<div
           className="slanty-label continuous"
           key={i}
-          style={{ right: xAxisStage.width - coordinate.x }}
+          style={{ right: xAxisStage.width - coordinate.x, color: colorTextBar }}
         >{segmentValueStr}</div>);
 
         if (i === lastIndex) {
@@ -591,7 +593,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
           labels.push(<div
             className="slanty-label continuous"
             key="last-one"
-            style={{ right: xAxisStage.width - (coordinate.x + coordinate.stepWidth) }}
+            style={{ right: xAxisStage.width - (coordinate.x + coordinate.stepWidth), color: colorTextBar }}
           >{segmentValueStr}</div>);
         }
       });
@@ -603,7 +605,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
         labels.push(<div
           className="slanty-label categorical"
           key={segmentValueStr}
-          style={{ right: xAxisStage.width - (coordinate.x + coordinate.stepWidth / 2) }}
+          style={{ right: xAxisStage.width - (coordinate.x + coordinate.stepWidth / 2), color: colorTextBar }}
         >{segmentValueStr}</div>);
       });
     }

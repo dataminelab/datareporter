@@ -12,7 +12,7 @@ import Filters from "@/components/Filters";
 import { Dashboard } from "@/services/dashboard";
 import routes from "@/services/routes";
 
-import logoUrl from "@/assets/images/redash_icon_small.png";
+import logoUrl from "@/assets/images/report_icon_small.png";
 
 import useDashboard from "./hooks/useDashboard";
 
@@ -90,10 +90,10 @@ class PublicDashboardPage extends React.Component {
         <div id="footer">
           <div className="text-center">
             <a href="https://redash.io">
-              <img alt="Redash Logo" src={logoUrl} width="38" />
+              <img alt="Data reporter Logo" src={logoUrl} width="38" />
             </a>
           </div>
-          Powered by <a href="https://redash.io/?ref=public-dashboard">Redash</a>
+          Powered by <a href="https://redash.io/?ref=public-dashboard">Data reporter</a>
         </div>
       </div>
     );

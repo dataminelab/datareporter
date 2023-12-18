@@ -24,6 +24,7 @@
   .internals {
     @include pin-full;
     overflow: auto;
+    padding: 25px 0px;
   }
 
   .loader,

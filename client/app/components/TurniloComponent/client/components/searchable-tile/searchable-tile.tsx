@@ -14,9 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
@@ -52,11 +50,13 @@ export interface SearchableTileState {
 
 export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
   public mounted: boolean;
-  private stepInput: React.RefObject<unknown>;
+  private header: React.RefObject<any>;
+  private searchBox: React.RefObject<any>;
 
   constructor(props: Readonly<SearchableTileProps>) {
     super(props);
-    this.stepInput = React.createRef();
+    this.header = React.createRef();
+    this.searchBox = React.createRef();
   }
 
   state: SearchableTileState = {
@@ -65,7 +65,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
   componentDidMount() {
     this.mounted = true;
-    this.setState({ actionsMenuAlignOn: ReactDOM.findDOMNode(this.refs["header"]) as Element });
+    this.setState({ actionsMenuAlignOn: (this.header.current) as Element });
     window.addEventListener("mousedown", this.globalMouseDownListener);
     window.addEventListener("keydown", this.globalKeyDownListener);
   }
@@ -84,12 +84,12 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
     const target = e.target as Element;
 
-    const searchBoxElement = ReactDOM.findDOMNode(this.refs["search-box"]);
+    const searchBoxElement = this.searchBox.current;
     if (!searchBoxElement || isInside(target, searchBoxElement)) return;
-
-    const headerRef = this.refs["header"];
+    
+    const headerRef = this.header.current;
     if (!headerRef || headerRef instanceof Element) return;
-    const searchButtonElement = ReactDOM.findDOMNode(headerRef.refs["search"]);
+    const searchButtonElement = this.searchBox.current;
     if (!searchButtonElement || isInside(target, searchButtonElement)) return;
 
     toggleChangeFn();
@@ -178,14 +178,14 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     var qualifiedClassName = "searchable-tile " + className;
     const header = <TileHeader
       title={title}
-      ref="header"
+      ref={this.header}
       icons={tileIcons}
       onDragStart={onDragStart}
     />;
 
     let searchBar: JSX.Element = null;
     if (showSearch) {
-      searchBar = <div className="search-box" ref="search-box">
+      searchBar = <div className="search-box" ref={this.searchBox}>
         <ClearableInput
           placeholder="Search"
           focusOnMount={true}

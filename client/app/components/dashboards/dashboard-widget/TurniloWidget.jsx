@@ -1,30 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Menu from "antd/lib/menu";
 import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
 import Widget from "./Widget";
 import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
 import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
 import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
-import navigateTo from "@/components/ApplicationArea/navigateTo";
-import location from "@/services/location";
 
 function TurniloWidget(props) {
   const { widget, canEdit, config } = props;
-
-  const turniloHash = '#' + widget.text.replace('[turnilo-widget]', '')
-  const editTurnilo = () => {
-    // eslint-disable-next-line no-restricted-globals
-    let backUrl = location.url.split('/')[2];
-    navigateTo(`/report/?back=${backUrl}&widgetId=${widget.id}&dashboardId=${widget.dashboard_id}${turniloHash}`);
-  };
-
-  const TurniloMenuOptions = [
-    <Menu.Item key="edit" onClick={editTurnilo}>
-      Edit
-    </Menu.Item>,
-  ];
+  const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
+  const TurniloMenuOptions = [];
 
   if (!widget.width) {
     return null;
@@ -40,19 +26,20 @@ function TurniloWidget(props) {
     Ajax.version = version;
 
     const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(config)
     });
 
-    return (
+    return ( 
       <Widget {...props} menuOptions={canEdit ? TurniloMenuOptions : null} className="widget-text">
         <turnilo-widget>
           <TurniloApplication
+            config={config}
             version={version}
             hashWidget={turniloHash}
             appSettings={appSettings}
-            initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+            initTimekeeper={config.timekeeper ? Timekeeper.fromJS(config.timekeeper) : new Timekeeper({ timeTags: [] })}
           />
-        </turnilo-widget>;
+        </turnilo-widget>
       </Widget>
     );
   } else {

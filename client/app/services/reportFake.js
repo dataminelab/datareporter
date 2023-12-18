@@ -19,6 +19,12 @@ function getStorageItem(key, callback) {
     callback(result);
   }
 }
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 function setStorageItem(key, value, callback) {
   const newValue = JSON.stringify(value);
@@ -33,7 +39,7 @@ function setStorageItem(key, value, callback) {
 }
 
 const axios = {
-  query:  (params) => {
+  getList:  (params) => {
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (res) => {
         const response = res ? JSON.parse(res) : [];
@@ -66,12 +72,25 @@ const axios = {
   create: (item) => {
     return new Promise((resolve, reject) => {
       getStorageItem('reportDB', (res) => {
-        const response = res ? JSON.parse(res) : [];
+        const response = JSON.parse(res);
         let data = []
         if (res) {
           data = response;
         }
-        data.push(item);
+        let itemData = {
+          id: uuidv4(),
+          can_edit: item.can_edit,
+          data_source_id: item.data_source_id,
+          latest_report_data: item.latest_report_data,
+          latest_report_data_id: item.latest_report_data_id,
+          name: item.name,
+          options: item.options,
+          report: item.report,
+          schedule: item.schedule,
+          tags: item.tags,
+          user: item.user
+        }
+        data.push(itemData);
         setStorageItem('reportDB', data, () => {
           resolve(item);
         })
@@ -104,7 +123,6 @@ const axios = {
       getStorageItem('reportDB', (res) => {
         let response = res ? JSON.parse(res) : [];
         response = response.filter((item) => model.id === item.connection)
-        console.log(res)
         setStorageItem('reportDB', response, () => {
           resolve(model.id);
         })
@@ -136,7 +154,7 @@ function deleteReport(model) {
 };*/
 
 const Report = {
-  query: params => axios.query(params),
+  getList: params => axios.getList(params),
   get: ({ id }) => axios.get(id),
   create: data => axios.create(data),
   save: data => axios.save(data),

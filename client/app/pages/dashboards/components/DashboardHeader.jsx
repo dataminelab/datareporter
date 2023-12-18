@@ -190,13 +190,14 @@ function DashboardControl({ dashboardOptions }) {
             </Button>
           )}
           {showRefreshButton && <RefreshButton dashboardOptions={dashboardOptions} />}
-          {showFullscreenButton && (
+          {/* DR-153: Disable fullscreen button */}          
+          {/* {showFullscreenButton && (
             <Tooltip className="hidden-xs" title="Enable/Disable Fullscreen display">
               <Button type={buttonType(fullscreen)} className="icon-button m-l-5" onClick={toggleFullscreen}>
                 <i className="zmdi zmdi-fullscreen" />
               </Button>
             </Tooltip>
-          )}
+          )} */}
           {showShareButton && (
             <Tooltip title="Dashboard Sharing Options">
               <Button

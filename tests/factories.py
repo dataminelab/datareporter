@@ -1,5 +1,6 @@
 from passlib.apps import custom_app_context as pwd_context
 import redash.models
+import redash.models.models
 from redash.models import db
 from redash.permissions import ACCESS_TYPE_MODIFY
 from redash.utils import gen_query_hash, utcnow
@@ -168,6 +169,25 @@ query_snippet_factory = ModelFactory(
     trigger=Sequence("trigger {}"),
     description="description",
     snippet="snippet",
+)
+
+model_config_factory = ModelFactory(
+    redash.models.models.ModelConfig,
+    user=user_factory.create,
+    content=Sequence("key: {}"),
+)
+
+model_factory = ModelFactory(
+    redash.models.models.Model,
+    user=user_factory.create,
+    name=Sequence("Model {}"),
+    data_source=data_source_factory.create
+)
+
+report_factory = ModelFactory(
+    redash.models.models.Report,
+    user=user_factory.create,
+    name=Sequence("Report{}"),
 )
 
 
@@ -340,3 +360,24 @@ class Factory(object):
         args = {"user": self.user, "org": self.org}
         args.update(kwargs)
         return query_snippet_factory.create(**args)
+
+    def create_model_config(self, **kwargs):
+        args = {"user": self.user}
+        args.update(kwargs)
+        return model_config_factory.create(**args)
+
+    def create_model(self, **kwargs):
+        args = {"user": self.user}
+        args.update(kwargs)
+        return model_factory.create(**args)
+
+    def create_report(self, **kwargs):
+        args = {
+            "user": self.user,
+            'model': self.create_model(),
+            'expression': {'name': 'John'},
+            'color_1': 'color_1',
+            'color_2': 'color_2'
+        }
+        args.update(kwargs)
+        return report_factory.create(**args)

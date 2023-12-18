@@ -9,7 +9,6 @@ dist/
 *.pyc
 .coverage
 coverage.xml
-client/dist
 .DS_Store
 .#*
 \#*#
@@ -27,3 +26,6 @@ npm-debug.log
 
 client/cypress/screenshots
 client/cypress/videos
+*.iml
+
+dist

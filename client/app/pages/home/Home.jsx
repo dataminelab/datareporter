@@ -14,7 +14,7 @@ import recordEvent from "@/services/recordEvent";
 import { messages } from "@/services/auth";
 import notification from "@/services/notification";
 import { Dashboard } from "@/services/dashboard";
-import { Query } from "@/services/query";
+import { Report } from "@/services/report";
 import routes from "@/services/routes";
 
 import "./Home.less";
@@ -91,7 +91,9 @@ function FavoriteList({ title, resource, itemUrl, emptyState }) {
               <span className="btn-favourite m-r-5">
                 <i className="fa fa-star" aria-hidden="true" />
               </span>
-              {item.name}
+              <span className="name-favourite">
+                {item.name}
+              </span>
               {item.is_draft && <span className="label label-default m-l-5">Unpublished</span>}
             </a>
           ))}
@@ -125,22 +127,22 @@ function DashboardAndQueryFavoritesList() {
                   <span className="btn-favourite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <a href="dashboards">Dashboards</a> will appear here
+                  Favorite <a className="will-appear-a-tag" href="dashboards">Dashboards</a> will appear here
                 </p>
               }
             />
           </div>
           <div className="col-sm-6 m-t-20">
             <FavoriteList
-              title="Favorite Queries"
-              resource={Query}
-              itemUrl={query => `queries/${query.id}`}
+              title="Favorite Reports"
+              resource={Report}
+              itemUrl={report => `reports/${report.id}/source`}
               emptyState={
                 <p>
                   <span className="btn-favourite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <a href="queries">Queries</a> will appear here
+                  Favorite <a className="will-appear-a-tag" href="reports">Reports</a> will appear here
                 </p>
               }
             />
@@ -162,9 +164,10 @@ function Home() {
         {includes(messages, "using-deprecated-embed-feature") && <DeprecatedEmbedFeatureAlert />}
         {includes(messages, "email-not-verified") && <EmailNotVerifiedAlert />}
         <EmptyState
-          header="Welcome to Redash 👋"
+          header="Welcome to Data reporter 👋"
           description="Connect to any data source, easily visualize and share your data"
-          illustration="dashboard"
+          illustration="empty-queries2"
+          illustrationType=".png"
           helpLink="https://redash.io/help/user-guide/getting-started"
           showDashboardStep
           showInviteStep
@@ -182,7 +185,7 @@ routes.register(
   "Home",
   routeWithUserSession({
     path: "/",
-    title: "Redash",
+    title: "Data reporter",
     render: pageProps => <Home {...pageProps} />,
   })
 );

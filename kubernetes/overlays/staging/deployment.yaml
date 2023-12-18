@@ -17,13 +17,25 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: datareporter-worker
+  name: datareporter-ad-hoc-worker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-scheduled-worker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-scheduler
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plywood-server
 spec:
   template:
     spec:
       containers:
-      - name: datareporter-worker
-        image: eu.gcr.io/datareporter/datareporter:_
-        env:
-          - name: WORKERS_COUNT
-            value: "1"
+      - name: plywood-server
+        image: eu.gcr.io/datareporter/plywood-server:_

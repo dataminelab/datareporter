@@ -5,10 +5,7 @@ supportLabel: Support Question
 
 # Comment to post on issues marked as support requests, `{issue-author}` is an
 # optional placeholder. Set to `false` to disable
-supportComment: >
-  :wave: @{issue-author}, we use the issue tracker exclusively for bug reports
-  and planned work. However, this issue appears to be a support request.
-  Please use [our forum](https://discuss.redash.io) to get help.
+supportComment: false
 
 # Close issues marked as support requests
 close: true

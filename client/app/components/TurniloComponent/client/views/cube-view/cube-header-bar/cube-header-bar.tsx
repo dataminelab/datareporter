@@ -26,6 +26,7 @@ import { Binary } from "../../../../common/utils/functional/functional";
 import { Fn } from "../../../../common/utils/general/general";
 import { AutoRefreshMenu } from "../../../components/auto-refresh-menu/auto-refresh-menu";
 import { DebugMenu } from "../../../components/debug-menu/debug-menu";
+import { UtilsMenu } from "../../../components/utils-menu/utils-menu";
 import { InfoBubble } from "../../../components/info-bubble/info-bubble";
 import { ShareMenu } from "../../../components/share-menu/share-menu";
 import { SvgIcon } from "../../../components/svg-icon/svg-icon";
@@ -223,12 +224,24 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     let headerStyle: React.CSSProperties = null;
     if (customization && customization.headerBackground) {
       headerStyle = {
-        background: customization.headerBackground
+        background: customization.headerBackground,
+        display: "none"
+      };
+    } else {
+      headerStyle = {
+        display: "none"
       };
     }
 
     return <header className="cube-header-bar" style={headerStyle}>
-      {this.renderLeftBar()}
+      <UtilsMenu 
+        onClose={this.closeDebugMenu}
+        openRawDataModal={this.props.openRawDataModal}
+        downloadCSV={this.props.getDownloadableDataset}
+        essence={this.props.essence}
+        timekeeper={this.props.timekeeper}
+        getDownloadableDataset={this.props.getDownloadableDataset}
+      />
       {this.renderRightBar()}
       {this.renderShareMenu()}
       {this.renderAutoRefreshMenu()}

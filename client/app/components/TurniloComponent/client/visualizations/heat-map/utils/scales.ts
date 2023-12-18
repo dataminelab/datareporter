@@ -38,6 +38,8 @@ function seriesSelector(series: ConcreteSeries): Unary<Datum, number> {
 }
 
 export default function scales(dataset: Datum[], tileSize: number, series: ConcreteSeries): Scales {
+  const { report } = this.props;
+  const colorChart = (report && report.colorBody) || orange;
   const bucketSizeMax = max(dataset, d => nestedDataset(d).length) || 0; // d3.max returns undefined if collection is empty
   const dataLength = dataset.length;
 
@@ -60,7 +62,7 @@ export default function scales(dataset: Datum[], tileSize: number, series: Concr
   const colorMax = max(dataset, d => max(nestedDataset(d), select));
 
   const color = scaleLinear<string, string>({
-    range: [white, orange],
+    range: [white, colorChart],
     domain: [Math.min(colorMin, 0), colorMax]
   });
 

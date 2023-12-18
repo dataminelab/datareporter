@@ -59,8 +59,7 @@ def invite_user(org, inviter, user, send_email=True):
     if settings.email_server_is_configured() and send_email:
         send_invite_email(inviter, user, invite_url, org)
     else:
-        d["invite_link"] = invite_url
-
+        d["invite_link"] = invite_url 
     return d
 
 

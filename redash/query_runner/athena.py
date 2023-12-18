@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -22,7 +23,6 @@ try:
     enabled = True
 except ImportError:
     enabled = False
-
 
 _TYPE_MAPPINGS = {
     "boolean": TYPE_BOOLEAN,
@@ -71,7 +71,7 @@ class Athena(BaseQueryRunner):
                     "title": "Schema Name",
                     "default": "default",
                 },
-                "glue": {"type": "boolean", "title": "Use Glue Data Catalog"},
+                "glue": {"type": "boolean", "title": "Use Glue Data Catalog", "default": True},
                 "work_group": {
                     "type": "string",
                     "title": "Athena Work Group",
@@ -185,7 +185,11 @@ class Athena(BaseQueryRunner):
                             columns["Name"]
                             for columns in table["StorageDescriptor"]["Columns"]
                         ]
-                        schema[table_name] = {"name": table_name, "columns": column}
+                        typed_columns = [
+                            {'name': columns["Name"], 'type': columns['Type']}
+                            for columns in table["StorageDescriptor"]["Columns"]
+                        ]
+                        schema[table_name] = {"name": table_name, "columns": column, 'typed_columns': typed_columns}
                         for partition in table.get("PartitionKeys", []):
                             schema[table_name]["columns"].append(partition["Name"])
         return list(schema.values())
@@ -211,7 +215,7 @@ class Athena(BaseQueryRunner):
             if table_name not in schema:
                 schema[table_name] = {"name": table_name, "columns": []}
             schema[table_name]["columns"].append(row["column_name"])
-
+            
         return list(schema.values())
 
     def run_query(self, query, user):

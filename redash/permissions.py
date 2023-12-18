@@ -115,6 +115,24 @@ def can_modify(obj, user):
     return is_admin_or_owner(obj.user_id) or user.has_access(obj, ACCESS_TYPE_MODIFY)
 
 
+def can_view(obj, user):
+    return is_admin_or_owner(obj.user_id) or user.has_access(obj, ACCESS_TYPE_VIEW) or \
+        any(id in obj.user.group_ids for id in user.group_ids)
+
+def can_delete(obj, user):
+    return is_admin_or_owner(obj.user_id) or user.has_access(obj, ACCESS_TYPE_DELETE)
+
+
+def require_object_delete_permission(obj, user):
+    if not can_delete(obj, user):
+        abort(403)
+
+
+def require_object_view_permission(obj, user):
+    if not can_view(obj, user):
+        abort(403)
+
+
 def require_object_modify_permission(obj, user):
     if not can_modify(obj, user):
         abort(403)

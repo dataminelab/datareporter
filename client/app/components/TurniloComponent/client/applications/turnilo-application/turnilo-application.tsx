@@ -35,9 +35,12 @@ import "./turnilo-application.scss";
 
 export interface TurniloApplicationProps {
   version: string;
+  report?: any;
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
+  setReportChanged?: (reportChanged: boolean) => void;
+  reportChanged?: boolean;
 }
 
 export interface TurniloApplicationState {
@@ -49,6 +52,7 @@ export interface TurniloApplicationState {
   viewHash?: string;
   showAboutModal?: boolean;
   errorId?: string;
+  reportChanged?: boolean;
 }
 
 export type ViewType = "home" | "cube" | "no-data" | "general-error";
@@ -68,7 +72,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     viewType: null,
     viewHash: null,
     showAboutModal: false,
-    errorId: null
+    errorId: null,
   };
 
   componentDidCatch(error: Error) {
@@ -80,24 +84,27 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   componentWillMount() {
-    const { appSettings, initTimekeeper } = this.props;
+    const { appSettings, initTimekeeper, report } = this.props;
     const { dataCubes } = appSettings;
 
-    const hash = window.location.hash;
-    let viewType = this.getViewTypeFromHash(hash);
+    var hash;
+    if (report.hash && report.source_name) {
+      hash = report.source_name + "/4/" + report.hash;
+    } else {
+      hash = window.location.hash;
+    }
 
     if (!dataCubes.length) {
       window.location.hash = "";
-
       this.setState({
         viewType: NO_DATA,
         viewHash: "",
         appSettings
       });
-
       return;
     }
 
+    let viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
 
     let selectedItem: DataCube;
@@ -158,9 +165,13 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       drawerOpen: false
     };
 
+    const appSettings = AppSettings.fromJS(this.props.report.appSettings, {
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(this.props.report)
+    });
+
     if (this.viewTypeNeedsAnItem(viewType)) {
-      const item = this.getSelectedDataCubeFromHash(dataCubes, hash);
-      newState.selectedItem = item ? item : dataCubes[0];
+      const item = this.getSelectedDataCubeFromHash(appSettings.dataCubes, hash);
+      newState.selectedItem = item ? item : dataCubes[0]; 
     } else {
       newState.selectedItem = null;
     }
@@ -169,7 +180,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   parseHash(hash: string): string[] {
-    if (hash[0] === "#") hash = hash.substr(1);
+    if (hash[0] === "#") hash = hash.slice(1);
     return hash.split("/");
   }
 
@@ -202,7 +213,14 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     return parts.join("/");
   }
 
+  setReportChanged = (reportChanged: boolean) => {
+    const { setReportChanged } = this.props;
+    if (setReportChanged) setReportChanged(reportChanged);
+    this.setState({ reportChanged });
+  };
+
   changeHash(hash: string, force = false): void {
+    console.log("USE THIS METHOD TO CHANGE THE HASH")
     this.hashUpdating = true;
 
     // Hash initialization, no need to add the intermediary url in the history
@@ -219,6 +237,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   updateEssenceInHash = (essence: Essence, force = false) => {
     const newHash = `${this.state.selectedItem.name}/${this.convertEssenceToHash(essence)}`;
     this.changeHash(newHash, force);
+    this.setReportChanged(true);
   };
 
   changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null) => {
@@ -256,7 +275,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   renderView() {
-    const { maxFilters } = this.props;
+    const { maxFilters, report } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { dataCubes, customization } = appSettings;
 
@@ -281,6 +300,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
           dataCube={selectedItem}
           appSettings={appSettings}
           initTimekeeper={timekeeper}
+          report={report}
           hash={viewHash}
           changeEssence={this.updateEssenceInHash}
           changeDataCubeAndEssence={this.changeDataCubeWithEssence}
@@ -300,13 +320,14 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   render() {
-    return <React.StrictMode>
+    // React.StrictMode is giving us a lot of warnings about deprecated lifecycle methods
+    // and the project is too old to change everything to hooks
+    return <>
       <main className="turnilo-application">
         {this.renderView()}
-        {this.renderAboutModal()}
         <Notifications />
         <Questions />
       </main>
-    </React.StrictMode>;
+    </>;
   }
 }

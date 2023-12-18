@@ -10,7 +10,7 @@
 
   .title-with-tags {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     flex: 1 1;
     margin: -5px 0;
@@ -48,10 +48,70 @@
 
   .header-actions {
     display: flex;
-    flex-wrap: nowrap;
-
+    flex-wrap: wrap;
+    row-gap: 5px;
+    align-content: center;
+    .ant-btn {
+      height: 35px;
+      border: 1px solid white;
+      &:hover {
+        border-color: #33147d;
+      }
+    }
     @media (max-width: 515px) {
       flex-basis: 100%;
     }
   }
 }
+
+#meta-button, #save-as-ul {
+  display: none
+}
+
+#meta-modal, #save-as-ul {
+  display: block;
+  z-index: -1;
+  opacity: 0;
+  width: 150px;
+  height: 120px;
+  position: absolute;
+  right: auto;
+  top: 115px;
+  @media (max-width: 1186px) {
+    top: 150px;
+  }
+  background: #cfcfcf;
+  padding: 12px;
+}
+
+#save-as-ul {
+  right: 50px;
+  width: auto;
+  height: 60px;
+}
+
+.new-name-label {
+  cursor: default;
+  position: absolute;
+  z-index: 100;
+}
+
+.new-name-input {
+  height: 100%;
+}
+
+.modal-left, .modal-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100%;
+  width: 50%;
+  margin: auto;
+  width: auto;
+  text-align: initial;
+}
+
+.modal-right {
+  align-items: baseline;
+}
+

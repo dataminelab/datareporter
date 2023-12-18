@@ -10,13 +10,15 @@ export default function ResendInvitationForm(props) {
 
   const [loading, setLoading] = useState(false);
   const [passwordLink, setPasswordLink] = useState(null);
+  const [invitationSent, setInvitationSent] = useState(null);
 
   const resendInvitation = useCallback(() => {
     setLoading(true);
 
     User.resendInvitation(user)
-      .then(passwordLink => {
-        setPasswordLink(passwordLink);
+      .then(data => {
+        setPasswordLink(data.invite_link);
+        setInvitationSent(data.invitationSent);
       })
       .finally(() => {
         setLoading(false);
@@ -28,7 +30,7 @@ export default function ResendInvitationForm(props) {
       <Button className="w-100 m-t-10" onClick={resendInvitation} loading={loading}>
         Resend Invitation
       </Button>
-      <PasswordLinkAlert user={user} passwordLink={passwordLink} afterClose={() => setPasswordLink(null)} />
+      <PasswordLinkAlert user={user} invitationSent={invitationSent} passwordLink={passwordLink} afterClose={() => setPasswordLink(null)} />
     </DynamicComponent>
   );
 }

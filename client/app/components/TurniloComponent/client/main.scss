@@ -54,11 +54,6 @@ svg {
   border-radius: 3px;
 }
 
-//.drag-mask { // uncomment if you want to see the drag masks
-//  background: $brand;
-//  opacity: 0.2;
-//}
-
 :root {
   @each $var, $val in $theme-colors {
     #{'--' + $var}: #{$val};
@@ -67,9 +62,134 @@ svg {
 
 .report-widget {
   .label {
-    color: #000000;
+    color: #160f66;
     text-align: left;
+    font-weight: bold;
+  }
+  .series-tile .items .measure.series, .overflow-menu .measure.split, .overflow-menu .measure.series, .overflow-menu .measure.filter, .series-tile .measure.overflow {
+    background-color: #160f66 !important;
+    color: #ffffff !important;
+  }
+  .remove {
+    color: #ffffff;
+    svg path {
+      fill: #ffffff !important;
+    }
+  }
+  .cube-view {
+    color: var(--text-default-color);
+  }
+  .cube-view .container {
+    top: 0;
+  }
+  .turnilo-application {
+    background-color: #ededf3;
+  }
+  .cube-view .center-panel {
+    top: 0;
+    bottom: 0;
+  }
+  .pinboard-panel {
+    padding: 0 0 0 10px;
+  }
+  .cube-view .center-panel .center-top-bar .pinboard-toggle,
+  .cube-view .center-panel .center-top-bar .dimension-panel-toggle {
+    background-color: #dbd8f6;
+    * {
+      fill: rgb(22, 15, 102);
+    }
+  }
+  .cube-view .center-panel .center-top-bar {
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .dimension-measure-panel {
+    padding: 0 10px 0 0;
   }
 }
+
+.dimension-actions-menu .action, .measure-actions-menu .action {
+  color: rgb(22, 15, 102);
+}
+
+.remove svg path {
+  fill: #ffffff !important;
+}
+
+.ant-btn {
+ .icon {
+   font-size: 16px;
+   top: 2px;
+   position: relative;
+ }
+}
+
+.filter-split-section .title,
+.tile-header .title,
+.pinboard-measure-tile .title,
+.label {
+  color: #160f66;
+}
+
+.filter-tile .items .dimension.filter, .overflow-menu .dimension.split,
+.overflow-menu .dimension.series, .overflow-menu .dimension.filter, .filter-tile .dimension.overflow {
+  background-color: #ff9b5d;
+  color: #ffffff;
+}
+
+.button.secondary,
+.button.secondary:hover,
+.button.secondary:active,
+.button.secondary:focus {
+  color: #160f66;
+  background-color: #ffffff;
+  border: 1px solid #160f66;
+}
+
+.button.primary,
+.button.primary:hover,
+.button.primary:active,
+.button.primary:focus {
+  color: #ffffff;
+  background-color: #160f66;
+  border: 1px solid #160f66;
+}
+
+.editor-yaml-box {
+  display: flex;
+  justify-content: space-between;
+  .editor-yaml-docs {
+    margin-left: 40px;
+    h1 {
+      margin-bottom: 20px;
+    }
+    * {
+      color: #000000;
+    }
+    p {
+      margin: 15px 0;
+    }
+    strong {
+      font-weight: bold;
+      color: #160f66;
+    }
+    a span {
+      cursor: pointer;
+      color: #0000EE;
+    }
+    a:visited span { color: #551A8B; }
+  }
+}
+
+@media only screen and (max-width: 1300px) {
+  .editor-yaml-box {
+    display: block;
+    .editor-yaml-docs {
+      margin-left: 0;
+      margin-top: 30px;
+    }
+  }
+}
+
 
 @import "custom";

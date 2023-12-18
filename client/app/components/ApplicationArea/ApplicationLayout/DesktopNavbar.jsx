@@ -1,25 +1,20 @@
 import { first } from "lodash";
 import React, { useState } from "react";
-import Button from "antd/lib/button";
 import Menu from "antd/lib/menu";
-import Icon from "antd/lib/icon";
-import HelpTrigger from "@/components/HelpTrigger";
+import Tooltip from "antd/lib/tooltip";
 import CreateDashboardDialog from "@/components/dashboards/CreateDashboardDialog";
 import { Auth, currentUser } from "@/services/auth";
 import settingsMenu from "@/services/settingsMenu";
-import logoUrl from "@/assets/images/redash_icon_small.png";
+import routes from "@/services/routes";
+import location from "@/services/location";
+import logoUrl from "@/assets/images/report_icon_small.png";
 
 import VersionInfo from "./VersionInfo";
 import "./DesktopNavbar.less";
 
 function NavbarSection({ inlineCollapsed, children, ...props }) {
   return (
-    <Menu
-      selectable={false}
-      mode={inlineCollapsed ? "inline" : "vertical"}
-      inlineCollapsed={inlineCollapsed}
-      theme="dark"
-      {...props}>
+    <Menu selectable={false} {...props}>
       {children}
     </Menu>
   );
@@ -29,50 +24,83 @@ export default function DesktopNavbar() {
   const [collapsed, setCollapsed] = useState(true);
 
   const firstSettingsTab = first(settingsMenu.getAvailableItems());
+  const headerBlock = routes.getRoute(location.path) ? routes.getRoute(location.path).headerBlock : {};
 
   const canCreateQuery = currentUser.hasPermission("create_query");
   const canCreateDashboard = currentUser.hasPermission("create_dashboard");
   const canCreateAlert = currentUser.hasPermission("list_alerts");
 
+  const handleDeepRefresh = (event) => {
+    event.stopPropagation();
+    localStorage.setItem("bypass_cache", true);
+    window.location.reload();
+  }
+
+  const handleNewReportButton = (event) => {
+    event.preventDefault();
+    window.location.hash = "#";
+    if (window.location.pathname !== "/reports/new") {
+      window.location.pathname = "/reports/new";
+    } else {
+      window.location.reload();
+    }
+  }
+
   return (
-    <div className="desktop-navbar">
+    <div className="desktop-navbar-report">
       <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-logo">
         <a href="./">
-          <img src={logoUrl} alt="Redash" />
+          <img className="logo" src={logoUrl} alt="Data reporter" width="25" height="26" />
         </a>
       </NavbarSection>
 
-      <NavbarSection inlineCollapsed={collapsed}>
+      <NavbarSection inlineCollapsed={collapsed} className="left-border">
         {currentUser.hasPermission("list_dashboards") && (
           <Menu.Item key="dashboards">
-            <a href="dashboards">
-              <Icon type="desktop" />
-              <span>Dashboards</span>
+            <Tooltip
+              placement="bottom"
+              title="Dashboards"
+            >
+             <a href="dashboards">
+              <i className="icon-ui icon-dashboard"></i>
             </a>
+            </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
           <Menu.Item key="queries">
-            <a href="queries">
-              <Icon type="code" />
-              <span>Queries</span>
-            </a>
+            <Tooltip
+              placement="bottom"
+              title="Queries"
+            >
+              <a href="queries">
+                  <i className="icon-ui  icon-command-line"></i>
+              </a>
+            </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
           <Menu.Item key="reports">
-            <a href="reports">
-              <Icon type="pie-chart" />
-              <span>Reports</span>
-            </a>
+            <Tooltip
+              placement="bottom"
+              title="Reports"
+            >
+              <a href="reports">
+                <i className="icon-ui  icon-bar-chart"></i>
+              </a>
+            </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("list_alerts") && (
           <Menu.Item key="alerts">
-            <a href="alerts">
-              <Icon type="alert" />
-              <span>Alerts</span>
-            </a>
+            <Tooltip
+              placement="bottom"
+              title="Alerts"
+            >
+              <a href="alerts">
+                <i className="icon-ui  icon-notifications-allerts-bell"></i>
+              </a>
+            </Tooltip>
           </Menu.Item>
         )}
       </NavbarSection>
@@ -82,13 +110,17 @@ export default function DesktopNavbar() {
         {(canCreateQuery || canCreateDashboard || canCreateAlert) && (
           <Menu.SubMenu
             key="create"
-            popupClassName="desktop-navbar-submenu"
+            popupOffset={[-36, 60]}
             title={
               <React.Fragment>
-                <span data-test="CreateButton">
-                  <Icon type="plus" />
-                  <span>Create</span>
-                </span>
+                <Tooltip
+                  placement="bottom"
+                  title="Create"
+                >
+                  <a data-test="CreateButton">
+                    <i className="icon-ui  icon-plus"></i>
+                  </a>
+                </Tooltip>
               </React.Fragment>
             }>
             {canCreateQuery && (
@@ -100,7 +132,7 @@ export default function DesktopNavbar() {
             )}
             {canCreateQuery && (
               <Menu.Item key="new-report">
-                <a href="reports/new" data-test="CreateReportMenuItem">
+                <a href="reports/new" onClick={handleNewReportButton} data-test="CreateReportMenuItem">
                   New Report
                 </a>
               </Menu.Item>
@@ -122,34 +154,25 @@ export default function DesktopNavbar() {
           </Menu.SubMenu>
         )}
       </NavbarSection>
-
-      <NavbarSection inlineCollapsed={collapsed}>
-        <Menu.Item key="help">
-          <HelpTrigger showTooltip={false} type="HOME">
-            <Icon type="question-circle" />
-            <span>Help</span>
-          </HelpTrigger>
-        </Menu.Item>
-        {firstSettingsTab && (
-          <Menu.Item key="settings">
-            <a href={firstSettingsTab.path} data-test="SettingsLink">
-              <Icon type="setting" />
-              <span>Settings</span>
-            </a>
-          </Menu.Item>
-        )}
-        <Menu.Divider />
-      </NavbarSection>
-
       <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-profile-menu">
+       {/* <Menu.Item key="messages">
+          <a data-test="Messages" href="#">
+            <i className="icon-ui  icon-chat-rect"></i>
+          </a>
+        </Menu.Item>*/}
         <Menu.SubMenu
-          key="profile"
+          key="profile-menu"
           popupClassName="desktop-navbar-submenu"
+          popupOffset={[-36, 60]}
           title={
-            <span data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
-              <img className="profile__image_thumb" src={currentUser.profile_image_url} alt={currentUser.name} />
-              <span>{currentUser.name}</span>
-            </span>
+            <Tooltip
+              placement="bottom"
+              title="Settings"
+            >
+              <div data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
+                <i className="icon-ui icon-more"></i>
+              </div>
+            </Tooltip>
           }>
           <Menu.Item key="profile">
             <a href="users/me">Profile</a>
@@ -170,11 +193,28 @@ export default function DesktopNavbar() {
             <VersionInfo />
           </Menu.Item>
         </Menu.SubMenu>
+        <Menu.Item key="account">
+          <a data-test="AccountButton" href="users/me">
+            <img className="profile__image_thumb" src={currentUser.profile_image_url} alt={currentUser.name} />
+          </a>
+        </Menu.Item>
       </NavbarSection>
 
-      <Button onClick={() => setCollapsed(!collapsed)} className="desktop-navbar-collapse-button">
-        <Icon type={collapsed ? "menu-unfold" : "menu-fold"} />
-      </Button>
+      <NavbarSection inlineCollapsed={collapsed} className="settings-menu">
+        <Menu.Item key="refresh">
+          <a data-test="Refresh" href="#" onClick={handleDeepRefresh}>
+            <i className="icon-ui icon-refresh"></i>
+          </a>
+        </Menu.Item>
+        {firstSettingsTab && (
+          <Menu.Item key="settings">
+            <a href={firstSettingsTab.path} data-test="SettingsLink">
+              <i className="icon-ui  icon-settings"></i>
+            </a>
+          </Menu.Item>
+        )}
+        <Menu.Divider />
+      </NavbarSection>
     </div>
   );
 }

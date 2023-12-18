@@ -1,6 +1,7 @@
 from flask_login import current_user, login_required
 
 from redash import models
+from redash.models.models import Model, Report
 from redash.handlers import routes
 from redash.handlers.base import json_response, org_scoped_rule
 from redash.authentication import current_org
@@ -15,9 +16,11 @@ def organization_status(org_slug=None):
         "data_sources": models.DataSource.all(
             current_org, group_ids=current_user.group_ids
         ).count(),
+        "models": Model.get_by_user(current_user).count(),
         "queries": models.Query.all_queries(
             current_user.group_ids, current_user.id, include_drafts=True
         ).count(),
+        "reports": Report.get_by_user(current_user).count(),
         "dashboards": models.Dashboard.query.filter(
             models.Dashboard.org == current_org, models.Dashboard.is_archived == False
         ).count(),

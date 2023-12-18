@@ -29,8 +29,14 @@ interface HoverGuideProps {
 
 export const HoverGuide: React.SFC<HoverGuideProps> = props => {
   const { stage, hover: { range }, yScale, xScale } = props;
-  const midpoint = range.midpoint();
-  const x = xScale(midpoint);
+  var x;
+  if (range.midpoint) {
+    const midpoint = range.midpoint();
+    x = xScale(midpoint);
+  } else {
+    //@ts-ignore
+    x = xScale(new Date(range))
+  }
   const [y2, y1] = yScale.range();
   return <line
     transform={stage.getTransform()}

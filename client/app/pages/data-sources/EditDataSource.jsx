@@ -61,7 +61,8 @@ class EditDataSource extends React.Component {
           notification.success("Data source deleted successfully.");
           navigateTo("data_sources");
         })
-        .catch(() => {
+        .catch((e) => {
+          notification.error(e);
           callback();
         });
     };
@@ -117,12 +118,17 @@ class EditDataSource extends React.Component {
 
     return (
       <div className="row" data-test="DataSource">
-        <div className="text-right m-r-10">
-          {HELP_TRIGGER_TYPES[helpTriggerType] && (
-            <HelpTrigger className="f-13" type={helpTriggerType}>
-              Setup Instructions <i className="fa fa-question-circle" />
-            </HelpTrigger>
-          )}
+        <div className="flex-space-between">
+          <div className="text-left m-r-10">
+            {HELP_TRIGGER_TYPES[helpTriggerType] && (
+              <HelpTrigger className="f-13" type={helpTriggerType}>
+                Setup Instructions <i className="fa fa-question-circle" />
+              </HelpTrigger>
+            )}
+          </div>
+          <div className="text-right m-r-10">
+            <a onClick={()=>navigateTo("data_sources")} href="#" className="help-trigger f-13"> Close <i className="fa fa-close" /></a>
+          </div>
         </div>
         <div className="text-center m-b-10">
           <img className="p-5" src={`${IMG_ROOT}/${type.type}.png`} alt={type.name} width="64" />

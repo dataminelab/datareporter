@@ -1,12 +1,10 @@
-import { isString, map, get, find } from "lodash";
+import { isString, get, find } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 
 import Button from "antd/lib/button";
-import Modal from "antd/lib/modal";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import Paginator from "@/components/Paginator";
-import InputWithCopy from "@/components/InputWithCopy";
 
 import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
@@ -18,26 +16,30 @@ import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTab
 
 import wrapSettingsTab from "@/components/SettingsWrapper";
 
-import { currentUser } from "@/services/auth";
 import { policy } from "@/services/policy";
 import Model from "@/services/model";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import notification from "@/services/notification";
-import { absoluteUrl } from "@/services/utils";
 import routes from "@/services/routes";
 
 import CreateModelDialog from "./components/CreateModelDialog";
 import DataSource from "@/services/data-source";
 
 function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
+  const handleDeleteModel = (event) => {
+    var r = confirm(`Are you sure you would like to delete ${model.name} and all reports that use this model?`);
+    if (r == true) {
+      deleteModel(event, model);
+    }
+  }
   return <>
             <Button type="ghost" icon="setting" className="m-2 inline" onClick={() => editConfigModel(model)}>
               Edit config
             </Button>
-            <Button type="primary" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
+            <Button type="dashed" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
               Edit
             </Button>
-            <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => deleteModel(event, model)}>
+            <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => handleDeleteModel(event)}>
               Delete
             </Button>
           </>;
@@ -78,10 +80,10 @@ class ModelsList extends React.Component {
       width: null,
     }),
     Columns.custom.sortable(
-      (text, model) => this.getDataSourceName(model),
+      (text, model) => model.data_source_name,
       {
-        title: "Connection",
-        field: "connection",
+        title: "Data source",
+        field: "data_source_name",
       }
     ),
     Columns.custom(
@@ -116,7 +118,6 @@ class ModelsList extends React.Component {
   createModel = values =>
     Model.create(values)
       .then(model => {
-        console.log(model)
         navigateTo(`models/${model.id}`);
         notification.success("Saved.");
       })
@@ -135,7 +136,8 @@ class ModelsList extends React.Component {
         return Promise.reject(new Error(message));
       });
 
-  showCreateModelDialog = () => {
+  showCreateModelDialog = (e) => {
+    e.preventDefault();
     const { dataSources } = this.state;
     if (policy.canCreateDataSource()) {
       const goToModelsList = () => {
@@ -160,9 +162,13 @@ class ModelsList extends React.Component {
       };
       CreateModelDialog.showModal({ dataSources, model })
         .onClose(values =>
-          this.saveModel(values, model.id).then(() => {
+        {
+          this.saveModel(values).then(() => {
+
             this.props.controller.update();
           })
+        }
+
         )
         .onDismiss(goToModelsList);
     }
@@ -188,12 +194,13 @@ class ModelsList extends React.Component {
 
   render() {
     const { controller } = this.props;
+    const emptyMessage = <span>There are no models yet. Click <a className="underline-link" onClick={this.showCreateModelDialog}>here</a> to add one.</span>
     return (
       <React.Fragment>
         {this.renderPageHeader()}
         <div>
           {!controller.isLoaded && <LoadingState className="" />}
-          {controller.isLoaded && controller.isEmpty && <EmptyState className="" />}
+          {controller.isLoaded && controller.isEmpty && <EmptyState message={emptyMessage} className="" />}
           {controller.isLoaded && !controller.isEmpty && (
             <div className="table-responsive" data-test="ModelList">
               <ItemsTable

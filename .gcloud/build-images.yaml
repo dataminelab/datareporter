@@ -43,13 +43,6 @@ steps:
     dir: plywood/server
     id: Build-Plywood
     waitFor: [ '-' ]
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
-    id: Push-Data-Reporter
-    waitFor:
-      - Build-Data-Reporter
   - name: gcr.io/cloud-builders/gcloud
     args:
       - '-c'

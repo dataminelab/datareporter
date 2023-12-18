@@ -120,7 +120,7 @@ class Widget extends React.Component {
             )}
             {canEdit && <WidgetDeleteButton onClick={this.deleteWidget} />}
           </div>
-          <div className="body-row widget-header">{header || config.name}</div>
+          <div className="body-row widget-header">{config?.name || header}</div>
           {children}
           {footer && <div className="body-row tile__bottom-control">{footer}</div>}
         </div>

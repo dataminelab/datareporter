@@ -1,7 +1,6 @@
 import hashlib
 import json
 from typing import List, Union
-import re
 
 import lzstring
 from flask_restful import abort
@@ -134,7 +133,15 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
     return None
 
 
-def is_yoy_query(query):
+def is_yoy_query(query:str) -> bool:
+    """This function predicts if the query is a YoY query
+
+    Args:
+        query (str): query text
+
+    Returns:
+        bool: Currently tested for BIGQUERY, ATHENA
+    """
     return query.count("SUM") > 3
 
 
@@ -155,11 +162,16 @@ def parse_result(
         abort(400, message='Error with query')
 
     is_fetching = jobs_status(queries)
-
     if is_fetching:
         return ReportSerializer(
             status=is_fetching,
             queries=queries,
+        )
+    errored = clean_errored(queries)
+    if errored:
+        return ReportSerializer(
+            status=FAILED_QUERY_CODE,
+            queries=queries+errored,
         )
 
     split = len(expression.filter['splits']) or 1
@@ -176,7 +188,12 @@ def parse_result(
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
 
-    errored = clean_errored(queries)
+        errored = clean_errored(queries)
+        if errored:
+            return ReportSerializer(
+                status=FAILED_QUERY_CODE,
+                queries=queries+errored,
+            )
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
@@ -186,17 +203,11 @@ def parse_result(
         data_cube=data_cube,
     )
 
-    if len(errored) == len(queries):
-        data = None
-        meta = None
-        clear_cache(hash_string, split)
-    else:
-        data = query_parser.parse_ply(data_cube.ply_engine)
-        meta = data_cube.get_meta(queries)
+    data = query_parser.parse_ply(data_cube.ply_engine)
+    meta = data_cube.get_meta(queries)
 
     serializer = ReportSerializer(
         queries=queries,
-        failed=errored,
         data=data,
         meta=meta,
         shape=expression.shape,
@@ -206,7 +217,7 @@ def parse_result(
     return serializer
 
 
-def clean_errored(queries: list):
+def clean_errored(queries: list): 
     errored = []
 
     for index, query in enumerate(queries):

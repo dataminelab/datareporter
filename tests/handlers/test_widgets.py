@@ -42,10 +42,10 @@ class WidgetAPITest(BaseTestCase):
 
     def test_create_text_widget(self):
         dashboard = self.factory.create_dashboard()
-
+        text = "[turnilo-widget]1/Sample text."
         data = {
             "visualization_id": None,
-            "text": "Sample text.",
+            "text": text, # where 1 is report id
             "dashboard_id": dashboard.id,
             "options": {},
             "width": 2,
@@ -53,8 +53,8 @@ class WidgetAPITest(BaseTestCase):
 
         rv = self.make_request("post", "/api/widgets", data=data)
 
-        self.assertEqual(rv.status_code, 200)
-        self.assertEqual(rv.json["text"], "Sample text.")
+        self.assertEqual(rv.status_code, 200) 
+        self.assertEqual(rv.json["text"], text)
 
     def test_delete_widget(self):
         widget = self.factory.create_widget()

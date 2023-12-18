@@ -5,7 +5,7 @@
   "compilerOptions": {
     "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": "../",
+    "rootDir": "../../../",
     "outDir": "../../build",
     "experimentalDecorators": true
   },

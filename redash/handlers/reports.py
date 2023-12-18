@@ -232,6 +232,8 @@ class ReportResource(BaseResource):
         report_properties = request.get_json(force=True)
         updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
         report = get_object_or_404(Report.get_by_id, report_id)
+        require_object_modify_permission(report, self.current_user)
+        
         counter = 0
         for key, value in updates.items():
             if key == "expression" and isinstance(value, dict):
@@ -240,10 +242,6 @@ class ReportResource(BaseResource):
                 counter+=1
         if counter == len(updates):
             return make_response(json.dumps({"message": "No changes made"}), 204)
-
-        formatting = request.args.get("format", "base64")
-
-        require_object_modify_permission(report, self.current_user)
 
         if MODEL_ID in updates:
             try:
@@ -266,7 +264,8 @@ class ReportResource(BaseResource):
             "object_id": report.id,
             "object_type": "report"
         })
-
+        
+        formatting = request.args.get("format", "base64")
         return ReportSerializer(report, formatting=formatting).serialize()
 
     @require_permission("edit_report")

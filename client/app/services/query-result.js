@@ -200,7 +200,9 @@ class QueryResult {
   }
 
   cancelExecution() {
-    axios.delete(`api/jobs/${this.job.id}`);
+    if (this.status !== "waiting") {
+      axios.delete(`api/jobs/${this.job.id}`);
+    }
   }
 
   getStatus() {

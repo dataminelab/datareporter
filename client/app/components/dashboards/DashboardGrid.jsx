@@ -55,12 +55,12 @@ const DashboardWidget = React.memo(
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect( () => {
       async function getConfigTurnilo() {
-        if (!config.appSettings) {
-          const report_config =  await axios.get('/api/reports/' + widget.report_id);
-          setConfig(report_config);
-        }
+        if (config.appSettings) return;
+        if (!widget.report_id) return;
+          const result =  await axios.get('/api/reports/' + widget.report_id);
+          setConfig(result);
       }
-      getConfigTurnilo()
+      getConfigTurnilo();
     }, [widget]);
 
     if (type === WidgetTypeEnum.VISUALIZATION) {

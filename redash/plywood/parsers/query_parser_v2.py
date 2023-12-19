@@ -166,11 +166,7 @@ class PlywoodQueryParserV2:
             index = pydash.find_index(split['data'], lambda v: v[column_name] == value[column_name])
             if index == -1:
                 continue
-            selected_query_split = query['query_result']['data']['rows']
-            if len(last_query_split) >= len(selected_query_split):
-                split['data'][index]['SPLIT']['data'] = last_query_split
-            else:
-                split['data'][index]['SPLIT']['data'] = selected_query_split
+            split['data'][index]['SPLIT']['data'] = query['query_result']['data']['rows']
             if self._visualization == 'line-chart':
                 self._prepare_line_chart(shape=shape, top_index=index)
 

@@ -167,7 +167,7 @@ class PlywoodQueryParserV2:
             if index == -1:
                 continue
             selected_query_split = query['query_result']['data']['rows']
-            if len(last_query_split) >= len(selected_query_split):
+            if len(last_query_split) > len(selected_query_split):
                 split['data'][index]['SPLIT']['data'] = last_query_split
             else:
                 split['data'][index]['SPLIT']['data'] = selected_query_split
@@ -186,6 +186,7 @@ class PlywoodQueryParserV2:
         # If exists second query, means it's 1 split
         if len(self._query_result) >= 2:
             self._build_first_split(shape=shape)
+            # self._build_second_split(shape=shape)
 
         # If exists second query, means it's 2 split
         if len(self._query_result) >= 3:

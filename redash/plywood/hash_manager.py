@@ -176,7 +176,7 @@ def parse_result(
 
     split = len(expression.filter['splits']) or 1
 
-    if split == 2:
+    if split == 2: # initiating 2 split jobs
         queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
         queries = cache_or_get(
             hash_string,

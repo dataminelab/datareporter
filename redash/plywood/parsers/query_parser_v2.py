@@ -123,6 +123,8 @@ class PlywoodQueryParserV2:
         column_name = split['data'][top_index]['SPLIT']['keys'][0]
 
         for inner_index, item in enumerate(split['data'][top_index]['SPLIT']['data']):
+            if column_name not in item:
+                continue
             tmp_value = copy.deepcopy(item[column_name])
             if isinstance(tmp_value, str) or isinstance(tmp_value, datetime.datetime):
                 real_date = parser.parse(tmp_value)

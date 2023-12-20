@@ -123,6 +123,8 @@ class PlywoodQueryParserV2:
         column_name = split['data'][top_index]['SPLIT']['keys'][0]
 
         for inner_index, item in enumerate(split['data'][top_index]['SPLIT']['data']):
+            if column_name not in item:
+                continue
             tmp_value = copy.deepcopy(item[column_name])
             if isinstance(tmp_value, str) or isinstance(tmp_value, datetime.datetime):
                 real_date = parser.parse(tmp_value)
@@ -166,11 +168,7 @@ class PlywoodQueryParserV2:
             index = pydash.find_index(split['data'], lambda v: v[column_name] == value[column_name])
             if index == -1:
                 continue
-            selected_query_split = query['query_result']['data']['rows']
-            if len(last_query_split) > len(selected_query_split):
-                split['data'][index]['SPLIT']['data'] = last_query_split
-            else:
-                split['data'][index]['SPLIT']['data'] = selected_query_split
+            split['data'][index]['SPLIT']['data'] = query['query_result']['data']['rows']
             if self._visualization == 'line-chart':
                 self._prepare_line_chart(shape=shape, top_index=index)
 

@@ -169,6 +169,7 @@ def parse_result(
         )
     errored = clean_errored(queries)
     if errored:
+        clear_cache(hash_string)
         return ReportSerializer(
             status=FAILED_QUERY_CODE,
             queries=queries+errored,
@@ -190,6 +191,7 @@ def parse_result(
 
         errored = clean_errored(queries)
         if errored:
+            clear_cache(hash_string, split)
             return ReportSerializer(
                 status=FAILED_QUERY_CODE,
                 queries=queries+errored,

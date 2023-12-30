@@ -31,16 +31,24 @@ function CreateModelDialog({ dialog, dataSources, model }) {
   }, [dialog]);
 
   const onChangeConnection = useCallback(async (id) => {
-    setLoadTables(true)
+    setError(null);
+    setLoadTables(true);
+    setTables([]);
     try {
       const res = await DataSource.getTables(id);
       setTables(res);
       setLoadTables(false);
     } catch(err) {
-      setError(err);
+      const res = err.response;
+      if (res && res.status === 400) {
+        const catchedError = new Error(res.data.message);
+        setError(catchedError);
+      } else {
+        setError(err);
+      }
+      setTables([]);
       setLoadTables(false);
     }
-
   }, [tables])
 
 

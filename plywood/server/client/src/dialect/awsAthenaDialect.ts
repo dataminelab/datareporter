@@ -1,5 +1,5 @@
 import { Duration, Timezone } from 'chronoshift';
-import { PlyType, PlyTypeSimple } from '../types';
+import { PlyType } from '../types';
 import { SQLDialect } from './baseDialect';
 
 export class AwsAthenaDialect extends SQLDialect {
@@ -12,7 +12,7 @@ export class AwsAthenaDialect extends SQLDialect {
     P1Y: '%Y-01-01 00:00:00Z',
     P1W: '%Y-%m-%d 00:00:00Z',
     P3M: '%Y-%m-%d 00:00:00Z',
-  };
+  }
 
   // Format: {fromType: {toType: 'expression'}}
   static CAST_TO_FUNCTION: Record<string, Record<string, string>> = {
@@ -26,7 +26,7 @@ export class AwsAthenaDialect extends SQLDialect {
     STRING: {
       NUMBER: 'cast($$ as varchar)',
     },
-  };
+  }
 
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
     SECOND_OF_MINUTE: "extract(SECOND from $$)",
@@ -59,7 +59,7 @@ export class AwsAthenaDialect extends SQLDialect {
     //
     MONTH_OF_YEAR: "EXTRACT(month from $$)",
     YEAR: "EXTRACT(year from $$)",
-  };
+  }
 
   public constantGroupBy(): string {
     return "";
@@ -68,7 +68,7 @@ export class AwsAthenaDialect extends SQLDialect {
   public castExpression(inputType: PlyType, operand: string, cast: string): string {
     let castFunction = AwsAthenaDialect.CAST_TO_FUNCTION[cast][inputType];
     if (!castFunction)
-      throw new Error(`unsupported cast from ${inputType} to ${cast} in BigQuery dialect`);
+      throw new Error(`unsupported cast from ${inputType} to ${cast} in Amazon Athena dialect`);
     return castFunction.replace(/\$\$/g, operand);
   }
 
@@ -118,7 +118,6 @@ export class AwsAthenaDialect extends SQLDialect {
   public containsExpression(a: string, b: string): string {
     return `STRPOS(${a},${b})>0`;
   }
-
 
   public concatExpression(a: string, b: string): string {
     return `CONCAT(${a},${b})`;

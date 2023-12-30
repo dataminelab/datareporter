@@ -22,7 +22,8 @@ from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expr
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
-
+from redash.settings import REDASH_DEBUG
+from redash.plywood.hash_manager import get_data_cube
 HASH = "hash"
 DATA_CUBE = "dataCube"
 EXPRESSION = "expression"
@@ -31,6 +32,7 @@ NAME = "name"
 MODEL_ID = "model_id"
 COLOR_1 = 'color_1'
 COLOR_2 = 'color_2'
+TAGS = 'tags'
 
 
 class ReportFilter(BaseResource):
@@ -39,8 +41,11 @@ class ReportFilter(BaseResource):
         req = request.get_json(True)
         require_fields(req, (EXPRESSION,))
         model = get_object_or_404(Model.get_by_id, model_id)
-
-        return filter_expression_to_result(expression=req[EXPRESSION], model=model, organisation=self.current_org)
+        filtered_result = filter_expression_to_result(req[EXPRESSION], model, self.current_org)
+        data_cube = get_data_cube(model)
+        if filtered_result.data:
+            filtered_result.meta = data_cube.get_meta(filtered_result.queries)
+        return filtered_result.serialized()
 
 
 class ReportGenerateResource(BaseResource):
@@ -51,13 +56,63 @@ class ReportGenerateResource(BaseResource):
 
         require_fields(req, (HASH,))
         hash_string = req[HASH]
+        bypass_cache = req.get("bypass_cache", False)
         model = get_object_or_404(Model.get_by_id, model_id)
-        result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org)
         try:
+            result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=bypass_cache)
             return result.serialized()
         except ExpressionNotSupported as err:
-            abort(400, message=err.message)
+            if REDASH_DEBUG:
+                abort(400, message=err.message)
+            else:
+                abort(400, message="An error occurred while generating the report. Please contact support.")
 
+
+# /api/reports/archive
+class ReportsArchiveResource(BaseResource):
+    def get(self):
+        search_term = request.args.get("q")
+        archives = Report.get_my_archived_reports(search_term, self.current_user.id)
+        page = request.args.get("page", 1, type=int)
+        page_size = request.args.get("page_size", 25, type=int)
+        response = paginate(archives, page, page_size, ReportSerializer)
+        self.record_event(
+            {
+                "action": "load_archives",
+                "object_type": "report",
+                "params": {
+                    "q": search_term,
+                    "tags": request.args.getlist("tags"),
+                    "page": page,
+                },
+            }
+        )
+
+        return response
+
+    def delete(self):
+        """ 
+            Archives a report. 
+        """
+        report_id = request.args.get("id")
+        if not report_id:
+            abort(400, message="Missing report id")
+        report_id = int(report_id)
+
+        report = get_object_or_404(Report.get_by_id, report_id)
+
+        require_object_delete_permission(report, self.current_user)
+
+        report.archive()
+        models.db.session.commit()
+
+        self.record_event({
+            "action": "archive",
+            "object_id": report.id,
+            "object_type": "report",
+        })
+
+        return make_response("", 204)
 
 # /api/reports
 class ReportsListResource(BaseResource):
@@ -70,7 +125,7 @@ class ReportsListResource(BaseResource):
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
         color_1, color_2 = req.get(COLOR_1, 'color'), req.get(COLOR_2, 'color')
 
-        model = get_object_or_404(Model.get_by_id_and_user, model_id, self.current_user)
+        model = get_object_or_404(Model.get_by_id_and_user, model_id, self.current_org)
 
         expression_obj = ExpressionBase64Parser.parse_base64_to_dict(expression)
 
@@ -96,10 +151,21 @@ class ReportsListResource(BaseResource):
 
     @require_permission("view_report")
     def get(self):
-        reports = Report.get_by_user(self.current_user)
+        _type = request.args.get("type", "all", type=str)
+        search_query = request.args.get("q", "", type=str)
+        reports = []
+        if _type == "my":
+            reports = Report.get_by_user(
+                self.current_user
+            ).filter(
+                Report.is_archived.is_(False)
+            )
+        elif _type == "all":
+            reports = Report.get_by_group_ids(self.current_user)
+        if search_query:
+            reports = reports.filter(Report.name.ilike(f"%{search_query}%"))
 
         formatting = request.args.get("format", "base64")
-
         ordered_results = order_results(reports)
 
         page = request.args.get("page", 1, type=int)
@@ -119,6 +185,19 @@ class ReportsListResource(BaseResource):
         })
         return response
 
+    def delete(self, report_id):
+        report = get_object_or_404(Report.get_by_id, report_id)
+
+        require_object_delete_permission(report, self.current_user)
+        report.archive()
+
+        self.record_event({
+            "action": "archive",
+            "object_id": report.id,
+            "object_type": "report",
+        })
+
+        return make_response("", 204)
 
 # /api/reports/<int:report_id>
 class ReportResource(BaseResource):
@@ -151,25 +230,24 @@ class ReportResource(BaseResource):
     @require_permission("edit_report")
     def post(self, report_id: int):
         report_properties = request.get_json(force=True)
-        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
+        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
         report = get_object_or_404(Report.get_by_id, report_id)
+        require_object_modify_permission(report, self.current_user)
+        
         counter = 0
         for key, value in updates.items():
-            if value == report.__getattribute__(key):
+            if key == "expression" and isinstance(value, dict):
+                counter+=1
+            elif value == report.__getattribute__(key):
                 counter+=1
         if counter == len(updates):
             return make_response(json.dumps({"message": "No changes made"}), 204)
 
-        formatting = request.args.get("format", "base64")
-
-        require_object_modify_permission(report, self.current_user)
-
         if MODEL_ID in updates:
             try:
                 model = Model.get_by_id(updates[MODEL_ID])
-                if model.user_id != self.current_user.id:
+                if not any(id in model.user.group_ids for id in self.current_user.group_ids):
                     abort(403)
-
             except NoResultFound:
                 abort(400, message=f"The Model with id {MODEL_ID} does not exists")
 
@@ -186,7 +264,8 @@ class ReportResource(BaseResource):
             "object_id": report.id,
             "object_type": "report"
         })
-
+        
+        formatting = request.args.get("format", "base64")
         return ReportSerializer(report, formatting=formatting).serialize()
 
     @require_permission("edit_report")
@@ -194,9 +273,7 @@ class ReportResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
-
-        models.db.session.delete(report)
-        models.db.session.commit()
+        report.remove()
 
         self.record_event({
             "action": "delete",
@@ -205,6 +282,14 @@ class ReportResource(BaseResource):
         })
 
         return make_response("", 204)
+
+class ReportTagsResource(BaseResource):
+    def get(self):
+        """
+        Returns all query tags including those for drafts.
+        """
+        tags = Report.all_tags(self.current_user, include_drafts=True)
+        return {"tags": [{"name": name, "count": count} for name, count in tags]}
 
 class ReportFavoriteListResource(BaseResource):
     def get(self):

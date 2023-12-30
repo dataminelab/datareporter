@@ -23,6 +23,8 @@ import DashboardHeader from "./components/DashboardHeader";
 
 import "./DashboardPage.less";
 
+import { setColorElements } from "@/pages/reports/components/ReportPageHeader";
+
 function DashboardSettings({ dashboardOptions }) {
   const { dashboard, updateDashboard } = dashboardOptions;
   return (
@@ -93,6 +95,7 @@ function DashboardComponent(props) {
   const [bottomPanelStyles, setBottomPanelStyles] = useState({});
 
   useEffect(() => {
+    setColorElements();
     if (pageContainer) {
       const unobserve = resizeObserver(pageContainer, () => {
         if (editingLayout) {

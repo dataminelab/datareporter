@@ -52,16 +52,19 @@ def create_org(org_name, user_name, email, password):
     return default_org, user
 
 def add_member_mailchimp(email, name, org_name):
+    list_id = settings.MAILCHIMP_LIST_ID
     try:
-      client = MailchimpMarketing.Client()
-      client.set_config({
-        "api_key": settings.MAILCHIMP_API_KEY,
-        "server": settings.MAILCHIMP_SERVER
-      })
-
-      response = client.lists.add_list_member(settings.MAILCHIMP_LIST_ID, {"email_address": email, "merge_fields": {"FNAME": name, "ONAME": org_name}, "status": "subscribed"})
+        client = MailchimpMarketing.Client()
+        client.set_config({
+            "api_key": settings.MAILCHIMP_API_KEY,
+            "server": settings.MAILCHIMP_SERVER
+        })
+        client.lists.add_list_member(list_id, {"email_address": email, "merge_fields": {"FNAME": name, "ONAME": org_name}, "status": "subscribed"})
     except ApiClientError as error:
-      raise Exception("Error: {}".format(error.text))
+        if error.status_code == 400:
+            print("Already subscribed")
+        else:
+            raise Exception("Error: {}".format(error.text))
 
 
 @routes.route("/setup", methods=["GET", "POST"])

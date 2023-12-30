@@ -115,7 +115,8 @@ export default function ReportSelector(props) {
                 <QueryTagsControl
                   isDraft={q.is_draft}
                   tags={q.tags}
-                  className={cx("inline-tags-control", { disabled })}
+                  isArchived={q.is_archived}
+                  className="d-block"
                 />
               </Option>
             );

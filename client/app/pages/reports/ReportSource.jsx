@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 
@@ -27,6 +27,7 @@ function ReportSource(props) {
   const reportFlags = useReportFlags(report, []);
   const [selectedVisualization] = useVisualizationTabHandler(report.visualizations);
   const isMobile = !useMedia({ minWidth: 768 });
+  const [reportChanged, setReportChanged] = useState(false);
 
   useUnsavedChangesAlert(isDirty);
 
@@ -45,12 +46,17 @@ function ReportSource(props) {
   }, [report.name]);
 
 
-  const editVisualization = useEditVisualizationDialog(report, reportResult, newReport => setReport(newReport));
+  const editVisualization = useEditVisualizationDialog(report, reportResult, newReport => {
+    setReport(newReport);
+    setReportChanged(true);
+  });
 
   return (
     <div className={cx("report-page-wrapper", { "report-fixed-layout": !isMobile })}>
       <div className="container w-100 p-b-10">
         <ReportPageHeader
+          reportChanged={reportChanged}
+          setReportChanged={setReportChanged}
           report={report}
           dataSource={[]}
           sourceMode
@@ -64,7 +70,11 @@ function ReportSource(props) {
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
               style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
-              <ReportEditor report={report} />
+              <ReportEditor 
+                report={report} 
+                reportChanged={reportChanged}
+                setReportChanged={setReportChanged}
+              />
             </div>
           </div>
           {reportResult && !reportResult.getError() && (

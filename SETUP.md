@@ -12,6 +12,7 @@ Requirements:
 * Data reported builds correctly with Node 12
 * Install node 12.22.12 with nodenv and ensure shims are added to PATH
 see for more info: https://github.com/nodenv/nodenv#how-it-works
+see https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl for windows-wsl2-nvm
 
 ```
 nodenv install 12.22.12
@@ -22,7 +23,7 @@ nodenv local 12.22.12
     * Enter project root directory
     * `cd client`
     * `npm install` Installs all node dependencies to for redash
-    * `npm run build` Builds front end to  the folder `client/dist/`
+    * `npm run build` Builds front end to the folder `client/dist/`
 
 * Build Plywood
     * Enter project root directory
@@ -34,6 +35,8 @@ nodenv local 12.22.12
     * `make up` or `docker-compose up --build`  to start required services like postgres app server
     * `docker-compose run --rm server create_db`  Will start server and run. exec /app/manage.py database create_tables.
       This step is required **only once**.
+    * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker-compose run server manage db migrate`
+    * Later on and only if necessary, in order to upgrade local database run: `docker-compose run --rm server manage db upgrade`
 
 
 * Not needed anymore, might be useful for local development: start UI proxy
@@ -144,6 +147,7 @@ visit http://localhost:8080/ instead of using port 5050
 To run Python debugger:
 docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
 
+To log messages to/from Plywood add to the Plywood env (in docker-compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
 
 ### Docker installation issues
 

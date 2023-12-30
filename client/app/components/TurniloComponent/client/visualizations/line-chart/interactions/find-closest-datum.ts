@@ -27,9 +27,14 @@ function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousSc
   let closestDatum: Datum = null;
   let minDist = Infinity;
   for (const datum of data) {
+    var mid;
     const continuousSegmentValue = datum[continuousDimension.name] as (TimeRange | NumberRange);
     if (!continuousSegmentValue) continue;
-    const mid = new Date(continuousSegmentValue.toString());
+    else if (continuousSegmentValue.midpoint) {
+      mid = continuousSegmentValue.midpoint();
+    } else {
+      mid = new Date(continuousSegmentValue.toString());
+    }
     const dist = Math.abs(mid.valueOf() - value.valueOf());
     const distPx = Math.abs(scaleX(mid) - scaleX(value));
     if ((!closestDatum || dist < minDist) && distPx < MAX_HOVER_DIST) { // Make sure it is not too far way

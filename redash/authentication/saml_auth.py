@@ -4,14 +4,28 @@ from redash import settings
 from redash.authentication import create_and_login_user, logout_and_redirect_to_index
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import org_scoped_rule
-from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT, entity
-from saml2.client import Saml2Client
-from saml2.config import Config as Saml2Config
-from saml2.saml import NAMEID_FORMAT_TRANSIENT
+
 
 logger = logging.getLogger("saml_auth")
 blueprint = Blueprint("saml_auth", __name__)
 
+loaded = False
+BINDING_HTTP_POST = None
+BINDING_HTTP_REDIRECT = None
+entity = None
+Saml2Client = None
+Saml2Config = None
+NAMEID_FORMAT_TRANSIENT = None
+
+
+def _load_modules():
+    global BINDING_HTTP_POST, BINDING_HTTP_REDIRECT, entity, Saml2Client, Saml2Config, NAMEID_FORMAT_TRANSIENT, loaded
+    if not loaded:
+        from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT, entity
+        from saml2.client import Saml2Client
+        from saml2.config import Config as Saml2Config
+        from saml2.saml import NAMEID_FORMAT_TRANSIENT
+        loaded = True
 
 def get_saml_client(org):
     """
@@ -19,6 +33,7 @@ def get_saml_client(org):
 
     The configuration is a hash for use by saml2.config.Config
     """
+    _load_modules()
     metadata_url = org.get_setting("auth_saml_metadata_url")
     entity_id = org.get_setting("auth_saml_entity_id")
 
@@ -64,6 +79,7 @@ def get_saml_client(org):
 
 @blueprint.route(org_scoped_rule("/saml/callback"), methods=["POST"])
 def idp_initiated(org_slug=None):
+    _load_modules()
     if not current_org.get_setting("auth_saml_enabled"):
         logger.error("SAML Login is not enabled")
         return redirect(url_for("redash.index", org_slug=org_slug))
@@ -104,6 +120,7 @@ def idp_initiated(org_slug=None):
 
 @blueprint.route(org_scoped_rule("/saml/login"))
 def sp_initiated(org_slug=None):
+    _load_modules()
     if not current_org.get_setting("auth_saml_enabled"):
         logger.error("SAML Login is not enabled")
         return redirect(url_for("redash.index", org_slug=org_slug))

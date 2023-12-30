@@ -19,20 +19,19 @@ export default function ReportsListEmptyState({ page, searchTerm, selectedTags }
     case "my":
       return (
         <div className="tiled bg-white p-15">
-          <a href="queries/new" className="btn btn-primary btn-sm">
+          <a href="reports/new" className="btn btn-primary btn-sm">
             Create your first report
-          </a>{" "}
-          to populate My Queries list. Need help? Check out our{" "}
-          <a href="https://redash.io/help/user-guide/querying/writing-queries">query writing documentation</a>.
+          </a>
         </div>
       );
     default:
       return (
         <EmptyState
-          icon="fa fa-code"
-          illustration="query"
+          icon="fa fa-cubes"
+          illustration="report"
           description="Getting the data from your datasources."
           helpLink="https://help.redash.io/category/21-querying"
+          illustrationType=".png"
         />
       );
   }

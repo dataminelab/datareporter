@@ -61,3 +61,24 @@ def create_app():
     tasks.init_app(app)
 
     return app
+
+
+def create_worker():
+    from . import (
+        extensions,
+        mail,
+        tasks,
+    )
+    from .models import db
+    from .utils import sentry
+    from . import worker
+    sentry.init()
+    app = Redash()
+
+    db.init_app(app)
+    mail.init_app(app)
+    extensions.init_app(app)
+    tasks.init_app(app)
+    worker.init_app(app)
+
+    return app

@@ -9,6 +9,7 @@ import { absoluteUrl } from "@/services/utils";
 
 export default function PasswordLinkAlert(props) {
   const { user, passwordLink, ...restProps } = props;
+  const { invitationSent } = props;
 
   if (!isString(passwordLink)) {
     return null;
@@ -16,21 +17,38 @@ export default function PasswordLinkAlert(props) {
 
   return (
     <DynamicComponent name="UserProfile.PasswordLinkAlert" {...props}>
-      <Alert
-        message="Email not sent!"
-        description={
-          <React.Fragment>
-            <p>
-              The mail server is not configured, please send the following link to <b>{user.name}</b>:
-            </p>
-            <InputWithCopy value={absoluteUrl(passwordLink)} readOnly />
-          </React.Fragment>
-        }
-        type="warning"
-        className="m-t-20"
-        closable
-        {...restProps}
-      />
+      {invitationSent ? (
+        <Alert
+          description={
+            <React.Fragment>
+              <p>
+                An email is sent to <b>{user.email}</b>:
+              </p>
+              <InputWithCopy value={absoluteUrl(passwordLink)} readOnly />
+            </React.Fragment>
+          }
+          type="success"
+          className="m-t-20"
+          closable
+          {...restProps}
+        />
+      ) : (
+        <Alert
+          message="Email not sent!"
+          description={
+            <React.Fragment>
+              <p>
+                The mail server is not configured, please send the following link to <b>{user.name}</b>:
+              </p>
+              <InputWithCopy value={absoluteUrl(passwordLink)} readOnly />
+            </React.Fragment>
+          }
+          type="warning"
+          className="m-t-20"
+          closable
+          {...restProps}
+        />
+      )}
     </DynamicComponent>
   );
 }

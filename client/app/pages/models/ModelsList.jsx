@@ -26,14 +26,20 @@ import CreateModelDialog from "./components/CreateModelDialog";
 import DataSource from "@/services/data-source";
 
 function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
+  const handleDeleteModel = (event) => {
+    var r = confirm(`Are you sure you would like to delete ${model.name} and all reports that use this model?`);
+    if (r == true) {
+      deleteModel(event, model);
+    }
+  }
   return <>
             <Button type="ghost" icon="setting" className="m-2 inline" onClick={() => editConfigModel(model)}>
               Edit config
             </Button>
-            <Button type="primary" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
+            <Button type="dashed" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
               Edit
             </Button>
-            <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => deleteModel(event, model)}>
+            <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => handleDeleteModel(event)}>
               Delete
             </Button>
           </>;

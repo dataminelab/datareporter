@@ -38,9 +38,9 @@ def render_token_login_page(template, org_slug, token, invite):
         user = models.User.get_by_id_and_org(user_id, org)
     except NoResultFound:
         logger.exception(
-            "Bad user id in token. Token= , User id= %s, Org=%s",
-            user_id,
+            "Bad user id in token. Token=%s, User id=%s, Org=%s",
             token,
+            user_id,
             org_slug,
         )
         return (
@@ -349,5 +349,12 @@ def session(org_slug=None):
             "messages": messages(),
             "org_slug": current_org.slug,
             "client_config": client_config(),
+            "timeout": settings.CLIENT_TIMEOUT_DELTA,
         }
     )
+
+
+@routes.route("/api/timeout", methods=["GET"])
+@login_required
+def timeout():
+    return json_response({"timeout": settings.CLIENT_TIMEOUT_DELTA})

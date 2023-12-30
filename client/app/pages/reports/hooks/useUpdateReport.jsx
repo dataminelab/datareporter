@@ -49,7 +49,6 @@ function confirmOverwrite() {
 }
 
 function doSaveReport(data, { canOverwrite = false } = {}) {
-  // omit parameter properties that don't need to be stored
   if (isObject(data.options) && data.options.parameters) {
     data.options = {
       ...data.options,
@@ -68,6 +67,9 @@ function doSaveReport(data, { canOverwrite = false } = {}) {
     } else if (get(error, "response.status") === 400) {
       let message = get(error, "response.data.message")
       return Promise.reject(new SaveReportError(message));
+    }
+    if (error.name == "TypeError") {
+      return Promise.reject();
     }
     return Promise.reject(new SaveReportError("Report could not be saved"));
   });
@@ -93,7 +95,7 @@ export default function useUpdateReport(report, onChange) {
           "report",
           "description",
           "name",
-          "model",
+          "model_id",
           "appSettings",
           "timekeeper",
           "data_source_id",
@@ -103,12 +105,12 @@ export default function useUpdateReport(report, onChange) {
           "color_1",
           "color_2",
           "expression",
-          "model_id",
         ]);
       }
-
+      if (!report.expression && !report.hash) return 0;
       return doSaveReport(data, { canOverwrite: report.can_edit })
         .then(updatedReport => {
+          if (!updatedReport || updatedReport.message === 'No changes made') return;
           if (!isNil(successMessage)) {
             notification.success(successMessage);
           }
@@ -126,6 +128,7 @@ export default function useUpdateReport(report, onChange) {
           if (error instanceof SaveReportConflictError) {
             notificationOptions.duration = null;
           }
+          if (!error || error.message === 'No changes made') return;
           notification.error(error.message, error.detailedMessage, notificationOptions);
         });
     },

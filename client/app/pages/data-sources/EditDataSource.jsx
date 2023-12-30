@@ -61,7 +61,8 @@ class EditDataSource extends React.Component {
           notification.success("Data source deleted successfully.");
           navigateTo("data_sources");
         })
-        .catch(() => {
+        .catch((e) => {
+          notification.error(e);
           callback();
         });
     };

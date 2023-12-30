@@ -1,8 +1,9 @@
 import express, { NextFunction, Request } from "express";
+import * as Sentry from "@sentry/node";
 import { statusEndpoint } from "./endpoint/status-endpoint";
 import { plywoodEndpoint } from "./endpoint/plywood-endpoint";
 import { handleError } from "./middlewares/errorHandler";
-import { handleLogs } from "./middlewares/requestLogs";
+import { logRequestAndResponse } from "./middlewares/requestLogs";
 import { attributesFormatterEndpoint } from './endpoint/attributes-formatter'
 import { AttributeParserFactory } from "./formatter/attributesFormatter/factory/AttributeParserFactory";
 import { PostgresAttributeParser } from './formatter/attributesFormatter/parsers/PostgresAttributeParser';
@@ -13,19 +14,29 @@ import { hashConverterRequest } from "./endpoint/hash-converter";
 import { filterToHash, hashToFilter } from './endpoint/filter-to-hash-converter';
 import { responseShape } from './endpoint/response-shape';
 import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParser";
+import { env } from "process";
 
 AttributeParserFactory.register(PostgresAttributeParser);
 AttributeParserFactory.register(MySqlAttributeParser);
 AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
 const app = express();
-
+if (env.SENTRY_DSN) {
+    console.log("Sentry enabled");
+    Sentry.init({
+        dsn: env.SENTRY_DSN,
+        release: env.DATAREPORTER_VERSION || 'unknown',
+        environment: env.SENTRY_ENVIRONMENT,
+        attachStacktrace: true,
+        sampleRate: parseFloat(env.SENTRY_SAMPLE_RATE || "1.0",),
+        tracesSampleRate: parseFloat(env.SENTRY_TRACES_SAMPLE_RATE || "1.0",),
+    });
+    app.use(Sentry.Handlers.requestHandler());
+}
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use((req: Request, _res, next: NextFunction) => {
-    handleLogs(req, next)
-});
+app.use(logRequestAndResponse);
 
 app.use('/api/v1/status', statusEndpoint);
 app.use('/api/v1/plywood/attributes/engines', requestSupportedEngines)

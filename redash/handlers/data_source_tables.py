@@ -4,6 +4,7 @@ from redash.handlers.base import BaseResource, get_object_or_404
 from redash.models import models
 from redash.permissions import require_access, view_only
 from redash.serializers.data_source_serializer import TableSerializer
+from redash.query_runner import NotSupported
 
 
 class DataSourceTablesResource(BaseResource):
@@ -15,7 +16,10 @@ class DataSourceTablesResource(BaseResource):
         )
 
         require_access(data_source, self.current_user, view_only)
-
-        schema = data_source.get_schema(refresh=refresh)
-
-        return TableSerializer(schema).serialize()
+        try:
+            schema = data_source.get_schema(refresh=refresh)
+            return TableSerializer(schema).serialize()
+        except NotSupported:
+            return {"message": "Data source does not support schema generation."}, 400
+        except:
+            return {"message": "Data source is corrupted, change settings."}, 400

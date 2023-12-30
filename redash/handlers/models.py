@@ -62,7 +62,9 @@ class ModelsListResource(BaseResource):
         data_source = request.args.get('data_source', None)
 
         if data_source:
-            found_models = Model.get_by_user_and_data_source(self.current_user, int(data_source))
+            found_models = Model.get_by_data_source(int(data_source))
+        elif self.current_user.has_permission("admin"):
+            found_models = Model.get_by_group_ids(self.current_user)
         else:
             found_models = Model.get_by_user(self.current_user)
 
@@ -134,6 +136,8 @@ class ModelsResource(BaseResource):
 
         if model.config is not None:
             models.db.session.delete(model.config)
+        for report in model.reports:
+            models.db.session.delete(report)
         models.db.session.delete(model)
         models.db.session.commit()
 

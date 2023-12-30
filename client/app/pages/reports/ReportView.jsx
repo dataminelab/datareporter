@@ -45,6 +45,7 @@ function ReportView(props) {
   const isFixedLayout = useMedia({ minHeight: 500 }) && isDesktop;
   const [fullscreen, toggleFullscreen] = useFullscreenHandler(isDesktop);
   const [addingDescription, setAddingDescription] = useState(false);
+  const [reportChanged, setReportChanged] = useState(false);
 
   const {
     queryResult,
@@ -96,6 +97,8 @@ function ReportView(props) {
       <div className="container w-100">
         <ReportPageHeader
           report={report}
+          reportChanged={reportChanged}
+          setReportChanged={setReportChanged}
           dataSource={dataSource}
           onChange={setReport}
           selectedVisualization={selectedVisualization}

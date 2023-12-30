@@ -30,8 +30,9 @@ function confirmArchive() {
 }
 
 function doArchiveReport(report) {
-  return Report.delete({ id: report.id })
+  return Report.archiveReport({ id: report.id })
     .then(() => {
+      notification.success("Report archived.");
       return extend(report.clone(), { is_archived: true, schedule: null });
     })
     .catch(error => {

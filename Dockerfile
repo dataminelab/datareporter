@@ -1,4 +1,4 @@
-FROM node:12 as frontend-builder
+FROM node:14.17 as frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
@@ -7,7 +7,7 @@ WORKDIR /frontend
 COPY bin/build_frontend.sh .
 COPY client/ /frontend/client
 COPY viz-lib/ /frontend/viz-lib
-COPY plywood/server/client /frontend/plywood/server/client
+COPY plywood/server/ /frontend/plywood/server/
 RUN if [ "x$skip_frontend_build" = "x" ] ; then \
     echo "Building frontend";\
     ./build_frontend.sh;\
@@ -25,6 +25,7 @@ EXPOSE 5000
 ARG skip_ds_deps
 # Controls whether to install dev dependencies.
 ARG skip_dev_deps
+
 
 RUN useradd --create-home redash
 
@@ -76,8 +77,9 @@ ENV PIP_NO_CACHE_DIR=1
 
 # We first copy only the requirements file, to avoid rebuilding on every file
 # change.
-COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements_all_ds.txt ./
-RUN if [ "x$skip_dev_deps" = "x" ] ; then pip install -r requirements.txt -r requirements_dev.txt; else pip install -r requirements.txt; fi
+COPY requirements.txt requirements_bundles.txt  requirements_dev.txt  ./
+RUN if [ "x$skip_dev_deps" = "x" ] ; then pip install -r requirements.txt -r requirements_dev.txt; else echo "Skipping pip install dev dependencies" ; pip install -r requirements.txt; fi
+COPY  requirements_all_ds.txt ./
 RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
 COPY . /app
@@ -85,5 +87,7 @@ COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/di
 RUN find /app
 USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+ARG version
+ENV DATAREPORTER_VERSION=$version
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
 CMD ["server"]

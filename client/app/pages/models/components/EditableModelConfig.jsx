@@ -12,6 +12,8 @@ import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 import ModelService from "@/services/model";
 import ModelConfigDocs from "./ModelConfigDocs";
 
+import axios from "axios";
+
 export default function EditableModelConfig({model, saveConfig}) {
   const configYAML = "customization:\n" +
     "  urlShortener: |\n" +
@@ -209,13 +211,30 @@ export default function EditableModelConfig({model, saveConfig}) {
 
   const save = () => saveConfig(model.id, item)
   const handleSaveConfig = (callback) => {
-    const yamlContent =  document.querySelector("#yaml_editor > div.ace_scroller > div").textContent;
-    if (yamlContent.includes("timeAttribute: null")) {
-      const prompt = window.confirm("timeAttribute is null. Are you sure you want to save?");
-      if (prompt) {
-        callback();
-      }
+    const yamlContent =  item;
+    if (!yamlContent.includes("timeAttribute") || yamlContent.includes("timeAttribute: null")) {
+      alert("your time attribute variable is null");
       return;
+    }
+    const timeAttribute = yamlContent.split("timeAttribute: ")[1].split("\n")[0];
+    const attributes = yamlContent.split("attributes:")[1].split("dimensions:")[0];
+    // if timeAttribute is not in attributes, then alert
+    if (!attributes.includes(timeAttribute)) {
+      alert("your time attribute variable is not in attributes list");
+      return;
+    }
+    // if timeAttribute's type is not TIME then alert 
+    const attributesList = attributes.split("- name: ");
+    attributesList.shift();
+    for (let i = 0; i < attributesList.length; i++) {
+      const attribute = attributesList[i];
+      if (attribute.includes(timeAttribute)) {
+        const attributeType = attribute.split("type: ")[1].split("\n")[0];
+        if (attributeType !== "TIME") {
+          alert("your time attribute variable's type is not a time or timestamp");
+          return;
+        }
+      }
     }
     callback();
   }
@@ -250,7 +269,7 @@ export default function EditableModelConfig({model, saveConfig}) {
     <div className="col-md-12">
       <div className="editor-yaml-box">
         <div className="editor-yaml">
-          <h1>Edit config
+          <h1>{model.name} | edit config
             <ButtonTooltip title={'Cmd + S'} shortcut={'mod+s'}>
               <Button
                 className="query-editor-controls-button m-l-5 right"

@@ -16,7 +16,8 @@
     "rootDir": "src",
     "outDir": "build",
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": false,
   },
   "include": [
     "typings/private.d.ts",

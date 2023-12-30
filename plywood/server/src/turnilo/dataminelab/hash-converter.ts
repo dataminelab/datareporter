@@ -49,10 +49,8 @@ export const hashToExpression = (hash: string, dataCubeInput: DataCubeJS) => {
         throw new Error(`Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.getMaxSplits()} splits`);
     }
 
-
-    // To do, find out what is time keeper
-
     const timeKeeper = Timekeeper.fromJS({
+        nowOverride: null,
         timeTags: [],
     });
 
@@ -71,7 +69,12 @@ export const hashToExpression = (hash: string, dataCubeInput: DataCubeJS) => {
         ? queryWithMeasures
             .apply(SPLIT, applySplit(0, essence, timeShiftEnv, $main))
         : queryWithMeasures
-
+    if (timeShiftEnv.type === TimeShiftEnvType.WITH_PREVIOUS) {
+        //@ts-ignore
+        res.setPrevElement(timeShiftEnv.currentFilter.expression.value.elements)
+        //@ts-ignore
+        res.setCurrElement(timeShiftEnv.previousFilter.expression.value.elements)
+    }
     return res.toJS();
 }
 

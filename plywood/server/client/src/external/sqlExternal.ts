@@ -27,6 +27,7 @@ import {
   SortExpression,
   SplitExpression,
   TimeBucketExpression,
+  YearOverYearExpression,
 } from '../expressions/index';
 import { External, ExternalJS, ExternalValue, Inflater, QueryAndPostTransform } from './baseExternal';
 import { PlywoodRequester } from 'plywood-base-api';
@@ -99,9 +100,8 @@ export abstract class SQLExternal extends External {
     }
   }
 
-  public getQueryAndPostTransform(): QueryAndPostTransform<string> {
-    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery } = this;
-
+  public getQueryAndPostTransform(timeRanges:any=null): QueryAndPostTransform<string> {
+    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, engine } = this;
     let query = [];
     if (withQuery) {
       query.push(`WITH __with__ AS (${withQuery})\n`);
@@ -113,10 +113,9 @@ export abstract class SQLExternal extends External {
     let inflaters: Inflater[] = [];
     let keys: string[] = null;
     let zeroTotalApplies: ApplyExpression[] = null;
+    let split;
 
-    //dialect.setTable(null);
     let from = this.getFrom();
-    //dialect.setTable(source as string);
 
     let filter = this.getQueryFilter();
     if (!filter.equals(Expression.TRUE)) {
@@ -160,19 +159,11 @@ export abstract class SQLExternal extends External {
             .join(', '),
           from,
         );
-        if (sort) {
-          query.push(sort.getSQL(dialect));
-        }
-        if (limit) {
-          query.push(limit.getSQL(dialect));
-        }
         break;
-
       case 'value':
         query.push(this.toValueApply().getSQL(dialect), from, dialect.constantGroupBy());
         postTransform = External.valuePostTransformFactory();
         break;
-
       case 'total':
         zeroTotalApplies = applies;
         inflaters = applies
@@ -189,9 +180,8 @@ export abstract class SQLExternal extends External {
           dialect.constantGroupBy(),
         );
         break;
-
       case 'split':
-        let split = this.getQuerySplit();
+        split = this.getQuerySplit();
         keys = split.mapSplits(name => name);
         query.push(
           split
@@ -208,19 +198,37 @@ export abstract class SQLExternal extends External {
         if (!this.havingFilter.equals(Expression.TRUE)) {
           query.push('HAVING ' + this.havingFilter.getSQL(dialect));
         }
-        if (sort) {
-          query.push(sort.getSQL(dialect));
-        }
-        if (limit) {
-          query.push(limit.getSQL(dialect));
-        }
         inflaters = getSplitInflaters(split);
         break;
-
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-
+    const isYoyQuery = YearOverYearExpression.isYoyQuery(query.join('\n'));
+    if (isYoyQuery) {
+      let yoyExpression = new YearOverYearExpression(engine, query, mode);
+      yoyExpression.setKeys(keys)
+      if (split) {
+        yoyExpression.setGroupBy(
+          (this.capability('shortcut-group-by')
+            ? split.getShortGroupBySQL()
+            : split.getGroupBySQL(dialect)
+          ).join(',')
+        );
+      }
+      if (timeRanges) {
+        yoyExpression.setTimeRanges(timeRanges)
+      }
+      yoyExpression.process()
+      query = [
+        yoyExpression.getQuery()
+      ];
+    }
+    if (sort) {
+      query.push(sort.getSQL(dialect));
+    }
+    if (limit) {
+      query.push(limit.getSQL(dialect));
+    }
     return {
       query: this.sqlToQuery(query.join('\n')),
       postTransform:

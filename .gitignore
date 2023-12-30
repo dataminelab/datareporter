@@ -26,6 +26,4 @@ client/cypress/screenshots
 client/cypress/videos
 *.iml
 
-# dist folders
-client/dist
-plywood/dist
+dist

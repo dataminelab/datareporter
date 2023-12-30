@@ -1,5 +1,6 @@
 import yaml
 from flask import request
+from typing import List
 
 from redash import models
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
@@ -45,15 +46,20 @@ class ModelsConfigResource(BaseResource):
 
         return ModelConfigSerializer(model.config).serialize()
 
-    @require_permission("view_model")
+    @require_permission("view_model") 
     def get(self, model_id):
-        model = get_object_or_404(Model.get_by_id, model_id)
-        data_cube = DataCube(model)
+        model: Model = get_object_or_404(Model.get_by_id, model_id)
+        models: list(Model) = Model.query.filter(Model.data_source_id==model.data_source_id).all()
+        data_cubes: List[DataCube.data_cube] = []
+        table_names: list(str) = []
+        for model in models:
+            cube = DataCube(model).data_cube
+            if cube['name'] not in table_names:
+                table_names.append(cube['name'])
+                data_cubes.append(cube)
         return {
             "appSettings": {
-                "dataCubes": [
-                    data_cube.data_cube
-                ],
+                "dataCubes": data_cubes,
                 "clusters": [],
                 "customization": {}
             },

@@ -1,6 +1,6 @@
-import {extend, map, filter, reduce} from "lodash";
-import React, {useCallback, useMemo, useState, useEffect} from "react";
-import PropTypes from "prop-types";
+import { extend, map, filter, reduce } from "lodash";
+import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
+import PropTypes, { any } from "prop-types";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
@@ -8,14 +8,15 @@ import Icon from "antd/lib/icon";
 import useMedia from "use-media";
 import EditInPlace from "@/components/EditInPlace";
 import FavoritesControl from "@/components/FavoritesControl";
-import reactCSS from 'reactcss'
-import { SketchPicker } from 'react-color'
-import { clientConfig } from "@/services/auth";
+import reactCSS from "reactcss";
+import { SketchPicker } from "react-color";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
+import useUpdateReport from "../hooks/useUpdateReport";
+import useUpdateReportTags from "../hooks/useUpdateReportTags";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
 import useColorsReport from "@/pages/reports/hooks/useColorsReport";
@@ -24,8 +25,14 @@ import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
 import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
-import useUpdateReport from "@/pages/reports/hooks/useUpdateReport";
 import Model from "@/services/model";
+import { QueryTagsControl } from "@/components/tags-control/TagsControl";
+import { replaceHash, hexToRgb, setPriceButton } from "../components/ReportPageHeaderUtils";
+import getTags from "@/services/getTags";
+
+function getQueryTags() {
+  return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
+}
 
 function createMenu(menu) {
   const handlers = {};
@@ -61,283 +68,305 @@ function createMenu(menu) {
   );
 }
 
+export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
+  if (chartTextColor) {
+    document.documentElement.style.setProperty("--text-default-color", chartTextColor);
+  } else if (chartTextColor === undefined) {
+    document.documentElement.style.removeProperty("--text-default-color");
+  }
+  if (chartColor) {
+    document.documentElement.style.setProperty("--background-brand-light", chartColor);
+  } else if (chartColor === undefined) {
+    document.documentElement.style.removeProperty("--background-brand-light");
+  }
+  if (chartBorderColor) {
+    document.documentElement.style.setProperty("--highlight-border", chartBorderColor);
+  } else if (chartBorderColor === undefined) {
+    document.documentElement.style.removeProperty("--highlight-border");
+  }
+}
+
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const queryFlags = useReportFlags(props.report, props.dataSource);
-  const archiveReport = useArchiveReport(props.report, props.onChange);
-  const publishReport = usePublishReport(props.report, props.onChange);
-  const unpublishReport = useUnpublishReport(props.report, props.onChange);
-  const [isDuplicating, duplicateReport] = useDuplicateReport(props.report);
-  const openApiKeyDialog = useApiKeyDialog(props.report, props.onChange);
-  const openPermissionsEditorDialog = usePermissionsEditorDialog(props.report);
-  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(props.report);
+  const { report, setReport, saveReport, saveAsReport, deleteReport } = useReport(props.report);
+  const queryFlags = useReportFlags(report, props.dataSource);
+  const updateTags = useUpdateReportTags(report, setReport);
+  const archiveReport = useArchiveReport(report, setReport);
+  const publishReport = usePublishReport(report, setReport);
+  const unpublishReport = useUnpublishReport(report, setReport);
+  const [isDuplicating, duplicateReport] = useDuplicateReport(report);
+  const openApiKeyDialog = useApiKeyDialog(report, setReport);
+  const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
+  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
   const [models, setModels] = useState([]);
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
-  const [modelConfig, setModelConfig] = useState({});
-  const [modelConfigLoaded, setLoadModelConfigLoaded] = useState(false);
-  const reportFlags = useReportFlags(props.report, dataSource)
-
-  const { report, setReport, saveReport } = useReport(props.report);
-  const updateColors = useColorsReport(report, props.onChange);
+  const reportFlags = useReportFlags(report, dataSource);
+  const [currentHash, setCurrentHash] = useState(null);
+  const updateColors = useColorsReport(report, setReport);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
-  const [colorBody, setColorBody] = useState(
-    {
-      r: '241',
-      g: '112',
-      b: '19',
-      a: '1',
-    }
-  );
-  const [colorText, setColorText] = useState({
-    r: '241',
-    g: '112',
-    b: '19',
-    a: '1',
-  });
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedDataSource, setSelectedDataSource] = useState(null);
+  const [colorBodyHex, setColorBodyHex] = useState("#f17013");
+  const [colorTextHex, setColorTextHex] = useState("#000");
+  const reportChanged = props.reportChanged;
+  const setReportChanged = props.setReportChanged;
+  const [reportName, setReportName] = useState(report.name);
+  const [newName, setNewName] = useState("Copy of " + report.name);
+  const modelSelectElement = useRef();
+  const modelSelectElementText = useRef("");
 
+  const handleReportChanged = (state) => {
+    if (!report.data_source_id) return;
+    if (!report.model_id) return;
+    setReportChanged(state);
+  }
+
+  const handleNewNameChange = (event) => {
+    setNewName(event.target.value);
+  }
+  // delete spesific color
   const styles = reactCSS({
-    'default': {
+    default: {
       color: {
-        width: '36px',
-        height: '14px',
-        display: 'inline-block',
-        borderRadius: '2px',
-        background: `rgba(${ colorText.r }, ${ colorText.g }, ${ colorText.b }, ${ colorText.a })`,
-        position: 'relative',
-        marginRight: '10px',
-        top: '3px',
+        width: "36px",
+        height: "14px",
+        display: "inline-block",
+        borderRadius: "2px",
+        background: `${colorTextHex}`,
+        position: "relative",
+        marginRight: "10px",
+        top: "3px",
+      },
+      colorSpanElement: {
+        marginRight: "6px",
       },
       colorBody: {
-        width: '36px',
-        height: '14px',
-        display: 'inline-block',
-        borderRadius: '2px',
-        background: `rgba(${ colorBody.r }, ${ colorBody.g }, ${ colorBody.b }, ${ colorBody.a })`,
-        position: 'relative',
-        top: '3px',
+        width: "36px",
+        height: "14px",
+        display: "inline-block",
+        borderRadius: "2px",
+        background: `${colorBodyHex}`,
+        position: "relative",
+        top: "3px",
       },
       swatch: {
-        padding: '5px 15px',
-        background: '#fff',
-        borderRadius: '1px',
-        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-        display: 'inline-block',
-        marginRight: '10px',
-        cursor: 'pointer',
-        lineHeight: '25px'
+        padding: "4px 8px",
+        background: "#fff",
+        borderRadius: "1px",
+        boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+        display: "inline-block",
+        cursor: "pointer",
+        lineHeight: "25px",
       },
       popover: {
-        position: 'absolute',
-        zIndex: '2',
+        position: "absolute",
+        top: "115px",
+        zIndex: "2",
+      },
+      popoverSecond: {
+        position: "absolute",
+        top: "115px",
+        zIndex: "2",
+        marginLeft: "15vw",
       },
       cover: {
-        position: 'fixed',
-        top: '0px',
-        right: '0px',
-        bottom: '0px',
-        left: '0px',
+        position: "fixed",
+        top: "0px",
+        right: "0px",
+        bottom: "0px",
+        left: "0px",
       },
     },
   });
-
-  const handleClick = (type) => {
-    setDisplayColorPicker(type)
+  // delete
+  const handleClick = type => {
+    setDisplayColorPicker(type);
   };
-
+  // delete
   const handleClose = () => {
-    setDisplayColorPicker(0)
+    setDisplayColorPicker(0);
   };
-
-  const hexToRgb = (hex) => {
-    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
-      return r + r + g + g + b + b;
-    });
-  
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16),
-      a: 1
-    } : null;
-  }
-
+  // delete
   const handleColorChange = useCallback(
     (color, type, successMessage) => {
       if (!color.rgb && color.startsWith("#")) {
         color = {
           rgb: hexToRgb(color),
           hex: color,
-        }
+        };
       }
       if (!color.rgb || !color.hex) {
-        return 0
+        return 0;
       }
       if (type === 2) {
-        setColorBody(color.rgb)
-        updateColors('colorBody', color.hex, { successMessage });
-        let updates = { color_1: color.hex }
+        setColorBodyHex(color.hex);
+        updateColors("colorBody", color.hex, { successMessage });
+        let updates = { color_1: color.hex };
         props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage });
+        // ligten color
+        const amount = 20;
+        const lightenedRed = Math.min(255, Math.round(color.rgb.r + (amount / 100) * (255 - color.rgb.r)));
+        const lightenedGreen = Math.min(255, Math.round(color.rgb.g + (amount / 100) * (255 - color.rgb.g)));
+        const lightenedBlue = Math.min(255, Math.round(color.rgb.b + (amount / 100) * (255 - color.rgb.b)));
+        // Convert RGB components back to hex color string
+        const lightenedHexColor = `#${lightenedRed.toString(16)}${lightenedGreen.toString(16)}${lightenedBlue.toString(16)}`;
+        setColorElements(false, color.hex, lightenedHexColor);
       } else {
-        setColorText(color.rgb)
-        updateColors('colorText', color.hex, { successMessage });
-        let updates = { color_2: color.hex }
+        setColorTextHex(color.hex);
+        updateColors("colorText", color.hex, { successMessage });
+        let updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage });
+        setColorElements(color.hex, false, false); 
       }
-    },[report, updateColors]
+    },
+    [report, props.onChange, updateColors]
   );
 
-  const onChangeDataSource = useCallback( async dataSourceId => {
-    setLoadModelsLoaded(true)
-    recordEvent("update", "report", report.id, { dataSourceId });
-    try {
-        const res = await Model.query({data_source: dataSourceId});
-        const updates = {
-          data_source_id: dataSourceId,
-          isJustLanded: false
-        };
-        setModels(res.results);
-        props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage: null });
-        setLoadModelsLoaded(false);
-    } catch(err) {
-        console.error("*ERR",err);
-        setLoadModelsLoaded(false);
+  const changeModelDataText = (text) => {
+    const elem = document.querySelector("#model-data-source").querySelector("span");
+    if (elem.innerText === text) return;
+    if (elem.innerText !== modelSelectElement.current.props.placeholder) {
+      modelSelectElementText.current = elem.innerText;
     }
+    elem.innerText = text;
+    modelSelectElement.current.focus();
+  }
 
-  }, [report, props.onChange, updateReport])
-
-  const handleModelChange = useCallback( async modelId => {
-      setLoadModelConfigLoaded(true)
+  const handleDataSourceChange = useCallback(
+    async (data_source_id, signal) => {
+      changeModelDataText(modelSelectElement.current.props.placeholder);
+      setLoadModelsLoaded(false);
+      var newModels = [];
       try {
-        var res
+        const res = await Model.query({ data_source: data_source_id });
+        newModels = res.results;
+        if (signal && signal.aborted) return;
+        const updates = {
+          data_source_id,
+          isJustLanded: false,
+        }
+        setModels(newModels);
+        props.onChange(extend(report.clone(), { ...updates }));
+        updateReport(updates, { successMessage: null });
+        handleReportChanged(true);
+        recordEvent("update", "report", report.id, { data_source_id });
+      } catch (err) {
+        updateReport({}, { successMessage: err });
+        recordEvent("error", "report", report.id, { data_source_id });
+      }
+      setLoadModelsLoaded(true);
+      setSelectedDataSource(data_source_id);
+    },
+    [report, props.onChange, updateReport]
+  );
+
+  const handleModelChange = useCallback(
+    async (modelId, signal) => {
+      try {
+        var res;
         if (report.isJustLanded) {
-          res = {appSettings: report.appSettings, timekeeper:{}}
+          res = { appSettings: report.appSettings, timekeeper: {} };
         } else {
           res = await Model.getReporterConfig(modelId);
         }
-        setModelConfig(res);
+        const model = models.find(m => m.id === modelId);
+        if (model && model.id !== report.model_id) {
+          replaceHash(model, window.location.hash.split("/4/")[1]);
+        }
         recordEvent("update", "report", report.id, { modelId });
         var updates = {
-          // fix below line only one model id is enough
-          model: modelId,
           model_id: modelId,
           appSettings: res.appSettings,
           timekeeper: res.timekeeper,
           isJustLanded: false,
         };
-        props.onChange(extend(report.clone(), updates));
-        updateReport(updates, { successMessage: null }); // show message only on error
-        setLoadModelConfigLoaded(false);
-      } catch(err) {
-        setLoadModelConfigLoaded(false);
+        if (report.data_source_id || selectedDataSource) {
+          updates.data_source_id = report.data_source_id || selectedDataSource
+        }
+        if (signal && signal.aborted) return;
+        props.onChange(extend(report.clone(), { ...updates }));
+        updateReport({...report.clone(), ...updates}, { successMessage: null }); // show message only on error
+        handleReportChanged(true);
+        setSelectedModel(modelId);
+      } catch (err) {
+        updateReport({}, { successMessage: "failed to load the model" }); // show message only on error
       }
-    }, [report, props.onChange, updateReport]
+    },
+    [report, props.onChange, updateReport]
   );
-  const handleIdChange = useCallback( async id => {
+
+  const handleIdChange = useCallback(async id => {
     recordEvent("update", "report", report.id, { id });
-    props.onChange(extend(report.clone(), { id }));
+    setReport(extend(report.clone(), { id }));
     updateReport({ id }, { successMessage: null });
+    handleReportChanged(true);
   });
 
   const handleUpdateName = useCallback( name => {
-      recordEvent("update", "report", report.id, {name});
-      const changes = { name };
-      const options = {};
-
-      if (report.is_draft && clientConfig.autoPublishNamedQueries && name !== "New Report") {
-        changes.is_draft = false;
-        options.successMessage = "Report saved and published";
-      }
-      props.onChange(extend(report.clone(), changes));
-      updateReport(changes, { successMessage: null });
-    },
-    [report.id, report.is_draft, updateReport]
+      setReportName(name);
+      setNewName("Copy of " + name);
+      handleReportChanged(true);
+    },[report.id, report.is_draft]
   );
 
-  const handlePriceReport = () => {
-    if (document.querySelector("#meta-modal").style.opacity === "1") {
-      document.querySelector("#meta-modal").style.opacity = "0";
-      document.querySelector("#meta-modal").style['z-index'] = "-1";
+  const handleGivenModal = (id) => {
+    try {
+      if (document.getElementById(id).style.opacity === "1") {
+        document.getElementById(id).style.opacity = "0";
+        document.getElementById(id).style["z-index"] = "-1";
+      } else {
+        document.getElementById(id).style.opacity = "1";
+        document.getElementById(id).style["z-index"] = "10";
+      }
+    } catch {console.warn("price modal doesnt exist on this page.")}
+  }
+
+  const handleDeleteReport = () => {
+    const report = props.report;
+    if (report.id) {
+      recordEvent("delete", "report", report.id, { name: report.name });
+      deleteReport(report);
     } else {
-      document.querySelector("#meta-modal").style.opacity = "1";
-      document.querySelector("#meta-modal").style['z-index'] = "10";
+      setReport(null);
     }
   }
 
-  const handleSaveReport = () => {
-    if (!window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
-      recordEvent("create", report.id, { id: report.id });
-      updateReport({ is_draft: false }, { successMessage: null });
-      return saveReport();
+  const handleSaveReport = (save_as) => {
+    if (window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
+      updateReport({
+        expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
+        color_1: colorBodyHex || report.color_1,
+        color_2: colorTextHex || report.color_2,
+        name: save_as ? newName : reportName,
+      }, { successMessage: "Report updated" });
+      recordEvent("update", "report", report.id);
+    } else {
+      updateReport({
+        color_1: colorBodyHex || report.color_1,
+        color_2: colorTextHex || report.color_2,
+        is_draft: false,
+      }, { successMessage: null });
+      recordEvent("create", "report", report.id);
     }
-    var updates = {
-      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
-      color_1: report.color_1 || "#f17013",
-      color_2: report.color_2 || "#f17013",
-    };
-    props.onChange(extend(report.clone(), updates));
-    updateReport(updates, { successMessage: null });
-    if (!report.expression || !report.appSettings) {
-      setTimeout(()=>{
-        // need to render itself again with recent changes
-        document.querySelector("#_handleSaveReport").click();
-      }, 466);
-      return 0;
+    if (!report.id) {
+      saveReport();
     }
-    return saveReport();
   }
-
 
   const moreActionsMenu = useMemo(
     () =>
       createMenu([
         {
-          fork: {
-            isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
-            title: (
-              <React.Fragment>
-                Fork
-                <i className="fa fa-external-link m-l-5" />
-              </React.Fragment>
-            ),
-            onClick: duplicateReport,
+          downloadCSV: {
+            isAvailable: true,
+            title: "Download as CSV",
+            onClick: () => {document.querySelector("#export-data-csv").click()},
           },
-        },
-        {
-          archive: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Archive",
-            onClick: archiveReport,
-          },
-          managePermissions: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
-            title: "Manage Permissions",
-            onClick: openPermissionsEditorDialog,
-          },
-          publish: {
-            isAvailable:
-              !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
-            title: "Publish",
-            onClick: publishReport,
-          },
-          unpublish: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
-            title: "Unpublish",
-            onClick: unpublishReport,
-          },
-        },
-        {
-          showAPIKey: {
-            isAvailable: !queryFlags.isNew,
-            title: "Show API Key",
-            onClick: openApiKeyDialog,
+          downloadTSV: {
+            isAvailable: true,
+            title: "Download as TSV",
+            onClick: () => {document.querySelector("#export-data-tsv").click()},
           },
         },
       ]),
@@ -359,14 +388,88 @@ export default function ReportPageHeader(props) {
   );
 
   useEffect(() => {
+    updateReport(report, { successMessage: null });
+  }, [report.expression, window.location.hash]);
+
+  useEffect(() => {
     if (report.isJustLanded) {
-      handleColorChange(report.color_1, 2, null);
-      handleColorChange(report.color_2, 1, null);
-      onChangeDataSource(report.data_source_id);
-      handleModelChange(report.model_id);
-      handleIdChange(report.id);
+      if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1, null);
+      if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2, null);
+      if (report.data_source_id !== selectedDataSource) handleDataSourceChange(report.data_source_id);
+      if (report.model_id !== selectedModel) handleModelChange(report.model_id);
+      if (report.name !== reportName) setReportName(report.name);
+      if (report.id !== props.report.id) handleIdChange(report.id);
+      setPriceButton(
+        Number(localStorage.getItem(`${window.location.pathname}-price`)), 
+        Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 
+        false);
+      setTimeout(() => {
+        handleReportChanged(false);
+      }, 333);
     }
   }, [report.name]);
+  
+  useEffect(() => {
+    if (window.location.href.indexOf("4/") > -1) {
+      setCurrentHash(window.location.hash);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!currentHash) return;
+    if (!dataSources) return;
+
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
+    const setData = async (dataSourceId, model_id) => {
+      if (signal.aborted) return;
+      await handleDataSourceChange(dataSourceId, signal);
+      if (signal.aborted) return;
+      await handleModelChange(model_id, signal)
+        .then(() => {
+          if (signal.aborted) return;
+          setTimeout(() => {
+            window.location.hash = currentHash;
+            setCurrentHash(null);
+          }, 133);
+        });
+    }
+
+    const baseDataSource = currentHash.split("/")[0].replace("#", "");
+    for (let i = 0; i < dataSources.length; i++) {
+      const dataSource = dataSources[i];
+      const tables = dataSource.tables;
+      const table_ids = dataSource.table_ids;
+      for (let i = 0; i < tables.length; i++) {
+        if (tables[i] === baseDataSource) {
+          setData(dataSource.id, table_ids[i]);
+          return;
+        }
+      }
+    }
+
+    return () => {
+      abortController.abort();
+    }
+  }, [dataSourcesLoaded]);
+
+  useEffect(() => {
+    if (dataSourcesLoaded && !selectedDataSource) {
+      if (dataSources.length) {
+        handleDataSourceChange(dataSources[0].id);
+      }
+    }
+  }, [dataSourcesLoaded]);
+
+  useEffect(() => {
+    if (modelsLoaded && !selectedModel) {
+      if (models.length) {
+        handleModelChange(models[0].id);
+        replaceHash(models[0], window.location.hash.split("/4/")[1]);
+      }
+    }
+  }, [modelsLoaded]);
 
   return (
     <div className="report-page-header">
@@ -375,100 +478,121 @@ export default function ReportPageHeader(props) {
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={report} />}
             <h3>
-              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={report.name} />
+              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={reportName} />
             </h3>
           </div>
+        </div>
+        <div className="query-tags">
+          <QueryTagsControl
+            tags={report.tags}
+            isDraft={queryFlags.isDraft}
+            isArchived={queryFlags.isArchived}
+            canEdit={queryFlags.canEdit}
+            getAvailableTags={getQueryTags}
+            onEdit={updateTags}
+            tagsExtra={props.tagsExtra}
+          />
         </div>
       </div>
       <div className="header-actions">
         {props.headerExtra}
         <div>
-          <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={handlePriceReport}>
+          <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={() => handleGivenModal("meta-modal")}>
             <span className="icon icon-ribbon m-r-5"></span>Meta
           </Button>
-          <ul id="meta-modal" className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical" role="menu"
-            onClick={(e) => e.stopPropagation()}>
-            <li className="ant-menu-item modal-left" role="menuitem">
-              <p id="_price" alt="0">Price: 0</p>         
-            </li>
-            <li className="ant-menu-item modal-right" role="menuitem">
-              <p id="_proceed_data" alt="0">Bytes: 0</p>
-            </li>
-          </ul>
-        </div>
-        <div style={ styles.swatch } onClick={ () => handleClick(1) }>
-          Text chart color: <div style={ styles.color } />
-        </div>
-        <div style={ styles.swatch } onClick={ () => handleClick(2) }>
-          Chart color: <div style={ styles.colorBody } />
-        </div>
-        { displayColorPicker === 1 ? <div style={ styles.popover }>
-          <div style={ styles.cover } onClick={ handleClose }/>
-          <SketchPicker color={ colorText } onChangeComplete={ (color) => handleColorChange(color, 1) } />
-          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
-        </div> : null }
-        { displayColorPicker === 2 ? <div style={ styles.popover }>
-          <div style={ styles.cover } onClick={ handleClose }/>
-          <SketchPicker color={ colorBody } onChangeComplete={ (color) => handleColorChange(color, 2) } />
-          <button style={{ margin: "10px" }} onClick={ handleClose }>Close</button>
-        </div> : null }
-        {dataSourcesLoaded && (
-          <div className="data-source-box m-r-10">
-            <span className="icon icon-datasource m-r-5"></span>
-            <Select
-              data-test="SelectDataSource"
-              placeholder="Choose base data source..."
-              value={report ? report.data_source_id : undefined}
-              disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
-              loading={!dataSourcesLoaded}
-              optionFilterProp="data-name"
-              showSearch
-              onChange={onChangeDataSource}>
-              {map(dataSources, ds => (
-                <Select.Option
-                  key={`ds-${ds.id}`}
-                  value={ds.id}
-                  data-name={ds.name}
-                  data-test={`SelectDataSource${ds.id}`}>
-                  <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
-                  <span>{ds.name}</span>
-                </Select.Option>
-              ))}
-            </Select>
+              <ul
+                id="meta-modal"
+                className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+                role="menu"
+                onClick={e => e.stopPropagation()}>
+                <div style={styles.cover} onClick={() => handleGivenModal("meta-modal")} />
+                <li className="ant-menu-item modal-left" role="menuitem">
+                  <p id="_price" alt="0">
+                    Price: 0
+                  </p>
+                </li>
+                <li className="ant-menu-item modal-right" role="menuitem">
+                  <p id="_proceed_data" alt="0">
+                    Bytes: 0
+                  </p>
+                </li>
+              </ul>
           </div>
-        )}
+        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
+          <span style={styles.colorSpanElement}>Text</span>
+          <div style={styles.color} />
+        </Button>
+        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(2)}>
+          <span style={styles.colorSpanElement}>Chart</span>
+          <div style={styles.colorBody} />
+        </Button>
+        {displayColorPicker === 1 ? (
+          <div style={styles.popover}>
+            <div style={styles.cover} onClick={handleClose} />
+            <SketchPicker color={colorTextHex} onChangeComplete={color => handleColorChange(color, 1)} />
+          </div>
+        ) : null}
+        {displayColorPicker === 2 ? (
+          <div style={styles.popoverSecond}>
+            <div style={styles.cover} onClick={handleClose} />
+            <SketchPicker color={colorBodyHex} onChangeComplete={color => handleColorChange(color, 2)} />
+          </div>
+        ) : null}
+        <div className="data-source-box m-r-10">
+          <span className="icon icon-datasource m-r-5"></span>
+          <Select
+            data-test="SelectDataSource"
+            placeholder="Choose base data source..."
+            value={selectedDataSource}
+            disabled={(!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
+            loading={!dataSourcesLoaded}
+            optionFilterProp="data-name"
+            showSearch
+            onChange={handleDataSourceChange}>
+            {map(dataSources, ds => (
+              <Select.Option
+                key={`ds-${ds.id}`}
+                value={ds.id}
+                data-name={ds.name}
+                data-test={`SelectDataSource${ds.id}`}>
+                <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
+                <span>{ds.name}</span>
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
         <div className="data-source-box m-r-10">
           <span className="icon icon-datasource m-r-5"></span>
           <Select
             data-test="SelectModel"
             placeholder="Choose model data source..."
-            value={report.model_id}
-            disabled={!reportFlags.canEdit || modelsLoaded || models.length === 0}
-            loading={modelsLoaded}
+            id="model-data-source"
+            value={report ? report.model_id : undefined} 
+            disabled={(report.id || (!reportFlags.canEdit || !modelsLoaded || models.length === 0)) ? true : false}
+            loading={!modelsLoaded}
             optionFilterProp="data-name"
             showSearch
-            onChange={handleModelChange}>
+            ref={modelSelectElement}
+            onChange={handleModelChange}> 
             {map(models, m => (
-              <Select.Option
-                key={`ds-${m.id}`}
-                value={m.id}
-                data-name={m.name}
-                data-test={`SelectModel${m.id}`}>
+              <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
                 <span>{m.name}</span>
               </Select.Option>
             ))}
           </Select>
         </div>
-        <Button className="m-r-5" id="_handleSaveReport" onClick={handleSaveReport}>
-          <span className="icon icon-save-floppy-disc m-r-5"></span> Save Report
-        </Button>
-        {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
-          <Button className="m-r-5" onClick={publishReport}>
-            <i className="fa fa-paper-plane m-r-5" /> Publish
+        {isDesktop && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
+            <Button className="m-r-5" onClick={archiveReport}>
+              <i className="fa fa-paper-plane m-r-5" /> Archive
+            </Button>
+        )}
+        {!queryFlags.isNew && queryFlags.canEdit && (
+          <Button className="m-r-5" onClick={handleDeleteReport}>
+            <i className="fa fa-trash m-r-5" /> Delete
           </Button>
         )}
 
-        {!queryFlags.isNew && queryFlags.canViewSource && (
+        {!queryFlags.isNew && (
           <span>
             {!props.sourceMode && (
               <Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
@@ -478,14 +602,31 @@ export default function ReportPageHeader(props) {
             )}
           </span>
         )}
-
-        {!queryFlags.isNew && (
-          <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
-            <Button>
-              <Icon type="ellipsis" rotate={90} />
+          <Button disabled={!reportChanged} className="m-r-5" id="_handleSaveReport" onClick={() => handleSaveReport()}>
+            <span className="icon icon-save-floppy-disc m-r-5"></span> Save
+          </Button>
+        {(report.id) && (
+          <>
+            <Button className="m-r-5" id="_handleSaveAs" onClick={() => handleGivenModal("save-as-ul")}>
+              Save as...
             </Button>
-          </Dropdown>
-        )}
+            <ul
+              id="save-as-ul"
+              className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+              role="menu"
+              onClick={e => e.stopPropagation()}
+            >
+              <p className="new-name-label">name</p>
+              <input className="new-name-input" type="text" value={newName} onChange={handleNewNameChange} />
+              <Button className="ant-menu-item-group-title" onClick={() => saveAsReport(newName)}>Save now</Button>
+            </ul>
+          </>
+        )}         
+        <Dropdown disabled={(report.id || report.model_id) ? false : true} overlay={moreActionsMenu} trigger={["click"]}>
+          <Button>
+            <Icon type="ellipsis" rotate={90} />
+          </Button>
+        </Dropdown>
       </div>
     </div>
   );
@@ -502,8 +643,10 @@ ReportPageHeader.propTypes = {
   selectedVisualization: PropTypes.number,
   headerExtra: PropTypes.node,
   tagsExtra: PropTypes.node,
-  onChangeColor: PropTypes.func
-};
+  onChangeColor: PropTypes.func,
+  reportChanged: any,
+  setReportChanged: PropTypes.func,
+}
 
 ReportPageHeader.defaultProps = {
   dataSource: null,
@@ -511,5 +654,7 @@ ReportPageHeader.defaultProps = {
   selectedVisualization: null,
   headerExtra: null,
   tagsExtra: null,
-  onChangeColor: () => {}
-};
+  onChangeColor: () => {},
+  reportChanged: null,
+  setReportChanged: () => {},
+}

@@ -48,11 +48,12 @@
   "scripts": {
     "watch": "nodemon",
     "prepare": "./compile && tdi -q",
-    "build": "./compile && tdi -q",
+    "build": "./compile && tdi -q && echo \"Plywood Client Built!\"",
     "compile": "./compile",
     "pretest": "./compile",
     "test": "./travis-test",
-    "full-test": "./run-tests"
+    "full-test": "./run-tests",
+    "clear": "rm -rf ./dist/ && rm -rf ./build/"
   },
   "nodemonConfig": {
     "ext": "*.ts,*.json,*.js",

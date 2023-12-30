@@ -27,7 +27,7 @@ def _wait_for_db_connection(db):
 
         retried = True
 
- 
+
 def is_db_empty():
     from redash.models import db
 

@@ -1,895 +1,903 @@
 BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE = {
   "attributes": [
-    {
-      "name": "transactions_moneytransaction",
-      "type": "DATASET"
-    },
-    {
-      "name": "MillisecondsInInterval",
-      "type": "NUMBER"
-    },
-    {
-      "name": "amount",
-      "type": "NUMBER"
-    },
-    {
-      "name": "SPLIT",
-      "type": "DATASET"
-    }
+      {
+          "name": "transactions_moneytransaction",
+          "type": "DATASET"
+      },
+      {
+          "name": "MillisecondsInInterval",
+          "type": "NUMBER"
+      },
+      {
+          "name": "amount",
+          "type": "NUMBER"
+      },
+      {
+          "name": "SPLIT",
+          "type": "DATASET"
+      }
   ],
   "data": [
-    {
-      "SPLIT": {
-        "keys": [
-          "full_name"
-        ],
-        "attributes": [
-          {
-            "name": "full_name",
-            "type": "STRING"
-          },
-          {
-            "name": "amount",
-            "type": "NUMBER"
-          },
-          {
-            "name": "transactions_moneytransaction",
-            "type": "DATASET"
-          },
-          {
-            "name": "SPLIT",
-            "type": "DATASET"
-          }
-        ],
-        "data": [
-          {
-            "SPLIT": {
+      {
+          "SPLIT": {
               "keys": [
-                "date"
+                  "full_name"
               ],
               "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
+                  {
+                      "name": "full_name",
+                      "type": "STRING"
+                  },
+                  {
+                      "name": "amount",
+                      "type": "NUMBER"
+                  },
+                  {
+                      "name": "transactions_moneytransaction",
+                      "type": "DATASET"
+                  },
+                  {
+                      "name": "SPLIT",
+                      "type": "DATASET"
+                  }
               ],
               "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Spencer Logan",
+                      "amount": 46273
                   },
-                  "amount": 9129,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Randal Patton",
+                      "amount": 45809
                   },
-                  "amount": 6037,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Trevor Ramey",
+                      "amount": 45706
                   },
-                  "amount": 4305,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Sherry Etheridge",
+                      "amount": 44827
                   },
-                  "amount": 6484,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Lawrence Hudson",
+                      "amount": 44087
                   },
-                  "amount": 9373,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Brenda Gillespie",
+                      "amount": 43374
                   },
-                  "amount": 9401,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Jeffery Wilson",
+                      "amount": 42893
                   },
-                  "amount": 1544,
-                  "MillisecondsInInterval": 3600000
-                }
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Anderson Lemaster",
+                      "amount": 42828
+                  },
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Eleanor Martinez",
+                      "amount": 42748
+                  },
+                  {
+                      "SPLIT": {
+                          "keys": [
+                              "date"
+                          ],
+                          "attributes": [
+                              {
+                                  "name": "date",
+                                  "type": "TIME_RANGE"
+                              },
+                              {
+                                  "name": "amount",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "MillisecondsInInterval",
+                                  "type": "NUMBER"
+                              },
+                              {
+                                  "name": "public.wikiticker",
+                                  "type": "DATASET"
+                              }
+                          ],
+                          "data": [
+                              {
+                                  "date": {
+                                      "start": "2021-10-16T00:00:00.0Z",
+                                      "end": "2021-10-17T00:00:00.0Z"
+                                  },
+                                  "amount": 3767,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-17T00:00:00.0Z",
+                                      "end": "2021-10-18T00:00:00.0Z"
+                                  },
+                                  "amount": 9370,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-18T00:00:00.0Z",
+                                      "end": "2021-10-19T00:00:00.0Z"
+                                  },
+                                  "amount": 7550,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-19T00:00:00.0Z",
+                                      "end": "2021-10-20T00:00:00.0Z"
+                                  },
+                                  "amount": 7308,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-20T00:00:00.0Z",
+                                      "end": "2021-10-21T00:00:00.0Z"
+                                  },
+                                  "amount": 7619,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-21T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:00.0Z"
+                                  },
+                                  "amount": 5548,
+                                  "MillisecondsInInterval": 3600000
+                              },
+                              {
+                                  "date": {
+                                      "start": "2021-10-22T00:00:00.0Z",
+                                      "end": "2021-10-22T00:00:01.0Z"
+                                  },
+                                  "amount": 1217,
+                                  "MillisecondsInInterval": 3600000
+                              }
+                          ]
+                      },
+                      "full_name": "Sara Green",
+                      "amount": 42379
+                  }
               ]
-            },
-            "full_name": "Spencer Logan",
-            "amount": 46273
           },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 9085,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 5719,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 9646,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 9257,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 4096,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
-                  },
-                  "amount": 6182,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
-                  },
-                  "amount": 1824,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Randal Patton",
-            "amount": 45809
-          },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 7297,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 10722,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 4164,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 7806,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 7306,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
-                  },
-                  "amount": 7860,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
-                  },
-                  "amount": 551,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Trevor Ramey",
-            "amount": 45706
-          },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 7503,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 10135,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 5502,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 8569,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 6599,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
-                  },
-                  "amount": 4915,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
-                  },
-                  "amount": 1604,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Sherry Etheridge",
-            "amount": 44827
-          },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 6513,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 5494,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 7993,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 3865,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 8991,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
-                  },
-                  "amount": 8022,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
-                  },
-                  "amount": 3209,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Lawrence Hudson",
-            "amount": 44087
-          },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 7387,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 3994,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 10664,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 6931,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 5112,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
-                  },
-                  "amount": 7332,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
-                  },
-                  "amount": 1954,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Brenda Gillespie",
-            "amount": 43374
-          },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 5253,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 6891,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 9064,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 6967,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 5931,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
-                  },
-                  "amount": 7609,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
-                  },
-                  "amount": 1178,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Jeffery Wilson",
-            "amount": 42893
-          },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 6800,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 7294,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 3539,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 6532,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 8123,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
-                  },
-                  "amount": 9882,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
-                  },
-                  "amount": 658,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Anderson Lemaster",
-            "amount": 42828
-          },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 13017,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 8383,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 6281,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 8064,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 5292,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:01.0Z"
-                  },
-                  "amount": 1711,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Eleanor Martinez",
-            "amount": 42748
-          },
-          {
-            "SPLIT": {
-              "keys": [
-                "date"
-              ],
-              "attributes": [
-                {
-                  "name": "date",
-                  "type": "TIME_RANGE"
-                },
-                {
-                  "name": "amount",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "MillisecondsInInterval",
-                  "type": "NUMBER"
-                },
-                {
-                  "name": "public.wikiticker",
-                  "type": "DATASET"
-                }
-              ],
-              "data": [
-                {
-                  "date": {
-                    "start": "2021-10-16T00:00:00.0Z",
-                    "end": "2021-10-17T00:00:00.0Z"
-                  },
-                  "amount": 3767,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-17T00:00:00.0Z",
-                    "end": "2021-10-18T00:00:00.0Z"
-                  },
-                  "amount": 9370,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-18T00:00:00.0Z",
-                    "end": "2021-10-19T00:00:00.0Z"
-                  },
-                  "amount": 7550,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-19T00:00:00.0Z",
-                    "end": "2021-10-20T00:00:00.0Z"
-                  },
-                  "amount": 7308,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-20T00:00:00.0Z",
-                    "end": "2021-10-21T00:00:00.0Z"
-                  },
-                  "amount": 7619,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-21T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:00.0Z"
-                  },
-                  "amount": 5548,
-                  "MillisecondsInInterval": 3600000
-                },
-                {
-                  "date": {
-                    "start": "2021-10-22T00:00:00.0Z",
-                    "end": "2021-10-22T00:00:01.0Z"
-                  },
-                  "amount": 1217,
-                  "MillisecondsInInterval": 3600000
-                }
-              ]
-            },
-            "full_name": "Sara Green",
-            "amount": 42379
-          }
-        ]
-      },
-      "MillisecondsInInterval": 604800000,
-      "amount": 824683,
-      "transactions_moneytransaction": 824683
-    }
+          "MillisecondsInInterval": 604800000,
+          "amount": 824683.0,
+          "transactions_moneytransaction": 824683
+      }
   ]
 }
 

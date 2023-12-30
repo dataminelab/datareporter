@@ -35,8 +35,8 @@
     @include ellipsis;
     display: block;
     pointer-events: auto;
-    height: $input-height;
-    padding: 8px 22px 0 6px;
+    height: 100%;
+    padding: 8px 22px 8px 6px;
   }
 
   .dropdown-label {

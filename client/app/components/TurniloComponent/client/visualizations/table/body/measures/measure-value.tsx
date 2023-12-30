@@ -36,6 +36,7 @@ interface MeasureValueProps {
 export const MeasureValue: React.SFC<MeasureValueProps> = props => {
   const { series, datum, scale, highlight, showPrevious, cellWidth, lastLevel, report } = props;
   const colorText = report ? report.colorText : null
+  const colorBody = report ? report.colorBody : null
   const currentValue = series.selectValue(datum);
 
   const currentCell = <MeasureCell
@@ -56,14 +57,14 @@ export const MeasureValue: React.SFC<MeasureValueProps> = props => {
   return <React.Fragment>
     {currentCell}
     <MeasureCell
-      color={report.colorText}
+      color={colorText}
       key={series.reactKey(SeriesDerivation.PREVIOUS)}
       width={cellWidth}
       value={series.formatValue(datum, SeriesDerivation.PREVIOUS)}>
-      {lastLevel && <MeasureBackground backgroundColor={report.colorBody}  highlight={highlight} width={scale(previousValue)} />}
+      {lastLevel && <MeasureBackground backgroundColor={colorBody}  highlight={highlight} width={scale(previousValue)} />}
     </MeasureCell>
     <MeasureCell
-      color={report.colorText}
+      color={colorText}
       width={cellWidth}
       key={series.reactKey(SeriesDerivation.DELTA)}
       value={<Delta

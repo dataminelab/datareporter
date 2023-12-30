@@ -162,6 +162,10 @@ GOOGLE_CLIENT_ID = os.environ.get("REDASH_GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("REDASH_GOOGLE_CLIENT_SECRET", "")
 GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
 
+GOOGLE_PRODUCT_ID = os.environ.get("REDASH_GOOGLE_PROJECT_ID", "")
+GOOGLE_PUBSUB_WORKER_TOPIC_ID = os.environ.get("REDASH_GOOGLE_PUBSUB_WORKER_TOPIC_ID", "")
+WORKER_NOTIFY_URL = os.environ.get("REDASH_WORKER_NOTIFY_URL", "")
+
 # If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
 # even if your actual Redash URL scheme is HTTPS. This will cause Flask to build
 # the SAML redirect URL incorrect thus failing auth. This is especially common if
@@ -528,3 +532,7 @@ MAILCHIMP_SERVER = os.environ.get("MAILCHIMP_SERVER")
 MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY")
 
 MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
+
+REDASH_DEBUG = parse_boolean(os.environ.get("REDASH_DEBUG", "False"))
+
+CLIENT_TIMEOUT_DELTA = int(os.environ.get("CLIENT_TIMEOUT_DELTA", 0))

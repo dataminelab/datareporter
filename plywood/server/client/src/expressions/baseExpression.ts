@@ -112,6 +112,12 @@ export interface ComputeOptions extends Environment {
   maxRows?: number;
   maxComputeCycles?: number;
   concurrentQueryLimit?: number;
+  others?: any;
+}
+
+interface timeRangeElement {
+  start: string;
+  end: string;
 }
 
 export interface AlterationFillerPromise {
@@ -277,6 +283,8 @@ export interface ExpressionJS {
   outputType?: PlyTypeSimple;
   tuning?: string;
   sql?: string;
+  currElement?: timeRangeElement;
+  prevElement?: timeRangeElement;
 }
 
 export interface ExtractAndRest {
@@ -313,13 +321,19 @@ function getString(param: string | Expression): string {
   if (param instanceof RefExpression && param.nest === 0) {
     return param.name;
   }
+  if (typeof param === 'object' && param !== null) {
+    return param.toString();
+  }
   throw new Error('could not extract a string out of ' + String(param));
 }
 
-function getNumber(param: number | Expression): number {
+function getNumber(param: number | Expression | Duration): number {
   if (typeof param === 'number') return param;
   if (param instanceof LiteralExpression && param.type === 'NUMBER') {
     return param.value;
+  }
+  if (param instanceof Duration && param.spans) {
+    return parseInt(param.spans.year.toString());
   }
   throw new Error('could not extract a number out of ' + String(param));
 }
@@ -697,6 +711,8 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
   public type: PlyType;
   public simple: boolean;
   public options?: Record<string, any>;
+  public currElement?: timeRangeElement;
+  public prevElement?: timeRangeElement;
 
   constructor(parameters: ExpressionValue, dummy: any = null) {
     this.op = parameters.op;
@@ -705,6 +721,16 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     }
     if (parameters.simple) this.simple = true;
     if (parameters.options) this.options = parameters.options;
+  }
+  
+  public setCurrElement(elements: [timeRangeElement]): void {
+    if (!elements.length) throw new Error('elements must be a non-empty array');
+    this.currElement = elements[0];
+  }
+
+  public setPrevElement(elements: [timeRangeElement]): void {
+    if (!elements.length) throw new Error('elements must be a non-empty array');
+    this.prevElement = elements[0];
   }
 
   protected _ensureOp(op: string) {
@@ -730,6 +756,8 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
   public toJS(): ExpressionJS {
     let js: ExpressionJS = { op: this.op };
     if (this.options) js.options = this.options;
+    if (this.currElement) js.currElement = this.currElement;
+    if (this.prevElement) js.prevElement = this.prevElement; 
     return js;
   }
 
@@ -1846,7 +1874,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
       fillExpressionExternalAlteration(readyExternals, (external, terminal) => {
         if (queries < maxQueries) {
           queries++;
-          return external.simulateValue(terminal, simulatedQueryGroup);
+          return external.simulateValue(terminal, simulatedQueryGroup, null, options);
         } else {
           queries++;
           return null; // Query limit reached, don't do any more queries.

@@ -11,7 +11,7 @@ export const responseShape = (req: Request, res: Response) => {
     const ex = Expression.fromJS(expression);
     const external = External.fromJS(context);
 
-    const shape = ex.simulate({ [dataCube]: external })
+    const shape = ex.simulate({ [dataCube]: external }, {others: expression});
 
     res
         .status(httpStatus.OK)

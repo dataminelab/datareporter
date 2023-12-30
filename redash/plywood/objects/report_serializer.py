@@ -25,10 +25,11 @@ class Progress:
         self.results = results
 
     def dict(self):
+        total = self.jobs + self.results or 1
         return {
             'all': self.jobs + self.results,
             'results': self.results,
-            'progress': int(self.results / (self.jobs + self.results) * 100),
+            'progress': int(self.results / total * 100),
         }
 
 
@@ -42,6 +43,7 @@ class ReportSerializer:
         status: int = 200,
         data: Optional[Union[PlywoodValue, dict]] = None,
         meta: Optional[ReportMetaData] = None,
+        expression_queries: Optional[List[dict]] = None,
     ):
         self.queries = queries
         self.failed = failed
@@ -49,6 +51,7 @@ class ReportSerializer:
         self.status = status
         self.data = data
         self.meta = meta
+        self.expression_queries = expression_queries
 
     def _get_progress(self) -> Progress:
         jobs = 0
@@ -63,7 +66,6 @@ class ReportSerializer:
         return Progress(jobs=jobs, results=query_result)
 
     def serialized(self) -> dict:
-        progress = self._get_progress()
         data = None
 
         if self.data:
@@ -72,6 +74,7 @@ class ReportSerializer:
             else:
                 data = self.data.dict()
 
+        progress = self._get_progress()
         return {
             'data': data,
             'status': self.status,
@@ -79,5 +82,6 @@ class ReportSerializer:
             'failed': self.failed,
             'meta': self.meta.to_dict() if self.meta else None,
             'shape': self.shape,
-            'progress': self._get_progress().dict(),
+            'progress': progress.dict(),
+            "expression_queries": self.expression_queries,
         }

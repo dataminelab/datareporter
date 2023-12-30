@@ -9,51 +9,6 @@ from redash.plywood.objects.report_serializer import ReportMetaData
 from redash.plywood.plywood import PlywoodApi
 from redash.utils.big_query_utils import get_price_for_query
 
-"""
-Example config
-{
-            "appSettings": {
-                "dataCubes": [
-                    {
-                        "name": "customer",
-                        "title": "Customer",
-                        "timeAttribute": "last_update",
-                        "clusterName": "native",
-                        "defaultSortMeasure": "active",
-                        "defaultSelectedMeasures": [
-                            "active"
-                        ],
-                        "attributes": [
-                            {
-                                "name": "active",
-                                "type": "NUMBER",
-                                "nativeType": "INTEGER"
-                            }
-                        ],
-                        "dimensions": [
-                            {
-                                "name": "activebool",
-                                "title": "Activebool",
-                                "formula": "$activebool",
-                                "kind": "BOOLEAN"
-                            }
-                        ],
-                        "measures": [
-                            {
-                                "name": "active",
-                                "title": "Active",
-                                "formula": "$main.sum($active)"
-                            }
-                        ]
-                    }
-                ],
-                "clusters": [],
-                "customization": {}
-            },
-                "timekeeper": {}
-        }
-"""
-
 
 def lower_kind(obj: dict):
     for v in obj['dimensions']:
@@ -73,14 +28,14 @@ class DataCube:
             return "IS NULL"
         elif self.ply_engine == 'mysql':
             return "IS NULL"
-
+        elif self.ply_engine == 'athena':
+            return "IS NULL"
         return "IS NULL"
 
     def get_meta(self, queries: List[dict]) -> ReportMetaData:
         meta = ReportMetaData()
         if self.ply_engine == 'athena':
             for query in queries:
-
                 meta_data = query['query_result']['data']['metadata']
 
                 if 'query_cost' in meta_data:
@@ -134,6 +89,8 @@ class DataCube:
 
     @property
     def data_cube(self, lower_case_kind=True):
+        if not self._model.config:
+            return None
         data_cube = pydash.head(self.config["dataCubes"])
 
         if lower_case_kind:

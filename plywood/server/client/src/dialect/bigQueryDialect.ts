@@ -96,26 +96,22 @@ export class BigQueryDialect extends SQLDialect {
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     if (duration.toString() == "P1W") {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}',
-          DATETIME_TRUNC(
-            CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
-          , WEEK)
-        )`,
-        timezone,      
+        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), WEEK))`, 
+        timezone
+      );
+    } else if (duration.toString() == "P1Y") {
+      return this.walltimeToUTC(
+        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), YEAR))`, 
+        timezone
       );
     } else if (duration.toString() == "P3M") {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}',
-          DATETIME_TRUNC(
-            CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME)
-          , QUARTER)
-        )`,
+        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), QUARTER))`,
         timezone,      
       );
     } else {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}', 
-          CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
+        `FORMAT_DATETIME('${bucketFormat}', CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME))`,
         timezone,
       );
     }
@@ -153,34 +149,34 @@ export class BigQueryDialect extends SQLDialect {
     if (step === 0) return operand;
 
     // https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime_add
-    let sqlFn = step > 0 ? 'DATETIME_ADD(' : 'DATETIME_SUB(';
+    let sqlFn = step > 0 ? 'TIMESTAMP(DATE_ADD(DATE(' : 'TIMESTAMP(DATE_SUB(DATE(';
     let spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
-      operand = sqlFn + operand + ', INTERVAL ' + String(spans.week) + ' WEEK)';
+      operand = sqlFn + operand + "), INTERVAL " + String(spans.week) + " WEEK))";
     }
     if (spans.month) {
       let expr = String(spans.month);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " MONTH)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " MONTH))";
     }
     if (spans.year) {
       let expr = String(spans.year);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " YEAR)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " YEAR))";
     }
     if (spans.day) {
       let expr = String(spans.day);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " DAY)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " DAY))";
     }
     if (spans.hour) {
       let expr = String(spans.hour);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " HOUR)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " HOUR))";
     }
     if (spans.minute) {
       let expr = String(spans.minute);
-      operand = sqlFn + operand + ", INTERVAL " + expr + " MINUTE)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " MINUTE))";
     }
     if (spans.second) {
       let expr = spans.second;
-      operand = sqlFn + operand + ", INTERVAL " + expr + " SECOND)";
+      operand = sqlFn + operand + "), INTERVAL " + expr + " SECOND))";
     }
     return operand;
   }
@@ -197,7 +193,6 @@ export class BigQueryDialect extends SQLDialect {
   }
 
   public walltimeToUTC(operand: string, timezone: Timezone): string {
-    // todo figure out timezone witchcraft
     return operand;
   }
 }

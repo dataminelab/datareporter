@@ -43,13 +43,6 @@ function collectParams(parts) {
   return parameters;
 }
 
-function uuidv4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
-
 export class Report {
   constructor(report) {
     extend(this, report);
@@ -417,10 +410,19 @@ const ReportService = {
   report: params => axios.get("api/reports", { params }).then(mapResults),
   get: data => axios.get("api/reports/" + data.id).then(getReport),
   save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
-  delete: data => axios.delete(`api/reports/${data.id}`),
+  saveAs: data => axios.post("api/reports", data).then(getReport),
+  delete: data => axios.delete(`api/reports/${data.id}`)
+    .then(() => {
+      window.location.href = '/reports';
+    }),
   recent: params => axios.get(`api/reports/recent`, { params }).then(data => map(data, getReport)),
-  archive: params => axios.get(`api/reports/archive`, { params }).then(mapResults),
-  myReports: params => axios.get("api/reports/my", { params }).then(mapResults),
+  archive: params => axios.get(`api/reports/archive`, { params })
+    .then(mapResults),
+  archiveReport: params => axios.delete(`api/reports/archive`, { params })
+    .then(() => {
+      window.location.href = '/reports/archive';
+    }),
+  myReports: params => axios.get("api/reports?type=my", { params }).then(mapResults),
   fork: ({ id }) => axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
   resultById: data => axios.get(`api/reports/${data.id}/results.json`),
   asDropdown: data => axios.get(`api/reports/${data.id}/dropdown`),

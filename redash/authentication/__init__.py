@@ -1,16 +1,16 @@
 import hashlib
-import hmac
 import logging
 import time
+import hmac
 from urllib.parse import urlsplit, urlunsplit
 
 from flask import jsonify, redirect, request, url_for
 from flask_login import LoginManager, login_user, logout_user, user_logged_in
 from redash import models, settings
-from redash.authentication import jwt_auth
 from redash.authentication.org_resolving import current_org
 from redash.settings.organization import settings as org_settings
 from redash.tasks import record_event
+from redash.authentication import jwt_auth
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import Unauthorized
 
@@ -34,7 +34,6 @@ def get_login_url(external=False, next="/"):
 def sign(key, path, expires):
     if not key:
         return None
-
     h = hmac.new(key.encode(), msg=path.encode(), digestmod=hashlib.sha1)
     h.update(str(expires).encode())
 
@@ -66,6 +65,8 @@ def request_loader(request):
         user = hmac_load_user_from_request(request)
     elif settings.AUTH_TYPE == "api_key":
         user = api_key_load_user_from_request(request)
+    elif settings.AUTH_TYPE == "jwt" or org_settings["auth_jwt_login_enabled"]:
+        user = jwt_token_load_user_from_request(request)
     else:
         logger.warning(
             "Unknown authentication type ({}). Using default (HMAC).".format(
@@ -73,9 +74,6 @@ def request_loader(request):
             )
         )
         user = hmac_load_user_from_request(request)
-
-    if org_settings["auth_jwt_login_enabled"] and user is None:
-        user = jwt_token_load_user_from_request(request)
     return user
 
 
@@ -209,7 +207,6 @@ def log_user_logged_in(app, user):
         "user_agent": request.user_agent.string,
         "ip": request.remote_addr,
     }
-
     record_event.delay(event)
 
 

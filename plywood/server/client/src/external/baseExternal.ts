@@ -64,6 +64,7 @@ import {
   SplitExpression,
   TimeBucketExpression,
   TimeFloorExpression,
+  ComputeOptions,
 } from '../expressions/index';
 import { ReadableError } from '../helper/streamBasics';
 import { StreamConcat } from '../helper/streamConcat';
@@ -1552,11 +1553,11 @@ export abstract class External {
     });
   }
 
-  public getQueryFilter(): Expression {
+  public getQueryFilter(): Expression { 
     let filter = this.inlineDerivedAttributes(this.filter).simplify();
 
-    if (filter instanceof RefExpression && !this.capability('filter-on-attribute')) {
-      filter = filter.is(true);
+    if (filter instanceof RefExpression) {
+      filter = filter.is(true)
     }
 
     return filter;
@@ -1614,6 +1615,7 @@ export abstract class External {
     lastNode: boolean,
     simulatedQueries: any[],
     externalForNext: External = null,
+    options: ComputeOptions = {},
   ): PlywoodValue | TotalContainer {
     const { mode } = this;
 
@@ -1621,10 +1623,10 @@ export abstract class External {
 
     let delegate = this.getDelegate();
     if (delegate) {
-      return delegate.simulateValue(lastNode, simulatedQueries, externalForNext);
+      return delegate.simulateValue(lastNode, simulatedQueries, externalForNext, options);
     }
 
-    simulatedQueries.push(this.getQueryAndPostTransform().query);
+    simulatedQueries.push(this.getQueryAndPostTransform(options?.others).query);
 
     if (mode === 'value') {
       let valueExpression = this.valueExpression;
@@ -1665,7 +1667,7 @@ export abstract class External {
     });
   }
 
-  public getQueryAndPostTransform(): QueryAndPostTransform<any> {
+  public getQueryAndPostTransform(timeRanges:any=null): QueryAndPostTransform<any> {
     throw new Error('can not call getQueryAndPostTransform directly');
   }
 

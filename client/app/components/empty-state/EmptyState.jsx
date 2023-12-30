@@ -12,12 +12,19 @@ function Step({ show, completed, text, url, urlText, onClick }) {
     return null;
   }
 
+  if (completed) {
+    return (
+      <li className="done">
+        <i className="fa fa-check-circle" /> {urlText} {text}
+      </li>
+    );
+  }
+
   return (
-    <li className={classNames({ done: completed })}>
+    <li>
       <a href={url} onClick={onClick}>
-        {urlText}
-      </a>{" "}
-      {text}
+        {urlText} {text}
+      </a>
     </li>
   );
 }
@@ -42,6 +49,8 @@ function EmptyState({
   header,
   description,
   illustration,
+  illustrationType=".svg",
+  illustrationWidth="75%",
   helpLink,
   onboardingMode,
   showAlertStep,
@@ -88,9 +97,11 @@ function EmptyState({
         </h2>
         <p>{description}</p>
         <img
-          src={"/static/images/illustrations/" + illustration + ".svg"}
+          src={"/static/images/illustrations/" + illustration + illustrationType}
           alt={illustration + " Illustration"}
-          width="75%"
+          style={{
+            width: illustrationWidth
+          }}
         />
       </div>
       <div className="empty-state__steps">

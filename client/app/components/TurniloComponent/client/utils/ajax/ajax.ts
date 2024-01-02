@@ -28,7 +28,7 @@ import {
 } from "plywood";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { setPriceButton } from "../../../../../pages/reports/components/ReportPageHeaderUtils"; 
+import { setPriceButton } from "../../../../../pages/reports/components/ReportPageHeaderUtils";
 
 interface Meta {
   // Inner response object that returns two parameters:
@@ -41,6 +41,8 @@ interface APIResponse {
     status: number;
     data: DatasetJS;
 }
+
+const EmptyDataset = Dataset.fromJS([]);
 
 function getSplitsDescription(ex: Expression): string {
   const splits: string[] = [];
@@ -81,6 +83,10 @@ function reload() {
   if (reloadRequested) return;
   reloadRequested = true;
   window.location.reload();
+}
+
+function getHash() {
+  return window.location.hash ? window.location.hash.substring(window.location.hash.indexOf("4/") + 2) : "";
 }
 
 
@@ -126,20 +132,24 @@ export class Ajax {
 
   static queryUrlExecutorFactory(dataCube: DataCube): Executor {
     const timeout = clientTimeout(dataCube.cluster);
-    // @ts-ignore
-    function timeoutQuery(ms) {
+
+    function timeoutQuery(ms:number) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
-        const { data, method, timeout , url } = input;
-        data.bypass_cache = localStorage.getItem("bypass_cache") === "true";
-        localStorage.removeItem("bypass_cache");
-        const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
-        if ([1, 2].indexOf(res.status) >= 0) {
-            await timeoutQuery(2000);
-            return await subscribe(input);
-       } else return res;
+      const { data, method, timeout , url } = input;
+      data.bypass_cache = localStorage.getItem("bypass_cache") === "true";
+      localStorage.removeItem("bypass_cache");
+      const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
+      if (data.hash !== getHash()) {
+        console.log("[INFO] subscribe is killed by hash mismatch, skipping")
+        return res;
+      }
+      if ([1, 2].indexOf(res.status) >= 0) {
+        await timeoutQuery(2000);
+        return await subscribe(input);
+      } else return res;
     }
 
     async function subscribeToFilter(ex: LimitExpression, modelId: number) {
@@ -166,22 +176,18 @@ export class Ajax {
             Number(sub.meta.proceed_data),
             false);
         }
-        return Dataset.fromJS(sub.data);
-      }
-      var hash;
-      if (window.location.hash) {
-        hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
+        return Dataset.fromJS(sub.data || EmptyDataset);
       } else {
-        hash = this.hash;
-      }
-      const sub = await subscribeToSplit(hash, modelId);
-      if (sub.meta) {
-        setPriceButton(
-          Number(sub.meta.price), 
-          Number(sub.meta.proceed_data),
-          false);
-      }
-      return Dataset.fromJS(sub.data);
-    };
+        const hash = getHash() || this.hash;
+        const sub = await subscribeToSplit(hash, modelId);
+        if (sub.meta) {
+          setPriceButton(
+            Number(sub.meta.price), 
+            Number(sub.meta.proceed_data),
+            false);
+        }
+        return Dataset.fromJS(sub.data || EmptyDataset);
+      };
+    }
   }
 }

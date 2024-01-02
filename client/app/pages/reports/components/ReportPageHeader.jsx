@@ -607,7 +607,7 @@ export default function ReportPageHeader(props) {
         {showShareButton && (
             <Tooltip title="Report Sharing Options">
               <Button
-                className="icon-button m-l-5"
+                className="icon-button m-r-5"
                 type={buttonType(report.publicAccessEnabled)}
                 onClick={showShareReportDialog}
                 data-test="OpenShareForm">

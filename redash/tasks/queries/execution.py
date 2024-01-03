@@ -143,6 +143,7 @@ def _resolve_user(user_id, is_api_key, query_id):
     if user_id is not None:
         if is_api_key:
             api_key = user_id
+            query_id = metadata.get("Query ID")
             if query_id is not None:
                 q = models.Query.get_by_id(query_id)
             else:
@@ -278,7 +279,7 @@ class QueryExecutor(object):
 
 # user_id is added last as a keyword argument for backward compatability -- to support executing previously submitted
 # jobs before the upgrade to this version.
-def execute_query(
+def execute_query( # xxx
     query,
     data_source_id,
     metadata,

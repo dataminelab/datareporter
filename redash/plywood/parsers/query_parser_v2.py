@@ -184,6 +184,7 @@ class PlywoodQueryParserV2:
         # If exists second query, means it's 1 split
         if len(self._query_result) >= 2:
             self._build_first_split(shape=shape)
+            # self._build_second_split(shape=shape)
 
         # If exists second query, means it's 2 split
         if len(self._query_result) >= 3:

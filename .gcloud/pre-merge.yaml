@@ -1,0 +1,10 @@
+# .gcloud/pre-merge.yaml
+
+# Always return true example
+
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'exit 0'

@@ -369,6 +369,8 @@ class PublicReportResource(BaseResource):
             report = api_key.object
         else:
             report_id = request.args.get("report_id", None)
+            if not report_id or report_id == "null":
+                abort(400, message="Missing report_id parameter.")
             report = get_object_or_404(Report.get_by_id, report_id or self.current_user.object)
         return hash_report(report, can_edit=False)
 

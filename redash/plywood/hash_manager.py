@@ -4,6 +4,7 @@ from typing import List, Union
 
 import lzstring
 from flask_restful import abort
+from flask import url_for
 
 from redash.handlers.base import get_object_or_404
 from redash.handlers.query_results import run_query
@@ -245,6 +246,15 @@ def is_admin(user):
 def hash_report(o, can_edit):
     data_cube = get_data_cube(o.model)
     is_favorite = o.is_favorite_v2(o.user, o)
+    api_key = models.ApiKey.get_by_object(o)
+    public_url = None
+    if api_key:
+        public_url = url_for(
+            "redash.public_report",
+            token=api_key.api_key,
+            _external=True,
+        )
+        api_key = api_key.api_key
     result = {
         "color_1": o.color_1,
         "color_2": o.color_2,
@@ -273,6 +283,8 @@ def hash_report(o, can_edit):
             "clusters": [],
         },
         "id": o.id,
+        "api_key": api_key,
+        "public_url": public_url,
     }
     return result
 

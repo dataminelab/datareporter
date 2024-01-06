@@ -118,6 +118,9 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     def regenerate_api_key(self):
         self.api_key = generate_token(40)
+    
+    def set_api_key(self, api_key):
+        self.api_key = api_key
 
     @classmethod
     def all_tags(self, user, include_drafts=False):

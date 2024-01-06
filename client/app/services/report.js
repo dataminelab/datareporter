@@ -419,9 +419,15 @@ const transformResponse = data => {
   });
 }
 
+function transformPublicState(report) {
+  report = new Report(report);
+  report.publicAccessEnabled = report.public_url !== undefined;
+  return report;
+}
+
 const ReportService = {
   report: params => axios.get("api/reports", { params }).then(mapResults),
-  get: data => axios.get("api/reports/" + data.id).then(getReport),
+  get: data => axios.get("api/reports/" + data.id).then(getReport).then(transformPublicState),
   save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
   saveAs: data => axios.post("api/reports", data).then(getReport),
   delete: data => axios.delete(`api/reports/${data.id}`)
@@ -444,7 +450,7 @@ const ReportService = {
   favorites: params => axios.get("api/reports/favorites", { params }).then(mapResults),
   favorite: data => axios.post(`api/reports/${data.id}/favorite`),
   unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),  
-  getByToken: ({ token }) => axios.get(`api/reports/public/${token}`),
+  getByToken: ({ token }) => axios.get(`api/reports/public/${token}`).then(transformPublicState),
 };
 
 ReportService.newReport = function newReport() {

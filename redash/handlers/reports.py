@@ -387,6 +387,7 @@ class ReportShareResource(BaseResource):
         report: Report = get_object_or_404(Report.get_by_id, report_id)
         require_admin_or_owner(report.user_id)
         api_key = models.ApiKey.create_for_object(report, self.current_user)
+        report.set_api_key(api_key.api_key)
         models.db.session.flush()
         models.db.session.commit()
 

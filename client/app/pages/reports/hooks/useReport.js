@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { extend } from "lodash";
 import useUpdateReport from "./useUpdateReport";
 import useSaveReport from "./useSaveReport";
 import navigateTo from "@/components/ApplicationArea/navigateTo";

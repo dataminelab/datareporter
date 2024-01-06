@@ -169,9 +169,11 @@ def parse_result(
         )
     errored = clean_errored(queries)
     if errored:
+        # clean the error from the cache
+        clear_cache(hash_string)
         return ReportSerializer(
-            status=FAILED_QUERY_CODE,
-            queries=queries+errored,
+            status=is_fetching,
+            queries=[],
         )
 
     split = len(expression.filter['splits']) or 1
@@ -184,16 +186,17 @@ def parse_result(
             current_org,
             model,
             split)
+        errored = clean_errored(queries)
+        if errored:
+            clear_cache(hash_string)
+            return ReportSerializer(
+                status=is_fetching,
+                queries=[],
+            )
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
 
-        errored = clean_errored(queries)
-        if errored:
-            return ReportSerializer(
-                status=FAILED_QUERY_CODE,
-                queries=queries+errored,
-            )
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,

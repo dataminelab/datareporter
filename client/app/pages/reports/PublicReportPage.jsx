@@ -87,7 +87,7 @@ class PublicReportPage extends React.Component {
               <img alt="Data reporter Logo" src={logoUrl} width="38" />
             </a>
           </div>
-          Powered by <a href="https://dataminelab.com">Data reporter</a>
+          Powered by <a href="https://dataminelab.com">Dataminelab</a>
         </div>
       </div>
     );

@@ -93,7 +93,7 @@ class PublicDashboardPage extends React.Component {
               <img alt="Data reporter Logo" src={logoUrl} width="38" />
             </a>
           </div>
-          Powered by <a href="https://datareporter.com">Data reporter</a>
+          Powered by <a href="https://datareporter.com">Dataminelab</a>
         </div>
       </div>
     );

@@ -60,7 +60,7 @@ def public_dashboard(token, org_slug=None):
 @csp_allows_embeding
 def public_report(token, org_slug=None):
     if current_user.is_api_user():
-        report = current_user.object
+        report = {"id":current_user.object}
     else:
         api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
         report = api_key.object

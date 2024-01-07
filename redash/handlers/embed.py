@@ -60,17 +60,17 @@ def public_dashboard(token, org_slug=None):
 @csp_allows_embeding
 def public_report(token, org_slug=None):
     if current_user.is_api_user():
-        report = {"id":current_user.object}
+        report_id = current_user.object
     else:
         api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
-        report = api_key.object
+        report_id = api_key.object.id
 
     record_event(
         current_org,
         current_user,
         {
             "action": "view",
-            "object_id": report.id,
+            "object_id": report_id,
             "object_type": "report",
             "public": True,
             "headless": "embed" in request.args,

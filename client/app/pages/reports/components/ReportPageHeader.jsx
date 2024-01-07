@@ -120,8 +120,7 @@ export default function ReportPageHeader(props) {
   const [newName, setNewName] = useState("Copy of " + report.name);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
-  const showShareButton = report.publicAccessEnabled || (queryFlags.canEdit && !report.is_draft);
-  console.log("report", report)
+  const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
 
   const handleReportChanged = (state) => {
     if (!report.data_source_id) return;

@@ -1,6 +1,7 @@
 import { extend, map, filter, reduce } from "lodash";
 import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import PropTypes, { any } from "prop-types";
+import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
@@ -32,6 +33,10 @@ import getTags from "@/services/getTags";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
+}
+
+function buttonType(value) {
+  return value ? "primary" : "default";
 }
 
 function createMenu(menu) {
@@ -88,7 +93,7 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const { report, setReport, saveReport, saveAsReport, deleteReport } = useReport(props.report);
+  const { report, setReport, saveReport, saveAsReport, deleteReport, showShareReportDialog } = useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
   const updateTags = useUpdateReportTags(report, setReport);
   const archiveReport = useArchiveReport(report, setReport);
@@ -115,6 +120,7 @@ export default function ReportPageHeader(props) {
   const [newName, setNewName] = useState("Copy of " + report.name);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
+  const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
 
   const handleReportChanged = (state) => {
     if (!report.data_source_id) return;
@@ -368,6 +374,11 @@ export default function ReportPageHeader(props) {
             title: "Download as TSV",
             onClick: () => {document.querySelector("#export-data-tsv").click()},
           },
+          showAPIKey: {
+            isAvailable: !queryFlags.isNew,
+            title: "Show API Key",
+            onClick: openApiKeyDialog,
+          },
         },
       ]),
     [
@@ -591,6 +602,18 @@ export default function ReportPageHeader(props) {
             <i className="fa fa-trash m-r-5" /> Delete
           </Button>
         )}
+        
+        {showShareButton && (
+            <Tooltip title="Report Sharing Options">
+              <Button
+                className="icon-button m-r-5"
+                type={buttonType(report.publicAccessEnabled)}
+                onClick={showShareReportDialog}
+                data-test="OpenShareForm">
+                <i className="zmdi zmdi-share" />
+              </Button>
+            </Tooltip>
+          )}
 
         {!queryFlags.isNew && (
           <span>

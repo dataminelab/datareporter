@@ -1,8 +1,10 @@
 import json
-from flask import request, make_response
+from flask import request, make_response, url_for
 from flask_restful import abort
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
+from redash.security import csp_allows_embeding
+from redash.serializers.report_serializer import ReportSerializer
 from redash import models
 from redash.handlers.base import (
     BaseResource,
@@ -15,6 +17,7 @@ from redash.handlers.queries import order_results
 from redash.models.models import Model, Report
 from redash.permissions import (
     require_permission,
+    require_admin_or_owner,
     require_object_modify_permission,
     require_object_delete_permission, require_object_view_permission
 )
@@ -47,10 +50,25 @@ class ReportFilter(BaseResource):
             filtered_result.meta = data_cube.get_meta(filtered_result.queries)
         return filtered_result.serialized()
 
+class ReportGeneratePublicResource(BaseResource):
+    def post(self, model_id):
+        if not isinstance(self.current_user, models.ApiUser):
+            abort(405)
+
+        req = request.get_json(True)
+        require_fields(req, (HASH,))
+        hash_string = req[HASH]
+        model = get_object_or_404(Model.get_by_id, model_id)
+        try:
+            result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=False)
+            return result.serialized()
+        except ExpressionNotSupported as err:
+            abort(400, message=err.message)
 
 class ReportGenerateResource(BaseResource):
-    @require_permission("generate_report")
     def post(self, model_id):
+        if not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser):
+            abort(405)
 
         req = request.get_json(True)
 
@@ -92,7 +110,7 @@ class ReportsArchiveResource(BaseResource):
 
     def delete(self):
         """ 
-            Archives a report. 
+            Archives the report. 
         """
         report_id = request.args.get("id")
         if not report_id:
@@ -125,7 +143,9 @@ class ReportsListResource(BaseResource):
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
         color_1, color_2 = req.get(COLOR_1, 'color'), req.get(COLOR_2, 'color')
 
-        model = get_object_or_404(Model.get_by_id_and_user, model_id, self.current_org)
+        model = get_object_or_404(
+            Model.get_by_id_and_user, model_id, self.current_user
+        )
 
         expression_obj = ExpressionBase64Parser.parse_base64_to_dict(expression)
 
@@ -186,6 +206,9 @@ class ReportsListResource(BaseResource):
         return response
 
     def delete(self, report_id):
+        """ 
+            Archives given report. 
+        """
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
@@ -331,3 +354,80 @@ class ReportFavoriteListResource(BaseResource):
         )
 
         return response
+
+class PublicReportResource(BaseResource):
+    decorators = BaseResource.decorators + [csp_allows_embeding]
+
+    def get(self, token):
+        """
+        Retrieve a public dashboard.
+
+        :param token: An API key for a public dashboard.
+        """
+        if not isinstance(self.current_user, models.ApiUser):
+            api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
+            report = api_key.object
+        else:
+            report_id = request.args.get("report_id", None)
+            if not report_id or report_id == "null":
+                report_id = self.current_user.object
+            report = get_object_or_404(Report.get_by_id, report_id)
+        return hash_report(report, can_edit=False)
+
+
+class ReportShareResource(BaseResource):
+    def post(self, report_id):
+        """
+        Allow anonymous access to a report.
+
+        :param report_id: The numeric ID of the report to share.
+        :>json string public_url: The URL for anonymous access to the report.
+        :>json api_key: The API key to use when accessing it.
+        """
+        report: Report = get_object_or_404(Report.get_by_id, report_id)
+        require_admin_or_owner(report.user_id)
+        api_key = models.ApiKey.create_for_object(report, self.current_user)
+        report.set_api_key(api_key.api_key)
+        models.db.session.flush()
+        models.db.session.commit()
+
+        public_url = url_for(
+            "redash.public_report",
+            token=api_key.api_key,
+            org_slug=self.current_org.slug,
+            _external=True
+        )
+
+        self.record_event(
+            {
+                "action": "activate_api_key",
+                "object_id": report.id,
+                "object_type": "report",
+            }
+        )
+
+        return {"public_url": public_url, "api_key": api_key.api_key}
+
+    def delete(self, report_id):
+        # XXX TODO IT'S A COPY OF DASHBOARD SHARE
+        """
+        Disable anonymous access to a report.
+
+        :param report_id: The numeric ID of the report to unshare.
+        """
+        report: Report = get_object_or_404(Report.get_by_id, report_id)
+        require_admin_or_owner(report.user_id)
+        api_key = models.ApiKey.get_by_object(report)
+
+        if api_key:
+            api_key.active = False
+            models.db.session.add(api_key)
+            models.db.session.commit()
+
+        self.record_event(
+            {
+                "action": "deactivate_api_key",
+                "object_id": report.id,
+                "object_type": "report",
+            }
+        )

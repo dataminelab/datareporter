@@ -1,3 +1,5 @@
+import base64
+import os
 import click
 import simplejson
 from flask import current_app
@@ -8,6 +10,10 @@ from redash import __version__, create_app, settings, rq_redis_connection
 from redash.cli import data_sources, database, groups, organization, queries, users, rq
 from redash.monitor import get_status
 
+def base64_from_url(url):
+    file = open(os.getcwd() + url, "rb")
+    encoded_string = base64.b64encode(file.read())
+    return encoded_string    
 
 def create(group):
     app = current_app or create_app()
@@ -18,6 +24,12 @@ def create(group):
         from redash import models, settings
 
         return {"models": models, "settings": settings}
+    
+    @app.context_processor
+    def custom_functions():
+        return {
+            'base64_from_url': base64_from_url,
+        }
 
     return app
 

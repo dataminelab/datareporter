@@ -6,6 +6,7 @@ from sqlalchemy.orm.exc import StaleDataError
 from funcy import partial
 
 from redash import models, settings
+from redash.models.models import Model, Report
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import (
     BaseResource,
@@ -28,6 +29,7 @@ from redash.permissions import (
 )
 from redash.utils import collect_parameters_from_request
 from redash.serializers import QuerySerializer
+from redash.serializers.report_serializer import ReportSerializer
 from redash.models.parameterized_query import ParameterizedQuery
 
 
@@ -419,6 +421,26 @@ class QueryResource(BaseResource):
         query.archive(self.current_user)
         models.db.session.commit()
 
+class ReportRegenerateApiKeyResource(BaseResource):
+    @require_permission("edit_report")
+    def post(self, report_id):
+        report = get_object_or_404(
+            Report.get_by_id_and_org, report_id, self.current_org
+        )
+        require_admin_or_owner(report.user_id)
+        report.regenerate_api_key()
+        models.db.session.commit()
+
+        self.record_event(
+            {
+                "action": "regnerate_api_key",
+                "object_id": report_id,
+                "object_type": "report",
+            }
+        )
+
+        result = ReportSerializer(report).serialize()
+        return result
 
 class QueryRegenerateApiKeyResource(BaseResource):
     @require_permission("edit_query")

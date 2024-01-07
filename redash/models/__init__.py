@@ -1250,6 +1250,8 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
             return None
         return text.replace("[turnilo-widget]", "").split("/")[0]
 
+    def get_report_id(self):
+        return self.get_id_from_text(self.text)
 
 @generic_repr(
     "id", "object_type", "object_id", "action", "user_id", "org_id", "created_at"

@@ -1,0 +1,53 @@
+@import "~@/assets/less/inc/variables";
+
+/****
+  grid bg - based on 6 cols, 35px rows and 15px spacing
+****/
+
+// let the bg go all the way to the bottom
+.dashboard-page,
+.dashboard-page .container {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  width: 100%;
+}
+
+#dashboard-container {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  height: 70vh;
+  margin-top: 40px;
+
+  div.dimension-measure-panel, div.resize-handle, div.center-top-bar {
+    // hidden
+    display: none;
+  }
+
+  div.center-main, div.center-panel {
+    // full width
+    width: 100%!important;
+    left: 0px!important;
+    right: 0px!important;
+    top: -5%!important;
+    bottom: -10px!important;
+  }
+}
+
+// dec @primary-color
+@primary-color: #1d9dfc;
+
+div.public-dashboard-page {
+  div.text-center {
+    margin-top: -20px;
+    margin-bottom: 20px;
+  }
+  a {
+    color: @primary-color;
+    &:hover {
+      color: @primary-color;
+    }
+    cursor: pointer;
+  }
+}

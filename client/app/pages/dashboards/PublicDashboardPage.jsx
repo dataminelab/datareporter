@@ -89,11 +89,11 @@ class PublicDashboardPage extends React.Component {
         )}
         <div id="footer">
           <div className="text-center">
-            <a href="https://redash.io">
+            <a href="https://datareporter.com">
               <img alt="Data reporter Logo" src={logoUrl} width="38" />
             </a>
           </div>
-          Powered by <a href="https://redash.io/?ref=public-dashboard">Data reporter</a>
+          Powered by <a href="https://datareporter.com">Data reporter</a>
         </div>
       </div>
     );

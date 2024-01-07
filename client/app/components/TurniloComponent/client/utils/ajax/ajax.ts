@@ -143,7 +143,7 @@ export class Ajax {
       localStorage.removeItem("bypass_cache");
       const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
       const urlHash = getHash();
-      if (urlHash && data.hash !== urlHash) {
+      if (!url.endsWith("filter") && urlHash && data.hash !== urlHash) {
         console.log("[INFO] subscribe is killed by hash mismatch, skipping")
         return res;
       }

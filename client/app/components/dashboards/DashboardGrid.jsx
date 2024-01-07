@@ -55,7 +55,6 @@ const DashboardWidget = React.memo(
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect( () => {
       async function getConfigTurnilo() {
-        console.log("setting config")
         if (!config.appSettings) {
           if (widget.is_public) {
             const token = window.location.pathname.split('/')[3];
@@ -263,7 +262,6 @@ class DashboardGrid extends React.Component {
       isPublic,
       widgets,
     } = this.props;
-    console.log("grid is good")
     return (
       <div className={className}>
         <ResponsiveGridLayout

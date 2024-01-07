@@ -143,9 +143,7 @@ class ReportsListResource(BaseResource):
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
         color_1, color_2 = req.get(COLOR_1, 'color'), req.get(COLOR_2, 'color')
 
-        model = get_object_or_404(
-            Model.get_by_id_and_user, model_id, self.current_user
-        )
+        model = get_object_or_404(Model.get_by_id, model_id)
 
         expression_obj = ExpressionBase64Parser.parse_base64_to_dict(expression)
 
@@ -254,7 +252,7 @@ class ReportResource(BaseResource):
     def post(self, report_id: int):
         report_properties = request.get_json(force=True)
         updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
-        report = get_object_or_404(Report.get_by_id, report_id)
+        report = get_object_or_404(Report.get_by_user_and_id, self.current_user, report_id)
         require_object_modify_permission(report, self.current_user)
         
         counter = 0

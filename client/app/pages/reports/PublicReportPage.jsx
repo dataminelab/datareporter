@@ -49,10 +49,6 @@ function PublicReport({ currentReport }) {
   );
 }
 
-PublicReport.propTypes = {
-  report: !PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-};
-
 class PublicReportPage extends React.Component {
   static propTypes = {
     token: PropTypes.string.isRequired,

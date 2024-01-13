@@ -9,6 +9,7 @@ import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 
 function ReportPage({ report, reportChanged, setReportChanged }) {
+  console.log("repoirt gere?", report)
   if (report.appSettings) {
     if (report.appSettings.customization.sentryDSN) {
       errorReporterInit(report.appSettings.customization.sentryDSN, report.version);
@@ -28,7 +29,7 @@ function ReportPage({ report, reportChanged, setReportChanged }) {
         report={report}
         reportChanged={reportChanged}
         setReportChanged={setReportChanged}
-        appSettings={appSettings}
+        appSettings={appSettings} 
         initTimekeeper={report.timekeeper ? Timekeeper.fromJS(report.timekeeper) : new Timekeeper({ timeTags: [] })}
       />
     </turnilo-widget>;

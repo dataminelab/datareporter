@@ -4,6 +4,7 @@ from typing import List, Union
 
 import lzstring
 from flask_restful import abort
+from flask import url_for
 
 from redash.handlers.base import get_object_or_404
 from redash.handlers.query_results import run_query
@@ -169,9 +170,11 @@ def parse_result(
         )
     errored = clean_errored(queries)
     if errored:
+        # clean the error from the cache
+        clear_cache(hash_string)
         return ReportSerializer(
-            status=FAILED_QUERY_CODE,
-            queries=queries+errored,
+            status=is_fetching,
+            queries=[],
         )
 
     split = len(expression.filter['splits']) or 1
@@ -184,16 +187,17 @@ def parse_result(
             current_org,
             model,
             split)
+        errored = clean_errored(queries)
+        if errored:
+            clear_cache(hash_string)
+            return ReportSerializer(
+                status=is_fetching,
+                queries=[],
+            )
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
 
-        errored = clean_errored(queries)
-        if errored:
-            return ReportSerializer(
-                status=FAILED_QUERY_CODE,
-                queries=queries+errored,
-            )
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
@@ -242,6 +246,15 @@ def is_admin(user):
 def hash_report(o, can_edit):
     data_cube = get_data_cube(o.model)
     is_favorite = o.is_favorite_v2(o.user, o)
+    api_key = models.ApiKey.get_by_object(o)
+    public_url = None
+    if api_key:
+        public_url = url_for(
+            "redash.public_report",
+            token=api_key.api_key,
+            _external=True,
+        )
+        api_key = api_key.api_key
     result = {
         "color_1": o.color_1,
         "color_2": o.color_2,
@@ -270,6 +283,8 @@ def hash_report(o, can_edit):
             "clusters": [],
         },
         "id": o.id,
+        "api_key": api_key,
+        "public_url": public_url,
     }
     return result
 

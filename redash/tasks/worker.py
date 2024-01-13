@@ -41,12 +41,12 @@ class NoopNotifier:
 
 
 class HttpNotifier:
-    publisher = None
+    worker = None
 
     def notify(self, message):
-        if self.publisher is None:
-            self.publisher = ThreadPoolExecutor(max_workers=2)
-        self.publisher.submit(self._send, message)
+        if self.worker is None:
+            self.worker = ThreadPoolExecutor(max_workers=2)
+        self.worker.submit(self._send, message)
 
     def _send(self, message):
         resp = requests.post(WORKER_NOTIFY_URL,

@@ -19,7 +19,7 @@ from redash.serializers.query_result import (
 from redash.utils import json_loads
 
 
-def public_widget(widget):
+def public_widget(widget: models.Widget):
     res = {
         "id": widget.id,
         "width": widget.width,
@@ -27,6 +27,8 @@ def public_widget(widget):
         "text": widget.text,
         "updated_at": widget.updated_at,
         "created_at": widget.created_at,
+        "report_id": widget.get_report_id(),
+        "is_public": 1,
     }
 
     v = widget.visualization
@@ -157,20 +159,21 @@ def serialize_visualization(object, with_query=True):
     return d
 
 
-def serialize_widget(object):
+def serialize_widget(widget: models.Widget):
     d = {
-        "id": object.id,
-        "width": object.width,
-        "options": json_loads(object.options),
-        "dashboard_id": object.dashboard_id,
-        "text": object.text,
-        "updated_at": object.updated_at,
-        "created_at": object.created_at,
-        "report_id": models.Widget.get_id_from_text(object.text)
+        "id": widget.id,
+        "width": widget.width,
+        "options": json_loads(widget.options),
+        "dashboard_id": widget.dashboard_id,
+        "text": widget.text,
+        "updated_at": widget.updated_at,
+        "created_at": widget.created_at,
+        "report_id": widget.get_report_id(),
+        "is_public": 0,
     }
 
-    if object.visualization and object.visualization.id:
-        d["visualization"] = serialize_visualization(object.visualization)
+    if widget.visualization and widget.visualization.id:
+        d["visualization"] = serialize_visualization(widget.visualization)
 
     return d
 

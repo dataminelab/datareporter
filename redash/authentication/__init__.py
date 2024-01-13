@@ -119,11 +119,11 @@ def get_user_from_api_key(api_key, query_id):
         user = models.User.get_by_api_key_and_org(api_key, org)
         if user.is_disabled:
             user = None
-    except models.NoResultFound:
+    except (models.NoResultFound, NoResultFound):
         try:
             api_key = models.ApiKey.get_by_api_key(api_key)
             user = models.ApiUser(api_key, api_key.org, [])
-        except models.NoResultFound:
+        except (models.NoResultFound, NoResultFound):
             if query_id:
                 query = models.Query.get_by_id_and_org(query_id, org)
                 if query and query.api_key == api_key:

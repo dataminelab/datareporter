@@ -6,6 +6,7 @@ from rq import get_current_job
 from rq.exceptions import NoSuchJobError
 from rq.job import JobStatus
 from rq.timeouts import JobTimeoutException
+from sqlalchemy.orm.exc import NoResultFound
 
 from redash import models, redis_connection, settings
 from redash.query_runner import InterruptException
@@ -129,7 +130,7 @@ class QueryExecutionError(Exception):
     pass
 
 
-def _resolve_user(user_id, is_api_key, query_id):
+def _resolve_user(user_id, is_api_key, metadata):
     """ Resolves user from user_id or api_key or metadata if exists
 
     Args:
@@ -143,7 +144,7 @@ def _resolve_user(user_id, is_api_key, query_id):
     if user_id is not None:
         if is_api_key:
             api_key = user_id
-            query_id = metadata.get("Query ID")
+            query_id = metadata.get("query_id")
             if query_id is not None:
                 q = models.Query.get_by_id(query_id)
             else:
@@ -168,7 +169,7 @@ class QueryExecutor(object):
         self.metadata = metadata
         self.data_source = self._load_data_source()
         self.query_id = metadata.get("query_id")
-        self.user = _resolve_user(user_id, is_api_key, metadata.get("query_id"))
+        self.user = _resolve_user(user_id, is_api_key, metadata)
         self.query_model = (
             models.Query.query.get(self.query_id)
             if self.query_id and self.query_id != "adhoc"

@@ -82,7 +82,7 @@ export default function useUpdateReport(report, onChange) {
     (data = null, { successMessage = "Report saved" } = {}) => {
       if (isObject(data)) {
         // Don't save new report with partial data
-        if (report.isNew()) {
+        if (report.isNew && report.isNew()) {
           handleChange(extend(report.clone(), data));
           return;
         }

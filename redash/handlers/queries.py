@@ -215,7 +215,7 @@ class QueryListResource(BaseQueryListResource):
 
         .. _query-response-label:
 
-        :>json number id: query_id or Query ID
+        :>json number id: query_id
         :>json number latest_query_data_id: ID for latest output data from this query
         :>json string name:
         :>json string description:

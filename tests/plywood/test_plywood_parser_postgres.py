@@ -100,5 +100,4 @@ class TestPostgresParseV2(unittest.TestCase):
             visualization='line-chart'
         )
         data = parser.parse_ply(ENGINE_BIG_QUERY)
-        # floating numbers on server and local machine are different
-        self.assertMultiLineEqual(data.dict(), BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE)
+        self.assertDictEqual(data.dict(), BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE)

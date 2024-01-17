@@ -1,0 +1,6 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/YOUR_PROJECT_ID/your-flask-app', '.']
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'your-flask-app', '--image', 'gcr.io/YOUR_PROJECT_ID/your-flask-app', '--platform', 'managed']

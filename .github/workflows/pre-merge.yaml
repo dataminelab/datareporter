@@ -62,6 +62,7 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.ci.yml run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
       - name: "Extract test results"
         shell: bash
+        if: always()
         run: |
           docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
@@ -89,3 +90,9 @@ jobs:
           indicators: true
           output: both
           thresholds: '60 80'
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md

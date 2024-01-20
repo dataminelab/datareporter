@@ -59,7 +59,7 @@ jobs:
       - name: "Execute unit tests"
         shell: bash
         run: |-
-          docker compose run  --user redash --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
+          docker compose run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
           docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
       - name: "Publish unit test report"

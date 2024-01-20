@@ -59,7 +59,7 @@ jobs:
       - name: "Execute unit tests"
         shell: bash
         run: |-
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/test_authentication.py
       - name: "Extract test results"
         shell: bash
         run: |

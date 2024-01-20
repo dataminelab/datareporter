@@ -1,6 +1,6 @@
 # This configuration file is for the **development** setup.
 # For a production example please refer to kubernetes or CloudRun setups
-version: "2.2"
+version: "3.9"
 x-redash-service: &redash-service
   build:
     context: .

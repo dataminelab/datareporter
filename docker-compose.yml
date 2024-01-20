@@ -9,9 +9,9 @@ x-redash-service: &redash-service
     cache_to:
       - "type=gha,mode=max"
     args:
-      skip_frontend_build: "${skip_frontend_build-true}"
-      skip_dev_deps: "${skip_dev_deps-false}"
-      skip_ds_deps: "${skip_ds_deps-true}"
+      skip_frontend_build: "${skip_frontend_build-}"
+      skip_dev_deps: "${skip_dev_deps-}"
+      skip_ds_deps: "${skip_ds_deps-}"
   volumes:
     - .:/app
 x-redash-environment: &redash-environment

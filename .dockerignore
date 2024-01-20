@@ -1,4 +1,5 @@
 .*
+.github
 !.coveragerc
 client/.tmp/
 #client/dist/
@@ -22,3 +23,5 @@ venv/
 /setup/
 scripts
 setup
+*.md
+docker-compose*.yml

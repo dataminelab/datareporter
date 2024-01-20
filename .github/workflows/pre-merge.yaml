@@ -38,7 +38,7 @@ jobs:
       - name: Build docker compose
         uses: docker/bake-action@v4
         with:
-          files: docker-compose.yml
+          files: docker-compose.yml, docker-compose.ci.yml
           load: true
       - name: "Prepare test environment"
         shell: bash
@@ -47,7 +47,7 @@ jobs:
       - name: "Wait for postgres to start"
         shell: bash
         run: |-
-          for i in 1 2 3 4 5; do docker-compose run  --rm postgres psql -h postgres -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'tests'"  && break || sleep 2; done
+          for i in 1 2 3 4 5; do docker compose run  --rm postgres psql -h postgres -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'tests'"  && break || sleep 2; done
       - name: "Create tests database"
         shell: bash
         run: |-
@@ -59,15 +59,19 @@ jobs:
       - name: "Execute unit tests"
         shell: bash
         run: |-
-          docker compose run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
+      - name: "Extract test results"
+        shell: bash
+        run: |
           docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
+          ls -l
       - name: "Publish unit test report"
         uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           fail_on_failure: true
-          report_paths: './results.xml'
+          report_paths: results.xml
           require_tests: true
           include_passed: true
           summary: true
@@ -76,7 +80,7 @@ jobs:
       - name: Code Coverage Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: ./coverage.xml
+          filename: coverage.xml
           badge: true
           fail_below_min: true
           format: markdown

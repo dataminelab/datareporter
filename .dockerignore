@@ -1,27 +1,30 @@
+# Ignore general files and directories
 .*
-.github
-!.coveragerc
-client/.tmp/
-#client/dist/
-client/node_modules/
-#plywood/server
-.dockerignore
-plywood/server/node_modules/
-plywood/server/client/node_modules/
-node_modules/
-viz-lib/node_modules/
-.tmp/
 .venv/
 venv/
 .git/
-/.codeclimate.yml
-/.coverage
-/coverage.xml
-/.circleci/
-/.github/
-/netlify.toml
+*.md
+.coveragerc
+.coverage
+coverage.xml
+.circleci/
+.github/
+.codeclimate.yml
+docker-compose*.yml
+netlify.toml
 /setup/
 scripts
 setup
-*.md
-docker-compose*.yml
+
+# Ignore client-specific files and directories
+client/.tmp/
+client/dist/
+
+# Ignore Plywood server files and directories
+plywood/server/node_modules/
+plywood/server/client/node_modules/
+
+# Ignore Node.js dependencies
+node_modules/
+viz-lib/node_modules/
+.tmp/

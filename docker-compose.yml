@@ -4,6 +4,10 @@ version: "2.2"
 x-redash-service: &redash-service
   build:
     context: .
+    cache_from:
+      - "type=gha"
+    cache_to:
+      - "type=gha,mode=max"
     args:
       skip_frontend_build: "false"
   volumes:

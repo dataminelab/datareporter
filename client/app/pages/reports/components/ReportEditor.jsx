@@ -9,7 +9,6 @@ import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 
 function ReportPage({ report, reportChanged, setReportChanged }) {
-  console.log("repoirt gere?", report)
   if (report.appSettings) {
     if (report.appSettings.customization.sentryDSN) {
       errorReporterInit(report.appSettings.customization.sentryDSN, report.version);

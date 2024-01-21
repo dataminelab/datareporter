@@ -1,6 +1,9 @@
 services:
   server:
     volumes: []
+    build:
+      args:
+        skip_frontend_build: true
   plywood:
     volumes: []
 

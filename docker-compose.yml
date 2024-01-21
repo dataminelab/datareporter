@@ -1,11 +1,17 @@
 # This configuration file is for the **development** setup.
 # For a production example please refer to kubernetes or CloudRun setups
-version: "2.2"
+version: "3.9"
 x-redash-service: &redash-service
   build:
     context: .
+    cache_from:
+      - "type=gha"
+    cache_to:
+      - "type=gha,mode=max"
     args:
-      skip_frontend_build: "false"
+      skip_frontend_build: "${skip_frontend_build-}"
+      skip_dev_deps: "${skip_dev_deps-}"
+      skip_ds_deps: "${skip_ds_deps-}"
   volumes:
     - .:/app
 x-redash-environment: &redash-environment
@@ -89,3 +95,15 @@ services:
       - ./plywood/server:/app
     environment:
       - LOG_MODE=request_and_response
+  tests:
+    <<: *redash-service
+    command: pytest
+    depends_on:
+      - postgres
+      - redis
+      - server
+    environment:
+      <<: *redash-environment
+      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+      PYTHONUNBUFFERED: 0
+      PLYWOOD_SERVER_URL: "http://plywood:3000"

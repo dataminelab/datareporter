@@ -1,4 +1,4 @@
-FROM node:14.17 as frontend-builder
+FROM node:14.17 AS frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
@@ -84,6 +84,7 @@ RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt 
 
 COPY . /app
 COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
+RUN chown redash:redash -R /app
 RUN find /app
 USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python

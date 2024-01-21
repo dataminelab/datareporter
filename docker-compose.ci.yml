@@ -1,9 +1,56 @@
+# This configuration file is for the **development** setup.
+# For a production example please refer to kubernetes or CloudRun setups
+version: "3.9"
+
+
 services:
   server:
-    volumes: []
     build:
+      context: .
+      cache_from:
+        - "type=gha"
+      cache_to:
+        - "type=gha,mode=max"
       args:
         skip_frontend_build: true
+        skip_dev_deps: ""
+        skip_ds_deps: ""
+    command: server
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "5000:5000"
+      - "5678:5678"
+    environment:
+      REDASH_LOG_LEVEL: "DEBUG"
+      REDASH_REDIS_URL: "redis://redis:6379/0"
+      REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
+      REDASH_DEBUG: "true"
+      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+      PYTHONUNBUFFERED: 0
+      PLYWOOD_SERVER_URL: "http://plywood:3000"
+  redis:
+    image: redis:6-alpine
+    restart: unless-stopped
+    ports:
+      - "6379"
+  postgres:
+    image: postgres:13-alpine
+    ports:
+      - "15432:5432"
+      - "5432:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "trust"
   plywood:
-    volumes: []
-
+    image: node:14.5.0-alpine
+    working_dir: /app
+    command: npm run watch-node
+    ports:
+      - "3000:3000"
+      - "9231:9229"
+    volumes:
+      - ./plywood/server:/app
+    environment:
+      - LOG_MODE=request_and_response

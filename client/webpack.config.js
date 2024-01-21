@@ -94,6 +94,18 @@ const config = {
     new WebpackBuildNotifierPlugin({ title: "Redash" }),
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
+    new HtmlWebpackPlugin({
+      template: "./app/index.html",
+      filename: "index.html",
+      excludeChunks: ["server"],
+      release: process.env.BUILD_VERSION || "dev",
+      staticPath
+    }),
+    new HtmlWebpackPlugin({
+      template: "./app/multi_org.html",
+      filename: "multi_org.html",
+      excludeChunks: ["server"]
+    }),
     new MiniCssExtractPlugin({
       filename: "[name].[chunkhash].css"
     }),
@@ -104,8 +116,6 @@ const config = {
     new CopyWebpackPlugin([
       { from: "app/assets/robots.txt" },
       { from: "app/assets/manifest.json" },
-      { from: "app/multi_org.html" },
-      { from: "app/index.html" },
       { from: "app/unsupported.html" },
       { from: "app/unsupportedRedirect.js" },
       { from: "app/assets/css/*.css", to: "styles/", flatten: true },

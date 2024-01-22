@@ -95,15 +95,4 @@ services:
       - ./plywood/server:/app
     environment:
       - LOG_MODE=request_and_response
-  tests:
-    <<: *redash-service
-    command: pytest
-    depends_on:
-      - postgres
-      - redis
-      - server
-    environment:
-      <<: *redash-environment
-      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
-      PYTHONUNBUFFERED: 0
-      PLYWOOD_SERVER_URL: "http://plywood:3000"
+

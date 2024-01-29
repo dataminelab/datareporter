@@ -103,7 +103,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         "tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True
     )
 
-    api_key = Column(db.String(40), default=lambda: generate_token(40))
+    api_key = Column(db.String(40), default=lambda: generate_token(40), nullable=True)
 
     __tablename__ = "reports"
     __mapper_args__ = {"version_id_col": version}

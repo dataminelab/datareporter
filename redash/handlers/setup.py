@@ -1,12 +1,11 @@
-from flask import g, redirect, render_template, request, url_for
-
+from flask import g, redirect, render_template, request, url_for, abort
 from flask_login import login_user
 from redash import settings
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import routes
 from redash.models import Group, Organization, User, db
 from redash.tasks.general import subscribe
-from wtforms import BooleanField, Form, PasswordField, StringField, validators
+from wtforms import BooleanField, RadioField, Form, PasswordField, StringField, validators
 from wtforms.fields.html5 import EmailField
 import mailchimp_marketing as MailchimpMarketing
 from mailchimp_marketing.api_client import ApiClientError
@@ -18,6 +17,7 @@ class SetupForm(Form):
     org_name = StringField("Organization Name", validators=[validators.InputRequired()])
     security_notifications = BooleanField()
     newsletter = BooleanField()
+    integration = RadioField('Label', choices=[('sendgrid','SendGrid'),('mailchimp','Mailchimp')], default='sendgrid')
 
 
 def create_org(org_name, user_name, email, password):
@@ -77,6 +77,18 @@ def setup():
     form.security_notifications.data = True
 
     if request.method == "POST" and form.validate():
+        if form.integration.data == 'sendgrid':
+            if not settings.SENDGRID_API_KEY:
+                abort(500, "SendGrid API key is not configured")
+            settings.MAIL_SERVER = "smtp.sendgrid.net"
+            settings.MAIL_USE_TLS = False
+            settings.MAIL_USE_SSL = True
+        elif form.integration.data == 'mailchimp':
+            settings.SENDGRID_API_KEY = None
+            settings.MAIL_SERVER = "email"
+            settings.MAIL_USE_TLS = True
+            settings.MAIL_USE_SSL = False
+
         default_org, user = create_org(
             form.org_name.data, form.name.data, form.email.data, form.password.data
         )

@@ -11,7 +11,7 @@ from flask_migrate import Migrate
 from statsd import StatsClient
 
 from . import settings
-from .app import create_app  # noqa
+from .app import create_app # noqa
 from .query_runner import import_query_runners
 from .destinations import import_destinations
 
@@ -20,7 +20,6 @@ __version__ = os.environ.get("DATAREPORTER_VERSION")
 
 if os.environ.get("REMOTE_DEBUG"):
     import ptvsd
-
     ptvsd.enable_attach(address=("0.0.0.0", 5678))
 
 

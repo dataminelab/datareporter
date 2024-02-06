@@ -52,7 +52,7 @@ Consider using (https://github.com/pyenv/pyenv#installation)[pyenv] for installi
 
 ```
 # install necessary python version
-pyenv install 3.8.7 
+pyenv install 3.8.7
 # make sure you run below command in the datareported folder
 # automatically select whenever you are in the current directory (or its subdirectories)
 pyenv local 3.8.7
@@ -155,4 +155,5 @@ To log messages to/from Plywood add to the Plywood env (in docker-compose) follo
 if you are having issue building docker images, try to remove ~/.docker/config.json file
 ```bash
 rm  ~/.docker/config.json
+rm  ~/.docker -r
 ```

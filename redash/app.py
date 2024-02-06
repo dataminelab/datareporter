@@ -49,8 +49,11 @@ def create_app():
     request_metrics.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
-    app.config['MAIL_USE_TLS'] = False
-    app.config['MAIL_USE_SSL'] = True
+    if settings.SENDGRID_API_KEY:
+        print("Setting up SendGrid")
+        app.config['MAIL_USE_TLS'] = False
+        app.config['MAIL_USE_SSL'] = True
+        app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
     mail.init_app(app)
     authentication.init_app(app)
     limiter.init_app(app)

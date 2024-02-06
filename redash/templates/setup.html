@@ -42,6 +42,10 @@
       {{ render_field(form.email) }}
       {{ render_field(form.password) }}
 
+      <div class="radio">
+        {{ form.integration() }}
+      </div>
+
       <div class="checkbox">
         <label>
           {{ form.security_notifications() }}

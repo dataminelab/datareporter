@@ -536,3 +536,5 @@ MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
 REDASH_DEBUG = parse_boolean(os.environ.get("REDASH_DEBUG", "False"))
 
 CLIENT_TIMEOUT_DELTA = int(os.environ.get("CLIENT_TIMEOUT_DELTA", 0))
+
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", None)

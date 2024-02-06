@@ -9,24 +9,24 @@ x-redash-service: &redash-service
   volumes:
     - .:/app
 x-redash-environment: &redash-environment
-  REDASH_LOG_LEVEL: "DEBUG"
+  REDASH_LOG_LEVEL: "${REDASH_LOG_LEVEL}"
   REDASH_REDIS_URL: "redis://redis:6379/0"
   REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
-  REDASH_MAIL_DEFAULT_SENDER: "mirkanbaba1@gmail.com"
+  REDASH_MAIL_DEFAULT_SENDER: "tech@dataminelab.com"
   REDASH_MAIL_MAX_EMAILS: 100
-  REDASH_MAIL_SERVER: "smtp.sendgrid.net"
+  REDASH_MAIL_SERVER: "${MAIL_SERVER}"
   REDASH_MAIL_PORT: 465
   REDASH_ENFORCE_CSRF: "false"
   REDASH_MAIL_USERNAME: "apikey"
   MAIL_USE_TLS: "false"
   MAIL_USE_SSL: "true"
-  REDASH_MAIL_PASSWORD: "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"
+  SENDGRID_API_KEY: "${SENDGRID_API_KEY}"
   MAILCHIMP_SERVER: "us1"
-  MAILCHIMP_API_KEY: "e4c804be8fbd3c445a0fef9d05b6fc27"
-  MAILCHIMP_LIST_ID: "e48180787b"
-  REDASH_DEBUG: "true"
-  CLIENT_TIMEOUT_DELTA: 100000
+  MAILCHIMP_API_KEY: "${MAILCHIMP_API_KEY}"
+  MAILCHIMP_LIST_ID: "${MAILCHIMP_LIST_ID}"
+  REDASH_DEBUG: "${REDASH_DEBUG}"
+  CLIENT_TIMEOUT_DELTA: "${CLIENT_TIMEOUT_DELTA}"
 services:
   server:
     <<: *redash-service

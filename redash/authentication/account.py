@@ -57,7 +57,7 @@ def send_invite_email(inviter, invited, invite_url, org):
     text_content = render_template("emails/invite.txt", **context)
     subject = "{} invited you to join Datareporter".format(inviter.name)
 
-    send_mail.delay([invited.email], subject, html_content, text_content)
+    send_mail([invited.email], subject, html_content, text_content)
 
 
 def send_password_reset_email(user):

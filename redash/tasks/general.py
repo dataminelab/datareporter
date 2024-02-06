@@ -59,7 +59,7 @@ def subscribe(form):
 @job("emails")
 def send_mail(to, subject, html, text):
     try:
-        message = Message(recipients=to, subject=subject, html=html, body=text)
+        message = Message(recipients=to, subject=subject, html=html, body=text, sender=settings.MAIL_DEFAULT_SENDER)
 
         mail.send(message)
     except Exception:

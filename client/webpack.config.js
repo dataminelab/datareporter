@@ -10,7 +10,6 @@ const LessPluginAutoPrefix = require("less-plugin-autoprefix");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
 const fs = require("fs");
-
 const path = require("path");
 const { CheckerPlugin } = require('awesome-typescript-loader')
 
@@ -28,13 +27,15 @@ function optionalRequire(module, defaultReturn = undefined) {
 }
 
 // Load optionally configuration object (see scripts/README)
-const CONFIG = optionalRequire("./scripts/config", {});
+const CONFIG = optionalRequire("../scripts/config", {});
 
 const isProduction = process.env.NODE_ENV === "production";
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
 const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
+const baseHref = CONFIG.baseHref || "/";
 const staticPath = CONFIG.staticPath || "/static/";
+const htmlTitle = CONFIG.title || "Datareporter";
 
 const basePath = path.join(__dirname);
 const appPath = path.join(__dirname, "app");
@@ -99,7 +100,9 @@ const config = {
       filename: "index.html",
       excludeChunks: ["server"],
       release: process.env.BUILD_VERSION || "dev",
-      staticPath
+      staticPath,
+      baseHref,
+      title: htmlTitle
     }),
     new HtmlWebpackPlugin({
       template: "./app/multi_org.html",

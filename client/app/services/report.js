@@ -421,7 +421,8 @@ const transformResponse = data => {
 
 function transformPublicState(report) {
   report = new Report(report);
-  report.publicAccessEnabled = report.public_url !== undefined;
+  if (report.public_url) report.publicAccessEnabled = true;
+  else report.publicAccessEnabled = false;
   return report;
 }
 

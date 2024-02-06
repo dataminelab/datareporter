@@ -42,7 +42,7 @@ nodenv local 12.22.12
 * Not needed anymore, might be useful for local development: start UI proxy
     * Enter project root directory
     * `cd client`
-    * `npm run start`  Starts babel and webpack dev server which  will proxy  redash and plywood backend
+    * `npm run start` Starts babel and webpack dev server which will proxy redash and plywood backend
 
 * `open http://localhost:5000`
 
@@ -67,8 +67,7 @@ source ./.venv/bin/activate
 
 Installation in Linux using virtualenvwrapper:
 ```
-
-sudo pacman -S yay
+sudo pacman -S yay 
 yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38
 ```
@@ -79,8 +78,10 @@ Follow the tutorial: https://redash.io/help/open-source/dev-guide/debugging
 
 And run the debugging session:
 ```
+# install below library
 pip install ptvsd
-# and start debugging session
+
+# start debugging session using below line
 docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
 ```
 

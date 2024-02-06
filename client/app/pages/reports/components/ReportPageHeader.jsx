@@ -352,6 +352,7 @@ export default function ReportPageHeader(props) {
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
         is_draft: false,
+        name: reportName
       }, { successMessage: null });
       recordEvent("create", "report", report.id);
     }

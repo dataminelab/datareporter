@@ -51,6 +51,7 @@ def create_org(org_name, user_name, email, password):
 
     return default_org, user
 
+
 def add_member_mailchimp(email, name, org_name):
     list_id = settings.MAILCHIMP_LIST_ID
     try:

@@ -119,7 +119,7 @@ class EditDataSource extends React.Component {
     return (
       <div className="row" data-test="DataSource">
         <div className="flex-space-between">
-          <div className="text-left m-r-10">
+          <div className="text-left m-l-10">
             {HELP_TRIGGER_TYPES[helpTriggerType] && (
               <HelpTrigger className="f-13" type={helpTriggerType}>
                 Setup Instructions <i className="fa fa-question-circle" />

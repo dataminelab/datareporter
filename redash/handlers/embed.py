@@ -56,7 +56,6 @@ def public_dashboard(token, org_slug=None):
     return render_index()
 
 @routes.route(org_scoped_rule("/public/reports/<token>"), methods=["GET"])
-@login_required
 @csp_allows_embeding
 def public_report(token, org_slug=None):
     if current_user.is_api_user():

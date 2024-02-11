@@ -162,7 +162,14 @@ export class Ajax {
 
     async function subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
-      const url = `api/reports/generate/${modelId}`;
+      var url;
+      const href = window.location.href;
+      if (href.includes("public/dashboards")) {
+        let api_key = href.split("public/dashboards/")[1].split("/")[0].split("?")[0];
+        url = `api/reports/generate/${modelId}/public?api_key=${api_key}`;
+      } else {
+        url = `api/reports/generate/${modelId}`;
+      }
       const data = { hash };
       return subscribe({ method, url, timeout, data });
     }

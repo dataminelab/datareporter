@@ -1,5 +1,4 @@
 from flask import g, redirect, render_template, request, url_for
-
 from flask_login import login_user
 from redash import settings
 from redash.authentication.org_resolving import current_org

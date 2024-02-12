@@ -5,8 +5,7 @@ DataReporter
 Requirements:
 * DataReporter builds correctly with Node 12
 
-Consider using `nodenv`, see for more info:
-https://joshmorel.ca/post/node-virtual-environments-with-nodenv/
+Consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
 
 Requirements:
 * Data reported builds correctly with Node 12
@@ -48,8 +47,7 @@ nodenv local 12.22.12
 
 ## Local Development
 
-Consider using (https://github.com/pyenv/pyenv#installation)[pyenv] for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7
-
+Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
 ```
 # install necessary python version
 pyenv install 3.8.7 
@@ -74,7 +72,7 @@ mkvirtualenv -p /usr/bin/python3.8 python38
 
 If working with Visual Studio Code
 
-Follow the tutorial: https://redash.io/help/open-source/dev-guide/debugging
+Follow the [tutorial](https://redash.io/help/open-source/dev-guide/debugging)
 
 And run the debugging session:
 ```
@@ -98,10 +96,9 @@ docker-compose run --rm server tests
 ```
 
 ### Components
-
 #### Datareporter server
 * **directory**: `redash`
-* **debug**: Please follow the instruction from (https://redash.io/help/open-source/dev-guide/debugging)[redash]
+* **debug**: Please follow the instruction from [redash](https://redash.io/help/open-source/dev-guide/debugging)
 * **changes:**
   * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
 #### Datareporter frontend

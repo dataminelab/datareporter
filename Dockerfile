@@ -17,7 +17,7 @@ RUN if [ "x$skip_frontend_build" = "x" ] ; then \
     touch /frontend/client/dist/multi_org.html &&\
     touch /frontend/client/dist/index.html;\
   fi
-FROM python:3.8-slim-bookworm
+FROM python:3.8
 
 EXPOSE 5000
 

@@ -1,3 +1,4 @@
+# this file is used to vs-code to provide intellisense for the python code snippets
 Flask==1.1.1
 Jinja2==2.11.3
 itsdangerous==1.1.0

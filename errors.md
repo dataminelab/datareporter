@@ -1,4 +1,4 @@
-## This file is for errors and problems that I faced during the development of the project.
+
 ```bash
 =============================================================================== 760 passed, 137 warnings in 578.37s (0:09:38) ===============================================================================
 ```

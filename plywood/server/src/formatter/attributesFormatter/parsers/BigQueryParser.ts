@@ -1,5 +1,6 @@
 import { InputAttribute, OutputAttribute } from "../types/types";
 import { AttributeParser } from "./AttributeParser";
+// @ts-ignore
 import { BigQueryColumn, BigQueryExternal } from "reporter-plywood";
 
 

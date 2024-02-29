@@ -50,7 +50,7 @@ services:
     command: dev_worker_server
     ports:
       - "5001:5000"
-      - "5679:5678"
+      - "5679:5679"
     depends_on:
       - server
     environment:

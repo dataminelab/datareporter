@@ -82,6 +82,7 @@ services:
   email:
     image: djfarrelly/maildev
     ports:
+      - 25
       - "1080:80"
     restart: unless-stopped
   plywood:

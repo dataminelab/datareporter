@@ -111,7 +111,7 @@ export class AwsAthenaDialect extends SQLDialect {
   }
 
   public regexpExpression(expression: string, regexp: string): string {
-    // https://prestodb.io/docs/0.217/functions/regexp.html
+    // https://prestodb.io/docs/current/functions/regexp.html
     return `regexp_like(${expression}, ${this.escapeLiteral(regexp)})`;
   }
 
@@ -161,7 +161,7 @@ export class AwsAthenaDialect extends SQLDialect {
 
   timeToSQL(date: Date): string {
     // format: '"2021-01-26T04:59:59.245Z"'
-    // see https://prestodb.io/docs/0.217/functions/datetime.html
+    // see https://prestodb.io/docs/current/functions/datetime.html
     if (!date) return this.nullConstant();
     return `from_iso8601_timestamp('${date.toISOString()}')`;
   }

@@ -1,4 +1,3 @@
-import json
 import unittest
 
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2

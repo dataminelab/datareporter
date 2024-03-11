@@ -126,11 +126,10 @@ docker-compose run --rm server tests
   * To see details/logs of build go into repo root dir and run `docker-compose logs plywood`
 
 ### Publishing NPM reporter-plywood package
-This is depricated but still available for backward compatibility.
 First make sure to authenticate with `npm login` then build and publish the package:
 
 ```
-cd plywood/client
+cd plywood/server/client
 npm install
 npm run compile
 npm publish

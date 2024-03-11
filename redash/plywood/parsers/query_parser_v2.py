@@ -10,7 +10,7 @@ from dateutil import parser
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 TIME_SHIFT_ATTRS = '_delta__'
-supported_engines = ['postgres', 'mysql', 'bigquery', 'athena']
+supported_engines = ['postgres', 'mysql', 'bigquery', 'athena', 'druid']
 
 logger = logging.getLogger(__name__)
 

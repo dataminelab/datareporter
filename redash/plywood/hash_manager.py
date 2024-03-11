@@ -126,8 +126,7 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
 
     return None
 
-def is_yoy_query(query):
-    return query.count("SUM") > 3
+
 
 def parse_result(
     hash_string: str,

@@ -30,6 +30,8 @@ class DataCube:
             return "IS NULL"
         elif self.ply_engine == 'athena':
             return "IS NULL"
+        elif self.ply_engine == 'druid':
+            return "IS NULL"
         return "IS NULL"
 
     def get_meta(self, queries: List[dict]) -> ReportMetaData:

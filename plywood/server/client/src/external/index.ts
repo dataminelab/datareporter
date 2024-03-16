@@ -19,6 +19,6 @@ export * from './sqlExternal';
 export * from './mySqlExternal';
 export * from './postgresExternal';
 export * from './utils/druidTypes';
-export * from './druidExternal';
+export * from './druidSqlExternal';
 export * from './bigQueryExternal';
 export * from './awsAthenaExternal';

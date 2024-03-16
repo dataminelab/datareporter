@@ -397,9 +397,8 @@ describe("Supported engines", () => {
                 chai.expect(res.status).to.equal(200);
                 chai.expect(res.body.supportedEngines).to.include('postgres');
                 chai.expect(res.body.supportedEngines).to.include('mysql');
-
-
-            })
+                chai.expect(res.body.supportedEngines).to.include('druid');
+            });
     })
 })
 

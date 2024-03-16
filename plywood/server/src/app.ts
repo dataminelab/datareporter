@@ -13,11 +13,13 @@ import { hashConverterRequest } from "./endpoint/hash-converter";
 import { filterToHash, hashToFilter } from './endpoint/filter-to-hash-converter';
 import { responseShape } from './endpoint/response-shape';
 import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParser";
+import { DruidParse } from "./formatter/attributesFormatter/parsers/DruidParser";
 
 AttributeParserFactory.register(PostgresAttributeParser);
 AttributeParserFactory.register(MySqlAttributeParser);
 AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
+AttributeParserFactory.register(DruidParse);
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));

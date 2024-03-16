@@ -12,14 +12,12 @@ dev_scheduler() {
 
   exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive -- ./manage.py rq scheduler
 }
-
 ensure_schema() {
   if [[ "$DATAREPORTER_ENSURE_SCHEMA" == "true" ]]; then
     echo "starting schema creation"
     /app/bin/ensure_schema.sh &
   fi
 }
-
 worker() {
 
   ensure_schema
@@ -31,7 +29,6 @@ worker() {
 
   supervisord -c worker.conf
 }
-
 worker_server() {
 
   ensure_schema
@@ -43,7 +40,6 @@ worker_server() {
   REDASH_WEB_WORKER_THREADS=${REDASH_WEB_WORKER_THREADS-8}
   exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name worker -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT worker.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
 }
-
 dev_worker() {
   echo "Starting dev RQ worker..."
 
@@ -111,8 +107,7 @@ dev_worker_server)
   REDASH_WEB_WORKERS=1
   REDASH_WEB_WORKER_TIMOUT=180
   REDASH_WEB_WORKER_THREADS=1
-
-  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive --  /app/dev_worker_server.py runserver --debugger --no-reload -h 0.0.0.0 --without-threads
+  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive -- /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name worker -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT worker.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
   ;;
 worker_server)
   shift
@@ -153,8 +148,7 @@ shell)
   exec /app/manage.py shell
   ;;
 create_db)
-    echo "starting schema creation"
-    /app/bin/ensure_schema.sh
+  create_db
   ;;
 manage)
   shift

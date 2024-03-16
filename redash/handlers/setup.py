@@ -1,5 +1,4 @@
 from flask import g, redirect, render_template, request, url_for
-
 from flask_login import login_user
 from redash import settings
 from redash.authentication.org_resolving import current_org
@@ -51,14 +50,16 @@ def create_org(org_name, user_name, email, password):
 
     return default_org, user
 
+
 def add_member_mailchimp(email, name, org_name):
+    list_id = settings.MAILCHIMP_LIST_ID
     try:
         client = MailchimpMarketing.Client()
         client.set_config({
             "api_key": settings.MAILCHIMP_API_KEY,
             "server": settings.MAILCHIMP_SERVER
         })
-        client.lists.add_list_member(settings.MAILCHIMP_LIST_ID, {"email_address": email, "merge_fields": {"FNAME": name, "ONAME": org_name}, "status": "subscribed"})
+        client.lists.add_list_member(list_id, {"email_address": email, "merge_fields": {"FNAME": name, "ONAME": org_name}, "status": "subscribed"})
     except ApiClientError as error:
         if error.status_code == 400:
             print("Already subscribed")

@@ -27,3 +27,5 @@ client/cypress/videos
 *.iml
 
 dist
+
+scripts/config.js

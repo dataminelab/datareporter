@@ -5,8 +5,7 @@ DataReporter
 Requirements:
 * DataReporter builds correctly with Node 12
 
-Consider using `nodenv`, see for more info:
-https://joshmorel.ca/post/node-virtual-environments-with-nodenv/
+Consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
 
 Requirements:
 * Data reported builds correctly with Node 12
@@ -35,20 +34,20 @@ nodenv local 12.22.12
     * `make up` or `docker-compose up --build`  to start required services like postgres app server
     * `docker-compose run --rm server create_db`  Will start server and run. exec /app/manage.py database create_tables.
       This step is required **only once**.
+    * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker-compose run server manage db migrate`
     * Later on and only if necessary, in order to upgrade local database run: `docker-compose run --rm server manage db upgrade`
 
 
 * Not needed anymore, might be useful for local development: start UI proxy
     * Enter project root directory
     * `cd client`
-    * `npm run start`  Starts babel and webpack dev server which  will proxy  redash and plywood backend
+    * `npm run start` Starts babel and webpack dev server which will proxy redash and plywood backend
 
 * `open http://localhost:5000`
 
 ## Local Development
 
-Consider using (https://github.com/pyenv/pyenv#installation)[pyenv] for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7
-
+Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
 ```
 # install necessary python version
 pyenv install 3.8.7 
@@ -66,7 +65,6 @@ source ./.venv/bin/activate
 
 Installation in Linux using virtualenvwrapper:
 ```
-
 sudo pacman -S yay 
 yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38
@@ -74,12 +72,14 @@ mkvirtualenv -p /usr/bin/python3.8 python38
 
 If working with Visual Studio Code
 
-Follow the tutorial: https://redash.io/help/open-source/dev-guide/debugging
+Follow the [tutorial](https://redash.io/help/open-source/dev-guide/debugging)
 
 And run the debugging session:
 ```
+# install below library
 pip install ptvsd
-# and start debugging session
+
+# start debugging session using below line
 docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
 ```
 
@@ -96,10 +96,9 @@ docker-compose run --rm server tests
 ```
 
 ### Components
-
 #### Datareporter server
 * **directory**: `redash`
-* **debug**: Please follow the instruction from (https://redash.io/help/open-source/dev-guide/debugging)[redash]
+* **debug**: Please follow the instruction from [redash](https://redash.io/help/open-source/dev-guide/debugging)
 * **changes:**
   * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
 #### Datareporter frontend
@@ -127,11 +126,10 @@ docker-compose run --rm server tests
   * To see details/logs of build go into repo root dir and run `docker-compose logs plywood`
 
 ### Publishing NPM reporter-plywood package
-This is depricated but still available for backward compatibility.
 First make sure to authenticate with `npm login` then build and publish the package:
 
 ```
-cd plywood/client
+cd plywood/server/client
 npm install
 npm run compile
 npm publish
@@ -153,4 +151,21 @@ To log messages to/from Plywood add to the Plywood env (in docker-compose) follo
 if you are having issue building docker images, try to remove ~/.docker/config.json file
 ```bash
 rm  ~/.docker/config.json
+```
+
+## Docker connectivity issues for testing connection between containers
+```bash
+>> docker network connect datareporter_default router
+>> docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' router
+docker_default, datareporter_default
+>> docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' datareporter-server-1
+datareporter_default 
+>> docker exec datareporter-server-1 ping router -c2
+PING router (172.19.0.9) 56(84) bytes of data.
+64 bytes from router.datareporter_default (172.19.0.9): icmp_seq=1 ttl=64 time=1.51 ms
+64 bytes from router.datareporter_default (172.19.0.9): icmp_seq=2 ttl=64 time=0.057 ms
+
+--- router ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 3ms
+rtt min/avg/max/mdev = 0.057/0.781/1.506/0.725 ms
 ```

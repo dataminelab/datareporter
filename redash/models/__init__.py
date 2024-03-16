@@ -1242,6 +1242,16 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
     def get_by_id_and_org(self, object_id, org):
         return super(Widget, self).get_by_id_and_org(object_id, org, Dashboard)
 
+    @classmethod
+    def get_id_from_text(self, text):
+        if not text:
+            return None
+        elif len(text.split("/")) < 2:
+            return None
+        return text.replace("[turnilo-widget]", "").split("/")[0]
+
+    def get_report_id(self):
+        return self.get_id_from_text(self.text)
 
 @generic_repr(
     "id", "object_type", "object_id", "action", "user_id", "org_id", "created_at"

@@ -9,7 +9,7 @@ import {AppSettings} from "@/components/TurniloComponent/common/models/app-setti
 
 function TurniloWidget(props) {
   const { widget, canEdit, config } = props;
-  const turniloHash = widget.text.replace('[turnilo-widget]', '');
+  const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
   const TurniloMenuOptions = [];
 
   if (!widget.width) {
@@ -29,10 +29,11 @@ function TurniloWidget(props) {
       executorFactory: Ajax.queryUrlExecutorFactory.bind(config)
     });
 
-    return (
-      <Widget {...props} menuOptions={canEdit ? TurniloMenuOptions : null} className="widget-text">
+    return ( 
+      <Widget {...props} menuOptions={canEdit ? TurniloMenuOptions : null} className="widget-report">
         <turnilo-widget>
           <TurniloApplication
+            config={config}
             version={version}
             hashWidget={turniloHash}
             appSettings={appSettings}

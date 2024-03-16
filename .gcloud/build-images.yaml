@@ -4,67 +4,64 @@ substitutions:
 
 
 steps:
+
   - name: gcr.io/cloud-builders/docker
-    args:
-      - buildx
-      - build
-      - --build-arg
-      - version=$COMMIT_SHA
-      - --push
-      - '-t'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
-      - '-t'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
-      - .
-      - '--build-arg'
-      - 'skip_dev_deps=true'
-      - '-f'
-      - Dockerfile
-      - '-o'
-      - type=image
+    env:
+      - 'COMMIT_SHA=$COMMIT_SHA'
+      - 'PROJECT_ID=$PROJECT_ID'
+      - '_GCR_HOSTNAME=$_GCR_HOSTNAME'
+      - 'BRANCH_NAME=$BRANCH_NAME'
+    script: |
+       #!/usr/bin/env bash
+       docker buildx build \
+       --push \
+       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA \
+       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest \
+       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$BRANCH_NAME \
+       --build-arg version=$BRANCH_NAME-$COMMIT_SHA \
+       --build-arg skip_dev_deps=true \
+       -f Dockerfile -o type=image \
+       .
+
     id: Build-Data-Reporter
     waitFor: [ '-' ]
   - name: gcr.io/cloud-builders/docker
-    args:
-      - buildx
-      - build
-      - --build-arg
-      - version=$COMMIT_SHA
-      - --push
-      - '-t'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
-      - '-t'
-      - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
-      - .
-      - '-f'
-      - Dockerfile
-      - '-o'
-      - type=image
+    env:
+      - 'COMMIT_SHA=$COMMIT_SHA'
+      - 'PROJECT_ID=$PROJECT_ID'
+      - '_GCR_HOSTNAME=$_GCR_HOSTNAME'
+      - 'BRANCH_NAME=$BRANCH_NAME'
+    script: |
+      #!/usr/bin/env bash
+      docker buildx build \
+      --push \
+      -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA" \
+      -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest" \
+      -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:$BRANCH_NAME" \
+      --build-arg "version=$BRANCH_NAME-$COMMIT_SHA" \
+      -f Dockerfile -o type=image \
+      .;
+
     dir: plywood/server
     id: Build-Plywood
     waitFor: [ '-' ]
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
-    id: Push-Data-Reporter
-    waitFor:
-      - Build-Data-Reporter
   - name: gcr.io/cloud-builders/gcloud
     args:
       - '-c'
       - >-
-        gcloud builds triggers  run datareporter-deploy-$_ENVIRONMENT
-        --region=$LOCATION --sha=$COMMIT_SHA --substitutions=_IMAGE_TAG="$COMMIT_SHA",_ENVIRONMENT=$_ENVIRONMENT
-    id: Deploy-$_ENVIRONMENT
+        gcloud builds triggers  run datareporter-deploy-$BRANCH_NAME
+        --region=$LOCATION --branch=$BRANCH_NAME  --substitutions=_IMAGE_TAG="$COMMIT_SHA",
+    id: Deploy-$BRANCH_NAME
     entrypoint: bash
     waitFor:
       - Build-Data-Reporter
       - Build-Plywood
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
-  - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
   - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$BRANCH_NAME'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$BRANCH_NAME'
   - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
 options:
   substitutionOption: ALLOW_LOOSE

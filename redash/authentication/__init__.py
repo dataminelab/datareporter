@@ -1,6 +1,7 @@
 import hashlib
 import logging
 import time
+import hmac
 from urllib.parse import urlsplit, urlunsplit
 
 from flask import jsonify, redirect, request, url_for
@@ -9,6 +10,7 @@ from redash import models, settings
 from redash.authentication.org_resolving import current_org
 from redash.settings.organization import settings as org_settings
 from redash.tasks import record_event
+from redash.authentication import jwt_auth
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import Unauthorized
 
@@ -32,8 +34,6 @@ def get_login_url(external=False, next="/"):
 def sign(key, path, expires):
     if not key:
         return None
-
-    import hmac
     h = hmac.new(key.encode(), msg=path.encode(), digestmod=hashlib.sha1)
     h.update(str(expires).encode())
 
@@ -62,21 +62,18 @@ def load_user(user_id_with_identity):
 def request_loader(request):
     user = None
     if settings.AUTH_TYPE == "hmac":
-        import hmac
         user = hmac_load_user_from_request(request)
     elif settings.AUTH_TYPE == "api_key":
         user = api_key_load_user_from_request(request)
+    elif settings.AUTH_TYPE == "jwt" or org_settings["auth_jwt_login_enabled"]:
+        user = jwt_token_load_user_from_request(request)
     else:
         logger.warning(
             "Unknown authentication type ({}). Using default (HMAC).".format(
                 settings.AUTH_TYPE
             )
         )
-        import hmac
         user = hmac_load_user_from_request(request)
-
-    if org_settings["auth_jwt_login_enabled"] and user is None:
-        user = jwt_token_load_user_from_request(request)
     return user
 
 
@@ -122,11 +119,11 @@ def get_user_from_api_key(api_key, query_id):
         user = models.User.get_by_api_key_and_org(api_key, org)
         if user.is_disabled:
             user = None
-    except models.NoResultFound:
+    except (models.NoResultFound, NoResultFound):
         try:
             api_key = models.ApiKey.get_by_api_key(api_key)
             user = models.ApiUser(api_key, api_key.org, [])
-        except models.NoResultFound:
+        except (models.NoResultFound, NoResultFound):
             if query_id:
                 query = models.Query.get_by_id_and_org(query_id, org)
                 if query and query.api_key == api_key:
@@ -179,7 +176,6 @@ def jwt_token_load_user_from_request(request):
         return None
 
     if jwt_token:
-        from redash.authentication import jwt_auth
         payload, token_is_valid = jwt_auth.verify_jwt_token(
             jwt_token,
             expected_issuer=org_settings["auth_jwt_auth_issuer"],
@@ -216,7 +212,7 @@ def log_user_logged_in(app, user):
 
 @login_manager.unauthorized_handler
 def redirect_to_login():
-    if request.is_xhr or "/api/" in request.path:
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or "/api/" in request.path:
         response = jsonify(
             {"message": "Couldn't find resource. Please login and try again."}
         )

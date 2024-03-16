@@ -57,7 +57,7 @@ const version = config.version;
 Ajax.version = version;
 
 const appSettings = AppSettings.fromJS(config.appSettings, {
-  executorFactory: Ajax.queryUrlExecutorFactory
+  executorFactory: Ajax.queryUrlExecutorFactory.bind(config)
 });
 
 const app =

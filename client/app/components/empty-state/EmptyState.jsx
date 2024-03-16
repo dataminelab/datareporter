@@ -12,12 +12,19 @@ function Step({ show, completed, text, url, urlText, onClick }) {
     return null;
   }
 
+  if (completed) {
+    return (
+      <li className="done">
+        <i className="fa fa-check-circle" /> {urlText} {text}
+      </li>
+    );
+  }
+
   return (
-    <li className={classNames({ done: completed })}>
+    <li>
       <a href={url} onClick={onClick}>
-        {urlText}
-      </a>{" "}
-      {text}
+        {urlText} {text}
+      </a>
     </li>
   );
 }

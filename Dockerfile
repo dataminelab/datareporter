@@ -1,8 +1,7 @@
-FROM node:14.17 as frontend-builder
+FROM node:14.17 AS frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
-ARG version
 
 WORKDIR /frontend
 COPY bin/build_frontend.sh .
@@ -26,6 +25,7 @@ EXPOSE 5000
 ARG skip_ds_deps
 # Controls whether to install dev dependencies.
 ARG skip_dev_deps
+
 
 RUN useradd --create-home redash
 
@@ -52,6 +52,7 @@ RUN apt-get update && \
     freetds-dev \
     libsasl2-dev \
     unzip \
+    iputils-ping \
     libsasl2-modules-gssapi-mit && \
   # MSSQL ODBC Driver:
 #  curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
@@ -77,15 +78,18 @@ ENV PIP_NO_CACHE_DIR=1
 
 # We first copy only the requirements file, to avoid rebuilding on every file
 # change.
-COPY requirements.txt requirements_bundles.txt requirements_dev.txt requirements_all_ds.txt ./
+COPY requirements.txt requirements_bundles.txt  requirements_dev.txt  ./
 RUN if [ "x$skip_dev_deps" = "x" ] ; then pip install -r requirements.txt -r requirements_dev.txt; else echo "Skipping pip install dev dependencies" ; pip install -r requirements.txt; fi
+COPY  requirements_all_ds.txt ./
 RUN if [ "x$skip_ds_deps" = "x" ] ; then pip install -r requirements_all_ds.txt ; else echo "Skipping pip install -r requirements_all_ds.txt" ; fi
 
 COPY . /app
 COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
+RUN chown redash:redash -R /app
 RUN find /app
 USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+ARG version
 ENV DATAREPORTER_VERSION=$version
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
 CMD ["server"]

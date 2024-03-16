@@ -99,6 +99,11 @@ export class BigQueryDialect extends SQLDialect {
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), WEEK))`, 
         timezone
       );
+    } else if (duration.toString() == "P1Y") {
+      return this.walltimeToUTC(
+        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), YEAR))`, 
+        timezone
+      );
     } else if (duration.toString() == "P3M") {
       return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), QUARTER))`,

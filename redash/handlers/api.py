@@ -86,11 +86,14 @@ from redash.handlers.query_snippets import (
 from redash.handlers.reports import (
     ReportsListResource,
     ReportGenerateResource,
+    ReportGeneratePublicResource,
     ReportResource,
     ReportFilter,
     ReportFavoriteListResource,
     ReportTagsResource,
-    ReportsArchiveResource
+    ReportsArchiveResource,
+    PublicReportResource,
+    ReportShareResource,
 )
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
@@ -359,6 +362,7 @@ api.add_org_resource(DataSourceModelsResource, "/api/data_sources/<int:data_sour
 
 api.add_org_resource(ReportFilter, "/api/reports/generate/<int:model_id>/filter", endpoint="report_model_filter")
 api.add_org_resource(ReportGenerateResource, "/api/reports/generate/<int:model_id>", endpoint="report_model")
+api.add_org_resource(ReportGeneratePublicResource, "/api/reports/generate/<int:model_id>/public", endpoint="public_report_model")
 
 api.add_org_resource(ReportResource, "/api/reports/<int:report_id>", endpoint="report")
 
@@ -375,4 +379,16 @@ api.add_org_resource(
     ReportFavoriteListResource,
     "/api/reports/favorites",
     endpoint="report_favorites",
+)
+api.add_org_resource(
+    PublicReportResource,
+    "/api/reports/<report_id>/public",
+    "/api/reports/public/<token>",
+    endpoint="public_report",
+)
+
+api.add_org_resource(
+    ReportShareResource,
+    "/api/reports/<report_id>/share",
+    endpoint="report_share",
 )

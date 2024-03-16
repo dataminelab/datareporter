@@ -154,6 +154,8 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
       } else {
         this.replaceSplit(split, dragPosition.replace);
       }
+    } else if (split.type !== "time") {
+      this.insertSplit(split, 0);
     } else {
       this.insertSplit(split, dragPosition.insert);
     }
@@ -161,6 +163,11 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
 
   appendSplit = (dimension: Dimension) => {
     this.props.clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+  };
+
+  insertSplitFromDimension = (dimension: Dimension, index: number) => {
+    const { clicker, essence: { splits } } = this.props;
+    clicker.changeSplits(splits.insertByIndex(index, Split.fromDimension(dimension)), VisStrategy.FairGame);
   };
 
   insertSplit = (split: Split, index: number) => {
@@ -194,7 +201,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
           openOverflowMenu={this.openOverflowMenu} />
       </div>
       <DragIndicator dragOver={this.dragOver} dragLeave={this.dragLeave} drop={this.drop} dragPosition={dragPosition} />
-      <AddSplit appendSplit={this.appendSplit} menuStage={menuStage} essence={essence} />
+      <AddSplit appendSplit={this.appendSplit} insertSplit={this.insertSplitFromDimension} menuStage={menuStage} essence={essence} />
     </div>;
   }
 }

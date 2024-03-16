@@ -1,4 +1,3 @@
-import json
 import unittest
 
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
@@ -24,6 +23,9 @@ ENGINE_BIG_QUERY = 'bigquery'
 
 
 class TestPostgresParseV2(unittest.TestCase):
+    def __init__(self, methodName: str = "runTest") -> None:
+        super().__init__(methodName)
+        self.maxDiff = None
 
     def test_0_split_1_measure_1_filter(self):
         parser = PlywoodQueryParserV2(
@@ -62,7 +64,6 @@ class TestPostgresParseV2(unittest.TestCase):
             data_cube_name=CUSTOMER_DATA_CUBE,
             query_result=POSTGRES_1_SPLIT_JOBS_TIMESHIFT,
             shape=POSTGRES_1_SPLIT_SHAPE_TIMESHIFT,
-
         )
 
         data = parser.parse_ply(ENGINE)
@@ -85,7 +86,6 @@ class TestPostgresParseV2(unittest.TestCase):
             data_cube_name=CUSTOMER_DATA_CUBE_BIG_QUERY,
             query_result=POSTGRES_2_SLIT_JOBS_BIG_QUERY,
             shape=TEST_DATA_2_SPLIT_SHAPE_BIG_QUERY,
-
         )
 
         data = parser.parse_ply(ENGINE_BIG_QUERY)
@@ -98,5 +98,5 @@ class TestPostgresParseV2(unittest.TestCase):
             shape=POSTGRES_LINE_CHART_SHAPE,
             visualization='line-chart'
         )
-        data = parser.parse_ply(ENGINE_BIG_QUERY) 
+        data = parser.parse_ply(ENGINE_BIG_QUERY)
         self.assertDictEqual(data.dict(), BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE)

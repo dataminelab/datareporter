@@ -1,6 +1,7 @@
 import { extend, map, filter, reduce } from "lodash";
 import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import PropTypes, { any } from "prop-types";
+import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
@@ -32,6 +33,10 @@ import getTags from "@/services/getTags";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
+}
+
+function buttonType(value) {
+  return value ? "primary" : "default";
 }
 
 function createMenu(menu) {
@@ -88,7 +93,7 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const { report, setReport, saveReport, saveAsReport, deleteReport } = useReport(props.report);
+  const { report, setReport, saveReport, saveAsReport, deleteReport, showShareReportDialog } = useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
   const updateTags = useUpdateReportTags(report, setReport);
   const archiveReport = useArchiveReport(report, setReport);
@@ -115,6 +120,7 @@ export default function ReportPageHeader(props) {
   const [newName, setNewName] = useState("Copy of " + report.name);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
+  const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
 
   const handleReportChanged = (state) => {
     if (!report.data_source_id) return;
@@ -234,28 +240,29 @@ export default function ReportPageHeader(props) {
   }
 
   const handleDataSourceChange = useCallback(
-    async (dataSourceId, signal) => {
+    async (data_source_id, signal) => {
       changeModelDataText(modelSelectElement.current.props.placeholder);
       setLoadModelsLoaded(false);
-      recordEvent("update", "report", report.id, { dataSourceId });
       var newModels = [];
       try {
-        const res = await Model.query({ data_source: dataSourceId });
+        const res = await Model.query({ data_source: data_source_id });
         newModels = res.results;
         if (signal && signal.aborted) return;
         const updates = {
-          data_source_id: dataSourceId,
+          data_source_id,
           isJustLanded: false,
         }
         setModels(newModels);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null });
         handleReportChanged(true);
+        recordEvent("update", "report", report.id, { data_source_id });
       } catch (err) {
         updateReport({}, { successMessage: err });
+        recordEvent("error", "report", report.id, { data_source_id });
       }
       setLoadModelsLoaded(true);
-      setSelectedDataSource(dataSourceId);
+      setSelectedDataSource(data_source_id);
     },
     [report, props.onChange, updateReport]
   );
@@ -338,15 +345,19 @@ export default function ReportPageHeader(props) {
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
         name: save_as ? newName : reportName,
-      }, { successMessage: null });
+      }, { successMessage: "Report updated" });
       recordEvent("update", "report", report.id);
     } else {
       updateReport({
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
         is_draft: false,
+        name: reportName
       }, { successMessage: null });
       recordEvent("create", "report", report.id);
+    }
+    if (!report.id) {
+      saveReport();
     }
   }
 
@@ -363,6 +374,11 @@ export default function ReportPageHeader(props) {
             isAvailable: true,
             title: "Download as TSV",
             onClick: () => {document.querySelector("#export-data-tsv").click()},
+          },
+          showAPIKey: {
+            isAvailable: !queryFlags.isNew,
+            title: "Show API Key",
+            onClick: openApiKeyDialog,
           },
         },
       ]),
@@ -384,17 +400,17 @@ export default function ReportPageHeader(props) {
   );
 
   useEffect(() => {
-    saveReport();
-  }, [report.expression])
+    updateReport(report, { successMessage: null });
+  }, [report.expression, window.location.hash]);
 
   useEffect(() => {
     if (report.isJustLanded) {
-      handleColorChange(report.color_1, 2, null);
-      handleColorChange(report.color_2, 1, null);
-      handleDataSourceChange(report.data_source_id);
-      handleModelChange(report.model_id);
-      handleIdChange(report.id);
-      setReportName(report.name);
+      if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1, null);
+      if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2, null);
+      if (report.data_source_id !== selectedDataSource) handleDataSourceChange(report.data_source_id);
+      if (report.model_id !== selectedModel) handleModelChange(report.model_id);
+      if (report.name !== reportName) setReportName(report.name);
+      if (report.id !== props.report.id) handleIdChange(report.id);
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)), 
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 
@@ -587,6 +603,18 @@ export default function ReportPageHeader(props) {
             <i className="fa fa-trash m-r-5" /> Delete
           </Button>
         )}
+        
+        {showShareButton && (
+            <Tooltip title="Report Sharing Options">
+              <Button
+                className="icon-button m-r-5"
+                type={buttonType(report.publicAccessEnabled)}
+                onClick={showShareReportDialog}
+                data-test="OpenShareForm">
+                <i className="zmdi zmdi-share" />
+              </Button>
+            </Tooltip>
+          )}
 
         {!queryFlags.isNew && (
           <span>

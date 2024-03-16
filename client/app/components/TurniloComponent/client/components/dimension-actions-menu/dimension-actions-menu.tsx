@@ -84,7 +84,13 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
   }
 
   function onSubSplit() {
-    if (!hasSplitOn) clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+    if (!hasSplitOn) {
+      if (dimension.kind !== "time") {
+        clicker.changeSplits(splits.insertByIndex(0, Split.fromDimension(dimension)), VisStrategy.FairGame);
+      } else {
+        clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+      }
+    }
     onClose();
   }
 

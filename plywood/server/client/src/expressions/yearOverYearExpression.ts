@@ -57,6 +57,10 @@ export class YearOverYearExpression {
         this._setRegexSettings();
     }
 
+    public static iSFalseQuery(query: string): boolean {
+        return query.includes("WHERE FALSE");
+    }
+
     private _setExpressionTypes(arg0: string) {
         this.type = arg0;
     }
@@ -122,6 +126,7 @@ export class YearOverYearExpression {
     }
 
     static isYoyQuery(query : string): boolean {
+        if (this.iSFalseQuery(query)) return false;
         return query.includes("_previous__") && query.includes("_delta__");
     }
 
@@ -134,6 +139,10 @@ export class YearOverYearExpression {
             this.query = this.query.replace(/\\/g, '')
             this.query = this.query.replace(/`/g, '"')
         }
+    }
+
+    private secondSplitExists() {
+        return this.queries[2].includes("some_");
     }
 
     
@@ -170,6 +179,9 @@ export class YearOverYearExpression {
         }
         if (this.engine === 'athena') {
             formattedSumQueries=formattedSumQueries.slice(0, -1)
+        } else if (this.engine === 'bigquery' && this.secondSplitExists()) {
+            where1=where1.replace(")) AND (", "))) AND (").slice(0, -1);
+            where2=where2.replace(")) AND (", "))) AND (").slice(0, -1);
         }
         return [formattedSumQueries, fromQuery, where1, where2];
     }
@@ -218,12 +230,12 @@ export class YearOverYearExpression {
                 while ((match = this.sumPattern.exec(this.queries[1])) !== null) {
                     const columnName = match[1] || match[2];
                     this.sumColumns.push(columnName);
-                }                
+                }
                 formattedSumQueries = this.sumColumns
                     .filter((value, index, self) => {
                         return self.indexOf(value) === index;
                     })
-                    .map(i => 
+                    .map(i =>
                         `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`
                     ).join(' ');
 

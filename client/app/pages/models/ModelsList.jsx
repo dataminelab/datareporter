@@ -36,7 +36,7 @@ function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
             <Button type="ghost" icon="setting" className="m-2 inline" onClick={() => editConfigModel(model)}>
               Edit config
             </Button>
-            <Button type="primary" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
+            <Button type="dashed" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
               Edit
             </Button>
             <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => handleDeleteModel(event)}>

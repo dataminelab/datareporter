@@ -10,11 +10,12 @@ import { Moment } from "@/components/proptypes";
 
 import "./Widget.less";
 
-function WidgetDropdownButton({ extraOptions, showDeleteOption, onDelete }) {
+function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete }) {
   const WidgetMenu = (
     <Menu data-test="WidgetDropdownButtonMenu">
       {extraOptions}
-      {showDeleteOption && extraOptions && <Menu.Divider />}
+      {showDeleteOption && extraOptions.length && <Menu.Divider />}
+      {showDeleteOption && report && <Menu.Item onClick={()=> window.location.href=`/reports/${report.id}/source`}>Edit</Menu.Item>}
       {showDeleteOption && <Menu.Item onClick={onDelete}>Remove from Dashboard</Menu.Item>}
     </Menu>
   );
@@ -103,7 +104,7 @@ class Widget extends React.Component {
   };
 
   render() {
-    const { className, children, header, footer, canEdit, isPublic, menuOptions, tileProps } = this.props;
+    const { className, children, header, footer, canEdit, isPublic, menuOptions, tileProps, config } = this.props;
     const showDropdownButton = !isPublic && (canEdit || !isEmpty(menuOptions));
     return (
       <div className="widget-wrapper">
@@ -111,6 +112,7 @@ class Widget extends React.Component {
           <div className="widget-actions">
             {showDropdownButton && (
               <WidgetDropdownButton
+                report={config}
                 extraOptions={menuOptions}
                 showDeleteOption={canEdit}
                 onDelete={this.deleteWidget}
@@ -118,7 +120,7 @@ class Widget extends React.Component {
             )}
             {canEdit && <WidgetDeleteButton onClick={this.deleteWidget} />}
           </div>
-          <div className="body-row widget-header">{header}</div>
+          <div className="body-row widget-header">{config?.name || header}</div>
           {children}
           {footer && <div className="body-row tile__bottom-control">{footer}</div>}
         </div>

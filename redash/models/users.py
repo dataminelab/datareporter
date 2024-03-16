@@ -418,7 +418,10 @@ class ApiUser(UserMixin, PermissionsCheckMixin):
         else:
             self.id = api_key.api_key
             self.name = "ApiKey: {}".format(api_key.id)
-            self.object = api_key.object
+            if api_key.object_type == "reports":
+                self.object = api_key.object_id
+            else:
+                self.object = api_key.object
         self.group_ids = groups
         self.org = org
 

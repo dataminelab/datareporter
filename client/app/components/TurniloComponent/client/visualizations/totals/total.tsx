@@ -25,7 +25,7 @@ interface DifferenceProps {
   series: ConcreteSeries;
 }
 
-const Difference: React.SFC<DifferenceProps> = ({ datum, series }) => {
+const Difference: React.FunctionComponent<DifferenceProps> = ({ datum, series }) => {
   return <React.Fragment>
     <div className="measure-value measure-value--previous">
       {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
@@ -47,7 +47,8 @@ export interface TotalProps {
   color: string;
 }
 
-export const Total: React.SFC<TotalProps> = ({ showPrevious, datum, series, color }) => {
+export const Total: React.FunctionComponent<TotalProps> = ({ showPrevious, datum, series, color }) => {
+  if (!datum) datum = {} as Datum;
   return <div className="total">
     <div className="measure-name" title={series.title()}>{series.title()}</div>
     <div className="measure-value" style={{ color }}>{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>

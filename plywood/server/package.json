@@ -17,6 +17,7 @@
     "full-clear": "rm -rf ./dist/ && rm -rf ./node_modules/"
   },
   "dependencies": {
+    "@sentry/node": "^7.74.1",
     "@types/express": "^4.17.8",
     "@types/node": "^15.12.2",
     "body-parser": "^1.20.1",

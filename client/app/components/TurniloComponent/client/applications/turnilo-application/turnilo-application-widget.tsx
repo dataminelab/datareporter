@@ -35,6 +35,7 @@ export interface TurniloApplicationProps {
   maxFilters?: number;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
+  config?: any;
 }
 
 export interface TurniloApplicationState {
@@ -46,6 +47,7 @@ export interface TurniloApplicationState {
   viewHash?: string;
   showAboutModal?: boolean;
   errorId?: string;
+  config?: any;
 }
 
 export type ViewType = "cube" | "no-data" | "general-error";
@@ -64,7 +66,8 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     viewType: null,
     viewHash: null,
     showAboutModal: false,
-    errorId: null
+    errorId: null,
+    config: null
   };
 
   componentDidCatch(error: Error) {
@@ -76,12 +79,16 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   componentWillMount() {
-    const { appSettings, initTimekeeper, hashWidget } = this.props;
+    const { appSettings, initTimekeeper, hashWidget, config } = this.props;
     const { dataCubes } = appSettings;
-
-    const hash = hashWidget;
-    let viewType = this.getViewTypeFromHash(hash);
-
+    
+    var hash;
+    if (config.hash && config.source_name) {
+      hash = config.source_name + "/4/" + config.hash;
+    } else {
+      hash = hashWidget;
+    }
+    
     if (!dataCubes.length) {
       this.setState({
         viewType: NO_DATA,
@@ -91,7 +98,9 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       return;
     }
 
+    let viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
+    
     let selectedItem: DataCube;
 
     if (this.viewTypeNeedsAnItem(viewType)) {
@@ -142,8 +151,12 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       drawerOpen: false
     };
 
+    const appSettings = AppSettings.fromJS(this.props.config.appSettings, {
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(this.props.config)
+    });
+
     if (this.viewTypeNeedsAnItem(viewType)) {
-      const item = this.getSelectedDataCubeFromHash(dataCubes, hash);
+      const item = this.getSelectedDataCubeFromHash(appSettings.dataCubes, hash);
       newState.selectedItem = item ? item : dataCubes[0];
     } else {
       newState.selectedItem = null;

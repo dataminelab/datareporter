@@ -2,13 +2,12 @@ import calendar
 import datetime
 from unittest import TestCase
 
-import pytz
 from dateutil.parser import parse as date_parse
-from tests import BaseTestCase
 
-from redash import models, redis_connection
-from redash.models import db, types
+from redash import models
+from redash.models import db
 from redash.utils import gen_query_hash, utcnow
+from tests import BaseTestCase
 
 
 class DashboardTest(BaseTestCase):
@@ -56,7 +55,7 @@ class ShouldScheduleNextTest(TestCase):
     def test_exact_time_with_day_change(self):
         now = utcnow().replace(hour=0, minute=1)
         previous = (now - datetime.timedelta(days=2)).replace(hour=23, minute=59)
-        schedule = "23:59".format(now.hour + 3)
+        schedule = "23:59"
         self.assertTrue(models.should_schedule_next(previous, now, "86400", schedule))
 
     def test_exact_time_every_x_days_that_needs_reschedule(self):
@@ -324,7 +323,7 @@ class QueryOutdatedQueriesTest(BaseTestCase):
         valid_query = self.create_scheduled_query(interval="60")
         self.fake_previous_execution(valid_query, minutes=10)
 
-        queries = models.Query.outdated_queries()
+        models.Query.outdated_queries()
 
         self.assertEqual(list(models.Query.outdated_queries()), [valid_query])
         self.assertTrue(faulty_query.schedule.get("disabled"))

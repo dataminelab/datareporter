@@ -1,5 +1,4 @@
 from flask import request
-
 from .authentication import current_org
 from flask_login import current_user, login_required
 from redash import models
@@ -54,3 +53,29 @@ def public_dashboard(token, org_slug=None):
         },
     )
     return render_index()
+
+
+@routes.route(org_scoped_rule("/public/reports/<token>"), methods=["GET"])
+@login_required
+@csp_allows_embeding
+def public_report(token, org_slug=None):
+    if current_user.is_api_user():
+        report_id = current_user.object
+    else:
+        api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
+        report_id = api_key.object.id
+
+    record_event(
+        current_org,
+        current_user,
+        {
+            "action": "view",
+            "object_id": report_id,
+            "object_type": "report",
+            "public": True,
+            "headless": "embed" in request.args,
+            "referer": request.headers.get("Referer"),
+        },
+    )
+    return render_index()
+

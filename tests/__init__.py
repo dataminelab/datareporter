@@ -22,11 +22,11 @@ os.environ["REDASH_RATELIMIT_ENABLED"] = "true"
 
 os.environ["REDASH_ENFORCE_CSRF"] = "false"
 
-from redash import limiter, redis_connection
-from redash.app import create_app
-from redash.models import db
-from redash.utils import json_dumps, json_loads
-from tests.factories import Factory, user_factory
+from redash import limiter, redis_connection  # noqa: E402
+from redash.app import create_app  # noqa: E402
+from redash.models import db  # noqa: E402
+from redash.utils import json_dumps  # noqa: E402
+from tests.factories import Factory, user_factory  # noqa: E402
 
 
 logging.disable(logging.INFO)

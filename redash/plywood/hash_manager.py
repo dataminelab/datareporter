@@ -1,10 +1,10 @@
 import hashlib
 import json
 from typing import List, Union
-import re
 
 import lzstring
 from flask_restful import abort
+from flask import url_for
 
 from redash.handlers.base import get_object_or_404
 from redash.handlers.query_results import run_query
@@ -81,7 +81,18 @@ def cache_or_get(
 
         redis_connection.setex(key, MAX_AGE, json.dumps(job_ids))
 
-        return cache_or_get(hash_string=hash_string, queries=queries, current_org=current_org, model=model, split=split)
+        return cache_or_get(hash_string, queries, current_org, model, split)
+
+
+def clear_cache(
+    hash_string: str,
+    split: int = 1
+):
+    smaller_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+    key = PLYWOOD_PREFIX + smaller_hash + str(split)
+    exists = redis_connection.exists(key)
+    if exists:
+        redis_connection.delete(key)
 
 
 def clear_cache_and_get(
@@ -91,12 +102,8 @@ def clear_cache_and_get(
     model: Model,
     split: int = 1
 ):
-    smaller_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
-    key = PLYWOOD_PREFIX + smaller_hash + str(split)
-    exists = redis_connection.exists(key)
-    if exists:
-        redis_connection.delete(key)
-    return cache_or_get(hash_string=hash_string, queries=queries, current_org=current_org, model=model, split=split)
+    clear_cache(hash_string, split)
+    return cache_or_get(hash_string, queries, current_org, model, split)
 
 
 def has_pending(array):
@@ -127,7 +134,6 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
     return None
 
 
-
 def parse_result(
     hash_string: str,
     queries: List[dict],
@@ -135,6 +141,7 @@ def parse_result(
     expression: Expression,
     model: Model,
     current_org,
+    expression_queries: List[dict] = None,
 ) -> ReportSerializer:
     """
     Redash caches result and returns query in the same endpoint
@@ -144,39 +151,41 @@ def parse_result(
         abort(400, message='Error with query')
 
     is_fetching = jobs_status(queries)
-
     if is_fetching:
         return ReportSerializer(
             status=is_fetching,
             queries=queries,
         )
+    errored = clean_errored(queries)
+    if errored:
+        # clean the error from the cache
+        clear_cache(hash_string)
+        return ReportSerializer(
+            status=is_fetching,
+            queries=[],
+        )
 
-    split = len(expression.filter['splits'])
-    if split > 1:
-        if split == 2:
-            queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
-            queries = cache_or_get(
-                hash_string=hash_string,
-                queries=queries_2_splits,
-                current_org=current_org,
-                model=model,
-                split=2)
-        elif split == 3:
-            queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
-            queries_3_splits = expression.get_3_splits_queries(prev_result=queries, prev_queries=queries_2_splits)
-            queries = cache_or_get(
-                hash_string=hash_string,
-                queries=queries_3_splits,
-                current_org=current_org,
-                model=model,
-                split=3)
+    split = len(expression.filter['splits']) or 1
+
+    if split == 2: # initiating 2 split jobs
+        queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
+        queries = cache_or_get(
+            hash_string,
+            queries_2_splits,
+            current_org,
+            model,
+            split)
+        errored = clean_errored(queries)
+        if errored:
+            clear_cache(hash_string)
+            return ReportSerializer(
+                status=is_fetching,
+                queries=[],
+            )
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
 
-    errored = clean_errored(queries)
-    if len(errored):
-        abort(400, message=errored[0]['job']['error'])
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
@@ -185,25 +194,26 @@ def parse_result(
         visualization=expression.visualization,
         data_cube=data_cube,
     )
+
     data = query_parser.parse_ply(data_cube.ply_engine)
     meta = data_cube.get_meta(queries)
 
     serializer = ReportSerializer(
         queries=queries,
-        failed=errored,
         data=data,
         meta=meta,
         shape=expression.shape,
+        expression_queries=expression_queries,
     )
 
     return serializer
 
 
-def clean_errored(queries: list):
+def clean_errored(queries: list): 
     errored = []
 
     for index, query in enumerate(queries):
-        if 'job' in query:
+        if 'job' in query and query['job']['status'] == FAILED_QUERY_CODE:# and query['job']['error']:
             errored.append(query)
             del queries[index]
 
@@ -224,6 +234,15 @@ def is_admin(user):
 def hash_report(o, can_edit):
     data_cube = get_data_cube(o.model)
     is_favorite = o.is_favorite_v2(o.user, o)
+    api_key = models.ApiKey.get_by_object(o)
+    public_url = None
+    if api_key:
+        public_url = url_for(
+            "redash.public_report",
+            token=api_key.api_key,
+            _external=True,
+        )
+        api_key = api_key.api_key
     result = {
         "color_1": o.color_1,
         "color_2": o.color_2,
@@ -252,6 +271,8 @@ def hash_report(o, can_edit):
             "clusters": [],
         },
         "id": o.id,
+        "api_key": api_key,
+        "public_url": public_url,
     }
     return result
 
@@ -261,26 +282,27 @@ def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: b
     expression = Expression(hash=hash_string, data_cube=data_cube)
     if bypass_cache:
         queries_result = clear_cache_and_get(
-            hash_string=hash_string,
-            queries=expression.queries,
-            current_org=organisation,
-            model=model,
+            hash_string,
+            expression.queries,
+            organisation,
+            model,
         )
     else:
-        queries_result = cache_or_get( 
-            hash_string=hash_string,
-            queries=expression.queries,
-            current_org=organisation,
-            model=model,
+        queries_result = cache_or_get(
+            hash_string,
+            expression.queries,
+            organisation,
+            model,
         )
 
     return parse_result(
-        hash_string=hash_string,
-        queries=queries_result,
-        data_cube=data_cube,
-        expression=expression,
-        model=model,
-        current_org=organisation,
+        hash_string,
+        queries_result,
+        data_cube,
+        expression,
+        model,
+        organisation,
+        expression.queries
     )
 
 
@@ -288,7 +310,7 @@ def filter_expression_to_result(expression: dict, model: Model, organisation):
     data_cube = DataCube(model=model)
     expression = replace_item(expression, 'main', data_cube.source_name)
 
-    queries = Expression.get_queries_from_prepared_expression(data_cube=data_cube, expression=expression)
+    queries = Expression.get_queries_from_prepared_expression(data_cube, expression)
 
     queries_result = cache_or_get(
         hash_string=ExpressionBase64Parser.parse_dict_to_base64(expression),
@@ -305,9 +327,9 @@ def filter_expression_to_result(expression: dict, model: Model, organisation):
             queries=queries_result,
         )
 
-    shape = Expression.get_shape_from_prepared_expression(data_cube=data_cube, expression=expression)
+    shape = Expression.get_shape_from_prepared_expression(data_cube, expression)
 
-    data = PlywoodFilterParser(result=queries_result, data_cube=data_cube, shape=shape)
+    data = PlywoodFilterParser(queries_result, data_cube, shape)
 
     return ReportSerializer(
         data=data.get_plywood_value(),

@@ -1,11 +1,12 @@
 from . import TimestampMixin, ChangeTrackingMixin, User, DataSource
 from .base import db, primary_key, Column, key_type, gfk_type
 from sqlalchemy.orm import load_only
-from sqlalchemy import and_, or_, func, any_
+from sqlalchemy import and_, or_, func, text
 from sqlalchemy.dialects.postgresql import ARRAY
 from ..services.expression import ExpressionBase64Parser
 from redash.models import Favorite
 from .types import MutableList
+from redash.utils import generate_token
 
 
 @gfk_type
@@ -48,6 +49,19 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
     def get_by_id_and_user(cls, _id, user):
         return cls.query.filter(cls.id == _id, cls.user_id == user.id).one()
 
+    @classmethod
+    def get_by_group_ids(self, user):
+        return self.query.join(User).filter(
+            and_(
+                User.org_id == user.org.id,
+                User.group_ids.overlap(user.group_ids)
+            )
+        )
+
+    @classmethod
+    def get_one_by_group_ids(self, user):
+        return self.get_by_group_ids(user).one()
+
 
 @gfk_type
 class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
@@ -89,6 +103,8 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         "tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True
     )
 
+    api_key = Column(db.String(40), default=lambda: generate_token(40), nullable=True)
+
     __tablename__ = "reports"
     __mapper_args__ = {"version_id_col": version}
 
@@ -99,6 +115,12 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         db.session.add(self)
         self.is_archived = True
         db.session.commit()
+
+    def regenerate_api_key(self):
+        self.api_key = generate_token(40)
+    
+    def set_api_key(self, api_key):
+        self.api_key = api_key
 
     @classmethod
     def all_tags(self, user, include_drafts=False):
@@ -114,6 +136,10 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
             .order_by(usage_count.desc())
         )
         return report
+
+    @classmethod
+    def by_api_key(self, api_key):
+        return self.query.filter(self.api_key == api_key).one()
 
     @classmethod
     def get_by_id(cls, _id):
@@ -213,7 +239,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         return self.query.join(User).filter(
             and_(
                 Report.is_archived.is_(False),
-                User.org_id == user.org.id,  # Replace with the appropriate value
-                User.group_ids.contains(user.group_ids)  # Check if 3 is in the array of group_ids
+                User.org_id == user.org.id,
+                User.group_ids.overlap(user.group_ids)
             )
         )

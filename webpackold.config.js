@@ -93,14 +93,14 @@ const config = {
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
     new HtmlWebpackPlugin({
-      template: "./client/app/index.html",
+      template: "./app/index.html",
       filename: "index.html",
       excludeChunks: ["server"],
       release: process.env.BUILD_VERSION || "dev",
       staticPath
     }),
     new HtmlWebpackPlugin({
-      template: "./client/app/multi_org.html",
+      template: "./app/multi_org.html",
       filename: "multi_org.html",
       excludeChunks: ["server"]
     }),

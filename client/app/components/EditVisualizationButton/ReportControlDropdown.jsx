@@ -7,8 +7,8 @@ import Icon from "antd/lib/icon";
 
 import ReportResultsLink from "./ReportResultsLink";
 
-export default function ReportControlDropdown(props) {
-  const menu = (
+export function ReportMenuElement(props) {
+  return (
     <Menu>
       {!props.report.isNew() && (!props.report.is_draft || !props.report.is_archived) && (
         <Menu.Item>
@@ -59,7 +59,9 @@ export default function ReportControlDropdown(props) {
       </Menu.Item>
     </Menu>
   );
-
+}
+export default function ReportControlDropdown(props) {
+  const menu = ReportMenuElement(props);
   return (
     <Dropdown trigger={["click"]} overlay={menu} overlayClassName="report-control-dropdown-overlay">
       <Button data-test="ReportControlDropdownButton">

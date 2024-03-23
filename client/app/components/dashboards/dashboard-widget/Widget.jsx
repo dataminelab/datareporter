@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { isEmpty } from "lodash";
@@ -7,15 +7,61 @@ import Modal from "antd/lib/modal";
 import Menu from "antd/lib/menu";
 import recordEvent from "@/services/recordEvent";
 import { Moment } from "@/components/proptypes";
-
+import { Report } from "@/services/report";
 import "./Widget.less";
 
+function downloadCSV(data) {
+  const headers = Object.keys(data[0]);
+  const csvContent = "data:text/csv;charset=utf-8," +
+    headers.join(",") + "\n" +
+    data.map(row => headers.map(header => row[header]).join(",")).join("\n");
+    
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  // TODO: use report name
+  link.setAttribute("download", "data.csv");
+  document.body.appendChild(link);
+  link.click();
+}
+
+function getExtraOptions(report) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await Report.getData(report);
+        setData(result);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, [report]);
+
+  const extraOptions = [];
+  if (data) {
+    extraOptions.push(
+      <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>Download as CSV File</Menu.Item>
+    );
+    extraOptions.push(<Menu.Divider key="divider_report" />);
+  }
+  extraOptions.push(
+    <Menu.Item key="view_report" onClick={() => window.location.href=`/reports/${report.id}/source`}>View Report</Menu.Item>
+  );
+  return extraOptions;
+}
+
 function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete }) {
+  if (report?.hash) {
+    extraOptions = getExtraOptions(report);
+  }
   const WidgetMenu = (
     <Menu data-test="WidgetDropdownButtonMenu">
       {extraOptions}
-      {showDeleteOption && extraOptions.length && <Menu.Divider />}
-      {showDeleteOption && report && <Menu.Item onClick={()=> window.location.href=`/reports/${report.id}/source`}>Edit</Menu.Item>}
+      {showDeleteOption && <Menu.Divider />}
       {showDeleteOption && <Menu.Item onClick={onDelete}>Remove from Dashboard</Menu.Item>}
     </Menu>
   );

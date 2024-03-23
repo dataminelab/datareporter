@@ -56,6 +56,17 @@ export class Report {
     }
   }
 
+  static async getData(report) {
+    const data = await axios.post(`api/reports/generate/${report.id}`, { 
+      hash: report.hash,
+      bypass_cache: false,
+    });
+    if (!data) return null;
+    console.log(data[data.length-1])
+    const queries = data.queries;
+    return queries[queries.length-1].query_result.data.rows;
+  }
+
   isNew() {
     return this.id === undefined;
   }

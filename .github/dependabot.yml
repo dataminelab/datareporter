@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+  - directory: "/"
+    target-branch: "develop"
+    package-ecosystem: "pip"
+    commit-message:
+      # Prefix all commit messages with "npm: "
+      prefix: "python package upgrade: "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'
+  - directory: "/client"
+    target-branch: "develop"
+    package-ecosystem: "npm"
+    commit-message:
+      # Prefix all commit messages with "npm: "
+      prefix: "client npm upgrade: "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'
+  - directory: "/viz-lib"
+    target-branch: "develop"
+    package-ecosystem: "npm"
+    commit-message:
+      # Prefix all commit messages with "npm: "
+      prefix: "vizlib npm upgrade: "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'

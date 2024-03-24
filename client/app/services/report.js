@@ -62,7 +62,6 @@ export class Report {
       bypass_cache: false,
     });
     if (!data) return null;
-    console.log(data[data.length-1])
     const queries = data.queries;
     return queries[queries.length-1].query_result.data.rows;
   }

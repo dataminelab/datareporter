@@ -65,7 +65,7 @@ supervisor_checks
 # Uncomment the requirement for ldap3 if using ldap.
 # It is not included by default because of the GPL license conflict.
 # ldap3==2.2.4
-greenlet==0.4.16
+greenlet==3.0.3
 mailchimp-marketing==3.0.36
 inflection==0.5.1
 mock==4.0.3

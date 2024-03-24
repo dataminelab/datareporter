@@ -1,6 +1,12 @@
 version: 2
 updates:
   # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+  - directory: "/bin"
+    package-ecosystem: "pip"
+    schedule:
+      interval: "monthly"
+    ignore:
+    - dependency-name: "*"
   - directory: "/"
     target-branch: "develop"
     package-ecosystem: "pip"

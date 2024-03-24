@@ -57,7 +57,7 @@ export class Report {
   }
 
   static async getData(report) {
-    const data = await axios.post(`api/reports/generate/${report.id}`, { 
+    const data = await axios.post(`api/reports/generate/1`, { 
       hash: report.hash,
       bypass_cache: false,
     });

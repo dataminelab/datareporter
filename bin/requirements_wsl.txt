@@ -63,7 +63,7 @@ disposable-email-domains>=0.0.52
 gevent==1.4.0
 sshtunnel==0.1.5
 supervisor==4.1.0
-werkzeug==0.16.1
+werkzeug==2.3.8
 urllib3
 supervisor_checks
 # Install the dependencies of the bin/bundle-extensions script here.

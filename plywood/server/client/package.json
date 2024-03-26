@@ -82,7 +82,7 @@
     "@types/readable-stream": "^2.3.9",
     "@types/stream-to-array": "^2.3.0",
     "awesome-code-style": "^1.4.3",
-    "chai": "4.2.0",
+    "chai": "5.1.0",
     "f-tool": "0.1.3",
     "immutable-class-tester": "0.7.2",
     "imonit": "0.2.0",

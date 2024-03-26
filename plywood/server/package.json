@@ -27,7 +27,7 @@
     "dotenv": "^16.0.3",
     "druid-query-toolkit": "^0.9.16",
     "druid.d.ts": "^0.12.1",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "has-own-prop": "^1.0.1",
     "http-status": "^1.4.2",
     "immer": "^9.0.3",

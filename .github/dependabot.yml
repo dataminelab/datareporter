@@ -5,7 +5,15 @@ updates:
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
-      prefix: "plywood package upgrade: "
+      prefix: "plywood-server package upgrade: "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'
+  - directory: "/plywood/server/client"
+    target-branch: "develop"
+    package-ecosystem: "npm"
+    commit-message:
+      prefix: "plywood-client package upgrade: "
     schedule:
       interval: 'weekly'
       day: 'saturday'

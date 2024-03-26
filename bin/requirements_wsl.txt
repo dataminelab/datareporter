@@ -51,7 +51,7 @@ sentry-sdk>=0.14.3,<0.15.0
 semver==2.8.1
 xlsxwriter==1.2.2
 # pystache==0.5.4
-parsedatetime==2.4
+parsedatetime==2.6
 PyJWT==1.7.1
 cryptography==3.3.2
 simplejson==3.16.0

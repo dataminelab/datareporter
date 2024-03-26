@@ -95,6 +95,12 @@ Then run the tests:
 docker-compose run --rm server tests
 ```
 
+In order to test viz-lib folder you need to install dependencies and run tests because you cant have 2 react versions in the same project. To do that run below commands in the viz-lib folder:
+```
+npm install antd@^3 react@^16.8 react-dom@^16.8
+npm run test
+```
+
 ### Components
 #### Datareporter server
 * **directory**: `redash`

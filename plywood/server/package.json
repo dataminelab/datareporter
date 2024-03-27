@@ -37,7 +37,7 @@
     "l": "^0.6.0",
     "lz-string": "^1.4.4",
     "moment-timezone": "^0.5.26",
-    "numbro": "^2.3.2",
+    "numbro": "^2.4.0",
     "plywood-base-api": "^0.2.8",
     "plywood-postgres-requester": "^1.4.0",
     "react": "^17.0.2",

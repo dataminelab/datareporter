@@ -106,7 +106,6 @@ cat \
   build/external/mySqlExternal.js \
   build/external/postgresExternal.js \
   build/external/druidSqlExternal.js \
-  build/external/druidExternal.js \
   build/external/bigQueryExternal.js \
   build/external/awsAthenaExternal.js \
   build/executor/basicExecutor.js \

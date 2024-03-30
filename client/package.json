@@ -163,7 +163,7 @@
     "@typescript-eslint/parser": "^2.10.0",
     "awesome-typescript-loader": "^5.2.1",
     "babel-eslint": "^10.0.3",
-    "babel-jest": "^24.1.0",
+    "babel-jest": "^29.7.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-flow-to-typescript": "^0.6.0",
     "babel-plugin-react-remove-properties": "^0.3.0",

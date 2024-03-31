@@ -1,7 +1,7 @@
 import React from "react";
 import renderer from "react-test-renderer";
 import Group from "@/services/group";
-import ReadOnlyModelConfig from "./ReadOnlyUserProfile";
+import ReadOnlyModelConfig from "./ReadOnlyModelConfig";
 
 beforeEach(() => {
   Group.query = jest.fn().mockResolvedValue([]);

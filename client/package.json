@@ -110,6 +110,7 @@
     "webpack-merge": "^5.1.2"
   },
   "devDependencies": {
+    "core-js": "^2.6.12",
     "@babel/cli": "^7.12.1",
     "@babel/core": "^7.10.4",
     "@babel/plugin-proposal-class-properties": "^7.10.4",

@@ -367,12 +367,12 @@ export default function ReportPageHeader(props) {
         {
           downloadCSV: {
             isAvailable: true,
-            title: "Download as CSV",
+            title: "Download as CSV File",
             onClick: () => {document.querySelector("#export-data-csv").click()},
           },
           downloadTSV: {
             isAvailable: true,
-            title: "Download as TSV",
+            title: "Download as TSV File",
             onClick: () => {document.querySelector("#export-data-tsv").click()},
           },
           showAPIKey: {

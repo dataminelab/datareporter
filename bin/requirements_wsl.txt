@@ -23,7 +23,7 @@ Flask-Limiter==0.9.3
 Flask-WTF==0.14.3
 passlib==1.7.1
 aniso8601==8.0.0
-blinker==1.4
+blinker==1.6.2
 # psycopg2==2.8.3
 python-dateutil==2.8.0
 pytz>=2019.3
@@ -51,7 +51,7 @@ sentry-sdk>=0.14.3,<0.15.0
 semver==2.8.1
 xlsxwriter==1.2.2
 # pystache==0.5.4
-parsedatetime==2.4
+parsedatetime==2.6
 PyJWT==1.7.1
 cryptography==3.3.2
 simplejson==3.16.0
@@ -61,7 +61,7 @@ maxminddb-geolite2==2018.703
 pypd==1.1.0
 disposable-email-domains>=0.0.52
 gevent==1.4.0
-sshtunnel==0.1.5
+sshtunnel==0.4.0
 supervisor==4.1.0
 werkzeug==0.16.1
 urllib3

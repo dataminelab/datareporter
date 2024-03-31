@@ -18,9 +18,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/getredash/redash.git"
+    "url": "git+https://github.com/dataminelab/datareporter.git"
   },
-  "author": "Redash",
+  "author": "Datareporter",
   "license": "BSD-2-Clause",
   "peerDependencies": {
     "antd": ">=3.19.0 < 4",
@@ -40,6 +40,7 @@
     "enzyme-adapter-react-16": "^1.7.1",
     "enzyme-to-json": "^3.3.5",
     "file-loader": "^6.0.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^24.1.0",
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
@@ -50,7 +51,9 @@
     "prop-types": "^15.7.2",
     "style-loader": "^1.1.4",
     "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "antd": "^3.26.20",
+    "mockdate": "^3.0.5"
   },
   "files": [
     "dist",
@@ -81,6 +84,15 @@
     "use-media": "^1.4.0"
   },
   "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "jsx",
+      "ts",
+      "tsx",
+      "node",
+      "less"
+    ],
     "rootDir": "./src",
     "setupFiles": [
       "../__tests__/enzyme_setup.js",

@@ -17,6 +17,7 @@
 
 import { Duration } from "chronoshift";
 import { Record } from "immutable";
+// @ts-ignore
 import { Expression, NumberBucketExpression, TimeBucketExpression } from "reporter-plywood";
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";

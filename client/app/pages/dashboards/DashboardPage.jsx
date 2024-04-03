@@ -63,7 +63,7 @@ function AddWidgetContainer({dashboardOptions, className, ...props }) {
           Add Textbox
         </Button>
         <Button type="primary" onClick={showAddWidgetDialog} data-test="AddWidgetButton">
-          Add Widget
+          Add Query Widget
         </Button>
       </div>
     </div>

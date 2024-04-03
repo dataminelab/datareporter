@@ -49,7 +49,8 @@ function AddReportDialog({ dialog, dashboard }) {
         disabled: !selectedReport || dialog.props.okButtonProps.disabled,
       }}
       okText="Add to Dashboard"
-      width={700}>
+      width={700}
+    >
       <div data-test="AddReportDialog">
         <ReportSelector onChange={report => selectReport(report ? report.id : null)} />
         {selectedReport ? selectedReport.id : ''}

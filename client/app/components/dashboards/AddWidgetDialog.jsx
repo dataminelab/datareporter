@@ -112,7 +112,7 @@ function AddWidgetDialog({ dialog, dashboard }) {
   return (
     <Modal
       {...dialog.props}
-      title="Add Widget"
+      title="Add Query Widget"
       onOk={saveWidget}
       okButtonProps={{
         ...dialog.props.okButtonProps,

@@ -76,7 +76,7 @@
     "readable-stream": "^3.0.3",
     "stream-to-array": "^2.3.0",
     "tdi": "0.6.5",
-    "tslib": "^1.10.0"
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
     "@types/readable-stream": "^2.3.9",

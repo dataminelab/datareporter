@@ -71,7 +71,6 @@ jobs:
         shell: bash
         if: always()
         run: |
-          docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
           ls -l
       - name: "Publish unit test report"

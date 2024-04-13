@@ -34,10 +34,14 @@ Editor.propTypes = {
 
 export default function initNumberColumn(column) {
   const format = createNumberFormatter(column.numberFormat);
-
+  
   function prepareData(row) {
+    let number = row[column.name];
+    if (Number.isSafeInteger(number)) {
+      number = format(number);
+    }
     return {
-      text: format(row[column.name]),
+      text: number,
     };
   }
 

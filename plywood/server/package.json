@@ -30,7 +30,7 @@
     "express": "^4.19.2",
     "has-own-prop": "^1.0.1",
     "http-status": "^1.4.2",
-    "immer": "^9.0.3",
+    "immer": "^10.0.4",
     "immutable": "^4.0.0-rc.14",
     "immutable-class": "^0.9.4",
     "immutable-class-tester": "^0.7.2",

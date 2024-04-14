@@ -34,7 +34,7 @@ function getExtraOptions(report) {
         const result = await Report.getData(report);
         setData(result);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error while fetching', error);
       }
     };
 

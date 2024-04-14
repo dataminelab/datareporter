@@ -31,7 +31,7 @@ jobs:
           export PATH=$PATH:/builder/home/.local/bin
           ./bin/flake8_tests.sh
   PythonUnitTests:
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     runs-on:  ubuntu-latest
     steps:
@@ -71,6 +71,7 @@ jobs:
         shell: bash
         if: always()
         run: |
+          docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
           ls -l
       - name: "Publish unit test report"

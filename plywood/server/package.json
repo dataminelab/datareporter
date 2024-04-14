@@ -23,7 +23,7 @@
     "body-parser": "^1.20.1",
     "chronoshift": "0.9.4",
     "concurrently": "^5.3.0",
-    "d3": "^6.7.0",
+    "d3": "^7.9.0",
     "dotenv": "^16.0.3",
     "druid-query-toolkit": "^0.9.16",
     "druid.d.ts": "^0.12.1",

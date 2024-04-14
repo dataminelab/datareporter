@@ -30,12 +30,14 @@ function DashboardSettings({ dashboardOptions }) {
   return (
     <div className="bg-white tiled">
       {/* THIS CHECKBOX DOESNT WORK? */}
-      {/* <Checkbox
+      <Checkbox
         checked={!!dashboard.dashboard_filters_enabled}
         onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
-        data-test="DashboardFiltersCheckbox">
+        data-test="DashboardFiltersCheckbox"
+        disabled
+      >
         Use Dashboard Level Filters
-      </Checkbox> */}
+      </Checkbox>
       <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
     </div>
   );
@@ -57,7 +59,7 @@ function AddWidgetContainer({dashboardOptions, className, ...props }) {
       </h2>
       <div>
         <Button onClick={showReportDialog} className="m-r-15 ant-btn-turnilo"  data-test="AddReportButton">
-          Add Report widget
+          Add Report Widget
         </Button>
         <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
           Add Textbox

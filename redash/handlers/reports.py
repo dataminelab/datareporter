@@ -297,7 +297,9 @@ class ReportResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
-        report.remove()
+        report.remove()        
+        # also delete as a cascade the widgets
+        models.Widget.delete_by_report_id(report_id)
 
         self.record_event({
             "action": "delete",

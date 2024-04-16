@@ -1250,6 +1250,25 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
             return None
         return text.replace("[turnilo-widget]", "").split("/")[0]
 
+    @classmethod
+    def delete_by_report_id(self, _report_id:str):
+        if isinstance(_report_id, int):
+            _report_id = str(_report_id)
+        for i in self.query.all():
+            report_id = i.get_id_from_text(i.text)
+            if report_id == _report_id:
+                db.session.delete(i)
+        db.session.commit()
+
+    def copy(self, dashboard_id):
+        return {
+            "options": self.options,
+            "width": self.width,
+            "text": self.text,
+            "visualization_id": self.visualization_id,
+            "dashboard_id": dashboard_id,
+        }
+    
     def get_report_id(self):
         return self.get_id_from_text(self.text)
 

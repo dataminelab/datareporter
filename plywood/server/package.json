@@ -29,7 +29,7 @@
     "druid.d.ts": "^0.12.1",
     "express": "^4.19.2",
     "has-own-prop": "^1.0.1",
-    "http-status": "^1.4.2",
+    "http-status": "^1.7.4",
     "immer": "^9.0.6",
     "immutable": "^4.0.0-rc.14",
     "immutable-class": "^0.9.4",

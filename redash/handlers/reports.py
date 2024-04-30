@@ -225,7 +225,7 @@ class ReportsListResource(BaseResource):
 
 # /api/reports/<int:report_id>
 class ReportResource(BaseResource):
-    ''' A resource for a single report creation, editing and deleting '''
+    ''' A resource for a single report viewing, creating, editing and deleting '''
 
     @require_permission("view_report")
     def get(self, report_id: int):

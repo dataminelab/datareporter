@@ -48,7 +48,7 @@ function confirmOverwrite() {
   });
 }
 
-function doSaveReport(data, { canOverwrite = false } = {}) {
+function doSaveReport(data, { canOverwrite = false, errorMessage = "Report could not be saved" } = {}) {
   if (isObject(data.options) && data.options.parameters) {
     data.options = {
       ...data.options,
@@ -71,7 +71,8 @@ function doSaveReport(data, { canOverwrite = false } = {}) {
     if (error.name == "TypeError") {
       return Promise.reject();
     }
-    return Promise.reject(new SaveReportError("Report could not be saved"));
+    if (errorMessage) return Promise.reject(new SaveReportError(errorMessage));
+    return Promise.reject();
   });
 }
 
@@ -79,7 +80,7 @@ export default function useUpdateReport(report, onChange) {
   const handleChange = useImmutableCallback(onChange);
 
   return useCallback(
-    (data = null, { successMessage = "Report saved" } = {}) => {
+    (data = null, { successMessage = "Report saved", errorMessage = "Report could not be saved" } = {}) => {
       if (isObject(data)) {
         // Don't save new report with partial data
         if (report.isNew && report.isNew()) {
@@ -108,7 +109,7 @@ export default function useUpdateReport(report, onChange) {
         ]);
       }
       if (!report.expression && !report.hash) return 0;
-      return doSaveReport(data, { canOverwrite: report.can_edit })
+      return doSaveReport(data, { canOverwrite: report.can_edit, errorMessage: errorMessage })
         .then(updatedReport => {
           if (!updatedReport || updatedReport.message === 'No changes made') return;
           if (!isNil(successMessage)) {

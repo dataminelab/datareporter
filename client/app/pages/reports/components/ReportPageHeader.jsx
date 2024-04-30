@@ -254,7 +254,7 @@ export default function ReportPageHeader(props) {
         }
         setModels(newModels);
         props.onChange(extend(report.clone(), { ...updates }));
-        updateReport(updates, { successMessage: null });
+        updateReport(updates, { successMessage: null, errorMessage: null });
         handleReportChanged(true);
         recordEvent("update", "report", report.id, { data_source_id });
       } catch (err) {
@@ -292,7 +292,7 @@ export default function ReportPageHeader(props) {
         }
         if (signal && signal.aborted) return;
         props.onChange(extend(report.clone(), { ...updates }));
-        updateReport({...report.clone(), ...updates}, { successMessage: null }); // show message only on error
+        updateReport({...report.clone(), ...updates}, { successMessage: null, errorMessage: null }); // show message only on error
         handleReportChanged(true);
         setSelectedModel(modelId);
       } catch (err) {
@@ -305,7 +305,7 @@ export default function ReportPageHeader(props) {
   const handleIdChange = useCallback(async id => {
     recordEvent("update", "report", report.id, { id });
     setReport(extend(report.clone(), { id }));
-    updateReport({ id }, { successMessage: null });
+    updateReport({ id }, { successMessage: null, errorMessage: null });
     handleReportChanged(true);
   });
 
@@ -400,7 +400,7 @@ export default function ReportPageHeader(props) {
   );
 
   useEffect(() => {
-    updateReport(report, { successMessage: null });
+    updateReport(report, { successMessage: null, errorMessage: null });
   }, [report.expression, window.location.hash]);
 
   useEffect(() => {

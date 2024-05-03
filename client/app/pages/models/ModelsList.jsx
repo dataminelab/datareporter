@@ -32,17 +32,17 @@ function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
       deleteModel(event, model);
     }
   }
-  return <>
-            <Button type="ghost" icon="setting" className="m-2 inline" onClick={() => editConfigModel(model)}>
-              Edit config
-            </Button>
-            <Button type="dashed" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
-              Edit
-            </Button>
-            <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => handleDeleteModel(event)}>
-              Delete
-            </Button>
-          </>;
+  return (<>
+    <Button type="ghost" icon="setting" className="m-2 inline" onClick={() => editConfigModel(model)}>
+      Edit config
+    </Button>
+    <Button type="dashed" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
+      Edit
+    </Button>
+    <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => handleDeleteModel(event)}>
+      Delete
+    </Button>
+  </>);
 }
 
 ModelsListActions.propTypes = {
@@ -182,9 +182,15 @@ class ModelsList extends React.Component {
     if (!policy.canCreateDataSource()) {
       return null;
     }
+    const newModelProps = {
+      type: "primary",
+      disabled: !policy.canCreateDataSource(),
+      onClick: this.showCreateModelDialog,
+      "data-test": "CreateModelButton"
+    };
     return (
       <div className="m-b-15">
-        <Button type="primary" disabled={!policy.canCreateDataSource()} onClick={this.showCreateModelDialog}>
+        <Button {...newModelProps}>
           <i className="fa fa-plus m-r-5" />
           New Model
         </Button>
@@ -204,6 +210,7 @@ class ModelsList extends React.Component {
           {controller.isLoaded && !controller.isEmpty && (
             <div className="table-responsive" data-test="ModelList">
               <ItemsTable
+                dataTest="CreateModelLink"
                 items={controller.pageItems}
                 columns={this.listColumns}
                 context={this.actions}

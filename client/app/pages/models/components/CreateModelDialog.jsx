@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
 import Alert from "antd/lib/alert";
 import DynamicForm from "@/components/dynamic-form/DynamicForm";
@@ -49,7 +50,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
       setTables([]);
       setLoadTables(false);
     }
-  }, [tables])
+  }, [tables]);
 
 
   const formFields = useMemo(() => {
@@ -84,10 +85,21 @@ function CreateModelDialog({ dialog, dataSources, model }) {
 
 
   }, [createModel, onChangeConnection]);
-
+  console.log("formFields", formFields)
   return (
-    <Modal {...dialog.props} title={ !model ? 'Create a New Model' : 'Edit a Model'}
-           okText={!model ? 'Create' : 'Save'} onOk={createModel}>
+    <Modal
+      {...dialog.props} 
+      data-test="CreateModelDialog" 
+      title={ !model ? 'Create a New Model' : 'Edit a Model'}
+      footer={[
+        <Button key="cancel" onClick={() => dialog.dismiss()} data-test="CreateModelCancelButton">
+          Cancel
+        </Button>,
+        <Button key="submit" onClick={()=> createModel()} type="primary">
+          {!model ? 'Create' : 'Save'} 
+        </Button>,
+      ]}
+    >
       <DynamicForm fields={formFields} ref={formRef} hideSubmitButton />
       {error && <Alert message={error.message} type="error" showIcon />}
     </Modal>

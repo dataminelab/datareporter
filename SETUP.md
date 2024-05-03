@@ -100,6 +100,21 @@ In order to test viz-lib folder you need to install dependencies and run tests b
 npm install antd@^3 react@^16.8 react-dom@^16.8 && npm run test
 ```
 
+### Running cypress
+
+install cypress and seed database
+```
+npm run cypress:install && node cypress/cypress.js db-seed
+```
+run cypress
+```
+npm run cypress
+```
+Open cypress for visual testing
+```
+npx cypress open
+``` 
+
 ### Components
 #### Datareporter server
 * **directory**: `redash`

@@ -93,7 +93,7 @@
     "plywood-druid-requester": "2.6.2",
     "plywood-mysql-requester": "2.3.0",
     "plywood-postgres-requester": "1.4.0",
-    "tslint": "5.18.0",
+    "tslint": "5.20.1",
     "typescript": "^4.0.3"
   }
 }

@@ -36,12 +36,8 @@ export default function initNumberColumn(column) {
   const format = createNumberFormatter(column.numberFormat);
   
   function prepareData(row) {
-    let number = row[column.name];
-    if (Number.isSafeInteger(number)) {
-      number = format(number);
-    }
     return {
-      text: number,
+      text: format(row[column.name])
     };
   }
 

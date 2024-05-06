@@ -66,7 +66,6 @@ export function createBooleanFormatter(values) {
 }
 
 export function createNumberFormatter(format) {
-  console.log("creating shit");
   if (isString(format) && format !== "") {
     const n = numeral(0); // cache `numeral` instance
     return value => (value === null || value === "" ? "" : n.set(value).format(format));

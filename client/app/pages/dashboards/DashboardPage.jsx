@@ -29,12 +29,10 @@ function DashboardSettings({ dashboardOptions }) {
   const { dashboard, updateDashboard, addWidgetStyle } = dashboardOptions;
   return (
     <div className="bg-white tiled">
-      {/* THIS CHECKBOX DOESNT WORK? */}
       <Checkbox
         checked={!!dashboard.dashboard_filters_enabled}
         onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
         data-test="DashboardFiltersCheckbox"
-        disabled
       >
         Use Dashboard Level Filters
       </Checkbox>

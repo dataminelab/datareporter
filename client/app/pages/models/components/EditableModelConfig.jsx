@@ -213,14 +213,14 @@ export default function EditableModelConfig({model, saveConfig}) {
   const handleSaveConfig = (callback) => {
     const yamlContent =  item;
     if (!yamlContent.includes("timeAttribute") || yamlContent.includes("timeAttribute: null")) {
-      alert("your time attribute variable is null");
+      alert("timeAttribute cannot be null");
       return;
     }
     const timeAttribute = yamlContent.split("timeAttribute: ")[1].split("\n")[0];
     const attributes = yamlContent.split("attributes:")[1].split("dimensions:")[0];
     // if timeAttribute is not in attributes, then alert
     if (!attributes.includes(timeAttribute)) {
-      alert("your time attribute variable is not in attributes list");
+      alert("timeAttribute is not in the attributes list");
       return;
     }
     // if timeAttribute's type is not TIME then alert 
@@ -231,7 +231,7 @@ export default function EditableModelConfig({model, saveConfig}) {
       if (attribute.includes(timeAttribute)) {
         const attributeType = attribute.split("type: ")[1].split("\n")[0];
         if (attributeType !== "TIME") {
-          alert("your time attribute variable's type is not a time or timestamp");
+          alert("timeAttribute must be time or timestamp");
           return;
         }
       }

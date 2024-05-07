@@ -267,28 +267,53 @@ export default function ReportPageHeader(props) {
     [report, props.onChange, updateReport]
   );
 
+  const getModel = (modelId) => {
+    return models.find(m => m.id === modelId);
+  }
+
+  const getModelDataCube = async (modelId) => {
+    const settings = await getSettings(modelId);
+    const model = getModel(modelId);
+    if (!model || !settings) return {};
+    const dataCubes = settings.appSettings.dataCubes
+    return dataCubes.find(m => m.name === model.table);
+  }
+
+
+  const getSettings = async (modelId) => {
+    var settings;
+    if (report.isJustLanded) {
+      settings = { appSettings: report.appSettings, timekeeper: {} };
+    } else {
+      settings = await Model.getReporterConfig(modelId);
+    }
+    return settings;
+  }
+
   const handleModelChange = useCallback(
     async (modelId, signal) => {
       try {
-        var res;
-        if (report.isJustLanded) {
-          res = { appSettings: report.appSettings, timekeeper: {} };
-        } else {
-          res = await Model.getReporterConfig(modelId);
+        const modelDataCube = await getModelDataCube(modelId);
+        if (!modelDataCube.timeAttribute) {
+          // Revert previous changes like make selected model name to previous one and so on
+          return updateReport({}, { successMessage: null, errorMessage: "DataCube must have a timeAttribute" }); // show message only on error
         }
-        const model = models.find(m => m.id === modelId);
+        const settings = await getSettings(modelId);
+        const model = getModel(modelId);
         if (model && model.id !== report.model_id) {
           replaceHash(model, window.location.hash.split("/4/")[1]);
         }
         recordEvent("update", "report", report.id, { modelId });
         var updates = {
           model_id: modelId,
-          appSettings: res.appSettings,
-          timekeeper: res.timekeeper,
+          appSettings: settings.appSettings,
+          timekeeper: settings.timekeeper,
           isJustLanded: false,
         };
-        if (report.data_source_id || selectedDataSource) {
-          updates.data_source_id = report.data_source_id || selectedDataSource
+        if (report.data_source_id) {
+          updates.data_source_id = report.data_source_id;
+        } else if (selectedDataSource) {
+          updates.data_source_id = selectedDataSource;
         }
         if (signal && signal.aborted) return;
         props.onChange(extend(report.clone(), { ...updates }));
@@ -434,11 +459,13 @@ export default function ReportPageHeader(props) {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    const setData = async (dataSourceId, model_id) => {
+    const setData = async (dataSourceId, modelId) => {
       if (signal.aborted) return;
       await handleDataSourceChange(dataSourceId, signal);
-      if (signal.aborted) return;
-      await handleModelChange(model_id, signal)
+      if (signal.aborted) return; 
+      const modelDataCube = await getModelDataCube(modelId);
+      if (!modelDataCube.timeAttribute) return null;
+      await handleModelChange(modelId, signal)
         .then(() => {
           if (signal.aborted) return;
           setTimeout(() => {
@@ -475,12 +502,15 @@ export default function ReportPageHeader(props) {
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
-    if (modelsLoaded && !selectedModel) {
-      if (models.length) {
-        handleModelChange(models[0].id);
-        replaceHash(models[0], window.location.hash.split("/4/")[1]);
-      }
+    const firstEncounterModelSetter = async (report, models) => {
+      const modelId = models[0].id;      
+      const modelDataCube = await getModelDataCube(modelId);
+      if (!modelDataCube.timeAttribute) return null;
+      handleModelChange(modelId);
+      const model = getModel(modelId);
+      replaceHash(model, window.location.hash.split("/4/")[1]);
     }
+    if (modelsLoaded && !selectedModel && models.length) firstEncounterModelSetter(report, models);
   }, [modelsLoaded]);
 
   return (

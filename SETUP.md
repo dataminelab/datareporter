@@ -32,11 +32,11 @@ nodenv local 12.22.12
     * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
 
 * Setup docker compose
-    * `make up` or `docker-compose up --build`  to start required services like postgres app server
-    * `docker-compose run --rm server create_db`  Will start server and run. exec /app/manage.py database create_tables.
+    * `make up` or `docker compose up --build`  to start required services like postgres app server
+    * `docker compose run --rm server create_db`  Will start server and run. exec /app/manage.py database create_tables.
       This step is required **only once**.
-    * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker-compose run server manage db migrate`
-    * Later on and only if necessary, in order to upgrade local database run: `docker-compose run --rm server manage db upgrade`
+    * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker compose run server manage db migrate`
+    * Later on and only if necessary, in order to upgrade local database run: `docker compose run --rm server manage db upgrade`
 
 
 * Not needed anymore, might be useful for local development: start UI proxy
@@ -82,19 +82,19 @@ And run the debugging session:
 pip install ptvsd
 
 # start debugging session using below line
-docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
+docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server
 ```
 
 ### Running tests locally
 
 First ensure that the "tests" database is created:
 ```
-docker-compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
+docker compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
 ```
 
 Then run the tests:
 ```
-docker-compose run --rm server tests
+docker compose run --rm server tests
 ```
 
 ### Components
@@ -126,7 +126,7 @@ docker-compose run --rm server tests
 * **changes:**
   * All changes should be reflected automatically. The server is running in watch mode with incremental build support
     and should rebuild at any source code change.
-  * To see details/logs of build go into repo root dir and run `docker-compose logs plywood`
+  * To see details/logs of build go into repo root dir and run `docker compose logs plywood`
 
 ### Publishing NPM reporter-plywood package
 This is depricated but still available for backward compatibility.
@@ -146,9 +146,9 @@ npm start
 visit http://localhost:8080/ instead of using port 5050
 
 To run Python debugger:
-docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
+docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server
 
-To log messages to/from Plywood add to the Plywood env (in docker-compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
+To log messages to/from Plywood add to the Plywood env (in docker compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
 
 ### Docker installation issues
 

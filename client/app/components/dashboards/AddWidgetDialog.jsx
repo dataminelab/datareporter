@@ -103,7 +103,7 @@ function AddWidgetDialog({ dialog, dashboard }) {
 
   const saveWidget = useCallback(() => {
     dialog.close({ visualization: selectedVisualization, parameterMappings }).catch(() => {
-      notification.error("Widget could not be added");
+      notification.error("Query Widget could not be added");
     });
   }, [dialog, selectedVisualization, parameterMappings]);
 
@@ -112,7 +112,7 @@ function AddWidgetDialog({ dialog, dashboard }) {
   return (
     <Modal
       {...dialog.props}
-      title="Add Widget"
+      title="Add Query Widget"
       onOk={saveWidget}
       okButtonProps={{
         ...dialog.props.okButtonProps,

@@ -220,7 +220,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   };
 
   changeHash(hash: string, force = false): void {
-    console.log("USE THIS METHOD TO CHANGE THE HASH")
+    // TODO: USE THIS METHOD TO CHANGE THE HASH
     this.hashUpdating = true;
 
     // Hash initialization, no need to add the intermediary url in the history
@@ -320,8 +320,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   render() {
-    // React.StrictMode is giving us a lot of warnings about deprecated lifecycle methods
-    // and the project is too old to change everything to hooks
     return <>
       <main className="turnilo-application">
         {this.renderView()}

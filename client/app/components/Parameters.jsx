@@ -160,7 +160,8 @@ export default class Parameters extends React.Component {
         containerProps={{
           className: "parameter-container",
           onKeyDown: dirtyParamCount ? this.handleKeyDown : null,
-        }}>
+        }}
+      >
         {parameters.map((param, index) => (
           <SortableElement key={param.name} index={index}>
             <div className="parameter-block" data-editable={editable || null}>

@@ -91,6 +91,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
   }
 
   public toExpression(dataCube: DataCube): Expression {
+    // @ts-ignore
     const clauses = this.clauses.toArray().map(clause => toExpression(clause, dataCube.getDimension(clause.reference)));
     switch (clauses.length) {
       case 0:
@@ -166,6 +167,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   public setClause(newClause: FilterClause): Filter {
     const idx = this.clauses.findIndex(clause => clause.reference === newClause.reference);
+    // @ts-ignore
     return this.updateClauses(clauses => idx === -1 ? clauses.concat([newClause]) : clauses.set(idx, newClause));
   }
 

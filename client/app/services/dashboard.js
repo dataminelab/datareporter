@@ -231,11 +231,11 @@ Dashboard.prototype.addWidget = function addWidget(textOrVisualization, options 
 
   if (_.isString(textOrVisualization)) {
     props.text = textOrVisualization;
+    props.visualization_id = options.id;
+    delete props.options.id;
   } else if (_.isObject(textOrVisualization)) {
     props.visualization_id = textOrVisualization.id;
     props.visualization = textOrVisualization;
-  } else {
-    // TODO: Throw an error?
   }
 
   const widget = new Widget(props);

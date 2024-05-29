@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import { axios } from "@/services/axios";
 import PropTypes from "prop-types";
 import { chain, cloneDeep, find } from "lodash";
 import cx from "classnames";
@@ -11,7 +12,6 @@ import { WidgetTypeEnum } from "@/services/widget";
 
 import "react-grid-layout/css/styles.css";
 import "./dashboard-grid.less";
-import {axios} from "@/services/axios";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -46,6 +46,9 @@ const DashboardWidget = React.memo(
     isPublic,
     isLoading,
     filters,
+    setClicker,
+    setEssence,
+    getEssence,
   }) {
     const { type } = widget;
     const onLoad = () => onLoadWidget(widget);
@@ -54,6 +57,7 @@ const DashboardWidget = React.memo(
     const [config, setConfig] = useState({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect( () => {
+      // TODO: Pull the query results directly from database instead of sending new requests to the server each time
       async function getConfigTurnilo() {
         if (!config.appSettings) {
           if (widget.is_public) {
@@ -69,30 +73,41 @@ const DashboardWidget = React.memo(
       }
       getConfigTurnilo()
     }, [widget]);
-
-    if (type === WidgetTypeEnum.VISUALIZATION) {
-      return (
-        <VisualizationWidget
+    switch (type) {
+      case WidgetTypeEnum.VISUALIZATION:
+        return <VisualizationWidget
+            widget={widget}
+            dashboard={dashboard}
+            filters={filters}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            isLoading={isLoading}
+            onLoad={onLoad}
+            onRefresh={onRefresh}
+            onDelete={onDelete}
+            onParameterMappingsChange={onParameterMappingsChange}
+          />;
+      case WidgetTypeEnum.TEXTBOX:
+        return <TextboxWidget
           widget={widget}
-          dashboard={dashboard}
-          filters={filters}
           canEdit={canEdit}
           isPublic={isPublic}
-          isLoading={isLoading}
-          onLoad={onLoad}
-          onRefresh={onRefresh}
           onDelete={onDelete}
-          onParameterMappingsChange={onParameterMappingsChange}
-        />
-      );
+        />;
+      case WidgetTypeEnum.TURNILO:
+        return <TurniloWidget
+          config={config}
+          widget={widget}
+          canEdit={canEdit}
+          isPublic={isPublic}
+          onDelete={onDelete}
+          setClicker={setClicker}
+          setEssence={setEssence}
+          getEssence={getEssence}
+        />;
+      default:
+        return <RestrictedWidget widget={widget} />;
     }
-    if (type === WidgetTypeEnum.TEXTBOX) {
-      return <TextboxWidget widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
-    }
-    if (type === WidgetTypeEnum.TURNILO) {
-      return <TurniloWidget config={config} widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
-    }
-    return <RestrictedWidget widget={widget} />;
   },
   (prevProps, nextProps) =>
     prevProps.widget === nextProps.widget &&
@@ -261,7 +276,11 @@ class DashboardGrid extends React.Component {
       dashboard,
       isPublic,
       widgets,
+      setClicker,
+      setEssence,
+      getEssence,
     } = this.props;
+
     return (
       <div className={className}>
         <ResponsiveGridLayout
@@ -276,7 +295,8 @@ class DashboardGrid extends React.Component {
           layouts={this.state.layouts}
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
-          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}>
+          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}
+        >
           {widgets.map(widget => (
             <div
               key={widget.id}
@@ -298,6 +318,9 @@ class DashboardGrid extends React.Component {
                 onRefreshWidget={onRefreshWidget}
                 onRemoveWidget={onRemoveWidget}
                 onParameterMappingsChange={onParameterMappingsChange}
+                setClicker={setClicker}
+                setEssence={setEssence}
+                getEssence={getEssence}
               />
             </div>
           ))}

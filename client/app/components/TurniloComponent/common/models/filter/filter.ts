@@ -71,7 +71,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     });
   }
 
-  public insertByIndex(index: number, newClause: FilterClause): Filter {
+  public insertByIndex(index: number, newClause: FilterClause): Filter { 
     return this.updateClauses((clauses: List<FilterClause>) =>
       clauses
         .insert(index, newClause)
@@ -118,7 +118,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
       }));
   }
 
-  private indexOfClause(reference: string): number {
+  private indexOfClause(reference: string): number { 
     return this.clauses.findIndex(clause => clause.reference === reference);
   }
 
@@ -131,9 +131,17 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
   }
 
   public removeClause(reference: string): Filter {
-    const index = this.indexOfClause(reference);
+    const index = this.indexOfClause(reference); 
     if (index === -1) return this;
     return this.updateClauses(clauses => clauses.delete(index));
+  }
+
+  public removeClauseByIndex(index: number) {
+    return this.updateClauses(clauses => clauses.delete(index));
+  }
+
+  public getReferenceNameByIndex(index: number) {
+    return this.clauses.get(index).reference;
   }
 
   public filteredOn(reference: string): boolean {

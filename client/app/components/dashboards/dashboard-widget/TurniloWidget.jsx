@@ -1,14 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
+import { TurniloApplication } from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
 import Widget from "./Widget";
-import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
-import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
-import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
-import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
+import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
+import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
 
 function TurniloWidget(props) {
-  const { widget, canEdit, config } = props;
+  const { widget, canEdit, config, setClicker, setEssence, getEssence } = props;
   const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
   const TurniloMenuOptions = [];
 
@@ -23,21 +21,19 @@ function TurniloWidget(props) {
 
     const version = config.version;
 
-    Ajax.version = version;
-
-    const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory.bind(config)
-    });
-
-    return ( 
+    return (
       <Widget {...props} menuOptions={canEdit ? TurniloMenuOptions : null} className="widget-report">
         <turnilo-widget>
           <TurniloApplication
+            widget={widget}
             config={config}
             version={version}
             hashWidget={turniloHash}
-            appSettings={appSettings}
+            appSettings={config.appSettings}
             initTimekeeper={config.timekeeper ? Timekeeper.fromJS(config.timekeeper) : new Timekeeper({ timeTags: [] })}
+            setClicker={setClicker}
+            setEssence={setEssence}
+            getEssence={getEssence}
           />
         </turnilo-widget>
       </Widget>
@@ -49,7 +45,6 @@ function TurniloWidget(props) {
       </Widget>
     );
   }
-
 }
 
 TurniloWidget.propTypes = {

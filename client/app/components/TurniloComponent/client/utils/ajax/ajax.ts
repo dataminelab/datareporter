@@ -29,6 +29,8 @@ import {
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { setPriceButton } from "../../../../../pages/reports/components/ReportPageHeaderUtils";
+import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { Essence } from "../../../common/models/essence/essence";
 
 interface Meta {
   // Inner response object that returns two parameters:
@@ -59,17 +61,6 @@ function getSplitsDescription(ex: Expression): string {
 }
 
 const CLIENT_TIMEOUT_DELTA:number = 30000;
-
-async function getDefaultTimeout() {
-  const method = "GET";
-  const url = `api/timeout`;
-  return axios({ method, url })
-    .then(res => {
-      console.log("timeout", res.data)
-      return res.data;
-    }
-  )
-}
 
 function clientTimeout(cluster: Cluster): number {
   const defaultTimeout = localStorage.getItem("CLIENT_TIMEOUT_DELTA") ? Number(localStorage.getItem("CLIENT_TIMEOUT_DELTA")) : CLIENT_TIMEOUT_DELTA;
@@ -130,7 +121,7 @@ export class Ajax {
       });
   }
 
-  static queryUrlExecutorFactory(dataCube: DataCube): Executor {
+  static queryUrlExecutorFactory(dataCube: DataCube, getEssence: () => Essence): Executor {
     const timeout = clientTimeout(dataCube.cluster);
 
     function timeoutQuery(ms:number) {
@@ -167,28 +158,27 @@ export class Ajax {
       return subscribe({ method, url, timeout, data });
     }
 
+    function parseMeta(sub: APIResponse) {
+      const meta = sub.meta;
+      if (!meta) return;
+      // TODO: proceed_data is a byte parse is better, use big int
+      // TODO: make it also visible on dashboard page
+      setPriceButton(Number(meta.price), Number(meta.proceed_data), false);
+    }
+
     return async (ex: Expression, env: Environment = {}) => {
       const modelId = this.model_id;
       if (ex instanceof  LimitExpression) {
         const sub = await subscribeToFilter(ex, modelId);
-        if (sub.meta) {
-          setPriceButton(
-            Number(sub.meta.price), 
-            Number(sub.meta.proceed_data),
-            false);
-        }
+        parseMeta(sub);
         return Dataset.fromJS(sub.data || EmptyDataset);
-      } else {
-        const hash = getHash() || this.hash;
-        const sub = await subscribeToSplit(hash, modelId);
-        if (sub.meta) {
-          setPriceButton(
-            Number(sub.meta.price), 
-            Number(sub.meta.proceed_data),
-            false);
-        }
-        return Dataset.fromJS(sub.data || EmptyDataset);
-      };
+      }
+      const essence = getEssence ? getEssence() : null;
+      console.log("the essence is really", essence)
+      const hash = essence ? urlHashConverter.toHash(getEssence()).substring(2) : getHash() || this.hash;
+      const sub = await subscribeToSplit(hash, modelId);
+      parseMeta(sub);
+      return Dataset.fromJS(sub.data || EmptyDataset);
     }
   }
 }

@@ -36,7 +36,7 @@ class WidgetListResource(BaseResource):
         widget_properties.pop("id", None)
 
         visualization_id = widget_properties.pop("visualization_id")
-        if visualization_id:
+        if visualization_id and visualization_id != -1:
             visualization = models.Visualization.get_by_id_and_org(
                 visualization_id, self.current_org
             )

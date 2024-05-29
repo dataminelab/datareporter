@@ -200,8 +200,8 @@ function useDashboard(dashboardData) {
   const showReportDialog = useCallback(() => {
     AddReportDialog.showModal({
       dashboard,
-    }).onClose((text) =>
-      dashboard.addWidget(text).then(() => {
+    }).onClose(({ text, options }) =>
+      dashboard.addWidget(text, options).then(() => {
         setDashboard(currentDashboard => extend({}, currentDashboard))
       }, [dashboard]));
   }, [dashboard]);

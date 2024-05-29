@@ -161,7 +161,7 @@ export class Ajax {
     function parseMeta(sub: APIResponse) {
       const meta = sub.meta;
       if (!meta) return;
-      // TODO: proceed_data is a byte parse is better, use big int
+      // TODO: proceed_data is a byte type, parse it better, use big int
       // TODO: make it also visible on dashboard page
       setPriceButton(Number(meta.price), Number(meta.proceed_data), false);
     }
@@ -174,7 +174,6 @@ export class Ajax {
         return Dataset.fromJS(sub.data || EmptyDataset);
       }
       const essence = getEssence ? getEssence() : null;
-      console.log("the essence is really", essence)
       const hash = essence ? urlHashConverter.toHash(getEssence()).substring(2) : getHash() || this.hash;
       const sub = await subscribeToSplit(hash, modelId);
       parseMeta(sub);

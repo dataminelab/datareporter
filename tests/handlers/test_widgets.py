@@ -5,7 +5,7 @@ from redash import models
 class WidgetAPITest(BaseTestCase):
     def create_widget(self, dashboard, visualization, width=1):
         data = {
-            "visualization_id": visualization.id, 
+            "visualization_id": visualization.id,
             "dashboard_id": dashboard.id,
             "options": {},
             "width": width,

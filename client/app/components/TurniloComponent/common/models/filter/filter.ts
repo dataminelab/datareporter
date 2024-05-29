@@ -71,7 +71,7 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     });
   }
 
-  public insertByIndex(index: number, newClause: FilterClause): Filter { 
+  public insertByIndex(index: number, newClause: FilterClause): Filter {
     return this.updateClauses((clauses: List<FilterClause>) =>
       clauses
         .insert(index, newClause)
@@ -91,7 +91,6 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
   }
 
   public toExpression(dataCube: DataCube): Expression {
-    // @ts-ignore
     const clauses = this.clauses.toArray().map(clause => toExpression(clause, dataCube.getDimension(clause.reference)));
     switch (clauses.length) {
       case 0:

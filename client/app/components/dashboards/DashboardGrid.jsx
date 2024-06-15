@@ -46,47 +46,28 @@ const DashboardWidget = React.memo(
     isPublic,
     isLoading,
     filters,
-    setClicker,
-    setEssence,
+    setFilterParams,
     getEssence,
   }) {
     const { type } = widget;
     const onLoad = () => onLoadWidget(widget);
     const onRefresh = () => onRefreshWidget(widget);
     const onDelete = () => onRemoveWidget(widget.id);
-    const [config, setConfig] = useState({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect( () => {
-      // TODO: Pull the query results directly from database instead of sending new requests to the server each time
-      async function getConfigTurnilo() {
-        if (!config.appSettings) {
-          if (widget.is_public) {
-            const token = window.location.pathname.split('/')[3];
-            if (!widget.report_id) return; 
-            const report_config =  await axios.get(`/api/reports/public/${token}?report_id=${widget.report_id}`);
-            setConfig(report_config);
-          } else {
-            const report_config =  await axios.get('/api/reports/' + widget.report_id);
-            setConfig(report_config);
-          }
-        }
-      }
-      getConfigTurnilo()
-    }, [widget]);
+
     switch (type) {
       case WidgetTypeEnum.VISUALIZATION:
         return <VisualizationWidget
-            widget={widget}
-            dashboard={dashboard}
-            filters={filters}
-            canEdit={canEdit}
-            isPublic={isPublic}
-            isLoading={isLoading}
-            onLoad={onLoad}
-            onRefresh={onRefresh}
-            onDelete={onDelete}
-            onParameterMappingsChange={onParameterMappingsChange}
-          />;
+          widget={widget}
+          dashboard={dashboard}
+          filters={filters}
+          canEdit={canEdit}
+          isPublic={isPublic}
+          isLoading={isLoading}
+          onLoad={onLoad}
+          onRefresh={onRefresh}
+          onDelete={onDelete}
+          onParameterMappingsChange={onParameterMappingsChange}
+        />;
       case WidgetTypeEnum.TEXTBOX:
         return <TextboxWidget
           widget={widget}
@@ -96,13 +77,12 @@ const DashboardWidget = React.memo(
         />;
       case WidgetTypeEnum.TURNILO:
         return <TurniloWidget
-          config={config}
+          config={widget.report}
           widget={widget}
           canEdit={canEdit}
           isPublic={isPublic}
           onDelete={onDelete}
-          setClicker={setClicker}
-          setEssence={setEssence}
+          setFilterParams={setFilterParams}
           getEssence={getEssence}
         />;
       default:
@@ -276,8 +256,7 @@ class DashboardGrid extends React.Component {
       dashboard,
       isPublic,
       widgets,
-      setClicker,
-      setEssence,
+      setFilterParams,
       getEssence,
     } = this.props;
 
@@ -318,8 +297,7 @@ class DashboardGrid extends React.Component {
                 onRefreshWidget={onRefreshWidget}
                 onRemoveWidget={onRemoveWidget}
                 onParameterMappingsChange={onParameterMappingsChange}
-                setClicker={setClicker}
-                setEssence={setEssence}
+                setFilterParams={setFilterParams}
                 getEssence={getEssence}
               />
             </div>

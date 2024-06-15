@@ -11,12 +11,72 @@ from rq.timeouts import JobTimeoutException
 from redash import models
 from redash.models.parameterized_query import ParameterizedQuery
 from redash.permissions import has_access, view_only
+from redash.plywood.objects.data_cube import DataCube
 from redash.serializers.query_result import (
     serialize_query_result,
     serialize_query_result_to_dsv,
     serialize_query_result_to_xlsx,
 )
 from redash.utils import json_loads
+from redash.services.expression import ExpressionBase64Parser
+from flask import url_for
+
+def is_admin(user):
+    if 'admin' in user.permissions or 'super_admin' in user.permissions or 'edit_report' in user.permissions:
+        return True
+    return False
+
+def get_data_cube(model):
+    data_cube = DataCube(model=model)
+    return data_cube
+
+def hash_report(o, can_edit=False):
+    # carry this into serializers folder and name it into serialize_report
+    data_cube = get_data_cube(o.model)
+    is_favorite = o.is_favorite_v2(o.user, o)
+    api_key = models.ApiKey.get_by_object(o)
+    public_url = None
+    if api_key:
+        public_url = url_for(
+            "redash.public_report",
+            token=api_key.api_key,
+            _external=True,
+        )
+        api_key = api_key.api_key
+    result = {
+        "color_1": o.color_1,
+        "color_2": o.color_2,
+        "hash": o.hash,
+        "name": o.name,
+        "model_id": o.model_id,
+        "can_edit": can_edit,
+        "source_name": data_cube.source_name,
+        "data_source_id": o.model.data_source.id,
+        "report": "",
+        "schedule": None,
+        "tags": o.tags,
+        "user":{
+            "id": o.user.id,
+            "name": o.user.name,
+            "profile_image_url": o.user.profile_image_url,
+            "permissions": o.user.permissions,
+            "isAdmin": is_admin(o.user),
+        },
+        "is_favorite": is_favorite,
+        "is_archived": o.is_archived,
+        "isJustLanded": True,
+        "appSettings": {
+            "dataCubes": [data_cube.data_cube],
+            "customization": {},
+            "clusters": [],
+        },
+        "id": o.id,
+        "api_key": api_key,
+        "public_url": public_url,
+    }
+    return result
+
+
 
 
 def public_widget(widget: models.Widget):
@@ -169,8 +229,12 @@ def serialize_widget(widget: models.Widget):
         "updated_at": widget.updated_at,
         "created_at": widget.created_at,
         "report_id": widget.get_report_id(),
+        "report": widget.get_report(),
         "is_public": 0,
     }
+
+    if d['report']:
+        d['report'] = hash_report(d['report'])
 
     if widget.visualization and widget.visualization.id:
         d["visualization"] = serialize_visualization(widget.visualization)

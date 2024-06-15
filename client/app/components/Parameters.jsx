@@ -1,4 +1,4 @@
-import { size, filter, forEach, extend } from "lodash";
+import { size, filter, forEach, extend, each } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import { SortableContainer, SortableElement, DragHandle } from "@redash/viz/lib/components/sortable";
@@ -11,9 +11,11 @@ import { toHuman } from "@/lib/utils";
 
 import "./Parameters.less";
 
-function updateUrl(parameters) {
+export function updateUrl(parameters) {
+  if (!parameters) return;
   const params = extend({}, location.search);
-  parameters.forEach(param => {
+  each(parameters, param => {
+    if (!param) return;
     extend(params, param.toUrlParams());
   });
   location.setSearch(params, true);

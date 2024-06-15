@@ -185,7 +185,7 @@ model_factory = ModelFactory(
 )
 
 report_factory = ModelFactory(
-    redash.models.models.Report,
+    redash.models.Report,
     user=user_factory.create,
     name=Sequence("Report{}"),
 )

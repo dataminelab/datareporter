@@ -6,7 +6,8 @@ from sqlalchemy.orm.exc import StaleDataError
 from funcy import partial
 
 from redash import models, settings
-from redash.models.models import Model, Report
+from redash.models.models import Model
+from redash.models import Report
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import (
     BaseResource,

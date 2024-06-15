@@ -2,8 +2,8 @@ import json
 
 import mock
 from sqlalchemy.orm.exc import NoResultFound
-from redash.models import db
-from redash.models.models import Report, ModelConfig
+from redash.models import db, Report
+from redash.models.models import ModelConfig
 from tests import BaseTestCase
 import lzstring
 from redash import models

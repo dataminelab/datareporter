@@ -32,6 +32,8 @@ import { Button } from "../../button/button";
 import { StringInputWithPresets } from "../../input-with-presets/string-input-with-presets";
 import { getTimeFilterPresets, LATEST_PRESETS, TimeFilterPreset } from "./presets";
 import { TimeShiftSelector } from "./time-shift-selector";
+// @ts-ignore
+import { updateUrl } from '../../../../../../components/Parameters'
 
 export interface PresetTimeTabProps {
   timekeeper: Timekeeper;
@@ -64,7 +66,7 @@ function initialState(essence: Essence, dimension: Dimension): PresetTimeTabStat
   };
 }
 
-function constructFilter(period: TimeFilterPeriod, duration: string, reference: string) {
+function constructFilter(period: TimeFilterPeriod, duration: string, reference: string): RelativeTimeFilterClause {
   return new RelativeTimeFilterClause({ period, duration: Duration.fromJS(duration), reference });
 }
 
@@ -94,6 +96,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       clicker.changeComparisonShift(timeShift);
       setEssence(widget, newEssence);
     }
+    updateUrl([constructFilter(filterPeriod, filterDuration, filterDuration)]);
     onClose();
   }
 
@@ -158,7 +161,8 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       errorMessage={latestPeriod && !isValidDuration(filterDuration) && STRINGS.invalidDurationFormat}
       selected={latestPeriod ? filterDuration : undefined}
       onChange={(duration: string) => this.setFilter(TimeFilterPeriod.LATEST, duration)}
-      placeholder={STRINGS.durationsExamples} />;
+      placeholder={STRINGS.durationsExamples}
+    />;
   }
 
   private renderButtonGroup(title: string, period: TimeFilterPeriod) {

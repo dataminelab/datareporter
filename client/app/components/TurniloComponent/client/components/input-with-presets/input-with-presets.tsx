@@ -98,11 +98,14 @@ export class InputWithPresets<T> extends React.Component<InputWithPresetsProps<T
 
     return <React.Fragment>
       <ButtonGroup title={title} groupMembers={members} />
-      {customSelected && <input type="text"
-                                className={classNames("custom-input", { invalid: errorMessage })}
-                                placeholder={placeholder}
-                                value={customValue}
-                                onChange={this.customValueUpdate} />}
+      {customSelected && (
+        <input type="text"
+          className={classNames("custom-input", { invalid: errorMessage })}
+          placeholder={placeholder}
+          value={customValue}
+          onChange={this.customValueUpdate}
+        />
+      )}
       {renderErrorMessage && <span className="error-message">{errorMessage}</span>}
     </React.Fragment>;
   }

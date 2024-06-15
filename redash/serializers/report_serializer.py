@@ -1,7 +1,7 @@
 from flask_login import current_user
 import lzstring
 from redash import models
-from redash.models.models import Report
+from redash.models import Report
 from redash.serializers import Serializer
 from redash.services.expression import ExpressionBase64Parser
 

@@ -204,7 +204,7 @@ export class Report {
   }
 }
 
-class Parameters {
+export class Parameters {
   constructor(report, reportString) {
     this.report = report;
     this.updateParameters();

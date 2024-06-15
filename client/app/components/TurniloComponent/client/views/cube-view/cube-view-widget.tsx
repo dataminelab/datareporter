@@ -66,8 +66,7 @@ const defaultLayout: CubeViewLayout = {
 export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
-  setClicker: (widgetId: number, clicker: Clicker) => void;
-  setEssence: (widgetId: number, essence: Essence) => void;
+  setFilterParams: (widgetId: number, essence: Essence, clicker: Clicker) => void;
   widgetId: number;
   hash: string;
   changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
@@ -235,23 +234,22 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   };
 
-  private getCubeContext(): Promise<CubeContextValue> {
+  private async getCubeContext(): Promise<CubeContextValue> {
     const { essence } = this.state;
     /*
      React determine context value change using value reference.
      Because we're creating new object, reference would be different despite same values inside,
      hence memoization. More info: https://reactjs.org/docs/context.html#caveats
     */
-    return this.constructContext(essence, this.clicker);
+    return await this.constructContext(essence, this.clicker);
   }
 
   private constructContext = memoizeOne(
     async (essence: Essence, clicker: Clicker) => {
-      const { setClicker, setEssence, widgetId } = this.props;
+      const { setFilterParams, widgetId } = this.props;
 
       if (widgetId) {
-        await setClicker(widgetId, clicker);
-        await setEssence(widgetId, essence);
+        await setFilterParams(widgetId, essence, clicker);
       }
       return { essence, clicker };
     },

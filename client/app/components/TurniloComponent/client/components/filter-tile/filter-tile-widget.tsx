@@ -250,7 +250,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   canDrop(): boolean {
     const { essenceList } = this.props;
-    const { filter } = essenceList[0]
+    const { filter } = essenceList[0];
     const dimension = DragManager.draggingDimension();
     if (dimension) return !filter.getClauseForDimension(dimension);
     if (DragManager.isDraggingSplit()) {

@@ -30,6 +30,8 @@ import { STRINGS } from "../../../config/constants";
 import { Button } from "../../button/button";
 import { DateRangePicker } from "../../date-range-picker/date-range-picker";
 import { TimeShiftSelector } from "./time-shift-selector";
+// @ts-ignore
+import { updateUrl } from '../../../../../../components/Parameters';
 
 export interface FixedTimeTabProps {
   timekeeper: Timekeeper;
@@ -147,6 +149,7 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
       clicker.changeComparisonShift(timeShift);
       setEssence(widget, newEssence);
     }
+    updateUrl([this.createDateRange()]);
     onClose();
   };
 

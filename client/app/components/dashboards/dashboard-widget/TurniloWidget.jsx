@@ -6,7 +6,7 @@ import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeep
 import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
 
 function TurniloWidget(props) {
-  const { widget, canEdit, config, setClicker, setEssence, getEssence } = props;
+  const { widget, canEdit, config, setFilterParams, getEssence } = props;
   const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
   const TurniloMenuOptions = [];
 
@@ -31,8 +31,7 @@ function TurniloWidget(props) {
             hashWidget={turniloHash}
             appSettings={config.appSettings}
             initTimekeeper={config.timekeeper ? Timekeeper.fromJS(config.timekeeper) : new Timekeeper({ timeTags: [] })}
-            setClicker={setClicker}
-            setEssence={setEssence}
+            setFilterParams={setFilterParams}
             getEssence={getEssence}
           />
         </turnilo-widget>

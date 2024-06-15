@@ -34,8 +34,7 @@ export interface TurniloApplicationProps {
   version: string;
   hashWidget: string;
   maxFilters?: number;
-  setClicker: Fn;
-  setEssence: Fn;
+  setFilterParams: Fn;
   getEssence: (id:Number) => Essence;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
@@ -217,7 +216,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   openAboutModal = () => this.setState({ showAboutModal: true });
 
   renderView() {
-    const { maxFilters, setClicker, setEssence } = this.props;
+    const { maxFilters, setFilterParams } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { customization } = appSettings;
     const widgetId = this.props.widget.options.type === "TURNILO" ? this.props.widget.id : null;
@@ -244,8 +243,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
           openAboutModal={this.openAboutModal}
           maxFilters={maxFilters}
           customization={customization}
-          setClicker={setClicker}
-          setEssence={setEssence}
+          setFilterParams={setFilterParams}
           widgetId={widgetId}
         />;
 

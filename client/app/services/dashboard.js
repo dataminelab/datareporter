@@ -206,6 +206,9 @@ Dashboard.prototype.getParametersDefs = function getParametersDefs() {
             globalParams[mapping.mapTo].locals.push(param);
           }
         });
+    } else if (widget.options.type === "TURNILO") {
+      widget = new Widget(widget);
+      globalParams["turnilo_daterange"] = widget.options.parameterMappings[0];
     }
   });
   return _.values(
@@ -232,7 +235,10 @@ Dashboard.prototype.addWidget = function addWidget(textOrVisualization, options 
   if (_.isString(textOrVisualization)) {
     props.text = textOrVisualization;
     props.visualization_id = options.id;
-    delete props.options.id;
+    if (props.options.type === "TABLE") {
+      delete props.options.parameterMappings
+      delete props.options.id;
+    }
   } else if (_.isObject(textOrVisualization)) {
     props.visualization_id = textOrVisualization.id;
     props.visualization = textOrVisualization;

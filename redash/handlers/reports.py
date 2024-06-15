@@ -14,7 +14,8 @@ from redash.handlers.base import (
 )
 
 from redash.handlers.queries import order_results
-from redash.models.models import Model, Report
+from redash.models.models import Model
+from redash.models import Report
 from redash.permissions import (
     require_permission,
     require_admin_or_owner,

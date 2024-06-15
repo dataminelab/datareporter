@@ -42,6 +42,7 @@ from redash.utils import (
 from redash.utils.configuration import ConfigurationContainer
 from redash.models.parameterized_query import ParameterizedQuery
 
+from sqlalchemy.dialects.postgresql import ARRAY
 from .base import db, gfk_type, Column, GFKBase, SearchBaseQuery, key_type, primary_key
 from .changes import ChangeTrackingMixin, Change  # noqa
 from .mixins import BelongsToOrgMixin, TimestampMixin
@@ -55,6 +56,7 @@ from .types import (
     pseudo_json_cast_property
 )
 from .users import AccessPermission, AnonymousUser, ApiUser, Group, User  # noqa
+from redash.services.expression import ExpressionBase64Parser
 
 logger = logging.getLogger(__name__)
 
@@ -496,6 +498,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     interval = pseudo_json_cast_property(db.Integer, "schedule", "interval", default=0)
     schedule_failures = Column(db.Integer, default=0)
     visualizations = db.relationship("Visualization", cascade="all, delete-orphan")
+    # also this should be in reports
     options = Column(MutableDict.as_mutable(PseudoJSON), default={})
     search_vector = Column(
         TSVectorType(
@@ -848,6 +851,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
 
     @property
     def parameters(self):
+        # this also should be in the reports
         return self.options.get("parameters", [])
 
     @property
@@ -1252,6 +1256,14 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
 
     def get_report_id(self):
         return self.get_id_from_text(self.text)
+    
+    def get_report(self):
+        _id = self.get_report_id()
+        try:
+            return Report.query.filter(Report.id == _id).one()
+        except:
+            return None
+
 
 @generic_repr(
     "id", "object_type", "object_id", "action", "user_id", "org_id", "created_at"
@@ -1505,3 +1517,171 @@ def init_db():
     # XXX remove after fixing User.group_ids
     db.session.commit()
     return default_org, admin_group, default_group
+
+
+class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
+    id = primary_key("Report")
+    name = Column(db.String(length=255))
+    user_id = Column(key_type("User"), db.ForeignKey("users.id"))
+    user = db.relationship(User)
+    expression = db.Column(db.JSON())
+    model_id = Column(db.Integer, db.ForeignKey("models.id"))
+    model = db.relationship("Model", back_populates="reports")
+
+    color_1 = Column(db.String(length=32))
+    color_2 = Column(db.String(length=32))
+
+    version = Column(db.Integer)
+    is_archived = Column(db.Boolean, default=False, index=True)
+    
+    tags = Column(
+        "tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True
+    )
+
+    api_key = Column(db.String(40), default=lambda: generate_token(40), nullable=True)
+
+    #options = Column(MutableDict.as_mutable(PseudoJSON), default={})
+
+    __tablename__ = "reports"
+    __mapper_args__ = {"version_id_col": version}
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+    def archive(self):
+        db.session.add(self)
+        self.is_archived = True
+        db.session.commit()
+
+    def regenerate_api_key(self):
+        self.api_key = generate_token(40)
+    
+    def set_api_key(self, api_key):
+        self.api_key = api_key
+
+    @classmethod
+    def all_tags(self, user, include_drafts=False):
+        reports = self.all(user.org, user.group_ids, user.id)
+        
+        tag_column = func.unnest(self.tags).label("tag")
+        usage_count = func.count(1).label("usage_count")
+
+        report = (
+            db.session.query(tag_column, usage_count)
+            .group_by(tag_column)
+            .filter(Report.id.in_(reports.options(load_only("id"))))
+            .order_by(usage_count.desc())
+        )
+        return report
+
+    # @property
+    # def parameters(self):
+    #     # this also should be in the reports
+    #     return self.options.get("parameters", [])
+
+    @classmethod
+    def by_api_key(self, api_key):
+        return self.query.filter(self.api_key == api_key).one()
+
+    @classmethod
+    def get_by_id(cls, _id):
+        return cls.query.filter(cls.id == _id).one()
+
+    @classmethod
+    def get_by_user(cls, user):
+        return cls.query.filter(cls.user_id == user.id)
+
+    @classmethod
+    def get_by_user_id(cls, user_id):
+        return cls.query.filter(cls.user_id == user_id)
+
+    @classmethod
+    def get_by_user_and_id(cls, user: User, _id: int):
+        return cls.query.filter(and_(cls.user_id == user.id, cls.id == _id)).one()
+
+    @property
+    def hash(self):
+        return ExpressionBase64Parser.parse_dict_to_base64(self.expression)
+
+    @classmethod
+    def all(self, org, groups_ids, user_id):
+        return self.query.filter(self.user.has(org=org))
+
+    @classmethod
+    def search(self, org, groups_ids, user_id, search_term):
+        return self.all(org, groups_ids, user_id).filter(
+            self.name.ilike("%{}%".format(search_term))
+        )
+
+    @classmethod
+    def get_my_archived_reports(self, term, user_id):
+        my_archives = self.get_by_user_id(user_id).filter(
+            Report.is_archived.is_(True))
+        if term:
+            return my_archives.filter(
+                self.name.ilike("%{}%".format(term))
+            )
+        return my_archives
+    
+    # TODO: this method is not used anywhere
+    # requires admin privilage to use
+    @classmethod
+    def search_archived_reports(
+        self,
+        term,
+        org,
+        group_ids,
+        user_id=None,
+        include_drafts=False,
+        limit=None,
+        multi_byte_search=False,
+    ):
+        if term:
+            archives = self.search(org, group_ids, user_id, term)
+        else:
+            archives = self.all(org, group_ids, user_id)
+        return archives.filter(Report.is_archived.is_(True))
+
+    @classmethod
+    def favorites(self, user, base_query=None):
+        if base_query is None:
+            base_query = self.all(user.org, user.group_ids, user.id)
+        return base_query.join(
+            (
+                Favorite,
+                and_(
+                    Favorite.object_type == "Report",
+                    Favorite.object_id == Report.id,
+                ),
+            )
+        ).filter(
+            Favorite.user_id == user.id
+        ).filter(
+            Report.is_archived.is_(False)
+        )
+
+    @classmethod
+    def is_favorite(cls, user, object):
+        return cls.query.filter(cls.object == object, cls.user_id == user).count() > 0
+
+    @classmethod
+    def is_favorite_v2(cls, user, object):
+        for favorite in user.favorites:
+            if favorite.object_type == "Report" and favorite.object_id == object.id:
+                return True
+
+    def remove(self):
+        Report.query.filter(
+            Report.id == self.id
+        ).delete()
+        db.session.commit()
+
+    @classmethod
+    def get_by_group_ids(self, user):
+        return self.query.join(User).filter(
+            and_(
+                Report.is_archived.is_(False),
+                User.org_id == user.org.id,
+                User.group_ids.overlap(user.group_ids)
+            )
+        )

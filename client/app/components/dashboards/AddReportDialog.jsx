@@ -86,17 +86,28 @@ VisualizationSelect.defaultProps = {
 function AddReportDialog({ dialog, dashboard }) {
   const [selectedReport, setSelectedReport] = useState(null);
   const [selectedVisualization, setSelectedVisualization] = useState(null);
+  const [parameterMappings, setParameterMappings] = useState([]);
 
   const selectReport = useCallback(
     reportId => {
       // Clear previously selected report (if any)
       setSelectedReport(null);
       setSelectedVisualization(null);
+      setParameterMappings([]);
 
       if (reportId) {
         Report.get({ id: reportId }).then(report => {
           if (report) {
             setSelectedReport(report);
+            setParameterMappings({
+              turnilo_daterange: {
+                mapTo:"turnilo_daterange",
+                name:"turnilo_default_daterange",
+                title: "DEFAULT TURNILO FILTER",
+                type: "turnilo",
+                name: "turnilo_daterange",
+              }
+            });
             setSelectedVisualization(first(PREDEFINED_GROUPS));
           }
         });
@@ -107,6 +118,7 @@ function AddReportDialog({ dialog, dashboard }) {
 
   const saveWidget = useCallback(() => {
     const options = {
+      parameterMappings: parameterMappings,
       type: selectedVisualization.type,
       description: selectedVisualization.description,
       id: selectedVisualization.id,

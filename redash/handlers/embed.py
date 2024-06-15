@@ -1,5 +1,4 @@
 from flask import request
-
 from .authentication import current_org
 from flask_login import current_user, login_required
 from redash import models
@@ -54,6 +53,7 @@ def public_dashboard(token, org_slug=None):
         },
     )
     return render_index()
+
 
 @routes.route(org_scoped_rule("/public/reports/<token>"), methods=["GET"])
 @login_required

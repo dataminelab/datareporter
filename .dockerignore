@@ -9,6 +9,10 @@ venv/
 coverage.xml
 .circleci/
 .github/
+*.md
+LICENSE*
+Dockerfile
+docker-compose.*
 .codeclimate.yml
 docker-compose*.yml
 netlify.toml
@@ -19,6 +23,7 @@ setup
 # Ignore client-specific files and directories
 client/.tmp/
 client/dist/
+client/cypress/
 
 # Ignore Plywood server files and directories
 plywood/server/node_modules/

@@ -173,9 +173,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
-    if (!dataCube) {
-      throw new Error("Data cube is required.");
-    }
+    if (!dataCube) throw new Error("Data cube is required.");
+    if (!dataCube.timeAttribute) throw new Error("DataCube must have a timeAttribute");
 
     this.setState({
       timekeeper: initTimekeeper || Timekeeper.EMPTY

@@ -84,7 +84,7 @@
     "awesome-code-style": "^1.4.3",
     "chai": "4.2.0",
     "f-tool": "0.1.3",
-    "immutable-class-tester": "0.7.2",
+    "immutable-class-tester": "0.7.4",
     "imonit": "0.2.0",
     "istanbul": "0.4.5",
     "mocha": "5.2.0",

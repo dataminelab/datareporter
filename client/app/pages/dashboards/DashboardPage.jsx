@@ -77,13 +77,13 @@ class AddWidgetContainer extends React.Component {
         </h2>
         <div>
           <Button onClick={showReportDialog} className="m-r-15 ant-btn-turnilo"  data-test="AddReportButton">
-            Add Report widget
+            Add Report Widget
           </Button>
           <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
             Add Textbox
           </Button>
           <Button type="primary" onClick={showAddWidgetDialog} data-test="AddWidgetButton">
-            Add Widget
+            Add Query Widget
           </Button>
         </div>
       </div>

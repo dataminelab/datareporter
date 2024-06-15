@@ -6,7 +6,7 @@ from pathlib import Path
 from shutil import copy
 from collections import OrderedDict as odict
 
-import importlib_metadata
+from importlib_metadata import entry_points
 import importlib_resources
 
 # Name of the subdirectory
@@ -65,7 +65,7 @@ def load_bundles():
 
     """
     bundles = odict()
-    for entry_point in importlib_metadata.entry_points().get("redash.bundles", []):
+    for entry_point in entry_points().select(group="redash.bundles"):
         logger.info('Loading Redash bundle "%s".', entry_point.name)
         module = entry_point_module(entry_point)
         # Try to get a list of bundle files

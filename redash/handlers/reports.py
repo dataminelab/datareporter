@@ -64,8 +64,12 @@ class ReportGeneratePublicResource(BaseResource):
             result = hash_to_result(hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=False)
             return result.serialized()
         except ExpressionNotSupported as err:
-            abort(400, message=err.message)
+            if REDASH_DEBUG:
+                abort(400, message=err.message)
+            else:
+                abort(400, message="An error occurred while generating report.")
 
+# /api/reports/generate/<int:model_id>
 class ReportGenerateResource(BaseResource):
     def post(self, model_id):
         if not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser):
@@ -84,8 +88,7 @@ class ReportGenerateResource(BaseResource):
             if REDASH_DEBUG:
                 abort(400, message=err.message)
             else:
-                abort(400, message="An error occurred while generating the report. Please contact support.")
-
+                abort(400, message="An error occurred while generating report.")
 
 # /api/reports/archive
 class ReportsArchiveResource(BaseResource):
@@ -223,7 +226,7 @@ class ReportsListResource(BaseResource):
 
 # /api/reports/<int:report_id>
 class ReportResource(BaseResource):
-    ''' A resource for a single report creation, editing and deleting '''
+    ''' A resource for a single report viewing, creating, editing and deleting '''
 
     @require_permission("view_report")
     def get(self, report_id: int):
@@ -286,7 +289,7 @@ class ReportResource(BaseResource):
             "object_id": report.id,
             "object_type": "report"
         })
-        
+
         formatting = request.args.get("format", "base64")
         return ReportSerializer(report, formatting=formatting).serialize()
 
@@ -295,7 +298,9 @@ class ReportResource(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
 
         require_object_delete_permission(report, self.current_user)
-        report.remove()
+        report.remove()        
+        # also delete as a cascade the widgets
+        models.Widget.delete_by_report_id(report_id)
 
         self.record_event({
             "action": "delete",
@@ -372,7 +377,6 @@ class PublicReportResource(BaseResource):
                 report_id = self.current_user.object
             report = get_object_or_404(Report.get_by_id, report_id)
         return hash_report(report, can_edit=False)
-
 
 class ReportShareResource(BaseResource):
     def post(self, report_id):

@@ -1,5 +1,5 @@
 import moment from "moment/moment";
-import numeral from "numeral";
+import numeral from "./numeral"; // numeral is waiting on v3.0.0 to be available on npm
 import { isString, isArray, isUndefined, isFinite, isNil, toString } from "lodash";
 
 numeral.options.scalePercentBy100 = false;

@@ -12,7 +12,6 @@ from redash.authentication import (
     sign,
 )
 from redash.authentication.google_oauth import create_and_login_user, verify_profile
-from redash.utils import utcnow
 from sqlalchemy.orm.exc import NoResultFound
 from tests import BaseTestCase
 
@@ -33,12 +32,12 @@ class TestApiKeyAuthentication(BaseTestCase):
 
     def test_no_api_key(self):
         with self.app.test_client() as c:
-            rv = c.get(self.query_url)
+            c.get(self.query_url)
             self.assertIsNone(api_key_load_user_from_request(request))
 
     def test_wrong_api_key(self):
         with self.app.test_client() as c:
-            rv = c.get(self.query_url, query_string={"api_key": "whatever"})
+            c.get(self.query_url, query_string={"api_key": "whatever"})
             self.assertIsNone(api_key_load_user_from_request(request))
 
     def test_correct_api_key(self):
@@ -48,14 +47,14 @@ class TestApiKeyAuthentication(BaseTestCase):
 
     def test_no_query_id(self):
         with self.app.test_client() as c:
-            rv = c.get(self.queries_url, query_string={"api_key": self.api_key})
+            c.get(self.queries_url, query_string={"api_key": self.api_key})
             self.assertIsNone(api_key_load_user_from_request(request))
 
     def test_user_api_key(self):
         user = self.factory.create_user(api_key="user_key")
         models.db.session.flush()
         with self.app.test_client() as c:
-            rv = c.get(self.queries_url, query_string={"api_key": user.api_key})
+            c.get(self.queries_url, query_string={"api_key": user.api_key})
             self.assertEqual(user.id, api_key_load_user_from_request(request).id)
 
     def test_disabled_user_api_key(self):
@@ -63,7 +62,7 @@ class TestApiKeyAuthentication(BaseTestCase):
         user.disable()
         models.db.session.flush()
         with self.app.test_client() as c:
-            rv = c.get(self.queries_url, query_string={"api_key": user.api_key})
+            c.get(self.queries_url, query_string={"api_key": user.api_key})
             self.assertEqual(None, api_key_load_user_from_request(request))
 
     def test_api_key_header(self):
@@ -75,7 +74,7 @@ class TestApiKeyAuthentication(BaseTestCase):
 
     def test_api_key_header_with_wrong_key(self):
         with self.app.test_client() as c:
-            rv = c.get(self.query_url, headers={"Authorization": "Key oops"})
+            c.get(self.query_url, headers={"Authorization": "Key oops"})
             self.assertIsNone(api_key_load_user_from_request(request))
 
     def test_api_key_for_wrong_org(self):
@@ -106,12 +105,12 @@ class TestHMACAuthentication(BaseTestCase):
 
     def test_no_signature(self):
         with self.app.test_client() as c:
-            rv = c.get(self.path)
+            c.get(self.path)
             self.assertIsNone(hmac_load_user_from_request(request))
 
     def test_wrong_signature(self):
         with self.app.test_client() as c:
-            rv = c.get(
+            c.get(
                 self.path,
                 query_string={"signature": "whatever", "expires": self.expires},
             )
@@ -130,7 +129,7 @@ class TestHMACAuthentication(BaseTestCase):
 
     def test_no_query_id(self):
         with self.app.test_client() as c:
-            rv = c.get(
+            c.get(
                 "/{}/api/queries".format(self.query.org.slug),
                 query_string={"api_key": self.api_key},
             )
@@ -143,7 +142,7 @@ class TestHMACAuthentication(BaseTestCase):
 
         signature = sign(user.api_key, path, self.expires)
         with self.app.test_client() as c:
-            rv = c.get(
+            c.get(
                 path,
                 query_string={
                     "signature": signature,

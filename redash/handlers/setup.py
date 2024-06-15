@@ -1,5 +1,4 @@
 from flask import g, redirect, render_template, request, url_for
-
 from flask_login import login_user
 from redash import settings
 from redash.authentication.org_resolving import current_org
@@ -50,6 +49,7 @@ def create_org(org_name, user_name, email, password):
     db.session.commit()
 
     return default_org, user
+
 
 def add_member_mailchimp(email, name, org_name):
     list_id = settings.MAILCHIMP_LIST_ID

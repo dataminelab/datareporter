@@ -12,6 +12,9 @@ Response `200`
 {
     "supportedEngines": [
         "postgres",
+        "aws",
+        "athena",
+        "druid",
         "mysql"
     ]
 }

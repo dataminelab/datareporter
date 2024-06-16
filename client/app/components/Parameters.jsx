@@ -121,7 +121,7 @@ export default class Parameters extends React.Component {
   renderParameter(param, index) {
     const { editable } = this.props;
     return (
-      <div key={param.name} className="di-block" data-test={`ParameterName-${param.name}`}>
+      <div key={param.name} className={`di-block ParameterName-${param.name} parameter-${index}`} data-test={`ParameterName-${param.name}`}>
         <div className="parameter-heading">
           <label>{param.title || toHuman(param.name)}</label>
           {editable && (

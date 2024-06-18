@@ -2,7 +2,6 @@ import { isNull, isObject, isFunction, isUndefined, isEqual, has, omit, isArray,
 
 class Parameter {
   constructor(parameter, parentQueryId) {
-    if (!parameter || !parameter.name) return;
     this.title = parameter.title;
     this.name = parameter.name;
     this.type = parameter.type;

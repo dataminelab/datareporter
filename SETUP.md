@@ -32,7 +32,7 @@ nodenv local 12.22.12
 
 * Setup docker compose
     * `make up` or `docker-compose up --build`  to start required services like postgres app server
-    * `docker-compose run --rm server create_db`  Will start server and run. exec /app/manage.py database create_tables.
+    * `docker-compose run --rm server create_db` Will start server and run. exec /app/manage.py database create_tables.
       This step is required **only once**.
     * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker-compose run server manage db migrate`
     * Later on and only if necessary, in order to upgrade local database run: `docker-compose run --rm server manage db upgrade`
@@ -41,7 +41,7 @@ nodenv local 12.22.12
 * Not needed anymore, might be useful for local development: start UI proxy
     * Enter project root directory
     * `cd client`
-    * `npm run start` Starts babel and webpack dev server which will proxy redash and plywood backend
+    * `npm run start` Starts babel and webpack dev server which will proxy redash and plywood backend.
 
 * `open http://localhost:5000`
 

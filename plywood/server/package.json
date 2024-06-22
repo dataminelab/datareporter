@@ -47,7 +47,8 @@
     "stream-to-array": "^2.3.0",
     "stream-to-string": "^1.2.0",
     "tslib": "^1.10.0",
-    "tslog": "^4.9.3"
+    "tslog": "^4.9.3",
+    "ws": ">=6.2.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",

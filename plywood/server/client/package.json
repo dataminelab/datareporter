@@ -73,13 +73,13 @@
     "immutable-class": "^0.9.4",
     "moment-timezone": "^0.5.26",
     "plywood-base-api": "^0.2.8",
-    "readable-stream": "^3.0.3",
+    "readable-stream": "^4.5.2",
     "stream-to-array": "^2.3.0",
     "tdi": "0.6.5",
     "tslib": "^2.6.3"
   },
   "devDependencies": {
-    "@types/readable-stream": "^2.3.9",
+    "@types/readable-stream": "^4.0.14",
     "@types/stream-to-array": "^2.3.0",
     "awesome-code-style": "^1.4.3",
     "chai": "4.2.0",

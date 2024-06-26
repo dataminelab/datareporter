@@ -17,15 +17,10 @@ RUN if [ "x$skip_frontend_build" = "x" ] ; then \
     touch /frontend/client/dist/multi_org.html &&\
     touch /frontend/client/dist/index.html;\
   fi
-FROM python:3.8
+
+FROM python:3.8-slim-buster
 
 EXPOSE 5000
-
-# Controls whether to install extra dependencies needed for all data sources.
-ARG skip_ds_deps
-# Controls whether to install dev dependencies.
-ARG skip_dev_deps
-
 
 RUN useradd --create-home redash
 
@@ -76,8 +71,7 @@ ENV POETRY_HOME=/etc/poetry
 ENV POETRY_VIRTUALENVS_CREATE=false
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
-COPY pyproject.toml ./
-# poetry.lock ./
+COPY pyproject.toml poetry.lock ./
 
 ARG POETRY_OPTIONS="--no-root --no-interaction --no-ansi"
 # for LDAP authentication, install with `ldap3` group
@@ -90,6 +84,7 @@ COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/di
 RUN find /app
 USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+# The version is being set arbitrarily by the builder
 ARG version
 ENV DATAREPORTER_VERSION=$version
 ENTRYPOINT ["/app/bin/docker-entrypoint"]

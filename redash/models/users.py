@@ -15,11 +15,11 @@ from sqlalchemy_utils import EmailType
 from sqlalchemy_utils.models import generic_repr
 
 from redash import redis_connection
-from redash.utils import generate_token, utcnow, dt_from_timestamp
+from redash.utils import dt_from_timestamp, generate_token
 
-from .base import db, Column, GFKBase, key_type, primary_key
-from .mixins import TimestampMixin, BelongsToOrgMixin
-from .types import json_cast_property, MutableDict, MutableList
+from .base import db, Column, GFKBase, db, key_type, primary_key
+from .mixins import BelongsToOrgMixin, TimestampMixin
+from .types import json_cast_property, MutableDict, MutableList, json_cast_property
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,9 @@ class User(
     _profile_image_url = Column("profile_image_url", db.String(320), nullable=True)
     password_hash = Column(db.String(128), nullable=True)
     group_ids = Column(
-        "groups", MutableList.as_mutable(postgresql.ARRAY(key_type("Group"))), nullable=True
+        "groups",
+        MutableList.as_mutable(postgresql.ARRAY(key_type("Group"))),
+        nullable=True,
     )
     api_key = Column(db.String(40), default=lambda: generate_token(40), unique=True)
 

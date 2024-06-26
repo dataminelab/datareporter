@@ -98,10 +98,16 @@ SESSION_COOKIE_HTTPONLY = parse_boolean(
 REMEMBER_COOKIE_SECURE = parse_boolean(
     os.environ.get("REDASH_REMEMBER_COOKIE_SECURE") or str(COOKIES_SECURE)
 )
+# Whether the session cookie is set HttpOnly.
+SESSION_COOKIE_HTTPONLY = parse_boolean(os.environ.get("REDASH_SESSION_COOKIE_HTTPONLY", "true"))
+SESSION_EXPIRY_TIME = int(os.environ.get("REDASH_SESSION_EXPIRY_TIME", 60 * 60 * 6))
+
+# Whether the session cookie is set to secure.
+REMEMBER_COOKIE_SECURE = parse_boolean(os.environ.get("REDASH_REMEMBER_COOKIE_SECURE") or str(COOKIES_SECURE))
 # Whether the remember cookie is set HttpOnly.
-REMEMBER_COOKIE_HTTPONLY = parse_boolean(
-    os.environ.get("REDASH_REMEMBER_COOKIE_HTTPONLY", "true")
-)
+REMEMBER_COOKIE_HTTPONLY = parse_boolean(os.environ.get("REDASH_REMEMBER_COOKIE_HTTPONLY", "true"))
+# The amount of time before the remember cookie expires.
+REMEMBER_COOKIE_DURATION = int(os.environ.get("REDASH_REMEMBER_COOKIE_DURATION", 60 * 60 * 24 * 31))
 
 # Doesn't set X-Frame-Options by default since it's highly dependent
 # on the specific deployment.
@@ -161,6 +167,17 @@ MULTI_ORG = parse_boolean(os.environ.get("REDASH_MULTI_ORG", "false"))
 GOOGLE_CLIENT_ID = os.environ.get("REDASH_GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("REDASH_GOOGLE_CLIENT_SECRET", "")
 GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+
+# If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
+# even if your actual Redash URL scheme is HTTPS. This will cause Flask to build
+# the SAML redirect URL incorrect thus failing auth. This is especially common if
+# you're behind a SSL/TCP configured AWS ELB or similar.
+# This setting will force the URL scheme.
+SAML_SCHEME_OVERRIDE = os.environ.get("REDASH_SAML_SCHEME_OVERRIDE", "")
+
+SAML_ENCRYPTION_PEM_PATH = os.environ.get("REDASH_SAML_ENCRYPTION_PEM_PATH", "")
+SAML_ENCRYPTION_CERT_PATH = os.environ.get("REDASH_SAML_ENCRYPTION_CERT_PATH", "")
+SAML_ENCRYPTION_ENABLED = SAML_ENCRYPTION_PEM_PATH != "" and SAML_ENCRYPTION_CERT_PATH != ""
 
 GOOGLE_PRODUCT_ID = os.environ.get("REDASH_GOOGLE_PROJECT_ID", "")
 GOOGLE_PUBSUB_WORKER_TOPIC_ID = os.environ.get("REDASH_GOOGLE_PUBSUB_WORKER_TOPIC_ID", "")
@@ -305,6 +322,7 @@ ALERTS_DEFAULT_MAIL_SUBJECT_TEMPLATE = os.environ.get(
 RATELIMIT_ENABLED = parse_boolean(os.environ.get("REDASH_RATELIMIT_ENABLED", "true"))
 THROTTLE_LOGIN_PATTERN = os.environ.get("REDASH_THROTTLE_LOGIN_PATTERN", "50/hour")
 LIMITER_STORAGE = os.environ.get("REDASH_LIMITER_STORAGE", REDIS_URL)
+THROTTLE_PASS_RESET_PATTERN = os.environ.get("REDASH_THROTTLE_PASS_RESET_PATTERN", "10/hour")
 
 # CORS settings for the Query Result API (and possbily future external APIs).
 # In most cases all you need to do is set REDASH_CORS_ACCESS_CONTROL_ALLOW_ORIGIN
@@ -512,6 +530,14 @@ REQUESTS_ALLOW_REDIRECTS = parse_boolean(
 ENFORCE_CSRF = parse_boolean(
     os.environ.get("REDASH_ENFORCE_CSRF", "false")
 )
+
+# Databricks
+
+CSRF_TIME_LIMIT = int(os.environ.get("REDASH_CSRF_TIME_LIMIT", 3600 * 6))
+
+# Email blocked domains, use delimiter comma to separated multiple domains
+BLOCKED_DOMAINS = set_from_string(os.environ.get("REDASH_BLOCKED_DOMAINS", "qq.com"))
+
 # Ignored data source types
 IGNORED_DATA_SOURCE_TYPES = {
     "bigquery": ["BYTE", "GEOGRAPHY", "RECORD"]

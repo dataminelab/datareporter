@@ -724,7 +724,17 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         return all_queries.search(term, sort=True).limit(limit)
 
     @classmethod
-    def search_by_user(self, term, user, limit=None):
+    def search_by_user(self, term, user, limit=None, multi_byte_search=False):
+        if multi_byte_search:
+            # Since tsvector doesn't work well with CJK languages, use `ilike` too
+            pattern = "%{}%".format(term)
+            return (
+                self.by_user(user)
+                .filter(or_(self.name.ilike(pattern), self.description.ilike(pattern)))
+                .order_by(Query.id)
+                .limit(limit)
+            )
+
         return self.by_user(user).search(term, sort=True).limit(limit)
 
     @classmethod
@@ -1174,6 +1184,10 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
                 ),
             )
         ).filter(Favorite.user_id == user.id)
+
+    @classmethod
+    def by_user(self, user):
+        return self.all(user.org, user.group_ids, user.id).filter(Dashboard.user == user)
 
     @classmethod
     def get_by_slug_and_org(self, slug, org):

@@ -8,9 +8,7 @@ build-docker-image-job: &build-docker-image-job
     - checkout
     - run: sudo apt update
     - run: sudo apt install python3-pip
-    - run: sudo pip3 install -r requirements_bundles.txt
     - run: .circleci/update_version
-    - run: npm run bundle
     - run: .circleci/docker_build
 jobs:
   backend-lint:
@@ -73,9 +71,7 @@ jobs:
       - checkout
       - run: sudo apt update
       - run: sudo apt install python3-pip
-      - run: sudo pip3 install -r requirements_bundles.txt
       - run: npm ci
-      - run: npm run bundle
       - run:
           name: Run App Tests
           command: npm test

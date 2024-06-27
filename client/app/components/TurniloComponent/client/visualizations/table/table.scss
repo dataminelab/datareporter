@@ -40,6 +40,9 @@
       border-top-left-radius: $corner;
       border-bottom-left-radius: $corner;
     }
+
+    .top-left-corner, .top-gutter, .left-gutter, .body{
+      margin-top: 10px!important;
+    }
   }
 }
-

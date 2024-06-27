@@ -30,7 +30,7 @@ function TurniloWidget(props) {
     });
 
     return ( 
-      <Widget {...props} menuOptions={canEdit ? TurniloMenuOptions : null} className="widget-text">
+      <Widget {...props} menuOptions={canEdit ? TurniloMenuOptions : null} className="widget-report">
         <turnilo-widget>
           <TurniloApplication
             config={config}

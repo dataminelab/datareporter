@@ -29,7 +29,8 @@ worker() {
 
   supervisord -c worker.conf
 }
-worker_server() {
+
+worker_server() { 
 
   ensure_schema
 
@@ -93,12 +94,7 @@ tests() {
   exec pytest $TEST_ARGS
 }
 
-case "$1" in
-worker)
-  shift
-  worker
-  ;;
-dev_worker_server)
+dev_worker_server() {
   echo "Starting dev worker server"
   export FLASK_DEBUG=1
   # Recycle gunicorn workers every n-th request. See http://docs.gunicorn.org/en/stable/settings.html#max-requests for more details.
@@ -107,7 +103,17 @@ dev_worker_server)
   REDASH_WEB_WORKERS=1
   REDASH_WEB_WORKER_TIMOUT=180
   REDASH_WEB_WORKER_THREADS=1
-  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive -- /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name worker -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT worker.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
+  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive --  /app/dev_worker_server.py runserver --debugger --no-reload -h 0.0.0.0 --without-threads
+}
+
+case "$1" in
+worker)
+  shift
+  worker
+  ;;
+dev_worker_server)
+  shift
+  dev_worker_server
   ;;
 worker_server)
   shift

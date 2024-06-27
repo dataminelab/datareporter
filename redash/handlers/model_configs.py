@@ -46,7 +46,7 @@ class ModelsConfigResource(BaseResource):
 
         return ModelConfigSerializer(model.config).serialize()
 
-    @require_permission("view_model") 
+    @require_permission("view_model")
     def get(self, model_id):
         model: Model = get_object_or_404(Model.get_by_id, model_id)
         models: list(Model) = Model.query.filter(Model.data_source_id==model.data_source_id).all()

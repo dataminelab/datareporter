@@ -26,15 +26,17 @@ import "./DashboardPage.less";
 import { setColorElements } from "@/pages/reports/components/ReportPageHeader";
 
 function DashboardSettings({ dashboardOptions }) {
-  const { dashboard, updateDashboard } = dashboardOptions;
+  const { dashboard, updateDashboard, addWidgetStyle } = dashboardOptions;
   return (
-    <div className="m-b-10 p-15 bg-white tiled">
+    <div className="bg-white tiled">
       <Checkbox
         checked={!!dashboard.dashboard_filters_enabled}
         onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
-        data-test="DashboardFiltersCheckbox">
+        data-test="DashboardFiltersCheckbox"
+      >
         Use Dashboard Level Filters
       </Checkbox>
+      <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
     </div>
   );
 }
@@ -50,19 +52,18 @@ function AddWidgetContainer({dashboardOptions, className, ...props }) {
       <h2>
         <i className="zmdi zmdi-widgets" />
         <span className="hidden-xs hidden-sm">
-          Widgets are individual query visualizations or text boxes you can place on your dashboard in various
-          arrangements.
+          You can arrange your queries and reports on a dashboard in the form of widgets.
         </span>
       </h2>
       <div>
         <Button onClick={showReportDialog} className="m-r-15 ant-btn-turnilo"  data-test="AddReportButton">
-          Add Report widget
+          Add Report Widget
         </Button>
         <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
           Add Textbox
         </Button>
         <Button type="primary" onClick={showAddWidgetDialog} data-test="AddWidgetButton">
-          Add Widget
+          Add Query Widget
         </Button>
       </div>
     </div>
@@ -92,7 +93,7 @@ function DashboardComponent(props) {
   } = dashboardOptions;
 
   const [pageContainer, setPageContainer] = useState(null);
-  const [bottomPanelStyles, setBottomPanelStyles] = useState({});
+  const [addWidgetStyle, setAddWidgetStyle] = useState({});
 
   useEffect(() => {
     setColorElements();
@@ -103,12 +104,11 @@ function DashboardComponent(props) {
           const bounds = pageContainer.getBoundingClientRect();
           const paddingLeft = parseFloat(style.paddingLeft) || 0;
           const paddingRight = parseFloat(style.paddingRight) || 0;
-          setBottomPanelStyles({
+          setAddWidgetStyle({
             left: Math.round(bounds.left) + paddingRight,
             width: pageContainer.clientWidth - paddingLeft - paddingRight,
           });
         }
-
         // reflow grid when container changes its size
         window.dispatchEvent(new Event("resize"));
       });
@@ -129,7 +129,7 @@ function DashboardComponent(props) {
           <Filters filters={filters} onChange={setFilters} />
         </div>
       )}
-      {editingLayout && <DashboardSettings dashboardOptions={dashboardOptions} />}
+      {editingLayout && <DashboardSettings dashboardOptions={dashboardOptions} addWidgetStyle={addWidgetStyle}/>}
       <div id="dashboard-container">
         <DashboardGrid
           dashboard={dashboard}
@@ -144,7 +144,6 @@ function DashboardComponent(props) {
           onParameterMappingsChange={loadDashboard}
         />
       </div>
-      {editingLayout && <AddWidgetContainer dashboardOptions={dashboardOptions} style={bottomPanelStyles} />}
     </div>
   );
 }

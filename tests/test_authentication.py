@@ -20,10 +20,9 @@ from redash.authentication import (
     org_settings,
     sign,
 )
-from redash.authentication.google_oauth import (
-    create_and_login_user,
-    verify_profile,
-)
+from redash.authentication.google_oauth import create_and_login_user, verify_profile
+from redash.utils import utcnow
+from sqlalchemy.orm.exc import NoResultFound
 from tests import BaseTestCase
 
 

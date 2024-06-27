@@ -17,7 +17,7 @@ import {
   each,
   some,
   clone,
-  find, get, isString,
+  find, get, isString, merge
 } from "lodash";
 import location from "@/services/location";
 
@@ -54,6 +54,16 @@ export class Report {
     if (!isArray(this.options.parameters)) {
       this.options.parameters = [];
     }
+  }
+
+  static async getData(report) {
+    const data = await axios.post(`api/reports/generate/2`, { 
+      hash: report.hash,
+      bypass_cache: false,
+    });
+    if (!data) return null;
+    const queries = data.queries;
+    return queries[queries.length-1].query_result.data.rows;
   }
 
   isNew() {
@@ -405,10 +415,30 @@ const saveOrCreateUrl = function (data) {
   }    
 }
 const mapResults = data => ({ ...data, results: map(data.results, getReport) });
+const normalizeCondition = {
+  "greater than": ">",
+  "less than": "<",
+  equals: "=",
+};
+const transformResponse = data => {
+  console.log("data", data)
+  merge({}, data, {
+    options: {
+      op: normalizeCondition[data.options.op] || data.options.op,
+    },
+  });
+}
+
+function transformPublicState(report) {
+  report = new Report(report);
+  if (report.public_url) report.publicAccessEnabled = true;
+  else report.publicAccessEnabled = false;
+  return report;
+}
 
 const ReportService = {
   report: params => axios.get("api/reports", { params }).then(mapResults),
-  get: data => axios.get("api/reports/" + data.id).then(getReport),
+  get: data => axios.get("api/reports/" + data.id).then(getReport).then(transformPublicState),
   save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
   saveAs: data => axios.post("api/reports", data).then(getReport),
   delete: data => axios.delete(`api/reports/${data.id}`)
@@ -430,7 +460,8 @@ const ReportService = {
     axios.get(`api/reports/${reportId}/dropdowns/${dropdownReportId}`),
   favorites: params => axios.get("api/reports/favorites", { params }).then(mapResults),
   favorite: data => axios.post(`api/reports/${data.id}/favorite`),
-  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),
+  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),  
+  getByToken: ({ token }) => axios.get(`api/reports/public/${token}`).then(transformPublicState),
 };
 
 ReportService.newReport = function newReport() {

@@ -4,6 +4,7 @@ import errno
 import os
 import signal
 import requests
+from concurrent.futures import ThreadPoolExecutor
 from redash import statsd_client
 from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
 from rq.utils import utcnow
@@ -29,7 +30,7 @@ class CancellableJob(BaseJob):
 class NoopNotifier:
     def notify(self, message):
         try:
-            logger.debug("skipping notify worker for {}", message)
+            logger.debug("skipping notify worker for %s", message)
         except Exception as error:
             logger.warning(error)
 

@@ -1,4 +1,4 @@
-FROM node:14.17 as frontend-builder
+FROM node:14.17 AS frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
@@ -47,6 +47,7 @@ RUN apt-get update && \
     freetds-dev \
     libsasl2-dev \
     unzip \
+    iputils-ping \
     libsasl2-modules-gssapi-mit && \
   # MSSQL ODBC Driver:
 #  curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
@@ -81,6 +82,7 @@ RUN /etc/poetry/bin/poetry install --only $install_groups $POETRY_OPTIONS
 
 COPY --chown=redash . /app
 COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
+RUN chown redash:redash -R /app
 RUN find /app
 USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python

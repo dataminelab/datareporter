@@ -56,8 +56,15 @@ const DashboardWidget = React.memo(
     useEffect( () => {
       async function getConfigTurnilo() {
         if (!config.appSettings) {
-          const report_config =  await axios.get('/api/reports/' + widget.report_id);
-          setConfig(report_config);
+          if (widget.is_public) {
+            const token = window.location.pathname.split('/')[3];
+            if (!widget.report_id) return; 
+            const report_config =  await axios.get(`/api/reports/public/${token}?report_id=${widget.report_id}`);
+            setConfig(report_config);
+          } else {
+            const report_config =  await axios.get('/api/reports/' + widget.report_id);
+            setConfig(report_config);
+          }
         }
       }
       getConfigTurnilo()

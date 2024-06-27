@@ -1,4 +1,3 @@
-import json
 import unittest
 import pytest
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
@@ -103,6 +102,4 @@ class TestPostgresParseV2(unittest.TestCase):
             visualization='line-chart'
         )
         data = parser.parse_ply(ENGINE_BIG_QUERY)
-        # floating numbers on server and local machine are different
-        # BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE
-        self.assertMultiLineEqual(data.dict(), POSTGRES_LINE_CHART_RESULT_TO_COMPARE)
+        self.assertDictEqual(data.dict(), BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE)

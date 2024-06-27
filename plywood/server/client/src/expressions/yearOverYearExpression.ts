@@ -141,6 +141,10 @@ export class YearOverYearExpression {
         }
     }
 
+    private secondSplitExists() {
+        return this.queries[2].includes("some_");
+    }
+
     
     public setTimeRanges(timeRanges:timeRangeType) {
         this.timeRanges = timeRanges;
@@ -175,6 +179,9 @@ export class YearOverYearExpression {
         }
         if (this.engine === 'athena') {
             formattedSumQueries=formattedSumQueries.slice(0, -1)
+        } else if (this.engine === 'bigquery' && this.secondSplitExists()) {
+            where1=where1.replace(")) AND (", "))) AND (").slice(0, -1);
+            where2=where2.replace(")) AND (", "))) AND (").slice(0, -1);
         }
         return [formattedSumQueries, fromQuery, where1, where2];
     }

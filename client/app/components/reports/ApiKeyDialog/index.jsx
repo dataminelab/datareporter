@@ -13,7 +13,8 @@ import notification from "@/services/notification";
 import "./index.less";
 
 function ApiKeyDialog({ dialog, ...props }) {
-  const [query, setReport] = useState(props.query);
+  console.log(props)
+  const [query, setReport] = useState(props.report);
   const [updatingApiKey, setUpdatingApiKey] = useState(false);
 
   const regenerateReportApiKey = useCallback(() => {

@@ -1,6 +1,7 @@
 import { extend, map, filter, reduce } from "lodash";
 import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import PropTypes, { any } from "prop-types";
+import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
@@ -12,6 +13,7 @@ import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
+import useDeleteReport from "../hooks/useDeleteReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
@@ -32,6 +34,10 @@ import getTags from "@/services/getTags";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
+}
+
+function buttonType(value) {
+  return value ? "primary" : "default";
 }
 
 function createMenu(menu) {
@@ -88,10 +94,11 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const { report, setReport, saveReport, saveAsReport, deleteReport } = useReport(props.report);
+  const { report, setReport, saveReport, saveAsReport, showShareReportDialog } = useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
   const updateTags = useUpdateReportTags(report, setReport);
   const archiveReport = useArchiveReport(report, setReport);
+  const deleteReport = useDeleteReport(report, setReport);
   const publishReport = usePublishReport(report, setReport);
   const unpublishReport = useUnpublishReport(report, setReport);
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
@@ -115,6 +122,7 @@ export default function ReportPageHeader(props) {
   const [newName, setNewName] = useState("Copy of " + report.name);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
+  const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
 
   const handleReportChanged = (state) => {
     if (!report.data_source_id) return;
@@ -248,7 +256,7 @@ export default function ReportPageHeader(props) {
         }
         setModels(newModels);
         props.onChange(extend(report.clone(), { ...updates }));
-        updateReport(updates, { successMessage: null });
+        updateReport(updates, { successMessage: null, errorMessage: null });
         handleReportChanged(true);
         recordEvent("update", "report", report.id, { data_source_id });
       } catch (err) {
@@ -261,32 +269,57 @@ export default function ReportPageHeader(props) {
     [report, props.onChange, updateReport]
   );
 
+  const getModel = (modelId) => {
+    return models.find(m => m.id === modelId);
+  }
+
+  const getModelDataCube = async (modelId) => {
+    const settings = await getSettings(modelId);
+    const model = getModel(modelId);
+    if (!model || !settings) return {};
+    const dataCubes = settings.appSettings.dataCubes
+    return dataCubes.find(m => m.name === model.table);
+  }
+
+
+  const getSettings = async (modelId) => {
+    var settings;
+    if (report.isJustLanded) {
+      settings = { appSettings: report.appSettings, timekeeper: {} };
+    } else {
+      settings = await Model.getReporterConfig(modelId);
+    }
+    return settings;
+  }
+
   const handleModelChange = useCallback(
     async (modelId, signal) => {
       try {
-        var res;
-        if (report.isJustLanded) {
-          res = { appSettings: report.appSettings, timekeeper: {} };
-        } else {
-          res = await Model.getReporterConfig(modelId);
+        const modelDataCube = await getModelDataCube(modelId);
+        if (!modelDataCube.timeAttribute) {
+          // Revert previous changes like make selected model name to previous one and so on
+          return updateReport({}, { successMessage: null, errorMessage: "DataCube must have a timeAttribute" }); // show message only on error
         }
-        const model = models.find(m => m.id === modelId);
+        const settings = await getSettings(modelId);
+        const model = getModel(modelId);
         if (model && model.id !== report.model_id) {
           replaceHash(model, window.location.hash.split("/4/")[1]);
         }
         recordEvent("update", "report", report.id, { modelId });
         var updates = {
           model_id: modelId,
-          appSettings: res.appSettings,
-          timekeeper: res.timekeeper,
+          appSettings: settings.appSettings,
+          timekeeper: settings.timekeeper,
           isJustLanded: false,
         };
-        if (report.data_source_id || selectedDataSource) {
-          updates.data_source_id = report.data_source_id || selectedDataSource
+        if (report.data_source_id) {
+          updates.data_source_id = report.data_source_id;
+        } else if (selectedDataSource) {
+          updates.data_source_id = selectedDataSource;
         }
         if (signal && signal.aborted) return;
         props.onChange(extend(report.clone(), { ...updates }));
-        updateReport({...report.clone(), ...updates}, { successMessage: null }); // show message only on error
+        updateReport({...report.clone(), ...updates}, { successMessage: null, errorMessage: null }); // show message only on error
         handleReportChanged(true);
         setSelectedModel(modelId);
       } catch (err) {
@@ -299,7 +332,7 @@ export default function ReportPageHeader(props) {
   const handleIdChange = useCallback(async id => {
     recordEvent("update", "report", report.id, { id });
     setReport(extend(report.clone(), { id }));
-    updateReport({ id }, { successMessage: null });
+    updateReport({ id }, { successMessage: null, errorMessage: null });
     handleReportChanged(true);
   });
 
@@ -319,17 +352,7 @@ export default function ReportPageHeader(props) {
         document.getElementById(id).style.opacity = "1";
         document.getElementById(id).style["z-index"] = "10";
       }
-    } catch {console.warn("price modal doesnt exist on this page.")}
-  }
-
-  const handleDeleteReport = () => {
-    const report = props.report;
-    if (report.id) {
-      recordEvent("delete", "report", report.id, { name: report.name });
-      deleteReport(report);
-    } else {
-      setReport(null);
-    }
+    } catch {console.warn("price modal doesn't exist on this page.")}
   }
 
   const handleSaveReport = (save_as) => {
@@ -346,6 +369,7 @@ export default function ReportPageHeader(props) {
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
         is_draft: false,
+        name: reportName
       }, { successMessage: null });
       recordEvent("create", "report", report.id);
     }
@@ -360,13 +384,18 @@ export default function ReportPageHeader(props) {
         {
           downloadCSV: {
             isAvailable: true,
-            title: "Download as CSV",
+            title: "Download as CSV File",
             onClick: () => {document.querySelector("#export-data-csv").click()},
           },
           downloadTSV: {
             isAvailable: true,
-            title: "Download as TSV",
+            title: "Download as TSV File",
             onClick: () => {document.querySelector("#export-data-tsv").click()},
+          },
+          showAPIKey: {
+            isAvailable: !queryFlags.isNew,
+            title: "Show API Key",
+            onClick: openApiKeyDialog,
           },
         },
       ]),
@@ -388,7 +417,7 @@ export default function ReportPageHeader(props) {
   );
 
   useEffect(() => {
-    updateReport(report, { successMessage: null });
+    updateReport(report, { successMessage: null, errorMessage: null });
   }, [report.expression, window.location.hash]);
 
   useEffect(() => {
@@ -422,11 +451,13 @@ export default function ReportPageHeader(props) {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    const setData = async (dataSourceId, model_id) => {
+    const setData = async (dataSourceId, modelId) => {
       if (signal.aborted) return;
       await handleDataSourceChange(dataSourceId, signal);
-      if (signal.aborted) return;
-      await handleModelChange(model_id, signal)
+      if (signal.aborted) return; 
+      const modelDataCube = await getModelDataCube(modelId);
+      if (!modelDataCube.timeAttribute) return null;
+      await handleModelChange(modelId, signal)
         .then(() => {
           if (signal.aborted) return;
           setTimeout(() => {
@@ -463,12 +494,17 @@ export default function ReportPageHeader(props) {
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
-    if (modelsLoaded && !selectedModel) {
-      if (models.length) {
-        handleModelChange(models[0].id);
-        replaceHash(models[0], window.location.hash.split("/4/")[1]);
-      }
+    if (report.isJustLanded) return;
+    const firstEncounterModelSetter = async (models) => {
+      const modelId = models[0].id;      
+      const modelDataCube = await getModelDataCube(modelId);
+      if (!modelDataCube) return;
+      if (!modelDataCube.timeAttribute) return;
+      handleModelChange(modelId);
+      const model = getModel(modelId);
+      replaceHash(model, window.location.hash.split("/4/")[1]);
     }
+    if (modelsLoaded && !selectedModel && models.length) firstEncounterModelSetter(models);
   }, [modelsLoaded]);
 
   return (
@@ -587,10 +623,22 @@ export default function ReportPageHeader(props) {
             </Button>
         )}
         {!queryFlags.isNew && queryFlags.canEdit && (
-          <Button className="m-r-5" onClick={handleDeleteReport}>
+          <Button className="m-r-5" onClick={deleteReport}>
             <i className="fa fa-trash m-r-5" /> Delete
           </Button>
         )}
+        
+        {showShareButton && (
+            <Tooltip title="Report Sharing Options">
+              <Button
+                className="icon-button m-r-5"
+                type={buttonType(report.publicAccessEnabled)}
+                onClick={showShareReportDialog}
+                data-test="OpenShareForm">
+                <i className="zmdi zmdi-share" />
+              </Button>
+            </Tooltip>
+          )}
 
         {!queryFlags.isNew && (
           <span>

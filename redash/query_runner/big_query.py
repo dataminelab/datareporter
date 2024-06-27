@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import sys
 import time
@@ -14,13 +15,15 @@ from redash.utils import json_dumps, json_loads
 logger = logging.getLogger(__name__)
 
 try:
+
     import apiclient.errors
     from apiclient.discovery import build
     from apiclient.errors import HttpError
     from oauth2client.service_account import ServiceAccountCredentials
 
     enabled = True
-except ImportError:
+except ImportError as e:
+    print(e)
     enabled = False
 
 types_map = {
@@ -81,12 +84,6 @@ def _get_query_results(jobs, project_id, location, job_id, start_index):
         return _get_query_results(jobs, project_id, location, job_id, start_index)
 
     return query_reply
-
-
-def _get_total_bytes_processed_for_resp(bq_response):
-    # BigQuery hides the total bytes processed for queries to tables with row-level access controls.
-    # For these queries the "totalBytesProcessed" field may not be defined in the response.
-    return int(bq_response.get("totalBytesProcessed", "0"))
 
 
 class BigQuery(BaseQueryRunner):
@@ -150,7 +147,7 @@ class BigQuery(BaseQueryRunner):
         http = httplib2.Http(timeout=settings.BIGQUERY_HTTP_TIMEOUT)
         http = creds.authorize(http)
 
-        return build("bigquery", "v2", http=http, cache_discovery=False)
+        return build("bigquery", "v2", http=http)
 
     def _get_project_id(self):
         return self.configuration["projectId"]
@@ -168,7 +165,7 @@ class BigQuery(BaseQueryRunner):
             job_data["useLegacySql"] = False
 
         response = jobs.query(projectId=self._get_project_id(), body=job_data).execute()
-        return _get_total_bytes_processed_for_resp(response)
+        return int(response["totalBytesProcessed"])
 
     def _get_job_data(self, query):
         job_data = {"configuration": {"query": {"query": query}}}
@@ -243,7 +240,7 @@ class BigQuery(BaseQueryRunner):
         data = {
             "columns": columns,
             "rows": rows,
-            "metadata": {"data_scanned": _get_total_bytes_processed_for_resp(query_reply)},
+            "metadata": {"data_scanned": int(query_reply["totalBytesProcessed"]), 'cache_hit': query_reply['cacheHit']},
         }
 
         return data
@@ -261,60 +258,55 @@ class BigQuery(BaseQueryRunner):
         columns = []
         if column["type"] == "RECORD":
             for field in column["fields"]:
-                columns.append("{}.{}".format(column["name"], field["name"]))
+                columns.append({"name": "{}.{}".format(column["name"], field["name"]), "type": field["type"]})
         else:
-            columns.append(column["name"])
+            columns.append({"name": column["name"], "type": column["type"]})
 
         return columns
 
-    def _get_project_datasets(self, project_id):
-        result = []
-        service = self._get_bigquery_service()
-
-        datasets = service.datasets().list(projectId=project_id).execute()
-        result.extend(datasets.get("datasets", []))
-        nextPageToken = datasets.get('nextPageToken', None)
-
-        while nextPageToken is not None:
-            datasets = service.datasets().list(projectId=project_id, pageToken=nextPageToken).execute()
-            result.extend(datasets.get("datasets", []))
-            nextPageToken = datasets.get('nextPageToken', None)
-
-        return result
-
     def get_schema(self, get_stats=False):
-        if not self.configuration.get("loadSchema", False):
-            return []
+        # TODO think about how to change config easily
+        # if not self.configuration.get("loadSchema", False):
+        #     return []
 
+        service = self._get_bigquery_service()
         project_id = self._get_project_id()
-        datasets = self._get_project_datasets(project_id)
-
-        query_base = """
-        SELECT table_schema, table_name, column_name
-        FROM `{dataset_id}`.INFORMATION_SCHEMA.COLUMNS
-        WHERE table_schema NOT IN ('information_schema')
-        """
-
-        schema = {}
-        queries = []
-        for dataset in datasets:
+        datasets = service.datasets().list(projectId=project_id).execute()
+        schema = []
+        for dataset in datasets.get("datasets", []):
             dataset_id = dataset["datasetReference"]["datasetId"]
-            query = query_base.format(dataset_id=dataset_id)
-            queries.append(query)
+            tables = (
+                service.tables()
+                    .list(projectId=project_id, datasetId=dataset_id)
+                    .execute()
+            )
+            while True:
+                for table in tables.get("tables", []):
+                    table_data = (
+                        service.tables()
+                            .get(
+                            projectId=project_id,
+                            datasetId=dataset_id,
+                            tableId=table["tableReference"]["tableId"],
+                        )
+                            .execute()
+                    )
+                    table_schema = self._get_columns_schema(table_data)
+                    schema.append(table_schema)
 
-        query = '\nUNION ALL\n'.join(queries)
-        results, error = self.run_query(query, None)
-        if error is not None:
-            self._handle_run_query_error(error)
+                next_token = tables.get("nextPageToken", None)
+                if next_token is None:
+                    break
 
-        results = json_loads(results)
-        for row in results["rows"]:
-            table_name = "{0}.{1}".format(row["table_schema"], row["table_name"])
-            if table_name not in schema:
-                schema[table_name] = {"name": table_name, "columns": []}
-            schema[table_name]["columns"].append(row["column_name"])
+                tables = (
+                    service.tables()
+                        .list(
+                        projectId=project_id, datasetId=dataset_id, pageToken=next_token
+                    )
+                        .execute()
+                )
 
-        return list(schema.values())
+        return schema
 
     def run_query(self, query, user):
         logger.debug("BigQuery got query: %s", query)
@@ -341,7 +333,7 @@ class BigQuery(BaseQueryRunner):
             json_data = json_dumps(data, ignore_nan=True)
         except apiclient.errors.HttpError as e:
             json_data = None
-            if e.resp.status in [400, 404]:
+            if e.resp.status == 400:
                 error = json_loads(e.content)["error"]["message"]
             else:
                 error = e.content

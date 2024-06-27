@@ -13,9 +13,8 @@ from redash.app import create_worker
 logger = logging.getLogger(__name__)
 
 
-def create(group):
+def create():
     app = create_worker()
-    group.app = app
 
     @app.shell_context_processor
     def shell_context():

@@ -1,4 +1,4 @@
-FROM node:14.5.0-alpine as frontend-builder
+FROM node:14.17.0-alpine as frontend-builder
 ARG version
 RUN apk update
 RUN apk add git
@@ -17,7 +17,7 @@ RUN echo "Now build server"
 RUN npm install
 RUN npm run build
 
-FROM node:14.5.0-alpine
+FROM node:14.17.0-alpine
 RUN addgroup -S plywood && adduser -S plywood
 COPY --from=frontend-builder --chown=plywood /app/dist/ /app/dist/
 COPY --from=frontend-builder  --chown=plywood /app/node_modules/ /app/node_modules/

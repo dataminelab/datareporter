@@ -18,6 +18,9 @@ jobs:
 #    needs:
 #      - unit_tests
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - id: get-version
         run: |
           #!/bin/bash

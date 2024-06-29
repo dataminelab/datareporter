@@ -34,7 +34,7 @@ jobs:
 
       - run: |
           #!/bin/bash
-          echo check ${{ needs.get-version.outputs.version }}
+          echo check ${{ steps.get-version.outputs.version }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Docker login

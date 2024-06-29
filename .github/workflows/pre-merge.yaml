@@ -13,5 +13,5 @@ concurrency:
 
 jobs:
   unit_tests:
-    uses: .github/workflows/test-unit.yaml
+    uses: ./.github/workflows/test-unit.yaml
     secrets: inherit

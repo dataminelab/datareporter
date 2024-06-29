@@ -21,7 +21,7 @@ jobs:
       - id: get-version
         run: |
           #!/bin/bash
-          next_version=$(.github/scripts/next_version.sh)
+          next_version=$(./.github/scripts/next_version.sh)
           echo "Next version: $next_version"
           echo "version=$next_version" >> $GITHUB_OUTPUT
 

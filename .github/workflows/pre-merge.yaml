@@ -1,8 +1,9 @@
 name: Pre-merge CI
 on:
-  pull_request:
-    branches:
-      - develop
+  workflow_call:
+#  pull_request:
+#    branches:
+#      - develop
 
 concurrency:
   cancel-in-progress: true

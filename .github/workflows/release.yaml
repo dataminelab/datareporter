@@ -1,0 +1,45 @@
+name: Pre-merge CI
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+
+  build-datarepoter:
+    runs-on: ubuntu-latest
+    steps:
+      - id: get-version
+        run: |
+          #!/bin/bash
+          next_version=$(.github/scripts/next_version.sh)
+          echo "Next version: $next_version"
+          echo "version=$next_version" >> $GITHUB_OUTPUT
+
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - id: auth
+        name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          token_format: access_token
+          workload_identity_provider: github-provider
+          service_account: github-actions-image-build@datareporter.iam.gserviceaccount.com
+          access_token_lifetime: 300s
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west1-docker.pkg.dev/datareporter
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: europe-west1-docker.pkg.dev/datareporter/datareporter:${{ needs.get-version.outputs.version }}

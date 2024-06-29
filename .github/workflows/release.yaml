@@ -1,4 +1,4 @@
-name: Pre-merge CI
+name: Release docker Image
 on:
   push:
     branches:
@@ -11,8 +11,13 @@ concurrency:
 
 jobs:
 
-  build-datarepoter:
+  unit_tests:
+    uses: .github/workflows/test-unit.yaml
+    secrets: inherit
+  release_image:
     runs-on: ubuntu-latest
+    needs:
+      - unit_tests
     steps:
       - id: get-version
         run: |
@@ -24,22 +29,20 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - id: auth
-        name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v0
-        with:
-          token_format: access_token
-          workload_identity_provider: github-provider
-          service_account: github-actions-image-build@datareporter.iam.gserviceaccount.com
-          access_token_lifetime: 300s
-      - name: Login to Docker Hub
+      - name: Docker login
         uses: docker/login-action@v3
         with:
-          registry: europe-west1-docker.pkg.dev/datareporter
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
-      - name: Build and push
+          registry: ${{ secrets.GCR_URL }}
+          username: ${{ secrets.GCR_USERNAME }}
+          password: ${{ secrets.GCR_PASSWORD }}
+      - name: Build and push datareporter
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: europe-west1-docker.pkg.dev/datareporter/datareporter:${{ needs.get-version.outputs.version }}
+          tags: ${{ secrets.GCR_URL }}/datareporter:${{ needs.get-version.outputs.version }}
+      - name: Build and push datareporter
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: plywood/server
+          tags: ${{ secrets.GCR_URL }}/plywood:${{ needs.get-version.outputs.version }}

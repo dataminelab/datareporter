@@ -30,11 +30,6 @@ jobs:
           next_version=$(./.github/scripts/next_version.sh)
           echo "Next version: $next_version"
           echo "version=$next_version" >> $GITHUB_OUTPUT
-
-
-      - run: |
-          #!/bin/bash
-          echo check ${{ steps.get-version.outputs.version }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Docker login
@@ -47,10 +42,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: europe-west1-docker.pkg.dev/datareporter/datareporter:${{ needs.get-version.outputs.version }}
+          tags: europe-west1-docker.pkg.dev/datareporter/datareporter:${{ steps.get-version.outputs.version }}
       - name: Build and push datareporter
         uses: docker/build-push-action@v6
         with:
           push: true
           context: plywood/server
-          tags: europe-west1-docker.pkg.dev/datareporter/plywood:${{ needs.get-version.outputs.version }}
+          tags: europe-west1-docker.pkg.dev/datareporter/plywood:${{ steps.get-version.outputs.version }}

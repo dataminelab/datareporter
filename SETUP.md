@@ -3,16 +3,34 @@
 DataReporter
 
 Requirements:
-* DataReporter builds correctly with Node 12
+* DataReporter builds correctly with Node 14
 Consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
-* Data reported builds correctly with Node 12
-* Install node 12.22.12 with nodenv and ensure shims are added to PATH
+* Install node v14 with nodenv and ensure shims are added to PATH
 see for more info: https://github.com/nodenv/nodenv#how-it-works
 see https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl for windows-wsl2-nvm
 
 ```
-nodenv install 12.22.12
-nodenv local 12.22.12
+nodenv install 14
+nodenv local 14
+```
+
+Alternatively you can use nvm
+```
+sudo apt update
+sudo apt install curl
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+```
+set nvm version
+```
+nvm install v14
+nvm alias default v14
+```
+You should enhance your local files in order to use v14 so type `nano ~/.bashrc` then enhance file according to below
+```
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+nvm use v14 > /dev/null
 ```
 
 * Build UI - Required to build ui for

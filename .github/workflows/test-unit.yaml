@@ -14,12 +14,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.8'
-      - name: Install Poetry
+      - name: Install pip
         run: |
-          curl -sSL https://install.python-poetry.org | python -
+          python -m ensurepip --upgrade
       - shell: bash
         run: |-
-          poetry add -G dev flake8
+          pip3 install flake8
       - shell: bash
         run: |-
           export PATH=$PATH:/builder/home/.local/bin

@@ -13,7 +13,7 @@ build-docker-image-job: &build-docker-image-job
 jobs:
   backend-lint:
     docker:
-      - image: circleci/python:3.8.0
+      - image: circleci/python:3.8.9
     steps:
       - checkout
       - run: sudo pip install flake8

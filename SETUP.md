@@ -4,10 +4,7 @@ DataReporter
 
 Requirements:
 * DataReporter builds correctly with Node 12
-
 Consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
-
-Requirements:
 * Data reported builds correctly with Node 12
 * Install node 12.22.12 with nodenv and ensure shims are added to PATH
 see for more info: https://github.com/nodenv/nodenv#how-it-works

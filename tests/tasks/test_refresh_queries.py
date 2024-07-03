@@ -1,3 +1,4 @@
+import pytest
 from mock import patch, call, ANY
 from tests import BaseTestCase
 from redash.tasks.queries.maintenance import refresh_queries

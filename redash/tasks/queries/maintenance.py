@@ -75,6 +75,10 @@ def _apply_default_parameters(query):
 class RefreshQueriesError(Exception):
     pass
 
+def _apply_auto_limit(query_text, query):
+    should_apply_auto_limit = query.options.get("apply_auto_limit", False)
+    return query.data_source.query_runner.apply_auto_limit(query_text, should_apply_auto_limit)
+
 
 def refresh_queries():
     logger.info("Refreshing queries...")

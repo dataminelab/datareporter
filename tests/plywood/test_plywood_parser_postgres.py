@@ -1,5 +1,4 @@
 import unittest
-import pytest
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from tests.plywood.fixtures.test_data_0_split_1_measure_1_filter.sample_1 import POSTGRES_0_SPLIT_JOBS, \
     POSTGRES_0_SPLIT_SHAPE, POSTGRES_0_SPLIT_RESULT
@@ -70,7 +69,6 @@ class TestPostgresParseV2(unittest.TestCase):
 
         self.assertDictEqual(data.dict(), POSTGRES_1_SPLIT_RESULT_TIMESHIFT)
 
-    # @pytest.mark.skip(reason="test_dummies does not exists anymore")
     def test_2_split_1_measure_1_filter(self):
         parser = PlywoodQueryParserV2(
             data_cube_name=CUSTOMER_DATA_CUBE,
@@ -82,7 +80,6 @@ class TestPostgresParseV2(unittest.TestCase):
 
         self.assertDictEqual(data.dict(), POSTGRES_2_SPLIT_RESULT)
 
-    # @pytest.mark.skip(reason="test_dummies does not exists anymore")
     def test_2_split_1_measure_1_filter_big_query(self):
         parser = PlywoodQueryParserV2(
             data_cube_name=CUSTOMER_DATA_CUBE_BIG_QUERY,
@@ -93,7 +90,6 @@ class TestPostgresParseV2(unittest.TestCase):
         data = parser.parse_ply(ENGINE_BIG_QUERY)
         self.assertDictEqual(data.dict(), POSTGRES_2_SPLIT_RESULT_BIG_QUERY)
 
-    # @pytest.mark.skip(reason="test_dummies does not exists anymore")
     def test_chart_line(self):
         parser = PlywoodQueryParserV2(
             data_cube_name=CUSTOMER_DATA_CUBE_BIG_QUERY,

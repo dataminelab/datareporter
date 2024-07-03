@@ -50,11 +50,10 @@ RQ_REDIS_URL = os.environ.get("RQ_REDIS_URL", _REDIS_URL)
 QUERY_RESULTS_CLEANUP_ENABLED = parse_boolean(
     os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_ENABLED", "true")
 )
-QUERY_RESULTS_CLEANUP_COUNT = int(
-    os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_COUNT", "100")
-)
-QUERY_RESULTS_CLEANUP_MAX_AGE = int(
-    os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_MAX_AGE", "7")
+QUERY_RESULTS_CLEANUP_COUNT = int(os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_COUNT", "100"))
+QUERY_RESULTS_CLEANUP_MAX_AGE = int(os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_MAX_AGE", "7"))
+QUERY_RESULTS_EXPIRED_TTL_ENABLED = parse_boolean(
+    os.environ.get("REDASH_QUERY_RESULTS_EXPIRED_TTL_ENABLED", "false")
 )
 
 SCHEMAS_REFRESH_SCHEDULE = int(os.environ.get("REDASH_SCHEMAS_REFRESH_SCHEDULE", 30))
@@ -78,9 +77,7 @@ ENFORCE_HTTPS_PERMANENT = parse_boolean(
 ENFORCE_FILE_SAVE = parse_boolean(os.environ.get("REDASH_ENFORCE_FILE_SAVE", "true"))
 
 # Whether api calls using the json query runner will block private addresses
-ENFORCE_PRIVATE_ADDRESS_BLOCK = parse_boolean(
-    os.environ.get("REDASH_ENFORCE_PRIVATE_IP_BLOCK", "true")
-)
+ENFORCE_PRIVATE_ADDRESS_BLOCK = parse_boolean(os.environ.get("REDASH_ENFORCE_PRIVATE_IP_BLOCK", "true"))
 
 # Whether to use secure cookies by default.
 COOKIES_SECURE = parse_boolean(

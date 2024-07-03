@@ -1,6 +1,5 @@
 import requests
 from redash.query_runner import *
-from redash.utils import json_dumps
 
 
 def _get_type(value):
@@ -110,7 +109,7 @@ class Rockset(BaseSQLQueryRunner):
                 columns.append(
                     {"name": k, "friendly_name": k, "type": _get_type(rows[0][k])}
                 )
-        data = json_dumps({"columns": columns, "rows": rows})
+        data = {"columns": columns, "rows": rows}
         return data, None
 
 

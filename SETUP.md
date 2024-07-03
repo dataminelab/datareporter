@@ -13,7 +13,6 @@ see https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-
 nodenv install 14
 nodenv local 14
 ```
-
 Alternatively you can use nvm
 ```
 sudo apt update
@@ -47,8 +46,8 @@ nvm use v14 > /dev/null
 
 * Setup docker compose
     * `make up` or `docker-compose up --build`  to start required services like postgres app server
-    * `docker-compose run --rm server create_db` Will start server and run. exec /app/manage.py database create_tables.
-      This step is required **only once**.
+    * `docker-compose run --rm server create_db` Will start server and run. exec /app/manage.py database create_tables. This step is required **only once**.
+    * In case you get an error stating that Target database is not up to date, run: `docker-compose run server manage db stamp head`
     * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker-compose run server manage db migrate`
     * Later on and only if necessary, in order to upgrade local database run: `docker-compose run --rm server manage db upgrade`
 
@@ -99,17 +98,14 @@ docker-compose stop server && docker-compose run --rm --service-ports server deb
 ```
 
 ### Running tests locally
-
 First ensure that the "tests" database is created:
 ```
 docker-compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
 ```
-
 Then run the tests:
 ```
 docker-compose run --rm server tests
 ```
-
 In order to test viz-lib folder you need to install dependencies and run tests because you cant have 2 react versions in the same project. To do that run below commands in the viz-lib folder:
 ```
 npm install antd@^3 react@^16.8 react-dom@^16.8 && npm run test
@@ -154,16 +150,18 @@ npm install
 npm run compile
 npm publish
 ```
-### Debugging notes
 
+### Debugging notes
+client side debugger
+```
 cd client
 npm start
-
-visit http://localhost:8080/ instead of using port 5050
-
-To run Python debugger:
+# visit http://localhost:8080/
+```
+Python debugger:
+```
 docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
-
+```
 To log messages to/from Plywood add to the Plywood env (in docker-compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
 
 ### Docker installation issues
@@ -174,6 +172,7 @@ rm  ~/.docker/config.json
 ```
 
 ## Docker connectivity issues for testing connection between containers
+This is usefull when testing fresh datasources
 ```bash
 >> docker network connect datareporter_default router
 >> docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' router
@@ -190,10 +189,10 @@ PING router (172.19.0.9) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.057/0.781/1.506/0.725 ms
 ```
 
-### How to handle package controll on Python side
+### How to handle package controll on Python side, [see settings](https://github.com/getredash/redash/blob/c97afeb327d8d54e7219ac439cc93d0f234763e5)
 ```
-# Install Poetry locally, [see-settings](https://github.com/getredash/redash/blob/c97afeb327d8d54e7219ac439cc93d0f234763e5)
-pip3 install poetry==1.6.1 # it has to be 1.6.1 or upper because of group usages
+# Install Poetry locally, it has to be 1.6.1 or upper because of group usages
+pip3 install poetry==1.6.1
 
 # Uninstall Poetry locally
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/901bdf0491005f1b3db41947d0d938da6838ecb9/get-poetry.py | python3 - --uninstall

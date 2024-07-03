@@ -4,7 +4,6 @@ import logging
 import requests
 
 from redash.query_runner import *
-from redash.utils import json_dumps
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +28,7 @@ def _transform_result(response):
                 }
             )
 
-    data = {"columns": columns, "rows": rows}
-    return json_dumps(data)
+    return {"columns": columns, "rows": rows}
 
 
 class Graphite(BaseQueryRunner):

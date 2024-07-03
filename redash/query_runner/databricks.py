@@ -10,7 +10,6 @@ from redash.query_runner import (
     TYPE_INTEGER,
     TYPE_FLOAT,
 )
-from redash.utils import json_dumps, json_loads
 from redash import __version__
 
 try:
@@ -34,6 +33,9 @@ TYPES_MAP = {
 def _build_odbc_connection_string(**kwargs):
     return ";".join([f"{k}={v}" for k, v in kwargs.items()])
 
+
+def combine_sql_statements(queries):
+    return ";\n".join(queries)
 
 class Databricks(BaseSQLQueryRunner):
     noop_query = "SELECT 1"
@@ -108,16 +110,13 @@ class Databricks(BaseSQLQueryRunner):
                 ]
 
                 data = {"columns": columns, "rows": rows}
-                json_data = json_dumps(data)
                 error = None
             else:
                 error = None
-                json_data = json_dumps(
-                    {
-                        "columns": [{"name": "result", "type": TYPE_STRING}],
-                        "rows": [{"result": "No data was returned."}],
-                    }
-                )
+                data = {
+                    "columns": [{"name": "result", "type": TYPE_STRING}],
+                    "rows": [{"result": "No data was returned."}],
+                }
 
             cursor.close()
         except pyodbc.Error as e:
@@ -125,9 +124,9 @@ class Databricks(BaseSQLQueryRunner):
                 error = str(e.args[1])
             else:
                 error = str(e)
-            json_data = None
+            data = None
 
-        return json_data, error
+        return data, error
 
     def get_schema(self):
         raise NotSupported()
@@ -138,8 +137,6 @@ class Databricks(BaseSQLQueryRunner):
 
         if error is not None:
             raise Exception("Failed getting schema.")
-
-        results = json_loads(results)
 
         first_column_name = results["columns"][0]["name"]
         return [row[first_column_name] for row in results["rows"]]

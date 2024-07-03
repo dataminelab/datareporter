@@ -1,7 +1,7 @@
+from redash.query_runner import BaseSQLQueryRunner, BaseQueryRunner
 from tests import BaseTestCase
 
 from redash.models import db
-from redash.utils import json_dumps
 from redash.handlers.query_results import error_messages
 
 
@@ -39,7 +39,7 @@ class TestQueryResultsContentDispositionHeaders(BaseTestCase):
         try:
             rv.headers['Content-Disposition'].encode('ascii')
         except Exception as e:
-            self.fail(repr(e))            
+            self.fail(repr(e))
 
 
 class TestQueryResultListAPI(BaseTestCase):
@@ -75,6 +75,48 @@ class TestQueryResultListAPI(BaseTestCase):
         self.assertEqual(rv.status_code, 200)
         self.assertNotIn("query_result", rv.json)
         self.assertIn("job", rv.json)
+
+
+    def test_add_limit_change_query_sql(self):
+        ds = self.factory.create_data_source(
+            group=self.factory.org.default_group, type="pg"
+        )
+        query = self.factory.create_query(query_text="SELECT 2", data_source=ds)
+        query_result = self.factory.create_query_result(data_source=ds, query_hash=query.query_hash)
+
+        rv = self.make_request(
+            "post",
+            "/api/query_results",
+            data={
+                "data_source_id": ds.id,
+                "query": query.query_text,
+                "apply_auto_limit": True
+            },
+        )
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertNotIn("query_result", rv.json)
+        self.assertIn("job", rv.json)
+
+    def test_add_limit_no_change_for_nonsql(self):
+        ds = self.factory.create_data_source(
+            group=self.factory.org.default_group, type="prometheus"
+        )
+        query = self.factory.create_query(query_text="SELECT 5", data_source=ds)
+        query_result = self.factory.create_query_result(data_source=ds, query_hash=query.query_hash)
+
+        rv = self.make_request(
+            "post",
+            "/api/query_results",
+            data={
+                "data_source_id": ds.id,
+                "query": query.query_text,
+                "apply_auto_limit": True
+            },
+        )
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(query_result.id, rv.json["query_result"]["id"])
 
     def test_execute_query_without_access(self):
         group = self.factory.create_group()
@@ -244,6 +286,19 @@ class TestQueryResultAPI(BaseTestCase):
         )
         self.assertEqual(rv.status_code, 200)
 
+    def test_get_latest_query_result_with_apply_auto_limit(self):
+        query = self.factory.create_query(
+            options={"parameters": [{"name": "foo", "type": "number"}], "apply_auto_limit": True}
+        )
+        rv = self.make_request(
+            "post",
+            "/api/queries/{}/results".format(query.id),
+            data={"parameters": {}, "apply_auto_limit": True},
+        )
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn("job", rv.json)
+
     def test_prevents_execution_of_unsafe_queries_using_api_key(self):
         ds = self.factory.create_data_source(
             group=self.factory.org.default_group, view_only=True
@@ -366,7 +421,7 @@ class TestQueryDropdownsResource(BaseTestCase):
 
         query_result = self.factory.create_query_result()
         data = {"rows": [], "columns": [{"name": "whatever"}]}
-        query_result = self.factory.create_query_result(data=json_dumps(data))
+        query_result = self.factory.create_query_result(data=data)
         unrelated_dropdown_query = self.factory.create_query(
             latest_query_data=query_result
         )
@@ -386,35 +441,29 @@ class TestQueryDropdownsResource(BaseTestCase):
     def test_allows_access_if_associated_and_has_access_to_parent(self):
         query_result = self.factory.create_query_result()
         data = {"rows": [], "columns": [{"name": "whatever"}]}
-        query_result = self.factory.create_query_result(data=json_dumps(data))
+        query_result = self.factory.create_query_result(data=data)
         dropdown_query = self.factory.create_query(latest_query_data=query_result)
 
-        options = {"parameters": [{"type": "query", "queryId": dropdown_query.id}]}
+        options = {"parameters": [{"name": "param", "type": "query", "queryId": dropdown_query.id}]}
         query = self.factory.create_query(options=options)
 
         # dropdown_query has been associated with query
         # user has access to query
 
-        rv = self.make_request(
-            "get", "/api/queries/{}/dropdowns/{}".format(query.id, dropdown_query.id)
-        )
+        rv = self.make_request("get", "/api/queries/{}/dropdowns/{}".format(query.id, dropdown_query.id))
 
         self.assertEqual(rv.status_code, 200)
 
     def test_prevents_access_if_associated_and_doesnt_have_access_to_parent(self):
-        ds2 = self.factory.create_data_source(
-            group=self.factory.org.admin_group, view_only=False
-        )
+        ds2 = self.factory.create_data_source(group=self.factory.org.admin_group, view_only=False)
         dropdown_query = self.factory.create_query(data_source=ds2)
-        options = {"parameters": [{"type": "query", "queryId": dropdown_query.id}]}
+        options = {"parameters": [{"name": "param", "type": "query", "queryId": dropdown_query.id}]}
         query = self.factory.create_query(data_source=ds2, options=options)
 
         # dropdown_query has been associated with query
         # user doesnt have access to either query
 
-        rv = self.make_request(
-            "get", "/api/queries/{}/dropdowns/{}".format(query.id, dropdown_query.id)
-        )
+        rv = self.make_request("get", "/api/queries/{}/dropdowns/{}".format(query.id, dropdown_query.id))
 
         self.assertEqual(rv.status_code, 403)
 
@@ -437,7 +486,7 @@ class TestQueryResultExcelResponse(BaseTestCase):
             "rows": [{"test": 1}, {"test": 2, "test2": 3}],
             "columns": [{"name": "test"}, {"name": "test2"}],
         }
-        query_result = self.factory.create_query_result(data=json_dumps(data))
+        query_result = self.factory.create_query_result(data=data)
 
         rv = self.make_request(
             "get",

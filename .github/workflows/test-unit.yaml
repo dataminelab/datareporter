@@ -44,7 +44,7 @@ jobs:
       - name: "Prepare test environment"
         shell: bash
         run: |-
-          docker compose  -f docker-compose.ci.yml up -d postgres redis
+          docker compose -f docker-compose.ci.yml up -d postgres redis
       - name: "Wait for postgres to start"
         shell: bash
         run: |-

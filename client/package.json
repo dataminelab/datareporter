@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "npm-run-all --parallel watch:viz webpack-dev-server",
-    "bundle": "bin/bundle-extensions",
     "clean": "rm -rf ./dist/",
     "clean-install:viz": "cd ../viz-lib && npm ci",
     "clean-install:plywood-client": "cd ../plywood/server/client && npm i ",

@@ -74,16 +74,13 @@ class TestDashboardResourceGet(BaseTestCase):
     def test_get_dashboard_filters_unauthorized_widgets(self):
         dashboard = self.factory.create_dashboard()
 
-        restricted_ds = self.factory.create_data_source(
-            group=self.factory.create_group()
-        )
+        restricted_ds = self.factory.create_data_source(group=self.factory.create_group())
         query = self.factory.create_query(data_source=restricted_ds)
         vis = self.factory.create_visualization(query_rel=query)
-        restricted_widget = self.factory.create_widget(
-            visualization=vis, dashboard=dashboard
-        )
+        restricted_widget = self.factory.create_widget(visualization=vis, dashboard=dashboard)
+
         widget = self.factory.create_widget(dashboard=dashboard)
-        dashboard.layout = "[[{}, {}]]".format(widget.id, restricted_widget.id)
+        dashboard.layout = [[widget.id, restricted_widget.id]]
         db.session.commit()
 
         rv = self.make_request("get", "/api/dashboards/{0}".format(dashboard.id))
@@ -103,7 +100,7 @@ class TestDashboardResourcePost(BaseTestCase):
         rv = self.make_request(
             "post",
             "/api/dashboards/{0}".format(d.id),
-            data={"name": new_name, "layout": "[]"},
+            data={"name": new_name, "layout": []},
         )
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(rv.json["name"], new_name)
@@ -116,7 +113,7 @@ class TestDashboardResourcePost(BaseTestCase):
         rv = self.make_request(
             "post",
             "/api/dashboards/{0}".format(d.id),
-            data={"name": new_name, "layout": "[]", "version": d.version - 1},
+            data={"name": new_name, "layout": [], "version": d.version - 1},
         )
 
         self.assertEqual(rv.status_code, 409)
@@ -129,7 +126,7 @@ class TestDashboardResourcePost(BaseTestCase):
         rv = self.make_request(
             "post",
             "/api/dashboards/{0}".format(d.id),
-            data={"name": new_name, "layout": "[]"},
+            data={"name": new_name, "layout": []},
         )
 
         self.assertEqual(rv.status_code, 200)
@@ -142,7 +139,7 @@ class TestDashboardResourcePost(BaseTestCase):
         rv = self.make_request(
             "post",
             "/api/dashboards/{0}".format(d.id),
-            data={"name": new_name, "layout": "[]", "version": d.version},
+            data={"name": new_name, "layout": [], "version": d.version},
             user=user,
         )
         self.assertEqual(rv.status_code, 403)
@@ -154,7 +151,7 @@ class TestDashboardResourcePost(BaseTestCase):
         rv = self.make_request(
             "post",
             "/api/dashboards/{0}".format(d.id),
-            data={"name": new_name, "layout": "[]", "version": d.version},
+            data={"name": new_name, "layout": [], "version": d.version},
             user=user,
         )
 

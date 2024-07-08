@@ -1,5 +1,4 @@
 from redash.query_runner import *
-from redash.utils import json_dumps, json_loads
 
 import logging
 
@@ -74,8 +73,6 @@ class Phoenix(BaseQueryRunner):
         if error is not None:
             raise Exception("Failed getting schema.")
 
-        results = json_loads(results)
-
         for row in results["rows"]:
             table_name = "{}.{}".format(row["TABLE_SCHEM"], row["TABLE_NAME"])
 
@@ -104,11 +101,10 @@ class Phoenix(BaseQueryRunner):
                 for i, r in enumerate(cursor.fetchall())
             ]
             data = {"columns": columns, "rows": rows}
-            json_data = json_dumps(data)
             error = None
             cursor.close()
         except Error as e:
-            json_data = None
+            data = None
             error = "code: {}, sql state:{}, message: {}".format(
                 e.code, e.sqlstate, str(e)
             )
@@ -116,7 +112,7 @@ class Phoenix(BaseQueryRunner):
             if connection:
                 connection.close()
 
-        return json_data, error
+        return data, error
 
 
 register(Phoenix)

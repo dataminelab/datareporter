@@ -201,5 +201,5 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/901bdf0491005f1
 poetry add <package-name>
 
 # Uninstall a package
-poetry remote <package-name>
+poetry remove <package-name>
 ```

@@ -7,6 +7,7 @@ from flask_talisman import talisman
 from .helpers import (
     fix_assets_path,
     array_from_string,
+    cast_int_or_default,
     parse_boolean,
     int_or_none,
     set_from_string,

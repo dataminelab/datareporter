@@ -31,7 +31,7 @@ services:
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
   redis:
-    image: redis:6-alpine
+    image: redis:7-alpine
     restart: unless-stopped
     ports:
       - "6379"

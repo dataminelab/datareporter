@@ -12,7 +12,7 @@ force-exclude = '''
 
 [tool.poetry]
 name = "datareporter"
-version = "0.2.1"
+version = "0.3.1"
 description = ""
 authors = ["Radoslaw Maciaszek <radek@dataminelab.com>"]
 license = "MIT"

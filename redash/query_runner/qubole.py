@@ -9,7 +9,6 @@ from redash.query_runner import (
     JobTimeoutException,
     TYPE_STRING,
 )
-from redash.utils import json_dumps
 
 try:
     import qds_sdk
@@ -133,13 +132,13 @@ class Qubole(BaseQueryRunner):
                     for row in data
                 ]
 
-            json_data = json_dumps({"columns": columns, "rows": rows})
+            data = {"columns": columns, "rows": rows}
         except (KeyboardInterrupt, JobTimeoutException):
             logging.info("Sending KILL signal to Qubole Command Id: %s", cmd.id)
             cmd.cancel()
             raise
 
-        return json_data, error
+        return data, error
 
     def get_schema(self, get_stats=False):
         schemas = {}

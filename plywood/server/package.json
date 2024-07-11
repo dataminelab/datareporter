@@ -27,10 +27,10 @@
     "@druid-toolkit/query": "^0.19.1",
     "chronoshift": "^0.10.0",
     "druid.d.ts": "^0.12.1",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "has-own-prop": "^1.0.1",
     "http-status": "^1.4.2",
-    "immer": "^9.0.3",
+    "immer": "^9.0.6",
     "immutable": "^4.0.0-rc.14",
     "immutable-class": "^0.9.4",
     "immutable-class-tester": "^0.7.2",
@@ -47,7 +47,7 @@
     "stream-to-array": "^2.3.0",
     "stream-to-string": "^1.2.0",
     "tslib": "^1.10.0",
-    "tslog": "^3.2.0"
+    "tslog": "^4.9.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",

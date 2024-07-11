@@ -9,7 +9,6 @@ from redash.permissions import (
     require_permission,
     view_only,
 )
-from redash.utils import json_dumps
 
 
 class WidgetListResource(BaseResource):
@@ -32,7 +31,6 @@ class WidgetListResource(BaseResource):
         )
         require_object_modify_permission(dashboard, self.current_user)
 
-        widget_properties["options"] = json_dumps(widget_properties["options"])
         widget_properties.pop("id", None)
 
         visualization_id = widget_properties.pop("visualization_id")
@@ -81,7 +79,6 @@ class WidgetResource(BaseResource):
         require_object_modify_permission(widget.dashboard, self.current_user)
         widget_properties = request.get_json(force=True)
         widget.text = widget_properties["text"]
-        widget.options = json_dumps(widget_properties["options"])
         models.db.session.commit()
         return serialize_widget(widget)
 

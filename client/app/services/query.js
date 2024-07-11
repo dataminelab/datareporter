@@ -50,6 +50,7 @@ export class Query {
     if (!has(this, "options")) {
       this.options = {};
     }
+    this.options.apply_auto_limit = !!this.options.apply_auto_limit;
 
     if (!isArray(this.options.parameters)) {
       this.options.parameters = [];
@@ -130,8 +131,9 @@ export class Query {
   }
 
   getQueryResult(maxAge) {
-    const execute = () => QueryResult.getByQueryId(this.id, this.getParameters().getExecutionValues(), maxAge);
-    return this.prepareQueryResultExecution(execute, maxAge);
+    const execute = () =>
+      QueryResult.getByQueryId(this.id, this.getParameters().getExecutionValues(), this.getAutoLimit(), maxAge);
+      return this.prepareQueryResultExecution(execute, maxAge);
   }
 
   getQueryResultByText(maxAge, selectedQueryText) {
@@ -141,7 +143,7 @@ export class Query {
     }
 
     const parameters = this.getParameters().getExecutionValues({ joinListValues: true });
-    const execute = () => QueryResult.get(this.data_source_id, queryText, parameters, maxAge, this.id);
+    const execute = () => QueryResult.get(this.data_source_id, queryText, parameters, this.getAutoLimit(), maxAge, this.id);
     return this.prepareQueryResultExecution(execute, maxAge);
   }
 
@@ -182,6 +184,10 @@ export class Query {
     }
 
     return this.$parameters;
+  }
+
+  getAutoLimit() {
+    return this.options.apply_auto_limit;
   }
 
   getParametersDefs(update = true) {

@@ -210,7 +210,7 @@ class DateRangeParameter extends React.Component {
     return (
       <DateRangeComponent
         ref={this.dateRangeComponentRef}
-        className={classNames("redash-datepicker date-range-input", { "dynamic-value": hasDynamicValue }, className)}
+        className={classNames("redash-datepicker", { "dynamic-value": hasDynamicValue }, className)}
         onSelect={onSelect}
         style={{ width: hasDynamicValue ? 195 : widthByType[type] }}
         suffixIcon={

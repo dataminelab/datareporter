@@ -2,7 +2,6 @@ import logging
 import sqlite3
 
 from redash.query_runner import BaseSQLQueryRunner, register, JobTimeoutException
-from redash.utils import json_dumps, json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +35,6 @@ class Sqlite(BaseSQLQueryRunner):
         if error is not None:
             raise Exception("Failed getting schema.")
 
-        results = json_loads(results)
-
         for row in results["rows"]:
             table_name = row["tbl_name"]
             schema[table_name] = {"name": table_name, "columns": []}
@@ -45,7 +42,6 @@ class Sqlite(BaseSQLQueryRunner):
             if error is not None:
                 raise Exception("Failed getting schema.")
 
-            results_table = json_loads(results_table)
             for row_column in results_table["rows"]:
                 schema[table_name]["columns"].append(row_column["name"])
 
@@ -68,16 +64,15 @@ class Sqlite(BaseSQLQueryRunner):
 
                 data = {"columns": columns, "rows": rows}
                 error = None
-                json_data = json_dumps(data)
             else:
+                data = None
                 error = "Query completed but it returned no data."
-                json_data = None
         except (KeyboardInterrupt, JobTimeoutException):
             connection.cancel()
             raise
         finally:
             connection.close()
-        return json_data, error
+        return data, error
 
 
 register(Sqlite)

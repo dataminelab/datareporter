@@ -178,7 +178,7 @@ This is usefull when testing fresh datasources
 >> docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' router
 docker_default, datareporter_default
 >> docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' datareporter-server-1
-datareporter_default 
+datareporter_default
 >> docker exec datareporter-server-1 ping router -c2
 PING router (172.19.0.9) 56(84) bytes of data.
 64 bytes from router.datareporter_default (172.19.0.9): icmp_seq=1 ttl=64 time=1.51 ms

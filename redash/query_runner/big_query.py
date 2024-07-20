@@ -272,9 +272,9 @@ class BigQuery(BaseQueryRunner):
         columns = []
         if column["type"] == "RECORD":
             for field in column["fields"]:
-                columns.append("{}.{}".format(column["name"], field["name"]))
+                columns.append({"name": "{}.{}".format(column["name"], field["name"]), "type": field["type"]})
         else:
-            columns.append(column["name"])
+            columns.append({"name": column["name"], "type": column["type"]})
 
         return columns
 

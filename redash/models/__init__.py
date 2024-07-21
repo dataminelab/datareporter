@@ -49,6 +49,7 @@ from redash.utils import (
     gen_query_hash
 )
 from redash.utils.configuration import ConfigurationContainer
+from redash.services.expression import ExpressionBase64Parser
 from redash.models.parameterized_query import (
     InvalidParameterError,
     ParameterizedQuery,

@@ -17,12 +17,6 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'saturday'
-  - directory: "/bin"
-    package-ecosystem: "pip"
-    schedule:
-      interval: "monthly"
-    ignore:
-    - dependency-name: "*"
   - directory: "/"
     target-branch: "develop"
     package-ecosystem: "pip"

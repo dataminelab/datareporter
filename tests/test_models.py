@@ -2,12 +2,14 @@ import calendar
 import datetime
 from unittest import TestCase
 
+import pytz
 from dateutil.parser import parse as date_parse
 
-from redash import models
-from redash.models import db
-from redash.utils import gen_query_hash, utcnow
 from tests import BaseTestCase
+
+from redash import models, redis_connection
+from redash.models import db, types
+from redash.utils import gen_query_hash, utcnow
 
 
 class DashboardTest(BaseTestCase):
@@ -55,7 +57,7 @@ class ShouldScheduleNextTest(TestCase):
     def test_exact_time_with_day_change(self):
         now = utcnow().replace(hour=0, minute=1)
         previous = (now - datetime.timedelta(days=2)).replace(hour=23, minute=59)
-        schedule = "23:59"
+        schedule = "23:59".format(now.hour + 3)
         self.assertTrue(models.should_schedule_next(previous, now, "86400", schedule))
 
     def test_exact_time_every_x_days_that_needs_reschedule(self):
@@ -323,8 +325,7 @@ class QueryOutdatedQueriesTest(BaseTestCase):
         valid_query = self.create_scheduled_query(interval="60")
         self.fake_previous_execution(valid_query, minutes=10)
 
-        models.Query.outdated_queries()
-
+        queries = models.Query.outdated_queries()
         self.assertEqual(list(models.Query.outdated_queries()), [valid_query])
         self.assertTrue(faulty_query.schedule.get("disabled"))
 
@@ -352,11 +353,10 @@ class QueryArchiveTest(BaseTestCase):
             query.data_source,
             query.query_hash,
             query.query_text,
-            "1",
+            {"columns": {}, "rows": []},
             123,
             yesterday,
         )
-
         query.latest_query_data = query_result
         groups = list(models.Group.query.filter(models.Group.id.in_(query.groups)))
         self.assertIn(query, list(models.Query.all_queries([g.id for g in groups])))
@@ -470,6 +470,37 @@ class TestQueryAll(BaseTestCase):
         qs2 = base.order_by(models.User.name.desc())
         self.assertEqual(["bob", "alice"], [q.user.name for q in qs2])
 
+    def test_update_query_hash_basesql_with_options(self):
+        ds = self.factory.create_data_source(
+            group=self.factory.org.default_group, type="pg"
+        )
+        query = self.factory.create_query(query_text="SELECT 2", data_source=ds)
+        query.options = {"apply_auto_limit": True}
+        origin_hash = query.query_hash
+        query.update_query_hash()
+        self.assertNotEqual(origin_hash, query.query_hash)
+
+    def test_update_query_hash_basesql_no_options(self):
+        ds = self.factory.create_data_source(
+            group=self.factory.org.default_group, type="pg"
+        )
+        query = self.factory.create_query(query_text="SELECT 2", data_source=ds)
+        query.options = {}
+        origin_hash = query.query_hash
+        query.update_query_hash()
+        self.assertEqual(origin_hash, query.query_hash)
+
+    def test_update_query_hash_non_basesql(self):
+        ds = self.factory.create_data_source(
+            group=self.factory.org.default_group, type="prometheus"
+        )
+        query = self.factory.create_query(query_text="SELECT 2", data_source=ds)
+        query.options = {"apply_auto_limit": True}
+        origin_hash = query.query_hash
+        query.update_query_hash()
+        self.assertEqual(origin_hash, query.query_hash)
+
+
 
 class TestGroup(BaseTestCase):
     def test_returns_groups_with_specified_names(self):
@@ -500,7 +531,7 @@ class TestQueryResultStoreResult(BaseTestCase):
         self.query_hash = gen_query_hash(self.query)
         self.runtime = 123
         self.utcnow = utcnow()
-        self.data = '{"a": 1}'
+        self.data = {"a": 1}
 
     def test_stores_the_result(self):
         query_result = models.QueryResult.store_result(
@@ -513,7 +544,7 @@ class TestQueryResultStoreResult(BaseTestCase):
             self.utcnow,
         )
 
-        self.assertEqual(query_result._data, self.data)
+        self.assertEqual(query_result.data, self.data)
         self.assertEqual(query_result.runtime, self.runtime)
         self.assertEqual(query_result.retrieved_at, self.utcnow)
         self.assertEqual(query_result.query_text, self.query)

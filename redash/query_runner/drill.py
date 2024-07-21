@@ -13,7 +13,6 @@ from redash.query_runner import (
     TYPE_BOOLEAN,
     guess_type,
 )
-from redash.utils import json_dumps, json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -102,9 +101,7 @@ class Drill(BaseHTTPQueryRunner):
         if error is not None:
             return None, error
 
-        results = parse_response(response.json())
-
-        return json_dumps(results), None
+        return parse_response(response.json()), None
 
     def get_schema(self, get_stats=False):
 
@@ -136,8 +133,6 @@ class Drill(BaseHTTPQueryRunner):
 
         if error is not None:
             raise Exception("Failed getting schema.")
-
-        results = json_loads(results)
 
         schema = {}
 

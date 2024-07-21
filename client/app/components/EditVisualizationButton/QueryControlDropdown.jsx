@@ -4,6 +4,7 @@ import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
 import Button from "antd/lib/button";
 import Icon from "antd/lib/icon";
+import { clientConfig } from "@/services/auth";
 
 import QueryResultsLink from "./QueryResultsLink";
 
@@ -17,7 +18,7 @@ export default function QueryControlDropdown(props) {
           </a>
         </Menu.Item>
       )}
-      {!props.query.isNew() && (
+      {!clientConfig.disablePublicUrls && !props.query.isNew() && (
         <Menu.Item>
           <a onClick={() => props.showEmbedDialog(props.query, props.selectedTab)} data-test="ShowEmbedDialogButton">
             <Icon type="share-alt" /> Embed Elsewhere

@@ -13,6 +13,7 @@ import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
+import useDeleteReport from "../hooks/useDeleteReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
@@ -93,10 +94,11 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const { report, setReport, saveReport, saveAsReport, deleteReport, showShareReportDialog } = useReport(props.report);
+  const { report, setReport, saveReport, saveAsReport, showShareReportDialog } = useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
   const updateTags = useUpdateReportTags(report, setReport);
   const archiveReport = useArchiveReport(report, setReport);
+  const deleteReport = useDeleteReport(report, setReport);
   const publishReport = usePublishReport(report, setReport);
   const unpublishReport = useUnpublishReport(report, setReport);
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
@@ -350,17 +352,7 @@ export default function ReportPageHeader(props) {
         document.getElementById(id).style.opacity = "1";
         document.getElementById(id).style["z-index"] = "10";
       }
-    } catch {console.warn("price modal doesnt exist on this page.")}
-  }
-
-  const handleDeleteReport = () => {
-    const report = props.report;
-    if (report.id) {
-      recordEvent("delete", "report", report.id, { name: report.name });
-      deleteReport(report);
-    } else {
-      setReport(null);
-    }
+    } catch {console.warn("price modal doesn't exist on this page.")}
   }
 
   const handleSaveReport = (save_as) => {
@@ -502,15 +494,17 @@ export default function ReportPageHeader(props) {
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
-    const firstEncounterModelSetter = async (report, models) => {
+    if (report.isJustLanded) return;
+    const firstEncounterModelSetter = async (models) => {
       const modelId = models[0].id;      
       const modelDataCube = await getModelDataCube(modelId);
-      if (!modelDataCube.timeAttribute) return null;
+      if (!modelDataCube) return;
+      if (!modelDataCube.timeAttribute) return;
       handleModelChange(modelId);
       const model = getModel(modelId);
       replaceHash(model, window.location.hash.split("/4/")[1]);
     }
-    if (modelsLoaded && !selectedModel && models.length) firstEncounterModelSetter(report, models);
+    if (modelsLoaded && !selectedModel && models.length) firstEncounterModelSetter(models);
   }, [modelsLoaded]);
 
   return (
@@ -629,7 +623,7 @@ export default function ReportPageHeader(props) {
             </Button>
         )}
         {!queryFlags.isNew && queryFlags.canEdit && (
-          <Button className="m-r-5" onClick={handleDeleteReport}>
+          <Button className="m-r-5" onClick={deleteReport}>
             <i className="fa fa-trash m-r-5" /> Delete
           </Button>
         )}

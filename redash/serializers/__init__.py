@@ -79,16 +79,14 @@ def hash_report(o, can_edit=False):
 
 
 
-def public_widget(widget: models.Widget):
+def public_widget(widget):
     res = {
         "id": widget.id,
         "width": widget.width,
-        "options": json_loads(widget.options),
+        "options": widget.options,
         "text": widget.text,
         "updated_at": widget.updated_at,
         "created_at": widget.created_at,
-        "report_id": widget.get_report_id(),
-        "is_public": 1,
     }
 
     v = widget.visualization
@@ -97,7 +95,7 @@ def public_widget(widget: models.Widget):
             "type": v.type,
             "name": v.name,
             "description": v.description,
-            "options": json_loads(v.options),
+            "options": v.options,
             "updated_at": v.updated_at,
             "created_at": v.created_at,
             "query": {
@@ -114,7 +112,7 @@ def public_widget(widget: models.Widget):
 def public_dashboard(dashboard):
     dashboard_dict = project(
         serialize_dashboard(dashboard, with_favorite_state=False),
-        ("name", "layout", "dashboard_filters_enabled", "updated_at", "created_at"),
+        ("name", "layout", "dashboard_filters_enabled", "updated_at", "created_at", "options"),
     )
 
     widget_list = (
@@ -127,7 +125,7 @@ def public_dashboard(dashboard):
     return dashboard_dict
 
 
-class Serializer(object):
+class Serializer:
     pass
 
 
@@ -208,7 +206,7 @@ def serialize_visualization(object, with_query=True):
         "type": object.type,
         "name": object.name,
         "description": object.description,
-        "options": json_loads(object.options),
+        "options": object.options,
         "updated_at": object.updated_at,
         "created_at": object.created_at,
     }
@@ -223,7 +221,7 @@ def serialize_widget(widget: models.Widget):
     d = {
         "id": widget.id,
         "width": widget.width,
-        "options": json_loads(widget.options),
+        "options": widget.options,
         "dashboard_id": widget.dashboard_id,
         "text": widget.text,
         "updated_at": widget.updated_at,
@@ -265,7 +263,7 @@ def serialize_alert(alert, full=True):
 
 
 def serialize_dashboard(obj, with_widgets=False, user=None, with_favorite_state=True):
-    layout = json_loads(obj.layout)
+    layout = obj.layout
 
     widgets = []
 
@@ -306,6 +304,7 @@ def serialize_dashboard(obj, with_widgets=False, user=None, with_favorite_state=
         "layout": layout,
         "dashboard_filters_enabled": obj.dashboard_filters_enabled,
         "widgets": widgets,
+        "options": obj.options,
         "is_archived": obj.is_archived,
         "is_draft": obj.is_draft,
         "tags": obj.tags or [],

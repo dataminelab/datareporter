@@ -6,7 +6,7 @@ from requests import Session
 from xlsxwriter.utility import xl_col_to_name
 
 from redash.query_runner import *
-from redash.utils import json_dumps, json_loads
+from redash.utils import json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -206,7 +206,7 @@ class GoogleSpreadsheet(BaseQueryRunner):
 
             data = parse_spreadsheet(spreadsheet, worksheet_num)
 
-            return json_dumps(data), None
+            return data, None
         except gspread.SpreadsheetNotFound:
             return (
                 None,

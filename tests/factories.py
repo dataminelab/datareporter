@@ -45,7 +45,7 @@ user_factory = ModelFactory(
     redash.models.User,
     name="John Doe",
     email=Sequence("test{}@example.com"),
-    password_hash=pwd_context.encrypt("test1234"),
+    password_hash=pwd_context.hash("test1234"),
     group_ids=[2],
     org_id=1,
 )
@@ -70,7 +70,7 @@ dashboard_factory = ModelFactory(
     redash.models.Dashboard,
     name="test",
     user=user_factory.create,
-    layout="[]",
+    layout=[],
     is_draft=False,
     org=1,
 )
@@ -122,7 +122,7 @@ alert_factory = ModelFactory(
 
 query_result_factory = ModelFactory(
     redash.models.QueryResult,
-    data='{"columns":{}, "rows":[]}',
+    data={"columns": {}, "rows": []},
     runtime=1,
     retrieved_at=utcnow,
     query_text="SELECT 1",
@@ -137,13 +137,13 @@ visualization_factory = ModelFactory(
     query_rel=query_factory.create,
     name="Chart",
     description="",
-    options="{}",
+    options={},
 )
 
 widget_factory = ModelFactory(
     redash.models.Widget,
     width=1,
-    options="{}",
+    options={},
     dashboard=dashboard_factory.create,
     visualization=visualization_factory.create,
 )
@@ -210,19 +210,13 @@ class Factory(object):
     def data_source(self):
         if self._data_source is None:
             self._data_source = data_source_factory.create(org=self.org)
-            db.session.add(
-                redash.models.DataSourceGroup(
-                    group=self.default_group, data_source=self._data_source
-                )
-            )
+            db.session.add(redash.models.DataSourceGroup(group=self.default_group, data_source=self._data_source))
 
         return self._data_source
 
     def create_org(self, **kwargs):
         org = org_factory.create(**kwargs)
-        self.create_group(
-            org=org, type=redash.models.Group.BUILTIN_GROUP, name="default"
-        )
+        self.create_group(org=org, type=redash.models.Group.BUILTIN_GROUP, name="default")
         self.create_group(
             org=org,
             type=redash.models.Group.BUILTIN_GROUP,
@@ -290,11 +284,7 @@ class Factory(object):
         data_source = data_source_factory.create(**args)
 
         if group:
-            db.session.add(
-                redash.models.DataSourceGroup(
-                    group=group, data_source=data_source, view_only=view_only
-                )
-            )
+            db.session.add(redash.models.DataSourceGroup(group=group, data_source=data_source, view_only=view_only))
 
         return data_source
 

@@ -1,4 +1,4 @@
-.PHONY: compose_build up test_db create_database clean down bundle tests lint backend-unit-tests frontend-unit-tests test build watch start redis-cli bash
+.PHONY: compose_build up test_db create_database clean down tests lint backend-unit-tests frontend-unit-tests test build watch start redis-cli bash
 
 compose_build:
 	docker-compose build
@@ -22,9 +22,6 @@ clean:
 down:
 	docker-compose down
 
-bundle:
-	docker-compose run server bin/bundle-extensions
-
 tests:
 	docker-compose run server tests
 
@@ -34,20 +31,19 @@ lint:
 backend-unit-tests: up test_db
 	docker-compose run --rm --name tests server tests
 
-frontend-unit-tests: bundle
+frontend-unit-tests:
 	npm ci
-	npm run bundle
 	npm test
 
 test: lint backend-unit-tests frontend-unit-tests
 
-build: bundle
+build:
 	npm run build
 
-watch: bundle
+watch:
 	npm run watch
 
-start: bundle
+start:
 	npm run start
 
 redis-cli:

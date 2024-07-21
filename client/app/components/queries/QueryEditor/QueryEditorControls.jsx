@@ -7,6 +7,7 @@ import Select from "antd/lib/select";
 import KeyboardShortcuts, { humanReadableShortcut } from "@/services/KeyboardShortcuts";
 
 import AutocompleteToggle from "./AutocompleteToggle";
+import AutoLimitCheckbox from "@/components/queries/QueryEditor/AutoLimitCheckbox";
 import "./QueryEditorControls.less";
 
 export function ButtonTooltip({ title, shortcut, ...props }) {
@@ -38,6 +39,7 @@ export default function EditorControl({
   saveButtonProps,
   executeButtonProps,
   autocompleteToggleProps,
+  autoLimitCheckboxProps,
   dataSourceSelectorProps,
 }) {
   useEffect(() => {
@@ -84,6 +86,7 @@ export default function EditorControl({
           onToggle={autocompleteToggleProps.onToggle}
         />
       )}
+      {autoLimitCheckboxProps !== false && <AutoLimitCheckbox {...autoLimitCheckboxProps} />}
       {dataSourceSelectorProps === false && <span className="query-editor-controls-spacer" />}
       {dataSourceSelectorProps !== false && (
         <Select
@@ -153,6 +156,10 @@ EditorControl.propTypes = {
       onToggle: PropTypes.func,
     }),
   ]),
+  autoLimitCheckboxProps: PropTypes.oneOfType([
+    PropTypes.bool, // `false` to hide
+    PropTypes.shape(AutoLimitCheckbox.propTypes),
+  ]),
   dataSourceSelectorProps: PropTypes.oneOfType([
     PropTypes.bool, // `false` to hide
     PropTypes.shape({
@@ -175,5 +182,6 @@ EditorControl.defaultProps = {
   saveButtonProps: false,
   executeButtonProps: false,
   autocompleteToggleProps: false,
+  autoLimitCheckboxProps: false,
   dataSourceSelectorProps: false,
 };

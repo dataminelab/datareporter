@@ -46,8 +46,8 @@ def replace_item(obj, value, replace_value):
 def execute_query(query, model, query_id, org):
     parameterized_query = ParameterizedQuery(query, org=org)
     parameters = {}
-
-    return run_query(parameterized_query, parameters, model.data_source, query_id, REDASH_QUERY_CACHE)
+    should_apply_auto_limit = False
+    return run_query(parameterized_query, parameters, model.data_source, query_id, should_apply_auto_limit, REDASH_QUERY_CACHE)
 
 
 def parse_job(job_id: str, current_org):

@@ -1,6 +1,6 @@
 """change type of json fields from varchar to json
-Revision ID: 1916fbf3b1eb
-Revises: b89fbc8cf4c1
+Revision ID: 7205816877ec
+Revises: 1916fbf3b1eb
 Create Date: 2024-01-03 13:55:18.885021
 """
 from alembic import op
@@ -9,8 +9,8 @@ from sqlalchemy.dialects.postgresql import JSONB, JSON
 
 
 # revision identifiers, used by Alembic.
-revision = '1916fbf3b1eb'
-down_revision = 'b89fbc8cf4c1'
+revision = '7205816877ec'
+down_revision = '1916fbf3b1eb'
 branch_labels = None
 depends_on = None
 

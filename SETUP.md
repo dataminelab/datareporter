@@ -47,7 +47,6 @@ nvm use v14 > /dev/null
 * Setup docker compose
     * `make up` or `docker-compose up --build`  to start required services like postgres app server
     * `docker-compose run --rm server create_db` Will start server and run. exec /app/manage.py database create_tables. This step is required **only once**.
-    * In case you get an error stating that Target database is not up to date, run: `docker-compose run server manage db stamp head`
     * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker-compose run server manage db migrate`
     * Later on and only if necessary, in order to upgrade local database run: `docker-compose run --rm server manage db upgrade`
 

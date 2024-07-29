@@ -7,7 +7,6 @@ from rq.registry import FailedJobRegistry
 from rq.job import Job
 from redash import mail, models, settings, rq_redis_connection
 from redash.models import users
-from redash.version_check import run_version_check
 from redash.worker import job, get_job_logger, default_operational_queues
 from redash.tasks.worker import Queue
 from redash.query_runner import NotSupported
@@ -33,27 +32,6 @@ def record_event(raw_event):
                 logger.error("Failed posting to %s: %s", hook, response.content)
         except Exception:
             logger.exception("Failed posting to %s", hook)
-
-
-def version_check():
-    run_version_check()
-
-
-@job("default")
-def subscribe(form):
-    logger.info(
-        "Subscribing to: [security notifications=%s], [newsletter=%s]",
-        form["security_notifications"],
-        form["newsletter"],
-    )
-    data = {
-        "admin_name": form["name"],
-        "admin_email": form["email"],
-        "org_name": form["org_name"],
-        "security_notifications": form["security_notifications"],
-        "newsletter": form["newsletter"],
-    }
-    requests.post("https://beacon.redash.io/subscribe", json=data)
 
 
 @job("emails")

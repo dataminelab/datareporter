@@ -17,6 +17,7 @@
 
 import { Duration, minute, Timezone } from "chronoshift";
 import { List, Record, Set as ImmutableSet } from "immutable";
+// @ts-ignore
 import { Datum, Expression, NumberRange as PlywoodNumberRange, r, Set as PlywoodSet, TimeRange } from "reporter-plywood";
 import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
 
@@ -159,6 +160,7 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
     const datum: Datum = {};
     datum[NOW_REF_NAME] = now;
     datum[MAX_TIME_REF_NAME] = maxTimeMinuteTop;
+    //@ts-ignore
     const { start, end }: TimeRange = selection.defineEnvironment({ timezone }).getFn()(datum);
     //@ts-ignore
     return new FixedTimeFilterClause({ reference: this.reference, values: List.of(new DateRange({ start, end })) });

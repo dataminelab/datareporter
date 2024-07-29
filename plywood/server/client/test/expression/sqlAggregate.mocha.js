@@ -15,7 +15,7 @@
  */
 
 const { expect } = require('chai');
-const { SqlExpression } = require('druid-query-toolkit');
+const { SqlExpression } = require('@druid-toolkit/query');
 
 let plywood = require('../plywood');
 let { SqlAggregateExpression } = plywood;

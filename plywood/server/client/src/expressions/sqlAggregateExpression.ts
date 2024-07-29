@@ -14,31 +14,60 @@
  * limitations under the License.
  */
 
-import { SqlRef, SqlExpression, SqlFunction, SqlCase } from 'druid-query-toolkit';
-import { PlywoodValue } from '../datatypes/index';
+import { SqlExpression } from '@druid-toolkit/query';
+
+import { PlywoodValue } from '../datatypes';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 import { Aggregate } from './mixins/aggregate';
 
 export class SqlAggregateExpression extends ChainableExpression {
   static op = 'SqlAggregate';
 
+  static KNOWN_AGGREGATIONS = [
+    'COUNT',
+    'SUM',
+    'MIN',
+    'MAX',
+    'AVG',
+    'APPROX_COUNT_DISTINCT',
+    'APPROX_COUNT_DISTINCT_DS_HLL',
+    'APPROX_COUNT_DISTINCT_DS_THETA',
+    'DS_HLL',
+    'DS_THETA',
+    'APPROX_QUANTILE',
+    'APPROX_QUANTILE_DS',
+    'APPROX_QUANTILE_FIXED_BUCKETS',
+    'DS_QUANTILES_SKETCH',
+    'BLOOM_FILTER',
+    'TDIGEST_QUANTILE',
+    'TDIGEST_GENERATE_SKETCH',
+    'VAR_POP',
+    'VAR_SAMP',
+    'VARIANCE',
+    'STDDEV_POP',
+    'STDDEV_SAMP',
+    'STDDEV',
+    'EARLIEST',
+    'LATEST',
+    'ANY_VALUE',
+  ];
+
+  static registerKnownAggregation(aggregation: string): void {
+    if (SqlAggregateExpression.KNOWN_AGGREGATIONS.includes(aggregation)) return;
+    SqlAggregateExpression.KNOWN_AGGREGATIONS.push(aggregation);
+  }
+
   static substituteFilter(sqlExpression: SqlExpression, condition: SqlExpression): SqlExpression {
-    return sqlExpression.walk(x => {
-      if (x instanceof SqlRef) {
-        if (x.column && x.table === 't') {
-          return SqlCase.ifThenElse(condition, x);
-        }
-      }
-      if (x instanceof SqlFunction && x.isCountStar()) {
-        return x.changeWhereExpression(condition);
-      }
-      return x;
-    }) as SqlExpression;
+    return sqlExpression.addFilterToAggregations(
+      condition,
+      SqlAggregateExpression.KNOWN_AGGREGATIONS,
+    );
   }
 
   static fromJS(parameters: ExpressionJS): SqlAggregateExpression {
-    let value = ChainableExpression.jsToValue(parameters);
+    const value = ChainableExpression.jsToValue(parameters);
     value.sql = parameters.sql;
     return new SqlAggregateExpression(value);
   }
@@ -57,13 +86,13 @@ export class SqlAggregateExpression extends ChainableExpression {
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.sql = this.sql;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let js = super.toJS();
+    const js = super.toJS();
     js.sql = this.sql;
     return js;
   }
@@ -72,21 +101,21 @@ export class SqlAggregateExpression extends ChainableExpression {
     return super.equals(other) && this.sql === other.sql;
   }
 
-  protected _toStringParameters(indent?: int): string[] {
+  protected _toStringParameters(_indent?: int): string[] {
     return [this.sql];
   }
 
-  protected _calcChainableHelper(operandValue: any): PlywoodValue {
+  protected _calcChainableHelper(_operandValue: any): PlywoodValue {
     throw new Error('can not compute on SQL aggregate');
   }
 
   protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+    let sql = this.sql;
     if (operandSQL.includes(' WHERE ')) {
       const filterParse = SqlExpression.parse(operandSQL.split(' WHERE ')[1]);
-      return String(SqlAggregateExpression.substituteFilter(this.parsedSql, filterParse));
-    } else {
-      return `(${this.sql})`;
+      sql = String(SqlAggregateExpression.substituteFilter(this.parsedSql, filterParse));
     }
+    return `(${sql})`;
   }
 }
 

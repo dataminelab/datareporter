@@ -18,16 +18,15 @@
 import { Transform } from 'readable-stream';
 import { Attributes } from '../datatypes/attributeInfo';
 import { SQLDialect } from '../dialect/baseDialect';
+import { DruidDialect } from '../dialect/druidDialect';
 import {
   ApplyExpression,
   Expression,
   FilterExpression,
-  LimitExpression,
-  NumberBucketExpression,
   SortExpression,
   SplitExpression,
-  TimeBucketExpression,
   YearOverYearExpression,
+  LiteralExpression,
 } from '../expressions/index';
 import { External, ExternalJS, ExternalValue, Inflater, QueryAndPostTransform } from './baseExternal';
 import { PlywoodRequester } from 'plywood-base-api';
@@ -38,6 +37,44 @@ function getSplitInflaters(split: SplitExpression): Inflater[] {
     if (simpleInflater) return simpleInflater;
     return undefined;
   });
+}
+
+function getApplies(applies: ApplyExpression[], dialect: SQLDialect, timeRanges: any): ConcatArray<string> {
+  let isDruidDialect = dialect instanceof DruidDialect;
+  // lookup if timeOverTime is used
+  var timeOverTimeFound = false;
+  for (let i = 0; i < applies.length; i++) {
+    let name = applies[i].name;
+    if (name.startsWith("_delta__") || name.startsWith("_previous__")) {
+      timeOverTimeFound = true;
+      break;
+    }
+  }
+  if (timeOverTimeFound && isDruidDialect) {
+    return applies.map(apply => {
+      var sql = apply.getSQL(dialect);
+      if (apply.expression instanceof LiteralExpression) return sql;
+      let sum = sql.split("AS")[0];
+      let name = apply.name;
+      let currElementStart = dialect.dateToSQLDateString(new Date(timeRanges.currElement.start));
+      let currElementEnd = dialect.dateToSQLDateString(new Date(timeRanges.currElement.end));
+      let prevElementStart = dialect.dateToSQLDateString(new Date(timeRanges.prevElement.start));
+      let prevElementEnd = dialect.dateToSQLDateString(new Date(timeRanges.prevElement.end));
+      if (name.startsWith("_previous__")) {
+        sql = `IFNULL(${sum} FILTER(WHERE TIMESTAMP '${prevElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${prevElementEnd}'), 0) AS "${name}"`            
+      } else if (name.startsWith("_delta__")) {
+        let realSum = `SUM("${applies[0].name}")`
+        sql = `(
+          IFNULL(${realSum} FILTER(WHERE TIMESTAMP '${currElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${currElementEnd}'), 0) -
+          IFNULL(${realSum} FILTER(WHERE TIMESTAMP '${prevElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${prevElementEnd}'), 0)
+        ) AS "${name}"`
+      } else {
+        sql = `IFNULL(${sum} FILTER(WHERE TIMESTAMP '${currElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${currElementEnd}'), 0) AS "${name}"`            
+      }
+      return sql
+    });
+  }
+  return applies.map(apply => apply.getSQL(dialect));
 }
 
 export abstract class SQLExternal extends External {
@@ -175,7 +212,7 @@ export abstract class SQLExternal extends External {
 
         keys = [];
         query.push(
-          applies.map(apply => apply.getSQL(dialect)).join(',\n'),
+          getApplies(applies, dialect, timeRanges).join(',\n'),
           from,
           dialect.constantGroupBy(),
         );
@@ -186,7 +223,7 @@ export abstract class SQLExternal extends External {
         query.push(
           split
             .getSelectSQL(dialect)
-            .concat(applies.map(apply => apply.getSQL(dialect)))
+            .concat(getApplies(applies, dialect, timeRanges))
             .join(',\n'),
           from,
           'GROUP BY ' +
@@ -203,7 +240,7 @@ export abstract class SQLExternal extends External {
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-    const isYoyQuery = YearOverYearExpression.isYoyQuery(query.join('\n'));
+    const isYoyQuery = !(dialect instanceof DruidDialect) && YearOverYearExpression.isYoyQuery(query[1]);
     if (isYoyQuery) {
       let yoyExpression = new YearOverYearExpression(engine, query, mode);
       yoyExpression.setKeys(keys)

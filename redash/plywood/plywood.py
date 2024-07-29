@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 REDASH_PLYWOOD_DB = {
     'pg': 'postgres',
     'bigquery': 'bigquery',
-    'mysql': 'mysql'
+    'mysql': 'mysql',
+    'druid': 'druid',
 }
 
 

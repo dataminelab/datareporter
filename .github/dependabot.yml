@@ -5,15 +5,21 @@ updates:
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
-      prefix: "plywood-server package upgrade: "
+      prefix: "(plywood-server): "
     schedule:
       interval: 'weekly'
       day: 'saturday'
+    ignore:
+      - dependency-name: "readable-stream"
+        update-types: ["version-update:semver-any"]
   - directory: "/plywood/server/client"
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
-      prefix: "plywood-client package upgrade: "
+      prefix: "(plywood-client): "
+    ignore:
+      - dependency-name: "readable-stream"
+        update-types: ["version-update:semver-any"]
     schedule:
       interval: 'weekly'
       day: 'saturday'
@@ -21,7 +27,7 @@ updates:
     target-branch: "develop"
     package-ecosystem: "pip"
     commit-message:
-      prefix: "python package upgrade: "
+      prefix: "(python): "
     schedule:
       interval: 'weekly'
       day: 'saturday'
@@ -29,7 +35,7 @@ updates:
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
-      prefix: "client npm upgrade: "
+      prefix: "(client-npm): "
     schedule:
       interval: 'weekly'
       day: 'saturday'
@@ -37,7 +43,7 @@ updates:
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
-      prefix: "vizlib npm upgrade: "
+      prefix: "(vizlib-npm): "
     schedule:
       interval: 'weekly'
       day: 'saturday'

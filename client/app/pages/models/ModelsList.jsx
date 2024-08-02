@@ -185,13 +185,14 @@ class ModelsList extends React.Component {
     const newModelProps = {
       type: "primary",
       disabled: !policy.canCreateDataSource(),
-      onClick: this.showCreateModelDialog,
-      "data-test": "CreateModelButton"
+      onClick: this.showCreateModelDialog
     };
     return (
       <div className="m-b-15">
-        <Button {...newModelProps}>
-          <i className="fa fa-plus m-r-5" />
+        <Button {...newModelProps}
+          data-test="CreateModelButton"
+        >
+          <i className="fa fa-plus m-r-5 aka" />
           New Model
         </Button>
       </div>

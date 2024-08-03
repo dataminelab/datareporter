@@ -121,7 +121,7 @@
     "@babel/preset-flow": "^7.10.4",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.10.4",
-    "@types/body-parser": "1.16.8",
+    "@types/body-parser": "1.19.5",
     "@types/chai": "4.2.7",
     "@types/chai-datetime": "0.0.33",
     "@types/classnames": "^2.2.10",

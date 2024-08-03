@@ -90,7 +90,7 @@
     "mocha": "5.2.0",
     "nodemon": "^2.0.4",
     "pegjs": "0.10.0",
-    "plywood-druid-requester": "2.6.2",
+    "plywood-druid-requester": "3.0.2",
     "plywood-mysql-requester": "2.3.0",
     "plywood-postgres-requester": "1.4.0",
     "tslint": "5.18.0",

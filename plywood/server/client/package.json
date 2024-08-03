@@ -69,7 +69,7 @@
     "@druid-toolkit/query": "^0.19.1",
     "chronoshift": "^0.10.0",
     "druid.d.ts": "^0.12.1",
-    "has-own-prop": "^1.0.1",
+    "has-own-prop": "^3.1.0",
     "immutable-class": "^0.9.4",
     "moment-timezone": "^0.5.26",
     "plywood-base-api": "^0.2.8",

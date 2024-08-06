@@ -48,6 +48,15 @@ function confirmOverwrite() {
   });
 }
 
+function showNotification(error) {
+  const notificationOptions = {};
+  if (error instanceof SaveReportConflictError) {
+    notificationOptions.duration = null;
+  }
+  if (!error || error.message === 'No changes made') return;
+  notification.error(error.message, error.detailedMessage, notificationOptions);
+}
+
 function doSaveReport(data, { canOverwrite = false, errorMessage = "Report could not be saved" } = {}) {
   if (isObject(data.options) && data.options.parameters) {
     data.options = {
@@ -85,6 +94,10 @@ export default function useUpdateReport(report, onChange) {
         // Don't save new report with partial data
         if (report.isNew && report.isNew()) {
           handleChange(extend(report.clone(), data));
+          if (errorMessage) {
+            const error = new SaveReportError(errorMessage);
+            showNotification(error);
+          }
           return;
         }
         data = { ...data, id: report.id, version: report.version };
@@ -124,14 +137,7 @@ export default function useUpdateReport(report, onChange) {
             )
           );
         })
-        .catch(error => {
-          const notificationOptions = {};
-          if (error instanceof SaveReportConflictError) {
-            notificationOptions.duration = null;
-          }
-          if (!error || error.message === 'No changes made') return;
-          notification.error(error.message, error.detailedMessage, notificationOptions);
-        });
+        .catch(error => showNotification(error));
     },
     [report, handleChange]
   );

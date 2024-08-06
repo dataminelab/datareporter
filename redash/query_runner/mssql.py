@@ -3,7 +3,6 @@ import sys
 import uuid
 
 from redash.query_runner import *
-from redash.utils import json_dumps, json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -82,8 +81,6 @@ class SqlServer(BaseSQLQueryRunner):
         if error is not None:
             raise Exception("Failed getting schema.")
 
-        results = json_loads(results)
-
         for row in results["rows"]:
             if row["table_schema"] != self.configuration["db"]:
                 table_name = "{}.{}".format(row["table_schema"], row["table_name"])
@@ -140,11 +137,10 @@ class SqlServer(BaseSQLQueryRunner):
                 ]
 
                 data = {"columns": columns, "rows": rows}
-                json_data = json_dumps(data)
                 error = None
             else:
                 error = "No data was returned."
-                json_data = None
+                data = None
 
             cursor.close()
         except pymssql.Error as e:
@@ -154,7 +150,7 @@ class SqlServer(BaseSQLQueryRunner):
             except IndexError:
                 # Connection errors are `args[0][1]`
                 error = e.args[0][1]
-            json_data = None
+            data = None
         except (KeyboardInterrupt, JobTimeoutException):
             connection.cancel()
             raise
@@ -162,7 +158,7 @@ class SqlServer(BaseSQLQueryRunner):
             if connection:
                 connection.close()
 
-        return json_data, error
+        return data, error
 
 
 register(SqlServer)

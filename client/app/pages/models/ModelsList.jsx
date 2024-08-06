@@ -32,7 +32,7 @@ function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
       deleteModel(event, model);
     }
   }
-  return (<>
+  return <>
     <Button type="ghost" icon="setting" className="m-2 inline" onClick={() => editConfigModel(model)}>
       Edit config
     </Button>
@@ -42,7 +42,7 @@ function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
     <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => handleDeleteModel(event)}>
       Delete
     </Button>
-  </>);
+  </>;
 }
 
 ModelsListActions.propTypes = {

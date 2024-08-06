@@ -16,6 +16,7 @@ from redash.handlers.dashboards import (
     DashboardResource,
     DashboardShareResource,
     DashboardTagsResource,
+    MyDashboardsResource,
     PublicDashboardResource,
 )
 from redash.handlers.data_source_tables import DataSourceTablesResource
@@ -151,6 +152,7 @@ api.add_org_resource(DashboardListResource, "/api/dashboards", endpoint="dashboa
 api.add_org_resource(
     DashboardResource, "/api/dashboards/<dashboard_id>", endpoint="dashboard"
 )
+api.add_org_resource(MyDashboardsResource, "/api/dashboards/my", endpoint="my_dashboards")
 api.add_org_resource(
     PublicDashboardResource,
     "/api/dashboards/public/<token>",

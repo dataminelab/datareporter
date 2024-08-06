@@ -4,7 +4,7 @@ from datetime import datetime
 from urllib.parse import parse_qs, urlparse
 
 from redash.query_runner import *
-from redash.utils import json_dumps, json_loads
+from redash.utils import json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -184,15 +184,14 @@ class GoogleAnalytics(BaseSQLQueryRunner):
                 response = api.get(**params).execute()
                 data = parse_ga_response(response)
                 error = None
-                json_data = json_dumps(data)
             except HttpError as e:
                 # Make sure we return a more readable error to the end user
                 error = e._get_reason()
-                json_data = None
+                data = None
         else:
             error = "Wrong query format."
-            json_data = None
-        return json_data, error
+            data = None
+        return data, error
 
 
 register(GoogleAnalytics)

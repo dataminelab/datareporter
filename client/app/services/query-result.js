@@ -4,7 +4,9 @@ import { axios } from "@/services/axios";
 import { QueryResultError } from "@/services/query";
 import { Auth } from "@/services/auth";
 import { isString, uniqBy, each, isNumber, includes, extend, forOwn, get } from "lodash";
+import JSONbig from 'json-bigint';
 
+const { parse: jsonParse } = JSONbig({ storeAsString: true });
 const logger = debug("redash:services:QueryResult");
 const filterTypes = ["filter", "multi-filter", "multiFilter"];
 
@@ -45,7 +47,9 @@ function getColumnFriendlyName(column) {
 
 const createOrSaveUrl = data => (data.id ? `api/query_results/${data.id}` : "api/query_results");
 const QueryResultResource = {
-  get: ({ id }) => axios.get(`api/query_results/${id}`),
+  get: ({ id }) => axios.get(`api/query_results/${id}`, { 
+    transformResponse: (response) => jsonParse(response) 
+  }),
   post: data => axios.post(createOrSaveUrl(data), data),
 };
 
@@ -113,6 +117,10 @@ export function fetchDataFromJob(jobId, interval = 1000) {
   });
 }
 
+export function isDateTime(v) {
+  return isString(v) && moment(v).isValid() && /^\d{4}-\d{2}-\d{2}T/.test(v);
+}
+
 class QueryResult {
   constructor(props) {
     this.deferred = defer();
@@ -147,7 +155,7 @@ class QueryResult {
           let newType = null;
           if (isNumber(v)) {
             newType = "float";
-          } else if (isString(v) && v.match(/^\d{4}-\d{2}-\d{2}T/)) {
+          } else if (isDateTime(v)) {
             row[k] = moment.utc(v);
             newType = "datetime";
           } else if (isString(v) && v.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -200,9 +208,7 @@ class QueryResult {
   }
 
   cancelExecution() {
-    if (this.status !== "waiting") {
-      axios.delete(`api/jobs/${this.job.id}`);
-    }
+    axios.delete(`api/jobs/${this.job.id}`);
   }
 
   getStatus() {
@@ -273,6 +279,10 @@ class QueryResult {
     return this.getColumnNames().map(col => getColumnFriendlyName(col));
   }
 
+  getTruncated() {
+    return this.query_result.data ? this.query_result.data.truncated : null;
+  }
+
   getFilters() {
     if (!this.getColumns()) {
       return [];
@@ -316,6 +326,9 @@ class QueryResult {
         }
         return v;
       });
+      if (filter.values.length > 1 && filter.multiple) {
+        filter.current = filter.values.slice();
+      }
     });
 
     return filters;
@@ -335,7 +348,9 @@ class QueryResult {
     queryResult.deferred.onStatusChange(ExecutionStatus.LOADING_RESULT);
 
     axios
-      .get(`api/queries/${queryId}/results/${id}.json`)
+      .get(`api/queries/${queryId}/results/${id}.json`, { 
+        transformResponse: (response) => jsonParse(response) 
+      }) 
       .then(response => {
         // Success handler
         queryResult.isLoadingResult = false;
@@ -437,11 +452,11 @@ class QueryResult {
     return `${queryName.replace(/ /g, "_") + moment(this.getUpdatedAt()).format("_YYYY_MM_DD")}.${fileType}`;
   }
 
-  static getByQueryId(id, parameters, maxAge) {
+  static getByQueryId(id, parameters, applyAutoLimit, maxAge) {
     const queryResult = new QueryResult();
 
     axios
-      .post(`api/queries/${id}/results`, { id, parameters, max_age: maxAge })
+      .post(`api/queries/${id}/results`, { id, parameters, apply_auto_limit: applyAutoLimit, max_age: maxAge })
       .then(response => {
         queryResult.update(response);
 
@@ -456,13 +471,14 @@ class QueryResult {
     return queryResult;
   }
 
-  static get(dataSourceId, query, parameters, maxAge, queryId) {
+  static get(dataSourceId, query, parameters, applyAutoLimit, maxAge, queryId) {
     const queryResult = new QueryResult();
 
     const params = {
       data_source_id: dataSourceId,
       parameters,
       query,
+      apply_auto_limit: applyAutoLimit,
       max_age: maxAge,
     };
 

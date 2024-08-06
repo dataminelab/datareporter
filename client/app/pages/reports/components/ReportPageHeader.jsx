@@ -13,6 +13,7 @@ import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
+import useDeleteReport from "../hooks/useDeleteReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
@@ -20,7 +21,6 @@ import useUpdateReport from "../hooks/useUpdateReport";
 import useUpdateReportTags from "../hooks/useUpdateReportTags";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
-import useColorsReport from "@/pages/reports/hooks/useColorsReport";
 import "./ReportPageHeader.less";
 import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
@@ -30,6 +30,7 @@ import Model from "@/services/model";
 import { QueryTagsControl } from "@/components/tags-control/TagsControl";
 import { replaceHash, hexToRgb, setPriceButton } from "../components/ReportPageHeaderUtils";
 import getTags from "@/services/getTags";
+import { reportPageStyles } from "./reportPageStyles";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
@@ -93,10 +94,11 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 
 export default function ReportPageHeader(props) {
   const isDesktop = useMedia({ minWidth: 768 });
-  const { report, setReport, saveReport, saveAsReport, deleteReport, showShareReportDialog } = useReport(props.report);
+  const { report, setReport, saveReport, saveAsReport, showShareReportDialog } = useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
   const updateTags = useUpdateReportTags(report, setReport);
   const archiveReport = useArchiveReport(report, setReport);
+  const deleteReport = useDeleteReport(report, setReport);
   const publishReport = usePublishReport(report, setReport);
   const unpublishReport = useUnpublishReport(report, setReport);
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
@@ -107,7 +109,6 @@ export default function ReportPageHeader(props) {
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
   const reportFlags = useReportFlags(report, dataSource);
   const [currentHash, setCurrentHash] = useState(null);
-  const updateColors = useColorsReport(report, setReport);
   const updateReport = useUpdateReport(report, setReport);
   const [displayColorPicker, setDisplayColorPicker] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
@@ -118,6 +119,7 @@ export default function ReportPageHeader(props) {
   const setReportChanged = props.setReportChanged;
   const [reportName, setReportName] = useState(report.name);
   const [newName, setNewName] = useState("Copy of " + report.name);
+  const [saveButtonClicked, setSaveButtonClicked] = useState(false);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
   const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
@@ -132,70 +134,9 @@ export default function ReportPageHeader(props) {
     setNewName(event.target.value);
   }
   // delete spesific color
-  const styles = reactCSS({
-    default: {
-      color: {
-        width: "36px",
-        height: "14px",
-        display: "inline-block",
-        borderRadius: "2px",
-        background: `${colorTextHex}`,
-        position: "relative",
-        marginRight: "10px",
-        top: "3px",
-      },
-      colorSpanElement: {
-        marginRight: "6px",
-      },
-      colorBody: {
-        width: "36px",
-        height: "14px",
-        display: "inline-block",
-        borderRadius: "2px",
-        background: `${colorBodyHex}`,
-        position: "relative",
-        top: "3px",
-      },
-      swatch: {
-        padding: "4px 8px",
-        background: "#fff",
-        borderRadius: "1px",
-        boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
-        display: "inline-block",
-        cursor: "pointer",
-        lineHeight: "25px",
-      },
-      popover: {
-        position: "absolute",
-        top: "115px",
-        zIndex: "2",
-      },
-      popoverSecond: {
-        position: "absolute",
-        top: "115px",
-        zIndex: "2",
-        marginLeft: "15vw",
-      },
-      cover: {
-        position: "fixed",
-        top: "0px",
-        right: "0px",
-        bottom: "0px",
-        left: "0px",
-      },
-    },
-  });
-  // delete
-  const handleClick = type => {
-    setDisplayColorPicker(type);
-  };
-  // delete
-  const handleClose = () => {
-    setDisplayColorPicker(0);
-  };
-  // delete
-  const handleColorChange = useCallback(
-    (color, type, successMessage) => {
+  const styles = useMemo(() => reactCSS(reportPageStyles(colorTextHex, colorBodyHex), [colorTextHex, colorBodyHex]));
+
+  const handleColorChange = useCallback( (color, type) => {
       if (!color.rgb && color.startsWith("#")) {
         color = {
           rgb: hexToRgb(color),
@@ -207,7 +148,6 @@ export default function ReportPageHeader(props) {
       }
       if (type === 2) {
         setColorBodyHex(color.hex);
-        updateColors("colorBody", color.hex, { successMessage });
         let updates = { color_1: color.hex };
         props.onChange(extend(report.clone(), updates));
         // ligten color
@@ -220,13 +160,12 @@ export default function ReportPageHeader(props) {
         setColorElements(false, color.hex, lightenedHexColor);
       } else {
         setColorTextHex(color.hex);
-        updateColors("colorText", color.hex, { successMessage });
         let updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
         setColorElements(color.hex, false, false); 
       }
     },
-    [report, props.onChange, updateColors]
+    [report, props.onChange]
   );
 
   const changeModelDataText = (text) => {
@@ -267,36 +206,60 @@ export default function ReportPageHeader(props) {
     [report, props.onChange, updateReport]
   );
 
+  const getModel = (modelId) => {
+    return models.find(m => m.id === modelId);
+  }
+
+  const getModelDataCube = async (modelId) => {
+    const settings = await getSettings(modelId);
+    const model = getModel(modelId);
+    if (!model || !settings) return {};
+    const dataCubes = settings.appSettings.dataCubes
+    return dataCubes.find(m => m.name === model.table);
+  }
+
+  const getSettings = async (modelId) => {
+    var settings;
+    if (report.isJustLanded) {
+      settings = { appSettings: report.appSettings, timekeeper: {} };
+    } else {
+      settings = await Model.getReporterConfig(modelId);
+    }
+    return settings;
+  }
+
   const handleModelChange = useCallback(
     async (modelId, signal) => {
       try {
-        var res;
-        if (report.isJustLanded) {
-          res = { appSettings: report.appSettings, timekeeper: {} };
-        } else {
-          res = await Model.getReporterConfig(modelId);
+        const modelDataCube = await getModelDataCube(modelId);
+        if (!modelDataCube.timeAttribute) {
+          // Revert previous changes like make selected model name to previous one and so on
+          return updateReport({}, { successMessage: null, errorMessage: "DataCube must have a timeAttribute" });
         }
-        const model = models.find(m => m.id === modelId);
+        const settings = await getSettings(modelId);
+        const model = getModel(modelId);
         if (model && model.id !== report.model_id) {
           replaceHash(model, window.location.hash.split("/4/")[1]);
         }
         recordEvent("update", "report", report.id, { modelId });
         var updates = {
           model_id: modelId,
-          appSettings: res.appSettings,
-          timekeeper: res.timekeeper,
+          appSettings: settings.appSettings,
+          timekeeper: settings.timekeeper,
           isJustLanded: false,
         };
-        if (report.data_source_id || selectedDataSource) {
-          updates.data_source_id = report.data_source_id || selectedDataSource
+        if (report.data_source_id) {
+          updates.data_source_id = report.data_source_id;
+        } else if (selectedDataSource) {
+          updates.data_source_id = selectedDataSource;
         }
         if (signal && signal.aborted) return;
         props.onChange(extend(report.clone(), { ...updates }));
-        updateReport({...report.clone(), ...updates}, { successMessage: null, errorMessage: null }); // show message only on error
+        updateReport({...report.clone(), ...updates}, { successMessage: null, errorMessage: null });
         handleReportChanged(true);
         setSelectedModel(modelId);
       } catch (err) {
-        updateReport({}, { successMessage: "failed to load the model" }); // show message only on error
+        updateReport({}, { successMessage: null, errorMessage: "failed to load the model" });
       }
     },
     [report, props.onChange, updateReport]
@@ -325,63 +288,55 @@ export default function ReportPageHeader(props) {
         document.getElementById(id).style.opacity = "1";
         document.getElementById(id).style["z-index"] = "10";
       }
-    } catch {console.warn("price modal doesnt exist on this page.")}
+    } catch {console.warn("modal doesn't exist on this page.")}
   }
 
-  const handleDeleteReport = () => {
-    const report = props.report;
-    if (report.id) {
-      recordEvent("delete", "report", report.id, { name: report.name });
-      deleteReport(report);
-    } else {
-      setReport(null);
-    }
-  }
+  useEffect(() => {
+    // this function is waiting for page to render again for saving report after handleSaveReport click
+    if (saveButtonClicked && !report.id) saveReport();
+  }, [saveButtonClicked]);
 
-  const handleSaveReport = (save_as) => {
+
+  const handleSaveReport = () => {
     if (window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
       updateReport({
         expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
-        name: save_as ? newName : reportName,
-      }, { successMessage: "Report updated" });
+        name: reportName,
+      }, { successMessage: "Report updated", errorMessage: null });
       recordEvent("update", "report", report.id);
+      setSaveButtonClicked(true);
     } else {
       updateReport({
         color_1: colorBodyHex || report.color_1,
         color_2: colorTextHex || report.color_2,
         is_draft: false,
         name: reportName
-      }, { successMessage: null });
+      }, { successMessage: "Report updated", errorMessage: null });
       recordEvent("create", "report", report.id);
-    }
-    if (!report.id) {
-      saveReport();
     }
   }
 
-  const moreActionsMenu = useMemo(
-    () =>
-      createMenu([
-        {
-          downloadCSV: {
-            isAvailable: true,
-            title: "Download as CSV File",
-            onClick: () => {document.querySelector("#export-data-csv").click()},
-          },
-          downloadTSV: {
-            isAvailable: true,
-            title: "Download as TSV File",
-            onClick: () => {document.querySelector("#export-data-tsv").click()},
-          },
-          showAPIKey: {
-            isAvailable: !queryFlags.isNew,
-            title: "Show API Key",
-            onClick: openApiKeyDialog,
-          },
+  const moreActionsMenu = useMemo(() => createMenu([
+      {
+        downloadCSV: {
+          isAvailable: true,
+          title: "Download as CSV File",
+          onClick: () => {document.querySelector("#export-data-csv").click()},
         },
-      ]),
+        downloadTSV: {
+          isAvailable: true,
+          title: "Download as TSV File",
+          onClick: () => {document.querySelector("#export-data-tsv").click()},
+        },
+        showAPIKey: {
+          isAvailable: !queryFlags.isNew,
+          title: "Show API Key",
+          onClick: openApiKeyDialog,
+        },
+      },
+    ]),
     [
       queryFlags.isNew,
       queryFlags.canFork,
@@ -405,8 +360,8 @@ export default function ReportPageHeader(props) {
 
   useEffect(() => {
     if (report.isJustLanded) {
-      if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1, null);
-      if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2, null);
+      if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
+      if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
       if (report.data_source_id !== selectedDataSource) handleDataSourceChange(report.data_source_id);
       if (report.model_id !== selectedModel) handleModelChange(report.model_id);
       if (report.name !== reportName) setReportName(report.name);
@@ -422,9 +377,7 @@ export default function ReportPageHeader(props) {
   }, [report.name]);
   
   useEffect(() => {
-    if (window.location.href.indexOf("4/") > -1) {
-      setCurrentHash(window.location.hash);
-    }
+    if (window.location.href.indexOf("4/") > -1) setCurrentHash(window.location.hash);
   }, []);
 
   useEffect(() => {
@@ -434,11 +387,13 @@ export default function ReportPageHeader(props) {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    const setData = async (dataSourceId, model_id) => {
+    const setData = async (dataSourceId, modelId) => {
       if (signal.aborted) return;
       await handleDataSourceChange(dataSourceId, signal);
-      if (signal.aborted) return;
-      await handleModelChange(model_id, signal)
+      if (signal.aborted) return; 
+      const modelDataCube = await getModelDataCube(modelId);
+      if (!modelDataCube.timeAttribute) return null;
+      await handleModelChange(modelId, signal)
         .then(() => {
           if (signal.aborted) return;
           setTimeout(() => {
@@ -467,20 +422,21 @@ export default function ReportPageHeader(props) {
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
-    if (dataSourcesLoaded && !selectedDataSource) {
-      if (dataSources.length) {
-        handleDataSourceChange(dataSources[0].id);
-      }
-    }
+    if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
-    if (modelsLoaded && !selectedModel) {
-      if (models.length) {
-        handleModelChange(models[0].id);
-        replaceHash(models[0], window.location.hash.split("/4/")[1]);
-      }
+    if (report.isJustLanded) return;
+    const firstEncounterModelSetter = async (models) => {
+      const modelId = models[0].id;      
+      const modelDataCube = await getModelDataCube(modelId);
+      if (!modelDataCube) return;
+      if (!modelDataCube.timeAttribute) return;
+      handleModelChange(modelId);
+      const model = getModel(modelId);
+      replaceHash(model, window.location.hash.split("/4/")[1]);
     }
+    if (modelsLoaded && !selectedModel && models.length) firstEncounterModelSetter(models);
   }, [modelsLoaded]);
 
   return (
@@ -530,23 +486,23 @@ export default function ReportPageHeader(props) {
                 </li>
               </ul>
           </div>
-        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(1)}>
+        <Button style={styles.swatch} className="m-r-5" onClick={() => setDisplayColorPicker(1)}>
           <span style={styles.colorSpanElement}>Text</span>
           <div style={styles.color} />
         </Button>
-        <Button style={styles.swatch} className="m-r-5" onClick={() => handleClick(2)}>
+        <Button style={styles.swatch} className="m-r-5" onClick={() => setDisplayColorPicker(2)}>
           <span style={styles.colorSpanElement}>Chart</span>
           <div style={styles.colorBody} />
         </Button>
         {displayColorPicker === 1 ? (
           <div style={styles.popover}>
-            <div style={styles.cover} onClick={handleClose} />
+            <div style={styles.cover} onClick={() => setDisplayColorPicker(0)} />
             <SketchPicker color={colorTextHex} onChangeComplete={color => handleColorChange(color, 1)} />
           </div>
         ) : null}
         {displayColorPicker === 2 ? (
           <div style={styles.popoverSecond}>
-            <div style={styles.cover} onClick={handleClose} />
+            <div style={styles.cover} onClick={() => setDisplayColorPicker(0)} />
             <SketchPicker color={colorBodyHex} onChangeComplete={color => handleColorChange(color, 2)} />
           </div>
         ) : null}
@@ -599,7 +555,7 @@ export default function ReportPageHeader(props) {
             </Button>
         )}
         {!queryFlags.isNew && queryFlags.canEdit && (
-          <Button className="m-r-5" onClick={handleDeleteReport}>
+          <Button className="m-r-5" onClick={deleteReport}>
             <i className="fa fa-trash m-r-5" /> Delete
           </Button>
         )}

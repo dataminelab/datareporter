@@ -4,7 +4,6 @@ import useUpdateReport from "./useUpdateReport";
 import useSaveReport from "./useSaveReport";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import ShareReportDialog from "../components/ShareReportDialog";
-import { Report } from "@/services/report";
 
 export default function useReport(originalReport) {
   const [report, setReport] = useState(originalReport);
@@ -43,23 +42,6 @@ export default function useReport(originalReport) {
       .onDismiss(handleDialogClose);
   }, [report]);
 
-  const doDeleteReport = (report) => {
-    // use this for delete submissions
-    return Report.delete({ id: report.id })
-      .then(() => {
-        notification.success("Report Deleted.");
-        // clear saved meta price data
-        localStorage.removeItem(`${window.location.pathname}-proceed_data`);
-        localStorage.removeItem(`${window.location.pathname}-price`);
-
-        return extend(report.clone(), { is_archived: true, schedule: null });
-      })
-      .catch(error => {
-        notification.error("Report could not be deleted.");
-        return Promise.reject(error);
-      });
-  }
-
   return useMemo(
     () => ({
       report,
@@ -67,7 +49,6 @@ export default function useReport(originalReport) {
       isDirty: report.report !== originalReportSource,
       saveReport: () => updateReport(),
       saveAsReport: (name) => saveAsReport(name),
-      deleteReport: (report) => doDeleteReport(report),
       showShareReportDialog,
     }),
     [report, originalReportSource, updateReport]

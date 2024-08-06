@@ -19,8 +19,7 @@ import useReport from "../reports/hooks/useReport";
 import "./PublicReportPage.less";
 
 function PublicReport({ currentReport }) {
-  console.log("currentReport", currentReport)
-  const { report, setReport, saveReport, saveAsReport, deleteReport, showShareReportDialog } = useReport(
+  const { report } = useReport(
     currentReport
   );
   const isMobile = !useMedia({ minWidth: 768 });

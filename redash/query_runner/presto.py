@@ -1,6 +1,5 @@
 from collections import defaultdict
 from redash.query_runner import *
-from redash.utils import json_dumps, json_loads
 
 import logging
 
@@ -80,8 +79,6 @@ class Presto(BaseQueryRunner):
         if error is not None:
             raise Exception("Failed getting schema.")
 
-        results = json_loads(results)
-
         for row in results["rows"]:
             table_name = "{}.{}".format(row["table_schema"], row["table_name"])
 
@@ -116,10 +113,9 @@ class Presto(BaseQueryRunner):
                 for i, r in enumerate(cursor.fetchall())
             ]
             data = {"columns": columns, "rows": rows}
-            json_data = json_dumps(data)
             error = None
         except DatabaseError as db:
-            json_data = None
+            data = None
             default_message = "Unspecified DatabaseError: {0}".format(str(db))
             if isinstance(db.args[0], dict):
                 message = db.args[0].get("failureInfo", {"message", None}).get(
@@ -132,7 +128,7 @@ class Presto(BaseQueryRunner):
             cursor.cancel()
             raise
 
-        return json_data, error
+        return data, error
 
 
 register(Presto)

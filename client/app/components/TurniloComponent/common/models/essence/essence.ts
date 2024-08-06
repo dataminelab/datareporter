@@ -196,6 +196,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     } = parameters;
 
     if (!dataCube) throw new Error("Essence must have a dataCube");
+    if (!dataCube.timeAttribute) throw new Error("DataCube must have a timeAttribute");
 
     const { visResolve, visualization, splits } = resolveVisualization(parameters);
 

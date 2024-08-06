@@ -1,6 +1,5 @@
 import React from "react";
-import { clientConfig, currentUser } from "@/services/auth";
-
+import { clientConfig } from "@/services/auth";
 const frontendVersion = "dev";
 
 export default function VersionInfo() {

@@ -10,7 +10,6 @@ from redash.query_runner import (
     TYPE_FLOAT,
     TYPE_BOOLEAN,
 )
-from redash.utils import json_dumps
 
 logger = logging.getLogger(__name__)
 
@@ -163,11 +162,10 @@ class Salesforce(BaseQueryRunner):
                 columns = self.fetch_columns(cols)
             error = None
             data = {"columns": columns, "rows": rows}
-            json_data = json_dumps(data)
         except SalesforceError as err:
+            data = None
             error = err.content
-            json_data = None
-        return json_data, error
+        return data, error
 
     def get_schema(self, get_stats=False):
         sf = self._get_sf()

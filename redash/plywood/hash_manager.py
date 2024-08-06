@@ -46,8 +46,8 @@ def replace_item(obj, value, replace_value):
 def execute_query(query, model, query_id, org):
     parameterized_query = ParameterizedQuery(query, org=org)
     parameters = {}
-
-    return run_query(parameterized_query, parameters, model.data_source, query_id, REDASH_QUERY_CACHE)
+    should_apply_auto_limit = False
+    return run_query(parameterized_query, parameters, model.data_source, query_id, should_apply_auto_limit, REDASH_QUERY_CACHE)
 
 
 def parse_job(job_id: str, current_org):
@@ -132,18 +132,6 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
         return 1
 
     return None
-
-
-def is_yoy_query(query:str) -> bool:
-    """This function predicts if the query is a YoY query
-
-    Args:
-        query (str): query text
-
-    Returns:
-        bool: Currently tested for BIGQUERY, ATHENA
-    """
-    return query.count("SUM") > 3
 
 
 def parse_result(

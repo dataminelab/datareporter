@@ -134,18 +134,6 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
     return None
 
 
-def is_yoy_query(query:str) -> bool:
-    """This function predicts if the query is a YoY query
-
-    Args:
-        query (str): query text
-
-    Returns:
-        bool: Currently tested for BIGQUERY, ATHENA
-    """
-    return query.count("SUM") > 3
-
-
 def parse_result(
     hash_string: str,
     queries: List[dict],

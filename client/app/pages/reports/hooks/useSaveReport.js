@@ -6,7 +6,7 @@ import { get } from "lodash";
 
 export default function useSaveReport(data) {
   return Report.saveAs(data)
-    .then(model => {
+    .then(() => {
       navigateTo('/reports')
       notification.success(`Report saved as ${data.name}`);
     })

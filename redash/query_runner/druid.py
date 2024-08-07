@@ -4,10 +4,17 @@ try:
     enabled = True
 except ImportError:
     enabled = False
-
-from redash.query_runner import BaseQueryRunner, register
-from redash.query_runner import TYPE_STRING, TYPE_INTEGER, TYPE_BOOLEAN
-
+import json
+from psycopg2.extensions import register_adapter, AsIs
+from redash.query_runner import (
+    TYPE_BOOLEAN,
+    TYPE_INTEGER,
+    TYPE_STRING,
+    BaseQueryRunner,
+    register,
+)
+import logging
+logger = logging.getLogger(__name__)
 TYPES_MAP = {1: TYPE_STRING, 2: TYPE_INTEGER, 3: TYPE_BOOLEAN}
 
 
@@ -42,18 +49,15 @@ class Druid(BaseQueryRunner):
             scheme=(self.configuration.get("scheme") or "http"),
             user=(self.configuration.get("user") or None),
             password=(self.configuration.get("password") or None),
+            context={'enableWindowing': True},
         )
 
         cursor = connection.cursor()
 
         try:
             cursor.execute(query)
-            columns = self.fetch_columns(
-                [(i[0], TYPES_MAP.get(i[1], None)) for i in cursor.description]
-            )
-            rows = [
-                dict(zip((column["name"] for column in columns), row)) for row in cursor
-            ]
+            columns = self.fetch_columns([(i[0], TYPES_MAP.get(i[1], None)) for i in cursor.description])
+            rows = [dict(zip((column["name"] for column in columns), row)) for row in cursor]
 
             data = {"columns": columns, "rows": rows}
             error = None
@@ -66,7 +70,8 @@ class Druid(BaseQueryRunner):
         query = """
         SELECT TABLE_SCHEMA,
                TABLE_NAME,
-               COLUMN_NAME
+               COLUMN_NAME,
+               DATA_TYPE
         FROM INFORMATION_SCHEMA.COLUMNS
         WHERE TABLE_SCHEMA <> 'INFORMATION_SCHEMA'
         """
@@ -74,7 +79,7 @@ class Druid(BaseQueryRunner):
         results, error = self.run_query(query, None)
 
         if error is not None:
-            raise Exception("Failed getting schema.")
+            self._handle_run_query_error(error)
 
         schema = {}
 
@@ -84,9 +89,16 @@ class Druid(BaseQueryRunner):
             if table_name not in schema:
                 schema[table_name] = {"name": table_name, "columns": []}
 
-            schema[table_name]["columns"].append(row["COLUMN_NAME"])
+            schema[table_name]["columns"].append({
+                'name': row["COLUMN_NAME"],
+                'type':row["DATA_TYPE"]
+            })
 
         return list(schema.values())
 
+def adapt_dict(dict_var):
+    return AsIs("'" + json.dumps(dict_var) + "'")
+
 
 register(Druid)
+register_adapter(dict, adapt_dict)

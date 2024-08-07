@@ -28,7 +28,7 @@ export interface DruidSQLDescribeRow {
 }
 
 export class DruidSQLExternal extends SQLExternal {
-  static engine = 'druidsql';
+  static engine = 'druid';
   static type = 'DATASET';
 
   static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): DruidSQLExternal {
@@ -101,7 +101,7 @@ export class DruidSQLExternal extends SQLExternal {
 
   constructor(parameters: ExternalValue) {
     super(parameters, new DruidDialect());
-    this._ensureEngine('druidsql');
+    this._ensureEngine('druid');
   }
 
   protected getIntrospectAttributes(): Promise<Attributes> {
@@ -120,10 +120,6 @@ export class DruidSQLExternal extends SQLExternal {
   protected sqlToQuery(sql: string): any {
     return {
       query: sql,
-      // context: {
-      //   useCache: false,
-      //   populateCache: false
-      // }
     };
   }
 

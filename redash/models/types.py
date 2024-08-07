@@ -1,3 +1,4 @@
+from json import JSONDecodeError
 from sqlalchemy.ext.indexable import index_property
 from sqlalchemy.ext.mutable import Mutable
 from sqlalchemy.types import TypeDecorator
@@ -48,13 +49,16 @@ class JSONText(TypeDecorator):
 
 class MutableDict(Mutable, dict):
     @classmethod
-    def coerce(cls, key, value):
-        "Convert plain dictionaries to MutableDict."
-
+    def coerce(self, key, value):
         if not isinstance(value, MutableDict):
             if isinstance(value, dict):
                 return MutableDict(value)
-
+            elif isinstance(value, str):
+                try:
+                    value_dict = json_loads(value)  # Convert JSON string to dict
+                    return MutableDict(value_dict)
+                except JSONDecodeError:
+                    raise ValueError(f"Cannot coerce string to MutableDict: {value}")
             # this call will raise ValueError
             return Mutable.coerce(key, value)
         else:

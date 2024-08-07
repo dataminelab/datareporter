@@ -19,6 +19,17 @@ import { PlyType } from '../types';
 import { SQLDialect } from './baseDialect';
 
 export class DruidDialect extends SQLDialect {
+  static TIME_BUCKETING: Record<string, string> = {
+    PT1S: "'yyyy-MM-dd HH:mm:ss''Z'",
+    PT1M: "'yyyy-MM-dd HH:mm:00''Z'",
+    PT1H: "'yyyy-MM-dd HH:00:00''Z'", // '%Y-%m-%d %H:00:00Z',
+    P1D: "'yyyy-MM-dd 00:00:00''Z'", // '%Y-%m-%d 00:00:00Z',
+    P1M: "'yyyy-MM-01 00:00:00''Z'", // '%Y-%m-01 00:00:00Z',
+    P1Y: "'yyyy-01-01 00:00:00''Z'", // '%Y-01-01 00:00:00Z',
+    P1W: "'yyyy-MM-dd 00:00:00''Z'", // '%Y-%m-%d 00:00:00Z',
+    P3M: "'yyyy-MM-dd 00:00:00''Z'", // '%Y-%m-%d 00:00:00Z',
+  };
+
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
     SECOND_OF_MINUTE: "TIME_EXTRACT($$,'SECOND',##)",
     SECOND_OF_HOUR: "(TIME_EXTRACT($$,'MINUTE',##)*60+TIME_EXTRACT($$,'SECOND',##))",
@@ -124,11 +135,26 @@ export class DruidDialect extends SQLDialect {
   private operandAsTimestamp(operand: string): string {
     return operand.includes('__time') ? operand : `TIME_PARSE(${operand})`;
   }
+  /*
+    This query returns "Year or Year" and "Quarter or Year" and "Month or Year" and "Week or Year" and ...
+    */
+  public timeFLoorOverTimeExpression(operand: string, duration: Duration, timezone: Timezone): string {
+    // TODO: implement
+    const timeFloor = this.timeFloorExpression(operand, duration, timezone);
+    const timeFloorPrev = this.timeFloorExpression(
+      this.timeShiftExpression(operand, duration, -1, timezone),
+      duration,
+      timezone,
+    );
+    return `SUM(${operand}) FILTER(WHERE ${timeFloor} <= "__time" AND "__time" < ${timeFloorPrev})`;
+  }
 
   public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
-    return `TIME_FLOOR(${this.operandAsTimestamp(operand)}, ${this.escapeLiteral(
+    let bucketFormat = DruidDialect.TIME_BUCKETING[duration.toString()];
+    if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
+    return `TIME_FORMAT(TIME_FLOOR(${this.operandAsTimestamp(operand)}, ${this.escapeLiteral(
       duration.toString(),
-    )}, NULL, ${this.escapeLiteral(timezone.toString())})`;
+    )}, NULL, ${this.escapeLiteral(timezone.toString())}), ${bucketFormat})`;
   }
 
   public timeBucketExpression(operand: string, duration: Duration, timezone: Timezone): string {

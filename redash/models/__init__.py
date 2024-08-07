@@ -617,7 +617,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
             Query.query.options(
                 joinedload(Query.latest_query_data).load_only("retrieved_at")
             )
-            .filter(func.jsonb_typeof(Query.schedule.cast(JSONB)) != "null")
+            .filter(func.jsonb_typeof(Query.schedule) != "null")
             .order_by(Query.id)
             .all()
         )

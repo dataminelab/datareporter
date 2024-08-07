@@ -97,33 +97,27 @@ docker-compose stop server && docker-compose run --rm --service-ports server deb
 ```
 
 ### Running tests locally
-First ensure that the "tests" database is created:
-```
-docker-compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
-```
-Then run the tests:
-```
-docker-compose run --rm server tests
+In order to test datareporter-server side you need to run below command:
+```sh
+bash bin/server_tests.sh
 ```
 In order to test viz-lib folder you need to install dependencies and run tests because you cant have 2 react versions in the same project. To do that run below commands in the viz-lib folder:
-```
+```sh
 npm install antd@^3 react@^16.8 react-dom@^16.8 && npm run test
 ```
 
 ### Running cypress
-
-install cypress and seed database
-```
+```sh
+# go to client folder
+cd client
+# install cypress and seed database
+# your local postgres-database is required to be running 
 npm run cypress:install && node cypress/cypress.js db-seed
-```
-run cypress
-```
+# run cypress
 npm run cypress
-```
-Open cypress for visual testing
-```
+# Open cypress for visual testing
 npx cypress open
-``` 
+```
 
 ### Components
 #### Datareporter server

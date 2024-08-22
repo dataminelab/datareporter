@@ -3,15 +3,32 @@ import logging
 import errno
 import os
 import signal
+import sys
 import requests
-from concurrent.futures import ThreadPoolExecutor
+
+from rq import Queue as BaseQueue
+from rq.job import Job as BaseJob
+from rq.job import JobStatus
+from rq.timeouts import HorseMonitorTimeoutException, UnixSignalDeathPenalty
+from rq.utils import utcnow
+from rq.worker import (
+    HerokuWorker,  # HerokuWorker implements graceful shutdown on SIGTERM
+    Worker,
+)
+
 from redash import statsd_client
-from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
+from rq import Queue as BaseQueue, get_current_job
 from rq.utils import utcnow
 from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
 from rq.job import Job as BaseJob, JobStatus
 from concurrent.futures import ThreadPoolExecutor
 from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
+
+# HerokuWorker does not work in OSX https://github.com/getredash/redash/issues/5413
+if sys.platform == "darwin":
+    BaseWorker = Worker
+else:
+    BaseWorker = HerokuWorker
 
 logger = logging.getLogger("pubsub")
 
@@ -143,7 +160,7 @@ class HardLimitingWorker(BaseWorker):
     """
 
     grace_period = 15
-    queue_class = CancellableQueue
+    queue_class = RedashQueue
     job_class = CancellableJob
 
     def stop_executing_job(self, job):

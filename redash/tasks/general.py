@@ -16,7 +16,6 @@ logger = get_job_logger(__name__)
 
 @job("default")
 def record_event(raw_event):
-    logger.info("raw event recieved: %s", raw_event)
     event = models.Event.record(raw_event)
     models.db.session.commit()
 
@@ -67,8 +66,8 @@ def get_schema(data_source_id, refresh):
                 "message": "Data source type does not support retrieving schema",
             }
         }
-    except Exception:
-        return {"error": {"code": 2, "message": "Error retrieving schema."}}
+    except Exception as e:
+        return {"error": {"code": 2, "message": "Error retrieving schema", "details": str(e)}}
 
 
 def sync_user_details():

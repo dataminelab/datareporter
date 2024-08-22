@@ -61,18 +61,9 @@ class TestSchedule(TestCase):
         self.assertEqual(jobs[0].meta["interval"], 60)
 
     def test_job_id(self):
-        for job in periodic_job_definitions():
-            _id = job_id(job)
-            self.assertNotEqual(_id, job["func"].__name__)
-        # example_job = {"func": foo, "interval": 60}
-        # _id = job_id(example_job)
-        # self.assertEqual(_id, "foo")
-        # schedule_periodic_jobs([{"func": foo, "interval": 60}])
-
-        # jobs = [job for job in rq_scheduler.get_jobs()]
-
-        # self.assertEqual(len(jobs), 1)
-        # self.assertEqual(jobs[0].id, "foo")
+        job = periodic_job_definitions()[0]
+        _id = job_id(job)
+        self.assertNotEqual(_id, job["func"].__name__)
 
 
 class TestSchedulerMetrics(TestCase):

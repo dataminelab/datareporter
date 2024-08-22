@@ -75,7 +75,7 @@ def sync_user_details():
     users.sync_last_active_at()
 
 
-def purge_failed_jobs():
+def purge_failed_jobs() -> None:
     with Connection(rq_redis_connection):
         queues = [q for q in Queue.all() if q.name not in default_operational_queues]
         for queue in queues:
@@ -91,9 +91,7 @@ def purge_failed_jobs():
                 # in which case we also consider them stale
                 if not failed_job.ended_at:
                     stale_jobs.append(failed_job)
-                elif (
-                    datetime.utcnow() - failed_job.ended_at
-                ).total_seconds() > settings.JOB_DEFAULT_FAILURE_TTL:
+                elif (datetime.utcnow() - failed_job.ended_at).total_seconds() > settings.JOB_DEFAULT_FAILURE_TTL:
                     stale_jobs.append(failed_job)
 
             for stale_job in stale_jobs:

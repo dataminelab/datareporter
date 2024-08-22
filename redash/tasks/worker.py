@@ -12,6 +12,7 @@ from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
 from rq.job import Job as BaseJob, JobStatus
 from concurrent.futures import ThreadPoolExecutor
 from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
+
 logger = logging.getLogger("pubsub")
 
 
@@ -44,16 +45,11 @@ class HttpNotifier:
         self.worker.submit(self._send, message)
 
     def _send(self, message):
-        resp = requests.post(WORKER_NOTIFY_URL,
-                             headers={
-                                 "Accept": "application/json",
-                                 "Content-Type": "application/json"
-                             },
-                             json={
-                                 "message": {
-                                     "data": base64.b64encode(message.encode('ascii')).decode('ascii')
-                                 }
-                             })
+        resp = requests.post(
+            WORKER_NOTIFY_URL,
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
+            json={"message": {"data": base64.b64encode(message.encode("ascii")).decode("ascii")}},
+        )
         try:
             resp.raise_for_status()
         except requests.HTTPError as e:
@@ -67,6 +63,7 @@ class GooglePubSubNotifier:
     def notify(self, message):
         if self.publisher is None:
             from google.cloud import pubsub_v1
+
             self.publisher = pubsub_v1.PublisherClient()
         # Data must be a bytestring
         data = message.encode("utf-8")

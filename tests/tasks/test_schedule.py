@@ -1,7 +1,7 @@
 from unittest import TestCase
 from mock import patch, ANY
 
-from redash.tasks.schedule import rq_scheduler, schedule_periodic_jobs
+from redash.tasks.schedule import rq_scheduler, schedule_periodic_jobs, job_id, periodic_job_definitions
 
 
 class TestSchedule(TestCase):
@@ -51,9 +51,7 @@ class TestSchedule(TestCase):
         def bar():
             pass
 
-        schedule_periodic_jobs(
-            [{"func": foo, "interval": 60}, {"func": bar, "interval": 90}]
-        )
+        schedule_periodic_jobs([{"func": foo, "interval": 60}, {"func": bar, "interval": 90}])
         schedule_periodic_jobs([{"func": foo, "interval": 60}])
 
         jobs = [job for job in rq_scheduler.get_jobs()]
@@ -61,6 +59,20 @@ class TestSchedule(TestCase):
         self.assertEqual(len(jobs), 1)
         self.assertTrue(jobs[0].func_name.endswith("foo"))
         self.assertEqual(jobs[0].meta["interval"], 60)
+
+    def test_job_id(self):
+        for job in periodic_job_definitions():
+            _id = job_id(job)
+            self.assertNotEqual(_id, job["func"].__name__)
+        # example_job = {"func": foo, "interval": 60}
+        # _id = job_id(example_job)
+        # self.assertEqual(_id, "foo")
+        # schedule_periodic_jobs([{"func": foo, "interval": 60}])
+
+        # jobs = [job for job in rq_scheduler.get_jobs()]
+
+        # self.assertEqual(len(jobs), 1)
+        # self.assertEqual(jobs[0].id, "foo")
 
 
 class TestSchedulerMetrics(TestCase):
@@ -79,3 +91,5 @@ class TestSchedulerMetrics(TestCase):
             rq_scheduler.enqueue_jobs()
             incr.assert_called_once_with("rq.jobs.created.periodic")
 
+
+# class TestScheduler

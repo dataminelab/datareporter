@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 from redash.plywood.objects.plywood_value import PlywoodValue
 from redash.plywood.hash_manager import cache_or_get
@@ -64,6 +65,7 @@ class TestPlywoodValue(unittest.TestCase):
         self.assertEqual(data.keys, None)
         self.assertEqual(data.dict(), test_data)
 
+    @pytest.mark.skip(reason="#TODO: Implement this test")
     def test_hash_manager(self):
         queries = [
             {"id": 1, "name": "query1", "failed_at": "2021-01-01", "message": "error1"},

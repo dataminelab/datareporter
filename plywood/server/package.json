@@ -26,7 +26,7 @@
     "body-parser": "^1.20.1",
     "chronoshift": "^0.10.0",
     "concurrently": "^5.3.0",
-    "d3": "^6.7.0",
+    "d3": "^7.9.0",
     "dotenv": "^16.0.3",
     "druid.d.ts": "^0.12.1",
     "express": "^4.19.2",

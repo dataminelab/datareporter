@@ -20,7 +20,7 @@
   "dependencies": {
     "@druid-toolkit/query": "^0.19.1",
     "@sentry/cli": "^2.33.1",
-    "@sentry/node": "^8.26.0",
+    "@sentry/node": "^7.119.0",
     "@types/express": "^4.17.8",
     "@types/node": "^15.12.2",
     "body-parser": "^1.20.1",

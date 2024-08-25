@@ -1,6 +1,5 @@
 import "./instrument"
 import express, { NextFunction, Request } from "express";
-import * as Sentry from "@sentry/node";
 import { statusEndpoint } from "./endpoint/status-endpoint";
 import { plywoodEndpoint } from "./endpoint/plywood-endpoint";
 import { handleError } from "./middlewares/errorHandler";
@@ -43,7 +42,5 @@ app.use('/api/v1/plywood', plywoodEndpoint);
 app.use((err, req, res, next) => {
     handleError(err, req, res, next);
 });
-if (env.SENTRY_DSN) {
-    Sentry.setupExpressErrorHandler(app);
-}
+
 export default app;

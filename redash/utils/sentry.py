@@ -1,3 +1,4 @@
+import logging
 import os
 import sentry_sdk
 from funcy import iffy
@@ -5,7 +6,10 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.rq import RqIntegration
+
+
 from redash import settings, __version__
+logger = logging.getLogger(__name__)
 
 TRACES_SAMPLE_RATE = float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0.0'))
 
@@ -23,6 +27,7 @@ def before_send(event, hint):
 
 def init():
     if settings.SENTRY_DSN:
+        logger.info("Sentry integration is enabled")
         sentry_sdk.init(
             dsn=settings.SENTRY_DSN,
             environment=settings.SENTRY_ENVIRONMENT,
@@ -37,6 +42,8 @@ def init():
             ],
             traces_sample_rate=TRACES_SAMPLE_RATE,
         )
+    else:
+        logger.info("Sentry integration is disabled")
 
 
 capture_exception = iffy(lambda _: settings.SENTRY_DSN, sentry_sdk.capture_exception)

@@ -349,26 +349,28 @@ class DashboardComponent extends React.Component {
     return (
       <div className="container" ref={this.setPageContainer} data-test={`DashboardId${dashboard.id}Container`}>
         <DashboardHeader dashboardOptions={dashboardOptions} />
-        {!isEmpty(globalParameters) && (
-          <div className="dashboard-parameters m-b-10 p-15 bg-white tiled" data-test="DashboardParameters">
-            <Parameters parameters={globalParameters} onValuesChange={dashboardOptions.refreshDashboard} />
-          </div>
-        )}
-        {(!isEmpty(filters) || turniloWidgetsAvailable) && (
-          <div className="m-b-10 p-15 bg-white tiled" data-test="DashboardFilters">
-            <Filters filters={filters} onChange={dashboardOptions.setFilters} />
-            <FilterTile
-              ref={filterTile}
-              updateSelectedRange={this.updateSelectedRange}
-              clickerList={this.state.clickerList}
-              essenceList={this.state.essenceList}
-              timekeeper={new Timekeeper({timeTags:[]})}
-              menuStage={visualizationStage}
-              setEssence={this.setEssence}
-              widgetList={this.state.widgetList}
-            />
-          </div>
-        )}
+        <div class="parameters-header">
+          {!isEmpty(globalParameters) && (
+            <div className="dashboard-parameters m-b-10 p-15 bg-white tiled" data-test="DashboardParameters">
+              <Parameters parameters={globalParameters} onValuesChange={dashboardOptions.refreshDashboard} />
+            </div>
+          )}
+          {(!isEmpty(filters) || turniloWidgetsAvailable) && (
+            <div className="m-b-10 p-15 bg-white tiled dashboard-report-filters" data-test="DashboardFilters">
+              <Filters filters={filters} onChange={dashboardOptions.setFilters} />
+              <FilterTile
+                ref={filterTile}
+                updateSelectedRange={this.updateSelectedRange}
+                clickerList={this.state.clickerList}
+                essenceList={this.state.essenceList}
+                timekeeper={new Timekeeper({timeTags:[]})}
+                menuStage={visualizationStage}
+                setEssence={this.setEssence}
+                widgetList={this.state.widgetList}
+              />
+            </div>
+          )}
+        </div>
         {editingLayout && <DashboardSettings dashboardOptions={dashboardOptions} addWidgetStyle={addWidgetStyle} />}
         <div id="dashboard-container">
           <DashboardGrid

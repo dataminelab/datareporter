@@ -1,3 +1,4 @@
+import "./instrument"
 import express, { NextFunction, Request } from "express";
 import * as Sentry from "@sentry/node";
 import { statusEndpoint } from "./endpoint/status-endpoint";
@@ -17,24 +18,14 @@ import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParse
 import { DruidParse } from "./formatter/attributesFormatter/parsers/DruidParser";
 import { env } from "process";
 
+
 AttributeParserFactory.register(PostgresAttributeParser);
 AttributeParserFactory.register(MySqlAttributeParser);
 AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
 AttributeParserFactory.register(DruidParse);
 const app = express();
-if (env.SENTRY_DSN) {
-    console.log("Sentry enabled");
-    Sentry.init({
-        dsn: env.SENTRY_DSN,
-        release: env.DATAREPORTER_VERSION || 'unknown',
-        environment: env.SENTRY_ENVIRONMENT,
-        attachStacktrace: true,
-        sampleRate: parseFloat(env.SENTRY_SAMPLE_RATE || "1.0",),
-        tracesSampleRate: parseFloat(env.SENTRY_TRACES_SAMPLE_RATE || "1.0",),
-    });
-    app.use(Sentry.Handlers.requestHandler());
-}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -52,5 +43,7 @@ app.use('/api/v1/plywood', plywoodEndpoint);
 app.use((err, req, res, next) => {
     handleError(err, req, res, next);
 });
-
+if (env.SENTRY_DSN) {
+    Sentry.setupExpressErrorHandler(app);
+}
 export default app;

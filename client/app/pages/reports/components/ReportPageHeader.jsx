@@ -254,8 +254,8 @@ export default function ReportPageHeader(props) {
           updates.data_source_id = selectedDataSource;
         }
         if (signal && signal.aborted) return;
-        props.onChange(extend(report.clone(), { ...updates }));
         updateReport({...report.clone(), ...updates}, { successMessage: null, errorMessage: null });
+        props.onChange(extend(report.clone(), { ...updates }));
         handleReportChanged(true);
         setSelectedModel(modelId);
       } catch (err) {
@@ -559,7 +559,7 @@ export default function ReportPageHeader(props) {
             <i className="fa fa-trash m-r-5" /> Delete
           </Button>
         )}
-        
+
         {showShareButton && (
             <Tooltip title="Report Sharing Options">
               <Button

@@ -91,6 +91,8 @@ class AddWidgetContainer extends React.Component {
   }
 }
 
+const essence = EssenceFixtures.wikiHeatmap();
+
 class DashboardComponent extends React.Component {
   static propTypes = {
     dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
@@ -103,7 +105,7 @@ class DashboardComponent extends React.Component {
       addWidgetStyle: {},
       listCreated: false,
       clickerList: [],
-      essenceList: [EssenceFixtures.wikiHeatmap()],
+      essenceList: [essence],
       widgetList: [],
       start: null, // fixed date start
       end: null, // fixed date end

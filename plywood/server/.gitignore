@@ -1,1 +1,4 @@
 dist
+
+# Sentry Config File
+.sentryclirc

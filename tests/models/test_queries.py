@@ -472,7 +472,7 @@ class TestQueryUpdateLatestResult(BaseTestCase):
     def test_updates_existing_queries(self):
         query1 = self.factory.create_query(query_text=self.query)
         query2 = self.factory.create_query(query_text=self.query)
-        query3 = self.factory.create_query(query_text=self.query, is_archived=True)
+        query3 = self.factory.create_query(query_text=self.query)
 
         query_result = QueryResult.store_result(
             self.data_source.org_id,

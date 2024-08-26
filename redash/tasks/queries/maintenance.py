@@ -81,6 +81,7 @@ def _apply_auto_limit(query_text, query):
 
 
 def refresh_queries():
+    # this function probably is never being called by the scheduler
     started_at = time.time()
     logger.info("Refreshing queries...")
     enqueued = []

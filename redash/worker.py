@@ -79,7 +79,7 @@ class FirstJobExecutor(Worker):
             self.log.info("Worker %s: started, version %s", self.key, VERSION)
             self.set_state(WorkerStatus.STARTED)
             qnames = self.queue_names()
-            self.log.info('*** Listening on %s...', green(', '.join(qnames)))
+            self.log.info("*** Listening on %s...", green(", ".join(qnames)))
             if self.should_run_maintenance_tasks:
                 self.clean_registries()
             # wait up to 1 second for next job
@@ -99,29 +99,28 @@ class FirstJobExecutor(Worker):
     """
     Dequeue next task without waiting if there is nothing to do
     """
+
     def dequeue(self, timeout: int):
         result = None
-        qnames = ','.join(self.queue_names())
+        qnames = ",".join(self.queue_names())
 
         self.set_state(WorkerStatus.IDLE)
-        self.procline('Listening on ' + qnames)
-        self.log.debug('*** Listening on %s...', green(qnames))
+        self.procline("Listening on " + qnames)
+        self.log.debug("*** Listening on %s...", green(qnames))
 
         self.heartbeat()
 
         try:
-            result = self.queue_class.dequeue_any(self.queues, timeout,
-                                                  connection=self.connection,
-                                                  job_class=self.job_class)
+            result = self.queue_class.dequeue_any(
+                self.queues, timeout, connection=self.connection, job_class=self.job_class
+            )
             if result is not None:
 
                 next_job, queue = result
                 if self.log_job_description:
-                    self.log.info(
-                        '%s: %s (%s)', green(queue.name),
-                        blue(next_job.description), next_job.id)
+                    self.log.info("%s: %s (%s)", green(queue.name), blue(next_job.description), next_job.id)
                 else:
-                    self.log.info('%s: %s', green(queue.name), next_job.id)
+                    self.log.info("%s: %s", green(queue.name), next_job.id)
 
         except DequeueTimeout:
             pass
@@ -131,16 +130,14 @@ class FirstJobExecutor(Worker):
 
 
 def queue_from(envelope) -> str:
-    message_data = envelope['message']['data']
+    message_data = envelope["message"]["data"]
     return base64.b64decode(message_data).decode("utf-8").strip()
 
 
-worker = Blueprint(
-    "redash", __name__
-)
+worker = Blueprint("redash", __name__)
 
 
-@worker.route('/execute', methods=['POST'])
+@worker.route("/execute", methods=["POST"])
 def process():
     queue = queue_from(request.json)
     job_consumer = FirstJobExecutor(queue)
@@ -148,7 +145,7 @@ def process():
     return "", 204
 
 
-@worker.route('/health')
+@worker.route("/health")
 def health():
     return {"status": "Up"}
 

@@ -1,10 +1,18 @@
 import { isNil, extend, each, includes, map, sortBy, toString } from "lodash";
 import chooseTextColorForBackground from "@/lib/chooseTextColorForBackground";
-import { ColorPaletteArray } from "@/visualizations/ColorPalette";
+import { AllColorPaletteArrays, ColorPaletteTypes } from "@/visualizations/ColorPalette";
 import { cleanNumber, normalizeValue, getSeriesAxis } from "./utils";
 
-function getSeriesColor(seriesOptions, seriesIndex) {
-  return seriesOptions.color || ColorPaletteArray[seriesIndex % ColorPaletteArray.length];
+function getSeriesColor(options, seriesOptions, seriesIndex, numSeries) {
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+  let palette = AllColorPaletteArrays[options.color_scheme];
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+  if (ColorPaletteTypes[options.color_scheme] === 'continuous' && palette.length > numSeries) {
+    const step = (palette.length - 1) / (numSeries - 1 || 1);
+    const index = Math.round(step * seriesIndex);
+    return seriesOptions.color || palette[index % palette.length];
+  }
+  return seriesOptions.color || palette[seriesIndex % palette.length];
 }
 
 function getHoverInfoPattern(options) {
@@ -71,11 +79,11 @@ function prepareBoxSeries(series, options, { seriesColor }) {
   return series;
 }
 
-function prepareSeries(series, options, additionalOptions) {
+function prepareSeries(series, options, numSeries, additionalOptions) {
   const { hoverInfoPattern, index } = additionalOptions;
 
   const seriesOptions = extend({ type: options.globalSeriesType, yAxis: 0 }, options.seriesOptions[series.name]);
-  const seriesColor = getSeriesColor(seriesOptions, index);
+  const seriesColor = getSeriesColor(options, seriesOptions, index, numSeries);
   const seriesYAxis = getSeriesAxis(series, options);
 
   // Sort by x - `Map` preserves order of items
@@ -85,32 +93,41 @@ function prepareSeries(series, options, additionalOptions) {
   // for other types `y` is always number
   const cleanYValue = includes(["bubble", "scatter"], seriesOptions.type)
     ? normalizeValue
-    : v => {
+    : (v) => {
         v = cleanNumber(v);
         return options.missingValuesAsZero && isNil(v) ? 0.0 : v;
       };
 
   const sourceData = new Map();
-  const xValues = [];
-  const yValues = [];
+
+  const labelsValuesMap = new Map();
+
   const yErrorValues = [];
   each(data, row => {
     const x = normalizeValue(row.x, options.xAxis.type); // number/datetime/category
     const y = cleanYValue(row.y, seriesYAxis === "y2" ? options.yAxis[1].type : options.yAxis[0].type); // depends on series type!
     const yError = cleanNumber(row.yError); // always number
     const size = cleanNumber(row.size); // always number
+    if (labelsValuesMap.has(x)) {
+      labelsValuesMap.set(x, labelsValuesMap.get(x) + y);
+    } else {
+      labelsValuesMap.set(x, y);
+    }
+    const aggregatedY = labelsValuesMap.get(x);
+
     sourceData.set(x, {
       x,
-      y,
+      y: aggregatedY,
       yError,
       size,
       yPercent: null, // will be updated later
       row,
     });
-    xValues.push(x);
-    yValues.push(y);
     yErrorValues.push(yError);
   });
+
+  const xValues = Array.from(labelsValuesMap.keys());
+  const yValues = Array.from(labelsValuesMap.values());
 
   const plotlySeries = {
     visible: true,
@@ -136,10 +153,13 @@ function prepareSeries(series, options, additionalOptions) {
     case "column":
       return prepareBarSeries(plotlySeries, options, additionalOptions);
     case "line":
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 3.
       return prepareLineSeries(plotlySeries, options, additionalOptions);
     case "area":
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 3.
       return prepareAreaSeries(plotlySeries, options, additionalOptions);
     case "scatter":
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 3.
       return prepareScatterSeries(plotlySeries, options, additionalOptions);
     case "bubble":
       return prepareBubbleSeries(plotlySeries, options, additionalOptions);
@@ -154,6 +174,7 @@ export default function prepareDefaultData(seriesList, options) {
   const additionalOptions = {
     hoverInfoPattern: getHoverInfoPattern(options),
   };
+  const numSeries = seriesList.length
 
-  return map(seriesList, (series, index) => prepareSeries(series, options, { ...additionalOptions, index }));
+  return map(seriesList, (series, index) => prepareSeries(series, options, numSeries, { ...additionalOptions, index }));
 }

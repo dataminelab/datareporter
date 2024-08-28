@@ -51,12 +51,7 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     @classmethod
     def get_by_group_ids(self, user):
-        return self.query.join(User).filter(
-            and_(
-                User.org_id == user.org.id,
-                User.group_ids.overlap(user.group_ids)
-            )
-        )
+        return self.query.join(User).filter(and_(User.org_id == user.org.id, User.group_ids.overlap(user.group_ids)))
 
     @classmethod
     def get_one_by_group_ids(self, user):
@@ -98,10 +93,8 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     version = Column(db.Integer)
     is_archived = Column(db.Boolean, default=False, index=True)
-    
-    tags = Column(
-        "tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True
-    )
+
+    tags = Column("tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True)
 
     api_key = Column(db.String(40), default=lambda: generate_token(40), nullable=True)
 
@@ -118,14 +111,14 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     def regenerate_api_key(self):
         self.api_key = generate_token(40)
-    
+
     def set_api_key(self, api_key):
         self.api_key = api_key
 
     @classmethod
     def all_tags(self, user, include_drafts=False):
         reports = self.all(user.org, user.group_ids, user.id)
-        
+
         tag_column = func.unnest(self.tags).label("tag")
         usage_count = func.count(1).label("usage_count")
 
@@ -167,20 +160,15 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     @classmethod
     def search(self, org, groups_ids, user_id, search_term):
-        return self.all(org, groups_ids, user_id).filter(
-            self.name.ilike("%{}%".format(search_term))
-        )
+        return self.all(org, groups_ids, user_id).filter(self.name.ilike("%{}%".format(search_term)))
 
     @classmethod
     def get_my_archived_reports(self, term, user_id):
-        my_archives = self.get_by_user_id(user_id).filter(
-            Report.is_archived.is_(True))
+        my_archives = self.get_by_user_id(user_id).filter(Report.is_archived.is_(True))
         if term:
-            return my_archives.filter(
-                self.name.ilike("%{}%".format(term))
-            )
+            return my_archives.filter(self.name.ilike("%{}%".format(term)))
         return my_archives
-    
+
     # TODO: this method is not used anywhere
     # requires admin privilage to use
     @classmethod
@@ -204,18 +192,18 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     def favorites(self, user, base_query=None):
         if base_query is None:
             base_query = self.all(user.org, user.group_ids, user.id)
-        return base_query.join(
-            (
-                Favorite,
-                and_(
-                    Favorite.object_type == "Report",
-                    Favorite.object_id == Report.id,
-                ),
+        return (
+            base_query.join(
+                (
+                    Favorite,
+                    and_(
+                        Favorite.object_type == "Report",
+                        Favorite.object_id == Report.id,
+                    ),
+                )
             )
-        ).filter(
-            Favorite.user_id == user.id
-        ).filter(
-            Report.is_archived.is_(False)
+            .filter(Favorite.user_id == user.id)
+            .filter(Report.is_archived.is_(False))
         )
 
     @classmethod
@@ -229,17 +217,11 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
                 return True
 
     def remove(self):
-        Report.query.filter(
-            Report.id == self.id
-        ).delete()
+        Report.query.filter(Report.id == self.id).delete()
         db.session.commit()
 
     @classmethod
     def get_by_group_ids(self, user):
         return self.query.join(User).filter(
-            and_(
-                Report.is_archived.is_(False),
-                User.org_id == user.org.id,
-                User.group_ids.overlap(user.group_ids)
-            )
+            and_(Report.is_archived.is_(False), User.org_id == user.org.id, User.group_ids.overlap(user.group_ids))
         )

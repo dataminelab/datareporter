@@ -53,4 +53,4 @@ Please email security@datareporter.com to report any security vulnerabilities. W
 
 ## License
 
-Apache-2.0-License.
+BSD 2-Clause "Simplified" License

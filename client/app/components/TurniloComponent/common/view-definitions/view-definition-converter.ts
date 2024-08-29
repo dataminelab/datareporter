@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DataCube } from "../models/data-cube/data-cube";
+
+import { ClientAppSettings } from "../models/app-settings/app-settings";
+import { ClientDataCube } from "../models/data-cube/data-cube";
 import { Essence } from "../models/essence/essence";
 
 export interface ViewDefinitionConverter<VD extends object, E extends Essence> {
   version: number;
 
-  fromViewDefinition(definition: VD, dataCube: DataCube): E;
+  fromViewDefinition(definition: VD, appSettings: ClientAppSettings, dataCube: ClientDataCube): E;
 
   toViewDefinition(essence: E): VD;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import "./highlighter.scss";
 
 export interface HighlighterProps {
@@ -44,8 +44,8 @@ export function Highlighter(props: HighlighterProps) {
   };
 
   return <div className="highlighter">
-    <div className="whiteout left" style={whiteoutLeftStyle}></div>
-    <div className="frame" style={frameStyle}></div>
-    <div className="whiteout right" style={whiteoutRightStyle}></div>
+    <div className="whiteout left" style={whiteoutLeftStyle} />
+    <div className="frame" style={frameStyle} />
+    <div className="whiteout right" style={whiteoutRightStyle} />
   </div>;
 }

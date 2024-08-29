@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { VisualizationManifest } from "../../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationSettings } from "../../../common/models/visualization-settings/visualization-settings";
-import { Binary } from "../../../common/utils/functional/functional";
+import { Binary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable-utils";
 import { MANIFESTS } from "../../../common/visualization-manifests";
 import { LineChartSettings } from "../../../common/visualization-manifests/line-chart/settings";
+import { ScatterplotSettings } from "../../../common/visualization-manifests/scatterplot/settings";
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { STRINGS } from "../../config/constants";
 import { settingsComponent } from "../../visualization-settings/settings-component";
@@ -84,7 +85,10 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     switch (visualization.name) {
       case "table":
         const TableSettingsComponent = settingsComponent(visualization.name);
-        return <TableSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<TableSettings>} />;
+        return <TableSettingsComponent onChange={this.changeSettings as Unary<ImmutableRecord<TableSettings>, void>}
+                                       settings={visualizationSettings as ImmutableRecord<TableSettings>} />;
+      case "grid":
+        return null;
       case "heatmap":
         return null;
       case "totals":
@@ -93,7 +97,12 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
         return null;
       case "line-chart":
         const LineChartSettingsComponent = settingsComponent(visualization.name);
-        return <LineChartSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<LineChartSettings>}/>;
+        return <LineChartSettingsComponent onChange={this.changeSettings as Unary<ImmutableRecord<LineChartSettings>, void>}
+                                           settings={visualizationSettings as ImmutableRecord<LineChartSettings>}/>;
+      case "scatterplot":
+        const ScatterplotSettingsComponent = settingsComponent(visualization.name);
+        return <ScatterplotSettingsComponent onChange={this.changeSettings as Unary<ImmutableRecord<ScatterplotSettings>, void>}
+                                             settings={visualizationSettings as ImmutableRecord<ScatterplotSettings>} />;
     }
   }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { classNames } from "../../utils/dom/dom";
 import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
@@ -33,6 +33,7 @@ export interface InfoBubbleState {
 
 export interface InfoBubbleProps {
   description: string;
+  extendedDescription?: string;
   icon?: string;
   title?: string;
   className?: string;
@@ -57,7 +58,8 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
 
   render() {
     const { showInfo } = this.state;
-    const { description, icon, className, title } = this.props;
+    const { description, extendedDescription, icon, className, title } = this.props;
+    const fullDescription = extendedDescription ? `${description}\n\n${extendedDescription}` : description;
 
     return <React.Fragment>
       <div className={classNames("info-button", className)} title={title || defaultTitle} onClick={this.showDescription}>
@@ -69,7 +71,7 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
         onClose={this.closeDescription}
         stage={Stage.fromSize(300, 200)}
         openOn={showInfo.target}>
-        <MarkdownNode markdown={description} />
+        <MarkdownNode markdown={fullDescription} />
       </BubbleMenu>}
     </React.Fragment>;
   }

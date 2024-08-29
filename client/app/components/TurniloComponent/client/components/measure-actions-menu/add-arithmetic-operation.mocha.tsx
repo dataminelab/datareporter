@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { mount, shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
 import { ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
@@ -30,14 +30,14 @@ import { AddArithmeticOperationButton } from "./add-arithmetic-operation";
 
 const renderButton = (measure: Measure) => shallow(<AddArithmeticOperationButton
   measure={measure}
-  addExpressionPlaceholder={null}
+  addPartialSeries={null}
   onClose={noop}
 />);
 
 const mountButton = (measure: Measure, addExpressionPlaceholder: Fn, onClose: Fn) => mount(<AddArithmeticOperationButton
   measure={measure}
   onClose={onClose}
-  addExpressionPlaceholder={addExpressionPlaceholder} />)
+  addPartialSeries={addExpressionPlaceholder} />)
   .find(".new-arithmetic-expression");
 
 describe("Add Arithmetic Operation Button", () => {

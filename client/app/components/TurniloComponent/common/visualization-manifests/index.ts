@@ -18,17 +18,21 @@
 import { NamedArray } from "immutable-class";
 import { VisualizationManifest } from "../models/visualization-manifest/visualization-manifest";
 import { BAR_CHART_MANIFEST } from "./bar-chart/bar-chart";
+import { GRID_MANIFEST } from "./grid/grid";
 import { HEAT_MAP_MANIFEST } from "./heat-map/heat-map";
 import { LINE_CHART_MANIFEST } from "./line-chart/line-chart";
+import { SCATTERPLOT_MANIFEST } from "./scatterplot/scatterplot";
 import { TABLE_MANIFEST } from "./table/table";
 import { TOTALS_MANIFEST } from "./totals/totals";
 
 export const MANIFESTS: VisualizationManifest[] = [
   TOTALS_MANIFEST,
-  TABLE_MANIFEST,
-  LINE_CHART_MANIFEST,
+  GRID_MANIFEST,
+  LINE_CHART_MANIFEST as unknown as VisualizationManifest,
   BAR_CHART_MANIFEST,
-  HEAT_MAP_MANIFEST
+  HEAT_MAP_MANIFEST,
+  TABLE_MANIFEST as unknown as VisualizationManifest,
+  SCATTERPLOT_MANIFEST as unknown as VisualizationManifest
 ];
 
 export function manifestByName(visualizationName: string): VisualizationManifest {

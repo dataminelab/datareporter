@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
 import { MessageCard } from "../../components/message-card/message-card";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import { TimeSeriesVisualizationControls } from "../../components/timeseries-visualization-controls/visualization-controls";
+import { ChartPanel, VisualizationProps } from "../../views/cube-view/center-panel/center-panel";
 import { Charts } from "./charts/charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import "./line-chart.scss";
@@ -30,15 +31,22 @@ import { XAxis } from "./x-axis/x-axis";
 const Y_AXIS_WIDTH = 60;
 const X_AXIS_HEIGHT = 30;
 
-export class LineChart extends BaseVisualization<BaseVisualizationState> {
+export default function LineChartVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <TimeSeriesVisualizationControls {...props} />
+    <ChartPanel {...props} chartComponent={LineChart}/>
+  </React.Fragment>;
+}
+
+class LineChart extends React.Component<ChartProps> {
   protected className = LINE_CHART_MANIFEST.name;
 
   private chartsRef = React.createRef<HTMLDivElement>();
 
-  protected renderInternals(dataset: Dataset): JSX.Element {
-    const { essence, timekeeper, stage } = this.props;
+  render(): JSX.Element {
+    const { essence, data, timekeeper, stage, highlight, dropHighlight, acceptHighlight, saveHighlight } = this.props;
 
-    const range = calculateXRange(essence, timekeeper, dataset);
+    const range = calculateXRange(essence, timekeeper, data);
     if (!range) {
       return <MessageCard title="No data found. Try different filters."/>;
     }
@@ -48,14 +56,14 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
     const maxHeight = stage.height - X_AXIS_HEIGHT;
 
     return <InteractionController
-      dataset={dataset}
+      dataset={data}
       xScale={scale}
       chartsContainerRef={this.chartsRef}
       essence={essence}
-      highlight={this.getHighlight()}
-      dropHighlight={this.dropHighlight}
-      acceptHighlight={this.acceptHighlight}
-      saveHighlight={this.highlight}>
+      highlight={highlight}
+      dropHighlight={dropHighlight}
+      acceptHighlight={acceptHighlight}
+      saveHighlight={saveHighlight}>
       {interactions => {
         return <div className="line-chart-container">
           <div className="line-charts" ref={this.chartsRef} style={{ maxHeight }}>
@@ -65,13 +73,13 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
               essence={essence}
               xScale={scale}
               xTicks={ticks}
-              dataset={dataset} />
+              dataset={data}/>
           </div>
           <XAxis
             width={stage.width}
             ticks={ticks}
             scale={scale}
-            timezone={essence.timezone} />
+            timezone={essence.timezone}/>
         </div>;
       }}
     </InteractionController>;

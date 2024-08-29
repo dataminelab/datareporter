@@ -15,7 +15,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
 import { Nullary } from "../../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../../components/highlight-modal/highlight-modal";
@@ -32,14 +32,8 @@ interface HighlightModalProps {
   rect: ClientRect | DOMRect;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = props => {
+export const HighlightModal: React.FunctionComponent<HighlightModalProps> = props => {
   const { rect: { left, top }, interaction, timezone, dropHighlight, acceptHighlight, xScale } = props;
-  const currentPage = window.location.href.split("/")[3];
-  if (currentPage === "dashboards") {
-      // The URL contains "dashboard"
-      dropHighlight();
-      return <></>;
-  }
   const range = toPlywoodRange(interaction.clause);
   const x = xScale(range.midpoint());
   return <BaseHighlightModal

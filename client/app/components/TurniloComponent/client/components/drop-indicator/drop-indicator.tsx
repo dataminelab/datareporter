@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./drop-indicator.scss";
 
@@ -29,7 +29,7 @@ export class DropIndicator extends React.Component<DropIndicatorProps, DropIndic
 
   render() {
     return <div className="drop-indicator">
-      <div className="white-out"></div>
+      <div className="white-out" />
       <div className="action">
         <SvgIcon svg={require("../../icons/split-replace.svg")} />
       </div>

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Measure } from "../../../common/models/measure/measure";
+import { allMeasures } from "../../../common/models/measure/measures";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { AddTile } from "../add-tile/add-tile";
@@ -27,10 +28,10 @@ interface AddSeriesProps {
   essence: Essence;
 }
 
-export const AddSeries: React.SFC<AddSeriesProps> = props => {
+export const AddSeries: React.FunctionComponent<AddSeriesProps> = props => {
   const { appendMeasureSeries, menuStage, essence: { dataCube, series } } = props;
-  const tiles = dataCube.measures
-    .filterMeasures(measure => !series.hasMeasure(measure))
+  const tiles = allMeasures(dataCube.measures)
+    .filter(measure => !series.hasMeasure(measure))
     .map(measure => {
       return {
         key: measure.name,
@@ -41,7 +42,7 @@ export const AddSeries: React.SFC<AddSeriesProps> = props => {
 
   return <AddTile<Measure>
     containerStage={menuStage}
-    insertSplit={appendMeasureSeries}
-    appendSplit={appendMeasureSeries}
+    onSelect={appendMeasureSeries}
     tiles={tiles} />;
+
 };

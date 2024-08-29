@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
@@ -22,11 +22,9 @@ import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { classNames } from "../../utils/dom/dom";
 import { SeriesMenu } from "../series-menu/series-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { WithRef } from "../with-ref/with-ref";
-import { SERIES_CLASS_NAME } from "./series-tiles";
 
 interface SeriesTileProps {
   item: ConcreteSeries;
@@ -42,7 +40,7 @@ interface SeriesTileProps {
   containerStage: Stage;
 }
 
-export const SeriesTile: React.SFC<SeriesTileProps> = props => {
+export const SeriesTile: React.FunctionComponent<SeriesTileProps> = props => {
   const { seriesList, measures, open, item, style, updateSeries, removeSeries, openSeriesMenu, closeSeriesMenu, dragStart, containerStage } = props;
   const { definition, measure } = item;
   const title = item.title();
@@ -56,12 +54,14 @@ export const SeriesTile: React.SFC<SeriesTileProps> = props => {
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
       <div
-        className={classNames(SERIES_CLASS_NAME, "measure")}
+        className="tile measure"
         draggable={true}
         ref={setRef}
         onClick={() => openSeriesMenu(definition)}
         onDragStart={e => dragStart(measure.title, definition, e)}
-        style={style}>
+        style={style}
+        title={title}
+      >
         <div className="reading">{title}</div>
         <div className="remove" onClick={remove}>
           <SvgIcon svg={require("../../icons/x.svg")} />

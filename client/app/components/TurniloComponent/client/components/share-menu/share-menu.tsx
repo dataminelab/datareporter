@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Customization } from "../../../common/models/customization/customization";
+import { Dataset } from "plywood";
+import React from "react";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 import { Essence } from "../../../common/models/essence/essence";
 import { ExternalView } from "../../../common/models/external-view/external-view";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { Binary } from "../../../common/utils/functional/functional";
+import { Binary, Nullary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
-import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
-import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
+import { download, FileFormat, fileNameBase } from "../../utils/download/download";
+import { DownloadableDataset, DownloadableDatasetContext } from "../../views/cube-view/downloadable-dataset-context";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clipboard";
 
@@ -35,23 +36,25 @@ export interface ShareMenuProps {
   openOn: Element;
   onClose: Fn;
   openUrlShortenerModal: Binary<string, string, void>;
-  customization: Customization;
+  customization: ClientCustomization;
   urlForEssence: (essence: Essence) => string;
-  getDownloadableDataset?: () => DataSetWithTabOptions;
 }
 
-type ExportProps = Pick<ShareMenuProps, "onClose" | "essence" | "timekeeper" | "getDownloadableDataset">;
+interface ExportProps {
+  getDataset: Nullary<Dataset | null>;
+  essence: Essence;
+  timekeeper: Timekeeper;
+  customization: ClientCustomization;
+  onClose: Fn;
+}
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
-  const { onClose, getDownloadableDataset, essence, timekeeper } = props;
-  const dataSetWithTabOptions = getDownloadableDataset();
-  if (!dataSetWithTabOptions.dataset) return;
+  const { getDataset, essence, timekeeper, onClose, customization: { locale: { exportEncoding } } } = props;
+  const dataset = getDataset();
+  if (!dataset) return;
+  const fileName = fileNameBase(essence, timekeeper);
 
-  const { dataCube } = essence;
-  const effectiveFilter = essence.getEffectiveFilter(timekeeper);
-
-  const fileName = makeFileName(dataCube.name, dateFromFilter(effectiveFilter));
-  download(dataSetWithTabOptions, fileFormat, fileName);
+  download(dataset, essence, fileFormat, `${fileName}_export`, exportEncoding);
   onClose();
 }
 
@@ -87,7 +90,7 @@ function linkItems({ essence, customization, timekeeper, onClose, urlForEssence,
       </li>
     </SafeCopyToClipboard>}
 
-    {customization.urlShortener && <React.Fragment>
+    {customization.hasUrlShortener && <React.Fragment>
       <li
         key="short-url"
         onClick={() => openShortenerModal(hash, isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl)}>
@@ -115,20 +118,26 @@ function externalViewItems({ customization: { externalViews = [] }, essence }: E
   });
 }
 
-export const ShareMenu: React.SFC<ShareMenuProps> = props => {
-  const { openOn, onClose } = props;
+export class ShareMenu extends React.Component<ShareMenuProps> {
+  static contextType = DownloadableDatasetContext;
+  context: DownloadableDataset;
 
-  return <BubbleMenu
-    className="header-menu"
-    direction="down"
-    stage={Stage.fromSize(230, 200)}
-    openOn={openOn}
-    onClose={onClose}
-  >
-    <ul className="bubble-list">
-      {linkItems(props)}
-      {exportItems(props)}
-      {externalViewItems(props)}
-    </ul>
-  </BubbleMenu>;
-};
+  render() {
+    const { getDataset } = this.context;
+    const { openOn, onClose } = this.props;
+
+    return <BubbleMenu
+      className="header-menu"
+      direction="down"
+      stage={Stage.fromSize(230, 200)}
+      openOn={openOn}
+      onClose={onClose}
+    >
+      <ul className="bubble-list">
+        {linkItems(this.props)}
+        {exportItems({ ...this.props, getDataset })}
+        {externalViewItems(this.props)}
+      </ul>
+    </BubbleMenu>;
+  }
+}

@@ -15,7 +15,7 @@
  */
 
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Delta } from "../../components/delta/delta";
 import "./total.scss";
@@ -44,14 +44,12 @@ export interface TotalProps {
   showPrevious: boolean;
   datum: Datum;
   series: ConcreteSeries;
-  color: string;
 }
 
-export const Total: React.FunctionComponent<TotalProps> = ({ showPrevious, datum, series, color }) => {
-  if (!datum) datum = {} as Datum;
+export const Total: React.FunctionComponent<TotalProps> = ({ showPrevious, datum, series }) => {
   return <div className="total">
     <div className="measure-name" title={series.title()}>{series.title()}</div>
-    <div className="measure-value" style={{ color }}>{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>
+    <div className="measure-value">{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>
     {showPrevious && <Difference series={series} datum={datum} />}
   </div>;
 };

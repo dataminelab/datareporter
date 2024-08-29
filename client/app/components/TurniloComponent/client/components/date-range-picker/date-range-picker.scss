@@ -38,8 +38,6 @@
     padding-right: 4px;
 
     .calendar-nav {
-      display: flex;
-      justify-content: space-between;
       margin-top: 18px;
       margin-bottom: 12px;
       text-align: center;
@@ -47,14 +45,10 @@
       user-select: none;
 
       .caret {
-        display: contents;
+        position: absolute;
         top: 0;
-        padding: 3px 3px;
+        padding: 3px;
         cursor: pointer;
-
-        .caret-svg {
-          padding: 3px;
-        }
 
         svg {
           width: 19px;
@@ -116,21 +110,27 @@
             }
           }
 
-          &:hover:not(.selectable, .bubble-menu) {
-            background: rgba($black, 0.06);
+          &:hover:not(.selectable) {
             &::after {
               @include pin-full;
               content: '';
               pointer-events: none;
+              background: rgba($black, 0.06);
+            }
+
+            &.beyond-max-range {
+              &::after {
+                background: rgba($black, 0.1);
+              }
             }
           }
-          
+
           &.beyond-max-range {
-            text-decoration: line-through;
             &::after {
               @include pin-full;
               content: '';
               pointer-events: none;
+              background: rgba($black, 0.05);
             }
           }
 

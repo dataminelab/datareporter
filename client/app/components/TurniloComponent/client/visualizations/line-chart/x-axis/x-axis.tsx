@@ -17,7 +17,7 @@
 
 import { Timezone } from "chronoshift";
 import * as d3 from "d3";
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { getMoment, scaleTicksFormatter } from "../../../../common/utils/time/time";
@@ -47,35 +47,20 @@ function labelFormatter(scale: ContinuousScale, timezone: Timezone): Unary<Date 
   return (value: number) => String(floatFormat(value));
 }
 
-export const XAxis: React.SFC<XAxisProps> = props => {
+export const XAxis: React.FunctionComponent<XAxisProps> = props => {
   const { width, ticks, scale, timezone } = props;
   const stage = Stage.fromSize(width, X_AXIS_HEIGHT);
   const format = labelFormatter(scale, timezone);
-  const minTickDistance = stage.width / 10;
 
   const lines = ticks.map((tick: any) => {
     const x = roundToHalfPx(scale(tick));
     return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />;
   });
 
-  var tickIndex = 0;
-
   const labelY = TICK_HEIGHT + TEXT_OFFSET;
   const labels = ticks.map((tick: any, index: number) => {
     const x = scale(tick);
-    var innerText;
-    const prevElementX = index > 0 ? scale(ticks[index - 1]) : 0;
-    if (x - prevElementX + tickIndex > minTickDistance) {
-      innerText = format(tick);
-      tickIndex = 0;
-    } else if (index === 0) {
-      innerText = format(tick);
-      tickIndex += x - prevElementX;
-    } else {
-      innerText = "";
-      tickIndex += x - prevElementX;
-    }
-    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: index === 0 ? "start" : "middle" }}>{innerText}</text>;
+    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: index === 0 ? "start" : "middle" }}>{format(tick)}</text>;
   });
 
   return <svg className="bottom-axis" width={stage.width} height={stage.height}>

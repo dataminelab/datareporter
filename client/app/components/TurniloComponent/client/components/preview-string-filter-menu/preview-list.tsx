@@ -15,7 +15,7 @@
  */
 
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { FilterMode } from "../../../common/models/filter/filter";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -34,7 +34,12 @@ interface PreviewListProps {
 
 const errorNotice = (content: string) => <div className="error-notice">{content}</div>;
 
-export const row = (content: string, highlight: string) => <div className="row no-select" key={content} title={content}>
+interface RowProps {
+  content: string;
+  highlight: string;
+}
+
+const Row: React.FunctionComponent<RowProps> = ({ content, highlight }) => <div className="row no-select" title={content}>
   <div className="row-wrapper">
     <HighlightString className="label" text={content} highlight={highlight} />
   </div>
@@ -56,7 +61,7 @@ function filterValues<T>(list: T[], filterMode: PreviewFilterMode, searchText: s
   return list.filter(predicate(filterMode, searchText));
 }
 
-export const PreviewList: React.SFC<PreviewListProps> = props => {
+export const PreviewList: React.FunctionComponent<PreviewListProps> = props => {
   const { regexErrorMessage, searchText, dataset, filterMode, dimension, limit } = props;
 
   if (regexErrorMessage) return errorNotice(regexErrorMessage);
@@ -69,6 +74,6 @@ export const PreviewList: React.SFC<PreviewListProps> = props => {
 
   return <React.Fragment>
     {searchText && <div className="matching-values-message">Matching Values</div>}
-    {filtered.map(value => row(String(value), searchText))}
+    {filtered.map(value => <Row content={String(value)} highlight={searchText} key={String(value)} />)}
   </React.Fragment>;
 };

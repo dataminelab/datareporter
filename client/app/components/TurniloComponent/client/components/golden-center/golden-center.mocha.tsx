@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 
@@ -26,7 +26,7 @@ import { GoldenCenter } from "./golden-center";
 
 describe("GoldenCenter", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <GoldenCenter>
         <div className="Hello">Is it me you're looking for?</div>
       </GoldenCenter>

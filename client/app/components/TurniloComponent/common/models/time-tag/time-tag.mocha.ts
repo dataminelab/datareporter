@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
+import { expect } from "chai";
+import { TimeTag } from "./time-tag";
+
 describe("TimeTag", () => {
-  it("is an immutable class", () => {
-    /* TODO: check the correctness of the test */
-    /*    testImmutableClass<TimeTagJS>(TimeTag, [
-          {
-            name: 'dodo',
-            time: new Date("2015-10-15T19:20:00Z"),
-            updated: new Date("2015-10-15T19:20:13Z")
-          },
-          {
-            name: 'wikipedia',
-            time: new Date("2015-10-15T19:21:00Z"),
-            updated: new Date("2015-10-15T19:21:13Z")
-          }
-        ]);*/
+  it("should read passed name values", () => {
+    const timeTag = TimeTag.fromJS({ name: "foobar" });
+    expect(timeTag.name).to.be.equal("foobar");
   });
 
+  it("should parse passed time value", () => {
+    const timeTag = TimeTag.fromJS({ name: "foobar", time: "2020-01-01" });
+    expect(timeTag.time).to.be.deep.equal(new Date("2020-01-01"));
+  });
+
+  it("should parse passed lastTimeChecked value", () => {
+    const timeTag = TimeTag.fromJS({ name: "foobar", lastTimeChecked: "2020-01-01" });
+    expect(timeTag.lastTimeChecked).to.be.deep.equal(new Date("2020-01-01"));
+  });
+
+  it("should use time value if lastTimeChecked is missing", () => {
+    const timeTag = TimeTag.fromJS({ name: "foobar", time: "2020-01-01" });
+    expect(timeTag.lastTimeChecked).to.be.deep.equal(new Date("2020-01-01"));
+  });
 });

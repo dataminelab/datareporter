@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-import { expect } from "chai";
-import { testImmutableClass } from "immutable-class-tester";
+import { expect, use } from "chai";
+import { $, AttributeInfo } from "plywood";
+import { SinonSpy, spy } from "sinon";
+import equivalent from "../../../client/utils/test-utils/equivalent";
+import { NOOP_LOGGER } from "../../logger/logger";
+import { deduceAttributes } from "../../utils/external/datacube-to-external";
+import { Cluster, fromConfig as clusterFromConfig } from "../cluster/cluster";
+import { createDimension, DimensionJS, timeDimension } from "../dimension/dimension";
+import { allDimensions, fromConfig as dimensionsFromConfig } from "../dimension/dimensions";
+import { DataCubeJS, fromConfig } from "./data-cube";
+import { addAttributes } from "./queryable-data-cube";
 
-import { AttributeInfo } from "plywood";
-import { Cluster } from "../cluster/cluster";
-import { DataCube, DataCubeJS } from "./data-cube";
-import { DataCubeFixtures } from "./data-cube.fixtures";
+const logger = NOOP_LOGGER;
+
+const build = (config: DataCubeJS, cluster: Cluster = undefined) => fromConfig(config, cluster, logger);
+
+use(equivalent);
 
 describe("DataCube", () => {
-  var druidCluster = Cluster.fromJS({
-    name: "druid"
-  });
-
-  var context = {
-    cluster: druidCluster
-  };
-
-  it("is an immutable class", () => {
-    testImmutableClass<DataCubeJS>(DataCube, [
-      DataCubeFixtures.TWITTER_JS,
-      DataCubeFixtures.WIKI_JS
-    ]);
-  });
+  const druidCluster = clusterFromConfig({
+    name: "druid",
+    url: "http://driud"
+  }, logger);
 
   describe("validates", () => {
     it("throws an error if bad name is used", () => {
       expect(() => {
-        DataCube.fromJS({
+        build({
           name: "wiki hello",
           clusterName: "druid",
           source: "wiki",
@@ -63,13 +63,13 @@ describe("DataCube", () => {
               formula: "$main.sum($count)"
             }
           ]
-        });
+        }, druidCluster);
       }).to.throw("'wiki hello' is not a URL safe name. Try 'wiki_hello' instead?");
     });
 
     it("throws an error if the defaultSortMeasure can not be found", () => {
       expect(() => {
-        DataCube.fromJS({
+        build({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -91,13 +91,13 @@ describe("DataCube", () => {
               formula: "$main.sum($count)"
             }
           ]
-        });
-      }).to.throw("can not find defaultSortMeasure 'gaga'");
+        }, druidCluster);
+      }).to.throw("Can not find defaultSortMeasure 'gaga' in data cube 'wiki'");
     });
 
     it("throws an error if duplicate name is used across measures and dimensions", () => {
       expect(() => {
-        DataCube.fromJS({
+        build({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -118,13 +118,13 @@ describe("DataCube", () => {
               formula: "$main.sum($count)"
             }
           ]
-        });
+        }, druidCluster);
       }).to.throw("data cube: 'wiki', names: 'articleName' found in both dimensions and measures");
     });
 
     it("throws an error if duplicate name is used in measures", () => {
       expect(() => {
-        DataCube.fromJS({
+        build({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -149,13 +149,13 @@ describe("DataCube", () => {
               formula: "$articleName"
             }
           ]
-        });
-      }).to.throw("data cube: 'wiki', found duplicate measure or group with names: 'articleName'");
+        }, druidCluster);
+      }).to.throw("data cube: 'wiki', found duplicate measure with name: 'articleName'");
     });
 
     it("throws an error if duplicate name is used in dimensions", () => {
       expect(() => {
-        DataCube.fromJS({
+        build({
           name: "wiki",
           clusterName: "druid",
           source: "wiki",
@@ -171,7 +171,7 @@ describe("DataCube", () => {
             },
             {
               name: "articleName",
-              formula: "$articleName.slice(0,2)"
+              formula: "$articleName.substr(0,2)"
             }
           ],
           measures: [
@@ -180,71 +180,15 @@ describe("DataCube", () => {
               formula: "$main.sum($count)"
             }
           ]
-        });
-      }).to.throw("data cube: 'wiki', found duplicate dimension or group with names: 'articleName'");
+        }, druidCluster);
+      }).to.throw("data cube: 'wiki', found duplicate dimension with name: 'articleName'");
     });
 
-  });
-
-  describe("#getIssues", () => {
-    it("raises issues", () => {
-      var dataCube = DataCube.fromJS({
-        name: "wiki",
-        clusterName: "druid",
-        source: "wiki",
-        attributes: [
-          { name: "__time", type: "TIME" },
-          { name: "articleName", type: "STRING" },
-          { name: "count", type: "NUMBER" }
-        ],
-        dimensions: [
-          {
-            name: "gaga",
-            formula: "$gaga"
-          },
-          {
-            name: "bucketArticleName",
-            formula: "$articleName.numberBucket(5)"
-          }
-        ],
-        measures: [
-          {
-            name: "count",
-            formula: "$main.sum($count)"
-          },
-          {
-            name: "added",
-            formula: "$main.sum($added)"
-          },
-          {
-            name: "sumArticleName",
-            formula: "$main.sum($articleName)"
-          },
-          {
-            name: "koalaCount",
-            formula: "$koala.sum($count)"
-          },
-          {
-            name: "countByThree",
-            formula: "$count / 3"
-          }
-        ]
-      });
-
-      expect(dataCube.getIssues()).to.deep.equal([
-        "failed to validate dimension 'gaga': could not resolve $gaga",
-        "failed to validate dimension 'bucketArticleName': numberBucket must have operand of type NUMBER (is STRING)",
-        "failed to validate measure 'added': could not resolve $added",
-        "failed to validate measure 'sumArticleName': sum must have expression of type NUMBER (is STRING)",
-        "failed to validate measure 'koalaCount': measure must contain a $main reference",
-        "failed to validate measure 'countByThree': measure must contain a $main reference"
-      ]);
-    });
   });
 
   describe.skip("back compat", () => {
     it("works in a generic case", () => {
-      var legacyDataCubeJS: any = {
+      const legacyDataCubeJS: any = {
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -281,9 +225,9 @@ describe("DataCube", () => {
         }
       };
 
-      var dataCube = DataCube.fromJS(legacyDataCubeJS, context);
+      const dataCube = build(legacyDataCubeJS, druidCluster);
 
-      expect(dataCube.toJS()).to.deep.equal({
+      expect(dataCube).to.deep.equal({
         attributeOverrides: [
           {
             name: "page",
@@ -344,7 +288,7 @@ describe("DataCube", () => {
 
   describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
-      var dataCube = DataCube.fromJS({
+      const dataCube = build({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -383,9 +327,9 @@ describe("DataCube", () => {
             formula: "$main.sum($added) / $main.sum($deleted)"
           }
         ]
-      }, context);
+      }, druidCluster);
 
-      expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
+      expect(AttributeInfo.toJSs(deduceAttributes(dataCube))).to.deep.equal([
         {
           name: "__time",
           type: "TIME"
@@ -414,7 +358,7 @@ describe("DataCube", () => {
     });
 
     it("omits unsupported expressions", () => {
-      var dataCube = DataCube.fromJS({
+      const dataCube = build({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
@@ -440,9 +384,9 @@ describe("DataCube", () => {
             formula: "$main.quantile($click_histogram,0.95)"
           }
         ]
-      }, context);
+      }, druidCluster);
 
-      expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
+      expect(AttributeInfo.toJSs(deduceAttributes(dataCube))).to.deep.equal([
         {
           name: "__time",
           type: "TIME"
@@ -461,7 +405,7 @@ describe("DataCube", () => {
   });
 
   describe("#addAttributes", () => {
-    var dataCubeStub = DataCube.fromJS({
+    const dataCubeStub = build({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -471,7 +415,7 @@ describe("DataCube", () => {
       refreshRule: {
         rule: "realtime"
       }
-    });
+    }, druidCluster);
     /* TODO: check the correctness of the test */
     /*
         it("works in basic case (no count) + re-add", () => {
@@ -694,14 +638,14 @@ describe("DataCube", () => {
         });*/
 
     it("works with existing dimension", () => {
-      var attributes1 = AttributeInfo.fromJSs([
+      const attributes1 = AttributeInfo.fromJSs([
         { name: "__time", type: "TIME" },
         { name: "added", type: "NUMBER" },
         { name: "added!!!", type: "NUMBER" },
         { name: "deleted", type: "NUMBER" }
       ]);
 
-      var dataCubeWithDim = DataCube.fromJS({
+      const dataCubeWithDim = build({
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -722,16 +666,16 @@ describe("DataCube", () => {
             formula: "${added!!!}"
           }
         ]
-      });
+      }, druidCluster);
 
-      var dataCube = dataCubeWithDim.addAttributes(attributes1);
-      expect(dataCube.toJS().measures.map(m => m.name)).to.deep.equal(["deleted"]);
+      const dataCube = addAttributes(dataCubeWithDim, attributes1);
+      expect(Object.keys(dataCube.measures.byName)).to.deep.equal(["deleted"]);
     });
 
   });
 
   describe("#addAttributes (new dim)", () => {
-    var dataCube = DataCube.fromJS({
+    const dataCube = build({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -742,10 +686,10 @@ describe("DataCube", () => {
       refreshRule: {
         rule: "realtime"
       }
-    });
+    }, druidCluster);
 
     it("adds new dimensions", () => {
-      var columns: any = [
+      const columns: any = [
         { name: "__time", type: "TIME" },
         { name: "added", makerAction: { action: "sum", expression: { name: "added", op: "ref" } }, type: "NUMBER", unsplitable: true },
         { name: "count", makerAction: { action: "count" }, type: "NUMBER", unsplitable: true },
@@ -754,49 +698,102 @@ describe("DataCube", () => {
         { name: "page_unique", special: "unique", type: "STRING" }
       ];
 
-      var dataCube1 = dataCube.addAttributes(AttributeInfo.fromJSs(columns));
+      const dataCube1 = addAttributes(dataCube, AttributeInfo.fromJSs(columns));
 
-      expect(dataCube1.toJS().dimensions).to.deep.equal([
-        {
-          kind: "time",
-          name: "__time",
-          title: "Time",
-          formula: "$__time"
-        },
-        {
-          kind: "string",
-          name: "page",
-          title: "Page",
-          formula: "$page"
-        }
+      expect(allDimensions(dataCube1.dimensions)).to.deep.equal([
+        createDimension("time", "time", $("__time")),
+        createDimension("string", "page", $("page"))
       ]);
 
       columns.push({ name: "channel", type: "STRING" });
-      var dataCube2 = dataCube1.addAttributes(AttributeInfo.fromJSs(columns));
+      const dataCube2 = addAttributes(dataCube1, AttributeInfo.fromJSs(columns));
 
-      expect(dataCube2.toJS().dimensions).to.deep.equal([
-        {
-          kind: "time",
-          name: "__time",
-          title: "Time",
-          formula: "$__time"
-        },
-        {
-          kind: "string",
-          name: "page",
-          title: "Page",
-          formula: "$page"
-        },
-        {
-          kind: "string",
-          name: "channel",
-          title: "Channel",
-          formula: "$channel"
-        }
+      expect(allDimensions(dataCube2.dimensions)).to.deep.equal([
+        createDimension("time", "time", $("__time")),
+        createDimension("string", "page", $("page")),
+        createDimension("string", "channel", $("channel"))
       ]);
-
     });
-
   });
 
+  describe("timeAttribute", () => {
+    describe("Druid clusters", () => {
+      const baseCube: DataCubeJS = {
+        name: "wiki",
+        clusterName: "druid",
+        source: "wiki"
+      };
+
+      const timeDimensionJS: DimensionJS = {
+        name: "time",
+        kind: "time",
+        formula: "$__time"
+      };
+
+      describe("timeAttribute property warnings", () => {
+        let loggerWarnSpy: SinonSpy;
+
+        beforeEach(() => {
+          loggerWarnSpy = spy(logger, "warn");
+        });
+
+        afterEach(() => {
+          loggerWarnSpy.restore();
+        });
+
+        it("should warn if timeAttribute is missing", () => {
+          build({ ...baseCube }, druidCluster);
+          expect(loggerWarnSpy.args[0][0]).to.be.equal("DataCube \"wiki\" should have property timeAttribute. Setting timeAttribute to default value \"__time\"");
+        });
+
+        it("should warn if timeAttribute has different value than \"__time\"", () => {
+          build({ ...baseCube, timeAttribute: "foobar" }, druidCluster);
+          expect(loggerWarnSpy.args[0][0]).to.be.equal('timeAttribute in DataCube "wiki" should have value "__time" because it is required by Druid. Overriding timeAttribute to "__time"');
+        });
+      });
+
+      it("should add timeAttribute", () => {
+        const cube = build({ ...baseCube, dimensions: [timeDimensionJS] }, druidCluster);
+        expect(cube.timeAttribute).to.be.equivalent($("__time"));
+      });
+
+      it("should prepend time dimension if not defined", () => {
+        const cube = build({ ...baseCube, dimensions: [] }, druidCluster);
+        const timeAttribute = $("__time");
+        expect(cube.dimensions.byName.time).to.be.deep.equal(timeDimension(timeAttribute));
+        expect(cube.dimensions.tree).to.be.deep.equal(["time"]);
+      });
+
+      it("should override invalid time Attribute", () => {
+        const cube = build({ ...baseCube, timeAttribute: "foobar" }, druidCluster);
+        const timeAttribute = $("__time");
+        expect(cube.timeAttribute).to.be.equivalent(timeAttribute);
+      });
+    });
+
+    describe("Native clusters", () => {
+      const baseCube: DataCubeJS = {
+        name: "medals",
+        clusterName: "native",
+        source: "medals.json"
+      };
+
+      const timeDimensionJS: DimensionJS = {
+        name: "time",
+        kind: "time",
+        formula: "$time_column"
+      };
+
+      it("should throw without timeAttribute property", () => {
+        expect(() => build({ ...baseCube })).to.throw("DataCube \"medals\" must have defined timeAttribute property");
+      });
+
+      it("should pass well defined dimensions and timeAttribute", () => {
+        const cube = build({ ...baseCube, timeAttribute: "time_column", dimensions: [timeDimensionJS] });
+        const timeAttribute = $("time_column");
+        expect(cube.timeAttribute).to.be.equivalent(timeAttribute);
+        expect(cube.dimensions).to.be.deep.equal(dimensionsFromConfig([timeDimensionJS]));
+      });
+    });
+  });
 });

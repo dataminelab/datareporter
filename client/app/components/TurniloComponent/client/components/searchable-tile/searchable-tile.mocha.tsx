@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as TestUtils from "react-dom/test-utils";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
@@ -25,7 +25,7 @@ import { SearchableTile } from "./searchable-tile";
 
 describe("SearchableTile", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <SearchableTile
         toggleChangeFn={null}
         onSearchChange={null}

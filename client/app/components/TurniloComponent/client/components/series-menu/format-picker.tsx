@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Measure } from "../../../common/models/measure/measure";
-import { customFormat, DEFAULT_FORMAT, EXACT_FORMAT, exactFormat, PERCENT_FORMAT, percentFormat, SeriesFormat, seriesFormatter, SeriesFormatType } from "../../../common/models/series/series-format";
+import React from "react";
+import { ClientMeasure } from "../../../common/models/measure/measure";
+import {
+  customFormat,
+  DEFAULT_FORMAT,
+  EXACT_FORMAT,
+  exactFormat,
+  measureDefaultFormat,
+  PERCENT_FORMAT,
+  percentFormat,
+  SeriesFormat,
+  seriesFormatter,
+  SeriesFormatType
+} from "../../../common/models/series/series-format";
 import { concatTruthy, Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
 import { StringInputWithPresets } from "../input-with-presets/string-input-with-presets";
@@ -24,7 +35,7 @@ import { StringInputWithPresets } from "../input-with-presets/string-input-with-
 const PREVIEW_VALUE = 23667.25431;
 
 interface FormatPickerProps {
-  measure: Measure;
+  measure: ClientMeasure;
   format: SeriesFormat;
   formatChange: Unary<SeriesFormat, void>;
 }
@@ -55,8 +66,8 @@ function printFormat(format: SeriesFormat, measureFormat: string): string {
   }
 }
 
-export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, formatChange }) => {
-  const measureFormat = measure.getFormat();
+export const FormatPicker: React.FunctionComponent<FormatPickerProps> = ({ format, measure, formatChange }) => {
+  const measureFormat = measure.format;
 
   const formatPresets = concatTruthy(
     { name: "Default", identity: measureFormat },
@@ -73,11 +84,11 @@ export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, fo
       presets={formatPresets}
       title={STRINGS.format}
       selected={printFormat(format, measureFormat)}
-      placeholder={`Custom format e.g. ${Measure.DEFAULT_FORMAT}`}
+      placeholder={`Custom format e.g. ${measureDefaultFormat}`}
       onChange={onFormatChange} />
     {format.type === SeriesFormatType.CUSTOM && <div className="format-hint">
       You can use custom numbro format to present measure values.
-      Please refer to the <a target="_blank" className="documentation-link" href="http://numbrojs.com/old-format.html">numbro documentation</a>
+      Please refer to the <a target="_blank" className="documentation-link" href="https://numbrojs.com/old-format.html">numbro documentation</a>
     </div>}
     <div className="preview">
       <span className="value">{PREVIEW_VALUE} → </span>

@@ -20,12 +20,19 @@ import { Timekeeper, TimekeeperJS } from "./timekeeper";
 export class TimekeeperFixtures {
   static fixedJS(): TimekeeperJS {
     return {
-      timeTags: [],
+      timeTags: {},
       nowOverride: new Date("2016-08-08T08:08:08Z")
     };
   }
 
   static fixed() {
     return Timekeeper.fromJS(TimekeeperFixtures.fixedJS());
+  }
+
+  static wiki() {
+    return Timekeeper.fromJS({
+      timeTags: {},
+      nowOverride: new Date("2015-09-13T00:00:00.000Z")
+    });
   }
 }

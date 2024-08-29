@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
-import { Customization } from "../../../common/models/customization/customization";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientCustomization } from "../../../common/models/customization/customization";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
-import { Binary } from "../../../common/utils/functional/functional";
+import { Ternary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { navigateToHome } from "../../applications/turnilo-application/view";
 import { STRINGS } from "../../config/constants";
 import filterDataCubes from "../../utils/data-cubes-filter/data-cubes-filter";
 import { classNames, escapeKey, isInside } from "../../utils/dom/dom";
@@ -33,15 +34,11 @@ import "./side-drawer.scss";
 
 export interface SideDrawerProps {
   essence: Essence;
-  dataCubes: DataCube[];
+  dataCubes: ClientDataCube[];
   onOpenAbout: Fn;
   onClose: Fn;
-  customization?: Customization;
-  changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
-}
-
-function openHome() {
-  window.location.hash = "#";
+  customization?: ClientCustomization;
+  changeDataCubeAndEssence: Ternary<ClientDataCube, Essence, boolean, void>;
 }
 
 export interface SideDrawerState {
@@ -89,7 +86,7 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     return <div className="home-container">
       <div
         className={classNames("home-link")}
-        onClick={openHome}
+        onClick={navigateToHome}
       >
         <SvgIcon svg={require("../../icons/home.svg")} />
         <span>Home</span>
@@ -97,9 +94,9 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
     </div>;
   }
 
-  navigateToCube = (dataCube: DataCube) => {
+  navigateToCube = (dataCube: ClientDataCube) => {
     const { onClose, essence, changeDataCubeAndEssence } = this.props;
-    changeDataCubeAndEssence(dataCube, essence.updateDataCube(dataCube));
+    changeDataCubeAndEssence(dataCube, essence.updateDataCube(dataCube), true);
     onClose();
   };
 

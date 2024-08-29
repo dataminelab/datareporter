@@ -17,20 +17,31 @@
 
 import { Set } from "immutable";
 import { Dataset } from "plywood";
-import * as React from "react";
-import { Clicker } from "../../../common/models/clicker/clicker";
+import React from "react";
+import {
+  DatasetRequest,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading
+} from "../../../common/models/dataset-request/dataset-request";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter, FilterMode } from "../../../common/models/filter/filter";
+import {
+  FilterClause,
+  StringFilterAction,
+  StringFilterClause
+} from "../../../common/models/filter-clause/filter-clause";
+import { FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
-import { debounceWithPromise } from "../../../common/utils/functional/functional";
+import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { stringFilterOptionsQuery } from "../../../common/utils/query/selectable-string-filter-query";
 import { SEARCH_WAIT, STRINGS } from "../../config/constants";
 import { classNames, enterKey } from "../../utils/dom/dom";
 import { reportError } from "../../utils/error-reporter/error-reporter";
+import { ApiContext, ApiContextValue } from "../../views/cube-view/api-context";
 import { Button } from "../button/button";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
@@ -44,18 +55,17 @@ import { StringValuesList } from "./string-values-list";
 const TOP_N = 100;
 
 export interface SelectableStringFilterMenuProps {
-  clicker: Clicker;
   dimension: Dimension;
   essence: Essence;
   timekeeper: Timekeeper;
   onClose: Fn;
   filterMode?: FilterMode;
-  onClauseChange: (clause: FilterClause) => Filter;
+  saveClause: Unary<FilterClause, void>;
 }
 
 export interface SelectableStringFilterMenuState {
   searchText: string;
-  dataset: DatasetLoad;
+  dataset: DatasetRequest;
   selectedValues: Set<string>;
   pasteModeEnabled: boolean;
 }
@@ -64,14 +74,10 @@ function toggle(set: Set<string>, value: string): Set<string> {
   return set.has(value) ? set.remove(value) : set.add(value);
 }
 
-interface QueryProps {
-  essence: Essence;
-  timekeeper: Timekeeper;
-  dimension: Dimension;
-  searchText: string;
-}
-
 export class SelectableStringFilterMenu extends React.Component<SelectableStringFilterMenuProps, SelectableStringFilterMenuState> {
+  static contextType = ApiContext;
+
+  context: ApiContextValue;
   private lastSearchText: string;
 
   state: SelectableStringFilterMenuState = {
@@ -96,17 +102,17 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       });
   }
 
-  private sendQueryFilter(): Promise<DatasetLoad> {
+  private sendQueryFilter(): Promise<DatasetRequest> {
     const { searchText } = this.state;
     this.lastSearchText = searchText;
-    return this.debouncedQueryFilter({ ...this.props, searchText });
+    return this.debouncedQueryFilter(this.props.essence, this.constructSearchTextClause());
   }
 
-  private queryFilter = (props: QueryProps): Promise<DatasetLoad> => {
-    const { essence, searchText } = props;
-    const query = stringFilterOptionsQuery({ ...props, limit: TOP_N + 1 });
+  private queryFilter = (essence: Essence, clause: StringFilterClause): Promise<DatasetRequest> => {
+    const { searchText } = this.state;
+    const { stringFilterQuery } = this.context;
 
-    return essence.dataCube.executor(query, { timezone: essence.timezone })
+    return stringFilterQuery(essence, clause)
       .then((dataset: Dataset) => {
         if (this.lastSearchText !== searchText) return null;
         return loaded(dataset);
@@ -121,7 +127,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.loadRows();
   }
 
@@ -153,19 +159,30 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   updateSearchText = (searchText: string) => this.setState({ searchText });
 
-  constructFilter(): Filter {
-    const { dimension, filterMode, onClauseChange } = this.props;
+  constructClause(): StringFilterClause {
+    const { dimension, filterMode } = this.props;
     const { selectedValues } = this.state;
     const { name } = dimension;
-    if (selectedValues.count() === 0) return onClauseChange(null);
+    if (selectedValues.isEmpty()) return null;
 
-    const clause = new StringFilterClause({
+    return new StringFilterClause({
       action: StringFilterAction.IN,
       reference: name,
       values: selectedValues,
       not: filterMode === FilterMode.EXCLUDE
     });
-    return onClauseChange(clause);
+  }
+
+  constructSearchTextClause(): StringFilterClause {
+    const { dimension } = this.props;
+    const { name: reference } = dimension;
+    const { searchText } = this.state;
+    return new StringFilterClause({
+      action: StringFilterAction.CONTAINS,
+      reference,
+      values: Set.of(searchText),
+      ignoreCase: true
+    });
   }
 
   onValueClick = (value: string, withModKey: boolean) => {
@@ -179,8 +196,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   onOkClick = () => {
     if (!this.isFilterValid()) return;
-    const { clicker, onClose } = this.props;
-    clicker.changeFilter(this.constructFilter());
+    const { saveClause, onClose } = this.props;
+    saveClause(this.constructClause());
     onClose();
   };
 
@@ -193,13 +210,15 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   isFilterValid(): boolean {
     const { selectedValues } = this.state;
     if (selectedValues.isEmpty()) return false;
-    return !this.props.essence.filter.equals(this.constructFilter());
+    const { essence: { filter }, dimension } = this.props;
+    const newClause = this.constructClause();
+    const oldClause = filter.getClauseForDimension(dimension);
+    return newClause && !newClause.equals(oldClause);
   }
 
   renderSelectMode(): JSX.Element {
     const { filterMode, onClose, dimension } = this.props;
     const { dataset, selectedValues, searchText } = this.state;
-    const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
 
     return <React.Fragment>
       <div className="paste-icon" onClick={this.enablePasteMode} title="Paste multiple values">
@@ -214,14 +233,13 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
         />
       </div>
       <div className={classNames("selectable-string-filter-menu", filterMode)}>
-        <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
+        <div className="menu-table">
           <div className="rows">
             {isLoaded(dataset) && <StringValuesList
               onRowSelect={this.onValueClick}
               dimension={dimension}
               dataset={dataset.dataset}
               searchText={searchText}
-              limit={TOP_N}
               selectedValues={selectedValues}
               promotedValues={this.initialSelection()}
               filterMode={filterMode} />}

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
-import { Unary, Binary } from "../../../common/utils/functional/functional";
+import { Unary } from "../../../common/utils/functional/functional";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { ClearableInput } from "../clearable-input/clearable-input";
 import { HighlightString } from "../highlight-string/highlight-string";
@@ -31,8 +31,7 @@ export interface Tile<T> {
 
 interface AddTileProps<T> {
   tiles: Array<Tile<T>>;
-  appendSplit: Unary<T, void>;
-  insertSplit: Binary<any, int, void> | Unary<T, void>;
+  onSelect: Unary<T, void>;
   containerStage: Stage;
 }
 
@@ -60,12 +59,7 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
   resetQuery = () => this.setQuery("");
 
   selectTile = (value: T) => {
-    //@ts-ignore
-    if (value.kind !== "time") {
-      this.props.insertSplit(value, 0);
-    } else {
-      this.props.appendSplit(value);
-    }
+    this.props.onSelect(value);
     this.resetQuery();
     this.closeMenu();
   };

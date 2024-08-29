@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { allDimensions } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
+import { allMeasures } from "../../../common/models/measure/measures";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -36,8 +38,8 @@ export interface DimensionMeasurePanelProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  triggerFilterMenu: (dimension: Dimension) => void;
-  appendDirtySeries: Unary<Series, void>;
+  addPartialFilter: Unary<Dimension, void>;
+  addPartialSeries: Unary<Series, void>;
   style?: React.CSSProperties;
 }
 
@@ -52,9 +54,9 @@ function dividerConstraints(height: number) {
   return { minDividerPosition, maxDividerPosition };
 }
 
-export function initialPosition(height: number, dataCube: DataCube) {
-  const dimensionsCount = dataCube.dimensions.size();
-  const measuresCount = dataCube.measures.size();
+export function initialPosition(height: number, dataCube: ClientDataCube) {
+  const dimensionsCount = allDimensions(dataCube.dimensions).length;
+  const measuresCount = allMeasures(dataCube.measures).length;
   const ratio = dimensionsCount / (measuresCount + dimensionsCount);
 
   const { minDividerPosition, maxDividerPosition } = dividerConstraints(height);
@@ -93,7 +95,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
   }
 
   render() {
-    const { clicker, essence, menuStage, triggerFilterMenu, appendDirtySeries, style } = this.props;
+    const { clicker, essence, menuStage, addPartialFilter, addPartialSeries, style } = this.props;
     const { dividerPosition, containerHeight } = this.state;
     const { maxDividerPosition, minDividerPosition } = dividerConstraints(containerHeight);
 
@@ -113,7 +115,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           clicker={clicker}
           essence={essence}
           menuStage={menuStage}
-          triggerFilterMenu={triggerFilterMenu}
+          addPartialFilter={addPartialFilter}
           style={dimensionListStyle}
         />
         {showResizeHandle &&
@@ -130,7 +132,7 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
           style={measureListStyle}
           clicker={clicker}
           essence={essence}
-          appendDirtySeries={appendDirtySeries}
+          addPartialSeries={addPartialSeries}
         />
       </div>
     </div>;

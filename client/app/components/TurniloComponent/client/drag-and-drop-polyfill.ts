@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-export default function dragAndDropPolyfill() {
-  const div = document.createElement("div");
-  const dragDiv = "draggable" in div;
-  const evts = "ondragstart" in div && "ondrop" in div;
 
-  const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+const div = document.createElement("div");
+const dragDiv = "draggable" in div;
+const evts = "ondragstart" in div && "ondrop" in div;
 
-  if (needsPatch) {
-    Promise.all([
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      import("../lib/polyfill/drag-drop-polyfill.min.js"),
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      import("../lib/polyfill/drag-drop-polyfill.css")
-    ]).then(([DragDropPolyfill, _]) => {
-      DragDropPolyfill.Initialize({});
-    });
-  }
+const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+
+if (needsPatch) {
+  Promise.all([
+    // @ts-ignore
+    import(/* webpackChunkName: "dnd-js" */ "../../lib/polyfill/drag-drop-polyfill.min.js"),
+    // @ts-ignore
+    import(/* webpackChunkName: "dnd-css" */"../../lib/polyfill/drag-drop-polyfill.css")
+  ]).then(([DragDropPolyfill, _]) => {
+    DragDropPolyfill.Initialize({});
+  });
 }

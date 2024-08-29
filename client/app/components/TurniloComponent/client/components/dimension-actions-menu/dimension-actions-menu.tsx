@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
@@ -41,12 +41,12 @@ export interface DimensionActionsProps {
   essence: Essence;
   dimension: Dimension;
   onClose: Fn;
-  triggerFilterMenu: (dimension: Dimension) => void;
+  addPartialFilter: (dimension: Dimension) => void;
 }
 
-export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionActionsMenuProps> =
+export const DimensionActionsMenu: React.FunctionComponent<DimensionActionsProps & DimensionActionsMenuProps> =
   (props: DimensionActionsMenuProps & DimensionActionsProps) => {
-    const { triggerFilterMenu, clicker, essence, direction, containerStage, openOn, dimension, onClose } = props;
+    const { addPartialFilter, clicker, essence, direction, containerStage, openOn, dimension, onClose } = props;
     return <BubbleMenu
       className="dimension-actions-menu"
       direction={direction}
@@ -61,20 +61,21 @@ export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionAc
         clicker={clicker}
         dimension={dimension}
         onClose={onClose}
-        triggerFilterMenu={triggerFilterMenu} />
+        addPartialFilter={addPartialFilter} />
     </BubbleMenu>;
   };
 
-export const DimensionActions: React.SFC<DimensionActionsProps> = (props: DimensionActionsProps) => {
-  const { onClose, triggerFilterMenu, clicker, essence: { splits }, dimension } = props;
+export const DimensionActions: React.FunctionComponent<DimensionActionsProps> = (props: DimensionActionsProps) => {
+  const { onClose, addPartialFilter, clicker, essence: { splits, filter }, dimension } = props;
   if (!dimension) return null;
 
   const hasSplitOn = splits.hasSplitOn(dimension);
+  const hasFilterOn = filter.filteredOn(dimension);
   const isOnlySplit = splits.length() === 1 && hasSplitOn;
   const isPinable = dimension.kind === "string" || dimension.kind === "boolean";
 
   function onFilter() {
-    triggerFilterMenu(dimension);
+    if (!hasFilterOn) addPartialFilter(dimension);
     onClose();
   }
 
@@ -84,13 +85,7 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
   }
 
   function onSubSplit() {
-    if (!hasSplitOn) {
-      if (dimension.kind !== "time") {
-        clicker.changeSplits(splits.insertByIndex(0, Split.fromDimension(dimension)), VisStrategy.FairGame);
-      } else {
-        clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
-      }
-    }
+    if (!hasSplitOn) clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     onClose();
   }
 
@@ -100,7 +95,7 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
   }
 
   return <React.Fragment>
-    <div className={classNames("filter", "action")} onClick={onFilter}>
+    <div className={classNames("filter", "action", { disabled: hasFilterOn })} onClick={onFilter}>
       <SvgIcon svg={require("../../icons/preview-filter.svg")} />
       <div className="action-label">{STRINGS.filter}</div>
     </div>

@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
@@ -24,12 +24,12 @@ import { renderIntoDocument } from "../../utils/test-utils";
 import { FancyDragIndicator } from "./fancy-drag-indicator";
 
 describe("FancyDragIndicator", () => {
-  var dragPosition = DragPosition.fromJS({
+  const dragPosition = DragPosition.fromJS({
     insert: 0
   });
 
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <FancyDragIndicator
         dragPosition={dragPosition}
       />

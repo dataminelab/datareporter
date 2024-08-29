@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
 import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { classNames } from "../../utils/dom/dom";
-import { SplitMenu } from "../split-menu/split-menu";
+import { SplitMenu, SplitMenuProps } from "../split-menu/split-menu";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import { WithRef } from "../with-ref/with-ref";
 
-interface SplitTileProps {
+export interface SplitTileBaseProps {
   essence: Essence;
   split: Split;
   dimension: Dimension;
@@ -41,10 +40,16 @@ interface SplitTileProps {
   containerStage: Stage;
 }
 
-const SPLIT_CLASS_NAME = "split";
+interface SplitTileProps extends SplitTileBaseProps {
+  splitMenuComponent: React.ComponentType<SplitMenuProps>;
+}
 
-export const SplitTile: React.SFC<SplitTileProps> = props => {
-  const { essence, open, split, dimension, style, removeSplit, updateSplit, openMenu, closeMenu, dragStart, containerStage } = props;
+export const DefaultSplitTile: React.FunctionComponent<SplitTileBaseProps> = props => {
+  return <SplitTile {...props} splitMenuComponent={SplitMenu} />;
+};
+
+export const SplitTile: React.FunctionComponent<SplitTileProps> = props => {
+  const { splitMenuComponent: SplitMenu, essence, open, split, dimension, style, removeSplit, updateSplit, openMenu, closeMenu, dragStart, containerStage } = props;
 
   const title = split.getTitle(dimension);
 
@@ -56,13 +61,14 @@ export const SplitTile: React.SFC<SplitTileProps> = props => {
   return <WithRef>
     {({ ref: openOn, setRef }) => <React.Fragment>
       <div
-        className={classNames(SPLIT_CLASS_NAME, "dimension")}
+        className="tile dimension"
         key={split.toKey()}
         ref={setRef}
         draggable={true}
         onClick={() => openMenu(split)}
         onDragStart={e => dragStart(dimension.title, split, e)}
         style={style}
+        title={title}
       >
         <div className="reading">{title}</div>
         <div className="remove"

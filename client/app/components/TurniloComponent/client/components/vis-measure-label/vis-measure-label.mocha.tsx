@@ -18,14 +18,14 @@
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { MeasureFixtures } from "../../../common/models/measure/measure.fixtures";
 import { SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { fromMeasure } from "../../../common/models/series/measure-concrete-series";
 import { Delta } from "../delta/delta";
 import { VisMeasureLabel } from "./vis-measure-label";
 
-const measure = MeasureFixtures.wikiCount();
+const measure = MeasureFixtures.count();
 const series = fromMeasure(measure);
 
 const datum: Datum = { [measure.name]: 10000, [series.plywoodKey(SeriesDerivation.PREVIOUS)]: 200 };

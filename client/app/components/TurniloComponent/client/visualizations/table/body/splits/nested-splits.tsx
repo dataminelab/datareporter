@@ -15,13 +15,13 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { INDENT_WIDTH } from "../../table";
-import { VisibleRows } from "../../utils/visible-rows";
+import { INDENT_WIDTH } from "../../../../components/tabular-scroller/dimensions";
+import { SplitValue } from "../../../../components/tabular-scroller/splits/split-value";
+import { VisibleRows } from "../../../../components/tabular-scroller/visible-rows/visible-rows";
 import { nestedSplitName } from "./nested-split-name";
 import "./nested-splits.scss";
-import { SplitValue } from "./split-value";
 
 interface NestedSplitsProps {
   visibleRowsIndexRange: [number, number];
@@ -30,11 +30,10 @@ interface NestedSplitsProps {
   hoverRow?: Datum;
   segmentWidth: number;
   highlightedRowIndex: number | null;
-  color: string;
 }
 
-export const NestedSplits: React.SFC<NestedSplitsProps> = props => {
-  const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth, color } = props;
+export const NestedSplits: React.FunctionComponent<NestedSplitsProps> = props => {
+  const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
 
   return <div className="nested-splits-rows">
     <VisibleRows
@@ -46,7 +45,7 @@ export const NestedSplits: React.SFC<NestedSplitsProps> = props => {
         const { index, top, datum, highlight, dimmed } = props;
         const nest = datum.__nest;
         const left = Math.max(0, nest - 1) * INDENT_WIDTH;
-        const segmentStyle = { left, width: segmentWidth - left, top, color };
+        const segmentStyle = { left, width: segmentWidth - left, top };
 
         return <SplitValue
           key={`segment_${index}`}

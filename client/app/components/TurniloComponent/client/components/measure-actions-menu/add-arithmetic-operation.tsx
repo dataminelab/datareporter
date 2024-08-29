@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ArithmeticExpression } from "../../../common/models/expression/concreteArithmeticOperation";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
 import { Measure } from "../../../common/models/measure/measure";
@@ -26,16 +26,16 @@ import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 
 interface AddPercentSeriesButtonProps {
-  addExpressionPlaceholder: Unary<Series, void>;
+  addPartialSeries: Unary<Series, void>;
   measure: Measure;
   onClose: Fn;
 }
 
-export const AddArithmeticOperationButton: React.SFC<AddPercentSeriesButtonProps> = props => {
-  const { measure, addExpressionPlaceholder, onClose } = props;
+export const AddArithmeticOperationButton: React.FunctionComponent<AddPercentSeriesButtonProps> = props => {
+  const { measure, addPartialSeries, onClose } = props;
 
   function onNewOperation() {
-    addExpressionPlaceholder(new ExpressionSeries({
+    addPartialSeries(new ExpressionSeries({
       reference: measure.name,
       expression: new ArithmeticExpression({
         operation: ExpressionSeriesOperation.ADD,

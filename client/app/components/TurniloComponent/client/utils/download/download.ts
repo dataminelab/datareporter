@@ -15,63 +15,50 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
-import * as filesaver from "file-saver";
-import { tz as getMomentWithTimezone } from "moment-timezone";
-import { Dataset, DatasetJSFull, TabulatorOptions } from "plywood";
-import { FixedTimeFilterClause } from "../../../common/models/filter-clause/filter-clause";
-import { Filter } from "../../../common/models/filter/filter";
-import { complement } from "../../../common/utils/functional/functional";
-import { isBlank } from "../../../common/utils/general/general";
-import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
+import * as fileSaver from "file-saver";
+import { Dataset, TabulatorOptions } from "plywood";
+import { Essence } from "../../../common/models/essence/essence";
+import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import tabularOptions from "../tabular-options/tabular-options";
 
-export type FileFormat = "csv" | "tsv" | "json";
+export type FileFormat = "csv" | "tsv";
 
-export function getMIMEType(fileType: string) {
+export function getMIMEType(fileType: FileFormat) {
   switch (fileType) {
     case "csv":
       return "text/csv";
     case "tsv":
       return "text/tsv";
-    default:
-      return "application/json";
   }
 }
 
-export function download({ dataset, options }: DataSetWithTabOptions, fileFormat: FileFormat, fileName?: string): void {
-  const type = `${getMIMEType(fileFormat)};charset=utf-8`;
-  const blob = new Blob([datasetToFileString(dataset, fileFormat, options)], { type });
-  if (!fileName) fileName = `${new Date()}-data`;
-  fileName += `.${fileFormat}`;
-  filesaver.saveAs(blob, fileName, true); // true == disable auto BOM
+function saveFile(part: string | Buffer, fileName: string, fileFormat: FileFormat, fileEncoding: string) {
+  const type = `${getMIMEType(fileFormat)};charset=${fileEncoding}`;
+  const blob = new Blob([part], { type });
+  fileSaver.saveAs(blob, `${fileName}.${fileFormat}`, true);
+}
+
+function encodeContent(content: string, encoding: string): Promise<string | Buffer> {
+  if (encoding === "utf-8") return Promise.resolve(content);
+  return import(/* webpackChunkName: "iconv-lite" */ "iconv-lite").then(iconv => iconv.encode(content, encoding));
+}
+
+export function download(dataset: Dataset, essence: Essence, fileFormat: FileFormat, fileName: string, fileEncoding: string) {
+  const result = datasetToFileString(dataset, fileFormat, tabularOptions(essence));
+  encodeContent(result, fileEncoding).then(content => {
+    saveFile(content, fileName, fileFormat, fileEncoding);
+  });
 }
 
 export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, options?: TabulatorOptions): string {
-  if (fileFormat === "csv") {
-    return dataset.toCSV(options);
-  } else if (fileFormat === "tsv") {
-    return dataset.toTSV(options);
-  } else {
-    const datasetJS = dataset.toJS() as DatasetJSFull;
-    return JSON.stringify(datasetJS.data, null, 2);
+  switch (fileFormat) {
+    case "csv":
+      return dataset.toCSV(options);
+    case "tsv":
+      return dataset.toTSV(options);
   }
 }
 
-function dateToFileString(date: Date): string {
-  return getMomentWithTimezone(date, Timezone.UTC.toString()).format("YYYY-MM-DD_HH_mm_ss");
-}
-
-export function dateFromFilter(filter: Filter): string {
-  const timeFilter: FixedTimeFilterClause = filter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
-  if (!timeFilter) return "";
-  const { start, end } = timeFilter.values.first();
-  return `${dateToFileString(start)}_${dateToFileString(end)}`;
-}
-
-export function makeFileName(...nameComponents: string[]): string {
-  return nameComponents
-    .filter(complement(isBlank))
-    .map(name => name.toLowerCase())
-    .join("_")
-    .slice(0, 200);
+export function fileNameBase(essence: Essence, timekeeper: Timekeeper): string {
+  return essence.description(timekeeper);
 }

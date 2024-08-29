@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./tile-header.scss";
@@ -24,7 +24,7 @@ export interface TileHeaderIcon {
   name: string;
   svg: string;
   onClick: React.MouseEventHandler<HTMLElement>;
-  ref?: string | React.RefObject<any>;
+  ref?: string;
   active?: boolean;
 }
 
@@ -37,31 +37,23 @@ export interface TileHeaderProps {
 export interface TileHeaderState {
 }
 
-class IconDiv extends React.Component<TileHeaderIcon, TileHeaderState> {
-  private ref: React.RefObject<any>;
-  constructor(props: Readonly<any>) {
-    super(props);
-    this.ref = React.createRef();
-  }
-  render() {
-    const { name, svg, onClick, active } = this.props;
-    return (
-      <div 
-        className={classNames("icon", name, { active })} 
-        onClick={onClick} 
-        ref={this.ref} 
-      >
-        <SvgIcon svg={svg}/>
-      </div>
-    );
-  }
-}
-
 export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState> {
+
   renderIcons() {
     const { icons } = this.props;
     if (!icons || !icons.length) return null;
-    var iconElements = icons.map((icon, index) => <IconDiv key={index} {...icon}/>);
+
+    const iconElements = icons.map(icon => {
+      return <div
+        className={classNames("icon", icon.name, { active: icon.active })}
+        key={icon.name}
+        onClick={icon.onClick}
+        ref={icon.ref}
+      >
+        <SvgIcon svg={icon.svg} />
+      </div>;
+    });
+
     return <div className="icons">{iconElements}</div>;
   }
 

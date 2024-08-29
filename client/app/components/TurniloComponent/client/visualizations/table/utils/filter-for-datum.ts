@@ -16,20 +16,17 @@
 import { List, Set } from "immutable";
 import { PseudoDatum } from "plywood";
 import { DateRange } from "../../../../common/models/date-range/date-range";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause, NumberRange, StringFilterAction, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  FilterClause,
+  FixedTimeFilterClause,
+  NumberFilterClause,
+  NumberRange,
+  StringFilterAction,
+  StringFilterClause
+} from "../../../../common/models/filter-clause/filter-clause";
 import { SplitType } from "../../../../common/models/split/split";
 import { Splits } from "../../../../common/models/splits/splits";
-import { day, Timezone } from "chronoshift";
-
-function createDateRange(start: any, end: any): DateRange | null {
-  if (!start) return null;
-  start = new Date(start);
-  // TODO get timezone from somewhere
-  const timezone = new Timezone("UTC");
-  end = end || day.shift(start, timezone, 1);
-  if (start >= end) return null;
-  return new DateRange({ start, end });
-}
 
 export function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List<FilterClause> {
   const splitNesting = flatDatum["__nest"];
@@ -41,18 +38,16 @@ export function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List
     .take(splitNesting)
     .map(({ reference, type }) => {
       const segment: any = flatDatum[reference];
-      // if (!segment && segment !== 0) {
-      //   segment = reference;
-      // }
 
       switch (type) {
         case SplitType.number:
           return new NumberFilterClause({ reference, values: List.of(new NumberRange(segment)) });
         case SplitType.time:
-          const newDate = createDateRange(segment, undefined);
-          return new FixedTimeFilterClause({ reference, values: List.of(newDate) });
+          return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(segment)) });
         case SplitType.string:
           return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
+        case SplitType.boolean:
+          return new BooleanFilterClause({ reference, values: Set.of(segment) });
       }
     });
 

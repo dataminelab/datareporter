@@ -16,7 +16,8 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientAppSettings } from "../../models/app-settings/app-settings";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Filter } from "../../models/filter/filter";
 import { Splits } from "../../models/splits/splits";
@@ -31,7 +32,7 @@ import { ViewDefinition3 } from "./view-definition-3";
 export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDefinition3, Essence> {
   version = 3;
 
-  fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube): Essence {
+  fromViewDefinition(definition: ViewDefinition3, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualization = manifestByName(definition.visualization);
@@ -41,13 +42,14 @@ export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDef
     const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
 
     const splitDefinitions = List(definition.splits);
-    const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
+    const splits = new Splits({ splits: splitDefinitions.map(sd => splitConverter.toSplitCombine(sd, dataCube)) });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const pinnedSort = definition.pinnedSort;
     const series = seriesDefinitionConverter.toEssenceSeries(definition.measures, dataCube.measures);
 
     return new Essence({
+      appSettings,
       dataCube,
       visualization,
       visualizationSettings,

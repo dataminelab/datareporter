@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ReactElement } from "react";
 import { Essence } from "../../../common/models/essence/essence";
+import { findMeasureByName } from "../../../common/models/measure/measures";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { insert } from "../../../common/utils/array/array";
@@ -24,12 +25,10 @@ import { Binary, Ternary, Unary } from "../../../common/utils/functional/functio
 import { Fn } from "../../../common/utils/general/general";
 import { transformStyle } from "../../utils/dom/dom";
 import { SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
+import { PartialSeries } from "../../views/cube-view/partial-tiles-provider";
 import { TileOverflowContainer } from "../tile-overflow-container/tile-overflow-container";
 import { PlaceholderSeriesTile } from "./placeholder-series";
 import { SeriesTile } from "./series-tile";
-import { Placeholder } from "./series-tiles-row";
-
-export const SERIES_CLASS_NAME = "series";
 
 interface SeriesTilesProps {
   menuStage: Stage;
@@ -41,7 +40,7 @@ interface SeriesTilesProps {
   openSeriesMenu: Unary<Series, void>;
   closeSeriesMenu: Fn;
   dragStart: Ternary<string, Series, React.DragEvent<HTMLElement>, void>;
-  placeholderSeries?: Placeholder;
+  partialSeries?: PartialSeries;
   removePlaceholderSeries: Fn;
   savePlaceholderSeries: Unary<Series, void>;
   overflowOpen: boolean;
@@ -49,7 +48,7 @@ interface SeriesTilesProps {
   openOverflowMenu: Fn;
 }
 
-export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
+export const SeriesTiles: React.FunctionComponent<SeriesTilesProps> = props => {
   const {
     openedSeriesMenu,
     menuStage,
@@ -64,7 +63,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
     essence,
     openSeriesMenu,
     overflowOpen,
-    placeholderSeries,
+    partialSeries,
     maxItems
   } = props;
 
@@ -84,9 +83,9 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
     updateSeries={updateSeries} />);
 
   function insertPlaceholder<T>(tiles: Array<ReactElement<T>>): Array<ReactElement<T>> {
-    if (!placeholderSeries) return tiles;
-    const { series, index } = placeholderSeries;
-    const measure = essence.dataCube.getMeasure(series.reference);
+    if (!partialSeries) return tiles;
+    const { series, position } = partialSeries;
+    const measure = findMeasureByName(essence.dataCube.measures, series.reference);
 
     const placeholderTile = <PlaceholderSeriesTile
       key="placeholder-series-tile"
@@ -98,7 +97,7 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
       saveSeries={savePlaceholderSeries}
       closeItem={removePlaceholderSeries} />;
 
-    return insert(tiles, index, placeholderTile);
+    return insert(tiles, position.getIndex(), placeholderTile);
   }
 
   const tilesWithPlaceholder = insertPlaceholder(seriesTiles);

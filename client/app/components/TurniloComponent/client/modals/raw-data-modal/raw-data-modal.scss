@@ -20,8 +20,6 @@ $header-height: 30px;
 $row-height: 30px;
 
 .raw-data-modal {
-  display: block;
-  position: fixed;
 
   .modal-window {
     width: 70%;
@@ -31,15 +29,9 @@ $row-height: 30px;
 
   .content {
     @include unpin-top($modal-header-height + $control-height);
-    left: 15vw;
-    right: 15vw;
+    left: $modal-window-padding;
+    right: $modal-window-padding;
     overflow: hidden;
-    background: white;
-    position: absolute;
-    top: 10vw;
-    bottom: 15vw;
-    overflow: hidden;
-    background: white;
 
     .filters {
       @include pin-full;
@@ -81,7 +73,7 @@ $row-height: 30px;
         @include border-css-variable('border-right', 1px, solid, 'border-extra-light');
         display: inline-block;
         height: 100%;
-        padding-left: 16px;
+        padding-left: 6px;
         padding-right: 6px;
         padding-top: 8px;
 

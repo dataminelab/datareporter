@@ -17,11 +17,11 @@
 
 import { Timezone } from "chronoshift";
 import { Class, Instance } from "immutable-class";
-import { DataCube } from "../data-cube/data-cube";
+import { ClientDataCube } from "../data-cube/data-cube";
 import { Filter } from "../filter/filter";
 import { Splits } from "../splits/splits";
 
-export type LinkGenerator = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => string;
+export type LinkGenerator = (dataCube: ClientDataCube, timezone: Timezone, filter: Filter, splits: Splits) => string;
 
 export interface ExternalViewValue {
   title: string;
@@ -30,7 +30,7 @@ export interface ExternalViewValue {
   sameWindow?: boolean;
 }
 
-var check: Class<ExternalViewValue, ExternalViewValue>;
+let check: Class<ExternalViewValue, ExternalViewValue>;
 
 export class ExternalView implements Instance<ExternalViewValue, ExternalViewValue> {
 
@@ -39,7 +39,7 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
   }
 
   static fromJS(parameters: ExternalViewValue): ExternalView {
-    var value = parameters;
+    const value = parameters;
     return new ExternalView({
       title: value.title,
       linkGenerator: value.linkGenerator,
@@ -60,7 +60,7 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
 
     this.title = title;
     this.linkGenerator = linkGenerator;
-    var linkGeneratorFnRaw: any = null;
+    let linkGeneratorFnRaw: any = null;
     try {
       // dataSource is for back compat.
       linkGeneratorFnRaw = new Function("dataCube", "dataSource", "timezone", "filter", "splits", linkGenerator) as LinkGenerator;
@@ -68,12 +68,11 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
       throw new Error(`Error constructing link generator function: ${e.message}`);
     }
 
-    this.linkGeneratorFn = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => {
+    this.linkGeneratorFn = (dataCube: ClientDataCube, timezone: Timezone, filter: Filter, splits: Splits) => {
       try {
         return linkGeneratorFnRaw(dataCube, dataCube, timezone, filter, splits);
       } catch (e) {
-        console.warn(`Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`);
-        return null;
+        throw new Error(`Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`);
       }
     };
 
@@ -81,7 +80,7 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
   }
 
   public toJS(): ExternalViewValue {
-    var js: ExternalViewValue = {
+    const js: ExternalViewValue = {
       title: this.title,
       linkGenerator: this.linkGenerator
     };
@@ -90,7 +89,7 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
   }
 
   public valueOf(): ExternalViewValue {
-    var value: ExternalViewValue = {
+    const value: ExternalViewValue = {
       title: this.title,
       linkGenerator: this.linkGenerator
     };

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRef } from "react";
+
 import { Fn } from "../../../common/utils/general/general";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 
@@ -28,17 +28,15 @@ interface PinboardIconsProps {
 
 export function pinboardIcons(props: PinboardIconsProps): TileHeaderIcon[] {
   const { showSearch, onClose, onSearchClick } = props;
-  this.searchRef = createRef();
-  this.closeRef = createRef();
   return [{
     name: "search",
-    ref: this.searchRef,
+    ref: "search",
     onClick: onSearchClick,
     svg: searchIcon,
     active: showSearch
   }, {
     name: "close",
-    ref: this.closeRef,
+    ref: "close",
     onClick: onClose,
     svg: removeIcon
   }];

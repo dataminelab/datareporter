@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import axios from "axios";
+import React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { Modal } from "../../components/modal/modal";
 import { SafeCopyToClipboard } from "../../components/safe-copy-to-clipboard/safe-copy-to-clipboard";
@@ -30,7 +31,7 @@ interface UrlProp {
   url: string;
 }
 
-export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlProp> = ({ title, onClose, url }) => {
+export const UrlShortenerModal: React.FunctionComponent<UrlShortenerModalProps & UrlProp> = ({ title, onClose, url }) => {
   return <Modal
     className="short-url-modal"
     title={title}
@@ -59,8 +60,9 @@ export class UrlShortenerPrompt extends React.Component<UrlProp, UrlShortenerPro
   }
 
   shortenUrl() {
-    return fetch("shorten?url=" + encodeURIComponent(this.props.url))
-      .then(response => response.json());
+    // NOTE: When replacing axios, please remember that native fetch doesn't reject on 4xx/5xx errors!
+    return axios("shorten?url=" + encodeURIComponent(this.props.url))
+      .then(response => response.data);
   }
 
   renderShortUrl() {

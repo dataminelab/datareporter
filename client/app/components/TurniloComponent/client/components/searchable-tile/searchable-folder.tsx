@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { PureComponent } from "react";
 import { classNames } from "../../utils/dom/dom";
 import { InfoBubble } from "../info-bubble/info-bubble";
@@ -36,7 +36,7 @@ export interface SearchableFolderState {
 
 export class SearchableFolder extends PureComponent<SearchableFolderProps, SearchableFolderState> {
 
-  readonly folderState: SearchableFolderState;
+  readonly state: SearchableFolderState;
 
   private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />;
   private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />;
@@ -45,11 +45,11 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
     super(props);
 
     const { inSearchMode, hasItemsWithSearchText, shouldBeOpened } = this.props;
-    this.folderState = { opened: inSearchMode && hasItemsWithSearchText || shouldBeOpened };
+    this.state = { opened: inSearchMode && hasItemsWithSearchText || shouldBeOpened };
   }
 
-  componentWillReceiveProps(nextProps: Readonly<SearchableFolderProps>) {
-    const { opened } = this.folderState;
+  UNSAFE_componentWillReceiveProps(nextProps: Readonly<SearchableFolderProps>) {
+    const { opened } = this.state;
     const { shouldBeOpened } = this.props;
 
     const shouldOpen = !opened && !shouldBeOpened && nextProps.shouldBeOpened;
@@ -64,7 +64,7 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
 
   render() {
     const { title, description, inSearchMode, hasItemsWithSearchText, children } = this.props;
-    const { opened } = this.folderState;
+    const { opened } = this.state;
 
     const isGroupOpen = opened || inSearchMode && hasItemsWithSearchText;
     const hidden = inSearchMode && !hasItemsWithSearchText;

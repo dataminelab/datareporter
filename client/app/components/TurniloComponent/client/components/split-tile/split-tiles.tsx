@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
@@ -23,7 +24,7 @@ import { Fn } from "../../../common/utils/general/general";
 import { transformStyle } from "../../utils/dom/dom";
 import { SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
 import { TileOverflowContainer } from "../tile-overflow-container/tile-overflow-container";
-import { SplitTile } from "./split-tile";
+import { SplitTileBaseProps } from "./split-tile";
 
 interface SplitTilesProps {
   essence: Essence;
@@ -38,15 +39,30 @@ interface SplitTilesProps {
   overflowOpen: boolean;
   closeOverflowMenu: Fn;
   openOverflowMenu: Fn;
+  splitTileComponent: React.ComponentType<SplitTileBaseProps>;
 }
 
-export const SplitTiles: React.SFC<SplitTilesProps> = props => {
-  const { overflowOpen, closeOverflowMenu, openOverflowMenu, essence, maxItems, removeSplit, updateSplit, openedSplit, openMenu, closeMenu, dragStart, menuStage } = props;
+export const SplitTiles: React.FunctionComponent<SplitTilesProps> = props => {
+  const {
+    splitTileComponent: SplitTile,
+    overflowOpen,
+    closeOverflowMenu,
+    openOverflowMenu,
+    essence,
+    maxItems,
+    removeSplit,
+    updateSplit,
+    openedSplit,
+    openMenu,
+    closeMenu,
+    dragStart,
+    menuStage
+  } = props;
 
   const splits = essence.splits.splits.toArray();
 
   const splitTiles = splits.map(split => {
-    const dimension = essence.dataCube.getDimension(split.reference);
+    const dimension = findDimensionByName(essence.dataCube.dimensions, split.reference);
     return <SplitTile
       key={split.toKey()}
       split={split}

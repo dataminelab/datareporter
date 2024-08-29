@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { BodyPortal } from "../body-portal/body-portal";
 import { BubbleTitle } from "../bubble-title/bubble-title";
@@ -29,7 +29,7 @@ export interface SegmentBubbleProps extends SegmentBubbleContentProps {
   top: number;
 }
 
-export const SegmentBubble: React.SFC<SegmentBubbleProps> = (props: SegmentBubbleProps) => {
+export const SegmentBubble: React.FunctionComponent<SegmentBubbleProps> = (props: SegmentBubbleProps) => {
   const { left, top, title, content } = props;
   return <BodyPortal left={left} top={top + OFFSET_V}>
     <div className="segment-bubble">
@@ -44,11 +44,9 @@ export interface SegmentBubbleContentProps {
   content?: ReactNode;
 }
 
-export const SegmentBubbleContent: React.SFC<SegmentBubbleContentProps> = ({ title, content }: SegmentBubbleContentProps) => {
-  return (
-    <div className="segment-bubble-text">
-      <BubbleTitle title={title} />
-      {content ? <div>{content}</div> : null}
-    </div>
-  );
-};
+export const SegmentBubbleContent: React.FunctionComponent<SegmentBubbleContentProps> = ({ title, content }: SegmentBubbleContentProps) => (
+  <div className="segment-bubble-text">
+    <BubbleTitle title={title} />
+    {content ? <div className="content">{content}</div> : null}
+  </div>
+);

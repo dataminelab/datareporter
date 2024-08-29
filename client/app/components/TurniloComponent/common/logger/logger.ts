@@ -14,22 +14,113 @@
  * limitations under the License.
  */
 
-import { noop } from "../utils/functional/functional";
+import { LoggerFormat } from "../../server/models/server-settings/server-settings";
+import { noop, Unary } from "../utils/functional/functional";
+import { isNil } from "../utils/general/general";
+import { isoNow } from "../utils/time/time";
 
-export interface Logger {
-  log: Function;
-  warn: Function;
-  error: Function;
+type LogFn = (msg: string, extra?: Record<string, unknown>) => void;
+type LogLevel = "INFO" | "WARN" | "ERROR";
+
+export function errorToMessage(error: Error): string {
+  if (isNil(error.stack)) {
+    return error.message;
+  }
+  return `${error.message}\n${error.stack}`;
 }
 
-export const LOGGER: Logger = {
-  error: console.error.bind(console),
-  warn: console.warn.bind(console),
-  log: console.log.bind(console)
-};
+export interface Logger {
+  log: LogFn;
+  warn: LogFn;
+  error: LogFn;
+  setLoggerId: Unary<String, Logger>;
+}
 
-export const NULL_LOGGER: Logger = {
+class JSONLogger implements Logger {
+
+  constructor(private logger = "turnilo") {
+  }
+
+  private logMessage(level: LogLevel, message: string, extra: Record<string, unknown> = {}) {
+    console.log(JSON.stringify({
+      message,
+      level,
+      "@timestamp": isoNow(),
+      "logger": this.logger,
+      ...extra
+    }));
+  }
+
+  log(message: string, extra: Record<string, unknown> = {}) {
+    this.logMessage("INFO", message, extra);
+  }
+
+  error(message: string, extra: Record<string, unknown> = {}) {
+    this.logMessage("ERROR", message, extra);
+  }
+
+  warn(message: string, extra: Record<string, unknown> = {}) {
+    this.logMessage("WARN", message, extra);
+  }
+
+  setLoggerId(loggerId: string): Logger {
+    return new JSONLogger(loggerId);
+  }
+}
+
+class ConsoleLogger implements Logger {
+  constructor(private prefix = "") {
+  }
+
+  error(message: string) {
+    console.error(this.prefix, message);
+  }
+
+  warn(message: string) {
+    console.warn(this.prefix, message);
+  }
+
+  log(message: string) {
+    console.log(this.prefix, message);
+  }
+
+  setLoggerId(loggerId: string): Logger {
+    return new ConsoleLogger(loggerId);
+  }
+}
+
+class AlwaysStdErrLogger implements Logger {
+  setLoggerId(): Logger {
+    return this;
+  }
+
+  error(message: string) {
+    console.error(message);
+  }
+
+  log(message: string) {
+    console.error(message);
+  }
+
+  warn(message: string) {
+    console.error(message);
+  }
+}
+
+export const NOOP_LOGGER: Logger = {
   error: noop,
   warn: noop,
-  log: noop
+  log: noop,
+  setLoggerId: () => NOOP_LOGGER
 };
+
+const LOGGERS: Record<LoggerFormat, Logger> = {
+  noop: NOOP_LOGGER,
+  json: new JSONLogger(),
+  plain: new ConsoleLogger(),
+  error: new AlwaysStdErrLogger()
+} as const;
+
+export function getLogger(format: LoggerFormat): Logger {
+  return LOGGERS[format];
+}

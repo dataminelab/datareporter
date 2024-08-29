@@ -17,7 +17,7 @@
 
 import { expect } from "chai";
 
-import * as React from "react";
+import React from "react";
 import * as TestUtils from "react-dom/test-utils";
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
@@ -26,7 +26,7 @@ import { RangeHandle } from "./range-handle";
 describe("RangeHandle", () => {
   it("adds the correct class", () => {
 
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <RangeHandle
         positionLeft={20}
         onChange={() => {

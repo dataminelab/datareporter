@@ -19,11 +19,13 @@ import { List, Set } from "immutable";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
 import { Dimension } from "../../models/dimension/dimension";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import {
   BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
-  NumberFilterClause, NumberRange,
+  NumberFilterClause,
+  NumberRange,
   RelativeTimeFilterClause,
   StringFilterAction,
   StringFilterClause,
@@ -53,6 +55,7 @@ export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition
   type: FilterType.string;
   action: StringFilterAction;
   not: boolean;
+  ignoreCase: boolean;
   values: string[];
 }
 
@@ -101,11 +104,11 @@ const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClau
 };
 
 const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition, StringFilterClause> = {
-  toFilterClause({ action, not, values }: StringFilterClauseDefinition, dimension: Dimension): StringFilterClause {
+  toFilterClause({ action, not, values, ignoreCase }: StringFilterClauseDefinition, dimension: Dimension): StringFilterClause {
     if (action === null) {
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
     }
-    if (!(<any> Object).values(StringFilterAction).includes(action)) {
+    if (!(Object as any).values(StringFilterAction).includes(action)) {
       throw Error(`Unknown string filter action. Dimension: ${dimension}`);
     }
     if (action in [StringFilterAction.CONTAINS, StringFilterAction.MATCH] && values.length !== 1) {
@@ -117,17 +120,19 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       reference: name,
       action,
       not,
+      ignoreCase,
       values: Set(values)
     });
   },
 
-  fromFilterClause({ action, reference, not, values }: StringFilterClause): StringFilterClauseDefinition {
+  fromFilterClause({ action, reference, not, values, ignoreCase }: StringFilterClause): StringFilterClauseDefinition {
     return {
       type: FilterType.string,
       ref: reference,
       action,
       values: values.toArray(),
-      not
+      not,
+      ignoreCase
     };
   }
 };
@@ -193,7 +198,6 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     return {
       type: FilterType.time,
       ref: reference,
-      //@ts-ignore
       timeRanges: values.map(value => ({ start: value.start.toISOString(), end: value.end.toISOString() })).toArray()
     };
   }
@@ -217,18 +221,18 @@ const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion
 };
 
 export interface FilterDefinitionConverter {
-  toFilterClause(filter: FilterClauseDefinition, dataCube: DataCube): FilterClause;
+  toFilterClause(filter: FilterClauseDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): FilterClause;
 
   fromFilterClause(filterClause: FilterClause): FilterClauseDefinition;
 }
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
-  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: DataCube): FilterClause {
+  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): FilterClause {
     if (clauseDefinition.ref == null) {
       throw new Error("Dimension name cannot be empty.");
     }
 
-    const dimension = dataCube.getDimension(clauseDefinition.ref);
+    const dimension = findDimensionByName(dataCube.dimensions, clauseDefinition.ref);
 
     if (dimension == null) {
       throw new Error(`Dimension ${clauseDefinition.ref} not found in data cube ${dataCube.name}.`);

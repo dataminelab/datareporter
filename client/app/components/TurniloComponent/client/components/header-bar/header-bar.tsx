@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Customization } from "../../../common/models/customization/customization";
+import React from "react";
+import { useSettingsContext } from "../../views/cube-view/settings-context";
 import "./header-bar.scss";
 
 export interface HeaderBarProps {
-  customization?: Customization;
   title?: string;
 }
 
-export const HeaderBar: React.SFC<HeaderBarProps> = props => {
-  const { customization, title } = props;
+export const HeaderBar: React.FunctionComponent<HeaderBarProps> = props => {
+  const { title } = props;
+  const { customization } = useSettingsContext();
 
   const headerStyle: React.CSSProperties = customization && customization.headerBackground && { background: customization.headerBackground };
 

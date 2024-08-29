@@ -16,11 +16,13 @@
 
 import { Timezone } from "chronoshift";
 import { List, OrderedSet } from "immutable";
-import { DataCube } from "../../models/data-cube/data-cube";
+import { ClientAppSettings } from "../../models/app-settings/app-settings";
+import { ClientDataCube } from "../../models/data-cube/data-cube";
 import { Essence } from "../../models/essence/essence";
 import { Filter } from "../../models/filter/filter";
 import { Splits } from "../../models/splits/splits";
 import { TimeShift } from "../../models/time-shift/time-shift";
+import { isTruthy } from "../../utils/general/general";
 import { manifestByName } from "../../visualization-manifests";
 import { ViewDefinitionConverter } from "../view-definition-converter";
 import { filterDefinitionConverter } from "./filter-definition";
@@ -32,23 +34,43 @@ import { fromViewDefinition, toViewDefinition } from "./visualization-settings-c
 export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDefinition4, Essence> {
   version = 4;
 
-  fromViewDefinition(definition: ViewDefinition4, dataCube: DataCube): Essence {
+  fromViewDefinition(definition: ViewDefinition4, appSettings: ClientAppSettings, dataCube: ClientDataCube): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualization = manifestByName(definition.visualization);
     const visualizationSettings = fromViewDefinition(visualization, definition.visualizationSettings);
     const timeShift = definition.timeShift ? TimeShift.fromJS(definition.timeShift) : TimeShift.empty();
 
-    const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
+    const clauses = definition.filters
+      .map(fc => {
+        try {
+          return filterDefinitionConverter.toFilterClause(fc, dataCube);
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter(isTruthy);
 
-    const splitDefinitions = List(definition.splits);
-    const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
+    const filter = Filter.fromClauses(clauses);
+
+    const splitDefinitions = definition.splits
+      .map(sd => {
+        try {
+          return splitConverter.toSplitCombine(sd, dataCube);
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter(isTruthy);
+
+    const splits = new Splits({ splits: List(splitDefinitions) });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const pinnedSort = definition.pinnedSort;
     const series = seriesDefinitionConverter.toEssenceSeries(definition.series, dataCube.measures);
 
     return new Essence({
+      appSettings,
       dataCube,
       visualization,
       visualizationSettings,

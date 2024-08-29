@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Measure } from "../../../common/models/measure/measure";
 import { Measures } from "../../../common/models/measure/measures";
 import { SeriesList } from "../../../common/models/series-list/series-list";
@@ -22,10 +22,8 @@ import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import { classNames } from "../../utils/dom/dom";
 import { SeriesMenu } from "../series-menu/series-menu";
 import { WithRef } from "../with-ref/with-ref";
-import { SERIES_CLASS_NAME } from "./series-tiles";
 
 interface PlaceholderSeriesTileProps {
   measure: Measure;
@@ -38,11 +36,11 @@ interface PlaceholderSeriesTileProps {
   closeItem: Fn;
 }
 
-export const PlaceholderSeriesTile: React.SFC<PlaceholderSeriesTileProps> = props => {
+export const PlaceholderSeriesTile: React.FunctionComponent<PlaceholderSeriesTileProps> = props => {
   const { series, measures, seriesList, containerStage, saveSeries, closeItem, style, measure } = props;
   return <WithRef>
     {({ ref: openOn, setRef }) => <div
-      className={classNames(SERIES_CLASS_NAME, "measure")}
+      className="tile measure"
       ref={setRef}
       style={style}>
       <div className="reading">{measure.title}</div>

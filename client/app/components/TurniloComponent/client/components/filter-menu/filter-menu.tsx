@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
+import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { Locale } from "../../../common/models/locale/locale";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
+import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { BooleanFilterMenu } from "./boolean-filter-menu/boolean-filter-menu";
 import "./filter-menu.scss";
@@ -32,25 +34,25 @@ import { TimeFilterMenu } from "./time-filter-menu/time-filter-menu";
 export interface FilterMenuProps {
   essence: Essence;
   timekeeper: Timekeeper;
+  locale: Locale;
   clicker: Clicker;
+  saveClause: Unary<FilterClause, void>;
   containerStage?: Stage;
   openOn: Element;
   dimension: Dimension;
-  changePosition: DragPosition;
   onClose: Fn;
-  inside?: Element;
 }
 
-export const FilterMenu: React.SFC<FilterMenuProps> = (props: FilterMenuProps) => {
-  if (!props.dimension) return null;
-  switch (props.dimension.kind) {
+export const FilterMenu: React.FunctionComponent<FilterMenuProps> = ({ dimension, ...props }: FilterMenuProps) => {
+  if (!dimension) return null;
+  switch (dimension.kind) {
     case "time":
-      return <TimeFilterMenu {...props} />;
+      return <TimeFilterMenu dimension={dimension} {...props} />;
     case "boolean":
-      return <BooleanFilterMenu {...props} />;
+      return <BooleanFilterMenu dimension={dimension}{...props} />;
     case "number":
-      return <NumberFilterMenu {...props} />;
+      return <NumberFilterMenu dimension={dimension} {...props} />;
     default:
-      return <StringFilterMenu {...props} />;
+      return <StringFilterMenu dimension={dimension}{...props} />;
   }
 };

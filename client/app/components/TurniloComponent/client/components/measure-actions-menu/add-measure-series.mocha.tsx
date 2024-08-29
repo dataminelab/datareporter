@@ -16,7 +16,7 @@
 
 import { expect } from "chai";
 import { mount, shallow } from "enzyme";
-import * as React from "react";
+import React from "react";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
@@ -50,7 +50,7 @@ describe("Add Measure Series Button", () => {
   });
 
   it("renders disabled add action when measure is selected", () => {
-    const actions = renderButton(MeasureFixtures.wikiCount());
+    const actions = renderButton(MeasureFixtures.count());
 
     expect(actions.find(".add-series").hasClass("disabled")).to.be.true;
   });
@@ -88,7 +88,7 @@ describe("Add Measure Series Button", () => {
       beforeEach(() => {
         onCloseSpy = sinon.spy();
         addSeriesSpy = sinon.spy();
-        const measure = MeasureFixtures.wikiCount();
+        const measure = MeasureFixtures.count();
         const addButton = mountButton(measure, addSeriesSpy, onCloseSpy);
         addButton.simulate("click");
       });

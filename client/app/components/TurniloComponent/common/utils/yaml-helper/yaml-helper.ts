@@ -16,20 +16,28 @@
  */
 
 import { AttributeInfo } from "plywood";
-import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../../common/models/labels";
+import { Logger } from "../../logger/logger";
 import { AppSettings } from "../../models/app-settings/app-settings";
-import { Cluster } from "../../models/cluster/cluster";
+import {
+  Cluster, DEFAULT_INTROSPECTION_STRATEGY,
+  DEFAULT_SOURCE_LIST_REFRESH_INTERVAL, DEFAULT_SOURCE_LIST_SCAN,
+  DEFAULT_SOURCE_REINTROSPECT_INTERVAL
+} from "../../models/cluster/cluster";
 import { Customization } from "../../models/customization/customization";
-import { DataCube, Source } from "../../models/data-cube/data-cube";
+import { DataCube, DEFAULT_DEFAULT_DURATION, DEFAULT_DEFAULT_TIMEZONE, Source } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
+import { allDimensions } from "../../models/dimension/dimensions";
+import { CLUSTER, CUSTOMIZATION, DATA_CUBE } from "../../models/labels";
 import { Measure } from "../../models/measure/measure";
+import { allMeasures } from "../../models/measure/measures";
+import { Sources } from "../../models/sources/sources";
 
 function spaces(n: number) {
   return (new Array(n + 1)).join(" ");
 }
 
 function extend(a: any, b: any): any {
-  for (let key in a) {
+  for (const key in a) {
     b[key] = a[key];
   }
 
@@ -85,13 +93,13 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
   }
 }
 
-function getYamlPropAdder(object: any, labels: any, lines: string[], withComments = false) {
+function getYamlPropAdder(object: any, labels: any, lines: string[], withComments: boolean, logger: Logger) {
   const adder = (propName: string, additionalOptions?: { defaultValue?: any }) => {
-    let propVerbiage = labels[propName];
+    const propVerbiage = labels[propName];
     let comment: string;
 
     if (!propVerbiage) {
-      console.warn(`No labels for ${propName}, please fix this in 'common/models/labels.ts'`);
+      logger.warn(`No labels for ${propName}, please fix this in 'common/models/labels.ts'`);
       comment = "";
     } else {
       comment = propVerbiage.description;
@@ -109,11 +117,11 @@ function getYamlPropAdder(object: any, labels: any, lines: string[], withComment
   return { add: adder };
 }
 
-function customizationToYAML(customization: Customization, withComments: boolean): string[] {
+function customizationToYAML(customization: Customization, withComments: boolean, logger: Logger): string[] {
   const { timezones, externalViews, cssVariables } = customization;
-  let lines: string[] = [];
+  const lines: string[] = [];
 
-  getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments)
+  getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments, logger)
     .add("customLogoSvg")
     .add("headerBackground")
     .add("sentryDSN")
@@ -146,22 +154,22 @@ function customizationToYAML(customization: Customization, withComments: boolean
   return lines.map(line => `${pad}${line}`);
 }
 
-function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
-  let lines: string[] = [
+function clusterToYAML(cluster: Cluster, withComments: boolean, logger: Logger): string[] {
+  const lines: string[] = [
     `name: ${cluster.name}`
   ];
 
-  let props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
+  const props = getYamlPropAdder(cluster, CLUSTER, lines, withComments, logger);
 
   props
     .add("url")
     .add("version")
-    .add("timeout", { defaultValue: Cluster.DEFAULT_TIMEOUT })
-    .add("sourceListScan", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN })
+    .add("timeout", { defaultValue: undefined })
+    .add("sourceListScan", { defaultValue: DEFAULT_SOURCE_LIST_SCAN })
     .add("sourceListRefreshOnLoad", { defaultValue: false })
-    .add("sourceListRefreshInterval", { defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL })
+    .add("sourceListRefreshInterval", { defaultValue: DEFAULT_SOURCE_LIST_REFRESH_INTERVAL })
     .add("sourceReintrospectOnLoad", { defaultValue: false })
-    .add("sourceReintrospectInterval", { defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL })
+    .add("sourceReintrospectInterval", { defaultValue: DEFAULT_SOURCE_REINTROSPECT_INTERVAL })
   ;
 
   if (withComments) {
@@ -173,7 +181,7 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
   switch (cluster.type) {
     case "druid":
       props
-        .add("introspectionStrategy", { defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY })
+        .add("introspectionStrategy", { defaultValue: DEFAULT_INTROSPECTION_STRATEGY })
         .add("requestDecorator")
       ;
       break;
@@ -184,7 +192,7 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
 }
 
 function attributeToYAML(attribute: AttributeInfo): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${attribute.name}`,
     `type: ${attribute.type}`
   ];
@@ -198,7 +206,7 @@ function attributeToYAML(attribute: AttributeInfo): string[] {
 }
 
 function dimensionToYAML(dimension: Dimension): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${dimension.name}`,
     `title: ${dimension.title}`
   ];
@@ -207,18 +215,19 @@ function dimensionToYAML(dimension: Dimension): string[] {
     lines.push(`kind: ${dimension.kind}`);
   }
 
-  if (dimension.multiValue) {
+  if (dimension.kind === "string" && dimension.multiValue) {
     lines.push("multiValue: true");
   }
 
-  lines.push(`formula: ${dimension.formula}`);
+  // TODO: We don't have proper formula! Maybe we should keep it in Dimension for yaml-helper? Seems weird :/
+  lines.push(`formula: ${dimension.expression.toString()}`);
 
   lines.push("");
   return yamlObject(lines);
 }
 
 function measureToYAML(measure: Measure): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${measure.name}`,
     `title: ${measure.title}`
   ];
@@ -227,7 +236,8 @@ function measureToYAML(measure: Measure): string[] {
     lines.push(`units: ${measure.units}`);
   }
 
-  lines.push(`formula: ${measure.formula}`);
+  // TODO: We don't have proper formula! Maybe we should keep it in Measure for yaml-helper? Seems weird :/
+  lines.push(`formula: ${measure.expression.toString()}`);
 
   const format = measure.format;
   if (!!format) {
@@ -247,7 +257,7 @@ function sourceToYAML(source: Source): string {
   return yamlArray(source);
 }
 
-function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
+function dataCubeToYAML(dataCube: DataCube, withComments: boolean, logger: Logger): string[] {
   let lines: string[] = [
     `name: ${dataCube.name}`,
     `title: ${dataCube.title}`,
@@ -255,14 +265,11 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     `source: ${sourceToYAML(dataCube.source)}`
   ];
 
-  const timeAttribute = dataCube.timeAttribute;
-  if (timeAttribute && !(dataCube.clusterName === "druid" && timeAttribute.name === "__time")) {
-    if (withComments) {
-      lines.push("# The primary time attribute of the data refers to the attribute that must always be filtered on");
-      lines.push("# This is particularly useful for Druid data cubes as they must always have a time filter.");
-    }
-    lines.push(`timeAttribute: ${timeAttribute.name}`, "");
+  if (withComments) {
+    lines.push("# The primary time attribute of the data refers to the attribute that must always be filtered on");
+    lines.push("# This is particularly useful for Druid data cubes as they must always have a time filter.");
   }
+  lines.push(`timeAttribute: ${dataCube.timeAttribute.name}`, "");
 
   const refreshRule = dataCube.refreshRule;
   if (withComments) {
@@ -275,15 +282,15 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   }
   lines.push("");
 
-  let addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
+  const addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments, logger);
 
   addProps
-    .add("defaultTimezone", { defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE })
-    .add("defaultDuration", { defaultValue: DataCube.DEFAULT_DEFAULT_DURATION })
-    .add("defaultSortMeasure", { defaultValue: dataCube.getDefaultSortMeasure() })
+    .add("defaultTimezone", { defaultValue: DEFAULT_DEFAULT_TIMEZONE })
+    .add("defaultDuration", { defaultValue: DEFAULT_DEFAULT_DURATION })
+    .add("defaultSortMeasure", { defaultValue: dataCube.defaultSortMeasure })
   ;
 
-  const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures.toArray() : null;
+  const defaultSelectedMeasures = dataCube.defaultSelectedMeasures ? dataCube.defaultSelectedMeasures : null;
   if (withComments) {
     lines.push("", "# The names of measures that are selected by default");
   }
@@ -293,7 +300,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     lines.push("#defaultSelectedMeasures: []");
   }
 
-  const defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions.toArray() : null;
+  const defaultPinnedDimensions = dataCube.defaultPinnedDimensions ? dataCube.defaultPinnedDimensions : null;
   if (withComments) {
     lines.push("", "# The names of dimensions that are pinned by default (in order that they will appear in the pin bar)");
   }
@@ -303,7 +310,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
     lines.push("", "#defaultPinnedDimensions: []");
   }
 
-  const introspection = dataCube.getIntrospection();
+  const introspection = dataCube.introspection;
   if (withComments) {
     lines.push(
       "",
@@ -368,7 +375,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.dimensions.mapDimensions(dimensionToYAML));
+  lines = lines.concat.apply(lines, allDimensions(dataCube.dimensions).map(dimensionToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived dimensions.",
@@ -406,7 +413,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.measures.mapMeasures(measureToYAML));
+  lines = lines.concat.apply(lines, allMeasures(dataCube.measures).map(measureToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived measures (a.k.a Post Aggregators).",
@@ -435,12 +442,8 @@ interface Extra {
   port?: number;
 }
 
-export function appSettingsToYAML(appSettings: AppSettings, withComments: boolean, extra: Extra = {}): string {
-  const { dataCubes, clusters, customization } = appSettings;
-
-  if (!dataCubes.length) throw new Error("Could not find any data cubes, please verify network connectivity");
-
-  let lines: string[] = [];
+export function printExtra(extra: Extra, withComments: boolean): string {
+  const lines = [];
 
   if (extra.header && extra.version) {
     lines.push(
@@ -452,30 +455,49 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
 
   if (extra.verbose) {
     if (withComments) {
-      lines.push("# Run Swiv in verbose mode so it prints out the queries that it issues");
+      lines.push("# Run Turnilo in verbose mode so it prints out the queries that it issues");
     }
     lines.push("verbose: true", "");
   }
 
   if (extra.port) {
     if (withComments) {
-      lines.push("# The port on which the Swiv server will listen on");
+      lines.push("# The port on which the Turnilo server will listen on");
     }
     lines.push(`port: ${extra.port}`, "");
   }
 
+  return lines.join("\n");
+}
+
+export function sourcesToYaml(sources: Sources, withComments: boolean, logger: Logger): string {
+  const { dataCubes, clusters } = sources;
+
+  if (!dataCubes.length) throw new Error("Could not find any data cubes, please verify network connectivity");
+
+  let lines: string[] = [];
+
   if (clusters.length) {
     lines.push("clusters:");
-    lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments)));
-  }
-
-  if (customization) {
-    lines.push("customization:");
-    lines.push(...customizationToYAML(customization, withComments));
+    lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments, logger)));
   }
 
   lines.push("dataCubes:");
-  lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments)));
+  lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments, logger)));
+
+  return lines.join("\n");
+}
+
+export function appSettingsToYaml(settings: AppSettings, withComments: boolean, logger: Logger): string {
+  // TODO: shouldn't we print oauth and clientTimeout?
+  const { customization, oauth, clientTimeout } = settings;
+
+  const lines = [];
+
+  if (customization) {
+    lines.push("customization:");
+    lines.push(...customizationToYAML(customization, withComments, logger));
+  }
 
   return lines.join("\n");
 }

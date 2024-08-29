@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
 import { StageFixtures } from "../../../common/models/stage/stage.fixtures";
@@ -25,7 +25,7 @@ import { BucketMarks } from "./bucket-marks";
 
 describe("BucketMarks", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <BucketMarks
         stage={StageFixtures.defaultA()}
         ticks={[]}

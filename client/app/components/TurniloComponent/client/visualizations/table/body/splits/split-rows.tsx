@@ -15,9 +15,10 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { FlattenedSplits } from "./flattened-splits";
+import { FlattenedSplitColumns } from "../../../../components/tabular-scroller/splits/flattened-split-columns";
+import { FlattenedSplits } from "../../../../components/tabular-scroller/splits/flattened-splits";
 import { NestedSplits } from "./nested-splits";
 
 interface SplitRowsProps {
@@ -27,15 +28,18 @@ interface SplitRowsProps {
   data: PseudoDatum[];
   hoverRow?: Datum;
   segmentWidth: number;
-  color: string;
   highlightedRowIndex: number | null;
 }
 
-export const SplitRows: React.SFC<SplitRowsProps> = props => {
-  const { collapseRows,  color, ...rest } = props;
-  const { data } = rest;
+export const SplitRows: React.FunctionComponent<SplitRowsProps> = props => {
+  const { collapseRows, ...rest } = props;
+  const { data, essence: { timezone, splits: { splits } } } = rest;
   if (!data) return null;
   return collapseRows ?
-    <FlattenedSplits {...rest} /> :
-    <NestedSplits color={color} {...rest} />;
+    <FlattenedSplits
+      {...rest}
+      splitLabel={({ datum }) =>
+        <FlattenedSplitColumns splits={splits} datum={datum} timezone={timezone} />}
+    /> :
+    <NestedSplits {...rest} />;
 };

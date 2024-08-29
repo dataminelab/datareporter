@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Cluster, ClusterJS, ClusterValue } from "./cluster";
+import { NOOP_LOGGER } from "../../logger/logger";
+import { Cluster, ClusterJS, fromConfig } from "./cluster";
 
 export class ClusterFixtures {
   static druidWikiClusterJS(): ClusterJS {
@@ -32,6 +33,10 @@ export class ClusterFixtures {
     };
   }
 
+  static druidWikiCluster(): Cluster {
+    return fromConfig(ClusterFixtures.druidWikiClusterJS(), NOOP_LOGGER);
+  }
+
   static druidTwitterClusterJS(): ClusterJS {
     return {
       name: "druid-twitter",
@@ -46,8 +51,13 @@ export class ClusterFixtures {
       introspectionStrategy: "segment-metadata-fallback"
     };
   }
-    static druidTwitterClusterJSWithGuard(): Cluster {
-    return Cluster.fromJS({
+
+  static druidTwitterCluster(): Cluster {
+    return fromConfig(ClusterFixtures.druidTwitterClusterJS(), NOOP_LOGGER);
+  }
+
+  static druidTwitterClusterJSWithGuard(guardDataCubes = true): Cluster {
+    return fromConfig({
       name: "druid-custom",
       url: "http://192.168.99.101",
       version: "0.9.1",
@@ -56,9 +66,9 @@ export class ClusterFixtures {
       sourceListScan: "auto",
       sourceListRefreshInterval: 10000,
       sourceReintrospectInterval: 10000,
-      guardDataCubes: true,
+      guardDataCubes,
 
       introspectionStrategy: "segment-metadata-fallback"
-    });
+    }, NOOP_LOGGER);
   }
 }

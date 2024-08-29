@@ -15,36 +15,33 @@
  * limitations under the License.
  */
 
-import { Dataset } from "plywood";
-import * as React from "react";
-import { TOTALS_MANIFEST } from "../../../common/visualization-manifests/totals/totals";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import React from "react";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
+import {
+  ChartPanel,
+  DefaultVisualizationControls,
+  VisualizationProps
+} from "../../views/cube-view/center-panel/center-panel";
 import { Total } from "./total";
 import "./totals.scss";
 
-export class Totals extends BaseVisualization<BaseVisualizationState> {
-  protected className = TOTALS_MANIFEST.name;
+const BigNumbers: React.FunctionComponent<ChartProps> = ({ essence, data }) => {
+  const series = essence.getConcreteSeries().toArray();
+  const datum = data.data[0];
+  return <div className="total-container">
+    {series.map(series =>
+    <Total
+      key={series.reactKey()}
+      series={series}
+      datum={datum}
+      showPrevious={essence.hasComparison()}
+    />)}
+  </div>;
+};
 
-  renderTotals(dataset: Dataset): JSX.Element[] {
-    const { essence, report } = this.props;
-    const series = essence.getConcreteSeries().toArray();
-    const datum = dataset.data[0];
-    return series.map(series =>
-      <Total
-        color={report ? report.colorText: null}
-        key={series.reactKey()}
-        series={series}
-        datum={datum}
-        showPrevious={essence.hasComparison()}
-      />);
-
-  }
-
-  renderInternals(dataset: Dataset) {
-    return <div className="internals">
-      <div className="total-container">
-        {this.renderTotals(dataset)}
-      </div>
-    </div>;
-  }
+export default function TotalsVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <DefaultVisualizationControls {...props} />
+    <ChartPanel {...props} chartComponent={BigNumbers}/>
+  </React.Fragment>;
 }

@@ -27,7 +27,6 @@ export interface Adjustment {
 
 export const HIGH_PRIORITY_ACTION = 4;
 export const NORMAL_PRIORITY_ACTION = 3;
-export const LOWEST_PRIORITY_ACTION = 0;
 
 export interface Resolution {
   description: string;
@@ -90,7 +89,7 @@ export class Resolve {
   }
 }
 
-export type Visualization = "heatmap" | "table" | "totals" | "bar-chart" | "line-chart";
+export type Visualization = "heatmap" | "table" | "totals" | "bar-chart" | "line-chart" | "grid" | "scatterplot";
 
 export class VisualizationManifest<T extends object = {}> {
   constructor(

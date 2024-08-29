@@ -1,16 +1,17 @@
 {
-  "extends": "../../../../tsconfig.json",
+  "extends": "../../tsconfig.json",
 
   "compileOnSave": false,
   "compilerOptions": {
     "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": "../../../",
+    "rootDir": "../",
     "outDir": "../../build",
     "experimentalDecorators": true
   },
 
   "include": [
+    "../../node_modules/highlight.js/types/index.d.ts",
     "./**/*.ts",
     "./**/*.tsx"
   ]

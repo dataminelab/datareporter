@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { isFunction } from "util";
 import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -33,7 +33,6 @@ export interface ResizeHandleProps {
 }
 
 export interface ResizeHandleState {
-  dragging?: boolean;
   anchor?: number;
 }
 
@@ -53,7 +52,6 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     const eventX = this.getValue(event);
 
     this.setState({
-      dragging: true,
       anchor: eventX - value
     });
 
@@ -61,9 +59,6 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
   };
 
   onGlobalMouseUp = () => {
-    this.setState({
-      dragging: false
-    });
     window.removeEventListener("mouseup", this.onGlobalMouseUp);
     window.removeEventListener("mousemove", this.onGlobalMouseMove);
 
@@ -74,21 +69,8 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
 
   onGlobalMouseMove = (event: MouseEvent) => {
     const { anchor } = this.state;
-    switch (this.props.direction) {
-      case Direction.TOP:
-        if (150 > anchor) {
-          const currentValue = this.constrainValue(this.getCoordinate(event)-150);
-          if (!!this.props.onResize) this.props.onResize(currentValue);
-        } else {
-          const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
-          if (!!this.props.onResize) this.props.onResize(currentValue);
-        }
-        break;
-      default:
-        const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
-        if (!!this.props.onResize) this.props.onResize(currentValue);
-        break;
-    }
+    const currentValue = this.constrainValue(this.getCoordinate(event) - anchor);
+    if (!!this.props.onResize) this.props.onResize(currentValue);
   };
 
   private getValue(event: MouseEvent | React.MouseEvent<HTMLElement>): number {

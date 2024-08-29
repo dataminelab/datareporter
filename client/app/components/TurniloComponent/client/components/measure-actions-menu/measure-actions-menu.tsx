@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Measure } from "../../../common/models/measure/measure";
+import React from "react";
+import { isApproximate, isQuantile, Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
@@ -40,14 +40,14 @@ export interface MeasureActionsMenuProps {
 }
 
 export interface MeasureActionsProps {
-  appendDirtySeries: Unary<Series, void>;
+  addPartialSeries: Unary<Series, void>;
   addSeries: Unary<Series, void>;
   series: SeriesList;
   measure: Measure;
   onClose: Fn;
 }
 
-export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = props => {
+export const MeasureActionsMenu: React.FunctionComponent<MeasureActionsMenuProps & MeasureActionsProps> = props => {
   const { direction, containerStage, openOn, measure, onClose } = props;
   if (!measure) return null;
 
@@ -67,21 +67,21 @@ export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActi
 };
 
 function measureActions(props: MeasureActionsProps): JSX.Element[] {
-  const { series, measure, onClose, addSeries, appendDirtySeries } = props;
+  const { series, measure, onClose, addSeries, addPartialSeries } = props;
 
-  if (measure.isQuantile()) {
+  if (isQuantile(measure)) {
     return [
       <AddQuantileSeriesButton
         key="Add"
         addSeries={addSeries}
-        appendDirtySeries={appendDirtySeries}
+        addPartialSeries={addPartialSeries}
         measure={measure}
         series={series}
         onClose={onClose} />
     ];
   }
 
-  if (measure.isApproximate()) {
+  if (isApproximate(measure)) {
     return [
       <AddMeasureSeriesButton
         key="Add"
@@ -107,7 +107,7 @@ function measureActions(props: MeasureActionsProps): JSX.Element[] {
       series={series} />,
     <AddArithmeticOperationButton
       key="Arithmetic"
-      addExpressionPlaceholder={appendDirtySeries}
+      addPartialSeries={addPartialSeries}
       measure={measure}
       onClose={onClose} />
   ];

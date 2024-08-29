@@ -5,11 +5,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { IgnorePlugin } = require('webpack');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
-const fs = require("fs");
 const path = require("path");
 const { CheckerPlugin } = require('awesome-typescript-loader')
 
@@ -59,7 +59,8 @@ function maybeApplyOverrides(config) {
 const babelLoader = {
   loader: "babel-loader",
   options: {
-    presets: [
+    presets: [ 
+      ['@babel/preset-react', {modules: false}],
       ["@babel/preset-env", {
         modules: false
       }]
@@ -79,7 +80,8 @@ const config = {
   },
   output: {
     path: path.join(basePath, "./dist"),
-    filename: isProduction ? "[name].[chunkhash].js" : "[name].js",
+    filename: "[name].js",
+    chunkFilename: "[name].[hash].js",
     publicPath: staticPath
   },
   resolve: {
@@ -92,7 +94,7 @@ const config = {
   },
   plugins: [
     new CheckerPlugin(),
-    new WebpackBuildNotifierPlugin({ title: "Redash" }),
+    new WebpackBuildNotifierPlugin({ title: "Datareporter" }),
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
     new HtmlWebpackPlugin({
@@ -123,7 +125,11 @@ const config = {
       { from: "app/unsupportedRedirect.js" },
       { from: "app/assets/css/*.css", to: "styles/", flatten: true },
       { from: "app/assets/fonts", to: "fonts/" }
-    ])
+    ]),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
   ],
   optimization: {
     splitChunks: {
@@ -136,14 +142,36 @@ const config = {
     rules: [
       {
         test: /\.js|jsx?$/,
-        exclude: /node_modules/,
+        exclude: {
+          and: [/node_modules/],
+          not: [
+            /* List of node modules to transpile */
+            /react-syntax-highlighter/ // imported from "react-syntax-highlighter/src"
+          ]
+        },
         use: [
           babelLoader
         ]
       },
       {
+        test: /\.[jt]sx?$/,
+        exclude: {
+          and: [/node_modules/],
+          not: [
+            /* List of node modules to transpile */
+            /react-syntax-highlighter/ // imported from "react-syntax-highlighter/src"
+          ]
+        }
+      },
+      {
         test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
+        exclude: {
+          and: [/node_modules/],
+          not: [
+            /* List of node modules to transpile */
+            /react-syntax-highlighter/ // imported from "react-syntax-highlighter/src"
+          ]
+        },
         use: [
           babelLoader,
           {

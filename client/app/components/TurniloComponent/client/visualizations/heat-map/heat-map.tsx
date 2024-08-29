@@ -20,67 +20,68 @@
 // tslint:disable-next-line: no-reference
 /// <reference path="../../index.d.ts" />
 
+import { Timezone } from "chronoshift";
 import memoizeOne from "memoize-one";
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
+import { ChartProps } from "../../../common/models/chart-props/chart-props";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
+import { Split } from "../../../common/models/split/split";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import {
+  ChartPanel,
+  DefaultVisualizationControls,
+  VisualizationProps
+} from "../../views/cube-view/center-panel/center-panel";
+import { SettingsContext, SettingsContextValue } from "../../views/cube-view/settings-context";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
 
-interface HeatmapState extends BaseVisualizationState {
-  preparedDataset: Dataset;
+export default function HeatMapVisualization(props: VisualizationProps) {
+  return <React.Fragment>
+    <DefaultVisualizationControls {...props} />
+    <ChartPanel {...props} chartComponent={HeatMap}/>
+  </React.Fragment>;
 }
 
-export class HeatMap extends BaseVisualization<HeatmapState> {
+class HeatMap extends React.Component<ChartProps> {
+  static contextType = SettingsContext;
   protected className = HEAT_MAP_MANIFEST.name;
 
+  context: SettingsContextValue;
+
   getScales = memoizeOne(scales);
+  prepareDataset = memoizeOne(
+    (data: Dataset, series: ConcreteSeries, split: Split, timezone: Timezone) =>
+      fillDatasetWithMissingValues((data.data[0][SPLIT] as Dataset), series.plywoodKey(), split, timezone),
+    ([nextData], [oldData]) => nextData === oldData);
 
-  series(): ConcreteSeries {
-    return this.props.essence.getConcreteSeries().first();
-  }
+  render() {
+    const { customization: { visualizationColors } } = this.context;
+    const { essence, stage, highlight, data, saveHighlight, acceptHighlight, dropHighlight } = this.props;
+    const { timezone, splits: { splits } } = essence;
+    const series = essence.getConcreteSeries().first();
+    const secondSplit = splits.get(1);
+    const dataset = this.prepareDataset(data, series, secondSplit, timezone);
 
-  renderInternals() {
-    const { essence, stage, report } = this.props;
+    const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, visualizationColors.main, series);
 
-    const { preparedDataset: dataset } = this.state;
-
-    const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, this.series());
-
-    return <div className="internals heatmap-container" style={{ maxHeight: stage.height }}>
+    return <div className="heatmap-container" style={{ height: stage.height }}>
       <LabelledHeatmap
         stage={stage}
         dataset={dataset.data}
-        report={report}
         xScale={x}
         yScale={y}
         colorScale={color}
-        saveHighlight={this.highlight}
-        highlight={this.getHighlight()}
-        acceptHighlight={this.acceptHighlight}
-        dropHighlight={this.dropHighlight}
+        saveHighlight={saveHighlight}
+        highlight={highlight}
+        acceptHighlight={acceptHighlight}
+        dropHighlight={dropHighlight}
         essence={essence}
       />
     </div>;
-  }
-
-  deriveDatasetState(dataset: Dataset): Partial<HeatmapState> {
-    const { essence } = this.props;
-    const { timezone } = essence;
-    const secondSplit = essence.splits.splits.get(1);
-
-    const preparedDataset = fillDatasetWithMissingValues(
-      (dataset.data[0][SPLIT] as Dataset),
-      this.series().plywoodKey(),
-      secondSplit,
-      timezone
-    );
-
-    return { preparedDataset };
   }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { classNames } from "../../utils/dom/dom";
 import "./shpitz.scss";
 
@@ -33,7 +33,7 @@ export class Shpitz extends React.Component<ShpitzProps, ShpitzState> {
     const { direction, style } = this.props;
 
     return <div className={classNames("shpitz", direction)} style={style}>
-      <div className="rectangle"></div>
+      <div className="rectangle" />
     </div>;
   }
 }

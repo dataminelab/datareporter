@@ -16,41 +16,41 @@
  */
 
 import { Logger } from "../../logger/logger";
+import { DataCube } from "../../models/data-cube/data-cube";
+import { QueryableDataCube } from "../../models/data-cube/queryable-data-cube";
 import { TimeTag } from "../../models/time-tag/time-tag";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
-
-export type Check = () => Promise<Date>;
+import { Nullary } from "../functional/functional";
+import { maxTimeQueryForCube } from "../query/max-time-query";
 
 export class TimeMonitor {
-  public logger: Logger;
-  public regularCheckInterval: number;
-  public specialCheckInterval: number;
   public timekeeper: Timekeeper;
-  public checks: Map<string, Check>;
+  private checks: Map<string, Nullary<Promise<Date>>>;
+  private logger: Logger;
   private doingChecks = false;
 
   constructor(logger: Logger) {
-    this.logger = logger;
+    this.logger = logger.setLoggerId("TimeMonitor");
     this.checks = new Map();
-    this.regularCheckInterval = 60000;
-    this.specialCheckInterval = 60000;
     this.timekeeper = Timekeeper.EMPTY;
     setInterval(this.doChecks, 1000);
   }
 
-  removeCheck(name: string): this {
+  removeCheck({ name }: DataCube): this {
     this.checks.delete(name);
     this.timekeeper = this.timekeeper.removeTimeTagFor(name);
     return this;
   }
 
-  addCheck(name: string, check: Check): this {
-    this.checks.set(name, check);
-    this.timekeeper = this.timekeeper.addTimeTagFor(name);
+  // NOTE: We should pass whole Cluster here, but we still don't have Cluster class for "native" cluster type.
+  addCheck(cube: QueryableDataCube, sourceTimeBoundaryRefreshInterval: number): this {
+    const { name } = cube;
+    this.checks.set(name, () => maxTimeQueryForCube(cube));
+    this.timekeeper = this.timekeeper.addTimeTagFor(name, sourceTimeBoundaryRefreshInterval);
     return this;
   }
 
-  private doCheck = ({ name }: TimeTag): Promise<void> => {
+  private doCheck = ({ name, time: previousTime }: TimeTag): Promise<void> => {
     const { logger, checks } = this;
     const check = checks.get(name);
     if (!check) return Promise.resolve(null);
@@ -58,15 +58,16 @@ export class TimeMonitor {
       logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
       this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
     }).catch(e => {
-        logger.error(`Error getting time for '${name}': ${e.message}`);
+        logger.error(`Failed getting time for '${name}', using previous time. Error: ${e.message}`);
+        this.timekeeper = this.timekeeper.updateTime(name, previousTime);
       }
     );
   }
 
-  private isStale = (timeTag: TimeTag): boolean => {
-    const { timekeeper, regularCheckInterval } = this;
+  private isStale = ({ time, lastTimeChecked, checkInterval }: TimeTag): boolean => {
+    const { timekeeper } = this;
     const now = timekeeper.now().valueOf();
-    return !timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval;
+    return !time || now - lastTimeChecked.valueOf() > checkInterval;
   }
 
   private doChecks = (): void => {
@@ -75,7 +76,7 @@ export class TimeMonitor {
     const timeTags = timekeeper.timeTags;
 
     this.doingChecks = true;
-    const checkTasks = timeTags.filter(this.isStale).map(this.doCheck);
+    const checkTasks = timeTags.filter(this.isStale).map(this.doCheck).values();
     Promise.all(checkTasks).then(() => {
       this.doingChecks = false;
     });

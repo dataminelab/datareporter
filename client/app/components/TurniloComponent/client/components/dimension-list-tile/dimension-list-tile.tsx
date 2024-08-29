@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Component, CSSProperties, DragEvent, MouseEvent } from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Filter } from "../../../common/models/filter/filter";
 import { Splits } from "../../../common/models/splits/splits";
@@ -32,14 +32,14 @@ import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 import { DIMENSION_CLASS_NAME } from "./dimension-item";
 import "./dimension-list-tile.scss";
-import { DimensionOrGroupForView, DimensionsConverter } from "./dimensions-converter";
+import { convert, DimensionOrGroupForView } from "./dimensions-converter";
 import { DimensionsRenderer } from "./dimensions-renderer";
 
 export interface DimensionListTileProps {
   clicker: Clicker;
   essence: Essence;
   menuStage: Stage;
-  triggerFilterMenu: (dimension: Dimension) => void;
+  addPartialFilter: (dimension: Dimension) => void;
   style?: CSSProperties;
 }
 
@@ -55,21 +55,21 @@ const hasSearchTextPredicate = (searchText: string) => (dimension: Dimension): b
 };
 
 const isFilteredOrSplitPredicate = (essence: Essence) => (dimension: Dimension): boolean => {
-  const { dataCube, filter, splits } = essence;
-  return isFiltered(dimension, filter, dataCube) || isSplit(dimension, splits, dataCube);
+  const { filter, splits } = essence;
+  return isFiltered(dimension, filter) || isSplit(dimension, splits);
 };
 
-const isSplit = (dimension: Dimension, { splits }: Splits, dataCube: DataCube): boolean => {
+const isSplit = (dimension: Dimension, { splits }: Splits): boolean => {
   return splits
-    .map(split => dataCube.dimensions.getDimensionByName(split.reference))
-    .contains(dimension);
+    .map(split => split.reference)
+    .contains(dimension.name);
 };
 
-const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): boolean => {
+const isFiltered = (dimension: Dimension, filter: Filter): boolean => {
   return filter
     .clauses
-    .map(clause => dataCube.dimensions.getDimensionByName(clause.reference))
-    .contains(dimension);
+    .map(clause => clause.reference)
+    .contains(dimension.name);
 };
 
 const isSelectedDimensionPredicate = (menuDimension: Dimension) => (dimension: Dimension): boolean => {
@@ -77,13 +77,6 @@ const isSelectedDimensionPredicate = (menuDimension: Dimension) => (dimension: D
 };
 
 export class DimensionListTile extends Component<DimensionListTileProps, DimensionListTileState> {
-  private item: React.RefObject<any>;
-  private search: React.RefObject<any>;
-  constructor(props: DimensionListTileProps) {
-    super(props);
-    this.item = React.createRef();
-    this.search = React.createRef();
-  }
   state: DimensionListTileState = {
     menuOpenOn: null,
     menuDimension: null,
@@ -91,7 +84,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     searchText: ""
   };
 
-  clickDimension = (dimensionName: string, e: MouseEvent<HTMLElement>) => {
+  private clickDimension = (dimensionName: string, e: MouseEvent<HTMLElement>) => {
     const { menuOpenOn } = this.state;
     const target = findParentWithClass(e.currentTarget, DIMENSION_CLASS_NAME);
     if (menuOpenOn === target) {
@@ -100,7 +93,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     }
 
     const { essence: { dataCube } } = this.props;
-    const dimension = dataCube.dimensions.getDimensionByName(dimensionName);
+    const dimension = findDimensionByName(dataCube.dimensions, dimensionName);
 
     this.setState({
       menuOpenOn: target,
@@ -119,7 +112,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
 
   dragStart = (dimensionName: string, e: DragEvent<HTMLElement>) => {
     const { essence: { dataCube } } = this.props;
-    const dimension = dataCube.dimensions.getDimensionByName(dimensionName);
+    const dimension = findDimensionByName(dataCube.dimensions, dimensionName);
 
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
@@ -138,7 +131,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
 
   onSearchChange = (text: string) => {
     const { searchText } = this.state;
-    const newSearchText = text.slice(0, MAX_SEARCH_LENGTH);
+    const newSearchText = text.substr(0, MAX_SEARCH_LENGTH);
 
     if (searchText === newSearchText) return; // nothing to do;
 
@@ -148,8 +141,8 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
   };
 
   renderMenu(): JSX.Element {
-    var { essence, clicker, menuStage, triggerFilterMenu } = this.props;
-    var { menuOpenOn, menuDimension } = this.state;
+    const { essence, clicker, menuStage, addPartialFilter } = this.props;
+    const { menuOpenOn, menuDimension } = this.state;
     if (!menuDimension) return null;
 
     return <DimensionActionsMenu
@@ -159,7 +152,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       containerStage={menuStage}
       openOn={menuOpenOn}
       dimension={menuDimension}
-      triggerFilterMenu={triggerFilterMenu}
+      addPartialFilter={addPartialFilter}
       onClose={this.closeMenu}
     />;
   }
@@ -180,21 +173,21 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
     const { menuDimension, showSearch, searchText } = this.state;
     const { dataCube } = essence;
 
-    const dimensionsConverter = new DimensionsConverter(
+    const dimensionsForView = convert(
+      dataCube.dimensions,
       hasSearchTextPredicate(searchText),
       isFilteredOrSplitPredicate(essence),
       isSelectedDimensionPredicate(menuDimension)
     );
-    const dimensionsForView = dataCube.dimensions.accept(dimensionsConverter);
 
     const dimensionsRenderer = new DimensionsRenderer(this.clickDimension, this.dragStart, searchText);
     const items = dimensionsRenderer.render(dimensionsForView);
     const message = this.renderMessageIfNoDimensionsFound(dimensionsForView);
 
-    var icons: TileHeaderIcon[] = [
+    const icons: TileHeaderIcon[] = [
       {
         name: "search",
-        ref: this.search,
+        ref: "search",
         onClick: this.toggleSearch,
         svg: require("../../icons/full-search.svg"),
         active: showSearch
@@ -211,7 +204,7 @@ export class DimensionListTile extends Component<DimensionListTileProps, Dimensi
       icons={icons}
       className="dimension-list-tile"
     >
-      <div className="rows" ref={this.item}>
+      <div className="rows" ref="items">
         {items}
         {message}
       </div>

@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
+import { allDimensions } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { Stage } from "../../../common/models/stage/stage";
-import { Unary, Binary } from "../../../common/utils/functional/functional";
+import { Unary } from "../../../common/utils/functional/functional";
 import { AddTile } from "../add-tile/add-tile";
 
 interface AddSplitProps {
   appendSplit: Unary<Dimension, void>;
-  insertSplit: Binary<any, int, void>;
   menuStage: Stage;
   essence: Essence;
 }
 
-export const AddSplit: React.SFC<AddSplitProps> = props => {
-  const { appendSplit, insertSplit, menuStage, essence: { dataCube, splits } } = props;
-  const tiles = dataCube.dimensions
-    .filterDimensions(d => splits.findSplitForDimension(d) === undefined)
+export const AddSplit: React.FunctionComponent<AddSplitProps> = props => {
+  const { appendSplit, menuStage, essence: { dataCube, splits } } = props;
+  const tiles = allDimensions(dataCube.dimensions)
+    .filter(d => splits.findSplitForDimension(d) === undefined)
     .map(dimension => {
       return {
         key: dimension.name,
@@ -42,7 +42,6 @@ export const AddSplit: React.SFC<AddSplitProps> = props => {
 
   return <AddTile<Dimension>
     containerStage={menuStage}
-    appendSplit={appendSplit}
-    insertSplit={insertSplit}
+    onSelect={appendSplit}
     tiles={tiles} />;
 };

@@ -18,17 +18,19 @@
 import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { Datum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../common/models/stage/stage";
 import { formatSegment } from "../../../common/utils/formatter/formatter";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
+import { ColorLegend } from "../../components/color-legend/color-legend";
+import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
 import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
 import { clamp } from "../../utils/dom/dom";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
-import { Highlight } from "../base-visualization/highlight";
+import { Highlight } from "../highlight-controller/highlight";
 import "./heat-map.scss";
 import { HeatmapCorner } from "./heatmap-corner";
 import { HeatmapHighlightIndicator } from "./heatmap-highlight-indicator";
@@ -47,7 +49,6 @@ import scrollerLayout from "./utils/scroller-layout";
 
 interface LabelledHeatmapProps {
   stage: Stage;
-  report: any;
   essence: Essence;
   dataset: Datum[];
   xScale: LinearScale;
@@ -119,8 +120,7 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
   }
 
   render() {
-    const { stage, colorScale, xScale, yScale, dataset, essence, highlight, acceptHighlight, dropHighlight, report } = this.props;
-    const colorLabel = report.colorText;
+    const { stage, colorScale, xScale, yScale, dataset, essence, highlight, acceptHighlight, dropHighlight } = this.props;
     const { scrollLeft, scrollTop, hoverPosition, topLabelsHeight } = this.state;
 
     const series = essence.getConcreteSeries().first();
@@ -145,7 +145,6 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
         layout={layout}
 
         topLeftCorner={<HeatmapCorner
-          colorScale={colorScale}
           width={layout.left}
           height={layout.top}
           essence={essence}/>}
@@ -153,7 +152,6 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
         topGutter={<HeatmapLabels
           orientation="top"
           labels={topLabels}
-          colorLabel={colorLabel}
           hoveredLabel={hoverPosition ? hoverPosition.column : -1}
           highlightedLabel={highlightPosition ? highlightPosition.column : -1}
           onMaxLabelSize={this.saveTopLabelHeight}
@@ -162,7 +160,6 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
         leftGutter={<HeatmapLabels
           orientation="left"
           labels={leftLabels}
-          colorLabel={colorLabel}
           hoveredLabel={hoverPosition ? hoverPosition.row : -1}
           highlightedLabel={highlightPosition ? highlightPosition.row : -1}
           onMaxLabelSize={this.saveLeftLabelWidth} />}
@@ -191,6 +188,12 @@ export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, L
             hoverPosition={hoverPosition} />}
         </React.Fragment>}
       />
+      <LegendSpot>
+        <ColorLegend
+          title={series.title()}
+          formatter={series.formatter()}
+          colorScale={colorScale} />
+      </LegendSpot>
       {highlightPosition && <HeatmapHighlightModal
         title={modalTitle(highlightPosition, dataset, essence)}
         position={highlightPosition}

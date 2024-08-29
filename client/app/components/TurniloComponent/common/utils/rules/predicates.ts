@@ -16,6 +16,7 @@
  */
 
 import { DimensionKind } from "../../models/dimension/dimension";
+import { findDimensionByName } from "../../models/dimension/dimensions";
 import { Split } from "../../models/split/split";
 import { VisualizationDependentPredicate } from "./visualization-dependent-evaluator";
 import { VisualizationIndependentPredicate } from "./visualization-independent-evaluator";
@@ -35,7 +36,7 @@ export class Predicates {
 
   public static areExactSplitKinds(...selectors: string[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
-      const kinds: string[] = splits.splits.map((split: Split) => dataCube.getDimension(split.reference).kind).toArray();
+      const kinds: string[] = splits.splits.map((split: Split) => findDimensionByName(dataCube.dimensions, split.reference).kind).toArray();
       return Predicates.strictCompare(selectors, kinds);
     };
   }
@@ -51,10 +52,10 @@ export class Predicates {
       return true;
     }
 
-    var bareSelector = selector.replace(/^!/, "");
+    const bareSelector = selector.replace(/^!/, "");
 
     // This can be enriched later, right now it's just a 1-1 match
-    var result = kind === bareSelector;
+    const result = kind === bareSelector;
 
     if (selector.charAt(0) === "!") {
       return !result;
@@ -65,7 +66,7 @@ export class Predicates {
 
   public static haveAtLeastSplitKinds(...kinds: DimensionKind[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
-      let getKind = (split: Split) => dataCube.getDimension(split.reference).kind;
+      const getKind = (split: Split) => findDimensionByName(dataCube.dimensions, split.reference).kind;
 
       const actualKinds = splits.splits.map(getKind);
 
@@ -74,7 +75,7 @@ export class Predicates {
   }
 
   public static supportedSplitsCount(): VisualizationDependentPredicate {
-    return ({ splits, dataCube }) => dataCube.getMaxSplits() < splits.length();
+    return ({ splits, dataCube }) => dataCube.maxSplits < splits.length();
   }
 
   public static noSelectedMeasures(): VisualizationIndependentPredicate {

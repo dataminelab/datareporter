@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Timezone } from "chronoshift";
 import { List } from "immutable";
 import { AttributeInfo, TabulatorOptions, TimeRange } from "plywood";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import { formatISODateTime } from "../../../common/utils/time/time";
 
 interface SeriesWithDerivation {
   series: ConcreteSeries;
@@ -37,12 +39,11 @@ function findSeriesAndDerivation(name: string, concreteSeriesList: List<Concrete
 export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
     formatter: {
-      //@ts-ignore
-      TIME_RANGE: (range: TimeRange) => range.start ? range.start.toISOString() : range
+      TIME_RANGE: (range: TimeRange, timezone: Timezone) => formatISODateTime(range.start, timezone)
     },
     attributeFilter: ({ name }: AttributeInfo) => {
       return findSeriesAndDerivation(name, essence.getConcreteSeries()) !== null
-        || essence.dataCube.getDimension(name) !== undefined;
+        || findDimensionByName(essence.dataCube.dimensions, name) !== null;
     },
     attributeTitle: ({ name }: AttributeInfo) => {
       const seriesWithDerivation = findSeriesAndDerivation(name, essence.getConcreteSeries());
@@ -50,7 +51,7 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
         const { series, derivation } = seriesWithDerivation;
         return series.title(derivation);
       }
-      const dimension = essence.dataCube.getDimension(name);
+      const dimension = findDimensionByName(essence.dataCube.dimensions, name);
       if (dimension) {
         return dimension.title;
       }

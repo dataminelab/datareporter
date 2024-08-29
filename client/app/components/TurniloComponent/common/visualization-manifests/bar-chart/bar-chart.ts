@@ -15,60 +15,109 @@
  * limitations under the License.
  */
 
+import { List } from "immutable";
 import { Dimension } from "../../models/dimension/dimension";
-import { DimensionSort } from "../../models/sort/sort";
-import { Split } from "../../models/split/split";
+import { allDimensions, findDimensionByName } from "../../models/dimension/dimensions";
+import { Split, SplitType } from "../../models/split/split";
 import { Splits } from "../../models/splits/splits";
-import { NORMAL_PRIORITY_ACTION, Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import {
+  NORMAL_PRIORITY_ACTION,
+  Resolve,
+  VisualizationManifest
+} from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
+import { thread } from "../../utils/functional/functional";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
+import {
+  adjustColorSplit,
+  adjustContinuousSplit,
+  adjustFiniteLimit,
+  adjustSort
+} from "../../utils/rules/split-adjustments";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
   .then(Actions.manualDimensionSelection("The Bar Chart requires at least one split"))
 
+  .when(Predicates.areExactSplitKinds("time"))
+  .or(Predicates.areExactSplitKinds("number"))
+  .then(({ splits, isSelectedVisualization }) => {
+    const continuousSplit = splits.getSplit(0);
+    const numberBoost = continuousSplit.type === SplitType.number ? 3 : 0;
+    const newContinuousSplit = adjustContinuousSplit(continuousSplit);
+    if (continuousSplit.equals(newContinuousSplit)) return Resolve.ready(isSelectedVisualization ? 10 : 3);
+    return Resolve.automatic(6 + numberBoost, {
+      splits: new Splits({
+        splits: List([newContinuousSplit])
+      })
+    });
+  })
+
+  .when(Predicates.areExactSplitKinds("time", "*"))
+  .or(Predicates.areExactSplitKinds("number", "*"))
+  .then(({ splits, series, dataCube, appSettings }) => {
+    const continuousSplit = splits.getSplit(0);
+    const numberBoost = continuousSplit.type === SplitType.number ? 3 : 0;
+    const nominalSplit = splits.getSplit(1);
+    const nominalDimension = findDimensionByName(dataCube.dimensions, nominalSplit.reference);
+
+    return Resolve.automatic(6 + numberBoost, {
+      // Switch splits in place and conform
+      splits: new Splits({
+        splits: List([
+          adjustColorSplit(nominalSplit, nominalDimension, series, appSettings.customization.visualizationColors),
+          adjustContinuousSplit(continuousSplit)
+        ])
+      })
+    });
+  })
+  .when(Predicates.areExactSplitKinds("*", "time"))
+  .or(Predicates.areExactSplitKinds("*", "number"))
+  .then(({ splits, series, dataCube, isSelectedVisualization, appSettings }) => {
+    const continuousSplit = splits.getSplit(1);
+    const numberBoost = continuousSplit.type === SplitType.number ? 3 : 0;
+    const nominalSplit = splits.getSplit(0);
+    const nominalDimension = findDimensionByName(dataCube.dimensions, nominalSplit.reference);
+
+    const newSplits = new Splits({
+      splits: List([
+        adjustColorSplit(nominalSplit, nominalDimension, series, appSettings.customization.visualizationColors),
+        adjustContinuousSplit(continuousSplit)
+      ])
+    });
+
+    const changed = !splits.equals(newSplits);
+    if (!changed) return Resolve.ready(isSelectedVisualization ? 10 : 3);
+    return Resolve.automatic(6 + numberBoost, {
+      splits: newSplits
+    });
+  })
+
   .when(Predicates.areExactSplitKinds("*"))
   .or(Predicates.areExactSplitKinds("*", "*"))
-  .then(({ splits, dataCube, isSelectedVisualization }) => {
-    let continuousBoost = 0;
-
-    // Auto adjustment
-    let autoChanged = false;
+  .then(({ splits, series, dataCube, isSelectedVisualization }) => {
 
     const newSplits = splits.update("splits", splits => splits.map((split: Split) => {
-      const splitDimension = dataCube.getDimension(split.reference);
-      if (splitDimension.canBucketByDefault() && split.sort.reference !== splitDimension.name) {
-        split = split.changeSort(new DimensionSort({
-          reference: splitDimension.name,
-          direction: split.sort.direction
-        }));
-        autoChanged = true;
-      }
-
-      if (splitDimension.kind === "number") {
-        continuousBoost = 4;
-      }
-
-      // ToDo: review this
-      if (!split.limit && (autoChanged || splitDimension.kind !== "time")) {
-        split = split.changeLimit(25);
-        autoChanged = true;
-      }
-
-      return split;
+      const splitDimension = findDimensionByName(dataCube.dimensions, split.reference);
+      return thread(
+        split,
+        adjustFiniteLimit(splitDimension.limits),
+        adjustSort(splitDimension, series)
+      );
     }));
 
-    if (autoChanged) {
-      return Resolve.automatic(5 + continuousBoost, { splits: newSplits });
+    const changed = !splits.equals(newSplits);
+    if (changed) {
+      return Resolve.automatic(5, { splits: newSplits });
     }
 
-    return Resolve.ready(isSelectedVisualization ? 10 : (7 + continuousBoost));
+    return Resolve.ready(isSelectedVisualization ? 10 : 6);
   })
 
   .otherwise(({ dataCube }) => {
-    const categoricalDimensions = dataCube.dimensions.filterDimensions(dimension => dimension.kind !== "time");
+    const categoricalDimensions = allDimensions(dataCube.dimensions).filter(dimension => dimension.kind !== "time");
 
     return Resolve.manual(
       NORMAL_PRIORITY_ACTION,

@@ -16,7 +16,7 @@
 
 import { List } from "immutable";
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { ReactNode } from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
@@ -24,7 +24,7 @@ import { Binary, Nullary, Unary } from "../../../../common/utils/functional/func
 import { GlobalEventListener } from "../../../components/global-event-listener/global-event-listener";
 import { toFilterClause } from "../../../utils/highlight-clause/highlight-clause";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
-import { Highlight } from "../../base-visualization/highlight";
+import { Highlight } from "../../highlight-controller/highlight";
 import { ContinuousRange, ContinuousScale, ContinuousValue } from "../utils/continuous-types";
 import { getContinuousReference } from "../utils/splits";
 import { constructRange, shiftByOne } from "./continuous-range";
@@ -76,11 +76,9 @@ export class InteractionController extends React.Component<InteractionController
       have exact type as object. Because we move union type into covariant position, typescript
       would expect that `hoverRange` has type NumberRange & TimeRange which is impossible.
       Plywood handles mismatched types correctly.
-    */
-    if (interaction && typeof interaction.range !== "string") {
-      // @ts-ignore
-      if (isHover(interaction) && interaction.range.equals(hoverRange)) return;
-    }
+     */
+    // @ts-ignore
+    if (isHover(interaction) && interaction.range.equals(hoverRange)) return;
     this.setState({ interaction: createHover(chartId, hoverRange) });
   };
 

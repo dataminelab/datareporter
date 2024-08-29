@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { NORMAL_COLORS } from "../../../../common/models/colors/colors";
+import React from "react";
+import { useSettingsContext } from "../../../views/cube-view/settings-context";
 import "./legend.scss";
 
 export interface LegendProps {
@@ -27,13 +27,14 @@ interface LegendValuesProps {
   values: string[];
 }
 
-const LegendValues: React.SFC<LegendValuesProps> = props => {
+const LegendValues: React.FunctionComponent<LegendValuesProps> = props => {
+  const { customization: { visualizationColors } } = useSettingsContext();
   const { values } = props;
   return <div className="legend-values">
     <table className="legend-values-table">
       <tbody>
       {values.map((value, i) => {
-        const style = { background: NORMAL_COLORS[i] };
+        const style = { background: visualizationColors.series[i] };
         return <tr key={value} className="legend-value">
           <td className="legend-value-color-cell">
             <div className="legend-value-color" style={style} />
@@ -48,7 +49,7 @@ const LegendValues: React.SFC<LegendValuesProps> = props => {
   </div>;
 };
 
-export const Legend: React.SFC<LegendProps> = props => {
+export const Legend: React.FunctionComponent<LegendProps> = props => {
   const { values, title } = props;
 
   return <div className="line-chart-legend">

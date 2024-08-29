@@ -17,10 +17,13 @@
 
 import { isDate } from "chronoshift";
 import { List } from "immutable";
-import { $, AttributeInfo, Dataset, Datum, Expression } from "plywood";
-import * as React from "react";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import { AttributeInfo, Dataset, Datum, Expression } from "plywood";
+import React from "react";
+import { ClientDataCube } from "../../../common/models/data-cube/data-cube";
+import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Essence } from "../../../common/models/essence/essence";
+import { Locale } from "../../../common/models/locale/locale";
+import { LIMIT } from "../../../common/models/raw-data-modal/raw-data-modal";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { formatFilterClause } from "../../../common/utils/formatter/formatter";
@@ -32,14 +35,13 @@ import { QueryError } from "../../components/query-error/query-error";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
-import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
+import { download, FileFormat, fileNameBase } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
-import tabularOptions from "../../utils/tabular-options/tabular-options";
+import { ApiContext, ApiContextValue } from "../../views/cube-view/api-context";
 import "./raw-data-modal.scss";
 
 const HEADER_HEIGHT = 30;
 const ROW_HEIGHT = 30;
-const LIMIT = 100;
 const TIME_COL_WIDTH = 180;
 const BOOLEAN_COL_WIDTH = 100;
 const NUMBER_COL_WIDTH = 100;
@@ -49,6 +51,7 @@ export interface RawDataModalProps {
   onClose: Fn;
   essence: Essence;
   timekeeper: Timekeeper;
+  locale: Locale;
 }
 
 export interface RawDataModalState {
@@ -81,7 +84,10 @@ function classFromAttribute(attribute: AttributeInfo): string {
 }
 
 export class RawDataModal extends React.Component<RawDataModalProps, RawDataModalState> {
+  static contextType = ApiContext;
+
   public mounted: boolean;
+  context: ApiContextValue;
 
   constructor(props: RawDataModalProps) {
     super(props);
@@ -98,20 +104,18 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   componentDidMount() {
     this.mounted = true;
-    const { essence, timekeeper } = this.props;
-    this.fetchData(essence, timekeeper);
+    const { essence } = this.props;
+    this.fetchData(essence);
   }
 
   componentWillUnmount() {
     this.mounted = false;
   }
 
-  fetchData(essence: Essence, timekeeper: Timekeeper): void {
-    const { dataCube } = essence;
-    const $main = $("main");
-    const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression(dataCube)).limit(LIMIT);
+  fetchData(essence: Essence): void {
+    const { rawDataQuery } = this.context;
     this.setState({ loading: true });
-    dataCube.executor(query, { timezone: essence.timezone })
+    rawDataQuery(essence)
       .then(
         (dataset: Dataset) => {
           if (!this.mounted) return;
@@ -147,18 +151,16 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
     const { dataCube } = essence;
 
     return essence.getEffectiveFilter(timekeeper).clauses.map(clause => {
-      const dimension = dataCube.getDimension(clause.reference);
+      const dimension = findDimensionByName(dataCube.dimensions, clause.reference);
       if (!dimension) return null;
       return formatFilterClause(dimension, clause, essence.timezone);
     }).toList();
   }
 
-  getSortedAttributes(dataCube: DataCube): AttributeInfo[] {
-    const timeAttributeName = dataCube.timeAttribute ? dataCube.timeAttribute.name : null;
-
+  getSortedAttributes(dataCube: ClientDataCube): AttributeInfo[] {
     const attributeRank = (attribute: AttributeInfo) => {
       const name = attribute.name;
-      if (name === timeAttributeName) {
+      if (name === dataCube.timeAttribute) {
         return 1;
       } else if (attribute.unsplitable) {
         return 3;
@@ -245,7 +247,7 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
           width: getColumnWidth(attribute)
         };
 
-        var displayValue = value;
+        let displayValue = value;
 
         if (isDate(datum[name])) {
           displayValue = (datum[name] as Date).toISOString();
@@ -290,12 +292,10 @@ export class RawDataModal extends React.Component<RawDataModalProps, RawDataModa
 
   download(fileFormat: FileFormat) {
     const { dataset } = this.state;
-    const { essence, timekeeper } = this.props;
-    const { dataCube } = essence;
+    const { essence, locale, timekeeper } = this.props;
 
-    const options = tabularOptions(essence);
-    const filtersString = dateFromFilter(essence.getEffectiveFilter(timekeeper));
-    download({ dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
+    const fileName = fileNameBase(essence, timekeeper);
+    download(dataset, essence, fileFormat, `${fileName}_raw_data`, locale.exportEncoding);
   }
 
   render() {

@@ -17,16 +17,18 @@
 
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-dom/test-utils";
+import { LOCALES } from "../../../common/models/locale/locale";
 import { renderIntoDocument } from "../../utils/test-utils";
 import { DateRangePicker } from "./date-range-picker";
 
 describe("DateRangePicker", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <DateRangePicker
+        locale={LOCALES["en-US"]}
         startTime={new Date(Date.UTC(2003, 11, 2))}
         endTime={new Date(Date.UTC(2004, 11, 2))}
         maxTime={new Date(Date.UTC(2004, 11, 2))}
@@ -76,6 +78,7 @@ describe("DateRangePicker", () => {
     expect(() => {
       renderIntoDocument(
         <DateRangePicker
+          locale={LOCALES["en-US"]}
           startTime={new Date(Date.UTC(2003, 11, 2))}
           endTime={null}
           maxTime={new Date(Date.UTC(2004, 11, 2))}

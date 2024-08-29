@@ -15,57 +15,48 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, Property, PropertyType } from "immutable-class";
-
-export type Special = "static" | "realtime";
+import { Record } from "immutable";
 
 export interface TimeTagValue {
   name: string;
+  checkInterval: number;
   time?: Date;
-  updated?: Date;
-  spacial?: Special;
+  lastTimeChecked?: Date;
 }
 
 export interface TimeTagJS {
   name: string;
-  time?: Date | string;
-  updated?: Date | string;
-  spacial?: Special;
+  checkInterval: number;
+  time?: string;
+  lastTimeChecked?: string;
 }
 
-export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
+const defaultTimeTag: TimeTagValue = {
+  name: "",
+  // NOTE: this value won't be used ever. Immutable.Record type does not understand that non-nullable fields should be not required in default value.
+  checkInterval: 60000,
+  time: null,
+  lastTimeChecked: null
+};
 
-  static isTimeTag(candidate: any): candidate is TimeTag {
-    return candidate instanceof TimeTag;
+export class TimeTag extends Record<TimeTagValue>(defaultTimeTag)  {
+
+  static fromJS({ name, checkInterval, time: timeJS, lastTimeChecked: lastTimeCheckedJS }: TimeTagJS): TimeTag {
+    const time = timeJS ? new Date(timeJS) : undefined;
+    const lastTimeChecked = lastTimeCheckedJS ? new Date(lastTimeCheckedJS) : time;
+    return new TimeTag({
+      name,
+      checkInterval,
+      time,
+      lastTimeChecked
+    });
   }
-
-  static PROPERTIES: Property[] = [
-    { name: "name" },
-    { name: "time", type: PropertyType.DATE, defaultValue: null },
-    { name: "updated", type: PropertyType.DATE, defaultValue: null },
-    { name: "spacial", defaultValue: null }
-  ];
-
-  static fromJS(parameters: TimeTagJS): TimeTag {
-    return new TimeTag(BaseImmutable.jsToValue(TimeTag.PROPERTIES, parameters));
-  }
-
-  public name: string;
-  public time: Date;
-  public updated: Date;
-  public special: Special;
 
   constructor(parameters: TimeTagValue) {
     super(parameters);
-    if (this.time && !this.updated) this.updated = this.time;
   }
 
-  public changeTime(time: Date, now: Date): TimeTag {
-    var value = this.valueOf();
-    value.time = time;
-    value.updated = now;
-    return new TimeTag(value);
+  public changeTime(time: Date, lastTimeChecked: Date): TimeTag {
+    return this.set("time", time).set("lastTimeChecked", lastTimeChecked);
   }
 }
-
-BaseImmutable.finalize(TimeTag);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { CORE_ITEM_GAP, CORE_ITEM_WIDTH } from "../../config/constants";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -42,8 +42,8 @@ export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps,
       ghostArrowLeft = dragPosition.insert * sectionWidth - CORE_ITEM_GAP / 2;
     } else {
       ghostArrowLeft = dragPosition.replace * sectionWidth + CORE_ITEM_WIDTH / 2;
-      let left = dragPosition.replace * sectionWidth;
-      dragGhostElement = <div className="drag-ghost-element" style={{ left }}></div>;
+      const left = dragPosition.replace * sectionWidth;
+      dragGhostElement = <div className="drag-ghost-element" style={{ left }} />;
     }
 
     return <div className="fancy-drag-indicator">

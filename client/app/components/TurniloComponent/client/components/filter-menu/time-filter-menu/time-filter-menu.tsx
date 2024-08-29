@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
-import { Dimension } from "../../../../common/models/dimension/dimension";
+import { TimeDimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { RelativeTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { FilterClause, RelativeTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import { Locale } from "../../../../common/models/locale/locale";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../../common/utils/functional/functional";
@@ -42,7 +43,7 @@ function tabTitle(tab: TimeFilterTab) {
   return tab === TimeFilterTab.RELATIVE ? STRINGS.relative : STRINGS.fixed;
 }
 
-const TabSelector: React.SFC<TabSelectorProps> = props => {
+const TabSelector: React.FunctionComponent<TabSelectorProps> = props => {
   const { selectedTab, onTabSelect } = props;
   const tabs = [TimeFilterTab.RELATIVE, TimeFilterTab.FIXED].map(tab => {
     return {
@@ -57,13 +58,14 @@ const TabSelector: React.SFC<TabSelectorProps> = props => {
 
 export interface TimeFilterMenuProps {
   clicker: Clicker;
+  saveClause: Unary<FilterClause, void>;
   timekeeper: Timekeeper;
   essence: Essence;
-  dimension: Dimension;
+  locale: Locale;
+  dimension: TimeDimension;
   onClose: Fn;
   containerStage?: Stage;
   openOn: Element;
-  inside?: Element;
 }
 
 enum TimeFilterTab { RELATIVE = "relative", FIXED = "fixed"}
@@ -84,12 +86,12 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
   selectTab = (tab: TimeFilterTab) => this.setState({ tab });
 
   render() {
-    const { essence, timekeeper, clicker, dimension, onClose, containerStage, openOn, inside } = this.props;
+    const { essence, saveClause, timekeeper, clicker, dimension, onClose, containerStage, locale, openOn } = this.props;
     if (!dimension) return null;
     const { tab } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
     const isRelativeTab = tab === TimeFilterTab.RELATIVE;
-    const tabProps = { essence, dimension, timekeeper, onClose, clicker };
+    const tabProps = { saveClause, essence, dimension, timekeeper, onClose, clicker, locale };
 
     return <BubbleMenu
       className="time-filter-menu"
@@ -98,7 +100,6 @@ export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFil
       stage={menuSize}
       openOn={openOn}
       onClose={onClose}
-      inside={inside}
     >
       <TabSelector selectedTab={tab} onTabSelect={this.selectTab} />
       {isRelativeTab ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}

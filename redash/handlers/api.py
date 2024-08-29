@@ -91,6 +91,7 @@ from redash.handlers.reports import (
     ReportsArchiveResource,
     PublicReportResource,
     ReportShareResource,
+    ReportApiKeyAccess,
 )
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
@@ -333,4 +334,16 @@ api.add_org_resource(
     ReportShareResource,
     "/api/reports/<report_id>/share",
     endpoint="report_share",
+)
+
+api.add_org_resource(
+    ReportRegenerateApiKeyResource,
+    "/api/reports/<int:report_id>/regenerate_api_key",
+    endpoint="report_regenerate_api_key",
+)
+# api/reports/3/results.csv
+api.add_org_resource(
+    ReportApiKeyAccess,
+    "/api/reports/<int:report_id>/results.<filetype>",
+    endpoint="report_file_download",
 )

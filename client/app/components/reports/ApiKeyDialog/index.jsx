@@ -14,39 +14,40 @@ import "./index.less";
 
 function ApiKeyDialog({ dialog, ...props }) {
   console.log(props)
-  const [query, setReport] = useState(props.report);
+  const [report, setReport] = useState(props.report);
   const [updatingApiKey, setUpdatingApiKey] = useState(false);
 
   const regenerateReportApiKey = useCallback(() => {
     setUpdatingApiKey(true);
+    console.log("request out now")
     axios
-      .post(`api/reports/${query.id}/regenerate_api_key`)
+      .post(`api/reports/${report.id}/regenerate_api_key`)
       .then(data => {
         setUpdatingApiKey(false);
-        setReport(extend(query.clone(), { api_key: data.api_key }));
+        setReport(extend(report.clone(), { api_key: data.api_key }));
       })
       .catch(() => {
         setUpdatingApiKey(false);
         notification.error("Failed to update API key");
       });
-  }, [query]);
+  }, [report]);
 
   const { csvUrl, jsonUrl } = useMemo(
     () => ({
-      csvUrl: `${clientConfig.basePath}api/reports/${query.id}/results.csv?api_key=${query.api_key}`,
-      jsonUrl: `${clientConfig.basePath}api/reports/${query.id}/results.json?api_key=${query.api_key}`,
+      csvUrl: `${clientConfig.basePath}api/reports/${report.id}/results.csv?api_key=${report.api_key}`,
+      jsonUrl: `${clientConfig.basePath}api/reports/${report.id}/results.json?api_key=${report.api_key}`,
     }),
-    [query.id, query.api_key]
+    [report.id, report.api_key]
   );
 
   return (
-    <Modal {...dialog.props} width={600} footer={<Button onClick={() => dialog.close(query)}>Close</Button>}>
-      <div className="query-api-key-dialog-wrapper">
+    <Modal {...dialog.props} width={600} footer={<Button onClick={() => dialog.close(report)}>Close</Button>}>
+      <div className="report-api-key-dialog-wrapper">
         <h5>API Key</h5>
         <div className="m-b-20">
           <Input.Group compact>
-            <Input readOnly value={query.api_key} />
-            {query.can_edit && (
+            <Input readOnly value={report.api_key} />
+            {report.can_edit && (
               <Button disabled={updatingApiKey} loading={updatingApiKey} onClick={regenerateReportApiKey}>
                 Regenerate
               </Button>
@@ -70,7 +71,7 @@ function ApiKeyDialog({ dialog, ...props }) {
 
 ApiKeyDialog.propTypes = {
   dialog: DialogPropType.isRequired,
-  query: PropTypes.shape({
+  report: PropTypes.shape({
     id: PropTypes.number.isRequired,
     api_key: PropTypes.string,
     can_edit: PropTypes.bool,

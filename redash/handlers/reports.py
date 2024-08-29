@@ -1,6 +1,9 @@
 import json
-from flask import request, make_response, url_for
+from flask import request, make_response, url_for, jsonify
 from flask_restful import abort
+import csv
+import io
+from datetime import datetime
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
 from redash.security import csp_allows_embeding
@@ -33,6 +36,14 @@ MODEL_ID = "model_id"
 COLOR_1 = "color_1"
 COLOR_2 = "color_2"
 TAGS = "tags"
+
+
+# Custom JSON encoder to handle datetime objects
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()  # Convert datetime to ISO 8601 string
+        return super().default(obj)
 
 
 class ReportFilter(BaseResource):
@@ -69,6 +80,59 @@ class ReportGeneratePublicResource(BaseResource):
                 abort(400, message="An error occurred while generating report.")
 
 
+# /api/reports/generate/<int:model_id>
+class ReportApiKeyAccess(BaseResource):
+    def get(self, report_id: int, filetype: str):
+        api_key = request.args.get("api_key")
+        if not api_key:
+            abort(400, message="Missing api key")
+        report = get_object_or_404(Report.get_by_id, report_id)
+        if api_key != report.api_key:
+            abort(403, message="Invalid api key")
+        expression = report.get_expression()
+        model = get_object_or_404(Model.get_by_id, report.model_id)
+
+        execute_plywood = hash_to_result(hash_string=report.hash, model=model, organisation=self.current_org)
+        serialized = execute_plywood.serialized()
+        file = ""
+        if filetype == "csv":
+            output = io.StringIO()
+            writer = csv.writer(output)
+
+            # Assuming serialized["queries"] is a list of queries
+            query = serialized["queries"][-1]
+            if "query_result" not in query:
+                return jsonify({"error": "Query result not found"}), 400
+
+            query_result = query["query_result"]
+            data = query_result["data"]
+
+            # Write the header
+            columns = [col["name"] for col in data["columns"]]
+            writer.writerow(columns)
+
+            # Write the data rows
+            for row in data["rows"]:
+                writer.writerow([row[col] for col in columns])
+
+            # Create the response object to return the CSV file
+            response = make_response(output.getvalue())
+            response.headers["Content-Disposition"] = f"attachment; filename=report_{report_id}.csv"
+            response.headers["Content-Type"] = "text/csv"
+            response.headers["X-Message"] = "Download started"
+            return response
+        elif filetype == "json":
+            # Use the custom JSON encoder to handle datetime objects
+            response = make_response(json.dumps(serialized, cls=CustomJSONEncoder, indent=4))
+            response.headers["Content-Disposition"] = f"attachment; filename=report_{report_id}.json"
+            response.headers["Content-Type"] = "application/json"
+            response.headers["X-Message"] = "Download started"
+            return response
+
+        # Default response if filetype doesn't match
+        return jsonify({"message": "OK", "data": serialized})
+
+
 class ReportGenerateResource(BaseResource):
     def post(self, model_id):
         if not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser):
@@ -86,10 +150,7 @@ class ReportGenerateResource(BaseResource):
             )
             return result.serialized()
         except ExpressionNotSupported as err:
-            if REDASH_DEBUG:
-                abort(400, message=err.message)
-            else:
-                abort(400, message="An error occurred while generating report.")
+            abort(400, message=err.message)
 
 
 # /api/reports/archive

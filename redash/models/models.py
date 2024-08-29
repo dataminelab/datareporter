@@ -225,3 +225,13 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         return self.query.join(User).filter(
             and_(Report.is_archived.is_(False), User.org_id == user.org.id, User.group_ids.overlap(user.group_ids))
         )
+
+    @classmethod
+    def get_by_id_and_org(self, _id, org):
+        return self.query.filter(and_(Report.id == _id, Report.user.has(org=org))).one()
+
+    def get_hash(self):
+        return self.expression
+
+    def get_expression(self):
+        return self.expression

@@ -354,18 +354,10 @@ export default function ReportPageHeader(props) {
     ]
   );
 
-  useEffect(() => {
-    updateReport(report, { successMessage: null, errorMessage: null });
-  }, [report.expression, window.location.hash]);
 
   useEffect(() => {
+    updateReport(report, { successMessage: null, errorMessage: null });
     if (report.isJustLanded) {
-      if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
-      if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
-      if (report.data_source_id !== selectedDataSource) handleDataSourceChange(report.data_source_id);
-      if (report.model_id !== selectedModel) handleModelChange(report.model_id);
-      if (report.name !== reportName) setReportName(report.name);
-      if (report.id !== props.report.id) handleIdChange(report.id);
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)), 
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 
@@ -373,8 +365,8 @@ export default function ReportPageHeader(props) {
       setTimeout(() => {
         handleReportChanged(false);
       }, 333);
-    }
-  }, [report.name]);
+    } else if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
+  }, [report.name, report.expression, window.location.hash, dataSourcesLoaded]);
   
   useEffect(() => {
     if (window.location.href.indexOf("4/") > -1) setCurrentHash(window.location.hash);
@@ -421,9 +413,6 @@ export default function ReportPageHeader(props) {
     }
   }, [dataSourcesLoaded]);
 
-  useEffect(() => {
-    if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
-  }, [dataSourcesLoaded]);
 
   useEffect(() => {
     if (report.isJustLanded) return;

@@ -178,20 +178,25 @@ export default function ReportPageHeader(props) {
     modelSelectElement.current.focus();
   }
 
+  const setNewModels = async (data_source_id) => {
+    var newModels = [];
+    const res = await Model.query({ data_source: data_source_id });
+    newModels = res.results;
+    const updates = {
+      data_source_id,
+      isJustLanded: false,
+    }
+    setModels(newModels);
+    return updates;
+  }
+
   const handleDataSourceChange = useCallback(
     async (data_source_id, signal) => {
       changeModelDataText(modelSelectElement.current.props.placeholder);
       setLoadModelsLoaded(false);
-      var newModels = [];
+      if (signal && signal.aborted) return;
       try {
-        const res = await Model.query({ data_source: data_source_id });
-        newModels = res.results;
-        if (signal && signal.aborted) return;
-        const updates = {
-          data_source_id,
-          isJustLanded: false,
-        }
-        setModels(newModels);
+        let updates = await setNewModels(data_source_id);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null, errorMessage: null });
         handleReportChanged(true);
@@ -356,8 +361,17 @@ export default function ReportPageHeader(props) {
 
 
   useEffect(() => {
-    updateReport(report, { successMessage: null, errorMessage: null });
     if (report.isJustLanded) {
+      if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
+      if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
+      if (report.data_source_id !== selectedDataSource) {
+        setNewModels(report.data_source_id);
+        setSelectedDataSource(report.data_source_id);
+      }
+      if (report.model_id !== selectedModel) {
+        setSelectedModel(report.model_id);
+        setLoadModelsLoaded(true);
+      }
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)), 
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 
@@ -415,6 +429,7 @@ export default function ReportPageHeader(props) {
 
 
   useEffect(() => {
+    // this function is working on report/new page for setting first model to report
     if (report.isJustLanded) return;
     const firstEncounterModelSetter = async (models) => {
       const modelId = models[0].id;      

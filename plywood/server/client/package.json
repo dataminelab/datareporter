@@ -87,7 +87,7 @@
     "immutable-class-tester": "0.7.4",
     "imonit": "0.2.0",
     "istanbul": "0.4.5",
-    "mocha": "5.2.0",
+    "mocha": "10.7.3",
     "nodemon": "^2.0.4",
     "pegjs": "0.10.0",
     "plywood-druid-requester": "2.6.2",

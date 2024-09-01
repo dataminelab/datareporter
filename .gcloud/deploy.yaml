@@ -11,8 +11,8 @@ steps:
     ]
     entrypoint: "bash"
     volumes:
-      name: "config"
-      path: "/config"
+      - name: "config"
+        path: "/config"
   - name: "alpine/k8s:1.26.10"
     env: [ "KUBECONFIG=/config/kubeconfig.conf" ]
     entrypoint: "helm"
@@ -23,8 +23,8 @@ steps:
       "https://dataminelab.github.io/contrib-helm-chart/"
     ]
     volumes:
-      name: "config"
-      path: "/config"
+      - name: "config"
+        path: "/config"
 
   - name: "alpine/k8s:1.26.10"
     env: [
@@ -53,8 +53,8 @@ steps:
          EOT
 
     volumes:
-      name: "config"
-      path: "/config"
+      - name: "config"
+        path: "/config"
 
 
   - name: "gcr.io/cloud-builders/gcloud"

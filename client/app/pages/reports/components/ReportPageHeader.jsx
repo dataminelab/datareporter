@@ -124,11 +124,11 @@ export default function ReportPageHeader(props) {
   const modelSelectElementText = useRef("");
   const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
 
-  const handleReportChanged = (state) => {
+  const handleReportChanged = useCallback((state) => {
     if (!report.data_source_id) return;
     if (!report.model_id) return;
     setReportChanged(state);
-  }
+  });
 
   const handleNewNameChange = (event) => {
     setNewName(event.target.value);
@@ -164,6 +164,7 @@ export default function ReportPageHeader(props) {
         props.onChange(extend(report.clone(), updates));
         setColorElements(color.hex, false, false); 
       }
+      handleReportChanged(true);
     },
     [report, props.onChange]
   );
@@ -321,6 +322,7 @@ export default function ReportPageHeader(props) {
       }, { successMessage: "Report updated", errorMessage: null });
       recordEvent("create", "report", report.id);
     }
+    setReportChanged(false);
   }
 
   const moreActionsMenu = useMemo(() => createMenu([

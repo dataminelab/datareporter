@@ -20,11 +20,11 @@ from redash.serializers import serialize_job
 from redash.services.expression import ExpressionBase64Parser
 from redash.tasks import Job
 
-PLYWOOD_PREFIX = 'PLYWOOD_QUERIES'
+PLYWOOD_PREFIX = "PLYWOOD_QUERIES"
 MAX_AGE = 800
 REDASH_QUERY_CACHE = 0
 parser = lzstring.LZString()
-QUERY_ID = 'adhoc'
+QUERY_ID = "adhoc"
 
 SUCCESS_CODE = 3
 FAILED_QUERY_CODE = 4
@@ -47,28 +47,24 @@ def execute_query(query, model, query_id, org):
     parameterized_query = ParameterizedQuery(query, org=org)
     parameters = {}
     should_apply_auto_limit = False
-    return run_query(parameterized_query, parameters, model.data_source, query_id, should_apply_auto_limit, REDASH_QUERY_CACHE)
+    return run_query(
+        parameterized_query, parameters, model.data_source, query_id, should_apply_auto_limit, REDASH_QUERY_CACHE
+    )
 
 
 def parse_job(job_id: str, current_org):
     job_data = serialize_job(Job.fetch(job_id))
 
-    if job_data['job']['status'] == SUCCESS_CODE:
-        query_result_id = job_data['job']['query_result_id']
+    if job_data["job"]["status"] == SUCCESS_CODE:
+        query_result_id = job_data["job"]["query_result_id"]
         query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query_result_id, current_org)
         return dict(query_result=query_result.to_dict())
 
     return job_data
 
 
-def cache_or_get(
-    hash_string: str,
-    queries: list,
-    current_org,
-    model: Model,
-    split: int = 1
-):
-    smaller_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+def cache_or_get(hash_string: str, queries: list, current_org, model: Model, split: int = 1):
+    smaller_hash = hashlib.md5(hash_string.encode("utf-8")).hexdigest()
     key = PLYWOOD_PREFIX + smaller_hash + str(split)
     exists = redis_connection.exists(key)
 
@@ -77,31 +73,22 @@ def cache_or_get(
         return [parse_job(job_id, current_org) for job_id in json.loads(data)]
     else:
         queries_result = [execute_query(query, model, QUERY_ID, current_org) for query in queries]
-        job_ids = [q['job']['id'] for q in queries_result]
+        job_ids = [q["job"]["id"] for q in queries_result]
 
         redis_connection.setex(key, MAX_AGE, json.dumps(job_ids))
 
         return cache_or_get(hash_string, queries, current_org, model, split)
 
 
-def clear_cache(
-    hash_string: str,
-    split: int = 1
-):
-    smaller_hash = hashlib.md5(hash_string.encode('utf-8')).hexdigest()
+def clear_cache(hash_string: str, split: int = 1):
+    smaller_hash = hashlib.md5(hash_string.encode("utf-8")).hexdigest()
     key = PLYWOOD_PREFIX + smaller_hash + str(split)
     exists = redis_connection.exists(key)
     if exists:
         redis_connection.delete(key)
 
 
-def clear_cache_and_get(
-    hash_string: str,
-    queries: list,
-    current_org,
-    model: Model,
-    split: int = 1
-):
+def clear_cache_and_get(hash_string: str, queries: list, current_org, model: Model, split: int = 1):
     clear_cache(hash_string, split)
     return cache_or_get(hash_string, queries, current_org, model, split)
 
@@ -122,8 +109,8 @@ def has_pending(array):
 def jobs_status(data: List[dict]) -> Union[None, int]:
     all_statuses = []
     for res in data:
-        if 'job' in res:
-            all_statuses.append(res['job']['status'])
+        if "job" in res:
+            all_statuses.append(res["job"]["status"])
 
     if len(all_statuses) == 0:
         return None
@@ -148,7 +135,7 @@ def parse_result(
     So we poll this url and if jobs are ready we transform it
     """
     if len(queries) == 0:
-        abort(400, message='Error with query')
+        abort(400, message="Error with query")
 
     is_fetching = jobs_status(queries)
     if is_fetching:
@@ -165,16 +152,11 @@ def parse_result(
             queries=[],
         )
 
-    split = len(expression.filter['splits']) or 1
+    split = len(expression.filter["splits"]) or 1
 
-    if split == 2: # initiating 2 split jobs
+    if split == 2:  # initiating 2 split jobs
         queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
-        queries = cache_or_get(
-            hash_string,
-            queries_2_splits,
-            current_org,
-            model,
-            split)
+        queries = cache_or_get(hash_string, queries_2_splits, current_org, model, split)
         errored = clean_errored(queries)
         if errored:
             clear_cache(hash_string)
@@ -185,7 +167,6 @@ def parse_result(
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
-
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
@@ -209,11 +190,11 @@ def parse_result(
     return serializer
 
 
-def clean_errored(queries: list): 
+def clean_errored(queries: list):
     errored = []
 
     for index, query in enumerate(queries):
-        if 'job' in query and query['job']['status'] == FAILED_QUERY_CODE:# and query['job']['error']:
+        if "job" in query and query["job"]["status"] == FAILED_QUERY_CODE:  # and query['job']['error']:
             errored.append(query)
             del queries[index]
 
@@ -226,7 +207,7 @@ def get_data_cube(model: Model):
 
 
 def is_admin(user):
-    if 'admin' in user.permissions or 'super_admin' in user.permissions or 'edit_report' in user.permissions:
+    if "admin" in user.permissions or "super_admin" in user.permissions or "edit_report" in user.permissions:
         return True
     return False
 
@@ -255,7 +236,7 @@ def hash_report(o, can_edit):
         "report": "",
         "schedule": None,
         "tags": o.tags,
-        "user":{
+        "user": {
             "id": o.user.id,
             "name": o.user.name,
             "profile_image_url": o.user.profile_image_url,
@@ -295,20 +276,12 @@ def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: b
             model,
         )
 
-    return parse_result(
-        hash_string,
-        queries_result,
-        data_cube,
-        expression,
-        model,
-        organisation,
-        expression.queries
-    )
+    return parse_result(hash_string, queries_result, data_cube, expression, model, organisation, expression.queries)
 
 
 def filter_expression_to_result(expression: dict, model: Model, organisation):
     data_cube = DataCube(model=model)
-    expression = replace_item(expression, 'main', data_cube.source_name)
+    expression = replace_item(expression, "main", data_cube.source_name)
 
     queries = Expression.get_queries_from_prepared_expression(data_cube, expression)
 

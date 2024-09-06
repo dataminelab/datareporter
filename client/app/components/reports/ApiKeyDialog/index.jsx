@@ -19,14 +19,14 @@ function ApiKeyDialog({ dialog, ...props }) {
 
   const regenerateReportApiKey = useCallback(() => {
     setUpdatingApiKey(true);
-    console.log("request out now")
     axios
       .post(`api/reports/${report.id}/regenerate_api_key`)
       .then(data => {
         setUpdatingApiKey(false);
         setReport(extend(report.clone(), { api_key: data.api_key }));
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
         setUpdatingApiKey(false);
         notification.error("Failed to update API key");
       });

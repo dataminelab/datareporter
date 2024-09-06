@@ -212,7 +212,7 @@ def is_admin(user):
     return False
 
 
-def hash_report(o, can_edit):
+def hash_report(o: dict, can_edit: bool, get_results: bool = False):
     data_cube = get_data_cube(o.model)
     is_favorite = o.is_favorite_v2(o.user, o)
     api_key = models.ApiKey.get_by_object(o)
@@ -224,38 +224,43 @@ def hash_report(o, can_edit):
             _external=True,
         )
         api_key = api_key.api_key
-    result = {
-        "color_1": o.color_1,
-        "color_2": o.color_2,
-        "hash": o.hash,
-        "name": o.name,
-        "model_id": o.model_id,
-        "can_edit": can_edit,
-        "source_name": data_cube.source_name,
-        "data_source_id": o.model.data_source.id,
-        "report": "",
-        "schedule": None,
-        "tags": o.tags,
-        "user": {
-            "id": o.user.id,
-            "name": o.user.name,
-            "profile_image_url": o.user.profile_image_url,
-            "permissions": o.user.permissions,
-            "isAdmin": is_admin(o.user),
-        },
-        "is_favorite": is_favorite,
-        "is_archived": o.is_archived,
-        "isJustLanded": True,
-        "appSettings": {
-            "dataCubes": [data_cube.data_cube],
-            "customization": {},
-            "clusters": [],
-        },
-        "id": o.id,
-        "api_key": api_key,
-        "public_url": public_url,
+    report = {}
+    report["color_1"] = o.color_1
+    report["color_2"] = o.color_2
+    report["hash"] = o.hash
+    report["name"] = o.name
+    report["model_id"] = o.model_id
+    report["can_edit"] = can_edit
+    report["source_name"] = data_cube.source_name
+    report["data_source_id"] = o.model.data_source.id
+    report["report"] = ""
+    report["schedule"] = None
+    report["tags"] = o.tags
+    report["user"] = {
+        "id": o.user.id,
+        "name": o.user.name,
+        "profile_image_url": o.user.profile_image_url,
+        "permissions": o.user.permissions,
+        "isAdmin": is_admin(o.user),
     }
-    return result
+    report["is_favorite"] = is_favorite
+    report["is_archived"] = o.is_archived
+    report["isJustLanded"] = True
+    report["appSettings"] = {
+        "dataCubes": [data_cube.data_cube],
+        "customization": {
+            "urlShortener": "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
+        },
+        "clusters": [],
+    }
+    report["id"] = o.id
+    report["api_key"] = api_key
+    report["public_url"] = public_url
+    if get_results:
+        # this process might return with a working class instead of a dict
+        report["results"] = hash_to_result(o.hash, o.model, o.user.org).serialized()
+    report["version"] = "1.26.0-beta.1"
+    return report
 
 
 def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: bool = False):

@@ -363,6 +363,11 @@ export default function ReportPageHeader(props) {
 
 
   useEffect(() => {
+    if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
+  }, [dataSourcesLoaded]);
+  
+  useEffect(() => {
+    
     if (report.isJustLanded) {
       if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
       if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
@@ -378,12 +383,10 @@ export default function ReportPageHeader(props) {
         Number(localStorage.getItem(`${window.location.pathname}-price`)), 
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 
         false);
-      setTimeout(() => {
-        handleReportChanged(false);
-      }, 333);
-    } else if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
-  }, [report.name, report.expression, window.location.hash, dataSourcesLoaded]);
-  
+        handleReportChanged(false); // fix this, we cant set get here save button is not working disabling and stuff
+    }
+  }, []);
+
   useEffect(() => {
     if (window.location.href.indexOf("4/") > -1) setCurrentHash(window.location.hash);
   }, []);

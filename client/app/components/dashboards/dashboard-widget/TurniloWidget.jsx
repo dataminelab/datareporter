@@ -1,12 +1,14 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { TurniloApplication } from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
+import * as React from "react";
+import * as PropTypes from "prop-types";
+import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
 import Widget from "./Widget";
-import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
-import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
+import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
+import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
+import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
 
 function TurniloWidget(props) {
-  const { widget, canEdit, config, setFilterParams, getEssence } = props;
+  const { widget, canEdit } = props;
+  const config = props.config;
   const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
   const TurniloMenuOptions = [];
 

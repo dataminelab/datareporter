@@ -1,0 +1,90 @@
+substitutions:
+
+  _GCR_HOSTNAME: eu.gcr.io
+  _IMAGE_TAG: "$COMMIT_SHA"
+
+steps:
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: [
+      "-c",
+      "gcloud secrets versions access latest --secret=kubeconfig-digitalocean-k8s > /config/kubeconfig.conf"
+    ]
+    entrypoint: "bash"
+    volumes:
+      - name: "config"
+        path: "/config"
+  - name: "alpine/k8s:1.26.10"
+    env: [ "KUBECONFIG=/config/kubeconfig.conf" ]
+    entrypoint: "helm"
+    args: [
+      "repo",
+      "add",
+      "datareporter",
+      "https://dataminelab.github.io/contrib-helm-chart/"
+    ]
+    volumes:
+      - name: "config"
+        path: "/config"
+
+  - name: "alpine/k8s:1.26.10"
+    env: [
+      "KUBECONFIG=/config/kubeconfig.conf",
+      "COMMIT_SHA=$COMMIT_SHA",
+      "PROJECT_ID=$PROJECT_ID",
+      "_GCR_HOSTNAME=$_GCR_HOSTNAME",
+      "BRANCH_NAME=$BRANCH_NAME",
+    ]
+    entrypoint: "ash"
+    args:
+      - "-c"
+      - |
+        <<EOT
+         kubectl get ns || exit 1
+         echo Deployment of $BRANCH_NAME
+         echo Will deploy to $(kubectl get ns -l 'datarepoter.com/branch=$BRANCH_NAME' -o jsonpath={.items[*].metadata.name})
+         for ns in $(kubectl get ns -l 'datarepoter.com/branch=$BRANCH_NAME' -o jsonpath={.items[*].metadata.name});
+         do
+         echo Deploy to $ns;
+         helm -n $ns upgrade --install --reuse-values datareporter datareporter/datareporter \
+         --set plywood.image.tag=$_IMAGE_TAG \
+         --set datareporter.image.tag=$_IMAGE_TAG \
+         --timeout=15m --atomic || helm  -n $ns rollback datareporter
+         done
+         EOT
+
+    volumes:
+      - name: "config"
+        path: "/config"
+
+
+  - name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    env: [
+      "COMMIT_SHA=$COMMIT_SHA",
+      "PROJECT_ID=$PROJECT_ID",
+      "_GCR_HOSTNAME=$_GCR_HOSTNAME",
+      "BRANCH_NAME=$BRANCH_NAME",
+    ]
+    args:
+      - "-c"
+      - |
+        <<EOT
+        echo Deployment of $BRANCH_NAME
+        dtr_services=$(gcloud run  services list --filter='metadata.labels.branch:$BRANCH_NAME AND metadata.labels.app:datareporter' --format='value(name)')
+        ply_services=$(gcloud run  services list --filter='metadata.labels.branch:$BRANCH_NAME AND metadata.labels.app:plywood' --format='value(name)')
+        echo Will upgrade $dtr_services $ply_services
+        for svc in $ply_services;
+        do
+        echo Upgrade plywood of $svc;
+        gcloud run deploy $svc\
+        --image $_GCR_HOSTNAME/$PROJECT_ID/plywood:$_IMAGE_TAG\
+        --region europe-west1
+        done
+        for svc in $dtr_services;
+        do
+        echo Upgrade datareporter of $svc;
+        gcloud run deploy $svc\
+        --image $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$_IMAGE_TAG\
+        --region europe-west1
+        done
+        EOT

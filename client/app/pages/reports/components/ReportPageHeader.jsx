@@ -124,11 +124,11 @@ export default function ReportPageHeader(props) {
   const modelSelectElementText = useRef("");
   const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
 
-  const handleReportChanged = (state) => {
+  const handleReportChanged = useCallback((state) => {
     if (!report.data_source_id) return;
     if (!report.model_id) return;
     setReportChanged(state);
-  }
+  });
 
   const handleNewNameChange = (event) => {
     setNewName(event.target.value);
@@ -164,6 +164,7 @@ export default function ReportPageHeader(props) {
         props.onChange(extend(report.clone(), updates));
         setColorElements(color.hex, false, false); 
       }
+      handleReportChanged(true);
     },
     [report, props.onChange]
   );
@@ -178,20 +179,25 @@ export default function ReportPageHeader(props) {
     modelSelectElement.current.focus();
   }
 
+  const setNewModels = async (data_source_id) => {
+    var newModels = [];
+    const res = await Model.query({ data_source: data_source_id });
+    newModels = res.results;
+    const updates = {
+      data_source_id,
+      isJustLanded: false,
+    }
+    setModels(newModels);
+    return updates;
+  }
+
   const handleDataSourceChange = useCallback(
     async (data_source_id, signal) => {
       changeModelDataText(modelSelectElement.current.props.placeholder);
       setLoadModelsLoaded(false);
-      var newModels = [];
+      if (signal && signal.aborted) return;
       try {
-        const res = await Model.query({ data_source: data_source_id });
-        newModels = res.results;
-        if (signal && signal.aborted) return;
-        const updates = {
-          data_source_id,
-          isJustLanded: false,
-        }
-        setModels(newModels);
+        let updates = await setNewModels(data_source_id);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null, errorMessage: null });
         handleReportChanged(true);
@@ -316,6 +322,7 @@ export default function ReportPageHeader(props) {
       }, { successMessage: "Report updated", errorMessage: null });
       recordEvent("create", "report", report.id);
     }
+    setReportChanged(false);
   }
 
   const moreActionsMenu = useMemo(() => createMenu([
@@ -354,28 +361,32 @@ export default function ReportPageHeader(props) {
     ]
   );
 
-  useEffect(() => {
-    updateReport(report, { successMessage: null, errorMessage: null });
-  }, [report.expression, window.location.hash]);
 
   useEffect(() => {
+    if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
+  }, [dataSourcesLoaded]);
+  
+  useEffect(() => {
+    
     if (report.isJustLanded) {
       if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
       if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
-      if (report.data_source_id !== selectedDataSource) handleDataSourceChange(report.data_source_id);
-      if (report.model_id !== selectedModel) handleModelChange(report.model_id);
-      if (report.name !== reportName) setReportName(report.name);
-      if (report.id !== props.report.id) handleIdChange(report.id);
+      if (report.data_source_id !== selectedDataSource) {
+        setNewModels(report.data_source_id);
+        setSelectedDataSource(report.data_source_id);
+      }
+      if (report.model_id !== selectedModel) {
+        setSelectedModel(report.model_id);
+        setLoadModelsLoaded(true);
+      }
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)), 
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)), 
         false);
-      setTimeout(() => {
-        handleReportChanged(false);
-      }, 333);
+        handleReportChanged(false); // fix this, we cant set get here save button is not working disabling and stuff
     }
-  }, [report.name]);
-  
+  }, []);
+
   useEffect(() => {
     if (window.location.href.indexOf("4/") > -1) setCurrentHash(window.location.hash);
   }, []);
@@ -421,11 +432,9 @@ export default function ReportPageHeader(props) {
     }
   }, [dataSourcesLoaded]);
 
-  useEffect(() => {
-    if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
-  }, [dataSourcesLoaded]);
 
   useEffect(() => {
+    // this function is working on report/new page for setting first model to report
     if (report.isJustLanded) return;
     const firstEncounterModelSetter = async (models) => {
       const modelId = models[0].id;      

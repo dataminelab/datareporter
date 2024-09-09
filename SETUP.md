@@ -191,8 +191,8 @@ rtt min/avg/max/mdev = 0.057/0.781/1.506/0.725 ms
 
 ### How to handle package controll on Python side, [see settings](https://github.com/getredash/redash/blob/c97afeb327d8d54e7219ac439cc93d0f234763e5)
 ```
-# Install Poetry locally, it has to be 1.6.1 or upper because of group usages
-pip3 install poetry==1.6.1
+# Install poetry using pip
+pip3 install poetry==1.8.3
 
 # Uninstall Poetry locally
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/901bdf0491005f1b3db41947d0d938da6838ecb9/get-poetry.py | python3 - --uninstall

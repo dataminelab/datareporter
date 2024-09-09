@@ -349,7 +349,7 @@ class QueryResult {
 
     axios
       .get(`api/queries/${queryId}/results/${id}.json`, { 
-        transformResponse: (response) => jsonParse(response) 
+        transformResponse: (response) => jsonParse(response)
       }) 
       .then(response => {
         // Success handler

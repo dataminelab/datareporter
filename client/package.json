@@ -87,7 +87,7 @@
     "mustache": "^2.3.0",
     "numbro": "^2.3.1",
     "numeral": "^2.0.6",
-    "path-to-regexp": "^3.1.0",
+    "path-to-regexp": "^8.0.0",
     "plywood": "^0.22.6",
     "prop-types": "^15.6.1",
     "query-string": "^6.9.0",

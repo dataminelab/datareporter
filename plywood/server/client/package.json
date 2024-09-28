@@ -65,7 +65,7 @@
   "tonicExampleFilename": "docs/examples/tonic.js",
   "dependencies": {
     "@aws-sdk/client-athena": "^3.3.0",
-    "@google-cloud/bigquery": "^5.0.1",
+    "@google-cloud/bigquery": "^7.9.1",
     "@druid-toolkit/query": "^0.19.1",
     "chronoshift": "^0.10.0",
     "druid.d.ts": "^0.12.1",

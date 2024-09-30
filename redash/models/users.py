@@ -418,12 +418,7 @@ class ApiUser(UserMixin, PermissionsCheckMixin):
         else:
             self.id = api_key.api_key
             self.name = "ApiKey: {}".format(api_key.id)
-            try:
-                self.object = api_key.object
-            except KeyError:
-                # import report here to avoid circular import
-
-                self.object = get_object_or_404(api_key.object_id, current_user.org)
+            self.object = api_key.object
         self.group_ids = groups
         self.org = org
 

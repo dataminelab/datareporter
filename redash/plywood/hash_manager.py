@@ -8,7 +8,7 @@ from flask import url_for
 
 from redash.handlers.base import get_object_or_404
 from redash.handlers.query_results import run_query
-from redash.models import ParameterizedQuery
+from redash.models import ParameterizedQuery, User, Organization
 from redash.models.models import Model
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
@@ -52,7 +52,7 @@ def execute_query(query, model, query_id, org):
     )
 
 
-def parse_job(job_id: str, current_org):
+def parse_job(job_id: str, current_org: Organization):
     job_data = serialize_job(Job.fetch(job_id))
 
     if job_data["job"]["status"] == SUCCESS_CODE:
@@ -93,7 +93,7 @@ def clear_cache_and_get(hash_string: str, queries: list, current_org, model: Mod
     return cache_or_get(hash_string, queries, current_org, model, split)
 
 
-def has_pending(array):
+def has_pending(array: List[dict]) -> bool:
     if len(array) == 0:
         return False
     no_duplicates = list(set(array))
@@ -127,7 +127,7 @@ def parse_result(
     data_cube: DataCube,
     expression: Expression,
     model: Model,
-    current_org,
+    current_org: Organization,
     expression_queries: List[dict] = None,
 ) -> ReportSerializer:
     """
@@ -190,7 +190,7 @@ def parse_result(
     return serializer
 
 
-def clean_errored(queries: list):
+def clean_errored(queries: list) -> list:
     errored = []
 
     for index, query in enumerate(queries):
@@ -201,66 +201,111 @@ def clean_errored(queries: list):
     return errored
 
 
-def get_data_cube(model: Model):
+def get_data_cube(model: Model) -> DataCube:
     data_cube = DataCube(model=model)
     return data_cube
 
 
-def is_admin(user):
+def is_admin(user) -> bool:
     if "admin" in user.permissions or "super_admin" in user.permissions or "edit_report" in user.permissions:
         return True
     return False
 
 
+class ReportHash:
+    def __init__(self, o: dict):
+        self.version = "1.26.0-beta.1"
+        self.appSettings = {
+            "dataCubes": [],
+            "customization": {
+                "urlShortener": "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
+            },
+            "clusters": [],
+        }
+        self.is_favorite = o.is_favorite_v2(o.user, o)
+        public_key = models.ApiKey.get_by_object(o)
+        self.api_key = o.api_key
+        if public_key:
+            self.public_key = public_key.api_key
+            self.public_url = url_for(
+                "redash.public_report",
+                token=self.public_key,
+                _external=True,
+            )
+        else:
+            self.public_key = None
+            self.public_url = None
+        # basicaly pull everything from the object
+        self.id = o.id
+        self.is_archived = o.is_archived
+        self.color_1 = o.color_1
+        self.color_2 = o.color_2
+        self.hash = o.hash
+        self.name = o.name
+        self.model_id = o.model_id
+        self.data_source_id = o.model.data_source.id
+        self.report = ""
+        self.schedule = None
+        self.tags = o.tags
+        self.user = {
+            "id": o.user.id,
+            "name": o.user.name,
+            "org_id": o.user.org_id,
+            "profile_image_url": o.user.profile_image_url,
+            "permissions": o.user.permissions,
+            "isAdmin": is_admin(o.user),
+        }
+        # self.user = User.get_by_id(o.user.id)
+        self.isJustLanded = True
+        self.can_edit = None
+        self.queries = []
+
+    def set_data_cube(self, data_cube: DataCube):
+        self.appSettings["dataCubes"].append(data_cube)
+
+    def set(self, key, value):
+        setattr(self, key, value)
+
+    def set_results(self):
+        model = Model.get_by_id(self.model_id)
+        org = Organization.get_by_id(self.user["org_id"])
+        self.results = hash_to_result(self.hash, model, org).serialized()
+
+    def get_results(self):
+        if not self.results:
+            self.set_results()
+        return self.results
+
+    def to_json(self):
+        obj = {}
+        for key, value in self.__dict__.items():
+            obj[key] = value
+        return obj
+
+    def to_dict(self):
+        return self.to_json()
+
+    def set_from_dict(self, obj):
+        for key, value in obj.items():
+            setattr(self, key, value)
+        return self
+
+    def set_data_cube_from_dict(self, obj):
+        data_cube = DataCube()
+        data_cube.set_from_dict(obj)
+        self.set_data_cube(data_cube)
+        return self
+
+
 def hash_report(o: dict, can_edit: bool, get_results: bool = False):
     data_cube = get_data_cube(o.model)
-    is_favorite = o.is_favorite_v2(o.user, o)
-    api_key = models.ApiKey.get_by_object(o)
-    public_url = None
-    if api_key:
-        public_url = url_for(
-            "redash.public_report",
-            token=api_key.api_key,
-            _external=True,
-        )
-        api_key = api_key.api_key
-    report = {}
-    report["color_1"] = o.color_1
-    report["color_2"] = o.color_2
-    report["hash"] = o.hash
-    report["name"] = o.name
-    report["model_id"] = o.model_id
-    report["can_edit"] = can_edit
-    report["source_name"] = data_cube.source_name
-    report["data_source_id"] = o.model.data_source.id
-    report["report"] = ""
-    report["schedule"] = None
-    report["tags"] = o.tags
-    report["user"] = {
-        "id": o.user.id,
-        "name": o.user.name,
-        "profile_image_url": o.user.profile_image_url,
-        "permissions": o.user.permissions,
-        "isAdmin": is_admin(o.user),
-    }
-    report["is_favorite"] = is_favorite
-    report["is_archived"] = o.is_archived
-    report["isJustLanded"] = True
-    report["appSettings"] = {
-        "dataCubes": [data_cube.data_cube],
-        "customization": {
-            "urlShortener": "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
-        },
-        "clusters": [],
-    }
-    report["id"] = o.id
-    report["api_key"] = api_key
-    report["public_url"] = public_url
+    report = ReportHash(o)
+    report.set_data_cube(data_cube.data_cube)
+    report.set("source_name", data_cube.source_name)
+    report.set("can_edit", can_edit)
     if get_results:
-        # this process might return with a working class instead of a dict
-        report["results"] = hash_to_result(o.hash, o.model, o.user.org).serialized()
-    report["version"] = "1.26.0-beta.1"
-    return report
+        report.set_results()
+    return report.to_dict()
 
 
 def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: bool = False):
@@ -284,7 +329,7 @@ def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: b
     return parse_result(hash_string, queries_result, data_cube, expression, model, organisation, expression.queries)
 
 
-def filter_expression_to_result(expression: dict, model: Model, organisation):
+def filter_expression_to_result(expression: dict, model: Model, organisation: Organization) -> ReportSerializer:
     data_cube = DataCube(model=model)
     expression = replace_item(expression, "main", data_cube.source_name)
 

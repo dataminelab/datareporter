@@ -271,7 +271,7 @@ class DashboardResource(BaseResource):
 
 
 class PublicDashboardResource(BaseResource):
-    decorators = BaseResource.decorators + [csp_allows_embeding]
+    decorators = [csp_allows_embeding]
 
     def get(self, token):
         """

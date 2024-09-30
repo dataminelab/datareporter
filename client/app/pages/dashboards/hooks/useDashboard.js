@@ -21,16 +21,15 @@ export { DashboardStatusEnum } from "./useEditModeHandler";
 
 function getAffectedWidgets(widgets, updatedParameters = []) {
   return !isEmpty(updatedParameters)
-    ? widgets.filter(widget =>
-        Object.values(widget.getParameterMappings())
-          .filter(({ type }) => type === "dashboard-level")
-          .some(({ mapTo }) =>
-            includes(
-              updatedParameters.map(p => p.name),
-              mapTo
-            )
-          )
+    ? widgets.filter(widget => Object.values(widget.getParameterMappings())
+      .filter(({ type }) => type === "dashboard-level")
+      .some(({ mapTo }) =>
+        includes(
+          updatedParameters.map(p => p.name),
+          mapTo
+        )
       )
+    )
     : widgets;
 }
 

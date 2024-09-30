@@ -44,6 +44,8 @@ function collectParams(parts) {
 }
 
 export class Report {
+  queries = []; // report queries
+  isPublic = false;
   constructor(report) {
     extend(this, report);
 
@@ -54,16 +56,38 @@ export class Report {
     if (!isArray(this.options.parameters)) {
       this.options.parameters = [];
     }
+    this.setResults(report);
+  }
+
+  setResults(report) {
+    let results = report.results;
+    if (!results) return 0;
+    // if (results.progress.progress < 100) return 0;
+    for (let i = 0; i < results.queries.length; i++) {
+      let query = results.queries[i];
+      let query_result = query.query_result;
+      if (!query_result) return 0;
+    }
+    let queries = results.queries;
+    if (queries.length === 0) return 0;
+    this.queries = map(queries, query => new ReportResult(query));
   }
 
   static async getData(report) {
-    const data = await axios.post(`api/reports/generate/2`, { 
+    if (this.queries.length) return getFirstDataAvailable(this.queries);
+    const data = await axios.post(`api/reports/generate/${report.model_id}`, {
       hash: report.hash,
       bypass_cache: false,
     });
     if (!data) return null;
-    const queries = data.queries;
-    return queries[queries.length-1].query_result.data.rows;
+    return getFirstDataAvailable(data.queries);
+  }
+
+  static getFirstDataAvailable(queries) {
+    if (!queries || queries.length === 0) return 0;
+    let lastAvailableQuery = queries[queries.length - 1];
+    if (!lastAvailableQuery || !lastAvailableQuery.query_result) return 0;
+    return lastAvailableQuery.query_result.data.rows
   }
 
   isNew() {
@@ -409,10 +433,10 @@ export class ReportResultError {
 const getReport = report => new Report(report);
 const saveOrCreateUrl = function (data) {
   if (data.id) {
-    return `api/reports/${data.id}` 
+    return `api/reports/${data.id}`
   } else {
     return "api/reports"
-  }    
+  }
 }
 const mapResults = data => ({ ...data, results: map(data.results, getReport) });
 const normalizeCondition = {
@@ -421,7 +445,6 @@ const normalizeCondition = {
   equals: "=",
 };
 const transformResponse = data => {
-  console.log("data", data)
   merge({}, data, {
     options: {
       op: normalizeCondition[data.options.op] || data.options.op,
@@ -430,7 +453,7 @@ const transformResponse = data => {
 }
 
 function transformPublicState(report) {
-  report = new Report(report);
+  if (report.results && !report.queries.length) throw new Error("Report has no queries.");
   if (report.public_url) report.publicAccessEnabled = true;
   else report.publicAccessEnabled = false;
   return report;
@@ -460,8 +483,9 @@ const ReportService = {
     axios.get(`api/reports/${reportId}/dropdowns/${dropdownReportId}`),
   favorites: params => axios.get("api/reports/favorites", { params }).then(mapResults),
   favorite: data => axios.post(`api/reports/${data.id}/favorite`),
-  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),  
+  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),
   getByToken: ({ token }) => axios.get(`api/reports/public/${token}`).then(transformPublicState),
+  getByTokenPublic: ({ token }) => axios.get(`api/reports/public/${token}?get_results=true`).then(getReport).then(transformPublicState),
 };
 
 ReportService.newReport = function newReport() {

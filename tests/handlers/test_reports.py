@@ -14,11 +14,11 @@ FAKE_QUERIES = {
     "queries": [
         [
             "SELECT SUM(`added`) AS `__VALUE__` FROM public.`wikiticker` AS t WHERE (TIMESTAMP('2001-07-14T09:29:00.000Z')<=`sometimeLater` AND `sometimeLater`<TIMESTAMP('2021-07-14T09:29:00.000Z'))",
-            "SELECT `isMinor` AS `isMinor`, SUM(`added`) AS `added` FROM public.`wikiticker` AS t WHERE (TIMESTAMP('2001-07-14T09:29:00.000Z')<=`sometimeLater` AND `sometimeLater`<TIMESTAMP('2021-07-14T09:29:00.000Z')) GROUP BY 1 ORDER BY `added` DESC LIMIT 5"
+            "SELECT `isMinor` AS `isMinor`, SUM(`added`) AS `added` FROM public.`wikiticker` AS t WHERE (TIMESTAMP('2001-07-14T09:29:00.000Z')<=`sometimeLater` AND `sometimeLater`<TIMESTAMP('2021-07-14T09:29:00.000Z')) GROUP BY 1 ORDER BY `added` DESC LIMIT 5",
         ],
         [
             "SELECT `countryIsoCode` AS `countryIsoCode`, SUM(`added`) AS `added` FROM public.`wikiticker` AS t WHERE ((TIMESTAMP('2001-07-14T09:29:00.000Z')<=`sometimeLater` AND `sometimeLater`<TIMESTAMP('2021-07-14T09:29:00.000Z')) AND (`isMinor`=TRUE)) GROUP BY 1 ORDER BY `added` DESC LIMIT 5"
-        ]
+        ],
     ]
 }
 
@@ -28,63 +28,34 @@ FAKE_EXPERSSION = {
         "op": "apply",
         "operand": {
             "op": "apply",
-            "operand": {
-                "op": "literal",
-                "value": {
-                    "attributes": [],
-                    "data": [
-                        {}
-                    ]
-                },
-                "type": "DATASET"
-            },
+            "operand": {"op": "literal", "value": {"attributes": [], "data": [{}]}, "type": "DATASET"},
             "expression": {
                 "op": "filter",
-                "operand": {
-                    "op": "ref",
-                    "name": "public.wikiticker"
-                },
+                "operand": {"op": "ref", "name": "public.wikiticker"},
                 "expression": {
                     "op": "overlap",
-                    "operand": {
-                        "op": "ref",
-                        "name": "sometimeLater"
-                    },
+                    "operand": {"op": "ref", "name": "sometimeLater"},
                     "expression": {
                         "op": "literal",
                         "value": {
                             "setType": "TIME_RANGE",
-                            "elements": [
-                                {
-                                    "start": "2001-07-13T11:01:00.000Z",
-                                    "end": "2021-07-13T11:01:00.000Z"
-                                }
-                            ]
+                            "elements": [{"start": "2001-07-13T11:01:00.000Z", "end": "2021-07-13T11:01:00.000Z"}],
                         },
-                        "type": "SET"
-                    }
-                }
+                        "type": "SET",
+                    },
+                },
             },
-            "name": "public.wikiticker"
+            "name": "public.wikiticker",
         },
-        "expression": {
-            "op": "literal",
-            "value": 630720000000
-        },
-        "name": "MillisecondsInInterval"
+        "expression": {"op": "literal", "value": 630720000000},
+        "name": "MillisecondsInInterval",
     },
     "expression": {
         "op": "sum",
-        "operand": {
-            "op": "ref",
-            "name": "public.wikiticker"
-        },
-        "expression": {
-            "op": "ref",
-            "name": "added"
-        }
+        "operand": {"op": "ref", "name": "public.wikiticker"},
+        "expression": {"op": "ref", "name": "added"},
     },
-    "name": "added"
+    "name": "added",
 }
 
 YAML_CONFIG = """
@@ -319,76 +290,32 @@ dataCubes:
 
 EXPRESSION_OBJ = {
     "visualization": "table",
-    "visualizationSettings": {
-        "collapseRows": False
-    },
+    "visualizationSettings": {"collapseRows": False},
     "timezone": "Etc/UTC",
     "filters": [
-        {
-            "type": "time",
-            "ref": "time",
-            "timePeriods": [
-                {
-                    "duration": "P1D",
-                    "step": -1,
-                    "type": "latest"
-                }
-            ]
-        },
-        {
-            "type": "boolean",
-            "ref": "isNew",
-            "values": [
-                True
-            ],
-            "not": False
-        }
+        {"type": "time", "ref": "time", "timePeriods": [{"duration": "P1D", "step": -1, "type": "latest"}]},
+        {"type": "boolean", "ref": "isNew", "values": [True], "not": False},
     ],
     "splits": [
         {
             "type": "string",
             "dimension": "countryIso",
-            "sort": {
-                "ref": "added",
-                "type": "series",
-                "direction": "descending",
-                "period": ""
-            },
-            "limit": 50
+            "sort": {"ref": "added", "type": "series", "direction": "descending", "period": ""},
+            "limit": 50,
         },
         {
             "type": "string",
             "dimension": "isAnonymous",
-            "sort": {
-                "ref": "added",
-                "type": "series",
-                "direction": "descending",
-                "period": ""
-            },
-            "limit": 5
-        }
+            "sort": {"ref": "added", "type": "series", "direction": "descending", "period": ""},
+            "limit": 5,
+        },
     ],
-    "series": [
-        {
-            "reference": "added",
-            "format": {
-                "type": "default",
-                "value": ""
-            },
-            "type": "measure"
-        }
-    ],
-    "pinnedDimensions": [
-        "channel",
-        "namespace",
-        "isRobot"
-    ],
-    "pinnedSort": "added"
+    "series": [{"reference": "added", "format": {"type": "default", "value": ""}, "type": "measure"}],
+    "pinnedDimensions": ["channel", "namespace", "isRobot"],
+    "pinnedSort": "added",
 }
 
-ANOTHER_BASE_64_OBJ = {
-    "name": "John"
-}
+ANOTHER_BASE_64_OBJ = {"name": "John"}
 parser = lzstring.LZString()
 
 ANOTHER_BASE_64 = parser.compressToBase64(json.dumps(ANOTHER_BASE_64_OBJ, separators=(",", ":")))
@@ -403,10 +330,7 @@ class TestReportListCreateResource(BaseTestCase):
         user = self.factory.create_user(group_ids=[group1.id])
 
         response = self.make_request(
-            "post",
-            "/api/reports",
-            data={"name": NAME, "model_id": 1, "expression": EXPRESSION_BASE64},
-            user=user
+            "post", "/api/reports", data={"name": NAME, "model_id": 1, "expression": EXPRESSION_BASE64}, user=user
         )
 
         self.assertEqual(403, response.status_code)
@@ -415,10 +339,7 @@ class TestReportListCreateResource(BaseTestCase):
         user = self.factory.create_user()
 
         response = self.make_request(
-            "post",
-            "/api/reports",
-            data={"model_id": 1, "expression": EXPRESSION_BASE64},
-            user=user
+            "post", "/api/reports", data={"model_id": 1, "expression": EXPRESSION_BASE64}, user=user
         )
 
         self.assertEqual(400, response.status_code)
@@ -433,10 +354,11 @@ class TestReportListCreateResource(BaseTestCase):
                 "name": NAME,
                 "model_id": 1,
                 "expression": EXPRESSION_BASE64,
-                'color_1': 'color_2',
-                'color_2': 'color_2'
+                "color_1": "color_2",
+                "color_2": "color_2",
+                "data_source_id": 1,
             },
-            user=user
+            user=user,
         )
 
         self.assertEqual(404, response.status_code)
@@ -454,10 +376,11 @@ class TestReportListCreateResource(BaseTestCase):
                 "name": NAME,
                 "model_id": model.id,
                 "expression": EXPRESSION_BASE64,
-                'color_1': 'color_2',
-                'color_2': 'color_2'
+                "color_1": "color_2",
+                "color_2": "color_2",
+                "data_source_id": 1,
             },
-            user=user2
+            user=user2,
         )
 
         self.assertEqual(200, response.status_code)
@@ -473,10 +396,11 @@ class TestReportListCreateResource(BaseTestCase):
                 "name": NAME,
                 "model_id": model.id,
                 "expression": EXPRESSION_BASE64,
-                'color_1': 'color_2',
-                'color_2': 'color_2'
+                "color_1": "color_2",
+                "color_2": "color_2",
+                "data_source_id": 1,
             },
-            user=user
+            user=user,
         )
         data = response.json
 
@@ -499,10 +423,11 @@ class TestReportListCreateResource(BaseTestCase):
                 "name": NAME,
                 "model_id": model.id,
                 "expression": EXPRESSION_BASE64,
-                'color_1': 'color_2',
-                'color_2': 'color_2'
+                "color_1": "color_2",
+                "color_2": "color_2",
+                "data_source_id": 1,
             },
-            user=user
+            user=user,
         )
         data = response.json
         self.assertEqual(200, response.status_code)
@@ -520,11 +445,7 @@ class TestReportListGetResource(BaseTestCase):
         user = self.factory.create_user(group_ids=[group1.id])
         db.session.flush()
 
-        response = self.make_request(
-            "get",
-            "/api/reports",
-            user=user
-        )
+        response = self.make_request("get", "/api/reports", user=user)
 
         self.assertEqual(403, response.status_code)
 
@@ -544,9 +465,9 @@ class TestReportListGetResource(BaseTestCase):
         [self.assertTrue(isinstance(x["expression"], str)) for x in data["results"]]
 
     def test_view_other_people(self):
-        '''
-          A recent given priviladge for new users to see reports of other users
-        '''
+        """
+        A recent given priviladge for new users to see reports of other users
+        """
         user1 = self.factory.create_user()
         user2 = self.factory.create_user()
 
@@ -554,11 +475,7 @@ class TestReportListGetResource(BaseTestCase):
         self.factory.create_report(user=user2)
         self.factory.create_report(user=user1)
 
-        response = self.make_request(
-            "get",
-            "/api/reports",
-            user=user1
-        )
+        response = self.make_request("get", "/api/reports", user=user1)
         self.assertEqual(200, response.status_code)
         self.assertEqual(len(response.json["results"]), 3)
 
@@ -589,7 +506,7 @@ class TestReportGetResource(BaseTestCase):
 
     def test_get_report_another_user(self):
         """
-          default_group is able to see reports of other users
+        default_group is able to see reports of other users
         """
         user1 = self.factory.create_user()
         user2 = self.factory.create_user()
@@ -611,14 +528,14 @@ class TestReportGetResource(BaseTestCase):
 
         report = self.factory.create_report(model=model, user=user)
 
-        with mock.patch('redash.plywood.plywood.PlywoodApi.convert_hash_to_expression') as mock_res:
-            with mock.patch('redash.plywood.plywood.PlywoodApi.convert_to_sql') as second_mock:
+        with mock.patch("redash.plywood.plywood.PlywoodApi.convert_hash_to_expression") as mock_res:
+            with mock.patch("redash.plywood.plywood.PlywoodApi.convert_to_sql") as second_mock:
                 mock_res.return_value = FAKE_EXPERSSION
                 second_mock.return_value = FAKE_QUERIES
                 response = self.make_request("get", f"/api/reports/{report.id}", user=user)
         self.assertEqual(200, response.status_code)
-        self.assertNotEqual(response.json['id'], None)
-        self.assertNotEqual(response.json['hash'], None)  
+        self.assertNotEqual(response.json["id"], None)
+        self.assertNotEqual(response.json["hash"], None)
 
     def test_get_report_success_formatting(self):
         model = self.factory.create_model()
@@ -632,14 +549,14 @@ class TestReportGetResource(BaseTestCase):
 
         report = self.factory.create_report(model=model, user=user)
 
-        with mock.patch('redash.plywood.plywood.PlywoodApi.convert_hash_to_expression') as mock_res:
-            with mock.patch('redash.plywood.plywood.PlywoodApi.convert_to_sql') as second_mock:
+        with mock.patch("redash.plywood.plywood.PlywoodApi.convert_hash_to_expression") as mock_res:
+            with mock.patch("redash.plywood.plywood.PlywoodApi.convert_to_sql") as second_mock:
                 mock_res.return_value = FAKE_EXPERSSION
                 second_mock.return_value = FAKE_QUERIES
                 response = self.make_request("get", f"/api/reports/{report.id}?format=json", user=user)
         self.assertEqual(200, response.status_code)
-        self.assertNotEqual(response.json['id'], None)
-        self.assertNotEqual(response.json['hash'], None)        
+        self.assertNotEqual(response.json["id"], None)
+        self.assertNotEqual(response.json["hash"], None)
 
 
 class TestReportEditResource(BaseTestCase):
@@ -648,12 +565,7 @@ class TestReportEditResource(BaseTestCase):
         user = self.factory.create_admin(group_ids=[group.id])
         report = self.factory.create_report(user=user)
 
-        response = self.make_request(
-            "post",
-            f"/api/reports/{report.id}",
-            data={"name": f"new {NAME}"},
-            user=user
-        )
+        response = self.make_request("post", f"/api/reports/{report.id}", data={"name": f"new {NAME}"}, user=user)
 
         self.assertEqual(403, response.status_code)
 
@@ -663,23 +575,13 @@ class TestReportEditResource(BaseTestCase):
 
         report = self.factory.create_report(user=user1)
 
-        response = self.make_request(
-            "post",
-            f"/api/reports/{report.id}",
-            data={"name": f"new {NAME}"},
-            user=user2
-        )
+        response = self.make_request("post", f"/api/reports/{report.id}", data={"name": f"new {NAME}"}, user=user2)
         self.assertEqual(403, response.status_code)
 
     def test_edit_report_does_not_exist(self):
         user = self.factory.create_user()
 
-        response = self.make_request(
-            "post",
-            f"/api/reports/{100}",
-            data={"name": f"new {NAME}"},
-            user=user
-        )
+        response = self.make_request("post", f"/api/reports/{100}", data={"name": f"new {NAME}"}, user=user)
 
         self.assertEqual(404, response.status_code)
 
@@ -687,12 +589,7 @@ class TestReportEditResource(BaseTestCase):
         user = self.factory.create_user()
         report = self.factory.create_report(user=user)
 
-        response = self.make_request(
-            "post",
-            f"/api/reports/{report.id}",
-            data={"model_id": 200},
-            user=user
-        )
+        response = self.make_request("post", f"/api/reports/{report.id}", data={"model_id": 200}, user=user)
 
         self.assertEqual(400, response.status_code)
 
@@ -703,12 +600,7 @@ class TestReportEditResource(BaseTestCase):
 
         report = self.factory.create_report(user=user2, model=model)
 
-        response = self.make_request(
-            "post",
-            f"/api/reports/{report.id}",
-            data={"model_id": model.id},
-            user=user2
-        )
+        response = self.make_request("post", f"/api/reports/{report.id}", data={"model_id": model.id}, user=user2)
 
         self.assertEqual(204, response.status_code)
 
@@ -723,7 +615,7 @@ class TestReportEditResource(BaseTestCase):
             "post",
             f"/api/reports/{report.id}",
             data={"model_id": model2.id, "name": f"new name", "expression": ANOTHER_BASE_64},
-            user=user
+            user=user,
         )
 
         refreshed_report = Report.get_by_id(report.id)
@@ -752,7 +644,7 @@ class TestReportEditResource(BaseTestCase):
             "post",
             f"/api/reports/{report.id}?format=json",
             data={"model_id": model2.id, "name": f"new name"},
-            user=user
+            user=user,
         )
 
         self.assertEqual(200, response.status_code)
@@ -804,4 +696,4 @@ class TestReportDeleteResource(BaseTestCase):
         response = self.make_request("delete", f"/api/reports/archive?id={report.id}", user=user)
         archives = self.make_request("get", "/api/reports/archive", user=user)
         self.assertEqual(204, response.status_code)
-        self.assertEqual(1, len(archives.json['results']))
+        self.assertEqual(1, len(archives.json["results"]))

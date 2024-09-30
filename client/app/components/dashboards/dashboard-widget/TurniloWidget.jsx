@@ -3,12 +3,10 @@ import * as PropTypes from "prop-types";
 import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
 import Widget from "./Widget";
 import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
-import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
-import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
+import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 
 function TurniloWidget(props) {
-  const { widget, canEdit } = props;
-  const config = props.config;
+  const { widget, canEdit, config, setFilterParams, getEssence } = props;
   const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
   const TurniloMenuOptions = [];
 

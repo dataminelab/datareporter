@@ -60,12 +60,11 @@ function getSplitsDescription(ex: Expression): string {
   return splits.join(";");
 }
 
-const CLIENT_TIMEOUT_DELTA:number = 30000;
-
+const docker_timeout = localStorage.getItem("CLIENT_TIMEOUT_DELTA");
+const timeout: number =  docker_timeout && docker_timeout !== 'undefined' ? Number(docker_timeout) : 100000;
 function clientTimeout(cluster: Cluster): number {
-  const defaultTimeout = localStorage.getItem("CLIENT_TIMEOUT_DELTA") ? Number(localStorage.getItem("CLIENT_TIMEOUT_DELTA")) : CLIENT_TIMEOUT_DELTA;
-  const clusterTimeout = cluster ? cluster.getTimeout() : 0;
-  return clusterTimeout + defaultTimeout;
+  const clusterTimeout = Number(cluster ? cluster.getTimeout() : 0);
+  return timeout + clusterTimeout;
 }
 
 let reloadRequested = false;
@@ -84,7 +83,7 @@ function getHash() {
 export interface AjaxOptions {
   method: "GET" | "POST";
   url: string;
-  timeout: number;
+  timeout?: number;
   data?: any;
 }
 
@@ -92,25 +91,23 @@ const validateStatus = (s: number) => 200 <= s && s < 300 || s === 304;
 
 export class Ajax {
   static version: string;
-
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
   private static model_id: number;
+  private static results: any;
   static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
     return axios({ method, url, data, timeout, validateStatus })
       .then(res => {
         if (res && res.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
+        else if ((res.data.progress.results !== res.data.progress.all || res.data.progress.progress != 100) && Ajax.onUpdate)  Ajax.onUpdate();
         return res.data;
       })
       .catch(error => {
         if (error.response && error.response.data) {
-          if (error.response.data.action === "reload") {
-            reload();
-          } else if (error.response.data.action === "update" && Ajax.onUpdate) {
-            Ajax.onUpdate();
-          }
+          if (error.response.data.action === "reload") reload();
+          else if (error.response.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
           var message =  error.response.data.message || error.message;
           throw new Error("error with response: " + error.response.status + ", " + message);
         } else if (error.request) {
@@ -125,7 +122,7 @@ export class Ajax {
     const timeout = clientTimeout(dataCube.cluster);
 
     function timeoutQuery(ms:number) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+      return new Promise(resolve => setTimeout(resolve, ms));;
     }
 
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
@@ -141,7 +138,9 @@ export class Ajax {
       if ([1, 2].indexOf(res.status) >= 0) {
         await timeoutQuery(2000);
         return await subscribe(input);
-      } else return res;
+      } else {
+        return res;
+      }
     }
 
     async function subscribeToFilter(ex: LimitExpression, modelId: number) {
@@ -173,7 +172,8 @@ export class Ajax {
       setPriceButton(Number(meta.price), Number(meta.proceed_data), false);
     }
 
-    return async (ex: Expression, env: Environment = {}) => {
+    return async (ex: Expression) => {
+      if (this.results) return Dataset.fromJS(this.results.data || EmptyDataset);
       const modelId = this.model_id;
       if (ex instanceof  LimitExpression) {
         const sub = await subscribeToFilter(ex, modelId);

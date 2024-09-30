@@ -3,6 +3,7 @@ This will eventually replace all the `to_dict` methods of the different model
 classes we have. This will ensure cleaner code and better
 separation of concerns.
 """
+
 from flask_login import current_user
 from funcy import project
 from rq.job import JobStatus
@@ -21,14 +22,17 @@ from redash.utils import json_loads
 from redash.services.expression import ExpressionBase64Parser
 from flask import url_for
 
+
 def is_admin(user):
-    if 'admin' in user.permissions or 'super_admin' in user.permissions or 'edit_report' in user.permissions:
+    if "admin" in user.permissions or "super_admin" in user.permissions or "edit_report" in user.permissions:
         return True
     return False
+
 
 def get_data_cube(model):
     data_cube = DataCube(model=model)
     return data_cube
+
 
 def hash_report(o, can_edit=False):
     # carry this into serializers folder and name it into serialize_report
@@ -55,7 +59,7 @@ def hash_report(o, can_edit=False):
         "report": "",
         "schedule": None,
         "tags": o.tags,
-        "user":{
+        "user": {
             "id": o.user.id,
             "name": o.user.name,
             "profile_image_url": o.user.profile_image_url,
@@ -77,51 +81,11 @@ def hash_report(o, can_edit=False):
     return result
 
 
-
-
-def public_widget(widget):
-    res = {
-        "id": widget.id,
-        "width": widget.width,
-        "options": widget.options,
-        "text": widget.text,
-        "updated_at": widget.updated_at,
-        "created_at": widget.created_at,
-    }
-
-    v = widget.visualization
-    if v and v.id:
-        res["visualization"] = {
-            "type": v.type,
-            "name": v.name,
-            "description": v.description,
-            "options": v.options,
-            "updated_at": v.updated_at,
-            "created_at": v.created_at,
-            "query": {
-                "id": v.query_rel.id,
-                "name": v.query_rel.name,
-                "description": v.query_rel.description,
-                "options": v.query_rel.options,
-            },
-        }
-
-    return res
-
-
 def public_dashboard(dashboard):
     dashboard_dict = project(
-        serialize_dashboard(dashboard, with_favorite_state=False),
-        ("name", "layout", "dashboard_filters_enabled", "updated_at", "created_at", "options"),
+        serialize_dashboard(dashboard, with_favorite_state=False, with_widgets=True, is_public=True),
+        ("name", "layout", "dashboard_filters_enabled", "updated_at", "created_at", "options", "widgets"),
     )
-
-    widget_list = (
-        models.Widget.query.filter(models.Widget.dashboard_id == dashboard.id)
-        .outerjoin(models.Visualization)
-        .outerjoin(models.Query)
-    )
-
-    dashboard_dict["widgets"] = [public_widget(w) for w in widget_list]
     return dashboard_dict
 
 
@@ -217,7 +181,7 @@ def serialize_visualization(object, with_query=True):
     return d
 
 
-def serialize_widget(widget: models.Widget):
+def serialize_widget(widget: models.Widget, is_public=False):
     d = {
         "id": widget.id,
         "width": widget.width,
@@ -228,11 +192,15 @@ def serialize_widget(widget: models.Widget):
         "created_at": widget.created_at,
         "report_id": widget.get_report_id(),
         "report": widget.get_report(),
-        "is_public": 0,
+        "is_public": is_public,
     }
 
-    if d['report']:
-        d['report'] = hash_report(d['report'])
+    # d['options']['widget_type'] = 'text'
+    d["options"]["widget_type"] = "query"
+    if d["report"]:
+        d["report"] = hash_report(d["report"])  # this is important
+        d["options"]["widget_type"] = "report"
+    # else it will be a null visualization on front end for now
 
     if widget.visualization and widget.visualization.id:
         d["visualization"] = serialize_visualization(widget.visualization)
@@ -262,20 +230,20 @@ def serialize_alert(alert, full=True):
     return d
 
 
-def serialize_dashboard(obj, with_widgets=False, user=None, with_favorite_state=True):
+def serialize_dashboard(obj, with_widgets=False, user=None, with_favorite_state=True, public=False, is_public=False):
     layout = obj.layout
 
     widgets = []
-
+    # if public, gotta use public_widget function for widgets
     if with_widgets:
         for w in obj.widgets:
             if w.visualization_id is None:
-                widgets.append(serialize_widget(w))
+                widgets.append(serialize_widget(w, is_public))
             elif user and has_access(w.visualization.query_rel, user, view_only):
-                widgets.append(serialize_widget(w))
+                widgets.append(serialize_widget(w, is_public))
             else:
                 widget = project(
-                    serialize_widget(w),
+                    serialize_widget(w, is_public),
                     (
                         "id",
                         "width",
@@ -300,6 +268,10 @@ def serialize_dashboard(obj, with_widgets=False, user=None, with_favorite_state=
             "name": obj.user.name,
             "email": obj.user.email,
             "profile_image_url": obj.user.profile_image_url,
+            "permissions": obj.user.permissions,
+            "created_at": obj.user.created_at,
+            "updated_at": obj.user.updated_at,
+            "is_disabled": obj.user.is_disabled,
         },
         "layout": layout,
         "dashboard_filters_enabled": obj.dashboard_filters_enabled,

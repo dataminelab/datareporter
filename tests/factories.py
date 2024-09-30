@@ -181,7 +181,7 @@ model_factory = ModelFactory(
     redash.models.models.Model,
     user=user_factory.create,
     name=Sequence("Model {}"),
-    data_source=data_source_factory.create
+    data_source=data_source_factory.create,
 )
 
 report_factory = ModelFactory(
@@ -364,10 +364,11 @@ class Factory(object):
     def create_report(self, **kwargs):
         args = {
             "user": self.user,
-            'model': self.create_model(),
-            'expression': {'name': 'John'},
-            'color_1': 'color_1',
-            'color_2': 'color_2'
+            "model": self.create_model(),
+            "expression": {"name": "John"},
+            "color_1": "color_1",
+            "color_2": "color_2",
+            "data_source_id": 1,
         }
         args.update(kwargs)
         return report_factory.create(**args)

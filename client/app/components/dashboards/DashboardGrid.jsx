@@ -53,59 +53,50 @@ const DashboardWidget = React.memo(
     const onLoad = () => onLoadWidget(widget);
     const onRefresh = () => onRefreshWidget(widget);
     const onDelete = () => onRemoveWidget(widget.id);
-    const [config, setConfig] = useState({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect( () => {
-      async function getConfigTurnilo() {
-        if (!config.appSettings) {
-          if (!widget.report_id) return;
-          if (widget.is_public) {
-            const token = window.location.pathname.split('/')[3];
-            const report_config =  await axios.get(`/api/reports/public/${token}?report_id=${widget.report_id}`);
-            setConfig(report_config);
-          } else {
-            const report_config =  await axios.get('/api/reports/' + widget.report_id);
-            setConfig(report_config);
-          }
-        }
-      }
-      getConfigTurnilo()
-    }, [widget]);
-
-    if (type === WidgetTypeEnum.VISUALIZATION) {
-      return (
-        <VisualizationWidget
-          widget={widget}
-          dashboard={dashboard}
-          filters={filters}
-          canEdit={canEdit}
-          isPublic={isPublic}
-          isLoading={isLoading}
-          onLoad={onLoad}
-          onRefresh={onRefresh}
-          onDelete={onDelete}
-          onParameterMappingsChange={onParameterMappingsChange}
-        />;
+    switch (type) {
+      case WidgetTypeEnum.VISUALIZATION:
+        return (
+          <VisualizationWidget
+            widget={widget}
+            dashboard={dashboard}
+            filters={filters}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            isLoading={isLoading}
+            onLoad={onLoad}
+            onRefresh={onRefresh}
+            onDelete={onDelete}
+            onParameterMappingsChange={onParameterMappingsChange}
+          />
+        );
+        
       case WidgetTypeEnum.TEXTBOX:
-        return <TextboxWidget
-          widget={widget}
-          canEdit={canEdit}
-          isPublic={isPublic}
-          onDelete={onDelete}
-        />;
+        return (
+          <TextboxWidget
+            widget={widget}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            onDelete={onDelete}
+          />
+        );
+    
       case WidgetTypeEnum.TURNILO:
-        return <TurniloWidget
-          config={widget.report}
-          widget={widget}
-          canEdit={canEdit}
-          isPublic={isPublic}
-          onDelete={onDelete}
-          setFilterParams={setFilterParams}
-          getEssence={getEssence}
-        />;
+        return (
+          <TurniloWidget
+            config={widget.report}
+            widget={widget}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            onDelete={onDelete}
+            setFilterParams={setFilterParams}
+            getEssence={getEssence}
+          />
+        );
+    
       default:
         return <RestrictedWidget widget={widget} />;
     }
+
   },
   (prevProps, nextProps) =>
     prevProps.widget === nextProps.widget &&

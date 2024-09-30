@@ -15,13 +15,14 @@ import routes from "@/services/routes";
 import logoUrl from "@/assets/images/report_icon_small.png";
 
 import useDashboard from "./hooks/useDashboard";
-
+import { useEssence } from "./useEssence"
 import "./PublicDashboardPage.less";
 
 function PublicDashboard({ dashboard }) {
   const { globalParameters, filters, setFilters, refreshDashboard, loadWidget, refreshWidget } = useDashboard(
     dashboard
   );
+  const { essenceList, widgetList, getEssence, setEssence } = useEssence();
 
   return (
     <div className="container p-t-10 p-b-20">
@@ -44,7 +45,7 @@ function PublicDashboard({ dashboard }) {
           isEditing={false}
           isPublic
           onLoadWidget={loadWidget}
-          onRefreshWidget={refreshWidget}
+          getEssence={getEssence}
         />
       </div>
     </div>
@@ -71,7 +72,7 @@ class PublicDashboardPage extends React.Component {
   };
 
   componentDidMount() {
-    Dashboard.getByToken({ token: this.props.token })
+    Dashboard.getByTokenPublic({ token: this.props.token })
       .then(dashboard => this.setState({ dashboard, loading: false }))
       .catch(error => this.props.onError(error));
   }

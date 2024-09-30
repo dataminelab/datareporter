@@ -34,7 +34,7 @@ import { NoDataView } from "../../views/no-data-view/no-data-view";
 import "./turnilo-application.scss";
 
 export interface TurniloApplicationProps {
-  version: string;
+  version?: string;
   report?: any;
   maxFilters?: number;
   appSettings: AppSettings;
@@ -164,7 +164,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       viewHash,
       drawerOpen: false
     };
-
     const appSettings = AppSettings.fromJS(this.props.report.appSettings, {
       executorFactory: Ajax.queryUrlExecutorFactory.bind(this.props.report)
     });

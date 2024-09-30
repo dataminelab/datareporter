@@ -34,6 +34,7 @@ import { RelativeTimeFilterClause, FixedTimeFilterClause } from "@/components/Tu
 import { TimeShift } from "@/components/TurniloComponent/common/models/time-shift/time-shift";
 import { DateRange } from "@/components/TurniloComponent/common/models/date-range/date-range";
 
+import { EssenceManager } from "./essenceManager"
 
 class DashboardSettings extends React.Component {
   static propTypes = {
@@ -113,6 +114,7 @@ class DashboardComponent extends React.Component {
       shiftChanged: false,
       turniloWidgetsLength: false,
     };
+    this.essenceManager = EssenceManager(); // Create an instance of EssenceManager
   }
 
   turniloWidgetsSetter() {
@@ -142,6 +144,10 @@ class DashboardComponent extends React.Component {
       this.unobserve = resizeObserver(this.state.pageContainer, this.handleResize);
     }
     this.turniloWidgetsSetter();
+    const essence = this.essenceManager.getEssence(this.state.widgetList[0]);
+    if (essence) {
+      console.log("Essence found:", essence);
+    }
   }
 
   componentWillUnmount() {
@@ -335,12 +341,6 @@ class DashboardComponent extends React.Component {
     }
   }
 
-  getEssence = (id) => {
-    const modelIndex = this.state.widgetList.lastIndexOf(id);
-    if (modelIndex === -1) return null;
-    return this.state.essenceList[modelIndex];
-  }
-
   render() {
     const { dashboardOptions } = this.props;
     const { dashboard, filters, globalParameters, editingLayout } = dashboardOptions;
@@ -351,7 +351,7 @@ class DashboardComponent extends React.Component {
     return (
       <div className="container" ref={this.setPageContainer} data-test={`DashboardId${dashboard.id}Container`}>
         <DashboardHeader dashboardOptions={dashboardOptions} />
-        <div class="parameters-header">
+        <div className="parameters-header">
           {!isEmpty(globalParameters) && (
             <div className="dashboard-parameters m-b-10 p-15 bg-white tiled" data-test="DashboardParameters">
               <Parameters parameters={globalParameters} onValuesChange={dashboardOptions.refreshDashboard} />
@@ -387,7 +387,7 @@ class DashboardComponent extends React.Component {
             onRemoveWidget={dashboardOptions.removeWidget}
             onParameterMappingsChange={dashboardOptions.loadDashboard} // refreshes the page
             setFilterParams={this.setFilterParams}
-            getEssence={this.getEssence}
+            getEssence={this.essenceManager.getEssence}
           />
         </div>
       </div>

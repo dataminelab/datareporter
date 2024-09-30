@@ -1,5 +1,5 @@
 from sqlalchemy.event import listens_for
-
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from .base import db, Column
 
 
@@ -26,3 +26,12 @@ class BelongsToOrgMixin(object):
         else:
             query = query.join(org_cls).filter(org_cls.org == org)
         return query.one()
+
+    @classmethod
+    def get_by_id_and_org_safe(cls, object_id, org, org_cls=None) -> object or None:
+        try:
+            return cls.get_by_id_and_org(object_id, org, org_cls)
+        except NoResultFound:
+            return None
+        except MultipleResultsFound:
+            return None

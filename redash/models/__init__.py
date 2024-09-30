@@ -16,7 +16,7 @@ from sqlalchemy.orm import (
     load_only,
     subqueryload,
 )
-from sqlalchemy.orm.exc import NoResultFound  # noqa: F401
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound  # noqa: F401
 from sqlalchemy_utils import generic_relationship
 from sqlalchemy_utils.models import generic_repr
 from sqlalchemy_utils.types import TSVectorType
@@ -34,6 +34,13 @@ from redash.models.base import (
     SearchBaseQuery,
     db,
     gfk_type,
+    key_type,
+    primary_key,
+    db,
+    gfk_type,
+    Column,
+    GFKBase,
+    SearchBaseQuery,
     key_type,
     primary_key,
 )
@@ -86,11 +93,11 @@ from redash.models.parameterized_query import (
     ParameterizedQuery,
     QueryDetachedFromDataSourceError,
 )
-from .base import db, gfk_type, Column, GFKBase, SearchBaseQuery, key_type, primary_key
 from .changes import ChangeTrackingMixin, Change  # noqa
 from .mixins import BelongsToOrgMixin, TimestampMixin
 from .organizations import Organization
 from .users import AccessPermission, AnonymousUser, ApiUser, Group, User  # noqa
+from sqlalchemy import Integer
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +140,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
         ),
     )
     queue_name = Column(db.String(255), default="queries")
+    reports = db.relationship("Report", back_populates="data_source")
     scheduled_queue_name = Column(db.String(255), default="scheduled_queries")
     created_at = Column(db.DateTime(True), default=db.func.now())
 
@@ -402,6 +410,10 @@ class QueryResult(db.Model, BelongsToOrgMixin):
     def groups(self):
         return self.data_source.groups
 
+    @classmethod
+    def get_by_id(cls, _id):
+        return cls.query.filter(cls.id == _id).one()
+
 
 def should_schedule_next(previous_iteration, now, interval, time=None, day_of_week=None, failures=0):
     # if time exists then interval > 23 hours (82800s)
@@ -592,6 +604,17 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         return cls.query.filter(cls.api_key == api_key).one()
 
     @classmethod
+    def by_api_key_safe(cls, api_key):
+        try:
+            return cls.by_api_key(api_key)
+        except NoResultFound:
+            logger.error(f"API key {api_key} not found")
+            return None
+        except MultipleResultsFound:
+            logger.error(f"Multiple results found for API key {api_key}")
+            return None
+
+    @classmethod
     def past_scheduled_queries(cls):
         now = utils.utcnow()
         queries = Query.query.filter(func.jsonb_typeof(Query.schedule) != "null").order_by(Query.id)
@@ -732,6 +755,17 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     @classmethod
     def get_by_id(cls, _id):
         return cls.query.filter(cls.id == _id).one()
+
+    @classmethod
+    def get_by_id_safe(cls, _id):
+        try:
+            return cls.get_by_id(_id)
+        except NoResultFound:
+            logger.error(f"ID key {_id} not found")
+            return None
+        except MultipleResultsFound:
+            logger.error(f"Multiple results found for ID {_id}")
+            return None
 
     @classmethod
     def all_groups_for_query_ids(cls, query_ids):
@@ -1353,6 +1387,17 @@ class ApiKey(TimestampMixin, GFKBase, db.Model):
         return cls.query.filter(cls.api_key == api_key, cls.active.is_(True)).one()
 
     @classmethod
+    def get_by_api_key_safe(cls, api_key):
+        try:
+            return cls.get_by_api_key(api_key)
+        except NoResultFound:
+            logger.error(f"API key {api_key} not found")
+            return None
+        except MultipleResultsFound:
+            logger.error(f"Multiple results found for API key {api_key}")
+            return None
+
+    @classmethod
     def get_by_object(cls, object):
         return cls.query.filter(
             cls.object_type == object.__class__.__tablename__,
@@ -1519,6 +1564,8 @@ def init_db():
     return default_org, admin_group, default_group
 
 
+@gfk_type
+@generic_repr("id", "name", "user_id", "version")
 class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     id = primary_key("Report")
     name = Column(db.String(length=255))
@@ -1527,6 +1574,9 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     expression = db.Column(db.JSON())
     model_id = Column(db.Integer, db.ForeignKey("models.id"))
     model = db.relationship("Model", back_populates="reports")
+
+    data_source_id = Column(Integer, db.ForeignKey("data_sources.id"))
+    data_source = db.relationship("DataSource", back_populates="reports")
 
     color_1 = Column(db.String(length=32))
     color_2 = Column(db.String(length=32))
@@ -1571,11 +1621,6 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
             .order_by(usage_count.desc())
         )
         return report
-
-    # @property
-    # def parameters(self):
-    #     # this also should be in the reports
-    #     return self.options.get("parameters", [])
 
     @classmethod
     def by_api_key(self, api_key):
@@ -1672,3 +1717,29 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         return self.query.join(User).filter(
             and_(Report.is_archived.is_(False), User.org_id == user.org.id, User.group_ids.overlap(user.group_ids))
         )
+
+    @classmethod
+    def get_by_id_and_org(self, _id, org) -> object:
+        return self.query.filter(and_(Report.id == _id, Report.user.has(org=org))).one()
+
+    @classmethod
+    def get_by_id_and_org_safe(self, _id, org) -> object or None:
+        try:
+            return self.get_by_id_and_org(_id, org)
+        except NoResultFound:
+            return None
+        except MultipleResultsFound:
+            return None
+
+    def get_hash(self):
+        return self.expression
+
+    def get_expression(self):
+        return self.expression
+
+    @property
+    def groups(self):
+        if self.data_source is None:
+            return {}
+
+        return self.data_source.groups

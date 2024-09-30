@@ -126,7 +126,7 @@ function calculateNewWidgetPosition(existingWidgets, newWidget) {
 export function Dashboard(dashboard) {
   _.extend(this, dashboard);
   Object.defineProperty(this, "url", {
-    get: function() {
+    get: function () {
       return urlForDashboard(this);
     },
   });
@@ -164,6 +164,7 @@ const DashboardService = {
     return axios.get(`api/dashboards/${id || slug}`, { params }).then(transformResponse);
   },
   getByToken: ({ token }) => axios.get(`api/dashboards/public/${token}`).then(transformResponse),
+  getByTokenPublic: ({ token }) => axios.get(`api/dashboards/public/${token}?get_results=true`).then(transformResponse),
   save: data => axios.post(saveOrCreateUrl(data), data).then(transformResponse),
   delete: ({ id }) => axios.delete(`api/dashboards/${id}`).then(transformResponse),
   query: params => axios.get("api/dashboards", { params }).then(transformResponse),
@@ -235,7 +236,7 @@ Dashboard.prototype.addWidget = function addWidget(textOrVisualization, options 
 
   if (_.isString(textOrVisualization)) {
     props.text = textOrVisualization;
-    props.visualization_id = options.id;
+    if (options.id) props.visualization_id = options.id;
     if (props.options.type === "TABLE") {
       delete props.options.parameterMappings
       delete props.options.id;

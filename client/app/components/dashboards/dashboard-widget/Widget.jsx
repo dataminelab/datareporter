@@ -26,28 +26,12 @@ function downloadCSV(data) {
 }
 
 function getExtraOptions(report) {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await Report.getData(report);
-        setData(result);
-      } catch (error) {
-        console.error('Error while fetching', error);
-      }
-    };
-
-    fetchData(); // Call the async function
-  }, [report]);
-
   const extraOptions = [];
-  if (data) {
-    extraOptions.push(
-      <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>Download as CSV File</Menu.Item>
-    );
-    extraOptions.push(<Menu.Divider key="divider_report" />);
-  }
+  const data = Report.getFirstDataAvailable(report.results?.queries);
+  extraOptions.push(
+    <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>Download as CSV File</Menu.Item>
+  );
+  extraOptions.push(<Menu.Divider key="divider_report" />);
   extraOptions.push(
     <Menu.Item key="view_report" onClick={() => window.location.href=`/reports/${report.id}/source`}>View Report</Menu.Item>
   );

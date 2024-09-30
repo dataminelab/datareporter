@@ -34,7 +34,7 @@ import { NoDataView } from "../../views/no-data-view/no-data-view";
 import "./turnilo-application.scss";
 
 export interface TurniloApplicationProps {
-  version: string;
+  version?: string;
   report?: any;
   maxFilters?: number;
   appSettings: AppSettings;
@@ -164,7 +164,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       viewHash,
       drawerOpen: false
     };
-
     const appSettings = AppSettings.fromJS(this.props.report.appSettings, {
       executorFactory: Ajax.queryUrlExecutorFactory.bind(this.props.report)
     });
@@ -220,7 +219,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   };
 
   changeHash(hash: string, force = false): void {
-    console.log("USE THIS METHOD TO CHANGE THE HASH")
+    // TODO: USE THIS METHOD TO CHANGE THE HASH
     this.hashUpdating = true;
 
     // Hash initialization, no need to add the intermediary url in the history
@@ -320,8 +319,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   render() {
-    // React.StrictMode is giving us a lot of warnings about deprecated lifecycle methods
-    // and the project is too old to change everything to hooks
     return <>
       <main className="turnilo-application">
         {this.renderView()}

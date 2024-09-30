@@ -271,7 +271,7 @@ class DashboardResource(BaseResource):
 
 
 class PublicDashboardResource(BaseResource):
-    decorators = BaseResource.decorators + [csp_allows_embeding]
+    decorators = [csp_allows_embeding]
 
     def get(self, token):
         """
@@ -313,6 +313,10 @@ class DashboardShareResource(BaseResource):
             org_slug=self.current_org.slug,
             _external=True,
         )
+        # get p_turnilo_daterange argument in the URL using request.args.get
+        p_turnilo_daterange = request.args.get("p_turnilo_daterange", None)
+        if p_turnilo_daterange:
+            public_url = f"{public_url}?p_turnilo_daterange={p_turnilo_daterange}"
 
         self.record_event(
             {

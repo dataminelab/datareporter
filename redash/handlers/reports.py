@@ -12,7 +12,8 @@ from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 
 from redash.handlers.queries import order_results
-from redash.models.models import Model, Report
+from redash.models.models import Model
+from redash.models import Report, QueryResult
 from redash.permissions import (
     require_permission,
     require_admin_or_owner,
@@ -24,8 +25,13 @@ from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expr
 from redash.plywood.objects.expression import ExpressionNotSupported
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
-from redash.settings import REDASH_DEBUG
+from redash.settings import parse_boolean
 from redash.plywood.hash_manager import get_data_cube
+from redash.serializers.report_result import (
+    serialize_report_result_to_dsv,
+    serialize_query_result_to_xlsx_with_multiple_sheets,
+)
+from redash.utils import json_dumps
 
 HASH = "hash"
 DATA_CUBE = "dataCube"
@@ -36,6 +42,7 @@ MODEL_ID = "model_id"
 COLOR_1 = "color_1"
 COLOR_2 = "color_2"
 TAGS = "tags"
+DATA_SOURCE_ID = "data_source_id"
 
 
 # Custom JSON encoder to handle datetime objects
@@ -60,29 +67,29 @@ class ReportFilter(BaseResource):
 
 
 class ReportGeneratePublicResource(BaseResource):
+    decorators = [csp_allows_embeding]
+
     def post(self, model_id):
-        if not isinstance(self.current_user, models.ApiUser):
+        if not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser):
             abort(405)
 
         req = request.get_json(True)
+
         require_fields(req, (HASH,))
         hash_string = req[HASH]
+        bypass_cache = False
         model = get_object_or_404(Model.get_by_id, model_id)
         try:
-            result = hash_to_result(
-                hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=False
-            )
+            result = hash_to_result(hash_string, model, self.current_org, bypass_cache)
             return result.serialized()
         except ExpressionNotSupported as err:
-            if REDASH_DEBUG:
-                abort(400, message=err.message)
-            else:
-                abort(400, message="An error occurred while generating report.")
+            abort(400, message=err.message)
 
 
-# /api/reports/generate/<int:model_id>
 class ReportApiKeyAccess(BaseResource):
-    def get(self, report_id: int, filetype: str):
+    decorators = []
+
+    def get(self, report_id: int, filetype: str = "json"):
         api_key = request.args.get("api_key")
         if not api_key:
             abort(400, message="Missing api key")
@@ -94,45 +101,52 @@ class ReportApiKeyAccess(BaseResource):
 
         execute_plywood = hash_to_result(hash_string=report.hash, model=model, organisation=self.current_org)
         serialized = execute_plywood.serialized()
-        file = ""
-        if filetype == "csv":
-            output = io.StringIO()
-            writer = csv.writer(output)
+        report_name = report.name.replace(" ", "_")
+        response_builders = {
+            "json": self.make_json_response,
+            "xlsx": self.make_excel_response,
+            "csv": self.make_csv_response,
+            "tsv": self.make_tsv_response,
+        }
+        query_results = []
+        for query_result in serialized["queries"]:
+            if not "query_result" in query_result:
+                continue
+            query_result = QueryResult.get_by_id(query_result["query_result"]["id"])
+            query_results.append(query_result)
+        if not query_results:
+            abort(404, message="No query results found")
+        return response_builders[filetype](query_results)
 
-            # Assuming serialized["queries"] is a list of queries
-            query = serialized["queries"][-1]
-            if "query_result" not in query:
-                return jsonify({"error": "Query result not found"}), 400
+    @staticmethod
+    def make_json_response(query_results):
+        results = []
+        for query in query_results:
+            results.append(query.to_dict())
+        data = json_dumps({"query_results": results})
+        headers = {"Content-Type": "application/json"}
+        return make_response(data, 200, headers)
 
-            query_result = query["query_result"]
-            data = query_result["data"]
+    @staticmethod
+    def make_csv_response(query_results):
+        results = []
+        for query in query_results:
+            results.append(query.to_dict())
+        headers = {"Content-Type": "text/csv; charset=UTF-8"}
+        return make_response(serialize_report_result_to_dsv(query_results, ","), 200, headers)
 
-            # Write the header
-            columns = [col["name"] for col in data["columns"]]
-            writer.writerow(columns)
+    @staticmethod
+    def make_tsv_response(query_result):
+        headers = {"Content-Type": "text/tab-separated-values; charset=UTF-8"}
+        return make_response(serialize_report_result_to_dsv(query_result, "\t"), 200, headers)
 
-            # Write the data rows
-            for row in data["rows"]:
-                writer.writerow([row[col] for col in columns])
-
-            # Create the response object to return the CSV file
-            response = make_response(output.getvalue())
-            response.headers["Content-Disposition"] = f"attachment; filename=report_{report_id}.csv"
-            response.headers["Content-Type"] = "text/csv"
-            response.headers["X-Message"] = "Download started"
-            return response
-        elif filetype == "json":
-            # Use the custom JSON encoder to handle datetime objects
-            response = make_response(json.dumps(serialized, cls=CustomJSONEncoder, indent=4))
-            response.headers["Content-Disposition"] = f"attachment; filename=report_{report_id}.json"
-            response.headers["Content-Type"] = "application/json"
-            response.headers["X-Message"] = "Download started"
-            return response
-
-        # Default response if filetype doesn't match
-        return jsonify({"message": "OK", "data": serialized})
+    @staticmethod
+    def make_excel_response(query_result):
+        headers = {"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
+        return make_response(serialize_query_result_to_xlsx_with_multiple_sheets(query_result), 200, headers)
 
 
+# /api/reports/generate/<int:model_id>
 class ReportGenerateResource(BaseResource):
     def post(self, model_id):
         if not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser):
@@ -145,9 +159,7 @@ class ReportGenerateResource(BaseResource):
         bypass_cache = req.get("bypass_cache", False)
         model = get_object_or_404(Model.get_by_id, model_id)
         try:
-            result = hash_to_result(
-                hash_string=hash_string, model=model, organisation=self.current_org, bypass_cache=bypass_cache
-            )
+            result = hash_to_result(hash_string, model, self.current_org, bypass_cache)
             return result.serialized()
         except ExpressionNotSupported as err:
             abort(400, message=err.message)
@@ -207,12 +219,12 @@ class ReportsListResource(BaseResource):
     @require_permission("create_report")
     def post(self):
         req = request.get_json(True)
-        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2))
+        require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, DATA_SOURCE_ID))
 
         formatting = request.args.get("format", "base64")
         name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
         color_1, color_2 = req.get(COLOR_1, "color"), req.get(COLOR_2, "color")
-
+        data_source_id = req.get(DATA_SOURCE_ID, "data_source_id")
         model = get_object_or_404(Model.get_by_id, model_id)
 
         expression_obj = ExpressionBase64Parser.parse_base64_to_dict(expression)
@@ -224,6 +236,7 @@ class ReportsListResource(BaseResource):
             expression=expression_obj,
             color_1=color_1,
             color_2=color_2,
+            data_source_id=data_source_id,
         )
 
         models.db.session.add(report)
@@ -302,13 +315,15 @@ class ReportResource(BaseResource):
                     "action": "view",
                     "object_id": report.id,
                     "object_type": "report",
-                    "message": "Report viewed by another user",
+                    "message": f"Report viewed by {current_user}",
                 }
             )
+        if report_user_email != current_user:
             can_edit = False
         else:
             can_edit = True
-        return hash_report(report, can_edit=can_edit)
+        get_results = parse_boolean(request.args.get("get_results", "False"))
+        return hash_report(report, can_edit, get_results)
 
     @require_permission("edit_report")
     def post(self, report_id: int):
@@ -417,7 +432,7 @@ class ReportFavoriteListResource(BaseResource):
 
 
 class PublicReportResource(BaseResource):
-    decorators = BaseResource.decorators + [csp_allows_embeding]
+    decorators = [csp_allows_embeding]
 
     def get(self, token):
         """
@@ -431,9 +446,12 @@ class PublicReportResource(BaseResource):
         else:
             report_id = request.args.get("report_id", None)
             if not report_id or report_id == "null":
-                report_id = self.current_user.object
-            report = get_object_or_404(Report.get_by_id, report_id)
-        return hash_report(report, can_edit=False)
+                report = self.current_user.object
+            else:
+                report = get_object_or_404(Report.get_by_id, report_id)
+        get_results = parse_boolean(request.args.get("get_results", "False"))
+        can_edit = False
+        return hash_report(report, can_edit, get_results)
 
 
 class ReportShareResource(BaseResource):

@@ -22,12 +22,14 @@ import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import { Cluster, ClusterJS } from "../cluster/cluster";
 import { Customization, CustomizationJS } from "../customization/customization";
 import { DataCube, DataCubeJS } from "../data-cube/data-cube";
+import { Essence } from "../../models/essence/essence";
 
 export interface AppSettingsValue {
   version?: number;
   clusters?: Cluster[];
   customization?: Customization;
   dataCubes?: DataCube[];
+  essence?: Essence;
 }
 
 export interface AppSettingsJS {
@@ -35,10 +37,12 @@ export interface AppSettingsJS {
   clusters?: ClusterJS[];
   customization?: CustomizationJS;
   dataCubes?: DataCubeJS[];
+  essence?: Essence;
 }
 
 export interface AppSettingsContext {
-  executorFactory?: (dataCube: DataCube) => Executor;
+  executorFactory?: (dataCube: DataCube, essence?: Essence) => Executor;
+  essence?: Essence;
 }
 
 var check: Class<AppSettingsValue, AppSettingsJS>;
@@ -77,7 +81,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
       var dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
       if (executorFactory) {
-        var executor = executorFactory(dataCubeObject);
+        var executor = executorFactory(dataCubeObject, context.essence);
         if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
       return dataCubeObject;
@@ -87,7 +91,8 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       version: parameters.version,
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
-      dataCubes
+      dataCubes,
+      essence: context.essence,
     };
 
     return new AppSettings(value);

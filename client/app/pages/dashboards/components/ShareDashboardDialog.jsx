@@ -35,6 +35,13 @@ class ShareDashboardDialog extends React.Component {
     };
 
     this.apiUrl = replace(API_SHARE_URL, "{id}", dashboard.id);
+    // Create a URL object
+    const url = new URL(window.location.href);
+
+    // Use URLSearchParams to get the parameter value
+    const params = new URLSearchParams(url.search);
+    const paramValue = params.get("p_turnilo_daterange");
+    this.apiUrl = this.apiUrl + "?p_turnilo_daterange=" + paramValue;
     this.enabled = this.props.hasOnlySafeQueries || dashboard.publicAccessEnabled;
   }
 

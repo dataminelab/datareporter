@@ -65,7 +65,7 @@ type DimensionId = string;
 
 export interface EssenceValue {
   dataCube: DataCube;
-  visualization: VisualizationManifest;
+  visualization: VisualizationManifest | VisualizationManifest<any> | null;
   visualizationSettings: VisualizationSettings | null;
   timezone: Timezone;
   filter: Filter;

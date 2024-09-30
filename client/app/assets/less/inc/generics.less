@@ -108,9 +108,11 @@
 /* --------------------------------------------------------
     Display
 -----------------------------------------------------------*/
-.di-block { display: inline-block !important; } 
+.di-block { display: inline-block !important; }
 .d-block { display: block; }
-
+.dashboard-parameters:has(.ParameterName-turnilo_daterange) { display: none !important; }
+.dashboard-parameters:has(.parameter-1) { display: inline-block !important; }
+.ParameterName-turnilo_daterange { display: none !important; }
 /* --------------------------------------------------------
     Background Colors and Colors
 -----------------------------------------------------------*/
@@ -123,7 +125,7 @@
     &.@{name2} {
         background-color: @color !important;
     }
-    
+
     &.@{name} {
         color: @color !important;
     }

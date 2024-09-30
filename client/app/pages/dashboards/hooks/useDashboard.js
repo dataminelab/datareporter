@@ -21,16 +21,15 @@ export { DashboardStatusEnum } from "./useEditModeHandler";
 
 function getAffectedWidgets(widgets, updatedParameters = []) {
   return !isEmpty(updatedParameters)
-    ? widgets.filter(widget =>
-        Object.values(widget.getParameterMappings())
-          .filter(({ type }) => type === "dashboard-level")
-          .some(({ mapTo }) =>
-            includes(
-              updatedParameters.map(p => p.name),
-              mapTo
-            )
-          )
+    ? widgets.filter(widget => Object.values(widget.getParameterMappings())
+      .filter(({ type }) => type === "dashboard-level")
+      .some(({ mapTo }) =>
+        includes(
+          updatedParameters.map(p => p.name),
+          mapTo
+        )
       )
+    )
     : widgets;
 }
 
@@ -200,8 +199,8 @@ function useDashboard(dashboardData) {
   const showReportDialog = useCallback(() => {
     AddReportDialog.showModal({
       dashboard,
-    }).onClose((text) =>
-      dashboard.addWidget(text).then(() => {
+    }).onClose(({ text, options }) =>
+      dashboard.addWidget(text, options).then(() => {
         setDashboard(currentDashboard => extend({}, currentDashboard))
       }, [dashboard]));
   }, [dashboard]);

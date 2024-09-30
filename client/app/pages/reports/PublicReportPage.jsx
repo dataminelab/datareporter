@@ -64,7 +64,7 @@ class PublicReportPage extends React.Component {
   };
 
   componentDidMount() {
-    Report.getByToken({ token: this.props.token })
+    Report.getByTokenPublic({ token: this.props.token })
       .then(report => this.setState({ report, loading: false }))
       .catch(error => this.props.onError(error));
   }

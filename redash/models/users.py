@@ -11,7 +11,7 @@ from passlib.apps import custom_app_context as pwd_context
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy_utils import EmailType
 from sqlalchemy_utils.models import generic_repr
-
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from redash import redis_connection
 from redash.utils import dt_from_timestamp, generate_token
 
@@ -187,7 +187,18 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
 
     @classmethod
     def get_by_api_key_and_org(cls, api_key, org):
-        return cls.get_by_org(org).filter(cls.api_key == api_key).one()
+        return cls.get_by_org(org).filter(cls.api_key == api_key).one()  # cant find available api key for reports
+
+    @classmethod
+    def get_by_api_key_and_org_safe(cls, api_key, org):
+        try:
+            return cls.get_by_api_key_and_org(api_key, org)
+        except NoResultFound:
+            logger.error(f"API key {api_key} not found for org {org}")
+            return None
+        except MultipleResultsFound:
+            logger.error(f"Multiple results found for API key {api_key} in org {org}")
+            return None
 
     @classmethod
     def all(cls, org):
@@ -380,7 +391,16 @@ class AccessPermission(GFKBase, db.Model):
         return d
 
 
+class PseudoOrg:
+    id = None
+    slug = None
+
+
 class AnonymousUser(AnonymousUserMixin, PermissionsCheckMixin):
+    org = PseudoOrg()
+    id = None
+    name = "anonymous"
+
     @property
     def permissions(self):
         return []

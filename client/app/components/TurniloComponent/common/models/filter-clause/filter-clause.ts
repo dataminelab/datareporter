@@ -160,6 +160,12 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
       this.period === other.period &&
       this.duration.equals(other.duration);
   }
+
+  toUrlParams(): object {
+    return {
+      p_turnilo_daterange: this.duration.toJS()
+    };
+  }
 }
 
 export type TimeFilterClause = FixedTimeFilterClause | RelativeTimeFilterClause;

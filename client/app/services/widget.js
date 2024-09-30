@@ -1,11 +1,12 @@
 import moment from "moment";
 import { axios } from "@/services/axios";
-import { each, pick, extend, isObject, truncate, keys, difference, filter, map, merge } from "lodash";
+import { each, pick, extend, isObject, truncate, keys, difference, filter, map, merge, values, isEmpty } from "lodash";
 import location from "@/services/location";
-import { cloneParameter } from "@/services/parameters";
+import { cloneParameter, Parameter } from "@/services/parameters";
 import dashboardGridOptions from "@/config/dashboard-grid-options";
 import { registeredVisualizations } from "@redash/viz/lib";
-import { Query } from "./query";
+import { Report } from "@/services/report";
+import { Query } from "@/services/query";
 
 export const WidgetTypeEnum = {
   TEXTBOX: "textbox",
@@ -96,6 +97,12 @@ class Widget {
 
     if (this.options.position.sizeY < 0) {
       this.options.position.autoHeight = true;
+    }
+
+    if (this.report && !isEmpty(this.options.parameterMappings)) {
+      this.report = new Report(this.report);
+      let turniloParameter = values(this.options.parameterMappings)[0];
+      this.options.parameterMappings = [new Parameter(turniloParameter)];
     }
   }
 
@@ -224,6 +231,7 @@ class Widget {
   getParametersDefs() {
     const mappings = this.getParameterMappings();
     // textboxes does not have query
+    if (this.type === "turnilo") return this.options.parameterMappings;
     const params = this.getQuery() ? this.getQuery().getParametersDefs() : [];
 
     const queryParams = location.search;
@@ -232,6 +240,7 @@ class Widget {
     return map(
       filter(params, param => localTypes.indexOf(mappings[param.name].type) >= 0),
       param => {
+        if (!param) return;
         const mapping = mappings[param.name];
         const result = cloneParameter(param);
         result.title = mapping.title || param.title;
@@ -254,8 +263,10 @@ class Widget {
 
     const existingParams = {};
     // textboxes does not have query
+    if (this.type === "turnilo") return this.options.parameterMappings;
     const params = this.getQuery() ? this.getQuery().getParametersDefs(false) : [];
     each(params, param => {
+      if (!param) return;
       existingParams[param.name] = true;
       if (!isObject(this.options.parameterMappings[param.name])) {
         // "migration" for old dashboards: parameters with `global` flag

@@ -6,7 +6,8 @@ from funcy import partial
 from sqlalchemy.orm.exc import StaleDataError
 
 from redash import models, settings
-from redash.models.models import Model, Report
+from redash.models.models import Model
+from redash.models import Report
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import (
     BaseResource,
@@ -198,7 +199,7 @@ class QueryListResource(BaseQueryListResource):
 
         .. _query-response-label:
 
-        :>json number id: query_id aka Query ID
+        :>json number id: query_id
         :>json number latest_query_data_id: ID for latest output data from this query
         :>json string name:
         :>json string description:

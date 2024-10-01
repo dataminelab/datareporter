@@ -29,6 +29,7 @@ x-redash-environment: &redash-environment
   MAILCHIMP_LIST_ID: "e48180787b"
   REDASH_DEBUG: "true"
   CLIENT_TIMEOUT_DELTA: 100000
+  REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
 services:
   server:
     <<: *redash-service
@@ -41,7 +42,6 @@ services:
       - "5678:5678"
     environment:
       <<: *redash-environment
-      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
     volumes:

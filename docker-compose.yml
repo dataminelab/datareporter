@@ -31,6 +31,8 @@ x-redash-environment: &redash-environment
   CLIENT_TIMEOUT_DELTA: 100000
   REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
   REDASH_SCHEMAS_REFRESH_TIMEOUT: 500
+  # every 60 mins
+  REDASH_SCHEMAS_REFRESH_SCHEDULE: 60
   WORKERS_COUNT: 10
   QUEUES: 100
 services:

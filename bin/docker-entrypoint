@@ -12,12 +12,14 @@ dev_scheduler() {
 
   exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive -- ./manage.py rq scheduler
 }
+
 ensure_schema() {
   if [[ "$DATAREPORTER_ENSURE_SCHEMA" == "true" ]]; then
     echo "starting schema creation"
     /app/bin/ensure_schema.sh &
   fi
 }
+
 worker() {
 
   ensure_schema
@@ -30,7 +32,7 @@ worker() {
   supervisord -c worker.conf
 }
 
-worker_server() { 
+worker_server() {
 
   ensure_schema
 
@@ -41,6 +43,20 @@ worker_server() {
   REDASH_WEB_WORKER_THREADS=${REDASH_WEB_WORKER_THREADS-8}
   exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name worker -w${REDASH_WEB_WORKERS:-4} --threads ${REDASH_WEB_WORKER_THREADS} --timeout $REDASH_WEB_WORKER_TIMOUT worker.wsgi:app --max-requests $MAX_REQUESTS --max-requests-jitter $MAX_REQUESTS_JITTER
 }
+
+workers_healthcheck() {
+  WORKERS_COUNT=${WORKERS_COUNT}
+  echo "Checking active workers count against $WORKERS_COUNT..."
+  ACTIVE_WORKERS_COUNT=`echo $(rq info --url $REDASH_REDIS_URL -R | grep workers | grep -oP ^[0-9]+)`
+  if [ "$ACTIVE_WORKERS_COUNT" -lt "$WORKERS_COUNT"  ]; then
+    echo "$ACTIVE_WORKERS_COUNT workers are active, Exiting"
+    exit 1
+  else
+    echo "$ACTIVE_WORKERS_COUNT workers are active"
+    exit 0
+  fi
+}
+
 dev_worker() {
   echo "Starting dev RQ worker..."
 
@@ -74,6 +90,7 @@ help() {
   echo "dev_worker -- start a single RQ worker with code reloading"
   echo "scheduler -- start an rq-scheduler instance"
   echo "dev_scheduler -- start an rq-scheduler instance with code reloading"
+  echo "workers_healthcheck -- start a healthcheck operation for workers"
   echo ""
   echo "shell -- open shell"
   echo "dev_server -- start Flask development server with debugger and auto reload"
@@ -118,6 +135,10 @@ dev_worker_server)
 worker_server)
   shift
   worker_server
+  ;;
+workers_healthcheck)
+  shift
+  workers_healthcheck
   ;;
 server)
   shift

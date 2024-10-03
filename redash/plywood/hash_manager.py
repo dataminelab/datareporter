@@ -8,11 +8,11 @@ from flask import url_for
 
 from redash.handlers.base import get_object_or_404
 from redash.handlers.query_results import run_query
-from redash.models import ParameterizedQuery, User, Organization
+from redash.models import ParameterizedQuery, User, Organization, ApiKey, QueryResult
 from redash.models.models import Model
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
-from redash import models, redis_connection
+from redash import redis_connection
 from redash.plywood.objects.report_serializer import ReportSerializer, ReportMetaData
 from redash.plywood.parsers.filter_parser import PlywoodFilterParser
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
@@ -57,13 +57,13 @@ def parse_job(job_id: str, current_org: Organization):
 
     if job_data["job"]["status"] == SUCCESS_CODE:
         query_result_id = job_data["job"]["query_result_id"]
-        query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query_result_id, current_org)
+        query_result = get_object_or_404(QueryResult.get_by_id_and_org, query_result_id, current_org)
         return dict(query_result=query_result.to_dict())
 
     return job_data
 
 
-def cache_or_get(hash_string: str, queries: list, current_org, model: Model, split: int = 1):
+def cache_or_get(hash_string: str, queries: list, current_org: Organization, model: Model, split: int = 1):
     smaller_hash = hashlib.md5(hash_string.encode("utf-8")).hexdigest()
     key = PLYWOOD_PREFIX + smaller_hash + str(split)
     exists = redis_connection.exists(key)
@@ -223,7 +223,7 @@ class ReportHash:
             "clusters": [],
         }
         self.is_favorite = o.is_favorite_v2(o.user, o)
-        public_key = models.ApiKey.get_by_object(o)
+        public_key = ApiKey.get_by_object(o)
         self.api_key = o.api_key
         if public_key:
             self.public_key = public_key.api_key

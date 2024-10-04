@@ -55,7 +55,7 @@
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "@redash/viz": "file:../viz-lib",
-    "@sentry/browser": "^5.21.4",
+    "@sentry/browser": "^7.119.1",
     "@uiw/react-monacoeditor": "^2.2.2",
     "@vx/heatmap": "0.0.198",
     "@vx/scale": "0.0.198",

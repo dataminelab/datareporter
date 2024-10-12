@@ -3515,20 +3515,26 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 
 [[package]]
 name = "python-arango"
-version = "6.1.0"
+version = "8.1.2"
 description = "Python Driver for ArangoDB"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "python-arango-6.1.0.tar.gz", hash = "sha256:04dbb017945105925c01d05ac98a62d718d29586cf39ef85ae3a44f032923b1c"},
-    {file = "python_arango-6.1.0-py2.py3-none-any.whl", hash = "sha256:ca31ceb555ff7c9671ada61c6a81abdcd24b308e76a27d91398a98320f9b27db"},
+    {file = "python_arango-8.1.2-py3-none-any.whl", hash = "sha256:2b9f604b0f4eaf5209893cdb7a2f96448aa27d540300939b0a854ded75c031cb"},
+    {file = "python_arango-8.1.2.tar.gz", hash = "sha256:4a39525ed426b23d7ae031e071f786ac35e6aa571d158ec54c59b74d6ae7a27f"},
 ]
 
 [package.dependencies]
+importlib-metadata = ">=4.7.1"
+packaging = ">=23.1"
 PyJWT = "*"
 requests = "*"
 requests-toolbelt = "*"
-six = "*"
+setuptools = ">=42"
+urllib3 = ">=1.26.0"
+
+[package.extras]
+dev = ["black (>=22.3.0)", "flake8 (>=4.0.1)", "isort (>=5.10.1)", "mock", "mypy (>=0.942)", "pre-commit (>=2.17.0)", "pytest (>=7.1.1)", "pytest-cov (>=3.0.0)", "sphinx", "sphinx-rtd-theme", "types-requests", "types-setuptools"]
 
 [[package]]
 name = "python-dateutil"
@@ -4944,4 +4950,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<3.9"
-content-hash = "94e8f6bed23d18110c6a14db8eb9f883f948bfb9611af08ec5e24e67e4f7239a"
+content-hash = "c16e0524bc4bc5d50fdfeba56312840388d20ce6d8ab5bc789b1734e9f996791"

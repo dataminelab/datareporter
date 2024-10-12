@@ -124,7 +124,7 @@ pyignite = "0.6.1"
 pymongo = {version = "4.3.3", extras = ["srv", "tls"]}
 pymssql = "2.2.8"
 pyodbc = "4.0.28"
-python-arango = "6.1.0"
+python-arango = "8.1.2"
 python-rapidjson = "1.1.0"
 qds-sdk = ">=1.9.6"
 requests-aws-sign = "0.1.5"

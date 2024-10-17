@@ -16,7 +16,8 @@
     "moduleResolution": "node",
     "jsx": "react",
     "lib": ["dom", "es6", "es5"],
-    "types": ["mocha", "webpack-env"]
+    "types": ["mocha", "webpack-env"],
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules",

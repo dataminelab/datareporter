@@ -29,7 +29,7 @@
     "d3": "^6.7.0",
     "dotenv": "^16.0.3",
     "druid.d.ts": "^0.12.1",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "has-own-prop": "^1.0.1",
     "http-status": "^1.4.2",
     "immer": "^9.0.6",

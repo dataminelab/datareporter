@@ -21,6 +21,16 @@ import { quoteNames } from "../../utils/general/general";
 import { Dimension } from "./dimension";
 import { DimensionGroup, DimensionOrGroup, dimensionOrGroupFromJS, DimensionOrGroupJS, DimensionOrGroupVisitor } from "./dimension-group";
 
+type DimensionId = string;
+export interface DimensionsInterface {
+  tree: DimensionOrGroup[];
+  byName: Record<DimensionId, Dimension>;
+}
+
+export function findDimensionByName(dimensions: DimensionsInterface, name: string): Dimension | null {
+  return dimensions.byName[name] || null;
+}
+
 class FlattenDimensionsWithGroupsVisitor implements DimensionOrGroupVisitor<void> {
   private items = List<DimensionOrGroup>().asMutable();
 

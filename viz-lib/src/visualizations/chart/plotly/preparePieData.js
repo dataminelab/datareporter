@@ -1,5 +1,5 @@
 import { isString, each, extend, includes, map, reduce } from "lodash";
-import d3 from "d3";
+import * as d3 from "d3";
 import chooseTextColorForBackground from "@/lib/chooseTextColorForBackground";
 import { AllColorPaletteArrays, ColorPaletteTypes } from "@/visualizations/ColorPalette";
 import { cleanNumber, normalizeValue } from "./utils";

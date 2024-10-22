@@ -1,6 +1,5 @@
 {
   "extends": "../../../../tsconfig.json",
-
   "compileOnSave": false,
   "compilerOptions": {
     "declaration": true,
@@ -9,7 +8,6 @@
     "outDir": "../../build",
     "experimentalDecorators": true
   },
-
   "include": [
     "./**/*.ts",
     "./**/*.tsx"

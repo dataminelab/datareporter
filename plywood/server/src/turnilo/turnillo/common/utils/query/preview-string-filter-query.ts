@@ -40,10 +40,14 @@ function filterExpression(params: QueryParams): Expression {
   if (!searchText) return filter;
 
   switch (filterMode) {
-    case FilterMode.CONTAINS:
+    case FilterMode.CONTAINS || FilterMode.INCLUDE:
       return filter.and(dimension.expression.contains(r(searchText)));
     case FilterMode.REGEX:
       return filter.and(dimension.expression.match(searchText));
+    case FilterMode.EXCLUDE:
+      return filter.and(dimension.expression.not());
+    default:
+      throw new Error(`unknown filter mode: ${filterMode}`);
   }
 }
 

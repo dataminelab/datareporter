@@ -36,6 +36,8 @@
     "cypress:install": "npm install --no-save cypress@~4.5.0 @percy/agent@0.26.2 @percy/cypress@^2.2.0 atob@2.1.2 lodash@^4.17.10 request-cookies@^1.1.0",
     "cypress": "node cypress/cypress.js",
     "preinstall": "npm run clean-install:plywood-client && npm run clean-install:plywood-server",
+    "clear": "rm -rf ./client/node_modules && rm -rf ./client/build",
+    "clear:all": "npm run clear && (cd ../viz-lib && npm run clear) && (cd ../plywood/server && npm run clear) && (cd ../plywood/server/client && npm run clear)",
     "postinstall": "npm run clean-install:viz && npm run build:viz"
   },
   "repository": {

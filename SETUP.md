@@ -33,16 +33,16 @@ nvm use v14 > /dev/null
 ```
 
 * Build UI - Required to build ui for
-    * Enter project root directory
-    * `cd client`
-    * `npm install` Installs all node dependencies to for redash
-    * `npm run build` Builds front end to the folder `client/dist/`
+  * Enter project root directory
+  * `cd client`
+  * `npm install` Installs all node dependencies to for redash
+  * `npm run build` Builds front end to the folder `client/dist/`
 
 * Build Plywood
-    * Enter project root directory
-    * `cd plywood/server`
-    * `npm install` Installs all node dependencies to for plywood
-    * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
+  * Enter project root directory
+  * `cd plywood/server`
+  * `npm install` Installs all node dependencies to for plywood
+  * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
 
 * Setup docker compose
     * `make up` or `docker compose up --build`  to start required services like postgres app server

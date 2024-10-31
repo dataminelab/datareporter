@@ -5,7 +5,7 @@
   "scripts": {
     "watch-ts": "tsc -w",
     "watch-node": "nodemon --inspect=0.0.0.0:9229 -r ts-node/register dist/server.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yellow.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "test": "mocha -r ts-node/register src/*.spec.ts",
     "build": "tsc -p . && echo \"Plywood Server Built!\"",
     "full-build": "npm install && tsc -p .",
@@ -13,8 +13,9 @@
     "start": "node dist/server.js",
     "dev": "nodemon --watch \"src/***\" --ext \"ts,json\" --exec \"ts-node src/server.ts\"",
     "ts-start": "ts-node src/server.ts",
-    "clear": "rm -rf ./dist/",
-    "full-clear": "rm -rf ./dist/ && rm -rf ./node_modules/",
+    "clear": "rm -rf dist",
+    "full-clear": "rm -rf dist node_modules",
+    "prepare": "npm run build",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org data-reporter --project plywood ./dist && sentry-cli sourcemaps upload --org data-reporter --project plywood ./dist"
   },
   "dependencies": {
@@ -40,7 +41,6 @@
     "lz-string": "^1.4.4",
     "moment-timezone": "^0.5.26",
     "numbro": "^2.4.0",
-    "plywood-base-api": "^0.2.8",
     "plywood-postgres-requester": "^1.4.0",
     "react": "^17.0.2",
     "readable-stream": "^3.0.3",

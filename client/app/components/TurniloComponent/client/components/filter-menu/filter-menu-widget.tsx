@@ -37,13 +37,14 @@ export interface FilterMenuProps {
   onClose: Fn;
   setEssence: Fn;
   inside?: Element;
-  widgetList: Number[];
+  widgetList: number[];
 }
 
 export const FilterMenu: React.SFC<FilterMenuProps> = (props: FilterMenuProps) => {
   if (!props.dimension) return null;
   switch (props.dimension.kind) {
     case "time":
+      // @ts-ignore
       return <TimeFilterMenu {...props} />;
     default:
       return null;

@@ -39,8 +39,7 @@ nvm use v14 > /dev/null
   * `npm run build` Builds front end to the folder `client/dist/`
 
 * Build Plywood
-  * Enter project root directory
-  * `cd plywood/server`
+  * `cd plywood/server` Enter project root directory
   * `npm install` Installs all node dependencies to for plywood
   * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
 

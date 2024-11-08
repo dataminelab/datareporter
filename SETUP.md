@@ -33,8 +33,7 @@ nvm use v14 > /dev/null
 ```
 
 * Build UI - Required to build ui for
-  * Enter project root directory
-  * `cd client`
+  * `cd client` Enter project root directory
   * `npm install` Installs all node dependencies to for redash
   * `npm run build` Builds front end to the folder `client/dist/`
 

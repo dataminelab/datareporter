@@ -74,13 +74,13 @@ export class Report {
   }
 
   static async getData(report) {
-    if (this.queries.length) return getFirstDataAvailable(this.queries);
+    if (this.queries.length) return this.getFirstDataAvailable(this.queries);
     const data = await axios.post(`api/reports/generate/${report.model_id}`, {
       hash: report.hash,
       bypass_cache: false,
     });
     if (!data) return null;
-    return getFirstDataAvailable(data.queries);
+    return this.getFirstDataAvailable(data.queries);
   }
 
   static getFirstDataAvailable(queries) {

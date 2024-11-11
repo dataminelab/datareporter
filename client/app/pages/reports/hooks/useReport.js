@@ -9,6 +9,9 @@ export default function useReport(originalReport) {
   const [report, setReport] = useState(originalReport);
   const [originalReportSource, setOriginalReportSource] = useState(originalReport.report);
 
+  // Use the hook here
+  const saveReport = useSaveReport();
+
   const updateReport = useUpdateReport(report, updatedReport => {
     // It's important to update URL first, and only then update state
     if (updatedReport.id !== report.id) {
@@ -19,7 +22,7 @@ export default function useReport(originalReport) {
     setOriginalReportSource(updatedReport.report);
   });
 
-  const saveAsReport = (name) => {
+  const saveAsReport = useCallback((name) => {
     delete report.id;
     const data = {
       name: name,
@@ -27,16 +30,18 @@ export default function useReport(originalReport) {
       expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2) || report.hash || report.expression,
       color_1: report.color_1,
       color_2: report.color_2,
-    }
-    useSaveReport(data);
-  };
+    };
+
+    // Call the save function returned by the useSaveReport hook
+    saveReport(data);
+  }, [report, saveReport]);
 
   const showShareReportDialog = useCallback(() => {
     const handleDialogClose = () => setReport(currentReport => extend({}, currentReport, { is_draft: false }));
 
     ShareReportDialog.showModal({
       report,
-      hasOnlySafeQueries:true,
+      hasOnlySafeQueries: true,
     })
       .onClose(handleDialogClose)
       .onDismiss(handleDialogClose);
@@ -48,9 +53,9 @@ export default function useReport(originalReport) {
       setReport,
       isDirty: report.report !== originalReportSource,
       saveReport: () => updateReport(),
-      saveAsReport: (name) => saveAsReport(name),
+      saveAsReport,
       showShareReportDialog,
     }),
-    [report, originalReportSource, updateReport]
+    [report, originalReportSource, updateReport, saveAsReport, showShareReportDialog]
   );
 }

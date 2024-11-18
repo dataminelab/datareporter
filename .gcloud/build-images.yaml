@@ -1,5 +1,5 @@
 substitutions:
-  _GCR_HOSTNAME: europe-west1-docker.pkg.dev
+  _GCR_HOSTNAME: europe-west1-docker.pkg.dev/
   _ENVIRONMENT:
 
 
@@ -15,9 +15,9 @@ steps:
        #!/usr/bin/env bash
        docker buildx build \
        --push \
-       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA \
-       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest \
-       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$BRANCH_NAME \
+       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter/datareporter:$COMMIT_SHA \
+       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter/datareporter:latest \
+       -t $_GCR_HOSTNAME/$PROJECT_ID/datareporter/datareporter:$BRANCH_NAME \
        --build-arg version=$BRANCH_NAME-$COMMIT_SHA \
        --build-arg skip_dev_deps=true \
        -f Dockerfile -o type=image \
@@ -35,9 +35,9 @@ steps:
       #!/usr/bin/env bash
       docker buildx build \
       --push \
-      -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA" \
-      -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest" \
-      -t "$_GCR_HOSTNAME/$PROJECT_ID/plywood:$BRANCH_NAME" \
+      -t "$_GCR_HOSTNAME/$PROJECT_ID/datareporter/plywood:$COMMIT_SHA" \
+      -t "$_GCR_HOSTNAME/$PROJECT_ID/datareporter/plywood:latest" \
+      -t "$_GCR_HOSTNAME/$PROJECT_ID/datareporter/plywood:$BRANCH_NAME" \
       --build-arg "version=$BRANCH_NAME-$COMMIT_SHA" \
       -f Dockerfile -o type=image \
       .;
@@ -57,11 +57,11 @@ steps:
       - Build-Data-Reporter
       - Build-Plywood
 images:
-  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$COMMIT_SHA'
-  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:latest'
-  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter:$BRANCH_NAME'
-  - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$COMMIT_SHA'
-  - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:$BRANCH_NAME'
-  - '$_GCR_HOSTNAME/$PROJECT_ID/plywood:latest'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/datareporter:$COMMIT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/datareporter:latest'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/datareporter:$BRANCH_NAME'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/plywood:$COMMIT_SHA'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/plywood:$BRANCH_NAME'
+  - '$_GCR_HOSTNAME/$PROJECT_ID/datareporter/plywood:latest'
 options:
   substitutionOption: ALLOW_LOOSE

@@ -1,5 +1,5 @@
 substitutions:
-  _GCR_HOSTNAME: europe-west1-docker.pkg.dev/
+  _GCR_HOSTNAME: europe-west1-docker.pkg.dev
   _ENVIRONMENT:
 
 

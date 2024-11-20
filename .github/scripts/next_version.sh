@@ -18,7 +18,13 @@ VERSION_MINOR_PATCH="${VERSION#*.}"
 VERSION_MINOR="${VERSION_MINOR_PATCH%%.*}"
 VERSION_PATCH_PRE_RELEASE="${VERSION_MINOR_PATCH#*.}"
 VERSION_PATCH="${VERSION_PATCH_PRE_RELEASE%%[-+]*}"
-
+VERSION_PRE_RELEASE=""
+case "$VERSION" in
+  *-*)
+    VERSION_PRE_RELEASE="${VERSION#*-}"
+    VERSION_PRE_RELEASE="${VERSION_PRE_RELEASE%%+*}"
+    ;;
+esac
 if [[ "${VERSION_MAJOR}" != "$(date '+%Y')" ]]; then
   VERSION_MAJOR="$(date '+%Y')"
   VERSION_MINOR="$(date '+%-m')"
@@ -26,6 +32,9 @@ if [[ "${VERSION_MAJOR}" != "$(date '+%Y')" ]]; then
 elif [[ "${VERSION_MINOR}" != "$(date '+%-m')" ]]; then
   VERSION_MINOR="$(date '+%-m')"
   VERSION_PATCH="0"
+fi
+if [[ "${VERSION_PRE_RELEASE}" != "${GIT_COMMIT}" ]];then
+  VERSION_PATCH=$((VERSION_PATCH+1))
 fi
 
 case "$PREFIX" in

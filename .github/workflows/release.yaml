@@ -35,11 +35,11 @@ jobs:
           registry: ${{ secrets.GCR_URL }}
           username: ${{ secrets.GCR_USERNAME }}
           password: ${{ secrets.GCR_PASSWORD }}
-#      - name: Build and push datareporter
-#        uses: docker/build-push-action@v6
-#        with:
-#          push: true
-#          tags: europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:${{ steps.get-version.outputs.version }}
+      - name: Build and push datareporter
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:${{ steps.get-version.outputs.version }}
 
       - name: Build and push plywood
         uses: docker/build-push-action@v6
@@ -50,5 +50,8 @@ jobs:
       - name: Tag release
         shell: bash
         run: |
-          git tag ${{ steps.get-version.outputs.version }}
-          git push --tags
+          if ! [ $(git rev-list ${{ steps.get-version.outputs.version }}.. >/dev/null )];
+          then
+            git tag ${{ steps.get-version.outputs.version }}
+            git push --tags
+          fi

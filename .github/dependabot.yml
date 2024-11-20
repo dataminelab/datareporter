@@ -1,0 +1,49 @@
+version: 2
+updates:
+  # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+  - directory: "/plywood/server"
+    target-branch: "develop"
+    package-ecosystem: "npm"
+    commit-message:
+      prefix: "(plywood-server): "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'
+    ignore:
+      - dependency-name: "readable-stream"
+        update-types: ["version-update:semver-any"]
+  - directory: "/plywood/server/client"
+    target-branch: "develop"
+    package-ecosystem: "npm"
+    commit-message:
+      prefix: "(plywood-client): "
+    ignore:
+      - dependency-name: "readable-stream"
+        update-types: ["version-update:semver-any"]
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'
+  - directory: "/"
+    target-branch: "develop"
+    package-ecosystem: "pip"
+    commit-message:
+      prefix: "(python): "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'
+  - directory: "/client"
+    target-branch: "develop"
+    package-ecosystem: "npm"
+    commit-message:
+      prefix: "(client-npm): "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'
+  - directory: "/viz-lib"
+    target-branch: "develop"
+    package-ecosystem: "npm"
+    commit-message:
+      prefix: "(vizlib-npm): "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'

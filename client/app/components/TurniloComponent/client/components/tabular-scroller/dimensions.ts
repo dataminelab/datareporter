@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +14,12 @@
  * limitations under the License.
  */
 
-export function get(key: string): any {
-  try {
-    return JSON.parse(localStorage.getItem(key));
-  } catch (e) {
-    return undefined;
-  }
-}
+export const HEADER_HEIGHT = 38;
+export const INDENT_WIDTH = 25;
+export const ROW_HEIGHT = 30;
+export const SPACE_LEFT = 10;
 
-export function set(key: string, value: any) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
-  }
-}
-
-export function remove(key: string) {
-  try {
-    localStorage.removeItem(key);
-  } catch (e) {
-  }
-}
+export const MIN_DIMENSION_WIDTH = 100;
+export const SEGMENT_WIDTH = 300;
+export const MEASURE_WIDTH = 130;
+export const SPACE_RIGHT = 10;

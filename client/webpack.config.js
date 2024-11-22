@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 const webpack = require("webpack");
+const { IgnorePlugin } = webpack;
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 const ManifestPlugin = require("webpack-manifest-plugin");
@@ -11,7 +12,7 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
 const fs = require("fs");
 const path = require("path");
-const { CheckerPlugin } = require('awesome-typescript-loader')
+const { CheckerPlugin } = require('awesome-typescript-loader');
 
 function optionalRequire(module, defaultReturn = undefined) {
   try {
@@ -62,7 +63,7 @@ const babelLoader = {
     presets: [
       ["@babel/preset-env", {
         modules: false
-      }]
+      }], "@babel/preset-react"
     ]
   }
 };
@@ -116,6 +117,10 @@ const config = {
       fileName: "asset-manifest.json",
       publicPath: ""
     }),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
     new CopyWebpackPlugin([
       { from: "app/assets/robots.txt" },
       { from: "app/assets/manifest.json" },
@@ -135,15 +140,33 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.js|jsx?$/,
-        exclude: /node_modules/,
+        enforce: "pre",
+        test: /\.js$/,
+        use: ["source-map-loader"],
+        exclude: [
+          /node_modules\/mutationobserver-shim/,
+        ],
+      },
+      {
+        test: /\.(js|jsx)$/,
+        exclude: {
+          and: [/node_modules/],
+          not: [
+            /react-syntax-highlighter/ // Include react-syntax-highlighter for transpiling
+          ]
+        },
         use: [
           babelLoader
         ]
       },
       {
         test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
+        exclude: {
+          and: [/node_modules/],
+          not: [
+            /react-syntax-highlighter/ // Include react-syntax-highlighter for transpiling
+          ]
+        },
         use: [
           babelLoader,
           {

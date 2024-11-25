@@ -17,7 +17,8 @@
     "jsx": "react",
     "lib": ["dom", "es6", "es5"],
     "types": ["mocha", "webpack-env"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
   },
   "exclude": [
     "node_modules",

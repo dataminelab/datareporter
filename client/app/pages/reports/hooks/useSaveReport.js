@@ -6,6 +6,8 @@ import { get } from "lodash";
 import { SaveReportError } from "./useUpdateReport"
 
 export default function useSaveReport(data) {
+  if (!data) return;
+
   return Report.saveAs(data)
     .then(() => {
       navigateTo('/reports')

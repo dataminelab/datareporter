@@ -9,9 +9,6 @@ export default function useReport(originalReport) {
   const [report, setReport] = useState(originalReport);
   const [originalReportSource, setOriginalReportSource] = useState(originalReport.report);
 
-  // Use the hook here
-  const saveReport = useSaveReport();
-
   const updateReport = useUpdateReport(report, updatedReport => {
     // It's important to update URL first, and only then update state
     if (updatedReport.id !== report.id) {
@@ -22,7 +19,7 @@ export default function useReport(originalReport) {
     setOriginalReportSource(updatedReport.report);
   });
 
-  const saveAsReport = useCallback((name) => {
+  const saveAsReport = (name) => {
     delete report.id;
     const data = {
       name: name,
@@ -30,11 +27,10 @@ export default function useReport(originalReport) {
       expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2) || report.hash || report.expression,
       color_1: report.color_1,
       color_2: report.color_2,
-    };
-
-    // Call the save function returned by the useSaveReport hook
-    saveReport(data);
-  }, [report, saveReport]);
+      data_source_id: report.data_source_id,
+    }
+    useSaveReport({ ...data });
+  };
 
   const showShareReportDialog = useCallback(() => {
     const handleDialogClose = () => setReport(currentReport => extend({}, currentReport, { is_draft: false }));
@@ -56,6 +52,6 @@ export default function useReport(originalReport) {
       saveAsReport,
       showShareReportDialog,
     }),
-    [report, originalReportSource, updateReport, saveAsReport, showShareReportDialog]
+    [report, originalReportSource, updateReport]
   );
 }

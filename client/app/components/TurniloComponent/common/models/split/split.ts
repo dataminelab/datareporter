@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
 import { Record } from "immutable";
-import { Expression, NumberBucketExpression, TimeBucketExpression } from "plywood";
+import { Datum, Expression, NumberBucketExpression, PlywoodValue, TimeBucketExpression } from "plywood";
+import { formatValue } from "../../utils/formatter/formatter";
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
-import { Dimension } from "../dimension/dimension";
+import { Dimension, DimensionKind } from "../dimension/dimension";
 import { DimensionSort, Sort } from "../sort/sort";
 import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 
 export enum SplitType {
   number = "number",
   string = "string",
-  time = "time"
+  time = "time",
+  boolean = "boolean"
+}
+
+export function isContinuousSplit({ type }: Split): boolean {
+  return  type === SplitType.time || type === SplitType.number;
 }
 
 export type Bucket = number | Duration;
@@ -68,21 +74,23 @@ export function toExpression({ bucket, type }: Split, { expression }: Dimension,
   return expWithShift.performAction(bucketToAction(bucket));
 }
 
-export function kindToType(kind: string): SplitType {
+export function kindToType(kind: DimensionKind): SplitType {
   switch (kind) {
     case "time":
       return SplitType.time;
     case "number":
       return SplitType.number;
-    default:
+    case "boolean":
+      return SplitType.boolean;
+    case "string":
       return SplitType.string;
   }
 }
 
 export class Split extends Record<SplitValue>(defaultSplit) {
 
-  static fromDimension({ name, kind }: Dimension): Split {
-    return new Split({ reference: name, type: kindToType(kind) });
+  static fromDimension({ name, kind, limits }: Dimension): Split {
+    return new Split({ reference: name, type: kindToType(kind), limit: limits[limits.length - 1] });
   }
 
   public toString(): string {
@@ -107,6 +115,14 @@ export class Split extends Record<SplitValue>(defaultSplit) {
 
   public getTitle(dimension: Dimension): string {
     return (dimension ? dimension.title : "?") + this.getBucketTitle();
+  }
+
+  public selectValue<T extends PlywoodValue>(datum: Datum): T {
+    return datum[this.toKey()] as T;
+  }
+
+  public formatValue(datum: Datum, timezone: Timezone): string {
+    return formatValue(datum[this.toKey()], timezone);
   }
 
   public getBucketTitle(): string {

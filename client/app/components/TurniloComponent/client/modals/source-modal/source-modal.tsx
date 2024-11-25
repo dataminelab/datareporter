@@ -38,7 +38,7 @@ export const SourceModal: React.FunctionComponent<SourceModalProps> = ({ copyLab
 
   const onCopy = useCallback(() => setCopied(true), [setCopied]);
 
-  const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter.tsx"));
+  const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter"));
 
   return <Modal
     onClose={onClose}

@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { INDENT_WIDTH } from "../../table";
 import { VisibleRows } from "../../utils/visible-rows";

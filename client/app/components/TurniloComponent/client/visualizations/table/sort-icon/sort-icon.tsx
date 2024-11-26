@@ -15,18 +15,16 @@
  */
 
 import React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
-import { CombinedSplitsTitle } from "./combined-splits-title";
-import { SplitColumnsHeader } from "./split-columns";
+import { SortDirection } from "../../../../common/models/sort/sort";
+import { classNames } from "../../../utils/dom/dom";
+import { SvgIcon } from "../../svg-icon/svg-icon";
+import "./sort-arrow.scss";
 
-interface SplitHeaderProps {
-  essence: Essence;
-  collapseRows: boolean;
+const sortArrow = require("../../../icons/sort-arrow.svg");
+
+interface SortIconProps {
+  direction: SortDirection;
 }
 
-export const SplitsHeader: React.FunctionComponent<SplitHeaderProps> = ({ essence, collapseRows }) => {
-  const { dataCube, splits } = essence;
-  return collapseRows ?
-    <SplitColumnsHeader dataCube={dataCube} splits={splits} /> :
-    <CombinedSplitsTitle dataCube={dataCube} splits={splits} />;
-};
+export const SortIcon: React.FunctionComponent<SortIconProps> = ({ direction }) =>
+  <SvgIcon svg={sortArrow} className={classNames("sort-arrow", direction)} />;

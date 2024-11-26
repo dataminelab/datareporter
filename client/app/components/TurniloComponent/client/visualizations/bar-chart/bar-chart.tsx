@@ -17,12 +17,11 @@
 
 import * as d3 from "d3";
 import { List, Set } from "immutable";
-import { findDimensionByName } from "../../../common/models/dimension/dimensions";
 import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "plywood";
 import * as React from "react";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { BooleanFilterClause, FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Measure } from "../../../common/models/measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
@@ -88,6 +87,8 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[]): List<FilterClaus
     const segment: any = datum[reference];
 
     switch (type) {
+      case SplitType.boolean:
+        return new BooleanFilterClause({ reference, values: Set.of(segment) });
       case SplitType.number:
         return new NumberFilterClause({ reference, values: List.of(segment) });
       case SplitType.time:

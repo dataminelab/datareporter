@@ -16,13 +16,14 @@
     "moduleResolution": "node",
     "jsx": "react",
     "lib": ["dom", "es6", "es5"],
-    "types": ["mocha", "webpack-env"],
+    "types": ["node", "express", "mocha", "webpack-env"],
     "allowSyntheticDefaultImports": true
   },
+  "include": ["app/components/TurniloComponent/**/*"],
   "exclude": [
     "node_modules",
-    "**/*.mocha.ts",
-    "**/*.mocha.tsx",
+    // "**/*.mocha.ts",
+    // "**/*.mocha.tsx",
     "**/*.json",
     "turnilo"
   ]

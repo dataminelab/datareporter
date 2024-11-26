@@ -24,6 +24,7 @@ export type Nullary<R> = () => R;
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, T2, R> = (arg: T, arg2: T2) => R;
 export type Ternary<T, T2, T3, R> = (arg: T, arg2: T2, arg3: T3) => R;
+export type Quaternary<T, T2, T3, T4, R> = (arg: T, arg2: T2, arg3: T3, arg4: T4) => R;
 
 export type Predicate<T> = Unary<T, boolean>;
 
@@ -37,8 +38,22 @@ export const constant = <T>(val: T): Nullary<T> => () => val;
 export const compose = <A, B, C>(f: Unary<A, B>, g: Unary<B, C>): Unary<A, C> =>
   (x: A) => g(f(x));
 
+//@ts-ignore
+export function assoc<T, K extends string | number | symbol = string>(coll: Record<K, T>, key: K, element: T): Record<K, T> {
+  //@ts-ignore
+  return Object.assign({}, coll, { [key]: element });
+}
+
 export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
+}
+
+export function replaceAt<T>(collection: T[], index: number, element: T): T[] {
+  return [
+    ...collection.slice(0, index),
+    element,
+    ...collection.slice(index + 1)
+  ];
 }
 
 export function zip<T, U>(xs: T[], ys: U[]): Array<[T, U]> {
@@ -53,6 +68,11 @@ export function flatMap<T, S>(coll: T[], mapper: Binary<T, number, S[]>): S[] {
   return [].concat(...coll.map(mapper));
 }
 
+export function cyclicShift<T>(coll: T[], count: number): T[] {
+  const n = count % coll.length;
+  return coll.slice(n, coll.length).concat(coll.slice(0, n));
+}
+
 export function concatTruthy<T>(...elements: T[]): T[] {
   return elements.reduce((result: T[], element: T) => isTruthy(element) ? cons(result, element) : result, []);
 }
@@ -62,6 +82,10 @@ export function mapTruthy<T, S>(coll: T[], f: Binary<T, number, S>): S[] {
     const mapped: S = f(element, idx);
     return isTruthy(mapped) ? cons(result, mapped) : result;
   }, []);
+}
+
+export function values<T>(obj: Record<string, T>): T[] {
+  return Object.keys(obj).map(k => obj[k]);
 }
 
 export function thread(x: any, ...fns: Function[]) {
@@ -97,11 +121,12 @@ export function range(from: number, to: number): number[] {
 }
 
 // TODO: fix to use infer on arguments tuple https://stackoverflow.com/a/50014868/1089761
-export function debounceWithPromise<T extends (...args: any[]) => any>(fn: T, ms: number): ((...args: any[]) => Promise<any>) & { cancel: Fn } {
+export function debounceWithPromise<T extends (...args: any[]) => Promise<any>>(fn: T, ms: number): ((...args: Parameters<T>) => Promise<any>) & { cancel: Fn } {
   let timeoutId: any;
 
-  const debouncedFn = function(...args: any[]) {
+  const debouncedFn = (...args: Parameters<T>) => {
     let resolve: Function;
+    // @ts-ignore
     const promise = new Promise(pResolve => {
       resolve = pResolve;
     });
@@ -117,7 +142,7 @@ export function debounceWithPromise<T extends (...args: any[]) => any>(fn: T, ms
     timeoutId = setTimeout(callLater, ms);
 
     return promise;
-  } as any;
+  };
 
   debouncedFn.cancel = () => timeoutId && clearTimeout(timeoutId);
 

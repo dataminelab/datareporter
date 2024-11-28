@@ -54,7 +54,7 @@ function formatLabelDummy(dimension: Dimension): string {
 export interface FilterTileProps {
   essenceList: Essence[];
   clickerList: Clicker[];
-  widgetList: Number[];
+  widgetList: number[];
   setEssence: Fn;
   timekeeper: Timekeeper;
   menuStage: Stage;
@@ -78,7 +78,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   private overflowMenuDeferred: Deferred<Element>;
   private items = React.createRef<HTMLDivElement>();
   private overflow = React.createRef<HTMLDivElement>();
-  private dimensionRef = React.createRef<HTMLDivElement>();  
+  private dimensionRef = React.createRef<HTMLDivElement>();
 
   constructor(props: FilterTileProps) {
     super(props);
@@ -305,7 +305,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   private dropDimension(dragPosition: DragPosition) {
     const { essenceList } = this.props;
-    const { filter, dataCube } = essenceList[0]; 
+    const { filter, dataCube } = essenceList[0];
     const dimension = this.draggingDimension();
     let tryingToReplaceTime = false;
     if (dragPosition.replace !== null) {
@@ -534,11 +534,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         };
       });
 
-    return <AddTile<Dimension> 
-      containerStage={menuStage} 
-      insertSplit={this.appendFilter} 
-      appendSplit={this.appendFilter} 
-      tiles={tiles} 
+    return <AddTile<Dimension>
+      containerStage={menuStage}
+      insertSplit={this.appendFilter}
+      appendSplit={this.appendFilter}
+      tiles={tiles}
     />;
   }
 

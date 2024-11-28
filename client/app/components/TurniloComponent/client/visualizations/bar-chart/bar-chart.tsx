@@ -21,7 +21,7 @@ import { Dataset, Datum, NumberRange, PlywoodRange, PseudoDatum, Range } from "p
 import * as React from "react";
 import { DateRange } from "../../../common/models/date-range/date-range";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import { BooleanFilterClause, FilterClause, FixedTimeFilterClause, NumberFilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
 import { Measure } from "../../../common/models/measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
@@ -87,6 +87,8 @@ function getFilterFromDatum(splits: Splits, dataPath: Datum[]): List<FilterClaus
     const segment: any = datum[reference];
 
     switch (type) {
+      case SplitType.boolean:
+        return new BooleanFilterClause({ reference, values: Set.of(segment) });
       case SplitType.number:
         return new NumberFilterClause({ reference, values: List.of(segment) });
       case SplitType.time:
@@ -115,6 +117,7 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
   data.forEach(d => {
     let segmentValue = d[dimensionName];
     const segmentStart = (segmentValue as PlywoodRange).start;
+    // @ts-ignore
     while (i < segmentStart) {
       filledData[j] = {};
       filledData[j][dimensionName] = NumberRange.fromJS({
@@ -279,7 +282,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return d3.extent(data, getY);
   }
 
-  getYScale(series: ConcreteSeries, yAxisStage: Stage): d3.scale.Linear<number, number> {
+  getYScale(series: ConcreteSeries, yAxisStage: Stage): d3.ScaleLinear<number, number> {
     const { essence } = this.props;
     const { flatData } = this.state;
 
@@ -288,7 +291,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const extentY = this.getYExtent(leafData, series);
 
-    return d3.scale.linear()
+    return d3.scaleLinear()
       .domain([Math.min(extentY[0] * 1.1, 0), Math.max(extentY[1] * 1.1, 0)])
       .range([yAxisStage.height, yAxisStage.y]);
   }
@@ -302,7 +305,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const xScale = this.getPrimaryXScale();
     const { essence, stage } = this.props;
 
-    const { stepWidth } = this.getBarDimensions(xScale.rangeBand());
+    const { stepWidth } = this.getBarDimensions(xScale.bandwidth());
     const xTicks = xScale.domain();
     const width = xTicks.length > 0 ? roundToPx(xScale(xTicks[xTicks.length - 1])) + stepWidth : 0;
 
@@ -619,7 +622,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getYAxisStuff(dataset: Dataset, series: ConcreteSeries, chartStage: Stage, chartIndex: number): {
-    yGridLines: JSX.Element, yAxis: JSX.Element, yScale: d3.scale.Linear<number, number>
+    yGridLines: JSX.Element, yAxis: JSX.Element, yScale: d3.ScaleLinear<number, number>
   } {
     const { yAxisStage } = this.getAxisStages(chartStage);
 
@@ -749,7 +752,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     }
   }
 
-  getPrimaryXScale(): d3.scale.Ordinal<string, number> {
+  getPrimaryXScale(): d3.ScaleBand<string> {
     const { datasetLoad, maxNumberOfLeaves } = this.state;
     if (!isLoaded(datasetLoad)) return null;
     const data = (datasetLoad.dataset.data[0][SPLIT] as Dataset).data;
@@ -763,9 +766,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
 
     const { usedWidth, padLeft } = this.getXValues(maxNumberOfLeaves);
 
-    return d3.scale.ordinal()
+    return d3.scaleBand()
       .domain(data.map(getX))
-      .rangeBands([padLeft, padLeft + usedWidth]);
+      .range([padLeft, padLeft + usedWidth]);
   }
 
   getBarDimensions(xRangeBand: number): { stepWidth: number, barWidth: number, barOffset: number } {
@@ -799,7 +802,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     return { padLeft, usedWidth };
   }
 
-  getBarsCoordinates(chartIndex: number, xScale: d3.scale.Ordinal<string, number>): BarCoordinates[] {
+  getBarsCoordinates(chartIndex: number, xScale: d3.ScaleBand<string>): BarCoordinates[] {
     if (!!this.coordinatesCache[chartIndex]) {
       return this.coordinatesCache[chartIndex];
     }
@@ -831,18 +834,18 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getSubCoordinates(
-    data: Datum[],
-    series: ConcreteSeries,
-    chartStage: Stage,
-    getX: (d: Datum, i: number) => string,
-    xScale: d3.scale.Ordinal<string, number>,
-    scaleY: d3.scale.Linear<number, number>,
-    splitIndex = 1
-  ): BarCoordinates[] {
+      data: Datum[],
+      series: ConcreteSeries,
+      chartStage: Stage,
+      getX: (d: Datum, i: number) => string,
+      xScale: d3.ScaleBand<string>,
+      scaleY: d3.ScaleLinear<number, number>,
+      splitIndex = 1
+    ): BarCoordinates[] {
     const { essence } = this.props;
     const { maxNumberOfLeaves } = this.state;
 
-    const { stepWidth, barWidth, barOffset } = this.getBarDimensions(xScale.rangeBand());
+    const { stepWidth, barWidth, barOffset } = this.getBarDimensions(xScale.bandwidth());
 
     const coordinates: BarCoordinates[] = data.map((d, i) => {
       let x = xScale(getX(d, i));
@@ -864,9 +867,9 @@ export class BarChart extends BaseVisualization<BarChartState> {
         let subStage: Stage = new Stage({ x, y: chartStage.y, width: barWidth, height: chartStage.height });
         let subGetX: any = (d: Datum, i: number) => String(i);
         let subData: Datum[] = (d[SPLIT] as Dataset).data;
-        let subxScale = d3.scale.ordinal()
+        const subxScale = d3.scaleBand()
           .domain(d3.range(0, maxNumberOfLeaves[splitIndex]).map(String))
-          .rangeBands([x + barOffset, x + subStage.width]);
+          .range([x + barOffset, x + subStage.width]);
 
         coordinate.children = this.getSubCoordinates(subData, series, subStage, subGetX, subxScale, scaleY, splitIndex + 1);
       }

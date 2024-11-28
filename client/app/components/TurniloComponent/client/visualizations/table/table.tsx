@@ -184,7 +184,7 @@ export class Table extends BaseVisualization<TableState> {
     return { flatData };
   }
 
-  private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
+  private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.ScaleLinear<number, number>> {
     const concreteSeries = essence.getConcreteSeries().toArray();
     const splitLength = essence.splits.length();
 
@@ -193,7 +193,7 @@ export class Table extends BaseVisualization<TableState> {
         .filter((d: Datum) => d["__nest"] === splitLength)
         .map((d: Datum) => series.selectValue(d));
 
-      return d3.scale.linear()
+      return d3.scaleLinear()
         // Ensure that 0 is in there
         .domain(d3.extent([0, ...measureValues]))
         .range([0, 100]);

@@ -11,19 +11,25 @@ export default function wrapReportPage(WrappedComponent) {
     const handleError = useImmutableCallback(onError);
 
     useEffect(() => {
-      let isCancelled = false;
-      const promise = reportId ? Report.get({ id: reportId }) : Promise.resolve(Report.newReport());
-      promise
-        .then(result => {
-          if (!isCancelled) {
-            setReport(result);
-          }
-        })
-        .catch(handleError);
+      const controller = new AbortController();
+      const { signal } = controller;
 
-      return () => {
-        isCancelled = true;
+      const fetchReport = async () => {
+        try {
+          const result = reportId
+            ? await Report.get({ id: reportId, signal })
+            : Report.newReport();
+          setReport(result);
+        } catch (error) {
+          if (!signal.aborted) {
+            handleError(error);
+          }
+        }
       };
+
+      fetchReport();
+
+      return () => controller.abort();
     }, [reportId, handleError]);
 
     if (!report) {

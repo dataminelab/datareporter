@@ -722,7 +722,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     if (parameters.simple) this.simple = true;
     if (parameters.options) this.options = parameters.options;
   }
-  
+
   public setCurrElement(elements: [timeRangeElement]): void {
     if (!elements.length) throw new Error('elements must be a non-empty array');
     this.currElement = elements[0];
@@ -757,7 +757,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     let js: ExpressionJS = { op: this.op };
     if (this.options) js.options = this.options;
     if (this.currElement) js.currElement = this.currElement;
-    if (this.prevElement) js.prevElement = this.prevElement; 
+    if (this.prevElement) js.prevElement = this.prevElement;
     return js;
   }
 

@@ -2,12 +2,14 @@
 set -e
 
 GIT_COMMIT=$(git rev-parse --short=8 HEAD)
-
+BRANCH=${BRANCH#"refs/heads/"}
 if [[ "${GITHUB_REF_TYPE-""}" == "tag" ]]; then
   PREFIX="v"
 elif [[ "${BRANCH-""}" == "main" ]]; then
   PREFIX="stable"
 else
+
+  echo "not main ${BRANCH#refs/heads/-""}"
   PREFIX="develop"
 fi
 

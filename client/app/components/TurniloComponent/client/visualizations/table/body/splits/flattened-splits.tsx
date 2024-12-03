@@ -15,26 +15,29 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { SPACE_LEFT } from "../../table";
 import { VisibleRows } from "../../utils/visible-rows";
-import { FlattenedSplitColumns } from "./flattened-split-columns";
 import "./flattened-splits.scss";
 import { SplitValue } from "./split-value";
 
+export interface SplitLabelProps {
+  datum: Datum;
+}
+
 interface FlattenedSplitsProps {
   visibleRowsIndexRange: [number, number];
-  essence: Essence;
+  essence?: Essence;
   data: PseudoDatum[];
   hoverRow?: Datum;
   segmentWidth: number;
   highlightedRowIndex: number | null;
+  splitLabel: React.ComponentType<SplitLabelProps>;
 }
 
-export const FlattenedSplits: React.SFC<FlattenedSplitsProps> = props => {
-  const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
-  const { splits: { splits }, timezone } = essence;
+export const FlattenedSplits: React.FunctionComponent<FlattenedSplitsProps> = props => {
+  const { splitLabel: SplitLabel, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
 
   return <div className="flattened-splits-rows">
     <VisibleRows
@@ -52,7 +55,7 @@ export const FlattenedSplits: React.SFC<FlattenedSplitsProps> = props => {
           style={segmentStyle}
           dimmed={dimmed}
           highlight={highlight}>
-          <FlattenedSplitColumns splits={splits} datum={datum} timezone={timezone} />
+          <SplitLabel datum={datum} />
         </SplitValue>;
       }} />
   </div>;

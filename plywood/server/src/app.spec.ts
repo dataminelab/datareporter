@@ -259,7 +259,7 @@ describe("Hash to expression endpoint", () => {
             .request(app)
             .post('/api/v1/plywood/expression')
             .send({ hash, dataCube })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 expect(res.status).to.eq(200);
                 expect(res.body).to.deep.eq(expectedExpression)
             });
@@ -271,7 +271,7 @@ describe("Hash to expression endpoint", () => {
             .request(app)
             .post('/api/v1/plywood/expression')
             .send({ dataCube })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 expect(res.status).to.eq(400);
             });
     });
@@ -281,7 +281,7 @@ describe("Hash to expression endpoint", () => {
             .request(app)
             .post('/api/v1/plywood/expression')
             .send({ hash })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 expect(res.status).to.eq(400);
             });
     });
@@ -316,7 +316,7 @@ describe('Attributes endpoint', () => {
             .request(app)
             .post('/api/v1/plywood/attributes')
             .send({ ...input })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(200);
                 chai.expect(res.body.attributes.length).to.equal(input.attributes.length);
 
@@ -350,7 +350,7 @@ describe('Attributes endpoint', () => {
             .request(app)
             .post('/api/v1/plywood/attributes')
             .send({ ...input, engine: undefined })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(400);
                 chai.expect(res.body.message).to.equal('Engine is missing');
                 chai.expect(res.body.field).to.equal('engine');
@@ -363,7 +363,7 @@ describe('Attributes endpoint', () => {
             .request(app)
             .post('/api/v1/plywood/attributes')
             .send({ ...input, engine: 'does_not_exists' })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(400);
                 chai.expect(res.body.message).to.include('Engine is not supported');
                 chai.expect(res.body.field).to.equal('engine');
@@ -376,7 +376,7 @@ describe('Attributes endpoint', () => {
             .request(app)
             .post('/api/v1/plywood/attributes')
             .send({ ...input, attributes: undefined })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(400);
                 chai.expect(res.body.message).to.include('Field attributes is missing');
                 chai.expect(res.body.field).to.equal('attributes');
@@ -393,7 +393,7 @@ describe("Supported engines", () => {
         return chai
             .request(app)
             .get('/api/v1/plywood/attributes/engines')
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(200);
                 chai.expect(res.body.supportedEngines).to.include('postgres');
                 chai.expect(res.body.supportedEngines).to.include('mysql');
@@ -409,7 +409,7 @@ describe("Status Endpoint", () => {
         return chai
             .request(app)
             .get("/api/v1/status")
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(200);
                 chai.expect(res.body.status).to.equal('UP');
             });
@@ -449,7 +449,7 @@ describe("Plywood Endpoint", () => {
         return chai
             .request(app)
             .post("/api/v1/plywood")
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(400);
                 chai.expect(res.body.error).to.equal("bad expression");
                 chai.expect(res.body.message).to.equal("op must be defined");
@@ -461,7 +461,7 @@ describe("Plywood Endpoint", () => {
             .request(app)
             .post("/api/v1/plywood")
             .send({})
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(400);
                 chai.expect(res.body.error).to.equal("bad expression");
                 chai.expect(res.body.message).to.equal("op must be defined");
@@ -476,7 +476,7 @@ describe("Plywood Endpoint", () => {
                 context,
                 expression: totalAddedExp
             })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(400);
                 chai.expect(res.body.error).to.equal("dataCube is null");
                 chai.expect(res.body.message).to.equal("data cube must be defined");
@@ -492,7 +492,7 @@ describe("Plywood Endpoint", () => {
                 context: { ...context, engine: 'bigquery' },
                 expression: totalAddedExp
             })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(200);
                 chai.expect(res.body.queries).to.be.eql([
                     [
@@ -511,7 +511,7 @@ describe("Plywood Endpoint", () => {
                 context: { ...context, engine: 'bigquery' },
                 expression: totalAddedExp
             })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(200);
                 chai.expect(res.body.queries).to.be.eql([
                     [
@@ -555,7 +555,7 @@ describe("Plywood Endpoint", () => {
                     "name": "Pages"
                 }
             })
-            .then(res => {
+            .then((res: ChaiHttp.Response) => {
                 chai.expect(res.status).to.equal(200);
                 chai.expect(res.body.queries).to.be.eql([
                     [

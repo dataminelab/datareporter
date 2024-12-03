@@ -1,10 +1,11 @@
 {
   "name": "@redash/viz",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Redash visualizations",
   "main": "dist/redash-visualizations.js",
   "scripts": {
     "clean": "rm -rf lib dist",
+    "clear": "rm -rf node_modules lib dist",
     "build:babel": "babel src --out-dir lib --source-maps --ignore 'src/**/*.test.js' --copy-files --no-copy-ignored",
     "build:webpack": "webpack",
     "build": " NODE_ENV=production npm-run-all clean build:babel build:webpack",
@@ -73,7 +74,7 @@
     "leaflet": "^1.2.0",
     "leaflet-fullscreen": "^1.0.2",
     "leaflet.markercluster": "^1.1.0",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.21",
     "moment": "^2.19.3",
     "numeral": "^2.0.6",
     "plotly.js": "^2.33.0",

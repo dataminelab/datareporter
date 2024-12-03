@@ -1,6 +1,5 @@
 {
   "extends": "../../../../tsconfig.json",
-
   "compileOnSave": false,
   "compilerOptions": {
     "declaration": true,
@@ -9,8 +8,8 @@
     "outDir": "../../build",
     "experimentalDecorators": true
   },
-
   "include": [
+    "../../node_modules/highlight.js/types/index.d.ts",
     "./**/*.ts",
     "./**/*.tsx"
   ]

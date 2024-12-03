@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
@@ -42,7 +42,7 @@ function tabTitle(tab: TimeFilterTab) {
   return tab === TimeFilterTab.RELATIVE ? STRINGS.relative : STRINGS.fixed;
 }
 
-const TabSelector: React.SFC<TabSelectorProps> = props => {
+const TabSelector: React.FunctionComponent<TabSelectorProps> = props => {
   const { selectedTab, onTabSelect } = props;
   const tabs = [TimeFilterTab.RELATIVE, TimeFilterTab.FIXED].map(tab => {
     return {

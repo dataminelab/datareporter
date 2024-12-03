@@ -2,7 +2,7 @@ import { ValidationError } from "../errors/ValidationError";
 import { FieldError } from "../errors/FieldError";
 
 import { logger } from "../logger/logger";
-
+// @ts-ignore
 export const handleError = (err, _req, res, next) => {
     if (!err) return next();
 

@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
+import React from "react";
+import { DataCube } from "../../../../../common/models/data-cube/data-cube";
+import { Splits } from "../../../../../common/models/splits/splits";
 import { Corner } from "../../utils/corner";
 
 interface CombinedSplitsTitle {
-  essence: Essence;
+  dataCube: DataCube;
+  splits: Splits;
 }
 
-export const CombinedSplitsTitle: React.SFC<CombinedSplitsTitle> = ({ essence }) => {
-  const { splits, dataCube } = essence;
-  const title = splits.splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
+export const CombinedSplitsTitle: React.FunctionComponent<CombinedSplitsTitle> = ({ dataCube, splits: { splits } }) => {
+  const title = splits.map(split => dataCube.getDimension(split.reference).title).join(", ");
   return <Corner>{title}</Corner>;
 };

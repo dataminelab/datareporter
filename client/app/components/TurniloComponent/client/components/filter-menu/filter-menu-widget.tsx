@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
@@ -40,11 +40,10 @@ export interface FilterMenuProps {
   widgetList: number[];
 }
 
-export const FilterMenu: React.SFC<FilterMenuProps> = (props: FilterMenuProps) => {
+export const FilterMenu: React.FunctionComponent<FilterMenuProps> = (props: FilterMenuProps) => {
   if (!props.dimension) return null;
   switch (props.dimension.kind) {
     case "time":
-      // @ts-ignore
       return <TimeFilterMenu {...props} />;
     default:
       return null;

@@ -146,4 +146,16 @@ export class Dimensions {
   toJS(): DimensionOrGroupJS[] {
     return this.dimensions.map(dimensionOrGroup => dimensionOrGroup.toJS());
   }
+
+  allDimensions(): Dimension[] {
+    return this.flattenedDimensions.toArray();
+  }
+
+  static findDimensionByExpression(): Dimension | null {
+    return null;
+  }
+
+  toArray(): Dimension[] {
+    return this.flattenedDimensions.toArray();
+  }
 }

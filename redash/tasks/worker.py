@@ -98,7 +98,7 @@ class NotifyWorkerQueue(BaseQueue):
             self.worker_notifier = GooglePubSubNotifier()
         elif WORKER_NOTIFY_URL:
             self.worker_notifier = HttpNotifier()
-        else:
+        else:  # schedules will never hit /execute for workers
             self.worker_notifier = NoopNotifier()
 
     def enqueue_job(self, *args, **kwargs):

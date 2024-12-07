@@ -64,7 +64,7 @@ nvm use v14 > /dev/null
 Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
 ```
 # install necessary python version
-pyenv install 3.8.7 
+pyenv install 3.8.7
 # make sure you run below command in the datareported folder
 # automatically select whenever you are in the current directory (or its subdirectories)
 pyenv local 3.8.7
@@ -79,22 +79,9 @@ source ./.venv/bin/activate
 
 Installation in Linux using virtualenvwrapper:
 ```
-sudo pacman -S yay 
+sudo pacman -S yay
 yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38
-```
-
-If working with Visual Studio Code
-
-Follow the [tutorial](https://redash.io/help/open-source/dev-guide/debugging)
-
-And run the debugging session:
-```
-# install below library
-pip install ptvsd
-
-# start debugging session using below line
-docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server
 ```
 
 ### Running tests locally
@@ -158,8 +145,17 @@ cd client
 npm start
 # visit http://localhost:8080/
 ```
-Python debugger:
+
+If working with Visual Studio Code
+
+Follow the [tutorial](https://redash.io/help/open-source/dev-guide/debugging)
+
+And run the debugging session:
 ```
+# install below library
+pip install ptvsd
+
+# start debugging session using below line
 docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server
 ```
 To log messages to/from Plywood add to the Plywood env (in docker compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`

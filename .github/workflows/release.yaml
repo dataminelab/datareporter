@@ -46,4 +46,11 @@ jobs:
           push: true
           context: plywood/server
           tags: europe-west1-docker.pkg.dev/datareporter/datareporter/plywood:${{ steps.get-version.outputs.version }}
-
+      - name: Tag release
+        shell: bash
+        run: |
+          if ! [ $(git rev-list ${{ steps.get-version.outputs.version }} >/dev/null )];
+          then
+            git tag ${{ steps.get-version.outputs.version }}
+            git push --tags
+          fi

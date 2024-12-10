@@ -92,7 +92,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
 
 
   }, [createModel, onChangeConnection]);
-
+  console.log("formFields", formFields)
   return (
     <Modal
       {...dialog.props} 

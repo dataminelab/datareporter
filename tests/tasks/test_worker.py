@@ -1,15 +1,12 @@
-from mock import patch, call
+from mock import call, patch
 from rq import Connection
 from rq.job import JobStatus
-from redash.tasks import Worker
 
-from tests import BaseTestCase
 from redash import rq_redis_connection
-from redash.tasks.worker import Queue
-from redash.tasks.queries.execution import (
-    enqueue_query,
-)
-from redash.worker import job, default_queues
+from redash.tasks import Queue, Worker
+from redash.tasks.queries.execution import enqueue_query
+from redash.worker import default_queues, job
+from tests import BaseTestCase
 
 
 @patch("statsd.StatsClient.incr")
@@ -38,7 +35,7 @@ class TestWorkerMetrics(BaseTestCase):
             call("rq.jobs.running.queries"),
             call("rq.jobs.started.queries"),
             call("rq.jobs.running.queries", -1, 1),
-            call("rq.jobs.finished.queries")
+            call("rq.jobs.finished.queries"),
         ]
         incr.assert_has_calls(calls)
 
@@ -66,7 +63,7 @@ class TestWorkerMetrics(BaseTestCase):
             call("rq.jobs.running.queries"),
             call("rq.jobs.started.queries"),
             call("rq.jobs.running.queries", -1, 1),
-            call("rq.jobs.failed.queries")
+            call("rq.jobs.failed.queries"),
         ]
         incr.assert_has_calls(calls)
 

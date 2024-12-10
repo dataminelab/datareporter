@@ -204,7 +204,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       newState.overflowMenuOpenOn = null;
     }
     this.setState(newState);
-  };
+  }
 
   openOverflowMenu(target: Element): Promise<Element> {
     if (!target) return Promise.resolve(null);
@@ -226,7 +226,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     this.setState({
       overflowMenuOpenOn: null
     });
-  };
+  }
 
   removeFilter(itemBlank: ItemBlank, e: MouseEvent) {
     const { essence, clicker } = this.props;

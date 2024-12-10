@@ -3,11 +3,17 @@ FROM node:14.17 AS frontend-builder
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
 
+RUN useradd --create-home datareporter
+USER datareporter
+
 WORKDIR /frontend
 COPY bin/build_frontend.sh .
-COPY client/ /frontend/client
-COPY viz-lib/ /frontend/viz-lib
+COPY --chown=datareporter client /frontend/
+COPY --chown=datareporter package.json package-lock.json /frontend/
+COPY --chown=datareporter viz-lib/ /frontend/viz-lib
 COPY plywood/server/ /frontend/plywood/server/
+
+# install node dependencies
 RUN if [ "x$skip_frontend_build" = "x" ] ; then \
     echo "Building frontend";\
     ./build_frontend.sh;\
@@ -22,7 +28,6 @@ FROM python:3.8-slim-buster
 
 EXPOSE 5000
 
-RUN useradd --create-home redash
 
 # Ubuntu packages
 RUN apt-get update && \
@@ -80,11 +85,10 @@ ARG POETRY_OPTIONS="--no-root --no-interaction --no-ansi"
 ARG install_groups="main,all_ds,dev"
 RUN /etc/poetry/bin/poetry install --only $install_groups $POETRY_OPTIONS
 
-COPY --chown=redash . /app
-COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
-RUN chown redash:redash -R /app
+COPY --chown=datareporter . /app
+COPY --chown=datareporter --from=frontend-builder /frontend/client/dist /app/client/dist
+RUN chown datareporter:datareporter -R /app
 RUN find /app
-USER redash
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 # The version is being set arbitrarily by the builder
 ARG version

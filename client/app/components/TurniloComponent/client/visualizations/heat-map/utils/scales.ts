@@ -15,14 +15,14 @@
  */
 
 import { scaleLinear } from "@vx/scale";
-import { max, min, scale } from "d3";
+import d3, { max, min } from "d3";
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 import { nestedDataset } from "./nested-dataset";
 
-export type ColorScale = scale.Linear<string, string>;
+export type ColorScale = d3.ScaleLinear<string, string>;
 
 const white = "#fff";
 const orange = "#ff5a00";

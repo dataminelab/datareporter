@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./checkbox.scss";
@@ -54,13 +54,13 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   render() {
     const { onClick, type, color, selected, label, className } = this.props;
 
-    var style: React.CSSProperties = null;
+    let style: React.CSSProperties = null;
     if (color) {
       style = { background: color };
     }
 
     return <div className={classNames("checkbox", type, className, { selected, color })} onClick={onClick}>
-      <div className="checkbox-body" style={style}></div>
+      <div className="checkbox-body" style={style} />
       {this.renderIcon()}
       {label ? <div className="label">{label}</div> : null}
     </div>;

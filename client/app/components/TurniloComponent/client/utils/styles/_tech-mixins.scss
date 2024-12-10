@@ -111,9 +111,6 @@
   @include internet-explorer {
     overflow-x: visible;
   }
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
 }
 
 // for the shpitz

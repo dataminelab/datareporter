@@ -15,7 +15,6 @@ import { filterToHash, hashToFilter } from './endpoint/filter-to-hash-converter'
 import { responseShape } from './endpoint/response-shape';
 import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParser";
 import { DruidParse } from "./formatter/attributesFormatter/parsers/DruidParser";
-import { env } from "process";
 
 
 AttributeParserFactory.register(PostgresAttributeParser);

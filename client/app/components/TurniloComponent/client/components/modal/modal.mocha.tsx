@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as TestUtils from "react-dom/test-utils";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
@@ -27,7 +27,7 @@ import { Modal } from "./modal";
 
 describe("Modal", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Modal
         title="Modal"
         onClose={null}

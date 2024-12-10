@@ -1,4 +1,4 @@
-from redash.models.models import Report
+from redash.models import Report
 from tests import BaseTestCase
 
 

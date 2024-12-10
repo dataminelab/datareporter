@@ -34,7 +34,8 @@ function VisualizationSelect({ query, visualization, onChange }) {
           id="choose-visualization"
           className="w-100"
           value={visualization ? visualization.id : undefined}
-          onChange={handleChange}>
+          onChange={handleChange}
+        >
           {map(visualizationGroups, (visualizations, groupKey) => (
             <Select.OptGroup key={groupKey} label={groupKey}>
               {map(visualizations, visualization => (
@@ -103,7 +104,7 @@ function AddWidgetDialog({ dialog, dashboard }) {
 
   const saveWidget = useCallback(() => {
     dialog.close({ visualization: selectedVisualization, parameterMappings }).catch(() => {
-      notification.error("Widget could not be added");
+      notification.error("Query Widget could not be added");
     });
   }, [dialog, selectedVisualization, parameterMappings]);
 

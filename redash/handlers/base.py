@@ -47,9 +47,15 @@ class BaseResource(Resource):
             setattr(model, k, v)
 
 
+def get_org_id(org):
+    if not org:
+        return None
+    return org.id
+
+
 def record_event(org, user, options):
     if user.is_api_user():
-        options.update({"api_key": user.name, "org_id": org.id})
+        options.update({"api_key": user.name, "org_id": get_org_id(org)})
     else:
         options.update({"user_id": user.id, "user_name": user.name, "org_id": org.id})
 

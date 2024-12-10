@@ -1,7 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 
 from redash import models
-from redash.models.models import Report
+from redash.models import Report
 from redash.handlers.base import BaseResource, get_object_or_404
 from redash.permissions import require_access, view_only
 

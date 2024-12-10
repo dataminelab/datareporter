@@ -27,15 +27,19 @@ import { reportError } from "../../utils/error-reporter/error-reporter";
 import { CubeView } from "../../views/cube-view/cube-view-widget";
 import { ErrorView } from "../../views/error-view/error-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
+import { Fn } from "../../../common/utils/general/general";
 import "./turnilo-application.scss";
 
 export interface TurniloApplicationProps {
   version: string;
   hashWidget: string;
   maxFilters?: number;
+  setFilterParams: Fn;
+  getEssence: (id:Number) => Essence;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
   config?: any;
+  widget?: any;
 }
 
 export interface TurniloApplicationState {
@@ -79,42 +83,21 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   }
 
   componentWillMount() {
-    const { appSettings, initTimekeeper, hashWidget, config } = this.props;
-    const { dataCubes } = appSettings;
-    
+    const { initTimekeeper, hashWidget, config } = this.props;
     var hash;
     if (config.hash && config.source_name) {
       hash = config.source_name + "/4/" + config.hash;
     } else {
       hash = hashWidget;
     }
-    
-    if (!dataCubes.length) {
-      this.setState({
-        viewType: NO_DATA,
-        viewHash: "",
-        appSettings
-      });
-      return;
-    }
+    this.hashToState(hash);
 
     let viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
-    
-    let selectedItem: DataCube;
-
-    if (this.viewTypeNeedsAnItem(viewType)) {
-      selectedItem = this.getSelectedDataCubeFromHash(dataCubes, hash);
-    }
-
-    viewType = CUBE;
-    selectedItem = dataCubes[0];
 
     this.setState({
       viewType,
       viewHash,
-      selectedItem,
-      appSettings,
       timekeeper: initTimekeeper || Timekeeper.EMPTY
     });
   }
@@ -142,7 +125,6 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   };
 
   hashToState(hash: string) {
-    const { dataCubes } = this.state.appSettings;
     const viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
     const newState: TurniloApplicationState = {
@@ -150,18 +132,20 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
       viewHash,
       drawerOpen: false
     };
-
-    const appSettings = AppSettings.fromJS(this.props.config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory.bind(this.props.config)
+    const { config } = this.props;
+    const appSettings = AppSettings.fromJS(config.appSettings, {
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(config),
+      essence: this.props.getEssence.bind(config, this.props.widget.id),
     });
 
     if (this.viewTypeNeedsAnItem(viewType)) {
-      const item = this.getSelectedDataCubeFromHash(appSettings.dataCubes, hash);
+      let { dataCubes } = appSettings;
+      const item = this.getSelectedDataCubeFromHash(dataCubes, hash);
       newState.selectedItem = item ? item : dataCubes[0];
     } else {
       newState.selectedItem = null;
     }
-
+    newState.appSettings = appSettings;
     this.setState(newState);
   }
 
@@ -232,9 +216,10 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
   openAboutModal = () => this.setState({ showAboutModal: true });
 
   renderView() {
-    const { maxFilters } = this.props;
+    const { maxFilters, setFilterParams } = this.props;
     const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { customization } = appSettings;
+    const widgetId = this.props.widget.options.type === "TURNILO" ? this.props.widget.id : null;
 
     switch (viewType) {
       case NO_DATA:
@@ -258,6 +243,8 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
           openAboutModal={this.openAboutModal}
           maxFilters={maxFilters}
           customization={customization}
+          setFilterParams={setFilterParams}
+          widgetId={widgetId}
         />;
 
       case ERROR:

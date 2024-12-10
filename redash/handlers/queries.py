@@ -6,7 +6,8 @@ from funcy import partial
 from sqlalchemy.orm.exc import StaleDataError
 
 from redash import models, settings
-from redash.models.models import Model, Report
+from redash.models.models import Model
+from redash.models import Report
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import (
     BaseResource,
@@ -198,7 +199,7 @@ class QueryListResource(BaseQueryListResource):
 
         .. _query-response-label:
 
-        :>json number id: query_id aka Query ID
+        :>json number id: query_id
         :>json number latest_query_data_id: ID for latest output data from this query
         :>json string name:
         :>json string description:
@@ -400,12 +401,11 @@ class QueryResource(BaseResource):
         query.archive(self.current_user)
         models.db.session.commit()
 
+
 class ReportRegenerateApiKeyResource(BaseResource):
     @require_permission("edit_report")
     def post(self, report_id):
-        report = get_object_or_404(
-            Report.get_by_id_and_org, report_id, self.current_org
-        )
+        report = get_object_or_404(Report.get_by_id_and_org, report_id, self.current_org)
         require_admin_or_owner(report.user_id)
         report.regenerate_api_key()
         models.db.session.commit()
@@ -419,7 +419,9 @@ class ReportRegenerateApiKeyResource(BaseResource):
         )
 
         result = ReportSerializer(report).serialize()
+        result["api_key"] = report.api_key
         return result
+
 
 class QueryRegenerateApiKeyResource(BaseResource):
     @require_permission("edit_query")

@@ -39,7 +39,6 @@ import { SvgIcon } from "../svg-icon/svg-icon";
 import "./filter-tile.scss";
 
 const FILTER_CLASS_NAME = "filter";
-const ANIMATION_DURATION = 400;
 
 export interface ItemBlank {
   dimension: Dimension;

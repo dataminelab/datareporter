@@ -69,7 +69,7 @@ export class EssenceFixtures {
   static lineChart(): EssenceValue {
     return {
       ...defaultEssence,
-      visualization: LINE_CHART_MANIFEST
+      visualization: LINE_CHART_MANIFEST,
     };
   }
 
@@ -86,6 +86,7 @@ export class EssenceFixtures {
   }
 
   static wikiHeatmap(): Essence {
+    console.log("wikiHeatmap");
     const filterClauses = [
       timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z"))
     ];

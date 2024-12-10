@@ -18,7 +18,6 @@
 import memoizeOne from "memoize-one";
 import { Dataset, TabulatorOptions } from "plywood";
 import * as React from "react";
-import { CSSTransition } from "react-transition-group";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Customization } from "../../../common/models/customization/customization";
@@ -41,7 +40,6 @@ import { Binary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { datesEqual } from "../../../common/utils/time/time";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
-import { SideDrawer } from "../../components/side-drawer/side-drawer";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import * as localStorage from "../../utils/local-storage/local-storage";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
@@ -68,6 +66,8 @@ const defaultLayout: CubeViewLayout = {
 export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
+  setFilterParams: (widgetId: number, essence: Essence, clicker: Clicker) => void;
+  widgetId: number;
   hash: string;
   changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
   changeEssence: Binary<Essence, boolean, void>;
@@ -84,20 +84,10 @@ export interface CubeViewState {
   timekeeper?: Timekeeper;
   visualizationStage?: Stage;
   menuStage?: Stage;
-  dragOver?: boolean;
-  showSideBar?: boolean;
-  showRawDataModal?: boolean;
-  showViewDefinitionModal?: boolean;
-  showDruidQueryModal?: boolean;
-  urlShortenerModalProps?: { url: string, title: string };
-  layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
   lastRefreshRequestTimestamp: number;
 }
-
-const MIN_PANEL_WIDTH = 240;
-const MAX_PANEL_WIDTH = 400;
 
 export interface DataSetWithTabOptions {
   dataset: Dataset;
@@ -106,10 +96,6 @@ export interface DataSetWithTabOptions {
 
 export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   static defaultProps: Partial<CubeViewProps> = { maxFilters: 20 };
-
-  private static canDrop(): boolean {
-    return DragManager.draggingDimension() !== null;
-  }
 
   public mounted: boolean;
   private readonly clicker: Clicker;
@@ -122,19 +108,17 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     this.state = {
       essence: null,
-      dragOver: false,
-      layout: this.getStoredLayout(),
       lastRefreshRequestTimestamp: 0,
       updatingMaxTime: false
     };
 
     this.clicker = {
       changeFilter: (filter: Filter) => {
+        let essence = this.state.essence.changeFilter(filter);
         this.setState(state => {
-          let { essence } = state;
-          essence = essence.changeFilter(filter);
           return { ...state, essence };
         });
+        return essence
       },
       changeComparisonShift: (timeShift: TimeShift) => {
         this.setState(state =>
@@ -186,29 +170,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       }
     };
   }
-
-  refreshMaxTime = () => {
-    const { essence, timekeeper } = this.state;
-    const { dataCube } = essence;
-    this.setState({ updatingMaxTime: true });
-
-    DataCube.queryMaxTime(dataCube)
-      .then(maxTime => {
-        if (!this.mounted) return;
-        const timeName = dataCube.name;
-        const isBatchCube = !dataCube.refreshRule.isRealtime();
-        const isCubeUpToDate = datesEqual(maxTime, timekeeper.getTime(timeName));
-        if (isBatchCube && isCubeUpToDate) {
-          this.setState({ updatingMaxTime: false });
-          return;
-        }
-        this.setState({
-          timekeeper: timekeeper.updateTime(timeName, maxTime),
-          updatingMaxTime: false,
-          lastRefreshRequestTimestamp: (new Date()).getTime()
-        });
-      });
-  };
 
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
@@ -272,97 +233,30 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     });
   };
 
-  private isSmallDevice(): boolean {
-    return this.state.deviceSize === DeviceSize.SMALL;
-  }
-
-  dragEnter = (e: React.DragEvent<HTMLElement>) => {
-    if (!CubeView.canDrop()) return;
-    e.preventDefault();
-    this.setState({ dragOver: true });
-  };
-
-  dragOver = (e: React.DragEvent<HTMLElement>) => {
-    if (!CubeView.canDrop()) return;
-    e.preventDefault();
-  };
-
-  getStoredLayout(): CubeViewLayout {
-    return localStorage.get("cube-view-layout-v2") || defaultLayout;
-  }
-
-  storeLayout(layout: CubeViewLayout) {
-    localStorage.set("cube-view-layout-v2", layout);
-  }
-
-  private updateLayout(layout: CubeViewLayout) {
-    this.setState({ layout });
-    this.storeLayout(layout);
-  }
-
-  toggleFactPanel = () => {
-    const { layout: { factPanel }, layout } = this.state;
-    this.updateLayout({
-      ...layout,
-      factPanel: {
-        ...factPanel,
-        hidden: !factPanel.hidden
-      }
-    });
-  };
-
-  togglePinboard = () => {
-    const { layout: { pinboard }, layout } = this.state;
-    this.updateLayout({
-      ...layout,
-      pinboard: {
-        ...pinboard,
-        hidden: true
-      }
-    });
-  };
-
-  onFactPanelResize = (width: number) => {
-    const { layout: { factPanel }, layout } = this.state;
-    this.updateLayout({
-      ...layout,
-      factPanel: {
-        ...factPanel,
-        width
-      }
-    });
-  };
-
-  onPinboardPanelResize = (width: number) => {
-    const { layout: { pinboard }, layout } = this.state;
-    this.updateLayout({
-      ...layout,
-      pinboard: {
-        ...pinboard,
-        width
-      }
-    });
-  };
-
-  onPanelResizeEnd = () => {
-    this.globalResizeListener();
-  };
-
-  private getCubeContext(): CubeContextValue {
+  private async getCubeContext(): Promise<CubeContextValue> {
     const { essence } = this.state;
     /*
      React determine context value change using value reference.
      Because we're creating new object, reference would be different despite same values inside,
      hence memoization. More info: https://reactjs.org/docs/context.html#caveats
     */
-    return this.constructContext(essence, this.clicker);
+    return await this.constructContext(essence, this.clicker);
   }
 
   private constructContext = memoizeOne(
-    (essence: Essence, clicker: Clicker) =>
-      ({ essence, clicker }),
-    ([nextEssence, nextClicker]: [Essence, Clicker], [prevEssence, prevClicker]: [Essence, Clicker]) =>
-      nextEssence.equals(prevEssence) && nextClicker === prevClicker);
+    async (essence: Essence, clicker: Clicker) => {
+      const { setFilterParams, widgetId } = this.props;
+
+      if (widgetId) {
+        await setFilterParams(widgetId, essence, clicker);
+      }
+      return { essence, clicker };
+    },
+    (
+      [nextEssence, nextClicker]: [Essence, Clicker], 
+      [prevEssence, prevClicker]: [Essence, Clicker]
+    ) => nextEssence.equals(prevEssence) && nextClicker === prevClicker
+  );
 
   render() {
     const { essence } = this.state;
@@ -379,37 +273,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     </CubeContext.Provider>;
   }
 
-  sideDrawerOpen = () => {
-    this.setState({ showSideBar: true });
-  };
-
-  sideDrawerClose = () => {
-    this.setState({ showSideBar: false });
-  };
-
-  renderSideDrawer() {
-    const { changeDataCubeAndEssence, openAboutModal, appSettings } = this.props;
-    const { showSideBar, essence } = this.state;
-    const { dataCubes, customization } = appSettings;
-    const transitionTimeout = { enter: 500, exit: 300 };
-    return <CSSTransition
-      in={showSideBar}
-      classNames="side-drawer"
-      mountOnEnter={true}
-      unmountOnExit={true}
-      timeout={transitionTimeout}
-    >
-      <SideDrawer
-        key="drawer"
-        essence={essence}
-        dataCubes={dataCubes}
-        onOpenAbout={openAboutModal}
-        onClose={this.sideDrawerClose}
-        customization={customization}
-        changeDataCubeAndEssence={changeDataCubeAndEssence}
-      />
-    </CSSTransition>;
-  }
 
   private visElement() {
     const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;

@@ -24,6 +24,7 @@ setup
 client/.tmp/
 client/dist/
 client/cypress/
+client/node_modules/
 
 # Ignore Plywood server files and directories
 plywood/server/node_modules/

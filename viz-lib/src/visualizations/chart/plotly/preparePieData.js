@@ -1,8 +1,7 @@
 import { isString, each, extend, includes, map, reduce } from "lodash";
 import d3 from "d3";
 import chooseTextColorForBackground from "@/lib/chooseTextColorForBackground";
-import { ColorPaletteArray } from "@/visualizations/ColorPalette";
-
+import { AllColorPaletteArrays, ColorPaletteTypes } from "@/visualizations/ColorPalette";
 import { cleanNumber, normalizeValue } from "./utils";
 
 export function getPieDimensions(series) {
@@ -95,14 +94,29 @@ function prepareSeries(series, options, additionalOptions) {
 }
 
 export default function preparePieData(seriesList, options) {
-  // we will use this to assign colors for values that have no explicitly set color
-  const getDefaultColor = d3.scale
-    .ordinal()
-    .domain([])
-    .range(ColorPaletteArray);
+  const palette = AllColorPaletteArrays[options.color_scheme];
   const valuesColors = {};
+  let getDefaultColor;
+
+  if (typeof(seriesList[0]) !== 'undefined' && ColorPaletteTypes[options.color_scheme] === 'continuous') {
+    const uniqueXValues =[... new Set(seriesList[0].data.map((d) => d.x))];
+    const step = (palette.length - 1) / (uniqueXValues.length - 1 || 1);
+    const colorIndices = d3.range(uniqueXValues.length).map(function(i) {
+      return Math.round(step * i);
+    });
+    getDefaultColor = d3.scale.ordinal()
+      .domain(uniqueXValues) // Set domain as the unique x-values
+      .range(colorIndices.map((index) => palette[index]));
+  } else {
+    getDefaultColor = d3.scale
+      .ordinal()
+      .domain([])
+      .range(palette);
+  };
+
   each(options.valuesOptions, (item, key) => {
     if (isString(item.color) && item.color !== "") {
+      // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       valuesColors[key] = item.color;
     }
   });
@@ -111,7 +125,8 @@ export default function preparePieData(seriesList, options) {
     ...getPieDimensions(seriesList),
     hasX: includes(options.columnMapping, "x"),
     hoverInfoPattern: getPieHoverInfoPattern(options),
-    getValueColor: v => valuesColors[v] || getDefaultColor(v),
+    // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    getValueColor: (v) => valuesColors[v] || getDefaultColor(v),
   };
 
   return map(seriesList, (series, index) => prepareSeries(series, options, { ...additionalOptions, index }));

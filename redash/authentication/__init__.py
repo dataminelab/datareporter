@@ -15,6 +15,7 @@ from redash.authentication import jwt_auth
 from redash.authentication.org_resolving import current_org
 from redash.settings.organization import settings as org_settings
 from redash.tasks import record_event
+from typing import Optional
 
 login_manager = LoginManager()
 logger = logging.getLogger("authentication")
@@ -56,7 +57,7 @@ def load_user(user_id_with_identity):
             return None
 
         return user
-    except (models.NoResultFound, ValueError, AttributeError):
+    except (NoResultFound, ValueError, AttributeError):
         return None
 
 
@@ -105,7 +106,7 @@ def hmac_load_user_from_request(request):
     return None
 
 
-def get_user_from_api_key(api_key, query_id):
+def get_user_from_api_key(api_key: str, obj: dict) -> Optional[models.ApiUser]:
     if not api_key:
         return None
 
@@ -113,26 +114,33 @@ def get_user_from_api_key(api_key, query_id):
 
     # TODO: once we switch all api key storage into the ApiKey model, this code will be much simplified
     org = current_org._get_current_object()
-    try:
-        user = models.User.get_by_api_key_and_org(api_key, org)
-        if user.is_disabled:
-            user = None
-    except (models.NoResultFound, NoResultFound):
-        try:
-            api_key = models.ApiKey.get_by_api_key(api_key)
-            user = models.ApiUser(api_key, api_key.org, [])
-        except (models.NoResultFound, NoResultFound):
-            if query_id:
-                query = models.Query.get_by_id_and_org(query_id, org)
-                if query and query.api_key == api_key:
-                    user = models.ApiUser(
-                        api_key,
-                        query.org,
-                        list(query.groups.keys()),
-                        name="ApiKey: Query {}".format(query.id),
-                    )
-
-    return user
+    user = models.User.get_by_api_key_and_org_safe(api_key, org)
+    if user and not user.is_disabled:
+        return user
+    _api_key = models.ApiKey.get_by_api_key_safe(api_key)
+    if _api_key:
+        return models.ApiUser(_api_key, _api_key.org, [])
+    if obj["target"] == "query":
+        id = obj["query_id"]
+        query = models.Query.get_by_id_and_org_safe(id, org)
+        if query and query.api_key == api_key:
+            return models.ApiUser(
+                api_key,
+                query.org,
+                list(query.groups.keys()),
+                name="ApiKey: Query {}".format(query.id),
+            )
+    elif obj["target"] == "report":
+        id = obj["report_id"]
+        report = models.Report.get_by_id_and_org_safe(id, org)
+        if report and report.api_key == api_key:
+            return models.ApiUser(
+                api_key,
+                None,
+                list(report.groups.keys()),
+                name="ApiKey: Report {}".format(report.id),
+            )
+    return None
 
 
 def get_api_key_from_request(request):
@@ -154,10 +162,13 @@ def api_key_load_user_from_request(request):
     api_key = get_api_key_from_request(request)
     if request.view_args is not None:
         query_id = request.view_args.get("query_id", None)
-        user = get_user_from_api_key(api_key, query_id)
+        user = get_user_from_api_key(api_key, {"target": "query", "query_id": query_id})
+
+        if not user:
+            report_id = request.view_args.get("report_id", None)
+            user = get_user_from_api_key(api_key, {"target": "report", "report_id": report_id})
     else:
         user = None
-
     return user
 
 
@@ -193,7 +204,7 @@ def jwt_token_load_user_from_request(request):
 
     try:
         user = models.User.get_by_email_and_org(payload["email"], org)
-    except models.NoResultFound:
+    except NoResultFound:
         user = create_and_login_user(current_org, payload["email"], payload["email"])
 
     return user

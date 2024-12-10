@@ -34,6 +34,7 @@ def outdated_queries():
         },
     )
 
+    # updated_at = manager_status.get("last_refresh_at", None)
     response = {
         "queries": QuerySerializer(outdated_queries, with_stats=True, with_last_modified_by=False).serialize(),
         "updated_at": manager_status["last_refresh_at"],

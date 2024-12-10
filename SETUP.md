@@ -45,10 +45,11 @@ nvm use v14 > /dev/null
     * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
 
 * Setup docker compose
-    * `make up` or `docker-compose up --build`  to start required services like postgres app server
-    * `docker-compose run --rm server create_db` Will start server and run. exec /app/manage.py database create_tables. This step is required **only once**.
-    * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker-compose run server manage db migrate`
-    * Later on and only if necessary, in order to upgrade local database run: `docker-compose run --rm server manage db upgrade`
+    * `make up` or `docker compose up --build`  to start required services like postgres app server
+    * `docker compose run --rm server create_db` Will start server and run. exec /app/manage.py database create_tables. This step is required **only once**.
+    * In case you get an error stating that Target database is not up to date, run: `docker-compose run server manage db stamp head`
+    * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker compose run server manage db migrate`
+    * Later on and only if necessary, in order to upgrade local database run: `docker compose run --rm server manage db upgrade`
 
 
 * Not needed anymore, might be useful for local development: start UI proxy
@@ -63,7 +64,7 @@ nvm use v14 > /dev/null
 Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
 ```
 # install necessary python version
-pyenv install 3.8.7 
+pyenv install 3.8.7
 # make sure you run below command in the datareported folder
 # automatically select whenever you are in the current directory (or its subdirectories)
 pyenv local 3.8.7
@@ -78,28 +79,19 @@ source ./.venv/bin/activate
 
 Installation in Linux using virtualenvwrapper:
 ```
-sudo pacman -S yay 
+sudo pacman -S yay
 yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38
 ```
 
-If working with Visual Studio Code
-
-Follow the [tutorial](https://redash.io/help/open-source/dev-guide/debugging)
-
-And run the debugging session:
-```
-# install below library
-pip install ptvsd
-
-# start debugging session using below line
-docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
-```
-
 ### Running tests locally
-In order to test datareporter-server side you need to run below command:
-```sh
-bash bin/server_tests.sh
+First ensure that the "tests" database is created:
+```
+docker compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
+```
+Then run the tests:
+```
+docker compose run --rm server tests
 ```
 In order to test viz-lib folder you need to install dependencies and run tests because you cant have 2 react versions in the same project. To do that run below commands in the viz-lib folder:
 ```sh
@@ -111,7 +103,7 @@ npm install antd@^3 react@^16.8 react-dom@^16.8 && npm run test
 # go to client folder
 cd client
 # install cypress and seed database
-# your local postgres-database is required to be running 
+# your local postgres-database is required to be running
 npm run cypress:install && node cypress/cypress.js db-seed
 # run cypress
 npm run cypress
@@ -147,7 +139,7 @@ npx cypress open
 * **changes:**
   * All changes should be reflected automatically. The server is running in watch mode with incremental build support
     and should rebuild at any source code change.
-  * To see details/logs of build go into repo root dir and run `docker-compose logs plywood`
+  * To see details/logs of build go into repo root dir and run `docker compose logs plywood`
 
 ### Publishing NPM reporter-plywood package
 First make sure to authenticate with `npm login` then build and publish the package:
@@ -166,11 +158,20 @@ cd client
 npm start
 # visit http://localhost:8080/
 ```
-Python debugger:
+
+If working with Visual Studio Code
+
+Follow the [tutorial](https://redash.io/help/open-source/dev-guide/debugging)
+
+And run the debugging session:
 ```
-docker-compose stop server && docker-compose run --rm --service-ports server debug && docker-compose start server
+# install below library
+pip install ptvsd
+
+# start debugging session using below line
+docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server
 ```
-To log messages to/from Plywood add to the Plywood env (in docker-compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
+To log messages to/from Plywood add to the Plywood env (in docker compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
 
 ### Docker installation issues
 
@@ -199,8 +200,8 @@ rtt min/avg/max/mdev = 0.057/0.781/1.506/0.725 ms
 
 ### How to handle package controll on Python side, [see settings](https://github.com/getredash/redash/blob/c97afeb327d8d54e7219ac439cc93d0f234763e5)
 ```
-# Install Poetry locally, it has to be 1.6.1 or upper because of group usages
-pip3 install poetry==1.6.1
+# Install poetry using pip
+pip3 install poetry==1.8.3
 
 # Uninstall Poetry locally
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/901bdf0491005f1b3db41947d0d938da6838ecb9/get-poetry.py | python3 - --uninstall

@@ -1,6 +1,7 @@
 import logging
 import time
 
+from requests.exceptions import ConnectionError
 from rq.timeouts import JobTimeoutException
 
 from redash import models, redis_connection, settings, statsd_client
@@ -157,7 +158,7 @@ def remove_ghost_locks():
     logger.info("Locks found: {}, Locks removed: {}".format(len(locks), count))
 
 
-@job("schemas")
+@job("schemas", timeout=settings.SCHEMAS_REFRESH_TIMEOUT)
 def refresh_schema(data_source_id):
     ds = models.DataSource.get_by_id(data_source_id)
     logger.info("task=refresh_schema state=start ds_id=%s", ds.id)
@@ -177,6 +178,13 @@ def refresh_schema(data_source_id):
             time.time() - start_time,
         )
         statsd_client.incr("refresh_schema.timeout")
+    except ConnectionError:
+        logger.info(
+            "task=refresh_schema state=connection_error ds_id=%s runtime=%.2f",
+            ds.id,
+            time.time() - start_time,
+        )
+        statsd_client.incr("refresh_schema.connection_error")
     except Exception:
         logger.warning("Failed refreshing schema for the data source: %s", ds.name, exc_info=1)
         statsd_client.incr("refresh_schema.error")

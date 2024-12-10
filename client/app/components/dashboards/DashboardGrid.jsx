@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import { axios } from "@/services/axios";
 import PropTypes from "prop-types";
 import { chain, cloneDeep, find } from "lodash";
 import cx from "classnames";
@@ -11,7 +12,6 @@ import { WidgetTypeEnum } from "@/services/widget";
 
 import "react-grid-layout/css/styles.css";
 import "./dashboard-grid.less";
-import {axios} from "@/services/axios";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -46,53 +46,57 @@ const DashboardWidget = React.memo(
     isPublic,
     isLoading,
     filters,
+    setFilterParams,
+    getEssence,
   }) {
     const { type } = widget;
     const onLoad = () => onLoadWidget(widget);
     const onRefresh = () => onRefreshWidget(widget);
     const onDelete = () => onRemoveWidget(widget.id);
-    const [config, setConfig] = useState({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect( () => {
-      async function getConfigTurnilo() {
-        if (!config.appSettings) {
-          if (widget.is_public) {
-            const token = window.location.pathname.split('/')[3];
-            if (!widget.report_id) return; 
-            const report_config =  await axios.get(`/api/reports/public/${token}?report_id=${widget.report_id}`);
-            setConfig(report_config);
-          } else {
-            const report_config =  await axios.get('/api/reports/' + widget.report_id);
-            setConfig(report_config);
-          }
-        }
-      }
-      getConfigTurnilo()
-    }, [widget]);
+    switch (type) {
+      case WidgetTypeEnum.VISUALIZATION:
+        return (
+          <VisualizationWidget
+            widget={widget}
+            dashboard={dashboard}
+            filters={filters}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            isLoading={isLoading}
+            onLoad={onLoad}
+            onRefresh={onRefresh}
+            onDelete={onDelete}
+            onParameterMappingsChange={onParameterMappingsChange}
+          />
+        );
+        
+      case WidgetTypeEnum.TEXTBOX:
+        return (
+          <TextboxWidget
+            widget={widget}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            onDelete={onDelete}
+          />
+        );
+    
+      case WidgetTypeEnum.TURNILO:
+        return (
+          <TurniloWidget
+            config={widget.report}
+            widget={widget}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            onDelete={onDelete}
+            setFilterParams={setFilterParams}
+            getEssence={getEssence}
+          />
+        );
+    
+      default:
+        return <RestrictedWidget widget={widget} />;
+    }
 
-    if (type === WidgetTypeEnum.VISUALIZATION) {
-      return (
-        <VisualizationWidget
-          widget={widget}
-          dashboard={dashboard}
-          filters={filters}
-          canEdit={canEdit}
-          isPublic={isPublic}
-          isLoading={isLoading}
-          onLoad={onLoad}
-          onRefresh={onRefresh}
-          onDelete={onDelete}
-          onParameterMappingsChange={onParameterMappingsChange}
-        />
-      );
-    }
-    if (type === WidgetTypeEnum.TEXTBOX) {
-      return <TextboxWidget widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
-    }
-    if (type === WidgetTypeEnum.TURNILO) {
-      return <TurniloWidget config={config} widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
-    }
-    return <RestrictedWidget widget={widget} />;
   },
   (prevProps, nextProps) =>
     prevProps.widget === nextProps.widget &&
@@ -261,7 +265,10 @@ class DashboardGrid extends React.Component {
       dashboard,
       isPublic,
       widgets,
+      setFilterParams,
+      getEssence,
     } = this.props;
+
     return (
       <div className={className}>
         <ResponsiveGridLayout
@@ -276,7 +283,8 @@ class DashboardGrid extends React.Component {
           layouts={this.state.layouts}
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
-          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}>
+          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}
+        >
           {widgets.map(widget => (
             <div
               key={widget.id}
@@ -298,6 +306,8 @@ class DashboardGrid extends React.Component {
                 onRefreshWidget={onRefreshWidget}
                 onRemoveWidget={onRemoveWidget}
                 onParameterMappingsChange={onParameterMappingsChange}
+                setFilterParams={setFilterParams}
+                getEssence={getEssence}
               />
             </div>
           ))}

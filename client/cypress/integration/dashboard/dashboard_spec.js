@@ -2,8 +2,6 @@
 
 import { getWidgetTestId } from "../../support/dashboard";
 
-const menuWidth = 80;
-
 describe("Dashboard", () => {
   beforeEach(() => {
     cy.login();
@@ -72,7 +70,7 @@ describe("Dashboard", () => {
   });
 
   context("viewport width is at 800px", () => {
-    before(function() {
+    before(function () {
       cy.login();
       cy.createDashboard("Foo Bar")
         .then(({ id }) => {
@@ -86,9 +84,10 @@ describe("Dashboard", () => {
         });
     });
 
-    beforeEach(function() {
+    beforeEach(function () {
+      cy.login();
       cy.visit(this.dashboardUrl);
-      cy.viewport(800 + menuWidth, 800);
+      cy.viewport(800, 800);
     });
 
     it("shows widgets with full width", () => {
@@ -96,7 +95,7 @@ describe("Dashboard", () => {
         expect($el.width()).to.eq(770);
       });
 
-      cy.viewport(801 + menuWidth, 800);
+      cy.viewport(801, 800);
       cy.get("@textboxEl").should($el => {
         expect($el.width()).to.eq(378);
       });
@@ -112,31 +111,31 @@ describe("Dashboard", () => {
         .as("editButton")
         .should("not.be.visible");
 
-      cy.viewport(801 + menuWidth, 800);
+      cy.viewport(801, 800);
       cy.get("@editButton").should("be.visible");
     });
 
-    it("disables edit mode", function() {
-      cy.viewport(801 + menuWidth, 800);
+    it("disables edit mode", function () {
+      cy.viewport(801, 800);
       cy.visit(this.dashboardEditUrl);
       cy.contains("button", "Done Editing")
         .as("saveButton")
         .should("exist");
 
-      cy.viewport(800 + menuWidth, 800);
+      cy.viewport(800, 800);
       cy.contains("button", "Done Editing").should("not.exist");
     });
   });
 
   context("viewport width is at 767px", () => {
-    before(function() {
+    before(function () {
       cy.login();
       cy.createDashboard("Foo Bar").then(({ id }) => {
         this.dashboardUrl = `/dashboards/${id}`;
       });
     });
 
-    beforeEach(function() {
+    beforeEach(function () {
       cy.visit(this.dashboardUrl);
       cy.viewport(767, 800);
     });

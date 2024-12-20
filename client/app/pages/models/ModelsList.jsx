@@ -182,10 +182,17 @@ class ModelsList extends React.Component {
     if (!policy.canCreateDataSource()) {
       return null;
     }
+    const newModelProps = {
+      type: "primary",
+      disabled: !policy.canCreateDataSource(),
+      onClick: this.showCreateModelDialog
+    };
     return (
       <div className="m-b-15">
-        <Button type="primary" disabled={!policy.canCreateDataSource()} onClick={this.showCreateModelDialog}>
-          <i className="fa fa-plus m-r-5" />
+        <Button {...newModelProps}
+          data-test="CreateModelButton"
+        >
+          <i className="fa fa-plus m-r-5 aka" />
           New Model
         </Button>
       </div>
@@ -204,6 +211,7 @@ class ModelsList extends React.Component {
           {controller.isLoaded && !controller.isEmpty && (
             <div className="table-responsive" data-test="ModelList">
               <ItemsTable
+                dataTest="CreateModelLink"
                 items={controller.pageItems}
                 columns={this.listColumns}
                 context={this.actions}

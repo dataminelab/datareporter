@@ -1001,4 +1001,26 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 }
 
+export function getMaxTime({ name, refreshRule }: DataCube, timekeeper: Timekeeper): Date {
+  if (refreshRule.isRealtime()) {
+    return timekeeper.now();
+  } else if (refreshRule.isFixed()) {
+    return refreshRule.time;
+  } else { // refreshRule is query
+    return timekeeper.getTime(name);
+  }
+}
+
+export function getTimeDimension(dataCube: DataCube): Dimension {
+  const dimension =  Dimensions.findDimensionByExpression()
+  if (dimension === null) {
+    throw new Error(`Expected DataCube "${dataCube.name}" to have timeAttribute property defined with expression of existing dimension`);
+  }
+  return dimension;
+}
+
+export function getTimeDimensionReference(dataCube: DataCube): string {
+  return getTimeDimension(dataCube).name;
+}
+
 check = DataCube;

@@ -5,7 +5,7 @@ import { Report } from "@/services/report";
 import notification from "@/services/notification";
 import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
 
-class SaveReportError extends Error {
+export class SaveReportError extends Error {
   constructor(message, detailedMessage = null) {
     super(message);
     this.detailedMessage = detailedMessage;

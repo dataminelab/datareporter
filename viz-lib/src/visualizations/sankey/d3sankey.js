@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import d3 from "d3";
+import * as d3 from "d3";
 
 function center(node) {
   return node.y + node.dy / 2;
@@ -221,37 +221,37 @@ function Sankey() {
     }
   }
 
-  sankey.nodeWidth = function(_) {
+  sankey.nodeWidth = function (_) {
     if (!arguments.length) return nodeWidth;
     nodeWidth = +_;
     return sankey;
   };
 
-  sankey.nodePadding = function(_) {
+  sankey.nodePadding = function (_) {
     if (!arguments.length) return nodePadding;
     nodePadding = +_;
     return sankey;
   };
 
-  sankey.nodes = function(_) {
+  sankey.nodes = function (_) {
     if (!arguments.length) return nodes;
     nodes = _;
     return sankey;
   };
 
-  sankey.links = function(_) {
+  sankey.links = function (_) {
     if (!arguments.length) return links;
     links = _;
     return sankey;
   };
 
-  sankey.size = function(_) {
+  sankey.size = function (_) {
     if (!arguments.length) return size;
     size = _;
     return sankey;
   };
 
-  sankey.layout = function(iterations) {
+  sankey.layout = function (iterations) {
     computeNodeLinks();
     computeNodeValues();
     computeNodeBreadths();
@@ -260,12 +260,12 @@ function Sankey() {
     return sankey;
   };
 
-  sankey.relayout = function() {
+  sankey.relayout = function () {
     computeLinkDepths();
     return sankey;
   };
 
-  sankey.link = function() {
+  sankey.link = function () {
     let curvature = 0.5;
 
     function link(d) {

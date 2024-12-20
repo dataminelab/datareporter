@@ -54,10 +54,10 @@ function formatLabelDummy(dimension: Dimension): string {
 export interface FilterTileProps {
   essenceList: Essence[];
   clickerList: Clicker[];
-  widgetList: Number[];
+  widgetList: number[];
   setEssence: Fn;
   timekeeper: Timekeeper;
-  menuStage: Stage;
+  stage: Stage;
 }
 
 export interface FilterTileState {
@@ -78,7 +78,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   private overflowMenuDeferred: Deferred<Element>;
   private items = React.createRef<HTMLDivElement>();
   private overflow = React.createRef<HTMLDivElement>();
-  private dimensionRef = React.createRef<HTMLDivElement>();  
+  private dimensionRef = React.createRef<HTMLDivElement>();
 
   constructor(props: FilterTileProps) {
     super(props);
@@ -96,10 +96,10 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   componentWillReceiveProps(nextProps: FilterTileProps) {
-    const { menuStage } = nextProps;
+    const { stage } = nextProps;
 
-    if (menuStage) {
-      const newMaxItems = getMaxItems(menuStage.width, this.getItemBlanks().length);
+    if (stage) {
+      const newMaxItems = getMaxItems(stage.width, this.getItemBlanks().length);
       if (newMaxItems !== this.state.maxItems) {
         this.setState({
           menuOpenOn: null,
@@ -305,7 +305,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
   private dropDimension(dragPosition: DragPosition) {
     const { essenceList } = this.props;
-    const { filter, dataCube } = essenceList[0]; 
+    const { filter, dataCube } = essenceList[0];
     const dimension = this.draggingDimension();
     let tryingToReplaceTime = false;
     if (dragPosition.replace !== null) {
@@ -357,7 +357,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   };
 
   renderMenu(): JSX.Element {
-    const { essenceList, timekeeper, clickerList, widgetList, menuStage, setEssence } = this.props;
+    const { essenceList, timekeeper, clickerList, widgetList, stage, setEssence } = this.props;
     const { menuOpenOn, menuDimension, menuInside, maxItems, overflowMenuOpenOn } = this.state;
     let { possiblePosition } = this.state;
     if (!menuDimension) return null;
@@ -372,7 +372,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
       widgetList={widgetList}
       setEssence={setEssence}
       timekeeper={timekeeper}
-      containerStage={overflowMenuOpenOn ? null : menuStage}
+      containerStage={overflowMenuOpenOn ? null : stage}
       openOn={menuOpenOn}
       dimension={menuDimension}
       changePosition={possiblePosition}
@@ -522,7 +522,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
   }
 
   renderAddButton() {
-    const { essenceList, menuStage } = this.props;
+    const { essenceList, stage } = this.props;
     const { dataCube, filter } = essenceList[0];
     const tiles = dataCube.dimensions
       .filterDimensions(dimension => !filter.getClauseForDimension(dimension))
@@ -534,11 +534,11 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
         };
       });
 
-    return <AddTile<Dimension> 
-      containerStage={menuStage} 
-      insertSplit={this.appendFilter} 
-      appendSplit={this.appendFilter} 
-      tiles={tiles} 
+    return <AddTile<Dimension>
+      containerStage={stage}
+      insertSplit={this.appendFilter}
+      appendSplit={this.appendFilter}
+      tiles={tiles}
     />;
   }
 

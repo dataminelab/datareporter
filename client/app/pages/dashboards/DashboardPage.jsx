@@ -155,8 +155,8 @@ class DashboardComponent extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if ((
-        prevState.clickerList !== this.state.clickerList || 
-        prevState.essenceList !== this.state.essenceList || 
+        prevState.clickerList !== this.state.clickerList ||
+        prevState.essenceList !== this.state.essenceList ||
         prevState.widgetList !== this.state.widgetList
       ) &&
         this.state.clickerList.length === this.state.essenceList.length &&
@@ -206,10 +206,10 @@ class DashboardComponent extends React.Component {
       const essence = this.state.essenceList[i];
       const clicker = this.state.clickerList[i];
       const widget = this.state.widgetList[i]
-      let dimensionName = essence.filter.getReferenceNameByIndex(0);    
-      const { start, end } = this.state;  
+      let dimensionName = essence.filter.getReferenceNameByIndex(0);
+      const { start, end } = this.state;
       const createDateRange = new DateRange({ start, end });
-      const clause = new FixedTimeFilterClause({ reference: dimensionName, 
+      const clause = new FixedTimeFilterClause({ reference: dimensionName,
         values: List.of(createDateRange) });
       let relativeFilter = essence.filter.setClause(clause);
       if (relativeFilter.length() > 1) {
@@ -250,13 +250,13 @@ class DashboardComponent extends React.Component {
   setFilterParams = async (widgetId, essence, clicker) => {
     this.setState((prevState) => {
       const { widgetList, clickerList, essenceList } = prevState;
-  
+
       const widgetExists = widgetList.includes(widgetId);
       const modelIndex = widgetExists ? widgetList.lastIndexOf(widgetId) : -1;
-  
+
       // Determine if this is the first time the function is called
       const isFirstCall = widgetList.length === 0;
-  
+
       // Update clicker list
       let updatedClickerList = [...clickerList];
       if (widgetExists) {
@@ -264,7 +264,7 @@ class DashboardComponent extends React.Component {
       } else {
         updatedClickerList = isFirstCall ? [clicker] : clickerList.concat(clicker);
       }
-  
+
       // Update essence list
       let updatedEssenceList = [...essenceList];
       if (widgetExists) {
@@ -272,10 +272,10 @@ class DashboardComponent extends React.Component {
       } else {
         updatedEssenceList = isFirstCall ? [essence] : essenceList.concat(essence);
       }
-  
+
       // Update widget list if necessary
       const updatedWidgetList = widgetExists ? widgetList : widgetList.concat(widgetId);
-  
+
       return {
         clickerList: updatedClickerList,
         essenceList: updatedEssenceList,
@@ -303,7 +303,7 @@ class DashboardComponent extends React.Component {
       } else {
         clickerList = this.state.clickerList.concat(clicker);
       }
-      this.setState({ 
+      this.setState({
         clickerList: clickerList,
         widgetList: this.state.widgetList.concat(id),
         listCreated: true,
@@ -330,7 +330,7 @@ class DashboardComponent extends React.Component {
       } else {
         essenceList = this.state.essenceList.concat(essence);
       }
-      this.setState({ 
+      this.setState({
         essenceList: essenceList,
         widgetList: this.state.widgetList.concat(id),
         listCreated: true,

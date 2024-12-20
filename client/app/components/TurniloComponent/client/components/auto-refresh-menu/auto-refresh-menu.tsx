@@ -16,8 +16,8 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import * as React from "react";
-import { DataCube } from "../../../common/models/data-cube/data-cube";
+import React from "react";
+import { DataCube, getMaxTime } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../common/utils/functional/functional";
@@ -78,13 +78,13 @@ function updatedText(dataCube: DataCube, timekeeper: Timekeeper, timezone: Timez
   } else if (refreshRule.isFixed()) {
     return `Fixed to ${formatDateTime(refreshRule.time, timezone)}`;
   } else { // refreshRule is query
-    const maxTime = dataCube.getMaxTime(timekeeper);
+    const maxTime = getMaxTime(dataCube, timekeeper);
     if (!maxTime) return null;
     return `Updated ${formatTimeElapsed(maxTime, timezone)} ago`;
   }
 }
 
-export const AutoRefreshMenu: React.SFC<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, dataCube, refreshMaxTime, timekeeper, timezone }) =>
+export const AutoRefreshMenu: React.FunctionComponent<AutoRefreshMenuProps> = ({ autoRefreshRate, setAutoRefreshRate, openOn, onClose, dataCube, refreshMaxTime, timekeeper, timezone }) =>
   <BubbleMenu
     className="auto-refresh-menu"
     direction="down"

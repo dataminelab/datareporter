@@ -36,8 +36,6 @@ import { RelativeTimeFilterClause, FixedTimeFilterClause } from "@/components/Tu
 import { TimeShift } from "@/components/TurniloComponent/common/models/time-shift/time-shift";
 import { DateRange } from "@/components/TurniloComponent/common/models/date-range/date-range";
 
-import { EssenceManager } from "./essenceManager"
-
 class DashboardSettings extends React.Component {
   static propTypes = {
     dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
@@ -115,7 +113,6 @@ class DashboardComponent extends React.Component {
       shiftChanged: false,
       turniloWidgetsLength: false,
     };
-    this.essenceManager = EssenceManager(); // Create an instance of EssenceManager
   }
 
   turniloWidgetsSetter() {
@@ -180,7 +177,7 @@ class DashboardComponent extends React.Component {
       ) &&
         this.state.clickerList.length === this.state.essenceList.length &&
         !this.state.shiftChanged
-      ) {
+    ) {
       if (this.state.turniloWidgetsLength !== this.state.widgetList.length) return;
       // test if this is not happening more then once
       const filterInterval = setInterval(() => {
@@ -252,7 +249,7 @@ class DashboardComponent extends React.Component {
     for (let i = 0; i < this.state.essenceList.length; i++) {
       const essence = this.state.essenceList[i];
       const clicker = this.state.clickerList[i];
-      const widget = this.state.widgetList[i]
+      const widget = this.state.widgetList[i];
       let dimensionName = essence.filter.getReferenceNameByIndex(0);
       let relativeFilter = essence.filter.setClause(this.constructFilter(filterPeriod, filterDuration, dimensionName));
       if (relativeFilter.length() > 1) {
@@ -262,7 +259,7 @@ class DashboardComponent extends React.Component {
       const timeShift = TimeShift.fromJS(null);
       clicker.changeComparisonShift(timeShift);
       this.setEssence(widget, newEssence);
-      }
+    }
     this.setState({ shiftChanged: true });
   }
 
@@ -335,12 +332,12 @@ class DashboardComponent extends React.Component {
       const modelIndex = this.state.widgetList.lastIndexOf(id);
 
       // Create a copy of the essenceList array and update the specific clicker
-      const updatedClickers = [...this.state.essenceList];
-      updatedClickers[modelIndex] = essence;
+      const updatedEssences = [...this.state.essenceList];
+      updatedEssences[modelIndex] = essence;
 
       // Update state with the new essenceList array and set the current clicker
       this.setState({
-        essenceList: updatedClickers,
+        essenceList: updatedEssences,
       });
     } else {
       var essenceList;
@@ -355,6 +352,12 @@ class DashboardComponent extends React.Component {
         listCreated: true,
       });
     }
+  }
+
+  getEssence = (id) => {
+    const modelIndex = this.state.widgetList.lastIndexOf(id);
+    if (modelIndex === -1) return null;
+    return this.state.essenceList[modelIndex];
   }
 
   render() {
@@ -412,7 +415,7 @@ class DashboardComponent extends React.Component {
             onRemoveWidget={dashboardOptions.removeWidget}
             onParameterMappingsChange={dashboardOptions.loadDashboard} // refreshes the page
             setFilterParams={this.setFilterParams}
-            getEssence={this.essenceManager.getEssence}
+            getEssence={this.getEssence}
           />
         </div>
       </div>

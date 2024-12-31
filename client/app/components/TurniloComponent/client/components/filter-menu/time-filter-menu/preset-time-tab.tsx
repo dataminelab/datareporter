@@ -144,7 +144,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       placeholder={STRINGS.durationsExamples} />;
   }
 
-  private renderButtonGroup(title: string, period: TimeFilterPeriod) {
+  private renderButtonGroup(title: string, period: TimeFilterPeriod.CURRENT | TimeFilterPeriod.PREVIOUS) {
     const { filterDuration, filterPeriod } = this.state;
     const activePeriod = period === filterPeriod;
     const presets = getTimeFilterPresets(period);
@@ -191,7 +191,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
         shift={timeShift}
         time={previewFilter}
         timezone={essence.timezone}
-        onShiftChange={this.setTimeShift} 
+        onShiftChange={this.setTimeShift}
       />
       {overlapError && <div className="overlap-error-message">{overlapError}</div>}
       <div className="ok-cancel-bar">

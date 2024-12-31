@@ -23,9 +23,7 @@ import { datesEqual, formatDatesInTimeRange, formatYearMonth, getDayInMonth, sca
 
 describe("Time", () => {
   it("calculates date equality properly", () => {
-    // @ts-ignore
     expect(datesEqual(null, new Date()), "null and not null").to.equal(false);
-    // @ts-ignore
     expect(datesEqual(null, null), "null and null").to.equal(true);
     expect(datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:00:00.000Z")), "equal dates").to.equal(true);
     expect(datesEqual(new Date("1995-02-24T00:00:00.000Z"), new Date("1995-02-24T00:02:00.000Z")), "not equal dates").to.equal(false);

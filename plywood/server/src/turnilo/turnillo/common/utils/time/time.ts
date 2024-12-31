@@ -22,7 +22,10 @@ import { Unary } from "../functional/functional";
 
 const ISO_FORMAT_DATE = "YYYY-MM-DD";
 const ISO_FORMAT_TIME = "HH:mm";
+const ISO_FORMAT_DATE_TIME = "YYYY-MM-DDTHH:mm:ss.sssZ";
 const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
+
+const URL_SAFE_FULL_FORMAT = "YYYY-MM-DD-HH-mm";
 
 export function getMoment(date: Date, timezone: Timezone): Moment {
   return tz(date, timezone.toString());
@@ -166,6 +169,14 @@ export function formatDateTime(date: Date, timezone: Timezone): string {
   return getMoment(date, timezone).format(FULL_FORMAT);
 }
 
+export function formatISODateTime(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(ISO_FORMAT_DATE_TIME);
+}
+
+export function formatUrlSafeDateTime(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(URL_SAFE_FULL_FORMAT);
+}
+
 export function formatISODate(date: Date, timezone: Timezone): string {
   return getMoment(date, timezone).format(ISO_FORMAT_DATE);
 }
@@ -200,4 +211,8 @@ export function validateISOTime(time: string): boolean {
 
 export function combineDateAndTimeIntoMoment(date: string, time: string, timezone: Timezone): Moment {
   return tz(`${date}T${time}`, timezone.toString());
+}
+
+export function isoNow(): string {
+  return (new Date()).toISOString();
 }

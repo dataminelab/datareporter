@@ -124,6 +124,7 @@ export function debounceWithPromise<T extends (...args: any[]) => Promise<any>>(
 
   const debouncedFn = (...args: Parameters<T>) => {
     let resolve: Function;
+    // @ts-ignore
     const promise = new Promise(pResolve => {
       resolve = pResolve;
     });

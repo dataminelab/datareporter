@@ -1,4 +1,4 @@
-import d3 from "d3";
+import * as d3 from "d3";
 import React, { useRef, useMemo, useCallback, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Resizable as ReactResizable } from "react-resizable";

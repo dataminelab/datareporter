@@ -18,26 +18,26 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "strictNullChecks": false,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "target": "esnext",
     "module": "esnext",
     "rootDir": ".",
     "outDir": "build",
     "moduleResolution": "node",
     "jsx": "react",
-    "types": ["mocha", "webpack-env"],
+    "types": ["node", "express", "mocha", "webpack-env"],
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./",
     "paths": {
       "@/*": ["./app/*"]
     },
-    "allowSyntheticDefaultImports": true
   },
-  "include": ["app/**/*"],
+  "include": ["app/**/*", "app/components/TurniloComponent/**/*",],
   "exclude": [
     "node_modules",
-    "**/*.mocha.ts",
-    "**/*.mocha.tsx",
+    // "**/*.mocha.ts",
+    // "**/*.mocha.tsx",
     "**/*.json",
     "turnilo"
   ]

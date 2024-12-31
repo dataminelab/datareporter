@@ -18,6 +18,7 @@ import { $, Expression } from "plywood";
 import { TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
 import { TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../../../../common/models/time/time";
+import { isTruthy } from "../../../../common/utils/general/general";
 
 const $MAX_TIME = $(MAX_TIME_REF_NAME);
 const $NOW = $(NOW_REF_NAME);
@@ -65,6 +66,32 @@ export const COMPARISON_PRESETS: ShiftPreset[] = [
   { label: "Y", shift: TimeShift.fromJS("P1Y") },
 ];
 
+export const DEFAULT_TIME_SHIFT_DURATIONS = [
+  "P1D", "P1W", "P1M", "P3M"
+];
+
+export const DEFAULT_LATEST_PERIOD_DURATIONS = [
+  "PT1H", "PT6H", "P1D", "P7D", "P30D"
+];
+
+const SINGLE_COMPONENT_DURATION = /^PT?(\d+)([YMWDHS])$/;
+const MULTI_COMPONENT_DURATION = /^PT?([\dTYMWDHS]+)$/;
+
+export function normalizeDurationName(duration: string): string {
+  const singleComponent = duration.match(SINGLE_COMPONENT_DURATION);
+  if (isTruthy(singleComponent)) {
+    const [, count, period] = singleComponent;
+    if (count === "1") return period;
+    return `${count}${period}`;
+  }
+  const multiComponent = duration.match(MULTI_COMPONENT_DURATION);
+  if (isTruthy(multiComponent)) {
+    const [, periods] = multiComponent;
+    return periods;
+  }
+  return duration;
+}
+
 export function constructFilter(period: TimeFilterPeriod, duration: string): Expression {
   switch (period) {
     case TimeFilterPeriod.PREVIOUS:
@@ -78,12 +105,10 @@ export function constructFilter(period: TimeFilterPeriod, duration: string): Exp
   }
 }
 
-export function getTimeFilterPresets(period: TimeFilterPeriod): TimeFilterPreset[] {
-   switch (period) {
+export function getTimeFilterPresets(period: TimeFilterPeriod.CURRENT | TimeFilterPeriod.PREVIOUS): TimeFilterPreset[] {
+  switch (period) {
     case TimeFilterPeriod.PREVIOUS:
       return PREVIOUS_PRESETS;
-    case TimeFilterPeriod.LATEST:
-      return LATEST_PRESETS;
     case TimeFilterPeriod.CURRENT:
       return CURRENT_PRESETS;
   }

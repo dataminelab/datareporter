@@ -1,5 +1,5 @@
 import { isString, each, extend, includes, map, reduce } from "lodash";
-import d3 from "d3";
+import * as d3 from "d3";
 import chooseTextColorForBackground from "@/lib/chooseTextColorForBackground";
 import { AllColorPaletteArrays, ColorPaletteTypes } from "@/visualizations/ColorPalette";
 import { cleanNumber, normalizeValue } from "./utils";
@@ -98,13 +98,13 @@ export default function preparePieData(seriesList, options) {
   const valuesColors = {};
   let getDefaultColor;
 
-  if (typeof(seriesList[0]) !== 'undefined' && ColorPaletteTypes[options.color_scheme] === 'continuous') {
-    const uniqueXValues =[... new Set(seriesList[0].data.map((d) => d.x))];
+  if (typeof (seriesList[0]) !== 'undefined' && ColorPaletteTypes[options.color_scheme] === 'continuous') {
+    const uniqueXValues = [... new Set(seriesList[0].data.map((d) => d.x))];
     const step = (palette.length - 1) / (uniqueXValues.length - 1 || 1);
-    const colorIndices = d3.range(uniqueXValues.length).map(function(i) {
+    const colorIndices = d3.range(uniqueXValues.length).map(function (i) {
       return Math.round(step * i);
     });
-    getDefaultColor = d3.scale.ordinal()
+    getDefaultColor = d3.scaleOrdinal()
       .domain(uniqueXValues) // Set domain as the unique x-values
       .range(colorIndices.map((index) => palette[index]));
   } else {

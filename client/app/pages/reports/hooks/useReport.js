@@ -46,6 +46,7 @@ export default function useReport(originalReport) {
       expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2) || report.hash || report.expression,
       color_1: report.color_1,
       color_2: report.color_2,
+      data_source_id: report.data_source_id,
     }
     saveReport(data);
   };
@@ -67,7 +68,7 @@ export default function useReport(originalReport) {
       setReport,
       isDirty: report.report !== originalReportSource,
       saveReport: () => updateReport(),
-      saveAsReport: (name) => saveAsReport(name),
+      saveAsReport,
       showShareReportDialog,
     }),
     [report, originalReportSource, updateReport]

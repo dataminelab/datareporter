@@ -13,8 +13,10 @@ export class MySqlAttributeParser extends AttributeParser {
             const result: MySQLDescribeRow = { Field: attribute.name, Type: attribute.type };
             return result;
         });
+
         const newAttributes = MySQLExternal.postProcessIntrospect(columns).map(atr => {
             if (!atr) return;
+
             return {
                 nativeType: atr.nativeType.toUpperCase(),
                 name: atr.name,

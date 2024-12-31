@@ -23,16 +23,17 @@ export interface XScale {
   calculate(x: DomainValue): number;
   invert(x: number): DomainValue;
   domain(): XDomain;
-  rangeBand(): number;
+  bandwidth(): number;
 }
 
 export function createXScale(domain: XDomain, width: number): XScale {
   const range: [number, number] = [0, width];
   const stringifiedDomain = domain.map(formatDomainValue);
-  const ordinalScale = d3.scale.ordinal()
+  const ordinalScale = d3.scaleBand()
     .domain(stringifiedDomain)
-    .rangeRoundBands(range, 0, 0);
-  const quantizedScale = d3.scale.quantize<DomainValue>()
+    .rangeRound(range);
+
+  const quantizedScale = d3.scaleQuantize<DomainValue>()
     .domain(range)
     .range(domain);
 
@@ -40,9 +41,10 @@ export function createXScale(domain: XDomain, width: number): XScale {
     calculate: (value: DomainValue) => ordinalScale(formatDomainValue(value)),
     domain: () => domain,
     invert: (x: number) => quantizedScale(x),
-    rangeBand: () => ordinalScale.rangeBand()
+    bandwidth: () => ordinalScale.bandwidth()
   };
 }
+
 
 export const xGetter = (reference: string): Unary<Datum, DomainValue> =>
     datum => (datum[reference] as DomainValue);

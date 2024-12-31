@@ -34,11 +34,11 @@ def get_data_cube(model):
     return data_cube
 
 
-def hash_report(o, can_edit=False):
+def hash_report(report, can_edit=False):
     # carry this into serializers folder and name it into serialize_report
-    data_cube = get_data_cube(o.model)
-    is_favorite = o.is_favorite_v2(o.user, o)
-    api_key = models.ApiKey.get_by_object(o)
+    data_cube = get_data_cube(report.model)
+    is_favorite = report.is_favorite_v2(report.user, report)
+    api_key = models.ApiKey.get_by_object(report)
     public_url = None
     if api_key:
         public_url = url_for(
@@ -48,36 +48,42 @@ def hash_report(o, can_edit=False):
         )
         api_key = api_key.api_key
     result = {
-        "color_1": o.color_1,
-        "color_2": o.color_2,
-        "hash": o.hash,
-        "name": o.name,
-        "model_id": o.model_id,
+        "color_1": report.color_1,
+        "color_2": report.color_2,
+        "hash": report.hash,
+        "name": report.name,
+        "model_id": report.model_id,
         "can_edit": can_edit,
         "source_name": data_cube.source_name,
-        "data_source_id": o.model.data_source.id,
+        "data_source_id": report.model.data_source.id,
         "report": "",
         "schedule": None,
-        "tags": o.tags,
+        "tags": report.tags,
         "user": {
-            "id": o.user.id,
-            "name": o.user.name,
-            "profile_image_url": o.user.profile_image_url,
-            "permissions": o.user.permissions,
-            "isAdmin": is_admin(o.user),
+            "id": report.user.id,
+            "name": report.user.name,
+            "profile_image_url": report.user.profile_image_url,
+            "permissions": report.user.permissions,
+            "isAdmin": is_admin(report.user),
         },
         "is_favorite": is_favorite,
-        "is_archived": o.is_archived,
+        "is_archived": report.is_archived,
         "isJustLanded": True,
         "appSettings": {
             "dataCubes": [data_cube.data_cube],
             "customization": {},
             "clusters": [],
         },
-        "id": o.id,
+        "id": report.id,
         "api_key": api_key,
         "public_url": public_url,
     }
+    with_last_modified_by = True
+    if with_last_modified_by:
+        result["last_modified_by"] = report.last_modified_by.to_dict() if report.last_modified_by is not None else None
+    else:
+        result["last_modified_by_id"] = report.last_modified_by_id
+
     return result
 
 
@@ -198,7 +204,7 @@ def serialize_widget(widget: models.Widget, is_public=False):
     # d['options']['widget_type'] = 'text'
     d["options"]["widget_type"] = "query"
     if d["report"]:
-        d["report"] = hash_report(d["report"])  # this is important
+        d["report"] = hash_report(d["report"])
         d["options"]["widget_type"] = "report"
     # else it will be a null visualization on front end for now
 

@@ -20,7 +20,7 @@
     "type": "git",
     "url": "git+https://github.com/dataminelab/datareporter.git"
   },
-  "author": "Datareporter",
+  "author": "DataReporterTeam",
   "license": "BSD-2-Clause",
   "peerDependencies": {
     "antd": ">=3.19.0 < 4",

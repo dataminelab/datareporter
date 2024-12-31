@@ -1,5 +1,15 @@
 {
   "compilerOptions": {
+    // Target latest version of ECMAScript.
+    "lib": ["dom", "es6", "es5", "dom.iterable", "esnext"],
+    // Process & infer types from .js files.
+    "allowJs": true,
+    // Don't emit; allow Babel to transform files.
+    "noEmit": true,
+    // Enable strictest settings like strictNullChecks & noImplicitAny.
+    "strict": true,
+    // Import non-ES modules as default imports.
+    "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,
     "noImplicitAny": true,
@@ -15,9 +25,15 @@
     "outDir": "build",
     "moduleResolution": "node",
     "jsx": "react",
-    "lib": ["dom", "es6", "es5"],
-    "types": ["mocha", "webpack-env"]
+    "types": ["mocha", "webpack-env"],
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./app/*"]
+    },
+    "allowSyntheticDefaultImports": true
   },
+  "include": ["app/**/*"],
   "exclude": [
     "node_modules",
     "**/*.mocha.ts",

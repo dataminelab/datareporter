@@ -237,6 +237,7 @@ class ReportsListResource(BaseResource):
             color_1=color_1,
             color_2=color_2,
             data_source_id=data_source_id,
+            last_modified_by=self.current_user,
         )
 
         models.db.session.add(report)
@@ -327,6 +328,14 @@ class ReportResource(BaseResource):
 
     @require_permission("edit_report")
     def post(self, report_id: int):
+        """## Modify a report
+
+        ### Args:
+            - `report_id (int)`: _description_
+
+        ### Returns:
+            - `_type_`: _description_
+        """
         report_properties = request.get_json(force=True)
         updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
         report: Report = get_object_or_404(Report.get_by_id, report_id)
@@ -353,6 +362,7 @@ class ReportResource(BaseResource):
             # decodes base64 that turnillo uses to plain json
             updates[EXPRESSION] = ExpressionBase64Parser.parse_base64_to_dict(updates[EXPRESSION])
 
+        report.last_modified_by = self.current_user
         self.update_model(report, updates)
 
         models.db.session.commit()

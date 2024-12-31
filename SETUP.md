@@ -61,7 +61,7 @@ nvm use v14 > /dev/null
 
 ## Local Development
 
-Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
+Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Data Reporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
 ```
 # install necessary python version
 pyenv install 3.8.7
@@ -95,7 +95,7 @@ docker compose run --rm server tests
 ```
 In order to test viz-lib folder you need to install dependencies and run tests because you cant have 2 react versions in the same project. To do that run below commands in the viz-lib folder:
 ```sh
-npm install antd@^3 react@^16.8 react-dom@^16.8 && npm run test
+npm install antd@^4 react@^16.8 react-dom@^16.8 && npm run test
 ```
 
 ### Running cypress
@@ -112,12 +112,12 @@ npx cypress open
 ```
 
 ### Components
-#### Datareporter server
+#### Data Reporter server
 * **directory**: `redash`
 * **debug**: Please follow the instruction from [redash](https://redash.io/help/open-source/dev-guide/debugging)
 * **changes:**
   * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
-#### Datareporter frontend
+#### Data Reporter frontend
   * **submodules** - for debug and changes they follow root fronted app:
     * Lib viz
       * **directory:** `viz-lib`
@@ -127,7 +127,7 @@ npx cypress open
   * **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
   * **changes:**
     * By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.
-    That will start watched for source code changes for Datareporter frontend and all submodules.
+    That will start watched for source code changes for Data Reporter frontend and all submodules.
     * At liniux system you may face problem of too many file system watchers. That will result in error message
     ```Error: ENOSPC: System limit for number of file watchers reached, watch ```
     To solve it you need to increase the number of available watches by :

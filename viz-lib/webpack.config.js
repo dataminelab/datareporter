@@ -10,15 +10,20 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     filename: "redash-visualizations.js",
     libraryTarget: "umd",
+    assetModuleFilename: 'images/[name][ext]'
   },
   resolve: {
     symlinks: false,
-    extensions: [".js", ".jsx"],
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
+    fullySpecified: false, // Allow imports without extensions
+    alias:{
+      './nonIterableSpread': './nonIterableSpread.js',
+    },
   },
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: ["babel-loader"],
       },
@@ -51,6 +56,12 @@ module.exports = {
             },
           },
         ],
+      },
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false, // Disable the behavior for this rule
+        },
       },
     ],
   },

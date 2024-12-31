@@ -15,7 +15,7 @@ function downloadCSV(data) {
   const csvContent = "data:text/csv;charset=utf-8," +
     headers.join(",") + "\n" +
     data.map(row => headers.map(header => row[header]).join(",")).join("\n");
-    
+
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
@@ -27,7 +27,7 @@ function downloadCSV(data) {
 
 function getExtraOptions(report) {
   const extraOptions = [];
-  const data = Report.getFirstDataAvailable(report.results?.queries);
+  const data = Report.getFirstDataAvailable(report.results && report.results.queries);
   extraOptions.push(
     <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>Download as CSV File</Menu.Item>
   );
@@ -39,7 +39,7 @@ function getExtraOptions(report) {
 }
 
 function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete }) {
-  if (report?.hash) {
+  if (report && report.hash) {
     extraOptions = getExtraOptions(report);
   }
   const WidgetMenu = (

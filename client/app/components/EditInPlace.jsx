@@ -2,7 +2,7 @@ import { trim } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
-import Input from "antd/lib/input"; 
+import Input from "antd/lib/input";
 import { SvgIcon } from "@/components/TurniloComponent/client/components/svg-icon/svg-icon.tsx";
 
 export default class EditInPlace extends React.Component {
@@ -88,6 +88,7 @@ export default class EditInPlace extends React.Component {
     return (
       <InputComponent
         defaultValue={value}
+        aria-label="Editing"
         onBlur={e => this.stopEditing(e.target.value)}
         onKeyDown={this.handleKeyDown}
         autoFocus

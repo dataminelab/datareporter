@@ -1,9 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
-import { extend } from "lodash";
-import useUpdateReport from "./useUpdateReport";
-import useSaveReport from "./useSaveReport";
+import { extend, get } from "lodash";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import ShareReportDialog from "../components/ShareReportDialog";
+import useUpdateReport, { SaveReportError } from "./useUpdateReport";
+import notification from "@/services/notification";
+import { Report } from "@/services/report";
 
 export default function useReport(originalReport) {
   const [report, setReport] = useState(originalReport);
@@ -19,6 +20,24 @@ export default function useReport(originalReport) {
     setOriginalReportSource(updatedReport.report);
   });
 
+  const saveReport = (data) => {
+    if (!data) return;
+
+    return Report.saveAs(data)
+      .then(() => {
+        navigateTo("/reports");
+        notification.success(`Report saved as ${data.name}`);
+      })
+      .catch((error) => {
+        if (get(error, "response.status") === 400) {
+          let message = get(error, "response.data.message");
+          return Promise.reject(new SaveReportError(message));
+        }
+        return Promise.reject(new SaveReportError("Report could not be saved"));
+      });
+  }
+
+
   const saveAsReport = (name) => {
     delete report.id;
     const data = {
@@ -28,7 +47,7 @@ export default function useReport(originalReport) {
       color_1: report.color_1,
       color_2: report.color_2,
     }
-    useSaveReport(data);
+    saveReport(data);
   };
 
   const showShareReportDialog = useCallback(() => {
@@ -36,7 +55,7 @@ export default function useReport(originalReport) {
 
     ShareReportDialog.showModal({
       report,
-      hasOnlySafeQueries:true,
+      hasOnlySafeQueries: true,
     })
       .onClose(handleDialogClose)
       .onDismiss(handleDialogClose);

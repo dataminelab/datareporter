@@ -57,6 +57,7 @@ export class Report {
       this.options.parameters = [];
     }
     this.setResults(report);
+    this.last_modified_by = report.last_modified_by;
   }
 
   setResults(report) {
@@ -74,13 +75,13 @@ export class Report {
   }
 
   static async getData(report) {
-    if (this.queries.length) return getFirstDataAvailable(this.queries);
+    if (this.queries.length) return this.getFirstDataAvailable(this.queries);
     const data = await axios.post(`api/reports/generate/${report.model_id}`, {
       hash: report.hash,
       bypass_cache: false,
     });
     if (!data) return null;
-    return getFirstDataAvailable(data.queries);
+    return this.getFirstDataAvailable(data.queries);
   }
 
   static getFirstDataAvailable(queries) {
@@ -363,36 +364,6 @@ export class Parameters {
     return Object.keys(params)
       .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
       .join("&");
-  }
-}
-
-function getErrorMessage(error) {
-  return find([get(error, "response.data.message"), get(error, "response.statusText"), "Unknown error"], isString);
-}
-// TODO template remove after
-function getStorageItem(key, callback) {
-
-  if (typeof callback !== 'function') throw new Error('Invalid callback handler');
-
-  const result = localStorage.getItem(key);
-
-  if (result instanceof window.Promise) {
-    result.then(callback);
-  }
-  else {
-    callback(result);
-  }
-}
-
-function setStorageItem(key, value, callback) {
-  value = JSON.stringify(value);
-  const result = localStorage.setItem(key, value);
-
-  if (result instanceof window.Promise && callback) {
-    result.then(callback);
-  }
-  else if (callback) {
-    callback();
   }
 }
 

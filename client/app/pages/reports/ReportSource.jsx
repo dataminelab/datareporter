@@ -70,8 +70,8 @@ function ReportSource(props) {
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
               style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
-              <ReportEditor 
-                report={report} 
+              <ReportEditor
+                report={report}
                 reportChanged={reportChanged}
                 setReportChanged={setReportChanged}
               />
@@ -106,16 +106,15 @@ routes.register(
   routeWithUserSession({
     path: "/reports/new",
     render: pageProps => <ReportSourcePage {...pageProps} />,
-    headerBlock: <h1></h1>,
     bodyClass: "fixed-layout",
   })
 );
+
 routes.register(
   "Reports.Edit",
   routeWithUserSession({
     path: "/reports/:reportId/source",
     render: pageProps => <ReportSourcePage {...pageProps} />,
-    headerBlock: <h1></h1>,
     bodyClass: "fixed-layout",
   })
 );

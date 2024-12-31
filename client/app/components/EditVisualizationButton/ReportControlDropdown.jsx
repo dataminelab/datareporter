@@ -3,25 +3,34 @@ import PropTypes from "prop-types";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
 import Button from "antd/lib/button";
-import Icon from "antd/lib/icon";
+import PlainButton from "@/components/PlainButton";
+import { clientConfig } from "@/services/auth";
+
+import PlusCircleFilledIcon from "@ant-design/icons/PlusCircleFilled";
+import ShareAltOutlinedIcon from "@ant-design/icons/ShareAltOutlined";
+import FileOutlinedIcon from "@ant-design/icons/FileOutlined";
+import FileExcelOutlinedIcon from "@ant-design/icons/FileExcelOutlined";
+import EllipsisOutlinedIcon from "@ant-design/icons/EllipsisOutlined";
 
 import ReportResultsLink from "./ReportResultsLink";
 
-export function ReportMenuElement(props) {
-  return (
+export default function ReportControlDropdown(props) {
+  const menu = (
     <Menu>
       {!props.report.isNew() && (!props.report.is_draft || !props.report.is_archived) && (
         <Menu.Item>
-          <a target="_self" onClick={() => props.openAddToDashboardForm(props.selectedTab)}>
-            <Icon type="plus-circle" theme="filled" /> Add to Dashboard
-          </a>
+          <PlainButton onClick={() => props.openAddToDashboardForm(props.selectedTab)}>
+            <PlusCircleFilledIcon /> Add to Dashboard
+          </PlainButton>
         </Menu.Item>
       )}
-      {!props.report.isNew() && (
+      {!clientConfig.disablePublicUrls && !props.query.isNew() && (
         <Menu.Item>
-          <a onClick={() => props.showEmbedDialog(props.report, props.selectedTab)} data-test="ShowEmbedDialogButton">
-            <Icon type="share-alt" /> Embed Elsewhere
-          </a>
+          <PlainButton
+            onClick={() => props.showEmbedDialog(props.query, props.selectedTab)}
+            data-test="ShowEmbedDialogButton">
+            <ShareAltOutlinedIcon /> Embed Elsewhere
+          </PlainButton>
         </Menu.Item>
       )}
       <Menu.Item>
@@ -32,7 +41,7 @@ export function ReportMenuElement(props) {
           queryResult={props.queryResult}
           embed={props.embed}
           apiKey={props.apiKey}>
-          <Icon type="file" /> Download as CSV File
+          <FileOutlinedIcon /> Download as CSV File
         </ReportResultsLink>
       </Menu.Item>
       <Menu.Item>
@@ -43,7 +52,7 @@ export function ReportMenuElement(props) {
           queryResult={props.queryResult}
           embed={props.embed}
           apiKey={props.apiKey}>
-          <Icon type="file" /> Download as TSV File
+          <FileOutlinedIcon /> Download as TSV File
         </ReportResultsLink>
       </Menu.Item>
       <Menu.Item>
@@ -54,18 +63,16 @@ export function ReportMenuElement(props) {
           queryResult={props.queryResult}
           embed={props.embed}
           apiKey={props.apiKey}>
-          <Icon type="file-excel" /> Download as Excel File
+          <FileExcelOutlinedIcon /> Download as Excel File
         </ReportResultsLink>
       </Menu.Item>
     </Menu>
   );
-}
-export default function ReportControlDropdown(props) {
-  const menu = ReportMenuElement(props);
+
   return (
-    <Dropdown trigger={["click"]} overlay={menu} overlayClassName="report-control-dropdown-overlay">
-      <Button data-test="ReportControlDropdownButton">
-        <Icon type="ellipsis" rotate={90} />
+    <Dropdown trigger={["click"]} overlay={menu} overlayClassName="query-control-dropdown-overlay">
+      <Button data-test="QueryControlDropdownButton">
+        <EllipsisOutlinedIcon rotate={90} />
       </Button>
     </Dropdown>
   );

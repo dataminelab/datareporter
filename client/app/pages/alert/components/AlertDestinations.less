@@ -1,73 +1,73 @@
 .alert-destinations {
-    position: relative;
-    
-    ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 15px;
+  position: relative;
 
-      li {
-          color: rgba(0, 0, 0, 0.85);
-          height: 46px;
-          border-bottom: 1px solid #e8e8e8;
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
 
-          .remove-button {
-              cursor: pointer;
-              height: 40px;
-              width: 40px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-          }
+    li {
+        color: rgba(0, 0, 0, 0.85);
+        height: 46px;
+        border-bottom: 1px solid #e8e8e8;
 
-          .toggle-button {
-              margin: 0 7px;
-          }
+        .remove-button {
+            cursor: pointer;
+            height: 40px;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-          .destination-warning {
-              color: #f5222d;
+        .toggle-button {
+            margin: 0 7px;
+        }
 
-              &:last-child {
-                  margin-right: 14px;
-              }
-          }
-      }
-  }
+        .destination-warning {
+            color: #f5222d;
 
-  .add-button {
-      position: absolute;
-      right: 0;
-      top:-33px;
-  }
+            &:last-child {
+                margin-right: 14px;
+            }
+        }
+    }
+}
+
+.add-button {
+    position: absolute;
+    right: 0;
+    top:-33px;
+}
 }
 
 .destination-wrapper {
-  padding-left: 8px;
-  display: flex;
-  align-items: center;
-  min-height: 38px;
-  width: 100%;
+padding-left: 8px;
+display: flex;
+align-items: center;
+min-height: 38px;
+width: 100%;
 
-  .select-items-dialog & {
-      padding: 0;
-  }
+.select-items-dialog & {
+    padding: 0;
+}
 
-  .destination-icon  {
-      height: 25px;
-      width: 25px;
-      margin: 2px 5px 0 0;
-      filter: grayscale(1);
+.destination-icon  {
+    height: 25px;
+    width: 25px;
+    margin: 2px 5px 0 0;
+    filter: grayscale(1);
 
-      &.fa {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-      }
+    &.fa {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
 
-      .select-items-dialog & {
-          width: 35px;
-          height: 35px;
-      }
-  }
+    .select-items-dialog & {
+        width: 35px;
+        height: 35px;
+    }
+}
 }

@@ -3,15 +3,20 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import useMedia from "use-media";
 import Button from "antd/lib/button";
-import Icon from "antd/lib/icon";
+
+import FullscreenOutlinedIcon from "@ant-design/icons/FullscreenOutlined";
+import FullscreenExitOutlinedIcon from "@ant-design/icons/FullscreenExitOutlined";
 
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import EditInPlace from "@/components/EditInPlace";
 import Parameters from "@/components/Parameters";
+import DynamicComponent from "@/components/DynamicComponent";
+import PlainButton from "@/components/PlainButton";
 
 import DataSource from "@/services/data-source";
 import { ExecutionStatus } from "@/services/report-result";
 import routes from "@/services/routes";
+import { policy } from "@/services/policy";
 
 import useReportResultData from "@/lib/useReportResultData";
 
@@ -103,24 +108,28 @@ function ReportView(props) {
           onChange={setReport}
           selectedVisualization={selectedVisualization}
           headerExtra={
-            <ReportViewButton
-              className="m-r-5"
-              type="primary"
-              shortcut="mod+enter, alt+enter, ctrl+enter"
-              disabled={!queryFlags.canExecute || isExecuting || areParametersDirty}
-              onClick={doExecuteReport}>
-              Refresh
-            </ReportViewButton>
+            <DynamicComponent name="ReportView.HeaderExtra" report={report}>
+              {policy.canRun(report) && (
+                <ReportViewButton
+                  className="m-r-5"
+                  type="primary"
+                  shortcut="mod+enter, alt+enter, ctrl+enter"
+                  disabled={!queryFlags.canExecute || isExecuting || areParametersDirty}
+                  onClick={doExecuteReport}>
+                  Refresh
+                </ReportViewButton>
+              )}
+            </DynamicComponent>
           }
           tagsExtra={
             !report.description &&
             queryFlags.canEdit &&
             !addingDescription &&
             !fullscreen && (
-              <a className="label label-tag hidden-xs" role="none" onClick={() => setAddingDescription(true)}>
-                <i className="zmdi zmdi-plus m-r-5" />
+              <PlainButton className="label label-tag hidden-xs" role="none" onClick={() => setAddingDescription(true)}>
+                <i className="zmdi zmdi-plus m-r-5" aria-hidden="true" />
                 Add description
-              </a>
+              </PlainButton>
             )
           }
         />
@@ -134,7 +143,7 @@ function ReportView(props) {
               onStopEditing={() => setAddingDescription(false)}
               placeholder="Add description"
               ignoreBlanks={false}
-              editorProps={{ autosize: { minRows: 2, maxRows: 4 } }}
+              editorProps={{ autoSize: { minRows: 2, maxRows: 4 } }}
               defaultEditing={addingDescription}
               multiline
             />
@@ -166,15 +175,19 @@ function ReportView(props) {
               onAddVisualization={addVisualization}
               onDeleteVisualization={deleteVisualization}
               refreshButton={
-                <Button
-                  type="primary"
-                  disabled={!queryFlags.canExecute || areParametersDirty}
-                  loading={isExecuting}
-                  onClick={doExecuteReport}>
-                  {!isExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
-                  Refresh Now
-                </Button>
+                policy.canRun(report) && (
+                  <Button
+                    type="primary"
+                    disabled={!queryFlags.canExecute || areParametersDirty}
+                    loading={isExecuting}
+                    onClick={doExecuteReport}
+                  >
+                    {!isExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
+                    Refresh Now
+                  </Button>
+                )
               }
+              canRefresh={policy.canRun(report)}
             />
           )}
           <div className="report-results-footer">
@@ -193,7 +206,7 @@ function ReportView(props) {
                     type="default"
                     shortcut="alt+f"
                     onClick={toggleFullscreen}>
-                    <Icon type={fullscreen ? "fullscreen-exit" : "fullscreen"} />
+                    {fullscreen ? <FullscreenExitOutlinedIcon /> : <FullscreenOutlinedIcon />}
                   </ReportViewButton>
                 }
               />
@@ -226,7 +239,7 @@ const ReportViewPage = wrapReportPage(ReportView);
 routes.register(
   "Reports.View",
   routeWithUserSession({
-    path: "/reports/:queryId",
+    path: "/reports/:reportId",
     render: pageProps => <ReportViewPage {...pageProps} />,
   })
 );

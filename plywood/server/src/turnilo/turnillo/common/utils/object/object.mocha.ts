@@ -15,7 +15,7 @@
  */
 
 import { expect } from "chai";
-import { omitFalsyValues } from "./object";
+import { fromEntries, mapValues, omitFalsyValues, pickValues } from "./object";
 
 describe("Object utils", () => {
   describe("omitFalsyValues", () => {
@@ -51,6 +51,97 @@ describe("Object utils", () => {
       const inputCopy = Object.assign({}, input);
 
       omitFalsyValues(input);
+
+      expect(input).to.deep.equal(inputCopy);
+    });
+  });
+
+  describe("fromEntries", () => {
+    it("should construct object from key-value pairs", () => {
+      const input = [
+        ["a", "foobar"],
+        ["b", 42],
+        ["c", true],
+        ["d", "qvux"]
+        ] as Array<[string, string | number | boolean]>;
+      expect(fromEntries<string, string | number | boolean>(input)).to.be.deep.equal({
+        a: "foobar",
+        b: 42,
+        c: true,
+        d: "qvux"
+      });
+    });
+  });
+
+  describe("pickValues", () => {
+
+    const greaterThan10 = (n: number) => n > 10;
+
+    it("should left only values that pass predicate", () => {
+      const input: any = {
+        a: 9,
+        b: 10,
+        c: 11
+      };
+
+      const expected = {
+        c: 11
+      };
+
+      expect(pickValues(input, greaterThan10)).to.be.deep.equal(expected);
+    });
+
+    it("should handle empty object", () => {
+      expect(pickValues({}, greaterThan10)).to.be.deep.equal({});
+    });
+
+    it("should not modify input object", () => {
+      const input: any = {
+        a: 9,
+        b: 10,
+        c: 11
+      };
+
+      const inputCopy = Object.assign({}, input);
+
+      pickValues(input, greaterThan10);
+
+      expect(input).to.deep.equal(inputCopy);
+    });
+  });
+
+  describe("mapValues", () => {
+    function addAndStringify(num: number): string {
+      return String(num + 1);
+    }
+
+    it("should apply function to all values", () => {
+      const input = {
+        a: 1,
+        b: 2
+      };
+
+      const expected = {
+        a: "2",
+        b: "3"
+      };
+
+      expect(mapValues(input, addAndStringify)).to.be.deep.equal(expected);
+    });
+
+    it("should handle empty object", () => {
+      expect(mapValues({}, addAndStringify)).to.be.deep.equal({});
+    });
+
+    it("should not modify input object", () => {
+      const input: any = {
+        a: 1,
+        b: 2
+      };
+
+      const inputCopy = Object.assign({}, input);
+
+      mapValues(input, addAndStringify);
 
       expect(input).to.deep.equal(inputCopy);
     });

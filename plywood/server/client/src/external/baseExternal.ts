@@ -27,8 +27,6 @@ import {
   ReadableStream,
   Transform,
   Writable,
-  WritableStream,
-  Readable,
   PassThrough,
 } from 'readable-stream';
 import {
@@ -312,7 +310,7 @@ export interface ExternalJS {
   // SQL
 
   withQuery?: string;
-  
+
   // Druid
 
   timeAttribute?: string;
@@ -1553,7 +1551,7 @@ export abstract class External {
     });
   }
 
-  public getQueryFilter(): Expression { 
+  public getQueryFilter(): Expression {
     let filter = this.inlineDerivedAttributes(this.filter).simplify();
 
     if (filter instanceof RefExpression) {

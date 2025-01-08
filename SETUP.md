@@ -98,15 +98,7 @@ npm install antd@^4 react@^16.8 react-dom@^16.8 && npm run test
 
 ### Running cypress
 ```sh
-# go to client folder
-cd client
-# install cypress and seed database
-# your local postgres-database is required to be running
-npm run cypress:install && node cypress/cypress.js db-seed
-# run cypress
-npm run cypress
-# Open cypress for visual testing
-npx cypress open
+bash bin/restart_cypress.sh
 ```
 
 ### Components

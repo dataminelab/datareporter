@@ -1,9 +1,8 @@
 import { filter, map, get, initial, last, reduce } from "lodash";
 import React, { useMemo, useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import Table from "antd/lib/table";
 import Input from "antd/lib/input";
-import Icon from "antd/lib/icon";
+import InfoCircleFilledIcon from "@ant-design/icons/InfoCircleFilled";
 import Popover from "antd/lib/popover";
 import { RendererPropTypes } from "@/visualizations/prop-types";
 
@@ -25,7 +24,7 @@ function joinColumns(array, separator = ", ") {
   );
 }
 
-function getSearchColumns(columns, { limit = Infinity, renderColumn = col => col.title } = {}) {
+function getSearchColumns(columns, { limit = Infinity, renderColumn = (col) => col.title } = {}) {
   const firstColumns = map(columns.slice(0, limit), col => renderColumn(col));
   const restColumns = map(columns.slice(limit), col => col.title);
   if (restColumns.length > 0) {
@@ -47,7 +46,7 @@ function SearchInputInfoIcon({ searchColumns }) {
           Search {getSearchColumns(searchColumns, { renderColumn: col => <code key={col.name}>{col.title}</code> })}
         </div>
       }>
-      <Icon className="table-visualization-search-info-icon" type="info-circle" theme="filled" />
+      <InfoCircleFilledIcon className="table-visualization-search-info-icon" />
     </Popover>
   );
 }
@@ -67,10 +66,6 @@ function SearchInput({ searchColumns, ...props }) {
   );
 }
 
-SearchInput.propTypes = {
-  onChange: PropTypes.func,
-};
-
 SearchInput.defaultProps = {
   onChange: () => {},
 };
@@ -79,18 +74,25 @@ export default function Renderer({ options, data }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [orderBy, setOrderBy] = useState([]);
 
+  const columnsToFix = new Set();
+  for (let i = 0; i < options.fixedColumns; i++) {
+    if (options.columns[i]) {
+      columnsToFix.add(options.columns[i].name);
+    }
+  }
+
   const searchColumns = useMemo(() => filter(options.columns, "allowSearch"), [options.columns]);
 
   const tableColumns = useMemo(() => {
     const searchInput =
       searchColumns.length > 0 ? (
-        <SearchInput searchColumns={searchColumns} onChange={event => setSearchTerm(event.target.value)} />
+        <SearchInput searchColumns={searchColumns} onChange={(event) => setSearchTerm(event.target.value)} />
       ) : null;
-    return prepareColumns(options.columns, searchInput, orderBy, newOrderBy => {
+    return prepareColumns(options.columns, searchInput, orderBy, (newOrderBy) => {
       setOrderBy(newOrderBy);
       // Remove text selection - may occur accidentally
       document.getSelection().removeAllRanges();
-    });
+    }, columnsToFix);
   }, [options.columns, searchColumns, orderBy]);
 
   const preparedRows = useMemo(() => sortRows(filterRows(initRows(data.rows), searchTerm, searchColumns), orderBy), [
@@ -122,7 +124,10 @@ export default function Renderer({ options, data }) {
           position: "bottom",
           pageSize: options.itemsPerPage,
           hideOnSinglePage: true,
+          showSizeChanger: false,
         }}
+        showSorterTooltip={false}
+        scroll = {{x : 'max-content'}}
       />
     </div>
   );

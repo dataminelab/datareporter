@@ -16,9 +16,13 @@ module.exports = {
     symlinks: false,
     extensions: [".js", ".jsx", ".ts", ".tsx"],
     fullySpecified: false, // Allow imports without extensions
-    alias:{
+    alias: {
       './nonIterableSpread': './nonIterableSpread.js',
     },
+    fallback: {
+      fs: false,
+      path: false
+    }
   },
   module: {
     rules: [
@@ -33,15 +37,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              outputPath: "images/",
-              name: "[name].[ext]",
-            },
-          },
-        ],
+        type: 'asset/resource',
       },
       {
         test: /\.less$/,
@@ -51,8 +47,10 @@ module.exports = {
           {
             loader: "less-loader",
             options: {
-              plugins: [new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })],
-              javascriptEnabled: true,
+              lessOptions: {
+                plugins: [new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })],
+                javascriptEnabled: true,
+	            },
             },
           },
         ],

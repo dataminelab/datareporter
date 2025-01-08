@@ -1,24 +1,21 @@
-FROM node:14.17 AS frontend-builder
+FROM node:16.20 AS frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
 
-RUN useradd --create-home datareporter
+RUN useradd -m -d /frontend datareporter
 USER datareporter
 
 WORKDIR /frontend
-COPY bin/build_frontend.sh .
-COPY --chown=datareporter client /frontend/
-COPY --chown=datareporter package.json package-lock.json /frontend/
+COPY --chown=datareporter client /frontend/client
 COPY --chown=datareporter viz-lib/ /frontend/viz-lib
-COPY plywood/server/ /frontend/plywood/server/
+COPY --chown=datareporter plywood/server /frontend/plywood/server/
+COPY --chown=datareporter plywood/server/client /frontend/plywood/server/client
 
 # install node dependencies
-RUN if [ "x$skip_frontend_build" = "x" ] ; then \
-    echo "Building frontend";\
-    ./build_frontend.sh;\
+RUN if [ "x$skip_frontend_build" = "x" ]; then \
+    cd client && npm i && npm run build;\
   else \
-    echo "Skipping frontend build" &&\
     mkdir -p /frontend/client/dist &&\
     touch /frontend/client/dist/multi_org.html &&\
     touch /frontend/client/dist/index.html;\
@@ -28,6 +25,7 @@ FROM python:3.8-slim-buster
 
 EXPOSE 5000
 
+RUN useradd --create-home datareporter
 
 # Ubuntu packages
 RUN apt-get update && \
@@ -88,10 +86,12 @@ RUN /etc/poetry/bin/poetry install --only $install_groups $POETRY_OPTIONS
 COPY --chown=datareporter . /app
 COPY --chown=datareporter --from=frontend-builder /frontend/client/dist /app/client/dist
 RUN chown datareporter:datareporter -R /app
-RUN find /app
+USER datareporter
+
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 # The version is being set arbitrarily by the builder
 ARG version
 ENV DATAREPORTER_VERSION=$version
+
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
 CMD ["server"]

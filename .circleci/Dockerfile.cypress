@@ -1,12 +1,14 @@
 FROM cypress/browsers:chrome67
+# FROM cypress/browsers:node16.13.0-chrome95-ff94
 
 ENV APP /usr/src/app
 WORKDIR $APP
 
 COPY package.json $APP/package.json
-RUN npm run cypress:install > /dev/null
+COPY viz-lib $APP/viz-lib
+COPY plywood $APP/plywood
+COPY client $APP/client
 
-COPY client/cypress $APP/client/cypress
-COPY cypress.json $APP/cypress.json
+COPY . $APP
 
 RUN ./node_modules/.bin/cypress verify

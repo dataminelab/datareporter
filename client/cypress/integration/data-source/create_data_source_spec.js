@@ -46,7 +46,7 @@ describe("Create Data Source", () => {
     cy.getByTestId("Host").type("postgres");
     cy.getByTestId("User").type("postgres");
     cy.getByTestId("Password").type("postgres");
-    cy.getByTestId("Database Name").type("postgres{enter}");
+    cy.getByTestId("Database Name").type("postgres");
     cy.getByTestId("CreateSourceSaveButton").click();
 
     cy.contains("Saved.");

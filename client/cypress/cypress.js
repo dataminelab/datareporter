@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies, no-console */
 const { find } = require("lodash");
-const atob = require("atob");
 const { execSync } = require("child_process");
 const { get, post } = require("request").defaults({ jar: true });
 const { seedData } = require("./seed-data");
@@ -44,9 +43,7 @@ function seedDatabase(seedValues) {
 
 function buildServer() {
   console.log("Building the server...");
-  execSync("docker compose -p cypress build --build-arg skip_dev_deps=true --build-arg skip_ds_deps=true", {
-    stdio: "inherit",
-  });
+  execSync("docker compose -p cypress build", { stdio: "inherit" });
 }
 
 function startServer() {
@@ -87,7 +84,6 @@ function runCypressCI() {
 }
 
 const command = process.argv[2] || "all";
-
 
 switch (command) {
   case "build":

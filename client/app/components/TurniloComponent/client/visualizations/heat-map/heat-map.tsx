@@ -17,7 +17,6 @@
 
 // For some reason tsc compiler does not see this file.
 // Remove when issue is identified.
-// tslint:disable-next-line: no-reference
 /// <reference path="../../index.d.ts" />
 
 import memoizeOne from "memoize-one";

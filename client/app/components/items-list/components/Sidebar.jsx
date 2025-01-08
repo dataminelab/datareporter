@@ -3,13 +3,14 @@ import React, { useState, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import Input from "antd/lib/input";
 import AntdMenu from "antd/lib/menu";
+import Link from "@/components/Link";
 import TagsList from "@/components/TagsList";
 
 /*
     SearchInput
  */
 
-export function SearchInput({ placeholder, value, showIcon, onChange }) {
+export function SearchInput({ placeholder, value, showIcon, onChange, label }) {
   const [currentValue, setCurrentValue] = useState(value);
 
   useEffect(() => {
@@ -28,21 +29,29 @@ export function SearchInput({ placeholder, value, showIcon, onChange }) {
   const InputControl = showIcon ? Input.Search : Input;
   return (
     <div className="m-b-10">
-      <InputControl className="form-control" placeholder={placeholder} value={currentValue} onChange={onInputChange} />
+      <InputControl
+        className="form-control"
+        placeholder={placeholder}
+        value={currentValue}
+        aria-label={label}
+        onChange={onInputChange}
+      />
     </div>
   );
 }
 
 SearchInput.propTypes = {
-  placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   showIcon: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
+  label: PropTypes.string,
 };
 
 SearchInput.defaultProps = {
   placeholder: "Search...",
   showIcon: false,
+  label: "Search",
 };
 
 /*
@@ -59,7 +68,7 @@ export function Menu({ items, selected }) {
       <AntdMenu className="invert-stripe-position" mode="inline" selectable={false} selectedKeys={[selected]}>
         {map(items, item => (
           <AntdMenu.Item key={item.key} className="m-0">
-            <a href={item.href}>
+            <Link href={item.href}>
               {isString(item.icon) && item.icon !== "" && (
                 <span className="btn-favorite m-r-5">
                   <i className={item.icon} aria-hidden="true" />
@@ -67,7 +76,7 @@ export function Menu({ items, selected }) {
               )}
               {isFunction(item.icon) && (item.icon(item) || null)}
               {item.title}
-            </a>
+            </Link>
           </AntdMenu.Item>
         ))}
       </AntdMenu>
@@ -131,13 +140,13 @@ ProfileImage.propTypes = {
     Tags
  */
 
-export function Tags({ url, onChange }) {
+export function Tags({ url, onChange, showUnselectAll }) {
   if (url === "") {
     return null;
   }
   return (
     <div className="m-b-10">
-      <TagsList tagsUrl={url} onUpdate={onChange} />
+      <TagsList tagsUrl={url} onUpdate={onChange} showUnselectAll={showUnselectAll} />
     </div>
   );
 }
@@ -145,4 +154,6 @@ export function Tags({ url, onChange }) {
 Tags.propTypes = {
   url: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  showUnselectAll: PropTypes.bool,
+  unselectAllButtonTitle: PropTypes.string,
 };

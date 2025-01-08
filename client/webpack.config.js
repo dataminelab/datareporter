@@ -10,7 +10,6 @@ const LessPluginAutoPrefix = require("less-plugin-autoprefix");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
 const path = require("path");
-const { CheckerPlugin } = require('awesome-typescript-loader');
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 function optionalRequire(module, defaultReturn = undefined) {
@@ -71,6 +70,7 @@ const babelLoader = {
           modules: false,
         },
       ],
+      "@babel/preset-typescript"
     ],
     plugins: [
       ...(isHotReloadingEnabled ? ["react-refresh/babel"] : []),
@@ -108,7 +108,6 @@ const config = {
     }
   },
   plugins: [
-    new CheckerPlugin(),
     new WebpackBuildNotifierPlugin({ title: "Data Reporter" }),
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
@@ -173,7 +172,7 @@ const config = {
         ],
       },
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(t|j)sx?$/,
         exclude: {
           and: [/node_modules/],
           not: [
@@ -182,24 +181,6 @@ const config = {
         },
         use: [
           babelLoader
-        ]
-      },
-      {
-        test: /\.(ts|tsx)$/,
-        exclude: {
-          and: [/node_modules/],
-          not: [
-            /react-syntax-highlighter/ // Include react-syntax-highlighter for transpiling
-          ]
-        },
-        use: [
-          babelLoader,
-          {
-            loader: 'awesome-typescript-loader?{configFileName: "tsconfig.json"}',
-            options: {
-              configFile: "tsconfig.json"
-            }
-          }
         ]
       },
       {

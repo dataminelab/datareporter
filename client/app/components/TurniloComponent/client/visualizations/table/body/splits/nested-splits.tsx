@@ -15,7 +15,7 @@
  */
 
 import { Datum, PseudoDatum } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { INDENT_WIDTH } from "../../table";
 import { VisibleRows } from "../../utils/visible-rows";
@@ -25,7 +25,7 @@ import { SplitValue } from "./split-value";
 
 interface NestedSplitsProps {
   visibleRowsIndexRange: [number, number];
-  essence: Essence;
+  essence?: Essence;
   data: PseudoDatum[];
   hoverRow?: Datum;
   segmentWidth: number;
@@ -33,7 +33,7 @@ interface NestedSplitsProps {
   color: string;
 }
 
-export const NestedSplits: React.SFC<NestedSplitsProps> = props => {
+export const NestedSplits: React.FunctionComponent<NestedSplitsProps> = props => {
   const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth, color } = props;
 
   return <div className="nested-splits-rows">

@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
+import { Ternary } from "../../utils/functional/functional";
+
 import { Instance } from "immutable-class";
 import { Binary } from "../../utils/functional/functional";
+
+export interface UrlShortenerContext {
+  clientIp: string;
+}
+
+export type UrlShortenerRef = Ternary<any, string, UrlShortenerContext, Promise<string>>;
+export type UrlShortenerDefSQ = string;
+
+export function fromConfig(definition?: UrlShortenerDefSQ): UrlShortenerRef | undefined {
+  return definition && Function("request", "url", "context", definition) as UrlShortenerRef;
+}
+
+
 
 export type UrlShortenerFn = Binary<string, any, Promise<string>>;
 export type UrlShortenerDef = string;

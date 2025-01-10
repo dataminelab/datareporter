@@ -284,8 +284,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
 
     let dimensions: Dimensions;
     let measures: Measures;
-
-
     try {
       dimensions = Dimensions.fromJS(parameters.dimensions || []);
       measures = Measures.fromJS(parameters.measures || []);
@@ -696,7 +694,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
     return this.addAttributes(external.attributes).attachExecutor(executor);
   }
 
-  public attachExecutor(executor: Executor): DataCube {
+  public attachExecutor(executor: any): DataCube {
     let value = this.valueOf();
     value.executor = executor;
     return new DataCube(value);
@@ -946,7 +944,6 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public getDefaultSplits(): Splits {
     if (this.defaultSplitDimensions) {
       const dimensions = this.defaultSplitDimensions.map(name => this.getDimension(name));
-      //@ts-ignore
       return Splits.fromDimensions(dimensions);
     }
     return DataCube.DEFAULT_DEFAULT_SPLITS;
@@ -1002,6 +999,28 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   public changeMeasures(measures: List<Measure>) {
     return this.change("measures", measures);
   }
+}
+
+export function getMaxTime({ name, refreshRule }: DataCube, timekeeper: Timekeeper): Date {
+  if (refreshRule.isRealtime()) {
+    return timekeeper.now();
+  } else if (refreshRule.isFixed()) {
+    return refreshRule.time;
+  } else { // refreshRule is query
+    return timekeeper.getTime(name);
+  }
+}
+
+export function getTimeDimension(dataCube: DataCube): Dimension {
+  const dimension =  Dimensions.findDimensionByExpression()
+  if (dimension === null) {
+    throw new Error(`Expected DataCube "${dataCube.name}" to have timeAttribute property defined with expression of existing dimension`);
+  }
+  return dimension;
+}
+
+export function getTimeDimensionReference(dataCube: DataCube): string {
+  return getTimeDimension(dataCube).name;
 }
 
 check = DataCube;

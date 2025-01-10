@@ -3,8 +3,11 @@ import navigateTo from "@/components/ApplicationArea/navigateTo";
 import { Report } from "@/services/report";
 import notification from "@/services/notification";
 import { get } from "lodash";
+import { SaveReportError } from "./useUpdateReport"
 
 export default function useSaveReport(data) {
+  if (!data) return;
+
   return Report.saveAs(data)
     .then(() => {
       navigateTo('/reports')

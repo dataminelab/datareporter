@@ -15,3 +15,4 @@
  */
 
 export const AVAILABLE_LIMITS = [5, 10, 25, 50, 100];
+export const DEFAULT_LIMITS = [5, 10, 25, 50, 100];

@@ -27,11 +27,15 @@ export function hasOwnProperty(obj: any, key: string | number): boolean {
   return objectHasOwnProperty.call(obj, key);
 }
 
-export function isNil(obj: any): boolean {
+export function isNil(obj: unknown): boolean {
   return obj === undefined || obj === null;
 }
 
-export function isTruthy(element: any): boolean {
+export function isObject(obj: unknown): obj is object {
+  return obj !== null && typeof obj === "object";
+}
+
+export function isTruthy(element: unknown): boolean {
   return element !== null && element !== undefined && element !== false;
 }
 
@@ -44,14 +48,14 @@ export function isNumber(n: unknown): n is number {
 }
 
 export function isFiniteNumber(n: number): boolean {
-  return isFinite(n) && !isNaN(n);
+  return isNumber(n) && isFinite(n) && !isNaN(n);
 }
 
 export function moveInList<T>(list: List<T>, itemIndex: number, insertPoint: number): List<T> {
-  var n = list.size;
+  const n = list.size;
   if (itemIndex < 0 || itemIndex >= n) throw new Error("itemIndex out of range");
   if (insertPoint < 0 || insertPoint > n) throw new Error("insertPoint out of range");
-  var newArray: T[] = [];
+  const newArray: T[] = [];
   list.forEach((value, i) => {
     if (i === insertPoint) newArray.push(list.get(itemIndex));
     if (i !== itemIndex) newArray.push(value);
@@ -93,7 +97,7 @@ export function makeUrlSafeName(name: string): string {
 export function verifyUrlSafeName(name: string): void {
   if (typeof name !== "string") throw new TypeError("name must be a string");
   if (!name.length) throw new Error("can not have empty name");
-  var urlSafeName = makeUrlSafeName(name);
+  const urlSafeName = makeUrlSafeName(name);
   if (name !== urlSafeName) {
     throw new Error(`'${name}' is not a URL safe name. Try '${urlSafeName}' instead?`);
   }
@@ -105,13 +109,14 @@ export function arraySum(inputArray: number[]) {
 
 export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
   if (!elementToFind) return -1;
+  //@ts-ignore
   return List(array).findIndex(g => valueOf(g) > valueOf(elementToFind));
 }
 
 export function findBiggerClosestToIdeal<T>(array: T[], elementToFind: T, ideal: T, valueOf: (input: T) => number) {
-  var biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
-  var biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
-  return biggerArrayOrEqual.reduce((pV, cV, i, arr) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
+  const biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
+  const biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
+  return biggerArrayOrEqual.reduce((pV, cV) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
 }
 
 export function findExactIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
@@ -135,7 +140,7 @@ export function integerDivision(x: number, y: number): number {
 }
 
 export function toSignificantDigits(n: number, digits: number) {
-  var multiplier = Math.pow(10, digits - Math.floor(Math.log(n) / Math.LN10) - 1);
+  const multiplier = Math.pow(10, digits - Math.floor(Math.log(n) / Math.LN10) - 1);
   return Math.round(n * multiplier) / multiplier;
 }
 
@@ -145,19 +150,25 @@ export function getNumberOfWholeDigits(n: number) {
 
 // replaces things like %{PORT_NAME}% with the value of vs.PORT_NAME
 export function inlineVars(obj: any, vs: Record<string, string>): any {
-  return JSON.parse(JSON.stringify(obj).replace(/%\{[\w\-]+\}%/g, varName => {
+  return JSON.parse(JSON.stringify(obj).replace(/%{[\w\-]+}%/g, varName => {
     varName = varName.substr(2, varName.length - 4);
-    var v = vs[varName];
+    let v = vs[varName];
     if (typeof v !== "string") throw new Error(`could not find variable '${varName}'`);
-    var v = JSON.stringify(v);
+    v = JSON.stringify(v);
     return v.substr(1, v.length - 2);
   }));
 }
 
-export function ensureOneOf(value: string, values: string[], messagePrefix: string): void {
+export function ensureOneOf(value: unknown, values: unknown[], messagePrefix: string): void {
   if (values.indexOf(value) !== -1) return;
-  var isMessage = typeof value === "undefined" ? "not defined" : `'${value}'`;
-  throw new Error(`${messagePrefix} must be on of '${values.join("', '")}' (is ${isMessage})`);
+  const isMessage = isTruthy(value) ? `'${value}'` : "not defined";
+  throw new Error(`${messagePrefix} must be one of '${values.join("', '")}' (is ${isMessage})`);
+}
+
+export function optionalEnsureOneOf(value: unknown, values: unknown[], messagePrefix: string): void {
+  if (!isTruthy(value)) return;
+  if (values.indexOf(value) !== -1) return;
+  throw new Error(`${messagePrefix} must be one of '${values.join("', '")}' (is '${value}')`);
 }
 
 export function pluralIfNeeded(n: number, thing: string): string {

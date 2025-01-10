@@ -25,7 +25,7 @@ import { MeasureCell } from "./measure-cell";
 interface MeasureValueProps {
   series: ConcreteSeries;
   datum: Datum;
-  scale: d3.scale.Linear<number, number>;
+  scale: d3.ScaleLinear<number, number>;
   cellWidth: number;
   lastLevel: boolean;
   showPrevious: boolean;

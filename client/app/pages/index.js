@@ -39,8 +39,8 @@ import "./query-snippets/QuerySnippetsList";
 
 import "./settings/OrganizationSettings";
 
-import "./users/UsersList";
-import "./users/UserProfile";
-
 import "./models/ModelsList";
 import "./models/ModelConfig";
+
+import "./users/UsersList";
+import "./users/UserProfile";

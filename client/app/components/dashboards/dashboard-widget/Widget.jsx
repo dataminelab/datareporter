@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { isEmpty } from "lodash";
@@ -8,6 +8,8 @@ import Menu from "antd/lib/menu";
 import recordEvent from "@/services/recordEvent";
 import { Moment } from "@/components/proptypes";
 import { Report } from "@/services/report";
+import PlainButton from "@/components/PlainButton";
+
 import "./Widget.less";
 
 function downloadCSV(data) {
@@ -45,7 +47,7 @@ function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete
   const WidgetMenu = (
     <Menu data-test="WidgetDropdownButtonMenu">
       {extraOptions}
-      {showDeleteOption && <Menu.Divider />}
+      {showDeleteOption && extraOptions && <Menu.Divider />}
       {showDeleteOption && <Menu.Item onClick={onDelete}>Remove from Dashboard</Menu.Item>}
     </Menu>
   );
@@ -53,9 +55,9 @@ function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete
   return (
     <div className="widget-menu-regular">
       <Dropdown overlay={WidgetMenu} placement="bottomRight" trigger={["click"]}>
-        <a className="action p-l-15 p-r-15" data-test="WidgetDropdownButton">
-          <i className="zmdi zmdi-more-vert" />
-        </a>
+        <PlainButton className="action p-l-15 p-r-15" data-test="WidgetDropdownButton" aria-label="More options">
+          <i className="zmdi zmdi-more-vert" aria-hidden="true" />
+        </PlainButton>
       </Dropdown>
     </div>
   );
@@ -76,9 +78,14 @@ WidgetDropdownButton.defaultProps = {
 function WidgetDeleteButton({ onClick }) {
   return (
     <div className="widget-menu-remove">
-      <a className="action" title="Remove From Dashboard" onClick={onClick} data-test="WidgetDeleteButton">
-        <i className="zmdi zmdi-close" />
-      </a>
+      <PlainButton
+        className="action"
+        title="Remove From Dashboard"
+        onClick={onClick}
+        data-test="WidgetDeleteButton"
+        aria-label="Close">
+        <i className="zmdi zmdi-close" aria-hidden="true" />
+      </PlainButton>
     </div>
   );
 }

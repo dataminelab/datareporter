@@ -354,6 +354,11 @@ class DashboardComponent extends React.Component {
     }
   }
 
+  onParametersEdit = parameters => {
+    const paramOrder = map(parameters, "name");
+    updateDashboard({ options: { globalParamOrder: paramOrder } });
+  };
+
   getEssence = (id) => {
     const modelIndex = this.state.widgetList.lastIndexOf(id);
     if (modelIndex === -1) return null;
@@ -361,7 +366,7 @@ class DashboardComponent extends React.Component {
   }
 
   render() {
-    const { dashboardOptions } = this.props;
+    const { dashboardOptions, onParametersEdit } = this.props;
     const { dashboard, filters, globalParameters, editingLayout } = dashboardOptions;
     const { addWidgetStyle, turniloWidgetsLength } = this.state;
     const turniloWidgetsAvailable = turniloWidgetsLength > 0;
@@ -382,8 +387,13 @@ class DashboardComponent extends React.Component {
         <div className="parameters-header">
           {!isEmpty(globalParameters) && (
             <div className="dashboard-parameters m-b-10 p-15 bg-white tiled" data-test="DashboardParameters">
-              <Parameters parameters={globalParameters} onValuesChange={dashboardOptions.refreshDashboard} />
-            </div>
+              <Parameters
+                parameters={globalParameters}
+                onValuesChange={this.props.refreshDashboard}
+                sortable={editingLayout}
+                onParametersEdit={onParametersEdit}
+              />
+          </div>
           )}
           {(!isEmpty(filters) || turniloWidgetsAvailable) && (
             <div className="m-b-10 p-15 bg-white tiled dashboard-report-filters" data-test="DashboardFilters">

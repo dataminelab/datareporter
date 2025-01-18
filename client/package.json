@@ -42,8 +42,8 @@
     "url": "git+https://github.com/dataminelab/datareporter.git"
   },
   "engines": {
-    "node": "^16.20.0",
-    "npm": "^8.0.0"
+    "node": ">16.0 <21.0",
+    "npm": ">8"
   },
   "author": "Dataminelab Contributors",
   "license": "BSD-2-Clause",

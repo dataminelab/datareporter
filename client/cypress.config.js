@@ -18,6 +18,7 @@ module.exports = defineConfig({
     env: {
       coverage: false,
     },
+    experimentalSessionAndOrigin: true,
   },
 
   component: {

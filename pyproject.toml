@@ -1,4 +1,5 @@
 [project]
+name = "datareporter"
 requires-python = ">=3.8"
 
 [tool.black]
@@ -11,8 +12,8 @@ force-exclude = '''
 '''
 
 [tool.poetry]
-name = "datareporter"
-version = "0.3.1"
+name = "redash"
+version = "0.4.0"
 description = ""
 authors = ["Radoslaw Maciaszek <radek@dataminelab.com>"]
 license = "MIT"

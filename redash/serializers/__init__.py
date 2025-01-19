@@ -86,12 +86,49 @@ def hash_report(report, can_edit=False):
 
     return result
 
+def public_widget(widget):
+    res = {
+        "id": widget.id,
+        "width": widget.width,
+        "options": widget.options,
+        "text": widget.text,
+        "updated_at": widget.updated_at,
+        "created_at": widget.created_at,
+    }
+
+    v = widget.visualization
+    if v and v.id:
+        res["visualization"] = {
+            "type": v.type,
+            "name": v.name,
+            "description": v.description,
+            "options": v.options,
+            "updated_at": v.updated_at,
+            "created_at": v.created_at,
+            "query": {
+                "id": v.query_rel.id,
+                "name": v.query_rel.name,
+                "description": v.query_rel.description,
+                "options": v.query_rel.options,
+            },
+        }
+
+    return res
+
 
 def public_dashboard(dashboard):
     dashboard_dict = project(
         serialize_dashboard(dashboard, with_favorite_state=False, with_widgets=True, is_public=True),
         ("name", "layout", "dashboard_filters_enabled", "updated_at", "created_at", "options", "widgets"),
     )
+
+    widget_list = (
+        models.Widget.query.filter(models.Widget.dashboard_id == dashboard.id)
+        .outerjoin(models.Visualization)
+        .outerjoin(models.Query)
+    )
+
+    dashboard_dict["widgets"] = [public_widget(w) for w in widget_list]
     return dashboard_dict
 
 

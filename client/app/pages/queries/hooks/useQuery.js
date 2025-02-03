@@ -1,3 +1,4 @@
+import { isEmpty } from "lodash";
 import { useState, useMemo } from "react";
 import useUpdateQuery from "./useUpdateQuery";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
@@ -22,9 +23,11 @@ export default function useQuery(originalQuery) {
     () => ({
       query,
       setQuery,
-      isDirty: query.query !== originalQuerySource,
+      isDirty:
+        query.query !== originalQuerySource ||
+        (!isEmpty(query.query) && query.options.apply_auto_limit !== originalAutoLimit),
       saveQuery: () => updateQuery(),
     }),
-    [query, originalQuerySource, updateQuery]
+    [query, originalQuerySource, updateQuery, originalAutoLimit]
   );
 }

@@ -1,3 +1,4 @@
+// test this later again here
 describe("Embedded Queries", () => {
   beforeEach(() => {
     cy.login();
@@ -78,6 +79,9 @@ describe("Embedded Queries", () => {
       SaveParameterSettings
       SaveButton
     `);
+    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-wait
+    cy.getByTestId("ExecuteButton").click();
+    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-wait
 
     // Add a little waiting - page is not updated fast enough
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -105,6 +109,8 @@ describe("Embedded Queries", () => {
     cy.getByTestId("QueryEditor")
       .get(".ace_text-input")
       .type("SELECT name, slug FROM organizations WHERE name='{{}{{}name}}'{esc}", { force: true });
+    
+    cy.getByTestId("SaveButton").click();
 
     cy.getByTestId("TextParamInput").type("Redash");
     cy.getByTestId("ParameterApplyButton").click();
@@ -115,6 +121,9 @@ describe("Embedded Queries", () => {
       SaveParameterSettings
       SaveButton
     `);
+    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-wait
+    cy.getByTestId("ExecuteButton").click();
+    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-wait
 
     // Add a little waiting - page is not updated fast enough
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting

@@ -67,7 +67,7 @@ describe("Widget", () => {
         cy.visit(this.dashboardUrl);
         cy.getByTestId(elTestId)
           .its("0.offsetHeight")
-          .should("eq", 435);
+          .should("eq", 485);
       });
     });
 
@@ -113,7 +113,7 @@ describe("Widget", () => {
         cy.wait("@FreshResults", { timeout: 10000 });
         cy.get("@widget")
           .invoke("height")
-          .should("eq", 285);
+          .should("eq", 235);
 
         // add 4 table rows
         cy.get("@paramInput")

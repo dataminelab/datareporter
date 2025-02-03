@@ -126,7 +126,7 @@ class Widget {
   get type() {
     if (this.visualization) {
       return WidgetTypeEnum.VISUALIZATION;
-    } else if (this.text.includes('[turnilo-widget]')) { //TODO add type turnilo widget
+    } else if (this.text && this.text.includes('[turnilo-widget]')) { //TODO add type turnilo widget
       return WidgetTypeEnum.TURNILO;
     } else if (this.restricted) {
       return WidgetTypeEnum.RESTRICTED;

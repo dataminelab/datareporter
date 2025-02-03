@@ -35,7 +35,7 @@ function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
     deleteModel(model)
       .then(() => {
         notification.success("Data source deleted successfully.");
-        navigateTo("data_sources");
+        callback();
       })
       .catch((e) => {
         notification.error(e);
@@ -197,7 +197,7 @@ class ModelsList extends React.Component {
     }
   };
 
-  deleteModel = (event, model) => Model.deleteModel(model).then(() => this.props.controller.update());
+  deleteModel = (model) => Model.deleteModel(model).then(() => this.props.controller.update());
   editConfigModel = (model) => navigateTo(`models/${model.id}`);
 
   // eslint-disable-next-line class-methods-use-this

@@ -43,4 +43,13 @@ exports.seedData = [
       type: "email",
     },
   },
+  {
+    route: "/api/models",
+    type: "json",
+    data: {
+      name: "Test Data Model",
+      data_source_id: 1,
+      table: "alerts"
+    },
+  },
 ];

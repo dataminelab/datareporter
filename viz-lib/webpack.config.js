@@ -1,6 +1,6 @@
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
 const path = require("path");
-
+const webpack = require('webpack');
 const isProduction = process.env.NODE_ENV === "production";
 
 module.exports = {
@@ -21,6 +21,7 @@ module.exports = {
     },
     fallback: {
       fs: false,
+      buffer: require.resolve('buffer/'),
       path: false
     }
   },
@@ -71,4 +72,9 @@ module.exports = {
     },
     /^antd/i,
   ],
+  plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
+  ]
 };

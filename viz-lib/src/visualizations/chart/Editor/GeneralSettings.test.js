@@ -43,7 +43,7 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
 
     findByTestID(el, "Chart.GlobalSeriesType")
       .last()
-      .simulate("click");
+      .simulate("mouseDown");
     findByTestID(el, "Chart.ChartType.pie")
       .last()
       .simulate("click");
@@ -60,7 +60,7 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
 
     findByTestID(el, "Chart.PieDirection")
       .last()
-      .simulate("click");
+      .simulate("mouseDown");
     findByTestID(el, "Chart.PieDirection.Clockwise")
       .last()
       .simulate("click");
@@ -77,7 +77,7 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
 
     findByTestID(el, "Chart.LegendPlacement")
       .last()
-      .simulate("click");
+      .simulate("mouseDown");
     findByTestID(el, "Chart.LegendPlacement.HideLegend")
       .last()
       .simulate("click");
@@ -109,7 +109,7 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
 
     findByTestID(el, "Chart.Stacking")
       .last()
-      .simulate("click");
+      .simulate("mouseDown");
     findByTestID(el, "Chart.Stacking.Stack")
       .last()
       .simulate("click");
@@ -141,7 +141,7 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
 
     findByTestID(el, "Chart.MissingValues")
       .last()
-      .simulate("click");
+      .simulate("mouseDown");
     findByTestID(el, "Chart.MissingValues.Keep")
       .last()
       .simulate("click");
@@ -194,4 +194,36 @@ describe("Visualizations -> Chart -> Editor -> General Settings", () => {
       expect(elementExists(el, "Chart.ColumnMapping.yError")).toBeTruthy();
     });
   });
+
+  test("Toggles horizontal bar chart", done => {
+    const el = mount(
+      {
+        globalSeriesType: "column",
+        series: {},
+      },
+      done
+    );
+
+    findByTestID(el, "Chart.SwappedAxes")
+      .last()
+      .find("input")
+      .simulate("change", { target: { checked: true } });
+  });
+
+  test("Toggles Enable click events", done => {
+    const el = mount(
+      {
+        globalSeriesType: "column",
+        series: {},
+      },
+      done
+    );
+
+    findByTestID(el, "Chart.EnableClickEvents")
+      .last()
+      .find("input")
+      .simulate("change", { target: { checked: true } });
+  });
+
+  
 });

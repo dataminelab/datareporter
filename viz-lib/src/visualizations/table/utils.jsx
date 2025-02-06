@@ -44,7 +44,7 @@ function getOrderByInfo(orderBy) {
   return result;
 }
 
-export function prepareColumns(columns, searchInput, orderBy, onOrderByChange, columnsToFix) {
+export function prepareColumns(columns, searchInput, orderBy, onOrderByChange) {
   columns = filter(columns, "visible");
   columns = sortBy(columns, "order");
 
@@ -87,7 +87,6 @@ export function prepareColumns(columns, searchInput, orderBy, onOrderByChange, c
         }),
         onClick: (event) => onOrderByChange(toggleOrderBy(column.name, orderBy, event.shiftKey)),
       }),
-      fixed: columnsToFix.has(column.name) ? 'left' : false
     };
 
     const initColumn = ColumnTypes[column.displayAs];

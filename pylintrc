@@ -75,7 +75,7 @@ limit-inference-results=100
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-load-plugins=
+load-plugins=pylint_flask
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -506,7 +506,12 @@ contextmanager-decorators=contextlib.contextmanager
 # List of members which are set dynamically and missed by pylint inference
 # system, and so shouldn't trigger E1101 when accessed. Python regular
 # expressions are accepted.
-generated-members=
+generated-members=db.relationship,
+      db.Column, db.Integer, db.String,
+      db.ForeignKey, db.Text, db.DateTime,
+      db.Boolean, db.func, db.Unicode, db.desc,
+      db.Index, db.UniqueConstraint, db.JSON,
+      db.configure_mappers,
 
 # Tells whether to warn about missing members when the owner of the attribute
 # is inferred to be None.
@@ -578,7 +583,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=120
 
 # Maximum number of lines in a module.
 max-module-lines=1000

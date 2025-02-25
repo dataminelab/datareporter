@@ -16,7 +16,7 @@ import "./DesktopNavbar.less";
 
 function NavbarSection({ children, ...props }) {
   return (
-    <Menu selectable={false} {...props}>
+    <Menu selectable={false} theme="dark" {...props}>
       {children}
     </Menu>
   );

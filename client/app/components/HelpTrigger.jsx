@@ -23,6 +23,7 @@ export const TYPES = mapValues(
     VALUE_SOURCE_OPTIONS: ["/user-guide/querying/query-parameters#Value-Source-Options", "Guide: Value Source Options"],
     SHARE_DASHBOARD: ["/user-guide/dashboards/sharing-dashboards", "Guide: Sharing and Embedding Dashboards"],
     AUTHENTICATION_OPTIONS: ["/user-guide/users/authentication-options", "Guide: Authentication Options"],
+    USAGE_DATA_SHARING: ["/open-source/admin-guide/usage-data", "Help: Anonymous Usage Data Sharing"],
     DS_ATHENA: ["/data-sources/amazon-athena-setup", "Guide: Help Setting up Amazon Athena"],
     DS_BIGQUERY: ["/data-sources/bigquery-setup", "Guide: Help Setting up BigQuery"],
     DS_URL: ["/data-sources/querying-urls", "Guide: Help Setting up URL"],
@@ -47,7 +48,7 @@ export const TYPES = mapValues(
     DASHBOARDS: ["/user-guide/dashboards", "Guide: Dashboards"],
     QUERIES: ["/user-guide/querying", "Guide: Queries"],
     ALERTS: ["/user-guide/alerts", "Guide: Alerts"],
-    REPORTS: ["/user-guide/reports", "Guide: Reports"], // DOES NOT EXISTS YET
+    REPORTS: ["/user-guide/reports", "Guide: Reports"], // TODO: DOES NOT EXISTS YET
   },
   ([url, title]) => [DOMAIN + HELP_PATH + url, title]
 );
@@ -180,13 +181,15 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
                   )}
                 </>
               ) : null
-            }>
+            }
+          >
             <Link
               href={url || this.getUrl()}
               className={className}
               rel="noopener noreferrer"
               target="_blank"
-              onClick={shouldRenderAsLink ? () => {} : this.openDrawer}>
+              onClick={shouldRenderAsLink ? () => {} : this.openDrawer}
+            >
               {this.props.children}
             </Link>
           </Tooltip>
@@ -197,7 +200,8 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
             visible={this.state.visible}
             className={cx("help-drawer", drawerClassName)}
             destroyOnClose
-            width={400}>
+            width={400}
+          >
             <div className="drawer-wrapper">
               <div className="drawer-menu">
                 {url && (

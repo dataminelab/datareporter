@@ -21,7 +21,7 @@ import nullableEquals from "./nullable-equals";
 interface DummyValue {
   dummy: number;
 }
-//@ts-ignore
+
 class DummyRecord extends Record<DummyValue>({ dummy: 1 }) {
 
 }

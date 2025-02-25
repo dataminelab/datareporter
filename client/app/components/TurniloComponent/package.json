@@ -1,7 +1,7 @@
 {
     "name": "turnilo-hardfork",
     "version": "1.40.2",
-    "description": "Business intelligence, data exploration and visualization web application for Druid, formerly known as Swiv and Pivot",
+    "description": "Most recent hardforked turnilo version (13/02/2025), components may vary from the original",
     "keywords": [
       "turnilo",
       "druid",

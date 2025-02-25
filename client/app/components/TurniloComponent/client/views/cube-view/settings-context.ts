@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +14,19 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+import React, { useContext } from "react";
+import { ClientCustomization } from "../../../common/models/customization/customization";
 
-.base-visualization {
-  @include pin-full;
-  overflow: hidden;
+export interface SettingsContextValue {
+  customization: ClientCustomization;
+}
 
-  .internals {
-    @include pin-full;
-    overflow: auto;
-    overflow-y: clip;
+export const SettingsContext = React.createContext<SettingsContextValue>({
+  get customization(): ClientCustomization {
+    throw new Error("Attempted to consume SettingsContext when there was no Provider in place.");
   }
+});
 
-  .loader,
-  .message {
-    @include pin-full;
-  }
+export function useSettingsContext(): SettingsContextValue {
+  return useContext(SettingsContext);
 }

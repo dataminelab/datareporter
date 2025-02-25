@@ -4,7 +4,7 @@ import "./ModelConfigDocs.less";
 
 function ModelConfigDocs() {
   return (
-    <>
+    <div className="model-config-docs">
       <h1>
         <strong>Model</strong>
       </h1>
@@ -174,7 +174,7 @@ function ModelConfigDocs() {
           keeping in line with Plywood's principle that every aggregate is a function acting on a data segment.
         </span>
       </p>
-    </>
+    </div>
   )
 }
 

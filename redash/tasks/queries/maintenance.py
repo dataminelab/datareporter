@@ -204,7 +204,7 @@ def refresh_schemas():
 
     logger.info("task=refresh_schemas state=start")
 
-    for ds in models.DataSource.query:
+    for ds in models.DataSource.query.all():
         if ds.paused:
             logger.info(
                 "task=refresh_schema state=skip ds_id=%s reason=paused(%s)",

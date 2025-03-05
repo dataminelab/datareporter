@@ -1,6 +1,7 @@
 import functools
 
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
+import sqlalchemy
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import object_session
 from sqlalchemy.pool import NullPool
@@ -10,7 +11,7 @@ from redash import settings
 from redash.utils import json_dumps, json_loads
 
 
-class RedashSQLAlchemy(SQLAlchemy):
+class RedashSQLAlchemy(SQLAlchemy, sqlalchemy.orm.Query):
     def apply_driver_hacks(self, app, info, options):
         options.update(json_serializer=json_dumps)
         if settings.SQLALCHEMY_ENABLE_POOL_PRE_PING:

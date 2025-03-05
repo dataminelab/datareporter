@@ -224,29 +224,28 @@ def serialize_visualization(object, with_query=True):
     return d
 
 
-def serialize_widget(widget: models.Widget, is_public=False):
+def serialize_widget(object: models.Widget, is_public=False):
     d = {
-        "id": widget.id,
-        "width": widget.width,
-        "options": widget.options,
-        "dashboard_id": widget.dashboard_id,
-        "text": widget.text,
-        "updated_at": widget.updated_at,
-        "created_at": widget.created_at,
-        "report_id": widget.get_report_id(),
-        "report": widget.get_report(),
+        "id": object.id,
+        "width": object.width,
+        "options": object.options,
+        "dashboard_id": object.dashboard_id,
+        "text": object.text,
+        "updated_at": object.updated_at,
+        "created_at": object.created_at,
+        "report_id": object.get_report_id(),
+        "report": object.get_report(),
         "is_public": is_public,
     }
 
-    # d['options']['widget_type'] = 'text'
-    d["options"]["widget_type"] = "query"
     if d["report"]:
-        d["report"] = hash_report(d["report"])
         d["options"]["widget_type"] = "report"
-    # else it will be a null visualization on front end for now
+        d["report"] = hash_report(d["report"])
+    else:
+        d["options"]["widget_type"] = "query"
 
-    if widget.visualization and widget.visualization.id:
-        d["visualization"] = serialize_visualization(widget.visualization)
+    if object.visualization and object.visualization.id:
+        d["visualization"] = serialize_visualization(object.visualization)
 
     return d
 
@@ -358,6 +357,7 @@ def serialize_job(job):
         JobStatus.STARTED: 2,
         JobStatus.FINISHED: 3,
         JobStatus.FAILED: 4,
+        JobStatus.CANCELED: 4,
     }
 
     job_status = job.get_status()

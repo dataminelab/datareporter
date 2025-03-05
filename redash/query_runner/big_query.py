@@ -7,6 +7,7 @@ from base64 import b64decode
 from redash import settings
 from redash.query_runner import (
     TYPE_BOOLEAN,
+    TYPE_DATE,
     TYPE_DATETIME,
     TYPE_FLOAT,
     TYPE_INTEGER,
@@ -37,6 +38,8 @@ types_map = {
     "BOOLEAN": TYPE_BOOLEAN,
     "STRING": TYPE_STRING,
     "TIMESTAMP": TYPE_DATETIME,
+    "DATETIME": TYPE_DATETIME,
+    "DATE": TYPE_DATE,
 }
 
 
@@ -272,9 +275,9 @@ class BigQuery(BaseQueryRunner):
         columns = []
         if column["type"] == "RECORD":
             for field in column["fields"]:
-                columns.append({"name": "{}.{}".format(column["name"], field["name"]), "type": field["type"]})
+                columns.append("{}.{}".format(column["name"], field["name"]))
         else:
-            columns.append({"name": column["name"], "type": column["type"]})
+            columns.append(column["name"])
 
         return columns
 
@@ -294,44 +297,37 @@ class BigQuery(BaseQueryRunner):
         return result
 
     def get_schema(self, get_stats=False):
-        service = self._get_bigquery_service()
+        if not self.configuration.get("loadSchema", False):
+            return []
+
         project_id = self._get_project_id()
-        datasets = service.datasets().list(projectId=project_id).execute()
-        schema = []
-        for dataset in datasets.get("datasets", []):
+        datasets = self._get_project_datasets(project_id)
+
+        query_base = """
+        SELECT table_schema, table_name, field_path, data_type
+        FROM `{dataset_id}`.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS
+        WHERE table_schema NOT IN ('information_schema')
+        """
+
+        schema = {}
+        queries = []
+        for dataset in datasets:
             dataset_id = dataset["datasetReference"]["datasetId"]
-            tables = (
-                service.tables()
-                    .list(projectId=project_id, datasetId=dataset_id)
-                    .execute()
-            )
-            while True:
-                for table in tables.get("tables", []):
-                    table_data = (
-                        service.tables()
-                            .get(
-                            projectId=project_id,
-                            datasetId=dataset_id,
-                            tableId=table["tableReference"]["tableId"],
-                        )
-                            .execute()
-                    )
-                    table_schema = self._get_columns_schema(table_data)
-                    schema.append(table_schema)
+            query = query_base.format(dataset_id=dataset_id)
+            queries.append(query)
 
-                next_token = tables.get("nextPageToken", None)
-                if next_token is None:
-                    break
+        query = "\nUNION ALL\n".join(queries)
+        results, error = self.run_query(query, None)
+        if error is not None:
+            self._handle_run_query_error(error)
 
-                tables = (
-                    service.tables()
-                        .list(
-                        projectId=project_id, datasetId=dataset_id, pageToken=next_token
-                    )
-                        .execute()
-                )
+        for row in results["rows"]:
+            table_name = "{0}.{1}".format(row["table_schema"], row["table_name"])
+            if table_name not in schema:
+                schema[table_name] = {"name": table_name, "columns": []}
+            schema[table_name]["columns"].append({"name": row["field_path"], "type": row["data_type"]})
 
-        return schema
+        return list(schema.values())
 
     def run_query(self, query, user):
         logger.debug("BigQuery got query: %s", query)
@@ -370,8 +366,5 @@ class BigQuery(BaseQueryRunner):
 
         return data, error
 
-    @property
-    def supports_auto_limit(self):
-        return True
 
 register(BigQuery)

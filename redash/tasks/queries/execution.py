@@ -46,7 +46,7 @@ def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query
                 logger.info("[%s] Found existing job: %s", query_hash, job_id)
                 job_complete = None
                 job_cancelled = None
-
+                message = None
                 try:
                     job = Job.fetch(job_id)
                     job_exists = True

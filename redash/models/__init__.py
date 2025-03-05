@@ -846,9 +846,9 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         return self.name.lower()
 
     @lowercase_name.expression
-    def lowercase_name(cls):
+    def lowercase_name(self):
         "The SQLAlchemy expression for the property above."
-        return func.lower(cls.name)
+        return func.lower(self.name)
 
     @property
     def parameters(self):
@@ -1219,9 +1219,9 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
         return self.name.lower()
 
     @lowercase_name.expression
-    def lowercase_name(cls):
+    def lowercase_name(self):
         "The SQLAlchemy expression for the property above."
-        return func.lower(cls.name)
+        return func.lower(self.name)
 
 
 @generic_repr("id", "name", "type", "query_id")

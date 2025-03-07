@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from 'chronoshift';
+import type { Duration, Timezone } from 'chronoshift';
+
+import { Ip } from '../datatypes/ip';
 import { PlyType, PlyTypeSimple } from '../types';
 
 export abstract class SQLDialect {
@@ -36,8 +38,15 @@ export abstract class SQLDialect {
     return 'NULL';
   }
 
-  public constantGroupBy(): string {
+  public emptyGroupBy(): string {
     return "GROUP BY ''";
+  }
+
+  /**
+   * @deprecated
+   */
+  public constantGroupBy(): string {
+    return this.emptyGroupBy()
   }
 
   public escapeName(name: string): string {
@@ -62,6 +71,10 @@ export abstract class SQLDialect {
 
   public booleanToSQL(bool: boolean): string {
     return ('' + bool).toUpperCase();
+  }
+
+  public ipToSQL(ip: Ip): string {
+    return ip.toString();
   }
 
   public floatDivision(numerator: string, denominator: string): string {
@@ -93,22 +106,36 @@ export abstract class SQLDialect {
 
   public abstract timeToSQL(date: Date): string;
 
+  public abstract stringArrayToSQL(value: string[]): string;
+
   public aggregateFilterIfNeeded(
     inputSQL: string,
     expressionSQL: string,
     elseSQL: string | null = null,
   ): string {
-    let whereIndex = inputSQL.indexOf(' WHERE ');
+    const whereIndex = inputSQL.indexOf(' WHERE ');
     if (whereIndex === -1) return expressionSQL;
-    let filterSQL = inputSQL.substr(whereIndex + 7);
+    const filterSQL = inputSQL.substr(whereIndex + 7);
     return this.ifThenElseExpression(filterSQL, expressionSQL, elseSQL);
   }
 
-  public concatExpression(a: string, b: string): string {
+  public concatExpression(_a: string, _b: string): string {
     throw new Error('must implement');
   }
 
-  public containsExpression(a: string, b: string): string {
+  public containsExpression(_a: string, _b: string, _insensitive: boolean): string {
+    throw new Error('must implement');
+  }
+
+  public mvContainsExpression(_a: string, _b: string[]): string {
+    throw new Error('must implement');
+  }
+
+  public mvFilterOnlyExpression(_a: string, _b: string[]): string {
+    throw new Error('must implement');
+  }
+
+  public mvOverlapExpression(_a: string, _b: string[]): string {
     throw new Error('must implement');
   }
 
@@ -120,9 +147,18 @@ export abstract class SQLDialect {
     return `COALESCE(${a}, ${b})`;
   }
 
-  public ifThenElseExpression(a: string, b: string, c: string | null = null): string {
-    const elsePart = c != null ? ` ELSE ${c}` : '';
+  public countDistinctExpression(a: string, _parameterAttributeName: string | undefined): string {
+    return `COUNT(DISTINCT ${a})`;
+  }
+
+  public ifThenElseExpression(a: string, b: string, c?: string): string {
+    const elsePart = typeof c === 'string' ? ` ELSE ${c}` : '';
     return `CASE WHEN ${a} THEN ${b}${elsePart} END`;
+  }
+
+  public filterAggregatorExpression(aggregate: string, whereFilter: string): string {
+    const whereIndex = whereFilter.indexOf('WHERE');
+    return `${aggregate}${whereIndex !== -1 ? `FILTER (${whereFilter.substr(whereIndex)})` : ''}`;
   }
 
   public isNotDistinctFromExpression(a: string, b: string): string {
@@ -153,7 +189,11 @@ export abstract class SQLDialect {
     }
   }
 
-  public abstract castExpression(inputType: PlyType, operand: string, cast: PlyTypeSimple): string;
+  public abstract castExpression(
+    inputType: PlyType,
+    operand: string,
+    targetType: PlyTypeSimple,
+  ): string;
 
   public lengthExpression(a: string): string {
     return `CHAR_LENGTH(${a})`;
@@ -184,7 +224,11 @@ export abstract class SQLDialect {
 
   public abstract indexOfExpression(str: string, substr: string): string;
 
-  public quantileExpression(str: string, substr: string): string {
+  public quantileExpression(
+    _str: string,
+    _quantile: number,
+    _parameterAttributeName: string | undefined,
+  ): string {
     throw new Error('dialect does not implement quantile');
   }
 
@@ -193,7 +237,27 @@ export abstract class SQLDialect {
     return `LOG(${base},${operand})`;
   }
 
-  public lookupExpression(base: string, lookup: string): string {
+  public lookupExpression(_base: string, _lookup: string): string {
     throw new Error('can not express a lookup as a function');
+  }
+
+  public ipMatchExpression(
+    _colName: string,
+    _searchString: string,
+    _ipSearchType?: string,
+  ): string {
+    throw new Error('must implement');
+  }
+
+  public ipSearchExpression(
+    _colName: string,
+    _searchString: string,
+    _ipSearchType?: string,
+  ): string {
+    throw new Error('must implement');
+  }
+
+  public ipStringifyExpression(_operand: string): string {
+    throw new Error('must implement');
   }
 }

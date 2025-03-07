@@ -18,21 +18,23 @@
 import { parseISODate } from 'chronoshift';
 import * as hasOwnProp from 'has-own-prop';
 import { isImmutableClass } from 'immutable-class';
+
+import { ComputeFn, Dataset, Datum, PlywoodValue, Set, TimeRange } from '../datatypes';
 import { getValueType, valueFromJS } from '../datatypes/common';
-import { ComputeFn, Dataset, Datum, PlywoodValue, Set, TimeRange } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
 import { DatasetFullType, PlyType } from '../types';
+
 import { Expression, ExpressionJS, ExpressionValue, r } from './baseExpression';
 
 export class LiteralExpression extends Expression {
   static op = 'Literal';
   static fromJS(parameters: ExpressionJS): LiteralExpression {
-    let value: ExpressionValue = {
+    const value: ExpressionValue = {
       op: parameters.op,
       type: parameters.type,
     };
     if (!hasOwnProp(parameters, 'value')) throw new Error('literal expression must have value');
-    let v: any = parameters.value;
+    const v: any = parameters.value;
     if (isImmutableClass(v)) {
       value.value = v;
     } else {
@@ -45,7 +47,7 @@ export class LiteralExpression extends Expression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    let value = parameters.value;
+    const value = parameters.value;
     this.value = value;
     this._ensureOp('literal');
     if (typeof this.value === 'undefined') {
@@ -56,14 +58,14 @@ export class LiteralExpression extends Expression {
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.value = this.value;
     if (this.type) value.type = this.type;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let js = super.toJS();
+    const js = super.toJS();
     if (this.value && this.value.toJS) {
       js.value = this.value.toJS();
       js.type = Set.isSetType(this.type) ? 'SET' : this.type;
@@ -75,7 +77,7 @@ export class LiteralExpression extends Expression {
   }
 
   public toString(): string {
-    let value = this.value;
+    const value = this.value;
     if (value instanceof Dataset && value.basis()) {
       return 'ply()';
     } else if (this.type === 'STRING') {
@@ -86,11 +88,11 @@ export class LiteralExpression extends Expression {
   }
 
   public getFn(): ComputeFn {
-    let value = this.value;
+    const value = this.value;
     return () => value;
   }
 
-  public calc(datum: Datum): PlywoodValue {
+  public calc(_datum: Datum): PlywoodValue {
     return this.value;
   }
 
@@ -99,12 +101,15 @@ export class LiteralExpression extends Expression {
   }
 
   public getSQL(dialect: SQLDialect): string {
-    let value = this.value;
+    const value = this.value;
     if (value === null) return dialect.nullConstant();
 
     switch (this.type) {
       case 'STRING':
         return dialect.escapeLiteral(value);
+
+      case 'IP':
+        return dialect.ipToSQL(value);
 
       case 'BOOLEAN':
         return dialect.booleanToSQL(value);
@@ -124,10 +129,13 @@ export class LiteralExpression extends Expression {
       case 'STRING_RANGE':
         return dialect.escapeLiteral(value.start);
 
+      case 'SET/IP':
       case 'SET/STRING':
+      case 'SET/NULL':
       case 'SET/NUMBER':
       case 'SET/NUMBER_RANGE':
       case 'SET/TIME_RANGE':
+      case 'SET/BOOLEAN':
         return '<DUMMY>';
 
       default:
@@ -154,7 +162,7 @@ export class LiteralExpression extends Expression {
   public updateTypeContext(typeContext: DatasetFullType): DatasetFullType {
     const { value } = this;
     if (value instanceof Dataset) {
-      let newTypeContext = value.getFullType();
+      const newTypeContext = value.getFullType();
       newTypeContext.parent = typeContext;
       return newTypeContext;
     }
@@ -175,14 +183,14 @@ export class LiteralExpression extends Expression {
     if (type === targetType) return this;
 
     if (type === 'STRING' && targetType === 'TIME') {
-      let parse = parseISODate(value, Expression.defaultParserTimezone);
+      const parse = parseISODate(value, Expression.defaultParserTimezone);
       if (!parse) throw new Error(`can not upgrade ${value} to TIME`);
       return r(parse);
     } else if (type === 'STRING_RANGE' && targetType === 'TIME_RANGE') {
-      let parseStart = parseISODate(value.start, Expression.defaultParserTimezone);
+      const parseStart = parseISODate(value.start, Expression.defaultParserTimezone);
       if (!parseStart) throw new Error(`can not upgrade ${value.start} to TIME`);
 
-      let parseEnd = parseISODate(value.end, Expression.defaultParserTimezone);
+      const parseEnd = parseISODate(value.end, Expression.defaultParserTimezone);
       if (!parseEnd) throw new Error(`can not upgrade ${value.end} to TIME`);
 
       return r(

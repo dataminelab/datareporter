@@ -41,7 +41,8 @@ export interface AppSettingsJS {
 }
 
 export interface AppSettingsContext {
-  executorFactory?: (dataCube: DataCube, essence?: Essence) => Executor;
+  executorFactory?: (dataCube: DataCube, getEssence: () => Essence) => Executor;
+  getEssence?: () => Essence;
   essence?: Essence;
 }
 
@@ -81,18 +82,20 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
 
       var dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
       if (executorFactory) {
-        var executor = executorFactory(dataCubeObject, context.essence);
+        
+        let essence = context.getEssence ? context.getEssence() : context.essence;
+        var executor = executorFactory(dataCubeObject, () => essence);
         if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
       return dataCubeObject;
     });
-
+  
     var value: AppSettingsValue = {
       version: parameters.version,
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
       dataCubes,
-      essence: context.essence,
+      essence: context.getEssence ? context.getEssence() : context.essence, // ✅ Fallback to context.essence if no function
     };
 
     return new AppSettings(value);

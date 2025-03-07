@@ -20,11 +20,13 @@ import {
   ChainableExpression,
   Dataset,
   DatasetJS,
-  Environment,
   Executor,
   Expression,
   LimitExpression,
-  SplitExpression
+  SplitExpression,
+  FilterExpression,
+  RefExpression,
+  ApplyExpression,
 } from "plywood";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
@@ -121,6 +123,10 @@ export class Ajax {
   static queryUrlExecutorFactory(dataCube: DataCube, getEssence: () => Essence): Executor {
     const timeout = clientTimeout(dataCube.cluster);
 
+    function getEssenceIfExists() {
+      return getEssence ? getEssence() : null;
+    }
+
     function timeoutQuery(ms:number) {
       return new Promise(resolve => setTimeout(resolve, ms));;
     }
@@ -175,14 +181,28 @@ export class Ajax {
     return async (ex: Expression) => {
       if (this.results) return Dataset.fromJS(this.results.data || EmptyDataset);
       const modelId = this.model_id;
-      if (ex instanceof  LimitExpression) {
-        const sub = await subscribeToFilter(ex, modelId);
-        parseMeta(sub);
-        return Dataset.fromJS(sub.data || EmptyDataset);
+      var sub;
+      // @ts-ignore
+      if (ex instanceof LimitExpression || ex.operand instanceof FilterExpression) {
+        // @ts-ignore
+        sub = await subscribeToFilter(ex, modelId);
+      } else if (ex instanceof FilterExpression) {
+        const essence = getEssenceIfExists();
+        const hash = essence ? urlHashConverter.toHash(essence).substring(2) : getHash() || this.hash;
+        sub = await subscribeToSplit(hash, modelId);
+      } else if (ex instanceof RefExpression) {
+        const essence = getEssenceIfExists();
+        const hash = essence ? urlHashConverter.toHash(essence).substring(2) : getHash() || this.hash;
+        sub = await subscribeToSplit(hash, modelId);
+      } else if (ex instanceof ApplyExpression) {
+        const essence = getEssenceIfExists();
+        const hash = essence ? urlHashConverter.toHash(essence).substring(2) : getHash() || this.hash;
+        sub = await subscribeToSplit(hash, modelId);
+      } else {
+        const essence = getEssenceIfExists();
+        const hash = essence ? urlHashConverter.toHash(essence).substring(2) : getHash() || this.hash;
+        sub = await subscribeToSplit(hash, modelId);
       }
-      const essence = getEssence ? getEssence() : null;
-      const hash = essence ? urlHashConverter.toHash(getEssence()).substring(2) : getHash() || this.hash;
-      const sub = await subscribeToSplit(hash, modelId);
       parseMeta(sub);
       return Dataset.fromJS(sub.data || EmptyDataset);
     }

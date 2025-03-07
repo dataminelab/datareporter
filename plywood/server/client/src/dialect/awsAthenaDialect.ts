@@ -166,6 +166,10 @@ export class AwsAthenaDialect extends SQLDialect {
     return `from_iso8601_timestamp('${date.toISOString()}')`;
   }
 
+  public stringArrayToSQL(_value: string[]): string {
+    throw new Error('must implement');
+  }
+
   public utcToWalltime(operand: string, timezone: Timezone): string {
     // todo figure out timezone witchcraft
     return operand;

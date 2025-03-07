@@ -11,6 +11,17 @@ Cypress.Commands.add("createDashboard", (name) => {
   return post({ url: "api/dashboards", body: { name } }).then(({ body }) => body);
 });
 
+Cypress.Commands.add("createReport", () => {
+  cy.visit("/reports/new");
+  cy.wait(500);
+  cy.clickThrough(`
+    SelectDataSource
+    SelectDataSource${Cypress.env("dataSourceId")}
+  `);
+  cy.get("div.visualization").should("exist");
+  cy.wait(500);
+});
+
 Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {
   const merged = extend(
     {

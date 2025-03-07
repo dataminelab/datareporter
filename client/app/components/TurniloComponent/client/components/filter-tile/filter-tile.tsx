@@ -228,7 +228,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     });
   }
 
-  removeFilter(itemBlank: ItemBlank, e: MouseEvent) {
+  removeFilter(itemBlank: ItemBlank, e: React.MouseEvent) {
     const { essence, clicker } = this.props;
     if (itemBlank.clause) {
       clicker.changeFilter(essence.filter.removeClause(itemBlank.clause.reference));
@@ -238,7 +238,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
     e.stopPropagation();
   }
 
-  dragStart(dimension: Dimension, clause: FilterClause, e: DragEvent) {
+  dragStart(dimension: Dimension, clause: FilterClause, e: React.DragEvent) {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     setDragData(dataTransfer, "text/plain", dimension.title);

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from '../datatypes/index';
+import { Dataset, PlywoodValue } from '../datatypes';
 import { SQLDialect } from '../dialect';
+
 import {
   ChainableUnaryExpression,
   Expression,
@@ -23,6 +24,7 @@ import {
   ExpressionValue,
 } from './baseExpression';
 import { Aggregate } from './mixins/aggregate';
+import { RefExpression } from './refExpression';
 
 export class QuantileExpression extends ChainableUnaryExpression implements Aggregate {
   static op = 'Quantile';
@@ -79,7 +81,15 @@ export class QuantileExpression extends ChainableUnaryExpression implements Aggr
     operandSQL: string,
     expressionSQL: string,
   ): string {
-    return dialect.quantileExpression(operandSQL, expressionSQL);
+    const { expression } = this;
+    return dialect.filterAggregatorExpression(
+      dialect.quantileExpression(
+        expressionSQL,
+        this.value,
+        expression instanceof RefExpression ? expression.name : undefined,
+      ),
+      operandSQL,
+    );
   }
 }
 

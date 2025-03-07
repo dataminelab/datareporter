@@ -187,6 +187,10 @@ export class BigQueryDialect extends SQLDialect {
     return `TIMESTAMP('${date.toISOString()}')`;
   }
 
+  public stringArrayToSQL(_value: string[]): string {
+    throw new Error('must implement');
+  }
+
   public utcToWalltime(operand: string, timezone: Timezone): string {
     // todo figure out timezone witchcraft
     return operand;

@@ -9,8 +9,8 @@ services:
       context: .
       cache_from:
         - "type=gha"
-      cache_to:
-        - "type=gha,mode=max"
+      # cache_to:
+      #   - "type=gha,mode=max"
       args:
         skip_frontend_build: true
         skip_dev_deps: ""

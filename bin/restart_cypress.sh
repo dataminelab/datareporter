@@ -5,6 +5,12 @@ fi
 if [ ! -d "node_modules" ]; then
   npm install
 fi
+
 npm run cypress build
-npm run cypress start
-npm run cypress open
+npm run cypress start # seed database
+
+if [ "$1" = "run" ]; then
+  npm run cypress run
+else # if [ "$1" = "open" ]; then
+  npm run cypress open
+fi

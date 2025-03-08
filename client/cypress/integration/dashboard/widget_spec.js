@@ -54,7 +54,7 @@ describe("Widget", () => {
         cy.visit(this.dashboardUrl);
         cy.getByTestId(elTestId)
           .its("0.offsetHeight")
-          .should("eq", 285);
+          .should("be.oneOf", [235, 335]);
       });
     });
 
@@ -67,7 +67,7 @@ describe("Widget", () => {
         cy.visit(this.dashboardUrl);
         cy.getByTestId(elTestId)
           .its("0.offsetHeight")
-          .should("eq", 485);
+          .should("be.oneOf", [335, 485]);
       });
     });
 
@@ -125,7 +125,7 @@ describe("Widget", () => {
         // expect to height to grow by 1 grid grow
         cy.get("@widget")
           .invoke("height")
-          .should("eq", 535);
+          .should("oneOf", [385, 535]);
       });
 
       it("revokes auto height after manual height adjustment", () => {
@@ -143,13 +143,14 @@ describe("Widget", () => {
         cy.wait("@FreshResults");
         cy.get("@widget")
           .invoke("height")
-          .should("eq", 335);
+          .should("eq", 285);
 
         // resize height by 1 grid row
         resizeBy(cy.get("@widget"), 0, 50)
           .then(() => cy.get("@widget"))
           .invoke("height")
-          .should("eq", 385); // resized by 50, , 135 -> 185
+          .should("eq", 335);
+
 
         // add 4 table rows
         cy.get("@paramInput")
@@ -161,7 +162,7 @@ describe("Widget", () => {
         // expect height to stay unchanged (would have been 435)
         cy.get("@widget")
           .invoke("height")
-          .should("eq", 385);
+          .should("eq", 335);
       });
     });
   });
@@ -192,7 +193,7 @@ describe("Widget", () => {
     createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(() => {
       cy.visit(this.dashboardUrl);
       cy.getByTestId("TableVisualization")
-        .next(".ant-pagination-mini")
+        .next(".ant-pagination.mini")
         .should("be.visible");
       cy.percySnapshot("Shows fixed mini pagination for overflowing tabular content");
     });

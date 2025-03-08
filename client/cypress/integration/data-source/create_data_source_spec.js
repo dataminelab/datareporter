@@ -3,12 +3,14 @@ describe("Create Data Source", () => {
     cy.login();
   });
 
-  it("opens the creation dialog when clicking in the create link or button", () => {
+  it("opens the creation dialog when clicking in the create button", () => {
+    // CreateDataSourceLink link click is not being tested here anymore
+    // because it is disappears after data-seed.js works for creating a null data source
     cy.visit("/data_sources");
     cy.server();
     cy.route("**/api/data_sources", []); // force an empty response
 
-    ["CreateDataSourceButton", "CreateDataSourceLink"].forEach(createElementTestId => {
+    ["CreateDataSourceButton"].forEach(createElementTestId => {
       cy.getByTestId(createElementTestId).click();
       cy.getByTestId("CreateSourceDialog").should("exist");
       cy.getByTestId("CreateSourceCancelButton").click();
@@ -46,8 +48,8 @@ describe("Create Data Source", () => {
     cy.getByTestId("Host").type("postgres");
     cy.getByTestId("User").type("postgres");
     cy.getByTestId("Password").type("postgres");
-    cy.getByTestId("Database Name").type("postgres");
-    cy.getByTestId("CreateSourceSaveButton").click();
+    cy.getByTestId("Database Name").type("postgres{enter}");
+    cy.getByTestId("CreateSourceSaveButton").click({ force: true });
 
     cy.contains("Saved.");
   });

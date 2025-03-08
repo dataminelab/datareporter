@@ -7,40 +7,34 @@ import "@testing-library/cypress/add-commands";
 const { each } = Cypress._;
 
 Cypress.Commands.add("login", (email = "admin@redash.io", password = "password") => {
-  cy.session(
-    [email, password],
-    () => {
-      let csrf;
-      cy.visit("/login");
-
-      cy.getCookie("csrf_token")
-        .then(cookie => {
-          if (cookie) {
-            csrf = cookie.value;
-          } else {
-            cy.visit("/login").then(() => {
-              cy.get('input[name="csrf_token"]')
-                .invoke("val")
-                .then(csrf_token => {
-                  csrf = csrf_token;
-                });
+  let csrf;
+  cy.visit("/login");
+  cy.getCookie("csrf_token")
+    .then(cookie => {
+      if (cookie) {
+        csrf = cookie.value;
+      } else {
+        cy.visit("/login").then(() => {
+          cy.get('input[name="csrf_token"]')
+            .invoke("val")
+            .then(csrf_token => {
+              csrf = csrf_token;
             });
-          }
-        })
-        .then(() => {
-          cy.request({
-            url: "/login",
-            method: "POST",
-            form: true,
-            body: {
-              email,
-              password,
-              csrf_token: csrf,
-            },
-          });
         });
-    }
-  );
+      }
+    })
+    .then(() => {
+      cy.request({
+        url: "/login",
+        method: "POST",
+        form: true,
+        body: {
+          email,
+          password,
+          csrf_token: csrf,
+        },
+      });
+    });
 });
 
 Cypress.Commands.add("logout", () => cy.visit("/logout"));

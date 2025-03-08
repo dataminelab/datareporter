@@ -216,6 +216,9 @@ class ReportsArchiveResource(BaseResource):
 
 # /api/reports
 class ReportsListResource(BaseResource):
+    """
+    List all reports or create a new report
+    """
     @require_permission("create_report")
     def post(self):
         req = request.get_json(True)

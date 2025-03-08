@@ -28,7 +28,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     setError(null);
     setLoadTables(true);
     setTables([]);
-    // do loading animation here
+    // loading animation is here
     tablesLoadingRef.current.style.opacity = "1";
     try {
       const res = await DataSource.getTables(id);
@@ -87,7 +87,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
       {...dialog.props}
       title={ !model ? 'Create a New Model' : 'Edit a Model'}
       footer={[
-        <Button key="cancel" onClick={() => dialog.dismiss()} data-test="CreateModelCancelButton">
+        <Button key="cancel" {...dialog.props.cancelButtonProps} onClick={dialog.dismiss} data-test="CreateModelCancelButton">
           Cancel
         </Button>,
         <Button
@@ -104,7 +104,13 @@ function CreateModelDialog({ dialog, dataSources, model }) {
       wrapProps={{
         "data-test": "CreateModelDialog",
       }}>
-      <DynamicForm onSubmit={handleSubmit} id={formId} fields={formFields} hideSubmitButton />
+      <DynamicForm 
+        id={formId}
+        fields={formFields}
+        onSubmit={handleSubmit}
+        hideSubmitButton
+        feedbackIcons
+      />
       <div ref={tablesLoadingRef} style={{opacity: 0}}>
         <Loader />
       </div>

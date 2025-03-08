@@ -275,7 +275,7 @@ VisualizationEmbed.defaultProps = {
 };
 
 routes.register(
-  "Visualizations.ViewShared",
+  "Reports.ViewShared",
   routeWithApiKeySession({
     path: "/embed/report/:queryId/visualization/:visualizationId",
     render: pageProps => <VisualizationEmbed {...pageProps} />,

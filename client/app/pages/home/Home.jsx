@@ -6,6 +6,7 @@ import Link from "@/components/Link";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import EmptyState, { EmptyStateHelpMessage } from "@/components/empty-state/EmptyState";
 import DynamicComponent from "@/components/DynamicComponent";
+import BeaconConsent from "@/components/BeaconConsent";
 import PlainButton from "@/components/PlainButton";
 
 import { axios } from "@/services/axios";
@@ -30,7 +31,8 @@ function DeprecatedEmbedFeatureAlert() {
           <Link
             href="https://discuss.redash.io/t/support-for-parameters-in-embedded-visualizations/3337"
             target="_blank"
-            rel="noopener noreferrer">
+            rel="noopener noreferrer"
+          >
             Read more
           </Link>
           .
@@ -81,7 +83,7 @@ export default function Home() {
             description="Connect to any data source, easily visualize and share your data"
             illustration="empty-queries2"
             illustrationType=".png"
-            helpLink={<EmptyStateHelpMessage helpTriggerType="GETTING_STARTED" />}
+            helpMessage={<EmptyStateHelpMessage helpTriggerType="GETTING_STARTED" />}
             showDashboardStep
             showInviteStep
             onboardingMode
@@ -89,6 +91,7 @@ export default function Home() {
         </DynamicComponent>
         <DynamicComponent name="HomeExtra" />
         <DashboardAndQueryFavoritesList />
+        <BeaconConsent />
       </div>
     </div>
   );
@@ -99,6 +102,6 @@ routes.register(
   routeWithUserSession({
     path: "/",
     title: "Data reporter",
-    render: pageProps => <Home {...pageProps} />,
+    render: (pageProps) => <Home {...pageProps} />,
   })
 );

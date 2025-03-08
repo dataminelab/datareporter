@@ -15,13 +15,13 @@
  */
 
 import { Dataset, Datum } from "plywood";
-import * as React from "react";
-import { NORMAL_COLORS } from "../../../../../common/models/colors/colors";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
-import { ColorEntry, ColorSwabs } from "../../../../components/color-swabs/color-swabs";
-import { Delta } from "../../../../components/delta/delta";
-import { MeasureBubbleContent } from "../../../../components/measure-bubble-content/measure-bubble-content";
+import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
+import { createColorEntry } from "../../../../components/color-swabs/color-entry";
+import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
+import { SeriesBubbleContent } from "../../../../components/series-bubble-content/series-bubble-content";
+import { useSettingsContext } from "../../../../views/cube-view/settings-context";
 import { Hover } from "../../interactions/interaction";
 import { getContinuousReference } from "../../utils/splits";
 
@@ -31,66 +31,31 @@ interface SplitHoverContentProps {
   dataset: Dataset;
 }
 
-interface SingleSeriesProps {
-  series: ConcreteSeries;
-  datum: Datum;
-  hasComparison: boolean;
-}
-
-const SingleSeries: React.SFC<SingleSeriesProps> = props => {
-  const { series, hasComparison, datum } = props;
-  if (!hasComparison) {
-    return <React.Fragment>
-      {series.formatValue(datum)}
-    </React.Fragment>;
-  }
-  const current = series.selectValue(datum);
-  const previous = series.selectValue(datum, SeriesDerivation.PREVIOUS);
-  const formatter = series.formatter();
-  return <MeasureBubbleContent current={current} previous={previous} formatter={formatter} />;
-};
-
 interface ColoredSeriesProps {
   series: ConcreteSeries[];
   datum: Datum;
   hasComparison: boolean;
 }
 
-const ColoredSeries: React.SFC<ColoredSeriesProps> = props => {
+const ColoredSeries: React.FunctionComponent<ColoredSeriesProps> = props => {
+  const { customization: { visualizationColors } } = useSettingsContext();
   const { datum, hasComparison, series } = props;
   const colorEntries = series.map((series, index) => {
-    const currentEntry: ColorEntry = {
-      color: NORMAL_COLORS[index],
-      name: series.title(),
-      value: series.formatValue(datum)
-    };
-
-    if (!hasComparison) {
-      return currentEntry;
-    }
-
-    return {
-      ...currentEntry,
-      previous: series.formatValue(datum, SeriesDerivation.PREVIOUS),
-      delta: <Delta
-        currentValue={series.selectValue(datum)}
-        previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-        formatter={series.formatter()}
-        lowerIsBetter={series.measure.lowerIsBetter}
-      />
-    };
+    const color = visualizationColors.series[index];
+    const name = series.title();
+    return createColorEntry({ color, name, hasComparison, datum, series });
   });
   return <ColorSwabs colorEntries={colorEntries} />;
 };
 
-export const SplitHoverContent: React.SFC<SplitHoverContentProps> = props => {
+export const SplitHoverContent: React.FunctionComponent<SplitHoverContentProps> = props => {
   const { essence, dataset, interaction: { range } } = props;
   const series = essence.getConcreteSeries().toArray();
   const hasComparison = essence.hasComparison();
   const reference = getContinuousReference(essence);
   const datum = dataset.findDatumByAttribute(reference, range) || {};
   if (series.length === 1) {
-    return <SingleSeries series={series[0]} datum={datum} hasComparison={hasComparison} />;
+    return <SeriesBubbleContent series={series[0]} datum={datum} showPrevious={hasComparison}/>;
   }
   return <ColoredSeries  datum={datum} series={series} hasComparison={hasComparison}/>;
 };

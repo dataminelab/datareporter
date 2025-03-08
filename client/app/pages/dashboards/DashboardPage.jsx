@@ -162,6 +162,7 @@ class DashboardComponent extends React.Component {
     }
     this.turniloWidgetsSetter();
   }
+  
 
   componentWillUnmount() {
     if (this.unobserve) {

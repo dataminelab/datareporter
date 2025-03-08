@@ -5,6 +5,7 @@ import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
 import DynamicForm from "@/components/dynamic-form/DynamicForm";
 import { wrap as wrapDialog, DialogPropType } from "@/components/DialogWrapper";
+import { useUniqueId } from "@/lib/hooks/useUniqueId";
 
 function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
   const handleSubmit = useCallback(
@@ -31,10 +32,12 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
     { name: "snippet", title: "Snippet", type: "ace", required: true },
   ].map(field => ({ ...field, readOnly, initialValue: get(querySnippet, field.name, "") }));
 
+  const reportSnippetsFormId = useUniqueId("reportSnippetForm");
+
   return (
     <Modal
       {...dialog.props}
-      title={isEditing ? querySnippet.trigger : "Create Query Snippet"}
+      title={isEditing ? querySnippet.trigger : "Create Report Snippet"}
       footer={[
         <Button key="cancel" {...dialog.props.cancelButtonProps} onClick={dialog.dismiss}>
           {readOnly ? "Close" : "Cancel"}
@@ -46,8 +49,8 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
             disabled={readOnly || dialog.props.okButtonProps.disabled}
             htmlType="submit"
             type="primary"
-            form="querySnippetForm"
-            data-test="SaveQuerySnippetButton">
+            form={reportSnippetsFormId}
+            data-test="SaveReportSnippetButton">
             {isEditing ? "Save" : "Create"}
           </Button>
         ),
@@ -55,7 +58,13 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
       wrapProps={{
         "data-test": "QuerySnippetDialog",
       }}>
-      <DynamicForm id="querySnippetForm" fields={formFields} onSubmit={handleSubmit} hideSubmitButton feedbackIcons />
+      <DynamicForm
+        id={reportSnippetsFormId}
+        fields={formFields}
+        onSubmit={handleSubmit}
+        hideSubmitButton
+        feedbackIcons
+      />
     </Modal>
   );
 }

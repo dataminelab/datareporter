@@ -3,6 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import routeWithApiKeySession from "@/components/ApplicationArea/routeWithApiKeySession";
+import Link from "@/components/Link";
 import BigMessage from "@/components/BigMessage";
 import PageHeader from "@/components/PageHeader";
 import Parameters from "@/components/Parameters";
@@ -15,14 +16,13 @@ import routes from "@/services/routes";
 import logoUrl from "@/assets/images/report_icon_small.png";
 
 import useDashboard from "./hooks/useDashboard";
-import { useEssence } from "./useEssence"
+
 import "./PublicDashboardPage.less";
 
 function PublicDashboard({ dashboard }) {
   const { globalParameters, filters, setFilters, refreshDashboard, loadWidget, refreshWidget } = useDashboard(
     dashboard
   );
-  const { essenceList, widgetList, getEssence, setEssence } = useEssence();
 
   return (
     <div className="container p-t-10 p-b-20">
@@ -45,7 +45,9 @@ function PublicDashboard({ dashboard }) {
           isEditing={false}
           isPublic
           onLoadWidget={loadWidget}
-          getEssence={getEssence}
+          // XXX TEST IT //
+          // getEssence={getEssence}
+          onRefreshWidget={refreshWidget}
         />
       </div>
     </div>
@@ -90,11 +92,11 @@ class PublicDashboardPage extends React.Component {
         )}
         <div id="footer">
           <div className="text-center">
-            <a href="https://datareporter.com">
+            <Link href="https://datareporter.com">
               <img alt="Data reporter Logo" src={logoUrl} width="38" />
-            </a>
+            </Link>
           </div>
-          Powered by <a href="https://datareporter.com">Dataminelab</a>
+          Powered by <Link href="https://datareporter.com">Dataminelab</Link>
         </div>
       </div>
     );

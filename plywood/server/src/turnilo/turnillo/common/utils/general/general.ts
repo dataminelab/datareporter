@@ -75,6 +75,19 @@ export function makeTitle(name: string): string {
     });
 }
 
+export function collect(wait: number, fn: Fn): Fn {
+  var timeout: any;
+  var later = function() {
+    timeout = null;
+    fn();
+  };
+  return function() {
+    if (!timeout) {
+      timeout = setTimeout(later, wait);
+    }
+  };
+}
+
 const URL_UNSAFE_CHARS = /[^\w.~\-]+/g;
 
 export function makeUrlSafeName(name: string): string {
@@ -96,6 +109,7 @@ export function arraySum(inputArray: number[]) {
 
 export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
   if (!elementToFind) return -1;
+  //@ts-ignore
   return List(array).findIndex(g => valueOf(g) > valueOf(elementToFind));
 }
 

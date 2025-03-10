@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2021 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-export const AVAILABLE_LIMITS = [5, 10, 25, 50, 100];
-export const DEFAULT_LIMITS = [5, 10, 25, 50, 100];
+import { Equalable } from "immutable-class";
+
+export default function immutableArrayEquals(xs: Equalable[], ys: Equalable[]): boolean {
+  if (!Array.isArray(xs) || !Array.isArray(ys)) {
+    return xs === ys;
+  }
+  if (xs.length !== ys.length) return false;
+  return xs.every((x, idx) => x.equals(ys[idx]));
+}

@@ -16,6 +16,7 @@
 
 import { $, Expression } from "reporter-plywood";
 import { TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
+import { TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../../../../common/models/time/time";
 import { isTruthy } from "../../../../common/utils/general/general";
 
@@ -28,11 +29,11 @@ export interface TimeFilterPreset {
 }
 
 export const LATEST_PRESETS: TimeFilterPreset[] = [
-  { name: "1H", duration: "PT1H" },
-  { name: "6H", duration: "PT6H" },
   { name: "1D", duration: "P1D" },
   { name: "7D", duration: "P7D" },
-  { name: "30D", duration: "P30D" }
+  { name: "30D", duration: "P30D" },
+  { name: "1Q", duration: "P3M" },
+  { name: "1Y", duration: "P1Y" },
 ];
 
 export const CURRENT_PRESETS: TimeFilterPreset[] = [
@@ -49,6 +50,20 @@ export const PREVIOUS_PRESETS: TimeFilterPreset[] = [
   { name: "M", duration: "P1M" },
   { name: "Q", duration: "P3M" },
   { name: "Y", duration: "P1Y" }
+];
+
+export interface ShiftPreset {
+  label: string;
+  shift: TimeShift;
+}
+
+export const COMPARISON_PRESETS: ShiftPreset[] = [
+  { label: "Off", shift: TimeShift.empty() },
+  { label: "D", shift: TimeShift.fromJS("P1D") },
+  { label: "W", shift: TimeShift.fromJS("P1W") },
+  { label: "M", shift: TimeShift.fromJS("P1M") },
+  { label: "Q", shift: TimeShift.fromJS("P3M") },
+  { label: "Y", shift: TimeShift.fromJS("P1Y") },
 ];
 
 export const DEFAULT_TIME_SHIFT_DURATIONS = [

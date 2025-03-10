@@ -28,7 +28,6 @@ const defaults: LineChartSettings = {
   groupSeries: false
 };
 
-//@ts-ignore
 const settingsFactory = Record<LineChartSettings>(defaults);
 
 const createSettings = (settings: Partial<LineChartSettings>): ImmutableRecord<LineChartSettings> => new (settingsFactory)(settings);
@@ -38,5 +37,5 @@ export const settings: LineChartVisualizationSettings = {
     print: (settings: ImmutableRecord<LineChartSettings>) => settings.toJS(),
     read: (input: LineChartSettings) => createSettings({ groupSeries: !!input.groupSeries })
   },
-  defaults: createSettings({})
+  defaults: createSettings(defaults) as unknown as VisualizationSettingsConfig<LineChartSettings>["defaults"]
 };

@@ -21,6 +21,16 @@ import { quoteNames } from "../../utils/general/general";
 import { Dimension } from "./dimension";
 import { DimensionGroup, DimensionOrGroup, dimensionOrGroupFromJS, DimensionOrGroupJS, DimensionOrGroupVisitor } from "./dimension-group";
 
+type DimensionId = string;
+export interface DimensionsInterface {
+  tree: DimensionOrGroup[];
+  byName: Record<DimensionId, Dimension>;
+}
+
+export function findDimensionByName(dimensions: DimensionsInterface, name: string): Dimension | null {
+  return dimensions.byName[name] || null;
+}
+
 class FlattenDimensionsWithGroupsVisitor implements DimensionOrGroupVisitor<void> {
   private items = List<DimensionOrGroup>().asMutable();
 
@@ -109,11 +119,11 @@ export class Dimensions {
     this.flattenedDimensions.forEach(sideEffect);
   }
 
-  getDimensionByName(name: string): Dimension | undefined {
+  getDimensionByName(name: string): Dimension {
     return this.flattenedDimensions.find(dimension => dimension.name === name);
   }
 
-  getDimensionByExpression(expression: Expression): Dimension | undefined {
+  getDimensionByExpression(expression: Expression): Dimension {
     return this.flattenedDimensions.find(dimension => expression.equals(dimension.expression));
   }
 
@@ -135,5 +145,17 @@ export class Dimensions {
 
   toJS(): DimensionOrGroupJS[] {
     return this.dimensions.map(dimensionOrGroup => dimensionOrGroup.toJS());
+  }
+
+  allDimensions(): Dimension[] {
+    return this.flattenedDimensions.toArray();
+  }
+
+  static findDimensionByExpression(): Dimension | null {
+    return null;
+  }
+
+  toArray(): Dimension[] {
+    return this.flattenedDimensions.toArray();
   }
 }

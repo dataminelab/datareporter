@@ -38,14 +38,12 @@ export const constant = <T>(val: T): Nullary<T> => () => val;
 export const compose = <A, B, C>(f: Unary<A, B>, g: Unary<B, C>): Unary<A, C> =>
   (x: A) => g(f(x));
 
-//@ts-ignore
-export function assoc<T, K extends string | number | symbol = string>(coll: Record<K, T>, key: K, element: T): Record<K, T> {
-  //@ts-ignore
-  return Object.assign({}, coll, { [key]: element });
-}
-
 export function cons<T>(coll: T[], element: T): T[] {
   return coll.concat([element]);
+}
+
+export function assoc<T, K extends string | number | symbol = string>(coll: Record<K, T>, key: K, element: T): Record<K, T> {
+  return Object.assign({}, coll, { [key]: element });
 }
 
 export function replaceAt<T>(collection: T[], index: number, element: T): T[] {

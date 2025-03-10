@@ -105,7 +105,7 @@ export const STRINGS: any = {
   generalSettings: "General settings",
   goToUrl: "Go to URL",
   granularity: "Granularity",
-  home: "Turnilo",
+  home: "Datareporter-turnilo",
   include: "Include",
   infoAndFeedback: "Info & Feedback",
   intersection: "Intersection",
@@ -185,7 +185,8 @@ const EN_US: Locale = {
 export function getLocale(): Locale {
   return EN_US;
 }
-export const exportOptions: Array<{ label: string, fileFormat: any }> = [
+
+export const exportOptions: Array<{ label: string, fileFormat: "csv" | "tsv"; }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },
   { label: STRINGS.exportToTSV, fileFormat: "tsv" }
 ];

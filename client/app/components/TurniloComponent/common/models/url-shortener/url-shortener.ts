@@ -18,6 +18,7 @@ import { Ternary } from "../../utils/functional/functional";
 
 import { Instance } from "immutable-class";
 import { Binary } from "../../utils/functional/functional";
+
 export interface UrlShortenerContext {
   clientIp: string;
 }

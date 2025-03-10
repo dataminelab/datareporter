@@ -42,7 +42,6 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
       .style(sizeAttribute, savedSize.current || "0px")
       .transition()
       .duration(200)
-      .ease("swing")
       .style(sizeAttribute, targetSize);
 
     // update state to new element's size

@@ -32,7 +32,7 @@ context("Bar Chart", () => {
         .should('equal', "Data Source");
       cy.get("div.scroller > .top-left-corner")
         .invoke('text')
-        .should('equal', "Name");
+        .should('equal', "Color 1");
     });
 
     it("should add a couple of filters", () => {
@@ -45,7 +45,7 @@ context("Bar Chart", () => {
 
       cy.get("div.scroller > .top-left-corner")
         .invoke('text')
-        .should('equal', "Table, Name");
+        .should('equal', "Color 2, Color 1");
       cy.get("div.scroller > .top-gutter")
         .invoke('text')
         .should('equal', "Data Source");
@@ -62,7 +62,7 @@ context("Bar Chart", () => {
 
     cy.get("div.scroller > .top-left-corner")
       .invoke('text')
-      .should('equal', "Table, Name");
+      .should('equal', "Color 2, Color 1");
     cy.get("div.scroller > .top-gutter")
       .invoke('text')
       .should('equal', "Data Source");
@@ -74,9 +74,9 @@ context("Bar Chart", () => {
     barChart().should("exist");
   });
 
-    it("should add a year over year (YOY) filters", () => {
-      // add multi filters with clicky clicks
-      // broken because no more than a single day data available.
-    });
+    // it("should add a year over year (YOY) filters", () => {
+    //   // add multi filters with clicky clicks
+    //   // broken because no more than a single day data available.
+    // });
   });
 });

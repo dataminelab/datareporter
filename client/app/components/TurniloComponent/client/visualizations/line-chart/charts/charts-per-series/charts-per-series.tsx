@@ -15,7 +15,7 @@
  */
 
 import { Dataset } from "plywood";
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
@@ -36,7 +36,7 @@ interface ChartsPerSeriesProps {
   stage: Stage;
 }
 
-export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
+export const ChartsPerSeries: React.FunctionComponent<ChartsPerSeriesProps> = props => {
   const { interactions, xScale, xTicks, essence, dataset, stage } = props;
 
   const concreteSeries = essence.getConcreteSeries().toArray();
@@ -46,7 +46,7 @@ export const ChartsPerSeries: React.SFC<ChartsPerSeriesProps> = props => {
     {hasNominalSplit(essence) && <LegendSpot>
       <SplitLegend dataset={dataset} essence={essence}/>
     </LegendSpot>}
-    {concreteSeries.map(series => {
+    {concreteSeries.map((series: any) => {
       const key = series.reactKey();
       return <SeriesChart
           interactions={interactions}

@@ -14,24 +14,40 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { Essence } from "../../../../../common/models/essence/essence";
+import React from "react";
+import { DataCube } from "../../../../../common/models/data-cube/data-cube";
+import { DimensionSort, Sort, SortDirection } from "../../../../../common/models/sort/sort";
+import { Split } from "../../../../../common/models/split/split";
+import { Splits } from "../../../../../common/models/splits/splits";
 import { Corner } from "../../utils/corner";
+import { SortIcon } from "../../sort-icon/sort-icon";
 import "./split-columns.scss";
 
 interface SplitColumnsHeader {
-  essence: Essence;
+  dataCube: DataCube;
+  sort?: Sort;
+  splits: Splits;
 }
 
-export const SplitColumnsHeader: React.SFC<SplitColumnsHeader> = ({ essence }) => {
-  const { splits: { splits }, dataCube } = essence;
 
+function sortDirection(split: Split, sort: Sort): SortDirection | null {
+  const isCurrentSort = sort instanceof DimensionSort && split.reference === sort.reference;
+  return isCurrentSort ? sort.direction : null;
+}
+
+export const SplitColumnsHeader: React.FunctionComponent<SplitColumnsHeader> = ({ sort, splits, dataCube }) => {
   return <Corner>
     <div className="header-split-columns">
-      {splits.toArray().map(split => {
+      {splits.splits.toArray().map(split => {
         const { reference } = split;
         const title = dataCube.getDimension(reference).title;
-        return <span className="header-split-column" key={reference}>{title}</span>;
+        const direction = sortDirection(split, sort);
+        return <div className="header-split-column" key={reference}>
+          <div className="header-split-column-title">{title}</div>
+          {direction && <div className="header-split-column-sort-icon">
+            <SortIcon direction={direction} />
+          </div>}
+        </div>;
       })}
     </div>
   </Corner>;

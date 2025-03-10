@@ -259,6 +259,8 @@ class ReportHash:
         self.isJustLanded = True
         self.can_edit = None
         self.queries = []
+        self.last_modified_by_id = o.last_modified_by_id
+        self.last_modified_by = User.get_by_id(o.last_modified_by_id).to_dict()
 
     def set_data_cube(self, data_cube: DataCube):
         self.appSettings["dataCubes"].append(data_cube)

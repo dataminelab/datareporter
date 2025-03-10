@@ -9,8 +9,8 @@ services:
       context: .
       cache_from:
         - "type=gha"
-      cache_to:
-        - "type=gha,mode=max"
+      # cache_to:
+      #   - "type=gha,mode=max"
       args:
         skip_frontend_build: true
         skip_dev_deps: ""
@@ -44,7 +44,7 @@ services:
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"
   plywood:
-    image: node:14.5.0-alpine
+    image: node:16.20.0-alpine
     working_dir: /app
     command: npm run watch-node
     ports:

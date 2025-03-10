@@ -5,9 +5,6 @@ from rq.registry import StartedJobRegistry
 
 from redash import __version__, redis_connection, rq_redis_connection, settings
 from redash.models import Dashboard, Query, QueryResult, Widget, db
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 def get_redis_status():
@@ -120,6 +117,4 @@ def rq_workers():
 
 
 def rq_status():
-    logger.info("Checking RQ status")
-    logging.info(f"rq workers: {rq_workers()}")
     return {"queues": rq_queues(), "workers": rq_workers()}

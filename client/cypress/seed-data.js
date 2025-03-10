@@ -43,4 +43,25 @@ exports.seedData = [
       type: "email",
     },
   },
+  {
+    route: "/api/models",
+    type: "json",
+    data: {
+      name: "Test data from reports table",
+      data_source_id: 1,
+      table: "reports"
+    },
+  },
+  {
+    route: "/api/reports",
+    type: "json",
+    data: {
+      expression: "N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvggvAHoZAAmAProVupkAAqOWBEuoBEwDuhYuAQJAIwAmlZQ9sL4ALT5qp7eQvalIEoAui3UUMJIaGmEtcGlDhCcVhG",
+      name: "test",
+      model_id: 1,
+      color_1: "#000",
+      color_2: "#fff",
+      data_source_id: 1,
+    },
+  },
 ];

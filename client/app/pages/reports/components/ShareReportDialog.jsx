@@ -11,9 +11,9 @@ import { wrap as wrapDialog, DialogPropType } from "@/components/DialogWrapper";
 import InputWithCopy from "@/components/InputWithCopy";
 import HelpTrigger from "@/components/HelpTrigger";
 
-const API_SHARE_URL = "api/reports/{id}/share"; 
+const API_SHARE_URL = "api/reports/{id}/share";
 
-class ShareDashboardDialog extends React.Component {
+class ShareReportDialog extends React.Component {
   static propTypes = {
     report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
     hasOnlySafeQueries: PropTypes.bool.isRequired,
@@ -94,12 +94,13 @@ class ShareDashboardDialog extends React.Component {
   };
 
   render() {
-    const { dialog, report } = this.props;
+    const { dialog, report, hasOnlySafeQueries } = this.props;
+    const headerContent = this.constructor.headerContent;
 
     return (
-      <Modal {...dialog.props} title={this.constructor.headerContent} footer={null}>
+      <Modal {...dialog.props} title={headerContent} footer={null}>
         <Form layout="horizontal">
-          {!this.props.hasOnlySafeQueries && (
+          {!hasOnlySafeQueries && (
             <Form.Item>
               <Alert
                 message="For your security, sharing is currently not supported for dashboards containing queries with text parameters. Consider changing the text parameters in your query to a different type."
@@ -127,4 +128,4 @@ class ShareDashboardDialog extends React.Component {
   }
 }
 
-export default wrapDialog(ShareDashboardDialog);
+export default wrapDialog(ShareReportDialog);

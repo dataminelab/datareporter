@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies, no-console */
 const { find } = require("lodash");
-const atob = require("atob");
 const { execSync } = require("child_process");
 const { get, post } = require("request").defaults({ jar: true });
 const { seedData } = require("./seed-data");
@@ -44,20 +43,18 @@ function seedDatabase(seedValues) {
 
 function buildServer() {
   console.log("Building the server...");
-  execSync("docker-compose -p cypress build --build-arg skip_dev_deps=true --build-arg skip_ds_deps=true", {
-    stdio: "inherit",
-  });
+  execSync("docker compose -p cypress build", { stdio: "inherit" });
 }
 
 function startServer() {
   console.log("Starting the server...");
-  execSync("docker-compose -p cypress up -d", { stdio: "inherit" });
-  execSync("docker-compose -p cypress run server create_db", { stdio: "inherit" });
+  execSync("docker compose -p cypress up -d", { stdio: "inherit" });
+  execSync("docker compose -p cypress run server create_db", { stdio: "inherit" });
 }
 
 function stopServer() {
   console.log("Stopping the server...");
-  execSync("docker-compose -p cypress down", { stdio: "inherit" });
+  execSync("docker compose -p cypress down", { stdio: "inherit" });
 }
 
 function runCypressCI() {
@@ -81,7 +78,7 @@ function runCypressCI() {
   }
 
   execSync(
-    "COMMIT_INFO_MESSAGE=$(git show -s --format=%s) docker-compose run cypress ./node_modules/.bin/percy exec -t 300 -- ./node_modules/.bin/cypress run --record",
+    "COMMIT_INFO_MESSAGE=$(git show -s --format=%s) docker compose run cypress ./node_modules/.bin/percy exec -t 300 -- ./node_modules/.bin/cypress run --record",
     { stdio: "inherit" }
   );
 }

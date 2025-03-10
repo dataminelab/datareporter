@@ -1,12 +1,18 @@
 FROM cypress/browsers:chrome67
+# FROM cypress/browsers:node16.13.0-chrome95-ff94
+
+# Install libnss3
+RUN apt-get update && apt-get install libgtk2.0-0t64 libgtk-3-0t64 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6 xauth xvfb \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV APP /usr/src/app
 WORKDIR $APP
 
 COPY package.json $APP/package.json
-RUN npm run cypress:install > /dev/null
+COPY viz-lib $APP/viz-lib
+COPY plywood $APP/plywood
+COPY client $APP/client
 
-COPY client/cypress $APP/client/cypress
-COPY cypress.json $APP/cypress.json
+COPY . $APP
 
 RUN ./node_modules/.bin/cypress verify

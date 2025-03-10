@@ -21,7 +21,7 @@ describe("Login", () => {
     cy.getByTestId("Email").type("admin@redash.io");
     cy.getByTestId("Password").type("password{enter}");
 
-    cy.title().should("eq", "Redash");
+    cy.title().should("eq", "Data reporter");
     cy.get(`img.profile__image_thumb[alt="Example Admin"]`).should("exist");
 
     cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting

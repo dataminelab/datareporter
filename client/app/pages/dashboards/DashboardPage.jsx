@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 
 import Button from "antd/lib/button";
+import Checkbox from "antd/lib/checkbox";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import DashboardGrid from "@/components/dashboards/DashboardGrid";
 import Parameters from "@/components/Parameters";
@@ -21,6 +22,7 @@ import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
 
 import useDashboard from "./hooks/useDashboard";
 import DashboardHeader from "./components/DashboardHeader";
+import DynamicComponent from "@/components/DynamicComponent";
 
 import "./DashboardPage.less";
 
@@ -44,13 +46,12 @@ class DashboardSettings extends React.Component {
     const { dashboard, updateDashboard, addWidgetStyle } = dashboardOptions;
     return (
       <div className="bg-white tiled">
-        {/* THIS CHECKBOX DOESNT WORK? */}
-        {/* <Checkbox
+        <Checkbox
           checked={!!dashboard.dashboard_filters_enabled}
           onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
           data-test="DashboardFiltersCheckbox">
           Use Dashboard Level Filters
-        </Checkbox> */}
+        </Checkbox>
         <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
       </div>
     );
@@ -65,7 +66,7 @@ class AddWidgetContainer extends React.Component {
 
   render() {
     const { dashboardOptions, className, ...props } = this.props;
-    const { showAddTextboxDialog, showAddWidgetDialog, showReportDialog } = dashboardOptions;
+    const { showAddTextboxDialog, showAddWidgetDialog, showAddReportDialog } = dashboardOptions;
     return (
       <div className={cx("add-widget-container", className)} {...props}>
         <h2>
@@ -75,7 +76,7 @@ class AddWidgetContainer extends React.Component {
           </span>
         </h2>
         <div>
-          <Button onClick={showReportDialog} className="m-r-15 ant-btn-turnilo"  data-test="AddReportButton">
+          <Button onClick={showAddReportDialog} className="m-r-15 ant-btn-turnilo"  data-test="AddReportButton">
             Add Report Widget
           </Button>
           <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
@@ -137,15 +138,31 @@ class DashboardComponent extends React.Component {
 
   componentDidMount() {
     setColorElements();
-    if (this.state.pageContainer) {
-      this.unobserve = resizeObserver(this.state.pageContainer, this.handleResize);
+    const pageContainer = this.state.pageContainer;
+    const { dashboardOptions } = this.props;
+    if (pageContainer) {
+      const unobserve = resizeObserver(pageContainer, () => {
+        if (dashboardOptions.editingLayout) {
+          const style = window.getComputedStyle(pageContainer, null);
+          const bounds = pageContainer.getBoundingClientRect();
+          const paddingLeft = parseFloat(style.paddingLeft) || 0;
+          const paddingRight = parseFloat(style.paddingRight) || 0;
+          this.setState({
+            addWidgetStyle: {
+              left: Math.round(bounds.left) + paddingRight,
+              width: pageContainer.clientWidth - paddingLeft - paddingRight,
+            },
+          });
+        }
+
+        // reflow grid when container changes its size
+        window.dispatchEvent(new Event("resize"));
+      });
+      return unobserve;
     }
     this.turniloWidgetsSetter();
-    const essence = this.getEssence(this.state.widgetList[0]);
-    if (essence) {
-      console.log("Essence found:", essence);
-    }
   }
+  
 
   componentWillUnmount() {
     if (this.unobserve) {
@@ -155,8 +172,8 @@ class DashboardComponent extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if ((
-        prevState.clickerList !== this.state.clickerList || 
-        prevState.essenceList !== this.state.essenceList || 
+        prevState.clickerList !== this.state.clickerList ||
+        prevState.essenceList !== this.state.essenceList ||
         prevState.widgetList !== this.state.widgetList
       ) &&
         this.state.clickerList.length === this.state.essenceList.length &&
@@ -206,10 +223,10 @@ class DashboardComponent extends React.Component {
       const essence = this.state.essenceList[i];
       const clicker = this.state.clickerList[i];
       const widget = this.state.widgetList[i]
-      let dimensionName = essence.filter.getReferenceNameByIndex(0);    
-      const { start, end } = this.state;  
+      let dimensionName = essence.filter.getReferenceNameByIndex(0);
+      const { start, end } = this.state;
       const createDateRange = new DateRange({ start, end });
-      const clause = new FixedTimeFilterClause({ reference: dimensionName, 
+      const clause = new FixedTimeFilterClause({ reference: dimensionName,
         values: List.of(createDateRange) });
       let relativeFilter = essence.filter.setClause(clause);
       if (relativeFilter.length() > 1) {
@@ -250,13 +267,13 @@ class DashboardComponent extends React.Component {
   setFilterParams = async (widgetId, essence, clicker) => {
     this.setState((prevState) => {
       const { widgetList, clickerList, essenceList } = prevState;
-  
+
       const widgetExists = widgetList.includes(widgetId);
       const modelIndex = widgetExists ? widgetList.lastIndexOf(widgetId) : -1;
-  
+
       // Determine if this is the first time the function is called
       const isFirstCall = widgetList.length === 0;
-  
+
       // Update clicker list
       let updatedClickerList = [...clickerList];
       if (widgetExists) {
@@ -264,7 +281,7 @@ class DashboardComponent extends React.Component {
       } else {
         updatedClickerList = isFirstCall ? [clicker] : clickerList.concat(clicker);
       }
-  
+
       // Update essence list
       let updatedEssenceList = [...essenceList];
       if (widgetExists) {
@@ -272,10 +289,10 @@ class DashboardComponent extends React.Component {
       } else {
         updatedEssenceList = isFirstCall ? [essence] : essenceList.concat(essence);
       }
-  
+
       // Update widget list if necessary
       const updatedWidgetList = widgetExists ? widgetList : widgetList.concat(widgetId);
-  
+
       return {
         clickerList: updatedClickerList,
         essenceList: updatedEssenceList,
@@ -303,7 +320,7 @@ class DashboardComponent extends React.Component {
       } else {
         clickerList = this.state.clickerList.concat(clicker);
       }
-      this.setState({ 
+      this.setState({
         clickerList: clickerList,
         widgetList: this.state.widgetList.concat(id),
         listCreated: true,
@@ -330,13 +347,18 @@ class DashboardComponent extends React.Component {
       } else {
         essenceList = this.state.essenceList.concat(essence);
       }
-      this.setState({ 
+      this.setState({
         essenceList: essenceList,
         widgetList: this.state.widgetList.concat(id),
         listCreated: true,
       });
     }
   }
+
+  onParametersEdit = parameters => {
+    const paramOrder = map(parameters, "name");
+    updateDashboard({ options: { globalParamOrder: paramOrder } });
+  };
 
   getEssence = (id) => {
     const modelIndex = this.state.widgetList.lastIndexOf(id);
@@ -345,7 +367,7 @@ class DashboardComponent extends React.Component {
   }
 
   render() {
-    const { dashboardOptions } = this.props;
+    const { dashboardOptions, onParametersEdit } = this.props;
     const { dashboard, filters, globalParameters, editingLayout } = dashboardOptions;
     const { addWidgetStyle, turniloWidgetsLength } = this.state;
     const turniloWidgetsAvailable = turniloWidgetsLength > 0;
@@ -353,12 +375,26 @@ class DashboardComponent extends React.Component {
 
     return (
       <div className="container" ref={this.setPageContainer} data-test={`DashboardId${dashboard.id}Container`}>
-        <DashboardHeader dashboardOptions={dashboardOptions} />
+        <DashboardHeader
+          dashboardConfiguration={dashboardOptions}
+          headerExtra={
+            <DynamicComponent
+              name="Dashboard.HeaderExtra"
+              dashboard={dashboard}
+              dashboardConfiguration={dashboardOptions}
+            />
+          }
+        />
         <div className="parameters-header">
           {!isEmpty(globalParameters) && (
             <div className="dashboard-parameters m-b-10 p-15 bg-white tiled" data-test="DashboardParameters">
-              <Parameters parameters={globalParameters} onValuesChange={dashboardOptions.refreshDashboard} />
-            </div>
+              <Parameters
+                parameters={globalParameters}
+                onValuesChange={this.props.refreshDashboard}
+                sortable={editingLayout}
+                onParametersEdit={onParametersEdit}
+              />
+          </div>
           )}
           {(!isEmpty(filters) || turniloWidgetsAvailable) && (
             <div className="m-b-10 p-15 bg-white tiled dashboard-report-filters" data-test="DashboardFilters">

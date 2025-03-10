@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { isEmpty } from "lodash";
@@ -8,6 +8,8 @@ import Menu from "antd/lib/menu";
 import recordEvent from "@/services/recordEvent";
 import { Moment } from "@/components/proptypes";
 import { Report } from "@/services/report";
+import PlainButton from "@/components/PlainButton";
+
 import "./Widget.less";
 
 function downloadCSV(data) {
@@ -15,7 +17,7 @@ function downloadCSV(data) {
   const csvContent = "data:text/csv;charset=utf-8," +
     headers.join(",") + "\n" +
     data.map(row => headers.map(header => row[header]).join(",")).join("\n");
-    
+
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
@@ -27,7 +29,7 @@ function downloadCSV(data) {
 
 function getExtraOptions(report) {
   const extraOptions = [];
-  const data = Report.getFirstDataAvailable(report.results?.queries);
+  const data = Report.getFirstDataAvailable(report.results && report.results.queries);
   extraOptions.push(
     <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>Download as CSV File</Menu.Item>
   );
@@ -39,13 +41,13 @@ function getExtraOptions(report) {
 }
 
 function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete }) {
-  if (report?.hash) {
+  if (report && report.hash) {
     extraOptions = getExtraOptions(report);
   }
   const WidgetMenu = (
     <Menu data-test="WidgetDropdownButtonMenu">
       {extraOptions}
-      {showDeleteOption && <Menu.Divider />}
+      {showDeleteOption && extraOptions && <Menu.Divider />}
       {showDeleteOption && <Menu.Item onClick={onDelete}>Remove from Dashboard</Menu.Item>}
     </Menu>
   );
@@ -53,9 +55,9 @@ function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete
   return (
     <div className="widget-menu-regular">
       <Dropdown overlay={WidgetMenu} placement="bottomRight" trigger={["click"]}>
-        <a className="action p-l-15 p-r-15" data-test="WidgetDropdownButton">
-          <i className="zmdi zmdi-more-vert" />
-        </a>
+        <PlainButton className="action p-l-15 p-r-15" data-test="WidgetDropdownButton" aria-label="More options">
+          <i className="zmdi zmdi-more-vert" aria-hidden="true" />
+        </PlainButton>
       </Dropdown>
     </div>
   );
@@ -76,9 +78,14 @@ WidgetDropdownButton.defaultProps = {
 function WidgetDeleteButton({ onClick }) {
   return (
     <div className="widget-menu-remove">
-      <a className="action" title="Remove From Dashboard" onClick={onClick} data-test="WidgetDeleteButton">
-        <i className="zmdi zmdi-close" />
-      </a>
+      <PlainButton
+        className="action"
+        title="Remove From Dashboard"
+        onClick={onClick}
+        data-test="WidgetDeleteButton"
+        aria-label="Close">
+        <i className="zmdi zmdi-close" aria-hidden="true" />
+      </PlainButton>
     </div>
   );
 }

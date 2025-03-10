@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from 'chronoshift';
+import type { Duration, Timezone } from 'chronoshift';
+import { NamedArray } from 'immutable-class';
+
+import { Attributes } from '../datatypes';
 import { PlyType } from '../types';
+
 import { SQLDialect } from './baseDialect';
+
+export interface DruidDialectOptions {
+  attributes?: Attributes;
+}
+
 
 export class DruidDialect extends SQLDialect {
   static TIME_BUCKETING: Record<string, string> = {
@@ -81,8 +90,11 @@ export class DruidDialect extends SQLDialect {
     },
   };
 
-  constructor() {
+  private readonly attributes?: Attributes;
+
+  constructor(options: DruidDialectOptions = {}) {
     super();
+    this.attributes = options.attributes;
   }
 
   public dateToSQLDateString(date: Date): string {
@@ -104,6 +116,11 @@ export class DruidDialect extends SQLDialect {
   public timeToSQL(date: Date): string {
     if (!date) return this.nullConstant();
     return `TIMESTAMP '${this.dateToSQLDateString(date)}'`;
+  }
+
+  public stringArrayToSQL(value: string[]): string {
+    const arr = value.map((v: string) => this.escapeLiteral(v));
+    return `ARRAY[${arr.join(',')}]`;
   }
 
   public concatExpression(a: string, b: string): string {
@@ -192,8 +209,20 @@ export class DruidDialect extends SQLDialect {
     return `POSITION(${substr} IN ${str}) - 1`;
   }
 
-  public quantileExpression(str: string, quantile: string): string {
-    return `APPROX_QUANTILE_DS(${str}, ${quantile})`;
+  public quantileExpression(
+    str: string,
+    quantile: number,
+    parameterAttributeName: string | undefined,
+  ): string {
+    const attribute = NamedArray.findByName(this.attributes || [], parameterAttributeName);
+    const nativeType = attribute ? attribute.nativeType : undefined;
+    switch (nativeType) {
+      case 'approximateHistogram':
+        return `APPROX_QUANTILE(${str}, ${quantile})`;
+
+      default:
+        return `APPROX_QUANTILE_DS(${str}, ${quantile})`;
+    }
   }
 
   public logExpression(base: string, operand: string): string {

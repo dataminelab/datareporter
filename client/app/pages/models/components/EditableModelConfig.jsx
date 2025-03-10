@@ -12,8 +12,6 @@ import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 import ModelService from "@/services/model";
 import ModelConfigDocs from "./ModelConfigDocs";
 
-import axios from "axios";
-
 export default function EditableModelConfig({model, saveConfig}) {
   const configYAML = "customization:\n" +
     "  urlShortener: |\n" +
@@ -223,7 +221,7 @@ export default function EditableModelConfig({model, saveConfig}) {
       alert("timeAttribute is not in the attributes list");
       return;
     }
-    // if timeAttribute's type is not TIME then alert 
+    // if timeAttribute's type is not TIME then alert
     const attributesList = attributes.split("- name: ");
     attributesList.shift();
     for (let i = 0; i < attributesList.length; i++) {

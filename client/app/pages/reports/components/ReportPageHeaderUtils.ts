@@ -26,8 +26,8 @@ export function setPriceButton(price: number, proceedData: number, set: boolean 
   // args: price, proceedData, set
   // set:
   //    TRUE means set given data into local storage
-  //    FALSE means only set data into the divs, 
-  //      so FALSE also means it is initial construction of this function
+  //    FALSE means only set data into the divs
+  //    so FALSE also means it is initial construction of this function
   const mediaButton = document.getElementById("meta-button");
   if (!mediaButton) return;
   if (!buttonVisible) {
@@ -37,7 +37,7 @@ export function setPriceButton(price: number, proceedData: number, set: boolean 
 
   let priceDiv = document.querySelector("#_price");
   let currentPrice = price + Number(priceDiv.getAttribute("alt"));
-  priceDiv.innerHTML = "Price: " + currentPrice.toString().slice(0,9) + " $";     
+  priceDiv.innerHTML = "Price: " + currentPrice.toString().slice(0,9) + " $";
   let bytesDiv = document.querySelector("#_proceed_data");
   let currentBytes = proceedData + Number(bytesDiv.getAttribute("alt"))
   let gbType = (currentBytes / 8) / 1024 / 1024 / 1024;

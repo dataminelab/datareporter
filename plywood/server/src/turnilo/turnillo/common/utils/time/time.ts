@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-import { day, Timezone } from "chronoshift";
+import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { Moment, tz } from "moment-timezone";
 import { Unary } from "../functional/functional";
 
 const ISO_FORMAT_DATE = "YYYY-MM-DD";
 const ISO_FORMAT_TIME = "HH:mm";
+const ISO_FORMAT_DATE_TIME = "YYYY-MM-DDTHH:mm:ss.sssZ";
 const FORMAT_FULL_MONTH_WITH_YEAR = "MMMM YYYY";
+
+const URL_SAFE_FULL_FORMAT = "YYYY-MM-DD-HH-mm";
 
 export function getMoment(date: Date, timezone: Timezone): Moment {
   return tz(date, timezone.toString());
@@ -67,7 +70,7 @@ function hasSameDateAndMonth(a: Date, b: Date): boolean {
   return a.getDate() === b.getDate() && a.getMonth() === b.getMonth();
 }
 
-export function scaleTicksFormat(scale: d3.time.Scale<number, number>): string {
+export function scaleTicksFormat(scale: d3.ScaleTime<number, number>): string {
   const ticks = scale.ticks();
   if (ticks.length < 2) return SHORT_FULL_FORMAT;
   const [first, ...rest] = ticks;
@@ -77,7 +80,7 @@ export function scaleTicksFormat(scale: d3.time.Scale<number, number>): string {
   return getShortFormat(sameYear, sameDayAndMonth, sameHour);
 }
 
-export function scaleTicksFormatter(scale: d3.time.Scale<number, number>): Unary<Moment, string> {
+export function scaleTicksFormatter(scale: d3.ScaleTime<number, number>): Unary<Moment, string> {
   return formatterFromDefinition(scaleTicksFormat(scale));
 }
 
@@ -166,6 +169,14 @@ export function formatDateTime(date: Date, timezone: Timezone): string {
   return getMoment(date, timezone).format(FULL_FORMAT);
 }
 
+export function formatISODateTime(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(ISO_FORMAT_DATE_TIME);
+}
+
+export function formatUrlSafeDateTime(date: Date, timezone: Timezone): string {
+  return getMoment(date, timezone).format(URL_SAFE_FULL_FORMAT);
+}
+
 export function formatISODate(date: Date, timezone: Timezone): string {
   return getMoment(date, timezone).format(ISO_FORMAT_DATE);
 }
@@ -200,4 +211,8 @@ export function validateISOTime(time: string): boolean {
 
 export function combineDateAndTimeIntoMoment(date: string, time: string, timezone: Timezone): Moment {
   return tz(`${date}T${time}`, timezone.toString());
+}
+
+export function isoNow(): string {
+  return (new Date()).toISOString();
 }

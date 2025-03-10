@@ -6,6 +6,8 @@ import { useDebouncedCallback } from "use-debounce";
 import Input from "antd/lib/input";
 import Button from "antd/lib/button";
 import Tooltip from "antd/lib/tooltip";
+import PlainButton from "@/components/PlainButton";
+import Tooltip from "@/components/Tooltip";
 import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
 import List from "react-virtualized/dist/commonjs/List";
 import useDataSourceSchema from "@/pages/reports/hooks/useDataSourceSchema";
@@ -64,14 +66,25 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
               const columnName = get(column, "name");
               const columnType = get(column, "type");
               return (
-                <div key={columnName} className="table-open">
-                  {columnName} {columnType && <span className="column-type">{columnType}</span>}
-                  <i
-                    className="fa fa-angle-double-right copy-to-editor"
-                    aria-hidden="true"
-                    onClick={e => handleSelect(e, columnName)}
-                  />
-                </div>
+                <Tooltip
+                  title="Insert column name into query text"
+                  mouseEnterDelay={0}
+                  mouseLeaveDelay={0}
+                  placement="rightTop">
+                  <PlainButton key={columnName} className="table-open-item" onClick={e => handleSelect(e, columnName)}>
+                    <div>
+                      {columnName} {columnType && <span className="column-type">{columnType}</span>}
+                    </div>
+
+                    <div className="copy-to-editor">
+                      <i
+                        className="fa fa-angle-double-right copy-to-editor"
+                        aria-hidden="true"
+                        onClick={e => handleSelect(e, columnName)}
+                      />
+                    </div>
+                  </PlainButton>
+                </Tooltip>
               );
             })
           )}
@@ -231,7 +244,8 @@ export default function SchemaBrowser({
         <Tooltip title="Refresh Schema">
           <Button onClick={() => refreshSchema(true)}>
             <i className={cx("zmdi zmdi-refresh", { "zmdi-hc-spin": isLoading })} />
-          </Button>
+            <span className="sr-only">{isLoading ? "Loading, please wait." : "Press to refresh."}</span>
+            </Button>
         </Tooltip>
       </div>
       <SchemaList

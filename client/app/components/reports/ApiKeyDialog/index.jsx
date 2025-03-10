@@ -9,8 +9,10 @@ import CodeBlock from "@/components/CodeBlock";
 import { axios } from "@/services/axios";
 import { clientConfig } from "@/services/auth";
 import notification from "@/services/notification";
+import { useUniqueId } from "@/lib/hooks/useUniqueId";
 
 import "./index.less";
+import { policy } from "@/services/policy";
 
 function ApiKeyDialog({ dialog, ...props }) {
   const [report, setReport] = useState(props.report);
@@ -39,14 +41,17 @@ function ApiKeyDialog({ dialog, ...props }) {
     [report.id, report.api_key]
   );
 
+  const csvResultsLabelId = useUniqueId("csv-results-label");
+  const jsonResultsLabelId = useUniqueId("json-results-label");
+
   return (
     <Modal {...dialog.props} width={600} footer={<Button onClick={() => dialog.close(report)}>Close</Button>}>
       <div className="report-api-key-dialog-wrapper">
         <h5>API Key</h5>
         <div className="m-b-20">
           <Input.Group compact>
-            <Input readOnly value={report.api_key} />
-            {report.can_edit && (
+            <Input readOnly value={report.api_key} aria-label="Report API Key" />
+            {policy.canEdit(report) && (
               <Button disabled={updatingApiKey} loading={updatingApiKey} onClick={regenerateReportApiKey}>
                 Regenerate
               </Button>
@@ -56,12 +61,16 @@ function ApiKeyDialog({ dialog, ...props }) {
 
         <h5>Example API Calls:</h5>
         <div className="m-b-10">
-          <label>Results in CSV format:</label>
-          <CodeBlock copyable>{csvUrl}</CodeBlock>
+          <span id={csvResultsLabelId}>Results in CSV format:</span>
+          <CodeBlock aria-labelledby={csvResultsLabelId} copyable>
+            {csvUrl}
+          </CodeBlock>
         </div>
         <div>
-          <label>Results in JSON format:</label>
-          <CodeBlock copyable>{jsonUrl}</CodeBlock>
+          <span id={jsonResultsLabelId}>Results in JSON format:</span>
+          <CodeBlock aria-labelledby={jsonResultsLabelId} copyable>
+            {jsonUrl}
+          </CodeBlock>
         </div>
       </div>
     </Modal>

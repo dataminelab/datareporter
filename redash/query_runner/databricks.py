@@ -42,9 +42,6 @@ def _build_odbc_connection_string(**kwargs):
     return ";".join([f"{k}={v}" for k, v in kwargs.items()])
 
 
-def combine_sql_statements(queries):
-    return ";\n".join(queries)
-
 class Databricks(BaseSQLQueryRunner):
     noop_query = "SELECT 1"
     should_annotate_query = False

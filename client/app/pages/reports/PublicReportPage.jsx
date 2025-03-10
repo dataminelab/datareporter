@@ -94,7 +94,7 @@ class PublicReportPage extends React.Component {
 }
 
 routes.register(
-  "Reports.ViewShared",
+  "Reports.ViewShared_v2",
   routeWithApiKeySession({
     path: "/public/reports/:token",
     render: pageProps => <PublicReportPage {...pageProps} />,

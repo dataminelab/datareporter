@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["cypress", "@percy/cypress", "@testing-library/cypress"]
+  },
+  "include": ["./**/*.ts", "integration/report/-time-filter-menu.js", "integration/report/fixed-time-filter-menu.js", "integration/report/grid.js", "integration/report/split-tile.js", "integration/report/bar-chart.js", "integration/report/boolean-filter-menu.js", "integration/report/line-chart.cy.js", "integration/report/scatterplot.js", "integration/report/totals.js", "integration/report/table.js", "integration/report/string-split-menu.js"]
+}

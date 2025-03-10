@@ -3,6 +3,9 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import Button from "antd/lib/button";
+import SettingOutlinedIcon from "@ant-design/icons/SettingOutlined";
+import EditOutlinedIcon from "@ant-design/icons/EditOutlined";
+import DeleteOutlinedIcon from "@ant-design/icons/DeleteOutlined";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import Paginator from "@/components/Paginator";
 
@@ -25,21 +28,41 @@ import routes from "@/services/routes";
 import CreateModelDialog from "./components/CreateModelDialog";
 import DataSource from "@/services/data-source";
 
+import Modal from "antd/lib/modal";
+
 function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
-  const handleDeleteModel = (event) => {
-    var r = confirm(`Are you sure you would like to delete ${model.name} and all reports that use this model?`);
-    if (r == true) {
-      deleteModel(event, model);
-    }
+  const doDelete = callback => {
+    deleteModel(model)
+      .then(() => {
+        notification.success("Data source deleted successfully.");
+        callback();
+      })
+      .catch((e) => {
+        notification.error(e);
+        callback();
+      });
+  };
+
+  const handleDeleteModel = () => {
+    Modal.confirm({
+      title: "Delete Data Source",
+      content: "Are you sure you want to delete this data source?",
+      okText: "Delete",
+      okType: "danger",
+      onOk: doDelete,
+      onCancel: () => {},
+      maskClosable: true,
+      autoFocusButton: null,
+    });
   }
   return <>
-    <Button type="ghost" icon="setting" className="m-2 inline" onClick={() => editConfigModel(model)}>
+    <Button type="ghost" icon={<SettingOutlinedIcon />} className="m-2 inline" onClick={() => editConfigModel(model)}>
       Edit config
     </Button>
-    <Button type="dashed" icon="edit" className="m-2 inline" onClick={() => editModel(model)}>
+    <Button type="dashed" icon={<EditOutlinedIcon />} className="m-2 inline" onClick={() => editModel(model)}>
       Edit
     </Button>
-    <Button type="danger"  icon="delete" className="m-2 inline" onClick={event => handleDeleteModel(event)}>
+    <Button type="danger"  icon={<DeleteOutlinedIcon />} className="m-2 inline" onClick={() => handleDeleteModel()}>
       Delete
     </Button>
   </>;
@@ -174,7 +197,7 @@ class ModelsList extends React.Component {
     }
   };
 
-  deleteModel = (event, model) => Model.deleteModel(model).then(() => this.props.controller.update());
+  deleteModel = (model) => Model.deleteModel(model).then(() => this.props.controller.update());
   editConfigModel = (model) => navigateTo(`models/${model.id}`);
 
   // eslint-disable-next-line class-methods-use-this
@@ -182,10 +205,17 @@ class ModelsList extends React.Component {
     if (!policy.canCreateDataSource()) {
       return null;
     }
+    const newModelProps = {
+      type: "primary",
+      disabled: !policy.canCreateDataSource(),
+      onClick: this.showCreateModelDialog
+    };
     return (
       <div className="m-b-15">
-        <Button type="primary" disabled={!policy.canCreateDataSource()} onClick={this.showCreateModelDialog}>
-          <i className="fa fa-plus m-r-5" />
+        <Button {...newModelProps}
+          data-test="CreateModelButton"
+        >
+          <i className="fa fa-plus m-r-5 aka" />
           New Model
         </Button>
       </div>
@@ -194,7 +224,7 @@ class ModelsList extends React.Component {
 
   render() {
     const { controller } = this.props;
-    const emptyMessage = <span>There are no models yet. Click <a className="underline-link" onClick={this.showCreateModelDialog}>here</a> to add one.</span>
+    const emptyMessage = "There are no models to view yet";
     return (
       <React.Fragment>
         {this.renderPageHeader()}
@@ -204,6 +234,7 @@ class ModelsList extends React.Component {
           {controller.isLoaded && !controller.isEmpty && (
             <div className="table-responsive" data-test="ModelList">
               <ItemsTable
+                dataTest="CreateModelLink"
                 items={controller.pageItems}
                 columns={this.listColumns}
                 context={this.actions}

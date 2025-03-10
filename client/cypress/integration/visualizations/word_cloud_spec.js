@@ -67,14 +67,17 @@ describe("Word Cloud", () => {
       cy.getByTestId("ExecuteButton").click();
     });
     cy.document().then(injectFont);
+    cy.getByTestId("NewVisualization").click();
+    cy.getByTestId("VisualizationType").click(); // Open the dropdown
+    cy.get('.rc-virtual-list-holder')
+      .scrollTo('bottom', { ensureScrollable: false })
+      .should('be.visible')
+      .invoke('attr', 'aria-expanded', 'true'); // Ensure the dropdown stays expanded
+    cy.getByTestId("VisualizationType.WORD_CLOUD").click();
   });
 
   it("creates visualization with automatic word frequencies", () => {
     cy.clickThrough(`
-      NewVisualization
-      VisualizationType
-      VisualizationType.WORD_CLOUD
-
       WordCloud.WordsColumn
       WordCloud.WordsColumn.a
     `);
@@ -91,10 +94,6 @@ describe("Word Cloud", () => {
 
   it("creates visualization with word frequencies from another column", () => {
     cy.clickThrough(`
-      NewVisualization
-      VisualizationType
-      VisualizationType.WORD_CLOUD
-
       WordCloud.WordsColumn
       WordCloud.WordsColumn.b
 
@@ -114,10 +113,6 @@ describe("Word Cloud", () => {
 
   it("creates visualization with word length and frequencies limits", () => {
     cy.clickThrough(`
-      NewVisualization
-      VisualizationType
-      VisualizationType.WORD_CLOUD
-
       WordCloud.WordsColumn
       WordCloud.WordsColumn.b
 

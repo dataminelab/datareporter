@@ -1,6 +1,6 @@
 /* eslint-disable */
-
 const webpack = require("webpack");
+const { IgnorePlugin } = webpack;
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 const ManifestPlugin = require("webpack-manifest-plugin");
@@ -9,9 +9,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
-const fs = require("fs");
 const path = require("path");
-const { CheckerPlugin } = require('awesome-typescript-loader')
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 function optionalRequire(module, defaultReturn = undefined) {
   try {
@@ -30,12 +29,15 @@ function optionalRequire(module, defaultReturn = undefined) {
 const CONFIG = optionalRequire("../scripts/config", {});
 
 const isProduction = process.env.NODE_ENV === "production";
+const isDevelopment = !isProduction;
+const isHotReloadingEnabled =
+  isDevelopment && process.env.HOT_RELOAD === "true";
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
 const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
 const baseHref = CONFIG.baseHref || "/";
 const staticPath = CONFIG.staticPath || "/static/";
-const htmlTitle = CONFIG.title || "Datareporter";
+const htmlTitle = CONFIG.title || "Data Reporter";
 
 const basePath = path.join(__dirname);
 const appPath = path.join(__dirname, "app");
@@ -56,16 +58,27 @@ function maybeApplyOverrides(config) {
   console.info("Custom overrides applied successfully.");
   return newConfig;
 }
+
 const babelLoader = {
-  loader: "babel-loader",
+  loader: require.resolve("babel-loader"),
   options: {
     presets: [
-      ["@babel/preset-env", {
-        modules: false
-      }]
-    ]
-  }
+      "@babel/preset-react",
+      [
+        "@babel/preset-env",
+        {
+          modules: false,
+        },
+      ],
+      "@babel/preset-typescript"
+    ],
+    plugins: [
+      ...(isHotReloadingEnabled ? ["react-refresh/babel"] : []),
+      "@babel/plugin-proposal-optional-chaining",
+    ],
+  },
 };
+
 
 const config = {
   mode: isProduction ? "production" : "development",
@@ -82,6 +95,10 @@ const config = {
     filename: isProduction ? "[name].[chunkhash].js" : "[name].js",
     publicPath: staticPath
   },
+  node: {
+    fs: "empty",
+    path: "empty"
+  },
   resolve: {
     symlinks: false,
     extensions: [".js", ".jsx", ".ts", ".tsx"],
@@ -91,8 +108,7 @@ const config = {
     }
   },
   plugins: [
-    new CheckerPlugin(),
-    new WebpackBuildNotifierPlugin({ title: "Redash" }),
+    new WebpackBuildNotifierPlugin({ title: "Data Reporter" }),
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
     new HtmlWebpackPlugin({
@@ -116,6 +132,10 @@ const config = {
       fileName: "asset-manifest.json",
       publicPath: ""
     }),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
     new CopyWebpackPlugin([
       { from: "app/assets/robots.txt" },
       { from: "app/assets/manifest.json" },
@@ -123,8 +143,9 @@ const config = {
       { from: "app/unsupportedRedirect.js" },
       { from: "app/assets/css/*.css", to: "styles/", flatten: true },
       { from: "app/assets/fonts", to: "fonts/" }
-    ])
-  ],
+    ]),
+    isHotReloadingEnabled && new ReactRefreshWebpackPlugin({ overlay: false })
+  ].filter(Boolean),
   optimization: {
     splitChunks: {
       chunks: chunk => {
@@ -135,23 +156,31 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.js|jsx?$/,
-        exclude: /node_modules/,
-        use: [
-          babelLoader
-        ]
+        enforce: "pre",
+        test: /\.js$/,
+        use: ["source-map-loader"],
+        exclude: [
+          /node_modules\/mutationobserver-shim/,
+        ],
       },
       {
-        test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
+        enforce: "pre",
+        test: /\.js$/,
+        use: ["source-map-loader"],
+        exclude: [
+          /node_modules\/mutationobserver-shim/,
+        ],
+      },
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: {
+          and: [/node_modules/],
+          not: [
+            /react-syntax-highlighter/ // Include react-syntax-highlighter for transpiling
+          ]
+        },
         use: [
-          babelLoader,
-          {
-            loader: 'awesome-typescript-loader?{configFileName: "tsconfig.json"}',
-            options: {
-              configFile: "tsconfig.json"
-            }
-          }
+          babelLoader
         ]
       },
       {
@@ -170,10 +199,7 @@ const config = {
             loader: MiniCssExtractPlugin.loader
           },
           {
-            loader: "css-loader",
-            options: {
-              minimize: process.env.NODE_ENV === "production"
-            }
+            loader: "css-loader"
           }
         ]
       },
@@ -184,10 +210,7 @@ const config = {
             loader: MiniCssExtractPlugin.loader
           },
           {
-            loader: "css-loader",
-            options: {
-              minimize: process.env.NODE_ENV === "production"
-            }
+            loader: "css-loader"
           },
           {
             loader: "less-loader",
@@ -280,14 +303,30 @@ const config = {
     ignored: /\.sw.$/
   },
   devServer: {
-    inline: true,
-    index: "/static/index.html",
+    client: {
+      overlay: {
+        runtimeErrors: (error) => {
+          if(error?.message === "ResizeObserver loop completed with undelivered notifications.")
+          {
+             console.error(error)
+             return false;
+          }
+          return true;
+        },
+      },
+    },
+    devMiddleware: {
+      index: "/static/index.html",
+      publicPath: staticPath,
+      stats: {
+        modules: false,
+        chunkModules: false
+      },
+    },
     historyApiFallback: {
       index: "/static/index.html",
       rewrites: [{ from: /./, to: "/static/index.html" }]
     },
-    contentBase: false,
-    publicPath: staticPath,
     proxy: [
       {
         context: [
@@ -322,10 +361,7 @@ const config = {
         secure: false
       }
     ],
-    stats: {
-      modules: false,
-      chunkModules: false
-    }
+    hot: isHotReloadingEnabled
   },
   performance: {
     hints: false

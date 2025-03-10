@@ -588,8 +588,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
               }));
             }
             if (measureSort.period !== SeriesDerivation.CURRENT && !this.hasComparison()) {
-              return split.update("sort", (sort: SeriesSort) =>
-                sort.set("period", SeriesDerivation.CURRENT));
+              return split.update("sort", (sort: Sort) =>
+                (sort as SeriesSort).set("period", SeriesDerivation.CURRENT));
             }
             return split;
           }

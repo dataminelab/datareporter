@@ -145,7 +145,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
         resolve: visualization.evaluateRules(ruleVariables)
       };
     });
-
+    //@ts-ignore
     return visAndResolves.sort((vr1, vr2) => Resolve.compare(vr1.resolve, vr2.resolve))[0];
   }
 

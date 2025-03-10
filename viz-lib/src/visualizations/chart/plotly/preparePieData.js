@@ -1,7 +1,8 @@
 import { isString, each, extend, includes, map, reduce } from "lodash";
-import d3 from "d3";
+import * as d3 from "d3";
 import chooseTextColorForBackground from "@/lib/chooseTextColorForBackground";
 import { AllColorPaletteArrays, ColorPaletteTypes } from "@/visualizations/ColorPalette";
+
 import { cleanNumber, normalizeValue } from "./utils";
 
 export function getPieDimensions(series) {
@@ -34,14 +35,13 @@ function prepareSeries(series, options, additionalOptions) {
     hoverInfoPattern,
     getValueColor,
   } = additionalOptions;
-
   const seriesOptions = extend({ type: options.globalSeriesType, yAxis: 0 }, options.seriesOptions[series.name]);
 
   const xPosition = (index % cellsInRow) * cellWidth;
   const yPosition = Math.floor(index / cellsInRow) * cellHeight;
 
-  const labels = [];
-  const values = [];
+  const labelsValuesMap = new Map();
+
   const sourceData = new Map();
   const seriesTotal = reduce(
     series.data,
@@ -54,18 +54,28 @@ function prepareSeries(series, options, additionalOptions) {
   each(series.data, row => {
     const x = hasX ? normalizeValue(row.x, options.xAxis.type) : `Slice ${index}`;
     const y = cleanNumber(row.y);
-    labels.push(x);
-    values.push(y);
+
+    if (labelsValuesMap.has(x)) {
+      labelsValuesMap.set(x, labelsValuesMap.get(x) + y);
+    } else {
+      labelsValuesMap.set(x, y);
+    }
+    const aggregatedY = labelsValuesMap.get(x);
+
+
     sourceData.set(x, {
       x,
-      y,
-      yPercent: (y / seriesTotal) * 100,
+      y: aggregatedY,
+      yPercent: (aggregatedY / seriesTotal) * 100,
       row,
     });
   });
 
-  const markerColors = map(series.data, row => getValueColor(row.x));
+  const markerColors = map(Array.from(sourceData.values()), data => getValueColor(data.row.x));
   const textColors = map(markerColors, c => chooseTextColorForBackground(c));
+
+  const labels = Array.from(labelsValuesMap.keys());
+  const values = Array.from(labelsValuesMap.values());
 
   return {
     visible: true,
@@ -90,6 +100,8 @@ function prepareSeries(series, options, additionalOptions) {
       y: [yPosition, yPosition + cellHeight - yPadding],
     },
     sourceData,
+    sort: options.piesort,
+    color_scheme: options.color_scheme,
   };
 }
 
@@ -98,15 +110,15 @@ export default function preparePieData(seriesList, options) {
   const valuesColors = {};
   let getDefaultColor;
 
-  if (typeof(seriesList[0]) !== 'undefined' && ColorPaletteTypes[options.color_scheme] === 'continuous') {
-    const uniqueXValues =[... new Set(seriesList[0].data.map((d) => d.x))];
+  if (typeof (seriesList[0]) !== 'undefined' && ColorPaletteTypes[options.color_scheme] === 'continuous') {
+    const uniqueXValues = [... new Set(seriesList[0].data.map((d) => d.x))];
     const step = (palette.length - 1) / (uniqueXValues.length - 1 || 1);
     const colorIndices = d3.range(uniqueXValues.length).map(function(i) {
       return Math.round(step * i);
     });
     getDefaultColor = d3.scale.ordinal()
       .domain(uniqueXValues) // Set domain as the unique x-values
-      .range(colorIndices.map((index) => palette[index]));
+      .range(colorIndices.map(index => palette[index]));
   } else {
     getDefaultColor = d3.scale
       .ordinal()
@@ -116,7 +128,6 @@ export default function preparePieData(seriesList, options) {
 
   each(options.valuesOptions, (item, key) => {
     if (isString(item.color) && item.color !== "") {
-      // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       valuesColors[key] = item.color;
     }
   });
@@ -125,7 +136,6 @@ export default function preparePieData(seriesList, options) {
     ...getPieDimensions(seriesList),
     hasX: includes(options.columnMapping, "x"),
     hoverInfoPattern: getPieHoverInfoPattern(options),
-    // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     getValueColor: (v) => valuesColors[v] || getDefaultColor(v),
   };
 

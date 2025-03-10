@@ -15,6 +15,7 @@ from sqlalchemy.orm import (
     joinedload,
     load_only,
     subqueryload,
+    aliased,
 )
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound  # noqa: F401
 from sqlalchemy_utils import generic_relationship
@@ -36,7 +37,6 @@ from redash.models.base import (
     gfk_type,
     key_type,
     primary_key,
-    db,
     gfk_type,
     Column,
     GFKBase,
@@ -846,9 +846,9 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         return self.name.lower()
 
     @lowercase_name.expression
-    def lowercase_name(cls):
+    def lowercase_name(self):
         "The SQLAlchemy expression for the property above."
-        return func.lower(cls.name)
+        return func.lower(self.name)
 
     @property
     def parameters(self):
@@ -1219,9 +1219,9 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
         return self.name.lower()
 
     @lowercase_name.expression
-    def lowercase_name(cls):
+    def lowercase_name(self):
         "The SQLAlchemy expression for the property above."
-        return func.lower(cls.name)
+        return func.lower(self.name)
 
 
 @generic_repr("id", "name", "type", "query_id")
@@ -1565,12 +1565,12 @@ def init_db():
 
 
 @gfk_type
-@generic_repr("id", "name", "user_id", "version")
+@generic_repr("id", "name", "user_id", "version", "last_modified_by_id")
 class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     id = primary_key("Report")
     name = Column(db.String(length=255))
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))
-    user = db.relationship(User)
+    user = db.relationship(User, foreign_keys=[user_id])
     expression = db.Column(db.JSON())
     model_id = Column(db.Integer, db.ForeignKey("models.id"))
     model = db.relationship("Model", back_populates="reports")
@@ -1582,6 +1582,9 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     color_2 = Column(db.String(length=32))
 
     version = Column(db.Integer)
+
+    last_modified_by_id = Column(key_type("User"), db.ForeignKey("users.id"), nullable=True)
+    last_modified_by = db.relationship(User, backref="modified_reports", foreign_keys=[last_modified_by_id])
     is_archived = Column(db.Boolean, default=False, index=True)
 
     tags = Column("tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True)
@@ -1713,9 +1716,19 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         db.session.commit()
 
     @classmethod
-    def get_by_group_ids(self, user):
-        return self.query.join(User).filter(
-            and_(Report.is_archived.is_(False), User.org_id == user.org.id, User.group_ids.overlap(user.group_ids))
+    def get_by_group_ids(cls, user):
+        # Use alias for User to avoid ambiguity if multiple joins are needed
+        user_alias = aliased(User)
+        return (
+            cls.query
+                .join(user_alias, cls.last_modified_by_id == user_alias.id)  # Explicit join condition
+                .filter(
+                    and_(
+                        cls.is_archived.is_(False),                # Only non-archived reports
+                        user_alias.org_id == user.org.id,          # Match the user's organization
+                        user_alias.group_ids.overlap(user.group_ids)  # Overlapping group IDs
+                    )
+                )
         )
 
     @classmethod
@@ -1743,3 +1756,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
             return {}
 
         return self.data_source.groups
+
+@listens_for(Report.user_id, "set")
+def report_last_modified_by(target, val, oldval, initiator):
+    target.last_modified_by_id = val

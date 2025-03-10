@@ -1,12 +1,29 @@
 import moment from "moment";
 import { axios } from "@/services/axios";
-import { each, pick, extend, isObject, truncate, keys, difference, filter, map, merge, values, isEmpty } from "lodash";
+import {
+  each,
+  pick,
+  extend,
+  isObject,
+  truncate,
+  keys,
+  difference,
+  filter,
+  map,
+  merge,
+  sortBy,
+  indexOf,
+  size,
+  includes,
+  values,
+  isEmpty
+} from "lodash";
 import location from "@/services/location";
 import { cloneParameter, Parameter } from "@/services/parameters";
 import dashboardGridOptions from "@/config/dashboard-grid-options";
 import { registeredVisualizations } from "@redash/viz/lib";
-import { Report } from "@/services/report";
-import { Query } from "@/services/query";
+import { Report } from "./report";
+import { Query } from "./query";
 
 export const WidgetTypeEnum = {
   TEXTBOX: "textbox",
@@ -109,7 +126,7 @@ class Widget {
   get type() {
     if (this.visualization) {
       return WidgetTypeEnum.VISUALIZATION;
-    } else if (this.text.includes('[turnilo-widget]')) { //TODO add type turnilo widget
+    } else if (this.text && this.text.includes('[turnilo-widget]')) { //TODO add type turnilo widget
       return WidgetTypeEnum.TURNILO;
     } else if (this.restricted) {
       return WidgetTypeEnum.RESTRICTED;
@@ -228,16 +245,16 @@ class Widget {
     return mappingType === Widget.MappingType.StaticValue;
   }
 
-  getParametersDefs() {
+  getParametersDefs() { 
+    if (this.type === "turnilo") return this.options.parameterMappings;
     const mappings = this.getParameterMappings();
     // textboxes does not have query
-    if (this.type === "turnilo") return this.options.parameterMappings;
     const params = this.getQuery() ? this.getQuery().getParametersDefs() : [];
 
     const queryParams = location.search;
 
     const localTypes = [Widget.MappingType.WidgetLevel, Widget.MappingType.StaticValue];
-    return map(
+    const localParameters = map(
       filter(params, param => localTypes.indexOf(mappings[param.name].type) >= 0),
       param => {
         if (!param) return;
@@ -254,6 +271,13 @@ class Widget {
         return result;
       }
     );
+
+    // order widget params using paramOrder
+    return sortBy(localParameters, param =>
+      includes(this.options.paramOrder, param.name)
+        ? indexOf(this.options.paramOrder, param.name)
+        : size(this.options.paramOrder)
+    );
   }
 
   getParameterMappings() {
@@ -263,7 +287,6 @@ class Widget {
 
     const existingParams = {};
     // textboxes does not have query
-    if (this.type === "turnilo") return this.options.parameterMappings;
     const params = this.getQuery() ? this.getQuery().getParametersDefs(false) : [];
     each(params, param => {
       if (!param) return;

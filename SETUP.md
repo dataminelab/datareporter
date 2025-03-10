@@ -1,67 +1,49 @@
 ## Dev environment
-
-DataReporter
-
-Requirements:
-* DataReporter builds correctly with Node 14
-Consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
-* Install node v14 with nodenv and ensure shims are added to PATH
-see for more info: https://github.com/nodenv/nodenv#how-it-works
-see https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl for windows-wsl2-nvm
+This is a setup guide for datareporter's devolopment environment
+DataReporter builds correctly with Node 16, consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
+* [ensure shims are added to PATH](https://github.com/nodenv/nodenv#how-it-works)
+* [for windows-wsl2-nvm](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl)
 
 ```
-nodenv install 14
-nodenv local 14
+nodenv install 16
+nodenv local 16
 ```
 Alternatively you can use nvm
 ```
 sudo apt update
 sudo apt install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+# Set nvm version
+nvm install v16
+nvm alias default v16
 ```
-set nvm version
-```
-nvm install v14
-nvm alias default v14
-```
-You should enhance your local files in order to use v14 so type `nano ~/.bashrc` then enhance file according to below
+Now you can enhance `.bashrc` in order to use v16 automatically or you might need to run `nvm use v16` every time you open a new terminal
 ```
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-nvm use v14 > /dev/null
+nvm use v16 > /dev/null
+```
+Build UI - Required to build ui for
+```sh
+  cd client # Enter front-end directory
+  npm install # Install dependencies
+  npm run build # Build for `client/dist/`
+  # this also buils for wiz-lib, plywood client and plywood server
 ```
 
-* Build UI - Required to build ui for
-    * Enter project root directory
-    * `cd client`
-    * `npm install` Installs all node dependencies to for redash
-    * `npm run build` Builds front end to the folder `client/dist/`
-
-* Build Plywood
-    * Enter project root directory
-    * `cd plywood/server`
-    * `npm install` Installs all node dependencies to for plywood
-    * `npm run build` Builds plywood server end to the folder `plywood/server/dist/`
-
-* Setup docker compose
-    * `make up` or `docker compose up --build`  to start required services like postgres app server
-    * `docker compose run --rm server create_db` Will start server and run. exec /app/manage.py database create_tables. This step is required **only once**.
-    * In case you get an error stating that Target database is not up to date, run: `docker-compose run server manage db stamp head`
-    * Any change to SQL data made on python side requires to create a migration file for upgrading the required database columns: `docker compose run server manage db migrate`
-    * Later on and only if necessary, in order to upgrade local database run: `docker compose run --rm server manage db upgrade`
-
-
-* Not needed anymore, might be useful for local development: start UI proxy
-    * Enter project root directory
-    * `cd client`
-    * `npm run start` Starts babel and webpack dev server which will proxy redash and plywood backend.
-
-* `open http://localhost:5000`
-
+### Setup docker compose
+```sh
+# This step is required on first build
+docker compose up --build # or make up to start required services like postgres app server
+docker compose run --rm server create_db # start server and run. exec /app/manage.py database create_tables. 
+# Database Update process
+docker-compose run server manage db stamp head # If you get an error stating that target database is not up to date, you can run this command
+docker compose run server manage db migrate # Any change to back-end models requires to create a migration
+docker compose run --rm server manage db upgrade # Ppgrade database
+```
 ## Local Development
 
-Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Datareporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
+Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Data Reporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
 ```
 # install necessary python version
 pyenv install 3.8.7
@@ -84,27 +66,34 @@ yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38
 ```
 
-### Running tests locally
-First ensure that the "tests" database is created:
-```
+## Running tests locally
+Tests are necessary to run before pushing any changes to the repository. Below are the steps to run tests for each component:
+### Back-end aka Python side:
+```sh
+# First ensure that the "tests" database is created
 docker compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
-```
-Then run the tests:
-```
+# Run the tests
 docker compose run --rm server tests
 ```
-In order to test viz-lib folder you need to install dependencies and run tests because you cant have 2 react versions in the same project. To do that run below commands in the viz-lib folder:
+### viz-lib
+```sh
+cd viz-lib 
+npm install react@^16.8 # tests doesnt work without this, so you need to clean package.json afterward
+npm run test
 ```
-npm install antd@^3 react@^16.8 react-dom@^16.8 && npm run test
+
+### client using Cypress
+```sh
+bash bin/restart_cypress.sh
 ```
 
 ### Components
-#### Datareporter server
+#### Data Reporter server
 * **directory**: `redash`
 * **debug**: Please follow the instruction from [redash](https://redash.io/help/open-source/dev-guide/debugging)
 * **changes:**
   * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
-#### Datareporter frontend
+#### Data Reporter frontend
   * **submodules** - for debug and changes they follow root fronted app:
     * Lib viz
       * **directory:** `viz-lib`
@@ -114,7 +103,7 @@ npm install antd@^3 react@^16.8 react-dom@^16.8 && npm run test
   * **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
   * **changes:**
     * By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.
-    That will start watched for source code changes for Datareporter frontend and all submodules.
+    That will start watched for source code changes for Data Reporter frontend and all submodules.
     * At liniux system you may face problem of too many file system watchers. That will result in error message
     ```Error: ENOSPC: System limit for number of file watchers reached, watch ```
     To solve it you need to increase the number of available watches by :
@@ -128,41 +117,15 @@ npm install antd@^3 react@^16.8 react-dom@^16.8 && npm run test
     and should rebuild at any source code change.
   * To see details/logs of build go into repo root dir and run `docker compose logs plywood`
 
-### Publishing NPM reporter-plywood package
-First make sure to authenticate with `npm login` then build and publish the package:
-
-```
-cd plywood/server/client
-npm install
-npm run compile
-npm publish
-```
-
 ### Debugging notes
-client side debugger
+If you are working on Visual Studio Code follow this [tutorial](https://redash.io/help/open-source/dev-guide/debugging) then you can run the debugging session following below:
+```sh
+pip install ptvsd # install below library
+docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server # start debugging session
 ```
-cd client
-npm start
-# visit http://localhost:8080/
-```
+To log messages from Plywood (in docker compose): `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
 
-If working with Visual Studio Code
-
-Follow the [tutorial](https://redash.io/help/open-source/dev-guide/debugging)
-
-And run the debugging session:
-```
-# install below library
-pip install ptvsd
-
-# start debugging session using below line
-docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server
-```
-To log messages to/from Plywood add to the Plywood env (in docker compose) following variable: `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
-
-### Docker installation issues
-
-if you are having issue building docker images, try to remove ~/.docker/config.json file
+if you are having issue building docker images, try to remove `config.json` file from docker folder
 ```bash
 rm  ~/.docker/config.json
 ```
@@ -185,7 +148,8 @@ PING router (172.19.0.9) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.057/0.781/1.506/0.725 ms
 ```
 
-### How to handle package controll on Python side, [see settings](https://github.com/getredash/redash/blob/c97afeb327d8d54e7219ac439cc93d0f234763e5)
+### Python package handling 
+We are using poetry for package control on backend [see this redash commit tree for more info](https://github.com/getredash/redash/blob/c97afeb327d8d54e7219ac439cc93d0f234763e5), and npm for client and viz-lib
 ```
 # Install poetry using pip
 pip3 install poetry==1.8.3

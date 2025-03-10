@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from "react";
-import { axios } from "@/services/axios";
+import React from "react";
 import PropTypes from "prop-types";
 import { chain, cloneDeep, find } from "lodash";
 import cx from "classnames";
@@ -42,6 +41,7 @@ const DashboardWidget = React.memo(
     onRefreshWidget,
     onRemoveWidget,
     onParameterMappingsChange,
+    isEditing,
     canEdit,
     isPublic,
     isLoading,
@@ -60,6 +60,7 @@ const DashboardWidget = React.memo(
             widget={widget}
             dashboard={dashboard}
             filters={filters}
+            isEditing={isEditing}
             canEdit={canEdit}
             isPublic={isPublic}
             isLoading={isLoading}
@@ -103,7 +104,8 @@ const DashboardWidget = React.memo(
     prevProps.canEdit === nextProps.canEdit &&
     prevProps.isPublic === nextProps.isPublic &&
     prevProps.isLoading === nextProps.isLoading &&
-    prevProps.filters === nextProps.filters
+    prevProps.filters === nextProps.filters &&
+    prevProps.isEditing === nextProps.isEditing
 );
 
 class DashboardGrid extends React.Component {
@@ -170,7 +172,6 @@ class DashboardGrid extends React.Component {
     this.widgetResizeEvent = new Event('widgetResize');
     // Define that the event name is 'build'.
     this.widgetResizeEvent.initEvent('widgetResize', true, true);
-
   }
 
   componentDidMount() {
@@ -255,7 +256,6 @@ class DashboardGrid extends React.Component {
   });
 
   render() {
-    const className = cx("dashboard-wrapper", this.props.isEditing ? "editing-mode" : "preview-mode");
     const {
       onLoadWidget,
       onRefreshWidget,
@@ -264,20 +264,23 @@ class DashboardGrid extends React.Component {
       filters,
       dashboard,
       isPublic,
+      isEditing,
       widgets,
       setFilterParams,
       getEssence,
     } = this.props;
+    const className = cx("dashboard-wrapper", isEditing ? "editing-mode" : "preview-mode");
 
     return (
       <div className={className}>
         <ResponsiveGridLayout
+          draggableCancel="input,.sortable-container"
           className={cx("layout", { "disable-animations": this.state.disableAnimations })}
           cols={{ [MULTI]: cfg.columns, [SINGLE]: 1 }}
           rowHeight={cfg.rowHeight - cfg.margins}
           margin={[cfg.margins, cfg.margins]}
-          isDraggable={this.props.isEditing}
-          isResizable={this.props.isEditing}
+          isDraggable={isEditing}
+          isResizable={isEditing}
           onResizeStart={this.autoHeightCtrl.stop}
           onResizeStop={this.onWidgetResize}
           layouts={this.state.layouts}
@@ -301,6 +304,7 @@ class DashboardGrid extends React.Component {
                 filters={filters}
                 isPublic={isPublic}
                 isLoading={widget.loading}
+                isEditing={isEditing}
                 canEdit={dashboard.canEdit()}
                 onLoadWidget={onLoadWidget}
                 onRefreshWidget={onRefreshWidget}

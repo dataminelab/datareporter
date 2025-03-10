@@ -135,7 +135,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     const { config } = this.props;
     const appSettings = AppSettings.fromJS(config.appSettings, {
       executorFactory: Ajax.queryUrlExecutorFactory.bind(config),
-      essence: this.props.getEssence.bind(config, this.props.widget.id),
+      getEssence: this.props.getEssence.bind(config, this.props.widget.id),
     });
 
     if (this.viewTypeNeedsAnItem(viewType)) {

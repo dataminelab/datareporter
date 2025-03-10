@@ -39,7 +39,7 @@ const SingleBar: React.SFC<SingleBarProps> = props => {
   const { datum, xScale, yScale, getX, series, maxHeight } = props;
   const x = getX(datum);
   const xPos = xScale.calculate(x) + SIDE_PADDING;
-  const width = xScale.rangeBand() - (2 * SIDE_PADDING);
+  const width = xScale.bandwidth() - (2 * SIDE_PADDING);
   const y = series.selectValue(datum);
   const yPos = yScale(y);
   const height = maxHeight - yPos;
@@ -65,8 +65,8 @@ const TimeShiftBar: React.SFC<TimeShiftBarProps> = props => {
   const { datum, xScale, yScale, getX, series, maxHeight } = props;
   const x = getX(datum);
   const xStart = xScale.calculate(x);
-  const rangeBand = xScale.rangeBand();
-  const fullWidth = rangeBand - 2 * SIDE_PADDING;
+  const bandwidth = xScale.bandwidth();
+  const fullWidth = bandwidth - 2 * SIDE_PADDING;
   const barWidth = fullWidth * 2 / 3;
 
   const yCurrent = series.selectValue(datum);
@@ -83,7 +83,7 @@ const TimeShiftBar: React.SFC<TimeShiftBarProps> = props => {
       height={maxHeight - yCurrentStart} />
     <rect
       className="bar-chart-bar-previous"
-      x={xStart + rangeBand - SIDE_PADDING - barWidth}
+      x={xStart + bandwidth - SIDE_PADDING - barWidth}
       y={yPreviousStart}
       width={barWidth}
       height={maxHeight - yPreviousStart} />

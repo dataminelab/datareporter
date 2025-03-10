@@ -2,13 +2,13 @@ from flask import request
 
 from redash import models
 from redash.handlers.base import BaseResource
-from redash.serializers import serialize_widget
 from redash.permissions import (
     require_access,
     require_object_modify_permission,
     require_permission,
     view_only,
 )
+from redash.serializers import serialize_widget
 
 
 class WidgetListResource(BaseResource):
@@ -46,7 +46,6 @@ class WidgetListResource(BaseResource):
 
         widget = models.Widget(**widget_properties)
         models.db.session.add(widget)
-        models.db.session.commit()
 
         models.db.session.commit()
         return serialize_widget(widget)
@@ -79,6 +78,7 @@ class WidgetResource(BaseResource):
         require_object_modify_permission(widget.dashboard, self.current_user)
         widget_properties = request.get_json(force=True)
         widget.text = widget_properties["text"]
+        widget.options = widget_properties["options"]
         models.db.session.commit()
         return serialize_widget(widget)
 
@@ -91,8 +91,6 @@ class WidgetResource(BaseResource):
         """
         widget = models.Widget.get_by_id_and_org(widget_id, self.current_org)
         require_object_modify_permission(widget.dashboard, self.current_user)
-        self.record_event(
-            {"action": "delete", "object_id": widget_id, "object_type": "widget"}
-        )
+        self.record_event({"action": "delete", "object_id": widget_id, "object_type": "widget"})
         models.db.session.delete(widget)
         models.db.session.commit()

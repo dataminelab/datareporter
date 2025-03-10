@@ -1,10 +1,10 @@
 import React  from 'react';
 import PropTypes from "prop-types";
-import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
-import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application";
-import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
-import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
-import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
+import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
+import { TurniloApplication } from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application";
+import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
+import { Ajax } from "@/components/TurniloComponent/client/utils/ajax/ajax";
+import { AppSettings } from "@/components/TurniloComponent/common/models/app-settings/app-settings";
 import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 

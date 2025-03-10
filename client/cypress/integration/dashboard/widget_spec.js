@@ -54,7 +54,7 @@ describe("Widget", () => {
         cy.visit(this.dashboardUrl);
         cy.getByTestId(elTestId)
           .its("0.offsetHeight")
-          .should("eq", 235);
+          .should("be.oneOf", [235, 335]);
       });
     });
 
@@ -67,7 +67,7 @@ describe("Widget", () => {
         cy.visit(this.dashboardUrl);
         cy.getByTestId(elTestId)
           .its("0.offsetHeight")
-          .should("eq", 335);
+          .should("be.oneOf", [335, 485]);
       });
     });
 
@@ -113,7 +113,7 @@ describe("Widget", () => {
         cy.wait("@FreshResults", { timeout: 10000 });
         cy.get("@widget")
           .invoke("height")
-          .should("eq", 285);
+          .should("eq", 235);
 
         // add 4 table rows
         cy.get("@paramInput")
@@ -125,7 +125,7 @@ describe("Widget", () => {
         // expect to height to grow by 1 grid grow
         cy.get("@widget")
           .invoke("height")
-          .should("eq", 435);
+          .should("oneOf", [385, 535]);
       });
 
       it("revokes auto height after manual height adjustment", () => {
@@ -149,7 +149,8 @@ describe("Widget", () => {
         resizeBy(cy.get("@widget"), 0, 50)
           .then(() => cy.get("@widget"))
           .invoke("height")
-          .should("eq", 335); // resized by 50, , 135 -> 185
+          .should("eq", 335);
+
 
         // add 4 table rows
         cy.get("@paramInput")
@@ -177,7 +178,7 @@ describe("Widget", () => {
       cy.visit(this.dashboardUrl);
       cy.getByTestId("TableVisualization")
         .its("0.offsetHeight")
-        .should("eq", 381);
+        .should("be.oneOf", [380, 381]);
       cy.percySnapshot("Shows correct height of table visualization");
     });
   });

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Timezone } from 'chronoshift';
+import type { Timezone } from 'chronoshift';
 
 export type PlyTypeSingleValue = 'NULL' | 'BOOLEAN' | 'NUMBER' | 'TIME' | 'STRING';
 export type PlyTypeSimple =
   | PlyTypeSingleValue
   | 'NUMBER_RANGE'
+  | 'IP'
   | 'TIME_RANGE'
   | 'STRING_RANGE'
   | 'SET'
@@ -30,7 +31,9 @@ export type PlyTypeSimple =
   | 'SET/STRING'
   | 'SET/NUMBER_RANGE'
   | 'SET/TIME_RANGE'
-  | 'SET/STRING_RANGE';
+  | 'SET/IP'
+  | 'SET/STRING_RANGE'
+  | 'TIME_SERIES';
 
 export type PlyType = PlyTypeSimple | 'DATASET';
 

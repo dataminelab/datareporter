@@ -2,9 +2,9 @@ import _ from "lodash";
 import { axios } from "@/services/axios";
 import dashboardGridOptions from "@/config/dashboard-grid-options";
 import Widget from "./widget";
-import { currentUser } from "@/services/auth";
 import location from "@/services/location";
 import { cloneParameter } from "@/services/parameters";
+import { policy } from "@/services/policy";
 
 export const urlForDashboard = ({ id, slug }) => `dashboards/${id}-${slug}`;
 
@@ -126,7 +126,7 @@ function calculateNewWidgetPosition(existingWidgets, newWidget) {
 export function Dashboard(dashboard) {
   _.extend(this, dashboard);
   Object.defineProperty(this, "url", {
-    get: function () {
+    get: function() {
       return urlForDashboard(this);
     },
   });
@@ -156,12 +156,13 @@ function transformResponse(data) {
 
 const saveOrCreateUrl = data => (data.id ? `api/dashboards/${data.id}` : "api/dashboards");
 const DashboardService = {
-  get: ({ id, slug }) => {
+  get: async ({ id, slug }) => {
     const params = {};
     if (!id) {
       params.legacy = null;
     }
-    return axios.get(`api/dashboards/${id || slug}`, { params }).then(transformResponse);
+    const data = await axios.get(`api/dashboards/${id || slug}`, { params });
+    return transformResponse(data);
   },
   getByToken: ({ token }) => axios.get(`api/dashboards/public/${token}`).then(transformResponse),
   getByTokenPublic: ({ token }) => axios.get(`api/dashboards/public/${token}?get_results=true`).then(transformResponse),
@@ -173,6 +174,7 @@ const DashboardService = {
   favorites: params => axios.get("api/dashboards/favorites", { params }).then(transformResponse),
   favorite: ({ id }) => axios.post(`api/dashboards/${id}/favorite`),
   unfavorite: ({ id }) => axios.delete(`api/dashboards/${id}/favorite`),
+  fork: ({ id }) => axios.post(`api/dashboards/${id}/fork`, { id }).then(transformResponse),
 };
 
 _.extend(Dashboard, DashboardService);
@@ -181,7 +183,7 @@ Dashboard.prepareDashboardWidgets = prepareDashboardWidgets;
 Dashboard.prepareWidgetsForDashboard = prepareWidgetsForDashboard;
 
 Dashboard.prototype.canEdit = function canEdit() {
-  return currentUser.canEdit(this) || this.can_edit;
+  return policy.canEdit(this);
 };
 
 Dashboard.prototype.getParametersDefs = function getParametersDefs() {
@@ -213,15 +215,22 @@ Dashboard.prototype.getParametersDefs = function getParametersDefs() {
       globalParams["turnilo_daterange"] = widget.options.parameterMappings[0];
     }
   });
-  return _.values(
+  const resultingGlobalParams = _.values(
     _.each(globalParams, param => {
       param.setValue(param.value); // apply global param value to all locals
       param.fromUrlParams(queryParams); // try to initialize from url (may do nothing)
     })
   );
+
+  // order dashboard params using paramOrder
+  return _.sortBy(resultingGlobalParams, param =>
+    _.includes(this.options.globalParamOrder, param.name)
+      ? _.indexOf(this.options.globalParamOrder, param.name)
+      : _.size(this.options.globalParamOrder)
+  );
 };
 
-Dashboard.prototype.addWidget = function addWidget(textOrVisualization, options = {}) {
+Dashboard.prototype.addWidget = async function addWidget(textOrVisualization, options = {}) {
   const props = {
     dashboard_id: this.id,
     options: {
@@ -244,6 +253,8 @@ Dashboard.prototype.addWidget = function addWidget(textOrVisualization, options 
   } else if (_.isObject(textOrVisualization)) {
     props.visualization_id = textOrVisualization.id;
     props.visualization = textOrVisualization;
+  } else {
+    // TODO: Throw an error?
   }
 
   const widget = new Widget(props);
@@ -252,10 +263,9 @@ Dashboard.prototype.addWidget = function addWidget(textOrVisualization, options 
   widget.options.position.col = position.col;
   widget.options.position.row = position.row;
 
-  return widget.save().then(() => {
-    this.widgets = [...this.widgets, widget];
-    return widget;
-  });
+  await widget.save();
+  this.widgets = [...this.widgets, widget];
+  return widget;
 };
 
 Dashboard.prototype.favorite = function favorite() {
@@ -264,4 +274,8 @@ Dashboard.prototype.favorite = function favorite() {
 
 Dashboard.prototype.unfavorite = function unfavorite() {
   return Dashboard.unfavorite(this);
+};
+
+Dashboard.prototype.getUrl = function getUrl() {
+  return urlForDashboard(this);
 };

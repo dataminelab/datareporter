@@ -125,23 +125,22 @@ function useDashboard(dashboardData) {
   dashboardRef.current = dashboard;
 
   const loadDashboard = useCallback(
-    (forceRefresh = false, updatedParameters = []) => {
+    async (forceRefresh = false, updatedParameters = []) => {
       const affectedWidgets = getAffectedWidgets(dashboardRef.current.widgets, updatedParameters);
       const loadWidgetPromises = compact(
         affectedWidgets.map(widget => loadWidget(widget, forceRefresh).catch(error => error))
       );
 
-      return Promise.all(loadWidgetPromises).then(() => {
-        const queryResults = compact(map(dashboardRef.current.widgets, widget => widget.getQueryResult()));
-        const updatedFilters = collectDashboardFilters(dashboardRef.current, queryResults, location.search);
-        setFilters(updatedFilters);
-      });
+      await Promise.all(loadWidgetPromises);
+      const queryResults = compact(map(dashboardRef.current.widgets, widget_2 => widget_2.getQueryResult()));
+      const updatedFilters = collectDashboardFilters(dashboardRef.current, queryResults, location.search);
+      setFilters(updatedFilters);
     },
     [loadWidget]
   );
 
   const refreshDashboard = useCallback(
-    updatedParameters => {
+    () => {
       if (!refreshing) {
         setRefreshing(true);
         setTimeout(() => document.querySelector("a[data-test='Refresh']").click(), 333);
@@ -184,19 +183,18 @@ function useDashboard(dashboardData) {
         .addWidget(visualization, {
           parameterMappings: editableMappingsToParameterMappings(parameterMappings),
         })
-        .then(widget => {
+        .then(async widget => {
           const widgetsToSave = [
             widget,
             ...synchronizeWidgetTitles(widget.options.parameterMappings, dashboard.widgets),
           ];
-          return Promise.all(widgetsToSave.map(w => w.save())).then(() =>
-            setDashboard(currentDashboard => extend({}, currentDashboard))
-          );
+          await Promise.all(widgetsToSave.map(w => w.save()));
+          return setDashboard(currentDashboard => extend({}, currentDashboard));
         })
     );
   }, [dashboard]);
 
-  const showReportDialog = useCallback(() => {
+  const showAddReportDialog = useCallback(() => {
     AddReportDialog.showModal({
       dashboard,
     }).onClose(({ text, options }) =>
@@ -250,7 +248,7 @@ function useDashboard(dashboardData) {
     showShareDashboardDialog,
     showAddTextboxDialog,
     showAddWidgetDialog,
-    showReportDialog,
+    showAddReportDialog,
     managePermissions,
   };
 }

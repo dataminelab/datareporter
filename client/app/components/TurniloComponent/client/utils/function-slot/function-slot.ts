@@ -24,7 +24,7 @@ export interface FunctionSlot<T> {
 
 export function createFunctionSlot<T>(): FunctionSlot<T> {
   var myFn: (...args: any[]) => T;
-  var slot: FunctionSlot<T> = (...args: any[]) => {
+  var slot: FunctionSlot<T> = function(this: FunctionSlot<T>, ...args: any[]) {
     if (myFn) return myFn.apply(this, args);
     return undefined;
   };

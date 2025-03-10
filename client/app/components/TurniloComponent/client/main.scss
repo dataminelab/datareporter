@@ -17,8 +17,6 @@
 
 @import '../lib/style/reset';
 @import '../lib/style/sanity';
-@import '../lib/style/open-sans-regular';
-@import '../lib/style/open-sans-600';
 @import 'imports';
 
 
@@ -58,6 +56,11 @@ svg {
   @each $var, $val in $theme-colors {
     #{'--' + $var}: #{$val};
   }
+}
+
+.row {
+  margin-right: auto!important;
+  margin-left: auto!important;
 }
 
 .report-widget {

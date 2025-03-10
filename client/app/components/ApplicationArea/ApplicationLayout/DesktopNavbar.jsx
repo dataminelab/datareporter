@@ -1,30 +1,66 @@
-import { first } from "lodash";
-import React, { useState } from "react";
+import React, { useMemo } from "react";
+import { first, includes } from "lodash";
 import Menu from "antd/lib/menu";
-import Tooltip from "antd/lib/tooltip";
+import Tooltip from "@/components/Tooltip";
+import Link from "@/components/Link";
+import PlainButton from "@/components/PlainButton";
 import CreateDashboardDialog from "@/components/dashboards/CreateDashboardDialog";
+import { useCurrentRoute } from "@/components/ApplicationArea/Router";
 import { Auth, currentUser } from "@/services/auth";
 import settingsMenu from "@/services/settingsMenu";
-import routes from "@/services/routes";
-import location from "@/services/location";
 import logoUrl from "@/assets/images/report_icon_small.png";
 
 import VersionInfo from "./VersionInfo";
+
 import "./DesktopNavbar.less";
 
-function NavbarSection({ inlineCollapsed, children, ...props }) {
+function NavbarSection({ children, ...props }) {
   return (
-    <Menu selectable={false} {...props}>
+    <Menu selectable={false} theme="dark" {...props}>
       {children}
     </Menu>
   );
 }
 
+function useNavbarActiveState() {
+  const currentRoute = useCurrentRoute();
+
+  return useMemo(
+    () => ({
+      dashboards: includes(
+        [
+          "Dashboards.List",
+          "Dashboards.Favorites",
+          "Dashboards.My",
+          "Dashboards.ViewOrEdit",
+          "Dashboards.LegacyViewOrEdit",
+        ],
+        currentRoute.id
+      ),
+      queries: includes(
+        [
+          "Queries.List",
+          "Queries.Favorites",
+          "Queries.Archived",
+          "Queries.My",
+          "Queries.View",
+          "Queries.New",
+          "Queries.Edit",
+        ],
+        currentRoute.id
+      ),
+      dataSources: includes(["DataSources.List"], currentRoute.id),
+      alerts: includes(["Alerts.List", "Alerts.New", "Alerts.View", "Alerts.Edit"], currentRoute.id),
+      reports: includes(["Reports.List", "Reports.View", "Reports.Edit", "Reports.New"], currentRoute.id),
+    }),
+    [currentRoute.id]
+  );
+}
+
 export default function DesktopNavbar() {
-  const [collapsed, setCollapsed] = useState(true);
+  const activeState = useNavbarActiveState();
 
   const firstSettingsTab = first(settingsMenu.getAvailableItems());
-  const headerBlock = routes.getRoute(location.path) ? routes.getRoute(location.path).headerBlock : {};
 
   const canCreateQuery = currentUser.hasPermission("create_query");
   const canCreateDashboard = currentUser.hasPermission("create_dashboard");
@@ -48,64 +84,66 @@ export default function DesktopNavbar() {
 
   return (
     <div className="desktop-navbar-report">
-      <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-logo">
-        <a href="./">
-          <img className="logo" src={logoUrl} alt="Data reporter" width="25" height="26" />
-        </a>
+      <NavbarSection className="desktop-navbar-logo">
+        <div role="menuitem">
+          <Link href="./">
+            <img className="logo" src={logoUrl} alt="Data reporter" width="25" height="26" />
+          </Link>
+        </div>
       </NavbarSection>
 
-      <NavbarSection inlineCollapsed={collapsed} className="left-border">
+      <NavbarSection className="left-border">
         {currentUser.hasPermission("list_dashboards") && (
-          <Menu.Item key="dashboards">
+          <Menu.Item key="dashboards" className={activeState.dashboards ? "navbar-active-item" : null}>
             <Tooltip
               placement="bottom"
               title="Dashboards"
             >
-             <a href="dashboards">
-              <i className="icon-ui icon-dashboard"></i>
-            </a>
+              <Link href="dashboards">
+                <i className="icon-ui icon-dashboard"></i>
+              </Link>
             </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
-          <Menu.Item key="queries">
+          <Menu.Item key="queries" className={activeState.queries ? "navbar-active-item" : null}>
             <Tooltip
               placement="bottom"
               title="Queries"
             >
-              <a href="queries">
+              <Link href="queries">
                   <i className="icon-ui  icon-command-line"></i>
-              </a>
+                </Link>
             </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
-          <Menu.Item key="reports">
+          <Menu.Item key="reports" className={activeState.reports ? "navbar-active-item" : null}>
             <Tooltip
               placement="bottom"
               title="Reports"
             >
-              <a href="reports">
-                <i className="icon-ui  icon-bar-chart"></i>
-              </a>
-            </Tooltip>
+              <Link href="reports">
+                  <i className="icon-ui  icon-bar-chart"></i>
+                </Link>
+              </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("list_alerts") && (
-          <Menu.Item key="alerts">
+          <Menu.Item key="alerts" className={activeState.alerts ? "navbar-active-item" : null}>
             <Tooltip
               placement="bottom"
               title="Alerts"
             >
-              <a href="alerts">
+              <Link href="alerts">
                 <i className="icon-ui  icon-notifications-allerts-bell"></i>
-              </a>
+              </Link>
             </Tooltip>
           </Menu.Item>
         )}
       </NavbarSection>
 
-      <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-spacer">
+      <NavbarSection className="desktop-navbar-spacer">
         {(canCreateQuery || canCreateDashboard || canCreateAlert) && <Menu.Divider />}
         {(canCreateQuery || canCreateDashboard || canCreateAlert) && (
           <Menu.SubMenu
@@ -113,94 +151,75 @@ export default function DesktopNavbar() {
             popupOffset={[-36, 60]}
             title={
               <React.Fragment>
-                <Tooltip
-                  placement="bottom"
-                  title="Create"
-                >
-                  <a data-test="CreateButton">
-                    <i className="icon-ui  icon-plus"></i>
-                  </a>
-                </Tooltip>
-              </React.Fragment>
+              <Link data-test="CreateButton">
+                <i className="icon-ui  icon-plus"></i>
+              </Link>
+            </React.Fragment>
             }>
             {canCreateQuery && (
               <Menu.Item key="new-query">
-                <a href="queries/new" data-test="CreateQueryMenuItem">
+                <Link href="queries/new" data-test="CreateQueryMenuItem">
                   New Query
-                </a>
+                </Link>
               </Menu.Item>
             )}
             {canCreateQuery && (
               <Menu.Item key="new-report">
-                <a href="reports/new" onClick={handleNewReportButton} data-test="CreateReportMenuItem">
+                <Link href="reports/new" onClick={handleNewReportButton} data-test="CreateReportMenuItem">
                   New Report
-                </a>
+                </Link>
               </Menu.Item>
             )}
             {canCreateDashboard && (
               <Menu.Item key="new-dashboard">
-                <a data-test="CreateDashboardMenuItem" onMouseUp={() => CreateDashboardDialog.showModal()}>
+                <PlainButton data-test="CreateDashboardMenuItem" onClick={() => CreateDashboardDialog.showModal()}>
                   New Dashboard
-                </a>
+                </PlainButton>
               </Menu.Item>
             )}
             {canCreateAlert && (
               <Menu.Item key="new-alert">
-                <a data-test="CreateAlertMenuItem" href="alerts/new">
+                <Link data-test="CreateAlertMenuItem" href="alerts/new">
                   New Alert
-                </a>
+                </Link>
               </Menu.Item>
             )}
           </Menu.SubMenu>
         )}
       </NavbarSection>
-      <NavbarSection inlineCollapsed={collapsed} className="desktop-navbar-profile-menu">
-       {/* <Menu.Item key="messages">
-          <a data-test="Messages" href="#">
-            <i className="icon-ui  icon-chat-rect"></i>
-          </a>
-        </Menu.Item>*/}
+      <NavbarSection className="desktop-navbar-profile-menu">
         <Menu.SubMenu
-          key="profile-menu"
+          key="profile"
           popupClassName="desktop-navbar-submenu"
           popupOffset={[-36, 60]}
+          tabIndex={0}
           title={
-            <Tooltip
-              placement="bottom"
-              title="Settings"
-            >
-              <div data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
-                <i className="icon-ui icon-more"></i>
-              </div>
-            </Tooltip>
+            <span data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
+              <img className="profile__image_thumb" src={currentUser.profile_image_url} alt={currentUser.name} />
+            </span>
           }>
           <Menu.Item key="profile">
-            <a href="users/me">Profile</a>
+            <Link href="users/me">Profile</Link>
           </Menu.Item>
           {currentUser.hasPermission("super_admin") && (
             <Menu.Item key="status">
-              <a href="admin/status">System Status</a>
+              <Link href="admin/status">System Status</Link>
             </Menu.Item>
           )}
           <Menu.Divider />
           <Menu.Item key="logout">
-            <a data-test="LogOutButton" onClick={() => Auth.logout()}>
+            <PlainButton data-test="LogOutButton" onClick={() => Auth.logout()}>
               Log out
-            </a>
+            </PlainButton>
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item key="version" disabled className="version-info">
+          <Menu.Item key="version" role="presentation" disabled className="version-info">
             <VersionInfo />
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.Item key="account">
-          <a data-test="AccountButton" href="users/me">
-            <img className="profile__image_thumb" src={currentUser.profile_image_url} alt={currentUser.name} />
-          </a>
-        </Menu.Item>
       </NavbarSection>
 
-      <NavbarSection inlineCollapsed={collapsed} className="settings-menu">
+      <NavbarSection className="settings-menu">
         <Menu.Item key="refresh">
           <a data-test="Refresh" href="#" onClick={handleDeepRefresh}>
             <i className="icon-ui icon-refresh"></i>

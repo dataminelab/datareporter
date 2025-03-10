@@ -83,10 +83,13 @@ export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, B
     const query = $("main")
       .filter(filterExpression)
       .split(dimension.expression, dimension.name);
+    const maxQueries = dataCube.maxQueries
+    const timezone = essence.timezone;
 
     this.setState({ loading: true });
-    dataCube.executor(query, { timezone: essence.timezone })
+    dataCube.executor(query, { maxQueries, timezone })
       .then(
+        // @ts-ignore
         (dataset: Dataset) => {
           this.setState({
             loading: false,

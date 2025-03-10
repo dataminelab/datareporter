@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { CombinedSplitsTitle } from "./combined-splits-title";
 import { SplitColumnsHeader } from "./split-columns";
@@ -24,8 +24,9 @@ interface SplitHeaderProps {
   collapseRows: boolean;
 }
 
-export const SplitsHeader: React.SFC<SplitHeaderProps> = ({ essence, collapseRows }) => {
+export const SplitsHeader: React.FunctionComponent<SplitHeaderProps> = ({ essence, collapseRows }) => {
+  const { dataCube, splits } = essence;
   return collapseRows ?
-    <SplitColumnsHeader essence={essence} /> :
-    <CombinedSplitsTitle essence={essence} />;
+    <SplitColumnsHeader dataCube={dataCube} splits={splits} /> :
+    <CombinedSplitsTitle dataCube={dataCube} splits={splits} />;
 };

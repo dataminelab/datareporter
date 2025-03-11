@@ -1,7 +1,5 @@
 # This configuration file is for the **development** setup.
 # For a production example please refer to kubernetes or CloudRun setups
-version: "3.9"
-
 
 services:
   server:
@@ -9,8 +7,8 @@ services:
       context: .
       cache_from:
         - "type=gha"
-      # cache_to:
-      #   - "type=gha,mode=max"
+      cache_to:
+        - "type=gha,mode=max"
       args:
         skip_frontend_build: true
         skip_dev_deps: ""

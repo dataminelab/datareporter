@@ -39,7 +39,7 @@ jobs:
         with:
           version: v0.12.1
       - name: Build docker compose
-        uses: docker/bake-action@v6
+        uses: docker/bake-action@v4
         with:
           files: docker-compose.yml, docker-compose.ci.yml
           load: true

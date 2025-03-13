@@ -35,8 +35,10 @@ Build UI - Required to build ui for
 ```sh
 # This step is required on first build
 docker compose up --build # or make up to start required services like postgres app server
-docker compose run --rm server create_db # start server and run. exec /app/manage.py database create_tables. 
-# Database Update process
+docker compose run --rm server create_db # start server and run. exec /app/manage.py database create_tables
+```
+### Database Update process
+``` sh
 docker-compose run server manage db stamp head # If you get an error stating that target database is not up to date, you can run this command
 docker compose run server manage db migrate # Any change to back-end models requires to create a migration
 docker compose run --rm server manage db upgrade # Ppgrade database

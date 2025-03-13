@@ -1,10 +1,11 @@
-import requests
 from datetime import datetime
-
+import requests
 from flask_mail import Message
-from rq import Connection, Queue
+from rq import Connection
 from rq.registry import FailedJobRegistry
 from rq.job import Job
+import mailchimp_marketing as MailchimpMarketing
+from mailchimp_marketing.api_client import ApiClientError
 from redash import mail, models, settings, rq_redis_connection
 from redash.models import users
 from redash.worker import job, get_job_logger, default_operational_queues
@@ -33,6 +34,26 @@ def record_event(raw_event):
             logger.exception("Failed posting to %s", hook)
 
 
+def version_check():
+    raise Exception("Version check is disabled")
+
+@job("default")
+def add_member_mailchimp(email, name, org_name):
+    list_id = settings.MAILCHIMP_LIST_ID
+    logger.info("Subscribing to: mailchimp newsteller service with %s", email)
+    try:
+        client = MailchimpMarketing.Client()
+        client.set_config({
+            "api_key": settings.MAILCHIMP_API_KEY,
+            "server": settings.MAILCHIMP_SERVER
+        })
+        client.lists.add_list_member(list_id, {"email_address": email, "merge_fields": {"FNAME": name, "ONAME": org_name}, "status": "subscribed"})
+    except ApiClientError as error:
+        if error.status_code == 400:
+            logger.info("%s is already subscribed to the mailchimp", email)
+        else:
+            raise Exception(f"Error: {error.text}") from error
+
 @job("emails")
 def send_mail(to, subject, html, text):
     try:
@@ -54,7 +75,7 @@ def test_connection(data_source_id):
         return True
 
 
-@job("schemas", queue_class=Queue, at_front=True, timeout=300, ttl=90)
+@job("schemas", queue_class=Queue, at_front=True, timeout=settings.SCHEMAS_REFRESH_TIMEOUT, ttl=90)
 def get_schema(data_source_id, refresh):
     try:
         data_source = models.DataSource.get_by_id(data_source_id)

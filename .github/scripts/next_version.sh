@@ -8,8 +8,6 @@ if [[ "${GITHUB_REF_TYPE-""}" == "tag" ]]; then
 elif [[ "${BRANCH-""}" == "main" ]]; then
   PREFIX="stable"
 else
-
-  echo "not main ${BRANCH#refs/heads/-""}"
   PREFIX="develop"
 fi
 

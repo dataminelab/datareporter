@@ -41,6 +41,7 @@ jobs:
         with:
           push: true
           tags: europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:${{ steps.get-version.outputs.version }}
+          build-args: version="${{ steps.get-version.outputs.version  }}"
 
       - name: Build and push plywood
         uses: docker/build-push-action@v6
@@ -48,6 +49,7 @@ jobs:
           push: true
           context: plywood/server
           tags: europe-west1-docker.pkg.dev/datareporter/datareporter/plywood:${{ steps.get-version.outputs.version }}
+          build-args: version="${{ steps.get-version.outputs.version  }}"
       - name: Tag release
         shell: bash
         run: |

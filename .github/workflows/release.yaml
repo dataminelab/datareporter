@@ -23,6 +23,8 @@ jobs:
           fetch-depth: 0
       - id: get-version
         name: "Get next version"
+        env:
+          BRANCH: ${{github.ref}}
         run: |
           #!/bin/bash
           next_version=$(./.github/scripts/next_version.sh)

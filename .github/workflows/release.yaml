@@ -80,6 +80,9 @@ jobs:
       - build_datareporter
       - build_plywood
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Tag release
         shell: bash
         run: |

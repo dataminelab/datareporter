@@ -13,10 +13,10 @@ jobs:
   unit_tests:
     uses: ./.github/workflows/test-unit.yaml
     secrets: inherit
-  release_image:
+  get_version:
     runs-on: ubuntu-latest
-    needs:
-      - unit_tests
+    outputs:
+      version: ${{ steps.get-version.outputs.version  }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,6 +30,15 @@ jobs:
           next_version=$(./.github/scripts/next_version.sh)
           echo "Next version: $next_version"
           echo "version=$next_version" >> $GITHUB_OUTPUT
+  build_datareporter:
+    runs-on: ubuntu-latest
+    needs:
+      - unit_tests
+      - get_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Docker login
         uses: docker/login-action@v3
         with:
@@ -40,21 +49,46 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:${{ steps.get-version.outputs.version }}
-          build-args: version="${{ steps.get-version.outputs.version  }}"
+          tags: europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:${{needs.get-version.outputs.version}}
+          build-args: version="${{needs.get-version.outputs.version}}"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
+  build_plywood:
+    runs-on: ubuntu-latest
+    needs:
+      - unit_tests
+      - get_version
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.GCR_URL }}
+          username: ${{ secrets.GCR_USERNAME }}
+          password: ${{ secrets.GCR_PASSWORD }}
       - name: Build and push plywood
         uses: docker/build-push-action@v6
         with:
           push: true
           context: plywood/server
-          tags: europe-west1-docker.pkg.dev/datareporter/datareporter/plywood:${{ steps.get-version.outputs.version }}
-          build-args: version="${{ steps.get-version.outputs.version  }}"
+          tags: europe-west1-docker.pkg.dev/datareporter/datareporter/plywood:${{needs.get-version.outputs.version}}
+          build-args: version="${{needs.get-version.outputs.version}}"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+  tag_release:
+    runs-on: ubuntu-latest
+    needs:
+      - build_datareporter
+      - build_plywood
+    steps:
       - name: Tag release
         shell: bash
         run: |
-          if ! [ $(git rev-list ${{ steps.get-version.outputs.version }} >/dev/null )];
+          if ! [ $(git rev-list ${{needs.get-version.outputs.version}} >/dev/null )];
           then
-            git tag ${{ steps.get-version.outputs.version }}
+            git tag ${{needs.get-version.outputs.version}}
             git push --tags
           fi

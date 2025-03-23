@@ -136,8 +136,8 @@ export class YearOverYearExpression {
 
     private fixEscapeNames() {
         if (this.engine === 'athena') {
-            this.query = this.query.replace(/\\/g, '')
-            this.query = this.query.replace(/`/g, '"')
+            this.query = this.query.replace(/\\/g, '');
+            this.query = this.query.replace(/`/g, '"');
         }
     }
 
@@ -163,25 +163,25 @@ export class YearOverYearExpression {
         var where2 = whereQuery;
         if (matches) {
             var i = 0;
-            for (const match of matches) {
+            for (let i = 0; i < matches.length; i++) {
+                const match = matches[i];
                 if (match.length < 2) continue;
-                if (i%2==0) {
-                    where1 = where1.replace(match, `('${prevElement.start}')`)
-                    where2 = where2.replace(match, `('${currElement.start}')`)
+                if (i % 2 == 0) {
+                    where1 = where1.replace(match, `('${prevElement.start}')`);
+                    where2 = where2.replace(match, `('${currElement.start}')`);
                 } else {
-                    where1 = where1.replace(match, `('${prevElement.end}')`)
-                    where2 = where2.replace(match, `('${currElement.end}')`)
+                    where1 = where1.replace(match, `('${prevElement.end}')`);
+                    where2 = where2.replace(match, `('${currElement.end}')`);
                 }
-                i++
             }
         } else {
             throw new Error("No matches found");
         }
         if (this.engine === 'athena') {
-            formattedSumQueries=formattedSumQueries.slice(0, -1)
+            formattedSumQueries = formattedSumQueries.slice(0, -1);
         } else if (this.engine === 'bigquery' && this.secondSplitExists()) {
-            where1=where1.replace(")) AND (", "))) AND (").slice(0, -1);
-            where2=where2.replace(")) AND (", "))) AND (").slice(0, -1);
+            where1 = where1.replace(")) AND (", "))) AND (").slice(0, -1);
+            where2 = where2.replace(")) AND (", "))) AND (").slice(0, -1);
         }
         return [formattedSumQueries, fromQuery, where1, where2];
     }

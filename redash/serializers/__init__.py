@@ -68,7 +68,7 @@ def hash_report(report, can_edit=False):
         },
         "is_favorite": is_favorite,
         "is_archived": report.is_archived,
-        "isJustLanded": True,
+        "landed": True,
         "appSettings": {
             "dataCubes": [data_cube.data_cube],
             "customization": {},

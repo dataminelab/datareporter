@@ -113,7 +113,7 @@ class JSONEncoder(json.JSONEncoder):
         elif "queries" in dir(o):
             # ReportSerializer
             result = o.queries
-        elif "isJustLanded" in dir(o):
+        elif "landed" in dir(o):
             # single report | api/report/<int>
             return o
         else:

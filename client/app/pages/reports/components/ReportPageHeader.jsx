@@ -190,7 +190,7 @@ export default function ReportPageHeader(props) {
     newModels = res.results;
     const updates = {
       data_source_id,
-      isJustLanded: false,
+      landed: false,
     }
     setModels(newModels);
     return updates;
@@ -231,7 +231,7 @@ export default function ReportPageHeader(props) {
 
   const getSettings = async (modelId) => {
     var settings;
-    if (report.isJustLanded) {
+    if (report.landed) {
       settings = { appSettings: report.appSettings, timekeeper: {} };
     } else {
       settings = await Model.getReporterConfig(modelId);
@@ -257,7 +257,7 @@ export default function ReportPageHeader(props) {
           model_id: modelId,
           appSettings: settings.appSettings,
           timekeeper: settings.timekeeper,
-          isJustLanded: false,
+          landed: false,
         };
         if (report.data_source_id) {
           updates.data_source_id = report.data_source_id;
@@ -410,7 +410,7 @@ export default function ReportPageHeader(props) {
 
   useEffect(() => {
 
-    if (report.isJustLanded) {
+    if (report.landed) {
       if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
       if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
       if (report.data_source_id !== selectedDataSource) {
@@ -475,7 +475,7 @@ export default function ReportPageHeader(props) {
 
   useEffect(() => {
     // this function is working on report/new page for setting first model to report
-    if (report.isJustLanded) return;
+    if (report.landed) return;
     const firstEncounterModelSetter = async (models) => {
       const modelId = models[0].id;
       const modelDataCube = await getModelDataCube(modelId);

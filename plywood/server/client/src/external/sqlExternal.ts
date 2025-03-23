@@ -253,9 +253,9 @@ export abstract class SQLExternal extends External {
         );
       }
       if (timeRanges) {
-        yoyExpression.setTimeRanges(timeRanges)
+        yoyExpression.setTimeRanges(timeRanges);
       }
-      yoyExpression.process()
+      yoyExpression.process();
       query = [
         yoyExpression.getQuery()
       ];

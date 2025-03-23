@@ -277,7 +277,7 @@ class BigQuery(BaseQueryRunner):
             for field in column["fields"]:
                 columns.append("{}.{}".format(column["name"], field["name"]))
         else:
-            columns.append(column["name"])
+            columns.append({"name": column["name"], "type": column["type"]})
 
         return columns
 
@@ -299,35 +299,44 @@ class BigQuery(BaseQueryRunner):
     def get_schema(self, get_stats=False):
         if not self.configuration.get("loadSchema", False):
             return []
-
+        service = self._get_bigquery_service()
         project_id = self._get_project_id()
         datasets = self._get_project_datasets(project_id)
-
-        query_base = """
-        SELECT table_schema, table_name, field_path, data_type
-        FROM `{dataset_id}`.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS
-        WHERE table_schema NOT IN ('information_schema')
-        """
-
-        schema = {}
-        queries = []
+        schema = []
         for dataset in datasets:
             dataset_id = dataset["datasetReference"]["datasetId"]
-            query = query_base.format(dataset_id=dataset_id)
-            queries.append(query)
+            tables = (
+                service.tables()
+                    .list(projectId=project_id, datasetId=dataset_id)
+                    .execute()
+            )
+            while True:
+                for table in tables.get("tables", []):
+                    table_data = (
+                        service.tables()
+                            .get(
+                            projectId=project_id,
+                            datasetId=dataset_id,
+                            tableId=table["tableReference"]["tableId"],
+                        )
+                            .execute()
+                    )
+                    table_schema = self._get_columns_schema(table_data)
+                    schema.append(table_schema)
 
-        query = "\nUNION ALL\n".join(queries)
-        results, error = self.run_query(query, None)
-        if error is not None:
-            self._handle_run_query_error(error)
+                next_token = tables.get("nextPageToken", None)
+                if next_token is None:
+                    break
 
-        for row in results["rows"]:
-            table_name = "{0}.{1}".format(row["table_schema"], row["table_name"])
-            if table_name not in schema:
-                schema[table_name] = {"name": table_name, "columns": []}
-            schema[table_name]["columns"].append({"name": row["field_path"], "type": row["data_type"]})
+                tables = (
+                    service.tables()
+                        .list(
+                        projectId=project_id, datasetId=dataset_id, pageToken=next_token
+                    )
+                        .execute()
+                )
 
-        return list(schema.values())
+        return schema
 
     def run_query(self, query, user):
         logger.debug("BigQuery got query: %s", query)
@@ -337,12 +346,12 @@ class BigQuery(BaseQueryRunner):
 
         try:
             if "totalMBytesProcessedLimit" in self.configuration:
-                limitMB = self.configuration["totalMBytesProcessedLimit"]
-                processedMB = self._get_total_bytes_processed(jobs, query) / 1000.0 / 1000.0
-                if limitMB < processedMB:
+                limit_mb = self.configuration["totalMBytesProcessedLimit"]
+                processed_mb = self._get_total_bytes_processed(jobs, query) / 1000.0 / 1000.0
+                if limit_mb < processed_mb:
                     return (
                         None,
-                        "Larger than %d MBytes will be processed (%f MBytes)" % (limitMB, processedMB),
+                        "Larger than %d MBytes will be processed (%f MBytes)" % (limit_mb, processed_mb),
                     )
 
             data = self._get_query_result(jobs, query)

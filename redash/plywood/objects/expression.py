@@ -2,8 +2,6 @@ from typing import Callable
 import json
 import re
 import lzstring
-from flask_restful import abort
-
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.plywood import PlywoodApi
 
@@ -44,9 +42,9 @@ class Expression:
     """
     _mem_cache: dict = None
 
-    def __init__(self, hash: str, data_cube: DataCube):
+    def __init__(self, _hash: str, data_cube: DataCube):
         self._data_cube = data_cube
-        self._hash = hash
+        self.hash = _hash
         self._mem_cache = dict()
 
     def _get_from_cache_or_set(self, name: str, func: Callable, refresh=False):
@@ -69,7 +67,7 @@ class Expression:
     def filter(self) -> dict:
         return self._get_from_cache_or_set(
             name="filter",
-            func=lambda: json.loads(parser.decompressFromBase64(self._hash))
+            func=lambda: json.loads(parser.decompressFromBase64(self.hash))
         )
 
     @property
@@ -122,7 +120,7 @@ class Expression:
         res = self._get_from_cache_or_set(
             name="expression",
             func=lambda: PlywoodApi.convert_hash_to_expression(
-                hash=self._hash,
+                hash=self.hash,
                 data_cube=cube
             )
         )
@@ -223,6 +221,7 @@ class Expression:
         return [*self.queries[0:len(self.queries) - 1], *two_splits_queries]
 
     def fix_string_filter(self, last_query):
+        # XXX
         # if same data name found on both split and filter
         where = self.get_where_statement(self.queries[0])
         # delete last paranthesis

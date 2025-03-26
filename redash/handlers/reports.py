@@ -1,13 +1,10 @@
 import json
-from flask import request, make_response, url_for, jsonify
-from flask_restful import abort
-import csv
-import io
 from datetime import datetime
+from flask import request, make_response, url_for
+from flask_restful import abort
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
 from redash.security import csp_allows_embeding
-from redash.serializers.report_serializer import ReportSerializer
 from redash import models
 from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 
@@ -23,7 +20,6 @@ from redash.permissions import (
 )
 from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expression_to_result
 from redash.plywood.objects.expression import ExpressionNotSupported
-from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
 from redash.settings import parse_boolean
 from redash.plywood.hash_manager import get_data_cube
@@ -31,6 +27,7 @@ from redash.serializers.report_result import (
     serialize_report_result_to_dsv,
     serialize_query_result_to_xlsx_with_multiple_sheets,
 )
+from redash.serializers.report_serializer import ReportSerializer
 from redash.utils import json_dumps
 
 HASH = "hash"
@@ -47,10 +44,10 @@ DATA_SOURCE_ID = "data_source_id"
 
 # Custom JSON encoder to handle datetime objects
 class CustomJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.isoformat()  # Convert datetime to ISO 8601 string
-        return super().default(obj)
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.isoformat()  # Convert datetime to ISO 8601 string
+        return super().default(o)
 
 
 class ReportFilter(BaseResource):
@@ -96,12 +93,10 @@ class ReportApiKeyAccess(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
         if api_key != report.api_key:
             abort(403, message="Invalid api key")
-        expression = report.get_expression()
         model = get_object_or_404(Model.get_by_id, report.model_id)
 
         execute_plywood = hash_to_result(hash_string=report.hash, model=model, organisation=self.current_org)
         serialized = execute_plywood.serialized()
-        report_name = report.name.replace(" ", "_")
         response_builders = {
             "json": self.make_json_response,
             "xlsx": self.make_excel_response,
@@ -498,7 +493,6 @@ class ReportShareResource(BaseResource):
         return {"public_url": public_url, "api_key": api_key.api_key}
 
     def delete(self, report_id):
-        # XXX TODO IT'S A COPY OF DASHBOARD SHARE
         """
         Disable anonymous access to a report.
 

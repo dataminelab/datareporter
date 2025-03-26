@@ -20,7 +20,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = ">=3.9,<3.11"
 advocate = "1.0.0"
 aniso8601 = "8.0.0"
 authlib = "0.15.5"
@@ -92,6 +92,7 @@ tzlocal = "4.3.1"
 pyodbc = "5.1.0"
 paramiko = "3.4.1"
 inflection = "0.3.1"
+setuptools = "77.0.3"
 
 [tool.poetry.group.all_ds]
 optional = true

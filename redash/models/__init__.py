@@ -1015,7 +1015,7 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
         )
 
     @classmethod
-    def get_by_id_and_org(cls, object_id, org):
+    def get_by_id_and_org(cls, object_id, org, org_cls=None):
         return super(Alert, cls).get_by_id_and_org(object_id, org, Query)
 
     def evaluate(self):
@@ -1241,7 +1241,7 @@ class Visualization(TimestampMixin, BelongsToOrgMixin, db.Model):
         return "%s %s" % (self.id, self.type)
 
     @classmethod
-    def get_by_id_and_org(cls, object_id, org):
+    def get_by_id_and_org(cls, object_id, org, org_cls=None):
         return super(Visualization, cls).get_by_id_and_org(object_id, org, Query)
 
     def copy(self):
@@ -1269,11 +1269,11 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
         return "%s" % self.id
 
     @classmethod
-    def get_by_id_and_org(self, object_id, org):
-        return super(Widget, self).get_by_id_and_org(object_id, org, Dashboard)
+    def get_by_id_and_org(cls, object_id, org, org_cls=None):
+        return super(Widget, cls).get_by_id_and_org(object_id, org, Dashboard)
 
     @classmethod
-    def get_id_from_text(self, text):
+    def get_id_from_text(cls, text):
         if not text:
             return None
         elif len(text.split("/")) < 2:
@@ -1281,10 +1281,10 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
         return text.replace("[turnilo-widget]", "").split("/")[0]
 
     @classmethod
-    def delete_by_report_id(self, _report_id: str):
+    def delete_by_report_id(cls, _report_id: str):
         if isinstance(_report_id, int):
             _report_id = str(_report_id)
-        for i in self.query.all():
+        for i in cls.query.all():
             report_id = i.get_id_from_text(i.text)
             if report_id == _report_id:
                 db.session.delete(i)
@@ -1306,7 +1306,7 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
         _id = self.get_report_id()
         try:
             return Report.query.filter(Report.id == _id).one()
-        except:
+        except NoResultFound:
             return None
 
 
@@ -1732,7 +1732,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         )
 
     @classmethod
-    def get_by_id_and_org(self, _id, org) -> object:
+    def get_by_id_and_org(self, _id, org, org_cls=None) -> object:
         return self.query.filter(and_(Report.id == _id, Report.user.has(org=org))).one()
 
     @classmethod

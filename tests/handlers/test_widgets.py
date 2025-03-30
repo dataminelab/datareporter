@@ -42,7 +42,8 @@ class WidgetAPITest(BaseTestCase):
 
     def test_create_text_widget(self):
         dashboard = self.factory.create_dashboard()
-        text = "[turnilo-widget]1/Sample text." # where 1 is report id
+        report = self.factory.create_report()
+        text = f"[turnilo-widget]{report.id}/Sample text."
         data = {
             "visualization_id": None,
             "text": text,
@@ -59,7 +60,7 @@ class WidgetAPITest(BaseTestCase):
     def test_filter_parameterized_report_widget(self):
         dashboard = self.factory.create_dashboard()
         report = self.factory.create_report()
-        text = "[turnilo-widget]2/Sample text.".format(report.id)
+        text = f"[turnilo-widget]{report.id}/Sample text."
         data = {
             "visualization_id": None,
             "text": text,

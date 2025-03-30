@@ -7,7 +7,6 @@ import PageHeader from "@/components/PageHeader";
 import Paginator from "@/components/Paginator";
 import DynamicComponent from "@/components/DynamicComponent";
 import { QueryTagsControl } from "@/components/tags-control/TagsControl";
-import SchedulePhrase from "@/components/reports/SchedulePhrase";
 
 import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
 import useItemsListExtraActions from "@/components/items-list/hooks/useItemsListExtraActions";

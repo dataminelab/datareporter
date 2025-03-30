@@ -408,9 +408,7 @@ class BaseHTTPQueryRunner(BaseQueryRunner):
 
 query_runners = {}
 
-
 def register(query_runner_class):
-    global query_runners
     if query_runner_class.enabled():
         logger.debug(
             "Registering %s (%s) query runner.",
@@ -424,6 +422,7 @@ def register(query_runner_class):
             "dependencies.",
             query_runner_class.name(),
         )
+
 
 
 def get_query_runner(query_runner_type, configuration):

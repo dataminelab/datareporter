@@ -17,7 +17,7 @@ def get_change_log(previous_sha):
             continue
 
         try:
-            pull_request = re.match("Merge pull request #(\d+)", subject).groups()[0]
+            pull_request = re.match(r"Merge pull request #(\d+)", subject).groups()[0]
             pull_request = " #{}".format(pull_request)
         except Exception as ex:
             pull_request = ""

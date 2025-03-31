@@ -35,11 +35,11 @@ def create_google_oauth_blueprint(app):
     logger = logging.getLogger("google_oauth")
     blueprint = Blueprint("google_oauth", __name__)
 
-    CONF_URL = "https://accounts.google.com/.well-known/openid-configuration"
+    conf_url = "https://accounts.google.com/.well-known/openid-configuration"
     oauth = OAuth(app)
     oauth.register(
         name="google",
-        server_metadata_url=CONF_URL,
+        server_metadata_url=conf_url,
         client_kwargs={"scope": "openid email profile"},
     )
 

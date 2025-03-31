@@ -1,6 +1,6 @@
+from unittest import TestCase
 from tests import BaseTestCase
 from collections import namedtuple
-from unittest import TestCase
 from redash.permissions import has_access
 from redash import models
 

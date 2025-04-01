@@ -23,7 +23,7 @@ def organization_status(org_slug=None):
         ).count(),
         "reports": Report.get_by_user(current_user).count(),
         "dashboards": models.Dashboard.query.filter(
-            models.Dashboard.org == current_org, models.Dashboard.is_archived == False
+            models.Dashboard.org == current_org, models.Dashboard.is_archived is False
         ).count(),
     }
 

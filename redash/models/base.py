@@ -11,7 +11,7 @@ from redash import settings
 from redash.utils import json_dumps, json_loads
 
 
-class RedashSQLAlchemy(SQLAlchemy, sqlalchemy.orm.Query):
+class RedashSQLAlchemy(SQLAlchemy):
     def apply_driver_hacks(self, app, info, options):
         options.update(json_serializer=json_dumps)
         if settings.SQLALCHEMY_ENABLE_POOL_PRE_PING:

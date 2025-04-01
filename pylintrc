@@ -512,7 +512,7 @@ generated-members=db.relationship,
       db.ForeignKey, db.Text, db.DateTime,
       db.Boolean, db.func, db.Unicode, db.desc,
       db.Index, db.UniqueConstraint, db.JSON,
-      db.configure_mappers,
+      db.configure_mappers, db.backref,
 
 # Tells whether to warn about missing members when the owner of the attribute
 # is inferred to be None.

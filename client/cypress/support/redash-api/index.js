@@ -11,41 +11,6 @@ Cypress.Commands.add("createDashboard", (name) => {
   return post({ url: "api/dashboards", body: { name } }).then(({ body }) => body);
 });
 
-Cypress.Commands.add("_createReport", () => {
-  const user = {
-    name: "John Doe",
-    email: "test@example.com",
-    password_hash: "test1234",
-    group_ids: [2],
-    org_id: 1,
-  }
-  const args = {
-    created_at: "2025-04-03T05:19:15.049Z",
-    expression: "N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0408SqGOAygKZobYDmZe2MCClGALZNkOJvhABRNAGMA9AFUAKgGEKIAGYQEaJgCcuAbVBoAngAdxBIeMp6mGiTMyDzCFkwAmAfU/pbhBDCAAr6WJ5GoJ4weuhYuATBAIwAIupQuub4ALRJAhZWIAj+GSAAvgC6lZRQbhBoRhU1YUyRIPYa+kzYMoVwPs4Z3lAA1jC+cKbqGph6guj4JgUSng5wvGjqYIgwheX5lhLCcLD25U0g5hDY2F4pQd1Q8Y2UVzdeDLObBP3eg2jDMYTKZlIA",
-    id: 2,
-    is_archived: false,
-    is_favorite: false,
-    model_id: 1,
-    name: "New Report",
-    tags: null,
-    user_id: 1,
-  }
-  return post({ url: "api/reports", args }).then(({ body }) => {
-    const id = get(body, "id");
-    assert.isDefined(id, "Report api call returns report id");
-    return body;
-  });
-  return post({ url: "api/reports", body: { name } }).then(({ body }) => body);
-  cy.visit("/reports/new");
-  cy.wait(500);
-  cy.clickThrough(`
-    SelectDataSource
-    SelectDataSource${Cypress.env("dataSourceId")}
-  `);
-  cy.get("div.visualization").should("exist");
-  cy.wait(500);
-});
-
 Cypress.Commands.add("createReport", (data) => {
   const merged =  extend(
     {

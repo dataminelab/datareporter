@@ -416,10 +416,10 @@ class QueryResult(db.Model, BelongsToOrgMixin):
 
 
 def should_schedule_next(previous_iteration, now, interval, time=None, day_of_week=None, failures=0):
-    # if time exists then interval > 23 hours (82800s)
-    # if day_of_week exists then interval > 6 days (518400s)
+    # if previous_iteration is None, it means the query has never been run before
+    # so we should schedule it immediately
     if previous_iteration is None:
-        return False
+        return True
     if time is None:
         ttl = int(interval)
         next_iteration = previous_iteration + datetime.timedelta(seconds=ttl)
@@ -642,6 +642,9 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         for query in queries:
             try:
                 if query.schedule.get("disabled"):
+                    continue
+
+                if all(value is None for value in query.schedule.values()):
                     continue
 
                 if query.schedule["until"]:

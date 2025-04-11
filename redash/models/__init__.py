@@ -1578,7 +1578,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     model_id = Column(db.Integer, db.ForeignKey("models.id"))
     model = db.relationship("Model", back_populates="reports")
 
-    data_source_id = Column(db.Integer, db.ForeignKey("data_sources.id"), nullable=True)
+    # data_source_id = Column(db.Integer, db.ForeignKey("data_sources.id"), nullable=True)
     data_source = db.relationship("DataSource", back_populates="reports")
 
     color_1 = Column(db.String(length=32))

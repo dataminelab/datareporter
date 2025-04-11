@@ -57,7 +57,6 @@ def upgrade():
             queries.update()
             .where(queries.c.id == record['query_id'])
             .values(query_hash=new_hash))
-    # op.drop_column('users', 'profile_image_url')
 
 
 def downgrade():

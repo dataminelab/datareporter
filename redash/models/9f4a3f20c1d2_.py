@@ -17,47 +17,30 @@ depends_on = None
 
 
 def upgrade():
-    # Try to add the column only if it doesn't exist
     conn = op.get_bind()
 
-    # Check if the column already exists
-    result = conn.execute(sa.text("""
-        SELECT column_name 
-        FROM information_schema.columns 
-        WHERE table_name='reports' AND column_name='data_source_id'
-    """))
+    # Add column only if missing
+    column_exists = conn.execute(sa.text("""
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'reports' AND column_name = 'data_source_id'
+    """)).fetchone()
 
-    if not result.first():
-        # Add the column
+    if not column_exists:
         with op.batch_alter_table("reports") as batch_op:
             batch_op.add_column(sa.Column("data_source_id", sa.Integer(), nullable=True))
 
-    # Add or replace foreign key
+    # Add FK if needed
     with op.batch_alter_table("reports") as batch_op:
-        # Drop old FK if exists (ignore errors)
         try:
-            batch_op.drop_constraint("reports_data_source_id_fkey", type_="foreignkey")
+            batch_op.create_foreign_key(
+                "reports_data_source_id_fkey",
+                "data_sources",
+                ["data_source_id"],
+                ["id"],
+                ondelete="SET NULL"
+            )
         except Exception:
             pass
-
-        batch_op.create_foreign_key(
-            "reports_data_source_id_fkey",
-            "data_sources",
-            ["data_source_id"],
-            ["id"],
-            ondelete="SET NULL"
-        )
-
-    # Pick a fallback id
-    fallback_result = conn.execute(sa.text("SELECT id FROM data_sources ORDER BY RANDOM() LIMIT 1"))
-    fallback_id = fallback_result.scalar() or 1
-
-    # Update rows with NULL
-    conn.execute(sa.text("""
-        UPDATE reports 
-        SET data_source_id = :fallback 
-        WHERE data_source_id IS NULL
-    """), {"fallback": fallback_id})
 
 
 def downgrade():

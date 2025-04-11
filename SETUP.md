@@ -49,7 +49,7 @@ docker compose run --rm server create_db # start server and run. exec /app/manag
 # Database Update process
 docker-compose run server manage db stamp head # If you get an error saying "target database is not up to date" you can run this command
 docker compose run server manage db migrate # Any change to back-end models requires to create a migration
-docker compose run --rm server manage db upgrade # Upgrade database
+docker compose run --rm server manage db upgrade # Upgrade database with recent migration
 ```
 
 ## Local Development

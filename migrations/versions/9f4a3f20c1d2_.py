@@ -32,22 +32,6 @@ def upgrade():
         with op.batch_alter_table("reports") as batch_op:
             batch_op.add_column(sa.Column("data_source_id", sa.Integer(), nullable=True))
 
-    # Add or replace foreign key
-    with op.batch_alter_table("reports") as batch_op:
-        # Drop old FK if exists (ignore errors)
-        try:
-            batch_op.drop_constraint("reports_data_source_id_fkey", type_="foreignkey")
-        except Exception:
-            pass
-
-        batch_op.create_foreign_key(
-            "reports_data_source_id_fkey",
-            "data_sources",
-            ["data_source_id"],
-            ["id"],
-            ondelete="SET NULL"
-        )
-
     # Pick a fallback id
     fallback_result = conn.execute(sa.text("SELECT id FROM data_sources ORDER BY RANDOM() LIMIT 1"))
     fallback_id = fallback_result.scalar() or 1
@@ -62,6 +46,8 @@ def upgrade():
 
 def downgrade():
     # Just drop the foreign key and column (optional)
-    with op.batch_alter_table("reports") as batch_op:
-        batch_op.drop_constraint("reports_data_source_id_fkey", type_="foreignkey")
-        batch_op.drop_column("data_source_id")
+    try:
+        with op.batch_alter_table("reports") as batch_op:
+            batch_op.drop_column("data_source_id")
+    except Exception:
+        pass

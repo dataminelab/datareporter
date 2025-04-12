@@ -32,20 +32,6 @@ def upgrade():
         with op.batch_alter_table("reports") as batch_op:
             batch_op.add_column(sa.Column("data_source_id", sa.Integer(), nullable=True))
 
-    # Add or replace foreign key
-    with op.batch_alter_table("reports") as batch_op:
-        # Drop old FK if exists (ignore errors)
-        try:
-            batch_op.create_foreign_key(
-                "reports_data_source_id_fkey",
-                "data_sources",
-                ["data_source_id"],
-                ["id"],
-                ondelete="SET NULL"
-            )
-        except Exception:
-            pass
-
     # Update rows with NULL
     conn.execute(sa.text("""
         UPDATE reports SET data_source_id = 1 WHERE 1=1
@@ -55,5 +41,4 @@ def upgrade():
 def downgrade():
     # Just drop the foreign key and column (optional)
     with op.batch_alter_table("reports") as batch_op:
-        batch_op.drop_constraint("reports_data_source_id_fkey", type_="foreignkey")
         batch_op.drop_column("data_source_id")

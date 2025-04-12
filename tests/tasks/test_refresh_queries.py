@@ -20,7 +20,6 @@ class TestRefreshQuery(BaseTestCase):
             options={"apply_auto_limit": True},
         )
         oq = staticmethod(lambda: [query1, query2])
-        #breakpoint()
         with patch(ENQUEUE_QUERY) as add_job_mock, patch.object(Query, "outdated_queries", oq):
             refresh_queries()
             self.assertEqual(add_job_mock.call_count, 2)
@@ -53,7 +52,6 @@ class TestRefreshQuery(BaseTestCase):
         query1 = self.factory.create_query(data_source=ds, options={"apply_auto_limit": True})
         query2 = self.factory.create_query(query_text="select 42;", data_source=ds, options={"apply_auto_limit": True})
         oq = staticmethod(lambda: [query1, query2])
-        #breakpoint()
         with patch(ENQUEUE_QUERY) as add_job_mock, patch.object(Query, "outdated_queries", oq):
             refresh_queries()
             self.assertEqual(add_job_mock.call_count, 2)

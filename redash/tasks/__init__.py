@@ -33,4 +33,3 @@ from rq.connections import push_connection, pop_connection
 def init_app(app):
     app.before_request(lambda: push_connection(rq_redis_connection))
     app.teardown_request(lambda _: pop_connection())
-

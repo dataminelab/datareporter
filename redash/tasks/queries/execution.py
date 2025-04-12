@@ -29,7 +29,9 @@ def _unlock(query_hash, data_source_id):
     redis_connection.delete(_job_lock_id(query_hash, data_source_id))
 
 
-def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata={}):
+def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata=None):
+    if metadata is None:
+        metadata = {}
     query_hash = gen_query_hash(query)
     logger.info("Inserting job for %s with metadata=%s", query_hash, metadata)
     try_count = 0

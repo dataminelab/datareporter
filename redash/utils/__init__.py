@@ -21,8 +21,6 @@ from sqlalchemy.orm.query import Query
 
 from redash import settings
 
-from .human_time import parse_human_time
-
 COMMENTS_REGEX = re.compile(r"/\*.*?\*/")
 WRITER_ENCODING = os.environ.get("REDASH_CSV_WRITER_ENCODING", "utf-8")
 WRITER_ERRORS = os.environ.get("REDASH_CSV_WRITER_ERRORS", "strict")

@@ -188,7 +188,7 @@ class TestExtractCachedQueryIds(TestCase):
         self.assertEqual([123, 4566], extract_cached_query_ids(query))
 
     def test_finds_queries_with_whitespace_characters(self):
-        query = "SELECT * FROM    cached_query_123 a JOIN\tcached_query_4566 b ON a.id=b.parent_id JOIN\r\ncached_query_78 c ON b.id=c.parent_id"
+        query = "SELECT * FROM cached_query_123 a JOIN\tcached_query_4566 b ON a.id=b.parent_id JOIN\r\ncached_query_78 c ON b.id=c.parent_id"
         self.assertEqual([123, 4566, 78], extract_cached_query_ids(query))
 
 

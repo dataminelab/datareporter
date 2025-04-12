@@ -5,4 +5,4 @@ from .maintenance import (
     empty_schedules,
     remove_ghost_locks,
 )
-from .execution import execute_query, enqueue_query
+from .execution import execute_query, enqueue_query # noqa: F401

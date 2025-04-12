@@ -1,5 +1,15 @@
+from datetime import datetime
 import requests
-from redash.query_runner import *
+from redash.query_runner import (
+    BaseSQLQueryRunner,
+    register,
+    TYPE_BOOLEAN,
+    TYPE_INTEGER,
+    TYPE_FLOAT,
+    TYPE_STRING,
+    TYPE_DATE,
+    TYPE_DATETIME,
+)
 
 
 def _get_type(value):
@@ -11,6 +21,11 @@ def _get_type(value):
         return TYPE_BOOLEAN
     elif isinstance(value, str):
         return TYPE_STRING
+    elif isinstance(value, datetime):
+        if value.tzinfo is not None:
+            return TYPE_DATETIME
+        else:
+            return TYPE_DATE
     return TYPE_STRING
 
 

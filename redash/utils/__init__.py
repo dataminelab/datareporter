@@ -21,6 +21,8 @@ from sqlalchemy.orm.query import Query
 
 from redash import settings
 
+from .human_time import parse_human_time
+
 COMMENTS_REGEX = re.compile(r"/\*.*?\*/")
 WRITER_ENCODING = os.environ.get("REDASH_CSV_WRITER_ENCODING", "utf-8")
 WRITER_ERRORS = os.environ.get("REDASH_CSV_WRITER_ERRORS", "strict")
@@ -58,7 +60,7 @@ def gen_query_hash(sql):
     """
     sql = COMMENTS_REGEX.sub("", sql)
     sql = "".join(sql.split())
-    return hashlib.md5(sql.encode("utf-8")).hexdigest()
+    return hashlib.md5(sql.encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 def generate_token(length):
@@ -68,14 +70,13 @@ def generate_token(length):
     return "".join(rand.choice(chars) for x in range(length))
 
 
-json_encoders = [m.custom_json_encoder for m in sys.modules if hasattr(m, "custom_json_encoder")]
-
-
 class JSONEncoder(json.JSONEncoder):
     """Adapter for `json.dumps`."""
 
     def __init__(self, **kwargs):
-        self.encoders = json_encoders
+        from redash.query_runner import query_runners
+
+        self.encoders = [r.custom_json_encoder for r in query_runners.values() if hasattr(r, "custom_json_encoder")]
         super().__init__(**kwargs)
 
     def default(self, o):

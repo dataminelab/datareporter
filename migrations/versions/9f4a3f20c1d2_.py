@@ -36,28 +36,19 @@ def upgrade():
     with op.batch_alter_table("reports") as batch_op:
         # Drop old FK if exists (ignore errors)
         try:
-            batch_op.drop_constraint("reports_data_source_id_fkey", type_="foreignkey")
+            batch_op.create_foreign_key(
+                "reports_data_source_id_fkey",
+                "data_sources",
+                ["data_source_id"],
+                ["id"],
+                ondelete="SET NULL"
+            )
         except Exception:
             pass
 
-        batch_op.create_foreign_key(
-            "reports_data_source_id_fkey",
-            "data_sources",
-            ["data_source_id"],
-            ["id"],
-            ondelete="SET NULL"
-        )
-
-    # Pick a fallback id
-    fallback_result = conn.execute(sa.text("SELECT id FROM data_sources ORDER BY RANDOM() LIMIT 1"))
-    fallback_id = fallback_result.scalar() or 1
-
-    # Update rows with NULL
     conn.execute(sa.text("""
-        UPDATE reports 
-        SET data_source_id = :fallback 
-        WHERE data_source_id IS NULL
-    """), {"fallback": fallback_id})
+        UPDATE reports SET data_source_id = 1 WHERE 1=1
+    """))
 
 
 def downgrade():

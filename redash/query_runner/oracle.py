@@ -91,7 +91,7 @@ class Oracle(BaseSQLQueryRunner):
             all_tab_cols.COLUMN_NAME
         FROM all_tab_cols
         WHERE all_tab_cols.OWNER NOT IN('SYS','SYSTEM','ORDSYS','CTXSYS','WMSYS','MDSYS','ORDDATA','XDB','OUTLN','DMSYS','DSSYS','EXFSYS','LBACSYS','TSMSYS')
-        """
+        """  # noqa: E501
 
         results, error = self.run_query(query, None)
 
@@ -157,7 +157,7 @@ class Oracle(BaseSQLQueryRunner):
         connection.outputtypehandler = Oracle.output_handler
 
         cursor = connection.cursor()
-
+        error = None
         try:
             cursor.execute(query)
             rows_count = cursor.rowcount

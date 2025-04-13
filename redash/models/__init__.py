@@ -38,9 +38,6 @@ from redash.models.base import (
     key_type,
     primary_key,
 )
-from redash.models.changes import Change, ChangeTrackingMixin  # noqa
-from redash.models.mixins import BelongsToOrgMixin, TimestampMixin
-from redash.models.organizations import Organization
 from redash.models.parameterized_query import (
     InvalidParameterError,
     ParameterizedQuery,
@@ -1710,16 +1707,12 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     def get_by_group_ids(cls, user):
         # Use alias for User to avoid ambiguity if multiple joins are needed
         user_alias = aliased(User)
-        return (
-            cls.query
-                .join(user_alias, cls.last_modified_by_id == user_alias.id)  # Explicit join condition
-                .filter(
-                    and_(
-                        cls.is_archived.is_(False),                # Only non-archived reports
-                        user_alias.org_id == user.org.id,          # Match the user's organization
-                        user_alias.group_ids.overlap(user.group_ids)  # Overlapping group IDs
-                    )
-                )
+        return cls.query.join(user_alias, cls.last_modified_by_id == user_alias.id).filter(  # Explicit join condition
+            and_(
+                cls.is_archived.is_(False),  # Only non-archived reports
+                user_alias.org_id == user.org.id,  # Match the user's organization
+                user_alias.group_ids.overlap(user.group_ids),  # Overlapping group IDs
+            )
         )
 
     @classmethod
@@ -1747,6 +1740,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
             return {}
 
         return self.data_source.groups
+
 
 @listens_for(Report.user_id, "set")
 def report_last_modified_by(target, val, oldval, initiator):

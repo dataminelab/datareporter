@@ -1,13 +1,21 @@
 import logging
-import sys
 
-from redash.query_runner import *
+from redash.query_runner import (
+    TYPE_DATETIME,
+    TYPE_FLOAT,
+    TYPE_INTEGER,
+    TYPE_STRING,
+    TYPE_BOOLEAN,
+    BaseSQLQueryRunner,
+    JobTimeoutException,
+    register,
+)
 from redash.utils import json_dumps
 
 logger = logging.getLogger(__name__)
 
 try:
-    from dql import Engine, FragmentEngine
+    from dql import Engine, FragmentEngine  # noqa: F401
     from dynamo3 import DynamoDBError
     from pyparsing import ParseException
 

@@ -36,7 +36,7 @@ class WorkerProcess:
         logger.info(f"running - {command}")
         result = subprocess.run(command, shell=True, capture_output=True)
         logger.warning(
-            f"worker execution result : {result.returncode}\nstdout:\n {result.stdout}\nstderr:\n {result.stderr}")
+            f"worker execution result : {result.returncode}\nstdout:\n {result.stdout}\nstderr:\n {result.stderr}")  # noqa: E231
 
 
 @routes.route("/api/subscribe/default", methods=["POST"])

@@ -31,7 +31,7 @@ def init_app(app):
         queries,
         setup,
         static,
-    )
+    ) # noqa: F401
 
     app.register_blueprint(routes)
     api.init_app(app)

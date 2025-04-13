@@ -4,6 +4,7 @@ import logging
 import time
 from datetime import timedelta
 from urllib.parse import urlsplit, urlunsplit
+from typing import Optional
 
 from flask import jsonify, redirect, request, session, url_for
 from flask_login import LoginManager, login_user, logout_user, user_logged_in
@@ -15,7 +16,6 @@ from redash.authentication import jwt_auth
 from redash.authentication.org_resolving import current_org
 from redash.settings.organization import settings as org_settings
 from redash.tasks import record_event
-from typing import Optional
 
 login_manager = LoginManager()
 logger = logging.getLogger("authentication")

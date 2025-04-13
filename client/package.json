@@ -274,6 +274,7 @@
     "and_chr >= 71",
     "and_ff >= 64",
     "and_uc >= 11.8",
-    "samsung >= 6.2"
+    "samsung >= 6.2",
+    "not IE 11"
   ]
 }

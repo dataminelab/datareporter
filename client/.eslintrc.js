@@ -52,6 +52,17 @@ module.exports = {
   },
   overrides: [
     {
+      files: ["**/cypress/**/*.js"],
+      plugins: ["cypress"],
+      env: {
+        "cypress/globals": true,
+      },
+      rules: {
+        "cypress/no-unnecessary-waiting": "warn",
+        "cypress/no-unnecessary-wait": "warn"
+      }
+    },
+    {
       // Only run typescript-eslint on TS files
       files: ["*.ts", "*.tsx", ".*.ts", ".*.tsx"],
       extends: ["plugin:@typescript-eslint/recommended"],

@@ -10,36 +10,30 @@ class DataSourceTest(BaseTestCase):
     def test_get_schema(self):
         return_value = [{"name": "table", "columns": []}]
 
-        with mock.patch(
-            "redash.query_runner.pg.PostgreSQL.get_schema"
-        ) as patched_get_schema:
+        with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
             patched_get_schema.return_value = return_value
 
             schema = self.factory.data_source.get_schema(refresh=True)
 
             new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
-            
+
             self.assertEqual(new_return_value, schema)
             self.assertEqual(patched_get_schema.call_count, 1)
 
     def test_get_schema_uses_cache(self):
         return_value = [{"name": "table", "columns": []}]
-        with mock.patch(
-            "redash.query_runner.pg.PostgreSQL.get_schema"
-        ) as patched_get_schema:
+        with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
             patched_get_schema.return_value = return_value
-            
+
             new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
             schema = self.factory.data_source.get_schema(refresh=True)
-            
+
             self.assertEqual(new_return_value, schema)
             self.assertEqual(patched_get_schema.call_count, 1)
 
     def test_get_schema_skips_cache_with_refresh_true(self):
         return_value = [{"name": "table", "columns": []}]
-        with mock.patch(
-            "redash.query_runner.pg.PostgreSQL.get_schema"
-        ) as patched_get_schema:
+        with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
             patched_get_schema.return_value = return_value
 
             self.factory.data_source.get_schema(refresh=True)
@@ -64,7 +58,7 @@ class DataSourceTest(BaseTestCase):
                 "name": "all_terain_vehicle",
                 "columns": ["has_all_wheel_drive", "has_engine", "has_wheels"],
             },
-            {"typed_columns": [],"name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
+            {"typed_columns": [], "name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
         ]
 
         real_output = self.factory.data_source._sort_schema(input_data)
@@ -80,19 +74,15 @@ class DataSourceTest(BaseTestCase):
         ]
 
         sorted_schema = [
-            {   "typed_columns": [],
+            {
+                "typed_columns": [],
                 "name": "all_terain_vehicle",
                 "columns": ["has_all_wheel_drive", "has_engine", "has_wheels"],
             },
-            {   "typed_columns": [],
-                "name": "zoo", 
-                "columns": ["is_cow", "is_snake", "is_zebra"]
-            },
+            {"typed_columns": [], "name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
         ]
 
-        with mock.patch(
-            "redash.query_runner.pg.PostgreSQL.get_schema"
-        ) as patched_get_schema:
+        with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
             patched_get_schema.return_value = orig_schema
 
             out_schema = self.factory.data_source.get_schema(refresh=True)
@@ -161,9 +151,7 @@ class TestDataSourceDelete(BaseTestCase):
 
         data_source.delete()
         self.assertIsNone(DataSource.query.get(data_source.id))
-        self.assertEqual(
-            0, QueryResult.query.filter(QueryResult.data_source == data_source).count()
-        )
+        self.assertEqual(0, QueryResult.query.filter(QueryResult.data_source == data_source).count())
 
     @patch("redash.redis_connection.delete")
     def test_deletes_schema(self, mock_redis):

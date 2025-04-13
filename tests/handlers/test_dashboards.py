@@ -31,8 +31,8 @@ class TestDashboardListGetResource(BaseTestCase):
 
     def test_filters_with_tags(self):
         d1 = self.factory.create_dashboard(tags=["test"])
-        d2 = self.factory.create_dashboard()
-        d3 = self.factory.create_dashboard()
+        self.factory.create_dashboard()
+        self.factory.create_dashboard()
 
         rv = self.make_request("get", "/api/dashboards?tags=test")
         assert len(rv.json["results"]) == 1
@@ -41,7 +41,7 @@ class TestDashboardListGetResource(BaseTestCase):
     def test_search_term(self):
         d1 = self.factory.create_dashboard(name="Sales")
         d2 = self.factory.create_dashboard(name="Q1 sales")
-        d3 = self.factory.create_dashboard(name="Ops")
+        self.factory.create_dashboard(name="Ops")
 
         rv = self.make_request("get", "/api/dashboards?q=sales")
         assert len(rv.json["results"]) == 2

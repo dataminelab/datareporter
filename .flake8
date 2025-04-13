@@ -1,0 +1,7 @@
+[flake8]
+max-line-length = 127
+max-complexity = 14
+
+per-file-ignores =
+    migrations/*: E128 F401 W605
+    migrations/versions/*: E128 F401 W605

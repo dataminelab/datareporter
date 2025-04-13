@@ -141,9 +141,11 @@ jobs:
           # cache: 'npm'
 
       - name: Install Dependencies
-        run: cd client && npm install
+        working-directory: client
+        run: npm install
 
       - name: Run Lint
+        working-directory: client
         run: npm run lint
 
       - name: Store Test Results
@@ -204,8 +206,6 @@ jobs:
         working-directory: plywood/server/client
         run: npm run test
 
-      - run: npm run lint
-
   frontend-e2e-tests:
     runs-on: ubuntu-latest
     needs: frontend-lint
@@ -236,7 +236,8 @@ jobs:
           echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
 
       - name: Install Dependencies
-        run: cd client && npm install
+        working-directory: client
+        run: npm install
 
       - name: Setup Redash Server
         run: |
@@ -246,6 +247,7 @@ jobs:
           docker compose run cypress npm run cypress db-seed
 
       - name: Execute Cypress Tests
+        working-directory: client
         run: npm run cypress run-ci
 
       - name: "Failure: output container logs to console"

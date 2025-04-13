@@ -6,6 +6,7 @@ import decimal
 import hashlib
 import io
 import json
+import math
 import os
 import random
 import re
@@ -126,6 +127,17 @@ def json_loads(data, *args, **kwargs):
     return json.loads(data, *args, **kwargs)
 
 
+# Convert NaN, Inf, and -Inf to None, as they are not valid JSON values.
+def _sanitize_data(data):
+    if isinstance(data, dict):
+        return {k: _sanitize_data(v) for k, v in data.items()}
+    if isinstance(data, list):
+        return [_sanitize_data(v) for v in data]
+    if isinstance(data, float) and (math.isnan(data) or math.isinf(data)):
+        return None
+    return data
+
+
 def json_dumps(data, *args, **kwargs):
     """A custom JSON dumping function which passes all parameters to the
     json.dumps function."""
@@ -134,7 +146,7 @@ def json_dumps(data, *args, **kwargs):
     # Float value nan or inf in Python should be render to None or null in json.
     # Using allow_nan = True will make Python render nan as NaN, leading to parse error in front-end
     kwargs.setdefault("allow_nan", False)
-    return json.dumps(data, *args, **kwargs)
+    return json.dumps(_sanitize_data(data), *args, **kwargs)
 
 
 def mustache_render(template, context=None, **kwargs):
@@ -243,8 +255,10 @@ def query_is_select_no_limit(query):
     if last_keyword_idx == -1 or parsed_query.tokens[0].value.upper() != "SELECT":
         return False
 
-    no_limit = parsed_query.tokens[last_keyword_idx].value.upper() != "LIMIT" \
-               and parsed_query.tokens[last_keyword_idx].value.upper() != "OFFSET"
+    no_limit = (
+        parsed_query.tokens[last_keyword_idx].value.upper() != "LIMIT"
+        and parsed_query.tokens[last_keyword_idx].value.upper() != "OFFSET"
+    )
     return no_limit
 
 
@@ -260,7 +274,7 @@ def add_limit_to_query(query):
     limit_tokens = sqlparse.parse(" LIMIT 1000")[0].tokens
     length = len(parsed_query.tokens)
     if parsed_query.tokens[length - 1].ttype == sqlparse.tokens.Punctuation:
-        parsed_query.tokens[length - 1:length - 1] = limit_tokens
+        parsed_query.tokens[length - 1 : length - 1] = limit_tokens
     else:
         parsed_query.tokens += limit_tokens
     return str(parsed_query)

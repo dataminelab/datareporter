@@ -9,7 +9,14 @@ module.exports = {
     // Remove any typescript-eslint rules that would conflict with prettier
     "prettier/@typescript-eslint",
   ],
-  plugins: ["jest", "compat", "no-only-tests", "@typescript-eslint", "jsx-a11y"],
+  plugins: [
+    "jest",
+    "compat",
+    "no-only-tests",
+    "@typescript-eslint",
+    "jsx-a11y",
+    "cypress",
+  ],
   settings: {
     "import/resolver": "webpack",
   },
@@ -49,19 +56,9 @@ module.exports = {
         ],
       },
     ],
+    "cypress/no-unnecessary-waiting": "warn",
   },
   overrides: [
-    {
-      files: ["**/cypress/**/*.js"],
-      plugins: ["cypress"],
-      env: {
-        "cypress/globals": true,
-      },
-      rules: {
-        "cypress/no-unnecessary-waiting": "warn",
-        "cypress/no-unnecessary-wait": "warn"
-      }
-    },
     {
       // Only run typescript-eslint on TS files
       files: ["*.ts", "*.tsx", ".*.ts", ".*.tsx"],
@@ -78,5 +75,14 @@ module.exports = {
         "@typescript-eslint/camelcase": "off",
       },
     },
+    {
+      files: ["**/*.mocha.ts", "**/*.mocha.tsx"],
+      env: {
+        mocha: true, // enables mocha globals like `describe`, `it`
+      },
+      rules: {
+        "@typescript-eslint/no-empty-function": "off", // or "warn"
+      },
+    }
   ],
 };

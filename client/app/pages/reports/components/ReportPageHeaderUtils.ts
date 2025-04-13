@@ -6,7 +6,7 @@ export const replaceHash = (model: any, hash: any) => {
 export const hexToRgb = (hex: any) => {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(shorthandRegex, function(m:number, r:number, g:number, b:number) {
+  hex = hex.replace(shorthandRegex, function(_: number, r: number, g: number, b: number) {
     return r + r + g + g + b + b;
   });
 
@@ -22,7 +22,7 @@ export const hexToRgb = (hex: any) => {
 };
 
 let buttonVisible = false;
-export function setPriceButton(price: number, proceedData: number, set: boolean = false) {
+export function setPriceButton(price: number, proceedData: number, set = false) {
   // args: price, proceedData, set
   // set:
   //    TRUE means set given data into local storage

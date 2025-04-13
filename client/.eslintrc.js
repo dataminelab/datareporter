@@ -90,6 +90,8 @@ module.exports = {
         "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
         "jest/no-disabled-tests": "off",
         "jest/valid-expect": "off",
+        "@typescript-eslint/ban-ts-ignore": "off",
+        "no-var": "warn",
       },
     },    
   ],

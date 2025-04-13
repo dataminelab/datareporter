@@ -41,7 +41,7 @@ class Wrap extends React.Component {
 describe("FilterMenu", () => {
   it("adds the correct class", () => {
 
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <Wrap />
     );
 

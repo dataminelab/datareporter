@@ -77,13 +77,18 @@ module.exports = {
       },
     },
     {
-      files: ["*.mocha.ts", "*.mocha.tsx"],
+      files: ["**/*.mocha.ts", "**/*.mocha.tsx"],
       env: {
-        mocha: true, // enables mocha globals like `describe`, `it`
+        mocha: true,
+        jest: false, // explicitly disable jest env
       },
+      plugins: [], // no "jest" here
       rules: {
-        "@typescript-eslint/no-empty-function": "off", // or "warn"
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
+        "jest/no-disabled-tests": "off",
+        "jest/valid-expect": "off",
       },
-    }
+    },    
   ],
 };

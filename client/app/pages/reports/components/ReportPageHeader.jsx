@@ -436,7 +436,7 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     if (!currentHash || !dataSources) return;
 
-    const abortController = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const abortController = typeof AbortController !== 'undefined' ? new (require('abortcontroller-polyfill/dist/cjs-ponyfill').AbortController)() : null;
     const signal = abortController ? abortController.signal : null;
 
     const setData = async (dataSourceId, modelId) => {

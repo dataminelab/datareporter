@@ -80,7 +80,7 @@ module.exports = {
       },
     },
     {
-      files: ["**/*.mocha.ts", "**/*.mocha.tsx"],
+      files: ["**/*.mocha.ts", "**/*.mocha.tsx", "**/*.test.ts", "**/*.test.tsx"],
       env: {
         mocha: true,
         jest: false, // explicitly disable jest env
@@ -93,7 +93,16 @@ module.exports = {
         "jest/valid-expect": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
         "no-var": "warn",
+        "@typescript-eslint/member-delimiter-style": "off",
+        "@typescript-eslint/no-empty-interface": "off",
+        "prefer-const": [
+          "warn",
+          {
+            destructuring: "all",
+            ignoreReadBeforeAssign: true,
+          },
+        ],
       },
-    },    
-  ],
+    },
+],
 };

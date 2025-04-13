@@ -205,7 +205,7 @@ class Python(BaseQueryRunner):
             result["rows"] = []
 
         result["rows"].append(values)
-
+ 
     @staticmethod
     def execute_query(data_source_name_or_id, query, result_type=None):
         """Run query from specific data source.

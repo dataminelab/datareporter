@@ -47,43 +47,43 @@ jobs:
         with:
           fetch-depth: 1
           ref: ${{ github.event.pull_request.head.sha }}
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           version: v0.12.1
-      
+
       - name: Build docker compose
         uses: docker/bake-action@v4
         with:
           files: docker-compose.yml, docker-compose.ci.yml
           load: true
-      
+
       - name: "Prepare test environment"
         shell: bash
         run: |-
           docker compose -f docker-compose.ci.yml up -d postgres redis
-      
+
       - name: "Wait for postgres to start"
         shell: bash
         run: |-
           for i in 1 2 3 4 5; do docker compose  -f docker-compose.ci.yml run  --rm postgres psql -h postgres -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'tests'"  && break || sleep 2; done
-      
+
       - name: "Create tests database"
         shell: bash
         run: |-
           docker compose  -f docker-compose.ci.yml run  --rm postgres psql -h postgres -U postgres -c "create database tests;"
-      
+
       - name: "List Enabled Query Runners"
         shell: bash
         run: |-
           docker compose  -f docker-compose.ci.yml run  --rm server manage ds list_types
-      
+
       - name: "Execute unit tests"
         shell: bash
         run: |-
           docker compose  -f docker-compose.ci.yml run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
-      
+
       - name: "Extract test results"
         shell: bash
         if: always()
@@ -91,7 +91,7 @@ jobs:
           docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
           ls -l
-      
+
       - name: "Publish unit test report"
         uses: mikepenz/action-junit-report@v4
         if: always()
@@ -103,7 +103,7 @@ jobs:
           summary: true
           job_summary: true
           check_name: "Unit Tests Report"
-      
+
       - name: Code Coverage Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
@@ -116,7 +116,7 @@ jobs:
           indicators: true
           output: both
           thresholds: '60 80'
-      
+
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
@@ -139,13 +139,13 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           # cache: 'npm'
-      
+
       - name: Install Dependencies
         run: cd client && npm install
-      
+
       - name: Run Lint
         run: npm run lint
-      
+
       - name: Store Test Results
         uses: actions/upload-artifact@v4
         with:
@@ -163,12 +163,12 @@ jobs:
         with:
           fetch-depth: 1
           ref: ${{ github.event.pull_request.head.sha }}
-      
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: Cache npm dependencies
         uses: actions/cache@v4
         with:
@@ -176,26 +176,34 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      
-      
-      - name: Install dependencies
+
+      - name: Install App dependencies
         working-directory: client
         run: npm install
-      
-      - name: Install Dependencies
-        run: cd client && npm install
-      
+
       - name: Run App Tests
+        working-directory: client
         run: npm run test
       
       - name: Run Visualizations Tests
         run: cd viz-lib && npm run test
       
+      - name: Install plywood-server dependencies
+        working-directory: plywood/server
+        run: npm install
+
       - name: Run plywood-server Tests
-        run: cd plywood/server && npm run test
-      
+        working-directory: plywood/server
+        run: npm run test
+
+      - name: Install plywood-client dependencies
+        working-directory: plywood/server/client
+        run: npm install
+
       - name: Run plywood-client Tests
-        run: cd plywood/server/client && npm run test
+        working-directory: plywood/server/client
+        run: npm run test
+
       - run: npm run lint
 
   frontend-e2e-tests:
@@ -221,32 +229,32 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           # cache: 'npm'
-      
+
       - name: Enable Code Coverage Report For Develop Branch
         if: endsWith(github.ref, '/develop')
         run: |
           echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
-      
+
       - name: Install Dependencies
         run: cd client && npm install
-      
+
       - name: Setup Redash Server
         run: |
           set -x
           npm run cypress build
           npm run cypress start -- --skip-db-seed
           docker compose run cypress npm run cypress db-seed
-      
+
       - name: Execute Cypress Tests
         run: npm run cypress run-ci
-      
+
       - name: "Failure: output container logs to console"
         if: failure()
         run: docker compose logs
-      
+
       - name: Copy Code Coverage Results
         run: docker cp cypress:/usr/src/app/coverage ./coverage || true
-      
+
       - name: Store Coverage Results
         uses: actions/upload-artifact@v4
         with:

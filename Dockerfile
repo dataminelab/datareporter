@@ -7,6 +7,7 @@ RUN useradd -m -d /frontend datareporter
 USER datareporter
 
 WORKDIR /frontend
+COPY --chown=redash package.json package-lock.lock /frontend/
 COPY --chown=datareporter client /frontend/client
 COPY --chown=datareporter viz-lib/ /frontend/viz-lib
 COPY --chown=datareporter plywood/server /frontend/plywood/server/

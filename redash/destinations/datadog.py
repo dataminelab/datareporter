@@ -63,7 +63,7 @@ class Datadog(BaseDestination):
             "alert_type": alert_type,
             "priority": options.get("priority"),
             "source_type_name": options.get("source_type_name"),
-            "aggregation_key": f"redash:{alert_url}", # noqa E231
+            "aggregation_key": f"redash:{alert_url}",  # noqa E231
             "tags": [],
         }
 
@@ -79,7 +79,7 @@ class Datadog(BaseDestination):
         )
 
         dd_host = os.getenv("DATADOG_HOST", "api.datadoghq.com")
-        url = f"https://{dd_host}/api/v1/events" # noqa E231
+        url = f"https://{dd_host}/api/v1/events"  # noqa E231
 
         try:
             resp = requests.post(url, headers=headers, data=json_dumps(body), timeout=5.0)

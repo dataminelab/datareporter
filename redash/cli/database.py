@@ -40,7 +40,7 @@ def is_db_empty():
 def load_extensions(db):
     with db.engine.connect() as connection:
         for extension in settings.dynamic_settings.database_extensions:
-            connection.execute(f'CREATE EXTENSION IF NOT EXISTS "{extension}";') # noqa: E702, E231
+            connection.execute(f'CREATE EXTENSION IF NOT EXISTS "{extension}";')  # noqa: E702, E231
 
 
 @manager.command(name="create_tables")

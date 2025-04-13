@@ -126,7 +126,7 @@ class TestModelsConfigCreateResource(BaseTestCase):
         db.session.commit()
         user = self.factory.create_admin(group_ids=[group.id])
         model = self.factory.create_model(user=user)
-        config = self.factory.create_model_config(model=model)
+        # config = self.factory.create_model_config(model=model)
         db.session.commit()
 
         content = """dataCubes:
@@ -151,7 +151,7 @@ class TestModelsConfigCreateResource(BaseTestCase):
 """
 
         response = self.make_request(
-            "post", "/api/models/{}/config".format(model.id), data={"content": content}, user=user
+            "post", f"/api/models/{model.id}/config", data={"content": content}, user=user
         )
 
         self.assertEqual(200, response.status_code)

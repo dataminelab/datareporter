@@ -24,7 +24,6 @@ from redash.models import db  # noqa: E402
 from redash.utils import json_dumps  # noqa: E402
 from tests.factories import Factory, user_factory  # noqa: E402
 
-
 logging.disable(logging.INFO)
 logging.getLogger("metrics").setLevel(logging.ERROR)
 

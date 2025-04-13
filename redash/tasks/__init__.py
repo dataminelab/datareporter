@@ -2,7 +2,6 @@ from .general import (
     record_event,
     send_mail,
     sync_user_details,
-    purge_failed_jobs,
     test_connection,
     get_schema,
 )

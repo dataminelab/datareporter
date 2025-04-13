@@ -58,13 +58,14 @@ class HttpNotifier:
     def _send(self, message):
         resp = requests.post(
             WORKER_NOTIFY_URL,
+            timeout=45,
             headers={"Accept": "application/json", "Content-Type": "application/json"},
             json={"message": {"data": base64.b64encode(message.encode("ascii")).decode("ascii")}},
         )
         try:
             resp.raise_for_status()
         except requests.HTTPError as e:
-            logger.error("Request failed: {}", e.response.text, e)
+            logger.error("Request failed: %s", e.response.text)
             raise e
 
 
@@ -79,7 +80,7 @@ class GooglePubSubNotifier:
         # Data must be a bytestring
         data = message.encode("utf-8")
         # When you publish a message, the client returns a future.
-        logger.info(f"publishing {GOOGLE_PUBSUB_WORKER_TOPIC_ID} : {data}")
+        logger.info("publishing %s: %s", GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
         future = self.publisher.publish(GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
         return future.result()
 

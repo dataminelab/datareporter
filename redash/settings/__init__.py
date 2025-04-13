@@ -392,7 +392,7 @@ QUERY_REFRESH_INTERVALS = list(
         array_from_string(
             os.environ.get(
                 "REDASH_QUERY_REFRESH_INTERVALS",
-                "60, 300, 600, 900, 1800, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 86400, 604800, 1209600, 2592000",
+                "60, 300, 600, 900, 1800, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 86400, 604800, 1209600, 2592000",  # noqa E501
             )
         ),
     )
@@ -443,7 +443,8 @@ SQLPARSE_FORMAT_OPTIONS = {
 REQUESTS_ALLOW_REDIRECTS = parse_boolean(os.environ.get("REDASH_REQUESTS_ALLOW_REDIRECTS", "false"))
 
 # Enforces CSRF token validation on API requests.
-# This is turned off by default to avoid breaking any existing deployments but it is highly recommended to turn this toggle on to prevent CSRF attacks.
+# This is turned off by default to avoid breaking any existing deployments,
+# but it is highly recommended to turn this toggle on to prevent CSRF attacks.
 ENFORCE_CSRF = parse_boolean(os.environ.get("REDASH_ENFORCE_CSRF", "false"))
 
 # Databricks

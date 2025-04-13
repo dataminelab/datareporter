@@ -4,5 +4,5 @@ from .maintenance import (
     cleanup_query_results,
     empty_schedules,
     remove_ghost_locks,
-)
+) # noqa: F401
 from .execution import execute_query, enqueue_query # noqa: F401

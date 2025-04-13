@@ -126,7 +126,7 @@ def parse_worksheet(worksheet):
             columns[j]["type"] = guess_type(value)
 
     column_types = [c["type"] for c in columns]
-    rows = [dict(zip(column_names, _value_eval_list(row, column_types))) for row in worksheet[HEADER_INDEX + 1 :]]  # noqa: E203 
+    rows = [dict(zip(column_names, _value_eval_list(row, column_types))) for row in worksheet[HEADER_INDEX + 1 :]]  # noqa: E203, E501
     data = {"columns": columns, "rows": rows}
 
     return data

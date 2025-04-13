@@ -304,7 +304,7 @@ class BaseSQLQueryRunner(BaseQueryRunner):
         length = len(parsed_query.tokens)
         if not self.limit_after_select:
             if parsed_query.tokens[length - 1].ttype == sqlparse.tokens.Punctuation:
-                parsed_query.tokens[length - 1 : length - 1] = limit_tokens
+                parsed_query.tokens[length - 1 : length - 1] = limit_tokens  # noqa: E203
             else:
                 parsed_query.tokens += limit_tokens
         else:

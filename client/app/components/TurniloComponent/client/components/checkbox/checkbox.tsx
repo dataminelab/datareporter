@@ -31,6 +31,7 @@ export interface CheckboxProps {
   className?: string;
 }
 
+// eslint-disable-next-line
 export interface CheckboxState {
 }
 

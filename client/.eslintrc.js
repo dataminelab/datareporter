@@ -40,6 +40,7 @@ module.exports = {
     "jsx-a11y/click-events-have-key-events": "off", // TMP
     "jsx-a11y/no-static-element-interactions": "off", // TMP
     "jsx-a11y/no-noninteractive-element-interactions": "off", // TMP
+    "jsx-a11y/label-has-associated-control": "off",
     "no-console": ["warn", { allow: ["warn", "error"] }],
     "no-restricted-imports": [
       "error",

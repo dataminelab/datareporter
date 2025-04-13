@@ -80,7 +80,7 @@ class JSONEncoder(json.JSONEncoder):
         self.encoders = [r.custom_json_encoder for r in query_runners.values() if hasattr(r, "custom_json_encoder")]
         super().__init__(**kwargs)
 
-    def default(self, o):  # noqa C901
+    def default(self, o):  # noqa: C901
         for encoder in self.encoders:
             result = encoder(self, o)
             if result:
@@ -274,7 +274,7 @@ def add_limit_to_query(query):
     limit_tokens = sqlparse.parse(" LIMIT 1000")[0].tokens
     length = len(parsed_query.tokens)
     if parsed_query.tokens[length - 1].ttype == sqlparse.tokens.Punctuation:
-        parsed_query.tokens[length - 1 : length - 1] = limit_tokens  # noqa E203
+        parsed_query.tokens[length - 1 : length - 1] = limit_tokens  # noqa: E203
     else:
         parsed_query.tokens += limit_tokens
     return str(parsed_query)

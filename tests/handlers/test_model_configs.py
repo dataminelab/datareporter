@@ -16,7 +16,7 @@ class TestModelsConfigCreateResource(BaseTestCase):
 
     def test_content_length_greater_than_20000(self):
         attributes = "\n".join(
-            [f"                    - key: {key}\n                    value: {key}" for key in range(680)]
+            [f"                    - key: {key}\n                    value: {key}" for key in range(680)]  # noqa: E221
         )
         content = """dataCubes:
                     - name: wikiticker

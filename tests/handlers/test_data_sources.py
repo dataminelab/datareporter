@@ -1,9 +1,7 @@
 from funcy import pairwise
-from tests import BaseTestCase
-from mock import patch
 
 from redash.models import DataSource
-from redash.query_runner.pg import PostgreSQL
+from tests import BaseTestCase
 
 
 class TestDataSourceGetSchema(BaseTestCase):

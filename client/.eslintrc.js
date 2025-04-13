@@ -57,6 +57,7 @@ module.exports = {
       },
     ],
     "cypress/no-unnecessary-waiting": "warn",
+    "cypress/unsafe-to-chain-command": "warn",
   },
   overrides: [
     {
@@ -76,7 +77,7 @@ module.exports = {
       },
     },
     {
-      files: ["**/*.mocha.ts", "**/*.mocha.tsx"],
+      files: ["*.mocha.ts", "*.mocha.tsx"],
       env: {
         mocha: true, // enables mocha globals like `describe`, `it`
       },

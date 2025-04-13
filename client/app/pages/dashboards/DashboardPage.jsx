@@ -1,5 +1,5 @@
 import { Duration } from "chronoshift";
-import { isEmpty } from "lodash";
+import { isEmpty, map } from "lodash";
 import { List } from "immutable";
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -357,7 +357,7 @@ class DashboardComponent extends React.Component {
 
   onParametersEdit = parameters => {
     const paramOrder = map(parameters, "name");
-    updateDashboard({ options: { globalParamOrder: paramOrder } });
+    this.props.dashboardOptions.updateDashboard({ options: { globalParamOrder: paramOrder } });
   };
 
   getEssence = (id) => {

@@ -10,7 +10,7 @@ FILE_SCHEME_PREFIX = "file://"
 
 
 def get_public_key_from_file(url):
-    file_path = url[len(FILE_SCHEME_PREFIX):]
+    file_path = url[len(FILE_SCHEME_PREFIX) :]  # noqa: E203
     with open(file_path) as key_file:
         key_str = key_file.read()
 

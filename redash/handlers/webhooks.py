@@ -33,10 +33,12 @@ class WorkerProcess:
 
     def run_worker(self) -> None:
         command = f"/app/manage.py rq worker --burst {self.queue}"
-        logger.info(f"running - {command}")
-        result = subprocess.run(command, shell=True, capture_output=True)
+        logger.info("running - %s", command)
+        result = subprocess.run(command, shell=True, capture_output=True, check=True)
         logger.warning(
-            f"worker execution result : {result.returncode}\nstdout:\n {result.stdout}\nstderr:\n {result.stderr}")  # noqa: E231
+            "worker execution result: %s\nstdout:\n %s\nstderr:\n %s",
+            result.returncode, result.stdout, result.stderr
+        )
 
 
 @routes.route("/api/subscribe/default", methods=["POST"])
@@ -51,5 +53,5 @@ def get_message_from_subscribed_data(request_data: bytes) -> str:
     envelope = request_data.decode("utf-8")
     data = json.loads(envelope)
     logger.info(f"Received message {envelope}")
-    message_data = data['message']['data']
+    message_data = data["message"]["data"]
     return base64.b64decode(message_data).decode("utf-8").strip()

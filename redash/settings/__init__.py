@@ -16,6 +16,7 @@ from .helpers import (
 from .organization import DATE_FORMAT, TIME_FORMAT  # noqa
 
 PLYWOOD_SERVER_URL = os.environ.get("PLYWOOD_SERVER_URL", "http://plywood-server:3000")
+SERVER_WORKER_URL = os.environ.get("SERVER_WORKER_URL", "")
 
 # _REDIS_URL is the unchanged REDIS_URL we get from env vars, to be used later with RQ
 _REDIS_URL = os.environ.get("REDASH_REDIS_URL", os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
@@ -308,11 +309,9 @@ default_query_runners = [
     "redash.query_runner.rockset",
     "redash.query_runner.treasuredata",
     "redash.query_runner.sqlite",
-    "redash.query_runner.dynamodb_sql",
     "redash.query_runner.mssql",
     "redash.query_runner.mssql_odbc",
     "redash.query_runner.memsql_ds",
-    "redash.query_runner.mapd",
     "redash.query_runner.jql",
     "redash.query_runner.google_analytics",
     "redash.query_runner.axibase_tsd",

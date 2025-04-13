@@ -68,7 +68,7 @@ class Oracle(BaseSQLQueryRunner):
                 "password": {"type": "string"},
                 "host": {
                     "type": "string",
-                    "title": "Host: To use a DSN Service Name instead, use the text string `_useservicename` in the host name field.",
+                    "title": "Host: To use a DSN Service Name instead, use the text string `_useservicename` in the host name field.",  # noqa: E501
                 },
                 "port": {"type": "number"},
                 "servicename": {"type": "string", "title": "DSN Service Name"},

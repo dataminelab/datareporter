@@ -115,7 +115,7 @@ function padDataset(originalDataset: Dataset, dimension: Dimension, measures: Me
 
   const filledData: Datum[] = [];
   data.forEach(d => {
-    let segmentValue = d[dimensionName];
+    const segmentValue = d[dimensionName];
     const segmentStart = (segmentValue as PlywoodRange).start;
     // @ts-ignore
     while (i < segmentStart) {

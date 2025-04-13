@@ -181,7 +181,7 @@ export class Ajax {
     return async (ex: Expression) => {
       if (this.results) return Dataset.fromJS(this.results.data || EmptyDataset);
       const modelId = this.model_id;
-      var sub;
+      let sub;
       // @ts-ignore
       if (ex instanceof LimitExpression || ex.operand instanceof FilterExpression) {
         // @ts-ignore

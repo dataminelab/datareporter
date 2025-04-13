@@ -58,6 +58,8 @@ module.exports = {
     ],
     "cypress/no-unnecessary-waiting": "warn",
     "cypress/unsafe-to-chain-command": "warn",
+    "@typescript-eslint/ban-ts-ignore": "warn",
+    "@typescript-eslint/explicit-function-return-type": "warn",
   },
   overrides: [
     {

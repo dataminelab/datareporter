@@ -83,7 +83,7 @@ def send_test_mail(email=None):
 @manager.command("shell")
 @with_appcontext
 def shell():
-    import sys
+    import sys # noqa F401
 
     from flask.globals import _app_ctx_stack
     from ptpython import repl

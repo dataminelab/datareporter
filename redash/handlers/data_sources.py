@@ -93,7 +93,7 @@ class DataSourceResource(BaseResource):
         try:
             data_source.delete()
         except IntegrityError:
-            abort(400, message=f"Data source has attached models.")
+            abort(400, message="Data source has attached models.")
 
         self.record_event(
             {

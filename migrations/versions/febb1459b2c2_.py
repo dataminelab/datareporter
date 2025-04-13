@@ -23,7 +23,7 @@ def upgrade():
     # Check if the column already exists
     result = conn.execute(sa.text("""
         SELECT column_name 
-        FROM information_schema.columns 
+        FROM information_schema.columns
         WHERE table_name='reports' AND column_name='data_source_id'
     """))
 

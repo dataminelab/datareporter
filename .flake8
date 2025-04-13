@@ -3,5 +3,9 @@ max-line-length = 127
 max-complexity = 14
 
 per-file-ignores =
-    migrations/*: E128 F401 W605
+    migrations/*: E128 F401 W605 E402 E501 E124
     migrations/versions/*: E128 F401 W605
+    tests/*: E501
+    redash/authentication/saml_auth.py: E501
+    redash/authentication/ldap_auth.py: E501
+    *__init__.py: F401

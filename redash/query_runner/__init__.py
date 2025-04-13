@@ -14,7 +14,6 @@ from redash.utils.requests_session import (
     requests_or_advocate,
     requests_session,
 )
-from redash.utils import query_is_select_no_limit, add_limit_to_query
 
 logger = logging.getLogger(__name__)
 
@@ -408,6 +407,7 @@ class BaseHTTPQueryRunner(BaseQueryRunner):
 
 query_runners = {}
 
+
 def register(query_runner_class):
     if query_runner_class.enabled():
         logger.debug(
@@ -422,7 +422,6 @@ def register(query_runner_class):
             "dependencies.",
             query_runner_class.name(),
         )
-
 
 
 def get_query_runner(query_runner_type, configuration):

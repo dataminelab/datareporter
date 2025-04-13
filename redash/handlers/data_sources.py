@@ -1,6 +1,5 @@
 import logging
 import time
-import json
 
 from flask import make_response, request
 from flask_restful import abort

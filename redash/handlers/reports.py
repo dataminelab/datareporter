@@ -105,7 +105,7 @@ class ReportApiKeyAccess(BaseResource):
         }
         query_results = []
         for query_result in serialized["queries"]:
-            if not "query_result" in query_result:
+            if "query_result" not in query_result:
                 continue
             query_result = QueryResult.get_by_id(query_result["query_result"]["id"])
             query_results.append(query_result)

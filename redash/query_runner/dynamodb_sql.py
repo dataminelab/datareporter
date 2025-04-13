@@ -129,9 +129,7 @@ class DynamoDBSQL(BaseSQLQueryRunner):
             json_data = json_dumps(data)
             error = None
         except ParseException as e:
-            error = "Error parsing query at line {} (column {}):\n{}".format(
-                e.lineno, e.column, e.line
-            )
+            error = "Error parsing query at line {} (column {}):\n{}".format(e.lineno, e.column, e.line)
             json_data = None
         except (KeyboardInterrupt, JobTimeoutException):
             if engine and engine.connection:

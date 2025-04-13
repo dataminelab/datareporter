@@ -3,8 +3,8 @@ import datetime
 import logging
 import numbers
 import time
-
 import pytz
+from sqlalchemy import Integer
 from sqlalchemy import UniqueConstraint, and_, cast, distinct, func, or_
 from sqlalchemy.dialects.postgresql import ARRAY, DOUBLE_PRECISION, JSONB
 from sqlalchemy.event import listens_for
@@ -35,12 +35,6 @@ from redash.models.base import (
     SearchBaseQuery,
     db,
     gfk_type,
-    key_type,
-    primary_key,
-    gfk_type,
-    Column,
-    GFKBase,
-    SearchBaseQuery,
     key_type,
     primary_key,
 )
@@ -88,16 +82,10 @@ from redash.utils import (
 )
 from redash.utils.configuration import ConfigurationContainer
 from redash.services.expression import ExpressionBase64Parser
-from redash.models.parameterized_query import (
-    InvalidParameterError,
-    ParameterizedQuery,
-    QueryDetachedFromDataSourceError,
-)
 from .changes import ChangeTrackingMixin, Change  # noqa
 from .mixins import BelongsToOrgMixin, TimestampMixin
 from .organizations import Organization
 from .users import AccessPermission, AnonymousUser, ApiUser, Group, User  # noqa
-from sqlalchemy import Integer
 
 logger = logging.getLogger(__name__)
 

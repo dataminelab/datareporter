@@ -43,7 +43,7 @@ def error_response(message, http_status=400):
 
 error_messages = {
     "unsafe_when_shared": error_response(
-        "This query contains potentially unsafe parameters and cannot be executed on a shared dashboard or an embedded visualization.",
+        "This query contains potentially unsafe parameters and cannot be executed on a shared dashboard or an embedded visualization.",  # noqa: E501
         403,
     ),
     "unsafe_on_view_only": error_response(

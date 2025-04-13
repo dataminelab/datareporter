@@ -86,7 +86,7 @@ HEADER_INDEX = 0
 
 class WorksheetNotFoundError(Exception):
     def __init__(self, worksheet_num, worksheet_count):
-        message = "Worksheet number {} not found. Spreadsheet has {} worksheets. Note that the worksheet count is zero based.".format(
+        message = "Worksheet number {} not found. Spreadsheet has {} worksheets. Note that the worksheet count is zero based.".format(  # noqa: E501
             worksheet_num, worksheet_count
         )
         super(WorksheetNotFoundError, self).__init__(message)

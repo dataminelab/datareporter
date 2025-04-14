@@ -58,7 +58,7 @@ describe("ManualFallback", () => {
     expect(firstResolution.text()).to.be.equal("Add a split on Time");
   });
 
-  it("should render resolutions", () => {
+  it("should render resolutions again", () => {
     const fallback = renderFallback();
     const secondResolution = fallback.find(".resolution-item").at(1);
 

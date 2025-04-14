@@ -20,7 +20,7 @@ import { extend } from "../../../common/utils/object/object";
 import { replaceHash } from "../../utils/url/url";
 import "./router.scss";
 
-export type Inflater = (key: string, value: string) => { key: string, value: any };
+export type Inflater = (key: string, value: string) => { key: string; value: any };
 
 export interface RouteProps {
   fragment: string;

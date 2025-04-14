@@ -143,7 +143,9 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
       style={{ top }}
       onClick={onClick}
       onMouseOver={this.onMouseOver}
+      onFocus={this.onMouseOver}
       onMouseLeave={this.onMouseLeave}
+      onBlur={this.onMouseLeave}
       className={classNames(`notification-card ${priority} ${rowsClass}`, { appearing, disappearing, muted })}
     >
       <div className="title">{title}</div>

@@ -1,14 +1,30 @@
 import requests
 from flask_mail import Message
+from mailchimp_marketing import Client as MailchimpClient
+from mailchimp_marketing.api_client import ApiClientError
 
 from redash import mail, models, settings
 from redash.models import users
 from redash.query_runner import NotSupported
 from redash.tasks.worker import Queue
-from redash.version_check import run_version_check
 from redash.worker import get_job_logger, job
 
 logger = get_job_logger(__name__)
+
+
+def add_member_mailchimp(email, name, org_name):
+    try:
+        client = MailchimpClient()
+        client.set_config({"api_key": settings.MAILCHIMP_API_KEY, "server": settings.MAILCHIMP_SERVER})
+        client.lists.add_list_member(
+            settings.MAILCHIMP_LIST_ID,
+            {"email_address": email, "merge_fields": {"FNAME": name, "ONAME": org_name}, "status": "subscribed"},
+        )
+    except ApiClientError as error:
+        if error.status_code == 400:
+            print("Already subscribed")
+        else:
+            raise Exception(f"Error: {error.text}") from error
 
 
 @job("default")
@@ -30,27 +46,14 @@ def record_event(raw_event):
             logger.exception("Failed posting to %s", hook)
 
 
-def version_check():
-    run_version_check()
-
-
 @job("default")
 def subscribe(form):
-    # TODO: implement
     logger.info(
         "Subscribing to: [security notifications=%s], [newsletter=%s]",
         form["security_notifications"],
         form["newsletter"],
     )
-    data = {
-        "admin_name": form["name"],
-        "admin_email": form["email"],
-        "org_name": form["org_name"],
-        "security_notifications": form["security_notifications"],
-        "newsletter": form["newsletter"],
-    }
-    # https://version.redash.io/subscribe
-    requests.post("https://datareporter.com/subscribe", json=data)
+    return add_member_mailchimp(form["email"], form["name"], form["org_name"])
 
 
 @job("emails")

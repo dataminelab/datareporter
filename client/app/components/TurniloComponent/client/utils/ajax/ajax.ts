@@ -127,7 +127,7 @@ export class Ajax {
       return getEssence ? getEssence() : null;
     }
 
-    function timeoutQuery(ms:number) {
+    function timeoutQuery(ms: number) {
       return new Promise(resolve => setTimeout(resolve, ms));;
     }
 

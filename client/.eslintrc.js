@@ -1,5 +1,9 @@
 module.exports = {
   root: true,
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module"
+  },
   parser: "@typescript-eslint/parser",
   extends: [
     "react-app",
@@ -83,9 +87,9 @@ module.exports = {
       files: ["**/*.mocha.ts", "**/*.mocha.tsx", "**/*.test.ts", "**/*.test.tsx"],
       env: {
         mocha: true,
-        jest: false, // explicitly disable jest env
+        jest: false,
       },
-      plugins: [], // no "jest" here
+      plugins: [],
       rules: {
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
@@ -104,5 +108,17 @@ module.exports = {
         ],
       },
     },
-],
+    {
+      files: ["**/TurniloComponent/**"],
+      env: {
+        mocha: true,
+        jest: false,
+      },
+      rules: {
+        "@typescript-eslint/no-useless-constructor": "off",
+        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/ban-ts-ignore": "off",
+      },
+    },
+  ],
 };

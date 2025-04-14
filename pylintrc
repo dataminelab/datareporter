@@ -153,6 +153,7 @@ disable=raw-checker-failed,
         deprecated-pragma,
         use-symbolic-message-instead,
         missing-function-docstring,
+        missing-module-docstring,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -530,7 +531,7 @@ ignore-on-opaque-inference=yes
 ignored-checks-for-mixins=no-member,
                           not-async-context-manager,
                           not-context-manager,
-                          attribute-defined-outside-init
+                          attribute-defined-outside-init,
 
 # List of class names for which member attributes should not be checked (useful
 # for classes with dynamically set attributes). This supports the use of

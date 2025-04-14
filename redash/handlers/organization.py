@@ -1,5 +1,4 @@
 from flask_login import current_user, login_required
-
 from redash import models
 from redash.models.models import Model
 from redash.models import Report

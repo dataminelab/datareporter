@@ -1,9 +1,5 @@
 module.exports = {
   root: true,
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-  },
   parser: "@typescript-eslint/parser",
   extends: [
     "react-app",
@@ -27,7 +23,6 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    es6: true,
   },
   rules: {
     // allow debugger during development

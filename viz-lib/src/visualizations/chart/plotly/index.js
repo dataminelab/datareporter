@@ -9,6 +9,7 @@ import { prepareCustomChartData, createCustomChartRenderer } from "./customChart
 
 Plotly.setPlotConfig({
   modeBarButtonsToRemove: ["sendDataToCloud"],
+  modeBarButtonsToAdd: ["togglespikelines", "v1hovermode"],
 });
 
 export {

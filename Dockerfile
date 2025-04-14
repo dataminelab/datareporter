@@ -1,4 +1,4 @@
-FROM node:16.20 AS frontend-builder
+FROM node:18-bookworm AS frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build

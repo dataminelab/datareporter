@@ -21,7 +21,7 @@ function prepareXAxis(axisOptions, additionalOptions) {
     title: getAxisTitle(axisOptions),
     type: getAxisScaleType(axisOptions),
     automargin: true,
-    tickformat: axisOptions.tickFormat,
+    tickformat: axisOptions.tickFormat ?? null,
   };
 
   if (additionalOptions.sortX && axis.type === "category") {
@@ -46,7 +46,7 @@ function prepareYAxis(axisOptions) {
     automargin: true,
     autorange: true,
     range: null,
-    tickformat: axisOptions.tickFormat,
+    tickformat: axisOptions.tickFormat ?? null,
   };
 }
 
@@ -118,6 +118,10 @@ export default function prepareLayout(element, options, data) {
       namelength: -1,
     },
   };
+
+  if (["line", "area", "column"].includes(options.globalSeriesType)) {
+    layout.hovermode = options.swappedAxes ? 'y' : 'x';
+  }
 
   switch (options.globalSeriesType) {
     case "pie":

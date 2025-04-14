@@ -25,9 +25,9 @@ module.exports = {
     "import/resolver": "webpack",
   },
   env: {
-    es2021: true,
     browser: true,
     node: true,
+    es6: true,
   },
   rules: {
     // allow debugger during development

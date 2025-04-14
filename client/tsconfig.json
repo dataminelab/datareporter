@@ -33,7 +33,13 @@
       "@/*": ["./app/*"]
     },
   },
-  "include": ["app/**/*", "app/components/TurniloComponent/**/*",],
+  "include": [
+    "app/**/*",
+    "app/components/TurniloComponent/**/*",
+    "cypress.config.js",
+    "prettier.config.js",
+    "cypress/support/**/*.js",
+  ],
   "exclude": [
     "node_modules",
     // "**/*.mocha.ts",

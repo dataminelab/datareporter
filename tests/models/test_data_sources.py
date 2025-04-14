@@ -1,9 +1,9 @@
 import mock
 from mock import patch
-from tests import BaseTestCase
 
 from redash.models import DataSource, Query, QueryResult
 from redash.utils.configuration import ConfigurationContainer
+from tests import BaseTestCase
 
 
 class DataSourceTest(BaseTestCase):
@@ -13,22 +13,19 @@ class DataSourceTest(BaseTestCase):
         with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
             patched_get_schema.return_value = return_value
 
-            schema = self.factory.data_source.get_schema(refresh=True)
+            schema = self.factory.data_source.get_schema()
 
-            new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
-
-            self.assertEqual(new_return_value, schema)
-            self.assertEqual(patched_get_schema.call_count, 1)
+            self.assertEqual(return_value, schema)
 
     def test_get_schema_uses_cache(self):
         return_value = [{"name": "table", "columns": []}]
         with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
             patched_get_schema.return_value = return_value
 
-            new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
-            schema = self.factory.data_source.get_schema(refresh=True)
+            self.factory.data_source.get_schema()
+            schema = self.factory.data_source.get_schema()
 
-            self.assertEqual(new_return_value, schema)
+            self.assertEqual(return_value, schema)
             self.assertEqual(patched_get_schema.call_count, 1)
 
     def test_get_schema_skips_cache_with_refresh_true(self):
@@ -36,10 +33,11 @@ class DataSourceTest(BaseTestCase):
         with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
             patched_get_schema.return_value = return_value
 
-            self.factory.data_source.get_schema(refresh=True)
-            new_return_value = [{"typed_columns": [], "name": "table", "columns": []}]
+            self.factory.data_source.get_schema()
+            new_return_value = [{"name": "new_table", "columns": []}]
             patched_get_schema.return_value = new_return_value
             schema = self.factory.data_source.get_schema(refresh=True)
+
             self.assertEqual(new_return_value, schema)
             self.assertEqual(patched_get_schema.call_count, 2)
 
@@ -54,14 +52,14 @@ class DataSourceTest(BaseTestCase):
 
         expected_output = [
             {
-                "typed_columns": [],
                 "name": "all_terain_vehicle",
                 "columns": ["has_all_wheel_drive", "has_engine", "has_wheels"],
             },
-            {"typed_columns": [], "name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
+            {"name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
         ]
 
         real_output = self.factory.data_source._sort_schema(input_data)
+
         self.assertEqual(real_output, expected_output)
 
     def test_model_uses_schema_sorter(self):
@@ -75,18 +73,29 @@ class DataSourceTest(BaseTestCase):
 
         sorted_schema = [
             {
-                "typed_columns": [],
                 "name": "all_terain_vehicle",
                 "columns": ["has_all_wheel_drive", "has_engine", "has_wheels"],
             },
-            {"typed_columns": [], "name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
+            {"name": "zoo", "columns": ["is_cow", "is_snake", "is_zebra"]},
         ]
 
         with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
             patched_get_schema.return_value = orig_schema
 
-            out_schema = self.factory.data_source.get_schema(refresh=True)
+            out_schema = self.factory.data_source.get_schema()
+
             self.assertEqual(out_schema, sorted_schema)
+
+    @patch("redash.redis_connection.set")
+    def test_expires_schema(self, mock_redis):
+        # default of 30min + 7 days
+        expected_ttl = 606600
+
+        with mock.patch("redash.query_runner.pg.PostgreSQL.get_schema") as patched_get_schema:
+            patched_get_schema.return_value = None
+            self.factory.data_source.get_schema(refresh=True)
+
+        mock_redis.assert_called_with("data_source:schema:1", "null", ex=expected_ttl)
 
 
 class TestDataSourceCreate(BaseTestCase):

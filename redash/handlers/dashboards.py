@@ -417,4 +417,3 @@ class DashboardForkResource(BaseResource):
         self.record_event({"action": "fork", "object_id": dashboard_id, "object_type": "dashboard"})
 
         return DashboardSerializer(fork_dashboard, with_widgets=True).serialize()
-

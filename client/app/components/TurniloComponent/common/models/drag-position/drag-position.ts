@@ -135,5 +135,5 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   }
 
 }
-
+// eslint-disable-next-line
 check = DragPosition;

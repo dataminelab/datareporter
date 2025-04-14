@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import LoadingState from "@/components/items-list/components/LoadingState";
 import { Report } from "@/services/report";
 import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
+import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
 
 export default function wrapReportPage(WrappedComponent) {
   function ReportPageWrapper({ reportId, onError, ...props }) {
@@ -11,7 +12,7 @@ export default function wrapReportPage(WrappedComponent) {
     const handleError = useImmutableCallback(onError);
 
     useEffect(() => {
-      const controller = new AbortController();
+      const controller = typeof AbortController !== 'undefined' ? new (require('abortcontroller-polyfill/dist/cjs-ponyfill').AbortController)() : null;
       const { signal } = controller;
 
       const fetchReport = async () => {

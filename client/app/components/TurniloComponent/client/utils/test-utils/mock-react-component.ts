@@ -16,19 +16,21 @@
  */
 
 export function mockReactComponent(_class: any) {
-  let prototype = _class.prototype;
-  let toUndo: Array<() => void> = [];
+  const prototype = _class.prototype;
+  const toUndo: Array<() => void> = [];
 
   if (prototype.hasOwnProperty("componentDidMount") === true) {
-    let oldComponentDidMount = prototype.componentDidMount;
+    const oldComponentDidMount = prototype.componentDidMount;
     toUndo.push(() => {
       prototype.componentDidMount = oldComponentDidMount;
     });
-    prototype.componentDidMount = () => {};
+    prototype.componentDidMount = () => {
+      // Intentionally left blank to mock componentDidMount
+    };
   }
 
   if (prototype.hasOwnProperty("render") === true) {
-    let oldRender = prototype.render;
+    const oldRender = prototype.render;
     toUndo.push(() => {
       prototype.render = oldRender;
     });

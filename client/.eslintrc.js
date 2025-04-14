@@ -95,13 +95,6 @@ module.exports = {
         "no-var": "warn",
         "@typescript-eslint/member-delimiter-style": "off",
         "@typescript-eslint/no-empty-interface": "off",
-        "prefer-const": [
-          "warn",
-          {
-            destructuring: "all",
-            ignoreReadBeforeAssign: true,
-          },
-        ],
       },
     },
     {
@@ -115,6 +108,13 @@ module.exports = {
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
         "no-var": "warn",
+        "prefer-const": "warn",
+        '@typescript-eslint/no-namespace': [
+          'warn',
+          { allowDeclarations: true },
+        ],
+        "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
+        "jest/valid-expect": "off",
       },
     },
   ],

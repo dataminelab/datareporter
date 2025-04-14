@@ -58,7 +58,6 @@ module.exports = {
       },
     ],
     "cypress/no-unnecessary-waiting": "warn",
-    "cypress/unsafe-to-chain-command": "warn",
     "@typescript-eslint/ban-ts-ignore": "warn",
     "@typescript-eslint/explicit-function-return-type": "warn",
   },
@@ -117,5 +116,18 @@ module.exports = {
         "jest/valid-expect": "off",
       },
     },
+    {
+      files: ["**/*.d.ts"],
+      parser: "@typescript-eslint/parser",
+      rules: {
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/ban-types": "off",
+      },
+    },
   ],
+  ignorePatterns: ["**/*.d.ts"], // Parsing error: Cannot read properties of undefined (reading 'map')
 };

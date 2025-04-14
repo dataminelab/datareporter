@@ -2,7 +2,8 @@ module.exports = {
   root: true,
   parserOptions: {
     ecmaVersion: "latest",
-    sourceType: "module"
+    sourceType: "module",
+    project: "./tsconfig.json"
   },
   parser: "@typescript-eslint/parser",
   extends: [
@@ -25,6 +26,7 @@ module.exports = {
     "import/resolver": "webpack",
   },
   env: {
+    es6: true,
     browser: true,
     node: true,
   },
@@ -118,6 +120,7 @@ module.exports = {
         "@typescript-eslint/no-useless-constructor": "off",
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
+        "no-var": "warn",
       },
     },
   ],

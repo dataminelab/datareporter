@@ -3,7 +3,6 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
-    project: "./tsconfig.json"
   },
   parser: "@typescript-eslint/parser",
   extends: [
@@ -26,7 +25,7 @@ module.exports = {
     "import/resolver": "webpack",
   },
   env: {
-    es6: true,
+    es2021: true,
     browser: true,
     node: true,
   },

@@ -38,7 +38,7 @@ import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
 describe("EssenceProps", () => {
-  var dataCubeJS = {
+  const dataCubeJS = {
     name: "twitter",
     title: "Twitter",
     clusterName: "druid",

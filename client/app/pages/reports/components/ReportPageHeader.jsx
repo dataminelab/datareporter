@@ -141,7 +141,7 @@ export default function ReportPageHeader(props) {
   // delete spesific color
   const styles = useMemo(() => reactCSS(reportPageStyles(colorTextHex, colorBodyHex), [colorTextHex, colorBodyHex]));
 
-  const handleColorChange = useCallback( (color, type) => {
+  const handleColorChange = useCallback((color, type) => {
       if (!color.rgb && color.startsWith("#")) {
         color = {
           rgb: hexToRgb(color),
@@ -171,7 +171,7 @@ export default function ReportPageHeader(props) {
       }
       handleReportChanged(true);
     },
-    [report, props.onChange]
+    [handleReportChanged, props, report]
   );
 
   const changeModelDataText = (text) => {
@@ -214,30 +214,36 @@ export default function ReportPageHeader(props) {
       setLoadModelsLoaded(true);
       setSelectedDataSource(data_source_id);
     },
-    [report, props.onChange, updateReport]
+    [props, report, updateReport, handleReportChanged]
   );
 
-  const getModel = (modelId) => {
+  const getModel = useCallback((modelId) => {
     return models.find(m => m.id === modelId);
-  }
+  })
 
-  const getModelDataCube = async (modelId) => {
-    const settings = await getSettings(modelId);
-    const model = getModel(modelId);
-    if (!model || !settings) return {};
-    const dataCubes = settings.appSettings.dataCubes
-    return dataCubes.find(m => m.name === model.table);
-  }
+  const getModelDataCube = useCallback(
+    async (modelId) => {
+      const settings = await getSettings(modelId);
+      const model = getModel(modelId);
+      if (!model || !settings) return {};
+      const dataCubes = settings.appSettings.dataCubes
+      return dataCubes.find(m => m.name === model.table);
+    },
+    [getSettings, getModel]
+  );
 
-  const getSettings = async (modelId) => {
-    var settings;
-    if (report.landed) {
-      settings = { appSettings: report.appSettings, timekeeper: {} };
-    } else {
-      settings = await Model.getReporterConfig(modelId);
-    }
-    return settings;
-  }
+  const getSettings = useCallback(
+    async (modelId) => {
+      var settings;
+      if (report.landed) {
+        settings = { appSettings: report.appSettings, timekeeper: {} };
+      } else {
+        settings = await Model.getReporterConfig(modelId);
+      }
+      return settings;
+    },
+    [report]
+  )
 
   const handleModelChange = useCallback(
     async (modelId, signal) => {
@@ -273,7 +279,7 @@ export default function ReportPageHeader(props) {
         updateReport({}, { successMessage: null, errorMessage: "failed to load the model" });
       }
     },
-    [report, props.onChange, updateReport]
+    [getModelDataCube, getSettings, getModel, report, selectedDataSource, updateReport, props, handleReportChanged]
   );
 
   const handleIdChange = useCallback(async id => {
@@ -287,7 +293,7 @@ export default function ReportPageHeader(props) {
       setReportName(name);
       setNewName("Copy of " + name);
       handleReportChanged(true);
-    },[report.id, report.is_draft]
+    },[handleReportChanged]
   );
 
   const handleGivenModal = (id) => {

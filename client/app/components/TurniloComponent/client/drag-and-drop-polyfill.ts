@@ -20,6 +20,7 @@ export default function dragAndDropPolyfill() {
   const dragDiv = "draggable" in div;
   const evts = "ondragstart" in div && "ondrop" in div;
 
+  // eslint-disable-next-line
   const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
   if (needsPatch) {

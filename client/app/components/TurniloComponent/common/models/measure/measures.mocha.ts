@@ -90,7 +90,7 @@ describe("Measures", () => {
   });
 
   it("should traverse measures", () => {
-    let measureTitles: string[] = [];
+    const measureTitles: string[] = [];
     measures.forEachMeasure(measure => measureTitles.push(measure.title));
 
     expect(measureTitles).to.deep.equal(MeasuresFixtures.wikiTitles());

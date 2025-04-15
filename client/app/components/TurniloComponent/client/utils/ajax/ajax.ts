@@ -110,7 +110,7 @@ export class Ajax {
         if (error.response && error.response.data) {
           if (error.response.data.action === "reload") reload();
           else if (error.response.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
-          var message =  error.response.data.message || error.message;
+          const message =  error.response.data.message || error.message;
           throw new Error("error with response: " + error.response.status + ", " + message);
         } else if (error.request) {
           throw new Error("no response received, " + error.message);
@@ -158,11 +158,11 @@ export class Ajax {
 
     async function subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
-      var url;
+      let url;
       const href = window.location.href;
       if (href.includes("public/dashboards")) {
-        let api_key = href.split("public/dashboards/")[1].split("/")[0].split("?")[0];
-        url = `api/reports/generate/${modelId}/public?api_key=${api_key}`;
+        const apiKey = href.split("public/dashboards/")[1].split("/")[0].split("?")[0];
+        url = `api/reports/generate/${modelId}/public?api_key=${apiKey}`;
       } else {
         url = `api/reports/generate/${modelId}`;
       }

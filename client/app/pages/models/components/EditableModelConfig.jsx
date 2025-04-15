@@ -243,7 +243,7 @@ export default function EditableModelConfig({model, saveConfig}) {
     } else {
       setItem(configYAML);
     }
-  }, [model]);
+  }, [configYAML, getConfigModel, model]);
 
   useEffect( () => {
     let buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(model.id, item)}];
@@ -252,7 +252,7 @@ export default function EditableModelConfig({model, saveConfig}) {
     return () => {
       KeyboardShortcuts.unbind(shortcuts);
     };
-  }, [item, saveConfig]);
+  }, [item, model.id, saveConfig]);
 
   const onChange = (config) => {
     setItem(config);

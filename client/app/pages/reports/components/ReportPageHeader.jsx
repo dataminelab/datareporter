@@ -219,18 +219,7 @@ export default function ReportPageHeader(props) {
 
   const getModel = useCallback((modelId) => {
     return models.find(m => m.id === modelId);
-  })
-
-  const getModelDataCube = useCallback(
-    async (modelId) => {
-      const settings = await getSettings(modelId);
-      const model = getModel(modelId);
-      if (!model || !settings) return {};
-      const dataCubes = settings.appSettings.dataCubes
-      return dataCubes.find(m => m.name === model.table);
-    },
-    [getSettings, getModel]
-  );
+  });
 
   const getSettings = useCallback(
     async (modelId) => {
@@ -243,7 +232,18 @@ export default function ReportPageHeader(props) {
       return settings;
     },
     [report]
-  )
+  );
+
+  const getModelDataCube = useCallback(
+    async (modelId) => {
+      const settings = await getSettings(modelId);
+      const model = getModel(modelId);
+      if (!model || !settings) return {};
+      const dataCubes = settings.appSettings.dataCubes
+      return dataCubes.find(m => m.name === model.table);
+    },
+    [getSettings, getModel]
+  );
 
   const handleModelChange = useCallback(
     async (modelId, signal) => {

@@ -10,12 +10,10 @@ module.exports = {
   },
   extends: [
     "react-app",
+    "prettier",
     "plugin:compat/recommended",
     'plugin:@typescript-eslint/recommended',
-    "prettier",
     "plugin:jsx-a11y/recommended",
-    // Remove any typescript-eslint rules that would conflict with prettier
-    "prettier/@typescript-eslint",
   ],
   plugins: [
     "jest",
@@ -81,7 +79,6 @@ module.exports = {
         "cypress/no-unnecessary-waiting": "warn",
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": "warn",
-        "@typescript-eslint/camelcase": "off",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-var-requires": "off",
       }
@@ -109,9 +106,7 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "off",
         // Do not complain about useless contructors in declaration files
         "no-useless-constructor": "off",
-        "@typescript-eslint/no-useless-constructor": "error",
-        // Many API fields and generated types use camelcase
-        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/no-useless-constructor": "warn",
       },
     },
     {
@@ -139,7 +134,6 @@ module.exports = {
         jest: false,
       },
       rules: {
-        "@typescript-eslint/no-useless-constructor": "off",
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
         "no-var": "warn",

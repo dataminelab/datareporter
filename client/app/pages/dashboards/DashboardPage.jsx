@@ -116,7 +116,7 @@ class DashboardComponent extends React.Component {
   }
 
   turniloWidgetsSetter() {
-    let turniloWidgets = this.props.dashboardOptions.dashboard.widgets.filter(w=>w.options.type==="TURNILO");
+    const turniloWidgets = this.props.dashboardOptions.dashboard.widgets.filter(w=>w.options.type==="TURNILO");
     turniloWidgets.forEach(widget => {
       const param = widget.options.parameterMappings[0];
       if (!param || !param.value) return;
@@ -189,7 +189,7 @@ class DashboardComponent extends React.Component {
         }
       }, 3333);
     }
-    let turniloWidgetsCount = this.props.dashboardOptions.dashboard.widgets.filter(w=>w.options.type==="TURNILO").length;
+    const turniloWidgetsCount = this.props.dashboardOptions.dashboard.widgets.filter(w=>w.options.type==="TURNILO").length;
     if (this.state.turniloWidgetsLength !== turniloWidgetsCount) this.turniloWidgetsSetter();
   }
 
@@ -223,7 +223,7 @@ class DashboardComponent extends React.Component {
       const essence = this.state.essenceList[i];
       const clicker = this.state.clickerList[i];
       const widget = this.state.widgetList[i]
-      let dimensionName = essence.filter.getReferenceNameByIndex(0);
+      const dimensionName = essence.filter.getReferenceNameByIndex(0);
       const { start, end } = this.state;
       const createDateRange = new DateRange({ start, end });
       const clause = new FixedTimeFilterClause({ reference: dimensionName,
@@ -232,7 +232,7 @@ class DashboardComponent extends React.Component {
       if (relativeFilter.length() > 1) {
         relativeFilter = relativeFilter.removeClauseByIndex(0);
       }
-      let newEssence = clicker.changeFilter(relativeFilter);
+      const newEssence = clicker.changeFilter(relativeFilter);
       const timeShift = TimeShift.fromJS(this.state.shift);
       clicker.changeComparisonShift(timeShift);
       this.setEssence(widget, newEssence);
@@ -251,12 +251,12 @@ class DashboardComponent extends React.Component {
       const essence = this.state.essenceList[i];
       const clicker = this.state.clickerList[i];
       const widget = this.state.widgetList[i];
-      let dimensionName = essence.filter.getReferenceNameByIndex(0);
+      const dimensionName = essence.filter.getReferenceNameByIndex(0);
       let relativeFilter = essence.filter.setClause(this.constructFilter(filterPeriod, filterDuration, dimensionName));
       if (relativeFilter.length() > 1) {
         relativeFilter = relativeFilter.removeClauseByIndex(0);
       }
-      let newEssence = clicker.changeFilter(relativeFilter);
+      const newEssence = clicker.changeFilter(relativeFilter);
       const timeShift = TimeShift.fromJS(null);
       clicker.changeComparisonShift(timeShift);
       this.setEssence(widget, newEssence);
@@ -314,7 +314,7 @@ class DashboardComponent extends React.Component {
         clickerList: updatedClickers
       });
     } else {
-      var clickerList;
+      let clickerList;
       if (!this.state.listCreated) {
         clickerList = [clicker];
       } else {
@@ -341,7 +341,7 @@ class DashboardComponent extends React.Component {
         essenceList: updatedEssences,
       });
     } else {
-      var essenceList;
+      let essenceList;
       if (!this.state.listCreated) {
         essenceList = [essence];
       } else {

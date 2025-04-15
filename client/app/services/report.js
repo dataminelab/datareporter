@@ -17,7 +17,8 @@ import {
   each,
   some,
   clone,
-  find, get, isString, merge
+  find,
+  merge,
 } from "lodash";
 import location from "@/services/location";
 
@@ -61,15 +62,15 @@ export class Report {
   }
 
   setResults(report) {
-    let results = report.results;
+    const results = report.results;
     if (!results) return 0;
     // if (results.progress.progress < 100) return 0;
     for (let i = 0; i < results.queries.length; i++) {
-      let query = results.queries[i];
-      let query_result = query.query_result;
+      const query = results.queries[i];
+      const query_result = query.query_result;
       if (!query_result) return 0;
     }
-    let queries = results.queries;
+    const queries = results.queries;
     if (queries.length === 0) return 0;
     this.queries = map(queries, query => new ReportResult(query));
   }
@@ -86,7 +87,7 @@ export class Report {
 
   static getFirstDataAvailable(queries) {
     if (!queries || queries.length === 0) return 0;
-    let lastAvailableQuery = queries[queries.length - 1];
+    const lastAvailableQuery = queries[queries.length - 1];
     if (!lastAvailableQuery || !lastAvailableQuery.query_result) return 0;
     return lastAvailableQuery.query_result.data.rows
   }

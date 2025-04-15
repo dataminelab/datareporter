@@ -30,7 +30,7 @@ export default function useReport(originalReport) {
       })
       .catch((error) => {
         if (get(error, "response.status") === 400) {
-          let message = get(error, "response.data.message");
+          const message = get(error, "response.data.message");
           return Promise.reject(new SaveReportError(message));
         }
         return Promise.reject(new SaveReportError("Report could not be saved"));

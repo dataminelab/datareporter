@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import { Model } from "@/components/proptypes";
 import AceEditor from "react-ace";
 import Button from "antd/lib/button";
@@ -202,10 +202,10 @@ export default function EditableModelConfig({model, saveConfig}) {
 
   const [item, setItem] = useState('');
 
-  const getConfigModel = async () => {
+  const getConfigModel = useCallback(async () => {
     const modelConfig = await ModelService.getConfig(model.model_config_id);
     setItem(modelConfig.content);
-  }
+  }, [model.model_config_id]);
 
   const save = () => saveConfig(model.id, item)
   const handleSaveConfig = (callback) => {
@@ -246,7 +246,7 @@ export default function EditableModelConfig({model, saveConfig}) {
   }, [configYAML, getConfigModel, model]);
 
   useEffect( () => {
-    let buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(model.id, item)}];
+    const buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(model.id, item)}];
     const shortcuts = fromPairs(map(buttons, b => [b.shortcut, b.onClick]));
     KeyboardShortcuts.bind(shortcuts);
     return () => {

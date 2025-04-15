@@ -1,9 +1,17 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    }
+  },
   extends: [
     "react-app",
     "plugin:compat/recommended",
+    'plugin:@typescript-eslint/recommended',
     "prettier",
     "plugin:jsx-a11y/recommended",
     // Remove any typescript-eslint rules that would conflict with prettier
@@ -57,11 +65,28 @@ module.exports = {
         ],
       },
     ],
-    "cypress/no-unnecessary-waiting": "warn",
     "@typescript-eslint/ban-ts-ignore": "warn",
     "@typescript-eslint/explicit-function-return-type": "warn",
+    "@typescript-eslint/camelcase": "warn",
+    "@typescript-eslint/no-empty-function": "warn",
   },
   overrides: [
+    {
+      // cypress tests
+      files: ["cypress/**/*.js", "cypress/**/*.ts", "cypress.config.js"],
+      rules: {
+        "no-unused-expressions": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "cypress/no-assigning-return-values": "off",
+        "cypress/no-unnecessary-waiting": "warn",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-var-requires": "off",
+      }
+
+    },
     {
       files: ["*.js", "*.jsx", ".*.js", ".*.jsx"],
       rules: {

@@ -143,7 +143,7 @@ export function SchemaList({ loading, schema, expandedFlags, onTableExpand, onIt
               rowHeight={({ index }) => {
                 const item = schema[index];
                 const columnsLength = !item.loading ? item.columns.length : 1;
-                let columnCount = expandedFlags[item.name] ? columnsLength : 0;
+                const columnCount = expandedFlags[item.name] ? columnsLength : 0;
                 return schemaTableHeight + schemaColumnHeight * columnCount;
               }}
               rowRenderer={({ key, index, style }) => {

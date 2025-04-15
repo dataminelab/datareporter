@@ -153,7 +153,7 @@ export default function ReportPageHeader(props) {
       }
       if (type === 2) {
         setColorBodyHex(color.hex);
-        let updates = { color_1: color.hex };
+        const updates = { color_1: color.hex };
         props.onChange(extend(report.clone(), updates));
         // ligten color
         const amount = 20;
@@ -165,7 +165,7 @@ export default function ReportPageHeader(props) {
         setColorElements(false, color.hex, lightenedHexColor);
       } else {
         setColorTextHex(color.hex);
-        let updates = { color_2: color.hex };
+        const updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
         setColorElements(color.hex, false, false);
       }
@@ -185,7 +185,7 @@ export default function ReportPageHeader(props) {
   }
 
   const setNewModels = async (data_source_id) => {
-    var newModels = [];
+    let newModels = [];
     const res = await Model.query({ data_source: data_source_id });
     newModels = res.results;
     const updates = {
@@ -202,7 +202,7 @@ export default function ReportPageHeader(props) {
       setLoadModelsLoaded(false);
       if (signal && signal.aborted) return;
       try {
-        let updates = await setNewModels(data_source_id);
+        const updates = await setNewModels(data_source_id);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null, errorMessage: null });
         handleReportChanged(true);
@@ -234,7 +234,7 @@ export default function ReportPageHeader(props) {
 
   const getSettings = useCallback(
     async (modelId) => {
-      var settings;
+      let settings;
       if (report.landed) {
         settings = { appSettings: report.appSettings, timekeeper: {} };
       } else {
@@ -259,7 +259,7 @@ export default function ReportPageHeader(props) {
           replaceHash(model, window.location.hash.split("/4/")[1]);
         }
         recordEvent("update", "report", report.id, { modelId });
-        var updates = {
+        const updates = {
           model_id: modelId,
           appSettings: settings.appSettings,
           timekeeper: settings.timekeeper,

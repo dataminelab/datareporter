@@ -63,10 +63,16 @@ module.exports = {
         ],
       },
     ],
-    "@typescript-eslint/ban-ts-ignore": "warn",
-    "@typescript-eslint/explicit-function-return-type": "warn",
-    "@typescript-eslint/camelcase": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-empty-function": "warn",
+    "@typescript-eslint/no-use-before-define": "warn",
+    "@typescript-eslint/ban-types": "warn",
+    "@typescript-eslint/explicit-module-boundary-types": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "no-useless-constructor": "off",
+    "@typescript-eslint/no-useless-constructor": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-var-requires": "warn",
   },
   overrides: [
     {
@@ -74,13 +80,13 @@ module.exports = {
       files: ["cypress/**/*.js", "cypress/**/*.ts", "cypress.config.js"],
       rules: {
         "no-unused-expressions": "off",
+        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-expressions": "off",
         "cypress/no-assigning-return-values": "off",
+        "cypress/unsafe-to-chain-command": "off",
         "cypress/no-unnecessary-waiting": "warn",
-        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": "warn",
         "@typescript-eslint/no-empty-function": "off",
-        "@typescript-eslint/no-var-requires": "off",
       }
 
     },
@@ -96,21 +102,8 @@ module.exports = {
       },
     },
     {
-      // Only run typescript-eslint on TS files
-      files: ["*.ts", "*.tsx", ".*.ts", ".*.tsx"],
-      extends: ["plugin:@typescript-eslint/recommended"],
-      rules: {
-        // Do not require functions (especially react components) to have explicit returns
-        "@typescript-eslint/explicit-function-return-type": "off",
-        // Do not require to type every import from a JS file to speed up development
-        "@typescript-eslint/no-explicit-any": "off",
-        // Do not complain about useless contructors in declaration files
-        "no-useless-constructor": "off",
-        "@typescript-eslint/no-useless-constructor": "warn",
-      },
-    },
-    {
       files: ["**/*.mocha.ts", "**/*.mocha.tsx", "**/*.test.ts", "**/*.test.tsx"],
+      parser: null,
       env: {
         mocha: true,
         jest: false,
@@ -121,21 +114,16 @@ module.exports = {
         "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
         "jest/no-disabled-tests": "off",
         "jest/valid-expect": "off",
-        "@typescript-eslint/ban-ts-ignore": "off",
         "no-var": "warn",
         "@typescript-eslint/member-delimiter-style": "off",
         "@typescript-eslint/no-empty-interface": "off",
       },
     },
     {
-      files: ["**/TurniloComponent/**"],
-      env: {
-        mocha: true,
-        jest: false,
-      },
+      files: ["**/TurniloComponent/**/*.{js,jsx,ts,tsx}"],
       rules: {
+        "@typescript-eslint/ban-ts-comment": "warn",
         "@typescript-eslint/no-empty-interface": "off",
-        "@typescript-eslint/ban-ts-ignore": "off",
         "no-var": "warn",
         "prefer-const": "warn",
         '@typescript-eslint/no-namespace': [
@@ -144,6 +132,10 @@ module.exports = {
         ],
         "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
         "jest/valid-expect": "off",
+        'getter-return': 'off',
+        '@typescript-eslint/no-empty-function': 'off',
+        "@typescript-eslint/explicit-module-boundary-types": "warn",
+        "jest/no-done-callback": "off",
       },
     },
   ],

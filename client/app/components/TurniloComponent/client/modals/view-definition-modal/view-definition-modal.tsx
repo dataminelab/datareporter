@@ -28,7 +28,7 @@ export interface ViewDefinitionModalProps {
 }
 
 const header = <React.Fragment>
-  View definition for <a className="mkurl-link" target="_blank" href="https://github.com/allegro/turnilo/blob/master/docs/generating-links.md">mkurl</a>
+  View definition for <a className="mkurl-link" target="_blank" href="https://github.com/allegro/turnilo/blob/master/docs/generating-links.md" rel="noreferrer">mkurl</a>
 </React.Fragment>;
 
 export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = ({ essence, onClose }) => {

@@ -128,7 +128,7 @@ export class Ajax {
     }
 
     function timeoutQuery(ms: number) {
-      return new Promise(resolve => setTimeout(resolve, ms));;
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {

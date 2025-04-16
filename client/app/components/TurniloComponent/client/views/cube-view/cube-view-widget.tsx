@@ -114,7 +114,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     this.clicker = {
       changeFilter: (filter: Filter) => {
-        let essence = this.state.essence.changeFilter(filter);
+        const essence = this.state.essence.changeFilter(filter);
         this.setState(state => {
           return { ...state, essence };
         });

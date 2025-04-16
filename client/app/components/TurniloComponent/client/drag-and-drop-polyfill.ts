@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 export default function dragAndDropPolyfill() {
   const div = document.createElement("div");
@@ -25,10 +24,8 @@ export default function dragAndDropPolyfill() {
 
   if (needsPatch) {
     Promise.all([
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       import("../lib/polyfill/drag-drop-polyfill.min.js"),
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       import("../lib/polyfill/drag-drop-polyfill.css")
     ]).then(([DragDropPolyfill, _]) => {

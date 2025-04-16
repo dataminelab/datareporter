@@ -42,7 +42,7 @@ import { Resolve, VisualizationManifest } from "../visualization-manifest/visual
 import { VisualizationSettings } from "../visualization-settings/visualization-settings";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
-  return <OrderedSet<string>> dimensions.filter(dimensionName => Boolean(dataCube.getDimension(dimensionName)));
+  return dimensions.filter(dimensionName => Boolean(dataCube.getDimension(dimensionName))) as OrderedSet<string>;
 }
 
 export interface VisualizationAndResolve {

@@ -4,7 +4,6 @@ from sqlalchemy.ext.mutable import Mutable
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy_utils import EncryptedType
 
-from redash.models.base import db
 from redash.utils import json_dumps, json_loads
 from redash.utils.configuration import ConfigurationContainer
 
@@ -49,7 +48,9 @@ class JSONText(TypeDecorator):
 
 class MutableDict(Mutable, dict):
     @classmethod
-    def coerce(self, key, value):
+    def coerce(cls, key, value):
+        "Convert plain dictionaries to MutableDict."
+
         if not isinstance(value, MutableDict):
             if isinstance(value, dict):
                 return MutableDict(value)
@@ -57,8 +58,8 @@ class MutableDict(Mutable, dict):
                 try:
                     value_dict = json_loads(value)  # Convert JSON string to dict
                     return MutableDict(value_dict)
-                except JSONDecodeError:
-                    raise ValueError(f"Cannot coerce string to MutableDict: {value}")
+                except JSONDecodeError as exc:
+                    raise ValueError(f"Cannot coerce string to MutableDict: {value}") from exc
             # this call will raise ValueError
             return Mutable.coerce(key, value)
         else:
@@ -110,4 +111,3 @@ class json_cast_property(index_property):
     def expr(self, model):
         expr = super(json_cast_property, self).expr(model)
         return expr.astext.cast(self.cast_type)
-

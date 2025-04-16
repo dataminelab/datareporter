@@ -32,12 +32,6 @@ describe("DimensionGroup", () => {
     expect(dimensionGroup.toJS()).to.deep.equal(DimensionGroupFixtures.withTitleInferredJS());
   });
 
-  it("should infer title from name", () => {
-    const dimensionGroup = DimensionGroup.fromJS(DimensionGroupFixtures.noTitleJS());
-
-    expect(dimensionGroup.toJS()).to.deep.equal(DimensionGroupFixtures.withTitleInferredJS());
-  });
-
   it("should throw when no name given", () => {
     const dimensionGroupConversion = () => DimensionGroup.fromJS(DimensionGroupFixtures.noNameJS());
 

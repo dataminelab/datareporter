@@ -46,19 +46,19 @@ export class ImmutableFormDelegate<T> {
     return this.form.setState.call(this.form, state, callback);
   }
 
-  updateErrors = (path: string, isValid: boolean, error: string): { errors: any, canSave: boolean } => {
-    var { errors } = this.form.state;
+  updateErrors = (path: string, isValid: boolean, error: string): { errors: any; canSave: boolean } => {
+    const { errors } = this.form.state;
 
     errors[path] = isValid ? false : error;
 
-    var canSave = true;
-    for (let key in errors) canSave = canSave && (errors[key] === false);
+    let canSave = true;
+    for (const key in errors) canSave = canSave && (errors[key] === false);
 
     return { errors, canSave };
   };
 
   onChange = (newItem: any, isValid: boolean, path: string, error: string) => {
-    var { errors, canSave } = this.updateErrors(path, isValid, error);
+    const { errors, canSave } = this.updateErrors(path, isValid, error);
 
     if (isValid) {
       this.setState({

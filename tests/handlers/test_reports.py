@@ -614,7 +614,7 @@ class TestReportEditResource(BaseTestCase):
         response = self.make_request(
             "post",
             f"/api/reports/{report.id}",
-            data={"model_id": model2.id, "name": f"new name", "expression": ANOTHER_BASE_64},
+            data={"model_id": model2.id, "name": "new name", "expression": ANOTHER_BASE_64},
             user=user,
         )
 
@@ -643,7 +643,7 @@ class TestReportEditResource(BaseTestCase):
         response = self.make_request(
             "post",
             f"/api/reports/{report.id}?format=json",
-            data={"model_id": model2.id, "name": f"new name"},
+            data={"model_id": model2.id, "name": "new name"},
             user=user,
         )
 

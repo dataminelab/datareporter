@@ -118,7 +118,7 @@ class Widget {
 
     if (this.report && !isEmpty(this.options.parameterMappings)) {
       this.report = new Report(this.report);
-      let turniloParameter = values(this.options.parameterMappings)[0];
+      const turniloParameter = values(this.options.parameterMappings)[0];
       this.options.parameterMappings = [new Parameter(turniloParameter)];
     }
   }

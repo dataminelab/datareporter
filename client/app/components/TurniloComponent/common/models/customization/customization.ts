@@ -104,7 +104,7 @@ export interface CustomizationJS {
   cssVariables?: Record<string, string>;
 }
 
-var check: Class<CustomizationValue, CustomizationJS>;
+let check: Class<CustomizationValue, CustomizationJS>;
 
 export class Customization implements Instance<CustomizationValue, CustomizationJS> {
   static DEFAULT_TITLE = "Turnilo (%v)";
@@ -135,7 +135,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   static fromJS(parameters: CustomizationJS): Customization {
-    var value: CustomizationValue = {
+    const value: CustomizationValue = {
       title: parameters.title,
       headerBackground: parameters.headerBackground,
       customLogoSvg: parameters.customLogoSvg,
@@ -144,15 +144,15 @@ export class Customization implements Instance<CustomizationValue, Customization
       cssVariables: parameters.cssVariables
     };
 
-    var paramViewsJS = parameters.externalViews;
-    var externalViews: ExternalView[] = null;
+    const paramViewsJS = parameters.externalViews;
+    let externalViews: ExternalView[] = null;
     if (Array.isArray(paramViewsJS)) {
       externalViews = paramViewsJS.map((view, i) => ExternalView.fromJS(view));
       value.externalViews = externalViews;
     }
 
-    var timezonesJS = parameters.timezones;
-    var timezones: Timezone[] = null;
+    const timezonesJS = parameters.timezones;
+    let timezones: Timezone[] = null;
     if (Array.isArray(timezonesJS)) {
       timezones = timezonesJS.map(Timezone.fromJS);
       value.timezones = timezones;
@@ -202,7 +202,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   public toJS(): CustomizationJS {
-    var js: CustomizationJS = {};
+    const js: CustomizationJS = {};
     if (this.title) js.title = this.title;
     if (this.sentryDSN) js.sentryDSN = this.sentryDSN;
     if (this.headerBackground) js.headerBackground = this.headerBackground;
@@ -245,7 +245,7 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   public getTitle(version: string): string {
-    var title = this.title || Customization.DEFAULT_TITLE;
+    const title = this.title || Customization.DEFAULT_TITLE;
     return title.replace(/%v/g, version);
   }
 
@@ -280,5 +280,5 @@ export class Customization implements Instance<CustomizationValue, Customization
     return valid;
   }
 }
-
+// eslint-disable-next-line
 check = Customization;

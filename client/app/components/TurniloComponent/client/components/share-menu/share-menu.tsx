@@ -108,7 +108,7 @@ function externalViewItems({ customization: { externalViews = [] }, essence }: E
   return externalViews.map((externalView: ExternalView, i: number) => {
     const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
     return <li key={`custom-url-${i}`}>
-      <a href={url} target={externalView.sameWindow ? "_self" : "_blank"}>
+      <a href={url} target={externalView.sameWindow ? "_self" : "_blank"} rel="noreferrer">
         {`${STRINGS.openIn} ${externalView.title}`}
       </a>
     </li>;

@@ -38,6 +38,12 @@ interface TabSelectorProps {
   onTabSelect: Unary<TimeFilterTab, void>;
 }
 
+enum TimeFilterTab { RELATIVE = "relative", FIXED = "fixed"}
+
+export interface TimeFilterMenuState {
+  tab: TimeFilterTab;
+}
+
 function tabTitle(tab: TimeFilterTab) {
   return tab === TimeFilterTab.RELATIVE ? STRINGS.relative : STRINGS.fixed;
 }
@@ -64,12 +70,6 @@ export interface TimeFilterMenuProps {
   containerStage?: Stage;
   openOn: Element;
   inside?: Element;
-}
-
-enum TimeFilterTab { RELATIVE = "relative", FIXED = "fixed"}
-
-export interface TimeFilterMenuState {
-  tab: TimeFilterTab;
 }
 
 function initialTab(essence: Essence): TimeFilterTab {

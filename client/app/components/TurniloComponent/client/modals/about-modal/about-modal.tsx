@@ -42,12 +42,12 @@ export class AboutModal extends React.Component<AboutModalProps, AboutModalState
     >
       <div className="p-group">
         <p>
-          <a href="https://github.com/allegro/turnilo" target="_blank">Turnilo</a> (version {version}) is open source under
-          the <a href="https://github.com/allegro/turnilo/blob/master/LICENSE" target="_blank">Apache 2.0</a> license.
+          <a href="https://github.com/allegro/turnilo" target="_blank" rel="noreferrer">Turnilo</a> (version {version}) is open source under
+          the <a href="https://github.com/allegro/turnilo/blob/master/LICENSE" target="_blank" rel="noreferrer">Apache 2.0</a> license.
         </p>
         <p>
-          For bug reports, feedback or support please create an issue on <a href="https://github.com/allegro/turnilo/issues"
-                                                                            target="_blank">GitHub</a>.
+          For bug reports, feedback or support please create an issue on
+          <a href="https://github.com/allegro/turnilo/issues" target="_blank" rel="noreferrer">GitHub</a>.
         </p>
       </div>
       <div className="button-bar">

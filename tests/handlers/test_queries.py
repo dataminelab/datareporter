@@ -264,9 +264,7 @@ class TestQueryListResourcePost(BaseTestCase):
         rv = self.make_request("post", "/api/queries", data=query_data)
 
         self.assertEqual(rv.status_code, 200)
-        for key, value in query_data.items():
-            self.assertIn(key, rv.json)
-            self.assertEqual(rv.json[key], value)
+        self.assertLessEqual(query_data.items(), rv.json.items())
         self.assertEqual(rv.json["user"]["id"], self.factory.user.id)
         self.assertIsNotNone(rv.json["api_key"])
         self.assertIsNotNone(rv.json["query_hash"])
@@ -471,3 +469,19 @@ class TestQueryForkResourcePost(BaseTestCase):
         rv = self.make_request("post", "/api/queries/{}/fork".format(query.id))
 
         self.assertEqual(rv.status_code, 403)
+
+
+class TestFormatSQLQueryAPI(BaseTestCase):
+    def test_format_sql_query(self):
+        admin = self.factory.create_admin()
+        query = "select a,b,c FROM foobar Where x=1 and y=2;"
+        expected = """SELECT a,
+       b,
+       c
+FROM foobar
+WHERE x=1
+  AND y=2;"""
+
+        rv = self.make_request("post", "/api/queries/format", user=admin, data={"query": query})
+
+        self.assertEqual(rv.json["query"], expected)

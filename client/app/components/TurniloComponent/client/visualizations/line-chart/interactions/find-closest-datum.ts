@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const MAX_HOVER_DIST = 50;
-
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
@@ -23,11 +21,13 @@ import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/
 import { ContinuousScale, ContinuousValue } from "../utils/continuous-types";
 import { getContinuousDimension, hasNominalSplit } from "../utils/splits";
 
+const MAX_HOVER_DIST = 50;
+
 function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousScale, continuousDimension: Dimension): Datum | null {
   let closestDatum: Datum = null;
   let minDist = Infinity;
   for (const datum of data) {
-    var mid;
+    let mid;
     const continuousSegmentValue = datum[continuousDimension.name] as (TimeRange | NumberRange);
     if (!continuousSegmentValue) continue;
     else if (continuousSegmentValue.midpoint) {

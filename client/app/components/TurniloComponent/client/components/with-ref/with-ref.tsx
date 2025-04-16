@@ -18,7 +18,7 @@ import * as React from "react";
 import { Unary } from "../../../common/utils/functional/functional";
 
 interface WithRefProps {
-  children: Unary<{ ref?: Element, setRef: Unary<Element, void> }, JSX.Element>;
+  children: Unary<{ ref?: Element; setRef: Unary<Element, void> }, JSX.Element>;
 }
 
 interface WithRefState {

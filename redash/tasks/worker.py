@@ -4,25 +4,19 @@ import errno
 import os
 import signal
 import sys
+from concurrent.futures import ThreadPoolExecutor
 import requests
 
 from rq import Queue as BaseQueue
-from rq.job import Job as BaseJob
-from rq.job import JobStatus
+from rq.job import Job as BaseJob, JobStatus
 from rq.timeouts import HorseMonitorTimeoutException, UnixSignalDeathPenalty
 from rq.utils import utcnow
 from rq.worker import (
     HerokuWorker,  # HerokuWorker implements graceful shutdown on SIGTERM
     Worker,
 )
-
-from redash import statsd_client
-from rq import Queue as BaseQueue, get_current_job
-from rq.utils import utcnow
-from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
-from rq.job import Job as BaseJob, JobStatus
-from concurrent.futures import ThreadPoolExecutor
 from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
+from redash import statsd_client
 
 # HerokuWorker does not work in OSX https://github.com/getredash/redash/issues/5413
 if sys.platform == "darwin":
@@ -34,7 +28,7 @@ logger = logging.getLogger("pubsub")
 
 
 class CancellableJob(BaseJob):
-    def cancel(self, pipeline=None):
+    def cancel(self, pipeline=None, enqueue_dependents=False):
         self.meta["cancelled"] = True
         self.save_meta()
 
@@ -64,13 +58,14 @@ class HttpNotifier:
     def _send(self, message):
         resp = requests.post(
             WORKER_NOTIFY_URL,
+            timeout=45,
             headers={"Accept": "application/json", "Content-Type": "application/json"},
             json={"message": {"data": base64.b64encode(message.encode("ascii")).decode("ascii")}},
         )
         try:
             resp.raise_for_status()
         except requests.HTTPError as e:
-            logger.error("Request failed: {}", e.response.text, e)
+            logger.error("Request failed: %s", e.response.text)
             raise e
 
 
@@ -85,7 +80,7 @@ class GooglePubSubNotifier:
         # Data must be a bytestring
         data = message.encode("utf-8")
         # When you publish a message, the client returns a future.
-        logger.info(f"publishing {GOOGLE_PUBSUB_WORKER_TOPIC_ID} : {data}")
+        logger.info("publishing %s: %s", GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
         future = self.publisher.publish(GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
         return future.result()
 

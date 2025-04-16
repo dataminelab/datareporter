@@ -111,7 +111,7 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
           onClick={this.openRawDataModal}
         >{STRINGS.displayRawData}</li>
         {url && <li key="goToUrl">
-          <a href={url} onClick={this.closeMoreMenu} target="_blank">{STRINGS.goToUrl}</a>
+          <a href={url} onClick={this.closeMoreMenu} target="_blank" rel="noreferrer">{STRINGS.goToUrl}</a>
         </li>}
       </ul>
     </BubbleMenu>;

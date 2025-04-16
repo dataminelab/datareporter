@@ -1,7 +1,5 @@
-import shutil
 import ssl
 from unittest import TestCase
-
 from redash.query_runner.cass import generate_ssl_options_dict
 
 

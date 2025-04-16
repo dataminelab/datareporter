@@ -164,14 +164,6 @@ const config = {
         ],
       },
       {
-        enforce: "pre",
-        test: /\.js$/,
-        use: ["source-map-loader"],
-        exclude: [
-          /node_modules\/mutationobserver-shim/,
-        ],
-      },
-      {
         test: /\.(t|j)sx?$/,
         exclude: {
           and: [/node_modules/],

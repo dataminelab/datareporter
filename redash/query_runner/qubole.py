@@ -11,7 +11,7 @@ from redash.query_runner import (
 )
 
 try:
-    import qds_sdk
+    import qds_sdk  # noqa: F401
     from qds_sdk.qubole import Qubole as qbol
     from qds_sdk.commands import Command, HiveCommand
     from qds_sdk.commands import SqlCommand, PrestoCommand

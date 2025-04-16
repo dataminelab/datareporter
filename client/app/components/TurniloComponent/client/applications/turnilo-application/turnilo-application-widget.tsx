@@ -35,7 +35,7 @@ export interface TurniloApplicationProps {
   hashWidget: string;
   maxFilters?: number;
   setFilterParams: Fn;
-  getEssence: (id:Number) => Essence;
+  getEssence: (id: number) => Essence;
   appSettings: AppSettings;
   initTimekeeper?: Timekeeper;
   config?: any;
@@ -84,7 +84,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
 
   componentWillMount() {
     const { initTimekeeper, hashWidget, config } = this.props;
-    var hash;
+    let hash;
     if (config.hash && config.source_name) {
       hash = config.source_name + "/4/" + config.hash;
     } else {
@@ -92,7 +92,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     }
     this.hashToState(hash);
 
-    let viewType = this.getViewTypeFromHash(hash);
+    const viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
 
     this.setState({
@@ -139,7 +139,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     });
 
     if (this.viewTypeNeedsAnItem(viewType)) {
-      let { dataCubes } = appSettings;
+      const { dataCubes } = appSettings;
       const item = this.getSelectedDataCubeFromHash(dataCubes, hash);
       newState.selectedItem = item ? item : dataCubes[0];
     } else {

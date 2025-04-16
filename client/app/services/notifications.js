@@ -4,7 +4,7 @@ import recordEvent from "@/services/recordEvent";
 import redashIconUrl from "@/assets/images/report_icon_small.png";
 
 const logger = debug("redash:notifications");
-
+// eslint-disable-next-line compat/compat
 const Notification = window.Notification || null;
 if (!Notification) {
   logger("HTML5 notifications are not supported.");

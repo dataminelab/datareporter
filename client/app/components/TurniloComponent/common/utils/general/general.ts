@@ -76,8 +76,8 @@ export function makeTitle(name: string): string {
 }
 
 export function collect(wait: number, fn: Fn): Fn {
-  var timeout: any;
-  var later = function() {
+  let timeout: any;
+  const later = function() {
     timeout = null;
     fn();
   };
@@ -109,7 +109,6 @@ export function arraySum(inputArray: number[]) {
 
 export function findFirstBiggerIndex<T>(array: T[], elementToFind: T, valueOf: (input: T) => number) {
   if (!elementToFind) return -1;
-  //@ts-ignore
   return List(array).findIndex(g => valueOf(g) > valueOf(elementToFind));
 }
 

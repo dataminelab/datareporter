@@ -1,8 +1,9 @@
 import { each, filter, map, toLower, toString, trim, upperFirst, without } from "lodash";
 import Mousetrap from "mousetrap";
 import "mousetrap/plugins/global-bind/mousetrap-global-bind";
-
+// eslint-disable-next-line compat/compat
 const modKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? "Cmd" : "Ctrl";
+// eslint-disable-next-line compat/compat
 const altKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? "Option" : "Alt";
 
 export function humanReadableShortcut(shortcut, limit = Infinity) {

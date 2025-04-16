@@ -72,7 +72,7 @@ export interface DimensionJS {
   sortStrategy?: string;
 }
 
-var check: Class<DimensionValue, DimensionJS>;
+let check: Class<DimensionValue, DimensionJS>;
 
 export class Dimension implements Instance<DimensionValue, DimensionJS> {
   static isDimension(candidate: any): candidate is Dimension {
@@ -181,7 +181,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   public toJS(): DimensionJS {
-    var js: DimensionJS = {
+    const js: DimensionJS = {
       name: this.name,
       title: this.title,
       formula: this.formula,
@@ -236,7 +236,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   change(propertyName: string, newValue: any): Dimension {
-    var v = this.valueOf();
+    const v = this.valueOf();
 
     if (!v.hasOwnProperty(propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
@@ -263,5 +263,5 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
 }
-
+// eslint-disable-next-line
 check = Dimension;

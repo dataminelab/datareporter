@@ -30,6 +30,21 @@ export default function ReportSelector(props) {
   const [selectedQuery, setSelectedQuery] = useState();
   const [doSearch, searchResults, searching] = useSearchResults(search, { initialResults: [] });
 
+  function selectQuery(queryId) {
+    let report = null;
+    if (queryId) {
+      report = find(searchResults, { id: queryId });
+      if (!report) {
+        // shouldn't happen
+        notification.error("Something went wrong...", "Couldn't select report");
+      }
+    }
+
+    setSearchTerm(report ? null : ""); // empty string triggers recent fetch
+    setSelectedQuery(report);
+    props.onChange(report);
+  }
+
   const placeholder = "Search a report by name";
   const clearIcon = (
     <i
@@ -56,21 +71,6 @@ export default function ReportSelector(props) {
       setSelectedQuery(props.selectedQuery);
     }
   }, [props.selectedQuery]);
-
-  function selectQuery(queryId) {
-    let report = null;
-    if (queryId) {
-      report = find(searchResults, { id: queryId });
-      if (!report) {
-        // shouldn't happen
-        notification.error("Something went wrong...", "Couldn't select report");
-      }
-    }
-
-    setSearchTerm(report ? null : ""); // empty string triggers recent fetch
-    setSelectedQuery(report);
-    props.onChange(report);
-  }
 
   function renderResults() {
     if (!searchResults.length) {

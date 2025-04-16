@@ -60,7 +60,7 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
   resetQuery = () => this.setQuery("");
 
   selectTile = (value: T) => {
-    //@ts-ignore
+    // @ts-ignore
     if (value.kind !== "time") {
       this.props.insertSplit(value, 0);
     } else {

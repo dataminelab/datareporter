@@ -25,7 +25,7 @@ import { DateRangePicker } from "./date-range-picker";
 
 describe("DateRangePicker", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <DateRangePicker
         startTime={new Date(Date.UTC(2003, 11, 2))}
         endTime={new Date(Date.UTC(2004, 11, 2))}

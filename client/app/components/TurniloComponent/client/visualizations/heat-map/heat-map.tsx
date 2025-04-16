@@ -17,8 +17,8 @@
 
 // For some reason tsc compiler does not see this file.
 // Remove when issue is identified.
-/// <reference path="../../index.d.ts" />
-
+// Importing types from index.d.ts
+import "../../index.d.ts";
 import memoizeOne from "memoize-one";
 import { Dataset } from "plywood";
 import * as React from "react";

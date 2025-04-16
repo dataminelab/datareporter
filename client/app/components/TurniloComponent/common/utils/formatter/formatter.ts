@@ -130,7 +130,7 @@ function getClauseLabel(clause: FilterClause, dimension: Dimension) {
   return `${dimensionTitle}${delimiter}`;
 }
 
-export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): { title: string, values: string } {
+export function getFormattedClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): { title: string; values: string } {
   return { title: getClauseLabel(clause, dimension), values: getFilterClauseValues(clause, timezone) };
 }
 

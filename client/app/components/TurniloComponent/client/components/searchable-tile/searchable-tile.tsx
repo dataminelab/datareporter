@@ -77,7 +77,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   }
 
   globalMouseDownListener = (e: MouseEvent) => {
-    var { searchText, toggleChangeFn } = this.props;
+    const { searchText, toggleChangeFn } = this.props;
 
     // Remove search if it looses focus while empty
     if (searchText !== "") return;
@@ -175,7 +175,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
       } as TileHeaderIcon)].concat(icons);
     }
 
-    var qualifiedClassName = "searchable-tile " + className;
+    let qualifiedClassName = "searchable-tile " + className;
     const header = <TileHeader
       title={title}
       ref={this.header}

@@ -84,12 +84,10 @@ function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): Ply
       .reduce(safeRangeSum, null);
   } else if (typeof flatDataset[0] === "string") {
     // ["21-05-2022:HH:MM:SS", ...]
-    //@ts-ignore
-    var start = new Date(flatDataset[0]);
-    //@ts-ignore
-    var end = new Date(flatDataset[0]);
+    let start = new Date(flatDataset[0]);
+    let end = new Date(flatDataset[0]);
     flatDataset.map(datum => {
-      let currentDate = new Date(datum.toString());
+      const currentDate = new Date(datum.toString());
       if (currentDate < start) {
         start = currentDate;
       }

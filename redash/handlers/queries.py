@@ -6,7 +6,6 @@ from funcy import partial
 from sqlalchemy.orm.exc import StaleDataError
 
 from redash import models, settings
-from redash.models.models import Model
 from redash.models import Report
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import (
@@ -29,8 +28,8 @@ from redash.permissions import (
     require_permission,
     view_only,
 )
-from redash.serializers import QuerySerializer
 from redash.utils import collect_parameters_from_request
+from redash.serializers import QuerySerializer
 from redash.serializers.report_serializer import ReportSerializer
 
 # Ordering map for relationships
@@ -50,6 +49,21 @@ order_map = {
 }
 
 order_results = partial(_order_results, default_order="-created_at", allowed_orders=order_map)
+
+
+@routes.route(org_scoped_rule("/api/queries/format"), methods=["POST"])
+@login_required
+def format_sql_query(org_slug=None):
+    """
+    Formats an SQL query using the Python ``sqlparse`` formatter.
+
+    :<json string query: The SQL text to format
+    :>json string query: Formatted SQL text
+    """
+    arguments = request.get_json(force=True)
+    query = arguments.get("query", "")
+
+    return jsonify({"query": sqlparse.format(query, **settings.SQLPARSE_FORMAT_OPTIONS)})
 
 
 class QuerySearchResource(BaseResource):
@@ -184,7 +198,7 @@ class QueryListResource(BaseQueryListResource):
 
         .. _query-response-label:
 
-        :>json number id: query_id
+        :>json number id: Query ID
         :>json number latest_query_data_id: ID for latest output data from this query
         :>json string name:
         :>json string description:

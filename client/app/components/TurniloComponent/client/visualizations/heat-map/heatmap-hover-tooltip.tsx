@@ -29,7 +29,7 @@ interface HeatmapHoverTooltip {
   dataset: Datum[];
   position: HoverPosition;
   essence: Essence;
-  scroll: { left: number, top: number };
+  scroll: { left: number; top: number };
 }
 
 interface ContentProps {

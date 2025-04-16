@@ -185,14 +185,15 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
         <div className="group">
           <label className="input-top-label">Type</label>
           <FilterOptionsDropdown
+            id="filter-type"
             selectedOption={filterMode}
             onSelectOption={this.onSelectFilterOption}
             filterOptions={filterOptions}
           />
         </div>
         <div className="group">
-          <label className="input-top-label">Min</label>
-          <input value={numberOrAnyToString(start)} onChange={this.onRangeInputStartChange} />
+          <label className="input-top-label" htmlFor="min-input">Min</label>
+          <input id="min-input" value={numberOrAnyToString(start)} onChange={this.onRangeInputStartChange} />
         </div>
         <div className="group">
           <label className="input-top-label">Max</label>

@@ -32,14 +32,13 @@ import { Button } from "../../button/button";
 import { StringInputWithPresets } from "../../input-with-presets/string-input-with-presets";
 import { getTimeFilterPresets, LATEST_PRESETS, TimeFilterPreset } from "./presets";
 import { TimeShiftSelector } from "./time-shift-selector";
-// @ts-ignore
 import { updateUrl } from '../../../../../../components/Parameters'
 
 export interface PresetTimeTabProps {
   timekeeper: Timekeeper;
   dimension: Dimension;
   onClose: Fn;
-  widgetList: Number[];
+  widgetList: number[];
   clickerList: Clicker[];
   essenceList: Essence[];
   setEssence: (widget_id: any, essence: any) => void;
@@ -86,12 +85,12 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
       const essence = essenceList[i];
       const clicker = clickerList[i];
       const widget = widgetList[i]
-      let dimensionName = essence.filter.getReferenceNameByIndex(0);
+      const dimensionName = essence.filter.getReferenceNameByIndex(0);
       let relativeFilter = essence.filter.setClause(constructFilter(filterPeriod, filterDuration, dimensionName));
       if (relativeFilter.length() > 1) {
         relativeFilter = relativeFilter.removeClauseByIndex(0);
       }
-      let newEssence = clicker.changeFilter(relativeFilter);
+      const newEssence = clicker.changeFilter(relativeFilter);
       const timeShift = TimeShift.fromJS(this.state.timeShift);
       clicker.changeComparisonShift(timeShift);
       setEssence(widget, newEssence);

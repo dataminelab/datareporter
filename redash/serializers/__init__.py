@@ -86,6 +86,7 @@ def hash_report(report, can_edit=False):
 
     return result
 
+
 def public_widget(widget):
     res = {
         "id": widget.id,

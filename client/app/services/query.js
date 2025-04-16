@@ -44,6 +44,168 @@ function collectParams(parts) {
   return parameters;
 }
 
+export class QueryResultError {
+  constructor(errorMessage) {
+    this.errorMessage = errorMessage;
+    this.updatedAt = moment.utc();
+  }
+
+  getUpdatedAt() {
+    return this.updatedAt;
+  }
+
+  getError() {
+    return this.errorMessage;
+  }
+
+  toPromise() {
+    return Promise.reject(this);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getStatus() {
+    return "failed";
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getData() {
+    return null;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getLog() {
+    return null;
+  }
+}
+
+class Parameters {
+  constructor(query, queryString) {
+    this.query = query;
+    this.updateParameters();
+    this.initFromQueryString(queryString);
+  }
+
+  parseQuery() {
+    const fallback = () => map(this.query.options.parameters, i => i.name);
+
+    let parameters = [];
+    if (this.query.query !== undefined) {
+      try {
+        const parts = Mustache.parse(this.query.query);
+        parameters = uniq(collectParams(parts));
+      } catch (e) {
+        logger("Failed parsing parameters: ", e);
+        // Return current parameters so we don't reset the list
+        parameters = fallback();
+      }
+    } else {
+      parameters = fallback();
+    }
+
+    return parameters;
+  }
+
+  updateParameters(update) {
+    if (this.query.query === this.cachedQueryText) {
+      const parameters = this.query.options.parameters;
+      const hasUnprocessedParameters = find(parameters, p => !(p instanceof Parameter));
+      if (hasUnprocessedParameters) {
+        this.query.options.parameters = map(parameters, p =>
+          p instanceof Parameter ? p : createParameter(p, this.query.id)
+        );
+      }
+      return;
+    }
+
+    this.cachedQueryText = this.query.query;
+    const parameterNames = update ? this.parseQuery() : map(this.query.options.parameters, p => p.name);
+
+    this.query.options.parameters = this.query.options.parameters || [];
+
+    const parametersMap = {};
+    this.query.options.parameters.forEach(param => {
+      parametersMap[param.name] = param;
+    });
+
+    parameterNames.forEach(param => {
+      if (!has(parametersMap, param)) {
+        this.query.options.parameters.push(
+          createParameter({
+            title: param,
+            name: param,
+            type: "text",
+            value: null,
+            global: false,
+          })
+        );
+      }
+    });
+
+    const parameterExists = p => includes(parameterNames, p.name);
+    const parameters = this.query.options.parameters;
+    this.query.options.parameters = parameters
+      .filter(parameterExists)
+      .map(p => (p instanceof Parameter ? p : createParameter(p, this.query.id)));
+  }
+
+  initFromQueryString(query) {
+    this.get().forEach(param => {
+      param.fromUrlParams(query);
+    });
+  }
+
+  get(update = true) {
+    this.updateParameters(update);
+    return this.query.options.parameters;
+  }
+
+  add(parameterDef) {
+    this.query.options.parameters = this.query.options.parameters.filter(p => p.name !== parameterDef.name);
+    const param = createParameter(parameterDef);
+    this.query.options.parameters.push(param);
+    return param;
+  }
+
+  getMissing() {
+    return map(
+      filter(this.get(), p => p.isEmpty),
+      i => i.title
+    );
+  }
+
+  isRequired() {
+    return !isEmpty(this.get());
+  }
+
+  getExecutionValues(extra = {}) {
+    const params = this.get();
+    return zipObject(
+      map(params, i => i.name),
+      map(params, i => i.getExecutionValue(extra))
+    );
+  }
+
+  hasPendingValues() {
+    return some(this.get(), p => p.hasPendingValue);
+  }
+
+  applyPendingValues() {
+    each(this.get(), p => p.applyPendingValue());
+  }
+
+  toUrlParams() {
+    if (this.get().length === 0) {
+      return "";
+    }
+
+    const params = Object.assign(...this.get().map(p => p.toUrlParams()));
+    Object.keys(params).forEach(key => params[key] == null && delete params[key]);
+    return Object.keys(params)
+      .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
+      .join("&");
+  }
+}
+
 export class Query {
   constructor(query) {
     extend(this, query);
@@ -209,168 +371,6 @@ export class Query {
     newQuery.$parameters = null;
     newQuery.getParameters();
     return newQuery;
-  }
-}
-
-class Parameters {
-  constructor(query, queryString) {
-    this.query = query;
-    this.updateParameters();
-    this.initFromQueryString(queryString);
-  }
-
-  parseQuery() {
-    const fallback = () => map(this.query.options.parameters, i => i.name);
-
-    let parameters = [];
-    if (this.query.query !== undefined) {
-      try {
-        const parts = Mustache.parse(this.query.query);
-        parameters = uniq(collectParams(parts));
-      } catch (e) {
-        logger("Failed parsing parameters: ", e);
-        // Return current parameters so we don't reset the list
-        parameters = fallback();
-      }
-    } else {
-      parameters = fallback();
-    }
-
-    return parameters;
-  }
-
-  updateParameters(update) {
-    if (this.query.query === this.cachedQueryText) {
-      const parameters = this.query.options.parameters;
-      const hasUnprocessedParameters = find(parameters, p => !(p instanceof Parameter));
-      if (hasUnprocessedParameters) {
-        this.query.options.parameters = map(parameters, p =>
-          p instanceof Parameter ? p : createParameter(p, this.query.id)
-        );
-      }
-      return;
-    }
-
-    this.cachedQueryText = this.query.query;
-    const parameterNames = update ? this.parseQuery() : map(this.query.options.parameters, p => p.name);
-
-    this.query.options.parameters = this.query.options.parameters || [];
-
-    const parametersMap = {};
-    this.query.options.parameters.forEach(param => {
-      parametersMap[param.name] = param;
-    });
-
-    parameterNames.forEach(param => {
-      if (!has(parametersMap, param)) {
-        this.query.options.parameters.push(
-          createParameter({
-            title: param,
-            name: param,
-            type: "text",
-            value: null,
-            global: false,
-          })
-        );
-      }
-    });
-
-    const parameterExists = p => includes(parameterNames, p.name);
-    const parameters = this.query.options.parameters;
-    this.query.options.parameters = parameters
-      .filter(parameterExists)
-      .map(p => (p instanceof Parameter ? p : createParameter(p, this.query.id)));
-  }
-
-  initFromQueryString(query) {
-    this.get().forEach(param => {
-      param.fromUrlParams(query);
-    });
-  }
-
-  get(update = true) {
-    this.updateParameters(update);
-    return this.query.options.parameters;
-  }
-
-  add(parameterDef) {
-    this.query.options.parameters = this.query.options.parameters.filter(p => p.name !== parameterDef.name);
-    const param = createParameter(parameterDef);
-    this.query.options.parameters.push(param);
-    return param;
-  }
-
-  getMissing() {
-    return map(
-      filter(this.get(), p => p.isEmpty),
-      i => i.title
-    );
-  }
-
-  isRequired() {
-    return !isEmpty(this.get());
-  }
-
-  getExecutionValues(extra = {}) {
-    const params = this.get();
-    return zipObject(
-      map(params, i => i.name),
-      map(params, i => i.getExecutionValue(extra))
-    );
-  }
-
-  hasPendingValues() {
-    return some(this.get(), p => p.hasPendingValue);
-  }
-
-  applyPendingValues() {
-    each(this.get(), p => p.applyPendingValue());
-  }
-
-  toUrlParams() {
-    if (this.get().length === 0) {
-      return "";
-    }
-
-    const params = Object.assign(...this.get().map(p => p.toUrlParams()));
-    Object.keys(params).forEach(key => params[key] == null && delete params[key]);
-    return Object.keys(params)
-      .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
-      .join("&");
-  }
-}
-
-export class QueryResultError {
-  constructor(errorMessage) {
-    this.errorMessage = errorMessage;
-    this.updatedAt = moment.utc();
-  }
-
-  getUpdatedAt() {
-    return this.updatedAt;
-  }
-
-  getError() {
-    return this.errorMessage;
-  }
-
-  toPromise() {
-    return Promise.reject(this);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getStatus() {
-    return "failed";
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getData() {
-    return null;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getLog() {
-    return null;
   }
 }
 

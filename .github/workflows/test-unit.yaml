@@ -135,7 +135,9 @@ jobs:
         with:
           fetch-depth: 1
           ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-node@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           # cache: 'npm'
@@ -172,12 +174,18 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache npm dependencies
+        id: cache-npm
         uses: actions/cache@v4
         with:
-          path: client/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+          path: client
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
 
       - name: Install App dependencies
         working-directory: client
@@ -225,13 +233,15 @@ jobs:
         with:
           fetch-depth: 1
           ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-node@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           # cache: 'npm'
 
       - name: Enable Code Coverage Report For Develop Branch
-        if: endsWith(github.ref, '/develop')
+        if: endsWith(github.ref, '/develop') || endsWith(github.ref, '/main')
         run: |
           echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
 
@@ -240,6 +250,7 @@ jobs:
         run: npm install
 
       - name: Setup Redash Server
+        working-directory: client
         run: |
           set -x
           npm run cypress build

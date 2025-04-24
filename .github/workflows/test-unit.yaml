@@ -255,7 +255,7 @@ jobs:
           set -x
           npm run cypress build
           npm run cypress start -- --skip-db-seed
-          docker compose run cypress npm run cypress db-seed
+          cd .. && docker compose run cypress npm run cypress db-seed
 
       - name: Execute Cypress Tests
         working-directory: client

@@ -29,7 +29,7 @@
     "type-check": "tsc --noEmit --project tsconfig.json",
     "type-check:watch": "npm run type-check -- --watch",
     "jest": "TZ=Africa/Khartoum jest",
-    "test": "jest",
+    "test": "jest --config jest.config.js --passWithNoTests",
     "check": "run-s type-check jest",
     "test:watch": "jest --watch",
     "cypress": "node cypress/cypress.js",

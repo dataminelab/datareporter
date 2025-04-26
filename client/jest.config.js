@@ -16,6 +16,7 @@ module.exports = {
     setupFiles: [
         path.resolve(__dirname, './app/__tests__/enzyme_setup.js'),
         path.resolve(__dirname, './app/__tests__/mocks.js'),
+        path.resolve(__dirname, './jest.setup.js'),
     ],
     snapshotSerializers: [
         "enzyme-to-json/serializer"
@@ -42,5 +43,4 @@ module.exports = {
         "<rootDir>/app/__tests__/"
     ],
     testEnvironment: 'jsdom',
-    
 };

@@ -182,13 +182,13 @@ jobs:
           restore-keys: Linux-node-
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-
-      - name: Install App dependencies
+        name: Install App dependencies
         working-directory: client
         run: npm install
+
+      - name: List the state of node modules
+        continue-on-error: true
+        run: npm list
 
       - name: Run App Tests
         working-directory: client

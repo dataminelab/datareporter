@@ -187,7 +187,7 @@ jobs:
         run: npm install
 
       - name: List the state of node modules
-        continue-on-error: true
+        working-directory: client
         run: npm list
 
       - name: Run App Tests
@@ -195,7 +195,8 @@ jobs:
         run: npm run test
       
       - name: Run Visualizations Tests
-        run: cd viz-lib && npm run test
+        working-directory: viz-lib
+        run: npm run test
       
       - name: Install plywood-server dependencies
         working-directory: plywood/server

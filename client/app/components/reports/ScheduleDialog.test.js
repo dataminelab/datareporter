@@ -208,7 +208,8 @@ describe("ScheduleDialog", () => {
 
   describe("Adheres to user permissions", () => {
     test.skip("Shows correct interval options", () => {
-      const refreshOptions = [60, 300, 3600, 7200]; // 1 min, 1 hour
+      // we dont have such a prop in the test for reports
+      const refreshOptions = [60, 300, 3600, 7200];
       const [wrapper] = getWrapper(null, { refreshOptions });
 
       // click select
@@ -222,7 +223,7 @@ describe("ScheduleDialog", () => {
           .find("Trigger")
           .instance()
           .getComponent()
-      ).find(".ant-select-item-option-content"); // here
+      ).find(".ant-select-item-option-content");
 
       const texts = options.map(node => node.text());
       const expected = ["Never", "1 minute", "5 minutes", "1 hour", "2 hours"];

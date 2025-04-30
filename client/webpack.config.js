@@ -161,6 +161,7 @@ const config = {
         use: ["source-map-loader"],
         exclude: [
           /node_modules\/mutationobserver-shim/,
+          /node_modules\/@plotly\/mapbox-gl/,
         ],
       },
       {

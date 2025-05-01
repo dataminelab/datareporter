@@ -42,7 +42,7 @@ let attributes = [
 
 let context = {
   diamonds: External.fromJS({
-    engine: 'druidsql',
+    engine: 'druid',
     version: '0.13.0',
     source: 'diamonds',
     timeAttribute: 'time',

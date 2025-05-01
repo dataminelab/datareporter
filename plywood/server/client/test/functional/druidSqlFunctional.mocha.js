@@ -244,7 +244,7 @@ describe('DruidSQL Functional', function() {
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druidsql',
+            engine: 'druid',
             source: 'wikipedia',
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
@@ -346,7 +346,7 @@ describe('DruidSQL Functional', function() {
       datasets: {
         wikiWith: External.fromJS(
           {
-            engine: 'druidsql',
+            engine: 'druid',
             source: 'wikipedia_zzz',
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
@@ -382,7 +382,7 @@ describe('DruidSQL Functional', function() {
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druidsql',
+            engine: 'druid',
             source: 'wikipedia',
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
@@ -451,28 +451,28 @@ describe('DruidSQL Functional', function() {
       return basicExecutor(ex, { rawQueries }).then(result => {
         expect(rawQueries).to.deep.equal([
           {
-            engine: 'druidsql',
+            engine: 'druid',
             query: {
               query:
                 'SELECT\nSUM("count") AS "Count",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE ("channel"=\'en\')\nGROUP BY \'\'',
             },
           },
           {
-            engine: 'druidsql',
+            engine: 'druid',
             query: {
               query:
                 'SELECT\n"namespace" AS "Namespace",\nSUM("added") AS "Added"\nFROM "wikipedia" AS t\nWHERE ("channel"=\'en\')\nGROUP BY "namespace"\nORDER BY "Added" DESC\nLIMIT 2',
             },
           },
           {
-            engine: 'druidsql',
+            engine: 'druid',
             query: {
               query:
                 'SELECT\nTIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\') AS "Timestamp",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE (("channel"=\'en\') AND ("namespace"=\'Main\'))\nGROUP BY TIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\')\nORDER BY "TotalAdded" DESC\nLIMIT 3',
             },
           },
           {
-            engine: 'druidsql',
+            engine: 'druid',
             query: {
               query:
                 'SELECT\nTIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\') AS "Timestamp",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE (("channel"=\'en\') AND ("namespace"=\'User talk\'))\nGROUP BY TIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\')\nORDER BY "TotalAdded" DESC\nLIMIT 3',
@@ -678,7 +678,7 @@ describe('DruidSQL Functional', function() {
   describe('incorrect commentLength and comment', () => {
     let wikiUserCharAsNumber = External.fromJS(
       {
-        engine: 'druidsql',
+        engine: 'druid',
         source: 'wikipedia',
         timeAttribute: 'time',
         allowEternity: true,
@@ -698,7 +698,7 @@ describe('DruidSQL Functional', function() {
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druidsql',
+            engine: 'druid',
             source: 'wikipedia',
           },
           druidRequester,
@@ -709,7 +709,7 @@ describe('DruidSQL Functional', function() {
     it('introspects', () => {
       return External.fromJS(
         {
-          engine: 'druidsql',
+          engine: 'druid',
           source: 'wikipedia',
         },
         druidRequester,

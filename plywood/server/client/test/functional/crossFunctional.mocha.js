@@ -141,7 +141,7 @@ let druidSqlExecutor = basicExecutorFactory({
   datasets: {
     wiki: External.fromJS(
       {
-        engine: 'druidsql',
+        engine: 'druid',
         source: 'wikipedia',
         attributes,
         derivedAttributes,

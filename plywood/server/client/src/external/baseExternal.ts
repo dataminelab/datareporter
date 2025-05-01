@@ -336,7 +336,6 @@ export interface AttributesAndApplies {
 
 export abstract class External {
   static type = 'EXTERNAL';
-
   static SEGMENT_NAME = '__SEGMENT__';
   static VALUE_NAME = '__VALUE__';
 

@@ -11,15 +11,21 @@ Cypress.Commands.add("createDashboard", (name) => {
   return post({ url: "api/dashboards", body: { name } }).then(({ body }) => body);
 });
 
-Cypress.Commands.add("createReport", () => {
-  cy.visit("/reports/new");
-  cy.wait(500);
-  cy.clickThrough(`
-    SelectDataSource
-    SelectDataSource${Cypress.env("dataSourceId")}
-  `);
-  cy.get("div.visualization").should("exist");
-  cy.wait(500);
+Cypress.Commands.add("createReport", (data) => {
+  const merged =  extend(
+    {
+      color_1: "#f17013",
+      color_2: "#000",
+      data_source_id: 1,
+      expression: "N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0408SqGOAygKZobYDmZe2MCClGALZNkOJvhABRNAGMA9AFUAKgGEKIAGYQEaJgCcuAbVBoAngAdxBIeMp6mGiTPvomAEwD66dTYAK+rDcjUDcYPXQsXAJfAEYAEXUoXXN8AFoYgQsrEARXJJAAXwBdYsoocyQ0IyKygKZgkHsNfSZsGWy3dDgPKEww9o8IN3UNTD1BbzwTLIk3BzheNHUwRBhswszLCWE4WHtCmpBzCGxsdziIYWwoSOrKY9P3BjGlgk6SHr69AaHCoA==",
+      model_id: 1,
+      name: "New Report",
+    },
+    data
+  );
+
+  return post({ url: "/api/reports", body: merged })
+    .then(({ body }) => cy.visit(`/reports/${body.id}/source`));;
 });
 
 Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {

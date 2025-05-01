@@ -25,4 +25,3 @@ class TestReports(BaseTestCase):
         actual_report = Report.get_by_user_and_id(user=user, _id=report.id)
 
         self.assertEqual(report, actual_report)
-

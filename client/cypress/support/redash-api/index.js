@@ -25,7 +25,7 @@ Cypress.Commands.add("createReport", (data) => {
   );
 
   return post({ url: "/api/reports", body: merged })
-    .then(({ body }) => cy.visit(`/reports/${body.id}/source`));;
+    .then(({ body }) => cy.visit(`/reports/${body.id}/source`));
 });
 
 Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {

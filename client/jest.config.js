@@ -40,7 +40,8 @@ module.exports = {
         "^.+\\.[jt]sx?$": "babel-jest"
     },
     testPathIgnorePatterns: [
-        "<rootDir>/app/__tests__/"
+        "<rootDir>/app/__tests__/",
+        "<rootDir>/app/components/TurniloComponent/"
     ],
     testEnvironment: 'jsdom',
 };

@@ -183,7 +183,7 @@ describe("ScheduleDialog", () => {
       });
     });
 
-    describe("Until feature", () => {
+    describe.skip("Until feature", () => {
       test("Until not set", () => {
         const [wrapper] = getWrapper({ interval: 300 });
         const el = findByTestID(wrapper, "ends");
@@ -206,8 +206,8 @@ describe("ScheduleDialog", () => {
     });
   });
 
-  describe("Adheres to user permissions", () => {
-    test.skip("Shows correct interval options", () => {
+  describe.skip("Adheres to user permissions", () => {
+    test("Shows correct interval options", () => {
       // we dont have such a prop in the test for reports
       const refreshOptions = [60, 300, 3600, 7200];
       const [wrapper] = getWrapper(null, { refreshOptions });

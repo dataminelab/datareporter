@@ -23,6 +23,7 @@ export const ControllerType = PropTypes.shape({
   orderByField: PropTypes.string,
   orderByReverse: PropTypes.bool.isRequired,
   toggleSorting: PropTypes.func.isRequired, // (orderByField: string) => void
+  setSorting: PropTypes.func.isRequired, // (orderByField: string, orderByReverse: boolean) => void
 
   // pagination
   page: PropTypes.number.isRequired,
@@ -76,10 +77,11 @@ export function wrap(WrappedComponent, createItemsSource, createStateStorage) {
       itemsSource.onError = error => this.props.onError(error);
 
       const initialState = this.getState({ ...itemsSource.getState(), isLoaded: false });
-      const { updatePagination, toggleSorting, updateSearch, updateSelectedTags, update, handleError } = itemsSource;
+      const { updatePagination, toggleSorting, setSorting, updateSearch, updateSelectedTags, update, handleError } = itemsSource;
       this.state = {
         ...initialState,
         toggleSorting, // eslint-disable-line react/no-unused-state
+        setSorting, // eslint-disable-line react/no-unused-state
         updateSearch: debounce(updateSearch, 200), // eslint-disable-line react/no-unused-state
         updateSelectedTags, // eslint-disable-line react/no-unused-state
         updatePagination, // eslint-disable-line react/no-unused-state

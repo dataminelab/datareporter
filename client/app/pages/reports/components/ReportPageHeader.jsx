@@ -641,7 +641,7 @@ export default function ReportPageHeader(props) {
             )}
           </span>
         )}
-          <Button disabled={!reportChanged} className="m-r-5" id="_handleSaveReport" onClick={() => handleSaveReport()}>
+          <Button disabled={!reportChanged} className="m-r-5" onClick={() => handleSaveReport()}>
             <span className="icon icon-save-floppy-disc m-r-5"></span> Save
           </Button>
         {(report.id) && (

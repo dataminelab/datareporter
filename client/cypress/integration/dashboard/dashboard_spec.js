@@ -57,7 +57,8 @@ describe("Dashboard", () => {
   it("is accessible through multiple urls", () => {
     cy.server();
     cy.route("GET", "**/api/dashboards/*").as("LoadDashboard");
-    cy.createDashboard("Dashboard multiple urls").then(({ id, slug }) => {
+    let randomSlug = Cypress._.random(0, 10000).toString(36);
+    cy.createDashboard("Dashboard multiple urls - " + randomSlug).then(({ id, slug }) => {
       [`/dashboards/${id}`, `/dashboards/${id}-anything-here`, `/dashboard/${slug}`].forEach(url => {
         cy.visit(url);
         cy.wait("@LoadDashboard");
@@ -70,7 +71,7 @@ describe("Dashboard", () => {
   });
 
   context("viewport width is at 800px", () => {
-    before(function () {
+    before(function() {
       cy.login();
       cy.createDashboard("Foo Bar")
         .then(({ id }) => {
@@ -84,7 +85,7 @@ describe("Dashboard", () => {
         });
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
       cy.login();
       cy.visit(this.dashboardUrl);
       cy.viewport(800, 800);
@@ -115,7 +116,7 @@ describe("Dashboard", () => {
       cy.get("@editButton").should("be.visible");
     });
 
-    it("disables edit mode", function () {
+    it("disables edit mode", function() {
       cy.viewport(801, 800);
       cy.visit(this.dashboardEditUrl);
       cy.contains("button", "Done Editing")
@@ -128,14 +129,14 @@ describe("Dashboard", () => {
   });
 
   context("viewport width is at 767px", () => {
-    before(function () {
+    before(function() {
       cy.login();
       cy.createDashboard("Foo Bar").then(({ id }) => {
         this.dashboardUrl = `/dashboards/${id}`;
       });
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
       cy.visit(this.dashboardUrl);
       cy.viewport(767, 800);
     });

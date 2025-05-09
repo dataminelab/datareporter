@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { NumberRange, PlywoodValue, Set, TimeRange } from '../datatypes/index';
+import { NumberRange, PlywoodValue, Set, TimeRange } from '../datatypes';
 import { SQLDialect } from '../dialect/baseDialect';
+import { handleNullCheckIfNeeded } from '../helper';
+
 import {
   ChainableUnaryExpression,
   Expression,
@@ -23,7 +25,6 @@ import {
   ExpressionValue,
   r,
 } from './baseExpression';
-import { FallbackExpression } from './fallbackExpression';
 import { IndexOfExpression } from './indexOfExpression';
 import { LiteralExpression } from './literalExpression';
 import { NumberBucketExpression } from './numberBucketExpression';
@@ -55,7 +56,7 @@ export class IsExpression extends ChainableUnaryExpression {
     const { expression } = this;
     if (expression instanceof LiteralExpression) {
       if (Set.isSetType(expression.type)) {
-        let valueSet: Set = expression.value;
+        const valueSet: Set = expression.value;
         return `${JSON.stringify(valueSet.elements)}.indexOf(${operandJS})>-1`;
       }
     }
@@ -67,26 +68,32 @@ export class IsExpression extends ChainableUnaryExpression {
     operandSQL: string,
     expressionSQL: string,
   ): string {
-    let expressionSet = this.expression.getLiteralValue();
+    const expressionSet = this.expression.getLiteralValue();
     if (expressionSet instanceof Set) {
+      if (expressionSet.empty()) return 'FALSE';
+
       switch (this.expression.type) {
         case 'SET/STRING':
-        case 'SET/NUMBER':
-          let nullCheck: string = null;
-          if (expressionSet.has(null)) {
-            nullCheck = `(${operandSQL} IS NULL)`;
-            expressionSet = expressionSet.remove(null);
-          }
-
-          let inCheck = `${operandSQL} IN (${expressionSet.elements
-            .map((v: any) => (typeof v === 'number' ? v : dialect.escapeLiteral(v)))
-            .join(',')})`;
-          return nullCheck ? `(${nullCheck} OR ${inCheck})` : inCheck;
+        case 'SET/NUMBER': {
+          return handleNullCheckIfNeeded(
+            expressionSet.elements,
+            `${operandSQL} IS NULL`,
+            'OR',
+            withoutNull =>
+              `${operandSQL} IN (${withoutNull
+                .map((v: any) => (typeof v === 'number' ? v : dialect.escapeLiteral(v)))
+                .join(',')})`,
+          );
+        }
 
         default:
-          return expressionSet.elements
-            .map(e => dialect.isNotDistinctFromExpression(operandSQL, r(e).getSQL(dialect)))
-            .join(' OR ');
+          return (
+            '(' +
+            expressionSet.elements
+              .map(e => dialect.isNotDistinctFromExpression(operandSQL, r(e).getSQL(dialect)))
+              .join(' OR ') +
+            ')'
+          );
       }
     } else {
       return dialect.isNotDistinctFromExpression(operandSQL, expressionSQL);
@@ -106,9 +113,18 @@ export class IsExpression extends ChainableUnaryExpression {
     const literalValue = expression.getLiteralValue();
 
     if (literalValue != null) {
-      // X.is(Set({Y})) => X.is(Y)
-      if (Set.isSet(literalValue) && literalValue.elements.length === 1) {
-        return operand.is(r(literalValue.elements[0]));
+      if (Set.isSet(literalValue)) {
+        const setElements = literalValue.elements;
+
+        // X.is(Set({})) => false
+        if (setElements.length === 0) {
+          return LiteralExpression.FALSE;
+        }
+
+        // X.is(Set({Y})) => X.is(Y)
+        if (setElements.length === 1) {
+          return operand.is(r(setElements[0]));
+        }
       }
 
       // X.indexOf(Y).is(-1)

@@ -30,6 +30,7 @@ cat \
   build/datatypes/stringRange.js \
   build/datatypes/set.js \
   build/datatypes/dataset.js \
+  build/datatypes/ip.js \
   build/datatypes/valueStream.js \
   build/expressions/baseExpression.js \
   build/expressions/literalExpression.js \
@@ -60,6 +61,9 @@ cat \
   build/expressions/greaterThanExpression.js \
   build/expressions/greaterThanOrEqualExpression.js \
   build/expressions/inExpression.js \
+  build/expressions/ipMatchExpression.js \
+  build/expressions/ipSearchExpression.js \
+  build/expressions/ipStringifyExpression.js \
   build/expressions/isExpression.js \
   build/expressions/joinExpression.js \
   build/expressions/yearOverYearExpression.js \
@@ -74,6 +78,9 @@ cat \
   build/expressions/maxExpression.js \
   build/expressions/minExpression.js \
   build/expressions/multiplyExpression.js \
+  build/expressions/mvContainsExpression.js \
+  build/expressions/mvFilterOnlyExpression.js \
+  build/expressions/mvOverlapExpression.js \
   build/expressions/notExpression.js \
   build/expressions/numberBucketExpression.js \
   build/expressions/orExpression.js \
@@ -106,6 +113,7 @@ cat \
   build/external/mySqlExternal.js \
   build/external/postgresExternal.js \
   build/external/druidSqlExternal.js \
+  build/external/druidExternal.js \
   build/external/bigQueryExternal.js \
   build/external/awsAthenaExternal.js \
   build/executor/basicExecutor.js \

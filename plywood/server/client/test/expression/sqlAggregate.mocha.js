@@ -15,10 +15,11 @@
  */
 
 const { expect } = require('chai');
-const { SqlExpression } = require('@druid-toolkit/query');
+const { SqlExpression } = require('druid-query-toolkit');
 
-let plywood = require('../plywood');
-let { SqlAggregateExpression } = plywood;
+const plywood = require('../plywood');
+
+const { SqlAggregateExpression } = plywood;
 
 describe('SqlAggregateExpression', () => {
   it('.substituteFilter', () => {

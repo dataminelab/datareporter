@@ -2624,7 +2624,7 @@ describe('DruidExternal', () => {
       .resolve(context)
       .simplify();
 
-    let external = ex.operand.external;
+    let external = ex.external;
     expect(external.getQueryAndPostTransform().query).to.deep.equal({
       columns: ['page', 'commentLength', 'castTime', 'added'],
       dataSource: 'wikipedia',

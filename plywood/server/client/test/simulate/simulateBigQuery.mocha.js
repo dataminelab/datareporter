@@ -16,12 +16,13 @@
  */
 
 const { expect } = require('chai');
-let { sane } = require('../utils');
+const { sane } = require('../utils');
 
-let plywood = require('../plywood');
-let { External, $, ply, r, Expression } = plywood;
+const plywood = require('../plywood');
 
-let context = {
+const { External, $, ply, r, Expression } = plywood;
+
+const context = {
   diamonds: External.fromJS({
     engine: 'bigquery',
     source: 'diamonds',

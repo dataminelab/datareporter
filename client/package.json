@@ -71,7 +71,7 @@
     "base64-arraybuffer": "^1.0.2",
     "bootstrap": "^3.3.7",
     "classnames": "^2.2.6",
-    "d3": "^3.5.17",
+    "d3": "4.13.0",
     "d3-dsv": "2.0.0",
     "debug": "^3.1.0",
     "dompurify": "^2.0.17",

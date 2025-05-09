@@ -202,7 +202,7 @@ export class Table extends BaseVisualization<TableState> {
 
   private shouldCollapseRows(): boolean {
     const { essence: { visualizationSettings } } = this.props;
-    //@ts-ignore
+    // @ts-ignore
     const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
     return collapseRows;
   }

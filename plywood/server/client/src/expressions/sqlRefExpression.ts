@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import { SqlExpression } from '@druid-toolkit/query';
-import { ComputeFn, Datum, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/index';
+import { SqlExpression, SqlFunction } from 'druid-query-toolkit';
+
+import { ComputeFn, Datum, PlywoodValue } from '../datatypes';
+import { SQLDialect } from '../dialect';
+import { PlyTypeSimple } from '../types';
+
 import { Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export class SqlRefExpression extends Expression {
   static op = 'SqlRef';
   static fromJS(parameters: ExpressionJS): SqlRefExpression {
-    let value: ExpressionValue = Expression.jsToValue(parameters);
+    const value: ExpressionValue = Expression.jsToValue(parameters);
     value.sql = parameters.sql;
     return new SqlRefExpression(value);
   }
@@ -34,34 +37,38 @@ export class SqlRefExpression extends Expression {
     super(parameters, dummyObject);
     this._ensureOp('sqlRef');
 
-    let sql = parameters.sql;
+    const sql = parameters.sql;
     if (typeof sql !== 'string' || sql.length === 0) {
       throw new TypeError('must have a nonempty `sql`');
     }
     this.sql = sql;
+    this.type = parameters.type;
 
     this.simple = true;
     this.parsedSql = SqlExpression.parse(this.sql);
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.sql = this.sql;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let js = super.toJS();
+    const js = super.toJS();
     js.sql = this.sql;
+    js.type = this.type;
     return js;
   }
 
   public toString(): string {
-    return `s$\{${this.sql}}`;
+    const { sql, type } = this;
+
+    return type ? `s$\{${sql}\}:${type}` : `s$\{${sql}\}`;
   }
 
   public changeSql(sql: string): SqlRefExpression {
-    let value = this.valueOf();
+    const value = this.valueOf();
     value.sql = sql;
     return new SqlRefExpression(value);
   }
@@ -70,7 +77,7 @@ export class SqlRefExpression extends Expression {
     throw new Error('can not getFn on SQL');
   }
 
-  public calc(datum: Datum): PlywoodValue {
+  public calc(_datum: Datum): PlywoodValue {
     throw new Error('can not calc on SQL');
   }
 
@@ -78,14 +85,28 @@ export class SqlRefExpression extends Expression {
     throw new Error('can not call getJS on SQL');
   }
 
-  public getSQL(dialect: SQLDialect, minimal = false): string {
+  public getSQL(dialect: SQLDialect, _minimal = false): string {
+    if (this.type) {
+      try {
+        return dialect.castExpression(undefined, this.sql, this.type as PlyTypeSimple);
+      } catch {
+        // Ignore error and fall though to just return the sql
+      }
+    }
     return `(${this.sql})`;
   }
 
   public equals(other: SqlRefExpression | undefined): boolean {
+    return super.equals(other) && this.sql === other.sql;
+  }
+
+  public isSqlFunction(...functionNames: string[]): boolean {
+    const upperCaseFunctionNames = functionNames.map(functionName => functionName.toUpperCase());
+    const { parsedSql } = this;
+
     return (
-      super.equals(other) &&
-      this.sql === other.sql
+      parsedSql instanceof SqlFunction &&
+      upperCaseFunctionNames.includes(parsedSql.getEffectiveFunctionName())
     );
   }
 }

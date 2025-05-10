@@ -218,7 +218,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: frontend-lint
     env:
-      COMPOSE_FILE: .circleci/docker-compose.cypress.yml
+      COMPOSE_FILE: .ci/docker-compose.cypress.yml
       COMPOSE_PROJECT_NAME: cypress
       CYPRESS_INSTALL_BINARY: 0
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1

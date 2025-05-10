@@ -6,7 +6,6 @@ venv/
 .coveragerc
 .coverage
 coverage.xml
-.circleci/
 .github/
 *.md
 LICENSE*

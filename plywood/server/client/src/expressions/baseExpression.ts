@@ -337,6 +337,7 @@ function getString(param: string | Expression): string {
     return param.name;
   }
   if (typeof param === 'object' && param !== null) {
+    // bigQuery and Athena fall back to this
     return param.toString();
   }
   throw new Error('could not extract a string out of ' + String(param));

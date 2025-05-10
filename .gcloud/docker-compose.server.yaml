@@ -7,8 +7,6 @@ x-redash-service: &redash-service
       - ${TAG-latest}
     cache_from:
       - "eu.gcr.io/datareporter/datareporter:cache"
-    # cache_to:
-    #   - "eu.gcr.io/datareporter/datareporter:cache"
     args:
       skip_frontend_build: "${skip_frontend_build-true}"
       skip_dev_deps: "${skip_dev_deps-false}"

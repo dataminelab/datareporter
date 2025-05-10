@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { TimeRange } from '../../datatypes/index';
 import {
-  $,
   CastExpression,
-  ChainableUnaryExpression,
   ConcatExpression,
   CustomTransformExpression,
   Expression,
@@ -38,11 +35,9 @@ import {
   TransformCaseExpression,
 } from '../../expressions';
 
-import { External } from '../baseExternal';
 import { CustomDruidTransforms } from './druidTypes';
 
 export interface DruidExtractionFnBuilderOptions {
-  version: string;
   customTransforms: CustomDruidTransforms;
 }
 
@@ -62,36 +57,6 @@ export class DruidExtractionFnBuilder {
     WEEK_OF_YEAR: 'w',
     MONTH_OF_YEAR: 'M',
     YEAR: 'Y',
-  };
-
-  static TIME_PART_TO_EXPR: Record<string, string> = {
-    SECOND_OF_MINUTE: 'd.getSecondOfMinute()',
-    SECOND_OF_HOUR: 'd.getSecondOfHour()',
-    SECOND_OF_DAY: 'd.getSecondOfDay()',
-    SECOND_OF_WEEK: 'd.getDayOfWeek()*86400 + d.getSecondOfMinute()',
-    SECOND_OF_MONTH: 'd.getDayOfMonth()*86400 + d.getSecondOfHour()',
-    SECOND_OF_YEAR: 'd.getDayOfYear()*86400 + d.getSecondOfDay()',
-
-    MINUTE_OF_HOUR: 'd.getMinuteOfHour()',
-    MINUTE_OF_DAY: 'd.getMinuteOfDay()',
-    MINUTE_OF_WEEK: 'd.getDayOfWeek()*1440 + d.getMinuteOfDay()',
-    MINUTE_OF_MONTH: 'd.getDayOfMonth()*1440 + d.getMinuteOfDay()',
-    MINUTE_OF_YEAR: 'd.getDayOfYear()*1440 + d.getMinuteOfDay()',
-
-    HOUR_OF_DAY: 'd.getHourOfDay()',
-    HOUR_OF_WEEK: 'd.getDayOfWeek()*24 + d.getHourOfDay()',
-    HOUR_OF_MONTH: 'd.getDayOfMonth()*24 + d.getHourOfDay()',
-    HOUR_OF_YEAR: 'd.getDayOfYear()*24 + d.getHourOfDay()',
-
-    DAY_OF_WEEK: 'd.getDayOfWeek()',
-    DAY_OF_MONTH: 'd.getDayOfMonth()',
-    DAY_OF_YEAR: 'd.getDayOfYear()',
-
-    WEEK_OF_YEAR: 'd.getWeekOfWeekyear()',
-
-    MONTH_OF_YEAR: 'd.getMonthOfYear()',
-    YEAR: 'd.getYearOfEra()',
-    QUARTER: 'Math.ceil((d.getMonthOfYear()) / 3)',
   };
 
   static composeFns(
@@ -117,35 +82,14 @@ export class DruidExtractionFnBuilder {
     }
   }
 
-  static wrapFunctionTryCatch(lines: string[]): string {
-    return 'function(s){try{\n' + lines.filter(Boolean).join('\n') + '\n}catch(e){return null;}}';
-  }
-
-  public version: string;
   public customTransforms: CustomDruidTransforms;
 
-  public allowJavaScript: boolean;
-
-  constructor(options: DruidExtractionFnBuilderOptions, allowJavaScript: boolean) {
-    this.version = options.version;
+  constructor(options: DruidExtractionFnBuilderOptions) {
     this.customTransforms = options.customTransforms;
-
-    this.allowJavaScript = allowJavaScript;
   }
 
   public expressionToExtractionFn(expression: Expression): Druid.ExtractionFn | null {
-    const extractionFn = this.expressionToExtractionFnPure(expression);
-    if (extractionFn && extractionFn.type === 'cascade') {
-      if (extractionFn.extractionFns.every(extractionFn => extractionFn.type === 'javascript')) {
-        // If they are all JS anyway might as well make a single JS function
-        return this.expressionToJavaScriptExtractionFn(expression);
-      }
-    }
-    return extractionFn;
-  }
-
-  private expressionToExtractionFnPure(expression: Expression): Druid.ExtractionFn | null {
-    let freeReferences = expression.getFreeReferences();
+    const freeReferences = expression.getFreeReferences();
     if (freeReferences.length > 1) {
       throw new Error(
         `must have at most 1 reference (has ${freeReferences.length}): ${expression}`,
@@ -186,7 +130,7 @@ export class DruidExtractionFnBuilder {
     } else if (expression instanceof OverlapExpression) {
       return this.overlapToExtractionFn(expression);
     } else {
-      return this.expressionToJavaScriptExtractionFn(expression);
+      throw new Error(`can not convert ${expression} to extractionFn`);
     }
   }
 
@@ -211,8 +155,8 @@ export class DruidExtractionFnBuilder {
           map: {
             '0': 'false',
             '1': 'true',
-            false: 'false',
-            true: 'true',
+            'false': 'false',
+            'true': 'true',
           },
         },
       };
@@ -223,7 +167,7 @@ export class DruidExtractionFnBuilder {
 
   private concatToExtractionFn(expression: ConcatExpression): Druid.ExtractionFn | null {
     let innerExpression: Expression | null = null;
-    let format = expression
+    const format = expression
       .getExpressionList()
       .map(ex => {
         if (ex instanceof LiteralExpression) {
@@ -239,7 +183,7 @@ export class DruidExtractionFnBuilder {
 
     if (!innerExpression) throw new Error(`invalid concat expression '${expression}'`);
 
-    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFnPure(innerExpression), {
+    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFn(innerExpression), {
       type: 'stringFormat',
       format,
       nullHandling: 'returnNull',
@@ -252,7 +196,7 @@ export class DruidExtractionFnBuilder {
     const { operand, duration } = expression;
     const timezone = expression.getTimezone();
 
-    let myExtractionFn: Druid.ExtractionFn = {
+    const myExtractionFn: Druid.ExtractionFn = {
       type: 'timeFormat',
       granularity: {
         type: 'period',
@@ -264,7 +208,7 @@ export class DruidExtractionFnBuilder {
     };
 
     return DruidExtractionFnBuilder.composeFns(
-      this.expressionToExtractionFnPure(operand),
+      this.expressionToExtractionFn(operand),
       myExtractionFn,
     );
   }
@@ -274,7 +218,7 @@ export class DruidExtractionFnBuilder {
     const timezone = expression.getTimezone();
 
     let myExtractionFn: Druid.ExtractionFn;
-    let format = DruidExtractionFnBuilder.TIME_PART_TO_FORMAT[part];
+    const format = DruidExtractionFnBuilder.TIME_PART_TO_FORMAT[part];
     if (format) {
       myExtractionFn = {
         type: 'timeFormat',
@@ -283,23 +227,11 @@ export class DruidExtractionFnBuilder {
         timeZone: timezone.toString(),
       };
     } else {
-      let expr = DruidExtractionFnBuilder.TIME_PART_TO_EXPR[part];
-      if (!expr) throw new Error(`can not part on ${part}`);
-      myExtractionFn = {
-        type: 'javascript',
-        function: DruidExtractionFnBuilder.wrapFunctionTryCatch([
-          'var d = new org.joda.time.DateTime(s);',
-          timezone.isUTC()
-            ? null
-            : `d = d.withZone(org.joda.time.DateTimeZone.forID(${JSON.stringify(timezone)}));`,
-          `d = ${expr};`,
-          'return d;',
-        ]),
-      };
+      throw new Error(`can not part on ${part}`);
     }
 
     return DruidExtractionFnBuilder.composeFns(
-      this.expressionToExtractionFnPure(operand),
+      this.expressionToExtractionFn(operand),
       myExtractionFn,
     );
   }
@@ -309,18 +241,18 @@ export class DruidExtractionFnBuilder {
   ): Druid.ExtractionFn | null {
     const { operand, size, offset } = expression;
 
-    let bucketExtractionFn: Druid.ExtractionFn = { type: 'bucket' };
+    const bucketExtractionFn: Druid.ExtractionFn = { type: 'bucket' };
     if (size !== 1) bucketExtractionFn.size = size;
     if (offset !== 0) bucketExtractionFn.offset = offset;
     return DruidExtractionFnBuilder.composeFns(
-      this.expressionToExtractionFnPure(operand),
+      this.expressionToExtractionFn(operand),
       bucketExtractionFn,
     );
   }
 
   private substrToExtractionFn(expression: SubstrExpression): Druid.ExtractionFn | null {
     const { operand, position, len } = expression;
-    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFnPure(operand), {
+    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFn(operand), {
       type: 'substring',
       index: position,
       length: len,
@@ -332,10 +264,10 @@ export class DruidExtractionFnBuilder {
   ): Druid.ExtractionFn | null {
     const { operand, transformType } = expression;
 
-    let type = DruidExtractionFnBuilder.CASE_TO_DRUID[transformType];
+    const type = DruidExtractionFnBuilder.CASE_TO_DRUID[transformType];
     if (!type) throw new Error(`unsupported case transformation '${type}'`);
 
-    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFnPure(operand), {
+    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFn(operand), {
       type: type,
     });
   }
@@ -343,7 +275,7 @@ export class DruidExtractionFnBuilder {
   private lengthToExtractionFn(expression: LengthExpression): Druid.ExtractionFn {
     const { operand } = expression;
 
-    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFnPure(operand), {
+    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFn(operand), {
       type: 'strlen',
     });
   }
@@ -351,7 +283,7 @@ export class DruidExtractionFnBuilder {
   private extractToExtractionFn(expression: ExtractExpression): Druid.ExtractionFn | null {
     const { operand, regexp } = expression;
 
-    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFnPure(operand), {
+    return DruidExtractionFnBuilder.composeFns(this.expressionToExtractionFn(operand), {
       type: 'regex',
       expr: regexp,
       replaceMissingValue: true,
@@ -361,13 +293,13 @@ export class DruidExtractionFnBuilder {
   private lookupToExtractionFn(expression: LookupExpression): Druid.ExtractionFn | null {
     const { operand, lookupFn } = expression;
 
-    let lookupExtractionFn: Druid.ExtractionFn = {
+    const lookupExtractionFn: Druid.ExtractionFn = {
       type: 'registeredLookup',
       lookup: lookupFn,
     };
 
     return DruidExtractionFnBuilder.composeFns(
-      this.expressionToExtractionFnPure(operand),
+      this.expressionToExtractionFn(operand),
       lookupExtractionFn,
     );
   }
@@ -376,8 +308,8 @@ export class DruidExtractionFnBuilder {
     const { operand, expression: fallback } = expression;
 
     if (operand instanceof ExtractExpression) {
-      let extractExtractionFn = this.extractToExtractionFn(operand);
-      let extractExtractionFnLast = DruidExtractionFnBuilder.getLastFn(extractExtractionFn);
+      const extractExtractionFn = this.extractToExtractionFn(operand);
+      const extractExtractionFnLast = DruidExtractionFnBuilder.getLastFn(extractExtractionFn);
 
       if (fallback.isOp('ref')) {
         // the ref has to be the same as the argument because we can't refer to other dimensions
@@ -391,8 +323,8 @@ export class DruidExtractionFnBuilder {
 
       return extractExtractionFn;
     } else if (operand instanceof LookupExpression) {
-      let lookupExtractionFn = this.lookupToExtractionFn(operand);
-      let lookupExtractionFnLast = DruidExtractionFnBuilder.getLastFn(lookupExtractionFn);
+      const lookupExtractionFn = this.lookupToExtractionFn(operand);
+      const lookupExtractionFnLast = DruidExtractionFnBuilder.getLastFn(lookupExtractionFn);
 
       if (fallback.isOp('ref')) {
         // the ref has to be the same as the argument because we can't refer to other dimensions
@@ -411,16 +343,16 @@ export class DruidExtractionFnBuilder {
       throw new Error(`cant handle direct fallback: ${expression}`);
     }
 
-    return this.expressionToJavaScriptExtractionFn(expression);
+    throw new Error(`can not convert fallback ${expression} to extractionFn`);
   }
 
   private customTransformToExtractionFn(
     customTransform: CustomTransformExpression,
   ): Druid.ExtractionFn {
     const { operand, custom } = customTransform;
-    let customExtractionFn = this.customTransforms[custom];
+    const customExtractionFn = this.customTransforms[custom];
     if (!customExtractionFn) throw new Error(`could not find extraction function: '${custom}'`);
-    let extractionFn = customExtractionFn.extractionFn;
+    const extractionFn = customExtractionFn.extractionFn;
 
     if (typeof extractionFn.type !== 'string')
       throw new Error(`must have type in custom extraction fn '${custom}'`);
@@ -432,22 +364,22 @@ export class DruidExtractionFnBuilder {
     }
 
     return DruidExtractionFnBuilder.composeFns(
-      this.expressionToExtractionFnPure(operand),
+      this.expressionToExtractionFn(operand),
       extractionFn,
     );
   }
 
   private castToExtractionFn(cast: CastExpression): Druid.ExtractionFn {
     if (cast.outputType === 'TIME') {
-      return this.expressionToJavaScriptExtractionFn(cast);
+      throw new Error(`can not convert cast ${cast} to extractionFn`);
     }
     // Do nothing, just swallow the cast
-    return this.expressionToExtractionFnPure(cast.operand);
+    return this.expressionToExtractionFn(cast.operand);
   }
 
   private overlapToExtractionFn(expression: OverlapExpression): Druid.ExtractionFn {
-    let freeReferences = expression.operand.getFreeReferences();
-    let rhsType = expression.expression.type;
+    const freeReferences = expression.operand.getFreeReferences();
+    const rhsType = expression.expression.type;
     if (
       freeReferences[0] === '__time' && // hack
       expression.expression instanceof LiteralExpression &&
@@ -458,52 +390,6 @@ export class DruidExtractionFnBuilder {
         .overlap(r(expression.expression.getLiteralValue().changeToNumber()));
     }
 
-    return this.expressionToJavaScriptExtractionFn(expression);
-  }
-
-  private expressionToJavaScriptExtractionFn(ex: Expression): Druid.ExtractionFn {
-    if (!this.allowJavaScript) throw new Error('avoiding javascript');
-
-    let prefixFn: Druid.ExtractionFn = null;
-    let jsExtractionFn: Druid.ExtractionFn = {
-      type: 'javascript',
-      function: null,
-    };
-
-    // Hack
-    if (ex.getFreeReferences()[0] === '__time') {
-      ex = ex.substitute(e => {
-        if (e instanceof LiteralExpression) {
-          if (e.value instanceof TimeRange) {
-            return r(e.value.changeToNumber());
-          } else {
-            return null;
-          }
-        } else if (e instanceof RefExpression) {
-          return $('__time');
-        } else {
-          return null;
-        }
-      });
-    }
-
-    try {
-      jsExtractionFn['function'] = ex.getJSFn('d');
-    } catch (e) {
-      if (ex instanceof ChainableUnaryExpression) {
-        prefixFn = this.expressionToExtractionFnPure(ex.operand);
-        jsExtractionFn['function'] = ex.getAction().getJSFn('d');
-      } else {
-        throw e;
-      }
-    }
-
-    if (ex.isOp('concat')) jsExtractionFn.injective = true;
-    return DruidExtractionFnBuilder.composeFns(prefixFn, jsExtractionFn);
-  }
-
-  private versionBefore(neededVersion: string): boolean {
-    const { version } = this;
-    return version && External.versionLessThan(version, neededVersion);
+    throw new Error(`can not convert overlap ${expression} to extractionFn`);
   }
 }

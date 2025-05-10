@@ -5,8 +5,6 @@ x-redash-service: &redash-service
     context: .
     cache_from:
       - "type=gha"
-    # cache_to:
-    #   - "type=gha,mode=max"
     args:
       skip_frontend_build: "${skip_frontend_build-}"
       skip_dev_deps: "${skip_dev_deps-}"

@@ -38,7 +38,7 @@ import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
 describe("EssenceProps", () => {
-  var dataCubeJS = {
+  const dataCubeJS = {
     name: "twitter",
     title: "Twitter",
     clusterName: "druid",
@@ -270,7 +270,7 @@ describe("EssenceProps", () => {
 
     describe("#changeVisualisation", () => {
       [TABLE_MANIFEST, LINE_CHART_MANIFEST, BAR_CHART_MANIFEST].forEach(manifest => {
-        it("it sets visResolve to manual", () => {
+        it("sets visResolve to manual", () => {
           const essence = EssenceFixtures.twitterNoVisualisation().changeVisualization(manifest);
           expect(essence.visualization.name).to.deep.equal(manifest.name);
           expect(essence.visResolve.isManual()).to.be.true;

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { PlywoodValue } from '../datatypes/index';
+import { PlywoodValue } from '../datatypes';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export class NotExpression extends ChainableExpression {
@@ -40,7 +41,7 @@ export class NotExpression extends ChainableExpression {
   }
 
   protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return `NOT(${operandSQL})`;
+    return `(${operandSQL}) IS NOT TRUE`;
   }
 
   protected specialSimplify(): Expression {

@@ -1,68 +1,89 @@
 name: "Unit tests"
 on:
-  workflow_call:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+    branches:
+      - develop
+      - master
+env:
+  NODE_VERSION: 18
+  NPM_VERSION: 9.5.1
 
 
 permissions:
   contents: read
   pull-requests: write
 jobs:
-  PythonLint:
+  backend-lint:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
+      - if: github.event.pull_request.mergeable == 'false'
+        name: Exit if PR is not mergeable
+        run: exit 1
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - name: Install pip
-        run: |
-          python -m ensurepip --upgrade
-      - shell: bash
-        run: |-
-          pip3 install flake8
-      - shell: bash
-        run: |-
-          export PATH=$PATH:/builder/home/.local/bin
-          ./bin/flake8_tests.sh
-  PythonUnitTests:
+      - run: python -m ensurepip --upgrade
+      - run: sudo pip install flake8==6.0.0
+      - run: flake8 --config=.flake8 --show-source --statistics .
+
+  backend-unit-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    needs: backend-lint
     steps:
+      - if: github.event.pull_request.mergeable == 'false'
+        name: Exit if PR is not mergeable
+        run: exit 1
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           version: v0.12.1
+
       - name: Build docker compose
         uses: docker/bake-action@v4
         with:
           files: docker-compose.yml, docker-compose.ci.yml
           load: true
+
       - name: "Prepare test environment"
         shell: bash
         run: |-
           docker compose -f docker-compose.ci.yml up -d postgres redis
+
       - name: "Wait for postgres to start"
         shell: bash
         run: |-
           for i in 1 2 3 4 5; do docker compose  -f docker-compose.ci.yml run  --rm postgres psql -h postgres -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'tests'"  && break || sleep 2; done
+
       - name: "Create tests database"
         shell: bash
         run: |-
           docker compose  -f docker-compose.ci.yml run  --rm postgres psql -h postgres -U postgres -c "create database tests;"
+
       - name: "List Enabled Query Runners"
         shell: bash
         run: |-
           docker compose  -f docker-compose.ci.yml run  --rm server manage ds list_types
+
       - name: "Execute unit tests"
         shell: bash
         run: |-
           docker compose  -f docker-compose.ci.yml run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
+
       - name: "Extract test results"
         shell: bash
         if: always()
@@ -70,6 +91,7 @@ jobs:
           docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
           ls -l
+
       - name: "Publish unit test report"
         uses: mikepenz/action-junit-report@v4
         if: always()
@@ -81,6 +103,7 @@ jobs:
           summary: true
           job_summary: true
           check_name: "Unit Tests Report"
+
       - name: Code Coverage Report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
@@ -93,9 +116,160 @@ jobs:
           indicators: true
           output: both
           thresholds: '60 80'
+
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
         with:
           recreate: true
           path: code-coverage-results.md
+
+  frontend-lint:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - if: github.event.pull_request.mergeable == 'false'
+        name: Exit if PR is not mergeable
+        run: exit 1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: 'npm'
+
+      - name: Install Dependencies
+        working-directory: client
+        run: npm install
+
+      - name: Run Lint
+        working-directory: client
+        run: npm run lint
+
+      - name: Store Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-results
+          path: /tmp/test-results
+
+  frontend-unit-tests:
+    runs-on: ubuntu-latest
+    needs: frontend-lint
+    steps:
+      - if: github.event.pull_request.mergeable == 'false'
+        name: Exit if PR is not mergeable
+        run: exit 1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache npm dependencies
+        id: cache-npm
+        uses: actions/cache@v4
+        with:
+          path: client/node_modules
+          key: Linux-node-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: Linux-node-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Install App dependencies
+        working-directory: client
+        run: npm install
+
+      - name: List the state of node modules
+        working-directory: client
+        run: npm list
+
+      - name: Run App Tests
+        working-directory: client
+        run: npm run test
+      
+      - name: Run Visualizations Tests
+        working-directory: viz-lib
+        run: npm run test
+      
+      - name: Install plywood-server dependencies
+        working-directory: plywood/server
+        run: npm install
+
+      - name: Run plywood-server Tests
+        working-directory: plywood/server
+        run: npm run test
+
+      - name: Install plywood-client dependencies
+        working-directory: plywood/server/client
+        run: npm install
+
+      - name: Run plywood-client Tests
+        working-directory: plywood/server/client
+        run: npm run test
+
+  frontend-e2e-tests:
+    runs-on: ubuntu-latest
+    needs: frontend-lint
+    env:
+      COMPOSE_FILE: .ci/docker-compose.cypress.yml
+      COMPOSE_PROJECT_NAME: cypress
+      CYPRESS_INSTALL_BINARY: 0
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+      # PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      # CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+      # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+    steps:
+      - if: github.event.pull_request.mergeable == 'false'
+        name: Exit if PR is not mergeable
+        run: exit 1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: 'npm'
+
+      - name: Enable Code Coverage Report For Develop Branch
+        if: endsWith(github.ref, '/develop') || endsWith(github.ref, '/main')
+        run: |
+          echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
+
+      - name: Install Dependencies
+        working-directory: client
+        run: npm install
+
+      - name: Setup Redash Server
+        working-directory: client
+        run: |
+          set -x
+          npm run cypress build
+          npm run cypress start -- --skip-db-seed
+          cd .. && docker compose run cypress npm run cypress db-seed
+
+      - name: Execute Cypress Tests
+        working-directory: client
+        run: npm run cypress run-ci
+
+      - name: "Failure: output container logs to console"
+        if: failure()
+        run: docker compose logs
+
+      - name: Copy Code Coverage Results
+        run: docker cp cypress:/usr/src/app/coverage ./coverage || true
+
+      - name: Store Coverage Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage

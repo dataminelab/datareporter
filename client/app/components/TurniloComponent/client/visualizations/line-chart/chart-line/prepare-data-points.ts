@@ -54,7 +54,7 @@ function shouldInsertNextPoint(dataset: Datum[], currentIndex: number, getX: Una
 export function prepareDataPoints(dataset: Datum[], getX: Unary<Datum, ContinuousRange>, getY: Unary<Datum, number>): DataPoint[] {
   return flatMap(dataset, (datum, index) => {
     const range = getX(datum) as ContinuousRange;
-    var x;
+    let x;
     try {
       x = range.midpoint().valueOf();
     } catch (e) {

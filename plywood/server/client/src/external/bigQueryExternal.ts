@@ -1,8 +1,10 @@
 import { PlywoodRequester } from 'plywood-base-api';
 import toArray from 'stream-to-array';
+
 import { AttributeInfo, Attributes } from '../datatypes';
 import { BigQueryDialect } from '../dialect/bigQueryDialect';
 import { PlyType } from '../types';
+
 import { External, ExternalJS, ExternalValue } from './baseExternal';
 import { SQLExternal } from './sqlExternal';
 
@@ -17,16 +19,16 @@ export class BigQueryExternal extends SQLExternal {
 
 
   static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): BigQueryExternal {
-    let value: ExternalValue = External.jsToValue(parameters, requester);
+    const value: ExternalValue = External.jsToValue(parameters, requester);
     return new BigQueryExternal(value);
   }
 
   static mapTypes(columns: BigQueryColumn[]): Attributes {
     return columns
       .map((column: BigQueryColumn) => {
-        let name = column.name;
+        const name = column.name;
         let type: PlyType;
-        let nativeType = column.type.toLowerCase();
+        const nativeType = column.type.toLowerCase();
         if (nativeType === 'date' || nativeType === 'datetime' || nativeType === 'timestamp') {
           type = 'TIME';
         } else if (nativeType === 'string') {
@@ -52,6 +54,10 @@ export class BigQueryExternal extends SQLExternal {
       });
   }
 
+  static postProcessIntrospect(columns: BigQueryColumn[]): Attributes {
+    return this.mapTypes(columns);
+  }
+    
   constructor(parameters: ExternalValue) {
     super(parameters, new BigQueryDialect());
     this._ensureEngine('bigquery');
@@ -66,6 +72,32 @@ export class BigQueryExternal extends SQLExternal {
             WHERE table_name = ${this.dialect.escapeLiteral(this.source as string)} AND is_hidden = false`
       })
     ).then(BigQueryExternal.mapTypes);
+  }
+
+  static getVersion(requester: PlywoodRequester<any>): Promise<string> {
+    return toArray(
+      requester({
+        query: `SELECT version()`,
+      })
+    ).then((rows: any[]) => {
+      if (rows.length === 0) {
+        throw new Error('No version found');
+      }
+      return rows[0].version;
+    });
+  }
+
+  static getSourceList(requester: PlywoodRequester<any>): Promise<string[]> {
+    return toArray(
+      requester({
+        query: `SELECT table_name AS name
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE table_type = 'BASE TABLE' AND table_schema = 'public'`,
+      })
+    ).then((sources: any[]) => {
+      if (!sources.length) return sources;
+      return sources.map((s: any) => s.name).sort();
+    });
   }
 }
 

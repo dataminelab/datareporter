@@ -101,15 +101,6 @@
     "use-media": "^1.4.0"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "jsx",
-      "ts",
-      "tsx",
-      "node",
-      "less"
-    ],
     "rootDir": "./src",
     "setupFiles": [
       "../__tests__/enzyme_setup.js",
@@ -119,8 +110,9 @@
       "enzyme-to-json/serializer"
     ],
     "moduleNameMapper": {
-      "^@/(.*)": "<rootDir>/$1",
-      "\\.(css|less)$": "identity-obj-proxy"
+      "\\.(css|less)$": "identity-obj-proxy",
+      "^react$": "<rootDir>/../../client/node_modules/react",
+      "^@/(.*)": "<rootDir>/$1"
     }
   },
   "browser": {

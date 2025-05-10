@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-let { druidRequesterFactory } = require('plywood-druid-requester');
-let { mySqlRequesterFactory } = require('plywood-mysql-requester');
-let { postgresRequesterFactory } = require('plywood-postgres-requester');
+const { druidRequesterFactory } = require('plywood-druid-requester');
+const { mySqlRequesterFactory } = require('plywood-mysql-requester');
+const { postgresRequesterFactory } = require('plywood-postgres-requester');
 
-let plywood = require('../plywood');
-let {
+const plywood = require('../plywood');
+
+const {
   Expression,
   External,
   TimeRange,
@@ -30,21 +31,21 @@ let {
   verboseRequesterFactory,
 } = plywood;
 
-let utils = require('../utils');
-let info = require('../info');
+const utils = require('../utils');
+const info = require('../info');
 
-let druidRequester = druidRequesterFactory({
+const druidRequester = druidRequesterFactory({
   host: info.druidHost,
 });
 
-let mySqlRequester = mySqlRequesterFactory({
+const mySqlRequester = mySqlRequesterFactory({
   host: info.mySqlHost,
   database: info.mySqlDatabase,
   user: info.mySqlUser,
   password: info.mySqlPassword,
 });
 
-let postgresRequester = postgresRequesterFactory({
+const postgresRequester = postgresRequesterFactory({
   host: info.postgresHost,
   database: info.postgresDatabase,
   user: info.postgresUser,
@@ -62,7 +63,7 @@ let postgresRequester = postgresRequesterFactory({
 //   requester: postgresRequester
 // });
 
-let attributes = [
+const attributes = [
   { name: '__time', type: 'TIME', nativeType: '__time' },
   { name: 'sometimeLater', type: 'TIME', nativeType: 'STRING' },
   { name: 'channel', type: 'STRING', nativeType: 'STRING' },
@@ -95,11 +96,11 @@ let attributes = [
   { name: 'deleted', type: 'NUMBER', nativeType: 'LONG', unsplitable: true },
 ];
 
-let derivedAttributes = {
+const derivedAttributes = {
   pageInBrackets: "'[' ++ $page:STRING ++ ']'", // ToDo: remove :STRING
 };
 
-let druidExecutor = basicExecutorFactory({
+const druidExecutor = basicExecutorFactory({
   datasets: {
     wiki: External.fromJS(
       {
@@ -117,15 +118,14 @@ let druidExecutor = basicExecutorFactory({
   },
 });
 
-let druidLegacyExecutor = basicExecutorFactory({
+const druidLegacyExecutor = basicExecutorFactory({
   datasets: {
     wiki: External.fromJS(
       {
         engine: 'druid',
         source: 'wikipedia',
-        context: Object.assign({}, info.druidContext, {
-          timeout: 10001, // Put a different timeout here so we can tell queries apart from non-legacy druid
-        }),
+        context: { ...info.druidContext, timeout: 10001, // Put a different timeout here so we can tell queries apart from non-legacy druid
+        },
         attributes,
         derivedAttributes,
         version: '0.10.0',
@@ -137,11 +137,11 @@ let druidLegacyExecutor = basicExecutorFactory({
   },
 });
 
-let druidSqlExecutor = basicExecutorFactory({
+const druidSqlExecutor = basicExecutorFactory({
   datasets: {
     wiki: External.fromJS(
       {
-        engine: 'druidsql',
+        engine: 'druid',
         source: 'wikipedia',
         attributes,
         derivedAttributes,
@@ -151,7 +151,7 @@ let druidSqlExecutor = basicExecutorFactory({
   },
 });
 
-let mysqlExecutor = basicExecutorFactory({
+const mysqlExecutor = basicExecutorFactory({
   datasets: {
     wiki: External.fromJS(
       {
@@ -165,7 +165,7 @@ let mysqlExecutor = basicExecutorFactory({
   },
 });
 
-let postgresExecutor = basicExecutorFactory({
+const postgresExecutor = basicExecutorFactory({
   datasets: {
     wiki: External.fromJS(
       {
@@ -179,7 +179,7 @@ let postgresExecutor = basicExecutorFactory({
   },
 });
 
-let equalityTest = utils.makeEqualityTest({
+const equalityTest = utils.makeEqualityTest({
   druid: druidExecutor,
   druidLegacy: druidLegacyExecutor,
   druidSql: druidSqlExecutor,
@@ -2075,10 +2075,10 @@ describe('Cross Functional', function() {
           .apply('TotalAdded', '$wiki.sum($added)')
           .apply('SixtySix', 66)
           .apply('AddedBYDeleted', '$wiki.sum($added) / $wiki.sum($deleted)')
-          //.apply('TokyoAdded', '$wiki.filter($cityName == Tokyo).sum($added)') // ToDo: fix null numbers
+          // .apply('TokyoAdded', '$wiki.filter($cityName == Tokyo).sum($added)') // ToDo: fix null numbers
           .apply('NullCities', '$wiki.filter($cityName == null).sum($added)')
-          //.apply('MinCommentLength', '$wiki.filter($cityName == Tokyo).min($commentLength)') // ToDo: fix this
-          //.apply('To*Added', '$wiki.filter($cityName.contains("to")).sum($added)') // ToDo: fix null numbers
+          // .apply('MinCommentLength', '$wiki.filter($cityName == Tokyo).min($commentLength)') // ToDo: fix this
+          // .apply('To*Added', '$wiki.filter($cityName.contains("to")).sum($added)') // ToDo: fix null numbers
           .apply('MinDelta', '$wiki.min($min_delta)')
           .apply('MaxDelta', '$wiki.max($max_delta)')
           .apply('Anon', '$wiki.filter($isAnonymous).count()')
@@ -2104,7 +2104,7 @@ describe('Cross Functional', function() {
           .apply('Added_NullCities', '$wiki.filter($cityName == null).sum($added)')
           .apply('Added_NullCities3', '$wiki.filter($cityName.substr(0, 3) == null).sum($added)')
           .apply('Added_NullCity_lol', '$wiki.filter($cityName.concat(_lol) == null).sum($added)')
-          //.apply('Added_NullCityExtract', '$wiki.filter($cityName.extract("^(...)") == null).sum($added)') // ToDo: issue with REGEXP_EXTRACT
+          // .apply('Added_NullCityExtract', '$wiki.filter($cityName.extract("^(...)") == null).sum($added)') // ToDo: issue with REGEXP_EXTRACT
           .sort('$Channel', 'descending')
           .limit(50),
       }),
@@ -2465,7 +2465,7 @@ describe('Cross Functional', function() {
           .apply('HOUR_OF_DAY', '$__time.timePart(HOUR_OF_DAY)')
           .apply('timeFloorP1D', '$__time.timeFloor(P1D)')
           .apply('timeFloorPT1M', '$__time.timeFloor(PT1M)')
-          //.apply('timeShift', '$__time.timeShift(P1D, 1)')
+          // .apply('timeShift', '$__time.timeShift(P1D, 1)')
           .select(
             '__time',
             'otherTime',
@@ -2474,7 +2474,7 @@ describe('Cross Functional', function() {
             'HOUR_OF_DAY',
             'timeFloorP1D',
             'timeFloorPT1M',
-            //'timeShift'
+            // 'timeShift'
           ),
       }),
     );

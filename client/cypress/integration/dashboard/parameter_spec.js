@@ -45,9 +45,7 @@ describe("Dashboard Parameters", () => {
       .filter(":visible")
       .as("Popover")
       .within(() => {
-        // This is needed to grant the element will have finished loading
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(500);
+        cy.wait(500);  // eslint-disable-line cypress/no-unnecessary-waiting
         cy.contains("button", "OK").click();
       })
       .then(() => {

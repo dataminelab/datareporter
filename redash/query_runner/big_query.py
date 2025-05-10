@@ -86,7 +86,7 @@ def _get_query_results(jobs, project_id, location, job_id, start_index):
     ).execute()
     logging.debug("query_reply %s", query_reply)
     if not query_reply["jobComplete"]:
-        time.sleep(10)
+        time.sleep(1)
         return _get_query_results(jobs, project_id, location, job_id, start_index)
 
     return query_reply
@@ -305,21 +305,17 @@ class BigQuery(BaseQueryRunner):
         schema = []
         for dataset in datasets:
             dataset_id = dataset["datasetReference"]["datasetId"]
-            tables = (
-                service.tables()
-                    .list(projectId=project_id, datasetId=dataset_id)
-                    .execute()
-            )
+            tables = service.tables().list(projectId=project_id, datasetId=dataset_id).execute()
             while True:
                 for table in tables.get("tables", []):
                     table_data = (
                         service.tables()
-                            .get(
+                        .get(
                             projectId=project_id,
                             datasetId=dataset_id,
                             tableId=table["tableReference"]["tableId"],
                         )
-                            .execute()
+                        .execute()
                     )
                     table_schema = self._get_columns_schema(table_data)
                     schema.append(table_schema)
@@ -329,11 +325,7 @@ class BigQuery(BaseQueryRunner):
                     break
 
                 tables = (
-                    service.tables()
-                        .list(
-                        projectId=project_id, datasetId=dataset_id, pageToken=next_token
-                    )
-                        .execute()
+                    service.tables().list(projectId=project_id, datasetId=dataset_id, pageToken=next_token).execute()
                 )
 
         return schema

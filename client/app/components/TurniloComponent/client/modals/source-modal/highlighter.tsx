@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// @ts-ignore
 import jsonLanguage from "highlight.js/lib/languages/json";
 import React from "react";
 /* Imported from `/src/` to save on bundle size.

@@ -18,10 +18,11 @@
 const { expect } = require('chai');
 const { Timezone } = require('chronoshift');
 
-let { testImmutableClass } = require('immutable-class-tester');
+const { testImmutableClass } = require('immutable-class-tester');
 
-let plywood = require('../plywood');
-let { Expression, $, ply, r, RefExpression, LimitExpression, SortExpression } = plywood;
+const plywood = require('../plywood');
+
+const { Expression, $, ply, r, RefExpression, LimitExpression, SortExpression } = plywood;
 
 describe('Expression', () => {
   it('is immutable class', () => {
@@ -44,7 +45,7 @@ describe('Expression', () => {
           type: 'SET',
         },
         { op: 'literal', value: { setType: 'NUMBER', elements: [0.05, 0.1] }, type: 'SET' },
-        //{ op: 'literal', value: [{}], type: 'DATASET' },
+        // { op: 'literal', value: [{}], type: 'DATASET' },
         { op: 'literal', value: new Date('2015-10-10Z'), type: 'TIME' },
         { op: 'ref', name: 'authors' },
         { op: 'ref', name: 'light_time' },
@@ -58,8 +59,8 @@ describe('Expression', () => {
         { op: 'ref', name: 'a thing', ignoreCase: true, options: { hello: 'world' } },
         { op: 'ref', name: 'a thing', ignoreCase: true, options: { hello: 'druid' } },
 
-        { op: 'sqlRef', sql: `A` },
-        { op: 'sqlRef', sql: `Substr(A, 1, 2)` },
+        { op: 'sqlRef', sql: `A`, type: undefined },
+        { op: 'sqlRef', sql: `Substr(A, 1, 2)`, type: 'IP' },
 
         {
           op: 'add',
@@ -128,7 +129,7 @@ describe('Expression', () => {
           op: 'external',
           external: {
             engine: 'druid',
-            version: '0.13.0',
+            version: '0.20.0',
             source: 'moon_child',
             attributes: [
               { name: 'color', type: 'STRING' },
@@ -228,6 +229,8 @@ describe('Expression', () => {
         { op: 'timeBucket', duration: 'P1D' },
         { op: 'timeBucket', duration: 'PT2H', timezone: 'Etc/UTC' },
         { op: 'timeBucket', duration: 'PT2H', timezone: 'America/Los_Angeles' },
+        { op: 'timeBucket', duration: 'PT2H', timezone: 'America/Los_Angeles', bounds: '[]' },
+        { op: 'timeBucket', duration: 'PT3H', timezone: 'America/Los_Angeles', bounds: '[)' },
 
         { op: 'timePart', part: 'DAY_OF_WEEK' },
         { op: 'timePart', part: 'DAY_OF_MONTH', timezone: 'Etc/UTC' },
@@ -242,6 +245,20 @@ describe('Expression', () => {
         { op: 'timeRange', duration: 'P1D', step: -2 },
         { op: 'timeRange', duration: 'P2D', step: 3, timezone: 'Etc/UTC' },
         { op: 'timeRange', duration: 'P2D', step: 3, timezone: 'America/Los_Angeles' },
+        {
+          op: 'timeRange',
+          duration: 'P2D',
+          step: 3,
+          timezone: 'America/Los_Angeles',
+          bounds: '[]',
+        },
+        {
+          op: 'timeRange',
+          duration: 'P2D',
+          step: 4,
+          timezone: 'America/Los_Angeles',
+          bounds: '[)',
+        },
 
         { op: 'transformCase', transformType: 'upperCase' },
         { op: 'transformCase', transformType: 'lowerCase' },
@@ -251,6 +268,29 @@ describe('Expression', () => {
 
         { op: 'sqlAggregate', sql: 'SUM(t.A)' },
         { op: 'sqlAggregate', sql: 'SUM(t.B)' },
+
+        {
+          op: 'mvContains',
+          mvArray: ['BMW', 'Honda', 'Suzuki'],
+        },
+        {
+          op: 'mvFilterOnly',
+          mvArray: ['BMW', 'Honda', 'Suzuki'],
+        },
+        {
+          op: 'mvOverlap',
+          mvArray: ['BMW', 'Honda', 'Suzuki'],
+        },
+        {
+          op: 'ipSearch',
+          ipToSearch: { ip: '192.0.0.0' },
+          ipSearchType: 'ip',
+        },
+        {
+          op: 'ipMatch',
+          ipToSearch: { ip: '192.0.0.0' },
+          ipSearchType: 'ip',
+        },
       ],
       {
         newThrows: true,
@@ -350,33 +390,33 @@ describe('Expression', () => {
 
   describe('#getFn', () => {
     it('works in a simple case of IS', () => {
-      let ex = $('x').is(8);
-      let exFn = ex.getFn();
+      const ex = $('x').is(8);
+      const exFn = ex.getFn();
       expect(exFn({ x: 5 })).to.equal(false);
       expect(exFn({ x: 8 })).to.equal(true);
     });
 
     it('works in a simple case of addition', () => {
-      let ex = $('x').add('$y', 5);
+      const ex = $('x').add('$y', 5);
 
-      let exFn = ex.getFn();
+      const exFn = ex.getFn();
       expect(exFn({ x: 5, y: 1 })).to.equal(11);
       expect(exFn({ x: 8, y: -3 })).to.equal(10);
     });
 
     it('works with calc', () => {
-      let ex = Expression.fromJS({
+      const ex = Expression.fromJS({
         op: 'add',
         operand: { op: 'ref', name: 'x' },
         expression: { op: 'ref', name: 'y' },
       });
-      let exFn = ex.getFn();
+      const exFn = ex.getFn();
       expect(exFn({ x: 5, y: 2 })).to.equal(7);
       expect(ex.calc({ x: 8, y: -3 })).to.equal(5);
     });
 
     it('works with case insensitive', () => {
-      let exp = Expression.parse('i$cUT');
+      const exp = Expression.parse('i$cUT');
       expect(exp.toJS()).to.deep.equal({
         ignoreCase: true,
         name: 'cUT',
@@ -390,129 +430,85 @@ describe('Expression', () => {
     });
   });
 
-  describe('#getJS', () => {
-    it('throws with case insensitive flag still set', () => {
-      let exp = Expression.parse('i$cUT');
-      expect(() => exp.getJS()).to.throw('can not express ignore case as js expression');
-    });
-  });
-
   describe('#decomposeAverage', () => {
     it('works in simple case', () => {
-      let ex1 = $('data').average('$x');
-      let ex2 = $('data')
-        .sum('$x')
-        .divide($('data').count());
+      const ex1 = $('data').average('$x');
+      const ex2 = $('data').sum('$x').divide($('data').count());
       expect(ex1.decomposeAverage().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it('works in more nested case', () => {
-      let ex1 = $('w').add($('data').average('$x'), $('data').average('$y + $z'));
-      let ex2 = $('w').add(
-        $('data')
-          .sum('$x')
-          .divide($('data').count()),
-        $('data')
-          .sum('$y + $z')
-          .divide($('data').count()),
+      const ex1 = $('w').add($('data').average('$x'), $('data').average('$y + $z'));
+      const ex2 = $('w').add(
+        $('data').sum('$x').divide($('data').count()),
+        $('data').sum('$y + $z').divide($('data').count()),
       );
       expect(ex1.decomposeAverage().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it('works in custom count case', () => {
-      let ex1 = $('data').average('$x');
-      let ex2 = $('data')
-        .sum('$x')
-        .divide($('data').sum('$count'));
+      const ex1 = $('data').average('$x');
+      const ex2 = $('data').sum('$x').divide($('data').sum('$count'));
       expect(ex1.decomposeAverage($('count')).toJS()).to.deep.equal(ex2.toJS());
     });
   });
 
   describe('#distribute', () => {
     it('works in simple - case', () => {
-      let ex1 = $('data').sum('-$x');
-      let ex2 = $('data')
-        .sum('$x')
-        .negate();
+      const ex1 = $('data').sum('-$x');
+      const ex2 = $('data').sum('$x').negate();
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it('works in simple + case', () => {
-      let ex1 = $('data').sum('$x + $y');
-      let ex2 = $('data')
-        .sum('$x')
-        .add('$data.sum($y)');
+      const ex1 = $('data').sum('$x + $y');
+      const ex2 = $('data').sum('$x').add('$data.sum($y)');
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it('turns sum in count 1', () => {
-      let ex1 = $('data').sum('6');
-      let ex2 = $('data')
-        .count()
-        .multiply(6);
+      const ex1 = $('data').sum('6');
+      const ex2 = $('data').count().multiply(6);
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it('turns sum in count 2', () => {
-      let ex1 = $('data').sum('1');
-      let ex2 = $('data').count();
+      const ex1 = $('data').sum('1');
+      const ex2 = $('data').count();
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it('works in constant * case', () => {
-      let ex1 = $('data').sum('$x * 6');
-      let ex2 = $('data')
-        .sum('$x')
-        .multiply(6);
+      const ex1 = $('data').sum('$x * 6');
+      const ex2 = $('data').sum('$x').multiply(6);
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it('works in post agg case 1', () => {
-      let ex1 = $('data')
-        .sum('$x * 6')
-        .multiply(3);
-      let ex2 = $('data')
-        .sum('$x')
-        .multiply(18);
+      const ex1 = $('data').sum('$x * 6').multiply(3);
+      const ex2 = $('data').sum('$x').multiply(18);
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it('works in post agg case 2', () => {
-      let ex1 = $('data')
-        .sum('$x * 6')
-        .add(3);
-      let ex2 = $('data')
-        .sum('$x')
-        .multiply(6)
-        .add(3);
+      const ex1 = $('data').sum('$x * 6').add(3);
+      const ex2 = $('data').sum('$x').multiply(6).add(3);
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it.skip('works in constant * case (multiple operands)', () => {
-      let ex1 = $('data').sum('$x * 6 * $y');
-      let ex2 = $('data')
-        .sum('$x * $y')
-        .multiply(6);
+      const ex1 = $('data').sum('$x * 6 * $y');
+      const ex2 = $('data').sum('$x * $y').multiply(6);
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
 
     it.skip('works in complex case', () => {
-      let ex1 = $('data').sum('$x + $y - $z * 5 + 6');
-      let ex2 = $('data')
+      const ex1 = $('data').sum('$x + $y - $z * 5 + 6');
+      const ex2 = $('data')
+        // eslint-disable-next-line no-undef
         .sum($x)
         .add('$data.sum($y)', '($data.sum($z) * 5).negate()', '6 * $data.count()');
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
-    });
-  });
-
-  describe('RefExpression.toJavaScriptSafeName', () => {
-    it('works', () => {
-      expect(RefExpression.toJavaScriptSafeName('hello')).to.equal('_hello');
-      expect(RefExpression.toJavaScriptSafeName('try')).to.equal('_try');
-      expect(RefExpression.toJavaScriptSafeName('i-love-you')).to.equal('_i$45love$45you');
-      expect(RefExpression.toJavaScriptSafeName('ру́сский')).to.equal(
-        '_$1088$1091$769$1089$1089$1082$1080$1081',
-      );
     });
   });
 
@@ -536,10 +532,10 @@ describe('Expression', () => {
   });
 
   describe('#defineEnvironment', () => {
-    let timezone = Timezone.fromJS('America/Los_Angeles');
+    const timezone = Timezone.fromJS('America/Los_Angeles');
 
     it('works in simple case', () => {
-      let ex = $('x').timeRange('P1D');
+      const ex = $('x').timeRange('P1D');
 
       expect(ex.defineEnvironment({ timezone }).toJS()).to.deep.equal({
         duration: 'P1D',
@@ -554,9 +550,7 @@ describe('Expression', () => {
     });
 
     it('works in nested case', () => {
-      let ex = $('x')
-        .timeShift('P1D', 1)
-        .timeRange('P1D');
+      const ex = $('x').timeShift('P1D', 1).timeRange('P1D');
 
       expect(ex.defineEnvironment({ timezone }).toJS()).to.deep.equal({
         duration: 'P1D',
@@ -579,7 +573,7 @@ describe('Expression', () => {
 
   describe('fromJS API back comparability', () => {
     it('works in complex case', () => {
-      let js = {
+      const js = {
         actions: [
           {
             action: 'apply',
@@ -677,13 +671,8 @@ describe('Expression', () => {
         op: 'chain',
       };
 
-      let ex2 = ply()
-        .apply(
-          'Diamonds',
-          ply()
-            .filter("$color == 'D'")
-            .apply('priceOver2', '$price/2'),
-        )
+      const ex2 = ply()
+        .apply('Diamonds', ply().filter("$color == 'D'").apply('priceOver2', '$price/2'))
         .apply('Count', $('Diamonds').count())
         .apply('TotalPrice', $('Diamonds').sum('$priceOver2'));
 

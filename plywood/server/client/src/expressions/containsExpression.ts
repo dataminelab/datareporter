@@ -16,6 +16,7 @@
 
 import { PlywoodValue, Set } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import {
   ChainableUnaryExpression,
   Expression,
@@ -34,7 +35,7 @@ export class ContainsExpression extends ChainableUnaryExpression {
 
   static op = 'Contains';
   static fromJS(parameters: ExpressionJS): ContainsExpression {
-    let value = ChainableUnaryExpression.jsToValue(parameters);
+    const value = ChainableUnaryExpression.jsToValue(parameters);
     value.compare = parameters.compare;
     return new ContainsExpression(value);
   }
@@ -64,13 +65,13 @@ export class ContainsExpression extends ChainableUnaryExpression {
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.compare = this.compare;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let js = super.toJS();
+    const js = super.toJS();
     js.compare = this.compare;
     return js;
   }
@@ -125,7 +126,7 @@ export class ContainsExpression extends ChainableUnaryExpression {
   }
 
   public changeCompare(compare: string): ContainsExpression {
-    let value = this.valueOf();
+    const value = this.valueOf();
     value.compare = compare;
     return new ContainsExpression(value);
   }

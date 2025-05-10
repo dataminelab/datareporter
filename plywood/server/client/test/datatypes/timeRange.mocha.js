@@ -17,11 +17,12 @@
 
 const { expect } = require('chai');
 
-let { testImmutableClass } = require('immutable-class-tester');
+const { testImmutableClass } = require('immutable-class-tester');
 
-let { Timezone } = require('chronoshift');
-let plywood = require('../plywood');
-let { TimeRange, $, ply, r } = plywood;
+const { Timezone, Duration } = require('chronoshift');
+const plywood = require('../plywood');
+
+const { Range, TimeRange } = plywood;
 
 describe('TimeRange', () => {
   it('is immutable class', () => {
@@ -97,7 +98,7 @@ describe('TimeRange', () => {
 
   describe('upgrades', () => {
     it('upgrades from a string', () => {
-      let timeRange = TimeRange.fromJS({
+      const timeRange = TimeRange.fromJS({
         start: '2015-01-26T04:54:10Z',
         end: '2015-01-26T05:00:00Z',
       });
@@ -185,7 +186,7 @@ describe('TimeRange', () => {
 
   describe('#toInterval', () => {
     it('works in general', () => {
-      let timeRange = TimeRange.fromJS({
+      const timeRange = TimeRange.fromJS({
         start: '2015-01-26T04:54:10Z',
         end: '2015-01-26T05:00:00Z',
       });
@@ -217,13 +218,59 @@ describe('TimeRange', () => {
 
   describe('#rebaseOnStart', () => {
     it('works in general', () => {
-      let timeRange = TimeRange.fromJS({
+      const timeRange = TimeRange.fromJS({
         start: '2015-01-26T04:54:10Z',
         end: '2015-01-26T05:00:00Z',
       });
       expect(timeRange.rebaseOnStart(new Date('2015-02-26T04:54:10Z')).toJS()).to.deep.equal({
         start: new Date('2015-02-26T04:54:10.000Z'),
         end: new Date('2015-02-26T05:00:00.000Z'),
+      });
+    });
+  });
+
+  describe('Accepts bounds', () => {
+    it('Can create a Time Range from a time bucket with bounds', () => {
+      const timeRange = TimeRange.timeBucket(
+        new Date('2015-02-26T05:00:00.000Z'),
+        Duration.fromJS('PT1H'),
+        Timezone.fromJS('Etc/UTC'),
+        '[]',
+      );
+      expect(timeRange.toJS()).to.deep.equal({
+        start: new Date('2015-02-26T05:00:00.000Z'),
+        end: new Date('2015-02-26T06:00:00.000Z'),
+        bounds: '[]',
+      });
+    });
+
+    it('Can create a Time Range from a time bucket without explicit bounds', () => {
+      const timeRange = TimeRange.timeBucket(
+        new Date('2015-02-26T05:00:00.000Z'),
+        Duration.fromJS('PT1H'),
+        Timezone.fromJS('Etc/UTC'),
+      );
+
+      // does not include bounds in toJS if default bounds are used
+      expect(timeRange.toJS()).to.deep.equal({
+        start: new Date('2015-02-26T05:00:00.000Z'),
+        end: new Date('2015-02-26T06:00:00.000Z'),
+      });
+      expect(timeRange.bounds).to.equal(Range.DEFAULT_BOUNDS);
+    });
+
+    it('Can change bounds', () => {
+      const timeRange = TimeRange.timeBucket(
+        new Date('2015-02-26T05:00:00.000Z'),
+        Duration.fromJS('PT1H'),
+        Timezone.fromJS('Etc/UTC'),
+      );
+
+      // does not include bounds in toJS if default bounds are used
+      expect(timeRange.changeBounds('()').toJS()).to.deep.equal({
+        start: new Date('2015-02-26T05:00:00.000Z'),
+        end: new Date('2015-02-26T06:00:00.000Z'),
+        bounds: '()',
       });
     });
   });

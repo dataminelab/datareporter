@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+export * from './awsAthenaExternal';
 export * from './baseExternal';
-export * from './sqlExternal';
+export * from './bigQueryExternal';
+export * from './druidSqlExternal';
 export * from './mySqlExternal';
 export * from './postgresExternal';
+export * from './sqlExternal';
 export * from './utils/druidTypes';
-export * from './druidSqlExternal';
-export * from './bigQueryExternal';
-export * from './awsAthenaExternal';

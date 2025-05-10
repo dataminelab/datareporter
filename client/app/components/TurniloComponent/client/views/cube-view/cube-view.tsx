@@ -22,6 +22,7 @@ import * as React from "react";
 import { CSSTransition } from "react-transition-group";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
+import { LOCALES } from "../../../common/models/locale/locale";
 import { Customization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Device, DeviceSize } from "../../../common/models/device/device";
@@ -596,7 +597,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                   clicker={clicker}
                   essence={essence}
                   timekeeper={timekeeper}
-                  menuStage={visualizationStage}
+                  clause={essence.filter.clauses.first()} // Example clause
+                  open={false} // Example value
+                  dimension={essence.dataCube.dimensions.first()} // Example dimension
+                  saveClause={() => {}} // Example function
+                  removeClause={() => {}} // Example function
+                  openFilterMenu={() => {}} // Example function
+                  closeFilterMenu={() => {}} // Example function
+                  dragStart={() => {}} // Example function
+                  stage={visualizationStage} // Example stage
+                  locale={LOCALES["en-US"]} // Example locale
                 />
                 <SplitTilesRow
                   ref={this.splitTile}

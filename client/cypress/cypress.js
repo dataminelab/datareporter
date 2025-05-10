@@ -4,7 +4,7 @@ const { execSync } = require("child_process");
 const { get, post } = require("request").defaults({ jar: true });
 const { seedData } = require("./seed-data");
 const fs = require("fs");
-var Cookie = require("request-cookies").Cookie;
+const Cookie = require("request-cookies").Cookie;
 
 let cypressConfigBaseUrl;
 try {

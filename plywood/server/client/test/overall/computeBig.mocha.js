@@ -16,34 +16,33 @@
  */
 
 const { expect } = require('chai');
-let fs = require('fs');
-let path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-let plywood = require('../plywood');
-let { Expression, Dataset, $, ply, r } = plywood;
+const plywood = require('../plywood');
 
-let chronoshift = require('chronoshift');
+const { Expression, Dataset, $, ply, r } = plywood;
 
-let rawData = fs.readFileSync(
+const chronoshift = require('chronoshift');
+
+const rawData = fs.readFileSync(
   path.join(__dirname, '../../resources/wikipedia-sampled.json'),
   'utf-8',
 );
-let wikiDayData = Dataset.parseJSON(rawData);
+const wikiDayData = Dataset.parseJSON(rawData);
 
 wikiDayData.forEach((d, i) => {
   d['time'] = new Date(d['time']);
   d['sometimeLater'] = new Date(d['sometimeLater']);
 });
 
-describe('compute native nontrivial data', function() {
+describe('compute native nontrivial data', function () {
   this.timeout(20000);
 
-  let ds = Dataset.fromJS(wikiDayData).hide();
+  const ds = Dataset.fromJS(wikiDayData).hide();
 
   it('works in simple agg case', () => {
-    let ex = ply()
-      .apply('Count', '$data.count()')
-      .apply('SumAdded', '$data.sum($added)');
+    const ex = ply().apply('Count', '$data.count()').apply('SumAdded', '$data.sum($added)');
 
     return ex.compute({ data: ds }).then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -56,9 +55,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works in with a filter == null', () => {
-    let ex = $('data')
-      .filter('$countryName == null')
-      .count();
+    const ex = $('data').filter('$countryName == null').count();
 
     return ex.compute({ data: ds }).then(v => {
       expect(v).to.equal(35445);
@@ -66,7 +63,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works in with a filter overlap null', () => {
-    let ex = $('data')
+    const ex = $('data')
       .filter($('countryName').is([null]))
       .count();
 
@@ -76,7 +73,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works with overlap filter', () => {
-    let ex = ply()
+    const ex = ply()
       .apply(
         'd1',
         $('data').filter(
@@ -95,7 +92,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works in simple split case (small dimension)', () => {
-    let ex = $('data')
+    const ex = $('data')
       .split('$countryName', 'CountryName')
       .apply('Count', '$data.count()')
       .apply('SumAdded', '$data.sum($added)')
@@ -134,7 +131,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works in simple split case (large dimension)', () => {
-    let ex = $('data')
+    const ex = $('data')
       .split('$page', 'Page')
       .apply('Count', '$data.count()')
       .apply('SumAdded', '$data.sum($added)')
@@ -173,7 +170,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works in simple timeBucket case', () => {
-    let ex = $('data')
+    const ex = $('data')
       .split('$time.timeBucket(PT1H, "Asia/Kathmandu")', 'Time') // America/Los_Angeles
       .apply('Count', '$data.count()')
       .sort('$Time', 'ascending')
@@ -200,7 +197,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works in heatmap like query', () => {
-    let ex = ply()
+    const ex = ply()
       .apply('Count', '$data.count()')
       .apply(
         'xs',
@@ -391,7 +388,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works in with funny aggregates', () => {
-    let ex = $('data')
+    const ex = $('data')
       .split('$countryName', 'CountryName')
       .apply('LabelCountry', '"[" ++ $CountryName ++ "]"')
       .apply('Count', '$data.count()')
@@ -472,7 +469,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works with join timeBucket case', () => {
-    let ex = $('data')
+    const ex = $('data')
       .split('$time.timeBucket(PT6H)', 'Time', 'd1')
       .join($('data').split('$time.timeShift(PT6H, 1).timeBucket(PT6H)', 'Time', 'd2'))
       .apply('CountD1', '$d1.count()')
@@ -518,7 +515,7 @@ describe('compute native nontrivial data', function() {
   });
 
   it('works with join timeBucket case with filters', () => {
-    let ex = ply()
+    const ex = ply()
       .apply(
         'd1',
         $('data').filter(

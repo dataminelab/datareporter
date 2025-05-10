@@ -71,7 +71,7 @@ export default function VisualizationRenderer(props) {
 
   const { showFilters, visualization } = props;
 
-  let options = { ...visualization.options };
+  const options = { ...visualization.options };
 
   // define pagination size based on context for Table visualization
   if (visualization.type === "TABLE") {

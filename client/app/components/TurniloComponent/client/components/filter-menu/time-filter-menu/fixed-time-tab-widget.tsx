@@ -30,14 +30,13 @@ import { STRINGS } from "../../../config/constants";
 import { Button } from "../../button/button";
 import { DateRangePicker } from "../../date-range-picker/date-range-picker";
 import { TimeShiftSelector } from "./time-shift-selector";
-// @ts-ignore
 import { updateUrl } from '../../../../../../components/Parameters';
 
 export interface FixedTimeTabProps {
   timekeeper: Timekeeper;
   dimension: Dimension;
   onClose: Fn;
-  widgetList: Number[];
+  widgetList: number[];
   clickerList: Clicker[];
   essenceList: Essence[];
   setEssence: (widget_id: any, essence: any) => void;
@@ -138,13 +137,13 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
       const essence = essenceList[i];
       const clicker = clickerList[i];
       const widget = widgetList[i]
-      let dimensionName = essence.filter.getReferenceNameByIndex(0);
+      const dimensionName = essence.filter.getReferenceNameByIndex(0);
       const clause = new FixedTimeFilterClause({ reference: dimensionName, values: List.of(this.createDateRange()) });
       let relativeFilter = essence.filter.setClause(clause);
       if (relativeFilter.length() > 1) {
         relativeFilter = relativeFilter.removeClauseByIndex(0);
       }
-      let newEssence = clicker.changeFilter(relativeFilter);
+      const newEssence = clicker.changeFilter(relativeFilter);
       const timeShift = TimeShift.fromJS(this.state.shift);
       clicker.changeComparisonShift(timeShift);
       setEssence(widget, newEssence);

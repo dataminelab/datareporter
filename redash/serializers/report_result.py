@@ -1,12 +1,7 @@
 import io
 import csv
 import xlsxwriter
-from funcy import rpartial, project
-from dateutil.parser import isoparse as parse_date
-from redash.utils import json_loads, UnicodeWriter
-from redash.query_runner import TYPE_BOOLEAN, TYPE_DATE, TYPE_DATETIME
 from .query_result import _get_column_lists
-from redash.authentication.org_resolving import current_org
 
 
 def serialize_query_result_to_xlsx_with_multiple_sheets(query_results):
@@ -18,7 +13,7 @@ def serialize_query_result_to_xlsx_with_multiple_sheets(query_results):
         sheet = book.add_worksheet(f"result({query_result.id})")
 
         column_names = []
-        for c, col in enumerate(query_data["columns"]):
+        for c, col in enumerate(query_data["c~olumns"]):
             sheet.write(0, c, col["name"])
             column_names.append(col["name"])
 

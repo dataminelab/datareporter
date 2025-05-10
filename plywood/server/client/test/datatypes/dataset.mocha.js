@@ -21,6 +21,7 @@ const { testImmutableClass } = require('immutable-class-tester');
 
 const { sane } = require('../utils');
 const plywood = require('../plywood');
+
 const { Dataset, AttributeInfo, $, Set, r, TimeRange } = plywood;
 
 describe('Dataset', () => {
@@ -295,7 +296,7 @@ describe('Dataset', () => {
 
   describe('introspects', () => {
     it('works in nested case', () => {
-      let ds = Dataset.fromJS([
+      const ds = Dataset.fromJS([
         {
           x: 1,
           y: 'hello',
@@ -337,7 +338,7 @@ describe('Dataset', () => {
     });
 
     it('in real case', () => {
-      let ds = Dataset.fromJS([
+      const ds = Dataset.fromJS([
         {
           time: new Date('2015-09-12T00:46:58.771Z'),
           channel: '#en.wikipedia',
@@ -410,7 +411,7 @@ describe('Dataset', () => {
   });
 
   describe('sorts', () => {
-    let someDataset = Dataset.fromJS([
+    const someDataset = Dataset.fromJS([
       { time: new Date('2015-01-04T12:32:43Z'), resource: 'A', value: 7, nice: false },
       { time: null, resource: 'B', value: 2, nice: true },
       { time: new Date('2015-01-03T12:32:43Z'), resource: null, value: null, nice: null },
@@ -484,18 +485,18 @@ describe('Dataset', () => {
   });
 
   describe('methods', () => {
-    let emptyDataset = Dataset.fromJS([]);
+    const emptyDataset = Dataset.fromJS([]);
 
-    let emptyNestedDataset = Dataset.fromJS([
+    const emptyNestedDataset = Dataset.fromJS([
       {
         count: 0,
         split: [],
       },
     ]);
 
-    let totalsDataset = Dataset.fromJS([{ count: 0 }]);
+    const totalsDataset = Dataset.fromJS([{ count: 0 }]);
 
-    let totalsDatasetWithSplit = Dataset.fromJS({
+    const totalsDatasetWithSplit = Dataset.fromJS({
       keys: [],
       attributes: [
         { name: 'count', type: 'NUMBER' },
@@ -525,7 +526,7 @@ describe('Dataset', () => {
       ],
     });
 
-    let carDataset = Dataset.fromJS([
+    const carDataset = Dataset.fromJS([
       {
         time: new Date('2015-01-04T12:32:43Z'),
         make: 'Honda',
@@ -540,7 +541,7 @@ describe('Dataset', () => {
       },
     ]).select(['time', 'make', 'model', 'price']);
 
-    let carAndPartsDataset = Dataset.fromJS([
+    const carAndPartsDataset = Dataset.fromJS([
       {
         time: new Date('2015-01-04T12:32:43Z'),
         make: 'Honda',
@@ -563,7 +564,7 @@ describe('Dataset', () => {
       },
     ]).select(['time', 'make', 'model', 'price', 'parts']);
 
-    let carTotalAndSubSplitDataset = Dataset.fromJS([
+    const carTotalAndSubSplitDataset = Dataset.fromJS([
       {
         price: 10000,
         weight: 1000,
@@ -606,7 +607,7 @@ describe('Dataset', () => {
       },
     ]);
 
-    let timeSeriesResult = Dataset.fromJS([
+    const timeSeriesResult = Dataset.fromJS([
       {
         count: 31427,
         added: 6686857,
@@ -889,36 +890,36 @@ describe('Dataset', () => {
           ],
           data: [
             {
-              make: 'Honda',
-              model: 'Civic',
+              'make': 'Honda',
+              'model': 'Civic',
               'parts.part': 'Engine',
               'parts.weight': 500,
-              price: 10000,
-              time: new Date('2015-01-04T12:32:43.000Z'),
+              'price': 10000,
+              'time': new Date('2015-01-04T12:32:43.000Z'),
             },
             {
-              make: 'Honda',
-              model: 'Civic',
+              'make': 'Honda',
+              'model': 'Civic',
               'parts.part': 'Door',
               'parts.weight': 20,
-              price: 10000,
-              time: new Date('2015-01-04T12:32:43.000Z'),
+              'price': 10000,
+              'time': new Date('2015-01-04T12:32:43.000Z'),
             },
             {
-              make: 'Toyota',
-              model: 'Prius',
+              'make': 'Toyota',
+              'model': 'Prius',
               'parts.part': 'Engine',
               'parts.weight': 400,
-              price: 20000,
-              time: new Date('2015-01-04T14:00:40.000Z'),
+              'price': 20000,
+              'time': new Date('2015-01-04T14:00:40.000Z'),
             },
             {
-              make: 'Toyota',
-              model: 'Prius',
+              'make': 'Toyota',
+              'model': 'Prius',
               'parts.part': 'Door',
               'parts.weight': 25,
-              price: 20000,
-              time: new Date('2015-01-04T14:00:40.000Z'),
+              'price': 20000,
+              'time': new Date('2015-01-04T14:00:40.000Z'),
             },
           ],
         });
@@ -963,68 +964,68 @@ describe('Dataset', () => {
           ],
           data: [
             {
-              make: 'Honda',
-              model: 'Civic',
+              'make': 'Honda',
+              'model': 'Civic',
               'parts.part': 'Engine',
               'parts.weight': 500,
-              price: 10000,
-              time: new Date('2015-01-04T12:32:43.000Z'),
+              'price': 10000,
+              'time': new Date('2015-01-04T12:32:43.000Z'),
             },
             {
-              make: 'Honda',
-              model: 'Civic',
+              'make': 'Honda',
+              'model': 'Civic',
               'parts.part': 'Door',
               'parts.weight': 20,
-              price: 10000,
-              time: new Date('2015-01-04T12:32:43.000Z'),
+              'price': 10000,
+              'time': new Date('2015-01-04T12:32:43.000Z'),
             },
             {
-              make: 'Honda',
-              model: 'Civic',
-              price: 10000,
+              'make': 'Honda',
+              'model': 'Civic',
+              'price': 10000,
               'smarts.part': 'Engine',
               'smarts.weight': 500,
-              time: new Date('2015-01-04T12:32:43.000Z'),
+              'time': new Date('2015-01-04T12:32:43.000Z'),
             },
             {
-              make: 'Honda',
-              model: 'Civic',
-              price: 10000,
+              'make': 'Honda',
+              'model': 'Civic',
+              'price': 10000,
               'smarts.part': 'Door',
               'smarts.weight': 20,
-              time: new Date('2015-01-04T12:32:43.000Z'),
+              'time': new Date('2015-01-04T12:32:43.000Z'),
             },
             {
-              make: 'Toyota',
-              model: 'Prius',
+              'make': 'Toyota',
+              'model': 'Prius',
               'parts.part': 'Engine',
               'parts.weight': 400,
-              price: 20000,
-              time: new Date('2015-01-04T14:00:40.000Z'),
+              'price': 20000,
+              'time': new Date('2015-01-04T14:00:40.000Z'),
             },
             {
-              make: 'Toyota',
-              model: 'Prius',
+              'make': 'Toyota',
+              'model': 'Prius',
               'parts.part': 'Door',
               'parts.weight': 25,
-              price: 20000,
-              time: new Date('2015-01-04T14:00:40.000Z'),
+              'price': 20000,
+              'time': new Date('2015-01-04T14:00:40.000Z'),
             },
             {
-              make: 'Toyota',
-              model: 'Prius',
-              price: 20000,
+              'make': 'Toyota',
+              'model': 'Prius',
+              'price': 20000,
               'smarts.part': 'Engine',
               'smarts.weight': 400,
-              time: new Date('2015-01-04T14:00:40.000Z'),
+              'time': new Date('2015-01-04T14:00:40.000Z'),
             },
             {
-              make: 'Toyota',
-              model: 'Prius',
-              price: 20000,
+              'make': 'Toyota',
+              'model': 'Prius',
+              'price': 20000,
               'smarts.part': 'Door',
               'smarts.weight': 25,
-              time: new Date('2015-01-04T14:00:40.000Z'),
+              'time': new Date('2015-01-04T14:00:40.000Z'),
             },
           ],
         });
@@ -1167,7 +1168,7 @@ describe('Dataset', () => {
 
     describe('#toTabular', () => {
       it('does not auto remove line breaks', () => {
-        let dsLineBreak = Dataset.fromJS([{ letter: `dear john\nhow are you doing\nfish` }]);
+        const dsLineBreak = Dataset.fromJS([{ letter: `dear john\nhow are you doing\nfish` }]);
         expect(dsLineBreak.toTabular({ lineBreak: '\n', finalLineBreak: 'suppress' })).to
           .equal(sane`
           letter
@@ -1178,9 +1179,9 @@ describe('Dataset', () => {
       });
 
       it('allows for custom finalization', () => {
-        let ds = Dataset.fromJS([{ number: 2, isEmpty: true }]);
+        const ds = Dataset.fromJS([{ number: 2, isEmpty: true }]);
 
-        let finalizer = v => {
+        const finalizer = v => {
           return `[${v}]`;
         };
 
@@ -1226,7 +1227,7 @@ describe('Dataset', () => {
       });
 
       it('escapes commas by enclosing whole field in quotes', () => {
-        let dsComma = Dataset.fromJS([{ letter: 'dear john, how are you doing' }]);
+        const dsComma = Dataset.fromJS([{ letter: 'dear john, how are you doing' }]);
 
         expect(dsComma.toCSV({ lineBreak: '\n', finalLineBreak: 'suppress' })).to.equal(sane`
         letter
@@ -1235,7 +1236,7 @@ describe('Dataset', () => {
       });
 
       it('escapes quotes by escaping quoted text but not if already quoted due to comma escape', () => {
-        let dsComma = Dataset.fromJS([{ letter: 'dear john, how are you "doing"' }]);
+        const dsComma = Dataset.fromJS([{ letter: 'dear john, how are you "doing"' }]);
         expect(dsComma.toCSV({ lineBreak: '\n', finalLineBreak: 'suppress' })).to.equal(sane`
         letter
         "dear john, how are you ""doing"""
@@ -1243,7 +1244,7 @@ describe('Dataset', () => {
       });
 
       it('escapes sets properly', () => {
-        let ds = Dataset.fromJS([
+        const ds = Dataset.fromJS([
           {
             w: [1, 2],
             x: 1,
@@ -1259,12 +1260,12 @@ describe('Dataset', () => {
         expect(ds.toCSV({ lineBreak: '\n', finalLineBreak: 'suppress' })).to.equal(sane`
           w,x,y,z
           "1, 2",1,"hel,lo, mo on","Thu Feb 19 2015 16:00:00 GMT-0800 (PST), Fri Feb 20 2015 16:00:00 GMT-0800 (PST)"
-          null,2,"wo rld, mo on",stars
+          ,2,"wo rld, mo on",stars
         `);
       });
 
       it('removes line breaks with csv', () => {
-        let dsLineBreak = Dataset.fromJS([
+        const dsLineBreak = Dataset.fromJS([
           { letter: `dear john\nhow are you doing?\r\nI'm good.\r-mildred` },
         ]);
         expect(dsLineBreak.toCSV({ lineBreak: '\n', finalLineBreak: 'suppress' })).to.equal(sane`
@@ -1274,16 +1275,16 @@ describe('Dataset', () => {
       });
 
       it('is ok with null', () => {
-        let ds = Dataset.fromJS([{ letter: null }]);
+        const ds = Dataset.fromJS([{ letter: null }]);
 
         expect(ds.toCSV({ lineBreak: '\n', finalLineBreak: 'suppress' })).to.equal(sane`
         letter
-        null
+
         `);
       });
 
       it('works with timezones', () => {
-        let ds = Dataset.fromJS([
+        const ds = Dataset.fromJS([
           {
             time: new Date('2015-01-04T12:32:43Z'),
             make: 'Honda',
@@ -1312,7 +1313,7 @@ describe('Dataset', () => {
       });
 
       it('respects ordered columns', () => {
-        let carDataset = Dataset.fromJS([
+        const carDataset = Dataset.fromJS([
           {
             time: new Date('2015-01-04T12:32:43Z'),
             make: 'Honda',
@@ -1338,7 +1339,7 @@ describe('Dataset', () => {
 
     describe('#toTSV', () => {
       it('does not escape commas in text by enclosing whole field in quotes', () => {
-        let dsComma = Dataset.fromJS([{ letter: 'dear john, how are you doing' }]);
+        const dsComma = Dataset.fromJS([{ letter: 'dear john, how are you doing' }]);
 
         expect(dsComma.toTSV({ lineBreak: '\n', finalLineBreak: 'suppress' })).to.equal(sane`
         letter
@@ -1347,7 +1348,7 @@ describe('Dataset', () => {
       });
 
       it('escapes tabs in text field', () => {
-        let dsComma = Dataset.fromJS([{ letter: 'dear john, \thow are you doing' }]);
+        const dsComma = Dataset.fromJS([{ letter: 'dear john, \thow are you doing' }]);
 
         expect(dsComma.toTSV({ lineBreak: '\n', finalLineBreak: 'suppress' })).to.equal(sane`
         letter
@@ -1356,7 +1357,7 @@ describe('Dataset', () => {
       });
 
       it('escapes set/string properly', () => {
-        let ds = Dataset.fromJS([
+        const ds = Dataset.fromJS([
           { x: 1, y: ['hel,lo', 'mo\non'] },
           { x: 2, y: ['wo\r\nrld', 'mo\ron'] },
         ]).select(['x', 'y']);
@@ -1369,7 +1370,7 @@ describe('Dataset', () => {
       });
 
       it('works with timezones', () => {
-        let ds = Dataset.fromJS({
+        const ds = Dataset.fromJS({
           attributes: [
             { name: 'time', type: 'TIME' },
             { name: 'favoriteTimes', type: 'SET/TIME' },
@@ -1421,7 +1422,7 @@ describe('Dataset', () => {
 
     describe('#select', () => {
       it('respects order', () => {
-        let carDataset = Dataset.fromJS([
+        const carDataset = Dataset.fromJS([
           {
             time: new Date('2015-01-04T12:32:43Z'),
             make: 'Honda',
@@ -1447,7 +1448,7 @@ describe('Dataset', () => {
 
     describe('#join', () => {
       it('works on simple key values', () => {
-        let carDataset1 = Dataset.fromJS({
+        const carDataset1 = Dataset.fromJS({
           keys: ['make'],
           data: [
             {
@@ -1465,7 +1466,7 @@ describe('Dataset', () => {
           ],
         });
 
-        let carDataset2 = Dataset.fromJS({
+        const carDataset2 = Dataset.fromJS({
           keys: ['make'],
           data: [
             {
@@ -1524,7 +1525,7 @@ describe('Dataset', () => {
       });
 
       it('works on complex key values', () => {
-        let carDataset1 = Dataset.fromJS({
+        const carDataset1 = Dataset.fromJS({
           keys: ['make'],
           data: [
             {
@@ -1542,7 +1543,7 @@ describe('Dataset', () => {
           ],
         });
 
-        let carDataset2 = Dataset.fromJS({
+        const carDataset2 = Dataset.fromJS({
           keys: ['make'],
           data: [
             {
@@ -1610,7 +1611,7 @@ describe('Dataset', () => {
         return { type: 'TIME_RANGE', start, end };
       }
 
-      let ds1 = Dataset.fromJS({
+      const ds1 = Dataset.fromJS({
         keys: ['__time'],
         data: [
           {
@@ -1668,7 +1669,7 @@ describe('Dataset', () => {
         ],
       });
 
-      let ds2 = Dataset.fromJS({
+      const ds2 = Dataset.fromJS({
         keys: ['__time'],
         data: [
           {

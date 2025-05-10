@@ -1,5 +1,7 @@
 import { Duration, Timezone } from 'chronoshift';
+
 import { PlyType } from '../types';
+
 import { SQLDialect } from './baseDialect';
 
 export class BigQueryDialect extends SQLDialect {
@@ -26,6 +28,10 @@ export class BigQueryDialect extends SQLDialect {
       NUMBER: 'cast($$ as string)',
     },
   };
+
+  constructor() {
+    super();
+  }
 
   // TODO Complete the rest of functions
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
@@ -66,12 +72,19 @@ export class BigQueryDialect extends SQLDialect {
     return '`' + name + '`';
   }
 
-  public constantGroupBy(): string {
+  public emptyGroupBy(): string {
     return "";
   }
 
+  /**
+   * @deprecated
+   */
+  public constantGroupBy(): string {
+    return this.emptyGroupBy();
+  }
+
   public castExpression(inputType: PlyType, operand: string, cast: string): string {
-    let castFunction = BigQueryDialect.CAST_TO_FUNCTION[cast][inputType];
+    const castFunction = BigQueryDialect.CAST_TO_FUNCTION[cast][inputType];
     if (!castFunction)
       throw new Error(`unsupported cast from ${inputType} to ${cast} in BigQuery dialect`);
     return castFunction.replace(/\$\$/g, operand);
@@ -92,19 +105,19 @@ export class BigQueryDialect extends SQLDialect {
   }
 
   public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
-    let bucketFormat = BigQueryDialect.TIME_BUCKETING[duration.toString()];
+    const bucketFormat = BigQueryDialect.TIME_BUCKETING[duration.toString()];
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
-    if (duration.toString() == "P1W") {
+    if (duration.toString() === "P1W") {
       return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), WEEK))`, 
         timezone
       );
-    } else if (duration.toString() == "P1Y") {
+    } else if (duration.toString() === "P1Y") {
       return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), YEAR))`, 
         timezone
       );
-    } else if (duration.toString() == "P3M") {
+    } else if (duration.toString() === "P3M") {
       return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), QUARTER))`,
         timezone,      
@@ -119,7 +132,7 @@ export class BigQueryDialect extends SQLDialect {
 
   public timePartExpression(operand: string, part: string, timezone: Timezone): string {
     // https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#extract
-    let timePartFunction = BigQueryDialect.TIME_PART_TO_FUNCTION[part];
+    const timePartFunction = BigQueryDialect.TIME_PART_TO_FUNCTION[part];
     if (!timePartFunction) throw new Error(`unsupported part ${part} in BigQuery dialect`);
     return timePartFunction.replace(/\$\$/g, this.utcToWalltime(operand, timezone));
   }
@@ -149,33 +162,33 @@ export class BigQueryDialect extends SQLDialect {
     if (step === 0) return operand;
 
     // https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime_add
-    let sqlFn = step > 0 ? 'TIMESTAMP(DATE_ADD(DATE(' : 'TIMESTAMP(DATE_SUB(DATE(';
-    let spans = duration.multiply(Math.abs(step)).valueOf();
+    const sqlFn = step > 0 ? 'TIMESTAMP(DATE_ADD(DATE(' : 'TIMESTAMP(DATE_SUB(DATE(';
+    const spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
       operand = sqlFn + operand + "), INTERVAL " + String(spans.week) + " WEEK))";
     }
     if (spans.month) {
-      let expr = String(spans.month);
+      const expr = String(spans.month);
       operand = sqlFn + operand + "), INTERVAL " + expr + " MONTH))";
     }
     if (spans.year) {
-      let expr = String(spans.year);
+      const expr = String(spans.year);
       operand = sqlFn + operand + "), INTERVAL " + expr + " YEAR))";
     }
     if (spans.day) {
-      let expr = String(spans.day);
+      const expr = String(spans.day);
       operand = sqlFn + operand + "), INTERVAL " + expr + " DAY))";
     }
     if (spans.hour) {
-      let expr = String(spans.hour);
+      const expr = String(spans.hour);
       operand = sqlFn + operand + "), INTERVAL " + expr + " HOUR))";
     }
     if (spans.minute) {
-      let expr = String(spans.minute);
+      const expr = String(spans.minute);
       operand = sqlFn + operand + "), INTERVAL " + expr + " MINUTE))";
     }
     if (spans.second) {
-      let expr = spans.second;
+      const expr = spans.second;
       operand = sqlFn + operand + "), INTERVAL " + expr + " SECOND))";
     }
     return operand;

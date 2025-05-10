@@ -1,7 +1,6 @@
-import base64
-import os
+import json
+
 import click
-import simplejson
 from flask import current_app
 from flask.cli import FlaskGroup, run_command, with_appcontext
 from rq import Connection
@@ -18,10 +17,6 @@ from redash.cli import (
 )
 from redash.monitor import get_status
 
-def base64_from_url(url):
-    file = open(os.getcwd() + url, "rb")
-    encoded_string = base64.b64encode(file.read())
-    return encoded_string    
 
 def create():
     app = current_app or create_app()
@@ -31,12 +26,6 @@ def create():
         from redash import models, settings
 
         return {"models": models, "settings": settings}
-    
-    @app.context_processor
-    def custom_functions():
-        return {
-            'base64_from_url': base64_from_url,
-        }
 
     return app
 
@@ -65,7 +54,7 @@ def version():
 @manager.command()
 def status():
     with Connection(rq_redis_connection):
-        print(simplejson.dumps(get_status(), indent=2))
+        print(json.dumps(get_status(), indent=2))
 
 
 @manager.command()
@@ -81,8 +70,9 @@ def send_test_mail(email=None):
     """
     Send test message to EMAIL (default: the address you defined in MAIL_DEFAULT_SENDER)
     """
-    from redash import mail
     from flask_mail import Message
+
+    from redash import mail
 
     if email is None:
         email = settings.MAIL_DEFAULT_SENDER
@@ -93,7 +83,7 @@ def send_test_mail(email=None):
 @manager.command("shell")
 @with_appcontext
 def shell():
-    import sys
+    import sys  # noqa: F401
 
     from flask.globals import _app_ctx_stack
     from ptpython import repl
@@ -101,4 +91,3 @@ def shell():
     app = _app_ctx_stack.top.app
 
     repl.embed(globals=app.make_shell_context())
-

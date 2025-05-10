@@ -187,7 +187,7 @@ export function getLocale(): Locale {
   return EN_US;
 }
 
-export const exportOptions: Array<{ label: string, fileFormat: FileFormat }> = [
+export const exportOptions: Array<{ label: string; fileFormat: FileFormat }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },
   { label: STRINGS.exportToTSV, fileFormat: "tsv" }
 ];

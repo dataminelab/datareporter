@@ -9,7 +9,7 @@ from redash import statsd_client
 metrics_logger = logging.getLogger("metrics")
 
 
-def record_requets_start_time():
+def record_request_start_time():
     g.start_time = time.time()
 
 
@@ -23,7 +23,7 @@ def calculate_metrics(response):
     endpoint = (request.endpoint or "unknown").replace(".", "_")
 
     metrics_logger.info(
-        "method=%s path=%s endpoint=%s status=%d content_type=%s content_length=%d duration=%.2f query_count=%d query_duration=%.2f",
+        "method=%s path=%s endpoint=%s status=%d content_type=%s content_length=%d duration=%.2f query_count=%d query_duration=%.2f",  # noqa: E501
         request.method,
         request.path,
         endpoint,
@@ -35,16 +35,12 @@ def calculate_metrics(response):
         queries_duration,
     )
 
-    statsd_client.timing(
-        "requests.{}.{}".format(endpoint, request.method.lower()), request_duration
-    )
+    statsd_client.timing("requests.{}.{}".format(endpoint, request.method.lower()), request_duration)
 
     return response
 
 
-MockResponse = namedtuple(
-    "MockResponse", ["status_code", "content_type", "content_length"]
-)
+MockResponse = namedtuple("MockResponse", ["status_code", "content_type", "content_length"])
 
 
 def calculate_metrics_on_exception(error):
@@ -53,6 +49,6 @@ def calculate_metrics_on_exception(error):
 
 
 def init_app(app):
-    app.before_request(record_requets_start_time)
+    app.before_request(record_request_start_time)
     app.after_request(calculate_metrics)
     app.teardown_request(calculate_metrics_on_exception)

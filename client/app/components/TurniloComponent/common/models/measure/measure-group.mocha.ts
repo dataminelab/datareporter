@@ -32,7 +32,7 @@ describe("MeasureGroup", () => {
     expect(measureGroup.toJS()).to.deep.equal(MeasureGroupFixtures.withTitleInferredJS());
   });
 
-  it("should infer title from name", () => {
+  it("should infer title from name again", () => {
     const measureGroup = MeasureGroup.fromJS(MeasureGroupFixtures.noTitleJS());
 
     expect(measureGroup.toJS()).to.deep.equal(MeasureGroupFixtures.withTitleInferredJS());

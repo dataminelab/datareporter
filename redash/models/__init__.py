@@ -3,8 +3,8 @@ import datetime
 import logging
 import numbers
 import time
-
 import pytz
+from sqlalchemy import Integer
 from sqlalchemy import UniqueConstraint, and_, cast, distinct, func, or_
 from sqlalchemy.dialects.postgresql import ARRAY, DOUBLE_PRECISION, JSONB
 from sqlalchemy.event import listens_for
@@ -37,16 +37,7 @@ from redash.models.base import (
     gfk_type,
     key_type,
     primary_key,
-    gfk_type,
-    Column,
-    GFKBase,
-    SearchBaseQuery,
-    key_type,
-    primary_key,
 )
-from redash.models.changes import Change, ChangeTrackingMixin  # noqa
-from redash.models.mixins import BelongsToOrgMixin, TimestampMixin
-from redash.models.organizations import Organization
 from redash.models.parameterized_query import (
     InvalidParameterError,
     ParameterizedQuery,
@@ -88,16 +79,10 @@ from redash.utils import (
 )
 from redash.utils.configuration import ConfigurationContainer
 from redash.services.expression import ExpressionBase64Parser
-from redash.models.parameterized_query import (
-    InvalidParameterError,
-    ParameterizedQuery,
-    QueryDetachedFromDataSourceError,
-)
 from .changes import ChangeTrackingMixin, Change  # noqa
 from .mixins import BelongsToOrgMixin, TimestampMixin
 from .organizations import Organization
 from .users import AccessPermission, AnonymousUser, ApiUser, Group, User  # noqa
-from sqlalchemy import Integer
 
 logger = logging.getLogger(__name__)
 
@@ -1216,6 +1201,21 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     def get_by_slug_and_org(self, slug, org):
         return self.query.filter(self.slug == slug, self.org == org).one()
 
+    def fork(self, user):
+        forked_list = ["org", "layout", "dashboard_filters_enabled", "tags"]
+
+        kwargs = {a: getattr(self, a) for a in forked_list}
+        forked_dashboard = Dashboard(name="Copy of (#{}) {}".format(self.id, self.name), user=user, **kwargs)
+
+        for w in self.widgets:
+            forked_w = w.copy(forked_dashboard.id)
+            fw = Widget(**forked_w)
+            db.session.add(fw)
+
+        forked_dashboard.slug = forked_dashboard.id
+        db.session.add(forked_dashboard)
+        return forked_dashboard
+
     @hybrid_property
     def lowercase_name(self):
         "Optional property useful for sorting purposes."
@@ -1722,16 +1722,12 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     def get_by_group_ids(cls, user):
         # Use alias for User to avoid ambiguity if multiple joins are needed
         user_alias = aliased(User)
-        return (
-            cls.query
-                .join(user_alias, cls.last_modified_by_id == user_alias.id)  # Explicit join condition
-                .filter(
-                    and_(
-                        cls.is_archived.is_(False),                # Only non-archived reports
-                        user_alias.org_id == user.org.id,          # Match the user's organization
-                        user_alias.group_ids.overlap(user.group_ids)  # Overlapping group IDs
-                    )
-                )
+        return cls.query.join(user_alias, cls.last_modified_by_id == user_alias.id).filter(  # Explicit join condition
+            and_(
+                cls.is_archived.is_(False),  # Only non-archived reports
+                user_alias.org_id == user.org.id,  # Match the user's organization
+                user_alias.group_ids.overlap(user.group_ids),  # Overlapping group IDs
+            )
         )
 
     @classmethod
@@ -1759,6 +1755,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
             return {}
 
         return self.data_source.groups
+
 
 @listens_for(Report.user_id, "set")
 def report_last_modified_by(target, val, oldval, initiator):

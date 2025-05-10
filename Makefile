@@ -26,7 +26,7 @@ tests:
 	docker-compose run server tests
 
 lint:
-	./bin/flake8_tests.sh
+	flake8 --config=.flake8 .
 
 backend-unit-tests: up test_db
 	docker-compose run --rm --name tests server tests

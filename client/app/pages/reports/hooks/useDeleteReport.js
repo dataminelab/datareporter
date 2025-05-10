@@ -53,6 +53,6 @@ export default function useDeleteReport(report, onChange) {
     confirmDelete()
       .then(() => doDeleteReport(report))
       .then(handleChange)
-      .catch(() => {console.log("Delete report cancelled")});
+      .catch(() => {console.error("Delete report cancelled")});
   }, [report, handleChange]);
 }

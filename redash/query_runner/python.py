@@ -197,8 +197,9 @@ class Python(BaseQueryRunner):
         """Helper function to add one row to results set.
 
         Parameters:
-        :result dict: The result dict
-        :values dict: One row of result in dict. The key should be one of the column names. The value is the value of the column in this row.
+        - result dict: The result dict
+        - values dict: One row of result in dict.
+            The key should be one of the column names. The value is the value of the column in this row.
         """
         if "rows" not in result:
             result["rows"] = []

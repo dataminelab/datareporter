@@ -1,14 +1,14 @@
 # Dev environment
 
 This is a setup guide for datareporter's devolopment environment
-DataReporter builds correctly with Node 16, consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
+DataReporter builds correctly with Node version 18.20, consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
 
 * [ensure shims are added to PATH](https://github.com/nodenv/nodenv#how-it-works)
 * [for windows-wsl2-nvm](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl)
 
 ```sh
-nodenv install 16
-nodenv local 16
+nodenv install 18.20
+nodenv local 18.20
 ```
 
 Alternatively you can use nvm
@@ -18,17 +18,17 @@ sudo apt update
 sudo apt install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 # Set nvm version
-nvm install v16
-nvm alias default v16
+nvm install v18.20
+nvm alias default v18.20
 ```
 
-Now you can enhance `.bashrc` in order to use v16 automatically or you might need to run `nvm use v16` every time you open a new terminal
+Now you can enhance `.bashrc` in order to use v18.20 automatically or you might need to run `nvm use v18.20` every time you open a new terminal
 
 ```sh
 # Add the following lines to your .bashrc or .bash_profile
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm use v16 > /dev/null
+nvm use v18.20 > /dev/null
 ```
 
 ## Build UI - Required to build ui for
@@ -95,8 +95,7 @@ docker compose run --rm server tests
 ### viz-lib
 
 ```sh
-cd viz-lib 
-npm install react@^16.8 # tests doesnt work without this, so you need to clean package.json afterward
+cd viz-lib
 npm run test
 ```
 
@@ -121,8 +120,9 @@ bash bin/restart_cypress.sh
   * Lib viz
     * **directory:** `viz-lib`
   * Plywood client
-    * **directory:** `plywood/client`
-  * **directory:** `client`
+    * **directory:** `plywood/server/client`
+  * main client
+    * **directory:** `client`
   * **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
   * **changes:**
     * By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.
@@ -160,7 +160,7 @@ rm  ~/.docker/config.json
 
 ## Docker connectivity issues for testing connection between containers
 
-This is usefull when testing fresh datasources
+This is useful when testing fresh datasources so cross server connections are needed. For example, if you want to connect to a router container from the datareporter-server container.
 
 ```bash
 >> docker network connect datareporter_default router
@@ -189,9 +189,9 @@ pip3 install poetry==1.8.3
 # Uninstall Poetry locally
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/901bdf0491005f1b3db41947d0d938da6838ecb9/get-poetry.py | python3 - --uninstall
 
-# Install additional packages into repository for Python side
+# Install a new package
 poetry add <package-name>
 
-# Uninstall a package
+# Uninstall an old package
 poetry remove <package-name>
 ```

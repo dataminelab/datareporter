@@ -1,16 +1,9 @@
-import { ComputeFn, Dataset, Datum, PlywoodValue } from '../datatypes/index';
+import { ComputeFn, Datum, PlywoodValue } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
-import { ApplyExpression } from './applyExpression';
+
 import {
-  ChainableUnaryExpression,
   Expression,
-  ExpressionJS,
-  ExpressionValue,
 } from './baseExpression';
-import { LiteralExpression } from './literalExpression';
-import { RefExpression } from './refExpression';
-import { SortExpression } from './sortExpression';
-import { SplitExpression } from './splitExpression';
 
 interface timeRangeElement {
     start: string;
@@ -38,10 +31,10 @@ export class YearOverYearExpression {
     groupBy: string;
     timeRanges?:timeRangeType;
     _whereRegex: RegExp;
-    private timestampRegex = /TIMESTAMP\('([\d-T:.Z]+)'\)/g;
-    private globalDateRangeRegex = /\([\"\'\`](\d+.{1,24})[\"\'\`]\)/g;;
-    private sumPattern = /SUM\([`",']([^`",']*)[`",']\)/g;
-    private columnPattern = /[`",']([^`",']*)[`",']\sAS/g;
+    private readonly timestampRegex = /TIMESTAMP\('([\d-T:.Z]+)'\)/g;
+    private readonly globalDateRangeRegex = /\([\"\'\`](\d+.{1,24})[\"\'\`]\)/g;;
+    private readonly sumPattern = /SUM\([`",']([^`",']*)[`",']\)/g;
+    private readonly columnPattern = /[`",']([^`",']*)[`",']\sAS/g;
 
     constructor(engine?: string, queries?: string[], mode?: string) {
         if (engine) {
@@ -157,16 +150,15 @@ export class YearOverYearExpression {
 
     private splitFromAndWhereQueries(formattedSumQueries: string): string[] {
         const { currElement, prevElement } = this.timeRanges;
-        var [fromQuery, whereQuery] = this.queries[2].split("WHERE");
+        const [fromQuery, whereQuery] = this.queries[2].split("WHERE");
         const matches = whereQuery.match(this._whereRegex);
-        var where1 = whereQuery;
-        var where2 = whereQuery;
+        let where1 = whereQuery;
+        let where2 = whereQuery;
         if (matches) {
-            var i = 0;
             for (let i = 0; i < matches.length; i++) {
                 const match = matches[i];
                 if (match.length < 2) continue;
-                if (i % 2 == 0) {
+                if (i % 2 === 0) {
                     where1 = where1.replace(match, `('${prevElement.start}')`);
                     where2 = where2.replace(match, `('${currElement.start}')`);
                 } else {
@@ -191,10 +183,15 @@ export class YearOverYearExpression {
     }
 
     public process() {
-        var formattedSumQueries: string;
-        var formattedColumnQueries: string;
+        let formattedSumQueries: string;
+        let formattedColumnQueries: string;
         let sumMatch;
         let columnMatch;
+        let fromQuery;
+        let where1;
+        let where2;
+        let onQuery;
+        let match;
         switch (this.mode) {
             case "raw":
                 break;
@@ -211,13 +208,13 @@ export class YearOverYearExpression {
                 while ((sumMatch = this.sumPattern.exec(this.queries[1])) !== null) {
                     this.sumColumns.push(sumMatch[1] || sumMatch[2]);
                 }
-                var [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(
+                [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(
                     this.sumColumns
                         .filter((value, index, self) => self.indexOf(value) === index)
                         .map(i => `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`)
                         .join(' ')
                 );
-                const onQuery = this.keys.length ? `curr.${this.keys[0]} = prev.${this.keys[0]}` : "1=1";
+                onQuery = this.keys.length ? `curr.${this.keys[0]} = prev.${this.keys[0]}` : "1=1";
                 this.query = `
                     SELECT ${formattedColumnQueries} ${formattedSumQueries}
                     FROM ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where1} GROUP BY ${this.groupBy}) AS curr
@@ -226,7 +223,6 @@ export class YearOverYearExpression {
                 `
                 break;
             case "total":
-                let match;
                 while ((match = this.sumPattern.exec(this.queries[1])) !== null) {
                     const columnName = match[1] || match[2];
                     this.sumColumns.push(columnName);
@@ -239,7 +235,7 @@ export class YearOverYearExpression {
                         `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`
                     ).join(' ');
 
-                var [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(formattedSumQueries);
+                [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(formattedSumQueries);
                 this.query = `
                     SELECT ${formattedSumQueries}
                     FROM ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where1}) AS curr

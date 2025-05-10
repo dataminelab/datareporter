@@ -16,6 +16,7 @@
 
 import { PlywoodValue, Range, Set } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import {
   ChainableUnaryExpression,
   Expression,
@@ -45,8 +46,8 @@ export class InExpression extends ChainableUnaryExpression {
     super(parameters, dummyObject);
     this._ensureOp('in');
 
-    let operandType = this.operand.type;
-    let expression = this.expression;
+    const operandType = this.operand.type;
+    const expression = this.expression;
     if (operandType) {
       if (
         !(
@@ -77,7 +78,7 @@ export class InExpression extends ChainableUnaryExpression {
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
     if (!expressionValue) return null;
-    return (<any>expressionValue).contains(operandValue);
+    return (expressionValue).contains(operandValue);
   }
 
   protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {

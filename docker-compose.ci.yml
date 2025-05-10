@@ -7,8 +7,6 @@ services:
       context: .
       cache_from:
         - "type=gha"
-#      cache_to:
-#        - "type=gha,mode=max"
       args:
         skip_frontend_build: true
         skip_dev_deps: ""
@@ -28,6 +26,8 @@ services:
       REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
+      NODE_VERSION: 18
+      NPM_VERSION: 9.5.1
   redis:
     image: redis:7-alpine
     restart: unless-stopped

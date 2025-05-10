@@ -19,8 +19,7 @@ import { SortDirection } from "../../../../common/models/sort/sort";
 import { classNames } from "../../../utils/dom/dom";
 import { SvgIcon } from "../../svg-icon/svg-icon";
 import "./sort-arrow.scss";
-
-const sortArrow = require("../../../icons/sort-arrow.svg");
+import sortArrow from "../../../icons/sort-arrow.svg";
 
 interface SortIconProps {
   direction: SortDirection;

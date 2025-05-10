@@ -226,11 +226,11 @@ def logout(org_slug=None):
 
 def base_href():
     if settings.MULTI_ORG:
-        base_href = url_for("redash.index", _external=True, org_slug=current_org.slug)
+        href = url_for("redash.index", _external=True, org_slug=current_org.slug)
     else:
-        base_href = url_for("redash.index", _external=True)
+        href = url_for("redash.index", _external=True)
 
-    return base_href
+    return href
 
 
 def date_time_format_config():
@@ -288,15 +288,15 @@ def client_config():
 
 
 def messages():
-    messages = []
+    _messages = []
 
     if not current_user.is_email_verified:
-        messages.append("email-not-verified")
+        _messages.append("email-not-verified")
 
     if settings.ALLOW_PARAMETERS_IN_EMBEDS:
-        messages.append("using-deprecated-embed-feature")
+        _messages.append("using-deprecated-embed-feature")
 
-    return messages
+    return _messages
 
 
 @routes.route("/api/config", methods=["GET"])

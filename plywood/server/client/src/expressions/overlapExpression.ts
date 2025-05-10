@@ -24,6 +24,7 @@ import {
   TimeRange,
 } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import {
   ChainableUnaryExpression,
   Expression,
@@ -43,8 +44,8 @@ export class OverlapExpression extends ChainableUnaryExpression {
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     this._ensureOp('overlap');
-    let operandType = Range.unwrapRangeType(Set.unwrapSetType(this.operand.type));
-    let expressionType = Range.unwrapRangeType(Set.unwrapSetType(this.expression.type));
+    const operandType = Range.unwrapRangeType(Set.unwrapSetType(this.operand.type));
+    const expressionType = Range.unwrapRangeType(Set.unwrapSetType(this.expression.type));
     if (
       !(
         !operandType ||
@@ -75,12 +76,12 @@ export class OverlapExpression extends ChainableUnaryExpression {
     const { expression } = this;
     if (expression instanceof LiteralExpression) {
       if (Range.isRangeType(expression.type)) {
-        let range: PlywoodRange = expression.value;
-        let r0 = range.start;
-        let r1 = range.end;
-        let bounds = range.bounds;
+        const range: PlywoodRange = expression.value;
+        const r0 = range.start;
+        const r1 = range.end;
+        const bounds = range.bounds;
 
-        let cmpStrings: string[] = [];
+        const cmpStrings: string[] = [];
         if (r0 != null) {
           cmpStrings.push(`${JSON.stringify(r0)}${bounds[0] === '(' ? '<' : '<='}_`);
         }
@@ -104,13 +105,13 @@ export class OverlapExpression extends ChainableUnaryExpression {
     operandSQL: string,
     expressionSQL: string,
   ): string {
-    let expression = this.expression;
-    let expressionType = expression.type;
+    const expression = this.expression;
+    const expressionType = expression.type;
     switch (expressionType) {
       case 'NUMBER_RANGE':
       case 'TIME_RANGE':
         if (expression instanceof LiteralExpression) {
-          let range: NumberRange | TimeRange = expression.value;
+          const range: NumberRange | TimeRange = expression.value;
           return dialect.inExpression(
             operandSQL,
             dialect.numberOrTimeToSQL(range.start),
@@ -122,7 +123,7 @@ export class OverlapExpression extends ChainableUnaryExpression {
 
       case 'STRING_RANGE':
         if (expression instanceof LiteralExpression) {
-          let stringRange: StringRange = expression.value;
+          const stringRange: StringRange = expression.value;
           return dialect.inExpression(
             operandSQL,
             dialect.escapeLiteral(stringRange.start),
@@ -135,7 +136,7 @@ export class OverlapExpression extends ChainableUnaryExpression {
       case 'SET/NUMBER_RANGE':
       case 'SET/TIME_RANGE':
         if (expression instanceof LiteralExpression) {
-          let setOfRange: Set = expression.value;
+          const setOfRange: Set = expression.value;
           return setOfRange.elements
             .map((range: NumberRange | TimeRange) => {
               return dialect.inExpression(

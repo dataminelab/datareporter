@@ -1,7 +1,6 @@
 import functools
 
 from flask_sqlalchemy import BaseQuery, SQLAlchemy
-import sqlalchemy
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import object_session
 from sqlalchemy.pool import NullPool
@@ -72,7 +71,7 @@ def gfk_type(cls):
     return cls
 
 
-class GFKBase(object):
+class GFKBase:
     """
     Compatibility with 'generic foreign key' approach Peewee used.
     """

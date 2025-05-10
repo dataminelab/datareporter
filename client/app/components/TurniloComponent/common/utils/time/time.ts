@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { day, Timezone } from "chronoshift";
+import { Timezone } from "chronoshift";
 import * as d3 from "d3";
 import { Moment, tz } from "moment-timezone";
 import { Unary } from "../functional/functional";

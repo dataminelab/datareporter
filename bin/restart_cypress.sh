@@ -7,7 +7,7 @@ if [ ! -d "node_modules" ]; then
 fi
 
 npm run cypress build
-npm run cypress start # seed database
+npm run cypress start # also seeds the database
 
 if [ "$1" = "run" ]; then
   npm run cypress run

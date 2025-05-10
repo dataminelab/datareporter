@@ -1,28 +1,17 @@
-import ctypes
-import threading
-from datetime import timedelta
-from functools import partial
-from flask import request
+import base64
 import logging
-
-from flask import Blueprint
+from functools import partial
 from itertools import chain
 
-from rq import get_current_job, VERSION
+from flask import Blueprint, request
+
+from rq import VERSION, get_current_job
 from rq.decorators import job as rq_job
-
-import base64
-
 from rq.exceptions import DequeueTimeout
 from rq.logutils import setup_loghandlers
-from rq.timeouts import JobTimeoutException, BaseDeathPenalty
-from rq.worker import WorkerStatus, green, blue
+from rq.worker import WorkerStatus, blue, green
 
-logger = logging.getLogger(__name__)
-from redash import (
-    settings,
-    rq_redis_connection,
-)
+from redash import settings, rq_redis_connection
 from redash.tasks.worker import Queue as RedashQueue, Worker
 
 default_operational_queues = ["periodic", "emails", "default"]
@@ -96,11 +85,8 @@ class FirstJobExecutor(Worker):
             if not self.is_horse:
                 self.register_death()
 
-    """
-    Dequeue next task without waiting if there is nothing to do
-    """
-
     def dequeue(self, timeout: int):
+        """Dequeue next task without waiting if there is nothing to do."""
         result = None
         qnames = ",".join(self.queue_names())
 

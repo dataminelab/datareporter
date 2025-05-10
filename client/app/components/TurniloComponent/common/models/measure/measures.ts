@@ -49,7 +49,7 @@ function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
     .toList();
 }
 
-function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ name: string, prefix: string }> {
+function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ name: string; prefix: string }> {
   return items
     .map(measureOrGroup => {
       if (isMeasureGroupJS(measureOrGroup)) {

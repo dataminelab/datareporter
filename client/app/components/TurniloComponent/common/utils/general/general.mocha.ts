@@ -22,27 +22,27 @@ import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readN
 describe("General", () => {
   describe("moveInList", () => {
     it("works in simple case 0", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 0).join("")).to.equal("ABCD");
     });
 
     it("works in simple case 1", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 1).join("")).to.equal("ABCD");
     });
 
     it("works in simple case 2", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 2).join("")).to.equal("BACD");
     });
 
     it("works in simple case 3", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 3).join("")).to.equal("BCAD");
     });
 
     it("works in simple case 4", () => {
-      var list = List("ABCD".split(""));
+      const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 4).join("")).to.equal("BCDA");
     });
 
@@ -86,13 +86,13 @@ describe("General", () => {
 
   describe("inlineVars", () => {
     it("works in simple case", () => {
-      var json: any = {
+      const json: any = {
         "hello": 1,
         "port": "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%"
       };
 
-      var vars: Record<string, string> = {
+      const vars: Record<string, string> = {
         PORT: "1234",
         FOX_SAYS: "Meow"
       };
@@ -105,13 +105,13 @@ describe("General", () => {
     });
 
     it("throw error if can not find var", () => {
-      var json: any = {
+      const json: any = {
         "hello": 1,
         "port": "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%"
       };
 
-      var vars: Record<string, string> = {
+      const vars: Record<string, string> = {
         PORT: "1234"
       };
 

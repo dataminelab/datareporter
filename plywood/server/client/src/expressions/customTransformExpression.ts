@@ -17,12 +17,13 @@
 import { PlywoodValue } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
 import { PlyTypeSingleValue } from '../types';
+
 import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export class CustomTransformExpression extends ChainableExpression {
   static op = 'CustomTransform';
   static fromJS(parameters: ExpressionJS): CustomTransformExpression {
-    let value = ChainableExpression.jsToValue(parameters);
+    const value = ChainableExpression.jsToValue(parameters);
     value.custom = parameters.custom;
     if (parameters.outputType) value.outputType = parameters.outputType;
     return new CustomTransformExpression(value);
@@ -40,14 +41,14 @@ export class CustomTransformExpression extends ChainableExpression {
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.custom = this.custom;
     if (this.outputType) value.outputType = this.outputType;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let js = super.toJS();
+    const js = super.toJS();
     js.custom = this.custom;
     if (this.outputType) js.outputType = this.outputType;
     return js;
@@ -60,7 +61,7 @@ export class CustomTransformExpression extends ChainableExpression {
   }
 
   protected _toStringParameters(indent?: int): string[] {
-    let param = [this.custom];
+    const param = [this.custom];
     if (this.outputType) param.push(this.outputType);
     return param;
   }

@@ -16,8 +16,9 @@
 
 const { expect } = require('chai');
 
-let plywood = require('../plywood');
-let {
+const plywood = require('../plywood');
+
+const {
   Expression,
   $,
   r,
@@ -36,7 +37,7 @@ function stringExternals(key, value) {
   return value;
 }
 
-let diamonds = External.fromJS({
+const diamonds = External.fromJS({
   engine: 'druid',
   source: 'diamonds',
   timeAttribute: 'time',
@@ -59,36 +60,26 @@ let diamonds = External.fromJS({
 
 describe('evaluate step', () => {
   it('works in basic case', () => {
-    let diamondEx = new ExternalExpression({ external: diamonds });
+    const diamondEx = new ExternalExpression({ external: diamonds });
 
-    let ex1 = ply()
+    const ex1 = ply()
       .apply('diamonds', diamondEx)
       .apply('Total', '$diamonds.count()')
       .apply('TotalX2', '$Total * 2')
-      .apply(
-        'SomeSplit',
-        $('diamonds')
-          .split('$cut:STRING', 'Cut')
-          .limit(10),
-      )
+      .apply('SomeSplit', $('diamonds').split('$cut:STRING', 'Cut').limit(10))
       .apply(
         'SomeNestedSplit',
         $('diamonds')
           .split('$color:STRING', 'Color')
           .limit(10)
-          .apply(
-            'SubSplit',
-            $('diamonds')
-              .split('$cut:STRING', 'SubCut')
-              .limit(5),
-          ),
+          .apply('SubSplit', $('diamonds').split('$cut:STRING', 'SubCut').limit(5)),
       );
 
-    let ex2 = ex1.simplify();
+    const ex2 = ex1.simplify();
 
     let readyExternals = ex2.getReadyExternals();
     expect(JSON.parse(JSON.stringify(readyExternals, stringExternals))).to.deep.equal({
-      '0': [
+      0: [
         {
           external: 'External',
           index: 0,
@@ -102,7 +93,7 @@ describe('evaluate step', () => {
         },
         {
           expressionAlterations: {
-            '1': {
+            1: {
               external: 'External',
             },
           },
@@ -114,7 +105,7 @@ describe('evaluate step', () => {
 
     fillExpressionExternalAlteration(readyExternals, external => `Ex(${external.mode})`);
     expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E1').to.deep.equal({
-      '0': [
+      0: [
         {
           external: 'External',
           index: 0,
@@ -130,7 +121,7 @@ describe('evaluate step', () => {
         },
         {
           expressionAlterations: {
-            '1': {
+            1: {
               external: 'External',
               result: 'Ex(split)',
             },
@@ -143,7 +134,7 @@ describe('evaluate step', () => {
 
     fillExpressionExternalAlteration(readyExternals, external => external.simulateValue(false, []));
     expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E2').to.deep.equal({
-      '0': [
+      0: [
         {
           external: 'External',
           index: 0,
@@ -181,7 +172,7 @@ describe('evaluate step', () => {
         },
         {
           expressionAlterations: {
-            '1': {
+            1: {
               external: 'External',
               result: {
                 attributes: [
@@ -209,7 +200,7 @@ describe('evaluate step', () => {
       ],
     });
 
-    let ex3 = ex2.applyReadyExternals(readyExternals);
+    const ex3 = ex2.applyReadyExternals(readyExternals);
     expect(JSON.parse(JSON.stringify(ex3, stringExternals)), 'E3').to.deep.equal({
       op: 'literal',
       type: 'DATASET',
@@ -290,7 +281,7 @@ describe('evaluate step', () => {
 
     readyExternals = ex3.getReadyExternals();
     expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E4').to.deep.equal({
-      '0': [
+      0: [
         {
           datasetAlterations: [
             {
@@ -308,7 +299,7 @@ describe('evaluate step', () => {
 
     fillExpressionExternalAlteration(readyExternals, external => external.simulateValue(false, []));
     expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E5').to.deep.equal({
-      '0': [
+      0: [
         {
           datasetAlterations: [
             {
@@ -342,7 +333,7 @@ describe('evaluate step', () => {
       ],
     });
 
-    let ex4 = ex3.applyReadyExternals(readyExternals);
+    const ex4 = ex3.applyReadyExternals(readyExternals);
     expect(JSON.parse(JSON.stringify(ex4, stringExternals)), 'E6').to.deep.equal({
       op: 'literal',
       type: 'DATASET',

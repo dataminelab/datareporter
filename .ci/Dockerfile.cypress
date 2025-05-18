@@ -8,11 +8,10 @@ RUN apt-get update && apt-get install libgtk2.0-0t64 libgtk-3-0t64 libgbm-dev li
 ENV APP /usr/src/app
 WORKDIR $APP
 
-COPY package.json $APP/package.json
 COPY viz-lib $APP/viz-lib
 COPY plywood $APP/plywood
 COPY client $APP/client
 
 COPY . $APP
 
-RUN ./node_modules/.bin/cypress verify
+RUN client/node_modules/.bin/cypress verify

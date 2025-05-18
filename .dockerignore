@@ -9,7 +9,6 @@ coverage.xml
 .github/
 *.md
 LICENSE*
-Dockerfile
 docker-compose.*
 .codeclimate.yml
 docker-compose*.yml

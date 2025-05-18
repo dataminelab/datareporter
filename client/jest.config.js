@@ -31,7 +31,6 @@ module.exports = {
         "/node_modules/(?!(viz-lib)/)"
     ],
     moduleNameMapper: {
-        //"^@redash/viz(.*)$": "<rootDir>/../viz-lib$1",
         "^react$": "<rootDir>/../client/node_modules/react",
         "^@/(.*)": "<rootDir>/app/$1",
         "\\.(css|less)$": "identity-obj-proxy"

@@ -14,4 +14,5 @@ COPY client $APP/client
 
 COPY . $APP
 
-RUN client/node_modules/.bin/cypress verify
+RUN ls
+RUN ./client/node_modules/.bin/cypress verify

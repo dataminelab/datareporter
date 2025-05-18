@@ -253,7 +253,7 @@ jobs:
       - name: Setup Redash Server
         run: |
           set -x
-          docker build -f Dockerfile.cypress -t cypress .
+          docker build -f .ci/Dockerfile.cypress -t cypress .
 
       - name: Seed Database
         working-directory: client

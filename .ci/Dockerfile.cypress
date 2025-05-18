@@ -9,11 +9,7 @@ ENV APP=/usr/src/app
 
 # Create working directory
 WORKDIR $APP
-
-# Copy project folders
-COPY viz-lib $APP/viz-lib
-COPY plywood $APP/plywood
-COPY client $APP/client
+COPY . $APP
 
 # Change to client directory and install deps
 WORKDIR $APP/client
@@ -21,7 +17,6 @@ RUN ls
 RUN npm install
 
 # Copy the rest of the repo (if needed)
-COPY . $APP
 
 # Verify Cypress installation
 RUN $APP/client/node_modules/.bin/cypress verify

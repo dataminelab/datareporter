@@ -13,6 +13,6 @@ COPY plywood $APP/plywood
 COPY client $APP/client
 
 COPY . $APP
-
+RUN cd client && npm i
 RUN ls client
 RUN client/node_modules/.bin/cypress verify

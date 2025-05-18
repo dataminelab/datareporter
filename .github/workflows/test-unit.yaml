@@ -189,6 +189,10 @@ jobs:
       - name: List the state of node modules
         working-directory: client
         run: npm list
+      
+      - name: Build App
+        working-directory: client
+        run: npm run build
 
       - name: Run App Tests
         working-directory: client

@@ -56,33 +56,33 @@ jobs:
       - name: Build docker compose
         uses: docker/bake-action@v4
         with:
-          files: docker-compose.yml, docker-compose.ci.yml
+          files: docker-compose.yml, .ci/docker-compose.ci.yml
           load: true
 
       - name: "Prepare test environment"
         shell: bash
         run: |-
-          docker compose -f docker-compose.ci.yml up -d postgres redis
+          docker compose -f .ci/docker-compose.ci.yml up -d postgres redis
 
       - name: "Wait for postgres to start"
         shell: bash
         run: |-
-          for i in 1 2 3 4 5; do docker compose  -f docker-compose.ci.yml run  --rm postgres psql -h postgres -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'tests'"  && break || sleep 2; done
+          for i in 1 2 3 4 5; do docker compose  -f .ci/docker-compose.ci.yml run  --rm postgres psql -h postgres -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'tests'"  && break || sleep 2; done
 
       - name: "Create tests database"
         shell: bash
         run: |-
-          docker compose  -f docker-compose.ci.yml run  --rm postgres psql -h postgres -U postgres -c "create database tests;"
+          docker compose -f .ci/docker-compose.ci.yml run --rm postgres psql -h postgres -U postgres -c "create database tests;"
 
       - name: "List Enabled Query Runners"
         shell: bash
         run: |-
-          docker compose  -f docker-compose.ci.yml run  --rm server manage ds list_types
+          docker compose -f .ci/docker-compose.ci.yml run --rm server manage ds list_types
 
       - name: "Execute unit tests"
         shell: bash
         run: |-
-          docker compose  -f docker-compose.ci.yml run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
+          docker compose -f .ci/docker-compose.ci.yml run --user 0 --name tests server tests --junitxml=junit.xml --cov-report xml --cov=redash --cov-config .coveragerc tests/
 
       - name: "Extract test results"
         shell: bash
@@ -222,7 +222,7 @@ jobs:
       CYPRESS_INSTALL_BINARY: 0
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
-      COMPOSE_FILE: docker-compose.cypress.yml
+      COMPOSE_FILE: .ci/docker-compose.cypress.yml
       # PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       # CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
       # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

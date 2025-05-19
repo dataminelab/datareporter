@@ -275,7 +275,7 @@ jobs:
 
       - name: Execute Cypress Tests
         working-directory: client
-        run: docker compose -p cypress run cypress
+        run: COMMIT_INFO_MESSAGE=$(git show -s --format=%s) docker compose run cypress ./client/node_modules/.bin/percy exec -t 300 -- ./client/node_modules/.bin/cypress run --record"
 
       - name: "Failure: output container logs to console"
         if: failure()

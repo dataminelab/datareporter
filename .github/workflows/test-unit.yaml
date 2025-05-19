@@ -262,17 +262,16 @@ jobs:
       - name: Seed Database
         run: |
           set -x
-          cd client
-          npm run cypress build
-          npm run cypress db-seed
+          docker compose -p cypress build
+          docker compose -p cypress run db-seed
 
       - name: Execute Cypress Tests
         working-directory: client
-        run: npm run cypress run-ci
+        run: docker compose -p cypress run cypress
 
       - name: "Failure: output container logs to console"
         if: failure()
-        run: docker compose logs
+        run: docker compose -p cypress logs
 
       - name: Copy Code Coverage Results
         run: docker cp cypress:/usr/src/app/coverage ./coverage || true

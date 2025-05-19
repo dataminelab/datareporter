@@ -72,13 +72,17 @@ jobs:
         run: docker compose -p server run --rm server manage ds list_types
       
       - name: Run Tests
-        run: docker compose -p server run --name tests server tests --junitxml=junit.xml --cov-report=xml --cov=server --cov-config=.coveragerc tests/
+        shell: bash
+        run: |-
+          docker compose  -p server run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report=xml --cov=redash --cov-config=.coveragerc tests/
       
       - name: Copy Test Results
+        shell: bash
+        if: always()
         run: |
-          mkdir -p /tmp/test-results/unit-tests
           docker cp tests:/app/coverage.xml ./coverage.xml
-          docker cp tests:/app/junit.xml /tmp/test-results/unit-tests/results.xml
+          docker cp tests:/app/junit.xml ./results.xml
+          ls -l
 
       - name: "Extract test results"
         shell: bash

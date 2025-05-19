@@ -41,7 +41,7 @@ jobs:
     needs: backend-lint
     env:
       COMPOSE_FILE: .ci/compose.ci.yml
-      COMPOSE_PROJECT_NAME: redash
+      COMPOSE_PROJECT_NAME: datareporter
       COMPOSE_DOCKER_CLI_BUILD: 1
       DOCKER_BUILDKIT: 1
     steps:
@@ -66,13 +66,13 @@ jobs:
           sleep 10
       
       - name: Create Test Database
-        run: docker compose -p redash run --rm postgres psql -h postgres -U postgres -c "create database tests;"
+        run: docker compose -p datareporter run --rm postgres psql -h postgres -U postgres -c "create database tests;"
       
       - name: List Enabled Query Runners
-        run: docker compose -p redash run --rm redash manage ds list_types
+        run: docker compose -p datareporter run --rm datareporter manage ds list_types
       
       - name: Run Tests
-        run: docker compose -p redash run --name tests redash tests --junitxml=junit.xml --cov-report=xml --cov=redash --cov-config=.coveragerc tests/
+        run: docker compose -p datareporter run --name tests datareporter tests --junitxml=junit.xml --cov-report=xml --cov=datareporter --cov-config=.coveragerc tests/
       
       - name: Copy Test Results
         run: |
@@ -250,7 +250,7 @@ jobs:
         working-directory: client
         run: npm install
 
-      - name: Setup Redash Server
+      - name: Setup datareporter Server
         run: |
           set -x
           docker build -f .ci/Dockerfile.cypress -t cypress .

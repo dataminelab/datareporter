@@ -254,16 +254,24 @@ jobs:
         working-directory: client
         run: npm install
 
-      - name: Setup server Server
+      - name: Setup Datareporter Server
         run: |
           set -x
           docker build -f .ci/Dockerfile.cypress -t cypress .
-
-      - name: Seed Database
+      
+      - name: Start Cypress Server
         run: |
           set -x
-          docker compose -p cypress build
-          docker compose -p cypress run db-seed
+          docker compose -p cypress up -d
+          docker compose -p cypress run server create_db
+          sleep 10
+
+      - name: Seed Database
+        working-directory: client
+        run: |
+          set -x
+          npm run cypress db-seed
+          sleep 10
 
       - name: Execute Cypress Tests
         working-directory: client

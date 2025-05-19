@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: backend-lint
     env:
-      COMPOSE_FILE: .ci/compose.ci.yaml
+      COMPOSE_FILE: .ci/compose.ci.yml
       COMPOSE_PROJECT_NAME: redash
       COMPOSE_DOCKER_CLI_BUILD: 1
       DOCKER_BUILDKIT: 1

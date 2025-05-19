@@ -226,7 +226,7 @@ jobs:
       CYPRESS_INSTALL_BINARY: 0
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
-      COMPOSE_FILE: .ci/docker-compose.cypress.yml
+      COMPOSE_FILE: .ci/compose.cypress.yml
       # PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       # CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
       # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -260,9 +260,9 @@ jobs:
           docker build -f .ci/Dockerfile.cypress -t cypress .
 
       - name: Seed Database
-        working-directory: client
         run: |
           set -x
+          cd client
           npm run cypress build
           npm run cypress db-seed
 

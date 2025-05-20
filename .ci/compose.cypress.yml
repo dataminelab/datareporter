@@ -39,6 +39,17 @@ services:
     environment:
       <<: *redash-environment
       PYTHONUNBUFFERED: 0
+  plywood:
+    image: node:16.20.0-alpine
+    working_dir: /app
+    command: npm run watch-node
+    ports:
+      - "3000:3000"
+      - "9231:9229"
+    volumes:
+      - ./plywood/server:/app
+    environment:
+      - LOG_MODE=request_and_response
   cypress:
     ipc: host
     build:
@@ -48,6 +59,7 @@ services:
       - server
       - worker
       - scheduler
+      - plywood
     environment:
       CYPRESS_baseUrl: "http://server:5000"
       CYPRESS_coverage: ${CODE_COVERAGE}

@@ -277,8 +277,10 @@ jobs:
         run: |
           COMMIT_INFO_MESSAGE=$(git show -s --format=%s) \
           docker compose run cypress \
-          ./node_modules/.bin/percy exec -t 300 -- \
-          ./node_modules/.bin/cypress run --record --browser chrome --disable-gpu
+            ./node_modules/.bin/percy exec -t 300 -- \
+            ./node_modules/.bin/cypress run \
+              --record \
+              --browser chrome
 
       - name: "Failure: output container logs to console"
         if: failure()

@@ -274,9 +274,9 @@ jobs:
           sleep 10
 
       - name: Execute Cypress Tests
-        working-directory: client
         run: |
           set -x
+          cd client
           npm run cypress run-ci
 
       - name: "Failure: output container logs to console"

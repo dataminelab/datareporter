@@ -4658,14 +4658,14 @@ tornado = ["tornado (>=6)"]
 
 [[package]]
 name = "setuptools"
-version = "77.0.3"
+version = "78.1.1"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "all_ds", "dev"]
 files = [
-    {file = "setuptools-77.0.3-py3-none-any.whl", hash = "sha256:67122e78221da5cf550ddd04cf8742c8fe12094483749a792d56cd669d6cf58c"},
-    {file = "setuptools-77.0.3.tar.gz", hash = "sha256:583b361c8da8de57403743e756609670de6fb2345920e36dc5c2d914c319c945"},
+    {file = "setuptools-78.1.1-py3-none-any.whl", hash = "sha256:c3a9c4211ff4c309edb8b8c4f1cbfa7ae324c4ba9f91ff254e3d305b9fd54561"},
+    {file = "setuptools-78.1.1.tar.gz", hash = "sha256:fcc17fd9cd898242f6b4adfaca46137a9edef687f43e6f78469692a5e70d851d"},
 ]
 
 [package.extras]
@@ -5626,4 +5626,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.11"
-content-hash = "ad763760d683e61fd5ab953f400890340c2e9b7bbec7cd0ba933fe27fcd5aafa"
+content-hash = "97aee35a14706786535fe9efa058216a1dffe1b9dd66b9bcc879c4cb70e5f424"

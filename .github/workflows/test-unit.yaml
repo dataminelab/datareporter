@@ -274,13 +274,10 @@ jobs:
           sleep 10
 
       - name: Execute Cypress Tests
+        working-directory: client
         run: |
-          COMMIT_INFO_MESSAGE=$(git show -s --format=%s) \
-          docker compose run cypress \
-            ./node_modules/.bin/percy exec -t 300 -- \
-            ./node_modules/.bin/cypress run \
-              --record \
-              --browser chrome
+          set -x
+          npm run cypress run-ci
 
       - name: "Failure: output container logs to console"
         if: failure()

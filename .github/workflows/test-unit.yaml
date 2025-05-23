@@ -258,7 +258,16 @@ jobs:
         run: |
           set -x
           docker build -f .ci/Dockerfile.cypress -t cypress .
-      
+
+      - name: list available docker images
+        run: docker images
+
+      - name: list available docker containers
+        run: docker ps -a
+
+      - name: list available configs
+        run: docker compose config --services
+
       - name: Start Cypress Server
         run: |
           set -x
@@ -266,18 +275,20 @@ jobs:
           docker compose -p cypress run server create_db
           sleep 10
 
-      - name: Seed Database
+      - name: Start and seed the app
         working-directory: client
         run: |
           set -x
+          npm run cypress start -- --skip-db-seed
           npm run cypress db-seed
           sleep 10
 
       - name: Execute Cypress Tests
+        working-directory: client
         run: |
           set -x
-          cd client
           npm run cypress run-ci
+          sleep 10
 
       - name: "Failure: output container logs to console"
         if: failure()

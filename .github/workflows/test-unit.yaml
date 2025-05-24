@@ -253,7 +253,10 @@ jobs:
       - name: Install Dependencies
         working-directory: client
         run: npm install
-      
+
+      - name: Install Cypress binary
+        run: npx cypress install
+
       - name: Cache Cypress binary
         uses: actions/cache@v3
         with:

@@ -254,6 +254,13 @@ jobs:
         working-directory: client
         run: npm install
 
+      - name: Ensure .ci/compose.cypress.yml exists in client
+        run: |
+          if [ ! -f client/.ci/compose.cypress.yml ] && [ -f .ci/compose.cypress.yml ]; then
+            mkdir -p client/.ci
+            cp .ci/compose.cypress.yml client/.ci/compose.cypress.yml
+          fi
+
       - name: Setup Datareporter Server
         run: |
           set -x

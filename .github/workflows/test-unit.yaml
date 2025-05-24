@@ -269,7 +269,6 @@ jobs:
         run: docker compose config --services
 
       - name: Start Cypress Server
-        working-directory: client
         run: |
           set -x
           cd client

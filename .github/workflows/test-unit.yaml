@@ -271,7 +271,6 @@ jobs:
       - name: Start Cypress Server
         run: |
           set -x
-          cd client
           docker compose -p cypress up -d
           docker compose -p cypress run server create_db
           sleep 10

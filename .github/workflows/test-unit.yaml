@@ -253,6 +253,14 @@ jobs:
       - name: Install Dependencies
         working-directory: client
         run: npm install
+      
+      - name: Cache Cypress binary
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            cypress-cache-${{ runner.os }}-
 
       - name: Ensure .ci/compose.cypress.yml exists in client
         run: |
@@ -282,13 +290,9 @@ jobs:
           docker compose -p cypress run server create_db
           sleep 10
 
-      - name: Start and seed the app
+      - name: Seed App Database
         working-directory: client
-        run: |
-          set -x
-          npm run cypress start -- --skip-db-seed
-          npm run cypress db-seed
-          sleep 10
+        run: npm run cypress db-seed
 
       - name: Execute Cypress Tests
         working-directory: client

@@ -255,6 +255,7 @@ jobs:
         run: npm install
 
       - name: Install Cypress binary
+        working-directory: client
         run: npx cypress install
 
       - name: Cache Cypress binary

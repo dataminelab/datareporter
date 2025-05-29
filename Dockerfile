@@ -3,6 +3,9 @@ FROM node:18-bookworm AS frontend-builder
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
 
+ENV CYPRESS_INSTALL_BINARY=0
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
+
 RUN useradd -m -d /frontend datareporter
 USER datareporter
 

@@ -256,7 +256,8 @@ jobs:
 
       - name: Install Cypress binary
         working-directory: client
-        run: npx cypress install
+        run: |
+          CYPRESS_INSTALL_BINARY=1 npx cypress install
 
       - name: Cache Cypress binary
         uses: actions/cache@v3
@@ -297,13 +298,6 @@ jobs:
       - name: Seed App Database
         working-directory: client
         run: npm run cypress db-seed
-
-      - name: Install Cypress Dependencies
-        working-directory: client
-        run: |-
-          npm ci
-          npx cypress install
-          npx cypress run
 
       - name: Execute Cypress Tests
         working-directory: client

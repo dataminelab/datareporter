@@ -11,6 +11,10 @@ WORKDIR $APP/client
 RUN ls
 RUN npm install
 
+WORKDIR $APP/plywood/server
+RUN ls
+RUN npm install
+
 WORKDIR $APP
 COPY . $APP
 

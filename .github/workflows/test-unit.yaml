@@ -254,11 +254,6 @@ jobs:
         working-directory: client
         run: npm install
 
-      - name: Install Cypress binary
-        working-directory: client
-        run: |
-          CYPRESS_INSTALL_BINARY=1 npx cypress install
-
       - name: Cache Cypress binary
         uses: actions/cache@v3
         with:

@@ -301,7 +301,6 @@ jobs:
       - name: Install Cypress Dependencies
         working-directory: client
         run: |-
-          CYPRESS_INSTALL_BINARY=1 npx cypress install
           npm ci
           npx cypress install
           npx cypress run

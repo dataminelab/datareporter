@@ -250,10 +250,6 @@ jobs:
         run: |
           echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
 
-      - name: Install Dependencies
-        working-directory: client
-        run: npm install
-
       - name: Cache Cypress binary
         uses: actions/cache@v3
         with:
@@ -261,6 +257,13 @@ jobs:
           key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             cypress-cache-${{ runner.os }}-
+
+      - name: Install Dependencies
+        working-directory: client
+        run: npm install
+
+      - name: Install Cypress Binary
+        run: npx cypress install
 
       - name: Ensure .ci/compose.cypress.yml exists in client
         run: |

@@ -297,6 +297,9 @@ jobs:
         working-directory: client
         run: npm run cypress db-seed
 
+      - name: Verify Cypress binary exists
+        run: ls -l /home/runner/.cache/Cypress/11.2.0/Cypress/
+
       - name: Execute Cypress Tests
         working-directory: client
         run: |

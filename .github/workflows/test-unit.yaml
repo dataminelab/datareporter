@@ -223,7 +223,7 @@ jobs:
     needs: frontend-lint
     env:
       COMPOSE_PROJECT_NAME: cypress
-      CYPRESS_INSTALL_BINARY: 0
+      # CYPRESS_INSTALL_BINARY: 0
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
       COMPOSE_FILE: .ci/compose.cypress.yml
@@ -254,7 +254,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/Cypress
-          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: cypress-cache-${{ runner.os }}-11.2.0-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             cypress-cache-${{ runner.os }}-
 
@@ -263,7 +263,7 @@ jobs:
         run: npm install
 
       - name: Install Cypress Binary
-        run: npx cypress install
+        run: npx cypress install --force
 
       - name: Ensure .ci/compose.cypress.yml exists in client
         run: |

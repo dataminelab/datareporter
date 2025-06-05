@@ -1,7 +1,9 @@
 name: "Unit tests"
 on:
   workflow_call:
-
+env:
+  NODE_VERSION: 18
+  NPM_VERSION: 9.5.1
 
 permissions:
   contents: read

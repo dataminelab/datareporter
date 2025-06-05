@@ -6,6 +6,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  checks: write
 jobs:
   backend-lint:
     timeout-minutes: 5
@@ -54,18 +55,18 @@ jobs:
           docker compose build --build-arg install_groups="main,all_ds,dev" --build-arg skip_frontend_build=true
           docker compose up -d
           sleep 10
-      
+
       - name: Create Test Database
         run: docker compose -p server run --rm postgres psql -h postgres -U postgres -c "create database tests;"
-      
+
       - name: List Enabled Query Runners
         run: docker compose -p server run --rm server manage ds list_types
-      
+
       - name: Run Tests
         shell: bash
         run: |-
           docker compose  -p server run  --user 0 --name tests server tests --junitxml=junit.xml --cov-report=xml --cov=redash --cov-config=.coveragerc tests/
-      
+
       - name: Copy Test Results
         shell: bash
         if: always()
@@ -300,6 +301,7 @@ jobs:
         working-directory: client
         run: |
           set -x
+          ls -l
           npm run cypress run-ci
           sleep 10
 

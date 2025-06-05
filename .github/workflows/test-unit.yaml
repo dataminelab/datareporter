@@ -301,9 +301,9 @@ jobs:
         run: ls -l /home/runner/.cache/Cypress/11.2.0/Cypress/
 
       - name: Execute Cypress Tests
-        working-directory: client
         run: |
           set -x
+          cd client
           npm run cypress run-ci
           sleep 10
 

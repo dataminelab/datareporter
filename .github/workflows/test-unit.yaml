@@ -1,16 +1,6 @@
 name: "Unit tests"
 on:
-  push:
-    branches:
-      - develop
-      - master
-  pull_request:
-    branches:
-      - develop
-      - master
-env:
-  NODE_VERSION: 18
-  NPM_VERSION: 9.5.1
+  workflow_call:
 
 
 permissions:
@@ -189,7 +179,7 @@ jobs:
       - name: List the state of node modules
         working-directory: client
         run: npm list
-      
+
       - name: Build App
         working-directory: client
         run: npm run build
@@ -197,11 +187,11 @@ jobs:
       - name: Run App Tests
         working-directory: client
         run: npm run test
-      
+
       - name: Run Visualizations Tests
         working-directory: viz-lib
         run: npm run test
-      
+
       - name: Install plywood-server dependencies
         working-directory: plywood/server
         run: npm install

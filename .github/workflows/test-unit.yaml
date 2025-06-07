@@ -293,20 +293,25 @@ jobs:
       - name: Verify Cypress binary exists
         run: ls -l /home/runner/.cache/Cypress/11.2.0/Cypress/
 
-      - name: Verify this file exists
-        run: |
-          set -x
-          ls -l /usr/src/app/client/cypress/integration
-
       - name: Verify that file exists
         run: |
           set -x
-          ls -l
+          ls -l /usr/
 
       - name: Verify that file exists x2
         run: |
           set -x
-          ls -l /usr/
+          ls -l /usr/src
+
+      - name: Verify that file exists x3
+        run: |
+          set -x
+          ls -l /usr/src/app
+
+      - name: Verify this file exists
+        run: |
+          set -x
+          ls -l /usr/src/app/client/cypress/integration
 
       - name: Execute Cypress Tests
         run: |

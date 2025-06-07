@@ -300,9 +300,10 @@ jobs:
           test -f cypress/support/index.js && echo "✅ Support file exists." || (echo "❌ Missing support file: cypress/support/index.js" && exit 1)
 
       - name: Execute Cypress Tests
-        working-directory: client
         run: |
           set -x
+          cd client
+          echo "Running Cypress tests..."
           ls -l
           npm run cypress run-ci
           sleep 10

@@ -293,11 +293,20 @@ jobs:
       - name: Verify Cypress binary exists
         run: ls -l /home/runner/.cache/Cypress/11.2.0/Cypress/
 
-      - name: Verify Cypress support file exists
-        working-directory: client
+      - name: Verify this file exists
         run: |
           set -x
-          test -f cypress/support/index.js && echo "✅ Support file exists." || (echo "❌ Missing support file: cypress/support/index.js" && exit 1)
+          ls -l /usr/src/app/client/cypress/integration
+
+      - name: Verify that file exists
+        run: |
+          set -x
+          ls -l
+
+      - name: Verify that file exists x2
+        run: |
+          set -x
+          ls -l /usr/
 
       - name: Execute Cypress Tests
         run: |

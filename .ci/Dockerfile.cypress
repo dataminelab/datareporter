@@ -3,18 +3,14 @@ FROM cypress/browsers:node18.12.0-chrome106-ff106
 ENV APP=/usr/src/app
 WORKDIR $APP
 
-# Copy everything at once (assuming . contains client, plywood, etc.)
 COPY . .
-
-# Install root dependencies
-RUN npm install
 
 # Install client dependencies
 WORKDIR $APP/client
 RUN npm install
-RUN ls -la cypress  # debug step to confirm spec files are here
+RUN ls -la cypress && find cypress -type f  # debug Cypress spec files
 
-# Install plywood server deps
+# Install server dependencies
 WORKDIR $APP/plywood/server
 RUN npm install
 

@@ -306,10 +306,17 @@ jobs:
       - name: Verify that file exists x3
         run: |
           set -x
-          ls -l /usr/src/app
+          ls -l /usr/src/linux-headers-6.11.0-1015-azure
 
-      - name: Verify Cypress spec files in container
-        run: docker compose -p cypress exec -T cypress ls -l /usr/src/app/client/cypress/integration
+      - name: Verify that file exists x4
+        run: |
+          set -x
+          ls -l /usr/src/linux-azure-6.11-headers-6.11.0-1015
+
+      - name: Verify that file exists x5
+        run: |
+          set -x
+          ls -l /usr/src/python3.12          
 
       - name: Execute Cypress Tests
         run: |

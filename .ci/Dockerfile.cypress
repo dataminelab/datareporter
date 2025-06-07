@@ -5,15 +5,12 @@ WORKDIR $APP
 
 COPY . .
 
-# Install client dependencies
-WORKDIR $APP/client
-RUN npm install
-RUN ls -la cypress && find cypress -type f  # debug Cypress spec files
+# Debug: list contents of client folder after copy
+RUN ls -la client
+RUN ls -la client/cypress
 
-# Install server dependencies
-WORKDIR $APP/plywood/server
+WORKDIR $APP/client
 RUN npm install
 
 # Verify Cypress installation
-WORKDIR $APP/client
 RUN ./node_modules/.bin/cypress verify

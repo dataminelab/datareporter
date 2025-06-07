@@ -1,3 +1,5 @@
+/* global Cypress */
+
 import "@cypress/code-coverage/support";
 import "./commands";
 import "./redash-api/index.js";

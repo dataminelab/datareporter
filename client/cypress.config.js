@@ -1,25 +1,25 @@
-const { defineConfig } = require("cypress");
+import { defineConfig } from "cypress";
 
-module.exports = defineConfig({
+export default defineConfig({
   e2e: {
     baseUrl: "http://localhost:5000",
     defaultCommandTimeout: 20000,
-    downloadsFolder: "client/cypress/downloads",
-    fixturesFolder: "client/cypress/fixtures",
+    downloadsFolder: "cypress/downloads",
+    fixturesFolder: "cypress/fixtures",
     requestTimeout: 15000,
-    screenshotsFolder: "client/cypress/screenshots",
-    specPattern: "client/cypress/integration/",
-    supportFile: "client/cypress/support/index.js",
+    screenshotsFolder: "cypress/screenshots",
+    specPattern: "cypress/integration/",
+    supportFile: false,
     video: true,
     videoUploadOnPasses: false,
-    videosFolder: "client/cypress/videos",
+    videosFolder: "cypress/videos",
     viewportHeight: 1024,
     viewportWidth: 1280,
     env: {
       coverage: false,
     },
     experimentalSessionAndOrigin: true,
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on) {
       on('before:browser:launch', (browser = {}, launchOptions) => {
         if (browser.name === 'chrome' || browser.name === 'chromium') {
           launchOptions.args.push('--disable-gpu')

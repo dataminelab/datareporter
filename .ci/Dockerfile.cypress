@@ -3,21 +3,21 @@ FROM cypress/browsers:node18.12.0-chrome106-ff106
 ENV APP=/usr/src/app
 WORKDIR $APP
 
-COPY client $APP/client
-COPY plywood $APP/plywood
-COPY viz-lib $APP/viz-lib
+# Copy everything at once (assuming . contains client, plywood, etc.)
+COPY . .
 
-WORKDIR $APP/client
-RUN ls
+# Install root dependencies
 RUN npm install
 
+# Install client dependencies
+WORKDIR $APP/client
+RUN npm install
+RUN ls -la cypress  # debug step to confirm spec files are here
+
+# Install plywood server deps
 WORKDIR $APP/plywood/server
-RUN ls
 RUN npm install
 
-WORKDIR $APP
-COPY . $APP
-
-WORKDIR $APP/client
 # Verify Cypress installation
+WORKDIR $APP/client
 RUN ./node_modules/.bin/cypress verify

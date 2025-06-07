@@ -308,10 +308,8 @@ jobs:
           set -x
           ls -l /usr/src/app
 
-      - name: Verify this file exists
-        run: |
-          set -x
-          ls -l /usr/src/app/client/cypress/integration
+      - name: Verify Cypress spec files in container
+        run: docker compose -p cypress exec -T cypress ls -l /usr/src/app/client/cypress/integration
 
       - name: Execute Cypress Tests
         run: |

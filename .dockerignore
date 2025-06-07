@@ -18,7 +18,6 @@ scripts
 setup
 client/.tmp/
 client/dist/
-client/cypress/
 client/node_modules/
 plywood/server/node_modules/
 plywood/server/client/node_modules/

@@ -9,7 +9,7 @@ export default defineConfig({
     requestTimeout: 15000,
     screenshotsFolder: "cypress/screenshots",
     specPattern: "cypress/integration/",
-    supportFile: false,
+    supportFile: "cypress/support/index.js",
     video: true,
     videoUploadOnPasses: false,
     videosFolder: "cypress/videos",

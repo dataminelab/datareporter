@@ -215,11 +215,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: frontend-lint
     env:
+      COMPOSE_FILE: .ci/compose.cypress.yml
       COMPOSE_PROJECT_NAME: cypress
-      # CYPRESS_INSTALL_BINARY: 0
+      CYPRESS_INSTALL_BINARY: 0
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
-      COMPOSE_FILE: .ci/compose.cypress.yml
       # PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       # CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
       # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -236,7 +236,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: 'npm'
 
       - name: Enable Code Coverage Report For Develop Branch
         if: endsWith(github.ref, '/develop') || endsWith(github.ref, '/main')
@@ -255,29 +254,10 @@ jobs:
         working-directory: client
         run: npm install
 
-      - name: Install Cypress Binary
-        run: npx cypress install --force
-
-      - name: Ensure .ci/compose.cypress.yml exists in client
-        run: |
-          if [ ! -f client/.ci/compose.cypress.yml ] && [ -f .ci/compose.cypress.yml ]; then
-            mkdir -p client/.ci
-            cp .ci/compose.cypress.yml client/.ci/compose.cypress.yml
-          fi
-
       - name: Setup Datareporter Server
         run: |
           set -x
           docker build -f .ci/Dockerfile.cypress -t cypress .
-
-      - name: list available docker images
-        run: docker images
-
-      - name: list available docker containers
-        run: docker ps -a
-
-      - name: list available configs
-        run: docker compose config --services
 
       - name: Start Cypress Server
         run: |
@@ -289,34 +269,6 @@ jobs:
       - name: Seed App Database
         working-directory: client
         run: npm run cypress db-seed
-
-      - name: Verify Cypress binary exists
-        run: ls -l /home/runner/.cache/Cypress/11.2.0/Cypress/
-
-      - name: Verify that file exists
-        run: |
-          set -x
-          ls -l /usr/
-
-      - name: Verify that file exists x2
-        run: |
-          set -x
-          ls -l /usr/src
-
-      - name: Verify that file exists x3
-        run: |
-          set -x
-          ls -l /usr/src/linux-headers-6.11.0-1015-azure
-
-      - name: Verify that file exists x4
-        run: |
-          set -x
-          ls -l /usr/src/linux-azure-6.11-headers-6.11.0-1015
-
-      - name: Verify that file exists x5
-        run: |
-          set -x
-          ls -l /usr/src/python3.12          
 
       - name: Execute Cypress Tests
         run: |

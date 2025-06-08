@@ -3,11 +3,9 @@ FROM cypress/browsers:node18.12.0-chrome106-ff106
 ENV APP=/usr/src/app
 WORKDIR $APP
 
-COPY . .
-
-# Debug: list contents of client folder after copy
-RUN ls -la client
-RUN ls -la client/cypress
+COPY viz-lib $APP/viz-lib
+COPY client $APP/client
+COPY plywood $APP/plywood
 
 WORKDIR $APP/client
 RUN npm install

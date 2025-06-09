@@ -220,9 +220,9 @@ jobs:
       CYPRESS_INSTALL_BINARY: 0
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
-      # PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      # CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-      # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
     steps:
       - if: github.event.pull_request.mergeable == 'false'
         name: Exit if PR is not mergeable

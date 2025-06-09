@@ -59,14 +59,14 @@ function stopServer() {
 
 function runCypressCI() {
   const {
-    PERCY_TOKEN_ENCODED,
+    PERCY_TOKEN,
     CYPRESS_PROJECT_ID_ENCODED,
     CYPRESS_RECORD_KEY_ENCODED,
     CYPRESS_RECORD_KEY, // eslint-disable-line @typescript-eslint/no-unused-vars
   } = process.env;
 
- if (PERCY_TOKEN_ENCODED) {
-    process.env.PERCY_TOKEN = atob(`${PERCY_TOKEN_ENCODED}`);
+ if (PERCY_TOKEN) {
+    process.env.PERCY_TOKEN = atob(`${PERCY_TOKEN}`);
   }
   if (CYPRESS_PROJECT_ID_ENCODED) {
     process.env.CYPRESS_PROJECT_ID = atob(`${CYPRESS_PROJECT_ID_ENCODED}`);
@@ -80,7 +80,7 @@ function runCypressCI() {
   }
 
   execSync(
-    "COMMIT_INFO_MESSAGE=$(git show -s --format=%s) docker compose run --name cypress cypress ./node_modules/.bin/percy exec -t 300 -- ./node_modules/.bin/cypress run $CYPRESS_OPTIONS",
+    "COMMIT_INFO_MESSAGE=$(git show -s --format=%s) ./node_modules/.bin/percy exec -t 300 -- ./node_modules/.bin/cypress run $CYPRESS_OPTIONS",
     { stdio: "inherit" }
   );
 }

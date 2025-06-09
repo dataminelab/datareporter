@@ -59,21 +59,9 @@ function stopServer() {
 
 function runCypressCI() {
   const {
-    PERCY_TOKEN,
-    CYPRESS_PROJECT_ID_ENCODED,
-    CYPRESS_RECORD_KEY_ENCODED,
+    CYPRESS_OPTIONS, // eslint-disable-line @typescript-eslint/no-unused-vars
     CYPRESS_RECORD_KEY, // eslint-disable-line @typescript-eslint/no-unused-vars
   } = process.env;
-
- if (PERCY_TOKEN) {
-    process.env.PERCY_TOKEN = atob(`${PERCY_TOKEN}`);
-  }
-  if (CYPRESS_PROJECT_ID_ENCODED) {
-    process.env.CYPRESS_PROJECT_ID = atob(`${CYPRESS_PROJECT_ID_ENCODED}`);
-  }
-  if (CYPRESS_RECORD_KEY_ENCODED) {
-    process.env.CYPRESS_RECORD_KEY = atob(`${CYPRESS_RECORD_KEY_ENCODED}`);
-  }
 
   if (process.env.CYPRESS_RECORD_KEY) {
     process.env.CYPRESS_OPTIONS = "--record";

@@ -217,9 +217,8 @@ jobs:
     env:
       COMPOSE_FILE: .ci/compose.cypress.yml
       COMPOSE_PROJECT_NAME: cypress
-      CYPRESS_INSTALL_BINARY: 0
+      # CYPRESS_INSTALL_BINARY: 0
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
-      # PUPPETEER_SKIP_FIREFOX_DOWNLOAD: 1
       COMPOSE_BAKE: true
       PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
@@ -255,7 +254,10 @@ jobs:
         working-directory: client
         run: npm install
 
-      - name: Ensure .ci/compose.cypress.yml exists in clientAdd commentMore actions
+      - name: Install Cypress Binary
+        run: npx cypress install --force
+
+      - name: Ensure .ci/compose.cypress.yml exists in client
         run: |
           if [ ! -f client/.ci/compose.cypress.yml ] && [ -f .ci/compose.cypress.yml ]; then
             mkdir -p client/.ci

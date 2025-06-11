@@ -59,8 +59,9 @@ RUN apt-get update && \
   freetds-dev \
   libsasl2-dev \
   unzip \
-  libsasl2-modules-gssapi-mit \
-  python3-distutils && \
+  python3-distutils \
+  python3-venv \
+  libsasl2-modules-gssapi-mit && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 

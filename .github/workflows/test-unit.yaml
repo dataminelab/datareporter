@@ -282,11 +282,7 @@ jobs:
 
       - name: Execute Cypress Tests
         working-directory: client
-        run: |
-          set -x
-          PUPPETEER_PRODUCT=firefox npm install
-          npm run cypress run-ci
-          sleep 10
+        run: npm run cypress run-ci
 
       - name: "Failure: output container logs to console"
         if: failure()

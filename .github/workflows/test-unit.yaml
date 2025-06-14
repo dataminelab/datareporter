@@ -268,6 +268,12 @@ jobs:
         run: |
           set -x
           docker build -f .ci/Dockerfile.cypress -t cypress .
+      
+      - name: ls plywood files
+        run: |
+          set -x
+          ls -l plywood/server/client/package.json
+          ls -l plywood/server/package.json
 
       - name: Start Cypress Server
         run: |

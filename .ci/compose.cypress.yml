@@ -48,9 +48,14 @@ services:
       - "3000:3000"
       - "9231:9229"
     volumes:
-      - ./plywood/server:/app
+      - ../plywood/server:/app
     environment:
       - LOG_MODE=request_and_response
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/v1/plywood/attributes"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
   cypress:
     ipc: host
     build:

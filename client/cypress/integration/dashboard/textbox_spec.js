@@ -117,7 +117,8 @@ describe("Textbox", () => {
           .should("exist")
           .within(() => {
             cy.get("textarea")
-              .clear()
+              .clear();
+            cy.get("textarea")
               .type(newContent);
             cy.contains("button", "Save").click();
           });

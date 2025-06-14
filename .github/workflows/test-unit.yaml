@@ -275,6 +275,11 @@ jobs:
           ls -l plywood/server/client/package.json
           ls -l plywood/server/package.json
 
+      - name: ls plywood files 2
+        run: |
+          set -x
+          ls -l ../plywood/server/package.json
+
       - name: Start Cypress Server
         run: |
           set -x

@@ -48,7 +48,7 @@ services:
       - "3000:3000"
       - "9231:9229"
     volumes:
-      - ../plywood/server:/app
+      - ${PWD}/../plywood/server:/app
     environment:
       - LOG_MODE=request_and_response
     healthcheck:

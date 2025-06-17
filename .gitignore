@@ -28,3 +28,4 @@ client/cypress/videos
 dist
 
 scripts/config.js
+bin/act

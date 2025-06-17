@@ -290,9 +290,15 @@ jobs:
         working-directory: client
         run: npm run cypress db-seed
 
-      - name: Get Percy version
-        working-directory: client
-        run: npx percy --version
+      
+      - name: give me basic plywood attributes
+        run: curl -s http://localhost:3000/api/v1/plywood/attributes
+
+      - name: give me basic plywood expression
+        run: curl -s http://localhost:3000/api/v1/plywood/expression
+
+      - name: give me basic plywood engines
+        run: curl -s http://localhost:3000/api/v1/plywood/attributes/engines
 
       - name: Execute Cypress Tests
         working-directory: client

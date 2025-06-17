@@ -49,6 +49,8 @@ services:
       - "9231:9229"
     volumes:
       - ${PWD}/../plywood/server:/app
+      - ${PWD}/../plywood/server/package.json:/app/package.json
+      - ${PWD}/../plywood/server/package-lock.json:/app/package-lock.json
     environment:
       - LOG_MODE=request_and_response
     healthcheck:

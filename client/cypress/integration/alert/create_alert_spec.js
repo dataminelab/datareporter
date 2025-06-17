@@ -13,7 +13,8 @@ describe("Create Alert", () => {
     cy.createQuery({ name: "Create Alert Query" }).then(({ id: queryId }) => {
       cy.visit("/alerts/new");
       cy.getByTestId("QuerySelector")
-        .click()
+        .click();
+      cy.getByTestId("QuerySelector")
         .type("Create Alert Query");
       cy.get(`.query-selector-result[data-test="QueryId${queryId}"]`).click();
       cy.getByTestId("Criteria").should("exist");

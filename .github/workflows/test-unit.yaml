@@ -223,6 +223,16 @@ jobs:
       PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      PERCY_PARALLEL_TOTAL: 1
+      PERCY_PARALLEL_NONCE: ${{ github.run_id }}
+      PERCY_PARALLEL: true
+      PERCY_BRANCH: ${{ github.head_ref }}
+      PERCY_COMMIT: ${{ github.sha }}
+      PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
+      COMMIT_INFO_BRANCH: ${{ github.head_ref }}
+      COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+      COMMIT_INFO_AUTHOR: ${{ github.event.pull_request.user.login }}
+      COMMIT_INFO_SHA: ${{ github.sha }}
     steps:
       - if: github.event.pull_request.mergeable == 'false'
         name: Exit if PR is not mergeable
@@ -280,9 +290,18 @@ jobs:
         working-directory: client
         run: npm run cypress db-seed
 
+      - name: Get Percy version
+        working-directory: client
+        run: npx percy --version
+
       - name: Execute Cypress Tests
         working-directory: client
         run: npm run cypress run-ci
+
+      - name: Run Percy Snapshot
+        if: always()
+        working-directory: client
+        run: npx percy snapshot --verbose
 
       - name: "Failure: output container logs to console"
         if: failure()

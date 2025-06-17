@@ -71,6 +71,7 @@ function runCypressCI() {
     "COMMIT_INFO_MESSAGE=$(git show -s --format=%s) docker compose run --name cypress cypress ./node_modules/.bin/percy exec -t 300 -- ./node_modules/.bin/cypress run $CYPRESS_OPTIONS",
     { stdio: "inherit" }
   );
+  execSync("docker compose run --rm cypress ./node_modules/.bin/percy build:finalize", { stdio: "inherit" });
 }
 
 const command = process.argv[2] || "all";

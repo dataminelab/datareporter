@@ -1,14 +1,17 @@
 FROM cypress/browsers:node18.12.0-chrome106-ff106
 
 ENV APP=/usr/src/app
-WORKDIR $APP
+RUN useradd -m -d /$APP datareporter
+USER datareporter
 
-COPY viz-lib $APP/viz-lib
-COPY client $APP/client
-COPY plywood $APP/plywood
+WORKDIR $APP
+COPY --chown=datareporter client $APP/client
+COPY --chown=datareporter viz-lib/ $APP/viz-lib
+COPY --chown=datareporter plywood/server $APP/plywood/server/
+COPY --chown=datareporter plywood/server/client $APP/plywood/server/client
 
 WORKDIR $APP/client
-RUN npm install
+RUN npm i && npm run build
 
 # Verify Cypress installation
 RUN ./node_modules/.bin/cypress verify

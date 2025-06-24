@@ -307,7 +307,7 @@ jobs:
       - name: Run Percy Snapshot
         if: always()
         working-directory: client
-        run: npx percy snapshot ./cypress/screenshots
+        run: npx percy snapshot cypress/screenshots
 
       - name: "Failure: output container logs to console"
         if: failure()

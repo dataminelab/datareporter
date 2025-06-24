@@ -11,7 +11,7 @@ updates:
       day: 'saturday'
     ignore:
       - dependency-name: "readable-stream"
-        update-types: ["version-update:semver-any"]
+        update-types: ["version-update:semver-minor"]
   - directory: "/plywood/server/client"
     target-branch: "develop"
     package-ecosystem: "npm"
@@ -19,7 +19,7 @@ updates:
       prefix: "(plywood-client): "
     ignore:
       - dependency-name: "readable-stream"
-        update-types: ["version-update:semver-any"]
+        update-types: ["version-update:semver-minor"]
     schedule:
       interval: 'weekly'
       day: 'saturday'

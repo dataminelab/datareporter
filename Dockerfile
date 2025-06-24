@@ -85,7 +85,7 @@ RUN <<EOF
   fi
 EOF
 
- WORKDIR /app
+WORKDIR /app
 
 ENV POETRY_VERSION=2.1.1
 ENV POETRY_HOME=/etc/poetry
@@ -109,7 +109,6 @@ RUN chown datareporter:datareporter -R /app
 USER datareporter
 
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-# The version is being set arbitrarily by the builder
 ARG version
 ENV DATAREPORTER_VERSION=$version
 

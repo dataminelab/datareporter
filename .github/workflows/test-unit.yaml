@@ -253,26 +253,26 @@ jobs:
         run: |
           echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
 
-      - name: Cache Cypress binary
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-cache-${{ runner.os }}-11.2.0-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            cypress-cache-${{ runner.os }}-
-
       - name: Install Dependencies
         working-directory: client
         run: npm install
 
-      - name: Install Cypress Binary
-        run: npx cypress install --force
+
+      - name: Check and Install Cypress Binary
+        run: |
+          if npx cypress verify; then
+            echo "Cypress is already installed."
+          else
+            echo "Cypress not found, installing..."
+            npx cypress install --force
+          fi
 
       - name: Ensure .ci/compose.cypress.yml exists in client
         run: |
           if [ ! -f client/.ci/compose.cypress.yml ] && [ -f .ci/compose.cypress.yml ]; then
             mkdir -p client/.ci
             cp .ci/compose.cypress.yml client/.ci/compose.cypress.yml
+            cp .ci/Dockerfile.cypress client/.ci/Dockerfile.cypress
           fi
 
       - name: Setup Datareporter Server
@@ -290,15 +290,6 @@ jobs:
       - name: Seed App Database
         working-directory: client
         run: npm run cypress db-seed
-
-      # - name: give me basic plywood attributes
-      #   run: curl -s http://localhost:3000/api/v1/plywood/attributes
-
-      # - name: give me basic plywood expression
-      #   run: curl -s http://localhost:3000/api/v1/plywood/expression
-
-      # - name: give me basic plywood engines
-      #   run: curl -s http://localhost:3000/api/v1/plywood/attributes/engines
 
       - name: Execute Cypress Tests
         working-directory: client

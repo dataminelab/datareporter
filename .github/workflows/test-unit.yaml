@@ -291,10 +291,15 @@ jobs:
         working-directory: client
         run: npm run cypress run-ci
 
-      - name: Run Percy Snapshot
+      - name: Run Percy Snapshot images
         if: always()
         working-directory: client
         run: npx percy snapshot cypress/screenshots
+
+      - name: Run Percy Snapshot videos
+        if: always()
+        working-directory: client
+        run: npx percy snapshot cypress/videos
 
       - name: "Failure: output container logs to console"
         if: failure()

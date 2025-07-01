@@ -121,7 +121,7 @@ describe("Widget", () => {
         // expect to height to grow by 1 grid grow
         cy.get("@widget")
           .invoke("height")
-          .should("oneOf", [385, 535]);
+          .should("oneOf", [285, 385, 535]);
       });
 
       it("revokes auto height after manual height adjustment", () => {

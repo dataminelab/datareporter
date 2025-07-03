@@ -8,7 +8,7 @@ from redash.services.expression import ExpressionBase64Parser
 parser = lzstring.LZString()
 
 
-def _serialize_report(report: Report, formatting):
+def _serialize_report(report: Report, formatting: str = "base64") -> dict:
     # to have the same base64 as the one we had we need to remove spaces that json.dumps() adds
 
     if formatting == "json":
@@ -33,7 +33,7 @@ def _serialize_report(report: Report, formatting):
 
 
 class ReportSerializer(Serializer):
-    def __init__(self, object_or_list, formatting="base64", **kwargs):
+    def __init__(self, object_or_list, formatting: str = "base64", **kwargs):
         self.object_or_list = object_or_list
         self.formatting = formatting
         self.options = kwargs

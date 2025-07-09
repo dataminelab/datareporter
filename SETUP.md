@@ -47,7 +47,8 @@ nvm use v18.20 > /dev/null
 docker compose up --build # or make up to start required services like postgres app server
 docker compose run --rm server create_db # start server and run. exec /app/manage.py database create_tables. 
 # Database Update process
-docker-compose run server manage db stamp head # If you get an error saying "target database is not up to date" you can run this command
+docker compose exec ollama ollama pull deepseek-r1:7b # Pull deepseek-r1:7b model from ollama
+docker compose run server manage db stamp head # If you get an error saying "target database is not up to date" you can run this command
 docker compose run server manage db migrate # Any change to back-end models requires to create a migration
 docker compose run --rm server manage db upgrade # Upgrade database with recent migration
 ```

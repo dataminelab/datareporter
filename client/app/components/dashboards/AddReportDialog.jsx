@@ -117,6 +117,10 @@ function AddReportDialog({ dialog, dashboard }) {
   );
 
   const saveWidget = useCallback(() => {
+    if (!selectedVisualization || !selectedReport) {
+      notification.error("Please select a report and visualization before saving.");
+      return;
+    }
     const options = {
       parameterMappings: parameterMappings,
       type: selectedVisualization.type,
@@ -130,7 +134,7 @@ function AddReportDialog({ dialog, dashboard }) {
       .catch(() => {
         notification.error("Report Widget could not be added");
       });
-  }, [dialog, parameterMappings, selectedReport.hash, selectedReport.id, selectedVisualization.description, selectedVisualization.id, selectedVisualization.type]);
+  }, [dialog, parameterMappings, selectedReport, selectedVisualization]);
 
   return (
     <Modal

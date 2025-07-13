@@ -46,7 +46,7 @@ export interface BaseFilterClauseDefinition {
 export interface NumberFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.number;
   not: boolean;
-  ranges: Array<{ start: number, end: number, bounds?: string }>;
+  ranges: Array<{ start: number; end: number; bounds?: string }>;
 }
 
 export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition {
@@ -64,7 +64,7 @@ export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinitio
 
 export interface TimeFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.time;
-  timeRanges?: Array<{ start: string, end: string }>;
+  timeRanges?: Array<{ start: string; end: string }>;
   timePeriods?: TimePeriodDefinition[];
 }
 
@@ -105,7 +105,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
     if (action === null) {
       throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
     }
-    if (!(<any> Object).values(StringFilterAction).includes(action)) {
+    if (!(Object as any).values(StringFilterAction).includes(action)) {
       throw Error(`Unknown string filter action. Dimension: ${dimension}`);
     }
     if (action in [StringFilterAction.CONTAINS, StringFilterAction.MATCH] && values.length !== 1) {
@@ -193,7 +193,6 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
     return {
       type: FilterType.time,
       ref: reference,
-      //@ts-ignore
       timeRanges: values.map(value => ({ start: value.start.toISOString(), end: value.end.toISOString() })).toArray()
     };
   }

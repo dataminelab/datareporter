@@ -34,6 +34,7 @@ export interface ButtonGroupProps {
   className?: string;
 }
 
+// eslint-disable-next-line
 export interface ButtonGroupState {
 }
 

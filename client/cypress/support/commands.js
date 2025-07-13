@@ -83,7 +83,9 @@ Cypress.Commands.add("fillInputs", (elements, { wait = 0 } = {}) => {
   each(elements, (value, testId) => {
     cy.getByTestId(testId)
       .filter(":visible")
-      .clear()
+      .clear();
+    cy.getByTestId(testId)
+      .filter(":visible")
       .type(value);
     if (wait > 0) {
       cy.wait(wait); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -98,13 +100,12 @@ Cypress.Commands.add("dragBy", { prevSubject: true }, (subject, offsetLeft, offs
   if (!offsetTop) {
     offsetTop = 1;
   }
-  return cy
-    .wrap(subject)
-    .trigger("mouseover", { force })
-    .trigger("mousedown", "topLeft", { force })
-    .trigger("mousemove", 1, 1, { force }) // must have at least 2 mousemove events for react-grid-layout to trigger onLayoutChange
-    .trigger("mousemove", offsetLeft, offsetTop, { force })
-    .trigger("mouseup", { force });
+  cy.wrap(subject).trigger("mouseover", { force });
+  cy.wrap(subject).trigger("mousedown", "topLeft", { force });
+  cy.wrap(subject).trigger("mousemove", 1, 1, { force }); // must have at least 2 mousemove events for react-grid-layout to trigger onLayoutChange
+  cy.wrap(subject).trigger("mousemove", offsetLeft, offsetTop, { force });
+  cy.wrap(subject).trigger("mouseup", { force });
+  return cy.wrap(subject);
 });
 
 Cypress.Commands.add("all", (...functions) => {

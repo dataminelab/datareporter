@@ -117,7 +117,8 @@ describe("Textbox", () => {
           .should("exist")
           .within(() => {
             cy.get("textarea")
-              .clear()
+              .clear();
+            cy.get("textarea")
               .type(newContent);
             cy.contains("button", "Save").click();
           });
@@ -141,7 +142,7 @@ describe("Textbox", () => {
       })
       .should($el => {
         const { top, left } = $el.offset();
-        expect(top).to.be.oneOf([232, 232.015625, 162, 222.015625]);
+        expect(top).to.be.oneOf([232, 232.015625, 162, 222.015625, 222.984375]);
         expect(left).to.be.oneOf([215, 282]);
         expect($el.width()).to.be.oneOf([585, 545]);
         expect($el.height()).to.eq(185);

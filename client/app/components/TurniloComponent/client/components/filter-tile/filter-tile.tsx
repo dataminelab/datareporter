@@ -496,7 +496,7 @@ export class FilterTile extends React.Component<FilterTileProps, FilterTileState
 
     const { dataCube, filter } = essence;
 
-    let itemBlanks = filter.clauses.toArray()
+    const itemBlanks = filter.clauses.toArray()
       .map((clause): ItemBlank => {
         const dimension = dataCube.getDimension(clause.reference);
         if (!dimension) return null;

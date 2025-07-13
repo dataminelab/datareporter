@@ -1,0 +1,33 @@
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+      "baseUrl": "./",
+      "composite": true,
+      "declarationDir": "dist/types",
+      "outDir": "dist",
+      "strict": true,
+      "noEmit": true,
+      "sourceMap": true,
+      "declaration": true,
+      "noImplicitAny": true,
+      "noEmitOnError": true,
+      "removeComments": true,
+      "noFallthroughCasesInSwitch": true,
+      "noImplicitReturns": true,
+      "strictNullChecks": false,
+      "skipLibCheck": true,
+      "target": "esnext",
+      "module": "esnext",
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "jsx": "react",
+      "lib": ["dom", "es6", "es5"],
+      "types": ["node", "express", "mocha", "cypress", "webpack-env"]
+    },
+    "include": [
+      "**/*",
+      "../../../app/components/**/*"
+    ],
+    "exclude": []
+  }
+  

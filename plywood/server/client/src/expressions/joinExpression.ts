@@ -15,9 +15,11 @@
  */
 
 import * as hasOwnProp from 'has-own-prop';
+
 import { PlywoodValue } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
 import { DatasetFullType } from '../types';
+
 import {
   ChainableUnaryExpression,
   Expression,
@@ -46,10 +48,10 @@ export class JoinExpression extends ChainableUnaryExpression {
   ): DatasetFullType {
     const myDatasetType = typeContext.datasetType;
     const expressionDatasetType = expressionTypeContext.datasetType;
-    for (let k in expressionDatasetType) {
+    for (const k in expressionDatasetType) {
       typeContext.datasetType[k] = expressionDatasetType[k];
 
-      let ft = expressionDatasetType[k];
+      const ft = expressionDatasetType[k];
       if (hasOwnProp(myDatasetType, k)) {
         if (myDatasetType[k].type !== ft.type) {
           throw new Error(

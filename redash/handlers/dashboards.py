@@ -145,19 +145,20 @@ class DashboardResource(BaseResource):
 
         .. _dashboard-response-label:
 
-        :>json number id: Dashboard ID
-        :>json string name:
-        :>json string slug:
-        :>json number user_id: ID of the dashboard creator
-        :>json string created_at: ISO format timestamp for dashboard creation
-        :>json string updated_at: ISO format timestamp for last dashboard modification
-        :>json number version: Revision number of dashboard
-        :>json boolean dashboard_filters_enabled: Whether filters are enabled or not
-        :>json boolean is_archived: Whether this dashboard has been removed from the index or not
-        :>json boolean is_draft: Whether this dashboard is a draft or not.
-        :>json array layout: Array of arrays containing widget IDs, corresponding to the rows and columns the widgets are displayed in
-        :>json array widgets: Array of arrays containing :ref:`widget <widget-response-label>` data
-        :>json object options: Dashboard options
+        - json number id: Dashboard ID
+        - json string name:
+        - json string slug:
+        - json number user_id: ID of the dashboard creator
+        - json string created_at: ISO format timestamp for dashboard creation
+        - json string updated_at: ISO format timestamp for last dashboard modification
+        - json number version: Revision number of dashboard
+        - json boolean dashboard_filters_enabled: Whether filters are enabled or not
+        - json boolean is_archived: Whether this dashboard has been removed from the index or not
+        - json boolean is_draft: Whether this dashboard is a draft or not.
+        - json array layout: Array of arrays containing widget IDs,
+            corresponding to the rows and columns the widgets are displayed in
+        - json array widgets: Array of arrays containing :ref:`widget <widget-response-label>` data
+        - json object options: Dashboard options
 
         .. _widget-response-label:
 
@@ -278,7 +279,8 @@ class PublicDashboardResource(BaseResource):
         Retrieve a public dashboard.
 
         :param token: An API key for a public dashboard.
-        :>json array widgets: An array of arrays of :ref:`public widgets <public-widget-label>`, corresponding to the rows and columns the widgets are displayed in
+        - json array widgets: An array of arrays of :ref:`public widgets <public-widget-label>`,
+            corresponding to the rows and columns the widgets are displayed in
         """
         if self.current_org.get_setting("disable_public_urls"):
             abort(400, message="Public URLs are disabled.")
@@ -402,3 +404,16 @@ class DashboardFavoriteListResource(BaseResource):
         )
 
         return response
+
+
+class DashboardForkResource(BaseResource):
+    @require_permission("edit_dashboard")
+    def post(self, dashboard_id):
+        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
+
+        fork_dashboard = dashboard.fork(self.current_user)
+        models.db.session.commit()
+
+        self.record_event({"action": "fork", "object_id": dashboard_id, "object_type": "dashboard"})
+
+        return DashboardSerializer(fork_dashboard, with_widgets=True).serialize()

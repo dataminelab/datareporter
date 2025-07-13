@@ -13,7 +13,7 @@ export class DruidParse extends AttributeParser {
             COLUMN_NAME: atr.name,
             DATA_TYPE: atr.type
         }) as DruidSQLDescribeRow);
-
+        // @ts-ignore
         return DruidSQLExternal.postProcessIntrospect(columns);
     }
 }

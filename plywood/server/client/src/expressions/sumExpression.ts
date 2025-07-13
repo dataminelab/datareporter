@@ -16,6 +16,7 @@
 
 import { Dataset, PlywoodValue } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import { AddExpression } from './addExpression';
 import {
   ChainableUnaryExpression,
@@ -58,7 +59,7 @@ export class SumExpression extends ChainableUnaryExpression implements Aggregate
     const { operand, expression } = this;
 
     if (expression instanceof LiteralExpression) {
-      let value = expression.value;
+      const value = expression.value;
       return operand
         .count()
         .multiply(value)

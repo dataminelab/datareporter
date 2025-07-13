@@ -80,7 +80,7 @@ describe("Dimensions", () => {
   });
 
   it("should traverse dimensions", () => {
-    let dimensionTitles: string[] = [];
+    const dimensionTitles: string[] = [];
     dimensions.forEachDimension(dimension => dimensionTitles.push(dimension.title));
 
     expect(dimensionTitles).to.deep.equal(DimensionsFixtures.wikiTitles());

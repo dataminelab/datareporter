@@ -17,7 +17,9 @@
 
 import { Duration, parseISODate, Timezone } from 'chronoshift';
 import { Class, Instance } from 'immutable-class';
+
 import { Expression } from '../expressions/baseExpression';
+
 import { NumberRange } from './numberRange';
 import { Range } from './range';
 
@@ -52,14 +54,9 @@ const START_OF_TIME = '1000';
 const END_OF_TIME = '3000';
 
 function dateToIntervalPart(date: Date): string {
-  return date
-    .toISOString()
-    .replace('.000Z', 'Z')
-    .replace(':00Z', 'Z')
-    .replace(':00Z', 'Z'); // Do not do a final .replace('T00Z', 'Z');
+  return date.toISOString().replace('.000Z', 'Z').replace(':00Z', 'Z').replace(':00Z', 'Z'); // Do not do a final .replace('T00Z', 'Z');
 }
 
-let check: Class<TimeRangeValue, TimeRangeJS>;
 export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, TimeRangeJS> {
   static type = 'TIME_RANGE';
 
@@ -71,13 +68,19 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
     return dateToIntervalPart(date) + '/' + dateToIntervalPart(new Date(date.valueOf() + 1));
   }
 
-  static timeBucket(date: Date, duration: Duration, timezone: Timezone): TimeRange {
+  static timeBucket(
+    date: Date,
+    duration: Duration,
+    timezone: Timezone,
+    bounds?: string,
+  ): TimeRange {
     if (!date) return null;
-    let start = duration.floor(date, timezone);
+    const start = duration.floor(date, timezone);
+
     return new TimeRange({
       start: start,
       end: duration.shift(start, timezone, 1),
-      bounds: Range.DEFAULT_BOUNDS,
+      bounds: bounds ?? Range.DEFAULT_BOUNDS,
     });
   }
 
@@ -125,7 +128,7 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
   }
 
   public toJS(): TimeRangeJS {
-    let js: TimeRangeJS = {
+    const js: TimeRangeJS = {
       start: this.start,
       end: this.end,
     };
@@ -145,7 +148,7 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
    */
   public toInterval(): string {
     let { start, end, bounds } = this;
-    let interval: string[] = [START_OF_TIME, END_OF_TIME];
+    const interval: string[] = [START_OF_TIME, END_OF_TIME];
     if (start) {
       if (bounds[0] === '(') start = new Date(start.valueOf() + 1); // add a m.sec
       interval[0] = dateToIntervalPart(start);
@@ -185,6 +188,24 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
       bounds,
     });
   }
+
+  public changeBounds(bounds: string): TimeRange {
+    const value = this.toJS();
+    value.bounds = bounds;
+    return TimeRange.fromJS(value);
+  }
+
+  public shift(duration: Duration, timezone: Timezone, step?: number): TimeRange {
+    const { start, end, bounds } = this;
+    if (!start) return this;
+    return new TimeRange({
+      start: start ? duration.shift(start, timezone, step) : null,
+      end: end ? duration.shift(end, timezone, step) : null,
+      bounds,
+    });
+  }
 }
-check = TimeRange;
+
+// eslint-disable-next-line unused-imports/no-unused-vars
+const check: Class<TimeRangeValue, TimeRangeJS> = TimeRange;
 Range.register(TimeRange);

@@ -35,7 +35,7 @@ const MENU_LENGTH = 5;
 export type GranularityJS = string | number;
 export type ContinuousDimensionKind = "time" | "number";
 
-type BucketableRange = { start: number, end: number } | { start: Date, end: Date };
+type BucketableRange = { start: number; end: number } | { start: Date; end: Date };
 
 export function validateGranularity(kind: string, granularity: string): string {
   if (kind === "time") {
@@ -66,7 +66,7 @@ function makeCheckpoint(checkPoint: number, returnValue: Bucket): Checker {
 }
 
 function makeNumberBuckets(centerAround: number, count: number, coarse?: boolean): number[] {
-  let granularities: number[] = [];
+  const granularities: number[] = [];
   let logTen = Math.log(centerAround) / Math.LN10;
   const digits = getNumberOfWholeDigits(centerAround);
   const decimalBase = 10;

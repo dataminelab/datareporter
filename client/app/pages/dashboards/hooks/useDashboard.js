@@ -146,7 +146,7 @@ function useDashboard(dashboardData) {
         setTimeout(() => document.querySelector("a[data-test='Refresh']").click(), 333);
       }
     },
-    [refreshing, loadDashboard]
+    [refreshing]
   );
 
   const archiveDashboard = useCallback(() => {

@@ -16,13 +16,14 @@
 
 import { PlywoodValue } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 import { Aggregate } from './mixins/aggregate';
 
 export class CustomAggregateExpression extends ChainableExpression {
   static op = 'CustomAggregate';
   static fromJS(parameters: ExpressionJS): CustomAggregateExpression {
-    let value = ChainableExpression.jsToValue(parameters);
+    const value = ChainableExpression.jsToValue(parameters);
     value.custom = parameters.custom;
     return new CustomAggregateExpression(value);
   }
@@ -38,13 +39,13 @@ export class CustomAggregateExpression extends ChainableExpression {
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.custom = this.custom;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let js = super.toJS();
+    const js = super.toJS();
     js.custom = this.custom;
     return js;
   }

@@ -1,0 +1,31 @@
+{
+  "extends": "@awesome-code-style",
+  "parserOptions": {
+    "project": "tsconfig.lint.json"
+  },
+  "rules": {
+    "@typescript-eslint/ban-types": [0],
+    "@typescript-eslint/consistent-type-assertions": [0],
+    "@typescript-eslint/no-unnecessary-boolean-literal-compare": [0],
+    "@typescript-eslint/prefer-includes": [0],
+    "@typescript-eslint/prefer-string-starts-ends-with": [0],
+    "@typescript-eslint/triple-slash-reference": [0],
+    "unicorn/filename-case": [0],
+    "max-classes-per-file": [0],
+    "no-useless-escape": [0],
+    "@typescript-eslint/consistent-type-imports": [0]
+  },
+  "overrides": [
+    {
+      "files": "test/**/*.js",
+      "env": {
+        "node": true,
+        "jest": true
+      },
+      "rules": {
+        "@typescript-eslint/no-var-requires": [0],
+        "unused-imports/no-unused-vars": [0]
+      }
+    }
+  ]
+}

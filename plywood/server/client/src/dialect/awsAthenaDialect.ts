@@ -1,5 +1,7 @@
 import { Duration, Timezone } from 'chronoshift';
+
 import { PlyType } from '../types';
+
 import { SQLDialect } from './baseDialect';
 
 export class AwsAthenaDialect extends SQLDialect {
@@ -26,6 +28,10 @@ export class AwsAthenaDialect extends SQLDialect {
     STRING: {
       NUMBER: 'cast($$ as varchar)',
     },
+  }
+
+  constructor() {
+    super();
   }
 
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
@@ -61,12 +67,19 @@ export class AwsAthenaDialect extends SQLDialect {
     YEAR: "EXTRACT(year from $$)",
   }
 
-  public constantGroupBy(): string {
+  public emptyGroupBy(): string {
     return "";
   }
 
+  /**
+   * @deprecated
+   */
+  public constantGroupBy(): string {
+    return this.emptyGroupBy();
+  }
+
   public castExpression(inputType: PlyType, operand: string, cast: string): string {
-    let castFunction = AwsAthenaDialect.CAST_TO_FUNCTION[cast][inputType];
+    const castFunction = AwsAthenaDialect.CAST_TO_FUNCTION[cast][inputType];
     if (!castFunction)
       throw new Error(`unsupported cast from ${inputType} to ${cast} in Amazon Athena dialect`);
     return castFunction.replace(/\$\$/g, operand);
@@ -86,13 +99,13 @@ export class AwsAthenaDialect extends SQLDialect {
   }
 
   public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
-    let bucketFormat = AwsAthenaDialect.TIME_BUCKETING[duration.toString()];
+    const bucketFormat = AwsAthenaDialect.TIME_BUCKETING[duration.toString()];
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
-    if (duration.toString() == "P1W") {
+    if (duration.toString() === "P1W") {
       return this.walltimeToUTC(
         `DATE_FORMAT( DATE_TRUNC('week', ${this.utcToWalltime(operand, timezone)}), '${bucketFormat}')`, timezone,
       );
-    } else if (duration.toString() == "P3M") {
+    } else if (duration.toString() === "P3M") {
       return this.walltimeToUTC(
         `DATE_FORMAT( DATE_TRUNC('quarter', ${this.utcToWalltime(operand, timezone)}), '${bucketFormat}')`, timezone,
       );
@@ -105,7 +118,7 @@ export class AwsAthenaDialect extends SQLDialect {
   }
 
   public timePartExpression(operand: string, part: string, timezone: Timezone): string {
-    let timePartFunction = AwsAthenaDialect.TIME_PART_TO_FUNCTION[part];
+    const timePartFunction = AwsAthenaDialect.TIME_PART_TO_FUNCTION[part];
     if (!timePartFunction) throw new Error(`unsupported part ${part} in BigQuery dialect`);
     return timePartFunction.replace(/\$\$/g, this.utcToWalltime(operand, timezone));
   }
@@ -133,8 +146,8 @@ export class AwsAthenaDialect extends SQLDialect {
   timeShiftExpression(operand: string, duration: Duration, step: int, timezone: Timezone): string {
     if (step === 0) return operand;
 
-    let mult = step < 0 ? '-1 * ' : '';
-    let spans = duration.multiply(Math.abs(step)).valueOf();
+    const mult = step < 0 ? '-1 * ' : '';
+    const spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
       operand = `DATE_ADD('week', ${mult}${spans.week}, ${operand})`;
     }

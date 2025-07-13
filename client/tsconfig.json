@@ -18,7 +18,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "strictNullChecks": false,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "target": "esnext",
     "module": "esnext",
     "rootDir": ".",
@@ -33,12 +33,10 @@
       "@/*": ["./app/*"]
     },
   },
-  "include": ["app/**/*", "app/components/TurniloComponent/**/*",],
+  "include": ["app/**/*"],
   "exclude": [
     "node_modules",
-    // "**/*.mocha.ts",
-    // "**/*.mocha.tsx",
     "**/*.json",
-    "turnilo"
+    "app/components/TurniloComponent",
   ]
 }

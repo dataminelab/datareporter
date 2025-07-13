@@ -20,9 +20,10 @@ from redash.authentication import (
     org_settings,
     sign,
 )
-from redash.authentication.google_oauth import create_and_login_user, verify_profile
-from redash.utils import utcnow
-from sqlalchemy.orm.exc import NoResultFound
+from redash.authentication.google_oauth import (
+    create_and_login_user,
+    verify_profile,
+)
 from tests import BaseTestCase
 
 
@@ -271,7 +272,7 @@ class TestRedirectToUrlAfterLoggingIn(BaseTestCase):
 
     def test_starts_scheme_url_in_next_param(self):
         response = self.post_request(
-            "/login?next=https://example.com",
+            "/login?next=https://datareporter.com",
             data={"email": self.user.email, "password": self.password},
             org=self.factory.org,
         )
@@ -279,7 +280,7 @@ class TestRedirectToUrlAfterLoggingIn(BaseTestCase):
 
     def test_without_scheme_url_in_next_param(self):
         response = self.post_request(
-            "/login?next=//example.com",
+            "/login?next=//datareporter.com",
             data={"email": self.user.email, "password": self.password},
             org=self.factory.org,
         )

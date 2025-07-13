@@ -21,5 +21,5 @@ class DataSourceTablesResource(BaseResource):
             return TableSerializer(schema).serialize()
         except NotSupported:
             return {"message": "Data source does not support schema generation."}, 400
-        except:
+        except Exception:
             return {"message": "Data source is corrupted, change settings."}, 400

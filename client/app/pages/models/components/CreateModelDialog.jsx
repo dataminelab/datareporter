@@ -46,7 +46,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
       setLoadTables(false);
     }
     tablesLoadingRef.current.style.opacity = "0";
-  }, [tables]);
+  }, []);
 
 
   const formFields = useMemo(() => {
@@ -80,7 +80,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     }
 
 
-  }, [handleSubmit, onChangeConnection]);
+  }, [dataSources, loadTables, model, onChangeConnection, tables]);
 
   return (
     <Modal

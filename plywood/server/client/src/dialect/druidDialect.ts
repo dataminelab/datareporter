@@ -26,7 +26,6 @@ export interface DruidDialectOptions {
   attributes?: Attributes;
 }
 
-
 export class DruidDialect extends SQLDialect {
   static TIME_BUCKETING: Record<string, string> = {
     PT1S: "'yyyy-MM-dd HH:mm:ss''Z'",
@@ -70,23 +69,32 @@ export class DruidDialect extends SQLDialect {
     DAY_OF_MONTH: "TIME_EXTRACT($$,'DAY',##)",
     DAY_OF_YEAR: "TIME_EXTRACT($$,'DOY',##)",
 
-    //WEEK_OF_MONTH: ???,
+    // WEEK_OF_MONTH: ???,
     WEEK_OF_YEAR: "TIME_EXTRACT($$,'WEEK',##)",
 
     MONTH_OF_YEAR: "TIME_EXTRACT($$,'MONTH',##)",
     YEAR: "TIME_EXTRACT($$,'YEAR',##)",
   };
 
+  // Recorded as TO: FROM: FN
   static CAST_TO_FUNCTION: Record<string, Record<string, string>> = {
     TIME: {
       NUMBER: 'MILLIS_TO_TIMESTAMP(CAST($$ AS BIGINT))',
+      _: 'CAST($$ AS TIMESTAMP)',
     },
     NUMBER: {
       TIME: 'CAST($$ AS BIGINT)',
-      STRING: 'CAST($$ AS FLOAT)',
+      STRING: 'CAST($$ AS DOUBLE)',
+      _: 'CAST($$ AS DOUBLE)',
     },
     STRING: {
       NUMBER: 'CAST($$ AS VARCHAR)',
+      _: 'CAST($$ AS VARCHAR)',
+    },
+    BOOLEAN: {
+      NUMBER: '($$ = 1)',
+      STRING: `($$ = 'true')`,
+      _: `(CAST($$ AS VARCHAR) IN ('1','true'))`,
     },
   };
 
@@ -109,8 +117,15 @@ export class DruidDialect extends SQLDialect {
     return `(${numerator}*1.0/${denominator})`;
   }
 
+  public emptyGroupBy(): string {
+    return 'GROUP BY ()';
+  }
+
+  /**
+   * @deprecated
+   */
   public constantGroupBy(): string {
-    return "GROUP BY ''";
+    return this.emptyGroupBy();
   }
 
   public timeToSQL(date: Date): string {
@@ -123,16 +138,54 @@ export class DruidDialect extends SQLDialect {
     return `ARRAY[${arr.join(',')}]`;
   }
 
+  public ipParse(value: string): string {
+    return `IP_PARSE(${value})`;
+  }
+
+  public ipPrefixParse(value: string): string {
+    return `IP_PREFIX_PARSE(${value})`;
+  }
+
   public concatExpression(a: string, b: string): string {
     return `(${a}||${b})`;
   }
 
-  public containsExpression(a: string, b: string): string {
-    return `POSITION(${a} IN ${b})>0`;
+  public containsExpression(a: string, b: string, insensitive: boolean): string {
+    return `${insensitive ? 'ICONTAINS_STRING' : 'CONTAINS_STRING'}(CAST(${a} AS VARCHAR),${b})`;
+  }
+
+  public mvContainsExpression(a: string, b: string[]): string {
+    return `MV_CONTAINS(${a}, ${this.stringArrayToSQL(b)})`;
+  }
+
+  public mvFilterOnlyExpression(a: string, b: string[]): string {
+    return `MV_FILTER_ONLY(${a}, ${this.stringArrayToSQL(b)})`;
+  }
+
+  public mvOverlapExpression(a: string, b: string[]): string {
+    return `MV_OVERLAP(${a}, ${this.stringArrayToSQL(b)})`;
   }
 
   public substrExpression(a: string, position: number, length: number): string {
     return `SUBSTRING(${a},${position + 1},${length})`;
+  }
+
+  public countDistinctExpression(a: string, parameterAttributeName: string | undefined): string {
+    const attribute = NamedArray.findByName(this.attributes || [], parameterAttributeName);
+    const nativeType = attribute ? attribute.nativeType : undefined;
+    switch (nativeType) {
+      case 'HLLSketch':
+        return `APPROX_COUNT_DISTINCT_DS_HLL(${a})`;
+
+      case 'thetaSketch':
+        return `APPROX_COUNT_DISTINCT_DS_THETA(${a})`;
+
+      case 'hyperUnique':
+        return `APPROX_COUNT_DISTINCT(${a})`;
+
+      default:
+        return `COUNT(DISTINCT ${a})`;
+    }
   }
 
   public isNotDistinctFromExpression(a: string, b: string): string {
@@ -142,19 +195,27 @@ export class DruidDialect extends SQLDialect {
     return `(${a}=${b})`;
   }
 
-  public castExpression(inputType: PlyType, operand: string, cast: string): string {
-    let castFunction = DruidDialect.CAST_TO_FUNCTION[cast][inputType];
-    if (!castFunction)
-      throw new Error(`unsupported cast from ${inputType} to ${cast} in Druid dialect`);
+  public castExpression(
+    inputType: PlyType | undefined,
+    operand: string,
+    targetType: string,
+  ): string {
+    if (targetType === 'SET/STRING') targetType = 'STRING'; // In Druid actually everything is a STRING
+    if (inputType === targetType) return operand;
+    const castForInput = DruidDialect.CAST_TO_FUNCTION[targetType];
+    const castFunction = castForInput[inputType || '_'] || castForInput['_'];
+    if (!castFunction) {
+      throw new Error(
+        `unsupported cast from ${inputType || 'unknown'} to ${targetType} in Druid dialect`,
+      );
+    }
     return castFunction.replace(/\$\$/g, operand);
   }
 
   private operandAsTimestamp(operand: string): string {
-    return operand.includes('__time') ? operand : `TIME_PARSE(${operand})`;
+    return operand.includes('__time') ? operand : `CAST(${operand} AS TIMESTAMP)`;
   }
-  /*
-    This query returns "Year or Year" and "Quarter or Year" and "Month or Year" and "Week or Year" and ...
-    */
+
   public timeFLoorOverTimeExpression(operand: string, duration: Duration, timezone: Timezone): string {
     // TODO: implement
     const timeFloor = this.timeFloorExpression(operand, duration, timezone);
@@ -167,11 +228,9 @@ export class DruidDialect extends SQLDialect {
   }
 
   public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
-    let bucketFormat = DruidDialect.TIME_BUCKETING[duration.toString()];
-    if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
-    return `TIME_FORMAT(TIME_FLOOR(${this.operandAsTimestamp(operand)}, ${this.escapeLiteral(
+    return `TIME_FLOOR(${this.operandAsTimestamp(operand)}, ${this.escapeLiteral(
       duration.toString(),
-    )}, NULL, ${this.escapeLiteral(timezone.toString())}), ${bucketFormat})`;
+    )}, NULL, ${this.escapeLiteral(timezone.toString())})`;
   }
 
   public timeBucketExpression(operand: string, duration: Duration, timezone: Timezone): string {
@@ -179,7 +238,7 @@ export class DruidDialect extends SQLDialect {
   }
 
   public timePartExpression(operand: string, part: string, timezone: Timezone): string {
-    let timePartFunction = DruidDialect.TIME_PART_TO_FUNCTION[part];
+    const timePartFunction = DruidDialect.TIME_PART_TO_FUNCTION[part];
     if (!timePartFunction) throw new Error(`unsupported part ${part} in Druid dialect`);
     return timePartFunction
       .replace(/\$\$/g, this.operandAsTimestamp(operand))
@@ -198,11 +257,11 @@ export class DruidDialect extends SQLDialect {
   }
 
   public extractExpression(operand: string, regexp: string): string {
-    return `REGEXP_EXTRACT(${operand}, ${this.escapeLiteral(regexp)}, 1)`;
+    return `REGEXP_EXTRACT(CAST(${operand} AS VARCHAR), ${this.escapeLiteral(regexp)}, 1)`;
   }
 
   public regexpExpression(expression: string, regexp: string): string {
-    return `REGEXP_LIKE(${expression}, ${this.escapeLiteral(regexp)})`;
+    return `REGEXP_LIKE(CAST(${expression} AS VARCHAR), ${this.escapeLiteral(regexp)})`;
   }
 
   public indexOfExpression(str: string, substr: string): string {
@@ -233,5 +292,27 @@ export class DruidDialect extends SQLDialect {
 
   public lookupExpression(base: string, lookup: string): string {
     return `LOOKUP(${base}, ${this.escapeLiteral(lookup)})`;
+  }
+
+  public ipMatchExpression(columnName: string, searchString: string, ipSearchType: string): string {
+    // TODO: remove toString hack
+    return ipSearchType === 'ipPrefix'
+      ? `IP_MATCH(${this.escapeLiteral(searchString.toString())}, ${columnName})`
+      : `IP_MATCH(${columnName}, ${this.escapeLiteral(searchString.toString())})`;
+  }
+
+  public ipSearchExpression(
+    columnName: string,
+    searchString: string,
+    ipSearchType: string,
+  ): string {
+    // TODO: remove toString hack
+    return ipSearchType === 'ipPrefix'
+      ? `IP_SEARCH(${this.escapeLiteral(searchString.toString())}, ${columnName})`
+      : `IP_SEARCH(${columnName}, ${this.escapeLiteral(searchString.toString())})`;
+  }
+
+  public ipStringifyExpression(operand: string): string {
+    return `IP_STRINGIFY(${operand})`;
   }
 }

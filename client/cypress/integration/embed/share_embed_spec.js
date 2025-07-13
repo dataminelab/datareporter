@@ -79,9 +79,9 @@ describe("Embedded Queries", () => {
       SaveParameterSettings
       SaveButton
     `);
-    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-wait
+    cy.wait(500);
     cy.getByTestId("ExecuteButton").click();
-    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-wait
+    cy.wait(500);
 
     // Add a little waiting - page is not updated fast enough
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -121,9 +121,9 @@ describe("Embedded Queries", () => {
       SaveParameterSettings
       SaveButton
     `);
-    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-wait
+    cy.wait(500);  // eslint-disable-line cypress/no-unnecessary-waiting
     cy.getByTestId("ExecuteButton").click();
-    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-wait
+    cy.wait(500);  // eslint-disable-line cypress/no-unnecessary-waiting
 
     // Add a little waiting - page is not updated fast enough
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting

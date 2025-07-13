@@ -17,30 +17,26 @@
 import { isDate } from 'chronoshift';
 import { NamedArray } from 'immutable-class';
 
+import { AttributeInfo, NumberRange, PlywoodRange, Range, Set, TimeRange } from '../../datatypes';
 import {
-  AttributeInfo,
-  NumberRange,
-  PlywoodRange,
-  Range,
-  Set,
-  TimeRange,
-} from '../../datatypes/index';
-
-import {
-  r,
   AndExpression,
   ContainsExpression,
   Expression,
+  IpMatchExpression,
+  IpSearchExpression,
+  IpStringifyExpression,
   IsExpression,
   LiteralExpression,
   MatchExpression,
+  MvContainsExpression,
+  MvOverlapExpression,
   NotExpression,
   OrExpression,
   OverlapExpression,
+  r,
   RefExpression,
 } from '../../expressions';
 
-import { External } from '../baseExternal';
 import { DruidExpressionBuilder } from './druidExpressionBuilder';
 import { DruidExtractionFnBuilder } from './druidExtractionFnBuilder';
 import { CustomDruidTransforms } from './druidTypes';
@@ -51,7 +47,6 @@ export interface DruidFilterAndIntervals {
 }
 
 export interface DruidFilterBuilderOptions {
-  version: string;
   rawAttributes: AttributeInfo[];
   timeAttribute: string;
   allowEternity: boolean;
@@ -62,14 +57,12 @@ export class DruidFilterBuilder {
   static TIME_ATTRIBUTE = '__time';
   static TRUE_INTERVAL = '1000/3000';
 
-  public version: string;
   public rawAttributes: AttributeInfo[];
   public timeAttribute: string;
   public allowEternity: boolean;
   public customTransforms: CustomDruidTransforms;
 
   constructor(options: DruidFilterBuilderOptions) {
-    this.version = options.version;
     this.rawAttributes = options.rawAttributes;
     this.timeAttribute = options.timeAttribute;
     this.allowEternity = options.allowEternity;
@@ -138,7 +131,7 @@ export class DruidFilterBuilder {
       if (filter.value === true) {
         return null;
       } else {
-        throw new Error('should never get here');
+        return { type: 'false' };
       }
     } else if (filter instanceof NotExpression) {
       return {
@@ -169,7 +162,7 @@ export class DruidFilterBuilder {
     } else if (filter instanceof OverlapExpression) {
       const { operand: lhs, expression: rhs } = filter;
       if (rhs instanceof LiteralExpression) {
-        let rhsType = rhs.type;
+        const rhsType = rhs.type;
         if (rhsType === 'SET/STRING' || rhsType === 'SET/NUMBER' || rhsType === 'SET/NULL') {
           return this.makeInFilter(lhs, rhs.value);
         } else if (Set.unwrapSetType(rhsType) === 'TIME_RANGE' && this.isTimeRef(lhs)) {
@@ -202,20 +195,27 @@ export class DruidFilterBuilder {
     } else if (filter instanceof ContainsExpression) {
       const { operand: lhs, expression: rhs, compare } = filter;
       return this.makeContainsFilter(lhs, rhs, compare);
+    } else if (filter instanceof MvContainsExpression) {
+      const { operand, mvArray } = filter;
+      return {
+        type: 'and',
+        fields: mvArray.map(elem => this.makeSelectorFilter(operand, elem)),
+      };
+    } else if (filter instanceof MvOverlapExpression) {
+      return this.makeInFilter(filter.operand, Set.fromJS(filter.mvArray));
+    } else if (filter instanceof IpMatchExpression) {
+      return this.makeExpressionFilter(
+        filter.operand.ipMatch(filter.ipToSearch.toString(), filter.ipSearchType),
+      );
+    } else if (filter instanceof IpSearchExpression) {
+      return this.makeExpressionFilter(
+        filter.operand.ipSearch(filter.ipToSearch.toString(), filter.ipSearchType),
+      );
+    } else if (filter instanceof IpStringifyExpression) {
+      return this.makeExpressionFilter(filter.operand.ipStringify());
     }
 
     throw new Error(`could not convert filter ${filter} to Druid filter`);
-  }
-
-  private makeJavaScriptFilter(ex: Expression): Druid.Filter {
-    let attributeInfo = this.getSingleReferenceAttributeInfo(ex);
-    if (!attributeInfo) throw new Error(`can not construct JS filter on multiple`);
-
-    return {
-      type: 'javascript',
-      dimension: this.getDimensionNameForAttributeInfo(attributeInfo),
-      function: ex.getJSFn('d'),
-    };
   }
 
   private valueToIntervals(value: Date | TimeRange | Set): Druid.Intervals {
@@ -240,7 +240,7 @@ export class DruidFilterBuilder {
 
   // Makes a filter of (ex = value) or (value in ex) which are the same in Druid
   private makeSelectorFilter(ex: Expression, value: any): Druid.Filter {
-    let attributeInfo = this.getSingleReferenceAttributeInfo(ex);
+    const attributeInfo = this.getSingleReferenceAttributeInfo(ex);
     if (!attributeInfo) {
       return this.makeExpressionFilter(ex.is(r(value)));
     }
@@ -253,19 +253,15 @@ export class DruidFilterBuilder {
 
     let extractionFn: Druid.ExtractionFn;
     try {
-      extractionFn = new DruidExtractionFnBuilder(this, false).expressionToExtractionFn(ex);
+      extractionFn = new DruidExtractionFnBuilder(this).expressionToExtractionFn(ex);
     } catch {
-      try {
-        return this.makeExpressionFilter(ex.is(r(value)));
-      } catch {
-        extractionFn = new DruidExtractionFnBuilder(this, true).expressionToExtractionFn(ex);
-      }
+      return this.makeExpressionFilter(ex.is(r(value)));
     }
 
     // Kill range
     if (value instanceof Range) value = value.start;
 
-    let druidFilter: Druid.Filter = {
+    const druidFilter: Druid.Filter = {
       type: 'selector',
       dimension: this.getDimensionNameForAttributeInfo(attributeInfo),
       value,
@@ -275,11 +271,11 @@ export class DruidFilterBuilder {
   }
 
   private makeInFilter(ex: Expression, valueSet: Set): Druid.Filter {
-    let elements = valueSet.elements;
+    const elements = valueSet.elements;
 
-    let attributeInfo = this.getSingleReferenceAttributeInfo(ex);
+    const attributeInfo = this.getSingleReferenceAttributeInfo(ex);
     if (!attributeInfo) {
-      let fields = elements.map((value: string) => {
+      const fields = elements.map((value: string) => {
         return this.makeSelectorFilter(ex, value);
       });
 
@@ -288,16 +284,12 @@ export class DruidFilterBuilder {
 
     let extractionFn: Druid.ExtractionFn;
     try {
-      extractionFn = new DruidExtractionFnBuilder(this, false).expressionToExtractionFn(ex);
+      extractionFn = new DruidExtractionFnBuilder(this).expressionToExtractionFn(ex);
     } catch {
-      try {
-        return this.makeExpressionFilter(ex.is(r(valueSet)));
-      } catch {
-        extractionFn = new DruidExtractionFnBuilder(this, true).expressionToExtractionFn(ex);
-      }
+      return this.makeExpressionFilter(ex.is(r(valueSet)));
     }
 
-    let inFilter: Druid.Filter = {
+    const inFilter: Druid.Filter = {
       type: 'in',
       dimension: this.getDimensionNameForAttributeInfo(attributeInfo),
       values: elements,
@@ -307,27 +299,23 @@ export class DruidFilterBuilder {
   }
 
   private makeBoundFilter(ex: Expression, range: PlywoodRange): Druid.Filter {
-    let r0 = range.start;
-    let r1 = range.end;
-    let bounds = range.bounds;
+    const r0 = range.start;
+    const r1 = range.end;
+    const bounds = range.bounds;
 
-    let attributeInfo = this.getSingleReferenceAttributeInfo(ex);
+    const attributeInfo = this.getSingleReferenceAttributeInfo(ex);
     if (!attributeInfo) {
       return this.makeExpressionFilter(ex.overlap(range));
     }
 
     let extractionFn: Druid.ExtractionFn;
     try {
-      extractionFn = new DruidExtractionFnBuilder(this, false).expressionToExtractionFn(ex);
+      extractionFn = new DruidExtractionFnBuilder(this).expressionToExtractionFn(ex);
     } catch {
-      try {
-        return this.makeExpressionFilter(ex.overlap(range));
-      } catch {
-        extractionFn = new DruidExtractionFnBuilder(this, true).expressionToExtractionFn(ex);
-      }
+      return this.makeExpressionFilter(ex.overlap(range));
     }
 
-    let boundFilter: Druid.Filter = {
+    const boundFilter: Druid.Filter = {
       type: 'bound',
       dimension: this.getDimensionNameForAttributeInfo(attributeInfo),
     };
@@ -358,24 +346,20 @@ export class DruidFilterBuilder {
   }
 
   private makeIntervalFilter(ex: Expression, range: TimeRange | Set): Druid.Filter {
-    let attributeInfo = this.getSingleReferenceAttributeInfo(ex);
+    const attributeInfo = this.getSingleReferenceAttributeInfo(ex);
     if (!attributeInfo) {
       return this.makeExpressionFilter(ex.overlap(range));
     }
 
     let extractionFn: Druid.ExtractionFn;
     try {
-      extractionFn = new DruidExtractionFnBuilder(this, false).expressionToExtractionFn(ex);
+      extractionFn = new DruidExtractionFnBuilder(this).expressionToExtractionFn(ex);
     } catch {
-      try {
-        return this.makeExpressionFilter(ex.overlap(range));
-      } catch {
-        extractionFn = new DruidExtractionFnBuilder(this, true).expressionToExtractionFn(ex);
-      }
+      return this.makeExpressionFilter(ex.overlap(range));
     }
 
     const interval = this.valueToIntervals(range);
-    let intervalFilter: Druid.Filter = {
+    const intervalFilter: Druid.Filter = {
       type: 'interval',
       dimension: this.getDimensionNameForAttributeInfo(attributeInfo),
       intervals: Array.isArray(interval) ? interval : [interval],
@@ -385,23 +369,19 @@ export class DruidFilterBuilder {
   }
 
   private makeRegexFilter(ex: Expression, regex: string): Druid.Filter {
-    let attributeInfo = this.getSingleReferenceAttributeInfo(ex);
+    const attributeInfo = this.getSingleReferenceAttributeInfo(ex);
     if (!attributeInfo) {
       return this.makeExpressionFilter(ex.match(regex));
     }
 
     let extractionFn: Druid.ExtractionFn;
     try {
-      extractionFn = new DruidExtractionFnBuilder(this, false).expressionToExtractionFn(ex);
+      extractionFn = new DruidExtractionFnBuilder(this).expressionToExtractionFn(ex);
     } catch {
-      try {
-        return this.makeExpressionFilter(ex.match(regex));
-      } catch {
-        extractionFn = new DruidExtractionFnBuilder(this, true).expressionToExtractionFn(ex);
-      }
+      return this.makeExpressionFilter(ex.match(regex));
     }
 
-    let regexFilter: Druid.Filter = {
+    const regexFilter: Druid.Filter = {
       type: 'regex',
       dimension: this.getDimensionNameForAttributeInfo(attributeInfo),
       pattern: regex,
@@ -412,7 +392,7 @@ export class DruidFilterBuilder {
 
   private makeContainsFilter(lhs: Expression, rhs: Expression, compare: string): Druid.Filter {
     if (rhs instanceof LiteralExpression) {
-      let attributeInfo = this.getSingleReferenceAttributeInfo(lhs);
+      const attributeInfo = this.getSingleReferenceAttributeInfo(lhs);
       if (!attributeInfo) {
         return this.makeExpressionFilter(lhs.contains(rhs, compare));
       }
@@ -430,16 +410,12 @@ export class DruidFilterBuilder {
 
       let extractionFn: Druid.ExtractionFn;
       try {
-        extractionFn = new DruidExtractionFnBuilder(this, false).expressionToExtractionFn(lhs);
+        extractionFn = new DruidExtractionFnBuilder(this).expressionToExtractionFn(lhs);
       } catch {
-        try {
-          return this.makeExpressionFilter(lhs.contains(rhs, compare));
-        } catch {
-          extractionFn = new DruidExtractionFnBuilder(this, true).expressionToExtractionFn(lhs);
-        }
+        return this.makeExpressionFilter(lhs.contains(rhs, compare));
       }
 
-      let searchFilter: Druid.Filter = {
+      const searchFilter: Druid.Filter = {
         type: 'search',
         dimension: this.getDimensionNameForAttributeInfo(attributeInfo),
         query: {
@@ -451,12 +427,12 @@ export class DruidFilterBuilder {
       if (extractionFn) searchFilter.extractionFn = extractionFn;
       return searchFilter;
     } else {
-      return this.makeJavaScriptFilter(lhs.contains(rhs, compare));
+      return this.makeExpressionFilter(lhs.contains(rhs, compare));
     }
   }
 
   private makeExpressionFilter(filter: Expression) {
-    let druidExpression = new DruidExpressionBuilder(this).expressionToDruidExpression(filter);
+    const druidExpression = new DruidExpressionBuilder(this).expressionToDruidExpression(filter);
     if (druidExpression === null) {
       throw new Error(`could not convert ${filter} to Druid expression for filter`);
     }
@@ -468,9 +444,9 @@ export class DruidFilterBuilder {
   }
 
   private getSingleReferenceAttributeInfo(ex: Expression): AttributeInfo | null {
-    let freeReferences = ex.getFreeReferences();
+    const freeReferences = ex.getFreeReferences();
     if (freeReferences.length !== 1) return null;
-    let referenceName = freeReferences[0];
+    const referenceName = freeReferences[0];
     return this.getAttributesInfo(referenceName);
   }
 
@@ -480,16 +456,11 @@ export class DruidFilterBuilder {
       : attributeInfo.name;
   }
 
-  private versionBefore(neededVersion: string): boolean {
-    const { version } = this;
-    return version && External.versionLessThan(version, neededVersion);
-  }
-
   public getAttributesInfo(attributeName: string) {
     return NamedArray.get(this.rawAttributes, attributeName);
   }
 
-  public isTimeRef(ex: Expression): boolean {
+  public isTimeRef(ex: Expression): ex is RefExpression {
     return ex instanceof RefExpression && ex.name === this.timeAttribute;
   }
 }

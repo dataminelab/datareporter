@@ -16,7 +16,6 @@
 
 context("Boolean Filter Menu", () => {
 
-  const filterTiles = () => cy.get(".center-top-bar:not(.fallback) .filter-tile-row");
   const booleanMenu = () => cy.get(".boolean-filter-menu");
   const booleanMenuTable = () => booleanMenu().find(".menu-table");
   const falseOption = () => booleanMenuTable().find(".row:contains('false')");
@@ -87,7 +86,6 @@ context("Boolean Filter Menu", () => {
 
     it("should not change url after closing menu without changes", () => {
       booleanMenuCancelButton().click();
-      const hash = window.location.hash;
       cy.location('hash').should('equal', urls.isRobotOnlyTrueValues);
     });
   });
@@ -127,7 +125,6 @@ context("Boolean Filter Menu", () => {
       falseOption().click();
 
       booleanMenuOkButton().click();
-      const hash = window.location.hash;
       cy.location('hash').should('equal', urls.isRobotAllValues);
     });
 
@@ -135,7 +132,6 @@ context("Boolean Filter Menu", () => {
       falseOption().click();
 
       booleanMenuCancelButton().click();
-      const hash = window.location.hash;
       cy.location('hash').should('equal', urls.isRobotOnlyTrueValues);
     });
   });

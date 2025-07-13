@@ -3,6 +3,9 @@ FROM node:18-bookworm AS frontend-builder
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
 
+ENV CYPRESS_INSTALL_BINARY=0
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
+
 RUN useradd -m -d /frontend datareporter
 USER datareporter
 
@@ -56,6 +59,8 @@ RUN apt-get update && \
   freetds-dev \
   libsasl2-dev \
   unzip \
+  python3-distutils \
+  python3-venv \
   libsasl2-modules-gssapi-mit && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
@@ -80,7 +85,7 @@ RUN <<EOF
   fi
 EOF
 
- WORKDIR /app
+WORKDIR /app
 
 ENV POETRY_VERSION=2.1.1
 ENV POETRY_HOME=/etc/poetry
@@ -104,7 +109,6 @@ RUN chown datareporter:datareporter -R /app
 USER datareporter
 
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-# The version is being set arbitrarily by the builder
 ARG version
 ENV DATAREPORTER_VERSION=$version
 

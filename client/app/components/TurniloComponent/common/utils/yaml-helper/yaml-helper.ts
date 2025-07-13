@@ -29,7 +29,7 @@ function spaces(n: number) {
 }
 
 function extend(a: any, b: any): any {
-  for (let key in a) {
+  for (const key in a) {
     b[key] = a[key];
   }
 
@@ -87,7 +87,7 @@ function yamlPropAdder(lines: string[], withComments: boolean, options: PropAdde
 
 function getYamlPropAdder(object: any, labels: any, lines: string[], withComments = false) {
   const adder = (propName: string, additionalOptions?: { defaultValue?: any }) => {
-    let propVerbiage = labels[propName];
+    const propVerbiage = labels[propName];
     let comment: string;
 
     if (!propVerbiage) {
@@ -111,7 +111,7 @@ function getYamlPropAdder(object: any, labels: any, lines: string[], withComment
 
 function customizationToYAML(customization: Customization, withComments: boolean): string[] {
   const { timezones, externalViews, cssVariables } = customization;
-  let lines: string[] = [];
+  const lines: string[] = [];
 
   getYamlPropAdder(customization, CUSTOMIZATION, lines, withComments)
     .add("customLogoSvg")
@@ -147,11 +147,11 @@ function customizationToYAML(customization: Customization, withComments: boolean
 }
 
 function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${cluster.name}`
   ];
 
-  let props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
+  const props = getYamlPropAdder(cluster, CLUSTER, lines, withComments);
 
   props
     .add("url")
@@ -184,7 +184,7 @@ function clusterToYAML(cluster: Cluster, withComments: boolean): string[] {
 }
 
 function attributeToYAML(attribute: AttributeInfo): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${attribute.name}`,
     `type: ${attribute.type}`
   ];
@@ -198,7 +198,7 @@ function attributeToYAML(attribute: AttributeInfo): string[] {
 }
 
 function dimensionToYAML(dimension: Dimension): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${dimension.name}`,
     `title: ${dimension.title}`
   ];
@@ -218,7 +218,7 @@ function dimensionToYAML(dimension: Dimension): string[] {
 }
 
 function measureToYAML(measure: Measure): string[] {
-  let lines: string[] = [
+  const lines: string[] = [
     `name: ${measure.name}`,
     `title: ${measure.title}`
   ];
@@ -275,7 +275,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
   }
   lines.push("");
 
-  let addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
+  const addProps = getYamlPropAdder(dataCube, DATA_CUBE, lines, withComments);
 
   addProps
     .add("defaultTimezone", { defaultValue: DataCube.DEFAULT_DEFAULT_TIMEZONE })
@@ -338,7 +338,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, attributeOverrides.map(attributeToYAML));
+  lines = lines.concat(...attributeOverrides.map(attributeToYAML));
 
   if (withComments) {
     lines.push("", "# The list of dimensions defined in the UI. The order here will be reflected in the UI");
@@ -368,7 +368,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.dimensions.mapDimensions(dimensionToYAML));
+  lines = lines.concat(...dataCube.dimensions.mapDimensions(dimensionToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived dimensions.",
@@ -406,7 +406,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       ""
     );
   }
-  lines = lines.concat.apply(lines, dataCube.measures.mapMeasures(measureToYAML));
+  lines = lines.concat(...dataCube.measures.mapMeasures(measureToYAML));
   if (withComments) {
     lines.push(
       "  # This is the place where you might want to add derived measures (a.k.a Post Aggregators).",
@@ -466,7 +466,7 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
 
   if (clusters.length) {
     lines.push("clusters:");
-    lines = lines.concat.apply(lines, clusters.map(c => clusterToYAML(c, withComments)));
+    lines = lines.concat(...clusters.map(c => clusterToYAML(c, withComments)));
   }
 
   if (customization) {
@@ -475,7 +475,7 @@ export function appSettingsToYAML(appSettings: AppSettings, withComments: boolea
   }
 
   lines.push("dataCubes:");
-  lines = lines.concat.apply(lines, dataCubes.map(d => dataCubeToYAML(d, withComments)));
+  lines = lines.concat(...dataCubes.map(d => dataCubeToYAML(d, withComments)));
 
   return lines.join("\n");
 }

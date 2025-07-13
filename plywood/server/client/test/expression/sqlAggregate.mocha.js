@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Imply Data, Inc.
+ * Copyright 2015-2020 Imply Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,92 @@
  * limitations under the License.
  */
 
+const { SqlExpression } = require('druid-query-toolkit');
 const { expect } = require('chai');
-const { SqlExpression } = require('@druid-toolkit/query');
 
-let plywood = require('../plywood');
-let { SqlAggregateExpression } = plywood;
+const plywood = require('../plywood');
+
+const { $, ply, r, Expression, SqlAggregateExpression } = plywood;
 
 describe('SqlAggregateExpression', () => {
-  it('.substituteFilter', () => {
-    expect(
-      String(
-        SqlAggregateExpression.substituteFilter(
-          SqlExpression.parse(`SUM(t.revenue) / MIN(t.lol)`),
-          SqlExpression.parse(`t.channel = 'en'`),
+  describe('errors', () => {
+    it('errors on non-parsable SQL', () => {
+      expect(() => {
+        Expression.fromJS({
+          op: 'sqlAggregate',
+          sql: 'SUM(A',
+        });
+      }).to.throw('Expected');
+    });
+  });
+
+  describe('.substituteFilter', () => {
+    it('works with simple function', () => {
+      expect(
+        String(
+          SqlAggregateExpression.substituteFilter(
+            SqlExpression.parse(`SUM(t."lol")`),
+            SqlExpression.parse(`t."browser" = 'Chrome'`),
+          ),
         ),
-      ),
-    ).to.equal(
-      `SUM(CASE WHEN t.channel = 'en' THEN t.revenue END) / MIN(CASE WHEN t.channel = 'en' THEN t.lol END)`,
-    );
+      ).to.equal(`SUM(t."lol") FILTER (WHERE t."browser" = 'Chrome')`);
+    });
+
+    it('works with COUNT(*) function', () => {
+      expect(
+        String(
+          SqlAggregateExpression.substituteFilter(
+            SqlExpression.parse(`COUNT(*)`),
+            SqlExpression.parse(`t."browser" = 'Chrome'`),
+          ),
+        ),
+      ).to.equal(`COUNT(*) FILTER (WHERE t."browser" = 'Chrome')`);
+    });
+
+    it('works with filtered COUNT(*) function', () => {
+      expect(
+        String(
+          SqlAggregateExpression.substituteFilter(
+            SqlExpression.parse(`COUNT(*) FILTER (WHERE t."os" = 'Windows')`),
+            SqlExpression.parse(`t."browser" = 'Chrome'`),
+          ),
+        ),
+      ).to.equal(`COUNT(*) FILTER (WHERE t."os" = 'Windows' AND t."browser" = 'Chrome')`);
+    });
+
+    it('works in more complex case', () => {
+      expect(
+        String(
+          SqlAggregateExpression.substituteFilter(
+            SqlExpression.parse(`SUM(t.revenue) / MIN(t.lol)`),
+            SqlExpression.parse(`t.channel = 'en'`),
+          ),
+        ),
+      ).to.equal(
+        `SUM(t.revenue) FILTER (WHERE t.channel = 'en') / MIN(t.lol) FILTER (WHERE t.channel = 'en')`,
+      );
+    });
+
+    it('works on unknown aggregates', () => {
+      expect(
+        String(
+          SqlAggregateExpression.substituteFilter(
+            SqlExpression.parse(`FOO(t.revenue) / BAR(t.lol)`),
+            SqlExpression.parse(`t.channel = 'en'`),
+          ),
+        ),
+      ).to.equal(
+        `FOO(t.revenue) FILTER (WHERE t.channel = 'en') / BAR(t.lol) FILTER (WHERE t.channel = 'en')`,
+      );
+    });
+
+    it('throws on un-aggregated column', () => {
+      expect(() => {
+        SqlAggregateExpression.substituteFilter(
+          SqlExpression.parse(`FOO(t.revenue) + t.lol`),
+          SqlExpression.parse(`t.channel = 'en'`),
+        );
+      }).to.throw(`column reference outside aggregation`);
+    });
   });
 });

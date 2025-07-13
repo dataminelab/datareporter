@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["BaseDestination", "register", "get_destination", "import_destinations"]
 
 
-class BaseDestination(object):
+class BaseDestination:
     deprecated = False
 
     def __init__(self, configuration):
@@ -41,11 +41,12 @@ class BaseDestination(object):
             "type": cls.type(),
             "icon": cls.icon(),
             "configuration_schema": cls.configuration_schema(),
-            **({ "deprecated": True } if cls.deprecated else {})
+            **({"deprecated": True} if cls.deprecated else {}),
         }
 
 
 destinations = {}
+
 
 def register(destination_class):
     if destination_class.enabled():

@@ -199,4 +199,5 @@ export class Stage implements Instance<StageValue, StageJS> {
   }
 }
 
+// eslint-disable-next-line
 check = Stage;

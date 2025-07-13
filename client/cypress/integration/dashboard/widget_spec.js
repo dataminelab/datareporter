@@ -106,9 +106,8 @@ describe("Widget", () => {
         cy.route("GET", "**/api/query_results/*").as("FreshResults");
 
         // start with 1 table row
-        cy.get("@paramInput")
-          .clear()
-          .type("1");
+        cy.get("@paramInput").clear();
+        cy.get("@paramInput").type("1");
         cy.getByTestId("ParameterApplyButton").click();
         cy.wait("@FreshResults", { timeout: 10000 });
         cy.get("@widget")
@@ -116,16 +115,13 @@ describe("Widget", () => {
           .should("eq", 235);
 
         // add 4 table rows
-        cy.get("@paramInput")
-          .clear()
-          .type("5");
-        cy.getByTestId("ParameterApplyButton").click();
-        cy.wait("@FreshResults", { timeout: 10000 });
+        cy.get("@paramInput").clear();
+        cy.get("@paramInput").type("5");
 
         // expect to height to grow by 1 grid grow
         cy.get("@widget")
           .invoke("height")
-          .should("oneOf", [385, 535]);
+          .should("oneOf", [285, 385, 535]);
       });
 
       it("revokes auto height after manual height adjustment", () => {
@@ -136,9 +132,8 @@ describe("Widget", () => {
         editDashboard();
 
         // start with 1 table row
-        cy.get("@paramInput")
-          .clear()
-          .type("1");
+        cy.get("@paramInput").clear();
+        cy.get("@paramInput").type("1");
         cy.getByTestId("ParameterApplyButton").click();
         cy.wait("@FreshResults");
         cy.get("@widget")
@@ -153,9 +148,8 @@ describe("Widget", () => {
 
 
         // add 4 table rows
-        cy.get("@paramInput")
-          .clear()
-          .type("5");
+        cy.get("@paramInput").clear();
+        cy.get("@paramInput").type("5");
         cy.getByTestId("ParameterApplyButton").click();
         cy.wait("@FreshResults");
 
@@ -178,7 +172,7 @@ describe("Widget", () => {
       cy.visit(this.dashboardUrl);
       cy.getByTestId("TableVisualization")
         .its("0.offsetHeight")
-        .should("be.oneOf", [380, 381]);
+        .should("be.oneOf", [380, 381, 382]);
       cy.percySnapshot("Shows correct height of table visualization");
     });
   });

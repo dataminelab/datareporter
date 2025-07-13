@@ -30,6 +30,7 @@ export interface BucketMarksProps {
   scale: d3.ScaleBand<PlywoodValue>;
 }
 
+// eslint-disable-next-line
 export interface BucketMarksState {
 }
 

@@ -1,6 +1,6 @@
-const { defineConfig } = require("cypress");
+import { defineConfig } from "cypress";
 
-module.exports = defineConfig({
+export default defineConfig({
   e2e: {
     baseUrl: "http://localhost:5000",
     defaultCommandTimeout: 20000,
@@ -19,6 +19,16 @@ module.exports = defineConfig({
       coverage: false,
     },
     experimentalSessionAndOrigin: true,
+    setupNodeEvents(on) {
+      on('before:browser:launch', (browser = {}, launchOptions) => {
+        if (browser.name === 'chrome' || browser.name === 'chromium') {
+          launchOptions.args.push('--disable-gpu')
+          launchOptions.args.push('--no-sandbox')
+          launchOptions.args.push('--disable-dev-shm-usage')
+        }
+        return launchOptions
+      })
+    },
   },
 
   component: {

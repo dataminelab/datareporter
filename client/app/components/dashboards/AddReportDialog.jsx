@@ -113,7 +113,7 @@ function AddReportDialog({ dialog, dashboard }) {
         });
       }
     },
-    [dashboard]
+    []
   );
 
   const saveWidget = useCallback(() => {
@@ -130,7 +130,7 @@ function AddReportDialog({ dialog, dashboard }) {
       .catch(() => {
         notification.error("Report Widget could not be added");
       });
-  }, [dialog, selectedReport, selectedVisualization]);
+  }, [dialog, parameterMappings, selectedReport.hash, selectedReport.id, selectedVisualization.description, selectedVisualization.id, selectedVisualization.type]);
 
   return (
     <Modal

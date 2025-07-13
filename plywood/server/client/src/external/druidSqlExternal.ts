@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import { Column, Introspect, QueryResult, SqlColumn, SqlQuery } from 'druid-query-toolkit';
 import { PlywoodRequester } from 'plywood-base-api';
 import * as toArray from 'stream-to-array';
-import { AttributeInfo, Attributes, PseudoDatum } from '../datatypes';
+
+import { AttributeInfo, Attributes } from '../datatypes';
 import { DruidDialect } from '../dialect';
+import { Expression, RefExpression, SqlRefExpression } from '../expressions';
+import { dictEqual } from '../helper';
 import { PlyType } from '../types';
-import { External, ExternalJS, ExternalValue } from './baseExternal';
+
+import { External, ExternalJS, ExternalValue, IntrospectionDepth } from './baseExternal';
+import { DruidExternal } from './druidExternal';
 import { SQLExternal } from './sqlExternal';
 
 export interface DruidSQLDescribeRow {
@@ -28,63 +34,81 @@ export interface DruidSQLDescribeRow {
 }
 
 export class DruidSQLExternal extends SQLExternal {
-  static engine = 'druid';
+  static engine = 'druidsql';
   static type = 'DATASET';
 
   static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): DruidSQLExternal {
-    let value: ExternalValue = SQLExternal.jsToValue(parameters, requester);
+    const value: ExternalValue = SQLExternal.jsToValue(parameters, requester);
+    value.context = parameters.context;
     return new DruidSQLExternal(value);
   }
 
-  static postProcessIntrospect(columns: DruidSQLDescribeRow[]): Attributes {
-    // only support BIGINT, FLOAT, VARCHAR, TIMESTAMP, DATE, OTHER
-    return columns
-      .map((column: DruidSQLDescribeRow) => {
-        let name = column.COLUMN_NAME;
-        let type: PlyType;
-        let nativeType = column.DATA_TYPE;
-        switch (nativeType) {
-          case 'TIMESTAMP':
-          case 'DATE':
-            type = 'TIME';
-            break;
+  static postProcessIntrospect(columns: Column[]): Attributes {
+    return columns.map(column => {
+      const name = column.name;
+      const effectiveType =
+        column.sqlType === 'TIMESTAMP' || column.sqlType === 'BOOLEAN'
+          ? column.sqlType
+          : column.nativeType;
 
-          case 'VARCHAR':
-            type = 'STRING';
-            break;
+      let type: PlyType;
+      switch (String(effectiveType).toUpperCase()) {
+        case 'TIMESTAMP':
+        case 'DATE':
+          type = 'TIME';
+          break;
 
-          case 'DOUBLE':
-          case 'FLOAT':
-          case 'BIGINT':
-            type = 'NUMBER';
-            break;
+        case 'IPADDRESS':
+        case 'IPPREFIX':
+          type = 'IP';
+          break;
 
-          default:
-            // OTHER
-            type = 'NULL';
-            break;
-        }
+        case 'VARCHAR':
+        case 'STRING':
+          type = 'STRING';
+          break;
 
-        return new AttributeInfo({
-          name,
-          type,
-          nativeType,
-        });
-      })
-      .filter(Boolean);
+        case 'DOUBLE':
+        case 'FLOAT':
+        case 'BIGINT':
+        case 'LONG':
+          type = 'NUMBER';
+          break;
+
+        case 'BOOLEAN':
+          type = 'BOOLEAN';
+          break;
+
+        case 'imply-ts':
+          type = 'TIME_SERIES';
+          break;
+
+        default:
+          // OTHER
+          type = 'NULL';
+          break;
+      }
+
+      return new AttributeInfo({
+        name,
+        type,
+        nativeType: effectiveType,
+      });
+    });
   }
 
-  static getSourceList(requester: PlywoodRequester<any>): Promise<string[]> {
-    return toArray(
+  static async getSourceList(requester: PlywoodRequester<any>): Promise<string[]> {
+    const sources = await toArray(
       requester({
         query: {
-          query: `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'druid' AND TABLE_TYPE = 'TABLE'`,
+          query: Introspect.getTableIntrospectionQuery(),
         },
       }),
-    ).then(sources => {
-      if (!sources.length) return sources;
-      return sources.map((s: PseudoDatum) => s['TABLE_NAME']).sort();
-    });
+    );
+
+    return Introspect.decodeTableIntrospectionResult(QueryResult.fromRawResult(sources))
+      .map(s => s.name)
+      .sort();
   }
 
   static getVersion(requester: PlywoodRequester<any>): Promise<string> {
@@ -99,28 +123,112 @@ export class DruidSQLExternal extends SQLExternal {
     });
   }
 
+  public context: Record<string, any>;
+
   constructor(parameters: ExternalValue) {
-    super(parameters, new DruidDialect());
-    this._ensureEngine('druid');
+    super(
+      parameters,
+      new DruidDialect({ attributes: parameters.rawAttributes || parameters.attributes }),
+    );
+    this._ensureEngine('druidsql');
+    this.context = parameters.context;
   }
 
-  protected getIntrospectAttributes(): Promise<Attributes> {
-    // from http://druid.io/docs/0.10.0-rc1/querying/sql.html
-    return toArray(
-      this.requester({
-        query: {
-          query: `SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'druid' AND TABLE_NAME = ${this.dialect.escapeLiteral(
-            this.source as string,
-          )}`,
-        },
-      }),
-    ).then(DruidSQLExternal.postProcessIntrospect);
+  public valueOf(): ExternalValue {
+    const value: ExternalValue = super.valueOf();
+    value.context = this.context;
+    return value;
+  }
+
+  public toJS(): ExternalJS {
+    const js: ExternalJS = super.toJS();
+    if (this.context) js.context = this.context;
+    return js;
+  }
+
+  public equals(other: DruidSQLExternal | undefined): boolean {
+    return super.equals(other) && dictEqual(this.context, other.context);
+  }
+
+  // -----------------
+
+  public getTimeAttribute(): string | undefined {
+    return '__time';
+  }
+
+  public isTimeRef(ex: Expression): ex is RefExpression {
+    if (ex instanceof SqlRefExpression) {
+      if (ex.parsedSql instanceof SqlColumn) {
+        return ex.parsedSql.getName() === '__time';
+      } else {
+        return false;
+      }
+    } else {
+      return super.isTimeRef(ex);
+    }
+  }
+
+  protected async getIntrospectAttributes(depth: IntrospectionDepth): Promise<Attributes> {
+    const { source, withQuery } = this;
+
+    if (withQuery) {
+      let withQueryParsed: SqlQuery;
+      try {
+        withQueryParsed = SqlQuery.parse(withQuery);
+      } catch (e) {
+        throw new Error(`could not parse withQuery: ${e.message}`);
+      }
+
+      const queryPayload = Introspect.getQueryColumnIntrospectionPayload(withQueryParsed);
+
+      // Query for sample also
+      const rawResult = await toArray(
+        this.requester({
+          query: {
+            ...queryPayload,
+            resultFormat: 'array',
+            context: this.context,
+          },
+        }),
+      );
+
+      const queryResult = QueryResult.fromRawResult(
+        rawResult,
+        true,
+        queryPayload.header,
+        queryPayload.typesHeader,
+        queryPayload.sqlTypesHeader,
+      );
+
+      return DruidSQLExternal.postProcessIntrospect(
+        Introspect.decodeQueryColumnIntrospectionResult(queryResult),
+      );
+    } else {
+      let table: string;
+      if (Array.isArray(source)) {
+        table = source[0];
+      } else {
+        table = source;
+      }
+
+      return DruidExternal.introspectAttributesWithSegmentMetadata(
+        table,
+        this.requester,
+        '__time',
+        this.context,
+        depth,
+      );
+    }
   }
 
   protected sqlToQuery(sql: string): any {
-    return {
+    const payload: any = {
       query: sql,
     };
+
+    payload.context = { ...(this.context || {}), sqlTimeZone: 'Etc/UTC' };
+
+    return payload;
   }
 
   protected capability(cap: string): boolean {

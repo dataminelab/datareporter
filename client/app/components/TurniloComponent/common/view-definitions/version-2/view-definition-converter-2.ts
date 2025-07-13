@@ -197,7 +197,7 @@ function readStringFilterClause(selection: ChainableExpression, dimension: Dimen
   }
 }
 
-function extractExclude(expression: ChainableUnaryExpression): { exclude: boolean, expression: ChainableUnaryExpression } {
+function extractExclude(expression: ChainableUnaryExpression): { exclude: boolean; expression: ChainableUnaryExpression } {
   if (expression instanceof NotExpression) {
     return { exclude: true, expression: expression.operand as ChainableUnaryExpression };
   }

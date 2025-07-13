@@ -3,15 +3,17 @@ from flask_restful import Api
 from werkzeug.wrappers import Response
 
 from redash.handlers.alerts import (
+    AlertEvaluateResource,
     AlertListResource,
-    AlertResource,
     AlertMuteResource,
+    AlertResource,
     AlertSubscriptionListResource,
     AlertSubscriptionResource,
 )
 from redash.handlers.base import org_scoped_rule
 from redash.handlers.dashboards import (
     DashboardFavoriteListResource,
+    DashboardForkResource,
     DashboardListResource,
     DashboardResource,
     DashboardShareResource,
@@ -40,7 +42,11 @@ from redash.handlers.destinations import (
     DestinationTypeListResource,
 )
 from redash.handlers.events import EventsResource
-from redash.handlers.favorites import DashboardFavoriteResource, QueryFavoriteResource, ReportFavoriteResource
+from redash.handlers.favorites import (
+    DashboardFavoriteResource,
+    QueryFavoriteResource,
+    ReportFavoriteResource,
+)
 from redash.handlers.groups import (
     GroupDataSourceListResource,
     GroupDataSourceResource,
@@ -63,16 +69,16 @@ from redash.handlers.queries import (
     QueryListResource,
     QueryRecentResource,
     QueryRefreshResource,
+    QueryRegenerateApiKeyResource,
+    ReportRegenerateApiKeyResource,
     QueryResource,
     QuerySearchResource,
     QueryTagsResource,
-    QueryRegenerateApiKeyResource,
-    ReportRegenerateApiKeyResource,
 )
 from redash.handlers.query_results import (
     JobResource,
-    QueryResultDropdownResource,
     QueryDropdownsResource,
+    QueryResultDropdownResource,
     QueryResultListResource,
     QueryResultResource,
 )
@@ -131,6 +137,7 @@ def json_representation(data, code, headers=None):
 
 api.add_org_resource(AlertResource, "/api/alerts/<alert_id>", endpoint="alert")
 api.add_org_resource(AlertMuteResource, "/api/alerts/<alert_id>/mute", endpoint="alert_mute")
+api.add_org_resource(AlertEvaluateResource, "/api/alerts/<alert_id>/eval", endpoint="alert_eval")
 api.add_org_resource(
     AlertSubscriptionListResource,
     "/api/alerts/<alert_id>/subscriptions",
@@ -145,7 +152,6 @@ api.add_org_resource(AlertListResource, "/api/alerts", endpoint="alerts")
 
 api.add_org_resource(DashboardListResource, "/api/dashboards", endpoint="dashboards")
 api.add_org_resource(DashboardResource, "/api/dashboards/<dashboard_id>", endpoint="dashboard")
-api.add_org_resource(MyDashboardsResource, "/api/dashboards/my", endpoint="my_dashboards")
 api.add_org_resource(
     PublicDashboardResource,
     "/api/dashboards/public/<token>",
@@ -206,6 +212,10 @@ api.add_org_resource(
     "/api/dashboards/<object_id>/favorite",
     endpoint="dashboard_favorite",
 )
+api.add_org_resource(DashboardForkResource, "/api/dashboards/<dashboard_id>/fork", endpoint="dashboard_fork")
+
+api.add_org_resource(MyDashboardsResource, "/api/dashboards/my", endpoint="my_dashboards")
+
 
 api.add_org_resource(QueryTagsResource, "/api/queries/tags", endpoint="query_tags")
 api.add_org_resource(ReportTagsResource, "/api/reports/tags", endpoint="report_tags")

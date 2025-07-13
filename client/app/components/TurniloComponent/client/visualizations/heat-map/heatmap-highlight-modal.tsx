@@ -26,7 +26,7 @@ export interface HeatmapHighlightModalProps {
   title: string;
   stage: Stage;
   layout: ScrollerLayout;
-  scroll: { left: number, top: number };
+  scroll: { left: number; top: number };
   position: HighlightPosition;
   dropHighlight: Fn;
   acceptHighlight: Fn;

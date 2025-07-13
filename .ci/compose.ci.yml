@@ -4,11 +4,7 @@
 services:
   server:
     build:
-      context: .
-      cache_from:
-        - "type=gha"
-#      cache_to:
-#        - "type=gha,mode=max"
+      context: ../
       args:
         skip_frontend_build: true
         skip_dev_deps: ""
@@ -21,20 +17,24 @@ services:
       - "5000:5000"
       - "5678:5678"
     environment:
-      REDASH_LOG_LEVEL: "DEBUG"
+      REDASH_LOG_LEVEL: "INFO"
       REDASH_REDIS_URL: "redis://redis:6379/0"
-      REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
-      REDASH_DEBUG: "true"
+      POSTGRES_PASSWORD: "FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb"
+      REDASH_DATABASE_URL: "postgresql://postgres:FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb@postgres/postgres"
+      REDASH_COOKIE_SECRET: "2H9gNG9obnAQ9qnR9BDTQUph6CbXKCzF"
       REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
+      NODE_VERSION: 18
+      NPM_VERSION: 9.5.1
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
       - "6379"
   postgres:
-    image: postgres:13-alpine
+    image: pgautoupgrade/pgautoupgrade:latest
+    command: "postgres -c fsync=off -c full_page_writes=off -c synchronous_commit=OFF"
     ports:
       - "15432:5432"
       - "5432:5432"

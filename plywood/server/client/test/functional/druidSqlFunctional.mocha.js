@@ -15,12 +15,13 @@
  */
 
 const { expect } = require('chai');
-let { sane } = require('../utils');
+const { sane } = require('../utils');
 
-let { druidRequesterFactory } = require('plywood-druid-requester');
+const { druidRequesterFactory } = require('plywood-druid-requester');
 
-let plywood = require('../plywood');
-let {
+const plywood = require('../plywood');
+
+const {
   External,
   DruidSQLExternal,
   TimeRange,
@@ -33,9 +34,9 @@ let {
   Expression,
 } = plywood;
 
-let info = require('../info');
+const info = require('../info');
 
-let druidRequester = druidRequesterFactory({
+const druidRequester = druidRequesterFactory({
   host: info.druidHost,
 });
 
@@ -46,7 +47,7 @@ let druidRequester = druidRequesterFactory({
 describe('DruidSQL Functional', function() {
   this.timeout(10000);
 
-  let wikiAttributes = [
+  const wikiAttributes = [
     {
       name: '__time',
       nativeType: 'TIMESTAMP',
@@ -226,7 +227,7 @@ describe('DruidSQL Functional', function() {
     },
   ].filter(Boolean);
 
-  let wikiDerivedAttributes = {
+  const wikiDerivedAttributes = {
     pageInBrackets: "'[' ++ $page ++ ']'",
   };
 
@@ -240,11 +241,11 @@ describe('DruidSQL Functional', function() {
   });
 
   describe('custom SQL', () => {
-    let basicExecutor = basicExecutorFactory({
+    const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druidsql',
+            engine: 'druid',
             source: 'wikipedia',
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
@@ -255,7 +256,7 @@ describe('DruidSQL Functional', function() {
     });
 
     it('works in simple aggregate case', () => {
-      let ex = $('wiki')
+      const ex = $('wiki')
         .split(s$(`CONCAT(channel, '~')`), 'Channel')
         .apply('Count', $('wiki').sqlAggregate(r(`SUM(t."count")`)))
         .apply('Fancy', $('wiki').sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)))
@@ -284,15 +285,15 @@ describe('DruidSQL Functional', function() {
     });
 
     it('can do compare column', () => {
-      let prevRange = TimeRange.fromJS({
+      const prevRange = TimeRange.fromJS({
         start: new Date('2015-09-12T00:00:00Z'),
         end: new Date('2015-09-12T12:00:00Z'),
       });
-      let mainRange = TimeRange.fromJS({
+      const mainRange = TimeRange.fromJS({
         start: new Date('2015-09-12T12:00:00Z'),
         end: new Date('2015-09-13T00:00:00Z'),
       });
-      let ex = $('wiki')
+      const ex = $('wiki')
         .split($('channel'), 'Channel')
         .apply(
           'CountPrev',
@@ -342,11 +343,11 @@ describe('DruidSQL Functional', function() {
   });
 
   describe('custom SQL with WITH', () => {
-    let basicExecutor = basicExecutorFactory({
+    const basicExecutor = basicExecutorFactory({
       datasets: {
         wikiWith: External.fromJS(
           {
-            engine: 'druidsql',
+            engine: 'druid',
             source: 'wikipedia_zzz',
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
@@ -358,7 +359,7 @@ describe('DruidSQL Functional', function() {
     });
 
     it('works in simple aggregate case', () => {
-      let ex = $('wikiWith')
+      const ex = $('wikiWith')
         .split(s$(`CONCAT(channel, '~')`), 'Channel')
         .apply('Count', $('wikiWith').sqlAggregate(r(`SUM(t."count")`)))
         .apply('Fancy', $('wikiWith').sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)))
@@ -378,11 +379,11 @@ describe('DruidSQL Functional', function() {
   });
 
   describe('defined attributes in datasource', () => {
-    let basicExecutor = basicExecutorFactory({
+    const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druidsql',
+            engine: 'druid',
             source: 'wikipedia',
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
@@ -393,7 +394,7 @@ describe('DruidSQL Functional', function() {
     });
 
     it('works in simple case', () => {
-      let ex = $('wiki')
+      const ex = $('wiki')
         .split('$channel', 'Channel')
         .apply('Count', $('wiki').sum('$count'))
         .sort('$Count', 'descending')
@@ -418,7 +419,7 @@ describe('DruidSQL Functional', function() {
     });
 
     it('works in advanced case', () => {
-      let ex = ply()
+      const ex = ply()
         .apply('wiki', $('wiki').filter($('channel').is('en')))
         .apply('Count', '$wiki.sum($count)')
         .apply('TotalAdded', '$wiki.sum($added)')
@@ -447,32 +448,32 @@ describe('DruidSQL Functional', function() {
       //     .limit(3)
       // );
 
-      let rawQueries = [];
+      const rawQueries = [];
       return basicExecutor(ex, { rawQueries }).then(result => {
         expect(rawQueries).to.deep.equal([
           {
-            engine: 'druidsql',
+            engine: 'druid',
             query: {
               query:
                 'SELECT\nSUM("count") AS "Count",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE ("channel"=\'en\')\nGROUP BY \'\'',
             },
           },
           {
-            engine: 'druidsql',
+            engine: 'druid',
             query: {
               query:
                 'SELECT\n"namespace" AS "Namespace",\nSUM("added") AS "Added"\nFROM "wikipedia" AS t\nWHERE ("channel"=\'en\')\nGROUP BY "namespace"\nORDER BY "Added" DESC\nLIMIT 2',
             },
           },
           {
-            engine: 'druidsql',
+            engine: 'druid',
             query: {
               query:
                 'SELECT\nTIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\') AS "Timestamp",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE (("channel"=\'en\') AND ("namespace"=\'Main\'))\nGROUP BY TIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\')\nORDER BY "TotalAdded" DESC\nLIMIT 3',
             },
           },
           {
-            engine: 'druidsql',
+            engine: 'druid',
             query: {
               query:
                 'SELECT\nTIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\') AS "Timestamp",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE (("channel"=\'en\') AND ("namespace"=\'User talk\'))\nGROUP BY TIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\')\nORDER BY "TotalAdded" DESC\nLIMIT 3',
@@ -589,7 +590,7 @@ describe('DruidSQL Functional', function() {
     });
 
     it.skip('works with boolean GROUP BYs', () => {
-      let ex = $('wiki')
+      const ex = $('wiki')
         .split($('channel').is('en'), 'ChannelIsEn')
         .apply('Count', $('wiki').sum('$count'))
         .sort('$Count', 'descending');
@@ -609,7 +610,7 @@ describe('DruidSQL Functional', function() {
     });
 
     it('works string range', () => {
-      let ex = $('wiki')
+      const ex = $('wiki')
         .filter($('cityName').greaterThan('Eagleton'))
         .split('$cityName', 'CityName')
         .sort('$CityName', 'descending')
@@ -652,7 +653,7 @@ describe('DruidSQL Functional', function() {
     });
 
     it('works with fancy lookup filter', () => {
-      let ex = ply()
+      const ex = ply()
         .apply(
           'wiki',
           $('wiki').filter(
@@ -676,9 +677,9 @@ describe('DruidSQL Functional', function() {
   });
 
   describe('incorrect commentLength and comment', () => {
-    let wikiUserCharAsNumber = External.fromJS(
+    const wikiUserCharAsNumber = External.fromJS(
       {
-        engine: 'druidsql',
+        engine: 'druid',
         source: 'wikipedia',
         timeAttribute: 'time',
         allowEternity: true,
@@ -694,11 +695,11 @@ describe('DruidSQL Functional', function() {
   });
 
   describe('introspection', () => {
-    let basicExecutor = basicExecutorFactory({
+    const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druidsql',
+            engine: 'druid',
             source: 'wikipedia',
           },
           druidRequester,
@@ -709,7 +710,7 @@ describe('DruidSQL Functional', function() {
     it('introspects', () => {
       return External.fromJS(
         {
-          engine: 'druidsql',
+          engine: 'druid',
           source: 'wikipedia',
         },
         druidRequester,
@@ -723,7 +724,7 @@ describe('DruidSQL Functional', function() {
 
     it.skip('works with introspection', () => {
       // ToDo: needs null check correction
-      let ex = ply()
+      const ex = ply()
         .apply('wiki', $('wiki').filter($('channel').is('en')))
         .apply('TotalAdded', '$wiki.sum($added)')
         .apply(

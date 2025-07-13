@@ -16,13 +16,14 @@
 
 import { Dataset, PlywoodValue } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import { ApplyExpression } from './applyExpression';
 import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export class LimitExpression extends ChainableExpression {
   static op = 'Limit';
   static fromJS(parameters: ExpressionJS): LimitExpression {
-    let value = ChainableExpression.jsToValue(parameters);
+    const value = ChainableExpression.jsToValue(parameters);
     value.value = parameters.value || (parameters as any).limit;
     return new LimitExpression(value);
   }
@@ -43,13 +44,13 @@ export class LimitExpression extends ChainableExpression {
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.value = this.value;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let js = super.toJS();
+    const js = super.toJS();
     js.value = this.value;
     return js;
   }

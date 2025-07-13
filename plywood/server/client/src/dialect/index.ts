@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+export * from './awsAthenaDialect'
 export * from './baseDialect';
+export * from './bigQueryDialect'
+export * from './druidDialect';
 export * from './mySqlDialect';
 export * from './postgresDialect';
-export * from './druidDialect';

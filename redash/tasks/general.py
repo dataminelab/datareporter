@@ -1,17 +1,30 @@
 import requests
-from datetime import datetime
-
 from flask_mail import Message
-from rq import Connection, Queue
-from rq.registry import FailedJobRegistry
-from rq.job import Job
-from redash import mail, models, settings, rq_redis_connection
+from mailchimp_marketing import Client as MailchimpClient
+from mailchimp_marketing.api_client import ApiClientError
+
+from redash import mail, models, settings
 from redash.models import users
-from redash.worker import job, get_job_logger, default_operational_queues
-from redash.tasks.worker import Queue
 from redash.query_runner import NotSupported
+from redash.tasks.worker import Queue
+from redash.worker import get_job_logger, job
 
 logger = get_job_logger(__name__)
+
+
+def add_member_mailchimp(email, name, org_name):
+    try:
+        client = MailchimpClient()
+        client.set_config({"api_key": settings.MAILCHIMP_API_KEY, "server": settings.MAILCHIMP_SERVER})
+        client.lists.add_list_member(
+            settings.MAILCHIMP_LIST_ID,
+            {"email_address": email, "merge_fields": {"FNAME": name, "ONAME": org_name}, "status": "subscribed"},
+        )
+    except ApiClientError as error:
+        if error.status_code == 400:
+            print("Already subscribed")
+        else:
+            raise Exception(f"Error: {error.text}") from error
 
 
 @job("default")
@@ -31,6 +44,16 @@ def record_event(raw_event):
                 logger.error("Failed posting to %s: %s", hook, response.content)
         except Exception:
             logger.exception("Failed posting to %s", hook)
+
+
+@job("default")
+def subscribe(form):
+    logger.info(
+        "Subscribing to: [security notifications=%s], [newsletter=%s]",
+        form["security_notifications"],
+        form["newsletter"],
+    )
+    return add_member_mailchimp(form["email"], form["name"], form["org_name"])
 
 
 @job("emails")
@@ -72,33 +95,3 @@ def get_schema(data_source_id, refresh):
 
 def sync_user_details():
     users.sync_last_active_at()
-
-
-def purge_failed_jobs() -> None:
-    with Connection(rq_redis_connection):
-        queues = [q for q in Queue.all() if q.name not in default_operational_queues]
-        for queue in queues:
-            failed_job_ids = FailedJobRegistry(queue=queue).get_job_ids()
-            failed_jobs = Job.fetch_many(failed_job_ids, rq_redis_connection)
-            stale_jobs = []
-            for failed_job in failed_jobs:
-                # the job may not actually exist anymore in Redis
-                if not failed_job:
-                    continue
-                # the job could have an empty ended_at value in case
-                # of a worker dying before it can save the ended_at value,
-                # in which case we also consider them stale
-                if not failed_job.ended_at:
-                    stale_jobs.append(failed_job)
-                elif (datetime.utcnow() - failed_job.ended_at).total_seconds() > settings.JOB_DEFAULT_FAILURE_TTL:
-                    stale_jobs.append(failed_job)
-
-            for stale_job in stale_jobs:
-                stale_job.delete()
-
-            if stale_jobs:
-                logger.info(
-                    "Purged %d old failed jobs from the %s queue.",
-                    len(stale_jobs),
-                    queue.name,
-                )

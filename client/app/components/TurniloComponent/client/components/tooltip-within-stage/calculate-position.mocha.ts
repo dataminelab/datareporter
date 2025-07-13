@@ -33,7 +33,7 @@ describe("calculatePosition", () => {
       expect(position).to.be.deep.equal(expected);
     });
 
-    it("should allow to override margins ", () => {
+    it("should allow to override margins", () => {
       const position = calculatePosition({
         top: 100,
         left: 200,

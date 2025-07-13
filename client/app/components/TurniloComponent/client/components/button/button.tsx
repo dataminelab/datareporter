@@ -32,6 +32,7 @@ export interface ButtonProps {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
+// eslint-disable-next-line
 export interface ButtonState {
 }
 

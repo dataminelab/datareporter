@@ -16,12 +16,13 @@
 
 import { PlywoodValue } from '../datatypes/index';
 import { SQLDialect } from '../dialect/baseDialect';
+
 import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export class LookupExpression extends ChainableExpression {
   static op = 'Lookup';
   static fromJS(parameters: ExpressionJS): LookupExpression {
-    let value = ChainableExpression.jsToValue(parameters);
+    const value = ChainableExpression.jsToValue(parameters);
     value.lookupFn = parameters.lookupFn || (parameters as any).lookup;
     return new LookupExpression(value);
   }
@@ -37,13 +38,13 @@ export class LookupExpression extends ChainableExpression {
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.lookupFn = this.lookupFn;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let js = super.toJS();
+    const js = super.toJS();
     js.lookupFn = this.lookupFn;
     return js;
   }

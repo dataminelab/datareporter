@@ -21,14 +21,13 @@ import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { MarkdownNode } from "../markdown-node/markdown-node";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
+import defaultIcon from "../../icons/info.svg";
 
-const defaultIcon = require("../../icons/info.svg");
 const defaultTitle = "More info";
-
 const BUBBLE_MAX_VERTICAL_SPACE = 120;
 
 export interface InfoBubbleState {
-  showInfo: { target: Element, direction: Direction };
+  showInfo: { target: Element; direction: Direction };
 }
 
 export interface InfoBubbleProps {

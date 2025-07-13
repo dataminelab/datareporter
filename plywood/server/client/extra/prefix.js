@@ -1,6 +1,7 @@
 'use strict';
 
 var tslib_1 = require('tslib');
+var { __assign, __awaiter, __extends, __generator } = require('tslib');
 
 var hasOwnProp = require('has-own-prop');
 var toArray = require('stream-to-array');
@@ -12,6 +13,7 @@ var Transform = readableStream.Transform;
 var PassThrough = readableStream.PassThrough;
 
 var immutableClass = require('immutable-class');
+var generalArraysEqual = immutableClass.generalArraysEqual;
 var generalEqual = immutableClass.generalEqual;
 var generalLookupsEqual = immutableClass.generalLookupsEqual;
 var isImmutableClass = immutableClass.isImmutableClass;
@@ -28,10 +30,14 @@ var moment = Chronoshift.moment;
 var isDate = Chronoshift.isDate;
 var parseISODate = Chronoshift.parseISODate;
 
-var druidQueryToolkit = require('@druid-toolkit/query');
+var druidQueryToolkit = require('druid-query-toolkit');
 var SqlRef = druidQueryToolkit.SqlRef;
+var SqlColumn = druidQueryToolkit.SqlColumn;
 var SqlExpression = druidQueryToolkit.SqlExpression;
 var SqlFunction = druidQueryToolkit.SqlFunction;
 var SqlCase = druidQueryToolkit.SqlCase;
+var SqlQuery = druidQueryToolkit.SqlQuery;
+var Introspect = druidQueryToolkit.Introspect;
+var QueryResult = druidQueryToolkit.QueryResult;
 
 var dummyObject = {};

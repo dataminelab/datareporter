@@ -21,8 +21,8 @@ def upgrade():
 
     # Check if the column already exists
     result = conn.execute(sa.text("""
-        SELECT column_name 
-        FROM information_schema.columns 
+        SELECT column_name
+        FROM information_schema.columns
         WHERE table_name='reports' AND column_name='data_source_id'
     """))
 
@@ -37,8 +37,8 @@ def upgrade():
 
     # Update rows with NULL
     conn.execute(sa.text("""
-        UPDATE reports 
-        SET data_source_id = :fallback 
+        UPDATE reports
+        SET data_source_id = :fallback
         WHERE data_source_id IS NULL
     """), {"fallback": fallback_id})
 

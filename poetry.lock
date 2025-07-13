@@ -19,6 +19,21 @@ python-dateutil = ">=2.1.0,<3"
 requests = ">=2.0.0,<3"
 
 [[package]]
+name = "vertica-python"
+version = "1.1.1"
+description = "Official native Python client for the Vertica database."
+optional = false
+python-versions = "*"
+files = [
+    {file = "vertica-python-1.1.1.tar.gz", hash = "sha256:dedf56d76b67673b4d57a13f7f96ebdc57b39ea650b93ebf0c05eb6d1d2c0c05"},
+    {file = "vertica_python-1.1.1-py2.py3-none-any.whl", hash = "sha256:63d300832d6fe471987880f06a9590eafc46a1f896860881270f6b6645f3bec6"},
+]
+
+[package.dependencies]
+python-dateutil = ">=1.5"
+six = ">=1.10.0"
+
+[[package]]
 name = "advocate"
 version = "1.0.0"
 description = "A wrapper around the requests library for safely making HTTP requests on behalf of a third party"

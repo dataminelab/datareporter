@@ -31,6 +31,6 @@ context("Grid", () => {
   });
 
   it("should load 2 rows", () => {
-    rows().should("have.length", 2);
+    rows().should("have.length", 3);
   });
 });

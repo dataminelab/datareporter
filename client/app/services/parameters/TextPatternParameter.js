@@ -15,7 +15,7 @@ class TextPatternParameter extends Parameter {
       return null;
     }
 
-    var re = new RegExp(this.regex);
+    const re = new RegExp(this.regex);
 
     if (re !== null) {
       if (re.test(normalizedValue)) {

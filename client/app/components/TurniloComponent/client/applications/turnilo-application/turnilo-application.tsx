@@ -87,7 +87,7 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     const { appSettings, initTimekeeper, report } = this.props;
     const { dataCubes } = appSettings;
 
-    var hash;
+    let hash;
     if (report.hash && report.source_name) {
       hash = report.source_name + "/4/" + report.hash;
     } else {

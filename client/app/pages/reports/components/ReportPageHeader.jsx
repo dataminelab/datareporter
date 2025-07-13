@@ -141,7 +141,7 @@ export default function ReportPageHeader(props) {
   // delete spesific color
   const styles = useMemo(() => reactCSS(reportPageStyles(colorTextHex, colorBodyHex), [colorTextHex, colorBodyHex]));
 
-  const handleColorChange = useCallback( (color, type) => {
+  const handleColorChange = useCallback((color, type) => {
       if (!color.rgb && color.startsWith("#")) {
         color = {
           rgb: hexToRgb(color),
@@ -153,7 +153,7 @@ export default function ReportPageHeader(props) {
       }
       if (type === 2) {
         setColorBodyHex(color.hex);
-        let updates = { color_1: color.hex };
+        const updates = { color_1: color.hex };
         props.onChange(extend(report.clone(), updates));
         // ligten color
         const amount = 20;
@@ -165,13 +165,13 @@ export default function ReportPageHeader(props) {
         setColorElements(false, color.hex, lightenedHexColor);
       } else {
         setColorTextHex(color.hex);
-        let updates = { color_2: color.hex };
+        const updates = { color_2: color.hex };
         props.onChange(extend(report.clone(), updates));
         setColorElements(color.hex, false, false);
       }
       handleReportChanged(true);
     },
-    [report, props.onChange]
+    [handleReportChanged, props, report]
   );
 
   const changeModelDataText = (text) => {
@@ -185,7 +185,7 @@ export default function ReportPageHeader(props) {
   }
 
   const setNewModels = async (data_source_id) => {
-    var newModels = [];
+    let newModels = [];
     const res = await Model.query({ data_source: data_source_id });
     newModels = res.results;
     const updates = {
@@ -202,7 +202,7 @@ export default function ReportPageHeader(props) {
       setLoadModelsLoaded(false);
       if (signal && signal.aborted) return;
       try {
-        let updates = await setNewModels(data_source_id);
+        const updates = await setNewModels(data_source_id);
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null, errorMessage: null });
         handleReportChanged(true);
@@ -214,30 +214,36 @@ export default function ReportPageHeader(props) {
       setLoadModelsLoaded(true);
       setSelectedDataSource(data_source_id);
     },
-    [report, props.onChange, updateReport]
+    [props, report, updateReport, handleReportChanged]
   );
 
-  const getModel = (modelId) => {
+  const getModel = useCallback((modelId) => {
     return models.find(m => m.id === modelId);
-  }
+  });
 
-  const getModelDataCube = async (modelId) => {
-    const settings = await getSettings(modelId);
-    const model = getModel(modelId);
-    if (!model || !settings) return {};
-    const dataCubes = settings.appSettings.dataCubes
-    return dataCubes.find(m => m.name === model.table);
-  }
+  const getSettings = useCallback(
+    async (modelId) => {
+      let settings;
+      if (report.landed) {
+        settings = { appSettings: report.appSettings, timekeeper: {} };
+      } else {
+        settings = await Model.getReporterConfig(modelId);
+      }
+      return settings;
+    },
+    [report]
+  );
 
-  const getSettings = async (modelId) => {
-    var settings;
-    if (report.landed) {
-      settings = { appSettings: report.appSettings, timekeeper: {} };
-    } else {
-      settings = await Model.getReporterConfig(modelId);
-    }
-    return settings;
-  }
+  const getModelDataCube = useCallback(
+    async (modelId) => {
+      const settings = await getSettings(modelId);
+      const model = getModel(modelId);
+      if (!model || !settings) return {};
+      const dataCubes = settings.appSettings.dataCubes
+      return dataCubes.find(m => m.name === model.table);
+    },
+    [getSettings, getModel]
+  );
 
   const handleModelChange = useCallback(
     async (modelId, signal) => {
@@ -253,7 +259,7 @@ export default function ReportPageHeader(props) {
           replaceHash(model, window.location.hash.split("/4/")[1]);
         }
         recordEvent("update", "report", report.id, { modelId });
-        var updates = {
+        const updates = {
           model_id: modelId,
           appSettings: settings.appSettings,
           timekeeper: settings.timekeeper,
@@ -273,7 +279,7 @@ export default function ReportPageHeader(props) {
         updateReport({}, { successMessage: null, errorMessage: "failed to load the model" });
       }
     },
-    [report, props.onChange, updateReport]
+    [getModelDataCube, getSettings, getModel, report, selectedDataSource, updateReport, props, handleReportChanged]
   );
 
   const handleIdChange = useCallback(async id => {
@@ -287,7 +293,7 @@ export default function ReportPageHeader(props) {
       setReportName(name);
       setNewName("Copy of " + name);
       handleReportChanged(true);
-    },[report.id, report.is_draft]
+    },[handleReportChanged]
   );
 
   const handleGivenModal = (id) => {
@@ -436,7 +442,7 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     if (!currentHash || !dataSources) return;
 
-    const abortController = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const abortController = typeof AbortController !== 'undefined' ? new (require('abortcontroller-polyfill/dist/cjs-ponyfill').AbortController)() : null;
     const signal = abortController ? abortController.signal : null;
 
     const setData = async (dataSourceId, modelId) => {

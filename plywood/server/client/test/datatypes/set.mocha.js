@@ -17,11 +17,12 @@
 
 const { expect } = require('chai');
 
-let { testImmutableClass } = require('immutable-class-tester');
+const { testImmutableClass } = require('immutable-class-tester');
 
-let { Timezone } = require('chronoshift');
-let plywood = require('../plywood');
-let { Set, $, ply, r, NumberRange, TimeRange } = plywood;
+const { Timezone } = require('chronoshift');
+const plywood = require('../plywood');
+
+const { Set, $, ply, r, NumberRange, TimeRange } = plywood;
 
 describe('Set', () => {
   it('is immutable class', () => {
@@ -447,14 +448,14 @@ describe('Set', () => {
     });
 
     it('works with NUMBER_RANGEs', () => {
-      let a = Set.fromJS({
+      const a = Set.fromJS({
         setType: 'NUMBER_RANGE',
         elements: [
           { start: 1, end: 3 },
           { start: 4, end: 7 },
         ],
       });
-      let b = Set.fromJS({
+      const b = Set.fromJS({
         setType: 'NUMBER_RANGE',
         elements: [
           { start: 2, end: 5 },
@@ -495,7 +496,7 @@ describe('Set', () => {
 
   describe('#simplify', () => {
     it('works correctly', () => {
-      let s = Set.fromJS({
+      const s = Set.fromJS({
         setType: 'NUMBER_RANGE',
         elements: [
           { start: 1, end: 3 },
@@ -511,12 +512,12 @@ describe('Set', () => {
   });
 
   describe('#has', () => {
-    let strNullSet = Set.fromJS({
+    const strNullSet = Set.fromJS({
       setType: 'STRING',
       elements: ['null'],
     });
 
-    let nrs = Set.fromJS({
+    const nrs = Set.fromJS({
       setType: 'NUMBER_RANGE',
       elements: [
         { start: 1, end: 3 },
@@ -524,7 +525,7 @@ describe('Set', () => {
       ],
     });
 
-    let trs = Set.fromJS({
+    const trs = Set.fromJS({
       setType: 'TIME_RANGE',
       elements: [
         { start: new Date('2015-09-12T22:00:00Z'), end: new Date('2015-09-12T23:00:00Z') },
@@ -570,12 +571,12 @@ describe('Set', () => {
   });
 
   describe('#contains', () => {
-    let strNullSet = Set.fromJS({
+    const strNullSet = Set.fromJS({
       setType: 'STRING',
       elements: ['null'],
     });
 
-    let nrs = Set.fromJS({
+    const nrs = Set.fromJS({
       setType: 'NUMBER_RANGE',
       elements: [
         { start: 1, end: 3 },
@@ -583,7 +584,7 @@ describe('Set', () => {
       ],
     });
 
-    let trs = Set.fromJS({
+    const trs = Set.fromJS({
       setType: 'TIME_RANGE',
       elements: [
         { start: new Date('2015-09-12T22:00:00Z'), end: new Date('2015-09-12T23:00:00Z') },

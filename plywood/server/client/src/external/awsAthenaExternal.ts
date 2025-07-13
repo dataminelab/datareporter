@@ -1,7 +1,9 @@
 import { PlywoodRequester } from 'plywood-base-api';
+
 import { AttributeInfo, Attributes } from '../datatypes';
 import { AwsAthenaDialect } from '../dialect/awsAthenaDialect';
 import { PlyType } from '../types';
+
 import { External, ExternalJS, ExternalValue } from './baseExternal';
 import { SQLExternal } from './sqlExternal';
 
@@ -17,14 +19,14 @@ export class AwsAthenaExternal extends SQLExternal {
 
 
   static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): AwsAthenaExternal {
-    let value: ExternalValue = External.jsToValue(parameters, requester);
+    const value: ExternalValue = External.jsToValue(parameters, requester);
     return new AwsAthenaExternal(value);
   }
 
   // https://docs.aws.amazon.com/athena/latest/ug/data-types.html
-  private static NUMBER_TYPES = ['tinyint', 'smallint', 'int', 'integer', 'bigint', 'float', 'decimal'];
-  private static STRING_TYPES = ['char', 'varchar', 'string'];
-  private static DATE_TYPES = ['date', 'timestamp'];
+  private static readonly NUMBER_TYPES = ['tinyint', 'smallint', 'int', 'integer', 'bigint', 'float', 'decimal'];
+  private static readonly STRING_TYPES = ['char', 'varchar', 'string'];
+  private static readonly DATE_TYPES = ['date', 'timestamp'];
   // there's also map,array and struct types, leaving out for simplicity :)
 
   // Method for converting Athena/Presto column info to plywood data types
@@ -32,9 +34,9 @@ export class AwsAthenaExternal extends SQLExternal {
   static mapTypes(columns: AthenaColumn[]): Attributes {
     return columns
       .map((column: AthenaColumn) => {
-        let name = column.name;
+        const name = column.name;
         let type: PlyType;
-        let nativeType = column.type.toLowerCase();
+        const nativeType = column.type.toLowerCase();
         if (AwsAthenaExternal.DATE_TYPES.indexOf(nativeType) > -1) {
           type = 'TIME';
         } else if (AwsAthenaExternal.STRING_TYPES.indexOf(nativeType) > -1) {

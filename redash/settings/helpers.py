@@ -29,6 +29,7 @@ def parse_boolean(s):
     else:
         raise ValueError("Invalid boolean value %r" % s)
 
+
 def cast_int_or_default(val, default=None):
     try:
         return int(val)

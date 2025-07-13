@@ -16,9 +16,11 @@
 
 import * as hasOwnProp from 'has-own-prop';
 import { immutableLookupsEqual } from 'immutable-class';
-import { Dataset, Datum, PlywoodValue, Set } from '../datatypes/index';
+
+import { Dataset, Datum, PlywoodValue, Set } from '../datatypes';
 import { SQLDialect } from '../dialect/baseDialect';
 import { DatasetFullType, FullType } from '../types';
+
 import {
   ChainableExpression,
   Expression,
@@ -32,11 +34,12 @@ import {
   SubstitutionFn,
 } from './baseExpression';
 import { Aggregate } from './mixins/aggregate';
+import { SqlRefExpression } from './sqlRefExpression';
 
 export class SplitExpression extends ChainableExpression implements Aggregate {
   static op = 'Split';
   static fromJS(parameters: ExpressionJS): SplitExpression {
-    let value = ChainableExpression.jsToValue(parameters);
+    const value = ChainableExpression.jsToValue(parameters);
 
     let splits: SplitsJS;
     if (parameters.expression && parameters.name) {
@@ -59,7 +62,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
     this._ensureOp('split');
     this._checkOperandTypes('DATASET');
 
-    let splits = parameters.splits;
+    const splits = parameters.splits;
     if (!splits) throw new Error('must have splits');
     this.splits = splits;
     this.keys = Object.keys(splits).sort();
@@ -70,20 +73,20 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   }
 
   public valueOf(): ExpressionValue {
-    let value = super.valueOf();
+    const value = super.valueOf();
     value.splits = this.splits;
     value.dataName = this.dataName;
     return value;
   }
 
   public toJS(): ExpressionJS {
-    let { splits } = this;
+    const { splits } = this;
 
-    let js = super.toJS();
+    const js = super.toJS();
     if (this.isMultiSplit()) {
       js.splits = Expression.expressionLookupToJS(splits);
     } else {
-      for (let name in splits) {
+      for (const name in splits) {
         js.name = name;
         js.expression = splits[name].toJS();
       }
@@ -102,7 +105,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
 
   public changeSplits(splits: Splits): SplitExpression {
     if (immutableLookupsEqual(this.splits, splits)) return this;
-    let value = this.valueOf();
+    const value = this.valueOf();
     value.splits = splits;
     return new SplitExpression(value);
   }
@@ -115,11 +118,11 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
     return this.numSplits() > 1;
   }
 
-  protected _toStringParameters(indent?: int): string[] {
+  protected _toStringParameters(_indent?: int): string[] {
     if (this.isMultiSplit()) {
-      let { splits } = this;
-      let splitStrings: string[] = [];
-      for (let name in splits) {
+      const { splits } = this;
+      const splitStrings: string[] = [];
+      for (const name in splits) {
         splitStrings.push(`${name}: ${splits[name]}`);
       }
       return [splitStrings.join(', '), this.dataName];
@@ -129,7 +132,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   }
 
   public updateTypeContext(typeContext: DatasetFullType): DatasetFullType {
-    let newDatasetType: Record<string, FullType> = {};
+    const newDatasetType: Record<string, FullType> = {};
     this.mapSplits((name, expression) => {
       newDatasetType[name] = {
         type: Set.unwrapSetType(expression.type),
@@ -157,10 +160,10 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   }
 
   public mapSplits<T>(fn: (name: string, expression?: Expression) => T): T[] {
-    let { splits, keys } = this;
-    let res: T[] = [];
-    for (let k of keys) {
-      let v = fn(k, splits[k]);
+    const { splits, keys } = this;
+    const res: T[] = [];
+    for (const k of keys) {
+      const v = fn(k, splits[k]);
       if (typeof v !== 'undefined') res.push(v);
     }
     return res;
@@ -169,9 +172,9 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   public mapSplitExpressions<T>(
     fn: (expression: Expression, name?: string) => T,
   ): Record<string, T> {
-    let { splits, keys } = this;
-    let ret: Record<string, T> = Object.create(null);
-    for (let key of keys) {
+    const { splits, keys } = this;
+    const ret: Record<string, T> = Object.create(null);
+    for (const key of keys) {
       ret[key] = fn(splits[key], key);
     }
     return ret;
@@ -179,7 +182,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
 
   public addSplits(splits: Splits): SplitExpression {
     const newSplits = this.mapSplitExpressions(ex => ex);
-    for (let k in splits) {
+    for (const k in splits) {
       newSplits[k] = splits[k];
     }
 
@@ -187,19 +190,29 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   }
 
   public calc(datum: Datum): PlywoodValue {
-    let { operand, splits, dataName } = this;
+    const { operand, splits, dataName } = this;
     const operandValue = operand.calc(datum);
     return operandValue ? (operandValue as Dataset).split(splits, dataName) : null;
   }
 
-  public getSQL(dialect: SQLDialect): string {
+  public getSQL(_dialect: SQLDialect): string {
     throw new Error('can not convert split expression to SQL directly');
   }
 
   public getSelectSQL(dialect: SQLDialect): string[] {
-    return this.mapSplits(
-      (name, expression) => `${expression.getSQL(dialect)} AS ${dialect.escapeName(name)}`,
-    );
+    return this.mapSplits((name, expression) => {
+      if (
+        expression instanceof SqlRefExpression &&
+        ['IP', 'SET/IP'].includes(expression.type) &&
+        !expression.isSqlFunction('IP_SEARCH', 'IP_MATCH')
+      ) {
+        return `${dialect.ipStringifyExpression(
+          expression.getSQL(dialect),
+        )} AS ${dialect.escapeName(name)}`;
+      } else {
+        return `${expression.getSQL(dialect)} AS ${dialect.escapeName(name)}`;
+      }
+    });
   }
 
   public getGroupBySQL(dialect: SQLDialect): string[] {
@@ -220,10 +233,10 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   public simplify(): Expression {
     if (this.simple) return this;
 
-    let simpleOperand = this.operand.simplify();
-    let simpleSplits = this.mapSplitExpressions(ex => ex.simplify());
-    let simpler: Expression = this.changeOperand(simpleOperand).changeSplits(simpleSplits);
-    if (simpler.fullyDefined()) return r(this.calc({}));
+    const simpleOperand = this.operand.simplify();
+    const simpleSplits = this.mapSplitExpressions(ex => ex.simplify());
+    const simpler: Expression = this.changeOperand(simpleOperand).changeSplits(simpleSplits);
+    if (simpler.fullyDefined()) return r(simpler.calc({}));
 
     if (simpler instanceof ChainableExpression) {
       const pushedInExternal = simpler.pushIntoExternal();
@@ -240,7 +253,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
     nestDiff: int,
     typeContext: DatasetFullType,
   ): ExpressionTypeContext {
-    let sub = substitutionFn.call(this, this, indexer.index, depth, nestDiff);
+    const sub = substitutionFn.call(this, this, indexer.index, depth, nestDiff);
     if (sub) {
       indexer.index += this.expressionCount();
       return {
@@ -298,18 +311,18 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   }
 
   public isLinear(): boolean {
-    let { splits, keys } = this;
-    for (let k of keys) {
-      let split = splits[k];
+    const { splits, keys } = this;
+    for (const k of keys) {
+      const split = splits[k];
       if (Set.isSetType(split.type)) return false;
     }
     return true;
   }
 
   public maxBucketNumber(): number {
-    let { splits, keys } = this;
+    const { splits, keys } = this;
     let num = 1;
-    for (let key of keys) {
+    for (const key of keys) {
       num *= splits[key].maxPossibleSplitValues();
     }
     return num;

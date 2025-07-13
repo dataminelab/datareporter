@@ -1,11 +1,6 @@
-import datetime
 import csv
 import io
-
 from tests import BaseTestCase
-
-from redash import models
-from redash.utils import utcnow
 from redash.serializers import serialize_query_result, serialize_query_result_to_dsv
 
 

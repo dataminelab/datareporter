@@ -17,12 +17,13 @@
 
 const { expect } = require('chai');
 const { Duration } = require('chronoshift');
-let { sane } = require('../utils');
+const { sane } = require('../utils');
 
-let { druidRequesterFactory } = require('plywood-druid-requester');
+const { druidRequesterFactory } = require('plywood-druid-requester');
 
-let plywood = require('../plywood');
-let {
+const plywood = require('../plywood');
+
+const {
   External,
   DruidExternal,
   TimeRange,
@@ -35,9 +36,9 @@ let {
   Expression,
 } = plywood;
 
-let info = require('../info');
+const info = require('../info');
 
-let druidRequester = druidRequesterFactory({
+const druidRequester = druidRequesterFactory({
   host: info.druidHost,
 });
 
@@ -48,7 +49,7 @@ let druidRequester = druidRequesterFactory({
 describe('Druid Functional (Full Text)', function() {
   this.timeout(10000);
 
-  let wikiAttributes = [
+  const wikiAttributes = [
     {
       name: 'time',
       nativeType: '__time',
@@ -356,7 +357,7 @@ describe('Druid Functional (Full Text)', function() {
   ];
 
   describe('defined attributes in datasource', () => {
-    let wiki = External.fromJS(
+    const wiki = External.fromJS(
       {
         engine: 'druid',
         source: 'wikipedia',
@@ -373,14 +374,14 @@ describe('Druid Functional (Full Text)', function() {
       druidRequester,
     );
 
-    let basicExecutor = basicExecutorFactory({
+    const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: wiki,
       },
     });
 
     it('works basic case', () => {
-      let ex = $('wiki')
+      const ex = $('wiki')
         .filter($('comment').contains(r('adding employer')))
         .split($('comment'), 'Comment')
         .apply('Count', '$wiki.sum($count)')

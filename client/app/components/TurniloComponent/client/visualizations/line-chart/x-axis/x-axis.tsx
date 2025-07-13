@@ -42,8 +42,10 @@ function labelFormatter(scale: ContinuousScale, timezone: Timezone): Unary<Date 
   const [start] = scale.domain();
   if (start instanceof Date) {
     const formatter = scaleTicksFormatter(scale as any);
+    // @ts-ignore
     return (date: Date) => formatter(getMoment(date, timezone));
   }
+  // @ts-ignore
   return (value: number) => String(floatFormat(value));
 }
 
@@ -58,12 +60,12 @@ export const XAxis: React.SFC<XAxisProps> = props => {
     return <line key={String(tick)} x1={x} y1={0} x2={x} y2={TICK_HEIGHT} />;
   });
 
-  var tickIndex = 0;
+  let tickIndex = 0;
 
   const labelY = TICK_HEIGHT + TEXT_OFFSET;
   const labels = ticks.map((tick: any, index: number) => {
     const x = scale(tick);
-    var innerText;
+    let innerText;
     const prevElementX = index > 0 ? scale(ticks[index - 1]) : 0;
     if (x - prevElementX + tickIndex > minTickDistance) {
       innerText = format(tick);

@@ -10,7 +10,7 @@ class ExpressionBase64Parser(lzstring.LZString):
         try:
             expression_obj = json.loads(cls.decompressFromBase64(expression))
             return expression_obj
-        except:
+        except Exception:
             abort(400, message='Error during reading expression string')
 
     @classmethod

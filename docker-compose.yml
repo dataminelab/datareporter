@@ -106,15 +106,4 @@ services:
       - ./ollama-models:/root/.ollama
     ports:
       - 11434:11434
-  ollama-init:
-    image: ollama/ollama
-    depends_on:
-      - ollama
-    entrypoint: ["/bin/sh", "-c"]
-    command: |
-      sleep 10
-      ollama pull deepseek-r1:7b
-    volumes:
-      - ./ollama-models:/root/.ollama
-    restart: "no"
 

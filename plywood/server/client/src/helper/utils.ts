@@ -40,7 +40,7 @@ export function dictEqual(dictA: Record<string, any>, dictB: Record<string, any>
   return true;
 }
 
-export function shallowCopy<T>(thing: T): T {
+export function shallowCopy<T extends object>(thing: T): T {
   const newThing: any = {};
   for (const k in thing) {
     if (hasOwnProp(thing, k)) newThing[k] = (thing as any)[k];

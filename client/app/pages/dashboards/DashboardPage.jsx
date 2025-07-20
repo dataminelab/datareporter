@@ -36,60 +36,6 @@ import { RelativeTimeFilterClause, FixedTimeFilterClause } from "@/components/Tu
 import { TimeShift } from "@/components/TurniloComponent/common/models/time-shift/time-shift";
 import { DateRange } from "@/components/TurniloComponent/common/models/date-range/date-range";
 
-
-async function run() {
-    let prompt = document.querySelector("#question").value
-
-    const response = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            model: "deepseek-r1:7b",
-            prompt: prompt,
-            stream: true
-        })
-    })
-
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder()
-
-    let compiledResponse = ""
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        let chunkJson = JSON.parse(chunk)
-        compiledResponse += chunkJson.response
-        compiledResponse = compiledResponse.replace("<think>", `<div id="think">`)
-        compiledResponse = compiledResponse.replace("</think>", `</div>`)
-        document.querySelector("#answer").innerHTML = compiledResponse;
-    }
-}
-
-class DashboardSettings extends React.Component {
-  static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  };
-
-  render() {
-    const { dashboardOptions } = this.props;
-    const { dashboard, updateDashboard, addWidgetStyle } = dashboardOptions;
-    return (
-      <div className="bg-white tiled">
-        <Checkbox
-          checked={!!dashboard.dashboard_filters_enabled}
-          onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
-          data-test="DashboardFiltersCheckbox">
-          Use Dashboard Level Filters
-        </Checkbox>
-        <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
-      </div>
-    );
-  }
-}
-
 class AddWidgetContainer extends React.Component {
   static propTypes = {
     dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
@@ -118,6 +64,28 @@ class AddWidgetContainer extends React.Component {
             Add Query Widget
           </Button>
         </div>
+      </div>
+    );
+  }
+}
+
+class DashboardSettings extends React.Component {
+  static propTypes = {
+    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  };
+
+  render() {
+    const { dashboardOptions } = this.props;
+    const { dashboard, updateDashboard, addWidgetStyle } = dashboardOptions;
+    return (
+      <div className="bg-white tiled">
+        <Checkbox
+          checked={!!dashboard.dashboard_filters_enabled}
+          onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
+          data-test="DashboardFiltersCheckbox">
+          Use Dashboard Level Filters
+        </Checkbox>
+        <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
       </div>
     );
   }
@@ -392,7 +360,7 @@ class DashboardComponent extends React.Component {
     this.props.dashboardOptions.updateDashboard({ options: { globalParamOrder: paramOrder } });
   };
 
-  getEssence = (id) => {
+  getEssence = id => {
     const modelIndex = this.state.widgetList.lastIndexOf(id);
     if (modelIndex === -1) return null;
     return this.state.essenceList[modelIndex];
@@ -451,7 +419,7 @@ class DashboardComponent extends React.Component {
             widgets={dashboard.widgets}
             filters={filters}
             isEditing={editingLayout}
-            onLayoutChange={editingLayout ? dashboardOptions.saveDashboardLayout : () => {}}
+            onLayoutChange={editingLayout ? dashboardOptions.saveDashboardLayout : undefined}
             onBreakpointChange={dashboardOptions.setGridDisabled}
             onLoadWidget={dashboardOptions.loadWidget}
             onRefreshWidget={dashboardOptions.refreshWidget}
@@ -460,17 +428,6 @@ class DashboardComponent extends React.Component {
             setFilterParams={this.setFilterParams}
             getEssence={this.getEssence}
           />
-        </div>
-        {/* UNSAFE: Directly injecting HTML for demonstration purposes */}
-        <div>
-          <h1>🤖 Local Deepseek</h1>
-
-          <textarea name="" id="question"></textarea>
-          <button onClick={() => run()}>Ask!</button>
-
-          <div id="answer">
-
-          </div>
         </div>
       </div>
     );

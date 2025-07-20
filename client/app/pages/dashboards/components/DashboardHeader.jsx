@@ -7,6 +7,7 @@ import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
 import EllipsisOutlinedIcon from "@ant-design/icons/EllipsisOutlined";
 import Modal from "antd/lib/modal";
+import classNames from "classnames";
 import Tooltip from "@/components/Tooltip";
 import FavoritesControl from "@/components/FavoritesControl";
 import EditInPlace from "@/components/EditInPlace";
@@ -178,6 +179,48 @@ DashboardMoreOptionsButton.propTypes = {
   dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
+async function getPromptAnswer(promptValue) {
+    const url = window.location.pathname.split('/').pop()?.split('?')[0] || '';
+    const datasets = window.loadedDatasetsByUrl[url];
+    let prompt = "You are a dashboard analyst. You will be given a question and you will answer it in the form of a dashboard query. ";
+    prompt += "Datasets are as below, you shall use them to answer the question. if there are some giant values such as `MillisecondsInInterval` please ignore them and do not use them in your answer. ";
+    datasets.forEach((d, i) => {
+        prompt += `\n\n Dataset ${i + 1}:\n`;
+        prompt += JSON.stringify(d);
+    });
+    prompt += "\n\n";
+    prompt += "Answer the question in the form of a dashboard query. Question is as below:\n";
+    prompt += promptValue;
+
+    const response = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            model: "deepseek-r1:7b",
+            prompt: prompt,
+            stream: true
+        })
+    })
+
+    const reader = response.body.getReader()
+    /* eslint-disable-next-line compat/compat */
+    const decoder = new TextDecoder()
+
+    let compiledResponse = ""
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        let chunkJson = JSON.parse(chunk);
+        compiledResponse += chunkJson.response;
+        compiledResponse = compiledResponse.replace("<think>", ``);
+        compiledResponse = compiledResponse.replace("</think>", ``);
+    }
+    return compiledResponse;
+}
+
 function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const {
     dashboard,
@@ -194,16 +237,69 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const canShareDashboard = canEditDashboard && !dashboard.is_draft;
   const showShareButton = !clientConfig.disablePublicUrls && (dashboard.publicAccessEnabled || canShareDashboard);
   const showMoreOptionsButton = canEditDashboard;
+  const showPromptButton = true;
 
   const unarchiveDashboard = () => {
     recordEvent("unarchive", "dashboard", dashboard.id);
     updateDashboard({ is_archived: false }, false);
   };
+  const [isPromptModalVisible, setPromptModalVisible] = React.useState(false);
+  const [promptValue, setPromptValue] = React.useState("");
+  const [promptAnswerValue, setPromptAnswerValue] = React.useState("");
+
+  const [sendingPrompt, setSendingPrompt] = React.useState(false);
+
+  const handlePromptSend = async () => {
+    setSendingPrompt(true);
+    const answer = await getPromptAnswer(promptValue);
+    setPromptAnswerValue(answer);
+    setPromptValue("");
+    setSendingPrompt(false);
+  };
+
   return (
     <div className="dashboard-control">
       {dashboard.can_edit && dashboard.is_archived && <Button onClick={unarchiveDashboard}>Unarchive</Button>}
       {!dashboard.is_archived && (
         <span className="hidden-print">
+          {showPromptButton && (
+            <>
+              <Button
+                className="m-r-5 hidden-xs"
+                onClick={() => setPromptModalVisible(true)}
+                loading={sendingPrompt}
+              >
+                <span className="fa fa-comment m-r-5" /> Prompt
+              </Button>
+              <Modal
+                title="Send Prompt"
+                visible={isPromptModalVisible}
+                onOk={handlePromptSend}
+                onCancel={() => setPromptModalVisible(false)}
+                okText="Send"
+                confirmLoading={sendingPrompt}
+              >
+                <input
+                  id="prompt"
+                  type="text"
+                  className={classNames("custom-input")}
+                  value={promptValue}
+                  onChange={e => setPromptValue(e.target.value)}
+                  placeholder="Enter your prompt"
+                  disabled={sendingPrompt}
+                />
+                <textarea
+                  id="answer"
+                  value={promptAnswerValue}
+                  onChange={e => setPromptValue(e.target.value)}
+                  placeholder="Response will appear here..."
+                  className="paste-field"
+                  readOnly
+                  disabled={sendingPrompt}
+                />
+              </Modal>
+            </>
+          )}
           {showPublishButton && (
             <Button className="m-r-5 hidden-xs" onClick={togglePublished}>
               <span className="fa fa-paper-plane m-r-5" /> Publish

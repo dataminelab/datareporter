@@ -69,17 +69,17 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private lastQueryEssence: Essence = null;
 
-  componentDidMount() {
+  componentDidMount(): void {
     const { essence, timekeeper } = this.props;
     this.loadData(essence, timekeeper);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.lastQueryEssence = null;
     this.debouncedCallExecutor.cancel();
   }
 
-  componentWillReceiveProps(nextProps: VisualizationProps) {
+  componentWillReceiveProps(nextProps: VisualizationProps): void {
     if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
       const { essence, timekeeper } = nextProps;
       const hadDataLoaded = isLoaded(this.state.datasetLoad);
@@ -92,9 +92,13 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     if (showSpinner) this.handleDatasetLoad(loading);
     this.fetchData(essence, timekeeper)
       .then(loadedDataset => {
-        // TODO: encode it better
-        // null is here when we get out of order request, so we just ignore it
         if (!loadedDataset) return;
+        if (typeof window !== "undefined") {
+            const url = window.location.pathname.split('/').pop()?.split('?')[0] || '';
+            (window as any).loadedDatasetsByUrl = (window as any).loadedDatasetsByUrl || {};
+            (window as any).loadedDatasetsByUrl[url] = (window as any).loadedDatasetsByUrl[url] || [];
+            (window as any).loadedDatasetsByUrl[url].push(loadedDataset);
+        }
         if (isError(loadedDataset)) {
           this.handleDatasetLoad(loadedDataset);
         }
@@ -111,10 +115,14 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> =>
     essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
-      .then((dataset: Dataset) => {
+      .then((value: any) => {
           // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
-          return loaded(dataset);
+          if (value instanceof Dataset) {
+            return loaded(value);
+          }
+          // handle unexpected value type (e.g., string, number, etc.)
+          return error(new Error("Query did not return a Dataset."));
         },
         err => {
           // signal out of order requests with null
@@ -131,7 +139,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private handleDatasetLoad(dl: DatasetLoad, derivedState: Partial<S> = {}) {
     // as object will be fixed in typescript 3.2 https://github.com/Microsoft/TypeScript/issues/10727
-    this.setState({ ...(derivedState as object), datasetLoad: dl, scrollLeft: 0, scrollTop: 0 });
+    this.setState({ ...(derivedState as Record<string, unknown>), datasetLoad: dl, scrollLeft: 0, scrollTop: 0 });
     const { registerDownloadableDataset } = this.props;
     if (registerDownloadableDataset) {
       registerDownloadableDataset(isLoaded(dl) ? dl.dataset : null);
@@ -142,7 +150,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return this.differentVisualizationDefinition(nextProps);
   }
 
-  protected differentVisualizationDefinition(nextProps: VisualizationProps) {
+  protected differentVisualizationDefinition(nextProps: VisualizationProps): boolean {
     const { essence, timekeeper } = this.props;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
@@ -193,16 +201,16 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return highlight.clauses;
   }
 
-  protected dropHighlight = () => this.setState({ highlight: null });
+  protected dropHighlight = (): void => this.setState({ highlight: null });
 
-  protected acceptHighlight = () => {
+  protected acceptHighlight = (): void => {
     if (!this.hasHighlight()) return;
     const { essence, clicker } = this.props;
     clicker.changeFilter(essence.filter.mergeClauses(this.getHighlightClauses()));
     this.setState({ highlight: null });
   };
 
-  protected highlight = (clauses: List<FilterClause>, key: string | null = null) => {
+  protected highlight = (clauses: List<FilterClause>, key: string | null = null): void => {
     const highlight = new Highlight(clauses, key);
     this.setState({ highlight });
   };
@@ -211,7 +219,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return {};
   }
 
-  render() {
+  render(): JSX.Element {
     const { datasetLoad } = this.state;
 
     return <div className={classNames("base-visualization", this.className)}>

@@ -25,6 +25,9 @@ module.exports = {
   ],
   settings: {
     "import/resolver": "webpack",
+    react: {
+      "version": "detect"
+    }
   },
   env: {
     browser: true,
@@ -91,14 +94,10 @@ module.exports = {
 
     },
     {
-      files: ["*.js", "*.jsx", ".*.js", ".*.jsx"],
+      files: ["*.js", "*.jsx"],
       rules: {
         "@typescript-eslint/explicit-function-return-type": "off",
-      },
-      settings: {
-        react: {
-          version: "detect",
-        },
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
       },
     },
     {

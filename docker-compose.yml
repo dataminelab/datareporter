@@ -27,6 +27,8 @@ x-redash-environment: &redash-environment
   REDASH_DEBUG: "true"
   CLIENT_TIMEOUT_DELTA: 100000
   REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+  OPENAI_API_KEY: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  OLLAMA_API_URL: "http://ollama:11434"
   REDASH_SCHEMAS_REFRESH_TIMEOUT: 500
   # every 60 mins
   REDASH_SCHEMAS_REFRESH_SCHEDULE: 60

@@ -182,12 +182,13 @@ DashboardMoreOptionsButton.propTypes = {
 async function getPromptAnswer(promptValue) {
     const url = window.location.pathname.split('/').pop()?.split('?')[0] || '';
     const datasets = window.loadedDatasetsByUrl[url];
+    const datasetHeaders = Array.from(document.querySelectorAll(".widget-header")).filter(header => header.innerText && header.innerText.trim() !== "");
     let prompt = "You are a dashboard analyst. There are datasets inside a a Dashboard aka widget. You will be given a question and you will answer it in the form of human language. ";
     prompt += "\n\n";
-    prompt += "Datasets are as below: ";
+    prompt += " Datasets are as below: ";
     prompt += "\n";
     datasets.forEach((d, i) => {
-      prompt += `Dataset[${i + 1}]: ${JSON.stringify(d)}\n`;
+      prompt += ` Dataset[${i + 1}]${datasetHeaders[i] ? `(${datasetHeaders[i].innerText.trim()})` : ''}: ${JSON.stringify(d)}\n`;
     });
     prompt += "\n---\n\n";
     prompt += promptValue;

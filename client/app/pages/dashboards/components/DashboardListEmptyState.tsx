@@ -15,7 +15,7 @@ export interface DashboardListEmptyStateProps {
   selectedTags: string[];
 }
 
-export default function DashboardListEmptyState({ page, searchTerm, selectedTags }: DashboardListEmptyStateProps) {
+export default function DashboardListEmptyState({ page, searchTerm, selectedTags }: DashboardListEmptyStateProps): React.ReactElement {
   if (searchTerm !== "") {
     return <BigMessage message="Sorry, we couldn't find anything." icon="fa-search" />;
   }

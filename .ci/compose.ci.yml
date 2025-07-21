@@ -23,6 +23,8 @@ services:
       REDASH_DATABASE_URL: "postgresql://postgres:FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb@postgres/postgres"
       REDASH_COOKIE_SECRET: "2H9gNG9obnAQ9qnR9BDTQUph6CbXKCzF"
       REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+      OPENAI_API_KEY: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      OLLAMA_API_URL: "http://ollama:11434"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
       NODE_VERSION: 18

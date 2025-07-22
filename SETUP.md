@@ -51,6 +51,7 @@ docker compose exec ollama ollama pull deepseek-r1:7b # Pull deepseek-r1:7b mode
 docker compose run server manage db stamp head # If you get an error saying "target database is not up to date" you can run this command
 docker compose run server manage db migrate # Any change to back-end models requires to create a migration
 docker compose run --rm server manage db upgrade # Upgrade database with recent migration
+cd client && npm run cypress db-seed # Seed the database with initial data for cypress tests
 ```
 
 ## Local Development

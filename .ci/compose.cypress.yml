@@ -8,11 +8,11 @@ x-redash-service: &redash-service
 x-redash-environment: &redash-environment
   REDASH_LOG_LEVEL: "INFO"
   REDASH_REDIS_URL: "redis://redis:6379/0"
-  POSTGRES_PASSWORD: "FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb"
-  REDASH_DATABASE_URL: "postgresql://postgres:FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb@postgres/postgres"
+  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+  REDASH_DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
   REDASH_ENFORCE_CSRF: "true"
-  REDASH_COOKIE_SECRET: "2H9gNG9obnAQ9qnR9BDTQUph6CbXKCzF"
+  REDASH_COOKIE_SECRET: "${REDASH_COOKIE_SECRET}"
 services:
   server:
     <<: *redash-service

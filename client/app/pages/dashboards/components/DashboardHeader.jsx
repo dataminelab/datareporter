@@ -183,26 +183,26 @@ async function getPromptAnswer(promptValue) {
     const url = window.location.pathname.split('/').pop()?.split('?')[0] || '';
     const datasets = window.loadedDatasetsByUrl[url];
     const datasetHeaders = Array.from(document.querySelectorAll(".widget-header")).filter(header => header.innerText && header.innerText.trim() !== "");
-    let prompt = "You are a dashboard analyst. There are datasets inside a a Dashboard aka widget. You will be given a question and you will answer it in the form of human language. ";
-    prompt += "\n\n";
-    prompt += " Datasets are as below: ";
-    prompt += "\n";
+
+    let prompt = "You are a data analyst reviewing a dashboard containing several datasets (widgets). Given a user question, analyze the datasets and provide a clear, concise, and human-readable answer based on the available data.\n\n";
+    prompt += "Datasets:\n";
     datasets.forEach((d, i) => {
-      prompt += ` Dataset[${i + 1}]${datasetHeaders[i] ? `(${datasetHeaders[i].innerText.trim()})` : ''}: ${JSON.stringify(d)}\n`;
+      prompt += `Dataset[${i + 1}]${datasetHeaders[i] ? ` (${datasetHeaders[i].innerText.trim()})` : ''}: ${JSON.stringify(d)}\n`;
     });
-    prompt += "\n---\n\n";
-    prompt += promptValue;
+    prompt += "\n---\n";
+    prompt += `User question: ${promptValue}\n`;
+    prompt += "Answer:";
 
     const response = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            model: "deepseek-r1:7b",
-            prompt: prompt,
-            stream: true
-        })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "deepseek-r1:7b",
+        prompt: prompt,
+        stream: true
+      })
     })
 
     const reader = response.body.getReader()

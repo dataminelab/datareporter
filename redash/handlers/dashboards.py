@@ -2,6 +2,7 @@ from flask import request, url_for
 from flask_restful import abort
 from funcy import partial, project
 from sqlalchemy.orm.exc import StaleDataError
+import requests
 
 from redash import models
 from redash.handlers.base import (
@@ -19,6 +20,7 @@ from redash.permissions import (
 )
 from redash.security import csp_allows_embeding
 from redash.serializers import DashboardSerializer, public_dashboard
+from redash.settings import OPENAI_API_KEY
 
 # Ordering map for relationships
 order_map = {
@@ -133,6 +135,49 @@ class MyDashboardsResource(BaseResource):
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)
         return paginate(ordered_results, page, page_size, DashboardSerializer)
+
+
+class DashboardPromptResource(BaseResource):
+    @require_permission("edit_dashboard")
+    def post(self, dashboard_id):
+        """
+        Retrieve a prompt for a dashboard.
+
+        :param dashboard_id: The numeric ID of the dashboard to retrieve the prompt for.
+        :>json string prompt: The prompt text for the dashboard.
+        """
+        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
+        require_object_modify_permission(dashboard, self.current_user)
+
+        # Assuming getPromptAnswer is a method that generates a prompt based on the dashboard
+        # prompt = dashboard.get_prompt_answer()
+
+        data = request.get_json(force=True)
+        question = data.get("question", "")
+
+        if not question:
+            abort(400, message="Missing 'question' in request body.")
+
+        headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
+        payload = {
+            "model": "gpt-3.5-turbo",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant for dashboard analytics."},
+                {"role": "user", "content": question},
+            ],
+        }
+
+        openai_response = requests.post(
+            "https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=30
+        )
+
+        if openai_response.status_code != 200:
+            abort(502, message="Failed to get response from OpenAI.")
+
+        openai_data = openai_response.json()
+        prompt = openai_data["choices"][0]["message"]["content"]
+
+        return {"prompt": prompt}
 
 
 class DashboardResource(BaseResource):

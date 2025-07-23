@@ -179,6 +179,25 @@ DashboardMoreOptionsButton.propTypes = {
   dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
+async function getOpenAiAnswer(promptValue) {
+  const urlParts = window.location.pathname.split("/");
+  const dashboardId = urlParts.includes("dashboards")
+    ? urlParts[urlParts.indexOf("dashboards") + 1]
+    : null;
+  const response = await fetch(`/api/dashboards/${dashboardId}/prompt`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ question: promptValue }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to get prompt from server");
+  }
+  const data = await response.json();
+  return data.prompt;
+}
+
 async function getPromptAnswer(promptValue) {
     const url = window.location.pathname.split('/').pop()?.split('?')[0] || '';
     const datasets = window.loadedDatasetsByUrl[url];
@@ -214,6 +233,7 @@ async function getPromptAnswer(promptValue) {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
+        console.log("chunk", chunk)
         let chunkJson = JSON.parse(chunk);
         compiledResponse += chunkJson.response;
         compiledResponse = compiledResponse.replace("<think>", ``);

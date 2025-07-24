@@ -197,3 +197,13 @@ poetry add <package-name>
 # Uninstall an old package
 poetry remove <package-name>
 ```
+
+### Settting up environment variables
+
+You have to set up environment variables in the `.env` file in the root directory of the project. This file is used to configure various settings for the application, such as database connections, API keys, and other configurations.
+For reference, see the `.env.example` file in the project root. It contains sample environment variables and their expected formats. Copy this file to `.env` and adjust the values as needed for your local setup.
+
+```sh
+cp .env.example .env
+# Edit .env to set your configuration
+```

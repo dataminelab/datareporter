@@ -228,16 +228,38 @@ async function getPromptAnswer(promptValue) {
     /* eslint-disable-next-line compat/compat */
     const decoder = new TextDecoder()
 
-    let compiledResponse = ""
+    let compiledResponse = "";
+    let buffer = "";
     while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
-        console.log("chunk", chunk)
-        let chunkJson = JSON.parse(chunk);
-        compiledResponse += chunkJson.response;
-        compiledResponse = compiledResponse.replace("<think>", ``);
-        compiledResponse = compiledResponse.replace("</think>", ``);
+        buffer += chunk;
+        // Split by newlines and process each complete line as JSON
+        let lines = buffer.split("\n");
+        buffer = lines.pop(); // Save incomplete line for next chunk
+        for (const line of lines) {
+            if (!line.trim()) continue;
+            try {
+                let chunkJson = JSON.parse(line);
+                compiledResponse += chunkJson.response;
+                compiledResponse = compiledResponse.replace("<think>", ``);
+                compiledResponse = compiledResponse.replace("</think>", ``);
+            } catch (e) {
+                // Ignore parse errors for incomplete lines
+            }
+        }
+    }
+    // Optionally process any remaining buffer
+    if (buffer.trim()) {
+        try {
+            let chunkJson = JSON.parse(buffer);
+            compiledResponse += chunkJson.response;
+            compiledResponse = compiledResponse.replace("<think>", ``);
+            compiledResponse = compiledResponse.replace("</think>", ``);
+        } catch (e) {
+            // Ignore parse errors for incomplete buffer
+        }
     }
     return compiledResponse;
 }

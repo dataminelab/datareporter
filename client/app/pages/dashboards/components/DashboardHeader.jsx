@@ -7,7 +7,7 @@ import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
 import EllipsisOutlinedIcon from "@ant-design/icons/EllipsisOutlined";
 import Modal from "antd/lib/modal";
-import classNames from "classnames";
+import DynamicForm from "@/components/dynamic-form/DynamicForm";
 import Tooltip from "@/components/Tooltip";
 import FavoritesControl from "@/components/FavoritesControl";
 import EditInPlace from "@/components/EditInPlace";
@@ -179,47 +179,44 @@ DashboardMoreOptionsButton.propTypes = {
   dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
-async function getOpenAiAnswer(promptValue) {
-  const urlParts = window.location.pathname.split("/");
-  const dashboardId = urlParts.includes("dashboards")
-    ? urlParts[urlParts.indexOf("dashboards") + 1]
-    : null;
+function writePrePrompt(question, slug) {
+  const datasets = window.loadedDatasetsByUrl[slug];
+  const datasetHeaders = Array.from(document.querySelectorAll(".widget-header")).filter(header => header.innerText && header.innerText.trim() !== "");
+  let prompt = "You are a data analyst reviewing a dashboard containing several datasets (widgets). Given a user question, analyze the datasets and provide a clear, concise, and human-readable answer based on the available data.\n\n";
+  prompt += "Datasets:\n";
+  datasets.forEach((d, i) => {
+    prompt += `Dataset[${i + 1}]${datasetHeaders[i] ? ` (${datasetHeaders[i].innerText.trim()})` : ''}: ${JSON.stringify(d)}\n`;
+  });
+  prompt += "\n---\n";
+  prompt += `User question: ${question}\n`;
+  prompt += "Answer:";
+  return prompt;
+}
+
+async function getOpenAiAnswer(question, dashboardId) {
   const response = await fetch(`/api/dashboards/${dashboardId}/prompt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ question: promptValue }),
+    body: JSON.stringify({ question: question }),
   });
   if (!response.ok) {
-    throw new Error("Failed to get prompt from server");
+    return "Sorry, there was a problem retrieving the answer from the server.";
   }
   const data = await response.json();
   return data.prompt;
 }
 
-async function getPromptAnswer(promptValue) {
-    const url = window.location.pathname.split('/').pop()?.split('?')[0] || '';
-    const datasets = window.loadedDatasetsByUrl[url];
-    const datasetHeaders = Array.from(document.querySelectorAll(".widget-header")).filter(header => header.innerText && header.innerText.trim() !== "");
-
-    let prompt = "You are a data analyst reviewing a dashboard containing several datasets (widgets). Given a user question, analyze the datasets and provide a clear, concise, and human-readable answer based on the available data.\n\n";
-    prompt += "Datasets:\n";
-    datasets.forEach((d, i) => {
-      prompt += `Dataset[${i + 1}]${datasetHeaders[i] ? ` (${datasetHeaders[i].innerText.trim()})` : ''}: ${JSON.stringify(d)}\n`;
-    });
-    prompt += "\n---\n";
-    prompt += `User question: ${promptValue}\n`;
-    prompt += "Answer:";
-
-    const response = await fetch("http://localhost:11434/api/generate", {
+async function getPromptAnswer(question) {
+    const response = await fetch(`http://localhost:11434/api/generate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: "deepseek-r1:7b",
-        prompt: prompt,
+        prompt: question,
         stream: true
       })
     })
@@ -281,6 +278,7 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const showShareButton = !clientConfig.disablePublicUrls && (dashboard.publicAccessEnabled || canShareDashboard);
   const showMoreOptionsButton = canEditDashboard;
   const showPromptButton = true;
+  const slug = `${dashboard.id}-${dashboard.name}`;
 
   const unarchiveDashboard = () => {
     recordEvent("unarchive", "dashboard", dashboard.id);
@@ -289,18 +287,44 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const [isPromptModalVisible, setPromptModalVisible] = React.useState(false);
   const [promptValue, setPromptValue] = React.useState("");
   const [promptAnswerValue, setPromptAnswerValue] = React.useState("");
-
+  const [selectedModel, setSelectedModel] = React.useState("deepseek");
   const [sendingPrompt, setSendingPrompt] = React.useState(false);
+
+  const handleSetSelectedModel = (value) => {
+    setSelectedModel(value);
+  };
+
+  const handleSetPromptValue = (e) => {
+    setPromptValue(e.target.value);
+  };
 
   const handlePromptSend = async () => {
     if (!promptValue) return;
     setSendingPrompt(true);
-    const answer = await getPromptAnswer(promptValue);
+    let answer = "";
+    const question = writePrePrompt(promptValue, slug);
+    if (selectedModel === "chatgpt") {
+      // Use OpenAI API for ChatGPT model
+      answer = await getOpenAiAnswer(question);
+    } else {
+      // Use DeepSeek ollama model for DeepSeek model
+      answer = await getPromptAnswer(question);
+    }
     setPromptAnswerValue(answer);
-    setPromptValue("");
+    recordEvent("send_prompt", "dashboard", dashboard.id, {
+      model: selectedModel,
+      answer: promptAnswerValue,
+    });
     setSendingPrompt(false);
   };
-
+  const aiOptions = [{
+      name: "deepseek",
+      value: "deepseek"
+  }, {
+      name: "chatgpt",
+      value: "chatgpt"
+  }]
+  const formId = `promptForm-${dashboard.id}`
   return (
     <div className="dashboard-control">
       {dashboard.can_edit && dashboard.is_archived && <Button onClick={unarchiveDashboard}>Unarchive</Button>}
@@ -312,6 +336,8 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                 className="m-r-5 hidden-xs"
                 onClick={() => setPromptModalVisible(true)}
                 loading={sendingPrompt}
+                form={formId}
+                data-test="DashboardPromptButton"
               >
                 <span className="fa fa-comment m-r-5" /> Prompt
               </Button>
@@ -323,24 +349,15 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                 okText="Send"
                 confirmLoading={sendingPrompt}
               >
-                <input
-                  id="prompt"
-                  type="text"
-                  className={classNames("custom-input")}
-                  value={promptValue}
-                  onChange={e => setPromptValue(e.target.value)}
-                  placeholder="Enter your prompt"
-                  disabled={sendingPrompt}
-                />
-                <textarea
-                  id="answer"
-                  value={promptAnswerValue}
-                  onChange={e => setPromptValue(e.target.value)}
-                  placeholder="Response will appear here..."
-                  className="paste-field"
-                  readOnly
-                  disabled={sendingPrompt}
-                />
+              <DynamicForm 
+                id={formId}
+                fields={[
+                  { required: true, name: "model", title: "Select AI model", type: "select", options: aiOptions, props: { onSelect: handleSetSelectedModel, disabled: sendingPrompt }, initialValue: "deepseek" },
+                  { required: true, name: "prompt", title: "Enter your prompt", type: "text", autoFocus: true, props: { onSelect: handleSetPromptValue, disabled: sendingPrompt } },
+                  { required: false, name: "response", title: "Response will appear here...", type: "textarea", loading: !sendingPrompt, value: promptAnswerValue, onChange: () => {}, props: { disabled: true } }
+                ]}
+                hideSubmitButton={true}
+              />
               </Modal>
             </>
           )}

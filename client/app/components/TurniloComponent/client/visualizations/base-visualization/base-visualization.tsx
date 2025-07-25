@@ -94,10 +94,10 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       .then(loadedDataset => {
         if (!loadedDataset) return;
         if (typeof window !== "undefined") {
-            const url = window.location.pathname.split('/').pop()?.split('?')[0] || '';
+            const slug = window.location.pathname.split('/').pop()?.split('?')[0] || '';
             (window as any).loadedDatasetsByUrl = (window as any).loadedDatasetsByUrl || {};
-            (window as any).loadedDatasetsByUrl[url] = (window as any).loadedDatasetsByUrl[url] || [];
-            (window as any).loadedDatasetsByUrl[url].push(loadedDataset);
+            (window as any).loadedDatasetsByUrl[slug] = (window as any).loadedDatasetsByUrl[slug] || [];
+            (window as any).loadedDatasetsByUrl[slug].push(loadedDataset);
         }
         if (isError(loadedDataset)) {
           this.handleDatasetLoad(loadedDataset);

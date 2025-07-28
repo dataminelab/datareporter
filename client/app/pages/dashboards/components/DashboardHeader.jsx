@@ -209,6 +209,7 @@ async function getOpenAiAnswer(question, dashboardId) {
 }
 
 async function getPromptAnswer(question) {
+  try {
     const response = await fetch(`http://localhost:11434/api/generate`, {
       method: "POST",
       headers: {
@@ -219,46 +220,54 @@ async function getPromptAnswer(question) {
         prompt: question,
         stream: true
       })
-    })
+    });
+    if (!response.ok || !response.body) {
+      console.error(response.message)
+      return "Sorry, there was a problem connecting to the AI server.";
+    }
 
-    const reader = response.body.getReader()
+    const reader = response.body.getReader();
     /* eslint-disable-next-line compat/compat */
-    const decoder = new TextDecoder()
+    const decoder = new TextDecoder();
 
     let compiledResponse = "";
     let buffer = "";
     while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        buffer += chunk;
-        // Split by newlines and process each complete line as JSON
-        let lines = buffer.split("\n");
-        buffer = lines.pop(); // Save incomplete line for next chunk
-        for (const line of lines) {
-            if (!line.trim()) continue;
-            try {
-                let chunkJson = JSON.parse(line);
-                compiledResponse += chunkJson.response;
-                compiledResponse = compiledResponse.replace("<think>", ``);
-                compiledResponse = compiledResponse.replace("</think>", ``);
-            } catch (e) {
-                // Ignore parse errors for incomplete lines
-            }
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      buffer += chunk;
+      // Split by newlines and process each complete line as JSON
+      let lines = buffer.split("\n");
+      buffer = lines.pop(); // Save incomplete line for next chunk
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          let chunkJson = JSON.parse(line);
+          compiledResponse += chunkJson.response;
+          compiledResponse = compiledResponse.replace("<think>", ``);
+          compiledResponse = compiledResponse.replace("</think>", ``);
+        } catch (e) {
+          // Ignore parse errors for incomplete lines
         }
+      }
     }
     // Optionally process any remaining buffer
     if (buffer.trim()) {
-        try {
-            let chunkJson = JSON.parse(buffer);
-            compiledResponse += chunkJson.response;
-            compiledResponse = compiledResponse.replace("<think>", ``);
-            compiledResponse = compiledResponse.replace("</think>", ``);
-        } catch (e) {
-            // Ignore parse errors for incomplete buffer
-        }
+      try {
+        let chunkJson = JSON.parse(buffer);
+        compiledResponse += chunkJson.response;
+        compiledResponse = compiledResponse.replace("<think>", ``);
+        compiledResponse = compiledResponse.replace("</think>", ``);
+      } catch (e) {
+        // Ignore parse errors for incomplete buffer
+      }
     }
     return compiledResponse;
+  } catch (error) {
+    console.error(error.message)
+    return "Sorry, there was a problem connecting to the AI server.";
+  }
 }
 
 function DashboardControl({ dashboardConfiguration, headerExtra }) {

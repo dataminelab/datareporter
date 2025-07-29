@@ -1,5 +1,7 @@
 module.exports = {
-  extends: ["plugin:jest/recommended"],
+  extends: [
+    "../.eslintrc.js"
+  ],
   plugins: ["jest"],
   env: {
     "jest/globals": true,

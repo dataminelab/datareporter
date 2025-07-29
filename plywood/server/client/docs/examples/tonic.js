@@ -11,8 +11,8 @@ let mysqlExternal = External.fromJS({
     { name: 'time', type: 'TIME' },
     { name: 'page', type: 'STRING' },
     { name: 'language', type: 'STRING' },
-    { name: 'added', type: 'NUMBER' }
-  ]
+    { name: 'added', type: 'NUMBER' },
+  ],
 });
 
 let druidExternal = External.fromJS({
@@ -22,32 +22,36 @@ let druidExternal = External.fromJS({
     { name: 'time', type: 'TIME' },
     { name: 'page', type: 'STRING' },
     { name: 'language', type: 'STRING' },
-    { name: 'added', type: 'NUMBER' }
-  ]
+    { name: 'added', type: 'NUMBER' },
+  ],
 });
 
 // Create an expression
 let ex = ply()
-  .apply("wiki",
+  .apply(
+    'wiki',
     $('wiki').filter(
-      $("__time").overlap({
-          start: new Date("2015-08-26T00:00:00Z"),
-          end: new Date("2015-08-27T00:00:00Z")
+      $('__time')
+        .overlap({
+          start: new Date('2015-08-26T00:00:00Z'),
+          end: new Date('2015-08-27T00:00:00Z'),
         })
-        .and($('language').is(['English', 'Spanish']))
-    )
+        .and($('language').is(['English', 'Spanish'])),
+    ),
   )
   .apply('TotalAdded', '$wiki.sum($added)')
-  .apply('Pages',
-    $('wiki').split('$page', 'Page')
+  .apply(
+    'Pages',
+    $('wiki')
+      .split('$page', 'Page')
       .apply('TotalAdded', '$wiki.sum($added)')
       .sort('$TotalAdded', 'descending')
-      .limit(6)
+      .limit(6),
   );
 
 // Let's see what queries this would make against these databases
-console.log("The query plans are:");
+console.log('The query plans are:');
 console.log(ex.simulateQueryPlan({ wiki: mysqlExternal }));
 console.log(ex.simulateQueryPlan({ wiki: druidExternal }));
 
-'Fin.';
+('Fin.');

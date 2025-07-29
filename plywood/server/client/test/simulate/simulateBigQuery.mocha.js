@@ -107,7 +107,7 @@ const diamondsCompact = External.fromJS({
 });
 
 const context = {
-  'diamonds': External.fromJS({
+  diamonds: External.fromJS({
     engine: 'druid',
     version: '0.20.0',
     source: 'diamonds',

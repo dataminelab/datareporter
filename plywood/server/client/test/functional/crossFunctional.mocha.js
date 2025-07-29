@@ -124,7 +124,9 @@ const druidLegacyExecutor = basicExecutorFactory({
       {
         engine: 'druid',
         source: 'wikipedia',
-        context: { ...info.druidContext, timeout: 10001, // Put a different timeout here so we can tell queries apart from non-legacy druid
+        context: {
+          ...info.druidContext,
+          timeout: 10001, // Put a different timeout here so we can tell queries apart from non-legacy druid
         },
         attributes,
         derivedAttributes,
@@ -187,7 +189,7 @@ const equalityTest = utils.makeEqualityTest({
   postgres: postgresExecutor,
 });
 
-describe('Cross Functional', function() {
+describe('Cross Functional', function () {
   this.timeout(15000);
 
   describe('filters', () => {
@@ -576,14 +578,7 @@ describe('Cross Functional', function() {
       equalityTest({
         executorNames: ['druid', 'druidSql', 'mysql', 'postgres'],
         expression: ply()
-          .apply(
-            'wiki',
-            $('wiki').filter(
-              $('__time')
-                .timePart('HOUR_OF_DAY')
-                .is([3, 7]),
-            ),
-          )
+          .apply('wiki', $('wiki').filter($('__time').timePart('HOUR_OF_DAY').is([3, 7])))
           .apply('TotalEdits', '$wiki.sum($count)')
           .apply('TotalAdded', '$wiki.sum($added)'),
       }),
@@ -594,14 +589,7 @@ describe('Cross Functional', function() {
       equalityTest({
         executorNames: ['druid', 'druidSql', 'mysql', 'postgres'],
         expression: ply()
-          .apply(
-            'wiki',
-            $('wiki').filter(
-              $('sometimeLater')
-                .timePart('HOUR_OF_DAY')
-                .is([3, 7]),
-            ),
-          )
+          .apply('wiki', $('wiki').filter($('sometimeLater').timePart('HOUR_OF_DAY').is([3, 7])))
           .apply('TotalEdits', '$wiki.sum($count)')
           .apply('TotalAdded', '$wiki.sum($added)'),
       }),
@@ -615,9 +603,7 @@ describe('Cross Functional', function() {
           .apply(
             'wiki',
             $('wiki').filter(
-              $('$deltaBucket100')
-                .absolute()
-                .cast('TIME') > new Date('1970-01-01T00:00:02.000Z'),
+              $('$deltaBucket100').absolute().cast('TIME') > new Date('1970-01-01T00:00:02.000Z'),
             ),
           )
           .apply('TotalEdits', '$wiki.sum($count)')
@@ -630,14 +616,7 @@ describe('Cross Functional', function() {
       equalityTest({
         executorNames: ['druid', 'druidSql', 'druidLegacy', 'mysql', 'postgres'],
         expression: ply()
-          .apply(
-            'wiki',
-            $('wiki').filter(
-              $('commentLength')
-                .cast('STRING')
-                .is(r('15')),
-            ),
-          )
+          .apply('wiki', $('wiki').filter($('commentLength').cast('STRING').is(r('15'))))
           .apply('TotalEdits', '$wiki.sum($count)'),
       }),
     );
@@ -647,14 +626,7 @@ describe('Cross Functional', function() {
       equalityTest({
         executorNames: ['druid', 'druidSql', 'druidLegacy', 'mysql', 'postgres'],
         expression: ply()
-          .apply(
-            'wiki',
-            $('wiki').filter(
-              $('commentLengthStr')
-                .cast('NUMBER')
-                .is(r(15)),
-            ),
-          )
+          .apply('wiki', $('wiki').filter($('commentLengthStr').cast('NUMBER').is(r(15))))
           .apply('TotalEdits', '$wiki.sum($count)'),
       }),
     );
@@ -903,9 +875,7 @@ describe('Cross Functional', function() {
       'works with constant split',
       equalityTest({
         executorNames: ['druid', 'druidSql', 'mysql', 'postgres'],
-        expression: $('wiki')
-          .split('blah', 'Constant')
-          .apply('TotalEdits', '$wiki.sum($count)'),
+        expression: $('wiki').split('blah', 'Constant').apply('TotalEdits', '$wiki.sum($count)'),
       }),
     );
 
@@ -913,9 +883,7 @@ describe('Cross Functional', function() {
       'works with plain split',
       equalityTest({
         executorNames: ['druid', 'druidSql', 'mysql', 'postgres'],
-        expression: $('wiki')
-          .split('$channel', 'Channel')
-          .sort('$Channel', 'ascending'),
+        expression: $('wiki').split('$channel', 'Channel').sort('$Channel', 'ascending'),
       }),
     );
 
@@ -1325,12 +1293,7 @@ describe('Cross Functional', function() {
       equalityTest({
         executorNames: ['druid', 'druidSql', 'mysql'], // 'postgres'
         expression: $('wiki')
-          .split(
-            $('__time')
-              .timeShift('PT2H', 1)
-              .timeBucket('PT1H', 'Etc/UTC'),
-            'TimeShiftByHour',
-          )
+          .split($('__time').timeShift('PT2H', 1).timeBucket('PT1H', 'Etc/UTC'), 'TimeShiftByHour')
           .apply('TotalEdits', '$wiki.sum($count)')
           .apply('TotalAdded', '$wiki.sum($added)')
           .sort('$TotalAdded', 'descending')
@@ -1553,12 +1516,7 @@ describe('Cross Functional', function() {
               .timePart('HOUR_OF_DAY')
               .lessThan(10)
               .then('Morning')
-              .fallback(
-                $('__time')
-                  .timePart('HOUR_OF_DAY')
-                  .lessThan(20)
-                  .then('Afternoon'),
-              )
+              .fallback($('__time').timePart('HOUR_OF_DAY').lessThan(20).then('Afternoon'))
               .fallback('Evening'),
             'Greeting',
           )
@@ -1575,10 +1533,7 @@ describe('Cross Functional', function() {
         executorNames: ['druid', 'druidSql', 'mysql', 'postgres'],
         expression: $('wiki')
           .split(
-            $('channel')
-              .overlap(['en', 'es', 'he'])
-              .then('$channel')
-              .fallback('Other'),
+            $('channel').overlap(['en', 'es', 'he']).then('$channel').fallback('Other'),
             'Channel',
           )
           .apply('TotalEdits', '$wiki.sum($count)')
@@ -1597,11 +1552,7 @@ describe('Cross Functional', function() {
             $('channel')
               .overlap(['en', 'es', 'he'])
               .then('$channel')
-              .fallback(
-                $('channel')
-                  .overlap(['fr', 'ru'])
-                  .then('War'),
-              )
+              .fallback($('channel').overlap(['fr', 'ru']).then('War'))
               .fallback('Other'),
             'Channel',
           )
@@ -1947,10 +1898,7 @@ describe('Cross Functional', function() {
         expression: ply()
           .apply(
             'ys',
-            $('wiki')
-              .split('$__time.timeBucket(PT1H)', 'v')
-              .sort('$v', 'ascending')
-              .limit(3),
+            $('wiki').split('$__time.timeBucket(PT1H)', 'v').sort('$v', 'ascending').limit(3),
           )
           .apply(
             'xs',
@@ -2016,10 +1964,7 @@ describe('Cross Functional', function() {
         expression: ply()
           .apply(
             'ys',
-            $('wiki')
-              .split('$__time.timeBucket(PT1H)', 'v')
-              .sort('$v', 'ascending')
-              .limit(3),
+            $('wiki').split('$__time.timeBucket(PT1H)', 'v').sort('$v', 'ascending').limit(3),
           )
           .apply(
             'xs',

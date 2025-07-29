@@ -9,20 +9,19 @@ let diamondsData = require('../../data/diamonds.js');
 
 let context = {
   diamonds: Dataset.fromJS({
-    data: diamondsData
-  }).hide()
+    data: diamondsData,
+  }).hide(),
 };
 
 let ex = ply()
-  .apply("diamonds", $('diamonds').filter($("color").is('D')))
+  .apply('diamonds', $('diamonds').filter($('color').is('D')))
   .apply('Count', $('diamonds').count())
   .apply('TotalPrice', '$diamonds.sum($price)');
 
-ex.compute(context)
-  .then(function(data) {
-    // Log the data while converting it to a readable standard
-    console.log(JSON.stringify(data.toJS(), null, 2));
-  });
+ex.compute(context).then(function (data) {
+  // Log the data while converting it to a readable standard
+  console.log(JSON.stringify(data.toJS(), null, 2));
+});
 
 // ----------------------------------
 

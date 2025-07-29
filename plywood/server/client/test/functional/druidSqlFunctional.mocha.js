@@ -44,7 +44,7 @@ const druidRequester = druidRequesterFactory({
 //   requester: druidRequester,
 // });
 
-describe('DruidSQL Functional', function() {
+describe('DruidSQL Functional', function () {
   this.timeout(10000);
 
   const wikiAttributes = [
@@ -297,15 +297,11 @@ describe('DruidSQL Functional', function() {
         .split($('channel'), 'Channel')
         .apply(
           'CountPrev',
-          $('wiki')
-            .filter($('__time').overlap(prevRange))
-            .sqlAggregate(r(`SUM(t."count")`)),
+          $('wiki').filter($('__time').overlap(prevRange)).sqlAggregate(r(`SUM(t."count")`)),
         )
         .apply(
           'CountMain',
-          $('wiki')
-            .filter($('__time').overlap(mainRange))
-            .sqlAggregate(r(`SUM(t."count")`)),
+          $('wiki').filter($('__time').overlap(mainRange)).sqlAggregate(r(`SUM(t."count")`)),
         )
         .sort($('CountMain'), 'descending')
         .limit(5);

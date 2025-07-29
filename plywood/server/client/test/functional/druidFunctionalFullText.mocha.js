@@ -46,7 +46,7 @@ const druidRequester = druidRequesterFactory({
 //   requester: druidRequester
 // });
 
-describe('Druid Functional (Full Text)', function() {
+describe('Druid Functional (Full Text)', function () {
   this.timeout(10000);
 
   const wikiAttributes = [

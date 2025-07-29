@@ -44,7 +44,7 @@ const mySqlRequester = mySqlRequesterFactory({
 //  requester: mySqlRequester
 // });
 
-describe('MySQL Functional', function() {
+describe('MySQL Functional', function () {
   this.timeout(10000);
 
   const wikiAttributes = [
@@ -485,12 +485,7 @@ describe('MySQL Functional', function() {
     });
 
     it("fallback doesn't happen if not null", () => {
-      const ex = ply().apply(
-        'added',
-        $('wiki')
-          .sum($('added'))
-          .fallback(2),
-      );
+      const ex = ply().apply('added', $('wiki').sum($('added')).fallback(2));
 
       return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
@@ -502,9 +497,7 @@ describe('MySQL Functional', function() {
     });
 
     it('works with simple raw mode', () => {
-      const ex = $('wiki')
-        .filter('$cityName == "El Paso"')
-        .select('regionName', 'added', 'page');
+      const ex = $('wiki').filter('$cityName == "El Paso"').select('regionName', 'added', 'page');
 
       return basicExecutor(ex).then(result => {
         expect(result.toJS()).to.deep.equal({
@@ -580,12 +573,7 @@ describe('MySQL Functional', function() {
     it('fallback happens if null', () => {
       const ex = ply()
         .apply('wiki', $('wiki').filter($('page').is('Rallicula')))
-        .apply(
-          'MetroCode',
-          $('wiki')
-            .sum($('metroCode'))
-            .fallback(0),
-        );
+        .apply('MetroCode', $('wiki').sum($('metroCode')).fallback(0));
 
       return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
@@ -600,18 +588,8 @@ describe('MySQL Functional', function() {
       const ex = ply()
         .apply('wiki', $('wiki').filter($('page').is('Kosowo')))
         .apply('Delta', $('wiki').min($('delta')))
-        .apply(
-          'AbsDelta',
-          $('wiki')
-            .min($('delta'))
-            .absolute(),
-        )
-        .apply(
-          'SquareDelta',
-          $('wiki')
-            .sum($('delta'))
-            .power(2),
-        );
+        .apply('AbsDelta', $('wiki').min($('delta')).absolute())
+        .apply('SquareDelta', $('wiki').sum($('delta')).power(2));
 
       return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
@@ -626,11 +604,7 @@ describe('MySQL Functional', function() {
 
     it('works string range (two bounds)', () => {
       const ex = $('wiki')
-        .filter(
-          $('cityName')
-            .greaterThan('Kab')
-            .and($('cityName').lessThan('Kar')),
-        )
+        .filter($('cityName').greaterThan('Kab').and($('cityName').lessThan('Kar')))
         .split('$cityName', 'City')
         .limit(5);
 

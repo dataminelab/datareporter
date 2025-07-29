@@ -12,44 +12,50 @@ let fancyRequestDecorator = ({ method, url, query }) => {
   }
   return {
     url: url + '?principalId/3246325435',
-    query
-  }
+    query,
+  };
 };
 
 let druidRequester = druidRequesterFactory({
   host: 'your-druid-host:8082', // Where ever your Druid may be
-  requestDecorator: fancyRequestDecorator
+  requestDecorator: fancyRequestDecorator,
 });
 
 druidRequester = verboseRequesterFactory({
-  requester: druidRequester
+  requester: druidRequester,
 });
 
 // ----------------------------------
 
 let context = {
-  wiki: External.fromJS({
-    engine: 'druid',
-    source: 'wikipedia',  // The datasource name in Druid
-    filter: $("__time").overlap({ start: new Date("2015-09-12T00:00:00Z"), end: new Date("2015-09-13T00:00:00Z") }),
-    exactResultsOnly: true // force groupBys
-  }, druidRequester)
+  wiki: External.fromJS(
+    {
+      engine: 'druid',
+      source: 'wikipedia', // The datasource name in Druid
+      filter: $('__time').overlap({
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
+      }),
+      exactResultsOnly: true, // force groupBys
+    },
+    druidRequester,
+  ),
 };
 
 let ex = $('wiki')
   .filter('$countryName == "United States"')
   .split('$channel', 'Language')
-    .apply('Edits', '$wiki.count()')
-    .sort('$Edits', 'descending')
-    .limit(5);
+  .apply('Edits', '$wiki.count()')
+  .sort('$Edits', 'descending')
+  .limit(5);
 
 ex.compute(context)
-  .then(function(data) {
+  .then(function (data) {
     // Log the data while converting it to a readable standard
     console.log(JSON.stringify(data.toJS(), null, 2));
   })
-  .catch(function(e) {
-    console.log('Error', e)
+  .catch(function (e) {
+    console.log('Error', e);
   });
 
 // ----------------------------------

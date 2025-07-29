@@ -5,39 +5,46 @@ let $ = plywood.$;
 let External = plywood.External;
 
 let druidRequester = druidRequesterFactory({
-  host: 'localhost:8082' // Where ever your Druid may be
+  host: 'localhost:8082', // Where ever your Druid may be
 });
 
 // ----------------------------------
 
 let context = {
-  wiki: External.fromJS({
-    engine: 'druid',
-    source: 'wikipedia',  // The datasource name in Druid
-  }, druidRequester)
+  wiki: External.fromJS(
+    {
+      engine: 'druid',
+      source: 'wikipedia', // The datasource name in Druid
+    },
+    druidRequester,
+  ),
 };
 
 let ex = ply()
-  .apply("wiki",
-    $('wiki').filter($("__time").overlap({
-      start: new Date("2015-08-26T00:00:00Z"),
-      end: new Date("2015-08-27T00:00:00Z")
-    }))
+  .apply(
+    'wiki',
+    $('wiki').filter(
+      $('__time').overlap({
+        start: new Date('2015-08-26T00:00:00Z'),
+        end: new Date('2015-08-27T00:00:00Z'),
+      }),
+    ),
   )
   .apply('Count', $('wiki').count())
   .apply('TotalAdded', '$wiki.sum($added)')
-  .apply('Pages',
-    $('wiki').split('$page', 'Page')
+  .apply(
+    'Pages',
+    $('wiki')
+      .split('$page', 'Page')
       .apply('Count', $('wiki').count())
       .sort('$Count', 'descending')
-      .limit(6)
+      .limit(6),
   );
 
-ex.compute(context)
-  .then(function(data) {
-    // Log the data while converting it to a readable standard
-    console.log(JSON.stringify(data.toJS(), null, 2));
-  });
+ex.compute(context).then(function (data) {
+  // Log the data while converting it to a readable standard
+  console.log(JSON.stringify(data.toJS(), null, 2));
+});
 
 // ----------------------------------
 

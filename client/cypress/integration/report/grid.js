@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 context("Grid", () => {
-
   const grid = () => cy.get(".internals.table-inner");
   const rows = () => grid().find(".split-value");
-
 
   beforeEach(() => {
     cy.login();

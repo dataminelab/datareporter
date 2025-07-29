@@ -27,7 +27,7 @@ function isTypeDateRange(type) {
 
 function joinExampleList(multiValuesOptions) {
   const { prefix, suffix } = multiValuesOptions;
-  return ["value1", "value2", "value3"].map((value) => `${prefix}${value}${suffix}`).join(",");
+  return ["value1", "value2", "value3"].map(value => `${prefix}${value}${suffix}`).join(",");
 }
 
 function NameInput({ name, type, onChange, existingNames, setValidation }) {
@@ -55,7 +55,7 @@ function NameInput({ name, type, onChange, existingNames, setValidation }) {
 
   return (
     <Form.Item required label="Keyword" help={helpText} validateStatus={validateStatus} {...formItemProps}>
-      <Input onChange={(e) => onChange(e.target.value)} autoFocus />
+      <Input onChange={e => onChange(e.target.value)} autoFocus />
     </Form.Item>
   );
 }
@@ -117,7 +117,7 @@ function EditParameterSettingsDialog(props) {
 
   const paramFormId = useUniqueId("paramForm");
 
-  const handleRegexChange = (e) => {
+  const handleRegexChange = e => {
     setUserInput(e.target.value);
     try {
       new RegExp(e.target.value);
@@ -153,7 +153,7 @@ function EditParameterSettingsDialog(props) {
         {isNew && (
           <NameInput
             name={param.name}
-            onChange={(name) => setParam({ ...param, name })}
+            onChange={name => setParam({ ...param, name })}
             setValidation={setIsNameValid}
             existingNames={props.existingParams}
             type={param.type}
@@ -162,12 +162,12 @@ function EditParameterSettingsDialog(props) {
         <Form.Item required label="Title" {...formItemProps}>
           <Input
             value={isNull(param.title) ? getDefaultTitle(param.name) : param.title}
-            onChange={(e) => setParam({ ...param, title: e.target.value })}
+            onChange={e => setParam({ ...param, title: e.target.value })}
             data-test="ParameterTitleInput"
           />
         </Form.Item>
         <Form.Item label="Type" {...formItemProps}>
-          <Select value={param.type} onChange={(type) => setParam({ ...param, type })} data-test="ParameterTypeSelect">
+          <Select value={param.type} onChange={type => setParam({ ...param, type })} data-test="ParameterTypeSelect">
             <Option value="text" data-test="TextParameterTypeOption">
               Text
             </Option>
@@ -216,7 +216,7 @@ function EditParameterSettingsDialog(props) {
             <Input.TextArea
               rows={3}
               value={param.enumOptions}
-              onChange={(e) => setParam({ ...param, enumOptions: e.target.value })}
+              onChange={e => setParam({ ...param, enumOptions: e.target.value })}
             />
           </Form.Item>
         )}
@@ -224,7 +224,7 @@ function EditParameterSettingsDialog(props) {
           <Form.Item label="Query" help="Select query to load dropdown values from" {...formItemProps}>
             <QuerySelector
               selectedQuery={initialQuery}
-              onChange={(q) => setParam({ ...param, queryId: q && q.id })}
+              onChange={q => setParam({ ...param, queryId: q && q.id })}
               type="select"
             />
           </Form.Item>
@@ -233,7 +233,7 @@ function EditParameterSettingsDialog(props) {
           <Form.Item className="m-b-0" label=" " colon={false} {...formItemProps}>
             <Checkbox
               defaultChecked={!!param.multiValuesOptions}
-              onChange={(e) =>
+              onChange={e =>
                 setParam({
                   ...param,
                   multiValuesOptions: e.target.checked
@@ -263,7 +263,7 @@ function EditParameterSettingsDialog(props) {
           >
             <Select
               value={param.multiValuesOptions.prefix}
-              onChange={(quoteOption) =>
+              onChange={quoteOption =>
                 setParam({
                   ...param,
                   multiValuesOptions: {

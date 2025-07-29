@@ -59,7 +59,7 @@ const listColumns = [
   Columns.custom.sortable(
     (text, item) => (
       <React.Fragment>
-        <Link className="table-main-title" href={"reports/" + item.id + '/source#' + item.report}>
+        <Link className="table-main-title" href={"reports/" + item.id + "/source#" + item.report}>
           {item.name}
         </Link>
         <QueryTagsControl className="d-block" tags={item.tags} isDraft={item.is_draft} isArchived={item.is_archived} />

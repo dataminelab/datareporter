@@ -73,7 +73,6 @@ function DynamicFormFields({ fields, feedbackIcons, form }) {
       };
     }
 
-
     return (
       <React.Fragment key={name}>
         <Form.Item {...formItemProps}>
@@ -126,7 +125,8 @@ function DynamicFormActions({ actions, isFormDirty }) {
       type={action.type}
       disabled={isFormDirty && action.disableWhenDirty}
       loading={inProgressActions.has(action.name)}
-      onClick={() => handleAction(action)}>
+      onClick={() => handleAction(action)}
+    >
       {action.name}
     </Button>
   ));
@@ -195,15 +195,17 @@ export default function DynamicForm({
       className="dynamic-form"
       layout="vertical"
       onFinish={handleFinish}
-      onFinishFailed={handleFinishFailed}>
-      <DynamicFormFields fields={regularFields} feedbackIcons={feedbackIcons} form={form}/>
+      onFinishFailed={handleFinishFailed}
+    >
+      <DynamicFormFields fields={regularFields} feedbackIcons={feedbackIcons} form={form} />
       {!isEmpty(extraFields) && (
         <div className="extra-options">
           <Button
             type="dashed"
             block
             className="extra-options-button"
-            onClick={() => setShowExtraFields(currentShowExtraFields => !currentShowExtraFields)}>
+            onClick={() => setShowExtraFields(currentShowExtraFields => !currentShowExtraFields)}
+          >
             Additional Settings
             <i
               className={cx("fa m-l-5", { "fa-caret-up": showExtraFields, "fa-caret-down": !showExtraFields })}

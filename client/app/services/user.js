@@ -102,10 +102,10 @@ function resendInvitation(user) {
     .then(data => {
       if (clientConfig.mailSettingsMissing) {
         notification.warning("The mail server is not configured.");
-        return {"invite_link": data.invite_link, invitationSent: false}
+        return { invite_link: data.invite_link, invitationSent: false };
       }
       notification.success("Invitation sent.");
-      return {"invite_link": data.invite_link, invitationSent: true}
+      return { invite_link: data.invite_link, invitationSent: true };
     })
     .catch(error => {
       notification.error("Failed to resend invitation", getErrorMessage(error));

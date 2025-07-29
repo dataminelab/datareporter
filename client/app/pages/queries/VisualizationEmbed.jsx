@@ -74,7 +74,8 @@ function VisualizationEmbedFooter({
           queryResult={queryResults}
           apiKey={apiKey}
           disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
+          embed
+        >
           <FileOutlinedIcon /> Download as CSV File
         </QueryResultsLink>
       </Menu.Item>
@@ -85,7 +86,8 @@ function VisualizationEmbedFooter({
           queryResult={queryResults}
           apiKey={apiKey}
           disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
+          embed
+        >
           <FileOutlinedIcon /> Download as TSV File
         </QueryResultsLink>
       </Menu.Item>
@@ -96,7 +98,8 @@ function VisualizationEmbedFooter({
           queryResult={queryResults}
           apiKey={apiKey}
           disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
+          embed
+        >
           <FileExcelOutlinedIcon /> Download as Excel File
         </QueryResultsLink>
       </Menu.Item>

@@ -3,7 +3,7 @@
 import { editDashboard, shareDashboard, createQueryAndAddWidget } from "../../support/dashboard";
 
 describe("Dashboard Sharing", () => {
-  beforeEach(function() {
+  beforeEach(function () {
     cy.login();
     cy.createDashboard("Foo Bar").then(({ id }) => {
       this.dashboardId = id;
@@ -12,7 +12,7 @@ describe("Dashboard Sharing", () => {
     cy.updateOrgSettings({ disable_public_urls: false });
   });
 
-  it("is unavailable when public urls feature is disabled", function() {
+  it("is unavailable when public urls feature is disabled", function () {
     const queryData = {
       query: "select 1",
     };
@@ -42,7 +42,7 @@ describe("Dashboard Sharing", () => {
       });
   });
 
-  it("is possible if all queries are safe", function() {
+  it("is possible if all queries are safe", function () {
     const options = {
       parameters: [
         {
@@ -78,7 +78,7 @@ describe("Dashboard Sharing", () => {
   });
 
   describe("is available to unauthenticated users", () => {
-    it("when there are no parameters", function() {
+    it("when there are no parameters", function () {
       const queryData = {
         query: "select 1",
       };
@@ -96,7 +96,7 @@ describe("Dashboard Sharing", () => {
       });
     });
 
-    it("when there are only safe parameters", function() {
+    it("when there are only safe parameters", function () {
       const queryData = {
         query: "select '{{foo}}'",
         options: {
@@ -123,7 +123,7 @@ describe("Dashboard Sharing", () => {
       });
     });
 
-    it("even when there are suddenly some unsafe parameters", function() {
+    it("even when there are suddenly some unsafe parameters", function () {
       const queryData = {
         query: "select 1",
       };
@@ -167,7 +167,7 @@ describe("Dashboard Sharing", () => {
     });
   });
 
-  it("is not possible if some queries are not safe", function() {
+  it("is not possible if some queries are not safe", function () {
     const options = {
       parameters: [
         {

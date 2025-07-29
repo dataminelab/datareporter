@@ -23,15 +23,15 @@ context("Bar Chart", () => {
   const segments = () => firstSeries().find(".bar-chart-bar-segment");
   const previousSegments = () => firstSeries().find(".bar-chart-bar-previous-segment");
   const legend = () => cy.get(".bar-chart-legend");
-  const legendValue = (idx) => legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
+  const legendValue = idx => legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
 
   describe("Time split", () => {
     beforeEach(() => {
       cy.login();
       cy.createReport();
-      
+
       cy.get("div.add-button").eq(1).click();
-      
+
       cy.get("div.tile-row").eq(0).click();
       cy.get(".vis-item.selected").click();
       cy.get(".vis-item.not-selected").eq(2).click();
@@ -59,9 +59,9 @@ context("Bar Chart", () => {
       beforeEach(() => {
         cy.login();
         cy.createReport();
-        
+
         cy.get("div.add-button").eq(1).click();
-      
+
         cy.get("div.tile-row").eq(0).click();
         cy.get(".vis-item.selected").click();
         cy.get(".vis-item.not-selected").eq(2).click();
@@ -84,9 +84,9 @@ context("Bar Chart", () => {
     beforeEach(() => {
       cy.login();
       cy.createReport();
-      
+
       cy.get("div.add-button").eq(1).click();
-      
+
       cy.get("div.tile-row").eq(0).click();
       cy.get(".vis-item.selected").click();
       cy.get(".vis-item.not-selected").eq(2).click();
@@ -123,9 +123,9 @@ context("Bar Chart", () => {
       beforeEach(() => {
         cy.login();
         cy.createReport();
-        
+
         cy.get("div.add-button").eq(1).click();
-      
+
         cy.get("div.tile-row").eq(0).click();
         cy.get(".vis-item.selected").click();
         cy.get(".vis-item.not-selected").eq(2).click();

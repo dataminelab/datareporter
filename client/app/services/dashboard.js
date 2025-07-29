@@ -97,14 +97,17 @@ function calculateNewWidgetPosition(existingWidgets, newWidget) {
         height: position.sizeY,
       };
     })
-    .reduce((result, item) => {
-      const from = Math.max(item.left, 0);
-      const to = Math.min(item.right, result.length + 1);
-      for (let i = from; i < to; i += 1) {
-        result[i] = Math.max(result[i], item.bottom);
-      }
-      return result;
-    }, _.map(new Array(dashboardGridOptions.columns), _.constant(0)))
+    .reduce(
+      (result, item) => {
+        const from = Math.max(item.left, 0);
+        const to = Math.min(item.right, result.length + 1);
+        for (let i = from; i < to; i += 1) {
+          result[i] = Math.max(result[i], item.bottom);
+        }
+        return result;
+      },
+      _.map(new Array(dashboardGridOptions.columns), _.constant(0))
+    )
     .value();
 
   // Go through columns, pick them by count necessary to hold new block,
@@ -126,7 +129,7 @@ function calculateNewWidgetPosition(existingWidgets, newWidget) {
 export function Dashboard(dashboard) {
   _.extend(this, dashboard);
   Object.defineProperty(this, "url", {
-    get: function() {
+    get: function () {
       return urlForDashboard(this);
     },
   });
@@ -247,7 +250,7 @@ Dashboard.prototype.addWidget = async function addWidget(textOrVisualization, op
     props.text = textOrVisualization;
     if (options.id) props.visualization_id = options.id;
     if (props.options.type === "TABLE") {
-      delete props.options.parameterMappings
+      delete props.options.parameterMappings;
       delete props.options.id;
     }
   } else if (_.isObject(textOrVisualization)) {

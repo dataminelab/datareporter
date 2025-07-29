@@ -163,7 +163,8 @@ function VisualizationWidgetFooter({ widget, isPublic, onRefresh, onExpand }) {
           <PlainButton
             className="refresh-button hidden-print btn btn-sm btn-default btn-transparent"
             onClick={() => refreshWidget(1)}
-            data-test="RefreshButton">
+            data-test="RefreshButton"
+          >
             <i className={cx("zmdi zmdi-refresh", { "zmdi-hc-spin": refreshClickButtonId === 1 })} aria-hidden="true" />
             <span className="sr-only">
               {refreshClickButtonId === 1 ? "Refreshing, please wait. " : "Press to refresh. "}
@@ -184,7 +185,8 @@ function VisualizationWidgetFooter({ widget, isPublic, onRefresh, onExpand }) {
         {!isPublic && (
           <PlainButton
             className="btn btn-sm btn-default hidden-print btn-transparent btn__refresh"
-            onClick={() => refreshWidget(2)}>
+            onClick={() => refreshWidget(2)}
+          >
             <i className={cx("zmdi zmdi-refresh", { "zmdi-hc-spin": refreshClickButtonId === 2 })} aria-hidden="true" />
             <span className="sr-only">
               {refreshClickButtonId === 2 ? "Refreshing, please wait." : "Press to refresh."}
@@ -306,7 +308,8 @@ class VisualizationWidget extends React.Component {
             className="body-row-auto spinner-container"
             role="status"
             aria-live="polite"
-            aria-relevant="additions removals">
+            aria-relevant="additions removals"
+          >
             <div className="spinner">
               <i className="zmdi zmdi-refresh zmdi-hc-spin zmdi-hc-5x" aria-hidden="true" />
               <span className="sr-only">Loading...</span>
@@ -354,7 +357,8 @@ class VisualizationWidget extends React.Component {
             onExpand={this.expandWidget}
           />
         }
-        tileProps={{ "data-refreshing": isRefreshing }}>
+        tileProps={{ "data-refreshing": isRefreshing }}
+      >
         {this.renderVisualization()}
       </Widget>
     );

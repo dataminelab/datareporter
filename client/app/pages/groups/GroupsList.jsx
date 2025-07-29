@@ -60,7 +60,8 @@ class GroupsList extends React.Component {
             disabled={!canRemove}
             group={group}
             title={canRemove ? null : "Cannot delete built-in group"}
-            onClick={() => this.onGroupDeleted()}>
+            onClick={() => this.onGroupDeleted()}
+          >
             Delete
           </DeleteGroupButton>
         );

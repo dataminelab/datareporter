@@ -21,5 +21,5 @@ export default function VersionInfo() {
     </React.Fragment>
   );
 }
-// XXX 
+// XXX
 // this is not visible on the frsit end anymore

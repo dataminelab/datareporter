@@ -61,7 +61,7 @@ class EditDataSource extends React.Component {
           notification.success("Data source deleted successfully.");
           navigateTo("data_sources");
         })
-        .catch((e) => {
+        .catch(e => {
           notification.error(e);
           callback();
         });
@@ -118,17 +118,17 @@ class EditDataSource extends React.Component {
 
     return (
       <div className="row" data-test="DataSource">
-      <div className="flex-space-between">
-        <div className="text-left m-l-10">
-          {HELP_TRIGGER_TYPES[helpTriggerType] && (
-            <HelpTrigger className="f-13" type={helpTriggerType}>
-              Setup Instructions <i className="fa fa-question-circle" aria-hidden="true" />
-              <span className="sr-only">(help)</span>
-            </HelpTrigger>
-          )}
+        <div className="flex-space-between">
+          <div className="text-left m-l-10">
+            {HELP_TRIGGER_TYPES[helpTriggerType] && (
+              <HelpTrigger className="f-13" type={helpTriggerType}>
+                Setup Instructions <i className="fa fa-question-circle" aria-hidden="true" />
+                <span className="sr-only">(help)</span>
+              </HelpTrigger>
+            )}
           </div>
           <div className="text-right m-r-10">
-            <a onClick={()=> navigateTo("data_sources")} href="#" className="help-trigger f-13">
+            <a onClick={() => navigateTo("data_sources")} href="#" className="help-trigger f-13">
               Close <i className="fa fa-close" aria-hidden="true" />
             </a>
           </div>

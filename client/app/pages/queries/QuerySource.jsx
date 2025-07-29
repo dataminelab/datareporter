@@ -253,7 +253,8 @@ function QuerySource(props) {
           <div className="flex-fill p-relative">
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
-              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
+              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}
+            >
               <Resizable direction="vertical" sizeAttribute="flex-basis">
                 <div className="row editor">
                   <section className="query-editor-wrapper" data-test="QueryEditor">
@@ -391,7 +392,8 @@ function QuerySource(props) {
                           type="primary"
                           disabled={!queryFlags.canExecute || areParametersDirty}
                           loading={isQueryExecuting}
-                          onClick={doExecuteQuery}>
+                          onClick={doExecuteQuery}
+                        >
                           {!isQueryExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
                           Refresh Now
                         </Button>

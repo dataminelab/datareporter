@@ -47,12 +47,7 @@ export function formatDate(value) {
 
 export function localizeTime(time) {
   const [hrs, mins] = time.split(":");
-  return moment
-    .utc()
-    .hour(hrs)
-    .minute(mins)
-    .local()
-    .format("HH:mm");
+  return moment.utc().hour(hrs).minute(mins).local().format("HH:mm");
 }
 
 export function secondsToInterval(count) {

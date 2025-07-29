@@ -21,7 +21,8 @@ function DynamicButton({ options, selectedDynamicValue, onSelect, enabled, stati
       className="dynamic-menu"
       onClick={({ key }) => onSelect(get(options, key, "static"))}
       selectedKeys={[`${findIndex(options, { value: selectedDynamicValue })}`]}
-      data-test="DynamicButtonMenu">
+      data-test="DynamicButtonMenu"
+    >
       {options.map((option, index) => (
         // eslint-disable-next-line react/no-array-index-key
         <Menu.Item key={index}>

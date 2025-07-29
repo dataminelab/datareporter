@@ -12,9 +12,7 @@ describe("Create Query Snippet", () => {
 
     cy.getByTestId("QuerySnippetDialog").within(() => {
       cy.getByTestId("Trigger").type("example-snippet");
-      cy.getByTestId("Snippet")
-        .find(".ace_text-input")
-        .type("SELECT 1", { force: true });
+      cy.getByTestId("Snippet").find(".ace_text-input").type("SELECT 1", { force: true });
     });
 
     cy.getByTestId("SaveQuerySnippetButton").click();

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 context("Totals", () => {
-
   const topBar = () => cy.get(".center-top-bar:not(.fallback)");
   const filters = () => topBar().find(".filter-tile .items");
   const series = () => topBar().find(".series-tile .items");
@@ -30,24 +29,17 @@ context("Totals", () => {
   });
 
   it("should set Latest day time filter", () => {
-    filters()
-      .should("have.length", 1)
-      .should("contain", "Latest day");
+    filters().should("have.length", 1).should("contain", "Latest day");
   });
 
   it('should set default series "Data Source"', () => {
-    series()
-      .should("have.length", 1)
-      .should("contain", "Data Source");
+    series().should("have.length", 1).should("contain", "Data Source");
   });
 
   it("should load data for defined filters and measures", () => {
-    visualization().find(".measure-name")
-      .should("have.length", 1)
-      .should("contain", "Data Source");
+    visualization().find(".measure-name").should("have.length", 1).should("contain", "Data Source");
 
-    visualization().find(".measure-value")
-      .should("have.length", 1)
-      //.should("contain", "9.4 m");
+    visualization().find(".measure-value").should("have.length", 1);
+    //.should("contain", "9.4 m");
   });
 });

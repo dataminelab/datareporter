@@ -86,7 +86,8 @@ export default function QuerySelector(props) {
             key={q.id}
             role="listitem"
             onClick={() => selectQuery(q.id)}
-            data-test={`QueryId${q.id}`}>
+            data-test={`QueryId${q.id}`}
+          >
             {q.name} <QueryTagsControl isDraft={q.is_draft} tags={q.tags} className="inline-tags-control" />
           </PlainButton>
         ))}
@@ -117,7 +118,8 @@ export default function QuerySelector(props) {
         filterOption={false}
         defaultActiveFirstOption={false}
         className={props.className}
-        data-test="QuerySelector">
+        data-test="QuerySelector"
+      >
         {searchResults &&
           searchResults.map(q => {
             const disabled = q.is_draft;
@@ -127,7 +129,8 @@ export default function QuerySelector(props) {
                 key={q.id}
                 disabled={disabled}
                 className="query-selector-result"
-                data-test={`QueryId${q.id}`}>
+                data-test={`QueryId${q.id}`}
+              >
                 {q.name}{" "}
                 <QueryTagsControl
                   isDraft={q.is_draft}

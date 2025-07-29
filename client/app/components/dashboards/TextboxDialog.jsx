@@ -67,7 +67,8 @@ function TextboxDialog({ dialog, isNew, ...props }) {
       onCancel={confirmDialogDismiss}
       okText={isNew ? "Add to Dashboard" : "Save"}
       width={500}
-      wrapProps={{ "data-test": "TextboxDialog" }}>
+      wrapProps={{ "data-test": "TextboxDialog" }}
+    >
       <div className="textbox-dialog">
         <Input.TextArea
           className="resize-vertical"
@@ -83,7 +84,8 @@ function TextboxDialog({ dialog, isNew, ...props }) {
           <Link
             target="_blank"
             rel="noopener noreferrer"
-            href="https://www.markdownguide.org/cheat-sheet/#basic-syntax">
+            href="https://www.markdownguide.org/cheat-sheet/#basic-syntax"
+          >
             <Tooltip title="Markdown guide opens in new window">Markdown</Tooltip>
           </Link>
           .

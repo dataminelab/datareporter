@@ -20,7 +20,7 @@ export default function useReport(originalReport) {
     setOriginalReportSource(updatedReport.report);
   });
 
-  const saveReport = (data) => {
+  const saveReport = data => {
     if (!data) return;
 
     return Report.saveAs(data)
@@ -28,26 +28,26 @@ export default function useReport(originalReport) {
         navigateTo("/reports");
         notification.success(`Report saved as ${data.name}`);
       })
-      .catch((error) => {
+      .catch(error => {
         if (get(error, "response.status") === 400) {
           const message = get(error, "response.data.message");
           return Promise.reject(new SaveReportError(message));
         }
         return Promise.reject(new SaveReportError("Report could not be saved"));
       });
-  }
+  };
 
-
-  const saveAsReport = (name) => {
+  const saveAsReport = name => {
     delete report.id;
     const data = {
       name: name,
       model_id: report.model_id,
-      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2) || report.hash || report.expression,
+      expression:
+        window.location.hash.substring(window.location.hash.indexOf("4/") + 2) || report.hash || report.expression,
       color_1: report.color_1,
       color_2: report.color_2,
       data_source_id: report.data_source_id,
-    }
+    };
     saveReport(data);
   };
 

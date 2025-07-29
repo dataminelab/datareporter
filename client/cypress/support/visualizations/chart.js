@@ -22,7 +22,7 @@ export function createChartThroughUI(chartName, chartSpecificAssertionFn = () =>
 
   cy.wait("@SaveVisualization").should("have.property", "status", 200);
 
-  return cy.get("@SaveVisualization").then((xhr) => {
+  return cy.get("@SaveVisualization").then(xhr => {
     const { id, name, options } = xhr.response.body;
     return cy.wrap({ id, name, options });
   });
@@ -62,14 +62,14 @@ export function assertAxesAndAddLabels(xaxisLabel, yaxisLabel) {
 }
 
 export function createDashboardWithCharts(title, chartGetters, widgetsAssertionFn = () => {}) {
-  cy.createDashboard(title).then((dashboard) => {
+  cy.createDashboard(title).then(dashboard => {
     const dashboardUrl = `/dashboards/${dashboard.id}`;
-    const widgetGetters = chartGetters.map((chartGetter) => `${chartGetter}Widget`);
+    const widgetGetters = chartGetters.map(chartGetter => `${chartGetter}Widget`);
 
     chartGetters.forEach((chartGetter, i) => {
       const position = { autoHeight: false, sizeY: 8, sizeX: 3, col: (i % 2) * 3 };
       cy.get(`@${chartGetter}`)
-        .then((chart) => cy.addWidget(dashboard.id, chart.id, { position }))
+        .then(chart => cy.addWidget(dashboard.id, chart.id, { position }))
         .as(widgetGetters[i]);
     });
 

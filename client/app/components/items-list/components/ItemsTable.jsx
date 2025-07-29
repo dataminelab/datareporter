@@ -175,11 +175,11 @@ export default class ItemsTable extends React.Component {
           },
         })
       : null;
-    
+
     const onChange = (pagination, filters, sorter, extra) => {
       const action = extra?.action;
       if (action === "sort") {
-        const propsColumn = this.props.columns.find((column) => column.field === sorter.field[1]);
+        const propsColumn = this.props.columns.find(column => column.field === sorter.field[1]);
         if (!propsColumn.sorter) {
           return;
         }

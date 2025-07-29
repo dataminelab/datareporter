@@ -102,6 +102,6 @@ routes.register(
   routeWithUserSession({
     path: "/",
     title: "Data reporter",
-    render: (pageProps) => <Home {...pageProps} />,
+    render: pageProps => <Home {...pageProps} />,
   })
 );

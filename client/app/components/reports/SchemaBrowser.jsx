@@ -70,7 +70,8 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
                   title="Insert column name into query text"
                   mouseEnterDelay={0}
                   mouseLeaveDelay={0}
-                  placement="rightTop">
+                  placement="rightTop"
+                >
                   <PlainButton key={columnName} className="table-open-item" onClick={e => handleSelect(e, columnName)}>
                     <div>
                       {columnName} {columnType && <span className="column-type">{columnType}</span>}
@@ -245,7 +246,7 @@ export default function SchemaBrowser({
           <Button onClick={() => refreshSchema(true)}>
             <i className={cx("zmdi zmdi-refresh", { "zmdi-hc-spin": isLoading })} />
             <span className="sr-only">{isLoading ? "Loading, please wait." : "Press to refresh."}</span>
-            </Button>
+          </Button>
         </Tooltip>
       </div>
       <SchemaList

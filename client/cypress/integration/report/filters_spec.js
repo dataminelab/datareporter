@@ -1,5 +1,4 @@
 context("Bar Chart", () => {
-
   const barChart = () => cy.get(".bar-chart");
   const xAxis = () => cy.get(".bar-chart-x-axis");
   const ticks = () => xAxis().find("g");
@@ -9,8 +8,8 @@ context("Bar Chart", () => {
   const segments = () => firstSeries().find(".bar-chart-bar-segment");
   const previousSegments = () => firstSeries().find(".bar-chart-bar-previous-segment");
   const legend = () => cy.get(".bar-chart-legend");
-  const legendValue = (idx) => legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
-  
+  const legendValue = idx => legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
+
   describe("Report Filters", () => {
     beforeEach(() => {
       cy.login();
@@ -22,17 +21,12 @@ context("Bar Chart", () => {
       cy.get("div.total-container > .total > .measure-value").should("exist"); // 1.0
     });
 
-    
     it("should add a simple filter", () => {
       cy.get("div.add-button").eq(1).click();
       cy.get("div.tile-row").eq(1).click();
 
-      cy.get("div.scroller > .top-gutter")
-        .invoke('text')
-        .should('equal', "Data Source");
-      cy.get("div.scroller > .top-left-corner")
-        .invoke('text')
-        .should('equal', "Color 1");
+      cy.get("div.scroller > .top-gutter").invoke("text").should("equal", "Data Source");
+      cy.get("div.scroller > .top-left-corner").invoke("text").should("equal", "Color 1");
     });
 
     it("should add a couple of filters", () => {
@@ -43,36 +37,27 @@ context("Bar Chart", () => {
       cy.get("div.add-button").eq(1).click();
       cy.get("div.tile-row").eq(1).click();
 
-      cy.get("div.scroller > .top-left-corner")
-        .invoke('text')
-        .should('equal', "Color 2, Color 1");
-      cy.get("div.scroller > .top-gutter")
-        .invoke('text')
-        .should('equal', "Data Source");
+      cy.get("div.scroller > .top-left-corner").invoke("text").should("equal", "Color 2, Color 1");
+      cy.get("div.scroller > .top-gutter").invoke("text").should("equal", "Data Source");
     });
 
-      
-  it("should load bar-chart", () => {
-    // add multi filters with click clicks
-    cy.get("div.add-button").eq(1).click();
-    cy.get("div.tile-row").eq(1).click();
+    it("should load bar-chart", () => {
+      // add multi filters with click clicks
+      cy.get("div.add-button").eq(1).click();
+      cy.get("div.tile-row").eq(1).click();
 
-    cy.get("div.add-button").eq(1).click();
-    cy.get("div.tile-row").eq(1).click();
+      cy.get("div.add-button").eq(1).click();
+      cy.get("div.tile-row").eq(1).click();
 
-    cy.get("div.scroller > .top-left-corner")
-      .invoke('text')
-      .should('equal', "Color 2, Color 1");
-    cy.get("div.scroller > .top-gutter")
-      .invoke('text')
-      .should('equal', "Data Source");
+      cy.get("div.scroller > .top-left-corner").invoke("text").should("equal", "Color 2, Color 1");
+      cy.get("div.scroller > .top-gutter").invoke("text").should("equal", "Data Source");
 
-    cy.get(".vis-item.selected").click();
-    cy.get(".vis-item.not-selected").eq(2).click();
-    cy.get("button.button.primary").click();
-    cy.wait(500);
-    barChart().should("exist");
-  });
+      cy.get(".vis-item.selected").click();
+      cy.get(".vis-item.not-selected").eq(2).click();
+      cy.get("button.button.primary").click();
+      cy.wait(500);
+      barChart().should("exist");
+    });
 
     // it("should add a year over year (YOY) filters", () => {
     //   // add multi filters with clicky clicks

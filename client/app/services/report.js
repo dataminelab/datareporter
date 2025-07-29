@@ -78,7 +78,6 @@ export class ReportResultError {
   }
 }
 
-
 export class Parameters {
   constructor(report, reportString) {
     this.report = report;
@@ -252,7 +251,7 @@ export class Report {
     if (!queries || queries.length === 0) return 0;
     const lastAvailableQuery = queries[queries.length - 1];
     if (!lastAvailableQuery || !lastAvailableQuery.query_result) return 0;
-    return lastAvailableQuery.query_result.data.rows
+    return lastAvailableQuery.query_result.data.rows;
   }
 
   isNew() {
@@ -265,12 +264,7 @@ export class Report {
 
   scheduleInLocalTime() {
     const parts = this.schedule.split(":");
-    return moment
-      .utc()
-      .hour(parts[0])
-      .minute(parts[1])
-      .local()
-      .format("HH:mm");
+    return moment.utc().hour(parts[0]).minute(parts[1]).local().format("HH:mm");
   }
 
   hasResult() {
@@ -406,11 +400,11 @@ export class Report {
 const getReport = report => new Report(report);
 const saveOrCreateUrl = function (data) {
   if (data.id) {
-    return `api/reports/${data.id}`
+    return `api/reports/${data.id}`;
   } else {
-    return "api/reports"
+    return "api/reports";
   }
-}
+};
 const mapResults = data => ({ ...data, results: map(data.results, getReport) });
 const normalizeCondition = {
   "greater than": ">",
@@ -423,7 +417,7 @@ const transformResponse = data => {
       op: normalizeCondition[data.options.op] || data.options.op,
     },
   });
-}
+};
 
 function transformPublicState(report) {
   if (report.results && !report.queries.length) throw new Error("Report has no queries.");
@@ -434,19 +428,22 @@ function transformPublicState(report) {
 
 const ReportService = {
   report: params => axios.get("api/reports", { params }).then(mapResults),
-  get: data => axios.get("api/reports/" + data.id).then(getReport).then(transformPublicState),
+  get: data =>
+    axios
+      .get("api/reports/" + data.id)
+      .then(getReport)
+      .then(transformPublicState),
   save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
   saveAs: data => axios.post("api/reports", data).then(getReport),
-  delete: data => axios.delete(`api/reports/${data.id}`)
-    .then(() => {
-      window.location.href = '/reports';
+  delete: data =>
+    axios.delete(`api/reports/${data.id}`).then(() => {
+      window.location.href = "/reports";
     }),
   recent: params => axios.get(`api/reports/recent`, { params }).then(data => map(data, getReport)),
-  archive: params => axios.get(`api/reports/archive`, { params })
-    .then(mapResults),
-  archiveReport: params => axios.delete(`api/reports/archive`, { params })
-    .then(() => {
-      window.location.href = '/reports/archive';
+  archive: params => axios.get(`api/reports/archive`, { params }).then(mapResults),
+  archiveReport: params =>
+    axios.delete(`api/reports/archive`, { params }).then(() => {
+      window.location.href = "/reports/archive";
     }),
   myReports: params => axios.get("api/reports?type=my", { params }).then(mapResults),
   fork: ({ id }) => axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
@@ -458,7 +455,8 @@ const ReportService = {
   favorite: data => axios.post(`api/reports/${data.id}/favorite`),
   unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),
   getByToken: ({ token }) => axios.get(`api/reports/public/${token}`).then(transformPublicState),
-  getByTokenPublic: ({ token }) => axios.get(`api/reports/public/${token}?get_results=true`).then(getReport).then(transformPublicState),
+  getByTokenPublic: ({ token }) =>
+    axios.get(`api/reports/public/${token}?get_results=true`).then(getReport).then(transformPublicState),
 };
 
 ReportService.newReport = function newReport() {

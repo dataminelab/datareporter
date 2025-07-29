@@ -144,7 +144,8 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
       height={direction === "vertical" ? size : 0}
       minConstraints={[0, 0]}
       {...resizeEventHandlers}
-      draggableOpts={draggableCoreOptions}>
+      draggableOpts={draggableCoreOptions}
+    >
       {children}
     </ReactResizable>
   );

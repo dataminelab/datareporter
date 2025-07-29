@@ -22,7 +22,7 @@ function BeaconConsent() {
     setHide(true);
   };
 
-  const confirmConsent = (confirm) => {
+  const confirmConsent = confirm => {
     let message = "🙏 Thank you.";
 
     if (!confirm) {

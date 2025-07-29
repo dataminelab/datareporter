@@ -9,9 +9,7 @@ import url from "@/services/url";
 import ErrorMessage from "./ErrorMessage";
 
 function generateRouteKey() {
-  return Math.random()
-    .toString(32)
-    .slice(2);
+  return Math.random().toString(32).slice(2);
 }
 
 export const CurrentRouteContext = React.createContext(null);

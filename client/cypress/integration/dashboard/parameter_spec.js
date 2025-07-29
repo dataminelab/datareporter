@@ -6,7 +6,7 @@ describe("Dashboard Parameters", () => {
     { name: "param2", title: "Parameter 2", type: "text", value: "example2" },
   ];
 
-  beforeEach(function() {
+  beforeEach(function () {
     cy.login();
     cy.createDashboard("Foo Bar")
       .then(({ id }) => {
@@ -34,9 +34,7 @@ describe("Dashboard Parameters", () => {
       cy.getByTestId("WidgetDropdownButton").click();
     });
 
-    cy.getByTestId("WidgetDropdownButtonMenu")
-      .contains("Edit Parameters")
-      .click();
+    cy.getByTestId("WidgetDropdownButtonMenu").contains("Edit Parameters").click();
   };
 
   const saveMappingOptions = (closeMappingMenu = false) => {
@@ -45,7 +43,7 @@ describe("Dashboard Parameters", () => {
       .filter(":visible")
       .as("Popover")
       .within(() => {
-        cy.wait(500);  // eslint-disable-line cypress/no-unnecessary-waiting
+        cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
         cy.contains("button", "OK").click();
       })
       .then(() => {
@@ -56,14 +54,12 @@ describe("Dashboard Parameters", () => {
       });
   };
 
-  it("supports widget parameters", function() {
+  it("supports widget parameters", function () {
     // widget parameter mapping is the default for the API
     cy.getByTestId(this.widgetTestId).within(() => {
       cy.getByTestId("TableVisualization").should("contain", "example1");
 
-      cy.getByTestId("ParameterName-param1")
-        .find("input")
-        .type("{selectall}Redash");
+      cy.getByTestId("ParameterName-param1").find("input").type("{selectall}Redash");
 
       cy.getByTestId("ParameterApplyButton").click();
 
@@ -73,16 +69,14 @@ describe("Dashboard Parameters", () => {
     cy.getByTestId("DashboardParameters").should("not.exist");
   });
 
-  it("supports static values for parameters", function() {
+  it("supports static values for parameters", function () {
     openMappingOptions(this.widgetTestId);
     cy.getByTestId("EditParamMappingButton-param1").click();
 
     cy.getByTestId("StaticValueOption").click();
 
     cy.getByTestId("EditParamMappingPopover").within(() => {
-      cy.getByTestId("ParameterValueInput")
-        .find("input")
-        .type("{selectall}StaticValue");
+      cy.getByTestId("ParameterValueInput").find("input").type("{selectall}StaticValue");
     });
 
     saveMappingOptions(true);

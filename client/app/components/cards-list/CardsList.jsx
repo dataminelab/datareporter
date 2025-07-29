@@ -38,7 +38,7 @@ export default function CardsList({ items = [], showSearch = false }) {
             <Input.Search
               placeholder="Search..."
               aria-label="Search cards"
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={e => setSearchText(e.target.value)}
               autoFocus
             />
           </div>

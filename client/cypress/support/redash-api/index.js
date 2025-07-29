@@ -2,30 +2,30 @@
 
 const { extend, get, merge, find } = Cypress._;
 
-const post = (options) =>
+const post = options =>
   cy
     .getCookie("csrf_token")
-    .then((csrf) => cy.request({ ...options, method: "POST", headers: { "X-CSRF-TOKEN": csrf.value } }));
+    .then(csrf => cy.request({ ...options, method: "POST", headers: { "X-CSRF-TOKEN": csrf.value } }));
 
-Cypress.Commands.add("createDashboard", (name) => {
+Cypress.Commands.add("createDashboard", name => {
   return post({ url: "api/dashboards", body: { name } }).then(({ body }) => body);
 });
 
-Cypress.Commands.add("createReport", (data) => {
-  const merged =  extend(
+Cypress.Commands.add("createReport", data => {
+  const merged = extend(
     {
       color_1: "#f17013",
       color_2: "#000",
       data_source_id: 1,
-      expression: "N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0408SqGOAygKZobYDmZe2MCClGALZNkOJvhABRNAGMA9AFUAKgGEKIAGYQEaJgCcuAbVBoAngAdxBIeMp6mGiTPvomAEwD66dTYAK+rDcjUDcYPXQsXAJfAEYAEXUoXXN8AFoYgQsrEARXJJAAXwBdYsoocyQ0IyKygKZgkHsNfSZsGWy3dDgPKEww9o8IN3UNTD1BbzwTLIk3BzheNHUwRBhswszLCWE4WHtCmpBzCGxsdziIYWwoSOrKY9P3BjGlgk6SHr69AaHCoA==",
+      expression:
+        "N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0408SqGOAygKZobYDmZe2MCClGALZNkOJvhABRNAGMA9AFUAKgGEKIAGYQEaJgCcuAbVBoAngAdxBIeMp6mGiTPvomAEwD66dTYAK+rDcjUDcYPXQsXAJfAEYAEXUoXXN8AFoYgQsrEARXJJAAXwBdYsoocyQ0IyKygKZgkHsNfSZsGWy3dDgPKEww9o8IN3UNTD1BbzwTLIk3BzheNHUwRBhswszLCWE4WHtCmpBzCGxsdziIYWwoSOrKY9P3BjGlgk6SHr69AaHCoA==",
       model_id: 1,
       name: "New Report",
     },
     data
   );
 
-  return post({ url: "/api/reports", body: merged })
-    .then(({ body }) => cy.visit(`/reports/${body.id}/source`));
+  return post({ url: "/api/reports", body: merged }).then(({ body }) => cy.visit(`/reports/${body.id}/source`));
 });
 
 Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {
@@ -45,7 +45,7 @@ Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {
   // eslint-disable-next-line cypress/no-assigning-return-values
   let request = post({ url: "/api/queries", body: merged }).then(({ body }) => body);
   if (shouldPublish) {
-    request = request.then((query) =>
+    request = request.then(query =>
       post({ url: `/api/queries/${query.id}`, body: { is_draft: false } }).then(() => query)
     );
   }
@@ -127,7 +127,7 @@ Cypress.Commands.add("createUser", ({ name, email, password }) => {
     url: "api/users?no_invite=yes",
     body: { name, email },
     failOnStatusCode: false,
-  }).then((xhr) => {
+  }).then(xhr => {
     const { status, body } = xhr;
     if (status < 200 || status > 400) {
       throw new Error(xhr);
@@ -164,7 +164,7 @@ Cypress.Commands.add("getDestinations", () => {
 Cypress.Commands.add("addDestinationSubscription", (alertId, destinationName) => {
   return cy
     .getDestinations()
-    .then((destinations) => {
+    .then(destinations => {
       const destination = find(destinations, { name: destinationName });
       if (!destination) {
         throw new Error("Destination not found");
@@ -184,6 +184,6 @@ Cypress.Commands.add("addDestinationSubscription", (alertId, destinationName) =>
     });
 });
 
-Cypress.Commands.add("updateOrgSettings", (settings) => {
+Cypress.Commands.add("updateOrgSettings", settings => {
   return post({ url: "api/settings/organization", body: settings }).then(({ body }) => body);
 });

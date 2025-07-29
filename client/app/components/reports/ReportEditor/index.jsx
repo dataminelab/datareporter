@@ -11,7 +11,7 @@ import "./index.less";
 
 const editorProps = { $blockScrolling: Infinity };
 
-const ReportEditor = React.forwardRef(function(
+const ReportEditor = React.forwardRef(function (
   { className, syntax, value, autocompleteEnabled, schema, onChange, onSelectionChange, ...props },
   ref
 ) {

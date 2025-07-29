@@ -51,5 +51,5 @@ export const reportPageStyles = (colorTextHex, colorBodyHex) => {
         left: "0px",
       },
     },
-  }
-}
+  };
+};

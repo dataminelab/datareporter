@@ -19,9 +19,7 @@ describe("Edit Profile", () => {
   it("updates the user after Save", () => {
     fillProfileDataAndSave("Jian Yang", "jian.yang@redash.io");
     cy.logout();
-    cy.login("jian.yang@redash.io")
-      .its("status")
-      .should("eq", 200);
+    cy.login("jian.yang@redash.io").its("status").should("eq", 200);
     cy.visit("/users/me");
     cy.contains("Jian Yang");
     fillProfileDataAndSave("Example Admin", "admin@redash.io");
@@ -32,9 +30,7 @@ describe("Edit Profile", () => {
       const previousApiKey = $apiKey.val();
 
       cy.getByTestId("RegenerateApiKey").click();
-      cy.get(".ant-btn-primary")
-        .contains("Regenerate")
-        .click({ force: true });
+      cy.get(".ant-btn-primary").contains("Regenerate").click({ force: true });
 
       cy.getByTestId("ApiKey").should("not.eq", previousApiKey);
     });
@@ -54,9 +50,7 @@ describe("Edit Profile", () => {
       fillChangePasswordAndSave("password", "newpassword", "newpassword");
       cy.contains("Saved.");
       cy.logout();
-      cy.login(undefined, "newpassword")
-        .its("status")
-        .should("eq", 200);
+      cy.login(undefined, "newpassword").its("status").should("eq", 200);
       cy.visit("/users/me");
       cy.getByTestId("ChangePassword").click();
       fillChangePasswordAndSave("newpassword", "password", "password");

@@ -21,15 +21,16 @@ export { DashboardStatusEnum } from "./useEditModeHandler";
 
 function getAffectedWidgets(widgets, updatedParameters = []) {
   return !isEmpty(updatedParameters)
-    ? widgets.filter(widget => Object.values(widget.getParameterMappings())
-      .filter(({ type }) => type === "dashboard-level")
-      .some(({ mapTo }) =>
-        includes(
-          updatedParameters.map(p => p.name),
-          mapTo
-        )
+    ? widgets.filter(widget =>
+        Object.values(widget.getParameterMappings())
+          .filter(({ type }) => type === "dashboard-level")
+          .some(({ mapTo }) =>
+            includes(
+              updatedParameters.map(p => p.name),
+              mapTo
+            )
+          )
       )
-    )
     : widgets;
 }
 
@@ -139,15 +140,12 @@ function useDashboard(dashboardData) {
     [loadWidget]
   );
 
-  const refreshDashboard = useCallback(
-    () => {
-      if (!refreshing) {
-        setRefreshing(true);
-        setTimeout(() => document.querySelector("a[data-test='Refresh']").click(), 333);
-      }
-    },
-    [refreshing]
-  );
+  const refreshDashboard = useCallback(() => {
+    if (!refreshing) {
+      setRefreshing(true);
+      setTimeout(() => document.querySelector("a[data-test='Refresh']").click(), 333);
+    }
+  }, [refreshing]);
 
   const archiveDashboard = useCallback(() => {
     recordEvent("archive", "dashboard", dashboard.id);
@@ -199,8 +197,9 @@ function useDashboard(dashboardData) {
       dashboard,
     }).onClose(({ text, options }) =>
       dashboard.addWidget(text, options).then(() => {
-        setDashboard(currentDashboard => extend({}, currentDashboard))
-      }, [dashboard]));
+        setDashboard(currentDashboard => extend({}, currentDashboard));
+      }, [dashboard])
+    );
   }, [dashboard]);
 
   const [refreshRate, setRefreshRate, disableRefreshRate] = useRefreshRateHandler(refreshDashboard);

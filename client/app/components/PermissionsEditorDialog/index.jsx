@@ -117,7 +117,8 @@ function UserSelect({ onSelect, shouldShowUser }) {
       notFoundContent={null}
       value={undefined}
       getPopupContainer={trigger => trigger.parentNode}
-      onSelect={onSelect}>
+      onSelect={onSelect}
+    >
       {users.filter(shouldShowUser).map(user => (
         <Option key={user.id} value={user.id}>
           <UserPreviewCard user={user} />
@@ -159,7 +160,8 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
       {...dialog.props}
       className="permissions-editor-dialog"
       title={<PermissionsEditorDialogHeader context={context} />}
-      footer={<Button onClick={dialog.dismiss}>Close</Button>}>
+      footer={<Button onClick={dialog.dismiss}>Close</Button>}
+    >
       <UserSelect
         onSelect={userId => addPermission(userId).then(loadUsersWithPermissions)}
         shouldShowUser={user => !userHasPermission(user)}
@@ -186,7 +188,8 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
                   <Tooltip title="Remove user permissions">
                     <PlainButton
                       aria-label="Remove permissions"
-                      onClick={() => removePermission(user.id).then(loadUsersWithPermissions)}>
+                      onClick={() => removePermission(user.id).then(loadUsersWithPermissions)}
+                    >
                       <i className="fa fa-remove clickable" aria-hidden="true" />
                     </PlainButton>
                   </Tooltip>

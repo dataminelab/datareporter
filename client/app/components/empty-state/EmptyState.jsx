@@ -64,7 +64,7 @@ function EmptyState({
   header,
   description,
   illustration,
-  illustrationType=".svg",
+  illustrationType = ".svg",
   helpMessage,
   closable,
   onClose,
@@ -216,7 +216,9 @@ function EmptyState({
   ];
 
   const stepsItems = getStepsItems ? getStepsItems(defaultStepsItems) : defaultStepsItems;
-  const imageSource = illustrationPath ? illustrationPath : "static/images/illustrations/" + illustration + illustrationType;
+  const imageSource = illustrationPath
+    ? illustrationPath
+    : "static/images/illustrations/" + illustration + illustrationType;
 
   return (
     <div className="empty-state-wrapper">

@@ -66,13 +66,13 @@ export default function DesktopNavbar() {
   const canCreateDashboard = currentUser.hasPermission("create_dashboard");
   const canCreateAlert = currentUser.hasPermission("list_alerts");
 
-  const handleDeepRefresh = (event) => {
+  const handleDeepRefresh = event => {
     event.stopPropagation();
     localStorage.setItem("bypass_cache", true);
     window.location.reload();
-  }
+  };
 
-  const handleNewReportButton = (event) => {
+  const handleNewReportButton = event => {
     event.preventDefault();
     window.location.hash = "#";
     if (window.location.pathname !== "/reports/new") {
@@ -80,7 +80,7 @@ export default function DesktopNavbar() {
     } else {
       window.location.reload();
     }
-  }
+  };
 
   return (
     <div className="desktop-navbar-report">
@@ -95,10 +95,7 @@ export default function DesktopNavbar() {
       <NavbarSection className="left-border">
         {currentUser.hasPermission("list_dashboards") && (
           <Menu.Item key="dashboards" className={activeState.dashboards ? "navbar-active-item" : null}>
-            <Tooltip
-              placement="bottom"
-              title="Dashboards"
-            >
+            <Tooltip placement="bottom" title="Dashboards">
               <Link href="dashboards">
                 <i className="icon-ui icon-dashboard"></i>
               </Link>
@@ -107,34 +104,25 @@ export default function DesktopNavbar() {
         )}
         {currentUser.hasPermission("view_query") && (
           <Menu.Item key="queries" className={activeState.queries ? "navbar-active-item" : null}>
-            <Tooltip
-              placement="bottom"
-              title="Queries"
-            >
+            <Tooltip placement="bottom" title="Queries">
               <Link href="queries">
-                  <i className="icon-ui  icon-command-line"></i>
-                </Link>
+                <i className="icon-ui  icon-command-line"></i>
+              </Link>
             </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
           <Menu.Item key="reports" className={activeState.reports ? "navbar-active-item" : null}>
-            <Tooltip
-              placement="bottom"
-              title="Reports"
-            >
+            <Tooltip placement="bottom" title="Reports">
               <Link href="reports">
-                  <i className="icon-ui  icon-bar-chart"></i>
-                </Link>
-              </Tooltip>
+                <i className="icon-ui  icon-bar-chart"></i>
+              </Link>
+            </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("list_alerts") && (
           <Menu.Item key="alerts" className={activeState.alerts ? "navbar-active-item" : null}>
-            <Tooltip
-              placement="bottom"
-              title="Alerts"
-            >
+            <Tooltip placement="bottom" title="Alerts">
               <Link href="alerts">
                 <i className="icon-ui  icon-notifications-allerts-bell"></i>
               </Link>
@@ -151,11 +139,12 @@ export default function DesktopNavbar() {
             popupOffset={[-36, 60]}
             title={
               <React.Fragment>
-              <Link data-test="CreateButton">
-                <i className="icon-ui  icon-plus"></i>
-              </Link>
-            </React.Fragment>
-            }>
+                <Link data-test="CreateButton">
+                  <i className="icon-ui  icon-plus"></i>
+                </Link>
+              </React.Fragment>
+            }
+          >
             {canCreateQuery && (
               <Menu.Item key="new-query">
                 <Link href="queries/new" data-test="CreateQueryMenuItem">
@@ -197,7 +186,8 @@ export default function DesktopNavbar() {
             <span data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
               <img className="profile__image_thumb" src={currentUser.profile_image_url} alt={currentUser.name} />
             </span>
-          }>
+          }
+        >
           <Menu.Item key="profile">
             <Link href="users/me">Profile</Link>
           </Menu.Item>

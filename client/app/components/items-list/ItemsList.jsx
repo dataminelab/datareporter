@@ -77,7 +77,8 @@ export function wrap(WrappedComponent, createItemsSource, createStateStorage) {
       itemsSource.onError = error => this.props.onError(error);
 
       const initialState = this.getState({ ...itemsSource.getState(), isLoaded: false });
-      const { updatePagination, toggleSorting, setSorting, updateSearch, updateSelectedTags, update, handleError } = itemsSource;
+      const { updatePagination, toggleSorting, setSorting, updateSearch, updateSelectedTags, update, handleError } =
+        itemsSource;
       this.state = {
         ...initialState,
         toggleSorting, // eslint-disable-line react/no-unused-state

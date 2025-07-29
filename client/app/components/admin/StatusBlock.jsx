@@ -73,7 +73,8 @@ export function Manager({ info }) {
             <span className="badge">
               <TimeAgo date={info.lastRefreshAt} placeholder="n/a" />
             </span>
-          }>
+          }
+        >
           Last Refresh
         </List.Item>,
         <List.Item
@@ -81,7 +82,8 @@ export function Manager({ info }) {
             <span className="badge">
               <TimeAgo date={info.startedAt} placeholder="n/a" />
             </span>
-          }>
+          }
+        >
           Started
         </List.Item>,
         <List.Item extra={<span className="badge">{info.outdatedQueriesCount}</span>}>

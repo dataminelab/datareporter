@@ -32,24 +32,20 @@ describe("Dashboard Filters", () => {
     });
   });
 
-  it("filters rows in a Table Visualization", function() {
+  it("filters rows in a Table Visualization", function () {
     editDashboard();
     cy.getByTestId("DashboardFilters").should("not.exist");
     cy.getByTestId("DashboardFiltersCheckbox").click();
 
     cy.getByTestId("DashboardFilters").within(() => {
-      cy.getByTestId("FilterName-stage1::filter")
-        .find(".ant-select-selection-item")
-        .should("have.text", "a");
+      cy.getByTestId("FilterName-stage1::filter").find(".ant-select-selection-item").should("have.text", "a");
     });
 
     cy.getByTestId(this.widget1TestId).within(() => {
       expectTableToHaveLength(4);
       expectFirstColumnToHaveMembers(["a", "a", "a", "a"]);
 
-      cy.getByTestId("FilterName-stage1::filter")
-        .find(".ant-select")
-        .click();
+      cy.getByTestId("FilterName-stage1::filter").find(".ant-select").click();
     });
 
     cy.contains(".ant-select-item:visible", "b").click();
@@ -69,9 +65,7 @@ describe("Dashboard Filters", () => {
     // assert that changing a global filter affects all widgets
 
     cy.getByTestId("DashboardFilters").within(() => {
-      cy.getByTestId("FilterName-stage1::filter")
-        .find(".ant-select")
-        .click();
+      cy.getByTestId("FilterName-stage1::filter").find(".ant-select").click();
     });
 
     cy.contains(".ant-select-item:visible", "c").click();

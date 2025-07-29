@@ -34,9 +34,7 @@ export function FavoriteList({ title, resource, itemUrl, emptyState }) {
               <span className="btn-favorite m-r-5">
                 <i className="fa fa-star" aria-hidden="true" />
               </span>
-              <span className="name-favorite">
-                {item.name}
-              </span>
+              <span className="name-favorite">{item.name}</span>
               {item.is_draft && <span className="label label-default m-l-5">Unpublished</span>}
             </Link>
           ))}
@@ -70,7 +68,11 @@ export function DashboardAndQueryFavoritesList() {
                   <span className="btn-favorite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <Link className="will-appear-a-tag" href="dashboards">Dashboards</Link> will appear here
+                  Favorite{" "}
+                  <Link className="will-appear-a-tag" href="dashboards">
+                    Dashboards
+                  </Link>{" "}
+                  will appear here
                 </p>
               }
             />
@@ -85,7 +87,11 @@ export function DashboardAndQueryFavoritesList() {
                   <span className="btn-favorite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <Link className="will-appear-a-tag" href="queries">Queries</Link> will appear here
+                  Favorite{" "}
+                  <Link className="will-appear-a-tag" href="queries">
+                    Queries
+                  </Link>{" "}
+                  will appear here
                 </p>
               }
             />
@@ -100,7 +106,11 @@ export function DashboardAndQueryFavoritesList() {
                   <span className="btn-favorite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <Link className="will-appear-a-tag" href="reports">Reports</Link> will appear here
+                  Favorite{" "}
+                  <Link className="will-appear-a-tag" href="reports">
+                    Reports
+                  </Link>{" "}
+                  will appear here
                 </p>
               }
             />

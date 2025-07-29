@@ -16,7 +16,7 @@ import {
   size,
   includes,
   values,
-  isEmpty
+  isEmpty,
 } from "lodash";
 import location from "@/services/location";
 import { cloneParameter, Parameter } from "@/services/parameters";
@@ -126,7 +126,7 @@ class Widget {
   get type() {
     if (this.visualization) {
       return WidgetTypeEnum.VISUALIZATION;
-    } else if (this.text && this.text.includes('[turnilo-widget]')) {
+    } else if (this.text && this.text.includes("[turnilo-widget]")) {
       return WidgetTypeEnum.TURNILO;
     } else if (this.restricted) {
       return WidgetTypeEnum.RESTRICTED;
@@ -245,7 +245,7 @@ class Widget {
     return mappingType === Widget.MappingType.StaticValue;
   }
 
-  getParametersDefs() { 
+  getParametersDefs() {
     if (this.type === "turnilo") return this.options.parameterMappings;
     const mappings = this.getParameterMappings();
     // textboxes does not have query

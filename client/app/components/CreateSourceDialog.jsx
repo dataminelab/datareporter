@@ -142,7 +142,8 @@ class CreateSourceDialog extends React.Component {
           imageUrl={`${imageFolder}/${item.type}.png`}
           roundedImage={false}
           data-test="PreviewItem"
-          data-test-type={item.type}>
+          data-test-type={item.type}
+        >
           <i className="fa fa-angle-double-right" aria-hidden="true" />
         </PreviewCard>
       </List.Item>
@@ -176,11 +177,13 @@ class CreateSourceDialog extends React.Component {
                   form={this.formId}
                   type="primary"
                   loading={savingSource}
-                  data-test="CreateSourceSaveButton">
+                  data-test="CreateSourceSaveButton"
+                >
                   Create
                 </Button>,
               ]
-        }>
+        }
+      >
         <div data-test="CreateSourceDialog">
           <Steps className="hidden-xs m-b-10" size="small" current={currentStep} progressDot>
             {currentStep === StepEnum.CONFIGURE_IT ? (

@@ -32,7 +32,10 @@ import { EssenceFixtures } from "@/components/TurniloComponent/common/models/ess
 import { FilterTile } from "@/components/TurniloComponent/client/components/filter-tile/filter-tile-widget";
 import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 import { Stage as visualizationStage } from "@/components/TurniloComponent/common/models/stage/stage";
-import { RelativeTimeFilterClause, FixedTimeFilterClause } from "@/components/TurniloComponent/common/models/filter-clause/filter-clause";
+import {
+  RelativeTimeFilterClause,
+  FixedTimeFilterClause,
+} from "@/components/TurniloComponent/common/models/filter-clause/filter-clause";
 import { TimeShift } from "@/components/TurniloComponent/common/models/time-shift/time-shift";
 import { DateRange } from "@/components/TurniloComponent/common/models/date-range/date-range";
 
@@ -49,7 +52,8 @@ class DashboardSettings extends React.Component {
         <Checkbox
           checked={!!dashboard.dashboard_filters_enabled}
           onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
-          data-test="DashboardFiltersCheckbox">
+          data-test="DashboardFiltersCheckbox"
+        >
           Use Dashboard Level Filters
         </Checkbox>
         <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
@@ -76,7 +80,7 @@ class AddWidgetContainer extends React.Component {
           </span>
         </h2>
         <div>
-          <Button onClick={showAddReportDialog} className="m-r-15 ant-btn-turnilo"  data-test="AddReportButton">
+          <Button onClick={showAddReportDialog} className="m-r-15 ant-btn-turnilo" data-test="AddReportButton">
             Add Report Widget
           </Button>
           <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
@@ -116,7 +120,7 @@ class DashboardComponent extends React.Component {
   }
 
   turniloWidgetsSetter() {
-    const turniloWidgets = this.props.dashboardOptions.dashboard.widgets.filter(w=>w.options.type==="TURNILO");
+    const turniloWidgets = this.props.dashboardOptions.dashboard.widgets.filter(w => w.options.type === "TURNILO");
     turniloWidgets.forEach(widget => {
       const param = widget.options.parameterMappings[0];
       if (!param || !param.value) return;
@@ -125,8 +129,8 @@ class DashboardComponent extends React.Component {
         if (param.value.split("_").length === 2) {
           const [start, end] = param.value.split("_");
           this.setState({
-              start: new Date(start),
-              end: new Date(end)
+            start: new Date(start),
+            end: new Date(end),
           });
         } else {
           this.setState({ shift: param.value });
@@ -162,7 +166,6 @@ class DashboardComponent extends React.Component {
     }
     this.turniloWidgetsSetter();
   }
-  
 
   componentWillUnmount() {
     if (this.unobserve) {
@@ -171,13 +174,12 @@ class DashboardComponent extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if ((
-        prevState.clickerList !== this.state.clickerList ||
+    if (
+      (prevState.clickerList !== this.state.clickerList ||
         prevState.essenceList !== this.state.essenceList ||
-        prevState.widgetList !== this.state.widgetList
-      ) &&
-        this.state.clickerList.length === this.state.essenceList.length &&
-        !this.state.shiftChanged
+        prevState.widgetList !== this.state.widgetList) &&
+      this.state.clickerList.length === this.state.essenceList.length &&
+      !this.state.shiftChanged
     ) {
       if (this.state.turniloWidgetsLength !== this.state.widgetList.length) return;
       // test if this is not happening more then once
@@ -189,11 +191,13 @@ class DashboardComponent extends React.Component {
         }
       }, 3333);
     }
-    const turniloWidgetsCount = this.props.dashboardOptions.dashboard.widgets.filter(w=>w.options.type==="TURNILO").length;
+    const turniloWidgetsCount = this.props.dashboardOptions.dashboard.widgets.filter(
+      w => w.options.type === "TURNILO"
+    ).length;
     if (this.state.turniloWidgetsLength !== turniloWidgetsCount) this.turniloWidgetsSetter();
   }
 
-  setPageContainer = (pageContainer) => {
+  setPageContainer = pageContainer => {
     this.setState({ pageContainer });
   };
 
@@ -222,12 +226,11 @@ class DashboardComponent extends React.Component {
     for (let i = 0; i < this.state.essenceList.length; i++) {
       const essence = this.state.essenceList[i];
       const clicker = this.state.clickerList[i];
-      const widget = this.state.widgetList[i]
+      const widget = this.state.widgetList[i];
       const dimensionName = essence.filter.getReferenceNameByIndex(0);
       const { start, end } = this.state;
       const createDateRange = new DateRange({ start, end });
-      const clause = new FixedTimeFilterClause({ reference: dimensionName,
-        values: List.of(createDateRange) });
+      const clause = new FixedTimeFilterClause({ reference: dimensionName, values: List.of(createDateRange) });
       let relativeFilter = essence.filter.setClause(clause);
       if (relativeFilter.length() > 1) {
         relativeFilter = relativeFilter.removeClauseByIndex(0);
@@ -238,7 +241,7 @@ class DashboardComponent extends React.Component {
       this.setEssence(widget, newEssence);
     }
     this.setState({ shiftChanged: true });
-  }
+  };
 
   constructFilter(period, duration, reference) {
     return new RelativeTimeFilterClause({ period, duration: Duration.fromJS(duration), reference });
@@ -262,10 +265,10 @@ class DashboardComponent extends React.Component {
       this.setEssence(widget, newEssence);
     }
     this.setState({ shiftChanged: true });
-  }
+  };
 
   setFilterParams = async (widgetId, essence, clicker) => {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       const { widgetList, clickerList, essenceList } = prevState;
 
       const widgetExists = widgetList.includes(widgetId);
@@ -296,10 +299,10 @@ class DashboardComponent extends React.Component {
       return {
         clickerList: updatedClickerList,
         essenceList: updatedEssenceList,
-        widgetList: updatedWidgetList
+        widgetList: updatedWidgetList,
       };
     });
-  }
+  };
 
   setClicker = async (id, clicker) => {
     if (this.state.widgetList.includes(id)) {
@@ -311,7 +314,7 @@ class DashboardComponent extends React.Component {
 
       // Update state with the new clickerList array and set the current clicker
       this.setState({
-        clickerList: updatedClickers
+        clickerList: updatedClickers,
       });
     } else {
       let clickerList;
@@ -326,7 +329,7 @@ class DashboardComponent extends React.Component {
         listCreated: true,
       });
     }
-  }
+  };
 
   setEssence = async (id, essence) => {
     if (this.state.widgetList.includes(id)) {
@@ -353,18 +356,18 @@ class DashboardComponent extends React.Component {
         listCreated: true,
       });
     }
-  }
+  };
 
   onParametersEdit = parameters => {
     const paramOrder = map(parameters, "name");
     this.props.dashboardOptions.updateDashboard({ options: { globalParamOrder: paramOrder } });
   };
 
-  getEssence = (id) => {
+  getEssence = id => {
     const modelIndex = this.state.widgetList.lastIndexOf(id);
     if (modelIndex === -1) return null;
     return this.state.essenceList[modelIndex];
-  }
+  };
 
   render() {
     const { dashboardOptions, onParametersEdit } = this.props;
@@ -394,7 +397,7 @@ class DashboardComponent extends React.Component {
                 sortable={editingLayout}
                 onParametersEdit={onParametersEdit}
               />
-          </div>
+            </div>
           )}
           {(!isEmpty(filters) || turniloWidgetsAvailable) && (
             <div className="m-b-10 p-15 bg-white tiled dashboard-report-filters" data-test="DashboardFilters">
@@ -404,7 +407,7 @@ class DashboardComponent extends React.Component {
                 updateSelectedRange={this.updateSelectedRange}
                 clickerList={this.state.clickerList}
                 essenceList={this.state.essenceList}
-                timekeeper={new Timekeeper({timeTags:[]})}
+                timekeeper={new Timekeeper({ timeTags: [] })}
                 menuStage={visualizationStage}
                 setEssence={this.setEssence}
                 widgetList={this.state.widgetList}

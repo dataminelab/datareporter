@@ -42,9 +42,7 @@ export class ItemsSource {
       },
     };
     return this._beforeUpdate().then(() => {
-      const fetchToken = Math.random()
-        .toString(36)
-        .substr(2);
+      const fetchToken = Math.random().toString(36).substr(2);
       this._currentFetchToken = fetchToken;
       return this._fetcher
         .fetch(changes, state, context)

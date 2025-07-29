@@ -64,7 +64,8 @@ class GroupDataSources extends React.Component {
         const menu = (
           <Menu
             selectedKeys={[datasource.view_only ? "viewonly" : "full"]}
-            onClick={item => this.setDataSourcePermissions(datasource, item.key)}>
+            onClick={item => this.setDataSourcePermissions(datasource, item.key)}
+          >
             <Menu.Item key="full">Full Access</Menu.Item>
             <Menu.Item key="viewonly">View Only</Menu.Item>
           </Menu>

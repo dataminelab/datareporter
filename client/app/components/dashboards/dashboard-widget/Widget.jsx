@@ -14,8 +14,10 @@ import "./Widget.less";
 
 function downloadCSV(data) {
   const headers = Object.keys(data[0]);
-  const csvContent = "data:text/csv;charset=utf-8," +
-    headers.join(",") + "\n" +
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    headers.join(",") +
+    "\n" +
     data.map(row => headers.map(header => row[header]).join(",")).join("\n");
 
   const encodedUri = encodeURI(csvContent);
@@ -31,11 +33,15 @@ function getExtraOptions(report) {
   const extraOptions = [];
   const data = Report.getFirstDataAvailable(report.results && report.results.queries);
   extraOptions.push(
-    <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>Download as CSV File</Menu.Item>
+    <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>
+      Download as CSV File
+    </Menu.Item>
   );
   extraOptions.push(<Menu.Divider key="divider_report" />);
   extraOptions.push(
-    <Menu.Item key="view_report" onClick={() => window.location.href=`/reports/${report.id}/source`}>View Report</Menu.Item>
+    <Menu.Item key="view_report" onClick={() => (window.location.href = `/reports/${report.id}/source`)}>
+      View Report
+    </Menu.Item>
   );
   return extraOptions;
 }
@@ -83,7 +89,8 @@ function WidgetDeleteButton({ onClick }) {
         title="Remove From Dashboard"
         onClick={onClick}
         data-test="WidgetDeleteButton"
-        aria-label="Close">
+        aria-label="Close"
+      >
         <i className="zmdi zmdi-close" aria-hidden="true" />
       </PlainButton>
     </div>

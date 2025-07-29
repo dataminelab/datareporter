@@ -50,14 +50,16 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
             htmlType="submit"
             type="primary"
             form={reportSnippetsFormId}
-            data-test="SaveReportSnippetButton">
+            data-test="SaveReportSnippetButton"
+          >
             {isEditing ? "Save" : "Create"}
           </Button>
         ),
       ]}
       wrapProps={{
         "data-test": "QuerySnippetDialog",
-      }}>
+      }}
+    >
       <DynamicForm
         id={reportSnippetsFormId}
         fields={formFields}

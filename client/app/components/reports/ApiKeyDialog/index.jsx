@@ -26,7 +26,7 @@ function ApiKeyDialog({ dialog, ...props }) {
         setUpdatingApiKey(false);
         setReport(extend(report.clone(), { api_key: data.api_key }));
       })
-      .catch((e) => {
+      .catch(e => {
         console.error(e);
         setUpdatingApiKey(false);
         notification.error("Failed to update API key");

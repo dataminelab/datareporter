@@ -69,14 +69,14 @@ export default function ReportSourceAlerts({ report, dataSourcesAvailable }) {
 
   return (
     <div className="report-source-alerts">
-    <Card>
-      <DynamicComponent name="ReportSource.Alerts" report={report} dataSourcesAvailable={dataSourcesAvailable}>
-        <div className="report-source-alerts-icon">
-          <WarningFilledIcon />
-        </div>
-        {message}
-      </DynamicComponent>
-    </Card>
+      <Card>
+        <DynamicComponent name="ReportSource.Alerts" report={report} dataSourcesAvailable={dataSourcesAvailable}>
+          <div className="report-source-alerts-icon">
+            <WarningFilledIcon />
+          </div>
+          {message}
+        </DynamicComponent>
+      </Card>
     </div>
   );
 }

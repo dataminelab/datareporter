@@ -103,7 +103,8 @@ class EditParameterMappingsDialog extends React.Component {
         title="Parameters"
         onOk={() => this.saveWidget()}
         okButtonProps={{ loading: this.state.saveInProgress }}
-        width={700}>
+        width={700}
+      >
         {this.state.parameterMappings.length > 0 && (
           <ParameterMappingListInput
             mappings={this.state.parameterMappings}

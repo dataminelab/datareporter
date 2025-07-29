@@ -109,7 +109,8 @@ export default function ReportVisualizationTabs({
         className="add-visualization-button"
         data-test="NewVisualization"
         type="link"
-        onClick={() => onAddVisualization()}>
+        onClick={() => onAddVisualization()}
+      >
         <i className="fa fa-plus" />
         <span className="m-l-5 hidden-xs">Add Visualization</span>
       </Button>
@@ -129,7 +130,8 @@ export default function ReportVisualizationTabs({
       animated={false}
       tabBarGutter={0}
       onChange={activeKey => onChangeTab(+activeKey)}
-      destroyInactiveTabPane>
+      destroyInactiveTabPane
+    >
       {orderedVisualizations.map(visualization => (
         <TabPane
           key={`${visualization.id}`}
@@ -141,7 +143,8 @@ export default function ReportVisualizationTabs({
               visualizationName={visualization.name}
               onDelete={() => onDeleteVisualization(visualization.id)}
             />
-          }>
+          }
+        >
           {queryResult ? (
             <VisualizationRenderer visualization={visualization} queryResult={queryResult} context="report" />
           ) : (

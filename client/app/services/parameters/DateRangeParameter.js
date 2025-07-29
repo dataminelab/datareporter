@@ -18,14 +18,7 @@ const DYNAMIC_DATE_RANGES = {
   },
   yesterday: {
     name: "Yesterday",
-    value: () => [
-      moment()
-        .subtract(1, "day")
-        .startOf("day"),
-      moment()
-        .subtract(1, "day")
-        .endOf("day"),
-    ],
+    value: () => [moment().subtract(1, "day").startOf("day"), moment().subtract(1, "day").endOf("day")],
   },
   this_week: {
     name: "This week",
@@ -41,36 +34,15 @@ const DYNAMIC_DATE_RANGES = {
   },
   last_week: {
     name: "Last week",
-    value: () => [
-      moment()
-        .subtract(1, "week")
-        .startOf("week"),
-      moment()
-        .subtract(1, "week")
-        .endOf("week"),
-    ],
+    value: () => [moment().subtract(1, "week").startOf("week"), moment().subtract(1, "week").endOf("week")],
   },
   last_month: {
     name: "Last month",
-    value: () => [
-      moment()
-        .subtract(1, "month")
-        .startOf("month"),
-      moment()
-        .subtract(1, "month")
-        .endOf("month"),
-    ],
+    value: () => [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
   },
   last_year: {
     name: "Last year",
-    value: () => [
-      moment()
-        .subtract(1, "year")
-        .startOf("year"),
-      moment()
-        .subtract(1, "year")
-        .endOf("year"),
-    ],
+    value: () => [moment().subtract(1, "year").startOf("year"), moment().subtract(1, "year").endOf("year")],
   },
   last_7_days: {
     name: "Last 7 days",

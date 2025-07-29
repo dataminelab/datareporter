@@ -24,9 +24,7 @@ describe("Embedded Queries", () => {
           cy.visit(`/queries/${query.id}/source`);
           cy.getByTestId("QueryPageVisualizationTabs", { timeout: 10000 }).should("exist");
           cy.getByTestId("QueryPageHeaderMoreButton").click();
-          cy.get(".ant-dropdown-menu-item")
-            .should("exist")
-            .should("not.contain", "Show API Key");
+          cy.get(".ant-dropdown-menu-item").should("exist").should("not.contain", "Show API Key");
           cy.getByTestId("QueryControlDropdownButton").click();
           cy.get(".ant-dropdown-menu-item").should("exist");
           cy.getByTestId("ShowEmbedDialogButton").should("not.exist");
@@ -109,7 +107,7 @@ describe("Embedded Queries", () => {
     cy.getByTestId("QueryEditor")
       .get(".ace_text-input")
       .type("SELECT name, slug FROM organizations WHERE name='{{}{{}name}}'{esc}", { force: true });
-    
+
     cy.getByTestId("SaveButton").click();
 
     cy.getByTestId("TextParamInput").type("Redash");
@@ -121,9 +119,9 @@ describe("Embedded Queries", () => {
       SaveParameterSettings
       SaveButton
     `);
-    cy.wait(500);  // eslint-disable-line cypress/no-unnecessary-waiting
+    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
     cy.getByTestId("ExecuteButton").click();
-    cy.wait(500);  // eslint-disable-line cypress/no-unnecessary-waiting
+    cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
 
     // Add a little waiting - page is not updated fast enough
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting

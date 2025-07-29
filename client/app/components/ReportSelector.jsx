@@ -85,7 +85,8 @@ export default function ReportSelector(props) {
             key={q.id}
             role="listitem"
             onClick={() => selectQuery(q.id)}
-            data-test={`QueryId${q.id}`}>
+            data-test={`QueryId${q.id}`}
+          >
             {q.name} <QueryTagsControl isDraft={q.is_draft} tags={q.tags} className="inline-tags-control" />
           </PlainButton>
         ))}
@@ -116,7 +117,8 @@ export default function ReportSelector(props) {
         filterOption={false}
         defaultActiveFirstOption={false}
         className={props.className}
-        data-test="ReportSelector">
+        data-test="ReportSelector"
+      >
         {searchResults &&
           searchResults.map(q => {
             const disabled = q.is_draft;
@@ -126,14 +128,10 @@ export default function ReportSelector(props) {
                 key={q.id}
                 disabled={disabled}
                 className="report-selector-result"
-                data-test={`QueryId${q.id}`}>
+                data-test={`QueryId${q.id}`}
+              >
                 {q.name}{" "}
-                <QueryTagsControl
-                  isDraft={q.is_draft}
-                  tags={q.tags}
-                  isArchived={q.is_archived}
-                  className="d-block"
-                />
+                <QueryTagsControl isDraft={q.is_draft} tags={q.tags} isArchived={q.is_archived} className="d-block" />
               </Option>
             );
           })}
@@ -144,7 +142,7 @@ export default function ReportSelector(props) {
   return (
     <span data-test="ReportSelector">
       {selectedQuery ? (
-        <Input value={selectedQuery.name} aria-label="Tied report"  suffix={clearIcon} readOnly />
+        <Input value={selectedQuery.name} aria-label="Tied report" suffix={clearIcon} readOnly />
       ) : (
         <Input
           placeholder={placeholder}

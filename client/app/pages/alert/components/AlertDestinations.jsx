@@ -193,7 +193,8 @@ export default class AlertDestinations extends React.Component {
             type="primary"
             size="small"
             className="add-button"
-            onClick={this.showAddAlertSubDialog}>
+            onClick={this.showAddAlertSubDialog}
+          >
             <i className="fa fa-plus f-12 m-r-5" aria-hidden="true" /> Add
           </Button>
         </Tooltip>

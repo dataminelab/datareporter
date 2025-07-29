@@ -75,10 +75,10 @@ export default function useEditModeHandler(canEditDashboard, widgets) {
     [saveDashboardLayout]
   );
 
-  const retrySaveDashboardLayout = useCallback(() => saveDashboardLayout(recentPositions), [
-    recentPositions,
-    saveDashboardLayout,
-  ]);
+  const retrySaveDashboardLayout = useCallback(
+    () => saveDashboardLayout(recentPositions),
+    [recentPositions, saveDashboardLayout]
+  );
 
   const setEditing = useCallback(
     editing => {

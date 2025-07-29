@@ -101,7 +101,8 @@ export default function DatabricksSchemaBrowser({
                 <>
                   <i className="fa fa-database m-r-5" aria-hidden="true" /> Database
                 </>
-              }>
+              }
+            >
               {filteredDatabases.map(database => (
                 <Select.Option key={database}>
                   <i className="fa fa-database m-r-5" aria-hidden="true" />

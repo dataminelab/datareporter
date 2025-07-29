@@ -230,12 +230,7 @@ export class Query {
 
   scheduleInLocalTime() {
     const parts = this.schedule.split(":");
-    return moment
-      .utc()
-      .hour(parts[0])
-      .minute(parts[1])
-      .local()
-      .format("HH:mm");
+    return moment.utc().hour(parts[0]).minute(parts[1]).local().format("HH:mm");
   }
 
   hasResult() {

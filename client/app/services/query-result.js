@@ -4,7 +4,7 @@ import { axios } from "@/services/axios";
 import { QueryResultError } from "@/services/query";
 import { Auth } from "@/services/auth";
 import { isString, uniqBy, each, isNumber, includes, extend, forOwn, get } from "lodash";
-import JSONbig from 'json-bigint';
+import JSONbig from "json-bigint";
 
 const { parse: jsonParse } = JSONbig({ storeAsString: true });
 const logger = debug("redash:services:QueryResult");
@@ -47,9 +47,10 @@ function getColumnFriendlyName(column) {
 
 const createOrSaveUrl = data => (data.id ? `api/query_results/${data.id}` : "api/query_results");
 const QueryResultResource = {
-  get: ({ id }) => axios.get(`api/query_results/${id}`, { 
-    transformResponse: (response) => jsonParse(response) 
-  }),
+  get: ({ id }) =>
+    axios.get(`api/query_results/${id}`, {
+      transformResponse: response => jsonParse(response),
+    }),
   post: data => axios.post(createOrSaveUrl(data), data),
 };
 
@@ -348,9 +349,9 @@ class QueryResult {
     queryResult.deferred.onStatusChange(ExecutionStatus.LOADING_RESULT);
 
     axios
-      .get(`api/queries/${queryId}/results/${id}.json`, { 
-        transformResponse: (response) => jsonParse(response)
-      }) 
+      .get(`api/queries/${queryId}/results/${id}.json`, {
+        transformResponse: response => jsonParse(response),
+      })
       .then(response => {
         // Success handler
         queryResult.isLoadingResult = false;
@@ -400,9 +401,12 @@ class QueryResult {
           });
           this.isLoadingResult = false;
         } else {
-          setTimeout(() => {
-            this.loadResult(tryCount + 1);
-          }, 1000 * Math.pow(2, tryCount));
+          setTimeout(
+            () => {
+              this.loadResult(tryCount + 1);
+            },
+            1000 * Math.pow(2, tryCount)
+          );
         }
       });
   }

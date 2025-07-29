@@ -21,7 +21,6 @@ import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
 
 import "./ReportSource.less";
 
-
 function ReportSource(props) {
   const { report, setReport, isDirty, showShareReportDialog } = useReport(props.report);
   const reportFlags = useReportFlags(report, []);
@@ -31,10 +30,7 @@ function ReportSource(props) {
 
   useUnsavedChangesAlert(isDirty);
 
-  const {
-    reportResult,
-    isExecuting: isReportExecuting,
-  } = useReportExecute(report);
+  const { reportResult, isExecuting: isReportExecuting } = useReportExecute(report);
 
   useEffect(() => {
     // TODO: ignore new pages?
@@ -44,7 +40,6 @@ function ReportSource(props) {
   useEffect(() => {
     document.title = report.name;
   }, [report.name]);
-
 
   const editVisualization = useEditVisualizationDialog(report, reportResult, newReport => {
     setReport(newReport);
@@ -69,12 +64,9 @@ function ReportSource(props) {
           <div className="flex-fill p-relative">
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
-              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
-              <ReportEditor
-                report={report}
-                reportChanged={reportChanged}
-                setReportChanged={setReportChanged}
-              />
+              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}
+            >
+              <ReportEditor report={report} reportChanged={reportChanged} setReportChanged={setReportChanged} />
             </div>
           </div>
           {reportResult && !reportResult.getError() && (

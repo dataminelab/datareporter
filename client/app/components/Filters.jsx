@@ -86,7 +86,8 @@ function Filters({ filters, onChange }) {
               <div
                 key={filter.name}
                 className="col-sm-6 p-l-0 filter-container"
-                data-test={`FilterName-${filter.name}`}>
+                data-test={`FilterName-${filter.name}`}
+              >
                 <label>{filter.friendlyName}</label>
                 {options.length === 0 && <Select className="w-100" disabled value="No values" />}
                 {options.length > 0 && (
@@ -108,7 +109,8 @@ function Filters({ filters, onChange }) {
                     maxTagCount={3}
                     maxTagTextLength={10}
                     maxTagPlaceholder={num => `+${num.length} more`}
-                    onChange={values => onChange(filter, values)}>
+                    onChange={values => onChange(filter, values)}
+                  >
                     {!filter.multiple && options}
                     {filter.multiple && [
                       <Select.Option key={NONE_VALUES} data-test="ClearOption">

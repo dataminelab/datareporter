@@ -18,7 +18,7 @@ describe("Create Data Source", () => {
     });
   });
 
-  it("renders the page and takes a screenshot", function() {
+  it("renders the page and takes a screenshot", function () {
     cy.visit("/data_sources/new");
     cy.server();
     cy.route("**/api/data_sources/types").as("DataSourceTypesRequest");
@@ -40,9 +40,7 @@ describe("Create Data Source", () => {
   it("creates a new PostgreSQL data source", () => {
     cy.visit("/data_sources/new");
     cy.getByTestId("SearchSource").type("PostgreSQL");
-    cy.getByTestId("CreateSourceDialog")
-      .contains("PostgreSQL")
-      .click();
+    cy.getByTestId("CreateSourceDialog").contains("PostgreSQL").click();
 
     cy.getByTestId("Name").type("Redash");
     cy.getByTestId("Host").type("postgres");

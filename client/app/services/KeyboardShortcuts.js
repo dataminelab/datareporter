@@ -36,10 +36,7 @@ const KeyboardShortcuts = {
 
   bind: keymap => {
     each(keymap, (fn, key) => {
-      const keys = key
-        .toLowerCase()
-        .split(",")
-        .map(trim);
+      const keys = key.toLowerCase().split(",").map(trim);
       each(keys, k => {
         handlers[k] = [...without(handlers[k], fn), fn];
         Mousetrap.bindGlobal(k, onShortcut);
@@ -49,10 +46,7 @@ const KeyboardShortcuts = {
 
   unbind: keymap => {
     each(keymap, (fn, key) => {
-      const keys = key
-        .toLowerCase()
-        .split(",")
-        .map(trim);
+      const keys = key.toLowerCase().split(",").map(trim);
       each(keys, k => {
         handlers[k] = without(handlers[k], fn);
         if (handlers[k].length === 0) {

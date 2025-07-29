@@ -53,7 +53,7 @@ function showNotification(error) {
   if (error instanceof SaveReportConflictError) {
     notificationOptions.duration = null;
   }
-  if (!error || error.message === 'No changes made') return;
+  if (!error || error.message === "No changes made") return;
   notification.error(error.message, error.detailedMessage, notificationOptions);
 }
 
@@ -74,7 +74,7 @@ function doSaveReport(data, { canOverwrite = false, errorMessage = "Report could
       }
       return Promise.reject(new SaveReportConflictError());
     } else if (get(error, "response.status") === 400) {
-      const message = get(error, "response.data.message")
+      const message = get(error, "response.data.message");
       return Promise.reject(new SaveReportError(message));
     }
     if (error.name === "TypeError") {
@@ -124,7 +124,7 @@ export default function useUpdateReport(report, onChange) {
       if (!report.expression && !report.hash) return 0;
       return doSaveReport(data, { canOverwrite: report.can_edit, errorMessage: errorMessage })
         .then(updatedReport => {
-          if (!updatedReport || updatedReport.message === 'No changes made') return;
+          if (!updatedReport || updatedReport.message === "No changes made") return;
           if (!isNil(successMessage)) {
             notification.success(successMessage);
           }
@@ -133,7 +133,9 @@ export default function useUpdateReport(report, onChange) {
               report.clone(),
               // if server returned completely new object (currently possible only when saving new report) -
               // update all fields; otherwise pick only changed fields
-              updatedReport.id !== report.id ? updatedReport : pick(updatedReport, uniq(["id", "version", ...keys(data)]))
+              updatedReport.id !== report.id
+                ? updatedReport
+                : pick(updatedReport, uniq(["id", "version", ...keys(data)]))
             )
           );
         })

@@ -103,9 +103,7 @@ class ScheduleDialog extends React.Component {
 
   setTime = time => {
     this.newSchedule = {
-      time: moment(time)
-        .utc()
-        .format(HOUR_FORMAT),
+      time: moment(time).utc().format(HOUR_FORMAT),
     };
   };
 
@@ -127,11 +125,7 @@ class ScheduleDialog extends React.Component {
       (newInterval === IntervalEnum.DAYS || newInterval === IntervalEnum.WEEKS) &&
       (!this.state.minute || !this.state.hour)
     ) {
-      newSchedule.time = moment()
-        .hour("00")
-        .minute("15")
-        .utc()
-        .format(HOUR_FORMAT);
+      newSchedule.time = moment().hour("00").minute("15").utc().format(HOUR_FORMAT);
     }
     if (newInterval === IntervalEnum.WEEKS && !this.state.dayOfWeek) {
       newSchedule.day_of_week = WEEKDAYS_FULL[0];
@@ -223,16 +217,7 @@ class ScheduleDialog extends React.Component {
           <div className="schedule-component">
             <h5>On time</h5>
             <div data-testid="time">
-              <TimeEditor
-                defaultValue={
-                  hour
-                    ? moment()
-                        .hour(hour)
-                        .minute(minute)
-                    : null
-                }
-                onChange={this.setTime}
-              />
+              <TimeEditor defaultValue={hour ? moment().hour(hour).minute(minute) : null} onChange={this.setTime} />
             </div>
           </div>
         ) : null}

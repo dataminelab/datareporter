@@ -24,7 +24,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     recordEvent("view", "page", "model/new");
   }, []);
 
-  const onChangeConnection = useCallback(async (id) => {
+  const onChangeConnection = useCallback(async id => {
     setError(null);
     setLoadTables(true);
     setTables([]);
@@ -34,7 +34,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
       const res = await DataSource.getTables(id);
       setTables(res);
       setLoadTables(false);
-    } catch(err) {
+    } catch (err) {
       const res = err.response;
       if (res && res.status === 400) {
         const catchedError = new Error(res.data.message);
@@ -48,46 +48,69 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     tablesLoadingRef.current.style.opacity = "0";
   }, []);
 
-
   const formFields = useMemo(() => {
-    const common = { required: true};
-    const dataSourceProps = { required: true, props: { onSelect: (id) => onChangeConnection(id) } };
-    const tableProps = { required: true, props: {disabled: tables.length === 0, loading: loadTables } };
-    const optionsConnection = dataSources.map((item) => {
-        return {
-          name: item.name,
-          value: item.id
-        }
-    })
-    const optionsTable = tables.map((item) => {
-        return {
-          name: item.name,
-          value: item.name
-        }
-    })
-    if (model)  {
+    const common = { required: true };
+    const dataSourceProps = { required: true, props: { onSelect: id => onChangeConnection(id) } };
+    const tableProps = { required: true, props: { disabled: tables.length === 0, loading: loadTables } };
+    const optionsConnection = dataSources.map(item => {
+      return {
+        name: item.name,
+        value: item.id,
+      };
+    });
+    const optionsTable = tables.map(item => {
+      return {
+        name: item.name,
+        value: item.name,
+      };
+    });
+    if (model) {
       return [
         { ...common, name: "name", title: "Name", type: "text", autoFocus: true, initialValue: model.name },
-        {...dataSourceProps, name: "data_source_id", title: "Connection", type: "select", options: optionsConnection, initialValue: model.data_source_id },
-        { ...tableProps, name: "table", title: "Table", type: "select", options: optionsTable, initialValue: model.table }
+        {
+          ...dataSourceProps,
+          name: "data_source_id",
+          title: "Connection",
+          type: "select",
+          options: optionsConnection,
+          initialValue: model.data_source_id,
+        },
+        {
+          ...tableProps,
+          name: "table",
+          title: "Table",
+          type: "select",
+          options: optionsTable,
+          initialValue: model.table,
+        },
       ];
     } else {
       return [
         { ...common, name: "name", title: "Name", type: "text", autoFocus: true },
-        { ...dataSourceProps, name: "data_source_id", title: "Connection", type: "select", onChange: onChangeConnection, options: optionsConnection },
-        { ...tableProps, name: "table", title: "Table", type: "select", options: optionsTable }
+        {
+          ...dataSourceProps,
+          name: "data_source_id",
+          title: "Connection",
+          type: "select",
+          onChange: onChangeConnection,
+          options: optionsConnection,
+        },
+        { ...tableProps, name: "table", title: "Table", type: "select", options: optionsTable },
       ];
     }
-
-
   }, [dataSources, loadTables, model, onChangeConnection, tables]);
 
   return (
     <Modal
       {...dialog.props}
-      title={ !model ? 'Create a New Model' : 'Edit a Model'}
+      title={!model ? "Create a New Model" : "Edit a Model"}
       footer={[
-        <Button key="cancel" {...dialog.props.cancelButtonProps} onClick={dialog.dismiss} data-test="CreateModelCancelButton">
+        <Button
+          key="cancel"
+          {...dialog.props.cancelButtonProps}
+          onClick={dialog.dismiss}
+          data-test="CreateModelCancelButton"
+        >
           Cancel
         </Button>,
         <Button
@@ -98,20 +121,15 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           form={formId}
           data-test="SaveUserButton"
         >
-          {!model ? 'Create' : 'Save'}
-        </Button>
+          {!model ? "Create" : "Save"}
+        </Button>,
       ]}
       wrapProps={{
         "data-test": "CreateModelDialog",
-      }}>
-      <DynamicForm 
-        id={formId}
-        fields={formFields}
-        onSubmit={handleSubmit}
-        hideSubmitButton
-        feedbackIcons
-      />
-      <div ref={tablesLoadingRef} style={{opacity: 0}}>
+      }}
+    >
+      <DynamicForm id={formId} fields={formFields} onSubmit={handleSubmit} hideSubmitButton feedbackIcons />
+      <div ref={tablesLoadingRef} style={{ opacity: 0 }}>
         <Loader />
       </div>
       {error && <Alert message={error.message} type="error" showIcon data-test="CreateModelErrorAlert" />}

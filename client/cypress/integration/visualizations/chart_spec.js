@@ -95,8 +95,8 @@ describe("Chart", () => {
 
     const withDashboardWidgetsAssertionFn = (widgetGetters, dashboardUrl) => {
       cy.visit(dashboardUrl);
-      widgetGetters.forEach((widgetGetter) => {
-        cy.get(`@${widgetGetter}`).then((widget) => {
+      widgetGetters.forEach(widgetGetter => {
+        cy.get(`@${widgetGetter}`).then(widget => {
           cy.getByTestId(getWidgetTestId(widget)).within(() => {
             cy.get("g.points").should("exist");
           });

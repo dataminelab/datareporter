@@ -46,7 +46,7 @@ export const Model = PropTypes.shape({
   user_id: PropTypes.number.isRequired,
   data_source_id: PropTypes.number.isRequired,
   created_at: PropTypes.string,
-  updated_at: PropTypes.string
+  updated_at: PropTypes.string,
 });
 
 export const Destination = PropTypes.shape({

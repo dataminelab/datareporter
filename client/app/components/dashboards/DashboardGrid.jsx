@@ -3,7 +3,12 @@ import PropTypes from "prop-types";
 import { chain, cloneDeep, find } from "lodash";
 import cx from "classnames";
 import { Responsive, WidthProvider } from "react-grid-layout";
-import { VisualizationWidget, TextboxWidget, RestrictedWidget, TurniloWidget } from "@/components/dashboards/dashboard-widget";
+import {
+  VisualizationWidget,
+  TextboxWidget,
+  RestrictedWidget,
+  TurniloWidget,
+} from "@/components/dashboards/dashboard-widget";
 import { FiltersType } from "@/components/Filters";
 import cfg from "@/config/dashboard-grid-options";
 import AutoHeightController from "./AutoHeightController";
@@ -70,17 +75,10 @@ const DashboardWidget = React.memo(
             onParameterMappingsChange={onParameterMappingsChange}
           />
         );
-        
+
       case WidgetTypeEnum.TEXTBOX:
-        return (
-          <TextboxWidget
-            widget={widget}
-            canEdit={canEdit}
-            isPublic={isPublic}
-            onDelete={onDelete}
-          />
-        );
-    
+        return <TextboxWidget widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
+
       case WidgetTypeEnum.TURNILO:
         return (
           <TurniloWidget
@@ -93,11 +91,10 @@ const DashboardWidget = React.memo(
             getEssence={getEssence}
           />
         );
-    
+
       default:
         return <RestrictedWidget widget={widget} />;
     }
-
   },
   (prevProps, nextProps) =>
     prevProps.widget === nextProps.widget &&
@@ -169,9 +166,9 @@ class DashboardGrid extends React.Component {
     // init AutoHeightController
     this.autoHeightCtrl = new AutoHeightController(this.onWidgetHeightUpdated);
     this.autoHeightCtrl.update(this.props.widgets);
-    this.widgetResizeEvent = new Event('widgetResize');
+    this.widgetResizeEvent = new Event("widgetResize");
     // Define that the event name is 'build'.
-    this.widgetResizeEvent.initEvent('widgetResize', true, true);
+    this.widgetResizeEvent.initEvent("widgetResize", true, true);
   }
 
   componentDidMount() {
@@ -210,10 +207,7 @@ class DashboardGrid extends React.Component {
       return;
     }
 
-    const normalized = chain(layouts[MULTI])
-      .keyBy("i")
-      .mapValues(this.normalizeTo)
-      .value();
+    const normalized = chain(layouts[MULTI]).keyBy("i").mapValues(this.normalizeTo).value();
 
     this.props.onLayoutChange(normalized);
   };
@@ -296,7 +290,8 @@ class DashboardGrid extends React.Component {
               data-test={`WidgetId${widget.id}`}
               className={cx("dashboard-widget-wrapper", {
                 "widget-auto-height-enabled": this.autoHeightCtrl.exists(widget.id),
-              })}>
+              })}
+            >
               <DashboardWidget
                 dashboard={dashboard}
                 configTurnilo={this.state.configTurnilo}

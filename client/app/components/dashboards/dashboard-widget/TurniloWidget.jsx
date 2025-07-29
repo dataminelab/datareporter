@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
+import { TurniloApplication } from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
 import Widget from "./Widget";
-import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
-import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
+import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
+import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 
 function TurniloWidget(props) {
   const { widget, canEdit, config, setFilterParams, getEssence } = props;
-  const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
+  const turniloHash = config.hash || widget.text.replace("[turnilo-widget]", "");
   const TurniloMenuOptions = [];
 
   if (!widget.width) {

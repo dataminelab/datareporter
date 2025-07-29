@@ -22,7 +22,8 @@ function ItemsList({ items, renderItem, onItemClick }) {
       return (
         <List.Item
           className={classNames("select-items-list", "w-100", "p-l-10", "p-r-10", { disabled: isDisabled }, className)}
-          onClick={isDisabled ? null : () => onItemClick(item)}>
+          onClick={isDisabled ? null : () => onItemClick(item)}
+        >
           {content}
         </List.Item>
       );
@@ -112,12 +113,14 @@ function SelectItemsDialog({
             {...dialog.props.okButtonProps}
             onClick={save}
             disabled={selectedItems.length === 0 || dialog.props.okButtonProps.disabled}
-            type="primary">
+            type="primary"
+          >
             Save
             {showCount && !isEmpty(selectedItems) ? ` (${size(selectedItems)})` : null}
           </Button>
         </div>
-      }>
+      }
+    >
       <div className="d-flex align-items-center m-b-10">
         <div className="flex-fill">
           <Input.Search

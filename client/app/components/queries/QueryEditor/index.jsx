@@ -12,7 +12,7 @@ import "./index.less";
 
 const editorProps = { $blockScrolling: Infinity };
 
-const QueryEditor = React.forwardRef(function(
+const QueryEditor = React.forwardRef(function (
   { className, syntax, value, autocompleteEnabled, schema, onChange, onSelectionChange, ...props },
   ref
 ) {

@@ -47,9 +47,7 @@ function AddToDashboardDialog({ dialog, visualization }) {
       })
       .then(dashboard => {
         dialog.close();
-        const key = `notification-${Math.random()
-          .toString(36)
-          .slice(2, 12)}`;
+        const key = `notification-${Math.random().toString(36).slice(2, 12)}`;
         notification.success(
           "Widget added to dashboard",
           <React.Fragment>
@@ -77,7 +75,8 @@ function AddToDashboardDialog({ dialog, visualization }) {
       title="Add to Dashboard"
       okButtonProps={{ disabled: !selectedDashboard || saveInProgress, loading: saveInProgress }}
       cancelButtonProps={{ disabled: saveInProgress }}
-      onOk={addWidgetToDashboard}>
+      onOk={addWidgetToDashboard}
+    >
       <label htmlFor="add-to-dashboard-dialog-dashboard">Choose the dashboard to add this query to:</label>
 
       {!selectedDashboard && (
@@ -116,7 +115,8 @@ function AddToDashboardDialog({ dialog, visualization }) {
                     ]
                   : []
               }
-              onClick={selectedDashboard ? null : () => setSelectedDashboard(d)}>
+              onClick={selectedDashboard ? null : () => setSelectedDashboard(d)}
+            >
               <div className="add-to-dashboard-dialog-item-content">
                 {d.name}
                 <ReportTagsControl isDraft={d.is_draft} tags={d.tags} />

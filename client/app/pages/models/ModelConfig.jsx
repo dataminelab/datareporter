@@ -45,7 +45,7 @@ function ModelConfig({ modelId, onError }) {
       .catch(error => {
         handleError(error);
       });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -77,7 +77,7 @@ const ModelConfigPage = wrapSettingsTab(
     title: "Model config",
     path: "models/config",
     order: 7,
-    isHide: true
+    isHide: true,
   },
   ModelConfig
 );

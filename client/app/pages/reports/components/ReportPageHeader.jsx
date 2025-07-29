@@ -1,6 +1,6 @@
 import { extend, map, filter, reduce } from "lodash";
 import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
-import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
+import "abortcontroller-polyfill/dist/abortcontroller-polyfill-only";
 import PropTypes, { any } from "prop-types";
 import Tooltip from "@/components/Tooltip";
 import Button from "antd/lib/button";
@@ -129,19 +129,20 @@ export default function ReportPageHeader(props) {
   const modelSelectElementText = useRef("");
   const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
 
-  const handleReportChanged = useCallback((state) => {
+  const handleReportChanged = useCallback(state => {
     if (!report.data_source_id) return;
     if (!report.model_id) return;
     setReportChanged(state);
   });
 
-  const handleNewNameChange = (event) => {
+  const handleNewNameChange = event => {
     setNewName(event.target.value);
-  }
+  };
   // delete spesific color
   const styles = useMemo(() => reactCSS(reportPageStyles(colorTextHex, colorBodyHex), [colorTextHex, colorBodyHex]));
 
-  const handleColorChange = useCallback((color, type) => {
+  const handleColorChange = useCallback(
+    (color, type) => {
       if (!color.rgb && color.startsWith("#")) {
         color = {
           rgb: hexToRgb(color),
@@ -174,7 +175,7 @@ export default function ReportPageHeader(props) {
     [handleReportChanged, props, report]
   );
 
-  const changeModelDataText = (text) => {
+  const changeModelDataText = text => {
     const elem = document.querySelector("#model-data-source").querySelectorAll("span")[2];
     if (elem.innerText === text) return;
     if (elem.innerText !== modelSelectElement.current.props.placeholder) {
@@ -182,19 +183,19 @@ export default function ReportPageHeader(props) {
     }
     elem.innerText = text;
     modelSelectElement.current.focus();
-  }
+  };
 
-  const setNewModels = async (data_source_id) => {
+  const setNewModels = async data_source_id => {
     let newModels = [];
     const res = await Model.query({ data_source: data_source_id });
     newModels = res.results;
     const updates = {
       data_source_id,
       landed: false,
-    }
+    };
     setModels(newModels);
     return updates;
-  }
+  };
 
   const handleDataSourceChange = useCallback(
     async (data_source_id, signal) => {
@@ -217,12 +218,12 @@ export default function ReportPageHeader(props) {
     [props, report, updateReport, handleReportChanged]
   );
 
-  const getModel = useCallback((modelId) => {
+  const getModel = useCallback(modelId => {
     return models.find(m => m.id === modelId);
   });
 
   const getSettings = useCallback(
-    async (modelId) => {
+    async modelId => {
       let settings;
       if (report.landed) {
         settings = { appSettings: report.appSettings, timekeeper: {} };
@@ -235,11 +236,11 @@ export default function ReportPageHeader(props) {
   );
 
   const getModelDataCube = useCallback(
-    async (modelId) => {
+    async modelId => {
       const settings = await getSettings(modelId);
       const model = getModel(modelId);
       if (!model || !settings) return {};
-      const dataCubes = settings.appSettings.dataCubes
+      const dataCubes = settings.appSettings.dataCubes;
       return dataCubes.find(m => m.name === model.table);
     },
     [getSettings, getModel]
@@ -271,7 +272,7 @@ export default function ReportPageHeader(props) {
           updates.data_source_id = selectedDataSource;
         }
         if (signal && signal.aborted) return;
-        updateReport({...report.clone(), ...updates}, { successMessage: null, errorMessage: null });
+        updateReport({ ...report.clone(), ...updates }, { successMessage: null, errorMessage: null });
         props.onChange(extend(report.clone(), { ...updates }));
         handleReportChanged(true);
         setSelectedModel(modelId);
@@ -289,14 +290,16 @@ export default function ReportPageHeader(props) {
     handleReportChanged(true);
   });
 
-  const handleUpdateName = useCallback( name => {
+  const handleUpdateName = useCallback(
+    name => {
       setReportName(name);
       setNewName("Copy of " + name);
       handleReportChanged(true);
-    },[handleReportChanged]
+    },
+    [handleReportChanged]
   );
 
-  const handleGivenModal = (id) => {
+  const handleGivenModal = id => {
     try {
       if (document.getElementById(id).style.opacity === "1") {
         document.getElementById(id).style.opacity = "0";
@@ -305,93 +308,107 @@ export default function ReportPageHeader(props) {
         document.getElementById(id).style.opacity = "1";
         document.getElementById(id).style["z-index"] = "10";
       }
-    } catch {console.warn("modal doesn't exist on this page.")}
-  }
+    } catch {
+      console.warn("modal doesn't exist on this page.");
+    }
+  };
 
   useEffect(() => {
     // this function is waiting for page to render again for saving report after handleSaveReport click
     if (saveButtonClicked && !report.id) saveReport();
   }, [saveButtonClicked]);
 
-
   const handleSaveReport = () => {
     if (window.location.hash.substring(window.location.hash.indexOf("4/") + 2)) {
-      updateReport({
-        expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
-        color_1: colorBodyHex || report.color_1,
-        color_2: colorTextHex || report.color_2,
-        name: reportName,
-      }, { successMessage: "Report updated", errorMessage: null });
+      updateReport(
+        {
+          expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2),
+          color_1: colorBodyHex || report.color_1,
+          color_2: colorTextHex || report.color_2,
+          name: reportName,
+        },
+        { successMessage: "Report updated", errorMessage: null }
+      );
       recordEvent("update", "report", report.id);
       setSaveButtonClicked(true);
     } else {
-      updateReport({
-        color_1: colorBodyHex || report.color_1,
-        color_2: colorTextHex || report.color_2,
-        is_draft: false,
-        name: reportName
-      }, { successMessage: "Report updated", errorMessage: null });
+      updateReport(
+        {
+          color_1: colorBodyHex || report.color_1,
+          color_2: colorTextHex || report.color_2,
+          is_draft: false,
+          name: reportName,
+        },
+        { successMessage: "Report updated", errorMessage: null }
+      );
       recordEvent("create", "report", report.id);
     }
     setReportChanged(false);
-  }
+  };
 
-  const moreActionsMenu = useMemo(() => createMenu([
-    {
-      fork: {
-        isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
-        title: (
-          <React.Fragment>
-            Fork <i className="fa fa-external-link m-l-5" aria-hidden="true" />
-            <span className="sr-only">(opens in a new tab)</span>
-          </React.Fragment>
-        ),
-        onClick: duplicateReport,
-      },
-    },
-    {
-      archive: {
-        isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-        title: "Archive",
-        onClick: archiveReport,
-      },
-      managePermissions: {
-        isAvailable:
-          !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
-        title: "Manage Permissions",
-        onClick: openPermissionsEditorDialog,
-      },
-      publish: {
-        isAvailable:
-          !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
-        title: "Publish",
-        onClick: publishReport,
-      },
-      unpublish: {
-        isAvailable: !clientConfig.disablePublish && !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
-        title: "Unpublish",
-        onClick: unpublishReport,
-      },
-    },
-    {
-      downloadCSV: {
-        isAvailable: true,
-        title: "Download as CSV File",
-        onClick: () => {document.querySelector("#export-data-csv").click()},
-      },
-      downloadTSV: {
-        isAvailable: true,
-        title: "Download as TSV File",
-        onClick: () => {document.querySelector("#export-data-tsv").click()},
-      }
-    },
-    {
-      showAPIKey: {
-        isAvailable: !clientConfig.disablePublicUrls && !queryFlags.isNew,
-        title: "Show API Key",
-        onClick: openApiKeyDialog,
-      },
-    }]),
+  const moreActionsMenu = useMemo(
+    () =>
+      createMenu([
+        {
+          fork: {
+            isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+            title: (
+              <React.Fragment>
+                Fork <i className="fa fa-external-link m-l-5" aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </React.Fragment>
+            ),
+            onClick: duplicateReport,
+          },
+        },
+        {
+          archive: {
+            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            title: "Archive",
+            onClick: archiveReport,
+          },
+          managePermissions: {
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
+            title: "Manage Permissions",
+            onClick: openPermissionsEditorDialog,
+          },
+          publish: {
+            isAvailable:
+              !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
+            title: "Publish",
+            onClick: publishReport,
+          },
+          unpublish: {
+            isAvailable: !clientConfig.disablePublish && !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
+            title: "Unpublish",
+            onClick: unpublishReport,
+          },
+        },
+        {
+          downloadCSV: {
+            isAvailable: true,
+            title: "Download as CSV File",
+            onClick: () => {
+              document.querySelector("#export-data-csv").click();
+            },
+          },
+          downloadTSV: {
+            isAvailable: true,
+            title: "Download as TSV File",
+            onClick: () => {
+              document.querySelector("#export-data-tsv").click();
+            },
+          },
+        },
+        {
+          showAPIKey: {
+            isAvailable: !clientConfig.disablePublicUrls && !queryFlags.isNew,
+            title: "Show API Key",
+            onClick: openApiKeyDialog,
+          },
+        },
+      ]),
     [
       queryFlags.isNew,
       queryFlags.canFork,
@@ -409,13 +426,11 @@ export default function ReportPageHeader(props) {
     ]
   );
 
-
   useEffect(() => {
     if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
-
     if (report.landed) {
       if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
       if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
@@ -430,8 +445,9 @@ export default function ReportPageHeader(props) {
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)),
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)),
-        false);
-        handleReportChanged(false); // fix this, we cant set get here save button is not working disabling and stuff
+        false
+      );
+      handleReportChanged(false); // fix this, we cant set get here save button is not working disabling and stuff
     }
   }, []);
 
@@ -442,7 +458,10 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     if (!currentHash || !dataSources) return;
 
-    const abortController = typeof AbortController !== 'undefined' ? new (require('abortcontroller-polyfill/dist/cjs-ponyfill').AbortController)() : null;
+    const abortController =
+      typeof AbortController !== "undefined"
+        ? new (require("abortcontroller-polyfill/dist/cjs-ponyfill").AbortController)()
+        : null;
     const signal = abortController ? abortController.signal : null;
 
     const setData = async (dataSourceId, modelId) => {
@@ -478,11 +497,10 @@ export default function ReportPageHeader(props) {
     };
   }, [dataSourcesLoaded]);
 
-
   useEffect(() => {
     // this function is working on report/new page for setting first model to report
     if (report.landed) return;
-    const firstEncounterModelSetter = async (models) => {
+    const firstEncounterModelSetter = async models => {
       const modelId = models[0].id;
       const modelDataCube = await getModelDataCube(modelId);
       if (!modelDataCube) return;
@@ -490,7 +508,7 @@ export default function ReportPageHeader(props) {
       handleModelChange(modelId);
       const model = getModel(modelId);
       replaceHash(model, window.location.hash.split("/4/")[1]);
-    }
+    };
     if (modelsLoaded && !selectedModel && models.length) firstEncounterModelSetter(models);
   }, [modelsLoaded]);
 
@@ -520,27 +538,32 @@ export default function ReportPageHeader(props) {
       <div className="header-actions">
         {props.headerExtra}
         <div>
-          <Button className="ant-menu-submenu-title m-r-5" id="meta-button" onClick={() => handleGivenModal("meta-modal")}>
+          <Button
+            className="ant-menu-submenu-title m-r-5"
+            id="meta-button"
+            onClick={() => handleGivenModal("meta-modal")}
+          >
             <span className="icon icon-ribbon m-r-5"></span>Meta
           </Button>
-              <ul
-                id="meta-modal"
-                className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
-                role="menu"
-                onClick={e => e.stopPropagation()}>
-                <div style={styles.cover} onClick={() => handleGivenModal("meta-modal")} />
-                <li className="ant-menu-item modal-left" role="menuitem">
-                  <p id="_price" alt="0">
-                    Price: 0
-                  </p>
-                </li>
-                <li className="ant-menu-item modal-right" role="menuitem">
-                  <p id="_proceed_data" alt="0">
-                    Bytes: 0
-                  </p>
-                </li>
-              </ul>
-          </div>
+          <ul
+            id="meta-modal"
+            className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
+            role="menu"
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={styles.cover} onClick={() => handleGivenModal("meta-modal")} />
+            <li className="ant-menu-item modal-left" role="menuitem">
+              <p id="_price" alt="0">
+                Price: 0
+              </p>
+            </li>
+            <li className="ant-menu-item modal-right" role="menuitem">
+              <p id="_proceed_data" alt="0">
+                Bytes: 0
+              </p>
+            </li>
+          </ul>
+        </div>
         <Button style={styles.swatch} className="m-r-5" onClick={() => setDisplayColorPicker(1)}>
           <span style={styles.colorSpanElement}>Text</span>
           <div style={styles.color} />
@@ -567,17 +590,19 @@ export default function ReportPageHeader(props) {
             data-test="SelectDataSource"
             placeholder="Choose base data source..."
             value={selectedDataSource}
-            disabled={(!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0) ? true : false}
+            disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0 ? true : false}
             loading={!dataSourcesLoaded}
             optionFilterProp="data-name"
             showSearch
-            onChange={handleDataSourceChange}>
+            onChange={handleDataSourceChange}
+          >
             {map(dataSources, ds => (
               <Select.Option
                 key={`ds-${ds.id}`}
                 value={ds.id}
                 data-name={ds.name}
-                data-test={`SelectDataSource${ds.id}`}>
+                data-test={`SelectDataSource${ds.id}`}
+              >
                 <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
                 <span>{ds.name}</span>
               </Select.Option>
@@ -590,12 +615,13 @@ export default function ReportPageHeader(props) {
             data-test="SelectModel"
             placeholder="Choose model data source..."
             value={report ? report.model_id : undefined}
-            disabled={(report.id || (!reportFlags.canEdit || !modelsLoaded || models.length === 0)) ? true : false}
+            disabled={report.id || !reportFlags.canEdit || !modelsLoaded || models.length === 0 ? true : false}
             loading={!modelsLoaded}
             optionFilterProp="data-name"
             showSearch
             ref={modelSelectElement}
-            onChange={handleModelChange}>
+            onChange={handleModelChange}
+          >
             {map(models, m => (
               <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
                 <span>{m.name}</span>
@@ -610,16 +636,17 @@ export default function ReportPageHeader(props) {
         )}
 
         {showShareButton && (
-            <Tooltip title="Report Sharing Options">
-              <Button
-                className="icon-button m-r-5"
-                type={buttonType(report.publicAccessEnabled)}
-                onClick={showShareReportDialog}
-                data-test="OpenShareForm">
-                <i className="zmdi zmdi-share" />
-              </Button>
-            </Tooltip>
-          )}
+          <Tooltip title="Report Sharing Options">
+            <Button
+              className="icon-button m-r-5"
+              type={buttonType(report.publicAccessEnabled)}
+              onClick={showShareReportDialog}
+              data-test="OpenShareForm"
+            >
+              <i className="zmdi zmdi-share" />
+            </Button>
+          </Tooltip>
+        )}
 
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
@@ -634,17 +661,18 @@ export default function ReportPageHeader(props) {
                 disabled
                 className="m-r-5"
                 href={report.getUrl(false, props.selectedVisualization)}
-                data-test="ReportPageShowResultOnly">
+                data-test="ReportPageShowResultOnly"
+              >
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Results Only</span>
               </Link.Button>
             )}
           </span>
         )}
-          <Button disabled={!reportChanged} className="m-r-5" onClick={() => handleSaveReport()}>
-            <span className="icon icon-save-floppy-disc m-r-5"></span> Save
-          </Button>
-        {(report.id) && (
+        <Button disabled={!reportChanged} className="m-r-5" onClick={() => handleSaveReport()}>
+          <span className="icon icon-save-floppy-disc m-r-5"></span> Save
+        </Button>
+        {report.id && (
           <>
             <Button className="m-r-5" id="_handleSaveAs" onClick={() => handleGivenModal("save-as-ul")}>
               Save as...
@@ -657,16 +685,18 @@ export default function ReportPageHeader(props) {
             >
               <p className="new-name-label">name</p>
               <input className="new-name-input" type="text" value={newName} onChange={handleNewNameChange} />
-              <Button className="ant-menu-item-group-title" onClick={() => saveAsReport(newName)}>Save now</Button>
+              <Button className="ant-menu-item-group-title" onClick={() => saveAsReport(newName)}>
+                Save now
+              </Button>
             </ul>
           </>
         )}
         {!queryFlags.isNew && (
           <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
-              {/* ### TODO write tests for below code  disabled={(report.id || report.model_id) ? false : true} */}
-              <Button data-test="ReportPageHeaderMoreButton" aria-label="More actions">
-                <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
-              </Button>
+            {/* ### TODO write tests for below code  disabled={(report.id || report.model_id) ? false : true} */}
+            <Button data-test="ReportPageHeaderMoreButton" aria-label="More actions">
+              <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
+            </Button>
           </Dropdown>
         )}
       </div>
@@ -688,7 +718,7 @@ ReportPageHeader.propTypes = {
   onChangeColor: PropTypes.func,
   reportChanged: any,
   setReportChanged: PropTypes.func,
-}
+};
 
 ReportPageHeader.defaultProps = {
   dataSource: null,
@@ -699,4 +729,4 @@ ReportPageHeader.defaultProps = {
   onChangeColor: () => {},
   reportChanged: null,
   setReportChanged: () => {},
-}
+};

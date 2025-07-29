@@ -63,10 +63,10 @@ export default function DatabricksSchemaBrowser({
     () => filter(databases, database => includes(database.toLowerCase(), databaseFilterString.toLowerCase())),
     [databases, databaseFilterString]
   );
-  const limitedDatabases = useMemo(() => getLimitedDatabases(filteredDatabases, currentDatabaseName), [
-    filteredDatabases,
-    currentDatabaseName,
-  ]);
+  const limitedDatabases = useMemo(
+    () => getLimitedDatabases(filteredDatabases, currentDatabaseName),
+    [filteredDatabases, currentDatabaseName]
+  );
 
   const handleSchemaUpdate = useImmutableCallback(onSchemaUpdate);
 
@@ -116,7 +116,8 @@ export default function DatabricksSchemaBrowser({
                 <>
                   <i className="fa fa-database m-r-5" aria-hidden="true" /> Database
                 </>
-              }>
+              }
+            >
               {limitedDatabases.map(database => (
                 <Select.Option key={database}>
                   <i className="fa fa-database m-r-5" aria-hidden="true" />

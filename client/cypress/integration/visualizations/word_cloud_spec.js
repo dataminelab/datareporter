@@ -69,10 +69,10 @@ describe("Word Cloud", () => {
     cy.document().then(injectFont);
     cy.getByTestId("NewVisualization").click();
     cy.getByTestId("VisualizationType").click(); // Open the dropdown
-    cy.get('.rc-virtual-list-holder')
-      .scrollTo('bottom', { ensureScrollable: false })
-      .should('be.visible')
-      .invoke('attr', 'aria-expanded', 'true'); // Ensure the dropdown stays expanded
+    cy.get(".rc-virtual-list-holder")
+      .scrollTo("bottom", { ensureScrollable: false })
+      .should("be.visible")
+      .invoke("attr", "aria-expanded", "true"); // Ensure the dropdown stays expanded
     cy.getByTestId("VisualizationType.WORD_CLOUD").click();
   });
 
@@ -85,9 +85,7 @@ describe("Word Cloud", () => {
     // Wait for proper initialization of visualization
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
 
-    cy.getByTestId("VisualizationPreview")
-      .find("svg text")
-      .should("have.length", 11);
+    cy.getByTestId("VisualizationPreview").find("svg text").should("have.length", 11);
 
     cy.percySnapshot("Visualizations - Word Cloud (Automatic word frequencies)", { widths: [viewportWidth] });
   });
@@ -104,9 +102,7 @@ describe("Word Cloud", () => {
     // Wait for proper initialization of visualization
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
 
-    cy.getByTestId("VisualizationPreview")
-      .find("svg text")
-      .should("have.length", 5);
+    cy.getByTestId("VisualizationPreview").find("svg text").should("have.length", 5);
 
     cy.percySnapshot("Visualizations - Word Cloud (Frequencies from another column)", { widths: [viewportWidth] });
   });
@@ -130,9 +126,7 @@ describe("Word Cloud", () => {
     // Wait for proper initialization of visualization
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
 
-    cy.getByTestId("VisualizationPreview")
-      .find("svg text")
-      .should("have.length", 2);
+    cy.getByTestId("VisualizationPreview").find("svg text").should("have.length", 2);
 
     cy.percySnapshot("Visualizations - Word Cloud (With filters)", { widths: [viewportWidth] });
   });

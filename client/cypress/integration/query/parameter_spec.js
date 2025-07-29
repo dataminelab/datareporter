@@ -6,10 +6,10 @@ function openAndSearchAntdDropdown(testId, paramOption) {
 }
 
 describe("Parameter", () => {
-  const expectDirtyStateChange = (edit) => {
+  const expectDirtyStateChange = edit => {
     cy.getByTestId("ParameterName-test-parameter")
       .find(".parameter-input")
-      .should(($el) => {
+      .should($el => {
         assert.isUndefined($el.data("dirty"));
       });
 
@@ -17,7 +17,7 @@ describe("Parameter", () => {
 
     cy.getByTestId("ParameterName-test-parameter")
       .find(".parameter-input")
-      .should(($el) => {
+      .should($el => {
         assert.isTrue($el.data("dirty"));
       });
   };
@@ -183,7 +183,7 @@ describe("Parameter", () => {
       cy.getByTestId("ParameterName-test-parameter").find(".ant-select-selection-search").click();
 
       // select all unselected options
-      cy.get(".ant-select-item-option").each(($option) => {
+      cy.get(".ant-select-item-option").each($option => {
         if (!$option.hasClass("ant-select-item-option-selected")) {
           cy.wrap($option).click();
         }
@@ -212,7 +212,7 @@ describe("Parameter", () => {
           name: "Dropdown Query",
           query: "",
         };
-        cy.createQuery(dropdownQueryData, true).then((dropdownQuery) => {
+        cy.createQuery(dropdownQueryData, true).then(dropdownQuery => {
           const queryData = {
             name: "Query Based Dropdown Parameter",
             query: "SELECT '{{test-parameter}}' AS parameter",
@@ -244,7 +244,7 @@ describe("Parameter", () => {
                   SELECT 'value2' AS name, 2 AS value UNION ALL
                   SELECT 'value3' AS name, 3 AS value`,
         };
-        cy.createQuery(dropdownQueryData, true).then((dropdownQuery) => {
+        cy.createQuery(dropdownQueryData, true).then(dropdownQuery => {
           const queryData = {
             name: "Query Based Dropdown Parameter",
             query: "SELECT '{{test-parameter}}' AS parameter",
@@ -291,7 +291,7 @@ describe("Parameter", () => {
         cy.getByTestId("ParameterName-test-parameter").find(".ant-select").click();
 
         // make sure all options are unselected and select all
-        cy.get(".ant-select-item-option").each(($option) => {
+        cy.get(".ant-select-item-option").each($option => {
           expect($option).not.to.have.class("ant-select-dropdown-menu-item-selected");
           cy.wrap($option).click();
         });
@@ -305,7 +305,7 @@ describe("Parameter", () => {
     });
   });
 
-  const selectCalendarDate = (date) => {
+  const selectCalendarDate = date => {
     cy.getByTestId("ParameterName-test-parameter").find("input").click();
 
     cy.get(".ant-picker-panel").contains(".ant-picker-cell-inner", date).click();
@@ -330,7 +330,7 @@ describe("Parameter", () => {
     });
 
     afterEach(() => {
-      cy.clock().then((clock) => clock.restore());
+      cy.clock().then(clock => clock.restore());
     });
 
     it("updates the results after selecting a date", function () {
@@ -375,7 +375,7 @@ describe("Parameter", () => {
     });
 
     afterEach(() => {
-      cy.clock().then((clock) => clock.restore());
+      cy.clock().then(clock => clock.restore());
     });
 
     it("updates the results after selecting a date and clicking in ok", function () {
@@ -446,7 +446,7 @@ describe("Parameter", () => {
     });
 
     afterEach(() => {
-      cy.clock().then((clock) => clock.restore());
+      cy.clock().then(clock => clock.restore());
     });
 
     it("updates the results after selecting a date range", function () {
@@ -481,7 +481,7 @@ describe("Parameter", () => {
   });
 
   describe("Apply Changes", () => {
-    const expectAppliedChanges = (apply) => {
+    const expectAppliedChanges = apply => {
       cy.getByTestId("ParameterName-test-parameter-1").find("input").as("Input").type("Redash");
 
       cy.getByTestId("ParameterName-test-parameter-2").find("input").type("Redash");
@@ -546,7 +546,7 @@ describe("Parameter", () => {
     });
 
     it('applies changes from "alt+enter" keyboard shortcut', () => {
-      expectAppliedChanges((input) => {
+      expectAppliedChanges(input => {
         input.type("{alt}{enter}");
       });
     });

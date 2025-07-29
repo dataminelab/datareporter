@@ -26,8 +26,8 @@ const PREDEFINED_GROUPS = [
     options: {},
     type: "TURNILO",
     updated_at: "2024-05-10T14:27:41.789Z",
-  }
-]
+  },
+];
 
 function VisualizationSelect({ report, visualization, onChange }) {
   const visualizationGroups = useMemo(() => {
@@ -88,33 +88,30 @@ function AddReportDialog({ dialog, dashboard }) {
   const [selectedVisualization, setSelectedVisualization] = useState(null);
   const [parameterMappings, setParameterMappings] = useState([]);
 
-  const selectReport = useCallback(
-    reportId => {
-      // Clear previously selected report (if any)
-      setSelectedReport(null);
-      setSelectedVisualization(null);
-      setParameterMappings([]);
+  const selectReport = useCallback(reportId => {
+    // Clear previously selected report (if any)
+    setSelectedReport(null);
+    setSelectedVisualization(null);
+    setParameterMappings([]);
 
-      if (reportId) {
-        Report.get({ id: reportId }).then(report => {
-          if (report) {
-            setSelectedReport(report);
-            setParameterMappings({
-              turnilo_daterange: {
-                mapTo:"turnilo_daterange",
-                name:"turnilo_default_daterange",
-                title: "DEFAULT TURNILO FILTER",
-                type: "turnilo",
-                name: "turnilo_daterange",
-              }
-            });
-            setSelectedVisualization(first(PREDEFINED_GROUPS));
-          }
-        });
-      }
-    },
-    []
-  );
+    if (reportId) {
+      Report.get({ id: reportId }).then(report => {
+        if (report) {
+          setSelectedReport(report);
+          setParameterMappings({
+            turnilo_daterange: {
+              mapTo: "turnilo_daterange",
+              name: "turnilo_default_daterange",
+              title: "DEFAULT TURNILO FILTER",
+              type: "turnilo",
+              name: "turnilo_daterange",
+            },
+          });
+          setSelectedVisualization(first(PREDEFINED_GROUPS));
+        }
+      });
+    }
+  }, []);
 
   const saveWidget = useCallback(() => {
     const options = {
@@ -122,15 +119,24 @@ function AddReportDialog({ dialog, dashboard }) {
       type: selectedVisualization.type,
       description: selectedVisualization.description,
       id: selectedVisualization.id,
-    }
-    dialog.close({ text: `[turnilo-widget]${selectedReport.id}/4/${selectedReport.hash}`, options })
+    };
+    dialog
+      .close({ text: `[turnilo-widget]${selectedReport.id}/4/${selectedReport.hash}`, options })
       .then(() => {
         notification.success("Report Widget added to dashboard.");
-      })    
+      })
       .catch(() => {
         notification.error("Report Widget could not be added");
       });
-  }, [dialog, parameterMappings, selectedReport.hash, selectedReport.id, selectedVisualization.description, selectedVisualization.id, selectedVisualization.type]);
+  }, [
+    dialog,
+    parameterMappings,
+    selectedReport.hash,
+    selectedReport.id,
+    selectedVisualization.description,
+    selectedVisualization.id,
+    selectedVisualization.type,
+  ]);
 
   return (
     <Modal

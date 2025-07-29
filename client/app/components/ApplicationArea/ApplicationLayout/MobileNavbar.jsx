@@ -75,9 +75,10 @@ export default function MobileNavbar({ getPopupContainer }) {
                 Log out
               </Menu.Item>
             </Menu>
-          }>
+          }
+        >
           <Button className="mobile-navbar-toggle-button" ghost>
-            <img height={24} width={24} src={iconMenu} alt="menu"/>
+            <img height={24} width={24} src={iconMenu} alt="menu" />
           </Button>
         </Dropdown>
       </div>

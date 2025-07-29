@@ -18,34 +18,14 @@ statuses:
   error: true
 
 # Request review on the Restyle PR?
-#
-# Possible values:
-#
-#   author: From the author of the original PR
-#   owner: From the owner of the repository
-#   none: Don't
-#
-# One value will apply to both origin and forked PRs, but you can also specify
-# separate values.
-#
-#   request_review:
-#     origin: author
-#     forked: owner
-#
 request_review: author
 
 # Add labels to any created Restyle PRs
-#
-# These can be used to tell other automation to avoid our PRs.
-#
 labels:
   - restyled
   - "Skip CI"
 
 # Labels to ignore
-#
-# PRs with any of these labels will be ignored by Restyled.
-#
 # ignore_labels:
 #   - restyled-ignore
 
@@ -62,6 +42,8 @@ restylers:
     command:
       - prettier
       - --write
+      - --arrow-parens
+      - avoid
     include:
       - client/app/**/*.js
       - client/app/**/*.jsx

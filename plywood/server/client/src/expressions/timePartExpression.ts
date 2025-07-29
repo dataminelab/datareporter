@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { Timezone } from 'chronoshift';
-import { immutableEqual } from 'immutable-class';
-import * as moment from 'moment-timezone';
+import { Timezone } from "chronoshift";
+import { immutableEqual } from "immutable-class";
+import * as moment from "moment-timezone";
 
-import { PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
-import { HasTimezone } from './mixins/hasTimezone';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import { HasTimezone } from "./mixins/hasTimezone";
 
 export class TimePartExpression extends ChainableExpression implements HasTimezone {
-  static op = 'TimePart';
+  static op = "TimePart";
   static fromJS(parameters: ExpressionJS): TimePartExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.part = parameters.part;
@@ -106,12 +106,12 @@ export class TimePartExpression extends ChainableExpression implements HasTimezo
     super(parameters, dummyObject);
     this.part = parameters.part;
     this.timezone = parameters.timezone;
-    this._ensureOp('timePart');
-    this._checkOperandTypes('TIME');
-    if (typeof this.part !== 'string') {
-      throw new Error('`part` must be a string');
+    this._ensureOp("timePart");
+    this._checkOperandTypes("TIME");
+    if (typeof this.part !== "string") {
+      throw new Error("`part` must be a string");
     }
-    this.type = 'NUMBER';
+    this.type = "NUMBER";
   }
 
   public valueOf(): ExpressionValue {
@@ -152,7 +152,7 @@ export class TimePartExpression extends ChainableExpression implements HasTimezo
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    throw new Error('implement me');
+    throw new Error("implement me");
   }
 
   protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {

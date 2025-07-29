@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { Column, Introspect, QueryResult, SqlColumn, SqlQuery } from 'druid-query-toolkit';
-import { PlywoodRequester } from 'plywood-base-api';
-import * as toArray from 'stream-to-array';
+import { Column, Introspect, QueryResult, SqlColumn, SqlQuery } from "druid-query-toolkit";
+import { PlywoodRequester } from "plywood-base-api";
+import * as toArray from "stream-to-array";
 
-import { AttributeInfo, Attributes } from '../datatypes';
-import { DruidDialect } from '../dialect';
-import { Expression, RefExpression, SqlRefExpression } from '../expressions';
-import { dictEqual } from '../helper';
-import { PlyType } from '../types';
+import { AttributeInfo, Attributes } from "../datatypes";
+import { DruidDialect } from "../dialect";
+import { Expression, RefExpression, SqlRefExpression } from "../expressions";
+import { dictEqual } from "../helper";
+import { PlyType } from "../types";
 
-import { External, ExternalJS, ExternalValue, IntrospectionDepth } from './baseExternal';
-import { DruidExternal } from './druidExternal';
-import { SQLExternal } from './sqlExternal';
+import { External, ExternalJS, ExternalValue, IntrospectionDepth } from "./baseExternal";
+import { DruidExternal } from "./druidExternal";
+import { SQLExternal } from "./sqlExternal";
 
 export interface DruidSQLDescribeRow {
   COLUMN_NAME: string;
@@ -34,8 +34,8 @@ export interface DruidSQLDescribeRow {
 }
 
 export class DruidSQLExternal extends SQLExternal {
-  static engine = 'druidsql';
-  static type = 'DATASET';
+  static engine = "druidsql";
+  static type = "DATASET";
 
   static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): DruidSQLExternal {
     const value: ExternalValue = SQLExternal.jsToValue(parameters, requester);
@@ -47,45 +47,45 @@ export class DruidSQLExternal extends SQLExternal {
     return columns.map(column => {
       const name = column.name;
       const effectiveType =
-        column.sqlType === 'TIMESTAMP' || column.sqlType === 'BOOLEAN'
+        column.sqlType === "TIMESTAMP" || column.sqlType === "BOOLEAN"
           ? column.sqlType
           : column.nativeType;
 
       let type: PlyType;
       switch (String(effectiveType).toUpperCase()) {
-        case 'TIMESTAMP':
-        case 'DATE':
-          type = 'TIME';
+        case "TIMESTAMP":
+        case "DATE":
+          type = "TIME";
           break;
 
-        case 'IPADDRESS':
-        case 'IPPREFIX':
-          type = 'IP';
+        case "IPADDRESS":
+        case "IPPREFIX":
+          type = "IP";
           break;
 
-        case 'VARCHAR':
-        case 'STRING':
-          type = 'STRING';
+        case "VARCHAR":
+        case "STRING":
+          type = "STRING";
           break;
 
-        case 'DOUBLE':
-        case 'FLOAT':
-        case 'BIGINT':
-        case 'LONG':
-          type = 'NUMBER';
+        case "DOUBLE":
+        case "FLOAT":
+        case "BIGINT":
+        case "LONG":
+          type = "NUMBER";
           break;
 
-        case 'BOOLEAN':
-          type = 'BOOLEAN';
+        case "BOOLEAN":
+          type = "BOOLEAN";
           break;
 
-        case 'imply-ts':
-          type = 'TIME_SERIES';
+        case "imply-ts":
+          type = "TIME_SERIES";
           break;
 
         default:
           // OTHER
-          type = 'NULL';
+          type = "NULL";
           break;
       }
 
@@ -115,7 +115,7 @@ export class DruidSQLExternal extends SQLExternal {
     return toArray(
       requester({
         query: {
-          queryType: 'status',
+          queryType: "status",
         },
       }),
     ).then(res => {
@@ -130,7 +130,7 @@ export class DruidSQLExternal extends SQLExternal {
       parameters,
       new DruidDialect({ attributes: parameters.rawAttributes || parameters.attributes }),
     );
-    this._ensureEngine('druidsql');
+    this._ensureEngine("druidsql");
     this.context = parameters.context;
   }
 
@@ -153,13 +153,13 @@ export class DruidSQLExternal extends SQLExternal {
   // -----------------
 
   public getTimeAttribute(): string | undefined {
-    return '__time';
+    return "__time";
   }
 
   public isTimeRef(ex: Expression): ex is RefExpression {
     if (ex instanceof SqlRefExpression) {
       if (ex.parsedSql instanceof SqlColumn) {
-        return ex.parsedSql.getName() === '__time';
+        return ex.parsedSql.getName() === "__time";
       } else {
         return false;
       }
@@ -186,7 +186,7 @@ export class DruidSQLExternal extends SQLExternal {
         this.requester({
           query: {
             ...queryPayload,
-            resultFormat: 'array',
+            resultFormat: "array",
             context: this.context,
           },
         }),
@@ -214,7 +214,7 @@ export class DruidSQLExternal extends SQLExternal {
       return DruidExternal.introspectAttributesWithSegmentMetadata(
         table,
         this.requester,
-        '__time',
+        "__time",
         this.context,
         depth,
       );
@@ -226,13 +226,13 @@ export class DruidSQLExternal extends SQLExternal {
       query: sql,
     };
 
-    payload.context = { ...(this.context || {}), sqlTimeZone: 'Etc/UTC' };
+    payload.context = { ...(this.context || {}), sqlTimeZone: "Etc/UTC" };
 
     return payload;
   }
 
   protected capability(cap: string): boolean {
-    if (cap === 'filter-on-attribute') return false;
+    if (cap === "filter-on-attribute") return false;
     return super.capability(cap);
   }
 }

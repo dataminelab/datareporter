@@ -23,19 +23,20 @@ import {
   BooleanFilterClause,
   FilterClause,
   FixedTimeFilterClause,
-  NumberFilterClause, NumberRange,
+  NumberFilterClause,
+  NumberRange,
   RelativeTimeFilterClause,
   StringFilterAction,
   StringFilterClause,
   TimeFilterClause,
-  TimeFilterPeriod
+  TimeFilterPeriod,
 } from "../../models/filter-clause/filter-clause";
 
 export enum FilterType {
   boolean = "boolean",
   number = "number",
   string = "string",
-  time = "time"
+  time = "time",
 }
 
 export interface BaseFilterClauseDefinition {
@@ -43,20 +44,23 @@ export interface BaseFilterClauseDefinition {
   ref: string;
 }
 
-export interface NumberFilterClauseDefinition extends BaseFilterClauseDefinition {
+export interface NumberFilterClauseDefinition
+  extends BaseFilterClauseDefinition {
   type: FilterType.number;
   not: boolean;
-  ranges: Array<{ start: number, end: number, bounds?: string }>;
+  ranges: Array<{ start: number; end: number; bounds?: string }>;
 }
 
-export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition {
+export interface StringFilterClauseDefinition
+  extends BaseFilterClauseDefinition {
   type: FilterType.string;
   action: StringFilterAction;
   not: boolean;
   values: string[];
 }
 
-export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinition {
+export interface BooleanFilterClauseDefinition
+  extends BaseFilterClauseDefinition {
   type: FilterType.boolean;
   not: boolean;
   values: Array<boolean | string>;
@@ -64,7 +68,7 @@ export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinitio
 
 export interface TimeFilterClauseDefinition extends BaseFilterClauseDefinition {
   type: FilterType.time;
-  timeRanges?: Array<{ start: string, end: string }>;
+  timeRanges?: Array<{ start: string; end: string }>;
   timePeriods?: TimePeriodDefinition[];
 }
 
@@ -77,41 +81,74 @@ export interface TimePeriodDefinition {
 }
 
 export type FilterClauseDefinition =
-  BooleanFilterClauseDefinition | NumberFilterClauseDefinition | StringFilterClauseDefinition | TimeFilterClauseDefinition;
+  | BooleanFilterClauseDefinition
+  | NumberFilterClauseDefinition
+  | StringFilterClauseDefinition
+  | TimeFilterClauseDefinition;
 
-export interface FilterDefinitionConversion<In extends FilterClauseDefinition, Out> {
+export interface FilterDefinitionConversion<
+  In extends FilterClauseDefinition,
+  Out,
+> {
   toFilterClause(filter: In, dimension: Dimension): Out;
 
   fromFilterClause(filterClause: Out): In;
 }
 
-const booleanFilterClauseConverter: FilterDefinitionConversion<BooleanFilterClauseDefinition, BooleanFilterClause> = {
-  toFilterClause({ not, values }: BooleanFilterClauseDefinition, { name }: Dimension): BooleanFilterClause {
-    return new BooleanFilterClause({ reference: name, not, values: Set(values) });
+const booleanFilterClauseConverter: FilterDefinitionConversion<
+  BooleanFilterClauseDefinition,
+  BooleanFilterClause
+> = {
+  toFilterClause(
+    { not, values }: BooleanFilterClauseDefinition,
+    { name }: Dimension,
+  ): BooleanFilterClause {
+    return new BooleanFilterClause({
+      reference: name,
+      not,
+      values: Set(values),
+    });
   },
 
   //@ts-ignore
-  fromFilterClause({ values, not, reference }: BooleanFilterClause): BooleanFilterClauseDefinition {
+  fromFilterClause({
+    values,
+    not,
+    reference,
+  }: BooleanFilterClause): BooleanFilterClauseDefinition {
     return {
       type: FilterType.boolean,
       ref: reference,
       //@ts-ignore
       values: values.toArray(),
-      not
+      not,
     };
-  }
+  },
 };
 
-const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClauseDefinition, StringFilterClause> = {
-  toFilterClause({ action, not, values }: StringFilterClauseDefinition, dimension: Dimension): StringFilterClause {
+const stringFilterClauseConverter: FilterDefinitionConversion<
+  StringFilterClauseDefinition,
+  StringFilterClause
+> = {
+  toFilterClause(
+    { action, not, values }: StringFilterClauseDefinition,
+    dimension: Dimension,
+  ): StringFilterClause {
     if (action === null) {
-      throw Error(`String filter action cannot be empty. Dimension: ${dimension}`);
+      throw Error(
+        `String filter action cannot be empty. Dimension: ${dimension}`,
+      );
     }
     if (!(<any>Object).values(StringFilterAction).includes(action)) {
       throw Error(`Unknown string filter action. Dimension: ${dimension}`);
     }
-    if (action in [StringFilterAction.CONTAINS, StringFilterAction.MATCH] && values.length !== 1) {
-      throw Error(`Wrong string filter values: ${values} for action: ${action}. Dimension: ${dimension}`);
+    if (
+      action in [StringFilterAction.CONTAINS, StringFilterAction.MATCH] &&
+      values.length !== 1
+    ) {
+      throw Error(
+        `Wrong string filter values: ${values} for action: ${action}. Dimension: ${dimension}`,
+      );
     }
     const { name } = dimension;
 
@@ -119,66 +156,105 @@ const stringFilterClauseConverter: FilterDefinitionConversion<StringFilterClause
       reference: name,
       action,
       not,
-      values: Set(values)
+      values: Set(values),
     });
   },
   //@ts-ignore
 
-  fromFilterClause({ action, reference, not, values }: StringFilterClause): StringFilterClauseDefinition {
+  fromFilterClause({
+    action,
+    reference,
+    not,
+    values,
+  }: StringFilterClause): StringFilterClauseDefinition {
     return {
       type: FilterType.string,
       ref: reference,
       action,
       //@ts-ignore
       values: values.toArray(),
-      not
+      not,
     };
-  }
+  },
 };
 
-const numberFilterClauseConverter: FilterDefinitionConversion<NumberFilterClauseDefinition, NumberFilterClause> = {
-  toFilterClause({ not, ranges }: NumberFilterClauseDefinition, { name }: Dimension): NumberFilterClause {
-    return new NumberFilterClause({ not, values: List(ranges.map(range => new NumberRange(range))), reference: name });
+const numberFilterClauseConverter: FilterDefinitionConversion<
+  NumberFilterClauseDefinition,
+  NumberFilterClause
+> = {
+  toFilterClause(
+    { not, ranges }: NumberFilterClauseDefinition,
+    { name }: Dimension,
+  ): NumberFilterClause {
+    return new NumberFilterClause({
+      not,
+      values: List(ranges.map(range => new NumberRange(range))),
+      reference: name,
+    });
   },
   //@ts-ignore
 
-  fromFilterClause({ not, reference, values }: NumberFilterClause): NumberFilterClauseDefinition {
+  fromFilterClause({
+    not,
+    reference,
+    values,
+  }: NumberFilterClause): NumberFilterClauseDefinition {
     return {
       type: FilterType.number,
       ref: reference,
       not,
       //@ts-ignore
-      ranges: values.toJS()
+      ranges: values.toJS(),
     };
-  }
+  },
 };
 
-const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefinition, TimeFilterClause> = {
-  toFilterClause(filterModel: TimeFilterClauseDefinition, dimension: Dimension): TimeFilterClause {
+const timeFilterClauseConverter: FilterDefinitionConversion<
+  TimeFilterClauseDefinition,
+  TimeFilterClause
+> = {
+  toFilterClause(
+    filterModel: TimeFilterClauseDefinition,
+    dimension: Dimension,
+  ): TimeFilterClause {
     const { timeRanges, timePeriods } = filterModel;
 
     if (timeRanges === undefined && timePeriods === undefined) {
-      throw Error(`Time filter must have one of: timeRanges or timePeriods property. Dimension: ${dimension}`);
+      throw Error(
+        `Time filter must have one of: timeRanges or timePeriods property. Dimension: ${dimension}`,
+      );
     }
     if (timeRanges !== undefined && timeRanges.length !== 1) {
-      throw Error(`Time filter support a single timeRange only. Dimension: ${dimension}`);
+      throw Error(
+        `Time filter support a single timeRange only. Dimension: ${dimension}`,
+      );
     }
     if (timePeriods !== undefined && timePeriods.length !== 1) {
-      throw Error(`Time filter support a single timePeriod only. Dimension: ${dimension}`);
+      throw Error(
+        `Time filter support a single timePeriod only. Dimension: ${dimension}`,
+      );
     }
 
     const { name } = dimension;
     if (timeRanges !== undefined) {
       return new FixedTimeFilterClause({
         reference: name,
-        values: List(timeRanges.map(range => new DateRange({ start: new Date(range.start), end: new Date(range.end) })))
+        values: List(
+          timeRanges.map(
+            range =>
+              new DateRange({
+                start: new Date(range.start),
+                end: new Date(range.end),
+              }),
+          ),
+        ),
       });
     }
     const { duration, step, type } = timePeriods[0];
     return new RelativeTimeFilterClause({
       reference: name,
       duration: Duration.fromJS(duration).multiply(Math.abs(step)),
-      period: timeFilterPeriod(step, type)
+      period: timeFilterPeriod(step, type),
     });
   },
 
@@ -195,7 +271,7 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
       return {
         type: FilterType.time,
         ref: reference,
-        timePeriods: [{ duration: duration.toString(), step, type }]
+        timePeriods: [{ duration: duration.toString(), step, type }],
       };
     }
     const { values } = filterClause;
@@ -203,12 +279,20 @@ const timeFilterClauseConverter: FilterDefinitionConversion<TimeFilterClauseDefi
       type: FilterType.time,
       ref: reference,
       //@ts-ignore
-      timeRanges: values.map(value => ({ start: value.start.toISOString(), end: value.end.toISOString() })).toArray()
+      timeRanges: values
+        .map(value => ({
+          start: value.start.toISOString(),
+          end: value.end.toISOString(),
+        }))
+        .toArray(),
     };
-  }
+  },
 };
 
-function timeFilterPeriod(step: number, type: TimePeriodType): TimeFilterPeriod {
+function timeFilterPeriod(
+  step: number,
+  type: TimePeriodType,
+): TimeFilterPeriod {
   if (type === "latest") {
     return TimeFilterPeriod.LATEST;
   }
@@ -218,28 +302,41 @@ function timeFilterPeriod(step: number, type: TimePeriodType): TimeFilterPeriod 
   return TimeFilterPeriod.PREVIOUS;
 }
 
-const filterClauseConverters: { [type in FilterType]: FilterDefinitionConversion<FilterClauseDefinition, FilterClause> } = {
+const filterClauseConverters: {
+  [type in FilterType]: FilterDefinitionConversion<
+    FilterClauseDefinition,
+    FilterClause
+  >;
+} = {
   boolean: booleanFilterClauseConverter,
   number: numberFilterClauseConverter,
   string: stringFilterClauseConverter,
-  time: timeFilterClauseConverter
+  time: timeFilterClauseConverter,
 };
 
 export interface FilterDefinitionConverter {
-  toFilterClause(filter: FilterClauseDefinition, dataCube: DataCube): FilterClause;
+  toFilterClause(
+    filter: FilterClauseDefinition,
+    dataCube: DataCube,
+  ): FilterClause;
 
   fromFilterClause(filterClause: FilterClause): FilterClauseDefinition;
 }
 
 export const filterDefinitionConverter: FilterDefinitionConverter = {
-  toFilterClause(clauseDefinition: FilterClauseDefinition, dataCube: DataCube): FilterClause {
+  toFilterClause(
+    clauseDefinition: FilterClauseDefinition,
+    dataCube: DataCube,
+  ): FilterClause {
     if (clauseDefinition.ref == null) {
       throw new Error("Dimension name cannot be empty.");
     }
     const dimension = dataCube.getDimension(clauseDefinition.ref);
 
     if (dimension == null) {
-      throw new Error(`Dimension ${clauseDefinition.ref} not found in data cube ${dataCube.name}.`);
+      throw new Error(
+        `Dimension ${clauseDefinition.ref} not found in data cube ${dataCube.name}.`,
+      );
     }
 
     const clauseConverter = filterClauseConverters[clauseDefinition.type];
@@ -253,12 +350,15 @@ export const filterDefinitionConverter: FilterDefinitionConverter = {
     if (filterClause instanceof NumberFilterClause) {
       return numberFilterClauseConverter.fromFilterClause(filterClause);
     }
-    if (filterClause instanceof FixedTimeFilterClause || filterClause instanceof RelativeTimeFilterClause) {
+    if (
+      filterClause instanceof FixedTimeFilterClause ||
+      filterClause instanceof RelativeTimeFilterClause
+    ) {
       return timeFilterClauseConverter.fromFilterClause(filterClause);
     }
     if (filterClause instanceof StringFilterClause) {
       return stringFilterClauseConverter.fromFilterClause(filterClause);
     }
     throw Error(`Unrecognized filter clause type ${filterClause}`);
-  }
+  },
 };

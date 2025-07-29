@@ -26,5 +26,5 @@ export const dataCube = new DataCube({
   measures: measuresCollection,
   name: "fixture",
   source: "custom",
-  timeAttribute: timeDimension.expression as RefExpression
+  timeAttribute: timeDimension.expression as RefExpression,
 });

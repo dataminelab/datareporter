@@ -22,8 +22,8 @@ import {
   Set,
   StringRange,
   TimeRange,
-} from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+} from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
@@ -31,27 +31,27 @@ import {
   ExpressionJS,
   ExpressionValue,
   r,
-} from './baseExpression';
-import { IndexOfExpression } from './indexOfExpression';
-import { LiteralExpression } from './literalExpression';
+} from "./baseExpression";
+import { IndexOfExpression } from "./indexOfExpression";
+import { LiteralExpression } from "./literalExpression";
 
 export class OverlapExpression extends ChainableUnaryExpression {
-  static op = 'Overlap';
+  static op = "Overlap";
   static fromJS(parameters: ExpressionJS): OverlapExpression {
     return new OverlapExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('overlap');
+    this._ensureOp("overlap");
     const operandType = Range.unwrapRangeType(Set.unwrapSetType(this.operand.type));
     const expressionType = Range.unwrapRangeType(Set.unwrapSetType(this.expression.type));
     if (
       !(
         !operandType ||
-        operandType === 'NULL' ||
+        operandType === "NULL" ||
         !expressionType ||
-        expressionType === 'NULL' ||
+        expressionType === "NULL" ||
         operandType === expressionType
       )
     ) {
@@ -59,7 +59,7 @@ export class OverlapExpression extends ChainableUnaryExpression {
         `${this.op} must have matching types (are ${this.operand.type}, ${this.expression.type})`,
       );
     }
-    this.type = 'BOOLEAN';
+    this.type = "BOOLEAN";
   }
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
@@ -83,13 +83,13 @@ export class OverlapExpression extends ChainableUnaryExpression {
 
         const cmpStrings: string[] = [];
         if (r0 != null) {
-          cmpStrings.push(`${JSON.stringify(r0)}${bounds[0] === '(' ? '<' : '<='}_`);
+          cmpStrings.push(`${JSON.stringify(r0)}${bounds[0] === "(" ? "<" : "<="}_`);
         }
         if (r1 != null) {
-          cmpStrings.push(`_${bounds[1] === ')' ? '<' : '<='}${JSON.stringify(r1)}`);
+          cmpStrings.push(`_${bounds[1] === ")" ? "<" : "<="}${JSON.stringify(r1)}`);
         }
 
-        return `((_=${operandJS}),${cmpStrings.join('&&')})`;
+        return `((_=${operandJS}),${cmpStrings.join("&&")})`;
       } else {
         throw new Error(
           `can not convert ${this} to JS function, unsupported type ${expression.type}`,
@@ -108,8 +108,8 @@ export class OverlapExpression extends ChainableUnaryExpression {
     const expression = this.expression;
     const expressionType = expression.type;
     switch (expressionType) {
-      case 'NUMBER_RANGE':
-      case 'TIME_RANGE':
+      case "NUMBER_RANGE":
+      case "TIME_RANGE":
         if (expression instanceof LiteralExpression) {
           const range: NumberRange | TimeRange = expression.value;
           return dialect.inExpression(
@@ -121,7 +121,7 @@ export class OverlapExpression extends ChainableUnaryExpression {
         }
         throw new Error(`can not convert action to SQL ${this}`);
 
-      case 'STRING_RANGE':
+      case "STRING_RANGE":
         if (expression instanceof LiteralExpression) {
           const stringRange: StringRange = expression.value;
           return dialect.inExpression(
@@ -133,8 +133,8 @@ export class OverlapExpression extends ChainableUnaryExpression {
         }
         throw new Error(`can not convert action to SQL ${this}`);
 
-      case 'SET/NUMBER_RANGE':
-      case 'SET/TIME_RANGE':
+      case "SET/NUMBER_RANGE":
+      case "SET/TIME_RANGE":
         if (expression instanceof LiteralExpression) {
           const setOfRange: Set = expression.value;
           return setOfRange.elements
@@ -146,7 +146,7 @@ export class OverlapExpression extends ChainableUnaryExpression {
                 range.bounds,
               );
             })
-            .join(' OR ');
+            .join(" OR ");
         }
         throw new Error(`can not convert action to SQL ${this}`);
 
@@ -183,7 +183,7 @@ export class OverlapExpression extends ChainableUnaryExpression {
       const { start, end, bounds } = literalValue;
 
       // contains could be either start less than 0 or start === 0 with inclusive bounds
-      if ((start < 0 && end === null) || (start === 0 && end === null && bounds[0] === '[')) {
+      if ((start < 0 && end === null) || (start === 0 && end === null && bounds[0] === "[")) {
         return x.contains(y);
       }
     }

@@ -1,6 +1,6 @@
-import { BigQuery } from '@google-cloud/bigquery';
-import { PlywoodLocator, PlywoodRequester } from 'plywood-base-api';
-import { Readable } from 'readable-stream';
+import { BigQuery } from "@google-cloud/bigquery";
+import { PlywoodLocator, PlywoodRequester } from "plywood-base-api";
+import { Readable } from "readable-stream";
 
 interface BigQueryRequesterParams {
   locator?: PlywoodLocator;
@@ -12,7 +12,7 @@ interface BigQueryRequesterParams {
  */
 export function BigQueryRequester(parameters: BigQueryRequesterParams): PlywoodRequester<string> {
   const client = new BigQuery({
-    keyFilename: parameters.keyFilename
+    keyFilename: parameters.keyFilename,
   });
 
   return (request): Readable => {
@@ -20,20 +20,23 @@ export function BigQueryRequester(parameters: BigQueryRequesterParams): PlywoodR
 
     const stream = new Readable({
       objectMode: true,
-      read: function() {
-      }
+      read: function () {},
     });
 
-    client.createQueryStream({
-      query,
-      useLegacySql: false
-    }).on('data', (row) => {
-      stream.push(row);
-    }).on('end', () => {
-      stream.push(null);
-    }).on('error', (error) => {
-      stream.emit('error', error);
-    });
+    client
+      .createQueryStream({
+        query,
+        useLegacySql: false,
+      })
+      .on("data", row => {
+        stream.push(row);
+      })
+      .on("end", () => {
+        stream.push(null);
+      })
+      .on("error", error => {
+        stream.emit("error", error);
+      });
 
     return stream;
   };

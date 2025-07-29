@@ -23,7 +23,9 @@ interface VisualizationSettingsComponentProps<T> {
   settings: ImmutableRecord<T>;
 }
 
-export type VisualizationSettingsComponent<T> = React.SFC<VisualizationSettingsComponentProps<T>>;
+export type VisualizationSettingsComponent<T> = React.SFC<
+  VisualizationSettingsComponentProps<T>
+>;
 
 interface VisualizationSettingsConverter<T> {
   print: Unary<T, object>;
@@ -31,9 +33,10 @@ interface VisualizationSettingsConverter<T> {
 }
 
 type VisSettingsInternal = object;
-export type VisualizationSettings<T extends VisSettingsInternal = object> = ImmutableRecord<VisSettingsInternal>;
+export type VisualizationSettings<T extends VisSettingsInternal = object> =
+  ImmutableRecord<VisSettingsInternal>;
 
 export interface VisualizationSettingsConfig<T extends VisSettingsInternal> {
   converter: VisualizationSettingsConverter<T>;
-  defaults: any
+  defaults: any;
 }

@@ -17,16 +17,23 @@
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { SortDirection, SortType } from "../../models/sort/sort";
 import { SplitType } from "../../models/split/split";
-import { NumberSplitDefinition, StringSplitDefinition, TimeSplitDefinition } from "./split-definition";
+import {
+  NumberSplitDefinition,
+  StringSplitDefinition,
+  TimeSplitDefinition,
+} from "./split-definition";
 
-export function stringSplitDefinition(dimension: string, {
-  limit = 50,
-  sort: {
-    direction = SortDirection.ascending,
-    period = SeriesDerivation.CURRENT,
-    reference = dimension
-  } = {}
-} = {}): StringSplitDefinition {
+export function stringSplitDefinition(
+  dimension: string,
+  {
+    limit = 50,
+    sort: {
+      direction = SortDirection.ascending,
+      period = SeriesDerivation.CURRENT,
+      reference = dimension,
+    } = {},
+  } = {},
+): StringSplitDefinition {
   return {
     type: SplitType.string,
     dimension,
@@ -34,20 +41,24 @@ export function stringSplitDefinition(dimension: string, {
       ref: reference,
       direction,
       period,
-      type: reference === dimension ? SortType.DIMENSION : SortType.SERIES
+      type: reference === dimension ? SortType.DIMENSION : SortType.SERIES,
     },
-    limit
+    limit,
   };
 }
 
-export function timeSplitDefinition(dimension: string, granularity: string, {
-  limit = 50,
-  sort: {
-    direction = SortDirection.ascending,
-    period = SeriesDerivation.CURRENT,
-    reference = dimension
-  } = {}
-} = {}): TimeSplitDefinition {
+export function timeSplitDefinition(
+  dimension: string,
+  granularity: string,
+  {
+    limit = 50,
+    sort: {
+      direction = SortDirection.ascending,
+      period = SeriesDerivation.CURRENT,
+      reference = dimension,
+    } = {},
+  } = {},
+): TimeSplitDefinition {
   return {
     granularity,
     type: SplitType.time,
@@ -56,20 +67,24 @@ export function timeSplitDefinition(dimension: string, granularity: string, {
       ref: reference,
       direction,
       period,
-      type: reference === dimension ? SortType.DIMENSION : SortType.SERIES
+      type: reference === dimension ? SortType.DIMENSION : SortType.SERIES,
     },
-    limit
+    limit,
   };
 }
 
-export function numberSplitDefinition(dimension: string, granularity: number, {
-  limit = 50,
-  sort: {
-    direction = SortDirection.ascending,
-    period = SeriesDerivation.CURRENT,
-    reference = dimension
-  } = {}
-} = {}): NumberSplitDefinition {
+export function numberSplitDefinition(
+  dimension: string,
+  granularity: number,
+  {
+    limit = 50,
+    sort: {
+      direction = SortDirection.ascending,
+      period = SeriesDerivation.CURRENT,
+      reference = dimension,
+    } = {},
+  } = {},
+): NumberSplitDefinition {
   return {
     granularity,
     type: SplitType.number,
@@ -78,8 +93,8 @@ export function numberSplitDefinition(dimension: string, granularity: number, {
       ref: reference,
       direction,
       period,
-      type: reference === dimension ? SortType.DIMENSION : SortType.SERIES
+      type: reference === dimension ? SortType.DIMENSION : SortType.SERIES,
     },
-    limit
+    limit,
   };
 }

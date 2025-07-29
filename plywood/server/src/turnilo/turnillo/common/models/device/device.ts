@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-export enum DeviceSize { SMALL = "small", MEDIUM = "medium", LARGE = "large"}
+export enum DeviceSize {
+  SMALL = "small",
+  MEDIUM = "medium",
+  LARGE = "large",
+}
 
 export class Device {
   static getSize(): DeviceSize {

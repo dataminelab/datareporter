@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from 'has-own-prop';
+import * as hasOwnProp from "has-own-prop";
 
-import { PlywoodValue } from '../datatypes/index';
-import { NumberRange } from '../datatypes/numberRange';
-import { SQLDialect } from '../dialect/baseDialect';
-import { continuousFloorExpression } from '../helper/utils';
+import { PlywoodValue } from "../datatypes/index";
+import { NumberRange } from "../datatypes/numberRange";
+import { SQLDialect } from "../dialect/baseDialect";
+import { continuousFloorExpression } from "../helper/utils";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class NumberBucketExpression extends ChainableExpression {
-  static op = 'NumberBucket';
+  static op = "NumberBucket";
   static fromJS(parameters: ExpressionJS): NumberBucketExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.size = parameters.size;
-    value.offset = hasOwnProp(parameters, 'offset') ? parameters.offset : 0;
+    value.offset = hasOwnProp(parameters, "offset") ? parameters.offset : 0;
     return new NumberBucketExpression(value);
   }
 
@@ -39,9 +39,9 @@ export class NumberBucketExpression extends ChainableExpression {
     super(parameters, dummyObject);
     this.size = parameters.size;
     this.offset = parameters.offset;
-    this._ensureOp('numberBucket');
-    this._checkOperandTypes('NUMBER');
-    this.type = 'NUMBER_RANGE';
+    this._ensureOp("numberBucket");
+    this._checkOperandTypes("NUMBER");
+    this.type = "NUMBER_RANGE";
   }
 
   public valueOf(): ExpressionValue {
@@ -76,12 +76,12 @@ export class NumberBucketExpression extends ChainableExpression {
 
   protected _getJSChainableHelper(operandJS: string): string {
     return Expression.jsNullSafetyUnary(operandJS, n =>
-      continuousFloorExpression(n, 'Math.floor', this.size, this.offset),
+      continuousFloorExpression(n, "Math.floor", this.size, this.offset),
     );
   }
 
   protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return continuousFloorExpression(operandSQL, 'FLOOR', this.size, this.offset);
+    return continuousFloorExpression(operandSQL, "FLOOR", this.size, this.offset);
   }
 }
 

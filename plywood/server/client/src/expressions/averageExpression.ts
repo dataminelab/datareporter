@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { Dataset, PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { Aggregate } from './mixins/aggregate';
+} from "./baseExpression";
+import { Aggregate } from "./mixins/aggregate";
 
 export class AverageExpression extends ChainableUnaryExpression implements Aggregate {
-  static op = 'Average';
+  static op = "Average";
   static fromJS(parameters: ExpressionJS): AverageExpression {
     return new AverageExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('average');
-    this._checkOperandTypes('DATASET');
-    this._checkExpressionTypes('NUMBER');
-    this.type = 'NUMBER';
+    this._ensureOp("average");
+    this._checkOperandTypes("DATASET");
+    this._checkExpressionTypes("NUMBER");
+    this.type = "NUMBER";
   }
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {

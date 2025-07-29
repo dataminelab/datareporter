@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { Dataset, PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ApplyExpression } from './applyExpression';
+import { ApplyExpression } from "./applyExpression";
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { RefExpression } from './refExpression';
-import { SortExpression } from './sortExpression';
-import { SplitExpression } from './splitExpression';
+} from "./baseExpression";
+import { RefExpression } from "./refExpression";
+import { SortExpression } from "./sortExpression";
+import { SplitExpression } from "./splitExpression";
 
 export class FilterExpression extends ChainableUnaryExpression {
-  static op = 'Filter';
+  static op = "Filter";
   static fromJS(parameters: ExpressionJS): FilterExpression {
     const value = ChainableUnaryExpression.jsToValue(parameters);
     return new FilterExpression(value);
@@ -37,9 +37,9 @@ export class FilterExpression extends ChainableUnaryExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('filter');
-    this._checkExpressionTypes('BOOLEAN');
-    this.type = 'DATASET';
+    this._ensureOp("filter");
+    this._checkExpressionTypes("BOOLEAN");
+    this.type = "DATASET";
   }
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
@@ -62,7 +62,7 @@ export class FilterExpression extends ChainableUnaryExpression {
   }
 
   public fullyDefined(): boolean {
-    return this.operand.isOp('literal') && this.expression.resolved();
+    return this.operand.isOp("literal") && this.expression.resolved();
   }
 
   public specialSimplify(): Expression {

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { ApplyExpression, Expression as PlywoodExpression, QuantileExpression } from "reporter-plywood";
+import {
+  ApplyExpression,
+  Expression as PlywoodExpression,
+  QuantileExpression,
+} from "reporter-plywood";
 import { Measure } from "../measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
 import { QuantileSeries } from "./quantile-series";
 
 export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
-
   constructor(series: QuantileSeries, measure: Measure) {
     super(series, measure);
   }
@@ -29,10 +32,18 @@ export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
     return `${super.title(derivation)} p${this.definition.formattedPercentile()}`;
   }
 
-  protected applyExpression(quantileExpression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression {
-    if (!(quantileExpression instanceof QuantileExpression)) throw new Error(`Expected QuantileExpression, got ${quantileExpression}`);
+  protected applyExpression(
+    quantileExpression: PlywoodExpression,
+    name: string,
+    nestingLevel: number,
+  ): ApplyExpression {
+    if (!(quantileExpression instanceof QuantileExpression))
+      throw new Error(`Expected QuantileExpression, got ${quantileExpression}`);
     //@ts-ignore
-    const expression = new QuantileExpression({ ...quantileExpression.valueOf(), value: this.definition.percentile / 100 });
+    const expression = new QuantileExpression({
+      ...quantileExpression.valueOf(),
+      value: this.definition.percentile / 100,
+    });
     return new ApplyExpression({ name, expression });
   }
 }

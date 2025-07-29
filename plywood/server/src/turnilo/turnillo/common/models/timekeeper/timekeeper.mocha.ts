@@ -43,10 +43,9 @@ describe("Timekeeper", () => {
   it("works with now", () => {
     var timekeeper = Timekeeper.fromJS({
       timeTags: [],
-      nowOverride: new Date("2016-01-01T01:02:03Z")
+      nowOverride: new Date("2016-01-01T01:02:03Z"),
     });
 
     expect(timekeeper.now()).to.deep.equal(new Date("2016-01-01T01:02:03Z"));
   });
-
 });

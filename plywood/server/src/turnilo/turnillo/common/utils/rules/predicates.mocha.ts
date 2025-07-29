@@ -30,7 +30,7 @@ describe("dimension kind matcher", () => {
       [["time", "*"], ["time", "tut"], true],
       [["!time"], ["pouet"], true],
       [["!time"], ["time"], false],
-      [["*"], ["time"], true]
+      [["*"], ["time"], true],
     ];
 
     cases.forEach((c, i) => {

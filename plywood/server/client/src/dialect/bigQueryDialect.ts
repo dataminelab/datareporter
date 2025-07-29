@@ -1,31 +1,31 @@
-import { Duration, Timezone } from 'chronoshift';
+import { Duration, Timezone } from "chronoshift";
 
-import { PlyType } from '../types';
+import { PlyType } from "../types";
 
-import { SQLDialect } from './baseDialect';
+import { SQLDialect } from "./baseDialect";
 
 export class BigQueryDialect extends SQLDialect {
   static TIME_BUCKETING: Record<string, string> = {
-    PT1S: '%Y-%m-%d %H:%M:%SZ',
-    PT1M: '%Y-%m-%d %H:%M:00Z',
-    PT1H: '%Y-%m-%d %H:00:00Z',
-    P1D: '%Y-%m-%d 00:00:00Z',
-    P1M: '%Y-%m-01 00:00:00Z',
-    P1Y: '%Y-01-01 00:00:00Z',
-    P1W: '%Y-%m-%d 00:00:00Z',
-    P3M: '%Y-%m-%d 00:00:00Z',
+    PT1S: "%Y-%m-%d %H:%M:%SZ",
+    PT1M: "%Y-%m-%d %H:%M:00Z",
+    PT1H: "%Y-%m-%d %H:00:00Z",
+    P1D: "%Y-%m-%d 00:00:00Z",
+    P1M: "%Y-%m-01 00:00:00Z",
+    P1Y: "%Y-01-01 00:00:00Z",
+    P1W: "%Y-%m-%d 00:00:00Z",
+    P3M: "%Y-%m-%d 00:00:00Z",
   };
 
   static CAST_TO_FUNCTION: Record<string, Record<string, string>> = {
     TIME: {
-      NUMBER: 'TIMESTAMP_MILLIS($$)',
+      NUMBER: "TIMESTAMP_MILLIS($$)",
     },
     NUMBER: {
-      TIME: 'UNIX_MILLIS($$)',
-      STRING: 'cast($$ as NUMERIC)',
+      TIME: "UNIX_MILLIS($$)",
+      STRING: "cast($$ as NUMERIC)",
     },
     STRING: {
-      NUMBER: 'cast($$ as string)',
+      NUMBER: "cast($$ as string)",
     },
   };
 
@@ -37,7 +37,8 @@ export class BigQueryDialect extends SQLDialect {
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
     SECOND_OF_MINUTE: "extract(SECOND from $$)",
     SECOND_OF_HOUR: "(extract(MINUTE from $$)*60+extract(SECOND from $$))",
-    SECOND_OF_DAY: "((extract(HOUR from $$)*60+extract(MINUTE from $$))*60+extract(SECOND from $$))",
+    SECOND_OF_DAY:
+      "((extract(HOUR from $$)*60+extract(MINUTE from $$))*60+extract(SECOND from $$))",
     SECOND_OF_WEEK:
       "(((mod((extract(DAYOFWEEK from $$)+6), 7)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$))*60 + extract(SECOND from $$))",
     SECOND_OF_MONTH:
@@ -49,8 +50,10 @@ export class BigQueryDialect extends SQLDialect {
     MINUTE_OF_DAY: "extract(HOUR from $$)*60+extract(MINUTE from $$)",
     MINUTE_OF_WEEK:
       "(mod(extract(DAYOFWEEK from $$)+6, 7)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
-    MINUTE_OF_MONTH: "((extract(DAY from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
-    MINUTE_OF_YEAR: "((extract(DAYOFYEAR from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
+    MINUTE_OF_MONTH:
+      "((extract(DAY from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
+    MINUTE_OF_YEAR:
+      "((extract(DAYOFYEAR from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
     //
     HOUR_OF_DAY: "extract(HOUR from $$)",
     HOUR_OF_WEEK: "(mod((extract(DAYOFWEEK from $$) + 6), 7) * 24 + extract(HOUR from $$))",
@@ -68,8 +71,8 @@ export class BigQueryDialect extends SQLDialect {
   };
 
   public escapeName(name: string): string {
-    name = name.replace(/`/g, '``');
-    return '`' + name + '`';
+    name = name.replace(/`/g, "``");
+    return "`" + name + "`";
   }
 
   public emptyGroupBy(): string {
@@ -109,18 +112,18 @@ export class BigQueryDialect extends SQLDialect {
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     if (duration.toString() === "P1W") {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), WEEK))`, 
-        timezone
+        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), WEEK))`,
+        timezone,
       );
     } else if (duration.toString() === "P1Y") {
       return this.walltimeToUTC(
-        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), YEAR))`, 
-        timezone
+        `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), YEAR))`,
+        timezone,
       );
     } else if (duration.toString() === "P3M") {
       return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), QUARTER))`,
-        timezone,      
+        timezone,
       );
     } else {
       return this.walltimeToUTC(
@@ -146,7 +149,6 @@ export class BigQueryDialect extends SQLDialect {
     return `STRPOS(${str},${substr})>0`;
   }
 
-
   public concatExpression(a: string, b: string): string {
     return `CONCAT(${a},${b})`;
   }
@@ -162,7 +164,7 @@ export class BigQueryDialect extends SQLDialect {
     if (step === 0) return operand;
 
     // https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime_add
-    const sqlFn = step > 0 ? 'TIMESTAMP(DATE_ADD(DATE(' : 'TIMESTAMP(DATE_SUB(DATE(';
+    const sqlFn = step > 0 ? "TIMESTAMP(DATE_ADD(DATE(" : "TIMESTAMP(DATE_SUB(DATE(";
     const spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
       operand = sqlFn + operand + "), INTERVAL " + String(spans.week) + " WEEK))";
@@ -201,7 +203,7 @@ export class BigQueryDialect extends SQLDialect {
   }
 
   public stringArrayToSQL(_value: string[]): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public utcToWalltime(operand: string, timezone: Timezone): string {

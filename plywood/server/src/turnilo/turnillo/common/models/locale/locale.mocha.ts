@@ -47,7 +47,7 @@ describe("locale", () => {
 
       expect(locale).to.deep.equal({
         ...en_us,
-        weekStart: 42
+        weekStart: 42,
       });
     });
   });

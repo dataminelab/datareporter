@@ -23,7 +23,7 @@ export class DimensionFixtures {
       name: "country",
       title: "important countries",
       formula: "$country",
-      kind: "string"
+      kind: "string",
     };
   }
 
@@ -33,7 +33,7 @@ export class DimensionFixtures {
       title: "important countries",
       formula: "$country",
       kind: "string",
-      url: "https://www.country.com/%s" // country.com redirects to a CMT.com. Could've been worse.
+      url: "https://www.country.com/%s", // country.com redirects to a CMT.com. Could've been worse.
     };
   }
 
@@ -43,7 +43,7 @@ export class DimensionFixtures {
       title: "time",
       formula: "$time",
       kind: "time",
-      url: "http://www.time.com/%s"
+      url: "http://www.time.com/%s",
     };
   }
 
@@ -52,7 +52,7 @@ export class DimensionFixtures {
       name: "numeric",
       title: "Numeric",
       formula: "$n",
-      kind: "number"
+      kind: "number",
     };
   }
 
@@ -61,7 +61,7 @@ export class DimensionFixtures {
       name: "time",
       title: "Time",
       formula: "$time",
-      kind: "time"
+      kind: "time",
     };
   }
 
@@ -70,7 +70,7 @@ export class DimensionFixtures {
       name: "commentLength",
       title: "Comment Length",
       formula: "$commentLength",
-      kind: "number"
+      kind: "number",
     };
   }
 
@@ -79,7 +79,7 @@ export class DimensionFixtures {
       name: "time",
       title: "Time",
       formula: "$time",
-      kind: "time"
+      kind: "time",
     });
   }
 
@@ -88,7 +88,7 @@ export class DimensionFixtures {
       name: "isRobot",
       title: "Is Robot",
       formula: "$isRobot",
-      kind: "boolean"
+      kind: "boolean",
     });
   }
 
@@ -96,7 +96,7 @@ export class DimensionFixtures {
     return new Dimension({
       name: "channel",
       title: "Channel",
-      formula: "$channel"
+      formula: "$channel",
     });
   }
 

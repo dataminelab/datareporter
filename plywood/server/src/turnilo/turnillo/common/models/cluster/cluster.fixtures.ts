@@ -28,7 +28,7 @@ export class ClusterFixtures {
       sourceListRefreshInterval: 10000,
       sourceReintrospectInterval: 10000,
 
-      introspectionStrategy: "segment-metadata-fallback"
+      introspectionStrategy: "segment-metadata-fallback",
     };
   }
 
@@ -43,10 +43,10 @@ export class ClusterFixtures {
       sourceListRefreshInterval: 10000,
       sourceReintrospectInterval: 10000,
 
-      introspectionStrategy: "segment-metadata-fallback"
+      introspectionStrategy: "segment-metadata-fallback",
     };
   }
-    static druidTwitterClusterJSWithGuard(): Cluster {
+  static druidTwitterClusterJSWithGuard(): Cluster {
     return Cluster.fromJS({
       name: "druid-custom",
       url: "http://192.168.99.101",
@@ -58,7 +58,7 @@ export class ClusterFixtures {
       sourceReintrospectInterval: 10000,
       guardDataCubes: true,
 
-      introspectionStrategy: "segment-metadata-fallback"
+      introspectionStrategy: "segment-metadata-fallback",
     });
   }
 }

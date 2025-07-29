@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ApplyExpression, Expression as PlywoodExpression } from "reporter-plywood";
+import {
+  ApplyExpression,
+  Expression as PlywoodExpression,
+} from "reporter-plywood";
 import { ArithmeticExpression } from "./concreteArithmeticOperation";
 import { PercentExpression } from "./percent";
 
@@ -24,7 +27,7 @@ export enum ExpressionSeriesOperation {
   SUBTRACT = "subtract",
   ADD = "add",
   MULTIPLY = "multiply",
-  DIVIDE = "divide"
+  DIVIDE = "divide",
 }
 
 export type Expression = PercentExpression | ArithmeticExpression;
@@ -34,7 +37,11 @@ export interface ExpressionValue {
 }
 
 export interface ConcreteExpression {
-  toExpression(expression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression;
+  toExpression(
+    expression: PlywoodExpression,
+    name: string,
+    nestingLevel: number,
+  ): ApplyExpression;
   title(): string;
 }
 

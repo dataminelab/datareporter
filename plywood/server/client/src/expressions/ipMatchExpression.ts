@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Ip } from '../datatypes/ip';
-import { SQLDialect } from '../dialect';
+import { Ip } from "../datatypes/ip";
+import { SQLDialect } from "../dialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class IpMatchExpression extends ChainableExpression {
-  static op = 'ipMatch';
+  static op = "ipMatch";
   static fromJS(parameters: ExpressionJS): IpMatchExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.ipToSearch = parameters.ipToSearch;
@@ -30,15 +30,15 @@ export class IpMatchExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('ipMatch');
-    this._checkOperandTypes('IP');
+    this._ensureOp("ipMatch");
+    this._checkOperandTypes("IP");
     this.ipToSearch = Ip.fromString(parameters.ipToSearch.ip);
     this.ipSearchType = parameters.ipSearchType;
-    this.type = 'BOOLEAN';
+    this.type = "BOOLEAN";
   }
 
   public ipToSearch: Ip;
-  public ipSearchType = 'ip';
+  public ipSearchType = "ip";
 
   public valueOf(): ExpressionValue {
     const value = super.valueOf();

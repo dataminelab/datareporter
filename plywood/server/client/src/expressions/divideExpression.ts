@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
+} from "./baseExpression";
 
 export class DivideExpression extends ChainableUnaryExpression {
-  static op = 'Divide';
+  static op = "Divide";
   static fromJS(parameters: ExpressionJS): DivideExpression {
     return new DivideExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('divide');
-    this._checkOperandTypes('NUMBER');
-    this._checkExpressionTypes('NUMBER');
-    this.type = 'NUMBER';
+    this._ensureOp("divide");
+    this._checkOperandTypes("NUMBER");
+    this._checkExpressionTypes("NUMBER");
+    this.type = "NUMBER";
   }
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {

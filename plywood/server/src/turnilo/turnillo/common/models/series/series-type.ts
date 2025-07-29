@@ -17,5 +17,5 @@
 export enum SeriesType {
   QUANTILE = "quantile",
   MEASURE = "measure",
-  EXPRESSION = "expression"
+  EXPRESSION = "expression",
 }

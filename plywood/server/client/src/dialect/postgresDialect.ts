@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { Duration, Timezone } from 'chronoshift';
+import type { Duration, Timezone } from "chronoshift";
 
-import { PlyType } from '../types';
+import { PlyType } from "../types";
 
-import { SQLDialect } from './baseDialect';
+import { SQLDialect } from "./baseDialect";
 
 export class PostgresDialect extends SQLDialect {
   static TIME_BUCKETING: Record<string, string> = {
-    PT1S: 'second',
-    PT1M: 'minute',
-    PT1H: 'hour',
-    P1D: 'day',
-    P1W: 'week',
-    P1M: 'month',
-    P3M: 'quarter',
-    P1Y: 'year',
+    PT1S: "second",
+    PT1M: "minute",
+    PT1H: "hour",
+    P1D: "day",
+    P1W: "week",
+    P1M: "month",
+    P3M: "quarter",
+    P1Y: "year",
   };
 
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
@@ -68,14 +68,14 @@ export class PostgresDialect extends SQLDialect {
 
   static CAST_TO_FUNCTION: Record<string, Record<string, string>> = {
     TIME: {
-      NUMBER: 'TO_TIMESTAMP($$::double precision / 1000)',
+      NUMBER: "TO_TIMESTAMP($$::double precision / 1000)",
     },
     NUMBER: {
-      TIME: 'EXTRACT(EPOCH FROM $$) * 1000',
-      STRING: '$$::float',
+      TIME: "EXTRACT(EPOCH FROM $$) * 1000",
+      STRING: "$$::float",
     },
     STRING: {
-      NUMBER: '$$::text',
+      NUMBER: "$$::text",
     },
   };
 
@@ -88,8 +88,8 @@ export class PostgresDialect extends SQLDialect {
   }
 
   /*
-    * @deprecated
-  */
+   * @deprecated
+   */
   public constantGroupBy(): string {
     return this.emptyGroupBy();
   }
@@ -100,7 +100,7 @@ export class PostgresDialect extends SQLDialect {
   }
 
   public stringArrayToSQL(_value: string[]): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public concatExpression(a: string, b: string): string {
@@ -165,20 +165,20 @@ export class PostgresDialect extends SQLDialect {
     if (step === 0) return operand;
 
     // https://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html#function_date-add
-    const sqlFn = step > 0 ? 'DATE_ADD(' : 'DATE_SUB(';
+    const sqlFn = step > 0 ? "DATE_ADD(" : "DATE_SUB(";
     const spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
-      return sqlFn + operand + ', INTERVAL ' + String(spans.week) + ' WEEK)';
+      return sqlFn + operand + ", INTERVAL " + String(spans.week) + " WEEK)";
     }
     if (spans.year || spans.month) {
-      const expr = String(spans.year || 0) + '-' + String(spans.month || 0);
+      const expr = String(spans.year || 0) + "-" + String(spans.month || 0);
       operand = sqlFn + operand + ", INTERVAL '" + expr + "' YEAR_MONTH)";
     }
     if (spans.day || spans.hour || spans.minute || spans.second) {
       const expr =
         String(spans.day || 0) +
-        ' ' +
-        [spans.hour || 0, spans.minute || 0, spans.second || 0].join(':');
+        " " +
+        [spans.hour || 0, spans.minute || 0, spans.second || 0].join(":");
       operand = sqlFn + operand + ", INTERVAL '" + expr + "' DAY_SECOND)";
     }
     return operand;

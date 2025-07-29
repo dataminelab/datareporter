@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Datum, PlywoodValue } from '../datatypes';
-import { ComputeOptions, Expression } from '../expressions/baseExpression';
+import { Datum, PlywoodValue } from "../datatypes";
+import { ComputeOptions, Expression } from "../expressions/baseExpression";
 
 export type Executor = (ex: Expression, opt?: ComputeOptions) => Promise<PlywoodValue>;
 

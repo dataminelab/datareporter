@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Visualization, VisualizationManifest } from "../../../models/visualization-manifest/visualization-manifest";
+import {
+  Visualization,
+  VisualizationManifest,
+} from "../../../models/visualization-manifest/visualization-manifest";
 import { ImmutableRecord } from "../../../utils/immutable-utils/immutable-utils";
 import { TABLE_MANIFEST } from "../../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../../visualization-manifests/totals/totals";
@@ -23,17 +26,22 @@ import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence } from "./utils";
 
 describe("Visualization", () => {
-  const mockViewDefinitionWithVis = (visualization: Visualization, visualizationSettings: object | null = null) =>
-    mockViewDefinition({ visualization, visualizationSettings });
+  const mockViewDefinitionWithVis = (
+    visualization: Visualization,
+    visualizationSettings: object | null = null,
+  ) => mockViewDefinition({ visualization, visualizationSettings });
 
-  const mockEssenceWithVis = (visualization: VisualizationManifest, visualizationSettings: ImmutableRecord<object> | null = null) =>
-    mockEssence({ visualization, visualizationSettings });
+  const mockEssenceWithVis = (
+    visualization: VisualizationManifest,
+    visualizationSettings: ImmutableRecord<object> | null = null,
+  ) => mockEssence({ visualization, visualizationSettings });
 
   describe("Totals", () => {
     it("reads totals visualization", () => {
       assertConversionToEssence(
         mockViewDefinitionWithVis("totals"),
-        mockEssenceWithVis(TOTALS_MANIFEST));
+        mockEssenceWithVis(TOTALS_MANIFEST),
+      );
     });
   });
 
@@ -44,17 +52,19 @@ describe("Visualization", () => {
       assertConversionToEssence(
         mockViewDefinitionWithVis("table"),
         //@ts-ignore
-        mockEssenceWithVis(manifest, manifest.visualizationSettings.defaults));
+        mockEssenceWithVis(manifest, manifest.visualizationSettings.defaults),
+      );
     });
 
     it("reads table visualization and converts settings", () => {
       const settings = { collapseRows: true };
-      const convertedSettings = manifest.visualizationSettings.converter.read(settings);
+      const convertedSettings =
+        manifest.visualizationSettings.converter.read(settings);
       assertConversionToEssence(
         mockViewDefinitionWithVis("table", settings),
         //@ts-ignore
-        mockEssenceWithVis(manifest, convertedSettings));
+        mockEssenceWithVis(manifest, convertedSettings),
+      );
     });
   });
-
 });

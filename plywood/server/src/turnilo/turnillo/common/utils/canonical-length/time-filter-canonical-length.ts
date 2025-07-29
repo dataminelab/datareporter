@@ -18,7 +18,10 @@ import { Duration } from "chronoshift";
 import { Essence } from "../../models/essence/essence";
 import { Timekeeper } from "../../models/timekeeper/timekeeper";
 
-export default function timeFilterCanonicalLength(essence: Essence, timekeeper: Timekeeper): number {
+export default function timeFilterCanonicalLength(
+  essence: Essence,
+  timekeeper: Timekeeper,
+): number {
   const currentTimeFilter = essence.currentTimeFilter(timekeeper);
   //@ts-ignore
   const { start, end } = currentTimeFilter.values.get(0);

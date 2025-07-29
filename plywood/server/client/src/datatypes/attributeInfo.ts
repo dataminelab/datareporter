@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from 'has-own-prop';
-import { Class, immutableEqual, Instance, NamedArray } from 'immutable-class';
+import * as hasOwnProp from "has-own-prop";
+import { Class, immutableEqual, Instance, NamedArray } from "immutable-class";
 
-import { Expression, ExpressionJS, RefExpression } from '../expressions';
-import { FullType, PlyType } from '../types';
+import { Expression, ExpressionJS, RefExpression } from "../expressions";
+import { FullType, PlyType } from "../types";
 
-import { PlywoodRange, PlywoodRangeJS, Range } from './range';
+import { PlywoodRange, PlywoodRangeJS, Range } from "./range";
 
 export type Attributes = AttributeInfo[];
 export type AttributeJSs = AttributeInfoJS[];
@@ -54,14 +54,14 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
   }
 
   static NATIVE_TYPE_FROM_SPECIAL: Record<string, string> = {
-    unique: 'hyperUnique',
-    theta: 'thetaSketch',
-    histogram: 'approximateHistogram',
+    unique: "hyperUnique",
+    theta: "thetaSketch",
+    histogram: "approximateHistogram",
   };
 
   static fromJS(parameters: AttributeInfoJS): AttributeInfo {
-    if (typeof parameters !== 'object') {
-      throw new Error('unrecognizable attributeMeta');
+    if (typeof parameters !== "object") {
+      throw new Error("unrecognizable attributeMeta");
     }
 
     const value: AttributeInfoValue = {
@@ -70,9 +70,9 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
     if (parameters.type) value.type = parameters.type;
 
     let nativeType = parameters.nativeType;
-    if (!nativeType && hasOwnProp(parameters, 'special')) {
+    if (!nativeType && hasOwnProp(parameters, "special")) {
       nativeType = AttributeInfo.NATIVE_TYPE_FROM_SPECIAL[(parameters as any).special];
-      value.type = 'NULL';
+      value.type = "NULL";
     }
     value.nativeType = nativeType;
     if (parameters.unsplitable) value.unsplitable = true;
@@ -87,7 +87,7 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
   }
 
   static fromJSs(attributeJSs: AttributeJSs): Attributes {
-    if (!Array.isArray(attributeJSs)) throw new TypeError('invalid attributeJSs');
+    if (!Array.isArray(attributeJSs)) throw new TypeError("invalid attributeJSs");
     return attributeJSs.map(attributeJS => AttributeInfo.fromJS(attributeJS));
   }
 
@@ -110,11 +110,11 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
   public termsDelegate?: string;
 
   constructor(parameters: AttributeInfoValue) {
-    if (typeof parameters.name !== 'string') {
-      throw new Error('name must be a string');
+    if (typeof parameters.name !== "string") {
+      throw new Error("name must be a string");
     }
     this.name = parameters.name;
-    this.type = parameters.type || 'NULL';
+    this.type = parameters.type || "NULL";
     if (!RefExpression.validType(this.type)) throw new Error(`invalid type: ${this.type}`);
 
     this.unsplitable = Boolean(parameters.unsplitable);
@@ -126,7 +126,7 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
   }
 
   public toString(): string {
-    const nativeType = this.nativeType ? `[${this.nativeType}]` : '';
+    const nativeType = this.nativeType ? `[${this.nativeType}]` : "";
     return `${this.name}::${this.type}${nativeType}`;
   }
 

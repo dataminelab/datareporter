@@ -46,13 +46,14 @@ const SMALL_WIKI_DATA = [
     delta: 36,
     added: 36,
     deleted: 0,
-    deltaByTen: 3.6
+    deltaByTen: 3.6,
   },
   {
     time: new Date("2015-09-12T00:47:00Z"),
     channel: "ca",
     cityName: null,
-    comment: "Robot inserta {{Commonscat}} que enllaça amb [[commons:category:Rallicula]]",
+    comment:
+      "Robot inserta {{Commonscat}} que enllaça amb [[commons:category:Rallicula]]",
     commentLength: 75,
     countryIsoCode: null,
     countryName: null,
@@ -72,13 +73,14 @@ const SMALL_WIKI_DATA = [
     delta: 17,
     added: 17,
     deleted: 0,
-    deltaByTen: 1.7
+    deltaByTen: 1.7,
   },
   {
     time: new Date("2015-09-12T00:47:05Z"),
     channel: "en",
     cityName: "Auburn",
-    comment: "/* Status of peremptory norms under international law */ fixed spelling of 'Wimbledon'",
+    comment:
+      "/* Status of peremptory norms under international law */ fixed spelling of 'Wimbledon'",
     commentLength: 86,
     countryIsoCode: "AU",
     countryName: "Australia",
@@ -98,7 +100,7 @@ const SMALL_WIKI_DATA = [
     delta: 0,
     added: 0,
     deleted: 0,
-    deltaByTen: 0
+    deltaByTen: 0,
   },
   {
     time: new Date("2015-09-12T00:47:08Z"),
@@ -124,7 +126,7 @@ const SMALL_WIKI_DATA = [
     delta: 18,
     added: 18,
     deleted: 0,
-    deltaByTen: 1.8
+    deltaByTen: 1.8,
   },
   {
     time: new Date("2015-09-12T00:47:11Z"),
@@ -150,7 +152,7 @@ const SMALL_WIKI_DATA = [
     delta: 18,
     added: 18,
     deleted: 0,
-    deltaByTen: 1.8
+    deltaByTen: 1.8,
   },
   {
     time: new Date("2015-09-12T00:47:13Z"),
@@ -176,7 +178,7 @@ const SMALL_WIKI_DATA = [
     delta: 18,
     added: 18,
     deleted: 0,
-    deltaByTen: 1.8
+    deltaByTen: 1.8,
   },
   {
     time: new Date("2015-09-12T00:47:17Z"),
@@ -202,7 +204,7 @@ const SMALL_WIKI_DATA = [
     delta: -20,
     added: 0,
     deleted: 20,
-    deltaByTen: -2
+    deltaByTen: -2,
   },
   {
     time: new Date("2015-09-12T00:47:19Z"),
@@ -224,11 +226,25 @@ const SMALL_WIKI_DATA = [
     regionIsoCode: null,
     regionName: null,
     user: "New Media Theorist",
-    userChars: [" ", "A", "D", "E", "H", "I", "M", "N", "O", "R", "S", "T", "W"],
+    userChars: [
+      " ",
+      "A",
+      "D",
+      "E",
+      "H",
+      "I",
+      "M",
+      "N",
+      "O",
+      "R",
+      "S",
+      "T",
+      "W",
+    ],
     delta: 345,
     added: 345,
     deleted: 0,
-    deltaByTen: 34.5
+    deltaByTen: 34.5,
   },
   {
     time: new Date("2015-09-12T00:47:21Z"),
@@ -254,7 +270,7 @@ const SMALL_WIKI_DATA = [
     delta: 121,
     added: 121,
     deleted: 0,
-    deltaByTen: 12.1
+    deltaByTen: 12.1,
   },
   {
     time: new Date("2015-09-12T00:47:25Z"),
@@ -280,8 +296,8 @@ const SMALL_WIKI_DATA = [
     delta: 18,
     added: 18,
     deleted: 0,
-    deltaByTen: 1.8
-  }
+    deltaByTen: 1.8,
+  },
 ];
 
 export class AppSettingsFixtures {
@@ -290,30 +306,23 @@ export class AppSettingsFixtures {
       customization: {
         title: "Hello World",
         headerBackground: "brown",
-        customLogoSvg: "ansvgstring"
+        customLogoSvg: "ansvgstring",
       },
-      clusters: [
-        ClusterFixtures.druidWikiClusterJS()
-      ],
-      dataCubes: [
-        DataCubeFixtures.WIKI_JS
-      ]
+      clusters: [ClusterFixtures.druidWikiClusterJS()],
+      dataCubes: [DataCubeFixtures.WIKI_JS],
     };
   }
 
   public static wikiTwitterJS(): AppSettingsJS {
     return {
       customization: {
-        title: "Hello World"
+        title: "Hello World",
       },
       clusters: [
         ClusterFixtures.druidWikiClusterJS(),
-        ClusterFixtures.druidTwitterClusterJS()
+        ClusterFixtures.druidTwitterClusterJS(),
       ],
-      dataCubes: [
-        DataCubeFixtures.WIKI_JS,
-        DataCubeFixtures.TWITTER_JS
-      ]
+      dataCubes: [DataCubeFixtures.WIKI_JS, DataCubeFixtures.TWITTER_JS],
     };
   }
 
@@ -322,20 +331,26 @@ export class AppSettingsFixtures {
   }
 
   static wikiOnly() {
-    return AppSettings.fromJS(AppSettingsFixtures.wikiOnlyJS(), AppSettingsFixtures.getContext());
+    return AppSettings.fromJS(
+      AppSettingsFixtures.wikiOnlyJS(),
+      AppSettingsFixtures.getContext(),
+    );
   }
 
   static wikiOnlyWithExecutor() {
     return AppSettingsFixtures.wikiOnly().attachExecutors(() => {
       return basicExecutorFactory({
         datasets: {
-          main: Dataset.fromJS(SMALL_WIKI_DATA)
-        }
+          main: Dataset.fromJS(SMALL_WIKI_DATA),
+        },
       });
     });
   }
 
   static wikiTwitter() {
-    return AppSettings.fromJS(AppSettingsFixtures.wikiTwitterJS(), AppSettingsFixtures.getContext());
+    return AppSettings.fromJS(
+      AppSettingsFixtures.wikiTwitterJS(),
+      AppSettingsFixtures.getContext(),
+    );
   }
 }

@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import { Timezone } from 'chronoshift';
-import * as hasOwnProp from 'has-own-prop';
-import { Class, generalEqual, Instance } from 'immutable-class';
+import { Timezone } from "chronoshift";
+import * as hasOwnProp from "has-own-prop";
+import { Class, generalEqual, Instance } from "immutable-class";
 
-import { PlyType } from '../types';
+import { PlyType } from "../types";
 
-import { getValueType, valueFromJS, valueToJS } from './common';
-import { PlywoodValue } from './dataset';
-import { NumberRange } from './numberRange';
-import { PlywoodRange, Range } from './range';
-import { StringRange } from './stringRange';
-import { TimeRange } from './timeRange';
+import { getValueType, valueFromJS, valueToJS } from "./common";
+import { PlywoodValue } from "./dataset";
+import { NumberRange } from "./numberRange";
+import { PlywoodRange, Range } from "./range";
+import { StringRange } from "./stringRange";
+import { TimeRange } from "./timeRange";
 
 export interface SetValue {
   setType: PlyType;
@@ -44,7 +44,7 @@ function dateString(date: Date): string {
 
 function stringKeyFn(value: any): string {
   if (value === null) {
-    return '__NULL_KEY_HASH_INTERNAL_USE_ONLY__';
+    return "__NULL_KEY_HASH_INTERNAL_USE_ONLY__";
   }
   return String(value);
 }
@@ -54,13 +54,13 @@ function arrayFromJS(xs: Array<any>, setType: string): Array<any> {
 }
 
 const typeUpgrades: Record<string, string> = {
-  NUMBER: 'NUMBER_RANGE',
-  TIME: 'TIME_RANGE',
-  STRING: 'STRING_RANGE',
+  NUMBER: "NUMBER_RANGE",
+  TIME: "TIME_RANGE",
+  STRING: "STRING_RANGE",
 };
 
 export class Set implements Instance<SetValue, SetJS> {
-  static type = 'SET';
+  static type = "SET";
   static EMPTY: Set;
 
   static unifyElements(elements: Array<PlywoodRange>): Array<PlywoodRange> {
@@ -104,16 +104,16 @@ export class Set implements Instance<SetValue, SetJS> {
   }
 
   static isAtomicType(type: PlyType): boolean {
-    return type && type !== 'NULL' && type.indexOf('SET/') === -1;
+    return type && type !== "NULL" && type.indexOf("SET/") === -1;
   }
 
   static isSetType(type: PlyType): boolean {
-    return type && type.indexOf('SET/') === 0;
+    return type && type.indexOf("SET/") === 0;
   }
 
   static wrapSetType(type: PlyType): PlyType {
     if (!type) return null;
-    return Set.isSetType(type) ? type : <PlyType>('SET/' + type);
+    return Set.isSetType(type) ? type : <PlyType>("SET/" + type);
   }
 
   static unwrapSetType(type: PlyType): PlyType {
@@ -229,14 +229,14 @@ export class Set implements Instance<SetValue, SetJS> {
     if (Array.isArray(parameters)) {
       parameters = { elements: parameters };
     }
-    if (typeof parameters !== 'object') {
-      throw new Error('unrecognizable set');
+    if (typeof parameters !== "object") {
+      throw new Error("unrecognizable set");
     }
     let setType = parameters.setType;
     const elements = parameters.elements;
     if (!setType) {
       setType = getValueType(elements.length ? elements[0] : null);
-      if (setType === 'NULL' && elements.length > 1) setType = getValueType(elements[1]);
+      if (setType === "NULL" && elements.length > 1) setType = getValueType(elements[1]);
     }
     return new Set({
       setType: setType,
@@ -253,7 +253,7 @@ export class Set implements Instance<SetValue, SetJS> {
   constructor(parameters: SetValue) {
     const setType = parameters.setType;
     this.setType = setType;
-    const keyFn = setType === 'TIME' ? dateString : stringKeyFn;
+    const keyFn = setType === "TIME" ? dateString : stringKeyFn;
     this.keyFn = keyFn;
 
     let elements = parameters.elements;
@@ -299,17 +299,17 @@ export class Set implements Instance<SetValue, SetJS> {
   public toString(tz?: Timezone): string {
     const { setType } = this;
     let stringFn: (v: any) => string = null;
-    if (setType === 'NULL') return 'null';
+    if (setType === "NULL") return "null";
 
-    if (setType === 'TIME_RANGE') {
-      stringFn = (e: any) => (e ? e.toString(tz) : 'null');
-    } else if (setType === 'TIME') {
-      stringFn = (e: any) => (e ? Timezone.formatDateWithTimezone(e, tz) : 'null');
+    if (setType === "TIME_RANGE") {
+      stringFn = (e: any) => (e ? e.toString(tz) : "null");
+    } else if (setType === "TIME") {
+      stringFn = (e: any) => (e ? Timezone.formatDateWithTimezone(e, tz) : "null");
     } else {
       stringFn = String;
     }
 
-    return `${this.elements.map(stringFn).join(', ')}`;
+    return `${this.elements.map(stringFn).join(", ")}`;
   }
 
   public equals(other: Set | undefined): boolean {
@@ -317,7 +317,7 @@ export class Set implements Instance<SetValue, SetJS> {
       other instanceof Set &&
       this.setType === other.setType &&
       this.elements.length === other.elements.length &&
-      this.elements.slice().sort().join('') === other.elements.slice().sort().join('')
+      this.elements.slice().sort().join("") === other.elements.slice().sort().join("")
     );
   }
 
@@ -348,7 +348,7 @@ export class Set implements Instance<SetValue, SetJS> {
   }
 
   public isNullSet(): boolean {
-    return this.setType === 'NULL';
+    return this.setType === "NULL";
   }
 
   public unifyElements(): Set {
@@ -364,23 +364,23 @@ export class Set implements Instance<SetValue, SetJS> {
   }
 
   public getType(): PlyType {
-    return ('SET/' + this.setType) as PlyType;
+    return ("SET/" + this.setType) as PlyType;
   }
 
   public upgradeType(): Set {
-    if (this.setType === 'NUMBER') {
+    if (this.setType === "NUMBER") {
       return Set.fromJS({
-        setType: 'NUMBER_RANGE',
+        setType: "NUMBER_RANGE",
         elements: this.elements.map(NumberRange.fromNumber),
       });
-    } else if (this.setType === 'TIME') {
+    } else if (this.setType === "TIME") {
       return Set.fromJS({
-        setType: 'TIME_RANGE',
+        setType: "TIME_RANGE",
         elements: this.elements.map(TimeRange.fromTime),
       });
-    } else if (this.setType === 'STRING') {
+    } else if (this.setType === "STRING") {
       return Set.fromJS({
-        setType: 'STRING_RANGE',
+        setType: "STRING_RANGE",
         elements: this.elements.map(StringRange.fromString),
       });
     } else {
@@ -421,10 +421,10 @@ export class Set implements Instance<SetValue, SetJS> {
     if (other.empty()) return this;
     let ret: Set = this;
     if (this.setType !== other.setType) {
-      if (this.setType === 'NULL') {
+      if (this.setType === "NULL") {
         ret = ret.changeSetType(other.setType);
-      } else if (other.setType !== 'NULL') {
-        throw new TypeError('can not union sets of different types');
+      } else if (other.setType !== "NULL") {
+        throw new TypeError("can not union sets of different types");
       }
     }
     return ret.changeElements(ret.elements.concat(other.elements)).unifyElements();
@@ -435,12 +435,12 @@ export class Set implements Instance<SetValue, SetJS> {
 
     const setType = this.setType;
     if (this.setType !== other.setType) {
-      throw new TypeError('can not intersect sets of different types');
+      throw new TypeError("can not intersect sets of different types");
     }
 
     const thisElements = this.elements;
     let newElements: Array<any>;
-    if (setType === 'NUMBER_RANGE' || setType === 'TIME_RANGE' || setType === 'STRING_RANGE') {
+    if (setType === "NUMBER_RANGE" || setType === "TIME_RANGE" || setType === "STRING_RANGE") {
       const otherElements = other.elements;
       newElements = Set.intersectElements(thisElements, otherElements);
     } else {
@@ -458,7 +458,7 @@ export class Set implements Instance<SetValue, SetJS> {
     if (this.empty() || other.empty()) return false;
 
     if (this.setType !== other.setType) {
-      throw new TypeError('can determine overlap sets of different types');
+      throw new TypeError("can determine overlap sets of different types");
     }
 
     const thisElements = this.elements;
@@ -491,8 +491,8 @@ export class Set implements Instance<SetValue, SetJS> {
   public add(value: any): Set {
     let setType = this.setType;
     const valueType = getValueType(value);
-    if (setType === 'NULL') setType = valueType;
-    if (valueType !== 'NULL' && setType !== valueType) throw new Error('value type must match');
+    if (setType === "NULL") setType = valueType;
+    if (valueType !== "NULL" && setType !== valueType) throw new Error("value type must match");
 
     if (this.contains(value)) return this;
     return new Set({

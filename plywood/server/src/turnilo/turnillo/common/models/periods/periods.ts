@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export enum Period {PREVIOUS = "previous__", CURRENT = ""}
+export enum Period {
+  PREVIOUS = "previous__",
+  CURRENT = "",
+}

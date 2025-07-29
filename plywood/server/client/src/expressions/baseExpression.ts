@@ -16,10 +16,10 @@
  */
 
 /* eslint-disable prefer-rest-params */
-import { Duration, parseISODate, Timezone } from 'chronoshift';
-import * as hasOwnProp from 'has-own-prop';
-import { generalLookupsEqual, Instance, isImmutableClass } from 'immutable-class';
-import { PassThrough } from 'readable-stream';
+import { Duration, parseISODate, Timezone } from "chronoshift";
+import * as hasOwnProp from "has-own-prop";
+import { generalLookupsEqual, Instance, isImmutableClass } from "immutable-class";
+import { PassThrough } from "readable-stream";
 
 import {
   ComputeFn,
@@ -34,84 +34,84 @@ import {
   sizeOfDatasetExternalAlterations,
   StringRange,
   TimeRange,
-} from '../datatypes';
+} from "../datatypes";
 import {
   failIfIntrospectNeededInDatum,
   getFullTypeFromDatum,
   introspectDatum,
-} from '../datatypes/common';
-import { Ip } from '../datatypes/ip';
-import { iteratorFactory, PlyBit } from '../datatypes/valueStream';
-import { SQLDialect } from '../dialect/baseDialect';
-import { External, ExternalJS } from '../external/baseExternal';
-import { promiseWhile } from '../helper/promiseWhile';
-import { deduplicateSort, pipeWithError, repeat, shallowCopy } from '../helper/utils';
-import { DatasetFullType, Environment, PlyType, PlyTypeSimple, PlyTypeSingleValue } from '../types';
+} from "../datatypes/common";
+import { Ip } from "../datatypes/ip";
+import { iteratorFactory, PlyBit } from "../datatypes/valueStream";
+import { SQLDialect } from "../dialect/baseDialect";
+import { External, ExternalJS } from "../external/baseExternal";
+import { promiseWhile } from "../helper/promiseWhile";
+import { deduplicateSort, pipeWithError, repeat, shallowCopy } from "../helper/utils";
+import { DatasetFullType, Environment, PlyType, PlyTypeSimple, PlyTypeSingleValue } from "../types";
 
-import { AbsoluteExpression } from './absoluteExpression';
-import { AddExpression } from './addExpression';
-import { AndExpression } from './andExpression';
-import { ApplyExpression } from './applyExpression';
-import { AverageExpression } from './averageExpression';
-import { CardinalityExpression } from './cardinalityExpression';
-import { CastExpression } from './castExpression';
-import { CollectExpression } from './collectExpression';
-import { ConcatExpression } from './concatExpression';
-import { ContainsExpression } from './containsExpression';
-import { CountDistinctExpression } from './countDistinctExpression';
-import { CountExpression } from './countExpression';
-import { CustomAggregateExpression } from './customAggregateExpression';
-import { CustomTransformExpression } from './customTransformExpression';
-import { DivideExpression } from './divideExpression';
-import { ExternalExpression } from './externalExpression';
-import { ExtractExpression } from './extractExpression';
-import { FallbackExpression } from './fallbackExpression';
-import { FilterExpression } from './filterExpression';
-import { GreaterThanExpression } from './greaterThanExpression';
-import { GreaterThanOrEqualExpression } from './greaterThanOrEqualExpression';
-import { IndexOfExpression } from './indexOfExpression';
-import { InExpression } from './inExpression';
-import { IpMatchExpression } from './ipMatchExpression';
-import { IpSearchExpression } from './ipSearchExpression';
-import { IpStringifyExpression } from './ipStringifyExpression';
-import { IsExpression } from './isExpression';
-import { JoinExpression } from './joinExpression';
-import { LengthExpression } from './lengthExpression';
-import { LessThanExpression } from './lessThanExpression';
-import { LessThanOrEqualExpression } from './lessThanOrEqualExpression';
-import { LimitExpression } from './limitExpression';
-import { LiteralExpression } from './literalExpression';
-import { LogExpression } from './logExpression';
-import { LookupExpression } from './lookupExpression';
-import { MatchExpression } from './matchExpression';
-import { MaxExpression } from './maxExpression';
-import { MinExpression } from './minExpression';
-import { MultiplyExpression } from './multiplyExpression';
-import { MvContainsExpression } from './mvContainsExpression';
-import { MvFilterOnlyExpression } from './mvFilterOnlyExpression';
-import { MvOverlapExpression } from './mvOverlapExpression';
-import { NotExpression } from './notExpression';
-import { NumberBucketExpression } from './numberBucketExpression';
-import { OrExpression } from './orExpression';
-import { OverlapExpression } from './overlapExpression';
-import { PowerExpression } from './powerExpression';
-import { QuantileExpression } from './quantileExpression';
-import { RefExpression } from './refExpression';
-import { SelectExpression } from './selectExpression';
-import { Direction, SortExpression } from './sortExpression';
-import { SplitExpression } from './splitExpression';
-import { SqlAggregateExpression } from './sqlAggregateExpression';
-import { SqlRefExpression } from './sqlRefExpression';
-import { SubstrExpression } from './substrExpression';
-import { SubtractExpression } from './subtractExpression';
-import { SumExpression } from './sumExpression';
-import { ThenExpression } from './thenExpression';
-import { TimeBucketExpression } from './timeBucketExpression';
-import { TimeFloorExpression } from './timeFloorExpression';
-import { TimePartExpression } from './timePartExpression';
-import { TimeRangeExpression } from './timeRangeExpression';
-import { TimeShiftExpression } from './timeShiftExpression';
-import { TransformCaseExpression } from './transformCaseExpression';
+import { AbsoluteExpression } from "./absoluteExpression";
+import { AddExpression } from "./addExpression";
+import { AndExpression } from "./andExpression";
+import { ApplyExpression } from "./applyExpression";
+import { AverageExpression } from "./averageExpression";
+import { CardinalityExpression } from "./cardinalityExpression";
+import { CastExpression } from "./castExpression";
+import { CollectExpression } from "./collectExpression";
+import { ConcatExpression } from "./concatExpression";
+import { ContainsExpression } from "./containsExpression";
+import { CountDistinctExpression } from "./countDistinctExpression";
+import { CountExpression } from "./countExpression";
+import { CustomAggregateExpression } from "./customAggregateExpression";
+import { CustomTransformExpression } from "./customTransformExpression";
+import { DivideExpression } from "./divideExpression";
+import { ExternalExpression } from "./externalExpression";
+import { ExtractExpression } from "./extractExpression";
+import { FallbackExpression } from "./fallbackExpression";
+import { FilterExpression } from "./filterExpression";
+import { GreaterThanExpression } from "./greaterThanExpression";
+import { GreaterThanOrEqualExpression } from "./greaterThanOrEqualExpression";
+import { IndexOfExpression } from "./indexOfExpression";
+import { InExpression } from "./inExpression";
+import { IpMatchExpression } from "./ipMatchExpression";
+import { IpSearchExpression } from "./ipSearchExpression";
+import { IpStringifyExpression } from "./ipStringifyExpression";
+import { IsExpression } from "./isExpression";
+import { JoinExpression } from "./joinExpression";
+import { LengthExpression } from "./lengthExpression";
+import { LessThanExpression } from "./lessThanExpression";
+import { LessThanOrEqualExpression } from "./lessThanOrEqualExpression";
+import { LimitExpression } from "./limitExpression";
+import { LiteralExpression } from "./literalExpression";
+import { LogExpression } from "./logExpression";
+import { LookupExpression } from "./lookupExpression";
+import { MatchExpression } from "./matchExpression";
+import { MaxExpression } from "./maxExpression";
+import { MinExpression } from "./minExpression";
+import { MultiplyExpression } from "./multiplyExpression";
+import { MvContainsExpression } from "./mvContainsExpression";
+import { MvFilterOnlyExpression } from "./mvFilterOnlyExpression";
+import { MvOverlapExpression } from "./mvOverlapExpression";
+import { NotExpression } from "./notExpression";
+import { NumberBucketExpression } from "./numberBucketExpression";
+import { OrExpression } from "./orExpression";
+import { OverlapExpression } from "./overlapExpression";
+import { PowerExpression } from "./powerExpression";
+import { QuantileExpression } from "./quantileExpression";
+import { RefExpression } from "./refExpression";
+import { SelectExpression } from "./selectExpression";
+import { Direction, SortExpression } from "./sortExpression";
+import { SplitExpression } from "./splitExpression";
+import { SqlAggregateExpression } from "./sqlAggregateExpression";
+import { SqlRefExpression } from "./sqlRefExpression";
+import { SubstrExpression } from "./substrExpression";
+import { SubtractExpression } from "./subtractExpression";
+import { SumExpression } from "./sumExpression";
+import { ThenExpression } from "./thenExpression";
+import { TimeBucketExpression } from "./timeBucketExpression";
+import { TimeFloorExpression } from "./timeFloorExpression";
+import { TimePartExpression } from "./timePartExpression";
+import { TimeRangeExpression } from "./timeRangeExpression";
+import { TimeShiftExpression } from "./timeShiftExpression";
+import { TransformCaseExpression } from "./transformCaseExpression";
 
 export interface ComputeOptions extends Environment {
   rawQueries?: any[];
@@ -218,7 +218,7 @@ export interface SplitsJS {
   [name: string]: ExpressionJS;
 }
 
-export type CaseType = 'upperCase' | 'lowerCase';
+export type CaseType = "upperCase" | "lowerCase";
 
 export interface ExpressionValue {
   op?: string;
@@ -307,10 +307,10 @@ export interface ExtractAndRest {
   rest: Expression;
 }
 
-export type IfNotFound = 'throw' | 'leave' | 'null';
+export type IfNotFound = "throw" | "leave" | "null";
 
 function runtimeAbstract() {
-  return new Error('must be implemented');
+  return new Error("must be implemented");
 }
 
 function getDataName(ex: Expression): string {
@@ -329,30 +329,30 @@ function getValue(param: any): any {
 }
 
 function getString(param: string | Expression): string {
-  if (typeof param === 'string') return param;
-  if (param instanceof LiteralExpression && param.type === 'STRING') {
+  if (typeof param === "string") return param;
+  if (param instanceof LiteralExpression && param.type === "STRING") {
     return param.value;
   }
   if (param instanceof RefExpression && param.nest === 0) {
     return param.name;
   }
-  if (typeof param === 'object' && param !== null) {
+  if (typeof param === "object" && param !== null) {
     // bigQuery and Athena fall back to this
     return param.toString();
   }
-  throw new Error('could not extract a string out of ' + String(param));
+  throw new Error("could not extract a string out of " + String(param));
 }
 
 function getNumber(param: number | Expression | Duration): number {
-  if (typeof param === 'number') return param;
-  if (param instanceof LiteralExpression && param.type === 'NUMBER') {
+  if (typeof param === "number") return param;
+  if (param instanceof LiteralExpression && param.type === "NUMBER") {
     return param.value;
   }
   if (param instanceof Duration && param.spans) {
     // eslint-disable-next-line radix
     return parseInt(param.spans.year.toString());
   }
-  throw new Error('could not extract a number out of ' + String(param));
+  throw new Error("could not extract a number out of " + String(param));
 }
 
 // -----------------------------
@@ -381,8 +381,8 @@ export function ply(dataset?: Dataset): LiteralExpression {
 export function $(name: string, nest?: number, type?: PlyType): RefExpression;
 export function $(name: string, type?: PlyType): RefExpression;
 export function $(name: string, nest?: any, type?: PlyType): RefExpression {
-  if (typeof name !== 'string') throw new TypeError('$() argument must be a string');
-  if (typeof nest === 'string') {
+  if (typeof name !== "string") throw new TypeError("$() argument must be a string");
+  if (typeof nest === "string") {
     type = nest as PlyType;
     nest = 0;
   }
@@ -394,8 +394,8 @@ export function $(name: string, nest?: any, type?: PlyType): RefExpression {
 }
 
 export function i$(name: string, nest?: number, type?: PlyType): RefExpression {
-  if (typeof name !== 'string') throw new TypeError('i$() argument must be a string');
-  if (typeof nest === 'string') {
+  if (typeof name !== "string") throw new TypeError("i$() argument must be a string");
+  if (typeof nest === "string") {
     type = nest as PlyType;
     nest = 0;
   }
@@ -409,19 +409,19 @@ export function i$(name: string, nest?: number, type?: PlyType): RefExpression {
 }
 
 export function s$(sql: string, type?: PlyType): SqlRefExpression {
-  if (typeof sql !== 'string') throw new TypeError('s$() argument must be a string');
+  if (typeof sql !== "string") throw new TypeError("s$() argument must be a string");
 
   return new SqlRefExpression({ sql, type });
 }
 
 export function r(value: any): LiteralExpression {
-  if (value instanceof External) throw new TypeError('r() can not accept externals');
+  if (value instanceof External) throw new TypeError("r() can not accept externals");
   if (Array.isArray(value)) value = Set.fromJS(value);
-  return LiteralExpression.fromJS({ op: 'literal', value: value });
+  return LiteralExpression.fromJS({ op: "literal", value: value });
 }
 
 export function toJS(thing: any): any {
-  return thing && typeof thing.toJS === 'function' ? thing.toJS() : thing;
+  return thing && typeof thing.toJS === "function" ? thing.toJS() : thing;
 }
 
 function chainVia(op: string, expressions: Expression[], zero: Expression): Expression {
@@ -496,7 +496,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * @param timezone The timezone within which to evaluate any untimezoned date strings
    */
   static parse(str: string, timezone?: Timezone): Expression {
-    if (str[0] === '{' && str[str.length - 1] === '}') {
+    if (str[0] === "{" && str[str.length - 1] === "}") {
       return Expression.fromJS(JSON.parse(str));
     }
 
@@ -520,10 +520,10 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     let expressionJS: ExpressionJS;
     // Quick parse simple expressions
     switch (typeof param) {
-      case 'undefined':
-        throw new Error('must have an expression');
+      case "undefined":
+        throw new Error("must have an expression");
 
-      case 'object':
+      case "object":
         if (param === null) {
           return Expression.NULL;
         } else if (param instanceof Expression) {
@@ -531,40 +531,40 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
         } else if (isImmutableClass(param)) {
           if (param.constructor.type) {
             // Must be a datatype
-            expressionJS = { op: 'literal', value: param };
+            expressionJS = { op: "literal", value: param };
           } else {
-            throw new Error('unknown object'); // ToDo: better error
+            throw new Error("unknown object"); // ToDo: better error
           }
         } else if (param.op) {
           expressionJS = <ExpressionJS>param;
         } else if (param.toISOString) {
-          expressionJS = { op: 'literal', value: new Date(param) };
+          expressionJS = { op: "literal", value: new Date(param) };
         } else if (Array.isArray(param)) {
-          expressionJS = { op: 'literal', value: Set.fromJS(param) };
-        } else if (hasOwnProp(param, 'start') && hasOwnProp(param, 'end')) {
-          expressionJS = { op: 'literal', value: Range.fromJS(param) };
+          expressionJS = { op: "literal", value: Set.fromJS(param) };
+        } else if (hasOwnProp(param, "start") && hasOwnProp(param, "end")) {
+          expressionJS = { op: "literal", value: Range.fromJS(param) };
         } else {
-          throw new Error('unknown parameter');
+          throw new Error("unknown parameter");
         }
         break;
 
-      case 'number':
-      case 'boolean':
-        expressionJS = { op: 'literal', value: param };
+      case "number":
+      case "boolean":
+        expressionJS = { op: "literal", value: param };
         break;
 
-      case 'string':
+      case "string":
         return Expression.parse(param);
 
       default:
-        throw new Error('unrecognizable expression');
+        throw new Error("unrecognizable expression");
     }
 
     return Expression.fromJS(expressionJS);
   }
 
   static jsNullSafetyUnary(inputJS: string, ifNotNull: (str: string) => string): string {
-    return `(_=${inputJS},(_==null?null:${ifNotNull('_')}))`;
+    return `(_=${inputJS},(_==null?null:${ifNotNull("_")}))`;
   }
 
   static jsNullSafetyBinary(
@@ -578,23 +578,23 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
       if (rhsCantBeNull) {
         return `(${combine(lhs, rhs)})`;
       } else {
-        return `(_=${rhs},(_==null)?null:(${combine(lhs, '_')}))`;
+        return `(_=${rhs},(_==null)?null:(${combine(lhs, "_")}))`;
       }
     } else {
       if (rhsCantBeNull) {
-        return `(_=${lhs},(_==null)?null:(${combine('_', rhs)}))`;
+        return `(_=${lhs},(_==null)?null:(${combine("_", rhs)}))`;
       } else {
-        return `(_=${rhs},_2=${lhs},(_==null||_2==null)?null:(${combine('_', '_2')})`;
+        return `(_=${rhs},_2=${lhs},(_==null||_2==null)?null:(${combine("_", "_2")})`;
       }
     }
   }
 
   static parseTuning(tuning: string | null): Record<string, string> {
-    if (typeof tuning !== 'string') return {};
-    const parts = tuning.split(',');
+    if (typeof tuning !== "string") return {};
+    const parts = tuning.split(",");
     const parsed: Record<string, string> = {};
     for (const part of parts) {
-      const subParts = part.split('=');
+      const subParts = part.split("=");
       if (subParts.length !== 2) throw new Error(`can not parse tuning '${tuning}'`);
       parsed[subParts[0]] = subParts[1];
     }
@@ -610,7 +610,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * @param expressions the array of expressions to compose
    */
   static and(expressions: Expression[]): Expression {
-    return chainVia('and', expressions, Expression.TRUE);
+    return chainVia("and", expressions, Expression.TRUE);
   }
 
   /**
@@ -618,7 +618,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * @param expressions the array of expressions to compose
    */
   static or(expressions: Expression[]): Expression {
-    return chainVia('or', expressions, Expression.FALSE);
+    return chainVia("or", expressions, Expression.FALSE);
   }
 
   /**
@@ -626,7 +626,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * @param expressions the array of expressions to compose
    */
   static add(expressions: Expression[]): Expression {
-    return chainVia('add', expressions, Expression.ZERO);
+    return chainVia("add", expressions, Expression.ZERO);
   }
 
   /**
@@ -634,19 +634,19 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * @param expressions the array of expressions to compose
    */
   static subtract(expressions: Expression[]): Expression {
-    return chainVia('subtract', expressions, Expression.ZERO);
+    return chainVia("subtract", expressions, Expression.ZERO);
   }
 
   static multiply(expressions: Expression[]): Expression {
-    return chainVia('multiply', expressions, Expression.ONE);
+    return chainVia("multiply", expressions, Expression.ONE);
   }
 
   static power(expressions: Expression[]): Expression {
-    return chainVia('power', expressions, Expression.ZERO);
+    return chainVia("power", expressions, Expression.ZERO);
   }
 
   static concat(expressions: Expression[]): Expression {
-    return chainVia('concat', expressions, Expression.EMPTY_STRING);
+    return chainVia("concat", expressions, Expression.EMPTY_STRING);
   }
 
   static classMap: Record<string, typeof Expression> = {};
@@ -683,31 +683,31 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * @param expressionJS
    */
   static fromJS(expressionJS: ExpressionJS): Expression {
-    if (!expressionJS) throw new Error('must have expressionJS');
-    if (!hasOwnProp(expressionJS, 'op')) {
-      if (hasOwnProp(expressionJS, 'action')) {
+    if (!expressionJS) throw new Error("must have expressionJS");
+    if (!hasOwnProp(expressionJS, "op")) {
+      if (hasOwnProp(expressionJS, "action")) {
         expressionJS = shallowCopy(expressionJS);
         expressionJS.op = expressionJS.action;
         delete expressionJS.action;
-        expressionJS.operand = { op: 'ref', name: '_' };
+        expressionJS.operand = { op: "ref", name: "_" };
       } else {
-        throw new Error('op must be defined');
+        throw new Error("op must be defined");
       }
     }
 
     // Back compat.
-    if (expressionJS.op === 'custom') {
+    if (expressionJS.op === "custom") {
       expressionJS = shallowCopy(expressionJS);
-      expressionJS.op = 'customAggregate';
+      expressionJS.op = "customAggregate";
     }
 
     const op = expressionJS.op;
-    if (typeof op !== 'string') {
-      throw new Error('op must be a string');
+    if (typeof op !== "string") {
+      throw new Error("op must be a string");
     }
 
     // Back compat.
-    if (op === 'chain') {
+    if (op === "chain") {
       const actions = expressionJS.actions || [expressionJS.action];
       return Expression.fromJS(expressionJS.expression).performActions(
         actions.map(Expression.fromJS),
@@ -734,19 +734,19 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
   constructor(parameters: ExpressionValue, dummy: any = null) {
     this.op = parameters.op;
     if (dummy !== dummyObject) {
-      throw new TypeError('can not call `new Expression` directly use Expression.fromJS instead');
+      throw new TypeError("can not call `new Expression` directly use Expression.fromJS instead");
     }
     if (parameters.simple) this.simple = true;
     if (parameters.options) this.options = parameters.options;
   }
 
   public setCurrElement(elements: [timeRangeElement]): void {
-    if (!elements.length) throw new Error('elements must be a non-empty array');
+    if (!elements.length) throw new Error("elements must be a non-empty array");
     this.currElement = elements[0];
   }
 
   public setPrevElement(elements: [timeRangeElement]): void {
-    if (!elements.length) throw new Error('elements must be a non-empty array');
+    if (!elements.length) throw new Error("elements must be a non-empty array");
     this.prevElement = elements[0];
   }
 
@@ -807,8 +807,8 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    */
   public canHaveType(wantedType: string): boolean {
     const { type } = this;
-    if (!type || type === 'NULL') return true;
-    if (wantedType === 'SET') {
+    if (!type || type === "NULL") return true;
+    if (wantedType === "SET") {
       return Set.isSetType(type);
     } else {
       return type === wantedType;
@@ -899,7 +899,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
             return null;
           }
         }
-      } else if (ex instanceof LiteralExpression && ex.type === 'DATASET') {
+      } else if (ex instanceof LiteralExpression && ex.type === "DATASET") {
         const datasetExternals = (ex.value as Dataset).getReadyExternals(limit);
         const size = sizeOfDatasetExternalAlterations(datasetExternals);
         if (size) {
@@ -932,7 +932,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     while (ex instanceof ChainableExpression) {
       allGood =
         allGood &&
-        (ex.op === 'filter' ? ex.argumentsResolvedWithoutExternals() : ex.argumentsResolved());
+        (ex.op === "filter" ? ex.argumentsResolvedWithoutExternals() : ex.argumentsResolved());
       ex = ex.operand;
       offset++;
     }
@@ -960,7 +960,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     const freeReferences: string[] = [];
     this.forEach((ex: Expression, index: int, depth: int, nestDiff: int) => {
       if (ex instanceof RefExpression && nestDiff <= ex.nest) {
-        freeReferences.push(repeat('^', ex.nest - nestDiff) + ex.name);
+        freeReferences.push(repeat("^", ex.nest - nestDiff) + ex.name);
       }
     });
     return deduplicateSort(freeReferences);
@@ -1097,22 +1097,22 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
 
   public abstract getJS(datumVar: string): string;
 
-  public getJSFn(datumVar = 'd[]'): string {
+  public getJSFn(datumVar = "d[]"): string {
     const { type } = this;
     const jsEx = this.getJS(datumVar);
     let body: string;
-    if (type === 'NUMBER' || type === 'NUMBER_RANGE' || type === 'TIME') {
+    if (type === "NUMBER" || type === "NUMBER_RANGE" || type === "TIME") {
       body = `_=${jsEx};return isNaN(_)?null:_`;
     } else {
       body = `return ${jsEx};`;
     }
-    return `function(${datumVar.replace('[]', '')}){var _,_2;${body}}`;
+    return `function(${datumVar.replace("[]", "")}){var _,_2;${body}}`;
   }
 
   public abstract getSQL(dialect: SQLDialect): string;
 
   public extractFromAnd(matchFn: ExpressionMatchFn): ExtractAndRest {
-    if (this.type !== 'BOOLEAN') return null;
+    if (this.type !== "BOOLEAN") return null;
     if (matchFn(this)) {
       return {
         extract: this,
@@ -1126,8 +1126,8 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     }
   }
 
-  public breakdownByDataset(_tempNamePrefix = 'b'): DatasetBreakdown {
-    throw new Error('ToDo');
+  public breakdownByDataset(_tempNamePrefix = "b"): DatasetBreakdown {
+    throw new Error("ToDo");
     // let nameIndex = 0;
     // let singleDatasetActions: ApplyExpression[] = [];
     //
@@ -1336,24 +1336,24 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
       ex = getValue(ex);
       snd = getValue(snd);
 
-      if (typeof ex === 'string') {
+      if (typeof ex === "string") {
         const parse = parseISODate(ex, Expression.defaultParserTimezone);
         if (parse) ex = parse;
       }
 
-      if (typeof snd === 'string') {
+      if (typeof snd === "string") {
         const parse = parseISODate(snd, Expression.defaultParserTimezone);
         if (parse) snd = parse;
       }
 
-      if (typeof ex === 'number' && typeof snd === 'number') {
+      if (typeof ex === "number" && typeof snd === "number") {
         ex = new NumberRange({ start: ex, end: snd });
       } else if (ex.toISOString && (snd as Date).toISOString) {
         ex = new TimeRange({ start: ex, end: snd as Date });
-      } else if (typeof ex === 'string' && typeof snd === 'string') {
+      } else if (typeof ex === "string" && typeof snd === "string") {
         ex = new StringRange({ start: ex, end: snd });
       } else {
-        throw new Error('uninterpretable IN parameters');
+        throw new Error("uninterpretable IN parameters");
       }
     }
 
@@ -1428,7 +1428,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
   }
 
   public customTransform(custom: string, outputType?: PlyTypeSingleValue) {
-    if (!custom) throw new Error('Must provide an extraction function name for custom transform');
+    if (!custom) throw new Error("Must provide an extraction function name for custom transform");
     outputType = outputType !== undefined ? (getString(outputType) as PlyTypeSingleValue) : null;
     return new CustomTransformExpression({ operand: this, custom: getString(custom), outputType });
   }
@@ -1469,7 +1469,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
 
   public timeShift(duration: any, step?: number, timezone?: any) {
     if (!(duration instanceof Duration)) duration = Duration.fromJS(getString(duration));
-    step = typeof step !== 'undefined' ? getNumber(step) : null;
+    step = typeof step !== "undefined" ? getNumber(step) : null;
     if (timezone && !(timezone instanceof Timezone))
       timezone = Timezone.fromJS(getString(timezone));
     return new TimeShiftExpression({ operand: this, duration, step, timezone });
@@ -1477,7 +1477,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
 
   public timeRange(duration: any, step?: number, timezone?: any) {
     if (!(duration instanceof Duration)) duration = Duration.fromJS(getString(duration));
-    step = typeof step !== 'undefined' ? getNumber(step) : null;
+    step = typeof step !== "undefined" ? getNumber(step) : null;
     if (timezone && !(timezone instanceof Timezone))
       timezone = Timezone.fromJS(getString(timezone));
     return new TimeRangeExpression({ operand: this, duration, step, timezone });
@@ -1522,9 +1522,9 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     if (
       arguments.length === 3 ||
       ((arguments.length === 2 || arguments.length === 1) &&
-        (typeof splits === 'string' || typeof splits.op === 'string'))
+        (typeof splits === "string" || typeof splits.op === "string"))
     ) {
-      name = arguments.length === 1 ? 'split' : getString(name);
+      name = arguments.length === 1 ? "split" : getString(name);
       const realSplits = Object.create(null);
       realSplits[name] = splits;
       splits = realSplits;
@@ -1541,7 +1541,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
 
     dataName = dataName ? getString(dataName) : getDataName(this);
     if (!dataName)
-      throw new Error('could not guess data name in `split`, please provide one explicitly');
+      throw new Error("could not guess data name in `split`, please provide one explicitly");
     return new SplitExpression({ operand: this, splits: parsedSplits, dataName: dataName });
   }
 
@@ -1552,7 +1552,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    */
   public apply(name: string, ex: any) {
     if (arguments.length < 2)
-      throw new Error('invalid arguments to .apply, did you forget to specify a name?');
+      throw new Error("invalid arguments to .apply, did you forget to specify a name?");
     if (!(ex instanceof Expression)) ex = Expression.fromJSLoose(ex);
     return new ApplyExpression({ operand: this, name: getString(name), expression: ex });
   }
@@ -1583,7 +1583,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
 
   public count() {
     if (arguments.length)
-      throw new Error('.count() should not have arguments, did you want to .filter().count() ?');
+      throw new Error(".count() should not have arguments, did you want to .filter().count() ?");
     return new CountExpression({ operand: this });
   }
 
@@ -1654,7 +1654,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
     if (!environment.timezone) environment = { timezone: Timezone.UTC };
 
     // Allow strings as well
-    if (typeof environment.timezone === 'string')
+    if (typeof environment.timezone === "string")
       environment = { timezone: Timezone.fromJS(environment.timezone as any) };
 
     return this.substitute(ex => {
@@ -1729,7 +1729,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * @param ifNotFound If the reference is not in the context what to do? "throw", "leave", "null"
    * @return The resolved expression
    */
-  public resolve(context: Datum, ifNotFound: IfNotFound = 'throw'): Expression {
+  public resolve(context: Datum, ifNotFound: IfNotFound = "throw"): Expression {
     const expressions: Record<string, Expression> = Object.create(null);
     for (const k in context) {
       if (!hasOwnProp(context, k)) continue;
@@ -1748,7 +1748,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
 
   public resolveWithExpressions(
     expressions: Record<string, Expression>,
-    ifNotFound: IfNotFound = 'throw',
+    ifNotFound: IfNotFound = "throw",
   ): Expression {
     return this.substitute((ex: Expression, index: int, depth: int, nestDiff: int) => {
       if (ex instanceof RefExpression) {
@@ -1768,23 +1768,23 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
             const mode = foundExpression.external.mode;
 
             // Never substitute split externals at all
-            if (mode === 'split') {
+            if (mode === "split") {
               return ex;
             }
 
             // Never substitute non-raw externals from an outside nesting
-            if (nest > 0 && mode !== 'raw') {
+            if (nest > 0 && mode !== "raw") {
               return ex;
             }
           }
 
           if (valueFound) {
             return foundExpression;
-          } else if (ifNotFound === 'throw') {
+          } else if (ifNotFound === "throw") {
             throw new Error(`could not resolve ${ex} because is was not in the context`);
-          } else if (ifNotFound === 'null') {
+          } else if (ifNotFound === "null") {
             return Expression.NULL;
-          } else if (ifNotFound === 'leave') {
+          } else if (ifNotFound === "leave") {
             return ex;
           }
         } else if (nestDiff < nest) {
@@ -1849,7 +1849,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
    * Returns the maximum number of possible values this expression can return in a split context
    */
   public maxPossibleSplitValues(): number {
-    return this.type === 'BOOLEAN' ? 3 : Infinity;
+    return this.type === "BOOLEAN" ? 3 : Infinity;
   }
 
   // ---------------------------------------------------------
@@ -1990,7 +1990,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
         });
       })
       .catch(e => {
-        pt.emit('error', e);
+        pt.emit("error", e);
       });
 
     return pt as any;
@@ -2039,7 +2039,7 @@ export abstract class Expression implements Instance<ExpressionValue, Expression
         computeCycles++;
       },
     ).then(() => {
-      if (!ex.isOp('literal')) throw new Error(`something went wrong, did not get literal: ${ex}`);
+      if (!ex.isOp("literal")) throw new Error(`something went wrong, did not get literal: ${ex}`);
       return ex.getLiteralValue();
     });
   }
@@ -2060,28 +2060,28 @@ export abstract class ChainableExpression extends Expression {
   }
 
   protected _checkTypeAgainstTypes(name: string, type: string, neededTypes: string[]) {
-    if (type && type !== 'NULL' && neededTypes.indexOf(type) === -1) {
+    if (type && type !== "NULL" && neededTypes.indexOf(type) === -1) {
       if (neededTypes.length === 1) {
         throw new Error(`${this.op} must have ${name} of type ${neededTypes[0]} (is ${type})`);
       } else {
         throw new Error(
-          `${this.op} must have ${name} of type ${neededTypes.join(' or ')} (is ${type})`,
+          `${this.op} must have ${name} of type ${neededTypes.join(" or ")} (is ${type})`,
         );
       }
     }
   }
 
   protected _checkOperandTypes(...neededTypes: string[]) {
-    this._checkTypeAgainstTypes('operand', Set.unwrapSetType(this.operand.type), neededTypes);
+    this._checkTypeAgainstTypes("operand", Set.unwrapSetType(this.operand.type), neededTypes);
   }
 
   protected _checkOperandTypesStrict(...neededTypes: string[]) {
-    this._checkTypeAgainstTypes('operand', this.operand.type, neededTypes);
+    this._checkTypeAgainstTypes("operand", this.operand.type, neededTypes);
   }
 
   protected _bumpOperandToTime() {
-    if (this.operand.type === 'STRING') {
-      this.operand = this.operand.upgradeToType('TIME');
+    if (this.operand.type === "STRING") {
+      this.operand = this.operand.upgradeToType("TIME");
     }
   }
 
@@ -2105,7 +2105,7 @@ export abstract class ChainableExpression extends Expression {
 
   public toString(indent?: int): string {
     return `${this.operand.toString(indent)}.${this.op}(${this._toStringParameters(indent).join(
-      ',',
+      ",",
     )})`;
   }
 
@@ -2127,7 +2127,7 @@ export abstract class ChainableExpression extends Expression {
     if (operand instanceof ChainableExpression) {
       return operand.changeOperand(this.changeOperand(operand.operand));
     } else {
-      throw new Error('operand must be chainable');
+      throw new Error("operand must be chainable");
     }
   }
 
@@ -2169,7 +2169,7 @@ export abstract class ChainableExpression extends Expression {
   }
 
   public fullyDefined(): boolean {
-    return this.operand.isOp('literal');
+    return this.operand.isOp("literal");
   }
 
   public calc(datum: Datum): PlywoodValue {
@@ -2307,11 +2307,11 @@ export abstract class ChainableUnaryExpression extends ChainableExpression {
   }
 
   protected _checkExpressionTypes(...neededTypes: string[]) {
-    this._checkTypeAgainstTypes('expression', Set.unwrapSetType(this.expression.type), neededTypes);
+    this._checkTypeAgainstTypes("expression", Set.unwrapSetType(this.expression.type), neededTypes);
   }
 
   protected _checkExpressionTypesStrict(...neededTypes: string[]) {
-    this._checkTypeAgainstTypes('expression', this.expression.type, neededTypes);
+    this._checkTypeAgainstTypes("expression", this.expression.type, neededTypes);
   }
 
   protected _checkOperandExpressionTypesAlign() {
@@ -2319,9 +2319,9 @@ export abstract class ChainableUnaryExpression extends ChainableExpression {
     const expressionType = Set.unwrapSetType(this.expression.type);
     if (
       !operandType ||
-      operandType === 'NULL' ||
+      operandType === "NULL" ||
       !expressionType ||
-      expressionType === 'NULL' ||
+      expressionType === "NULL" ||
       operandType === expressionType
     )
       return;
@@ -2331,12 +2331,12 @@ export abstract class ChainableUnaryExpression extends ChainableExpression {
   }
 
   protected _bumpOperandExpressionToTime() {
-    if (this.expression.type === 'TIME' && this.operand.type === 'STRING') {
-      this.operand = this.operand.upgradeToType('TIME');
+    if (this.expression.type === "TIME" && this.operand.type === "STRING") {
+      this.operand = this.operand.upgradeToType("TIME");
     }
 
-    if (this.operand.type === 'TIME' && this.expression.type === 'STRING') {
-      this.expression = this.expression.upgradeToType('TIME');
+    if (this.operand.type === "TIME" && this.expression.type === "STRING") {
+      this.expression = this.expression.upgradeToType("TIME");
     }
   }
 
@@ -2359,7 +2359,7 @@ export abstract class ChainableUnaryExpression extends ChainableExpression {
   public toString(indent?: int): string {
     // ToDo: handle indent
     return `${this.operand.toString(indent)}.${this.op}(${this._toStringParameters(indent).join(
-      ',',
+      ",",
     )})`;
   }
 
@@ -2381,7 +2381,7 @@ export abstract class ChainableUnaryExpression extends ChainableExpression {
   }
 
   public fullyDefined(): boolean {
-    return this.operand.isOp('literal') && this.expression.isOp('literal');
+    return this.operand.isOp("literal") && this.expression.isOp("literal");
   }
 
   public calc(datum: Datum): PlywoodValue {

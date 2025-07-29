@@ -22,7 +22,14 @@ import { complement } from "../../utils/functional/functional";
 import { isNil, isTruthy, quoteNames } from "../../utils/general/general";
 import { SeriesDerivation } from "../series/concrete-series";
 import { Measure } from "./measure";
-import { isMeasureGroupJS, MeasureGroup, MeasureOrGroup, measureOrGroupFromJS, MeasureOrGroupJS, MeasureOrGroupVisitor } from "./measure-group";
+import {
+  isMeasureGroupJS,
+  MeasureGroup,
+  MeasureOrGroup,
+  measureOrGroupFromJS,
+  MeasureOrGroupJS,
+  MeasureOrGroupVisitor,
+} from "./measure-group";
 
 class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
   private items = List<MeasureOrGroup>().asMutable();
@@ -33,7 +40,9 @@ class FlattenMeasuresWithGroupsVisitor implements MeasureOrGroupVisitor<void> {
 
   visitMeasureGroup(measureGroup: MeasureGroup): void {
     this.items.push(measureGroup);
-    measureGroup.measures.forEach(measureOrGroup => measureOrGroup.accept(this));
+    measureGroup.measures.forEach(measureOrGroup =>
+      measureOrGroup.accept(this),
+    );
   }
 
   getMeasuresAndGroups(): List<MeasureOrGroup> {
@@ -49,7 +58,9 @@ function findDuplicateNames(items: List<MeasureOrGroup>): List<string> {
     .toList();
 }
 
-function measureNamesWithForbiddenPrefix(items: List<MeasureOrGroup>): List<{ name: string, prefix: string }> {
+function measureNamesWithForbiddenPrefix(
+  items: List<MeasureOrGroup>,
+): List<{ name: string; prefix: string }> {
   return items
     .map(measureOrGroup => {
       if (isMeasureGroupJS(measureOrGroup)) return null;
@@ -76,7 +87,6 @@ export class Measures {
   }
 
   static fromJS(parameters: MeasureOrGroupJS[]): Measures {
-
     return new Measures(parameters.map(measureOrGroupFromJS));
   }
 
@@ -92,21 +102,25 @@ export class Measures {
 
     const duplicateNamesFindingVisitor = new FlattenMeasuresWithGroupsVisitor();
 
-
-    this.measures.forEach(measureOrGroup => measureOrGroup.accept(duplicateNamesFindingVisitor));
-    const flattenedMeasuresWithGroups = duplicateNamesFindingVisitor.getMeasuresAndGroups();
+    this.measures.forEach(measureOrGroup =>
+      measureOrGroup.accept(duplicateNamesFindingVisitor),
+    );
+    const flattenedMeasuresWithGroups =
+      duplicateNamesFindingVisitor.getMeasuresAndGroups();
     const duplicateNames = findDuplicateNames(flattenedMeasuresWithGroups);
     if (duplicateNames.size > 0) {
-      throw new Error(`found duplicate measure or group with names: ${quoteNames(duplicateNames)}`);
+      throw new Error(
+        `found duplicate measure or group with names: ${quoteNames(duplicateNames)}`,
+      );
     }
-  
-    // To do Find where object  
-   
+
+    // To do Find where object
+
     // const invalidNames = measureNamesWithForbiddenPrefix(flattenedMeasuresWithGroups);
     // if (invalidNames.size > 0) {
     //   throw new Error(`found measure that starts with forbidden prefixes: ${invalidNames.map(({ name, prefix }) => `'${name}' (prefix: '${prefix}')`).toArray().join(", ")}`);
     // }
-  
+
     this.flattenedMeasures = filterMeasures(flattenedMeasuresWithGroups);
   }
 
@@ -123,7 +137,9 @@ export class Measures {
   }
 
   equals(other: Measures): boolean {
-    return this === other || immutableArraysEqual(this.measures, other.measures);
+    return (
+      this === other || immutableArraysEqual(this.measures, other.measures)
+    );
   }
 
   mapMeasures<R>(mapper: (measure: Measure) => R): R[] {
@@ -151,7 +167,9 @@ export class Measures {
   }
 
   getMeasureByExpression(expression: Expression): Measure {
-    return this.flattenedMeasures.find(measure => measure.expression.equals(expression));
+    return this.flattenedMeasures.find(measure =>
+      measure.expression.equals(expression),
+    );
   }
 
   getMeasureNames(): List<string> {
@@ -163,7 +181,9 @@ export class Measures {
   }
 
   getFirstNMeasureNames(n: number): OrderedSet<string> {
-    return OrderedSet(this.flattenedMeasures.slice(0, n).map(measure => measure.name));
+    return OrderedSet(
+      this.flattenedMeasures.slice(0, n).map(measure => measure.name),
+    );
   }
 
   append(...measures: Measure[]): Measures {

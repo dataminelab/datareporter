@@ -28,41 +28,111 @@ import {
   RelativeTimeFilterClause,
   StringFilterAction,
   StringFilterClause,
-  TimeFilterPeriod
+  TimeFilterPeriod,
 } from "./filter-clause";
 
-export function stringWithAction(reference: string, action: StringFilterAction, values: string[], not = false): FilterClause {
-  if (action !== StringFilterAction.IN && values instanceof Array && values.length !== 1) {
+export function stringWithAction(
+  reference: string,
+  action: StringFilterAction,
+  values: string[],
+  not = false,
+): FilterClause {
+  if (
+    action !== StringFilterAction.IN &&
+    values instanceof Array &&
+    values.length !== 1
+  ) {
     throw new Error(`Unsupported values: ${values} for action: ${action}.`);
   }
 
-  return new StringFilterClause({ reference, action, values: Set(values), not });
+  return new StringFilterClause({
+    reference,
+    action,
+    values: Set(values),
+    not,
+  });
 }
 
-export function stringIn(reference: string, values: string[], not = false): StringFilterClause {
-  return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set(values), not });
+export function stringIn(
+  reference: string,
+  values: string[],
+  not = false,
+): StringFilterClause {
+  return new StringFilterClause({
+    reference,
+    action: StringFilterAction.IN,
+    values: Set(values),
+    not,
+  });
 }
 
-export function stringContains(reference: string, value: string, not = false): StringFilterClause {
-  return new StringFilterClause({ reference, action: StringFilterAction.CONTAINS, values: Set.of(value), not });
+export function stringContains(
+  reference: string,
+  value: string,
+  not = false,
+): StringFilterClause {
+  return new StringFilterClause({
+    reference,
+    action: StringFilterAction.CONTAINS,
+    values: Set.of(value),
+    not,
+  });
 }
 
-export function stringMatch(reference: string, value: string, not = false): StringFilterClause {
-  return new StringFilterClause({ reference, action: StringFilterAction.MATCH, values: Set.of(value), not });
+export function stringMatch(
+  reference: string,
+  value: string,
+  not = false,
+): StringFilterClause {
+  return new StringFilterClause({
+    reference,
+    action: StringFilterAction.MATCH,
+    values: Set.of(value),
+    not,
+  });
 }
 
-export function boolean(reference: string, values: Booleanish[], not = false): BooleanFilterClause {
+export function boolean(
+  reference: string,
+  values: Booleanish[],
+  not = false,
+): BooleanFilterClause {
   return new BooleanFilterClause({ reference, not, values: Set(values) });
 }
 
-export function numberRange(reference: string, start: number, end: number, bounds = "[)", not = false): NumberFilterClause {
-  return new NumberFilterClause({ reference, not, values: List.of(new NumberRange({ bounds, start, end })) });
+export function numberRange(
+  reference: string,
+  start: number,
+  end: number,
+  bounds = "[)",
+  not = false,
+): NumberFilterClause {
+  return new NumberFilterClause({
+    reference,
+    not,
+    values: List.of(new NumberRange({ bounds, start, end })),
+  });
 }
 
-export function timeRange(reference: string, start: Date, end: Date): FixedTimeFilterClause {
-  return new FixedTimeFilterClause({ reference, values: List.of(new DateRange({ start, end })) });
+export function timeRange(
+  reference: string,
+  start: Date,
+  end: Date,
+): FixedTimeFilterClause {
+  return new FixedTimeFilterClause({
+    reference,
+    values: List.of(new DateRange({ start, end })),
+  });
 }
 
-export function timePeriod(reference: string, duration: string, period: TimeFilterPeriod): RelativeTimeFilterClause {
-  return new RelativeTimeFilterClause({ reference, duration: Duration.fromJS(duration), period });
+export function timePeriod(
+  reference: string,
+  duration: string,
+  period: TimeFilterPeriod,
+): RelativeTimeFilterClause {
+  return new RelativeTimeFilterClause({
+    reference,
+    duration: Duration.fromJS(duration),
+    period,
+  });
 }

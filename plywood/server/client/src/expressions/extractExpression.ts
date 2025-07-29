@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class ExtractExpression extends ChainableExpression {
-  static op = 'Extract';
+  static op = "Extract";
   static fromJS(parameters: ExpressionJS): ExtractExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.regexp = parameters.regexp;
@@ -32,8 +32,8 @@ export class ExtractExpression extends ChainableExpression {
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     this.regexp = parameters.regexp;
-    this._ensureOp('extract');
-    this._checkOperandTypes('STRING');
+    this._ensureOp("extract");
+    this._checkOperandTypes("STRING");
     this.type = this.operand.type;
   }
 

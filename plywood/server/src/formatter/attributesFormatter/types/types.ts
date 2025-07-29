@@ -1,12 +1,11 @@
 export interface InputAttribute {
-    name: string,
-    type: string
+  name: string;
+  type: string;
 }
 
 export interface OutputAttribute {
-    name: string,
-    nativeType: string
-    type: string,
-    isSupported?: boolean
-
+  name: string;
+  nativeType: string;
+  type: string;
+  isSupported?: boolean;
 }

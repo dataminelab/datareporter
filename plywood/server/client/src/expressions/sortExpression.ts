@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { Dataset, PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { RefExpression } from './refExpression';
+} from "./baseExpression";
+import { RefExpression } from "./refExpression";
 
-export type Direction = 'ascending' | 'descending';
+export type Direction = "ascending" | "descending";
 
 export class SortExpression extends ChainableUnaryExpression {
-  static DESCENDING: Direction = 'descending';
-  static ASCENDING: Direction = 'ascending';
-  static DEFAULT_DIRECTION: Direction = 'ascending';
+  static DESCENDING: Direction = "descending";
+  static ASCENDING: Direction = "ascending";
+  static DEFAULT_DIRECTION: Direction = "ascending";
 
-  static op = 'Sort';
+  static op = "Sort";
   static fromJS(parameters: ExpressionJS): SortExpression {
     const value = ChainableUnaryExpression.jsToValue(parameters);
     value.direction = parameters.direction;
@@ -43,10 +43,10 @@ export class SortExpression extends ChainableUnaryExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('sort');
-    this._checkOperandTypes('DATASET');
+    this._ensureOp("sort");
+    this._checkOperandTypes("DATASET");
 
-    if (!this.expression.isOp('ref')) {
+    if (!this.expression.isOp("ref")) {
       throw new Error(`must be a reference expression: ${this.expression}`);
     }
 
@@ -58,7 +58,7 @@ export class SortExpression extends ChainableUnaryExpression {
     }
     this.direction = direction;
 
-    this.type = 'DATASET';
+    this.type = "DATASET";
   }
 
   public valueOf(): ExpressionValue {
@@ -90,7 +90,7 @@ export class SortExpression extends ChainableUnaryExpression {
     operandSQL: string,
     expressionSQL: string,
   ): string {
-    const dir = this.direction === SortExpression.DESCENDING ? 'DESC' : 'ASC';
+    const dir = this.direction === SortExpression.DESCENDING ? "DESC" : "ASC";
     return `ORDER BY ${expressionSQL} ${dir}`;
   }
 
@@ -104,7 +104,7 @@ export class SortExpression extends ChainableUnaryExpression {
   }
 
   public fullyDefined(): boolean {
-    return this.operand.isOp('literal') && this.expression.resolved();
+    return this.operand.isOp("literal") && this.expression.resolved();
   }
 
   public changeDirection(direction: Direction): SortExpression {

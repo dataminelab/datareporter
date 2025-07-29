@@ -22,9 +22,22 @@ import { Unary } from "../../utils/functional/functional";
 import { DataCube } from "../data-cube/data-cube";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
-import { FilterClause, FilterDefinition, fromJS, RelativeTimeFilterClause, StringFilterAction, StringFilterClause, toExpression } from "../filter-clause/filter-clause";
+import {
+  FilterClause,
+  FilterDefinition,
+  fromJS,
+  RelativeTimeFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+  toExpression,
+} from "../filter-clause/filter-clause";
 
-export enum FilterMode { EXCLUDE = "exclude", INCLUDE = "include", REGEX = "regex", CONTAINS = "contains" }
+export enum FilterMode {
+  EXCLUDE = "exclude",
+  INCLUDE = "include",
+  REGEX = "regex",
+  CONTAINS = "contains",
+}
 
 export interface FilterValue {
   clauses: List<FilterClause>;
@@ -34,7 +47,6 @@ const defaultFilter: FilterValue = { clauses: List([]) };
 
 //@ts-ignore
 export class Filter extends Record<FilterValue>(defaultFilter) {
-
   static fromClause(clause: FilterClause): Filter {
     return this.fromClauses([clause]);
   }
@@ -46,11 +58,13 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   static fromJS(definition: { clauses: FilterDefinition[] }): Filter {
     return new Filter({
-      clauses: List(definition.clauses.map(def => fromJS(def)))
+      clauses: List(definition.clauses.map(def => fromJS(def))),
     });
   }
 
-  private updateClauses(updater: Unary<List<FilterClause>, List<FilterClause>>): Filter {
+  private updateClauses(
+    updater: Unary<List<FilterClause>, List<FilterClause>>,
+  ): Filter {
     //@ts-ignore
     return this.update("clauses", updater);
   }
@@ -65,12 +79,12 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
       return this.insertByIndex(index, newClause);
     }
     return this.updateClauses((clauses: List<FilterClause>) => {
-      const newClauseIndex = clauses.findIndex(clause => clause.equals(newClause));
+      const newClauseIndex = clauses.findIndex(clause =>
+        clause.equals(newClause),
+      );
       if (newClauseIndex === -1) return clauses.set(index, newClause);
       const oldClause = clauses.get(index);
-      return clauses
-        .set(index, newClause)
-        .set(newClauseIndex, oldClause);
+      return clauses.set(index, newClause).set(newClauseIndex, oldClause);
     });
   }
 
@@ -79,7 +93,8 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     return this.updateClauses((clauses: List<FilterClause>) =>
       clauses
         .insert(index, newClause)
-        .filterNot((c, i) => c.equals(newClause) && i !== index));
+        .filterNot((c, i) => c.equals(newClause) && i !== index),
+    );
   }
 
   public empty(): boolean {
@@ -99,7 +114,11 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   public toExpression(dataCube: DataCube): Expression {
     //@ts-ignore
-    const clauses = this.clauses.toArray().map(clause => toExpression(clause, dataCube.getDimension(clause.reference)));
+    const clauses = this.clauses
+      .toArray()
+      .map(clause =>
+        toExpression(clause, dataCube.getDimension(clause.reference)),
+      );
     switch (clauses.length) {
       case 0:
         return Expression.TRUE;
@@ -112,10 +131,16 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   public isRelative(): boolean {
     //@ts-ignore
-    return this.clauses.some(clause => clause instanceof RelativeTimeFilterClause);
+    return this.clauses.some(
+      clause => clause instanceof RelativeTimeFilterClause,
+    );
   }
 
-  public getSpecificFilter(now: Date, maxTime: Date, timezone: Timezone): Filter {
+  public getSpecificFilter(
+    now: Date,
+    maxTime: Date,
+    timezone: Timezone,
+  ): Filter {
     if (!this.isRelative()) return this;
     return this.updateClauses(clauses =>
       //@ts-ignore
@@ -124,7 +149,8 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
           return clause.evaluate(now, maxTime, timezone);
         }
         return clause;
-      }));
+      }),
+    );
   }
 
   private indexOfClause(reference: string): number {
@@ -158,17 +184,29 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   public getModeForDimension({ name }: Dimension): FilterMode {
     //@ts-ignore
-    const dimensionClauses = this.clauses.filter(clause => clause.reference === name);
+    const dimensionClauses = this.clauses.filter(
+      clause => clause.reference === name,
+    );
 
     if (dimensionClauses.size > 0) {
-      if (dimensionClauses.every(clause =>
-        //@ts-ignore
-        clause instanceof StringFilterClause && clause.action === StringFilterAction.MATCH)) {
+      if (
+        dimensionClauses.every(
+          clause =>
+            //@ts-ignore
+            clause instanceof StringFilterClause &&
+            clause.action === StringFilterAction.MATCH,
+        )
+      ) {
         return FilterMode.REGEX;
       }
-      if (dimensionClauses.every(clause =>
-        //@ts-ignore
-        clause instanceof StringFilterClause && clause.action === StringFilterAction.CONTAINS)) {
+      if (
+        dimensionClauses.every(
+          clause =>
+            //@ts-ignore
+            clause instanceof StringFilterClause &&
+            clause.action === StringFilterAction.CONTAINS,
+        )
+      ) {
         return FilterMode.CONTAINS;
       }
       if (dimensionClauses.every((clause: any) => clause.not)) {
@@ -182,23 +220,34 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
 
   public setClause(newClause: FilterClause): Filter {
     //@ts-ignore
-    const idx = this.clauses.findIndex(clause => clause.reference === newClause.reference);
+    const idx = this.clauses.findIndex(
+      clause => clause.reference === newClause.reference,
+    );
     //@ts-ignore
-    return this.updateClauses(clauses => idx === -1 ? clauses.concat([newClause]) : clauses.set(idx, newClause));
+    return this.updateClauses(clauses =>
+      idx === -1 ? clauses.concat([newClause]) : clauses.set(idx, newClause),
+    );
   }
 
   public mergeClauses(clauses: List<FilterClause>): Filter {
     //@ts-ignore
-    return clauses.reduce((filter, deltaClause) => filter.setClause(deltaClause), this);
+    return clauses.reduce(
+      (filter, deltaClause) => filter.setClause(deltaClause),
+      this,
+    );
   }
 
   public constrainToDimensions(dimensions: Dimensions): Filter {
     return this.updateClauses(clauses =>
       //@ts-ignore
-      clauses.filter(clause => dimensions.getDimensionByName(clause.reference)));
+      clauses.filter(clause => dimensions.getDimensionByName(clause.reference)),
+    );
   }
 
-  public setExclusionForDimension(exclusion: boolean, { name }: Dimension): Filter {
+  public setExclusionForDimension(
+    exclusion: boolean,
+    { name }: Dimension,
+  ): Filter {
     return this.updateClauses(clauses => {
       //@ts-ignore
       const idx = clauses.findIndex(clause => clause.reference === name);

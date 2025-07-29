@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class AbsoluteExpression extends ChainableExpression {
-  static op = 'Absolute';
+  static op = "Absolute";
   static fromJS(parameters: ExpressionJS): AbsoluteExpression {
     return new AbsoluteExpression(ChainableExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('absolute');
-    this._checkOperandTypes('NUMBER');
+    this._ensureOp("absolute");
+    this._checkOperandTypes("NUMBER");
     this.type = this.operand.type;
   }
 

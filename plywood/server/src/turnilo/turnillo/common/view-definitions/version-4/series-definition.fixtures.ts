@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { DEFAULT_FORMAT, SeriesFormat } from "../../models/series/series-format";
+import {
+  DEFAULT_FORMAT,
+  SeriesFormat,
+} from "../../models/series/series-format";
 import { SeriesType } from "../../models/series/series-type";
 import { SeriesDefinition } from "./series-definition";
 
@@ -22,19 +25,26 @@ export function fromReference(reference: string): SeriesDefinition {
   return { reference };
 }
 
-export function measureSeriesDefinition(reference: string, format: SeriesFormat = DEFAULT_FORMAT): SeriesDefinition {
+export function measureSeriesDefinition(
+  reference: string,
+  format: SeriesFormat = DEFAULT_FORMAT,
+): SeriesDefinition {
   return {
     reference,
     format,
-    type: SeriesType.MEASURE
+    type: SeriesType.MEASURE,
   };
 }
 
-export function quantileSeriesDefinition(reference: string, percentile = 95, format: SeriesFormat = DEFAULT_FORMAT): SeriesDefinition {
+export function quantileSeriesDefinition(
+  reference: string,
+  percentile = 95,
+  format: SeriesFormat = DEFAULT_FORMAT,
+): SeriesDefinition {
   return {
     reference,
     format,
     percentile,
-    type: SeriesType.QUANTILE
+    type: SeriesType.QUANTILE,
   };
 }

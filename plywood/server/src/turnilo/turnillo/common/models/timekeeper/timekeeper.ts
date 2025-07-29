@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, NamedArray, Property, PropertyType } from "immutable-class";
+import {
+  BaseImmutable,
+  NamedArray,
+  Property,
+  PropertyType,
+} from "immutable-class";
 import { TimeTag, TimeTagJS } from "../time-tag/time-tag";
 
 // I am: export * from './timekeeper/timekeeper';
@@ -42,12 +47,18 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
   static fromJS(parameters: TimekeeperJS): Timekeeper {
-    return new Timekeeper(BaseImmutable.jsToValue(Timekeeper.PROPERTIES, parameters));
+    return new Timekeeper(
+      BaseImmutable.jsToValue(Timekeeper.PROPERTIES, parameters),
+    );
   }
 
   static PROPERTIES: Property[] = [
-    { name: "timeTags", type: PropertyType.ARRAY, immutableClassArray: TimeTag },
-    { name: "nowOverride", type: PropertyType.DATE, defaultValue: null }
+    {
+      name: "timeTags",
+      type: PropertyType.ARRAY,
+      immutableClassArray: TimeTag,
+    },
+    { name: "nowOverride", type: PropertyType.DATE, defaultValue: null },
   ];
 
   public timeTags: TimeTag[];
@@ -71,7 +82,10 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
     var value = this.valueOf();
     var tag = NamedArray.findByName(value.timeTags, name);
     if (!tag) return this;
-    value.timeTags = NamedArray.overrideByName(value.timeTags, tag.changeTime(time, this.now()));
+    value.timeTags = NamedArray.overrideByName(
+      value.timeTags,
+      tag.changeTime(time, this.now()),
+    );
     return new Timekeeper(value);
   }
 
@@ -86,7 +100,6 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
     value.timeTags = value.timeTags.filter(tag => tag.name !== name);
     return new Timekeeper(value);
   }
-
 }
 
 BaseImmutable.finalize(Timekeeper);

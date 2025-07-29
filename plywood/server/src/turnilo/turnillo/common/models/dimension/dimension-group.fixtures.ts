@@ -21,9 +21,7 @@ export class DimensionGroupFixtures {
   static noTitleJS(): DimensionGroupJS {
     return {
       name: "dummyName",
-      dimensions: [
-        DimensionFixtures.wikiTimeJS()
-      ]
+      dimensions: [DimensionFixtures.wikiTimeJS()],
     };
   }
 
@@ -31,28 +29,26 @@ export class DimensionGroupFixtures {
     return {
       name: "dummyName",
       title: "Dummy Name",
-      dimensions: [
-        DimensionFixtures.wikiTimeJS()
-      ]
+      dimensions: [DimensionFixtures.wikiTimeJS()],
     };
   }
 
   static noNameJS(): DimensionGroupJS {
     return {
-      dimensions: [DimensionFixtures.wikiTimeJS()]
+      dimensions: [DimensionFixtures.wikiTimeJS()],
     } as DimensionGroupJS;
   }
 
   static noDimensionsJS(): DimensionGroupJS {
     return {
-      name: "dummyName"
+      name: "dummyName",
     } as DimensionGroupJS;
   }
 
   static emptyDimensionsJS(): DimensionGroupJS {
     return {
       name: "dummyName",
-      dimensions: []
+      dimensions: [],
     } as DimensionGroupJS;
   }
 
@@ -65,21 +61,21 @@ export class DimensionGroupFixtures {
           kind: "string",
           name: "comment",
           title: "Comment",
-          formula: "$comment"
+          formula: "$comment",
         },
         {
           kind: "number",
           name: "commentLength",
           title: "Comment Length",
-          formula: "$commentLength"
+          formula: "$commentLength",
         },
         {
           kind: "boolean",
           name: "commentLengthOver100",
           title: "Comment Length Over 100",
-          formula: "$commentLength > 100"
-        }
-      ]
+          formula: "$commentLength > 100",
+        },
+      ],
     };
   }
 }

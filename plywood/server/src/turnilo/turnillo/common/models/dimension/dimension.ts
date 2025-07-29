@@ -18,30 +18,48 @@
 import { Class, Instance } from "immutable-class";
 import { $, Expression } from "reporter-plywood";
 import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
-import { granularityEquals, granularityFromJS, GranularityJS, granularityToJS } from "../granularity/granularity";
+import {
+  granularityEquals,
+  granularityFromJS,
+  GranularityJS,
+  granularityToJS,
+} from "../granularity/granularity";
 import { Bucket } from "../split/split";
 import { DimensionOrGroupVisitor } from "./dimension-group";
 
 export type DimensionKind = "string" | "boolean" | "time" | "number";
 
 function readKind(kind: string): DimensionKind {
-  if (kind === "string" || kind === "boolean" || kind === "time" || kind === "number") return kind;
+  if (
+    kind === "string" ||
+    kind === "boolean" ||
+    kind === "time" ||
+    kind === "number"
+  )
+    return kind;
   throw new Error(`Unrecognized kind: ${kind}`);
 }
 
 function typeToKind(type: string): DimensionKind {
   if (!type) return "string";
-  return readKind(type.toLowerCase().replace(/_/g, "-").replace(/-range$/, ""));
+  return readKind(
+    type
+      .toLowerCase()
+      .replace(/_/g, "-")
+      .replace(/-range$/, ""),
+  );
 }
 
 export enum BucketingStrategy {
   defaultBucket = "defaultBucket",
-  defaultNoBucket = "defaultNoBucket"
+  defaultNoBucket = "defaultNoBucket",
 }
 
-const bucketingStrategies: { [strategy in BucketingStrategy]: BucketingStrategy } = {
+const bucketingStrategies: {
+  [strategy in BucketingStrategy]: BucketingStrategy;
+} = {
   defaultBucket: BucketingStrategy.defaultBucket,
-  defaultNoBucket: BucketingStrategy.defaultNoBucket
+  defaultNoBucket: BucketingStrategy.defaultNoBucket,
 };
 
 export interface DimensionValue {
@@ -86,10 +104,14 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       name: parameters.name,
       title: parameters.title,
       description: parameters.description,
-      formula: parameters.formula || (typeof parameterExpression === "string" ? parameterExpression : null),
-      kind: parameters.kind ? readKind(parameters.kind) : typeToKind((parameters as any).type),
+      formula:
+        parameters.formula ||
+        (typeof parameterExpression === "string" ? parameterExpression : null),
+      kind: parameters.kind
+        ? readKind(parameters.kind)
+        : typeToKind((parameters as any).type),
       multiValue: parameters.multiValue === true,
-      url: parameters.url
+      url: parameters.url,
     };
 
     if (parameters.granularities) {
@@ -99,7 +121,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       value.bucketedBy = granularityFromJS(parameters.bucketedBy);
     }
     if (parameters.bucketingStrategy) {
-      value.bucketingStrategy = bucketingStrategies[parameters.bucketingStrategy];
+      value.bucketingStrategy =
+        bucketingStrategies[parameters.bucketingStrategy];
     }
     if (parameters.sortStrategy) {
       value.sortStrategy = parameters.sortStrategy;
@@ -134,14 +157,18 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     this.formula = formula;
     this.expression = Expression.parse(formula);
 
-    const kind = parameters.kind ? readKind(parameters.kind) : typeToKind(this.expression.type);
+    const kind = parameters.kind
+      ? readKind(parameters.kind)
+      : typeToKind(this.expression.type);
     this.kind = kind;
     this.multiValue = true === parameters.multiValue;
     this.className = kind;
 
     if (parameters.url) {
       if (typeof parameters.url !== "string") {
-        throw new Error(`unsupported url: ${parameters.url}: only strings are supported`);
+        throw new Error(
+          `unsupported url: ${parameters.url}: only strings are supported`,
+        );
       }
       this.url = parameters.url;
     }
@@ -149,14 +176,20 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
     const granularities = parameters.granularities;
     if (granularities) {
       if (!Array.isArray(granularities) || granularities.length !== 5) {
-        throw new Error(`must have list of 5 granularities in dimension '${parameters.name}'`);
+        throw new Error(
+          `must have list of 5 granularities in dimension '${parameters.name}'`,
+        );
       }
-      const sameType = granularities.every(g => typeof g === typeof granularities[0]);
-      if (!sameType) throw new Error("granularities must have the same type of actions");
+      const sameType = granularities.every(
+        g => typeof g === typeof granularities[0],
+      );
+      if (!sameType)
+        throw new Error("granularities must have the same type of actions");
       this.granularities = granularities;
     }
     if (parameters.bucketedBy) this.bucketedBy = parameters.bucketedBy;
-    if (parameters.bucketingStrategy) this.bucketingStrategy = parameters.bucketingStrategy;
+    if (parameters.bucketingStrategy)
+      this.bucketingStrategy = parameters.bucketingStrategy;
     if (parameters.sortStrategy) this.sortStrategy = parameters.sortStrategy;
   }
 
@@ -176,7 +209,7 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       granularities: this.granularities,
       bucketedBy: this.bucketedBy,
       bucketingStrategy: this.bucketingStrategy,
-      sortStrategy: this.sortStrategy
+      sortStrategy: this.sortStrategy,
     };
   }
 
@@ -185,12 +218,13 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       name: this.name,
       title: this.title,
       formula: this.formula,
-      kind: this.kind
+      kind: this.kind,
     };
     if (this.description) js.description = this.description;
     if (this.url) js.url = this.url;
     if (this.multiValue) js.multiValue = this.multiValue;
-    if (this.granularities) js.granularities = this.granularities.map(g => granularityToJS(g));
+    if (this.granularities)
+      js.granularities = this.granularities.map(g => granularityToJS(g));
     if (this.bucketedBy) js.bucketedBy = granularityToJS(this.bucketedBy);
     if (this.bucketingStrategy) js.bucketingStrategy = this.bucketingStrategy;
     if (this.sortStrategy) js.sortStrategy = this.sortStrategy;
@@ -206,7 +240,8 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   public equals(other: any): boolean {
-    return Dimension.isDimension(other) &&
+    return (
+      Dimension.isDimension(other) &&
       this.name === other.name &&
       this.title === other.title &&
       this.description === other.description &&
@@ -217,17 +252,23 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
       this.granularitiesEqual(other.granularities) &&
       granularityEquals(this.bucketedBy, other.bucketedBy) &&
       this.bucketingStrategy === other.bucketingStrategy &&
-      this.sortStrategy === other.sortStrategy;
+      this.sortStrategy === other.sortStrategy
+    );
   }
 
   private granularitiesEqual(otherGranularities: Bucket[]): boolean {
     if (!otherGranularities) return !this.granularities;
     if (otherGranularities.length !== this.granularities.length) return false;
-    return this.granularities.every((g, idx) => granularityEquals(g, otherGranularities[idx]));
+    return this.granularities.every((g, idx) =>
+      granularityEquals(g, otherGranularities[idx]),
+    );
   }
 
   public canBucketByDefault(): boolean {
-    return this.isContinuous() && this.bucketingStrategy !== BucketingStrategy.defaultNoBucket;
+    return (
+      this.isContinuous() &&
+      this.bucketingStrategy !== BucketingStrategy.defaultNoBucket
+    );
   }
 
   public isContinuous() {
@@ -261,7 +302,6 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   public changeFormula(newFormula: string): Dimension {
     return this.change("formula", newFormula);
   }
-
 }
 
 check = Dimension;

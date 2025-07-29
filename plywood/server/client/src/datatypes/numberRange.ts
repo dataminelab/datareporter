@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from 'immutable-class';
+import { Class, Instance } from "immutable-class";
 
-import { Range } from './range';
+import { Range } from "./range";
 
 export interface NumberRangeValue {
   start: number;
@@ -39,7 +39,7 @@ export class NumberRange
   extends Range<number>
   implements Instance<NumberRangeValue, NumberRangeJS>
 {
-  static type = 'NUMBER_RANGE';
+  static type = "NUMBER_RANGE";
 
   static isNumberRange(candidate: any): candidate is NumberRange {
     return candidate instanceof NumberRange;
@@ -55,12 +55,12 @@ export class NumberRange
   }
 
   static fromNumber(n: number): NumberRange {
-    return new NumberRange({ start: n, end: n, bounds: '[]' });
+    return new NumberRange({ start: n, end: n, bounds: "[]" });
   }
 
   static fromJS(parameters: NumberRangeJS): NumberRange {
-    if (typeof parameters !== 'object') {
-      throw new Error('unrecognizable numberRange');
+    if (typeof parameters !== "object") {
+      throw new Error("unrecognizable numberRange");
     }
     const start = parameters.start;
     const end = parameters.end;
@@ -73,8 +73,8 @@ export class NumberRange
 
   constructor(parameters: NumberRangeValue) {
     // So isNaN(null) === false
-    if (isNaN(parameters.start)) throw new TypeError('`start` must be a number');
-    if (isNaN(parameters.end)) throw new TypeError('`end` must be a number');
+    if (isNaN(parameters.start)) throw new TypeError("`start` must be a number");
+    if (isNaN(parameters.end)) throw new TypeError("`end` must be a number");
     super(parameters.start, parameters.end, parameters.bounds);
   }
 

@@ -22,8 +22,7 @@ interface DummyValue {
   dummy: number;
 }
 
-class DummyRecord extends Record<DummyValue>({ dummy: 1 }) {
-}
+class DummyRecord extends Record<DummyValue>({ dummy: 1 }) {}
 
 const dummy = (dummy: number) => new DummyRecord({ dummy });
 
@@ -43,6 +42,7 @@ describe("ImmutableArrayEquals", () => {
   });
 
   it("should return false if one member is different", () => {
-    expect(immutableArrayEquals([dummy(1), dummy(1)], [dummy(1), dummy(2)])).to.be.false;
+    expect(immutableArrayEquals([dummy(1), dummy(1)], [dummy(1), dummy(2)])).to
+      .be.false;
   });
 });

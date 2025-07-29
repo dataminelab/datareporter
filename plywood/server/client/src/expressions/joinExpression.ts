@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from 'has-own-prop';
+import * as hasOwnProp from "has-own-prop";
 
-import { PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
-import { DatasetFullType } from '../types';
+import { PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
+import { DatasetFullType } from "../types";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { ExternalExpression } from './externalExpression';
+} from "./baseExpression";
+import { ExternalExpression } from "./externalExpression";
 
 export class JoinExpression extends ChainableUnaryExpression {
-  static op = 'Join';
+  static op = "Join";
   static fromJS(parameters: ExpressionJS): JoinExpression {
     return new JoinExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('join');
-    this._checkOperandTypes('DATASET');
-    this._checkExpressionTypes('DATASET');
-    this.type = 'DATASET';
+    this._ensureOp("join");
+    this._checkOperandTypes("DATASET");
+    this._checkExpressionTypes("DATASET");
+    this.type = "DATASET";
   }
 
   public updateTypeContext(
@@ -78,7 +78,7 @@ export class JoinExpression extends ChainableUnaryExpression {
     operandSQL: string,
     expressionSQL: string,
   ): string {
-    throw new Error('not possible');
+    throw new Error("not possible");
   }
 }
 

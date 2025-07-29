@@ -33,21 +33,30 @@ const defaultSeries: ExpressionSeriesValue = {
   reference: null,
   format: DEFAULT_FORMAT,
   type: SeriesType.EXPRESSION,
-  expression: null
+  expression: null,
 };
 //@ts-ignore
-export class ExpressionSeries extends Record<ExpressionSeriesValue>(defaultSeries) implements SeriesBehaviours {
-
-  static fromJS({ type, reference, expression, format }: any): ExpressionSeries {
+export class ExpressionSeries
+  extends Record<ExpressionSeriesValue>(defaultSeries)
+  implements SeriesBehaviours
+{
+  static fromJS({
+    type,
+    reference,
+    expression,
+    format,
+  }: any): ExpressionSeries {
     return new ExpressionSeries({
       type,
       reference,
       expression: fromJS(expression),
-      format: SeriesFormat.fromJS(format)
+      format: SeriesFormat.fromJS(format),
     });
   }
 
-  constructor(params: RequireOnly<ExpressionSeriesValue, "reference" | "expression">) {
+  constructor(
+    params: RequireOnly<ExpressionSeriesValue, "reference" | "expression">,
+  ) {
     super(params);
   }
 

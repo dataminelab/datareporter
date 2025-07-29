@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { AttributeInfo } from '../../datatypes';
-import { Expression } from '../../expressions';
+import { AttributeInfo } from "../../datatypes";
+import { Expression } from "../../expressions";
 
-import { DruidFilterBuilder } from './druidFilterBuilder';
-import { CustomDruidTransforms } from './druidTypes';
+import { DruidFilterBuilder } from "./druidFilterBuilder";
+import { CustomDruidTransforms } from "./druidTypes";
 
 export interface DruidHavingFilterBuilderOptions {
   attributes: AttributeInfo[];
@@ -36,10 +36,10 @@ export class DruidHavingFilterBuilder {
 
   public filterToHavingFilter(filter: Expression): Druid.Having {
     return {
-      type: 'filter',
+      type: "filter",
       filter: new DruidFilterBuilder({
         rawAttributes: this.attributes,
-        timeAttribute: 'z',
+        timeAttribute: "z",
         allowEternity: true,
         customTransforms: this.customTransforms,
       }).timelessFilterToFilter(filter),

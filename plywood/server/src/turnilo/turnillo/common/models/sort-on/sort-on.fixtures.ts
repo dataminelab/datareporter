@@ -25,7 +25,7 @@ export class SortOnFixtures {
     return Measure.fromJS({
       name: "price",
       title: "Price",
-      formula: "$main.min($price)"
+      formula: "$main.min($price)",
     });
   }
 
@@ -33,7 +33,7 @@ export class SortOnFixtures {
     return Measure.fromJS({
       name: "price",
       title: "Price",
-      formula: "$main.sum($price)"
+      formula: "$main.sum($price)",
     });
   }
 
@@ -42,7 +42,7 @@ export class SortOnFixtures {
       name: "country",
       title: "important countries",
       formula: "$country",
-      kind: "string"
+      kind: "string",
     });
   }
 

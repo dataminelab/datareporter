@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
+} from "./baseExpression";
 
 export class ConcatExpression extends ChainableUnaryExpression {
-  static op = 'Concat';
+  static op = "Concat";
   static fromJS(parameters: ExpressionJS): ConcatExpression {
     return new ConcatExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('concat');
-    this._checkOperandTypes('STRING');
-    this._checkExpressionTypes('STRING');
+    this._ensureOp("concat");
+    this._checkOperandTypes("STRING");
+    this._checkExpressionTypes("STRING");
     this.type = Set.isSetType(this.operand.type) ? this.operand.type : this.expression.type;
   }
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
     if (operandValue === null || expressionValue === null) return null;
-    return Set.crossBinary(operandValue, expressionValue, (a, b) => '' + a + b);
+    return Set.crossBinary(operandValue, expressionValue, (a, b) => "" + a + b);
   }
 
   protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {

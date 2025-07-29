@@ -25,5 +25,5 @@ export const NORMAL_COLORS = [
   "#E68EE0",
   "#218C35",
   "#B0B510",
-  "#904064"
+  "#904064",
 ];

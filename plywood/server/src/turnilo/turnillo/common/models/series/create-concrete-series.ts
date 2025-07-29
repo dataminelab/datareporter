@@ -26,14 +26,22 @@ import { QuantileSeries } from "./quantile-series";
 import { Series } from "./series";
 import { SeriesType } from "./series-type";
 
-export default function createConcreteSeries(series: Series, measure: Measure, measures: Measures): ConcreteSeries {
+export default function createConcreteSeries(
+  series: Series,
+  measure: Measure,
+  measures: Measures,
+): ConcreteSeries {
   //@ts-ignore
   switch (series.type) {
     case SeriesType.MEASURE: {
       return new MeasureConcreteSeries(series as MeasureSeries, measure);
     }
     case SeriesType.EXPRESSION: {
-      return new ExpressionConcreteSeries(series as ExpressionSeries, measure, measures);
+      return new ExpressionConcreteSeries(
+        series as ExpressionSeries,
+        measure,
+        measures,
+      );
     }
     case SeriesType.QUANTILE: {
       return new QuantileConcreteSeries(series as QuantileSeries, measure);

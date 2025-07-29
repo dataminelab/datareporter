@@ -54,20 +54,25 @@ export class TimeMonitor {
     const { logger, checks } = this;
     const check = checks.get(name);
     if (!check) return Promise.resolve(null);
-    return check().then(updatedTime => {
-      logger.log(`Got the latest time for '${name}' (${updatedTime.toISOString()})`);
-      this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
-    }).catch(e => {
+    return check()
+      .then(updatedTime => {
+        logger.log(
+          `Got the latest time for '${name}' (${updatedTime.toISOString()})`,
+        );
+        this.timekeeper = this.timekeeper.updateTime(name, updatedTime);
+      })
+      .catch(e => {
         logger.error(`Error getting time for '${name}': ${e.message}`);
-      }
-    );
-  }
+      });
+  };
 
   private isStale = (timeTag: TimeTag): boolean => {
     const { timekeeper, regularCheckInterval } = this;
     const now = timekeeper.now().valueOf();
-    return !timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval;
-  }
+    return (
+      !timeTag.time || now - timeTag.updated.valueOf() > regularCheckInterval
+    );
+  };
 
   private doChecks = (): void => {
     const { doingChecks, timekeeper } = this;
@@ -79,5 +84,5 @@ export class TimeMonitor {
     Promise.all(checkTasks).then(() => {
       this.doingChecks = false;
     });
-  }
+  };
 }

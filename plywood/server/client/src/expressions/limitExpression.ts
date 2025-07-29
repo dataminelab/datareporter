@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { Dataset, PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ApplyExpression } from './applyExpression';
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ApplyExpression } from "./applyExpression";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class LimitExpression extends ChainableExpression {
-  static op = 'Limit';
+  static op = "Limit";
   static fromJS(parameters: ExpressionJS): LimitExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.value = parameters.value || (parameters as any).limit;
@@ -32,15 +32,15 @@ export class LimitExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('limit');
-    this._checkOperandTypes('DATASET');
+    this._ensureOp("limit");
+    this._checkOperandTypes("DATASET");
 
     let value = parameters.value;
     if (value == null) value = Infinity;
     if (value < 0) throw new Error(`limit value can not be negative (is ${value})`);
     this.value = value;
 
-    this.type = 'DATASET';
+    this.type = "DATASET";
   }
 
   public valueOf(): ExpressionValue {

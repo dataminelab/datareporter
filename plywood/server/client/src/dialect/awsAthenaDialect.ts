@@ -1,34 +1,34 @@
-import { Duration, Timezone } from 'chronoshift';
+import { Duration, Timezone } from "chronoshift";
 
-import { PlyType } from '../types';
+import { PlyType } from "../types";
 
-import { SQLDialect } from './baseDialect';
+import { SQLDialect } from "./baseDialect";
 
 export class AwsAthenaDialect extends SQLDialect {
   static TIME_BUCKETING: Record<string, string> = {
-    PT1S: '%Y-%m-%d %H:%i:%SZ',
-    PT1M: '%Y-%m-%d %H:%i:00Z',
-    PT1H: '%Y-%m-%d %H:00:00Z',
-    P1D: '%Y-%m-%d 00:00:00Z',
-    P1M: '%Y-%m-01 00:00:00Z',
-    P1Y: '%Y-01-01 00:00:00Z',
-    P1W: '%Y-%m-%d 00:00:00Z',
-    P3M: '%Y-%m-%d 00:00:00Z',
-  }
+    PT1S: "%Y-%m-%d %H:%i:%SZ",
+    PT1M: "%Y-%m-%d %H:%i:00Z",
+    PT1H: "%Y-%m-%d %H:00:00Z",
+    P1D: "%Y-%m-%d 00:00:00Z",
+    P1M: "%Y-%m-01 00:00:00Z",
+    P1Y: "%Y-01-01 00:00:00Z",
+    P1W: "%Y-%m-%d 00:00:00Z",
+    P3M: "%Y-%m-%d 00:00:00Z",
+  };
 
   // Format: {fromType: {toType: 'expression'}}
   static CAST_TO_FUNCTION: Record<string, Record<string, string>> = {
     TIME: {
-      NUMBER: 'FROM_UNIXTIME($$)',
+      NUMBER: "FROM_UNIXTIME($$)",
     },
     NUMBER: {
-      TIME: 'cast(to_unixtime($$)*1000 as BIGINT)',
-      STRING: 'cast($$ as BIGINT)',
+      TIME: "cast(to_unixtime($$)*1000 as BIGINT)",
+      STRING: "cast($$ as BIGINT)",
     },
     STRING: {
-      NUMBER: 'cast($$ as varchar)',
+      NUMBER: "cast($$ as varchar)",
     },
-  }
+  };
 
   constructor() {
     super();
@@ -37,7 +37,8 @@ export class AwsAthenaDialect extends SQLDialect {
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
     SECOND_OF_MINUTE: "extract(SECOND from $$)",
     SECOND_OF_HOUR: "(extract(MINUTE from $$)*60+extract(SECOND from $$))",
-    SECOND_OF_DAY: "((extract(HOUR from $$)*60+extract(MINUTE from $$))*60+extract(SECOND from $$))",
+    SECOND_OF_DAY:
+      "((extract(HOUR from $$)*60+extract(MINUTE from $$))*60+extract(SECOND from $$))",
     SECOND_OF_WEEK:
       "(((mod((extract(DAY_OF_WEEK from $$)+6), 7)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$))*60 + extract(SECOND from $$))",
     SECOND_OF_MONTH:
@@ -49,8 +50,10 @@ export class AwsAthenaDialect extends SQLDialect {
     MINUTE_OF_DAY: "extract(HOUR from $$)*60+extract(MINUTE from $$)",
     MINUTE_OF_WEEK:
       "(mod(extract(DAY_OF_WEEK from $$)+6, 7)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
-    MINUTE_OF_MONTH: "((extract(DAY from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
-    MINUTE_OF_YEAR: "((extract(DAY_OF_YEAR from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
+    MINUTE_OF_MONTH:
+      "((extract(DAY from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
+    MINUTE_OF_YEAR:
+      "((extract(DAY_OF_YEAR from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
     //
     HOUR_OF_DAY: "extract(HOUR from $$)",
     HOUR_OF_WEEK: "(mod((extract(DAY_OF_WEEK from $$) + 6), 7) * 24 + extract(HOUR from $$))",
@@ -65,7 +68,7 @@ export class AwsAthenaDialect extends SQLDialect {
     //
     MONTH_OF_YEAR: "EXTRACT(month from $$)",
     YEAR: "EXTRACT(year from $$)",
-  }
+  };
 
   public emptyGroupBy(): string {
     return "";
@@ -103,11 +106,13 @@ export class AwsAthenaDialect extends SQLDialect {
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     if (duration.toString() === "P1W") {
       return this.walltimeToUTC(
-        `DATE_FORMAT( DATE_TRUNC('week', ${this.utcToWalltime(operand, timezone)}), '${bucketFormat}')`, timezone,
+        `DATE_FORMAT( DATE_TRUNC('week', ${this.utcToWalltime(operand, timezone)}), '${bucketFormat}')`,
+        timezone,
       );
     } else if (duration.toString() === "P3M") {
       return this.walltimeToUTC(
-        `DATE_FORMAT( DATE_TRUNC('quarter', ${this.utcToWalltime(operand, timezone)}), '${bucketFormat}')`, timezone,
+        `DATE_FORMAT( DATE_TRUNC('quarter', ${this.utcToWalltime(operand, timezone)}), '${bucketFormat}')`,
+        timezone,
       );
     } else {
       return this.walltimeToUTC(
@@ -146,7 +151,7 @@ export class AwsAthenaDialect extends SQLDialect {
   timeShiftExpression(operand: string, duration: Duration, step: int, timezone: Timezone): string {
     if (step === 0) return operand;
 
-    const mult = step < 0 ? '-1 * ' : '';
+    const mult = step < 0 ? "-1 * " : "";
     const spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
       operand = `DATE_ADD('week', ${mult}${spans.week}, ${operand})`;
@@ -180,7 +185,7 @@ export class AwsAthenaDialect extends SQLDialect {
   }
 
   public stringArrayToSQL(_value: string[]): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public utcToWalltime(operand: string, timezone: Timezone): string {

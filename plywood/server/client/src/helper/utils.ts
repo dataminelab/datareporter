@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from 'has-own-prop';
-import { ReadableStream, WritableStream } from 'readable-stream';
+import * as hasOwnProp from "has-own-prop";
+import { ReadableStream, WritableStream } from "readable-stream";
 
 export function repeat(str: string, times: int): string {
   return new Array(times + 1).join(str);
 }
 
 export function indentBy(str: string, indent: int): string {
-  const spaces = repeat(' ', indent);
+  const spaces = repeat(" ", indent);
   return str
-    .split('\n')
+    .split("\n")
     .map(x => spaces + x)
-    .join('\n');
+    .join("\n");
 }
 
 export function dictEqual(dictA: Record<string, any>, dictB: Record<string, any>): boolean {
@@ -85,7 +85,7 @@ export function clip(x: number): number {
 
 export function safeAdd(num: number, delta: number): number {
   const stringDelta = String(delta);
-  const dotIndex = stringDelta.indexOf('.');
+  const dotIndex = stringDelta.indexOf(".");
   if (dotIndex === -1 || stringDelta.length === 18) {
     return num + delta;
   } else {
@@ -96,7 +96,7 @@ export function safeAdd(num: number, delta: number): number {
 
 export function safeRange(num: number, delta: number): { start: number; end: number } {
   const stringDelta = String(delta);
-  const dotIndex = stringDelta.indexOf('.');
+  const dotIndex = stringDelta.indexOf(".");
   if (dotIndex === -1 || stringDelta.length === 18) {
     return {
       start: num,
@@ -120,20 +120,20 @@ export function continuousFloorExpression(
 ): string {
   let expr = variable;
   if (offset !== 0) {
-    expr = expr + ' - ' + offset;
+    expr = expr + " - " + offset;
   }
   if (offset !== 0 && size !== 1) {
-    expr = '(' + expr + ')';
+    expr = "(" + expr + ")";
   }
   if (size !== 1) {
-    expr = expr + ' / ' + size;
+    expr = expr + " / " + size;
   }
-  expr = floorFn + '(' + expr + ')';
+  expr = floorFn + "(" + expr + ")";
   if (size !== 1) {
-    expr = expr + ' * ' + size;
+    expr = expr + " * " + size;
   }
   if (offset !== 0) {
-    expr = expr + ' + ' + offset;
+    expr = expr + " + " + offset;
   }
   return expr;
 }
@@ -146,7 +146,7 @@ export class ExtendableError extends Error {
     super(message);
     this.name = (this.constructor as any).name;
     this.message = message;
-    if (typeof (Error as any).captureStackTrace === 'function') {
+    if (typeof (Error as any).captureStackTrace === "function") {
       (Error as any).captureStackTrace(this, this.constructor);
     } else {
       this.stack = (new Error(message) as any).stack;
@@ -155,24 +155,24 @@ export class ExtendableError extends Error {
 }
 
 export function pluralIfNeeded(n: number, thing: string): string {
-  return `${n} ${thing}${n === 1 ? '' : 's'}`;
+  return `${n} ${thing}${n === 1 ? "" : "s"}`;
 }
 
 export function pipeWithError(src: ReadableStream, dest: WritableStream): any {
   src.pipe(dest);
-  src.on('error', (e: Error) => dest.emit('error', e));
+  src.on("error", (e: Error) => dest.emit("error", e));
   return dest;
 }
 
 export function handleNullCheckIfNeeded<T>(
   xs: T[],
   nullCheck: string,
-  andOr: 'AND' | 'OR',
+  andOr: "AND" | "OR",
   fn: (withoutNull: T[]) => string,
 ): string {
   if (!xs.length) {
     // This should never happen in real usage but in general return the 'zero' value of the andOr op
-    return andOr === 'AND' ? 'FALSE' : 'TRUE';
+    return andOr === "AND" ? "FALSE" : "TRUE";
   }
 
   const withoutNull = xs.filter(x => x != null);

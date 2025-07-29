@@ -32,9 +32,10 @@ const defaultSeriesList: SeriesListValue = { series: List([]) };
 
 //@ts-ignore
 export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
-
   static fromMeasureNames(names: string[]): SeriesList {
-    return new SeriesList({ series: List(names.map(reference => new MeasureSeries({ reference }))) });
+    return new SeriesList({
+      series: List(names.map(reference => new MeasureSeries({ reference }))),
+    });
   }
 
   static fromMeasures(measures: Measure[]): SeriesList {
@@ -43,10 +44,12 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
   }
 
   static fromJS(seriesDefs: any[], measures: Measures): SeriesList {
-    const series = List(seriesDefs.map(def => {
-      const measure = measures.getMeasureByName(def.reference);
-      return fromJS(def, measure);
-    }));
+    const series = List(
+      seriesDefs.map(def => {
+        const measure = measures.getMeasureByName(def.reference);
+        return fromJS(def, measure);
+      }),
+    );
     return new SeriesList({ series });
   }
 
@@ -56,9 +59,15 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   static validSeries(series: Series, measures: Measures): boolean {
     //@ts-ignore
-    if (series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression) {
+    if (
+      series instanceof ExpressionSeries &&
+      series.expression instanceof ArithmeticExpression
+    ) {
       //@ts-ignore
-      return measures.hasMeasureByName(series.reference) && measures.hasMeasureByName(series.expression.reference);
+      return (
+        measures.hasMeasureByName(series.reference) &&
+        measures.hasMeasureByName(series.expression.reference)
+      );
     }
     //@ts-ignore
     return measures.hasMeasureByName(series.reference);
@@ -72,14 +81,19 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   public removeSeries(series: Series): SeriesList {
     //@ts-ignore
-    return this.updateSeries(list => list.filter(s => s.key() !== series.key()));
+    return this.updateSeries(list =>
+      list.filter(s => s.key() !== series.key()),
+    );
   }
 
   public replaceSeries(original: Series, newSeries: Series): SeriesList {
     //@ts-ignore
     return this.updateSeries(series => {
       const idx = series.findIndex(s => s.equals(original));
-      if (idx === -1) throw new Error(`Couldn't replace series because couldn't find original: ${original}`);
+      if (idx === -1)
+        throw new Error(
+          `Couldn't replace series because couldn't find original: ${original}`,
+        );
       return series.set(idx, newSeries);
     });
   }
@@ -95,9 +109,7 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
       const newSeriesIndex = series.findIndex(split => split.equals(replace));
       if (newSeriesIndex === -1) return series.set(index, replace);
       const oldSplit = series.get(index);
-      return series
-        .set(index, replace)
-        .set(newSeriesIndex, oldSplit);
+      return series.set(index, replace).set(newSeriesIndex, oldSplit);
     });
   }
 
@@ -107,7 +119,8 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
       //@ts-ignore
       list
         .insert(index, insert)
-        .filterNot((series, idx) => series.equals(insert) && idx !== index));
+        .filterNot((series, idx) => series.equals(insert) && idx !== index),
+    );
   }
 
   public hasMeasureSeries(reference: string): boolean {
@@ -126,7 +139,9 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   public constrainToMeasures(measures: Measures): SeriesList {
     //@ts-ignore
-    return this.updateSeries(list => list.filter(series => SeriesList.validSeries(series, measures)));
+    return this.updateSeries(list =>
+      list.filter(series => SeriesList.validSeries(series, measures)),
+    );
   }
 
   public count(): number {
@@ -164,8 +179,10 @@ export class SeriesList extends Record<SeriesListValue>(defaultSeriesList) {
 
   public getExpressionSeriesFor(reference: string): List<ExpressionSeries> {
     //@ts-ignore
-    return this.series.filter(series =>
-      series.reference === reference && series instanceof ExpressionSeries) as List<ExpressionSeries>;
+    return this.series.filter(
+      series =>
+        series.reference === reference && series instanceof ExpressionSeries,
+    ) as List<ExpressionSeries>;
   }
 }
 

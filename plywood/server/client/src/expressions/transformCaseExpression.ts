@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   CaseType,
@@ -23,13 +23,13 @@ import {
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
+} from "./baseExpression";
 
 export class TransformCaseExpression extends ChainableExpression {
-  static UPPER_CASE = 'upperCase';
-  static LOWER_CASE = 'lowerCase';
+  static UPPER_CASE = "upperCase";
+  static LOWER_CASE = "lowerCase";
 
-  static op = 'TransformCase';
+  static op = "TransformCase";
   static fromJS(parameters: ExpressionJS): TransformCaseExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.transformType = parameters.transformType;
@@ -50,9 +50,9 @@ export class TransformCaseExpression extends ChainableExpression {
       );
     }
     this.transformType = transformType;
-    this._ensureOp('transformCase');
-    this._checkOperandTypes('STRING');
-    this.type = 'STRING';
+    this._ensureOp("transformCase");
+    this._checkOperandTypes("STRING");
+    this.type = "STRING";
   }
 
   public valueOf(): ExpressionValue {

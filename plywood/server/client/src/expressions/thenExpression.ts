@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import { PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
+} from "./baseExpression";
 
 export class ThenExpression extends ChainableUnaryExpression {
-  static op = 'Then';
+  static op = "Then";
   static fromJS(parameters: ExpressionJS): ThenExpression {
     return new ThenExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('then');
-    this._checkOperandTypes('BOOLEAN');
+    this._ensureOp("then");
+    this._checkOperandTypes("BOOLEAN");
     this.type = this.expression.type;
   }
 

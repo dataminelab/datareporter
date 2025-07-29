@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import { PlywoodRequester } from 'plywood-base-api';
-import { Transform } from 'readable-stream';
+import { PlywoodRequester } from "plywood-base-api";
+import { Transform } from "readable-stream";
 
-import { Attributes } from '../datatypes/attributeInfo';
-import { SQLDialect } from '../dialect/baseDialect';
-import { DruidDialect } from '../dialect/druidDialect';
+import { Attributes } from "../datatypes/attributeInfo";
+import { SQLDialect } from "../dialect/baseDialect";
+import { DruidDialect } from "../dialect/druidDialect";
 import {
   ApplyExpression,
   Expression,
@@ -29,7 +29,7 @@ import {
   SortExpression,
   SplitExpression,
   YearOverYearExpression,
-} from '../expressions';
+} from "../expressions";
 
 import {
   External,
@@ -38,7 +38,7 @@ import {
   Inflater,
   IntrospectionDepth,
   QueryAndPostTransform,
-} from './baseExternal';
+} from "./baseExternal";
 
 function getSplitInflaters(split: SplitExpression): Inflater[] {
   return split.mapSplits((label, splitExpression) => {
@@ -48,7 +48,11 @@ function getSplitInflaters(split: SplitExpression): Inflater[] {
   });
 }
 
-function getApplies(applies: ApplyExpression[], dialect: SQLDialect, timeRanges: any): ConcatArray<string> {
+function getApplies(
+  applies: ApplyExpression[],
+  dialect: SQLDialect,
+  timeRanges: any,
+): ConcatArray<string> {
   const isDruidDialect = dialect instanceof DruidDialect;
   // lookup if timeOverTime is used
   let timeOverTimeFound = false;
@@ -70,24 +74,24 @@ function getApplies(applies: ApplyExpression[], dialect: SQLDialect, timeRanges:
       const prevElementStart = dialect.dateToSQLDateString(new Date(timeRanges.prevElement.start));
       const prevElementEnd = dialect.dateToSQLDateString(new Date(timeRanges.prevElement.end));
       if (name.startsWith("_previous__")) {
-        sql = `IFNULL(${sum} FILTER(WHERE TIMESTAMP '${prevElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${prevElementEnd}'), 0) AS "${name}"`            
+        sql = `IFNULL(${sum} FILTER(WHERE TIMESTAMP '${prevElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${prevElementEnd}'), 0) AS "${name}"`;
       } else if (name.startsWith("_delta__")) {
-        const realSum = `SUM("${applies[0].name}")`
+        const realSum = `SUM("${applies[0].name}")`;
         sql = `(
           IFNULL(${realSum} FILTER(WHERE TIMESTAMP '${currElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${currElementEnd}'), 0) -
           IFNULL(${realSum} FILTER(WHERE TIMESTAMP '${prevElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${prevElementEnd}'), 0)
-        ) AS "${name}"`
+        ) AS "${name}"`;
       } else {
-        sql = `IFNULL(${sum} FILTER(WHERE TIMESTAMP '${currElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${currElementEnd}'), 0) AS "${name}"`            
+        sql = `IFNULL(${sum} FILTER(WHERE TIMESTAMP '${currElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${currElementEnd}'), 0) AS "${name}"`;
       }
-      return sql
+      return sql;
     });
   }
   return applies.map(apply => apply.getSQL(dialect));
 }
 
 export abstract class SQLExternal extends External {
-  static type = 'DATASET';
+  static type = "DATASET";
 
   static jsToValue(parameters: ExternalJS, requester: PlywoodRequester<any>): ExternalValue {
     const value: ExternalValue = External.jsToValue(parameters, requester);
@@ -122,7 +126,7 @@ export abstract class SQLExternal extends External {
   }
 
   protected capability(cap: string): boolean {
-    if (cap === 'filter-on-attribute' || cap === 'shortcut-group-by') return true;
+    if (cap === "filter-on-attribute" || cap === "shortcut-group-by") return true;
     return super.capability(cap);
   }
 
@@ -141,14 +145,14 @@ export abstract class SQLExternal extends External {
     return `FROM ${dialect.escapeName(source as string)} AS t`;
   }
 
-  public getQueryAndPostTransform(timeRanges:any=null): QueryAndPostTransform<string> {
+  public getQueryAndPostTransform(timeRanges: any = null): QueryAndPostTransform<string> {
     const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, engine } = this;
     let query = [];
     if (withQuery) {
       query.push(`WITH __with__ AS (${withQuery})\n`);
     }
 
-    query.push('SELECT');
+    query.push("SELECT");
 
     let postTransform: Transform = null;
     let inflaters: Inflater[] = [];
@@ -160,29 +164,29 @@ export abstract class SQLExternal extends External {
 
     const filter = this.getQueryFilter();
     if (!filter.equals(Expression.TRUE)) {
-      from += '\nWHERE ' + filter.getSQL(dialect);
+      from += "\nWHERE " + filter.getSQL(dialect);
     }
-    console.log("mode", mode, "maybe add year over year into the mod?")
+    console.log("mode", mode, "maybe add year over year into the mod?");
 
     let selectedAttributes = this.getSelectedAttributes();
     switch (mode) {
-      case 'raw':
+      case "raw":
         selectedAttributes = selectedAttributes.map(a => a.dropOriginInfo());
 
         inflaters = selectedAttributes
           .map(attribute => {
             const { name, type } = attribute;
             switch (type) {
-              case 'BOOLEAN':
+              case "BOOLEAN":
                 return External.booleanInflaterFactory(name);
 
-              case 'TIME':
+              case "TIME":
                 return External.timeInflaterFactory(name);
 
-              case 'IP':
+              case "IP":
                 return External.ipInflaterFactory(name);
 
-              case 'SET/STRING':
+              case "SET/STRING":
                 return External.setStringInflaterFactory(name);
 
               default:
@@ -201,7 +205,7 @@ export abstract class SQLExternal extends External {
                 return dialect.escapeName(name);
               }
             })
-            .join(', '),
+            .join(", "),
           from,
         );
         // if (sort) {
@@ -212,12 +216,12 @@ export abstract class SQLExternal extends External {
         // }
         break;
 
-      case 'value':
+      case "value":
         query.push(this.toValueApply().getSQL(dialect), from, dialect.emptyGroupBy());
         postTransform = External.valuePostTransformFactory();
         break;
 
-      case 'total':
+      case "total":
         zeroTotalApplies = applies;
         inflaters = applies
           .map(apply => {
@@ -228,29 +232,29 @@ export abstract class SQLExternal extends External {
 
         keys = [];
         query.push(
-          getApplies(applies, dialect, timeRanges).join(',\n'),
+          getApplies(applies, dialect, timeRanges).join(",\n"),
           from,
           dialect.emptyGroupBy(),
         );
         break;
 
-      case 'split': {
+      case "split": {
         split = this.getQuerySplit();
         keys = split.mapSplits(name => name);
         query.push(
           split
             .getSelectSQL(dialect)
             .concat(getApplies(applies, dialect, timeRanges))
-            .join(',\n'),
+            .join(",\n"),
           from,
-          'GROUP BY ' +
-            (this.capability('shortcut-group-by')
+          "GROUP BY " +
+            (this.capability("shortcut-group-by")
               ? split.getShortGroupBySQL()
               : split.getGroupBySQL(dialect)
-            ).join(','),
+            ).join(","),
         );
         if (!this.havingFilter.equals(Expression.TRUE)) {
-          query.push('HAVING ' + this.havingFilter.getSQL(dialect));
+          query.push("HAVING " + this.havingFilter.getSQL(dialect));
         }
         // if (sort) {
         //   query.push(sort.getSQL(dialect));
@@ -265,25 +269,24 @@ export abstract class SQLExternal extends External {
       default:
         throw new Error(`can not get query for mode: ${mode}`);
     }
-    const isYoyQuery = !(dialect instanceof DruidDialect) && YearOverYearExpression.isYoyQuery(query[1]);
+    const isYoyQuery =
+      !(dialect instanceof DruidDialect) && YearOverYearExpression.isYoyQuery(query[1]);
     if (isYoyQuery) {
       const yoyExpression = new YearOverYearExpression(engine, query, mode);
-      yoyExpression.setKeys(keys)
+      yoyExpression.setKeys(keys);
       if (split) {
         yoyExpression.setGroupBy(
-          (this.capability('shortcut-group-by')
+          (this.capability("shortcut-group-by")
             ? split.getShortGroupBySQL()
             : split.getGroupBySQL(dialect)
-          ).join(',')
+          ).join(","),
         );
       }
       if (timeRanges) {
         yoyExpression.setTimeRanges(timeRanges);
       }
       yoyExpression.process();
-      query = [
-        yoyExpression.getQuery()
-      ];
+      query = [yoyExpression.getQuery()];
     }
     if (sort) {
       query.push(sort.getSQL(dialect));
@@ -292,7 +295,7 @@ export abstract class SQLExternal extends External {
       query.push(limit.getSQL(dialect));
     }
     return {
-      query: this.sqlToQuery(query.join('\n')),
+      query: this.sqlToQuery(query.join("\n")),
       postTransform:
         postTransform ||
         External.postTransformFactory(inflaters, selectedAttributes, keys, zeroTotalApplies),

@@ -31,16 +31,23 @@ interface MeasureSeriesValue extends BasicSeriesValue {
 const defaultMeasureSeries: MeasureSeriesValue = {
   reference: null,
   format: DEFAULT_FORMAT,
-  type: SeriesType.MEASURE
+  type: SeriesType.MEASURE,
 };
 //@ts-ignore
-export class MeasureSeries extends Record<MeasureSeriesValue>(defaultMeasureSeries) implements SeriesBehaviours {
+export class MeasureSeries
+  extends Record<MeasureSeriesValue>(defaultMeasureSeries)
+  implements SeriesBehaviours
+{
   static fromMeasure(measure: Measure) {
     return new MeasureSeries({ reference: measure.name });
   }
 
   static fromJS({ reference, format, type }: any) {
-    return new MeasureSeries({ reference, type, format: SeriesFormat.fromJS(format) });
+    return new MeasureSeries({
+      reference,
+      type,
+      format: SeriesFormat.fromJS(format),
+    });
   }
 
   constructor(params: RequireOnly<MeasureSeriesValue, "reference">) {

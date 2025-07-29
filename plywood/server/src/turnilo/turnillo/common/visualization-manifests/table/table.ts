@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import {
+  Resolve,
+  VisualizationManifest,
+} from "../../models/visualization-manifest/visualization-manifest";
 import { Actions } from "../../utils/rules/actions";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -23,26 +26,32 @@ import { settings, TableSettings } from "./settings";
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
-  .then(Actions.manualDimensionSelection("The Table requires at least one split"))
+  .then(
+    Actions.manualDimensionSelection("The Table requires at least one split"),
+  )
   .when(Predicates.supportedSplitsCount())
   .then(Actions.removeExcessiveSplits("Table"))
 
   .otherwise(({ splits, dataCube, isSelectedVisualization }) => {
     let autoChanged = false;
-    const newSplits = splits.update("splits", splits => splits.map((split, i) => {
-      const splitDimension = dataCube.getDimension(split.reference);
+    const newSplits = splits.update("splits", splits =>
+      splits.map((split, i) => {
+        const splitDimension = dataCube.getDimension(split.reference);
 
-      // ToDo: review this
-      if (!split.limit && splitDimension.kind !== "time") {
-        split = split.changeLimit(i ? 5 : 50);
-        autoChanged = true;
-      }
+        // ToDo: review this
+        if (!split.limit && splitDimension.kind !== "time") {
+          split = split.changeLimit(i ? 5 : 50);
+          autoChanged = true;
+        }
 
-      return split;
-    }));
+        return split;
+      }),
+    );
 
     //@ts-ignore
-    return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 6);
+    return autoChanged
+      ? Resolve.automatic(6, { splits: newSplits })
+      : Resolve.ready(isSelectedVisualization ? 10 : 6);
   })
   .build();
 
@@ -50,5 +59,5 @@ export const TABLE_MANIFEST = new VisualizationManifest<TableSettings>(
   "table",
   "Table",
   rulesEvaluator,
-  settings
+  settings,
 );

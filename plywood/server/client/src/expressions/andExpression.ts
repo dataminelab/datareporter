@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
@@ -25,7 +25,7 @@ import {
   ExpressionValue,
   ExtractAndRest,
   r,
-} from './baseExpression';
+} from "./baseExpression";
 
 const IS_OR_OVERLAP: Record<string, boolean> = {
   is: true,
@@ -33,7 +33,7 @@ const IS_OR_OVERLAP: Record<string, boolean> = {
 };
 
 export class AndExpression extends ChainableUnaryExpression {
-  static op = 'And';
+  static op = "And";
   static fromJS(parameters: ExpressionJS): AndExpression {
     return new AndExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
@@ -48,8 +48,8 @@ export class AndExpression extends ChainableUnaryExpression {
     if (
       !lhs1.equals(lhs2) ||
       !Set.isAtomicType(lhs1.type) ||
-      !rhs1.isOp('literal') ||
-      !rhs2.isOp('literal')
+      !rhs1.isOp("literal") ||
+      !rhs2.isOp("literal")
     )
       return null;
 
@@ -61,10 +61,10 @@ export class AndExpression extends ChainableUnaryExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('and');
-    this._checkOperandTypes('BOOLEAN');
-    this._checkExpressionTypes('BOOLEAN');
-    this.type = 'BOOLEAN';
+    this._ensureOp("and");
+    this._checkOperandTypes("BOOLEAN");
+    this._checkExpressionTypes("BOOLEAN");
+    this.type = "BOOLEAN";
   }
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Dataset, Datum, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
-import { indentBy } from '../helper/utils';
-import { DatasetFullType } from '../types';
+import { Dataset, Datum, PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
+import { indentBy } from "../helper/utils";
+import { DatasetFullType } from "../types";
 
 import {
   ChainableUnaryExpression,
@@ -25,13 +25,13 @@ import {
   ExpressionJS,
   ExpressionValue,
   r,
-} from './baseExpression';
-import { ExternalExpression } from './externalExpression';
-import { LiteralExpression } from './literalExpression';
-import { RefExpression } from './refExpression';
+} from "./baseExpression";
+import { ExternalExpression } from "./externalExpression";
+import { LiteralExpression } from "./literalExpression";
+import { RefExpression } from "./refExpression";
 
 export class ApplyExpression extends ChainableUnaryExpression {
-  static op = 'Apply';
+  static op = "Apply";
   static fromJS(parameters: ExpressionJS): ApplyExpression {
     const value = ChainableUnaryExpression.jsToValue(parameters);
     value.name = parameters.name;
@@ -43,9 +43,9 @@ export class ApplyExpression extends ChainableUnaryExpression {
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     this.name = parameters.name;
-    this._ensureOp('apply');
-    this._checkOperandTypes('DATASET');
-    this.type = 'DATASET';
+    this._ensureOp("apply");
+    this._checkOperandTypes("DATASET");
+    this.type = "DATASET";
   }
 
   public valueOf(): ExpressionValue {
@@ -66,7 +66,7 @@ export class ApplyExpression extends ChainableUnaryExpression {
   ): DatasetFullType {
     const exprType: any = this.expression.type;
     typeContext.datasetType[this.name] =
-      exprType === 'DATASET' ? expressionTypeContext : { type: exprType };
+      exprType === "DATASET" ? expressionTypeContext : { type: exprType };
     return typeContext;
   }
 
@@ -79,10 +79,10 @@ export class ApplyExpression extends ChainableUnaryExpression {
   public toString(indent?: int): string {
     if (indent == null) return super.toString();
     let param: string;
-    if (this.expression.type === 'DATASET') {
-      param = '\n    ' + this._toStringParameters(indent + 2).join(',\n    ') + '\n  ';
+    if (this.expression.type === "DATASET") {
+      param = "\n    " + this._toStringParameters(indent + 2).join(",\n    ") + "\n  ";
     } else {
-      param = this._toStringParameters(indent).join(',');
+      param = this._toStringParameters(indent).join(",");
     }
     const actionStr = indentBy(`  .apply(${param})`, indent);
     return `${this.operand.toString(indent)}\n${actionStr}`;
@@ -155,7 +155,7 @@ export class ApplyExpression extends ChainableUnaryExpression {
       dataset = dataset.applyFn(
         name,
         (d: Datum): any => {
-          const simp = expression.resolve(d, 'null').simplify();
+          const simp = expression.resolve(d, "null").simplify();
           if (simp instanceof ExternalExpression) return simp.external;
           if (simp instanceof LiteralExpression) return simp.value;
           return simp;

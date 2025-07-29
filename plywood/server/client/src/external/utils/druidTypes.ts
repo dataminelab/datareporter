@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as Druid from 'druid.d.ts';
+import * as Druid from "druid.d.ts";
 
 export interface CustomDruidTransform {
   extractionFn: Druid.ExtractionFn;

@@ -17,12 +17,23 @@
 import { VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { VisualizationSettings } from "../../models/visualization-settings/visualization-settings";
 
-export function fromViewDefinition(visualization: VisualizationManifest, settings?: object): VisualizationSettings {
-  const { converter: { read }, defaults } = visualization.visualizationSettings;
+export function fromViewDefinition(
+  visualization: VisualizationManifest,
+  settings?: object,
+): VisualizationSettings {
+  const {
+    converter: { read },
+    defaults,
+  } = visualization.visualizationSettings;
   return settings ? read(settings) : defaults;
 }
 
-export function toViewDefinition(visualization: VisualizationManifest, settings: object): object {
-  const { converter: { print } } = visualization.visualizationSettings;
+export function toViewDefinition(
+  visualization: VisualizationManifest,
+  settings: object,
+): object {
+  const {
+    converter: { print },
+  } = visualization.visualizationSettings;
   return print(settings);
 }

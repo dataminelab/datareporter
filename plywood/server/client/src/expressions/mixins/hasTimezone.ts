@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Timezone } from 'chronoshift';
+import { Timezone } from "chronoshift";
 
-import { Environment } from '../../types';
-import { Expression, ExpressionValue } from '../baseExpression';
+import { Environment } from "../../types";
+import { Expression, ExpressionValue } from "../baseExpression";
 
 export class HasTimezone {
   public valueOf: () => ExpressionValue;
@@ -43,7 +43,7 @@ export class HasTimezone {
     if (!environment.timezone) environment = { timezone: Timezone.UTC };
 
     // Allow strings as well
-    if (typeof environment.timezone === 'string')
+    if (typeof environment.timezone === "string")
       environment = { timezone: Timezone.fromJS(environment.timezone as any) };
 
     if (this.timezone || !environment.timezone) return this as any;

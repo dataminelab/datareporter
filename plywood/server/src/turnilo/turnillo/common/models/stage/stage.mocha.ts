@@ -25,8 +25,7 @@ describe("Stage", () => {
     testImmutableClass<StageJS>(Stage, [
       StageFixtures.DEFAULT_A_JS,
       StageFixtures.DEFAULT_B_JS,
-      StageFixtures.DEFAULT_C_JS
+      StageFixtures.DEFAULT_C_JS,
     ]);
   });
-
 });

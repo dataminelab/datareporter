@@ -45,7 +45,7 @@ export function fromConfig(config?: OauthJS): Oauth {
   if (!config) return { status: "disabled" };
   return {
     status: "enabled",
-    ...config
+    ...config,
   };
 }
 

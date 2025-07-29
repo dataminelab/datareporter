@@ -61,6 +61,5 @@ describe("Promise utils", () => {
       expect(onReject.calledOnce).to.be.true;
       expect(onReject.calledWith("reject")).to.be.true;
     });
-
   });
 });

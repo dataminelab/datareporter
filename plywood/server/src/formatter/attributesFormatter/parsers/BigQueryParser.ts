@@ -3,31 +3,30 @@ import { AttributeParser } from "./AttributeParser";
 // @ts-ignore
 import { BigQueryColumn, BigQueryExternal } from "reporter-plywood";
 
-
 export class BigQueryParser extends AttributeParser {
+  static engine = "bigquery";
 
-    static engine = 'bigquery';
+  protected _parseAttributes(attributes: InputAttribute[]): OutputAttribute[] {
+    const columns: BigQueryColumn[] = attributes.map(attribute => {
+      const result: BigQueryColumn = {
+        name: attribute.name,
+        type: attribute.type,
+      };
+      return result;
+    });
 
-    protected _parseAttributes(attributes: InputAttribute[]): OutputAttribute[] {
+    const newAttributes = BigQueryExternal.mapTypes(columns).map(
+      (atr, index) => {
+        if (!atr) return;
 
-        const columns: BigQueryColumn[] = attributes.map((attribute) => {
-            const result: BigQueryColumn = { name: attribute.name, type: attribute.type };
-            return result;
-        });
+        return {
+          nativeType: atr.nativeType.toUpperCase(),
+          name: atr.name,
+          type: atr.type,
+        };
+      },
+    );
 
-
-
-        const newAttributes = BigQueryExternal.mapTypes(columns).map((atr, index) => {
-            if (!atr) return;
-            
-            return {
-                nativeType: atr.nativeType.toUpperCase(),
-                name: atr.name,
-                type: atr.type,
-            }
-        });
-
-        return newAttributes.filter(Boolean);
-
-    }
+    return newAttributes.filter(Boolean);
+  }
 }

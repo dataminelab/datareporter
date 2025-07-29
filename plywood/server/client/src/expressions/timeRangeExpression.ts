@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from 'chronoshift';
-import { immutableEqual } from 'immutable-class';
+import { Duration, Timezone } from "chronoshift";
+import { immutableEqual } from "immutable-class";
 
-import { PlywoodValue, Range } from '../datatypes';
-import { TimeRange } from '../datatypes/timeRange';
-import { SQLDialect } from '../dialect/baseDialect';
-import { pluralIfNeeded } from '../helper/utils';
+import { PlywoodValue, Range } from "../datatypes";
+import { TimeRange } from "../datatypes/timeRange";
+import { SQLDialect } from "../dialect/baseDialect";
+import { pluralIfNeeded } from "../helper/utils";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
-import { HasTimezone } from './mixins/hasTimezone';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import { HasTimezone } from "./mixins/hasTimezone";
 
 export class TimeRangeExpression extends ChainableExpression implements HasTimezone {
   static DEFAULT_STEP = 1;
 
-  static op = 'TimeRange';
+  static op = "TimeRange";
   static fromJS(parameters: ExpressionJS): TimeRangeExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.duration = Duration.fromJS(parameters.duration);
@@ -49,12 +49,12 @@ export class TimeRangeExpression extends ChainableExpression implements HasTimez
     this.step = parameters.step || TimeRangeExpression.DEFAULT_STEP;
     this.timezone = parameters.timezone;
     this.bounds = parameters.bounds;
-    this._ensureOp('timeRange');
-    this._checkOperandTypes('TIME');
+    this._ensureOp("timeRange");
+    this._checkOperandTypes("TIME");
     if (!(this.duration instanceof Duration)) {
-      throw new Error('`duration` must be a Duration');
+      throw new Error("`duration` must be a Duration");
     }
-    this.type = 'TIME_RANGE';
+    this.type = "TIME_RANGE";
   }
 
   public valueOf(): ExpressionValue {
@@ -112,11 +112,11 @@ export class TimeRangeExpression extends ChainableExpression implements HasTimez
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    throw new Error('implement me');
+    throw new Error("implement me");
   }
 
   protected _getSQLChainableHelper(_dialect: SQLDialect, _operandSQL: string): string {
-    throw new Error('implement me');
+    throw new Error("implement me");
   }
 
   public changeBounds(bounds: string): Expression {

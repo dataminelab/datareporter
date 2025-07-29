@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { generalArraysEqual } from 'immutable-class';
+import { generalArraysEqual } from "immutable-class";
 
-import { SQLDialect } from '../dialect/baseDialect';
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class MvFilterOnlyExpression extends ChainableExpression {
-  static op = 'MvFilterOnly';
+  static op = "MvFilterOnly";
   static fromJS(parameters: ExpressionJS): MvFilterOnlyExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.mvArray = parameters.mvArray;
@@ -32,10 +32,10 @@ export class MvFilterOnlyExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('mvFilterOnly');
-    this._checkOperandTypes('STRING');
+    this._ensureOp("mvFilterOnly");
+    this._checkOperandTypes("STRING");
     this.mvArray = parameters.mvArray;
-    this.type = 'STRING';
+    this.type = "STRING";
   }
 
   public valueOf(): ExpressionValue {

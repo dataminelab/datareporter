@@ -18,19 +18,21 @@ import { complement, Predicate } from "../../utils/functional/functional";
 import { StringFilterAction, StringFilterClause } from "./filter-clause";
 
 //@ts-ignore
-export function clausePredicate({ action, values, not }: StringFilterClause): Predicate<string> {
+export function clausePredicate({
+  action,
+  values,
+  not,
+}: StringFilterClause): Predicate<string> {
   switch (action) {
     case StringFilterAction.IN:
       //@ts-ignore
       const predicate = (str: string) => values.has(str);
       return not ? complement(predicate) : predicate;
     case StringFilterAction.MATCH:
-
       //@ts-ignore
       const regExp = new RegExp(values.first());
       return str => regExp.test(str);
     case StringFilterAction.CONTAINS:
-
       //@ts-ignore
       return str => str.includes(values.first());
   }

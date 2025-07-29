@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import type { Duration, Timezone } from 'chronoshift';
+import type { Duration, Timezone } from "chronoshift";
 
-import { Ip } from '../datatypes/ip';
-import { PlyType, PlyTypeSimple } from '../types';
+import { Ip } from "../datatypes/ip";
+import { PlyType, PlyTypeSimple } from "../types";
 
 export abstract class SQLDialect {
   private escapedTableName: string | null = null;
@@ -35,7 +35,7 @@ export abstract class SQLDialect {
   }
 
   public nullConstant(): string {
-    return 'NULL';
+    return "NULL";
   }
 
   public emptyGroupBy(): string {
@@ -46,7 +46,7 @@ export abstract class SQLDialect {
    * @deprecated
    */
   public constantGroupBy(): string {
-    return this.emptyGroupBy()
+    return this.emptyGroupBy();
   }
 
   public escapeName(name: string): string {
@@ -57,7 +57,7 @@ export abstract class SQLDialect {
   public maybeNamespacedName(name: string): string {
     const escapedName = this.escapeName(name);
     if (this.escapedTableName) {
-      return this.escapedTableName + '.' + escapedName;
+      return this.escapedTableName + "." + escapedName;
     } else {
       return escapedName;
     }
@@ -70,7 +70,7 @@ export abstract class SQLDialect {
   }
 
   public booleanToSQL(bool: boolean): string {
-    return ('' + bool).toUpperCase();
+    return ("" + bool).toUpperCase();
   }
 
   public ipToSQL(ip: Ip): string {
@@ -92,16 +92,16 @@ export abstract class SQLDialect {
 
   public numberToSQL(num: number): string {
     if (num === null) return this.nullConstant();
-    return '' + num;
+    return "" + num;
   }
 
   public dateToSQLDateString(date: Date): string {
     return date
       .toISOString()
-      .replace('T', ' ')
-      .replace('Z', '')
-      .replace(/\.000$/, '')
-      .replace(/ 00:00:00$/, '');
+      .replace("T", " ")
+      .replace("Z", "")
+      .replace(/\.000$/, "")
+      .replace(/ 00:00:00$/, "");
   }
 
   public abstract timeToSQL(date: Date): string;
@@ -113,30 +113,30 @@ export abstract class SQLDialect {
     expressionSQL: string,
     elseSQL: string | null = null,
   ): string {
-    const whereIndex = inputSQL.indexOf(' WHERE ');
+    const whereIndex = inputSQL.indexOf(" WHERE ");
     if (whereIndex === -1) return expressionSQL;
     const filterSQL = inputSQL.substr(whereIndex + 7);
     return this.ifThenElseExpression(filterSQL, expressionSQL, elseSQL);
   }
 
   public concatExpression(_a: string, _b: string): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public containsExpression(_a: string, _b: string, _insensitive: boolean): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public mvContainsExpression(_a: string, _b: string[]): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public mvFilterOnlyExpression(_a: string, _b: string[]): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public mvOverlapExpression(_a: string, _b: string[]): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public substrExpression(a: string, position: number, length: number): string {
@@ -152,13 +152,13 @@ export abstract class SQLDialect {
   }
 
   public ifThenElseExpression(a: string, b: string, c?: string): string {
-    const elsePart = typeof c === 'string' ? ` ELSE ${c}` : '';
+    const elsePart = typeof c === "string" ? ` ELSE ${c}` : "";
     return `CASE WHEN ${a} THEN ${b}${elsePart} END`;
   }
 
   public filterAggregatorExpression(aggregate: string, whereFilter: string): string {
-    const whereIndex = whereFilter.indexOf('WHERE');
-    return `${aggregate}${whereIndex !== -1 ? `FILTER (${whereFilter.substr(whereIndex)})` : ''}`;
+    const whereIndex = whereFilter.indexOf("WHERE");
+    return `${aggregate}${whereIndex !== -1 ? `FILTER (${whereFilter.substr(whereIndex)})` : ""}`;
   }
 
   public isNotDistinctFromExpression(a: string, b: string): string {
@@ -173,19 +173,19 @@ export abstract class SQLDialect {
   }
 
   public inExpression(operand: string, start: string, end: string, bounds: string) {
-    if (start === end && bounds === '[]') return `${operand}=${start}`;
+    if (start === end && bounds === "[]") return `${operand}=${start}`;
     let startSQL: string = null;
     if (start !== this.nullConstant()) {
-      startSQL = start + (bounds[0] === '[' ? '<=' : '<') + operand;
+      startSQL = start + (bounds[0] === "[" ? "<=" : "<") + operand;
     }
     let endSQL: string = null;
     if (end !== this.nullConstant()) {
-      endSQL = operand + (bounds[1] === ']' ? '<=' : '<') + end;
+      endSQL = operand + (bounds[1] === "]" ? "<=" : "<") + end;
     }
     if (startSQL) {
       return endSQL ? `(${startSQL} AND ${endSQL})` : startSQL;
     } else {
-      return endSQL ? endSQL : 'TRUE';
+      return endSQL ? endSQL : "TRUE";
     }
   }
 
@@ -229,7 +229,7 @@ export abstract class SQLDialect {
     _quantile: number,
     _parameterAttributeName: string | undefined,
   ): string {
-    throw new Error('dialect does not implement quantile');
+    throw new Error("dialect does not implement quantile");
   }
 
   public logExpression(base: string, operand: string): string {
@@ -238,7 +238,7 @@ export abstract class SQLDialect {
   }
 
   public lookupExpression(_base: string, _lookup: string): string {
-    throw new Error('can not express a lookup as a function');
+    throw new Error("can not express a lookup as a function");
   }
 
   public ipMatchExpression(
@@ -246,7 +246,7 @@ export abstract class SQLDialect {
     _searchString: string,
     _ipSearchType?: string,
   ): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public ipSearchExpression(
@@ -254,10 +254,10 @@ export abstract class SQLDialect {
     _searchString: string,
     _ipSearchType?: string,
   ): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 
   public ipStringifyExpression(_operand: string): string {
-    throw new Error('must implement');
+    throw new Error("must implement");
   }
 }

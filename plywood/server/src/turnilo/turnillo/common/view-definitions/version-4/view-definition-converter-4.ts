@@ -27,26 +27,45 @@ import { filterDefinitionConverter } from "./filter-definition";
 import { seriesDefinitionConverter } from "./series-definition";
 import { splitConverter } from "./split-definition";
 import { ViewDefinition4 } from "./view-definition-4";
-import { fromViewDefinition, toViewDefinition } from "./visualization-settings-converter";
+import {
+  fromViewDefinition,
+  toViewDefinition,
+} from "./visualization-settings-converter";
 
-export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDefinition4, Essence> {
+export class ViewDefinitionConverter4
+  implements ViewDefinitionConverter<ViewDefinition4, Essence>
+{
   version = 4;
 
   fromViewDefinition(definition: ViewDefinition4, dataCube: DataCube): Essence {
     const timezone = Timezone.fromJS(definition.timezone);
 
     const visualization = manifestByName(definition.visualization);
-    const visualizationSettings = fromViewDefinition(visualization, definition.visualizationSettings);
-    const timeShift = definition.timeShift ? TimeShift.fromJS(definition.timeShift) : TimeShift.empty();
+    const visualizationSettings = fromViewDefinition(
+      visualization,
+      definition.visualizationSettings,
+    );
+    const timeShift = definition.timeShift
+      ? TimeShift.fromJS(definition.timeShift)
+      : TimeShift.empty();
 
-    const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
+    const filter = Filter.fromClauses(
+      definition.filters.map(fc =>
+        filterDefinitionConverter.toFilterClause(fc, dataCube),
+      ),
+    );
 
     const splitDefinitions = List(definition.splits);
-    const splits = new Splits({ splits: splitDefinitions.map(splitConverter.toSplitCombine) });
+    const splits = new Splits({
+      splits: splitDefinitions.map(splitConverter.toSplitCombine),
+    });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const pinnedSort = definition.pinnedSort;
-    const series = seriesDefinitionConverter.toEssenceSeries(definition.series, dataCube.measures);
+    const series = seriesDefinitionConverter.toEssenceSeries(
+      definition.series,
+      dataCube.measures,
+    );
 
     return new Essence({
       dataCube,
@@ -58,7 +77,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       splits,
       pinnedDimensions,
       series,
-      pinnedSort
+      pinnedSort,
     });
   }
 
@@ -67,13 +86,20 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       //@ts-ignore
       visualization: essence.visualization.name,
       //@ts-ignore
-      visualizationSettings: toViewDefinition(essence.visualization, essence.visualizationSettings),
+      visualizationSettings: toViewDefinition(
+        essence.visualization,
+        essence.visualizationSettings,
+      ),
       //@ts-ignore
       timezone: essence.timezone.toJS(),
       //@ts-ignore
-      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
+      filters: essence.filter.clauses
+        .map(fc => filterDefinitionConverter.fromFilterClause(fc))
+        .toArray(),
       //@ts-ignore
-      splits: essence.splits.splits.map(splitConverter.fromSplitCombine).toArray(),
+      splits: essence.splits.splits
+        .map(splitConverter.fromSplitCombine)
+        .toArray(),
       //@ts-ignore
 
       series: seriesDefinitionConverter.fromEssenceSeries(essence.series),
@@ -82,7 +108,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       //@ts-ignore
       pinnedSort: essence.pinnedSort,
       //@ts-ignore
-      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined
+      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,
     };
   }
 }

@@ -20,16 +20,19 @@ import { RequireOnly } from "../../utils/functional/functional";
 import { SeriesDerivation } from "../series/concrete-series";
 import { MeasureSeries } from "../series/measure-series";
 
-export enum SortType { SERIES = "series", DIMENSION = "dimension" }
+export enum SortType {
+  SERIES = "series",
+  DIMENSION = "dimension",
+}
 
 export enum SortDirection {
   ascending = "ascending",
-  descending = "descending"
+  descending = "descending",
 }
 
-export const sortDirectionMapper: { [sort in SortDirection]: Direction; } = {
+export const sortDirectionMapper: { [sort in SortDirection]: Direction } = {
   ascending: "ascending",
-  descending: "descending"
+  descending: "descending",
 };
 
 interface BaseSortDefinition {
@@ -53,10 +56,13 @@ const defaultSeriesSort: SeriesSortDefinition = {
   reference: null,
   type: SortType.SERIES,
   direction: SortDirection.descending,
-  period: SeriesDerivation.CURRENT
+  period: SeriesDerivation.CURRENT,
 };
 //@ts-ignore
-export class SeriesSort extends Record<SeriesSortDefinition>(defaultSeriesSort) implements SortBehaviour {
+export class SeriesSort
+  extends Record<SeriesSortDefinition>(defaultSeriesSort)
+  implements SortBehaviour
+{
   constructor(params: RequireOnly<SeriesSortDefinition, "reference">) {
     super(params);
   }
@@ -68,7 +74,7 @@ export class SeriesSort extends Record<SeriesSortDefinition>(defaultSeriesSort) 
       //@ts-ignore
       direction: sortDirectionMapper[this.direction],
       //@ts-ignore
-      expression: $(series.plywoodKey(this.period))
+      expression: $(series.plywoodKey(this.period)),
     });
   }
 }
@@ -80,21 +86,24 @@ interface DimensionSortDefinition extends BaseSortDefinition {
 const defaultDimensionSort: DimensionSortDefinition = {
   reference: null,
   type: SortType.DIMENSION,
-  direction: SortDirection.descending
+  direction: SortDirection.descending,
 };
 //@ts-ignore
-export class DimensionSort extends Record<DimensionSortDefinition>(defaultDimensionSort) implements SortBehaviour {
+export class DimensionSort
+  extends Record<DimensionSortDefinition>(defaultDimensionSort)
+  implements SortBehaviour
+{
   constructor(params: RequireOnly<DimensionSortDefinition, "reference">) {
     super(params);
   }
 
   toExpression(): SortExpression {
-    return new SortExpression(({
+    return new SortExpression({
       //@ts-ignore
       direction: sortDirectionMapper[this.direction],
       //@ts-ignore
-      expression: $(this.reference)
-    }));
+      expression: $(this.reference),
+    });
   }
 }
 

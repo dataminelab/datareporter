@@ -24,12 +24,15 @@ export interface MeasuresDefinitionJS {
 }
 
 export interface SeriesDefinitionConverter {
-  toEssenceSeries(measuresDefs: MeasuresDefinitionJS, measures: Measures): SeriesList;
+  toEssenceSeries(
+    measuresDefs: MeasuresDefinitionJS,
+    measures: Measures,
+  ): SeriesList;
 }
 
 export const seriesDefinitionConverter: SeriesDefinitionConverter = {
   toEssenceSeries: ({ isMulti, multi, single }, measures: Measures) => {
     const names = isMulti ? multi : [single];
     return SeriesList.fromMeasures(measures.getMeasuresByNames(names));
-  }
+  },
 };

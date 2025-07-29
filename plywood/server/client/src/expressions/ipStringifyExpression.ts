@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { SQLDialect } from '../dialect';
+import { SQLDialect } from "../dialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class IpStringifyExpression extends ChainableExpression {
-  static op = 'IpStringify';
+  static op = "IpStringify";
   static fromJS(parameters: ExpressionJS): IpStringifyExpression {
     const value = ChainableExpression.jsToValue(parameters);
     return new IpStringifyExpression(value);
@@ -27,9 +27,9 @@ export class IpStringifyExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('ipStringify');
-    this._checkOperandTypes('STRING');
-    this.type = 'STRING';
+    this._ensureOp("ipStringify");
+    this._checkOperandTypes("STRING");
+    this.type = "STRING";
   }
 
   public valueOf(): ExpressionValue {

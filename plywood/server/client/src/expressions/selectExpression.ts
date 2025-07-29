@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
-import { DatasetFullType } from '../types';
+import { Dataset, PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
+import { DatasetFullType } from "../types";
 
-import { ApplyExpression } from './applyExpression';
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ApplyExpression } from "./applyExpression";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class SelectExpression extends ChainableExpression {
-  static op = 'Select';
+  static op = "Select";
   static fromJS(parameters: ExpressionJS): SelectExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.attributes = parameters.attributes;
@@ -33,10 +33,10 @@ export class SelectExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('select');
-    this._checkOperandTypes('DATASET');
+    this._ensureOp("select");
+    this._checkOperandTypes("DATASET");
     this.attributes = parameters.attributes;
-    this.type = 'DATASET';
+    this.type = "DATASET";
   }
 
   public valueOf(): ExpressionValue {
@@ -69,7 +69,7 @@ export class SelectExpression extends ChainableExpression {
       newDatasetType[attr] = attrType;
     }
     return {
-      type: 'DATASET',
+      type: "DATASET",
       datasetType: newDatasetType,
       parent,
     };
@@ -80,7 +80,7 @@ export class SelectExpression extends ChainableExpression {
   }
 
   protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    throw new Error('can not be expressed as SQL directly');
+    throw new Error("can not be expressed as SQL directly");
   }
 
   public specialSimplify(): Expression {

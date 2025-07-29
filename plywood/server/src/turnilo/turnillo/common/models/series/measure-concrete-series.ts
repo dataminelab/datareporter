@@ -24,8 +24,11 @@ export function fromMeasure(measure: Measure): MeasureConcreteSeries {
 }
 
 export class MeasureConcreteSeries extends ConcreteSeries<MeasureSeries> {
-
-  protected applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression {
+  protected applyExpression(
+    expression: Expression,
+    name: string,
+    nestingLevel: number,
+  ): ApplyExpression {
     return new ApplyExpression({ expression, name });
   }
 }

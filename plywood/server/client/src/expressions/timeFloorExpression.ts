@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from 'chronoshift';
-import { immutableEqual } from 'immutable-class';
+import { Duration, Timezone } from "chronoshift";
+import { immutableEqual } from "immutable-class";
 
-import { PlywoodValue, Set, TimeRange } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set, TimeRange } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
-import { HasTimezone } from './mixins/hasTimezone';
-import { OverlapExpression } from './overlapExpression';
-import { TimeBucketExpression } from './timeBucketExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import { HasTimezone } from "./mixins/hasTimezone";
+import { OverlapExpression } from "./overlapExpression";
+import { TimeBucketExpression } from "./timeBucketExpression";
 
 export class TimeFloorExpression extends ChainableExpression implements HasTimezone {
-  static op = 'TimeFloor';
+  static op = "TimeFloor";
   static fromJS(parameters: ExpressionJS): TimeFloorExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.duration = Duration.fromJS(parameters.duration);
@@ -42,16 +42,16 @@ export class TimeFloorExpression extends ChainableExpression implements HasTimez
     const duration = parameters.duration;
     this.duration = duration;
     this.timezone = parameters.timezone;
-    this._ensureOp('timeFloor');
+    this._ensureOp("timeFloor");
     this._bumpOperandToTime();
-    this._checkOperandTypes('TIME');
+    this._checkOperandTypes("TIME");
     if (!(duration instanceof Duration)) {
-      throw new Error('`duration` must be a Duration');
+      throw new Error("`duration` must be a Duration");
     }
     if (!duration.isFloorable()) {
       throw new Error(`duration '${duration.toString()}' is not floorable`);
     }
-    this.type = 'TIME';
+    this.type = "TIME";
   }
 
   public valueOf(): ExpressionValue {
@@ -87,7 +87,7 @@ export class TimeFloorExpression extends ChainableExpression implements HasTimez
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    throw new Error('implement me');
+    throw new Error("implement me");
   }
 
   protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
@@ -107,7 +107,7 @@ export class TimeFloorExpression extends ChainableExpression implements HasTimez
       if (literal instanceof TimeRange) {
         return literal.isAligned(duration, timezone);
       } else if (literal instanceof Set) {
-        if (literal.setType !== 'TIME_RANGE') return false;
+        if (literal.setType !== "TIME_RANGE") return false;
         return literal.elements.every((e: TimeRange) => {
           return e.isAligned(duration, timezone);
         });

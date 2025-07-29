@@ -22,9 +22,7 @@ interface DummyValue {
   dummy: number;
 }
 
-class DummyRecord extends Record<DummyValue>({ dummy: 1 }) {
-
-}
+class DummyRecord extends Record<DummyValue>({ dummy: 1 }) {}
 
 const dummy = (dummy: number) => new DummyRecord({ dummy });
 

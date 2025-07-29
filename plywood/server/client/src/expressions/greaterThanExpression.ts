@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { Range } from '../datatypes/range';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { Range } from "../datatypes/range";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
@@ -24,23 +24,23 @@ import {
   ExpressionJS,
   ExpressionValue,
   r,
-} from './baseExpression';
-import { LiteralExpression } from './literalExpression';
+} from "./baseExpression";
+import { LiteralExpression } from "./literalExpression";
 
 export class GreaterThanExpression extends ChainableUnaryExpression {
-  static op = 'GreaterThan';
+  static op = "GreaterThan";
   static fromJS(parameters: ExpressionJS): GreaterThanExpression {
     return new GreaterThanExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('greaterThan');
-    this._checkOperandTypes('NUMBER', 'TIME', 'STRING');
-    this._checkExpressionTypes('NUMBER', 'TIME', 'STRING');
+    this._ensureOp("greaterThan");
+    this._checkOperandTypes("NUMBER", "TIME", "STRING");
+    this._checkExpressionTypes("NUMBER", "TIME", "STRING");
     this._bumpOperandExpressionToTime();
     this._checkOperandExpressionTypesAlign();
-    this.type = 'BOOLEAN';
+    this.type = "BOOLEAN";
   }
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
@@ -65,12 +65,12 @@ export class GreaterThanExpression extends ChainableUnaryExpression {
 
     if (expression instanceof LiteralExpression) {
       // x > 7
-      return operand.overlap(r(Range.fromJS({ start: expression.value, end: null, bounds: '()' })));
+      return operand.overlap(r(Range.fromJS({ start: expression.value, end: null, bounds: "()" })));
     }
 
     if (operand instanceof LiteralExpression) {
       // 7 > x
-      return expression.overlap(r(Range.fromJS({ start: null, end: operand.value, bounds: '()' })));
+      return expression.overlap(r(Range.fromJS({ start: null, end: operand.value, bounds: "()" })));
     }
 
     return this;

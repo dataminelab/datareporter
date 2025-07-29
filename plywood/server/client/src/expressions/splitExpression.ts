@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from 'has-own-prop';
-import { immutableLookupsEqual } from 'immutable-class';
+import * as hasOwnProp from "has-own-prop";
+import { immutableLookupsEqual } from "immutable-class";
 
-import { Dataset, Datum, PlywoodValue, Set } from '../datatypes';
-import { SQLDialect } from '../dialect/baseDialect';
-import { DatasetFullType, FullType } from '../types';
+import { Dataset, Datum, PlywoodValue, Set } from "../datatypes";
+import { SQLDialect } from "../dialect/baseDialect";
+import { DatasetFullType, FullType } from "../types";
 
 import {
   ChainableExpression,
@@ -32,12 +32,12 @@ import {
   Splits,
   SplitsJS,
   SubstitutionFn,
-} from './baseExpression';
-import { Aggregate } from './mixins/aggregate';
-import { SqlRefExpression } from './sqlRefExpression';
+} from "./baseExpression";
+import { Aggregate } from "./mixins/aggregate";
+import { SqlRefExpression } from "./sqlRefExpression";
 
 export class SplitExpression extends ChainableExpression implements Aggregate {
-  static op = 'Split';
+  static op = "Split";
   static fromJS(parameters: ExpressionJS): SplitExpression {
     const value = ChainableExpression.jsToValue(parameters);
 
@@ -59,17 +59,17 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('split');
-    this._checkOperandTypes('DATASET');
+    this._ensureOp("split");
+    this._checkOperandTypes("DATASET");
 
     const splits = parameters.splits;
-    if (!splits) throw new Error('must have splits');
+    if (!splits) throw new Error("must have splits");
     this.splits = splits;
     this.keys = Object.keys(splits).sort();
-    if (!this.keys.length) throw new Error('must have at least one split');
+    if (!this.keys.length) throw new Error("must have at least one split");
     this.dataName = parameters.dataName;
 
-    this.type = 'DATASET';
+    this.type = "DATASET";
   }
 
   public valueOf(): ExpressionValue {
@@ -125,7 +125,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
       for (const name in splits) {
         splitStrings.push(`${name}: ${splits[name]}`);
       }
-      return [splitStrings.join(', '), this.dataName];
+      return [splitStrings.join(", "), this.dataName];
     } else {
       return [this.firstSplitExpression().toString(), this.firstSplitName(), this.dataName];
     }
@@ -142,7 +142,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
 
     return {
       parent: typeContext.parent,
-      type: 'DATASET',
+      type: "DATASET",
       datasetType: newDatasetType,
     };
   }
@@ -164,7 +164,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
     const res: T[] = [];
     for (const k of keys) {
       const v = fn(k, splits[k]);
-      if (typeof v !== 'undefined') res.push(v);
+      if (typeof v !== "undefined") res.push(v);
     }
     return res;
   }
@@ -196,15 +196,15 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   }
 
   public getSQL(_dialect: SQLDialect): string {
-    throw new Error('can not convert split expression to SQL directly');
+    throw new Error("can not convert split expression to SQL directly");
   }
 
   public getSelectSQL(dialect: SQLDialect): string[] {
     return this.mapSplits((name, expression) => {
       if (
         expression instanceof SqlRefExpression &&
-        ['IP', 'SET/IP'].includes(expression.type) &&
-        !expression.isSqlFunction('IP_SEARCH', 'IP_MATCH')
+        ["IP", "SET/IP"].includes(expression.type) &&
+        !expression.isSqlFunction("IP_SEARCH", "IP_MATCH")
       ) {
         return `${dialect.ipStringifyExpression(
           expression.getSQL(dialect),
@@ -225,7 +225,7 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
 
   public fullyDefined(): boolean {
     return (
-      this.operand.isOp('literal') &&
+      this.operand.isOp("literal") &&
       this.mapSplits((name, expression) => expression.resolved()).every(Boolean)
     );
   }

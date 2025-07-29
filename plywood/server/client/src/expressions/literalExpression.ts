@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-import { parseISODate } from 'chronoshift';
-import * as hasOwnProp from 'has-own-prop';
-import { isImmutableClass } from 'immutable-class';
+import { parseISODate } from "chronoshift";
+import * as hasOwnProp from "has-own-prop";
+import { isImmutableClass } from "immutable-class";
 
-import { ComputeFn, Dataset, Datum, PlywoodValue, Set, TimeRange } from '../datatypes';
-import { getValueType, valueFromJS } from '../datatypes/common';
-import { SQLDialect } from '../dialect/baseDialect';
-import { DatasetFullType, PlyType } from '../types';
+import { ComputeFn, Dataset, Datum, PlywoodValue, Set, TimeRange } from "../datatypes";
+import { getValueType, valueFromJS } from "../datatypes/common";
+import { SQLDialect } from "../dialect/baseDialect";
+import { DatasetFullType, PlyType } from "../types";
 
-import { Expression, ExpressionJS, ExpressionValue, r } from './baseExpression';
+import { Expression, ExpressionJS, ExpressionValue, r } from "./baseExpression";
 
 export class LiteralExpression extends Expression {
-  static op = 'Literal';
+  static op = "Literal";
   static fromJS(parameters: ExpressionJS): LiteralExpression {
     const value: ExpressionValue = {
       op: parameters.op,
       type: parameters.type,
     };
-    if (!hasOwnProp(parameters, 'value')) throw new Error('literal expression must have value');
+    if (!hasOwnProp(parameters, "value")) throw new Error("literal expression must have value");
     const v: any = parameters.value;
     if (isImmutableClass(v)) {
       value.value = v;
@@ -49,9 +49,9 @@ export class LiteralExpression extends Expression {
     super(parameters, dummyObject);
     const value = parameters.value;
     this.value = value;
-    this._ensureOp('literal');
-    if (typeof this.value === 'undefined') {
-      throw new TypeError('must have a `value`');
+    this._ensureOp("literal");
+    if (typeof this.value === "undefined") {
+      throw new TypeError("must have a `value`");
     }
     this.type = getValueType(value);
     this.simple = true;
@@ -68,10 +68,10 @@ export class LiteralExpression extends Expression {
     const js = super.toJS();
     if (this.value && this.value.toJS) {
       js.value = this.value.toJS();
-      js.type = Set.isSetType(this.type) ? 'SET' : this.type;
+      js.type = Set.isSetType(this.type) ? "SET" : this.type;
     } else {
       js.value = this.value;
-      if (this.type === 'TIME') js.type = 'TIME';
+      if (this.type === "TIME") js.type = "TIME";
     }
     return js;
   }
@@ -79,8 +79,8 @@ export class LiteralExpression extends Expression {
   public toString(): string {
     const value = this.value;
     if (value instanceof Dataset && value.basis()) {
-      return 'ply()';
-    } else if (this.type === 'STRING') {
+      return "ply()";
+    } else if (this.type === "STRING") {
       return JSON.stringify(value);
     } else {
       return String(value);
@@ -105,47 +105,47 @@ export class LiteralExpression extends Expression {
     if (value === null) return dialect.nullConstant();
 
     switch (this.type) {
-      case 'STRING':
+      case "STRING":
         return dialect.escapeLiteral(value);
 
-      case 'IP':
+      case "IP":
         return dialect.ipToSQL(value);
 
-      case 'BOOLEAN':
+      case "BOOLEAN":
         return dialect.booleanToSQL(value);
 
-      case 'NUMBER':
+      case "NUMBER":
         return dialect.numberToSQL(value);
 
-      case 'NUMBER_RANGE':
+      case "NUMBER_RANGE":
         return `${dialect.numberToSQL(value.start)}`;
 
-      case 'TIME':
+      case "TIME":
         return dialect.timeToSQL(<Date>value);
 
-      case 'TIME_RANGE':
+      case "TIME_RANGE":
         return `${dialect.timeToSQL(value.start)}`;
 
-      case 'STRING_RANGE':
+      case "STRING_RANGE":
         return dialect.escapeLiteral(value.start);
 
-      case 'SET/IP':
-      case 'SET/STRING':
-      case 'SET/NULL':
-      case 'SET/NUMBER':
-      case 'SET/NUMBER_RANGE':
-      case 'SET/TIME_RANGE':
-      case 'SET/BOOLEAN':
-        return '<DUMMY>';
+      case "SET/IP":
+      case "SET/STRING":
+      case "SET/NULL":
+      case "SET/NUMBER":
+      case "SET/NUMBER_RANGE":
+      case "SET/TIME_RANGE":
+      case "SET/BOOLEAN":
+        return "<DUMMY>";
 
       default:
-        throw new Error('currently unsupported type: ' + this.type);
+        throw new Error("currently unsupported type: " + this.type);
     }
   }
 
   public equals(other: LiteralExpression | undefined): boolean {
     if (!super.equals(other) || this.type !== other.type) return false;
-    if (this.value && this.type !== 'DATASET') {
+    if (this.value && this.type !== "DATASET") {
       // ToDo: make dataset equals work
       if (this.value.equals) {
         return this.value.equals(other.value);
@@ -182,11 +182,11 @@ export class LiteralExpression extends Expression {
     const { type, value } = this;
     if (type === targetType) return this;
 
-    if (type === 'STRING' && targetType === 'TIME') {
+    if (type === "STRING" && targetType === "TIME") {
       const parse = parseISODate(value, Expression.defaultParserTimezone);
       if (!parse) throw new Error(`can not upgrade ${value} to TIME`);
       return r(parse);
-    } else if (type === 'STRING_RANGE' && targetType === 'TIME_RANGE') {
+    } else if (type === "STRING_RANGE" && targetType === "TIME_RANGE") {
       const parseStart = parseISODate(value.start, Expression.defaultParserTimezone);
       if (!parseStart) throw new Error(`can not upgrade ${value.start} to TIME`);
 
@@ -197,7 +197,7 @@ export class LiteralExpression extends Expression {
         TimeRange.fromJS({
           start: parseStart,
           end: parseEnd,
-          bounds: '[]',
+          bounds: "[]",
         }),
       );
     }
@@ -211,7 +211,7 @@ Expression.ZERO = new LiteralExpression({ value: 0 });
 Expression.ONE = new LiteralExpression({ value: 1 });
 Expression.FALSE = new LiteralExpression({ value: false });
 Expression.TRUE = new LiteralExpression({ value: true });
-Expression.EMPTY_STRING = new LiteralExpression({ value: '' });
+Expression.EMPTY_STRING = new LiteralExpression({ value: "" });
 Expression.EMPTY_SET = new LiteralExpression({ value: Set.fromJS([]) });
 
 Expression.register(LiteralExpression);

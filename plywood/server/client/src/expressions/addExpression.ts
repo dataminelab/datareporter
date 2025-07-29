@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
+} from "./baseExpression";
 
 export class AddExpression extends ChainableUnaryExpression {
-  static op = 'Add';
+  static op = "Add";
   static fromJS(parameters: ExpressionJS): AddExpression {
     return new AddExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('add');
-    this._checkOperandTypes('NUMBER');
-    this._checkExpressionTypes('NUMBER');
-    this.type = 'NUMBER';
+    this._ensureOp("add");
+    this._checkOperandTypes("NUMBER");
+    this._checkExpressionTypes("NUMBER");
+    this.type = "NUMBER";
   }
 
   protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {

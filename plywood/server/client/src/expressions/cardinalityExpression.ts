@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export class CardinalityExpression extends ChainableExpression {
-  static op = 'Cardinality';
+  static op = "Cardinality";
   static fromJS(parameters: ExpressionJS): CardinalityExpression {
     return new CardinalityExpression(ChainableExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('cardinality');
+    this._ensureOp("cardinality");
     this._checkOperandTypes(
-      'BOOLEAN',
-      'STRING',
-      'STRING_RANGE',
-      'NUMBER',
-      'NUMBER_RANGE',
-      'TIME',
-      'TIME_RANGE',
+      "BOOLEAN",
+      "STRING",
+      "STRING_RANGE",
+      "NUMBER",
+      "NUMBER_RANGE",
+      "TIME",
+      "TIME_RANGE",
     );
-    this.type = 'NUMBER';
+    this.type = "NUMBER";
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {

@@ -16,7 +16,10 @@
 
 import { Equalable } from "immutable-class";
 
-export default function immutableArrayEquals(xs: Equalable[], ys: Equalable[]): boolean {
+export default function immutableArrayEquals(
+  xs: Equalable[],
+  ys: Equalable[],
+): boolean {
   if (!Array.isArray(xs) || !Array.isArray(ys)) {
     return xs === ys;
   }

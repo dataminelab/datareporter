@@ -51,7 +51,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: parameters.x,
       y: parameters.y,
       width: parameters.width,
-      height: parameters.height
+      height: parameters.height,
     });
   }
 
@@ -60,7 +60,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: rect.left,
       y: rect.top,
       width: rect.width,
-      height: rect.height
+      height: rect.height,
     });
   }
 
@@ -69,7 +69,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: 0,
       y: 0,
       width,
-      height
+      height,
     });
   }
 
@@ -90,7 +90,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: this.x,
       y: this.y,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   }
 
@@ -99,7 +99,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: this.x,
       y: this.y,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   }
 
@@ -112,7 +112,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       x: 0,
       y: 0,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   }
 
@@ -121,11 +121,13 @@ export class Stage implements Instance<StageValue, StageJS> {
   }
 
   public equals(other: Stage): boolean {
-    return Stage.isStage(other) &&
+    return (
+      Stage.isStage(other) &&
       this.x === other.x &&
       this.y === other.y &&
       this.width === other.width &&
-      this.height === other.height;
+      this.height === other.height
+    );
   }
 
   public getTransform(): string {
@@ -139,14 +141,17 @@ export class Stage implements Instance<StageValue, StageJS> {
   public getLeftTop(): React.CSSProperties {
     return {
       left: this.x,
-      top: this.y
+      top: this.y,
     };
   }
 
-  public getWidthHeight(widthOffset = 0, heightOffset = 0): React.CSSProperties {
+  public getWidthHeight(
+    widthOffset = 0,
+    heightOffset = 0,
+  ): React.CSSProperties {
     return {
       width: this.width + widthOffset,
-      height: this.height + this.y + heightOffset
+      height: this.height + this.y + heightOffset,
     };
   }
 
@@ -155,7 +160,7 @@ export class Stage implements Instance<StageValue, StageJS> {
       left: this.x,
       top: this.y,
       width: this.width,
-      height: this.height
+      height: this.height,
     };
   }
 

@@ -19,7 +19,10 @@ import { Expression } from "reporter-plywood";
 
 type FilterExpression = Expression;
 
-export enum TimeShiftEnvType { CURRENT, WITH_PREVIOUS }
+export enum TimeShiftEnvType {
+  CURRENT,
+  WITH_PREVIOUS,
+}
 
 interface TimeShiftEnvBase {
   type: TimeShiftEnvType;

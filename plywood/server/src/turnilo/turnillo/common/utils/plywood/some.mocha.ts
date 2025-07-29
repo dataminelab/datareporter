@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { expect } from "chai";
-import { $, CountDistinctExpression, Expression, RefExpression } from "reporter-plywood";
+import {
+  $,
+  CountDistinctExpression,
+  Expression,
+  RefExpression,
+} from "reporter-plywood";
 import some from "./some";
 
 const isRefExp = (e: Expression) => e instanceof RefExpression;
@@ -29,7 +34,8 @@ describe("Plywood Expression.some", () => {
   });
 
   it("should return false when nothing satisfies predicate", () => {
-    const isCountDistinct = (e: Expression) => e instanceof CountDistinctExpression;
+    const isCountDistinct = (e: Expression) =>
+      e instanceof CountDistinctExpression;
     expect(some($("main").multiply(2), isCountDistinct)).to.be.false;
   });
 });

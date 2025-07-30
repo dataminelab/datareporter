@@ -58,9 +58,7 @@ function stopServer() {
 }
 
 function runCypressCI() {
-  const {
-    CYPRESS_RECORD_KEY
-  } = process.env;
+  const { CYPRESS_RECORD_KEY } = process.env;
 
   if (CYPRESS_RECORD_KEY) {
     process.env.CYPRESS_OPTIONS = "--record";

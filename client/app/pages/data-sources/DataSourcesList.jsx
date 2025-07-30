@@ -81,8 +81,8 @@ class DataSourcesList extends React.Component {
                 navigateTo("data_sources", true);
               }
             }
-          }
-        )
+          },
+        ),
       )
       .catch(error => this.props.onError(error));
   }
@@ -129,9 +129,9 @@ class DataSourcesList extends React.Component {
 
   render() {
     const newDataSourceProps = {
-      type: "primary",
-      onClick: policy.isCreateDataSourceEnabled() ? this.showCreateSourceDialog : null,
-      disabled: !policy.isCreateDataSourceEnabled(),
+      "type": "primary",
+      "onClick": policy.isCreateDataSourceEnabled() ? this.showCreateSourceDialog : null,
+      "disabled": !policy.isCreateDataSourceEnabled(),
       "data-test": "CreateDataSourceButton",
     };
 
@@ -166,7 +166,7 @@ const DataSourcesListPage = wrapSettingsTab(
     path: "data_sources",
     order: 1,
   },
-  DataSourcesList
+  DataSourcesList,
 );
 
 routes.register(
@@ -175,7 +175,7 @@ routes.register(
     path: "/data_sources",
     title: "Data Sources",
     render: pageProps => <DataSourcesListPage {...pageProps} />,
-  })
+  }),
 );
 routes.register(
   "DataSources.New",
@@ -183,5 +183,5 @@ routes.register(
     path: "/data_sources/new",
     title: "Data Sources",
     render: pageProps => <DataSourcesListPage {...pageProps} isNewDataSourcePage />,
-  })
+  }),
 );

@@ -19,7 +19,7 @@ class SaveReportConflictError extends SaveReportError {
       <React.Fragment>
         <div className="m-b-5">It seems like the report has been modified by another user.</div>
         <div>Please copy/backup your changes and reload this page.</div>
-      </React.Fragment>
+      </React.Fragment>,
     );
   }
 }
@@ -135,12 +135,12 @@ export default function useUpdateReport(report, onChange) {
               // update all fields; otherwise pick only changed fields
               updatedReport.id !== report.id
                 ? updatedReport
-                : pick(updatedReport, uniq(["id", "version", ...keys(data)]))
-            )
+                : pick(updatedReport, uniq(["id", "version", ...keys(data)])),
+            ),
           );
         })
         .catch(error => showNotification(error));
     },
-    [report, handleChange]
+    [report, handleChange],
   );
 }

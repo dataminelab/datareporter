@@ -69,7 +69,7 @@ function OrganizationSettings({ onError }) {
           .finally(() => setIsSaving(false));
       }
     },
-    [isSaving, currentValues, handleError]
+    [isSaving, currentValues, handleError],
   );
 
   return (
@@ -109,7 +109,7 @@ const OrganizationSettingsPage = wrapSettingsTab(
     path: "settings/general",
     order: 7,
   },
-  OrganizationSettings
+  OrganizationSettings,
 );
 
 routes.register(
@@ -118,5 +118,5 @@ routes.register(
     path: "/settings/general",
     title: "General Settings",
     render: pageProps => <OrganizationSettingsPage {...pageProps} />,
-  })
+  }),
 );

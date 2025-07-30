@@ -20,7 +20,7 @@ export default function AuthSettings(props) {
       }
       onChange(changes);
     },
-    [values, onChange]
+    [values, onChange],
   );
 
   return (

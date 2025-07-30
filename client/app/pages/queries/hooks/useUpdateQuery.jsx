@@ -20,7 +20,7 @@ class SaveQueryConflictError extends SaveQueryError {
       <React.Fragment>
         <div className="m-b-5">It seems like the query has been modified by another user.</div>
         <div>Please copy/backup your changes and reload this page.</div>
-      </React.Fragment>
+      </React.Fragment>,
     );
   }
 }
@@ -109,8 +109,8 @@ export default function useUpdateQuery(query, onChange) {
               query.clone(),
               // if server returned completely new object (currently possible only when saving new query) -
               // update all fields; otherwise pick only changed fields
-              updatedQuery.id !== query.id ? updatedQuery : pick(updatedQuery, uniq(["id", "version", ...keys(data)]))
-            )
+              updatedQuery.id !== query.id ? updatedQuery : pick(updatedQuery, uniq(["id", "version", ...keys(data)])),
+            ),
           );
         })
         .catch(error => {
@@ -121,6 +121,6 @@ export default function useUpdateQuery(query, onChange) {
           notification.error(error.message, error.detailedMessage, notificationOptions);
         });
     },
-    [query, handleChange]
+    [query, handleChange],
   );
 }

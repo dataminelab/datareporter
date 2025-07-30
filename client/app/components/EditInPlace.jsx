@@ -74,8 +74,7 @@ export default class EditInPlace extends React.Component {
         role="presentation"
         onFocus={this.startEditing}
         onClick={this.startEditing}
-        className={this.props.isEditable ? "editable" : ""}
-      >
+        className={this.props.isEditable ? "editable" : ""}>
         {this.props.value}
         <SvgIcon className="svg" svg={require("@/components/TurniloComponent/client/icons/full-edit.svg")} />
       </span>

@@ -28,8 +28,7 @@ export default function ReportControlDropdown(props) {
         <Menu.Item>
           <PlainButton
             onClick={() => props.showEmbedDialog(props.query, props.selectedTab)}
-            data-test="ShowEmbedDialogButton"
-          >
+            data-test="ShowEmbedDialogButton">
             <ShareAltOutlinedIcon /> Embed Elsewhere
           </PlainButton>
         </Menu.Item>
@@ -41,8 +40,7 @@ export default function ReportControlDropdown(props) {
           report={props.report}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}
-        >
+          apiKey={props.apiKey}>
           <FileOutlinedIcon /> Download as CSV File
         </ReportResultsLink>
       </Menu.Item>
@@ -53,8 +51,7 @@ export default function ReportControlDropdown(props) {
           report={props.report}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}
-        >
+          apiKey={props.apiKey}>
           <FileOutlinedIcon /> Download as TSV File
         </ReportResultsLink>
       </Menu.Item>
@@ -65,8 +62,7 @@ export default function ReportControlDropdown(props) {
           report={props.report}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}
-        >
+          apiKey={props.apiKey}>
           <FileExcelOutlinedIcon /> Download as Excel File
         </ReportResultsLink>
       </Menu.Item>

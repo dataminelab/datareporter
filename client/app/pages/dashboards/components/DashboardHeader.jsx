@@ -96,8 +96,7 @@ function RefreshButton({ dashboardConfiguration }) {
             ))}
             {refreshRate && <Menu.Item key={null}>Disable auto refresh</Menu.Item>}
           </Menu>
-        }
-      >
+        }>
         <Button className="icon-button hidden-xs" type={buttonType(refreshRate)}>
           <i className="fa fa-angle-down" aria-hidden="true" />
           <span className="sr-only">Split button!</span>
@@ -167,8 +166,7 @@ function DashboardMoreOptionsButton({ dashboardConfiguration }) {
             <PlainButton onClick={archive}>Archive</PlainButton>
           </Menu.Item>
         </Menu>
-      }
-    >
+      }>
       <Button className="icon-button m-l-5" data-test="DashboardMoreButton" aria-label="More actions">
         <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
       </Button>
@@ -218,8 +216,7 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                 type={buttonType(fullscreen)}
                 className="icon-button m-l-5"
                 onClick={toggleFullscreen}
-                aria-label="Toggle fullscreen display"
-              >
+                aria-label="Toggle fullscreen display">
                 <i className="zmdi zmdi-fullscreen" aria-hidden="true" />
               </Button>
             </Tooltip>
@@ -232,8 +229,7 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                 type={buttonType(dashboard.publicAccessEnabled)}
                 onClick={showShareDashboardDialog}
                 data-test="OpenShareForm"
-                aria-label="Share"
-              >
+                aria-label="Share">
                 <i className="zmdi zmdi-share" aria-hidden="true" />
               </Button>
             </Tooltip>

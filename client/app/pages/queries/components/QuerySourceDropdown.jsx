@@ -17,8 +17,7 @@ export function QuerySourceDropdown(props) {
       loading={props.loading}
       optionFilterProp="data-name"
       showSearch
-      onChange={props.onChange}
-    >
+      onChange={props.onChange}>
       {map(props.dataSources, ds => (
         <Select.Option key={`ds-${ds.id}`} value={ds.id} data-name={ds.name} data-test={`SelectDataSource${ds.id}`}>
           <DynamicComponent name={"QuerySourceDropdownItem"} dataSource={ds} />

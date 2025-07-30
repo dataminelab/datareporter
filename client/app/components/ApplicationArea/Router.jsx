@@ -132,7 +132,7 @@ Router.propTypes = {
       // - after previous step, if value is a promise - router will wait for it to resolve; resolved value then will be used;
       //   otherwise value will be used directly.
       resolve: PropTypes.objectOf(PropTypes.any),
-    })
+    }),
   ),
   onRouteChange: PropTypes.func,
 };

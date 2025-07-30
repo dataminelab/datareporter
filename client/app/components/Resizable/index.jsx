@@ -71,7 +71,7 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         }}
       />
     ),
-    [direction, toggle]
+    [direction, toggle],
   );
 
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         }
       },
     }),
-    [sizeProp, getElementSize, sizeAttribute]
+    [sizeProp, getElementSize, sizeAttribute],
   );
 
   const draggableCoreOptions = useMemo(
@@ -125,7 +125,7 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         setSize(getElementSize());
       },
     }),
-    [getElementSize]
+    [getElementSize],
   );
 
   if (!children) {
@@ -144,8 +144,7 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
       height={direction === "vertical" ? size : 0}
       minConstraints={[0, 0]}
       {...resizeEventHandlers}
-      draggableOpts={draggableCoreOptions}
-    >
+      draggableOpts={draggableCoreOptions}>
       {children}
     </ReactResizable>
   );

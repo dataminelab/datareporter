@@ -37,7 +37,7 @@ class GroupsList extends React.Component {
       {
         field: "name",
         width: null,
-      }
+      },
     ),
     Columns.custom(
       (text, group) => (
@@ -49,7 +49,7 @@ class GroupsList extends React.Component {
       {
         width: "1%",
         className: "text-nowrap",
-      }
+      },
     ),
     Columns.custom(
       (text, group) => {
@@ -60,8 +60,7 @@ class GroupsList extends React.Component {
             disabled={!canRemove}
             group={group}
             title={canRemove ? null : "Cannot delete built-in group"}
-            onClick={() => this.onGroupDeleted()}
-          >
+            onClick={() => this.onGroupDeleted()}>
             Delete
           </DeleteGroupButton>
         );
@@ -70,13 +69,13 @@ class GroupsList extends React.Component {
         width: "1%",
         className: "text-nowrap p-l-0",
         isAvailable: () => currentUser.isAdmin,
-      }
+      },
     ),
   ];
 
   createGroup = () => {
     CreateGroupDialog.showModal().onClose(group =>
-      Group.create(group).then(newGroup => navigateTo(`groups/${newGroup.id}`))
+      Group.create(group).then(newGroup => navigateTo(`groups/${newGroup.id}`)),
     );
   };
 
@@ -147,8 +146,8 @@ const GroupsListPage = wrapSettingsTab(
           return Group.query.bind(Group);
         },
       }),
-    () => new StateStorage({ orderByField: "name", itemsPerPage: 10 })
-  )
+    () => new StateStorage({ orderByField: "name", itemsPerPage: 10 }),
+  ),
 );
 
 routes.register(
@@ -157,5 +156,5 @@ routes.register(
     path: "/groups",
     title: "Groups",
     render: pageProps => <GroupsListPage {...pageProps} currentPage="groups" />,
-  })
+  }),
 );

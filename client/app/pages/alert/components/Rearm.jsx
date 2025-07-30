@@ -90,8 +90,7 @@ function RearmEditor({ value, onChange }) {
         optionLabelProp="label"
         defaultValue={selected || 0}
         dropdownMatchSelectWidth={false}
-        onChange={_onChange}
-      >
+        onChange={_onChange}>
         <Select.Option value={0} label="Just once">
           Just once <em>until back to normal</em>
         </Select.Option>

@@ -143,12 +143,10 @@ function EditParameterSettingsDialog(props) {
           disabled={!isFulfilled()}
           type="primary"
           form={paramFormId}
-          data-test="SaveParameterSettings"
-        >
+          data-test="SaveParameterSettings">
           {isNew ? "Add Parameter" : "OK"}
         </Button>,
-      ]}
-    >
+      ]}>
       <Form layout="horizontal" onFinish={onConfirm} id={paramFormId}>
         {isNew && (
           <NameInput
@@ -201,8 +199,7 @@ function EditParameterSettingsDialog(props) {
           <Form.Item
             label="Regex"
             help={!isValidRegex ? "Invalid Regex Pattern" : "Valid Regex Pattern"}
-            {...formItemProps}
-          >
+            {...formItemProps}>
             <Input
               value={userInput}
               onChange={handleRegexChange}
@@ -245,8 +242,7 @@ function EditParameterSettingsDialog(props) {
                     : null,
                 })
               }
-              data-test="AllowMultipleValuesCheckbox"
-            >
+              data-test="AllowMultipleValuesCheckbox">
               Allow multiple values
             </Checkbox>
           </Form.Item>
@@ -259,8 +255,7 @@ function EditParameterSettingsDialog(props) {
                 Placed in query as: <code>{joinExampleList(param.multiValuesOptions)}</code>
               </React.Fragment>
             }
-            {...formItemProps}
-          >
+            {...formItemProps}>
             <Select
               value={param.multiValuesOptions.prefix}
               onChange={quoteOption =>
@@ -273,8 +268,7 @@ function EditParameterSettingsDialog(props) {
                   },
                 })
               }
-              data-test="QuotationSelect"
-            >
+              data-test="QuotationSelect">
               <Option value="">None (default)</Option>
               <Option value="'">Single Quotation Mark</Option>
               <Option value={'"'} data-test="DoubleQuotationMarkOption">

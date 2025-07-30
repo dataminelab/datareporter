@@ -35,15 +35,13 @@ function CreateUserDialog({ dialog }) {
           htmlType="submit"
           type="primary"
           form={formId}
-          data-test="SaveUserButton"
-        >
+          data-test="SaveUserButton">
           Create
         </Button>,
       ]}
       wrapProps={{
         "data-test": "CreateUserDialog",
-      }}
-    >
+      }}>
       <DynamicForm id={formId} fields={formFields} onSubmit={handleSubmit} hideSubmitButton />
       {error && <Alert message={error.message} type="error" showIcon data-test="CreateUserErrorAlert" />}
     </Modal>

@@ -21,7 +21,7 @@ export const Columns = {
         width: "1%",
         render: (text, item) => <FavoritesControl item={item} />,
       },
-      overrides
+      overrides,
     );
   },
   avatar(overrides, formatTitle) {
@@ -38,7 +38,7 @@ export const Columns = {
           />
         ),
       },
-      overrides
+      overrides,
     );
   },
   date(overrides) {
@@ -46,7 +46,7 @@ export const Columns = {
       {
         render: text => formatDate(text),
       },
-      overrides
+      overrides,
     );
   },
   dateTime(overrides) {
@@ -54,7 +54,7 @@ export const Columns = {
       {
         render: text => formatDateTime(text),
       },
-      overrides
+      overrides,
     );
   },
   duration(overrides) {
@@ -64,7 +64,7 @@ export const Columns = {
         className: "text-nowrap",
         render: text => durationHumanize(text),
       },
-      overrides
+      overrides,
     );
   },
   timeAgo(overrides, timeAgoCustomProps = undefined) {
@@ -72,7 +72,7 @@ export const Columns = {
       {
         render: value => <TimeAgo date={value} {...timeAgoCustomProps} />,
       },
-      overrides
+      overrides,
     );
   },
   custom(render, overrides) {
@@ -80,7 +80,7 @@ export const Columns = {
       {
         render,
       },
-      overrides
+      overrides,
     );
   },
 };
@@ -93,26 +93,26 @@ Columns.custom.sortable = sortable;
 
 export default class ItemsTable extends React.Component {
   static propTypes = {
-    loading: PropTypes.bool,
+    "loading": PropTypes.bool,
     // eslint-disable-next-line react/forbid-prop-types
-    items: PropTypes.arrayOf(PropTypes.object),
-    columns: PropTypes.arrayOf(
+    "items": PropTypes.arrayOf(PropTypes.object),
+    "columns": PropTypes.arrayOf(
       PropTypes.shape({
         field: PropTypes.string, // data field
         orderByField: PropTypes.string, // field to order by (defaults to `field`)
         render: PropTypes.func, // (prop, item) => text | node; `prop` is `item[field]`
         isAvailable: PropTypes.func, // return `true` to show column and `false` to hide; if omitted: show column
-      })
+      }),
     ),
-    showHeader: PropTypes.bool,
-    onRowClick: PropTypes.func, // (event, item) => void
+    "showHeader": PropTypes.bool,
+    "onRowClick": PropTypes.func, // (event, item) => void
 
-    orderByField: PropTypes.string,
-    orderByReverse: PropTypes.bool,
-    toggleSorting: PropTypes.func,
-    setSorting: PropTypes.func,
+    "orderByField": PropTypes.string,
+    "orderByReverse": PropTypes.bool,
+    "toggleSorting": PropTypes.func,
+    "setSorting": PropTypes.func,
     "data-test": PropTypes.string,
-    rowKey: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    "rowKey": PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   };
 
   static defaultProps = {
@@ -134,7 +134,7 @@ export default class ItemsTable extends React.Component {
     return map(
       map(
         filter(this.props.columns, column => (isFunction(column.isAvailable) ? column.isAvailable() : true)),
-        column => extend(column, { orderByField: column.orderByField || column.field })
+        column => extend(column, { orderByField: column.orderByField || column.field }),
       ),
       (column, index) => {
         // Wrap render function to pass correct arguments
@@ -146,7 +146,7 @@ export default class ItemsTable extends React.Component {
           defaultSortOrder: column.orderByField === orderByField ? orderByDirection : null,
           render,
         });
-      }
+      },
     );
   }
 

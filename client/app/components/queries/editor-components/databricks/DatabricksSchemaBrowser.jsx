@@ -40,7 +40,7 @@ export default function DatabricksSchemaBrowser({
   const [handleFilterChange] = useDebouncedCallback(setFilterString, 500);
   const [handleDatabaseFilterChange, cancelHandleDatabaseFilterChange] = useDebouncedCallback(
     setDatabaseFilterString,
-    500
+    500,
   );
 
   const handleDatabaseSelection = useCallback(
@@ -49,12 +49,12 @@ export default function DatabricksSchemaBrowser({
       cancelHandleDatabaseFilterChange();
       setDatabaseFilterString("");
     },
-    [cancelHandleDatabaseFilterChange, setCurrentDatabase]
+    [cancelHandleDatabaseFilterChange, setCurrentDatabase],
   );
 
   const filteredDatabases = useMemo(
     () => filter(databases, database => includes(database.toLowerCase(), databaseFilterString.toLowerCase())),
-    [databases, databaseFilterString]
+    [databases, databaseFilterString],
   );
 
   const handleSchemaUpdate = useImmutableCallback(onSchemaUpdate);
@@ -101,8 +101,7 @@ export default function DatabricksSchemaBrowser({
                 <>
                   <i className="fa fa-database m-r-5" aria-hidden="true" /> Database
                 </>
-              }
-            >
+              }>
               {filteredDatabases.map(database => (
                 <Select.Option key={database}>
                   <i className="fa fa-database m-r-5" aria-hidden="true" />

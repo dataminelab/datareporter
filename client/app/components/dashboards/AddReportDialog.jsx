@@ -39,7 +39,7 @@ function VisualizationSelect({ report, visualization, onChange }) {
       const selectedVisualization = report ? find(PREDEFINED_GROUPS, { id: visualizationId }) : null;
       onChange(selectedVisualization || null);
     },
-    [report, onChange]
+    [report, onChange],
   );
 
   if (!report) {
@@ -54,8 +54,7 @@ function VisualizationSelect({ report, visualization, onChange }) {
           id="choose-visualization"
           className="w-100"
           value={visualization ? visualization.id : undefined}
-          onChange={handleChange}
-        >
+          onChange={handleChange}>
           {map(visualizationGroups, (visualizations, groupKey) => (
             <Select.OptGroup key={groupKey} label={groupKey}>
               {map(visualizations, visualization => (
@@ -127,12 +126,7 @@ function AddReportDialog({ dialog }) {
       .catch(() => {
         notification.error("Report Widget could not be added");
       });
-  }, [
-    dialog,
-    parameterMappings,
-    selectedReport,
-    selectedVisualization,
-  ]);
+  }, [dialog, parameterMappings, selectedReport, selectedVisualization]);
 
   return (
     <Modal
@@ -144,8 +138,7 @@ function AddReportDialog({ dialog }) {
         disabled: !selectedReport || dialog.props.okButtonProps.disabled,
       }}
       okText="Add to Dashboard"
-      width={700}
-    >
+      width={700}>
       <div data-test="AddReportDialog">
         <ReportSelector onChange={report => selectReport(report ? report.id : null)} />
 

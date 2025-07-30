@@ -24,7 +24,7 @@ class DynamicDatePicker extends React.Component {
           name: PropTypes.string,
           value: PropTypes.object,
           label: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-        })
+        }),
       ),
     }),
     dateOptions: PropTypes.any, // eslint-disable-line react/forbid-prop-types

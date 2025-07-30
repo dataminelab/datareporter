@@ -60,7 +60,7 @@ class Jobs extends React.Component {
         started: c.started + q.started,
         queued: c.queued + q.queued,
       }),
-      { started: 0, queued: 0 }
+      { started: 0, queued: 0 },
     );
 
     const startedJobs = flatMap(values(queues), queue =>
@@ -68,7 +68,7 @@ class Jobs extends React.Component {
         ...job,
         enqueued_at: moment.utc(job.enqueued_at),
         started_at: moment.utc(job.started_at),
-      }))
+      })),
     );
 
     this.setState({ isLoading: false, queueCounters, startedJobs, overallCounters, workers });
@@ -134,5 +134,5 @@ routes.register(
     path: "/admin/queries/jobs",
     title: "RQ Status",
     render: pageProps => <Jobs {...pageProps} />,
-  })
+  }),
 );

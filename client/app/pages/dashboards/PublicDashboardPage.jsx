@@ -108,5 +108,5 @@ routes.register(
     path: "/public/dashboards/:token",
     render: pageProps => <PublicDashboardPage {...pageProps} />,
     getApiKey: currentRoute => currentRoute.routeParams.token,
-  })
+  }),
 );

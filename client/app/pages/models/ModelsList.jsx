@@ -120,7 +120,7 @@ class ModelsList extends React.Component {
       {
         width: "30%",
         isAvailable: () => policy.canCreateDataSource(),
-      }
+      },
     ),
   ];
 
@@ -130,7 +130,7 @@ class ModelsList extends React.Component {
         this.setState({
           dataSources: values[0],
           loading: false,
-        })
+        }),
       )
       .catch(error => this.props.onError(error));
   }
@@ -168,7 +168,7 @@ class ModelsList extends React.Component {
         .onClose(values =>
           this.createModel(values).then(() => {
             this.props.controller.update();
-          })
+          }),
         )
         .onDismiss(goToModelsList);
     }
@@ -266,8 +266,8 @@ const ModelsListPage = wrapSettingsTab(
           return Model.query.bind(Model);
         },
       }),
-    () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true })
-  )
+    () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
+  ),
 );
 
 routes.register(
@@ -276,7 +276,7 @@ routes.register(
     path: "/models/new",
     title: "Models",
     render: pageProps => <ModelsListPage {...pageProps} currentPage="active" isNewModelPage />,
-  })
+  }),
 );
 routes.register(
   "Models.List",
@@ -284,5 +284,5 @@ routes.register(
     path: "/models",
     title: "Models",
     render: pageProps => <ModelsListPage {...pageProps} currentPage="active" />,
-  })
+  }),
 );

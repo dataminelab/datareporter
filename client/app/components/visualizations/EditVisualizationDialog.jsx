@@ -80,7 +80,7 @@ function EditVisualizationDialog({ dialog, visualization, query, queryResult }) 
       columns: data.columns,
       rows: filterData(data.rows, filters),
     }),
-    [data, filters]
+    [data, filters],
   );
 
   const defaultState = useMemo(() => {
@@ -174,8 +174,7 @@ function EditVisualizationDialog({ dialog, visualization, query, queryResult }) 
       }}
       onOk={save}
       onCancel={dismiss}
-      wrapProps={{ "data-test": "EditVisualizationDialog" }}
-    >
+      wrapProps={{ "data-test": "EditVisualizationDialog" }}>
       <div className="edit-visualization-dialog">
         <div className="visualization-settings">
           <div className="m-b-15">
@@ -186,8 +185,7 @@ function EditVisualizationDialog({ dialog, visualization, query, queryResult }) 
               className="w-100"
               disabled={!isNew}
               value={type}
-              onChange={onTypeChanged}
-            >
+              onChange={onTypeChanged}>
               {map(availableVisualizations, vis => (
                 <Select.Option key={vis.type} data-test={"VisualizationType." + vis.type}>
                   {vis.name}

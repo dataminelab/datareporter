@@ -125,8 +125,7 @@ function DynamicFormActions({ actions, isFormDirty }) {
       type={action.type}
       disabled={isFormDirty && action.disableWhenDirty}
       loading={inProgressActions.has(action.name)}
-      onClick={() => handleAction(action)}
-    >
+      onClick={() => handleAction(action)}>
       {action.name}
     </Button>
   ));
@@ -173,17 +172,17 @@ export default function DynamicForm({
         msg => {
           setIsSubmitting(false);
           notification.error(msg);
-        }
+        },
       );
     },
-    [fields, onSubmit]
+    [fields, onSubmit],
   );
 
   const handleFinishFailed = useCallback(
     ({ errorFields }) => {
       form.scrollToField(errorFields[0].name);
     },
-    [form]
+    [form],
   );
   return (
     <Form
@@ -195,8 +194,7 @@ export default function DynamicForm({
       className="dynamic-form"
       layout="vertical"
       onFinish={handleFinish}
-      onFinishFailed={handleFinishFailed}
-    >
+      onFinishFailed={handleFinishFailed}>
       <DynamicFormFields fields={regularFields} feedbackIcons={feedbackIcons} form={form} />
       {!isEmpty(extraFields) && (
         <div className="extra-options">
@@ -204,8 +202,7 @@ export default function DynamicForm({
             type="dashed"
             block
             className="extra-options-button"
-            onClick={() => setShowExtraFields(currentShowExtraFields => !currentShowExtraFields)}
-          >
+            onClick={() => setShowExtraFields(currentShowExtraFields => !currentShowExtraFields)}>
             Additional Settings
             <i
               className={cx("fa m-l-5", { "fa-caret-up": showExtraFields, "fa-caret-down": !showExtraFields })}

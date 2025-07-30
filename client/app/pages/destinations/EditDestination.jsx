@@ -115,5 +115,5 @@ routes.register(
     path: "/destinations/:destinationId",
     title: "Alert Destinations",
     render: pageProps => <EditDestinationPage {...pageProps} />,
-  })
+  }),
 );

@@ -36,7 +36,7 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
       event.stopPropagation();
       onSelect(...args);
     },
-    [onSelect]
+    [onSelect],
   );
 
   if (!item) {
@@ -70,8 +70,7 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
                   title="Insert column name into query text"
                   mouseEnterDelay={0}
                   mouseLeaveDelay={0}
-                  placement="rightTop"
-                >
+                  placement="rightTop">
                   <PlainButton key={columnName} className="table-open-item" onClick={e => handleSelect(e, columnName)}>
                     <div>
                       {columnName} {columnType && <span className="column-type">{columnType}</span>}
@@ -180,7 +179,7 @@ export function applyFilterOnSchema(schema, filterString) {
       schema,
       item =>
         includes(item.name.toLowerCase(), nameFilter) ||
-        some(item.columns, column => includes(get(column, "name").toLowerCase(), columnFilter))
+        some(item.columns, column => includes(get(column, "name").toLowerCase(), columnFilter)),
     );
   }
 
@@ -196,7 +195,7 @@ export function applyFilterOnSchema(schema, filterString) {
         };
         return item.columns.length > 0 ? item : null;
       }
-    })
+    }),
   );
 }
 

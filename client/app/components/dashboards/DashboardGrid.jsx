@@ -102,7 +102,7 @@ const DashboardWidget = React.memo(
     prevProps.isPublic === nextProps.isPublic &&
     prevProps.isLoading === nextProps.isLoading &&
     prevProps.filters === nextProps.filters &&
-    prevProps.isEditing === nextProps.isEditing
+    prevProps.isEditing === nextProps.isEditing,
 );
 
 class DashboardGrid extends React.Component {
@@ -280,8 +280,7 @@ class DashboardGrid extends React.Component {
           layouts={this.state.layouts}
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
-          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}
-        >
+          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}>
           {widgets.map(widget => (
             <div
               key={widget.id}
@@ -290,8 +289,7 @@ class DashboardGrid extends React.Component {
               data-test={`WidgetId${widget.id}`}
               className={cx("dashboard-widget-wrapper", {
                 "widget-auto-height-enabled": this.autoHeightCtrl.exists(widget.id),
-              })}
-            >
+              })}>
               <DashboardWidget
                 dashboard={dashboard}
                 configTurnilo={this.state.configTurnilo}

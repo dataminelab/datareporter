@@ -85,7 +85,7 @@ class Alert extends React.Component {
               notification.warn(
                 "You cannot edit this alert",
                 "You do not have sufficient permissions to edit this alert, and have been redirected to the view-only page.",
-                { duration: 0 }
+                { duration: 0 },
               );
             }
 
@@ -259,7 +259,7 @@ routes.register(
     path: "/alerts/new",
     title: "New Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.NEW} />,
-  })
+  }),
 );
 routes.register(
   "Alerts.View",
@@ -267,7 +267,7 @@ routes.register(
     path: "/alerts/:alertId",
     title: "Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.VIEW} />,
-  })
+  }),
 );
 routes.register(
   "Alerts.Edit",
@@ -275,5 +275,5 @@ routes.register(
     path: "/alerts/:alertId/edit",
     title: "Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.EDIT} />,
-  })
+  }),
 );

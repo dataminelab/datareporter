@@ -12,7 +12,7 @@ export default function ReportViewButton({ title, shortcut, disabled, children, 
       onMouseEnter: () => setTooltipVisible(true),
       onMouseLeave: () => setTooltipVisible(false),
     }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -42,8 +42,7 @@ export default function ReportViewButton({ title, shortcut, disabled, children, 
           disabled={disabled}
           onClick={onClick}
           style={disabled ? { pointerEvents: "none" } : {}}
-          {...props}
-        >
+          {...props}>
           {children}
         </Button>
       </span>

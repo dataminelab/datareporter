@@ -106,7 +106,7 @@ class UsersList extends React.Component {
       {
         title: "Groups",
         field: "groups",
-      }
+      },
     ),
     Columns.timeAgo.sortable({
       title: "Joined",
@@ -132,7 +132,7 @@ class UsersList extends React.Component {
       {
         width: "1%",
         isAvailable: () => policy.canCreateUser(),
-      }
+      },
     ),
   ];
 
@@ -177,7 +177,7 @@ class UsersList extends React.Component {
           this.createUser(values).then(() => {
             this.props.controller.update();
             goToUsersList();
-          })
+          }),
         )
         .onDismiss(goToUsersList);
     }
@@ -281,8 +281,8 @@ const UsersListPage = wrapSettingsTab(
           return User.query.bind(User);
         },
       }),
-    () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true })
-  )
+    () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
+  ),
 );
 
 routes.register(
@@ -291,7 +291,7 @@ routes.register(
     path: "/users/new",
     title: "Users",
     render: pageProps => <UsersListPage {...pageProps} currentPage="active" isNewUserPage />,
-  })
+  }),
 );
 routes.register(
   "Users.List",
@@ -299,7 +299,7 @@ routes.register(
     path: "/users",
     title: "Users",
     render: pageProps => <UsersListPage {...pageProps} currentPage="active" />,
-  })
+  }),
 );
 routes.register(
   "Users.Pending",
@@ -307,7 +307,7 @@ routes.register(
     path: "/users/pending",
     title: "Pending Invitations",
     render: pageProps => <UsersListPage {...pageProps} currentPage="pending" />,
-  })
+  }),
 );
 routes.register(
   "Users.Disabled",
@@ -315,5 +315,5 @@ routes.register(
     path: "/users/disabled",
     title: "Disabled Users",
     render: pageProps => <UsersListPage {...pageProps} currentPage="disabled" />,
-  })
+  }),
 );

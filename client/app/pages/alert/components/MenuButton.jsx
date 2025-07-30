@@ -59,8 +59,7 @@ export default function MenuButton({ doDelete, canEdit, mute, unmute, evaluate, 
             <PlainButton onClick={() => execute(evaluate)}>Evaluate</PlainButton>
           </Menu.Item>
         </Menu>
-      }
-    >
+      }>
       <Button aria-label="More actions">
         {loading ? <LoadingOutlinedIcon /> : <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />}
       </Button>

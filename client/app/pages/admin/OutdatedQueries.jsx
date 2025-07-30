@@ -53,7 +53,7 @@ class OutdatedQueries extends React.Component {
         title: "Name",
         field: "name",
         width: null,
-      }
+      },
     ),
     Columns.avatar({ field: "user", className: "p-l-0 p-r-0" }, name => `Created by ${name}`),
     Columns.dateTime.sortable({ title: "Created At", field: "created_at" }),
@@ -158,7 +158,7 @@ const OutdatedQueriesPage = itemsList(
       },
       isPlainList: true,
     }),
-  () => new StateStorage({ orderByField: "created_at", orderByReverse: true })
+  () => new StateStorage({ orderByField: "created_at", orderByReverse: true }),
 );
 
 routes.register(
@@ -167,5 +167,5 @@ routes.register(
     path: "/admin/queries/outdated",
     title: "Outdated Queries",
     render: pageProps => <OutdatedQueriesPage {...pageProps} currentPage="outdated_queries" />,
-  })
+  }),
 );

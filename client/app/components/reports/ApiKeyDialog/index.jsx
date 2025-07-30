@@ -38,7 +38,7 @@ function ApiKeyDialog({ dialog, ...props }) {
       csvUrl: `${clientConfig.basePath}api/reports/${report.id}/results.csv?api_key=${report.api_key}`,
       jsonUrl: `${clientConfig.basePath}api/reports/${report.id}/results.json?api_key=${report.api_key}`,
     }),
-    [report.id, report.api_key]
+    [report.id, report.api_key],
   );
 
   const csvResultsLabelId = useUniqueId("csv-results-label");

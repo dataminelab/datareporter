@@ -19,7 +19,7 @@ function VisualizationSelect({ query, visualization, onChange }) {
       const selectedVisualization = query ? find(query.visualizations, { id: visualizationId }) : null;
       onChange(selectedVisualization || null);
     },
-    [query, onChange]
+    [query, onChange],
   );
 
   if (!query) {
@@ -34,8 +34,7 @@ function VisualizationSelect({ query, visualization, onChange }) {
           id="choose-visualization"
           className="w-100"
           value={visualization ? visualization.id : undefined}
-          onChange={handleChange}
-        >
+          onChange={handleChange}>
           {map(visualizationGroups, (visualizations, groupKey) => (
             <Select.OptGroup key={groupKey} label={groupKey}>
               {map(visualizations, visualization => (
@@ -90,7 +89,7 @@ function AddWidgetDialog({ dialog, dashboard }) {
                 value: param.normalizedValue,
                 title: "",
                 param,
-              }))
+              })),
             );
             if (query.visualizations.length > 0) {
               setSelectedVisualization(first(query.visualizations));
@@ -99,7 +98,7 @@ function AddWidgetDialog({ dialog, dashboard }) {
         });
       }
     },
-    [dashboard]
+    [dashboard],
   );
 
   const saveWidget = useCallback(() => {
@@ -120,8 +119,7 @@ function AddWidgetDialog({ dialog, dashboard }) {
         disabled: !selectedQuery || dialog.props.okButtonProps.disabled,
       }}
       okText="Add to Dashboard"
-      width={700}
-    >
+      width={700}>
       <div data-test="AddWidgetDialog">
         <QuerySelector onChange={query => selectQuery(query ? query.id : null)} />
 

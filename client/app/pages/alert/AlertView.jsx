@@ -136,8 +136,7 @@ export default class AlertView extends React.Component {
                             type="primary"
                             onClick={this.unmute}
                             loading={this.state.unmuting}
-                            className="m-t-5 m-l-5"
-                          >
+                            className="m-t-5 m-l-5">
                             Unmute
                           </Button>
                         </>

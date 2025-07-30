@@ -23,7 +23,7 @@ export function SearchInput({ placeholder, value, showIcon, onChange, label }) {
       setCurrentValue(newValue);
       onChange(newValue);
     },
-    [onChange]
+    [onChange],
   );
 
   const InputControl = showIcon ? Input.Search : Input;
@@ -92,7 +92,7 @@ Menu.propTypes = {
       title: PropTypes.string.isRequired,
       icon: PropTypes.func, // function to render icon
       isAvailable: PropTypes.func, // return `true` to show item and `false` to hide; if omitted: show item
-    })
+    }),
   ),
   selected: PropTypes.string,
 };

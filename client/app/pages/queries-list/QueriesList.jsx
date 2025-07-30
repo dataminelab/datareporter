@@ -70,7 +70,7 @@ const listColumns = [
       title: "Name",
       field: "name",
       width: null,
-    }
+    },
   ),
   Columns.custom((text, item) => item.user.name, { title: "Created By", width: "1%" }),
   Columns.dateTime.sortable({ title: "Created At", field: "created_at", width: "1%" }),
@@ -200,7 +200,7 @@ const QueriesListPage = itemsList(
         return item => new Query(item);
       },
     }),
-  () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true })
+  () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
 );
 
 routes.register(
@@ -209,7 +209,7 @@ routes.register(
     path: "/queries",
     title: "Queries",
     render: pageProps => <QueriesListPage {...pageProps} currentPage="all" />,
-  })
+  }),
 );
 routes.register(
   "Queries.Favorites",
@@ -217,7 +217,7 @@ routes.register(
     path: "/queries/favorites",
     title: "Favorite Queries",
     render: pageProps => <QueriesListPage {...pageProps} currentPage="favorites" />,
-  })
+  }),
 );
 routes.register(
   "Queries.Archived",
@@ -225,7 +225,7 @@ routes.register(
     path: "/queries/archive",
     title: "Archived Queries",
     render: pageProps => <QueriesListPage {...pageProps} currentPage="archive" />,
-  })
+  }),
 );
 routes.register(
   "Queries.My",
@@ -233,5 +233,5 @@ routes.register(
     path: "/queries/my",
     title: "My Queries",
     render: pageProps => <QueriesListPage {...pageProps} currentPage="my" />,
-  })
+  }),
 );

@@ -28,7 +28,7 @@ const DateTimeRangeInput = React.forwardRef(
         {...props}
       />
     );
-  }
+  },
 );
 
 DateTimeRangeInput.propTypes = {

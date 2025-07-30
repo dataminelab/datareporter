@@ -50,8 +50,8 @@ class DestinationsList extends React.Component {
                 navigateTo("destinations", true);
               }
             }
-          }
-        )
+          },
+        ),
       )
       .catch(error => this.props.onError(error));
   }
@@ -138,7 +138,7 @@ const DestinationsListPage = wrapSettingsTab(
     path: "destinations",
     order: 5,
   },
-  DestinationsList
+  DestinationsList,
 );
 
 routes.register(
@@ -147,7 +147,7 @@ routes.register(
     path: "/destinations",
     title: "Alert Destinations",
     render: pageProps => <DestinationsListPage {...pageProps} />,
-  })
+  }),
 );
 routes.register(
   "AlertDestinations.New",
@@ -155,5 +155,5 @@ routes.register(
     path: "/destinations/new",
     title: "Alert Destinations",
     render: pageProps => <DestinationsListPage {...pageProps} isNewDestinationPage />,
-  })
+  }),
 );

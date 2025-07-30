@@ -13,7 +13,7 @@ const editorProps = { $blockScrolling: Infinity };
 
 const ReportEditor = React.forwardRef(function (
   { className, syntax, value, autocompleteEnabled, schema, onChange, onSelectionChange, ...props },
-  ref
+  ref,
 ) {
   const [container, setContainer] = useState(null);
   const [editorRef, setEditorRef] = useState(null);
@@ -30,7 +30,7 @@ const ReportEditor = React.forwardRef(function (
       setCurrentValue(str);
       onChange(str);
     },
-    [onChange]
+    [onChange],
   );
 
   const editorOptions = useMemo(
@@ -41,7 +41,7 @@ const ReportEditor = React.forwardRef(function (
       enableLiveAutocompletion: autocompleteEnabled,
       autoScrollEditorIntoView: true,
     }),
-    [autocompleteEnabled]
+    [autocompleteEnabled],
   );
 
   useEffect(() => {
@@ -74,7 +74,7 @@ const ReportEditor = React.forwardRef(function (
       const selectedReportText = rawSelectedReportText.length > 1 ? rawSelectedReportText : null;
       onSelectionChange(selectedReportText);
     },
-    [editorRef, onSelectionChange]
+    [editorRef, onSelectionChange],
   );
 
   const initEditor = useCallback(editor => {
@@ -129,7 +129,7 @@ const ReportEditor = React.forwardRef(function (
         }
       },
     }),
-    [editorRef, onChange]
+    [editorRef, onChange],
   );
 
   return (

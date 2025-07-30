@@ -27,7 +27,7 @@ function ListItem({ item, keySuffix }) {
 export default function CardsList({ items = [], showSearch = false }) {
   const [searchText, setSearchText] = useState("");
   const filteredItems = items.filter(
-    item => isEmpty(searchText) || includes(item.title.toLowerCase(), searchText.toLowerCase())
+    item => isEmpty(searchText) || includes(item.title.toLowerCase(), searchText.toLowerCase()),
   );
 
   return (
@@ -66,7 +66,7 @@ CardsList.propTypes = {
       imgSrc: PropTypes.string.isRequired,
       onClick: PropTypes.func,
       href: PropTypes.string,
-    })
+    }),
   ),
   showSearch: PropTypes.bool,
 };

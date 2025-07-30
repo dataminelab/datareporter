@@ -93,5 +93,5 @@ routes.register(
     path: "/public/reports/:token",
     render: pageProps => <PublicReportPage {...pageProps} />,
     getApiKey: currentRoute => currentRoute.routeParams.token,
-  })
+  }),
 );

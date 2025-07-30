@@ -21,7 +21,7 @@ UserGroups.propTypes = {
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
       name: PropTypes.string,
-    })
+    }),
   ),
   linkGroups: PropTypes.bool,
 };

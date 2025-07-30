@@ -14,7 +14,7 @@ const editorProps = { $blockScrolling: Infinity };
 
 const QueryEditor = React.forwardRef(function (
   { className, syntax, value, autocompleteEnabled, schema, onChange, onSelectionChange, ...props },
-  ref
+  ref,
 ) {
   const [container, setContainer] = useState(null);
   const [editorRef, setEditorRef] = useState(null);
@@ -31,7 +31,7 @@ const QueryEditor = React.forwardRef(function (
       setCurrentValue(str);
       onChange(str);
     },
-    [onChange]
+    [onChange],
   );
 
   const editorOptions = useMemo(
@@ -42,7 +42,7 @@ const QueryEditor = React.forwardRef(function (
       enableLiveAutocompletion: autocompleteEnabled,
       autoScrollEditorIntoView: true,
     }),
-    [autocompleteEnabled]
+    [autocompleteEnabled],
   );
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const QueryEditor = React.forwardRef(function (
       const selectedQueryText = rawSelectedQueryText.length > 1 ? rawSelectedQueryText : null;
       onSelectionChange(selectedQueryText);
     },
-    [editorRef, onSelectionChange]
+    [editorRef, onSelectionChange],
   );
 
   const initEditor = useCallback(editor => {
@@ -149,7 +149,7 @@ const QueryEditor = React.forwardRef(function (
         }
       },
     }),
-    [editorRef, onChange]
+    [editorRef, onChange],
   );
 
   return (

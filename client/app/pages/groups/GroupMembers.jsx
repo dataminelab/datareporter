@@ -75,7 +75,7 @@ class GroupMembers extends React.Component {
       {
         width: "1%",
         isAvailable: () => currentUser.isAdmin,
-      }
+      },
     ),
   ];
 
@@ -204,8 +204,8 @@ const GroupMembersPage = wrapSettingsTab(
           return Group.members.bind(Group);
         },
       }),
-    () => new StateStorage({ orderByField: "name" })
-  )
+    () => new StateStorage({ orderByField: "name" }),
+  ),
 );
 
 routes.register(
@@ -214,5 +214,5 @@ routes.register(
     path: "/groups/:groupId",
     title: "Group Members",
     render: pageProps => <GroupMembersPage {...pageProps} currentPage="users" />,
-  })
+  }),
 );

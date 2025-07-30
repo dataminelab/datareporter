@@ -44,8 +44,8 @@ function createMenu(menu) {
           );
         }
         return null;
-      })
-    )
+      }),
+    ),
   );
 
   return (
@@ -56,7 +56,7 @@ function createMenu(menu) {
           const divider = result.length > 0 ? <Menu.Divider key={`divider${key}`} /> : null;
           return [...result, divider, ...items];
         },
-        []
+        [],
       )}
     </Menu>
   );
@@ -143,7 +143,7 @@ export default function QueryPageHeader({
       publishQuery,
       unpublishQuery,
       openApiKeyDialog,
-    ]
+    ],
   );
 
   return (
@@ -189,8 +189,7 @@ export default function QueryPageHeader({
               <Link.Button
                 className="m-r-5"
                 href={query.getUrl(false, selectedVisualization)}
-                data-test="QueryPageShowResultOnly"
-              >
+                data-test="QueryPageShowResultOnly">
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Results Only</span>
               </Link.Button>

@@ -74,8 +74,7 @@ function VisualizationEmbedFooter({
           queryResult={queryResults}
           apiKey={apiKey}
           disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed
-        >
+          embed>
           <FileOutlinedIcon /> Download as CSV File
         </ReportResultsLink>
       </Menu.Item>
@@ -86,8 +85,7 @@ function VisualizationEmbedFooter({
           queryResult={queryResults}
           apiKey={apiKey}
           disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed
-        >
+          embed>
           <FileOutlinedIcon /> Download as TSV File
         </ReportResultsLink>
       </Menu.Item>
@@ -98,8 +96,7 @@ function VisualizationEmbedFooter({
           queryResult={queryResults}
           apiKey={apiKey}
           disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed
-        >
+          embed>
           <FileExcelOutlinedIcon /> Download as Excel File
         </ReportResultsLink>
       </Menu.Item>
@@ -283,5 +280,5 @@ routes.register(
     path: "/embed/report/:queryId/visualization/:visualizationId",
     render: pageProps => <VisualizationEmbed {...pageProps} />,
     getApiKey: () => location.search.api_key,
-  })
+  }),
 );

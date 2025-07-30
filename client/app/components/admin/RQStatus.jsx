@@ -59,14 +59,14 @@ const workersColumns = [
         {value}
       </span>
     ),
-    { title: "State", dataIndex: "state" }
+    { title: "State", dataIndex: "state" },
   ),
 ]
   .concat(
     map(["Hostname", "PID", "Name", "Queues", "Current Job", "Successful Jobs", "Failed Jobs"], c => ({
       title: c,
       dataIndex: c.toLowerCase().replace(/\s/g, "_"),
-    }))
+    })),
   )
   .concat([
     Columns.dateTime({ title: "Birth Date", dataIndex: "birth_date" }),

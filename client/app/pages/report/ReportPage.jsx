@@ -68,5 +68,5 @@ routes.register(
     path: "/report",
     bodyClass: "report-widget",
     render: pageProps => <ReportPage {...pageProps} />,
-  })
+  }),
 );

@@ -79,7 +79,7 @@ const ModelConfigPage = wrapSettingsTab(
     order: 7,
     isHide: true,
   },
-  ModelConfig
+  ModelConfig,
 );
 
 routes.register(
@@ -88,5 +88,5 @@ routes.register(
     path: "/models/:modelId",
     title: "Model config",
     render: pageProps => <ModelConfigPage {...pageProps} />,
-  })
+  }),
 );

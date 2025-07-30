@@ -34,7 +34,7 @@ function useGrantees(url) {
         });
         return resultGrantees;
       }),
-    [url]
+    [url],
   );
 
   const addPermission = useCallback(
@@ -42,7 +42,7 @@ function useGrantees(url) {
       axios
         .post(url, { access_type: accessType, user_id: userId })
         .catch(() => notification.error("Could not grant permission to the user")),
-    [url]
+    [url],
   );
 
   const removePermission = useCallback(
@@ -50,7 +50,7 @@ function useGrantees(url) {
       axios
         .delete(url, { data: { access_type: accessType, user_id: userId } })
         .catch(() => notification.error("Could not remove permission from the user")),
-    [url]
+    [url],
   );
 
   return { loadGrantees, addPermission, removePermission };
@@ -87,9 +87,9 @@ function UserSelect({ onSelect, shouldShowUser }) {
         searchUsers(search)
           .then(setUsers)
           .finally(() => setLoadingUsers(false)),
-      DEBOUNCE_SEARCH_DURATION
+      DEBOUNCE_SEARCH_DURATION,
     ),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -117,8 +117,7 @@ function UserSelect({ onSelect, shouldShowUser }) {
       notFoundContent={null}
       value={undefined}
       getPopupContainer={trigger => trigger.parentNode}
-      onSelect={onSelect}
-    >
+      onSelect={onSelect}>
       {users.filter(shouldShowUser).map(user => (
         <Option key={user.id} value={user.id}>
           <UserPreviewCard user={user} />
@@ -148,7 +147,7 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
 
   const userHasPermission = useCallback(
     user => user.id === author.id || !!get(find(grantees, { id: user.id }), "accessType"),
-    [author.id, grantees]
+    [author.id, grantees],
   );
 
   useEffect(() => {
@@ -160,8 +159,7 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
       {...dialog.props}
       className="permissions-editor-dialog"
       title={<PermissionsEditorDialogHeader context={context} />}
-      footer={<Button onClick={dialog.dismiss}>Close</Button>}
-    >
+      footer={<Button onClick={dialog.dismiss}>Close</Button>}>
       <UserSelect
         onSelect={userId => addPermission(userId).then(loadUsersWithPermissions)}
         shouldShowUser={user => !userHasPermission(user)}
@@ -188,8 +186,7 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
                   <Tooltip title="Remove user permissions">
                     <PlainButton
                       aria-label="Remove permissions"
-                      onClick={() => removePermission(user.id).then(loadUsersWithPermissions)}
-                    >
+                      onClick={() => removePermission(user.id).then(loadUsersWithPermissions)}>
                       <i className="fa fa-remove clickable" aria-hidden="true" />
                     </PlainButton>
                   </Tooltip>

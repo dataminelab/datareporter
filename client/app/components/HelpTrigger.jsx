@@ -50,7 +50,7 @@ export const TYPES = mapValues(
     ALERTS: ["/user-guide/alerts", "Guide: Alerts"],
     REPORTS: ["/user-guide/reports", "Guide: Reports"], // TODO: DOES NOT EXISTS YET
   },
-  ([url, title]) => [DOMAIN + HELP_PATH + url, title]
+  ([url, title]) => [DOMAIN + HELP_PATH + url, title],
 );
 
 const HelpTriggerPropTypes = {
@@ -181,15 +181,13 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
                   )}
                 </>
               ) : null
-            }
-          >
+            }>
             <Link
               href={url || this.getUrl()}
               className={className}
               rel="noopener noreferrer"
               target="_blank"
-              onClick={shouldRenderAsLink ? () => {} : this.openDrawer}
-            >
+              onClick={shouldRenderAsLink ? () => {} : this.openDrawer}>
               {this.props.children}
             </Link>
           </Tooltip>
@@ -200,8 +198,7 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
             visible={this.state.visible}
             className={cx("help-drawer", drawerClassName)}
             destroyOnClose
-            width={400}
-          >
+            width={400}>
             <div className="drawer-wrapper">
               <div className="drawer-menu">
                 {url && (

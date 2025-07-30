@@ -61,8 +61,8 @@ function createMenu(menu) {
           );
         }
         return null;
-      })
-    )
+      }),
+    ),
   );
 
   return (
@@ -73,7 +73,7 @@ function createMenu(menu) {
           const divider = result.length > 0 ? <Menu.Divider key={`divider${key}`} /> : null;
           return [...result, divider, ...items];
         },
-        []
+        [],
       )}
     </Menu>
   );
@@ -172,7 +172,7 @@ export default function ReportPageHeader(props) {
       }
       handleReportChanged(true);
     },
-    [handleReportChanged, props, report]
+    [handleReportChanged, props, report],
   );
 
   const changeModelDataText = text => {
@@ -215,7 +215,7 @@ export default function ReportPageHeader(props) {
       setLoadModelsLoaded(true);
       setSelectedDataSource(data_source_id);
     },
-    [props, report, updateReport, handleReportChanged]
+    [props, report, updateReport, handleReportChanged],
   );
 
   const getModel = useCallback(modelId => {
@@ -232,7 +232,7 @@ export default function ReportPageHeader(props) {
       }
       return settings;
     },
-    [report]
+    [report],
   );
 
   const getModelDataCube = useCallback(
@@ -243,7 +243,7 @@ export default function ReportPageHeader(props) {
       const dataCubes = settings.appSettings.dataCubes;
       return dataCubes.find(m => m.name === model.table);
     },
-    [getSettings, getModel]
+    [getSettings, getModel],
   );
 
   const handleModelChange = useCallback(
@@ -280,7 +280,7 @@ export default function ReportPageHeader(props) {
         updateReport({}, { successMessage: null, errorMessage: "failed to load the model" });
       }
     },
-    [getModelDataCube, getSettings, getModel, report, selectedDataSource, updateReport, props, handleReportChanged]
+    [getModelDataCube, getSettings, getModel, report, selectedDataSource, updateReport, props, handleReportChanged],
   );
 
   const handleIdChange = useCallback(async id => {
@@ -296,7 +296,7 @@ export default function ReportPageHeader(props) {
       setNewName("Copy of " + name);
       handleReportChanged(true);
     },
-    [handleReportChanged]
+    [handleReportChanged],
   );
 
   const handleGivenModal = id => {
@@ -327,7 +327,7 @@ export default function ReportPageHeader(props) {
           color_2: colorTextHex || report.color_2,
           name: reportName,
         },
-        { successMessage: "Report updated", errorMessage: null }
+        { successMessage: "Report updated", errorMessage: null },
       );
       recordEvent("update", "report", report.id);
       setSaveButtonClicked(true);
@@ -339,7 +339,7 @@ export default function ReportPageHeader(props) {
           is_draft: false,
           name: reportName,
         },
-        { successMessage: "Report updated", errorMessage: null }
+        { successMessage: "Report updated", errorMessage: null },
       );
       recordEvent("create", "report", report.id);
     }
@@ -423,7 +423,7 @@ export default function ReportPageHeader(props) {
       publishReport,
       unpublishReport,
       openApiKeyDialog,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -445,7 +445,7 @@ export default function ReportPageHeader(props) {
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)),
         Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)),
-        false
+        false,
       );
       handleReportChanged(false); // fix this, we cant set get here save button is not working disabling and stuff
     }
@@ -541,16 +541,14 @@ export default function ReportPageHeader(props) {
           <Button
             className="ant-menu-submenu-title m-r-5"
             id="meta-button"
-            onClick={() => handleGivenModal("meta-modal")}
-          >
+            onClick={() => handleGivenModal("meta-modal")}>
             <span className="icon icon-ribbon m-r-5"></span>Meta
           </Button>
           <ul
             id="meta-modal"
             className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
             role="menu"
-            onClick={e => e.stopPropagation()}
-          >
+            onClick={e => e.stopPropagation()}>
             <div style={styles.cover} onClick={() => handleGivenModal("meta-modal")} />
             <li className="ant-menu-item modal-left" role="menuitem">
               <p id="_price" alt="0">
@@ -594,15 +592,13 @@ export default function ReportPageHeader(props) {
             loading={!dataSourcesLoaded}
             optionFilterProp="data-name"
             showSearch
-            onChange={handleDataSourceChange}
-          >
+            onChange={handleDataSourceChange}>
             {map(dataSources, ds => (
               <Select.Option
                 key={`ds-${ds.id}`}
                 value={ds.id}
                 data-name={ds.name}
-                data-test={`SelectDataSource${ds.id}`}
-              >
+                data-test={`SelectDataSource${ds.id}`}>
                 <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
                 <span>{ds.name}</span>
               </Select.Option>
@@ -620,8 +616,7 @@ export default function ReportPageHeader(props) {
             optionFilterProp="data-name"
             showSearch
             ref={modelSelectElement}
-            onChange={handleModelChange}
-          >
+            onChange={handleModelChange}>
             {map(models, m => (
               <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
                 <span>{m.name}</span>
@@ -641,8 +636,7 @@ export default function ReportPageHeader(props) {
               className="icon-button m-r-5"
               type={buttonType(report.publicAccessEnabled)}
               onClick={showShareReportDialog}
-              data-test="OpenShareForm"
-            >
+              data-test="OpenShareForm">
               <i className="zmdi zmdi-share" />
             </Button>
           </Tooltip>
@@ -661,8 +655,7 @@ export default function ReportPageHeader(props) {
                 disabled
                 className="m-r-5"
                 href={report.getUrl(false, props.selectedVisualization)}
-                data-test="ReportPageShowResultOnly"
-              >
+                data-test="ReportPageShowResultOnly">
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Results Only</span>
               </Link.Button>
@@ -681,8 +674,7 @@ export default function ReportPageHeader(props) {
               id="save-as-ul"
               className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
               role="menu"
-              onClick={e => e.stopPropagation()}
-            >
+              onClick={e => e.stopPropagation()}>
               <p className="new-name-label">name</p>
               <input className="new-name-input" type="text" value={newName} onChange={handleNewNameChange} />
               <Button className="ant-menu-item-group-title" onClick={() => saveAsReport(newName)}>

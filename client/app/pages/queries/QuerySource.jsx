@@ -127,7 +127,7 @@ function QuerySource(props) {
         updateQuery(updates, { successMessage: null }); // show message only on error
       }
     },
-    [query, setQuery, updateQuery]
+    [query, setQuery, updateQuery],
   );
 
   useEffect(() => {
@@ -137,7 +137,7 @@ function QuerySource(props) {
       const selectedDataSourceId = parseInt(localStorage.getItem("lastSelectedDataSourceId")) || null;
 
       handleDataSourceChange(
-        chooseDataSourceId([query.data_source_id, selectedDataSourceId, firstDataSourceId], dataSources)
+        chooseDataSourceId([query.data_source_id, selectedDataSourceId, firstDataSourceId], dataSources),
       );
     }
   }, [query.data_source_id, queryFlags.isNew, dataSourcesLoaded, dataSources, handleDataSourceChange]);
@@ -172,7 +172,7 @@ function QuerySource(props) {
         executeQuery();
       }
     },
-    [query, queryFlags.canExecute, areParametersDirty, isQueryExecuting, isDirty, selectedText, executeQuery]
+    [query, queryFlags.canExecute, areParametersDirty, isQueryExecuting, isDirty, selectedText, executeQuery],
   );
 
   const [isQuerySaving, setIsQuerySaving] = useState(false);
@@ -253,8 +253,7 @@ function QuerySource(props) {
           <div className="flex-fill p-relative">
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
-              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}
-            >
+              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
               <Resizable direction="vertical" sizeAttribute="flex-basis">
                 <div className="row editor">
                   <section className="query-editor-wrapper" data-test="QueryEditor">
@@ -392,8 +391,7 @@ function QuerySource(props) {
                           type="primary"
                           disabled={!queryFlags.canExecute || areParametersDirty}
                           loading={isQueryExecuting}
-                          onClick={doExecuteQuery}
-                        >
+                          onClick={doExecuteQuery}>
                           {!isQueryExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
                           Refresh Now
                         </Button>
@@ -434,7 +432,7 @@ routes.register(
     path: "/queries/new",
     render: pageProps => <QuerySourcePage {...pageProps} />,
     bodyClass: "fixed-layout",
-  })
+  }),
 );
 routes.register(
   "Queries.Edit",
@@ -442,5 +440,5 @@ routes.register(
     path: "/queries/:queryId/source",
     render: pageProps => <QuerySourcePage {...pageProps} />,
     bodyClass: "fixed-layout",
-  })
+  }),
 );

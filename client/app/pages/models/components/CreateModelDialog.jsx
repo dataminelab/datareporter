@@ -109,8 +109,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           key="cancel"
           {...dialog.props.cancelButtonProps}
           onClick={dialog.dismiss}
-          data-test="CreateModelCancelButton"
-        >
+          data-test="CreateModelCancelButton">
           Cancel
         </Button>,
         <Button
@@ -119,15 +118,13 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           htmlType="submit"
           type="primary"
           form={formId}
-          data-test="SaveUserButton"
-        >
+          data-test="SaveUserButton">
           {!model ? "Create" : "Save"}
         </Button>,
       ]}
       wrapProps={{
         "data-test": "CreateModelDialog",
-      }}
-    >
+      }}>
       <DynamicForm id={formId} fields={formFields} onSubmit={handleSubmit} hideSubmitButton feedbackIcons />
       <div ref={tablesLoadingRef} style={{ opacity: 0 }}>
         <Loader />

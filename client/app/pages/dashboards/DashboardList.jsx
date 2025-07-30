@@ -66,7 +66,7 @@ const listColumns = [
       title: "Name",
       field: "name",
       width: null,
-    }
+    },
   ),
   Columns.custom((text, item) => item.user.name, { title: "Created By", width: "1%" }),
   Columns.dateTime.sortable({
@@ -173,7 +173,7 @@ const DashboardListPage = itemsList(
         return item => new Dashboard(item);
       },
     }),
-  () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true })
+  () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
 );
 
 routes.register(
@@ -182,7 +182,7 @@ routes.register(
     path: "/dashboards",
     title: "Dashboards",
     render: pageProps => <DashboardListPage {...pageProps} currentPage="all" />,
-  })
+  }),
 );
 routes.register(
   "Dashboards.Favorites",
@@ -190,7 +190,7 @@ routes.register(
     path: "/dashboards/favorites",
     title: "Favorite Dashboards",
     render: pageProps => <DashboardListPage {...pageProps} currentPage="favorites" />,
-  })
+  }),
 );
 routes.register(
   "Dashboards.My",
@@ -198,5 +198,5 @@ routes.register(
     path: "/dashboards/my",
     title: "My Dashboards",
     render: pageProps => <DashboardListPage {...pageProps} currentPage="my" />,
-  })
+  }),
 );

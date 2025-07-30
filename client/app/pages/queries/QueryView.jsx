@@ -81,7 +81,7 @@ function QueryView(props) {
       }
       executeQuery();
     },
-    [areParametersDirty, executeQuery, isExecuting, queryFlags.canExecute]
+    [areParametersDirty, executeQuery, isExecuting, queryFlags.canExecute],
   );
 
   useEffect(() => {
@@ -97,8 +97,7 @@ function QueryView(props) {
       className={cx("query-page-wrapper", {
         "query-view-fullscreen": fullscreen,
         "query-fixed-layout": isFixedLayout,
-      })}
-    >
+      })}>
       <div className="container w-100">
         <QueryPageHeader
           query={query}
@@ -113,8 +112,7 @@ function QueryView(props) {
                   type="primary"
                   shortcut="mod+enter, alt+enter, ctrl+enter"
                   disabled={!queryFlags.canExecute || isExecuting || areParametersDirty}
-                  onClick={doExecuteQuery}
-                >
+                  onClick={doExecuteQuery}>
                   Refresh
                 </QueryViewButton>
               )}
@@ -179,8 +177,7 @@ function QueryView(props) {
                     type="primary"
                     disabled={!queryFlags.canExecute || areParametersDirty}
                     loading={isExecuting}
-                    onClick={doExecuteQuery}
-                  >
+                    onClick={doExecuteQuery}>
                     {!isExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
                     Refresh Now
                   </Button>
@@ -204,8 +201,7 @@ function QueryView(props) {
                     title="Toggle Fullscreen"
                     type="default"
                     shortcut="alt+f"
-                    onClick={toggleFullscreen}
-                  >
+                    onClick={toggleFullscreen}>
                     {fullscreen ? <FullscreenExitOutlinedIcon /> : <FullscreenOutlinedIcon />}
                   </QueryViewButton>
                 }
@@ -241,5 +237,5 @@ routes.register(
   routeWithUserSession({
     path: "/queries/:queryId",
     render: pageProps => <QueryViewPage {...pageProps} />,
-  })
+  }),
 );

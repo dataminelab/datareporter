@@ -64,8 +64,7 @@ class GroupDataSources extends React.Component {
         const menu = (
           <Menu
             selectedKeys={[datasource.view_only ? "viewonly" : "full"]}
-            onClick={item => this.setDataSourcePermissions(datasource, item.key)}
-          >
+            onClick={item => this.setDataSourcePermissions(datasource, item.key)}>
             <Menu.Item key="full">Full Access</Menu.Item>
             <Menu.Item key="viewonly">View Only</Menu.Item>
           </Menu>
@@ -84,7 +83,7 @@ class GroupDataSources extends React.Component {
         width: "1%",
         className: "p-r-0",
         isAvailable: () => currentUser.isAdmin,
-      }
+      },
     ),
     Columns.custom(
       (text, datasource) => (
@@ -95,7 +94,7 @@ class GroupDataSources extends React.Component {
       {
         width: "1%",
         isAvailable: () => currentUser.isAdmin,
-      }
+      },
     ),
   ];
 
@@ -242,8 +241,8 @@ const GroupDataSourcesPage = wrapSettingsTab(
           return Group.dataSources.bind(Group);
         },
       }),
-    () => new StateStorage({ orderByField: "name" })
-  )
+    () => new StateStorage({ orderByField: "name" }),
+  ),
 );
 
 routes.register(
@@ -252,5 +251,5 @@ routes.register(
     path: "/groups/:groupId/data_sources",
     title: "Group Data Sources",
     render: pageProps => <GroupDataSourcesPage {...pageProps} currentPage="datasources" />,
-  })
+  }),
 );

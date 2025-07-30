@@ -43,7 +43,7 @@ class QuerySnippetsList extends React.Component {
         title: "Trigger",
         field: "trigger",
         className: "text-nowrap",
-      }
+      },
     ),
     Columns.custom.sortable(text => text, {
       title: "Description",
@@ -70,7 +70,7 @@ class QuerySnippetsList extends React.Component {
         ),
       {
         width: "1%",
-      }
+      },
     ),
   ];
 
@@ -131,7 +131,7 @@ class QuerySnippetsList extends React.Component {
         this.saveQuerySnippet(querySnippet).then(() => {
           this.props.controller.update();
           goToSnippetsList();
-        })
+        }),
       )
       .onDismiss(goToSnippetsList);
   };
@@ -145,8 +145,7 @@ class QuerySnippetsList extends React.Component {
           <Button
             type="primary"
             onClick={() => this.showSnippetDialog()}
-            disabled={!policy.isCreateQuerySnippetEnabled()}
-          >
+            disabled={!policy.isCreateQuerySnippetEnabled()}>
             <i className="fa fa-plus m-r-5" aria-hidden="true" />
             New Query Snippet
           </Button>
@@ -211,8 +210,8 @@ const QuerySnippetsListPage = wrapSettingsTab(
           return QuerySnippet.query.bind(QuerySnippet);
         },
       }),
-    () => new StateStorage({ orderByField: "trigger", itemsPerPage: 10 })
-  )
+    () => new StateStorage({ orderByField: "trigger", itemsPerPage: 10 }),
+  ),
 );
 
 routes.register(
@@ -221,7 +220,7 @@ routes.register(
     path: "/query_snippets",
     title: "Query Snippets",
     render: pageProps => <QuerySnippetsListPage {...pageProps} currentPage="query_snippets" />,
-  })
+  }),
 );
 routes.register(
   "QuerySnippets.NewOrEdit",
@@ -229,5 +228,5 @@ routes.register(
     path: "/query_snippets/:querySnippetId",
     title: "Query Snippets",
     render: pageProps => <QuerySnippetsListPage {...pageProps} currentPage="query_snippets" isNewOrEditPage />,
-  })
+  }),
 );

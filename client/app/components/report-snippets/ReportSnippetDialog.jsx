@@ -21,7 +21,7 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
         .then(() => successCallback("Saved."))
         .catch(() => errorCallback("Failed saving snippet."));
     },
-    [dialog, querySnippet]
+    [dialog, querySnippet],
   );
 
   const isEditing = !!get(querySnippet, "id");
@@ -50,16 +50,14 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
             htmlType="submit"
             type="primary"
             form={reportSnippetsFormId}
-            data-test="SaveReportSnippetButton"
-          >
+            data-test="SaveReportSnippetButton">
             {isEditing ? "Save" : "Create"}
           </Button>
         ),
       ]}
       wrapProps={{
         "data-test": "QuerySnippetDialog",
-      }}
-    >
+      }}>
       <DynamicForm
         id={reportSnippetsFormId}
         fields={formFields}

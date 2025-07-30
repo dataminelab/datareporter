@@ -68,7 +68,7 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
         Max column value is{" "}
         <code className="p-0">
           {toString(
-            Math.max(...resultValues.map(o => Number(o[alertOptions.column])).filter(value => !isNaN(value)))
+            Math.max(...resultValues.map(o => Number(o[alertOptions.column])).filter(value => !isNaN(value))),
           ) || "unknown"}
         </code>
       </small>
@@ -79,7 +79,7 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
         Min column value is{" "}
         <code className="p-0">
           {toString(
-            Math.min(...resultValues.map(o => Number(o[alertOptions.column])).filter(value => !isNaN(value)))
+            Math.min(...resultValues.map(o => Number(o[alertOptions.column])).filter(value => !isNaN(value))),
           ) || "unknown"}
         </code>
       </small>
@@ -96,8 +96,7 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
             onChange={selector => onChange({ selector })}
             optionLabelProp="label"
             dropdownMatchSelectWidth={false}
-            style={{ width: 80 }}
-          >
+            style={{ width: 80 }}>
             <Select.Option value="first" label="first">
               first
             </Select.Option>
@@ -119,8 +118,7 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
             value={alertOptions.column}
             onChange={column => onChange({ column })}
             dropdownMatchSelectWidth={false}
-            style={{ minWidth: 100 }}
-          >
+            style={{ minWidth: 100 }}>
             {columnNames.map(name => (
               <Select.Option key={name}>{name}</Select.Option>
             ))}
@@ -137,8 +135,7 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
             onChange={op => onChange({ op })}
             optionLabelProp="label"
             dropdownMatchSelectWidth={false}
-            style={{ width: 55 }}
-          >
+            style={{ width: 55 }}>
             <Select.Option value=">" label={CONDITIONS[">"]}>
               {CONDITIONS[">"]} greater than
             </Select.Option>

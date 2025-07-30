@@ -31,8 +31,7 @@ function DeprecatedEmbedFeatureAlert() {
           <Link
             href="https://discuss.redash.io/t/support-for-parameters-in-embedded-visualizations/3337"
             target="_blank"
-            rel="noopener noreferrer"
-          >
+            rel="noopener noreferrer">
             Read more
           </Link>
           .
@@ -103,5 +102,5 @@ routes.register(
     path: "/",
     title: "Data reporter",
     render: pageProps => <Home {...pageProps} />,
-  })
+  }),
 );

@@ -87,8 +87,8 @@ export function editableMappingsToParameterMappings(mappings) {
         }
         delete result.param;
         return [result.name, result];
-      }
-    )
+      },
+    ),
   );
 }
 
@@ -352,8 +352,7 @@ class MappingEditor extends React.Component {
         trigger="click"
         content={this.renderContent()}
         visible={visible}
-        onVisibleChange={this.onVisibleChange}
-      >
+        onVisibleChange={this.onVisibleChange}>
         <Button size="small" type="dashed" data-test={`EditParamMappingButton-${mapping.param.name}`}>
           <EditOutlinedIcon />
         </Button>
@@ -462,8 +461,7 @@ class TitleEditor extends React.Component {
         trigger="click"
         content={this.renderPopover()}
         visible={this.state.showPopup}
-        onVisibleChange={this.onPopupVisibleChange}
-      >
+        onVisibleChange={this.onPopupVisibleChange}>
         <Button size="small" type="dashed">
           <EditOutlinedIcon />
         </Button>

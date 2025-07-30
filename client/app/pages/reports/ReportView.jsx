@@ -82,7 +82,7 @@ function ReportView(props) {
       }
       executeReport();
     },
-    [areParametersDirty, executeReport, isExecuting, queryFlags.canExecute]
+    [areParametersDirty, executeReport, isExecuting, queryFlags.canExecute],
   );
 
   useEffect(() => {
@@ -98,8 +98,7 @@ function ReportView(props) {
       className={cx("report-page-wrapper", {
         "report-view-fullscreen": fullscreen,
         "report-fixed-layout": isFixedLayout,
-      })}
-    >
+      })}>
       <div className="container w-100">
         <ReportPageHeader
           report={report}
@@ -116,8 +115,7 @@ function ReportView(props) {
                   type="primary"
                   shortcut="mod+enter, alt+enter, ctrl+enter"
                   disabled={!queryFlags.canExecute || isExecuting || areParametersDirty}
-                  onClick={doExecuteReport}
-                >
+                  onClick={doExecuteReport}>
                   Refresh
                 </ReportViewButton>
               )}
@@ -182,8 +180,7 @@ function ReportView(props) {
                     type="primary"
                     disabled={!queryFlags.canExecute || areParametersDirty}
                     loading={isExecuting}
-                    onClick={doExecuteReport}
-                  >
+                    onClick={doExecuteReport}>
                     {!isExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
                     Refresh Now
                   </Button>
@@ -207,8 +204,7 @@ function ReportView(props) {
                     title="Toggle Fullscreen"
                     type="default"
                     shortcut="alt+f"
-                    onClick={toggleFullscreen}
-                  >
+                    onClick={toggleFullscreen}>
                     {fullscreen ? <FullscreenExitOutlinedIcon /> : <FullscreenOutlinedIcon />}
                   </ReportViewButton>
                 }
@@ -244,5 +240,5 @@ routes.register(
   routeWithUserSession({
     path: "/reports/:reportId",
     render: pageProps => <ReportViewPage {...pageProps} />,
-  })
+  }),
 );

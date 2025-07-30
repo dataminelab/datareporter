@@ -35,7 +35,7 @@ function useNavbarActiveState() {
           "Dashboards.ViewOrEdit",
           "Dashboards.LegacyViewOrEdit",
         ],
-        currentRoute.id
+        currentRoute.id,
       ),
       queries: includes(
         [
@@ -47,13 +47,13 @@ function useNavbarActiveState() {
           "Queries.New",
           "Queries.Edit",
         ],
-        currentRoute.id
+        currentRoute.id,
       ),
       dataSources: includes(["DataSources.List"], currentRoute.id),
       alerts: includes(["Alerts.List", "Alerts.New", "Alerts.View", "Alerts.Edit"], currentRoute.id),
       reports: includes(["Reports.List", "Reports.View", "Reports.Edit", "Reports.New"], currentRoute.id),
     }),
-    [currentRoute.id]
+    [currentRoute.id],
   );
 }
 
@@ -143,8 +143,7 @@ export default function DesktopNavbar() {
                   <i className="icon-ui  icon-plus"></i>
                 </Link>
               </React.Fragment>
-            }
-          >
+            }>
             {canCreateQuery && (
               <Menu.Item key="new-query">
                 <Link href="queries/new" data-test="CreateQueryMenuItem">
@@ -186,8 +185,7 @@ export default function DesktopNavbar() {
             <span data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
               <img className="profile__image_thumb" src={currentUser.profile_image_url} alt={currentUser.name} />
             </span>
-          }
-        >
+          }>
           <Menu.Item key="profile">
             <Link href="users/me">Profile</Link>
           </Menu.Item>

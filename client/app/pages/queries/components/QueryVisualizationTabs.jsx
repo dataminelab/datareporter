@@ -52,7 +52,7 @@ function TabWithDeleteButton({ visualizationName, canDelete, onDelete, ...props 
         autoFocusButton: null,
       });
     },
-    [onDelete]
+    [onDelete],
   );
 
   return (
@@ -97,7 +97,7 @@ export default function QueryVisualizationTabs({
 }) {
   const visualizations = useMemo(
     () => (props.visualizations.length > 0 ? props.visualizations : defaultVisualizations),
-    [props.visualizations]
+    [props.visualizations],
   );
 
   const tabsProps = {};
@@ -111,8 +111,7 @@ export default function QueryVisualizationTabs({
         className="add-visualization-button"
         data-test="NewVisualization"
         type="link"
-        onClick={() => onAddVisualization()}
-      >
+        onClick={() => onAddVisualization()}>
         <i className="fa fa-plus" aria-hidden="true" />
         <span className="m-l-5 hidden-xs">Add Visualization</span>
       </Button>
@@ -134,8 +133,7 @@ export default function QueryVisualizationTabs({
       animated={false}
       tabBarGutter={0}
       onChange={activeKey => onChangeTab(+activeKey)}
-      destroyInactiveTabPane
-    >
+      destroyInactiveTabPane>
       {orderedVisualizations.map(visualization => (
         <TabPane
           key={`${visualization.id}`}
@@ -146,8 +144,7 @@ export default function QueryVisualizationTabs({
               visualizationName={visualization.name}
               onDelete={() => onDeleteVisualization(visualization.id)}
             />
-          }
-        >
+          }>
           {queryResult ? (
             <VisualizationRenderer
               visualization={visualization}

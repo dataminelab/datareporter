@@ -35,7 +35,7 @@ export default function UserInfoForm(props) {
           errorCallback(get(error, "response.data.message", "Failed saving."));
         });
     },
-    [user, handleChange]
+    [user, handleChange],
   );
 
   const formFields = useMemo(
@@ -73,9 +73,9 @@ export default function UserInfoForm(props) {
                 content: isLoadingGroups ? "Loading..." : <UserGroups data-test="Groups" groups={groups} />,
               },
         ],
-        field => ({ readOnly: user.isDisabled, required: true, ...field })
+        field => ({ readOnly: user.isDisabled, required: true, ...field }),
       ),
-    [user, groups, allGroups, isLoadingGroups]
+    [user, groups, allGroups, isLoadingGroups],
   );
 
   return (

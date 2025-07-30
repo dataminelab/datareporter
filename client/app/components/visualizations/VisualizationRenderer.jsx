@@ -66,7 +66,7 @@ export default function VisualizationRenderer(props) {
       columns: data.columns,
       rows: filterData(data.rows, filters),
     }),
-    [data, filters]
+    [data, filters],
   );
 
   const { showFilters, visualization } = props;

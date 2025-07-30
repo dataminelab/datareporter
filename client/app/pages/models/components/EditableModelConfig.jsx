@@ -274,8 +274,7 @@ export default function EditableModelConfig({ model, saveConfig }) {
                 className="query-editor-controls-button m-l-5 right"
                 onClick={handleSaveConfig.bind(this, save)}
                 type={"primary"}
-                data-test="SaveButton"
-              >
+                data-test="SaveButton">
                 <span className="fa fa-floppy-o" />
                 &nbsp;Save
               </Button>

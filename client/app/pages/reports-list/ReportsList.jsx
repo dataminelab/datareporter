@@ -69,7 +69,7 @@ const listColumns = [
       title: "Name",
       field: "name",
       width: null,
-    }
+    },
   ),
   Columns.custom((text, item) => item.user.name, { title: "Created By", width: "1%" }),
   Columns.dateTime.sortable({ title: "Created At", field: "created_at", width: "1%" }),
@@ -199,7 +199,7 @@ const ReportsListPage = itemsList(
         return item => new Report(item);
       },
     }),
-  () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true })
+  () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
 );
 
 routes.register(
@@ -208,7 +208,7 @@ routes.register(
     path: "/reports",
     title: "Reports",
     render: pageProps => <ReportsListPage {...pageProps} currentPage="all" />,
-  })
+  }),
 );
 routes.register(
   "Reports.Favorites",
@@ -216,7 +216,7 @@ routes.register(
     path: "/reports/favorites",
     title: "Favorite Reports",
     render: pageProps => <ReportsListPage {...pageProps} currentPage="favorites" />,
-  })
+  }),
 );
 routes.register(
   "Reports.Archived",
@@ -224,7 +224,7 @@ routes.register(
     path: "/reports/archive",
     title: "Archived Reports",
     render: pageProps => <ReportsListPage {...pageProps} currentPage="archive" />,
-  })
+  }),
 );
 routes.register(
   "Reports.My",
@@ -232,5 +232,5 @@ routes.register(
     path: "/reports/my",
     title: "My Reports",
     render: pageProps => <ReportsListPage {...pageProps} currentPage="my" />,
-  })
+  }),
 );

@@ -44,7 +44,7 @@ class AlertsList extends React.Component {
         ),
         field: "muted",
         width: "1%",
-      }
+      },
     ),
     Columns.custom.sortable(
       (text, alert) => (
@@ -57,7 +57,7 @@ class AlertsList extends React.Component {
       {
         title: "Name",
         field: "name",
-      }
+      },
     ),
     Columns.custom((text, item) => item.user.name, { title: "Created By", width: "1%" }),
     Columns.custom.sortable(
@@ -71,7 +71,7 @@ class AlertsList extends React.Component {
         field: "state",
         width: "1%",
         className: "text-nowrap",
-      }
+      },
     ),
     Columns.timeAgo.sortable({ title: "Last Updated At", field: "updated_at", width: "1%" }),
     Columns.dateTime.sortable({ title: "Created At", field: "created_at", width: "1%" }),
@@ -145,7 +145,7 @@ const AlertsListPage = itemsList(
         return Alert.query.bind(Alert);
       },
     }),
-  () => new StateStorage({ orderByField: "created_at", orderByReverse: true, itemsPerPage: 20 })
+  () => new StateStorage({ orderByField: "created_at", orderByReverse: true, itemsPerPage: 20 }),
 );
 
 routes.register(
@@ -154,5 +154,5 @@ routes.register(
     path: "/alerts",
     title: "Alerts",
     render: pageProps => <AlertsListPage {...pageProps} currentPage="alerts" />,
-  })
+  }),
 );

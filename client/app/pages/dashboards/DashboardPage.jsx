@@ -52,8 +52,7 @@ class DashboardSettings extends React.Component {
         <Checkbox
           checked={!!dashboard.dashboard_filters_enabled}
           onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
-          data-test="DashboardFiltersCheckbox"
-        >
+          data-test="DashboardFiltersCheckbox">
           Use Dashboard Level Filters
         </Checkbox>
         <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
@@ -192,7 +191,7 @@ class DashboardComponent extends React.Component {
       }, 3333);
     }
     const turniloWidgetsCount = this.props.dashboardOptions.dashboard.widgets.filter(
-      w => w.options.type === "TURNILO"
+      w => w.options.type === "TURNILO",
     ).length;
     if (this.state.turniloWidgetsLength !== turniloWidgetsCount) this.turniloWidgetsSetter();
   }
@@ -485,7 +484,7 @@ routes.register(
   routeWithUserSession({
     path: "/dashboard/:dashboardSlug",
     render: pageProps => <DashboardPage {...pageProps} />,
-  })
+  }),
 );
 
 routes.register(
@@ -493,7 +492,7 @@ routes.register(
   routeWithUserSession({
     path: "/dashboards/:dashboardId([^-]+)(-.*)?",
     render: pageProps => <DashboardPage {...pageProps} />,
-  })
+  }),
 );
 
 export { DashboardPage, DashboardComponent, AddWidgetContainer, DashboardSettings };

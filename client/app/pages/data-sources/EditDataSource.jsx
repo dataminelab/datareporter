@@ -94,7 +94,7 @@ class EditDataSource extends React.Component {
         notification.error(
           "Connection Test Failed:",
           "Unknown error occurred while performing connection test. Please try again later.",
-          { duration: 10 }
+          { duration: 10 },
         );
         callback();
       });
@@ -157,5 +157,5 @@ routes.register(
     path: "/data_sources/:dataSourceId",
     title: "Data Sources",
     render: pageProps => <EditDataSourcePage {...pageProps} />,
-  })
+  }),
 );

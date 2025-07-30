@@ -75,7 +75,7 @@ const UserProfilePage = wrapSettingsTab(
     path: "users/me",
     order: 8,
   },
-  UserProfile
+  UserProfile,
 );
 
 routes.register(
@@ -84,7 +84,7 @@ routes.register(
     path: "/users/me",
     title: "Account",
     render: pageProps => <UserProfilePage {...pageProps} />,
-  })
+  }),
 );
 routes.register(
   "Users.ViewOrEdit",
@@ -92,5 +92,5 @@ routes.register(
     path: "/users/:userId",
     title: "Users",
     render: pageProps => <UserProfilePage {...pageProps} />,
-  })
+  }),
 );

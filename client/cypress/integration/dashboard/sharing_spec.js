@@ -70,7 +70,7 @@ describe("Dashboard Sharing", () => {
       `,
         },
         `OpenShareForm
-      PublicAccessEnabled`
+      PublicAccessEnabled`,
       );
 
       cy.getByTestId("SecretAddress").should("exist");
@@ -159,7 +159,7 @@ describe("Dashboard Sharing", () => {
             cy.contains(
               ".alert",
               "This query contains potentially unsafe parameters" +
-                " and cannot be executed on a shared dashboard or an embedded visualization."
+                " and cannot be executed on a shared dashboard or an embedded visualization.",
             );
             cy.percySnapshot("Successfully Shared Parameterized Dashboard With Some Unsafe Queries");
           });
@@ -194,7 +194,7 @@ describe("Dashboard Sharing", () => {
         Publish
       `,
         },
-        "OpenShareForm"
+        "OpenShareForm",
       );
 
       cy.getByTestId("PublicAccessEnabled").should("be.disabled");

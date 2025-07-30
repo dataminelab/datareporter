@@ -22,7 +22,7 @@ Cypress.Commands.add("createReport", data => {
       model_id: 1,
       name: "New Report",
     },
-    data
+    data,
   );
 
   return post({ url: "/api/reports", body: merged }).then(({ body }) => cy.visit(`/reports/${body.id}/source`));
@@ -39,14 +39,14 @@ Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {
       },
       schedule: null,
     },
-    data
+    data,
   );
 
   // eslint-disable-next-line cypress/no-assigning-return-values
   let request = post({ url: "/api/queries", body: merged }).then(({ body }) => body);
   if (shouldPublish) {
     request = request.then(query =>
-      post({ url: `/api/queries/${query.id}`, body: { is_draft: false } }).then(() => query)
+      post({ url: `/api/queries/${query.id}`, body: { is_draft: false } }).then(() => query),
     );
   }
 

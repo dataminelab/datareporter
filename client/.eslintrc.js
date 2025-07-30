@@ -35,6 +35,7 @@ module.exports = {
     node: true,
   },
   rules: {
+    "no-empty": ["warn", { "allowEmptyCatch": true }],
     // allow debugger during development
     "no-debugger": process.env.NODE_ENV === "production" ? 2 : 0,
     "jsx-a11y/anchor-is-valid": [
@@ -99,6 +100,8 @@ module.exports = {
         "cypress/unsafe-to-chain-command": "off",
         "cypress/no-unnecessary-waiting": "warn",
         "@typescript-eslint/no-empty-function": "off",
+        "no-unused-vars": "warn",
+        "@typescript-eslint/no-unused-vars": "warn",
       }
 
     },
@@ -108,11 +111,9 @@ module.exports = {
       extends: ["eslint:recommended", "plugin:react/recommended"],
       rules: {
         "react/react-in-jsx-scope": "off",
-        "no-unused-vars": ["error", { varsIgnorePattern: "^React$" }],
         "react/display-name": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-unused-vars": "off",
         "react/prop-types": "warn",
       },
       settings: {

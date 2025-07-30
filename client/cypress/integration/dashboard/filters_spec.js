@@ -74,7 +74,7 @@ describe("Dashboard Filters", () => {
       cy.getByTestId(widgetTestId).within(() => {
         expectTableToHaveLength(4);
         expectFirstColumnToHaveMembers(["c", "c", "c", "c"]);
-      })
+      }),
     );
   });
 });

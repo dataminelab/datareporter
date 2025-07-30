@@ -86,8 +86,8 @@ describe("Sankey and Sunburst", () => {
               cy
                 .createQuery({ name: `Sunburst with ${sunburst.name}`, query: sunburst.query })
                 .then(queryData => cy.createVisualization(queryData.id, "SUNBURST_SEQUENCE", "Sunburst", {}))
-                .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: sunburst.position }))
-          )
+                .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: sunburst.position })),
+          ),
         )
         .then(widgets => {
           cy.visit(this.dashboardUrl);
@@ -112,8 +112,8 @@ describe("Sankey and Sunburst", () => {
               cy
                 .createQuery({ name: `Sankey with ${sankey.name}`, query: sankey.query })
                 .then(queryData => cy.createVisualization(queryData.id, "SANKEY", "Sankey", {}))
-                .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: sankey.position }))
-          )
+                .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: sankey.position })),
+          ),
         )
         .then(widgets => {
           cy.visit(this.dashboardUrl);

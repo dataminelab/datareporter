@@ -457,7 +457,7 @@ describe("Parameter", () => {
       const now = dayjs(this.now);
       cy.getByTestId("TableVisualization").should(
         "contain",
-        now.format("YYYY-MM-15") + " - " + now.format("YYYY-MM-20")
+        now.format("YYYY-MM-15") + " - " + now.format("YYYY-MM-20"),
       );
     });
 
@@ -471,7 +471,7 @@ describe("Parameter", () => {
       const lastMonth = dayjs(this.now).subtract(1, "month");
       cy.getByTestId("TableVisualization").should(
         "contain",
-        lastMonth.startOf("month").format("YYYY-MM-DD") + " - " + lastMonth.endOf("month").format("YYYY-MM-DD")
+        lastMonth.startOf("month").format("YYYY-MM-DD") + " - " + lastMonth.endOf("month").format("YYYY-MM-DD"),
       );
     });
 

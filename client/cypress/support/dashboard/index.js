@@ -28,7 +28,7 @@ export function shareDashboard() {
   cy.clickThrough(
     { button: "Publish" },
     `OpenShareForm
-    PublicAccessEnabled`
+    PublicAccessEnabled`,
   );
 
   return cy.getByTestId("SecretAddress").invoke("val");

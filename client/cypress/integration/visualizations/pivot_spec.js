@@ -137,15 +137,15 @@ describe("Pivot", () => {
             pivot => () =>
               cy
                 .createVisualization(this.queryId, "PIVOT", pivot.name, pivot.options)
-                .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: pivot.position }))
-          )
+                .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: pivot.position })),
+          ),
         );
       })
       .then(widgets => {
         cy.visit(this.dashboardUrl);
         widgets.forEach(widget => {
           cy.getByTestId(getWidgetTestId(widget)).within(() =>
-            cy.getByTestId("PivotTableVisualization").should("exist")
+            cy.getByTestId("PivotTableVisualization").should("exist"),
           );
         });
         cy.percySnapshot("Visualizations - Pivot Table");

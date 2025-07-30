@@ -59,17 +59,16 @@ function stopServer() {
 
 function runCypressCI() {
   const {
-    CYPRESS_OPTIONS, // eslint-disable-line @typescript-eslint/no-unused-vars
-    CYPRESS_RECORD_KEY, // eslint-disable-line @typescript-eslint/no-unused-vars
+    CYPRESS_RECORD_KEY
   } = process.env;
 
-  if (process.env.CYPRESS_RECORD_KEY) {
+  if (CYPRESS_RECORD_KEY) {
     process.env.CYPRESS_OPTIONS = "--record";
   }
 
   execSync(
     "COMMIT_INFO_MESSAGE=$(git show -s --format=%s) docker compose run --name cypress cypress ./node_modules/.bin/percy exec -t 300 -- ./node_modules/.bin/cypress run $CYPRESS_OPTIONS",
-    { stdio: "inherit" }
+    { stdio: "inherit" },
   );
   execSync("docker compose run --rm cypress ./node_modules/.bin/percy build:finalize", { stdio: "inherit" });
 }

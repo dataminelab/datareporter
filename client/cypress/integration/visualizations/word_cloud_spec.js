@@ -50,9 +50,9 @@ function injectFont(document) {
            url("${basePath}${fileName}.ttf") format("truetype"),
            url("${basePath}${fileName}.svg") format("svg");
     }
-  `
-      ).join("\n\n")
-    )
+  `,
+      ).join("\n\n"),
+    ),
   );
   document.getElementsByTagName("head")[0].appendChild(style);
 }

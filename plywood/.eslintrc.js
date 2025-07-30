@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   extends: [
-    "../client/.eslintrc.js"
+    require.resolve("../client/.eslintrc.js")
   ],
   overrides: [
     {

@@ -39,7 +39,7 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
         ...currentSchemas,
         [currentDatabaseName]: schema,
       })),
-    [currentDatabaseName]
+    [currentDatabaseName],
   );
 
   const currentDatabaseNameRef = useRef();
@@ -50,7 +50,7 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
       DatabricksDataSource.getTableColumns(
         dataSource,
         currentDatabaseName,
-        tableName.substring(currentDatabaseName.length + 1)
+        tableName.substring(currentDatabaseName.length + 1),
       ).then(columns => {
         if (currentDatabaseNameRef.current === currentDatabaseName) {
           setSchemas(currentSchemas => {
@@ -69,7 +69,7 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
         }
       });
     },
-    [dataSource, currentDatabaseName]
+    [dataSource, currentDatabaseName],
   );
 
   const schema = useMemo(() => get(schemas, currentDatabaseName, []), [schemas, currentDatabaseName]);
@@ -79,11 +79,11 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
       setRefreshing(true);
       const getDatabasesPromise = getDatabases(dataSource, true).then(setDatabases);
       const getSchemasPromise = getSchema(dataSource, currentDatabaseName, true).then(({ schema }) =>
-        setCurrentSchema(schema)
+        setCurrentSchema(schema),
       );
 
       Promise.all([getSchemasPromise.catch(() => {}), getDatabasesPromise.catch(() => {})]).then(() =>
-        setRefreshing(false)
+        setRefreshing(false),
       );
     }
   }, [dataSource, currentDatabaseName, setCurrentSchema, refreshing]);
@@ -136,7 +136,7 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
             defaultDatabaseNameRef.current ||
               localStorage.getItem(`lastSelectedDatabricksDatabase_${dataSource.id}`) ||
               first(data) ||
-              null
+              null,
           );
         }
       })
@@ -167,7 +167,7 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
         });
       }
     },
-    [dataSource.id, options, onOptionsUpdate]
+    [dataSource.id, options, onOptionsUpdate],
   );
 
   return {

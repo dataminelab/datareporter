@@ -44,7 +44,7 @@ const location = {
           search: newLocation.search,
           hash: newLocation.hash,
         },
-        isUndefined
+        isUndefined,
       );
 
       // keep existing fields (!)
@@ -54,7 +54,7 @@ const location = {
           search: location.search,
           hash: location.hash,
         },
-        newLocation
+        newLocation,
       );
 
       // serialize search and keep existing search parameters (!)

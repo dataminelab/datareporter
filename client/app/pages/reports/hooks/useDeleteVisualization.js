@@ -17,6 +17,6 @@ export default function useDeleteVisualization(report, onChange) {
         .catch(() => {
           notification.error("Error deleting visualization.", "Maybe it's used in a dashboard?");
         }),
-    [report, handleChange]
+    [report, handleChange],
   );
 }

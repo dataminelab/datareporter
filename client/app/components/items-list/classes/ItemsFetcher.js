@@ -35,7 +35,7 @@ export class PlainListFetcher extends ItemsFetcher {
         q: isString(searchTerm) && searchTerm !== "" ? searchTerm : undefined,
         tags: selectedTags,
       },
-      context
+      context,
     );
   }
 
@@ -79,7 +79,7 @@ export class PaginatedListFetcher extends ItemsFetcher {
         q: isString(searchTerm) && searchTerm !== "" ? searchTerm : undefined,
         tags: selectedTags,
       },
-      context
+      context,
     );
   }
 }

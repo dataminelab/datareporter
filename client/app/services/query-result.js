@@ -405,7 +405,7 @@ class QueryResult {
             () => {
               this.loadResult(tryCount + 1);
             },
-            1000 * Math.pow(2, tryCount)
+            1000 * Math.pow(2, tryCount),
           );
         }
       });

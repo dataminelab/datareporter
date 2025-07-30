@@ -17,7 +17,7 @@ export default function useAutoLimitFlags(dataSource, query, setQuery) {
       localOptions.set("applyAutoLimit", state);
       setQuery(extend(query.clone(), { options: { ...query.options, apply_auto_limit: state } }));
     },
-    [query, setQuery]
+    [query, setQuery],
   );
 
   return [isAvailable, isChecked, setAutoLimit];

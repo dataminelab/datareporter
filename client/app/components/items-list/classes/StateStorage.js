@@ -54,7 +54,7 @@ export class UrlStateStorage extends StateStorage {
         order: compileOrderBy(orderByField, orderByReverse),
         q: searchTerm !== "" ? searchTerm : null,
       },
-      true
+      true,
     );
   }
 }

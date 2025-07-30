@@ -64,7 +64,7 @@ export default function useEditModeHandler(canEditDashboard, widgets) {
           notification.error("Error saving changes.");
         });
     },
-    [canEditDashboard, widgets]
+    [canEditDashboard, widgets],
   );
 
   const saveDashboardLayoutDebounced = useCallback(
@@ -72,12 +72,12 @@ export default function useEditModeHandler(canEditDashboard, widgets) {
       setDashboardStatus(DashboardStatusEnum.SAVING);
       return debounce(() => saveDashboardLayout(...args), 2000)();
     },
-    [saveDashboardLayout]
+    [saveDashboardLayout],
   );
 
   const retrySaveDashboardLayout = useCallback(
     () => saveDashboardLayout(recentPositions),
-    [recentPositions, saveDashboardLayout]
+    [recentPositions, saveDashboardLayout],
   );
 
   const setEditing = useCallback(
@@ -88,7 +88,7 @@ export default function useEditModeHandler(canEditDashboard, widgets) {
       }
       setEditingLayout(canEditDashboard && editing);
     },
-    [dashboardStatus, canEditDashboard]
+    [dashboardStatus, canEditDashboard],
   );
 
   return {

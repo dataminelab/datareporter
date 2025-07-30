@@ -47,7 +47,7 @@ function prepareWidgetsForDashboard(widgets) {
         .map(w => w.options.position.sizeY)
         .max()
         .value(),
-      20
+      20,
     ) + 5;
 
   // Fix layout:
@@ -62,7 +62,7 @@ function prepareWidgetsForDashboard(widgets) {
       _.each(widgetsAtRow, widget => {
         height = Math.max(
           height,
-          widget.options.position.autoHeight ? defaultWidgetSizeY : widget.options.position.sizeY
+          widget.options.position.autoHeight ? defaultWidgetSizeY : widget.options.position.sizeY,
         );
         widget.options.position.row = row;
         if (widget.options.position.sizeY < 1) {
@@ -106,7 +106,7 @@ function calculateNewWidgetPosition(existingWidgets, newWidget) {
         }
         return result;
       },
-      _.map(new Array(dashboardGridOptions.columns), _.constant(0))
+      _.map(new Array(dashboardGridOptions.columns), _.constant(0)),
     )
     .value();
 
@@ -222,14 +222,14 @@ Dashboard.prototype.getParametersDefs = function getParametersDefs() {
     _.each(globalParams, param => {
       param.setValue(param.value); // apply global param value to all locals
       param.fromUrlParams(queryParams); // try to initialize from url (may do nothing)
-    })
+    }),
   );
 
   // order dashboard params using paramOrder
   return _.sortBy(resultingGlobalParams, param =>
     _.includes(this.options.globalParamOrder, param.name)
       ? _.indexOf(this.options.globalParamOrder, param.name)
-      : _.size(this.options.globalParamOrder)
+      : _.size(this.options.globalParamOrder),
   );
 };
 

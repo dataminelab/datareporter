@@ -8,6 +8,6 @@ export default function useEmbedDialog(report) {
       const visualization = find(report.visualizations, { id: visualizationId });
       EmbedReportDialog.showModal({ report, visualization });
     },
-    [report]
+    [report],
   );
 }

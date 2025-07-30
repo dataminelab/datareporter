@@ -19,6 +19,6 @@ export default function useRenameReport(report, onChange) {
 
       updateReport(changes, options);
     },
-    [report.id, report.is_draft, updateReport]
+    [report.id, report.is_draft, updateReport],
   );
 }

@@ -27,9 +27,9 @@ function getAffectedWidgets(widgets, updatedParameters = []) {
           .some(({ mapTo }) =>
             includes(
               updatedParameters.map(p => p.name),
-              mapTo
-            )
-          )
+              mapTo,
+            ),
+          ),
       )
     : widgets;
 }
@@ -46,11 +46,11 @@ function useDashboard(dashboardData) {
       !dashboard.is_archived &&
       has(dashboard, "user.id") &&
       (currentUser.id === dashboard.user.id || currentUser.hasPermission("admin")),
-    [dashboard]
+    [dashboard],
   );
   const hasOnlySafeQueries = useMemo(
     () => every(dashboard.widgets, w => (w.getQuery() ? w.getQuery().is_safe : true)),
-    [dashboard]
+    [dashboard],
   );
 
   const managePermissions = useCallback(() => {
@@ -84,12 +84,12 @@ function useDashboard(dashboardData) {
             notification.error(
               "It seems like the dashboard has been modified by another user. ",
               "Please copy/backup your changes and reload this page.",
-              { duration: null }
+              { duration: null },
             );
           }
         });
     },
-    [dashboard]
+    [dashboard],
   );
 
   const togglePublished = useCallback(() => {
@@ -118,7 +118,7 @@ function useDashboard(dashboardData) {
     setDashboard(currentDashboard =>
       extend({}, currentDashboard, {
         widgets: currentDashboard.widgets.filter(widget => widget.id !== undefined && widget.id !== widgetId),
-      })
+      }),
     );
   }, []);
 
@@ -129,7 +129,7 @@ function useDashboard(dashboardData) {
     async (forceRefresh = false, updatedParameters = []) => {
       const affectedWidgets = getAffectedWidgets(dashboardRef.current.widgets, updatedParameters);
       const loadWidgetPromises = compact(
-        affectedWidgets.map(widget => loadWidget(widget, forceRefresh).catch(error => error))
+        affectedWidgets.map(widget => loadWidget(widget, forceRefresh).catch(error => error)),
       );
 
       await Promise.all(loadWidgetPromises);
@@ -137,7 +137,7 @@ function useDashboard(dashboardData) {
       const updatedFilters = collectDashboardFilters(dashboardRef.current, queryResults, location.search);
       setFilters(updatedFilters);
     },
-    [loadWidget]
+    [loadWidget],
   );
 
   const refreshDashboard = useCallback(() => {
@@ -150,7 +150,7 @@ function useDashboard(dashboardData) {
   const archiveDashboard = useCallback(() => {
     recordEvent("archive", "dashboard", dashboard.id);
     Dashboard.delete(dashboard).then(updatedDashboard =>
-      setDashboard(currentDashboard => extend({}, currentDashboard, pick(updatedDashboard, ["is_archived"])))
+      setDashboard(currentDashboard => extend({}, currentDashboard, pick(updatedDashboard, ["is_archived"]))),
     );
   }, [dashboard]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -169,7 +169,7 @@ function useDashboard(dashboardData) {
     TextboxDialog.showModal({
       isNew: true,
     }).onClose(text =>
-      dashboard.addWidget(text).then(() => setDashboard(currentDashboard => extend({}, currentDashboard)))
+      dashboard.addWidget(text).then(() => setDashboard(currentDashboard => extend({}, currentDashboard))),
     );
   }, [dashboard]);
 
@@ -188,21 +188,24 @@ function useDashboard(dashboardData) {
           ];
           await Promise.all(widgetsToSave.map(w => w.save()));
           return setDashboard(currentDashboard => extend({}, currentDashboard));
-        })
+        }),
     );
   }, [dashboard]);
 
   const showAddReportDialog = useCallback(() => {
     AddReportDialog.showModal().onClose(({ text, options }) =>
-      dashboard.addWidget(text, options).then(() => {
-        setDashboard(currentDashboard => extend({}, currentDashboard));
-      }).catch(error => {
+      dashboard
+        .addWidget(text, options)
+        .then(() => {
+          setDashboard(currentDashboard => extend({}, currentDashboard));
+        })
+        .catch(error => {
           if (error instanceof QueryResultError) {
             notification.error("Report Widget could not be added", error.message);
           } else {
             notification.error("Report Widget could not be added", "An unexpected error occurred.");
           }
-        })
+        }),
     );
   }, [dashboard]);
 

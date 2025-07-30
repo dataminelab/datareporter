@@ -32,7 +32,7 @@ const DataSource = {
       .then(data => {
         if (has(data, "job")) {
           return fetchDataFromJob(data.job.id).catch(error =>
-            error.code === SCHEMA_NOT_SUPPORTED ? [] : Promise.reject(new Error(data.job.error))
+            error.code === SCHEMA_NOT_SUPPORTED ? [] : Promise.reject(new Error(data.job.error)),
           );
         }
         return has(data, "schema") ? data.schema : Promise.reject();

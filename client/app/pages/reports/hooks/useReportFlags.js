@@ -23,6 +23,6 @@ export default function useReportFlags(report, dataSource = null) {
       canFork: currentUser.hasPermission("edit_query") && !dataSource.view_only,
       canSchedule: currentUser.hasPermission("schedule_query"),
     }),
-    [report, dataSource.view_only]
+    [report, dataSource.view_only],
   );
 }

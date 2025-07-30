@@ -60,7 +60,7 @@ export default class AutoHeightController {
             const height = el ? el.getBoundingClientRect().height : 0;
             return acc + height;
           },
-          0
+          0,
         );
       },
     ];

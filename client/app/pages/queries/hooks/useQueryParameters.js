@@ -10,7 +10,7 @@ export default function useQueryParameters(query) {
       flag = isUndefined(flag) ? query.getParameters().hasPendingValues() : flag;
       setDirtyFlag(flag);
     },
-    [query]
+    [query],
   );
 
   useEffect(() => {

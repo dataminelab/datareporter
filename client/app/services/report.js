@@ -111,7 +111,7 @@ export class Parameters {
       const hasUnprocessedParameters = find(parameters, p => !(p instanceof Parameter));
       if (hasUnprocessedParameters) {
         this.report.options.parameters = map(parameters, p =>
-          p instanceof Parameter ? p : createParameter(p, this.report.id)
+          p instanceof Parameter ? p : createParameter(p, this.report.id),
         );
       }
       return;
@@ -136,7 +136,7 @@ export class Parameters {
             type: "text",
             value: null,
             global: false,
-          })
+          }),
         );
       }
     });
@@ -169,7 +169,7 @@ export class Parameters {
   getMissing() {
     return map(
       filter(this.get(), p => p.isEmpty),
-      i => i.title
+      i => i.title,
     );
   }
 
@@ -181,7 +181,7 @@ export class Parameters {
     const params = this.get();
     return zipObject(
       map(params, i => i.name),
-      map(params, i => i.getExecutionValue(extra))
+      map(params, i => i.getExecutionValue(extra)),
     );
   }
 
@@ -409,7 +409,7 @@ const mapResults = data => ({ ...data, results: map(data.results, getReport) });
 const normalizeCondition = {
   "greater than": ">",
   "less than": "<",
-  equals: "=",
+  "equals": "=",
 };
 const transformResponse = data => {
   merge({}, data, {

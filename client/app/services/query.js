@@ -111,7 +111,7 @@ class Parameters {
       const hasUnprocessedParameters = find(parameters, p => !(p instanceof Parameter));
       if (hasUnprocessedParameters) {
         this.query.options.parameters = map(parameters, p =>
-          p instanceof Parameter ? p : createParameter(p, this.query.id)
+          p instanceof Parameter ? p : createParameter(p, this.query.id),
         );
       }
       return;
@@ -136,7 +136,7 @@ class Parameters {
             type: "text",
             value: null,
             global: false,
-          })
+          }),
         );
       }
     });
@@ -169,7 +169,7 @@ class Parameters {
   getMissing() {
     return map(
       filter(this.get(), p => p.isEmpty),
-      i => i.title
+      i => i.title,
     );
   }
 
@@ -181,7 +181,7 @@ class Parameters {
     const params = this.get();
     return zipObject(
       map(params, i => i.name),
-      map(params, i => i.getExecutionValue(extra))
+      map(params, i => i.getExecutionValue(extra)),
     );
   }
 

@@ -19,6 +19,6 @@ export default function useRenameQuery(query, onChange) {
 
       updateQuery(changes, options);
     },
-    [query.id, query.is_draft, updateQuery]
+    [query.id, query.is_draft, updateQuery],
   );
 }

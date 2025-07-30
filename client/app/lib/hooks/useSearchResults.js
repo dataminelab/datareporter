@@ -26,7 +26,7 @@ export default function useSearchResults(fetch, { initialResults = null, debounc
       () => {
         isDestroyed.current = true;
       },
-    []
+    [],
   );
 
   return [doSearch, result, isLoading];

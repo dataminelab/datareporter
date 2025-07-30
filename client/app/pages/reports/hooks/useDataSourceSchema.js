@@ -35,7 +35,7 @@ export default function useDataSourceSchema(dataSource) {
           }
         });
     },
-    [dataSource]
+    [dataSource],
   );
 
   useEffect(() => {

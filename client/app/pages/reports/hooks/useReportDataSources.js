@@ -7,11 +7,11 @@ export default function useReportDataSources(report) {
   const [dataSourcesLoaded, setDataSourcesLoaded] = useState(false);
   const dataSources = useMemo(
     () => filter(allDataSources, ds => !ds.view_only || ds.id === report.data_source_id),
-    [allDataSources, report.data_source_id]
+    [allDataSources, report.data_source_id],
   );
   const dataSource = useMemo(
     () => find(dataSources, ds => toString(ds.id) === toString(report.data_source_id)) || null,
-    [report.data_source_id, dataSources]
+    [report.data_source_id, dataSources],
   );
 
   useEffect(() => {

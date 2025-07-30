@@ -5,7 +5,7 @@ import { merge } from "lodash";
 const normalizeCondition = {
   "greater than": ">",
   "less than": "<",
-  equals: "=",
+  "equals": "=",
 };
 
 const transformResponse = data =>

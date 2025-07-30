@@ -17,10 +17,10 @@ export default function useEditVisualizationDialog(query, queryResult, onChange)
         const filteredVisualizations = filter(query.visualizations, v => v.id !== updatedVisualization.id);
         handleChange(
           extend(query.clone(), { visualizations: [...filteredVisualizations, updatedVisualization] }),
-          updatedVisualization
+          updatedVisualization,
         );
       });
     },
-    [query, queryResult, handleChange]
+    [query, queryResult, handleChange],
   );
 }

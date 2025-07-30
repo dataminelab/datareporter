@@ -10,7 +10,7 @@ export default function useReportParameters(report) {
       flag = isUndefined(flag) ? report.getParameters().hasPendingValues() : flag;
       setDirtyFlag(flag);
     },
-    [report]
+    [report],
   );
 
   useEffect(() => {

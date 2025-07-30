@@ -28,6 +28,6 @@ export default function useQuery(originalQuery) {
         (!isEmpty(query.query) && query.options.apply_auto_limit !== originalAutoLimit),
       saveQuery: () => updateQuery(),
     }),
-    [query, originalQuerySource, updateQuery, originalAutoLimit]
+    [query, originalQuerySource, updateQuery, originalAutoLimit],
   );
 }

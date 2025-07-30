@@ -71,6 +71,6 @@ export default function useReport(originalReport) {
       saveAsReport,
       showShareReportDialog,
     }),
-    [report, originalReportSource, saveAsReport, showShareReportDialog, updateReport]
+    [report, originalReportSource, saveAsReport, showShareReportDialog, updateReport],
   );
 }

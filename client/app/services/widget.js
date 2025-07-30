@@ -109,7 +109,7 @@ class Widget {
     this.options.position = extend(
       {},
       visualizationOptions,
-      pick(this.options.position, ["col", "row", "sizeX", "sizeY", "autoHeight"])
+      pick(this.options.position, ["col", "row", "sizeX", "sizeY", "autoHeight"]),
     );
 
     if (this.options.position.sizeY < 0) {
@@ -269,14 +269,14 @@ class Widget {
           result.fromUrlParams(queryParams);
         }
         return result;
-      }
+      },
     );
 
     // order widget params using paramOrder
     return sortBy(localParameters, param =>
       includes(this.options.paramOrder, param.name)
         ? indexOf(this.options.paramOrder, param.name)
-        : size(this.options.paramOrder)
+        : size(this.options.paramOrder),
     );
   }
 

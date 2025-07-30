@@ -66,7 +66,9 @@ export class SumExpression extends ChainableUnaryExpression implements Aggregate
     // X.sum(lhs + rhs)
     if (expression instanceof AddExpression) {
       const { operand: lhs, expression: rhs } = expression;
-      return operand.sum(lhs).distribute().add(operand.sum(rhs).distribute()).simplify();
+      const distributedLhs = operand.sum(lhs).distribute();
+      const distributedRhs = operand.sum(rhs).distribute();
+      return distributedLhs.add(distributedRhs).simplify();
     }
 
     // X.sum(lhs - rhs)

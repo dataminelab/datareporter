@@ -193,12 +193,16 @@ function useDashboard(dashboardData) {
   }, [dashboard]);
 
   const showAddReportDialog = useCallback(() => {
-    AddReportDialog.showModal({
-      dashboard,
-    }).onClose(({ text, options }) =>
+    AddReportDialog.showModal().onClose(({ text, options }) =>
       dashboard.addWidget(text, options).then(() => {
         setDashboard(currentDashboard => extend({}, currentDashboard));
-      }, [dashboard])
+      }).catch(error => {
+          if (error instanceof QueryResultError) {
+            notification.error("Report Widget could not be added", error.message);
+          } else {
+            notification.error("Report Widget could not be added", "An unexpected error occurred.");
+          }
+        })
     );
   }, [dashboard]);
 

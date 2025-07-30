@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
-const fs = require('fs');
-const path = require('path');
+const { expect } = require("chai");
+const fs = require("fs");
+const path = require("path");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { Expression, Dataset, $, ply, r } = plywood;
 
-const chronoshift = require('chronoshift');
+const chronoshift = require("chronoshift");
 
 const rawData = fs.readFileSync(
-  path.join(__dirname, '../../resources/wikipedia-sampled.json'),
-  'utf-8',
+  path.join(__dirname, "../../resources/wikipedia-sampled.json"),
+  "utf-8",
 );
 const wikiDayData = Dataset.parseJSON(rawData);
 
 wikiDayData.forEach((d, i) => {
-  d['time'] = new Date(d['time']);
-  d['sometimeLater'] = new Date(d['sometimeLater']);
+  d["time"] = new Date(d["time"]);
+  d["sometimeLater"] = new Date(d["sometimeLater"]);
 });
 
-describe('compute native nontrivial data', function () {
+describe("compute native nontrivial data", function () {
   this.timeout(20000);
 
   const ds = Dataset.fromJS(wikiDayData).hide();
 
-  it('works in simple agg case', () => {
-    const ex = ply().apply('Count', '$data.count()').apply('SumAdded', '$data.sum($added)');
+  it("works in simple agg case", () => {
+    const ex = ply().apply("Count", "$data.count()").apply("SumAdded", "$data.sum($added)");
 
     return ex.compute({ data: ds }).then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -54,17 +54,17 @@ describe('compute native nontrivial data', function () {
     });
   });
 
-  it('works in with a filter == null', () => {
-    const ex = $('data').filter('$countryName == null').count();
+  it("works in with a filter == null", () => {
+    const ex = $("data").filter("$countryName == null").count();
 
     return ex.compute({ data: ds }).then(v => {
       expect(v).to.equal(35445);
     });
   });
 
-  it('works in with a filter overlap null', () => {
-    const ex = $('data')
-      .filter($('countryName').is([null]))
+  it("works in with a filter overlap null", () => {
+    const ex = $("data")
+      .filter($("countryName").is([null]))
       .count();
 
     return ex.compute({ data: ds }).then(v => {
@@ -72,15 +72,15 @@ describe('compute native nontrivial data', function () {
     });
   });
 
-  it('works with overlap filter', () => {
+  it("works with overlap filter", () => {
     const ex = ply()
       .apply(
-        'd1',
-        $('data').filter(
-          $('time').overlap(new Date('2015-09-12T12:00:00Z'), new Date('2015-09-13T00:00:00Z')),
+        "d1",
+        $("data").filter(
+          $("time").overlap(new Date("2015-09-12T12:00:00Z"), new Date("2015-09-13T00:00:00Z")),
         ),
       )
-      .apply('CountD1', '$d1.count()');
+      .apply("CountD1", "$d1.count()");
 
     return ex.compute({ data: ds }).then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -91,12 +91,12 @@ describe('compute native nontrivial data', function () {
     });
   });
 
-  it('works in simple split case (small dimension)', () => {
-    const ex = $('data')
-      .split('$countryName', 'CountryName')
-      .apply('Count', '$data.count()')
-      .apply('SumAdded', '$data.sum($added)')
-      .sort('$SumAdded', 'descending')
+  it("works in simple split case (small dimension)", () => {
+    const ex = $("data")
+      .split("$countryName", "CountryName")
+      .apply("Count", "$data.count()")
+      .apply("SumAdded", "$data.sum($added)")
+      .sort("$SumAdded", "descending")
       .limit(5);
 
     return ex.compute({ data: ds }).then(v => {
@@ -108,72 +108,72 @@ describe('compute native nontrivial data', function () {
         },
         {
           Count: 69,
-          CountryName: 'Colombia',
+          CountryName: "Colombia",
           SumAdded: 60398,
         },
         {
           Count: 194,
-          CountryName: 'Russia',
+          CountryName: "Russia",
           SumAdded: 50561,
         },
         {
           Count: 528,
-          CountryName: 'United States',
+          CountryName: "United States",
           SumAdded: 44433,
         },
         {
           Count: 256,
-          CountryName: 'Italy',
+          CountryName: "Italy",
           SumAdded: 41073,
         },
       ]);
     });
   });
 
-  it('works in simple split case (large dimension)', () => {
-    const ex = $('data')
-      .split('$page', 'Page')
-      .apply('Count', '$data.count()')
-      .apply('SumAdded', '$data.sum($added)')
-      .sort('$SumAdded', 'descending')
+  it("works in simple split case (large dimension)", () => {
+    const ex = $("data")
+      .split("$page", "Page")
+      .apply("Count", "$data.count()")
+      .apply("SumAdded", "$data.sum($added)")
+      .sort("$SumAdded", "descending")
       .limit(5);
 
     return ex.compute({ data: ds }).then(v => {
       expect(v.toJS().data).to.deep.equal([
         {
           Count: 1,
-          Page: 'User:QuackGuru/Electronic cigarettes 1',
+          Page: "User:QuackGuru/Electronic cigarettes 1",
           SumAdded: 199818,
         },
         {
           Count: 1,
-          Page: 'Обсуждение участника:पाणिनि/Архив-5',
+          Page: "Обсуждение участника:पाणिनि/Архив-5",
           SumAdded: 102719,
         },
         {
           Count: 1,
-          Page: 'Campeche',
+          Page: "Campeche",
           SumAdded: 94187,
         },
         {
           Count: 1,
-          Page: 'Équipe de Pologne de football à la Coupe du monde 1986',
+          Page: "Équipe de Pologne de football à la Coupe du monde 1986",
           SumAdded: 92182,
         },
         {
           Count: 1,
-          Page: 'Адвокат',
+          Page: "Адвокат",
           SumAdded: 89385,
         },
       ]);
     });
   });
 
-  it('works in simple timeBucket case', () => {
-    const ex = $('data')
-      .split('$time.timeBucket(PT1H, "Asia/Kathmandu")', 'Time') // America/Los_Angeles
-      .apply('Count', '$data.count()')
-      .sort('$Time', 'ascending')
+  it("works in simple timeBucket case", () => {
+    const ex = $("data")
+      .split('$time.timeBucket(PT1H, "Asia/Kathmandu")', "Time") // America/Los_Angeles
+      .apply("Count", "$data.count()")
+      .sort("$Time", "ascending")
       .limit(2);
 
     return ex.compute({ data: ds }).then(v => {
@@ -181,50 +181,50 @@ describe('compute native nontrivial data', function () {
         {
           Count: 556,
           Time: {
-            end: new Date('2015-09-12T01:15:00.000Z'),
-            start: new Date('2015-09-12T00:15:00.000Z'),
+            end: new Date("2015-09-12T01:15:00.000Z"),
+            start: new Date("2015-09-12T00:15:00.000Z"),
           },
         },
         {
           Count: 1129,
           Time: {
-            end: new Date('2015-09-12T02:15:00.000Z'),
-            start: new Date('2015-09-12T01:15:00.000Z'),
+            end: new Date("2015-09-12T02:15:00.000Z"),
+            start: new Date("2015-09-12T01:15:00.000Z"),
           },
         },
       ]);
     });
   });
 
-  it('works in heatmap like query', () => {
+  it("works in heatmap like query", () => {
     const ex = ply()
-      .apply('Count', '$data.count()')
+      .apply("Count", "$data.count()")
       .apply(
-        'xs',
-        $('data')
-          .split('$userChars', 'v')
-          .apply('cnt', '$data.count()')
-          .sort('$cnt', 'descending')
+        "xs",
+        $("data")
+          .split("$userChars", "v")
+          .apply("cnt", "$data.count()")
+          .sort("$cnt", "descending")
           .limit(3),
       )
       .apply(
-        'ys',
-        $('data')
-          .split('$channel', 'v')
-          .apply('cnt', '$data.count()')
-          .sort('$cnt', 'descending')
+        "ys",
+        $("data")
+          .split("$channel", "v")
+          .apply("cnt", "$data.count()")
+          .sort("$cnt", "descending")
           .limit(3),
       )
       .apply(
-        'cells',
-        $('data')
+        "cells",
+        $("data")
           .filter(
-            $('userChars')
-              .is($('xs').collect($('v')))
-              .and($('channel').in($('ys').collect($('v')))),
+            $("userChars")
+              .is($("xs").collect($("v")))
+              .and($("channel").in($("ys").collect($("v")))),
           )
-          .split({ channel: '$channel', userChars: '$userChars' })
-          .apply('cnt', '$data.count()')
+          .split({ channel: "$channel", userChars: "$userChars" })
+          .apply("cnt", "$data.count()")
           .limit(3 * 3),
       );
 
@@ -232,20 +232,20 @@ describe('compute native nontrivial data', function () {
       expect(v.toJS()).to.deep.equal({
         attributes: [
           {
-            name: 'Count',
-            type: 'NUMBER',
+            name: "Count",
+            type: "NUMBER",
           },
           {
-            name: 'xs',
-            type: 'DATASET',
+            name: "xs",
+            type: "DATASET",
           },
           {
-            name: 'ys',
-            type: 'DATASET',
+            name: "ys",
+            type: "DATASET",
           },
           {
-            name: 'cells',
-            type: 'DATASET',
+            name: "cells",
+            type: "DATASET",
           },
         ],
         data: [
@@ -254,132 +254,132 @@ describe('compute native nontrivial data', function () {
             cells: {
               attributes: [
                 {
-                  name: 'channel',
-                  type: 'STRING',
+                  name: "channel",
+                  type: "STRING",
                 },
                 {
-                  name: 'userChars',
-                  type: 'STRING',
+                  name: "userChars",
+                  type: "STRING",
                 },
                 {
-                  name: 'data',
-                  type: 'DATASET',
+                  name: "data",
+                  type: "DATASET",
                 },
                 {
-                  name: 'cnt',
-                  type: 'NUMBER',
+                  name: "cnt",
+                  type: "NUMBER",
                 },
               ],
               data: [
                 {
-                  channel: 'en',
+                  channel: "en",
                   cnt: 4947,
-                  userChars: 'E',
+                  userChars: "E",
                 },
                 {
-                  channel: 'en',
+                  channel: "en",
                   cnt: 1612,
-                  userChars: 'G',
+                  userChars: "G",
                 },
                 {
-                  channel: 'en',
+                  channel: "en",
                   cnt: 2815,
-                  userChars: 'L',
+                  userChars: "L",
                 },
                 {
-                  channel: 'en',
+                  channel: "en",
                   cnt: 3736,
-                  userChars: 'N',
+                  userChars: "N",
                 },
                 {
-                  channel: 'en',
+                  channel: "en",
                   cnt: 4994,
-                  userChars: 'O',
+                  userChars: "O",
                 },
                 {
-                  channel: 'en',
+                  channel: "en",
                   cnt: 3806,
-                  userChars: 'R',
+                  userChars: "R",
                 },
                 {
-                  channel: 'en',
+                  channel: "en",
                   cnt: 3006,
-                  userChars: 'S',
+                  userChars: "S",
                 },
                 {
-                  channel: 'en',
+                  channel: "en",
                   cnt: 4606,
-                  userChars: 'T',
+                  userChars: "T",
                 },
                 {
-                  channel: 'vi',
+                  channel: "vi",
                   cnt: 2513,
-                  userChars: '!',
+                  userChars: "!",
                 },
               ],
-              keys: ['channel', 'userChars'],
+              keys: ["channel", "userChars"],
             },
             xs: {
               attributes: [
                 {
-                  name: 'v',
-                  type: 'STRING',
+                  name: "v",
+                  type: "STRING",
                 },
                 {
-                  name: 'data',
-                  type: 'DATASET',
+                  name: "data",
+                  type: "DATASET",
                 },
                 {
-                  name: 'cnt',
-                  type: 'NUMBER',
+                  name: "cnt",
+                  type: "NUMBER",
                 },
               ],
               data: [
                 {
                   cnt: 22311,
-                  v: 'A',
+                  v: "A",
                 },
                 {
                   cnt: 22273,
-                  v: 'O',
+                  v: "O",
                 },
                 {
                   cnt: 21658,
-                  v: 'T',
+                  v: "T",
                 },
               ],
-              keys: ['v'],
+              keys: ["v"],
             },
             ys: {
               attributes: [
                 {
-                  name: 'v',
-                  type: 'STRING',
+                  name: "v",
+                  type: "STRING",
                 },
                 {
-                  name: 'data',
-                  type: 'DATASET',
+                  name: "data",
+                  type: "DATASET",
                 },
                 {
-                  name: 'cnt',
-                  type: 'NUMBER',
+                  name: "cnt",
+                  type: "NUMBER",
                 },
               ],
               data: [
                 {
                   cnt: 11549,
-                  v: 'en',
+                  v: "en",
                 },
                 {
                   cnt: 9747,
-                  v: 'vi',
+                  v: "vi",
                 },
                 {
                   cnt: 2523,
-                  v: 'de',
+                  v: "de",
                 },
               ],
-              keys: ['v'],
+              keys: ["v"],
             },
           },
         ],
@@ -387,19 +387,19 @@ describe('compute native nontrivial data', function () {
     });
   });
 
-  it('works in with funny aggregates', () => {
-    const ex = $('data')
-      .split('$countryName', 'CountryName')
-      .apply('LabelCountry', '"[" ++ $CountryName ++ "]"')
-      .apply('Count', '$data.count()')
-      .apply('CountLT1000', '$Count < 1000')
-      .apply('CountGT1000', '$Count > 1000')
-      .apply('CountLTE397', '$Count <= 397')
-      .apply('CountGTE397', '$Count >= 397')
-      .apply('SumAdded', '$data.sum($added)')
-      .apply('NegSumAdded', '-$SumAdded')
-      .apply('DistinctCity', '$data.countDistinct($cityName)')
-      .sort('$SumAdded', 'descending')
+  it("works in with funny aggregates", () => {
+    const ex = $("data")
+      .split("$countryName", "CountryName")
+      .apply("LabelCountry", '"[" ++ $CountryName ++ "]"')
+      .apply("Count", "$data.count()")
+      .apply("CountLT1000", "$Count < 1000")
+      .apply("CountGT1000", "$Count > 1000")
+      .apply("CountLTE397", "$Count <= 397")
+      .apply("CountGTE397", "$Count >= 397")
+      .apply("SumAdded", "$data.sum($added)")
+      .apply("NegSumAdded", "-$SumAdded")
+      .apply("DistinctCity", "$data.countDistinct($cityName)")
+      .sort("$SumAdded", "descending")
       .limit(5);
 
     return ex.compute({ data: ds }).then(v => {
@@ -422,9 +422,9 @@ describe('compute native nontrivial data', function () {
           CountGTE397: false,
           CountLT1000: true,
           CountLTE397: true,
-          CountryName: 'Colombia',
+          CountryName: "Colombia",
           DistinctCity: 8,
-          LabelCountry: '[Colombia]',
+          LabelCountry: "[Colombia]",
           NegSumAdded: -60398,
           SumAdded: 60398,
         },
@@ -434,9 +434,9 @@ describe('compute native nontrivial data', function () {
           CountGTE397: false,
           CountLT1000: true,
           CountLTE397: true,
-          CountryName: 'Russia',
+          CountryName: "Russia",
           DistinctCity: 36,
-          LabelCountry: '[Russia]',
+          LabelCountry: "[Russia]",
           NegSumAdded: -50561,
           SumAdded: 50561,
         },
@@ -446,9 +446,9 @@ describe('compute native nontrivial data', function () {
           CountGTE397: true,
           CountLT1000: true,
           CountLTE397: false,
-          CountryName: 'United States',
+          CountryName: "United States",
           DistinctCity: 252,
-          LabelCountry: '[United States]',
+          LabelCountry: "[United States]",
           NegSumAdded: -44433,
           SumAdded: 44433,
         },
@@ -458,9 +458,9 @@ describe('compute native nontrivial data', function () {
           CountGTE397: false,
           CountLT1000: true,
           CountLTE397: true,
-          CountryName: 'Italy',
+          CountryName: "Italy",
           DistinctCity: 78,
-          LabelCountry: '[Italy]',
+          LabelCountry: "[Italy]",
           NegSumAdded: -41073,
           SumAdded: 41073,
         },
@@ -468,13 +468,13 @@ describe('compute native nontrivial data', function () {
     });
   });
 
-  it('works with join timeBucket case', () => {
-    const ex = $('data')
-      .split('$time.timeBucket(PT6H)', 'Time', 'd1')
-      .join($('data').split('$time.timeShift(PT6H, 1).timeBucket(PT6H)', 'Time', 'd2'))
-      .apply('CountD1', '$d1.count()')
-      .apply('CountD2', '$d2.count()')
-      .sort('$Time', 'ascending');
+  it("works with join timeBucket case", () => {
+    const ex = $("data")
+      .split("$time.timeBucket(PT6H)", "Time", "d1")
+      .join($("data").split("$time.timeShift(PT6H, 1).timeBucket(PT6H)", "Time", "d2"))
+      .apply("CountD1", "$d1.count()")
+      .apply("CountD2", "$d2.count()")
+      .sort("$Time", "ascending");
 
     return ex.compute({ data: ds }).then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -482,62 +482,62 @@ describe('compute native nontrivial data', function () {
           CountD1: 5413,
           CountD2: 0,
           Time: {
-            end: new Date('2015-09-12T06:00:00.000Z'),
-            start: new Date('2015-09-12T00:00:00.000Z'),
+            end: new Date("2015-09-12T06:00:00.000Z"),
+            start: new Date("2015-09-12T00:00:00.000Z"),
           },
         },
         {
           CountD1: 11099,
           CountD2: 5413,
           Time: {
-            end: new Date('2015-09-12T12:00:00.000Z'),
-            start: new Date('2015-09-12T06:00:00.000Z'),
+            end: new Date("2015-09-12T12:00:00.000Z"),
+            start: new Date("2015-09-12T06:00:00.000Z"),
           },
         },
         {
           CountD1: 11879,
           CountD2: 11099,
           Time: {
-            end: new Date('2015-09-12T18:00:00.000Z'),
-            start: new Date('2015-09-12T12:00:00.000Z'),
+            end: new Date("2015-09-12T18:00:00.000Z"),
+            start: new Date("2015-09-12T12:00:00.000Z"),
           },
         },
         {
           CountD1: 10853,
           CountD2: 11879,
           Time: {
-            end: new Date('2015-09-13T00:00:00.000Z'),
-            start: new Date('2015-09-12T18:00:00.000Z'),
+            end: new Date("2015-09-13T00:00:00.000Z"),
+            start: new Date("2015-09-12T18:00:00.000Z"),
           },
         },
       ]);
     });
   });
 
-  it('works with join timeBucket case with filters', () => {
+  it("works with join timeBucket case with filters", () => {
     const ex = ply()
       .apply(
-        'd1',
-        $('data').filter(
-          $('time').overlap(new Date('2015-09-12T12:00:00Z'), new Date('2015-09-13T00:00:00Z')),
+        "d1",
+        $("data").filter(
+          $("time").overlap(new Date("2015-09-12T12:00:00Z"), new Date("2015-09-13T00:00:00Z")),
         ),
       )
       .apply(
-        'd2',
-        $('data').filter(
-          $('time').overlap(new Date('2015-09-12T00:00:00Z'), new Date('2015-09-12T12:00:00Z')),
+        "d2",
+        $("data").filter(
+          $("time").overlap(new Date("2015-09-12T00:00:00Z"), new Date("2015-09-12T12:00:00Z")),
         ),
       )
-      .apply('CountD1', '$d1.count()')
-      .apply('CountD2', '$d2.count()')
+      .apply("CountD1", "$d1.count()")
+      .apply("CountD2", "$d2.count()")
       .apply(
-        'Sub',
-        $('d1')
-          .split('$time.timeBucket(PT3H)', 'Time')
-          .join($('d2').split('$time.timeShift(PT12H, 1).timeBucket(PT3H)', 'Time'))
-          .apply('CountD1', '$d1.count()')
-          .apply('CountD2', '$d2.count()')
-          .sort('$Time', 'ascending'),
+        "Sub",
+        $("d1")
+          .split("$time.timeBucket(PT3H)", "Time")
+          .join($("d2").split("$time.timeShift(PT12H, 1).timeBucket(PT3H)", "Time"))
+          .apply("CountD1", "$d1.count()")
+          .apply("CountD2", "$d2.count()")
+          .sort("$Time", "ascending"),
       );
 
     return ex.compute({ data: ds }).then(v => {
@@ -548,24 +548,24 @@ describe('compute native nontrivial data', function () {
           Sub: {
             attributes: [
               {
-                name: 'Time',
-                type: 'TIME_RANGE',
+                name: "Time",
+                type: "TIME_RANGE",
               },
               {
-                name: 'd1',
-                type: 'DATASET',
+                name: "d1",
+                type: "DATASET",
               },
               {
-                name: 'd2',
-                type: 'DATASET',
+                name: "d2",
+                type: "DATASET",
               },
               {
-                name: 'CountD1',
-                type: 'NUMBER',
+                name: "CountD1",
+                type: "NUMBER",
               },
               {
-                name: 'CountD2',
-                type: 'NUMBER',
+                name: "CountD2",
+                type: "NUMBER",
               },
             ],
             data: [
@@ -573,36 +573,36 @@ describe('compute native nontrivial data', function () {
                 CountD1: 5655,
                 CountD2: 2514,
                 Time: {
-                  end: new Date('2015-09-12T15:00:00.000Z'),
-                  start: new Date('2015-09-12T12:00:00.000Z'),
+                  end: new Date("2015-09-12T15:00:00.000Z"),
+                  start: new Date("2015-09-12T12:00:00.000Z"),
                 },
               },
               {
                 CountD1: 6224,
                 CountD2: 2899,
                 Time: {
-                  end: new Date('2015-09-12T18:00:00.000Z'),
-                  start: new Date('2015-09-12T15:00:00.000Z'),
+                  end: new Date("2015-09-12T18:00:00.000Z"),
+                  start: new Date("2015-09-12T15:00:00.000Z"),
                 },
               },
               {
                 CountD1: 6015,
                 CountD2: 5979,
                 Time: {
-                  end: new Date('2015-09-12T21:00:00.000Z'),
-                  start: new Date('2015-09-12T18:00:00.000Z'),
+                  end: new Date("2015-09-12T21:00:00.000Z"),
+                  start: new Date("2015-09-12T18:00:00.000Z"),
                 },
               },
               {
                 CountD1: 4838,
                 CountD2: 5120,
                 Time: {
-                  end: new Date('2015-09-13T00:00:00.000Z'),
-                  start: new Date('2015-09-12T21:00:00.000Z'),
+                  end: new Date("2015-09-13T00:00:00.000Z"),
+                  start: new Date("2015-09-12T21:00:00.000Z"),
                 },
               },
             ],
-            keys: ['Time'],
+            keys: ["Time"],
           },
         },
       ]);

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const { druidRequesterFactory } = require('plywood-druid-requester');
-const { mySqlRequesterFactory } = require('plywood-mysql-requester');
+const { druidRequesterFactory } = require("plywood-druid-requester");
+const { mySqlRequesterFactory } = require("plywood-mysql-requester");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { External, TimeRange, $, ply, basicExecutorFactory, verboseRequesterFactory } = plywood;
 
-const utils = require('../utils');
-const info = require('../info');
+const utils = require("../utils");
+const info = require("../info");
 
 const druidRequester = druidRequesterFactory({
   host: info.druidHost,
@@ -45,48 +45,48 @@ const mySqlRequester = mySqlRequesterFactory({
 // });
 
 const attributes = [
-  { name: 'time', type: 'TIME' },
-  { name: 'sometimeLater', type: 'TIME' },
-  { name: 'channel', type: 'STRING' },
-  { name: 'cityName', type: 'STRING' },
-  { name: 'comment', type: 'STRING' },
-  { name: 'commentLength', type: 'NUMBER' },
-  { name: 'countryIsoCode', type: 'STRING' },
-  { name: 'countryName', type: 'STRING' },
-  { name: 'isAnonymous', type: 'BOOLEAN' },
-  { name: 'isMinor', type: 'BOOLEAN' },
-  { name: 'isNew', type: 'BOOLEAN' },
-  { name: 'isRobot', type: 'BOOLEAN' },
-  { name: 'isUnpatrolled', type: 'BOOLEAN' },
-  { name: 'metroCode', type: 'STRING' },
-  { name: 'namespace', type: 'STRING' },
-  { name: 'page', type: 'STRING' },
-  { name: 'regionIsoCode', type: 'STRING' },
-  { name: 'regionName', type: 'STRING' },
-  { name: 'user', type: 'STRING' },
+  { name: "time", type: "TIME" },
+  { name: "sometimeLater", type: "TIME" },
+  { name: "channel", type: "STRING" },
+  { name: "cityName", type: "STRING" },
+  { name: "comment", type: "STRING" },
+  { name: "commentLength", type: "NUMBER" },
+  { name: "countryIsoCode", type: "STRING" },
+  { name: "countryName", type: "STRING" },
+  { name: "isAnonymous", type: "BOOLEAN" },
+  { name: "isMinor", type: "BOOLEAN" },
+  { name: "isNew", type: "BOOLEAN" },
+  { name: "isRobot", type: "BOOLEAN" },
+  { name: "isUnpatrolled", type: "BOOLEAN" },
+  { name: "metroCode", type: "STRING" },
+  { name: "namespace", type: "STRING" },
+  { name: "page", type: "STRING" },
+  { name: "regionIsoCode", type: "STRING" },
+  { name: "regionName", type: "STRING" },
+  { name: "user", type: "STRING" },
   // { name: "userChars", type: 'SET/STRING' },
-  { name: 'count', type: 'NUMBER' },
-  { name: 'delta', type: 'NUMBER' },
-  { name: 'min_delta', type: 'NUMBER' },
-  { name: 'max_delta', type: 'NUMBER' },
-  { name: 'deltaByTen', type: 'NUMBER' },
-  { name: 'added', type: 'NUMBER' },
-  { name: 'deleted', type: 'NUMBER' },
+  { name: "count", type: "NUMBER" },
+  { name: "delta", type: "NUMBER" },
+  { name: "min_delta", type: "NUMBER" },
+  { name: "max_delta", type: "NUMBER" },
+  { name: "deltaByTen", type: "NUMBER" },
+  { name: "added", type: "NUMBER" },
+  { name: "deleted", type: "NUMBER" },
 ];
 
 const mixedExecutor = basicExecutorFactory({
   datasets: {
     wiki_druid: External.fromJS(
       {
-        engine: 'druid',
-        source: 'wikipedia',
-        timeAttribute: 'time',
+        engine: "druid",
+        source: "wikipedia",
+        timeAttribute: "time",
         context: info.druidContext,
         attributes,
-        filter: $('time').overlap(
+        filter: $("time").overlap(
           TimeRange.fromJS({
-            start: new Date('2015-09-12T00:00:00Z'),
-            end: new Date('2015-09-13T00:00:00Z'),
+            start: new Date("2015-09-12T00:00:00Z"),
+            end: new Date("2015-09-13T00:00:00Z"),
           }),
         ),
         version: info.druidVersion,
@@ -95,8 +95,8 @@ const mixedExecutor = basicExecutorFactory({
     ),
     wiki_mysql: External.fromJS(
       {
-        engine: 'mysql',
-        source: 'wikipedia',
+        engine: "mysql",
+        source: "wikipedia",
         attributes,
       },
       mySqlRequester,
@@ -104,130 +104,130 @@ const mixedExecutor = basicExecutorFactory({
   },
 });
 
-describe('Multi Dataset Functional', function () {
+describe("Multi Dataset Functional", function () {
   this.timeout(10000);
 
   // ToDo: make this work
-  it.skip('works in basic case', () => {
+  it.skip("works in basic case", () => {
     const ex = ply()
-      .apply('wiki_druid', $('wiki_druid').filter($('channel').is('en')))
-      .apply('TotalAddedDruid', '$wiki_druid.sum($added)')
-      .apply('wiki_mysql', $('wiki_mysql').filter($('channel').is('en')))
-      .apply('TotalAddedMySQL', '$wiki_mysql.sum($added)');
+      .apply("wiki_druid", $("wiki_druid").filter($("channel").is("en")))
+      .apply("TotalAddedDruid", "$wiki_druid.sum($added)")
+      .apply("wiki_mysql", $("wiki_mysql").filter($("channel").is("en")))
+      .apply("TotalAddedMySQL", "$wiki_mysql.sum($added)");
 
     return mixedExecutor(ex).then(result => {
       expect(result.toJS().data).to.deep.equal([]);
     });
   });
 
-  it('mixed split case', () => {
-    const ex = $('wiki_mysql')
-      .split('$channel', 'Channel')
-      .apply('TotalAddedMySQL', '$wiki_mysql.sum($added)')
-      .sort('$TotalAddedMySQL', 'descending')
+  it("mixed split case", () => {
+    const ex = $("wiki_mysql")
+      .split("$channel", "Channel")
+      .apply("TotalAddedMySQL", "$wiki_mysql.sum($added)")
+      .sort("$TotalAddedMySQL", "descending")
       .limit(3)
-      .apply('wiki_druid', $('wiki_druid').filter('$channel == $Channel'))
+      .apply("wiki_druid", $("wiki_druid").filter("$channel == $Channel"))
       .apply(
-        'Namespaces',
-        $('wiki_druid')
-          .split('$namespace', 'Namespace')
-          .apply('TotalAddedDruid', '$wiki_druid.sum($added)')
-          .sort('$TotalAddedDruid', 'descending')
+        "Namespaces",
+        $("wiki_druid")
+          .split("$namespace", "Namespace")
+          .apply("TotalAddedDruid", "$wiki_druid.sum($added)")
+          .sort("$TotalAddedDruid", "descending")
           .limit(3),
       );
 
     return mixedExecutor(ex).then(result => {
       expect(result.toJS().data).to.deep.equal([
         {
-          Channel: 'en',
+          Channel: "en",
           Namespaces: {
             attributes: [
               {
-                name: 'Namespace',
-                type: 'STRING',
+                name: "Namespace",
+                type: "STRING",
               },
               {
-                name: 'TotalAddedDruid',
-                type: 'NUMBER',
+                name: "TotalAddedDruid",
+                type: "NUMBER",
               },
             ],
             data: [
               {
-                Namespace: 'Main',
+                Namespace: "Main",
                 TotalAddedDruid: 11594002,
               },
               {
-                Namespace: 'User talk',
+                Namespace: "User talk",
                 TotalAddedDruid: 9210976,
               },
               {
-                Namespace: 'Wikipedia',
+                Namespace: "Wikipedia",
                 TotalAddedDruid: 4720291,
               },
             ],
-            keys: ['Namespace'],
+            keys: ["Namespace"],
           },
           TotalAddedMySQL: 32553107,
         },
         {
-          Channel: 'it',
+          Channel: "it",
           Namespaces: {
             attributes: [
               {
-                name: 'Namespace',
-                type: 'STRING',
+                name: "Namespace",
+                type: "STRING",
               },
               {
-                name: 'TotalAddedDruid',
-                type: 'NUMBER',
+                name: "TotalAddedDruid",
+                type: "NUMBER",
               },
             ],
             data: [
               {
-                Namespace: 'Discussioni utente',
+                Namespace: "Discussioni utente",
                 TotalAddedDruid: 5938398,
               },
               {
-                Namespace: 'Main',
+                Namespace: "Main",
                 TotalAddedDruid: 1545491,
               },
               {
-                Namespace: 'Utente',
+                Namespace: "Utente",
                 TotalAddedDruid: 97907,
               },
             ],
-            keys: ['Namespace'],
+            keys: ["Namespace"],
           },
           TotalAddedMySQL: 7852924,
         },
         {
-          Channel: 'fr',
+          Channel: "fr",
           Namespaces: {
             attributes: [
               {
-                name: 'Namespace',
-                type: 'STRING',
+                name: "Namespace",
+                type: "STRING",
               },
               {
-                name: 'TotalAddedDruid',
-                type: 'NUMBER',
+                name: "TotalAddedDruid",
+                type: "NUMBER",
               },
             ],
             data: [
               {
-                Namespace: 'Main',
+                Namespace: "Main",
                 TotalAddedDruid: 3830175,
               },
               {
-                Namespace: 'Discussion utilisateur',
+                Namespace: "Discussion utilisateur",
                 TotalAddedDruid: 1381838,
               },
               {
-                Namespace: 'Projet',
+                Namespace: "Projet",
                 TotalAddedDruid: 639063,
               },
             ],
-            keys: ['Namespace'],
+            keys: ["Namespace"],
           },
           TotalAddedMySQL: 7050247,
         },

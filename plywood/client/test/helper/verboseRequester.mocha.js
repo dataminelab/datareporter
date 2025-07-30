@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const { PassThrough } = require('readable-stream');
-const toArray = require('stream-to-array');
+const { PassThrough } = require("readable-stream");
+const toArray = require("stream-to-array");
 
-const { verboseRequesterFactory } = require('../../build/plywood');
+const { verboseRequesterFactory } = require("../../build/plywood");
 
-describe('Verbose requester', () => {
+describe("Verbose requester", () => {
   const requester = request => {
     const stream = new PassThrough({ objectMode: true });
     setTimeout(() => {
       if (/^fail/.test(request.query)) {
-        stream.emit('error', new Error('some error'));
+        stream.emit("error", new Error("some error"));
         stream.end();
       } else {
         stream.write(1);
@@ -39,19 +39,19 @@ describe('Verbose requester', () => {
     return stream;
   };
 
-  it('works on success', () => {
+  it("works on success", () => {
     const lines = [];
     const verboseRequester = verboseRequesterFactory({
-      name: 'rq1',
+      name: "rq1",
       requester: requester,
       printLine(line) {
         return lines.push(line);
       },
     });
 
-    return toArray(verboseRequester({ query: 'Query1' })).then(res => {
-      expect(res).to.be.an('array');
-      expect(lines.join('\n').replace(/\d+ms/, 'Xms')).to.equal(
+    return toArray(verboseRequester({ query: "Query1" })).then(res => {
+      expect(res).to.be.an("array");
+      expect(lines.join("\n").replace(/\d+ms/, "Xms")).to.equal(
         `vvvvvvvvvvvvvvvvvvvvvvvvvv
 Requester rq1 sending query 1:
 "Query1"
@@ -68,22 +68,22 @@ Requester rq1 got result from query 1: (in Xms)
     });
   });
 
-  it('works on failure', () => {
+  it("works on failure", () => {
     const lines = [];
     const verboseRequester = verboseRequesterFactory({
-      name: 'rq2',
+      name: "rq2",
       requester: requester,
       printLine(line) {
         return lines.push(line);
       },
     });
 
-    return toArray(verboseRequester({ query: 'failThis' }))
+    return toArray(verboseRequester({ query: "failThis" }))
       .then(() => {
-        throw new Error('did not fail');
+        throw new Error("did not fail");
       })
       .catch(error => {
-        expect(lines.join('\n').replace(/\d+ms/, 'Xms')).to.equal(
+        expect(lines.join("\n").replace(/\d+ms/, "Xms")).to.equal(
           `vvvvvvvvvvvvvvvvvvvvvvvvvv
 Requester rq2 sending query 1:
 "failThis"

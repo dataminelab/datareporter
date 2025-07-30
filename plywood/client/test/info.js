@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-exports.druidVersion = '0.18.0-iap4';
+exports.druidVersion = "0.18.0-iap4";
 exports.druidHost = `localhost:8082`;
 exports.druidContext = {
   timeout: 10000,
@@ -22,14 +22,14 @@ exports.druidContext = {
   populateCache: false,
 };
 
-exports.mySqlVersion = '5.7.29';
+exports.mySqlVersion = "5.7.29";
 exports.mySqlHost = `localhost:3306`;
-exports.mySqlDatabase = 'datazoo';
-exports.mySqlUser = 'datazoo';
-exports.mySqlPassword = 'datazoo';
+exports.mySqlDatabase = "datazoo";
+exports.mySqlUser = "datazoo";
+exports.mySqlPassword = "datazoo";
 
-exports.postgresVersion = '9.5.21';
+exports.postgresVersion = "9.5.21";
 exports.postgresHost = `localhost:5432`;
-exports.postgresDatabase = 'datazoo';
-exports.postgresUser = 'root';
-exports.postgresPassword = 'datazoo';
+exports.postgresDatabase = "datazoo";
+exports.postgresUser = "root";
+exports.postgresPassword = "datazoo";

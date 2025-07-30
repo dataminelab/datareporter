@@ -1,12 +1,12 @@
-let druidRequesterFactory = require('plywood-druid-requester').druidRequesterFactory;
-let plywood = require('../../build/plywood');
+let druidRequesterFactory = require("plywood-druid-requester").druidRequesterFactory;
+let plywood = require("../../build/plywood");
 let ply = plywood.ply;
 let $ = plywood.$;
 let External = plywood.External;
 let helper = plywood.helper;
 
 let druidRequester = druidRequesterFactory({
-  host: 'localhost:8082', // Where ever your Druid may be
+  host: "localhost:8082", // Where ever your Druid may be
 });
 
 druidRequester = helper.verboseRequesterFactory({
@@ -18,29 +18,29 @@ druidRequester = helper.verboseRequesterFactory({
 let context = {
   wiki: External.fromJS(
     {
-      engine: 'druid',
-      source: 'wikipedia', // The datasource name in Druid
-      filter: $('__time').overlap({
-        start: new Date('2015-09-01T00:00:00Z'),
-        end: new Date('2015-11-01T00:00:00Z'),
+      engine: "druid",
+      source: "wikipedia", // The datasource name in Druid
+      filter: $("__time").overlap({
+        start: new Date("2015-09-01T00:00:00Z"),
+        end: new Date("2015-11-01T00:00:00Z"),
       }),
     },
     druidRequester,
   ),
 };
 
-let ex = $('wiki')
+let ex = $("wiki")
   .filter('$region != null and $country == "United States"')
-  .split('$region', 'State')
-  .apply('Edits', '$wiki.count()')
-  .sort('$Edits', 'descending')
+  .split("$region", "State")
+  .apply("Edits", "$wiki.count()")
+  .sort("$Edits", "descending")
   .limit(5)
   .apply(
-    'DaysOfWeek',
-    $('wiki')
-      .split($('__time').timePart('DAY_OF_WEEK', 'America/New_York'), 'DayOfWeek')
-      .apply('Edits', '$wiki.count()')
-      .sort('$DayOfWeek', 'ascending'),
+    "DaysOfWeek",
+    $("wiki")
+      .split($("__time").timePart("DAY_OF_WEEK", "America/New_York"), "DayOfWeek")
+      .apply("Edits", "$wiki.count()")
+      .sort("$DayOfWeek", "ascending"),
   );
 
 ex.compute(context).then(function (data) {

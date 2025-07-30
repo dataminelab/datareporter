@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-var fs = require('fs');
-var peg = require('pegjs');
+var fs = require("fs");
+var peg = require("pegjs");
 
 function mkParser(pegjsFilename, outputFilename) {
-  var grammar = fs.readFileSync(pegjsFilename, 'utf8');
+  var grammar = fs.readFileSync(pegjsFilename, "utf8");
 
   try {
     var parserSrc = peg.generate(grammar, {
-      format: 'bare',
-      output: 'source',
-      optimize: 'speed', // or "size"
+      format: "bare",
+      output: "source",
+      optimize: "speed", // or "size"
     });
   } catch (e) {
     console.error(e);
@@ -33,14 +33,14 @@ function mkParser(pegjsFilename, outputFilename) {
   }
 
   parserSrc =
-    'module.exports =\n' +
+    "module.exports =\n" +
     parserSrc
-      .replace('\n(function() {\n', '\nfunction(plywood, chronoshift) {\n')
-      .replace('\n})()', '\n}');
+      .replace("\n(function() {\n", "\nfunction(plywood, chronoshift) {\n")
+      .replace("\n})()", "\n}");
 
-  fs.writeFileSync(outputFilename, parserSrc, 'utf8');
+  fs.writeFileSync(outputFilename, parserSrc, "utf8");
 }
 
 // Expressions
 
-mkParser('./src/expressions/expression.pegjs', './build/expressionParser.js');
+mkParser("./src/expressions/expression.pegjs", "./build/expressionParser.js");

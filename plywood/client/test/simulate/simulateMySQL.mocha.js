@@ -15,62 +15,62 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
-const { sane } = require('../utils');
+const { expect } = require("chai");
+const { sane } = require("../utils");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { External, $, ply, r, Expression } = plywood;
 
 const context = {
   diamonds: External.fromJS({
-    engine: 'mysql',
-    source: 'diamonds',
+    engine: "mysql",
+    source: "diamonds",
     attributes: [
-      { name: 'time', type: 'TIME' },
-      { name: 'color', type: 'STRING' },
-      { name: 'cut', type: 'STRING' },
-      { name: 'tags', type: 'SET/STRING' },
-      { name: 'carat', type: 'NUMBER', nativeType: 'STRING' },
-      { name: 'height_bucket', type: 'NUMBER' },
-      { name: 'price', type: 'NUMBER' },
-      { name: 'tax', type: 'NUMBER' },
+      { name: "time", type: "TIME" },
+      { name: "color", type: "STRING" },
+      { name: "cut", type: "STRING" },
+      { name: "tags", type: "SET/STRING" },
+      { name: "carat", type: "NUMBER", nativeType: "STRING" },
+      { name: "height_bucket", type: "NUMBER" },
+      { name: "price", type: "NUMBER" },
+      { name: "tax", type: "NUMBER" },
     ],
   }),
 };
 
-describe('simulate MySQL', () => {
-  it('works in advanced case', () => {
+describe("simulate MySQL", () => {
+  it("works in advanced case", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter($('color').is('D')))
-      .apply('Count', '$diamonds.count()')
-      .apply('TotalPrice', '$diamonds.sum($price)')
-      .apply('PriceTimes2', '$diamonds.sum($price) * 2')
-      .apply('PriceMinusTax', '$TotalPrice - $diamonds.sum($tax)')
-      .apply('Crazy', '$diamonds.sum($price) - $diamonds.sum($tax) + 10 - $diamonds.sum($carat)')
-      .apply('PriceAndTax', '$diamonds.sum($price) + $diamonds.sum($tax)')
-      .apply('PriceGoodCut', '$diamonds.filter($cut == good).sum($price)')
+      .apply("diamonds", $("diamonds").filter($("color").is("D")))
+      .apply("Count", "$diamonds.count()")
+      .apply("TotalPrice", "$diamonds.sum($price)")
+      .apply("PriceTimes2", "$diamonds.sum($price) * 2")
+      .apply("PriceMinusTax", "$TotalPrice - $diamonds.sum($tax)")
+      .apply("Crazy", "$diamonds.sum($price) - $diamonds.sum($tax) + 10 - $diamonds.sum($carat)")
+      .apply("PriceAndTax", "$diamonds.sum($price) + $diamonds.sum($tax)")
+      .apply("PriceGoodCut", "$diamonds.filter($cut == good).sum($price)")
       .apply(
-        'Cuts',
-        $('diamonds')
-          .split('$cut', 'Cut')
-          .apply('Count', $('diamonds').count())
-          .apply('PercentOfTotal', '$Count / $^Count')
-          .sort('$Count', 'descending')
+        "Cuts",
+        $("diamonds")
+          .split("$cut", "Cut")
+          .apply("Count", $("diamonds").count())
+          .apply("PercentOfTotal", "$Count / $^Count")
+          .sort("$Count", "descending")
           .limit(2)
           .apply(
-            'Time',
-            $('diamonds')
-              .split($('time').timeBucket('P1D', 'America/Los_Angeles'), 'Timestamp')
-              .apply('TotalPrice', $('diamonds').sum('$price'))
-              .sort('$Timestamp', 'ascending')
+            "Time",
+            $("diamonds")
+              .split($("time").timeBucket("P1D", "America/Los_Angeles"), "Timestamp")
+              .apply("TotalPrice", $("diamonds").sum("$price"))
+              .sort("$Timestamp", "ascending")
               // .limit(10)
               .apply(
-                'Carats',
-                $('diamonds')
-                  .split($('carat').numberBucket(0.25), 'Carat')
-                  .apply('Count', $('diamonds').count().fallback(0))
-                  .sort('$Count', 'descending')
+                "Carats",
+                $("diamonds")
+                  .split($("carat").numberBucket(0.25), "Carat")
+                  .apply("Count", $("diamonds").count().fallback(0))
+                  .sort("$Count", "descending")
                   .limit(3),
               ),
           ),
@@ -135,15 +135,15 @@ describe('simulate MySQL', () => {
     ]);
   });
 
-  it('works with up reference', () => {
+  it("works with up reference", () => {
     const ex = ply()
-      .apply('Count', '$diamonds.count()')
+      .apply("Count", "$diamonds.count()")
       .apply(
-        'Cuts',
-        $('diamonds')
-          .split('$cut', 'Cut')
-          .apply('Count', $('diamonds').count())
-          .apply('PercentOfTotal', '$Count / $^Count'),
+        "Cuts",
+        $("diamonds")
+          .split("$cut", "Cut")
+          .apply("Count", $("diamonds").count())
+          .apply("PercentOfTotal", "$Count / $^Count"),
       );
 
     const queryPlan = ex.simulateQueryPlan(context);
@@ -170,12 +170,12 @@ describe('simulate MySQL', () => {
     ]);
   });
 
-  it('works with having filter', () => {
-    const ex = $('diamonds')
-      .split('$cut', 'Cut')
-      .apply('Count', $('diamonds').count())
-      .sort('$Count', 'descending')
-      .filter($('Count').greaterThan(100))
+  it("works with having filter", () => {
+    const ex = $("diamonds")
+      .split("$cut", "Cut")
+      .apply("Count", $("diamonds").count())
+      .sort("$Count", "descending")
+      .filter($("Count").greaterThan(100))
       .limit(10);
 
     const queryPlan = ex.simulateQueryPlan(context);
@@ -195,22 +195,22 @@ describe('simulate MySQL', () => {
     ]);
   });
 
-  it('works with range bucket', () => {
+  it("works with range bucket", () => {
     const ex = ply()
       .apply(
-        'HeightBuckets',
-        $('diamonds')
-          .split('$height_bucket', 'HeightBucket')
-          .apply('Count', $('diamonds').count())
-          .sort('$Count', 'descending')
+        "HeightBuckets",
+        $("diamonds")
+          .split("$height_bucket", "HeightBucket")
+          .apply("Count", $("diamonds").count())
+          .sort("$Count", "descending")
           .limit(10),
       )
       .apply(
-        'HeightUpBuckets',
-        $('diamonds')
-          .split($('height_bucket').numberBucket(2, 0.5), 'HeightBucket')
-          .apply('Count', $('diamonds').count())
-          .sort('$Count', 'descending')
+        "HeightUpBuckets",
+        $("diamonds")
+          .split($("height_bucket").numberBucket(2, 0.5), "HeightBucket")
+          .apply("Count", $("diamonds").count())
+          .sort("$Count", "descending")
           .limit(10),
       );
 
@@ -239,8 +239,8 @@ describe('simulate MySQL', () => {
     ]);
   });
 
-  it('works with SELECT query', () => {
-    const ex = $('diamonds').filter('$color == "D"').sort('$cut', 'descending').limit(10);
+  it("works with SELECT query", () => {
+    const ex = $("diamonds").filter('$color == "D"').sort("$cut", "descending").limit(10);
 
     const queryPlan = ex.simulateQueryPlan(context);
     expect(queryPlan).to.have.length(1);
@@ -257,8 +257,8 @@ describe('simulate MySQL', () => {
     ]);
   });
 
-  it('works with value query', () => {
-    const ex = $('diamonds').filter('$color == "D"').sum('$price');
+  it("works with value query", () => {
+    const ex = $("diamonds").filter('$color == "D"').sum("$price");
 
     const queryPlan = ex.simulateQueryPlan(context);
     expect(queryPlan).to.have.length(1);
@@ -274,11 +274,11 @@ describe('simulate MySQL', () => {
     ]);
   });
 
-  it('works with BOOLEAN bucket', () => {
-    const ex = $('diamonds')
-      .split('$color == A', 'ColorIsA')
-      .apply('Count', $('diamonds').count())
-      .sort('$Count', 'descending');
+  it("works with BOOLEAN bucket", () => {
+    const ex = $("diamonds")
+      .split("$color == A", "ColorIsA")
+      .apply("Count", $("diamonds").count())
+      .sort("$Count", "descending");
 
     const queryPlan = ex.simulateQueryPlan(context);
     expect(queryPlan).to.have.length(1);
@@ -295,21 +295,21 @@ describe('simulate MySQL', () => {
     ]);
   });
 
-  it('works multi-dimensional GROUP BYs', () => {
+  it("works multi-dimensional GROUP BYs", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter($('color').overlap(['A', 'B', 'some_color'])))
+      .apply("diamonds", $("diamonds").filter($("color").overlap(["A", "B", "some_color"])))
       .apply(
-        'Cuts',
-        $('diamonds')
-          .split({ Cut: '$cut', Color: '$color' })
-          .apply('Count', $('diamonds').count())
+        "Cuts",
+        $("diamonds")
+          .split({ Cut: "$cut", Color: "$color" })
+          .apply("Count", $("diamonds").count())
           .limit(3)
           .apply(
-            'Carats',
-            $('diamonds')
-              .split($('carat').numberBucket(0.25), 'Carat')
-              .apply('Count', $('diamonds').count())
-              .sort('$Count', 'descending')
+            "Carats",
+            $("diamonds")
+              .split($("carat").numberBucket(0.25), "Carat")
+              .apply("Count", $("diamonds").count())
+              .sort("$Count", "descending")
               .limit(3),
           ),
       );

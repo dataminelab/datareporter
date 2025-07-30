@@ -1,27 +1,25 @@
 module.exports = {
   root: true,
-  extends: [
-    require.resolve("../client/.eslintrc.js")
-  ],
+  extends: [require.resolve("../client/.eslintrc.js")],
   overrides: [
     {
       files: ["docs/**/*.js", "data/**/*.js"],
       parser: "espree",
       parserOptions: {
         ecmaVersion: 2018,
-        sourceType: "script"
+        sourceType: "script",
       },
       env: {
         node: true,
-        commonjs: true
+        commonjs: true,
       },
       rules: {
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
         "no-undef": "off",
-        "@typescript-eslint/no-require-imports": "off"
-      }
-    }
+        "@typescript-eslint/no-require-imports": "off",
+      },
+    },
   ],
   ignorePatterns: ["**/*.min.js"],
 };

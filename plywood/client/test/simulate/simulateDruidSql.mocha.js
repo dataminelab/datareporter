@@ -15,51 +15,51 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { Expression, External, Dataset, TimeRange, $, ply, r, s$ } = plywood;
 
 const attributes = [
-  { name: 'time', type: 'TIME' },
-  { name: 'some_other_time', type: 'TIME' },
-  { name: 'some_other_time_long', type: 'TIME', nativeType: 'LONG' },
-  { name: 'color', type: 'STRING' },
-  { name: 'cut', type: 'STRING' },
-  { name: 'isNice', type: 'BOOLEAN' },
-  { name: 'tags', type: 'SET/STRING' },
-  { name: 'pugs', type: 'SET/STRING' },
-  { name: 'carat', type: 'NUMBER', nativeType: 'STRING' },
-  { name: 'carat_n', nativeType: 'STRING' },
-  { name: 'height_bucket', type: 'NUMBER' },
-  { name: 'price', type: 'NUMBER', unsplitable: true },
-  { name: 'tax', type: 'NUMBER', unsplitable: true },
-  { name: 'vendor_id', type: 'NULL', nativeType: 'hyperUnique', unsplitable: true },
-  { name: 'ip_address', type: 'IP' },
-  { name: 'ip_prefix', type: 'IP' },
+  { name: "time", type: "TIME" },
+  { name: "some_other_time", type: "TIME" },
+  { name: "some_other_time_long", type: "TIME", nativeType: "LONG" },
+  { name: "color", type: "STRING" },
+  { name: "cut", type: "STRING" },
+  { name: "isNice", type: "BOOLEAN" },
+  { name: "tags", type: "SET/STRING" },
+  { name: "pugs", type: "SET/STRING" },
+  { name: "carat", type: "NUMBER", nativeType: "STRING" },
+  { name: "carat_n", nativeType: "STRING" },
+  { name: "height_bucket", type: "NUMBER" },
+  { name: "price", type: "NUMBER", unsplitable: true },
+  { name: "tax", type: "NUMBER", unsplitable: true },
+  { name: "vendor_id", type: "NULL", nativeType: "hyperUnique", unsplitable: true },
+  { name: "ip_address", type: "IP" },
+  { name: "ip_prefix", type: "IP" },
 
-  { name: 'try', type: 'NUMBER', nativeType: 'STRING' }, // Added here because 'try' is a JS keyword
-  { name: 'a+b', type: 'NUMBER', nativeType: 'STRING' }, // Added here because it is invalid JS without escaping
+  { name: "try", type: "NUMBER", nativeType: "STRING" }, // Added here because 'try' is a JS keyword
+  { name: "a+b", type: "NUMBER", nativeType: "STRING" }, // Added here because it is invalid JS without escaping
 ];
 
-describe('simulate DruidSql', () => {
-  it('casts columns to VARCHAR for contains', () => {
+describe("simulate DruidSql", () => {
+  it("casts columns to VARCHAR for contains", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter('$tags.contains("ta")'))
-      .apply('Tags', $('diamonds').split('$tags', 'Tag').sort('$Tag', 'descending').limit(10));
+      .apply("diamonds", $("diamonds").filter('$tags.contains("ta")'))
+      .apply("Tags", $("diamonds").split("$tags", "Tag").sort("$Tag", "descending").limit(10));
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('time').overlap({
-          start: new Date('2015-03-12T00:00:00Z'),
-          end: new Date('2015-03-19T00:00:00Z'),
+        filter: $("time").overlap({
+          start: new Date("2015-03-12T00:00:00Z"),
+          end: new Date("2015-03-19T00:00:00Z"),
         }),
       }),
     });
@@ -68,7 +68,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n"tags" AS "Tag"\nFROM "diamonds" AS t\nWHERE ((TIMESTAMP \'2015-03-12 00:00:00\'<="time" AND "time"<TIMESTAMP \'2015-03-19 00:00:00\') AND CONTAINS_STRING(CAST("tags" AS VARCHAR),\'ta\'))\nGROUP BY 1\nORDER BY "Tag" DESC\nLIMIT 10',
@@ -77,22 +77,22 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('casts columns to VARCHAR for regex', () => {
+  it("casts columns to VARCHAR for regex", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter('$tags.match("^ta.*")'))
-      .apply('Tags', $('diamonds').split('$tags', 'Tag').sort('$Tag', 'descending').limit(10));
+      .apply("diamonds", $("diamonds").filter('$tags.match("^ta.*")'))
+      .apply("Tags", $("diamonds").split("$tags", "Tag").sort("$Tag", "descending").limit(10));
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('time').overlap({
-          start: new Date('2015-03-12T00:00:00Z'),
-          end: new Date('2015-03-19T00:00:00Z'),
+        filter: $("time").overlap({
+          start: new Date("2015-03-12T00:00:00Z"),
+          end: new Date("2015-03-19T00:00:00Z"),
         }),
       }),
     });
@@ -101,7 +101,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n"tags" AS "Tag"\nFROM "diamonds" AS t\nWHERE ((TIMESTAMP \'2015-03-12 00:00:00\'<="time" AND "time"<TIMESTAMP \'2015-03-19 00:00:00\') AND REGEXP_LIKE(CAST("tags" AS VARCHAR), \'^ta.*\'))\nGROUP BY 1\nORDER BY "Tag" DESC\nLIMIT 10',
@@ -110,36 +110,36 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works in basic case', () => {
+  it("works in basic case", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter('$tags.overlap(["tagA", "tagB"])'))
+      .apply("diamonds", $("diamonds").filter('$tags.overlap(["tagA", "tagB"])'))
       .apply(
-        'Tags',
-        $('diamonds')
-          .split('$tags', 'Tag')
-          .sort('$Tag', 'descending')
+        "Tags",
+        $("diamonds")
+          .split("$tags", "Tag")
+          .sort("$Tag", "descending")
           .limit(10)
           .apply(
-            'Cuts',
-            $('diamonds')
-              .split('$cut', 'Cut')
-              .apply('Count', $('diamonds').count())
-              .sort('$Count', 'descending')
+            "Cuts",
+            $("diamonds")
+              .split("$cut", "Cut")
+              .apply("Count", $("diamonds").count())
+              .sort("$Count", "descending")
               .limit(10),
           ),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('time').overlap({
-          start: new Date('2015-03-12T00:00:00Z'),
-          end: new Date('2015-03-19T00:00:00Z'),
+        filter: $("time").overlap({
+          start: new Date("2015-03-12T00:00:00Z"),
+          end: new Date("2015-03-19T00:00:00Z"),
         }),
       }),
     });
@@ -148,7 +148,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n"tags" AS "Tag"\nFROM "diamonds" AS t\nWHERE ((TIMESTAMP \'2015-03-12 00:00:00\'<="time" AND "time"<TIMESTAMP \'2015-03-19 00:00:00\') AND "tags" IN (\'tagA\',\'tagB\'))\nGROUP BY 1\nORDER BY "Tag" DESC\nLIMIT 10',
@@ -157,7 +157,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n"cut" AS "Cut",\nCOUNT(*) AS "Count"\nFROM "diamonds" AS t\nWHERE (((TIMESTAMP \'2015-03-12 00:00:00\'<="time" AND "time"<TIMESTAMP \'2015-03-19 00:00:00\') AND "tags" IN (\'tagA\',\'tagB\')) AND ("tags"=\'some_tags\'))\nGROUP BY 1\nORDER BY "Count" DESC\nLIMIT 10',
@@ -166,22 +166,22 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with . in the datasource', () => {
+  it("works with . in the datasource", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter('$tags.overlap(["tagA", "tagB"])'))
-      .apply('Tags', $('diamonds').split('$tags', 'Tag').sort('$Tag', 'descending').limit(10));
+      .apply("diamonds", $("diamonds").filter('$tags.overlap(["tagA", "tagB"])'))
+      .apply("Tags", $("diamonds").split("$tags", "Tag").sort("$Tag", "descending").limit(10));
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'dia.monds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "dia.monds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('time').overlap({
-          start: new Date('2015-03-12T00:00:00Z'),
-          end: new Date('2015-03-19T00:00:00Z'),
+        filter: $("time").overlap({
+          start: new Date("2015-03-12T00:00:00Z"),
+          end: new Date("2015-03-19T00:00:00Z"),
         }),
       }),
     });
@@ -190,7 +190,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n"tags" AS "Tag"\nFROM "dia.monds" AS t\nWHERE ((TIMESTAMP \'2015-03-12 00:00:00\'<="time" AND "time"<TIMESTAMP \'2015-03-19 00:00:00\') AND "tags" IN (\'tagA\',\'tagB\'))\nGROUP BY 1\nORDER BY "Tag" DESC\nLIMIT 10',
@@ -199,20 +199,20 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with null and null string are both included in a filter expression', () => {
+  it("works with null and null string are both included in a filter expression", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter('$tags.overlap(["tagA", "tagB", null, "null"])'))
-      .apply('Tags', $('diamonds').split('$tags', 'Tag'));
+      .apply("diamonds", $("diamonds").filter('$tags.overlap(["tagA", "tagB", null, "null"])'))
+      .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'dia.monds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "dia.monds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('pugs').overlap(['pugA', 'pugB', null, 'null']).not(),
+        filter: $("pugs").overlap(["pugA", "pugB", null, "null"]).not(),
       }),
     });
     expect(queryPlan.length).to.equal(1);
@@ -220,7 +220,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n"tags" AS "Tag"\nFROM "dia.monds" AS t\nWHERE ((("pugs" IS NULL OR "pugs" IN (\'pugA\',\'pugB\',\'null\'))) IS NOT TRUE AND ("tags" IS NULL OR "tags" IN (\'tagA\',\'tagB\',\'null\')))\nGROUP BY 1',
@@ -229,20 +229,20 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with overlap of [null]', () => {
+  it("works with overlap of [null]", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds'))
-      .apply('Tags', $('diamonds').split('$tags', 'Tag'));
+      .apply("diamonds", $("diamonds"))
+      .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'dia.monds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "dia.monds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('pugs').overlap([null]),
+        filter: $("pugs").overlap([null]),
       }),
     });
     expect(queryPlan.length).to.equal(1);
@@ -250,7 +250,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query: 'SELECT\n"tags" AS "Tag"\nFROM "dia.monds" AS t\nWHERE "pugs" IS NULL\nGROUP BY 1',
         },
@@ -258,20 +258,20 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with null and null string are both included in a filter expression (mvOverlap)', () => {
+  it("works with null and null string are both included in a filter expression (mvOverlap)", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter($('tags').mvOverlap(['tagA', 'tagB', null, 'null'])))
-      .apply('Tags', $('diamonds').split('$tags', 'Tag'));
+      .apply("diamonds", $("diamonds").filter($("tags").mvOverlap(["tagA", "tagB", null, "null"])))
+      .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'dia.monds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "dia.monds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('pugs').mvOverlap(['pugA', 'pugB', null, 'null']).not(),
+        filter: $("pugs").mvOverlap(["pugA", "pugB", null, "null"]).not(),
       }),
     });
     expect(queryPlan.length).to.equal(1);
@@ -279,7 +279,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n"tags" AS "Tag"\nFROM "dia.monds" AS t\nWHERE ((("pugs" IS NULL OR MV_OVERLAP("pugs", ARRAY[\'pugA\',\'pugB\',\'null\']))) IS NOT TRUE AND ("tags" IS NULL OR MV_OVERLAP("tags", ARRAY[\'tagA\',\'tagB\',\'null\'])))\nGROUP BY 1',
@@ -288,20 +288,20 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with null and null string are both included in a filter expression (mvContains)', () => {
+  it("works with null and null string are both included in a filter expression (mvContains)", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter($('tags').mvContains(['tagA', 'tagB', null, 'null'])))
-      .apply('Tags', $('diamonds').split('$tags', 'Tag'));
+      .apply("diamonds", $("diamonds").filter($("tags").mvContains(["tagA", "tagB", null, "null"])))
+      .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'dia.monds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "dia.monds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('pugs').mvContains(['pugA', 'pugB', null, 'null']).not(),
+        filter: $("pugs").mvContains(["pugA", "pugB", null, "null"]).not(),
       }),
     });
     expect(queryPlan.length).to.equal(1);
@@ -309,7 +309,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n"tags" AS "Tag"\nFROM "dia.monds" AS t\nWHERE ((("pugs" IS NULL AND MV_CONTAINS("pugs", ARRAY[\'pugA\',\'pugB\',\'null\']))) IS NOT TRUE AND ("tags" IS NULL AND MV_CONTAINS("tags", ARRAY[\'tagA\',\'tagB\',\'null\'])))\nGROUP BY 1',
@@ -318,23 +318,23 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with duplicate falsy values in a filter expression', () => {
+  it("works with duplicate falsy values in a filter expression", () => {
     const ex = ply()
       .apply(
-        'diamonds',
-        $('diamonds').filter('$tags.overlap(["tagA", "tagB", null, "null", "", ""])'),
+        "diamonds",
+        $("diamonds").filter('$tags.overlap(["tagA", "tagB", null, "null", "", ""])'),
       )
-      .apply('Tags', $('diamonds').split('$tags', 'Tag'));
+      .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'dia.monds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "dia.monds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('pugs').overlap(['pugA', 'pugB', null, null, '', '']).not(),
+        filter: $("pugs").overlap(["pugA", "pugB", null, null, "", ""]).not(),
       }),
     });
     expect(queryPlan.length).to.equal(1);
@@ -342,38 +342,38 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
-            'SELECT\n"tags" AS "Tag"\nFROM "dia.monds" AS t\nWHERE ((("pugs" IS NULL OR "pugs" IN (\'pugA\',\'pugB\',\'\'))) IS NOT TRUE AND ("tags" IS NULL OR "tags" IN (\'tagA\',\'tagB\',\'null\',\'\')))\nGROUP BY 1',
+            "SELECT\n\"tags\" AS \"Tag\"\nFROM \"dia.monds\" AS t\nWHERE (((\"pugs\" IS NULL OR \"pugs\" IN ('pugA','pugB',''))) IS NOT TRUE AND (\"tags\" IS NULL OR \"tags\" IN ('tagA','tagB','null','')))\nGROUP BY 1",
         },
       ],
     ]);
   });
 
-  it('works with sqlRefExpression', () => {
+  it("works with sqlRefExpression", () => {
     const ex = ply().apply(
-      'Tags',
-      $('diamonds')
-        .split(s$('t.tags'), 'Tag')
-        .apply('count', $('diamonds').count())
-        .sort('$count', 'descending')
+      "Tags",
+      $("diamonds")
+        .split(s$("t.tags"), "Tag")
+        .apply("count", $("diamonds").count())
+        .sort("$count", "descending")
         .limit(10)
-        .select('Tag', 'count'),
+        .select("Tag", "count"),
     );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
-        filter: $('time').overlap({
-          start: new Date('2015-03-12T00:00:00Z'),
-          end: new Date('2015-03-19T00:00:00Z'),
+        mode: "raw",
+        filter: $("time").overlap({
+          start: new Date("2015-03-12T00:00:00Z"),
+          end: new Date("2015-03-19T00:00:00Z"),
         }),
       }),
     });
@@ -382,7 +382,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n(t.tags) AS "Tag",\nCOUNT(*) AS "count"\nFROM "diamonds" AS t\nWHERE (TIMESTAMP \'2015-03-12 00:00:00\'<="time" AND "time"<TIMESTAMP \'2015-03-19 00:00:00\')\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',
@@ -391,37 +391,37 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with overlap SET/BOOLEAN', () => {
+  it("works with overlap SET/BOOLEAN", () => {
     const ex = ply().apply(
-      'Tags',
-      $('diamonds')
-        .filter(s$('t.isNice').overlap([true, false]))
-        .split(s$('t.tags'), 'Tag')
-        .apply('count', $('diamonds').count())
+      "Tags",
+      $("diamonds")
+        .filter(s$("t.isNice").overlap([true, false]))
+        .split(s$("t.tags"), "Tag")
+        .apply("count", $("diamonds").count())
         .apply(
-          'filteredCount',
-          $('diamonds')
-            .filter(s$('t.cut').equals('good'))
-            .sqlAggregate('COUNT(*) + COUNT(*)')
+          "filteredCount",
+          $("diamonds")
+            .filter(s$("t.cut").equals("good"))
+            .sqlAggregate("COUNT(*) + COUNT(*)")
             .divide(2),
         )
-        .sort('$count', 'descending')
+        .sort("$count", "descending")
         .limit(10)
-        .select('Tag', 'count', 'filteredCount'),
+        .select("Tag", "count", "filteredCount"),
     );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
-        filter: $('time').overlap({
-          start: new Date('2015-03-12T00:00:00Z'),
-          end: new Date('2015-03-19T00:00:00Z'),
+        mode: "raw",
+        filter: $("time").overlap({
+          start: new Date("2015-03-12T00:00:00Z"),
+          end: new Date("2015-03-19T00:00:00Z"),
         }),
       }),
     });
@@ -431,7 +431,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n(t.tags) AS "Tag",\nCOUNT(*) AS "count",\n((COUNT(*) FILTER (WHERE FALSE) + COUNT(*) FILTER (WHERE FALSE))*1.0/2) AS "filteredCount"\nFROM "diamonds" AS t\nWHERE ((TIMESTAMP \'2015-03-12 00:00:00\'<="time" AND "time"<TIMESTAMP \'2015-03-19 00:00:00\') AND (((t.isNice)=TRUE) OR ((t.isNice)=FALSE)))\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',
@@ -440,29 +440,29 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with mvOverlapExpression', () => {
+  it("works with mvOverlapExpression", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds'))
+      .apply("diamonds", $("diamonds"))
       .apply(
-        'Tags',
-        $('diamonds')
-          .filter($('tags').mvOverlap(['tagA', 'tagB']))
-          .split(s$('t.tags'), 'Tag')
-          .apply('count', $('diamonds').count())
-          .sort('$count', 'descending')
+        "Tags",
+        $("diamonds")
+          .filter($("tags").mvOverlap(["tagA", "tagB"]))
+          .split(s$("t.tags"), "Tag")
+          .apply("count", $("diamonds").count())
+          .sort("$count", "descending")
           .limit(10)
-          .select('Tag', 'count'),
+          .select("Tag", "count"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
+        mode: "raw",
       }),
     });
 
@@ -471,7 +471,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n(t.tags) AS "Tag",\nCOUNT(*) AS "count"\nFROM "diamonds" AS t\nWHERE MV_OVERLAP("tags", ARRAY[\'tagA\',\'tagB\'])\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',
@@ -480,28 +480,28 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with mvContainsExpression', () => {
+  it("works with mvContainsExpression", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter($('tags').mvContains(['tagA', 'tagB'])))
+      .apply("diamonds", $("diamonds").filter($("tags").mvContains(["tagA", "tagB"])))
       .apply(
-        'Tags',
-        $('diamonds')
-          .split(s$('t.tags'), 'Tag')
-          .apply('count', $('diamonds').count())
-          .sort('$count', 'descending')
+        "Tags",
+        $("diamonds")
+          .split(s$("t.tags"), "Tag")
+          .apply("count", $("diamonds").count())
+          .sort("$count", "descending")
           .limit(10)
-          .select('Tag', 'count'),
+          .select("Tag", "count"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
+        mode: "raw",
       }),
     });
 
@@ -510,7 +510,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n(t.tags) AS "Tag",\nCOUNT(*) AS "count"\nFROM "diamonds" AS t\nWHERE MV_CONTAINS("tags", ARRAY[\'tagA\',\'tagB\'])\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',
@@ -519,28 +519,28 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with inExpression with single value', () => {
+  it("works with inExpression with single value", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter($('color').in(['blue'])))
+      .apply("diamonds", $("diamonds").filter($("color").in(["blue"])))
       .apply(
-        'Tags',
-        $('diamonds')
-          .split(s$('t.tags', 'NUMBER'), 'Tag')
-          .apply('count', $('diamonds').count())
-          .sort('$count', 'descending')
+        "Tags",
+        $("diamonds")
+          .split(s$("t.tags", "NUMBER"), "Tag")
+          .apply("count", $("diamonds").count())
+          .sort("$count", "descending")
           .limit(10)
-          .select('Tag', 'count'),
+          .select("Tag", "count"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
+        mode: "raw",
       }),
     });
 
@@ -549,7 +549,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\nCAST(t.tags AS DOUBLE) AS "Tag",\nCOUNT(*) AS "count"\nFROM "diamonds" AS t\nWHERE ("color"=\'blue\')\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',
@@ -558,28 +558,28 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with inExpression with multiple values', () => {
+  it("works with inExpression with multiple values", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter($('color').in(['red', 'green', 'blue'])))
+      .apply("diamonds", $("diamonds").filter($("color").in(["red", "green", "blue"])))
       .apply(
-        'Tags',
-        $('diamonds')
-          .split(s$('t.tags'), 'Tag')
-          .apply('count', $('diamonds').count())
-          .sort('$count', 'descending')
+        "Tags",
+        $("diamonds")
+          .split(s$("t.tags"), "Tag")
+          .apply("count", $("diamonds").count())
+          .sort("$count", "descending")
           .limit(10)
-          .select('Tag', 'count'),
+          .select("Tag", "count"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
+        mode: "raw",
       }),
     });
 
@@ -588,7 +588,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\n(t.tags) AS "Tag",\nCOUNT(*) AS "count"\nFROM "diamonds" AS t\nWHERE "color" IN (\'red\',\'green\',\'blue\')\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',
@@ -597,28 +597,28 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with mvFilterOnly and mvOverlap', () => {
+  it("works with mvFilterOnly and mvOverlap", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds'))
+      .apply("diamonds", $("diamonds"))
       .apply(
-        'Tags',
-        $('diamonds')
-          .filter($('tags').mvOverlap(['tagA', 'tagB', 'tagC']))
-          .split($('tags').mvFilterOnly(['tagA', 'tagB']), 'Tag')
-          .sort('$Tag', 'descending'),
+        "Tags",
+        $("diamonds")
+          .filter($("tags").mvOverlap(["tagA", "tagB", "tagC"]))
+          .split($("tags").mvFilterOnly(["tagA", "tagB"]), "Tag")
+          .sort("$Tag", "descending"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        filter: $('time').overlap({
-          start: new Date('2015-03-12T00:00:00Z'),
-          end: new Date('2015-03-19T00:00:00Z'),
+        filter: $("time").overlap({
+          start: new Date("2015-03-12T00:00:00Z"),
+          end: new Date("2015-03-19T00:00:00Z"),
         }),
       }),
     });
@@ -627,38 +627,38 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
-            'SELECT\nMV_FILTER_ONLY("tags", ARRAY[\'tagA\',\'tagB\']) AS "Tag"\nFROM "diamonds" AS t\nWHERE ((TIMESTAMP \'2015-03-12 00:00:00\'<="time" AND "time"<TIMESTAMP \'2015-03-19 00:00:00\') AND MV_OVERLAP("tags", ARRAY[\'tagA\',\'tagB\',\'tagC\']))\nGROUP BY 1\nORDER BY "Tag" DESC',
+            "SELECT\nMV_FILTER_ONLY(\"tags\", ARRAY['tagA','tagB']) AS \"Tag\"\nFROM \"diamonds\" AS t\nWHERE ((TIMESTAMP '2015-03-12 00:00:00'<=\"time\" AND \"time\"<TIMESTAMP '2015-03-19 00:00:00') AND MV_OVERLAP(\"tags\", ARRAY['tagA','tagB','tagC']))\nGROUP BY 1\nORDER BY \"Tag\" DESC",
         },
       ],
     ]);
   });
 
-  it('works with ipSearchExpression on ip address', () => {
+  it("works with ipSearchExpression on ip address", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds'))
+      .apply("diamonds", $("diamonds"))
       .apply(
-        'Ip_address',
-        $('diamonds')
-          .filter($('ip_address').ipSearch('192.0'))
-          .split(s$('t.ip_address', 'IP'), 'Ip_address')
-          .apply('count', $('diamonds').count())
-          .sort('$count', 'descending')
+        "Ip_address",
+        $("diamonds")
+          .filter($("ip_address").ipSearch("192.0"))
+          .split(s$("t.ip_address", "IP"), "Ip_address")
+          .apply("count", $("diamonds").count())
+          .sort("$count", "descending")
           .limit(10)
-          .select('Ip_address', 'count'),
+          .select("Ip_address", "count"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
+        mode: "raw",
       }),
     });
 
@@ -667,7 +667,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\nIP_STRINGIFY((t.ip_address)) AS "Ip_address",\nCOUNT(*) AS "count"\nFROM "diamonds" AS t\nWHERE IP_SEARCH("ip_address", \'192.0\')\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',
@@ -676,29 +676,29 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with ipSearchExpression on ip prefix', () => {
+  it("works with ipSearchExpression on ip prefix", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds'))
+      .apply("diamonds", $("diamonds"))
       .apply(
-        'Ip_prefix',
-        $('diamonds')
-          .filter($('ip_prefix').ipSearch('192.0', 'ipPrefix'))
-          .split(s$('t.ip_prefix', 'IP'), 'Ip_prefix')
-          .apply('count', $('diamonds').count())
-          .sort('$count', 'descending')
+        "Ip_prefix",
+        $("diamonds")
+          .filter($("ip_prefix").ipSearch("192.0", "ipPrefix"))
+          .split(s$("t.ip_prefix", "IP"), "Ip_prefix")
+          .apply("count", $("diamonds").count())
+          .sort("$count", "descending")
           .limit(10)
-          .select('Ip_prefix', 'count'),
+          .select("Ip_prefix", "count"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
+        mode: "raw",
       }),
     });
 
@@ -707,7 +707,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\nIP_STRINGIFY((t.ip_prefix)) AS "Ip_prefix",\nCOUNT(*) AS "count"\nFROM "diamonds" AS t\nWHERE IP_SEARCH(\'192.0\', "ip_prefix")\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',
@@ -716,29 +716,29 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with ipMatchExpression on ip address', () => {
+  it("works with ipMatchExpression on ip address", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds'))
+      .apply("diamonds", $("diamonds"))
       .apply(
-        'Ip_address',
-        $('diamonds')
-          .filter($('ip_address').ipMatch('192.0'))
-          .split(s$('t.ip_address', 'IP'), 'Ip_address')
-          .apply('count', $('diamonds').count())
-          .sort('$count', 'descending')
+        "Ip_address",
+        $("diamonds")
+          .filter($("ip_address").ipMatch("192.0"))
+          .split(s$("t.ip_address", "IP"), "Ip_address")
+          .apply("count", $("diamonds").count())
+          .sort("$count", "descending")
           .limit(10)
-          .select('Ip_address', 'count'),
+          .select("Ip_address", "count"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
+        mode: "raw",
       }),
     });
 
@@ -747,7 +747,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
 
           query:
@@ -757,29 +757,29 @@ describe('simulate DruidSql', () => {
     ]);
   });
 
-  it('works with ipMatchExpression on ip prefix', () => {
+  it("works with ipMatchExpression on ip prefix", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds'))
+      .apply("diamonds", $("diamonds"))
       .apply(
-        'Ip_prefix',
-        $('diamonds')
-          .filter($('ip_prefix').ipMatch('192.0.1.0/16', 'ipPrefix'))
-          .split(s$('t.ip_prefix', 'IP'), 'Ip_prefix')
-          .apply('count', $('diamonds').count())
-          .sort('$count', 'descending')
+        "Ip_prefix",
+        $("diamonds")
+          .filter($("ip_prefix").ipMatch("192.0.1.0/16", "ipPrefix"))
+          .split(s$("t.ip_prefix", "IP"), "Ip_prefix")
+          .apply("count", $("diamonds").count())
+          .sort("$count", "descending")
           .limit(10)
-          .select('Ip_prefix', 'count'),
+          .select("Ip_prefix", "count"),
       );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
-        engine: 'druidsql',
-        version: '0.20.0',
-        source: 'diamonds',
-        timeAttribute: 'time',
+        engine: "druidsql",
+        version: "0.20.0",
+        source: "diamonds",
+        timeAttribute: "time",
         attributes,
         allowSelectQueries: true,
-        mode: 'raw',
+        mode: "raw",
       }),
     });
 
@@ -788,7 +788,7 @@ describe('simulate DruidSql', () => {
       [
         {
           context: {
-            sqlTimeZone: 'Etc/UTC',
+            sqlTimeZone: "Etc/UTC",
           },
           query:
             'SELECT\nIP_STRINGIFY((t.ip_prefix)) AS "Ip_prefix",\nCOUNT(*) AS "count"\nFROM "diamonds" AS t\nWHERE IP_MATCH(\'192.0.1.0/16\', "ip_prefix")\nGROUP BY 1\nORDER BY "count" DESC\nLIMIT 10',

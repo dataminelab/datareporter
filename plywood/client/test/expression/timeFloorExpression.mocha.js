@@ -14,87 +14,87 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { $, ply, r, Expression } = plywood;
 
-describe('TimeFloorExpression', () => {
-  describe('errors', () => {
-    it('errors on non-floorable duration', () => {
+describe("TimeFloorExpression", () => {
+  describe("errors", () => {
+    it("errors on non-floorable duration", () => {
       expect(() => {
         Expression.fromJS({
-          op: 'timeFloor',
-          operand: { op: 'ref', name: '_' },
-          duration: 'PT5H',
+          op: "timeFloor",
+          operand: { op: "ref", name: "_" },
+          duration: "PT5H",
         });
       }).to.throw("duration 'PT5H' is not floorable");
     });
   });
 
-  describe('#alignsWith', () => {
+  describe("#alignsWith", () => {
     const hourFloorUTC = Expression.fromJS({
-      op: 'timeFloor',
-      operand: { op: 'ref', name: '_' },
-      duration: 'PT1H',
-      timezone: 'Etc/UTC',
+      op: "timeFloor",
+      operand: { op: "ref", name: "_" },
+      duration: "PT1H",
+      timezone: "Etc/UTC",
     });
 
-    it('works with higher floor (PT2H)', () => {
+    it("works with higher floor (PT2H)", () => {
       const ex = Expression.fromJS({
-        op: 'timeFloor',
-        operand: { op: 'ref', name: '_' },
-        duration: 'PT2H',
-        timezone: 'Etc/UTC',
+        op: "timeFloor",
+        operand: { op: "ref", name: "_" },
+        duration: "PT2H",
+        timezone: "Etc/UTC",
       });
 
       expect(hourFloorUTC.alignsWith(ex)).to.equal(true);
     });
 
-    it('works with higher floor (P1D)', () => {
+    it("works with higher floor (P1D)", () => {
       const ex = Expression.fromJS({
-        op: 'timeFloor',
-        operand: { op: 'ref', name: '_' },
-        duration: 'P1D',
-        timezone: 'Etc/UTC',
+        op: "timeFloor",
+        operand: { op: "ref", name: "_" },
+        duration: "P1D",
+        timezone: "Etc/UTC",
       });
 
       expect(hourFloorUTC.alignsWith(ex)).to.equal(true);
     });
 
-    it('works fails on different timezone', () => {
+    it("works fails on different timezone", () => {
       const ex = Expression.fromJS({
-        op: 'timeFloor',
-        operand: { op: 'ref', name: '_' },
-        duration: 'PT2H',
-        timezone: 'America/Los_Angeles',
+        op: "timeFloor",
+        operand: { op: "ref", name: "_" },
+        duration: "PT2H",
+        timezone: "America/Los_Angeles",
       });
 
       expect(hourFloorUTC.alignsWith(ex)).to.equal(false);
     });
 
-    it('works fails on lower duration', () => {
+    it("works fails on lower duration", () => {
       const ex = Expression.fromJS({
-        op: 'timeFloor',
-        operand: { op: 'ref', name: '_' },
-        duration: 'PT30M',
-        timezone: 'Etc/UTC',
+        op: "timeFloor",
+        operand: { op: "ref", name: "_" },
+        duration: "PT30M",
+        timezone: "Etc/UTC",
       });
 
       expect(hourFloorUTC.alignsWith(ex)).to.equal(false);
     });
 
-    it('works with OVERLAP range', () => {
+    it("works with OVERLAP range", () => {
       const ex = Expression.fromJS({
-        op: 'overlap',
-        operand: { op: 'ref', name: '_' },
+        op: "overlap",
+        operand: { op: "ref", name: "_" },
         expression: {
-          op: 'literal',
-          type: 'TIME_RANGE',
+          op: "literal",
+          type: "TIME_RANGE",
           value: {
-            start: '2016-09-01T01:00:00Z',
-            end: '2016-09-01T02:00:00Z',
+            start: "2016-09-01T01:00:00Z",
+            end: "2016-09-01T02:00:00Z",
           },
         },
       });
@@ -102,16 +102,16 @@ describe('TimeFloorExpression', () => {
       expect(hourFloorUTC.alignsWith(ex)).to.equal(true);
     });
 
-    it('works fails OVERLAP range (bad)', () => {
+    it("works fails OVERLAP range (bad)", () => {
       const ex = Expression.fromJS({
-        op: 'overlap',
-        operand: { op: 'ref', name: '_' },
+        op: "overlap",
+        operand: { op: "ref", name: "_" },
         expression: {
-          op: 'literal',
-          type: 'TIME_RANGE',
+          op: "literal",
+          type: "TIME_RANGE",
           value: {
-            start: '2016-09-01T01:00:00Z',
-            end: '2016-09-01T02:00:01Z',
+            start: "2016-09-01T01:00:00Z",
+            end: "2016-09-01T02:00:01Z",
           },
         },
       });
@@ -119,18 +119,18 @@ describe('TimeFloorExpression', () => {
       expect(hourFloorUTC.alignsWith(ex)).to.equal(false);
     });
 
-    it('works with OVERLAP set', () => {
+    it("works with OVERLAP set", () => {
       const ex = Expression.fromJS({
-        op: 'overlap',
-        operand: { op: 'ref', name: '_' },
+        op: "overlap",
+        operand: { op: "ref", name: "_" },
         expression: {
-          op: 'literal',
-          type: 'SET',
+          op: "literal",
+          type: "SET",
           value: {
-            setType: 'TIME_RANGE',
+            setType: "TIME_RANGE",
             elements: [
-              { start: '2016-09-01T01:00:00Z', end: '2016-09-01T02:00:00Z' },
-              { start: '2016-09-01T05:00:00Z', end: '2016-09-01T07:00:00Z' },
+              { start: "2016-09-01T01:00:00Z", end: "2016-09-01T02:00:00Z" },
+              { start: "2016-09-01T05:00:00Z", end: "2016-09-01T07:00:00Z" },
             ],
           },
         },
@@ -139,18 +139,18 @@ describe('TimeFloorExpression', () => {
       expect(hourFloorUTC.alignsWith(ex)).to.equal(true);
     });
 
-    it('works fails OVERLAP set (bad)', () => {
+    it("works fails OVERLAP set (bad)", () => {
       const ex = Expression.fromJS({
-        op: 'overlap',
-        operand: { op: 'ref', name: '_' },
+        op: "overlap",
+        operand: { op: "ref", name: "_" },
         expression: {
-          op: 'literal',
-          type: 'SET',
+          op: "literal",
+          type: "SET",
           value: {
-            setType: 'TIME_RANGE',
+            setType: "TIME_RANGE",
             elements: [
-              { start: '2016-09-01T01:00:00Z', end: '2016-09-01T02:00:00Z' },
-              { start: '2016-09-01T05:00:00Z', end: '2016-09-01T07:00:01Z' },
+              { start: "2016-09-01T01:00:00Z", end: "2016-09-01T02:00:00Z" },
+              { start: "2016-09-01T05:00:00Z", end: "2016-09-01T07:00:01Z" },
             ],
           },
         },

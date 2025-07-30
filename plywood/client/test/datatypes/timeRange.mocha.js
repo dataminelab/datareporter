@@ -15,262 +15,262 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const { testImmutableClass } = require('immutable-class-tester');
+const { testImmutableClass } = require("immutable-class-tester");
 
-const { Timezone, Duration } = require('chronoshift');
-const plywood = require('../plywood');
+const { Timezone, Duration } = require("chronoshift");
+const plywood = require("../plywood");
 
 const { Range, TimeRange } = plywood;
 
-describe('TimeRange', () => {
-  it('is immutable class', () => {
+describe("TimeRange", () => {
+  it("is immutable class", () => {
     testImmutableClass(TimeRange, [
       {
-        start: new Date('2015-01-26T04:54:10Z'),
-        end: new Date('2015-01-26T05:54:10Z'),
+        start: new Date("2015-01-26T04:54:10Z"),
+        end: new Date("2015-01-26T05:54:10Z"),
       },
       {
-        start: new Date('2015-01-26T04:54:10Z'),
-        end: new Date('2015-01-26T05:00:00Z'),
+        start: new Date("2015-01-26T04:54:10Z"),
+        end: new Date("2015-01-26T05:00:00Z"),
       },
     ]);
   });
 
-  describe('allows number', () => {
-    it('basic number', () => {
+  describe("allows number", () => {
+    it("basic number", () => {
       expect(
         TimeRange.fromJS({
-          start: new Date('2015-01-26T04:54:10Z').valueOf(),
-          end: new Date('2015-01-26T05:54:10Z').valueOf(),
+          start: new Date("2015-01-26T04:54:10Z").valueOf(),
+          end: new Date("2015-01-26T05:54:10Z").valueOf(),
         }).toJS(),
       ).to.deep.equal({
-        start: new Date('2015-01-26T04:54:10Z'),
-        end: new Date('2015-01-26T05:54:10Z'),
+        start: new Date("2015-01-26T04:54:10Z"),
+        end: new Date("2015-01-26T05:54:10Z"),
       });
     });
   });
 
-  describe('does not die with hasOwnProperty', () => {
-    it('survives', () => {
+  describe("does not die with hasOwnProperty", () => {
+    it("survives", () => {
       expect(
         TimeRange.fromJS({
-          start: new Date('2015-01-26T04:54:10Z'),
-          end: new Date('2015-01-26T05:54:10Z'),
-          hasOwnProperty: 'troll',
+          start: new Date("2015-01-26T04:54:10Z"),
+          end: new Date("2015-01-26T05:54:10Z"),
+          hasOwnProperty: "troll",
         }).toJS(),
       ).to.deep.equal({
-        start: new Date('2015-01-26T04:54:10Z'),
-        end: new Date('2015-01-26T05:54:10Z'),
+        start: new Date("2015-01-26T04:54:10Z"),
+        end: new Date("2015-01-26T05:54:10Z"),
       });
     });
   });
 
-  describe('throws a good error', () => {
-    it('bad date', () => {
+  describe("throws a good error", () => {
+    it("bad date", () => {
       expect(() => {
         TimeRange.fromJS({
-          start: 'hello',
+          start: "hello",
           end: null,
         });
       }).to.throw(`could not parse 'hello' as date`);
     });
   });
 
-  describe('toString', () => {
-    it('works with timezone', () => {
+  describe("toString", () => {
+    it("works with timezone", () => {
       expect(
         TimeRange.fromJS({
-          start: new Date('2015-01-26T04:54:10Z'),
-          end: new Date('2015-01-26T05:54:10Z'),
+          start: new Date("2015-01-26T04:54:10Z"),
+          end: new Date("2015-01-26T05:54:10Z"),
         }).toString(),
-      ).to.deep.equal('[2015-01-26T04:54:10Z,2015-01-26T05:54:10Z]');
+      ).to.deep.equal("[2015-01-26T04:54:10Z,2015-01-26T05:54:10Z]");
 
       expect(
         TimeRange.fromJS({
-          start: new Date('2015-01-26T04:54:10Z'),
-          end: new Date('2015-01-26T05:54:10Z'),
-        }).toString(Timezone.fromJS('Asia/Kathmandu')),
-      ).to.deep.equal('[2015-01-26T10:39:10+05:45,2015-01-26T11:39:10+05:45]');
+          start: new Date("2015-01-26T04:54:10Z"),
+          end: new Date("2015-01-26T05:54:10Z"),
+        }).toString(Timezone.fromJS("Asia/Kathmandu")),
+      ).to.deep.equal("[2015-01-26T10:39:10+05:45,2015-01-26T11:39:10+05:45]");
     });
   });
 
-  describe('upgrades', () => {
-    it('upgrades from a string', () => {
+  describe("upgrades", () => {
+    it("upgrades from a string", () => {
       const timeRange = TimeRange.fromJS({
-        start: '2015-01-26T04:54:10Z',
-        end: '2015-01-26T05:00:00Z',
+        start: "2015-01-26T04:54:10Z",
+        end: "2015-01-26T05:00:00Z",
       });
-      expect(timeRange.start.valueOf()).to.equal(Date.parse('2015-01-26T04:54:10Z'));
-      expect(timeRange.end.valueOf()).to.equal(Date.parse('2015-01-26T05:00:00Z'));
+      expect(timeRange.start.valueOf()).to.equal(Date.parse("2015-01-26T04:54:10Z"));
+      expect(timeRange.end.valueOf()).to.equal(Date.parse("2015-01-26T05:00:00Z"));
     });
   });
 
-  describe('#union()', () => {
-    it('works correctly with a non-disjoint range', () => {
+  describe("#union()", () => {
+    it("works correctly with a non-disjoint range", () => {
       expect(
         TimeRange.fromJS({
-          start: '2015-01-26T00:00:00',
-          end: '2015-01-26T02:00:00',
+          start: "2015-01-26T00:00:00",
+          end: "2015-01-26T02:00:00",
         })
-          .union(TimeRange.fromJS({ start: '2015-01-26T01:00:00', end: '2015-01-26T03:00:00' }))
+          .union(TimeRange.fromJS({ start: "2015-01-26T01:00:00", end: "2015-01-26T03:00:00" }))
           .toJS(),
       ).to.deep.equal({
-        start: new Date('2015-01-26T00:00:00Z'),
-        end: new Date('2015-01-26T03:00:00Z'),
+        start: new Date("2015-01-26T00:00:00Z"),
+        end: new Date("2015-01-26T03:00:00Z"),
       });
     });
 
-    it('works correctly with a disjoint range', () => {
+    it("works correctly with a disjoint range", () => {
       expect(
         TimeRange.fromJS({
-          start: '2015-01-26T00:00:00',
-          end: '2015-01-26T01:00:00',
-        }).union(TimeRange.fromJS({ start: '2015-01-26T02:00:00', end: '2015-01-26T03:00:00' })),
+          start: "2015-01-26T00:00:00",
+          end: "2015-01-26T01:00:00",
+        }).union(TimeRange.fromJS({ start: "2015-01-26T02:00:00", end: "2015-01-26T03:00:00" })),
       ).to.deep.equal(null);
     });
 
-    it('works correctly with a adjacent range', () => {
+    it("works correctly with a adjacent range", () => {
       expect(
         TimeRange.fromJS({
-          start: '2015-01-26T00:00:00',
-          end: '2015-01-26T01:00:00',
+          start: "2015-01-26T00:00:00",
+          end: "2015-01-26T01:00:00",
         })
-          .union(TimeRange.fromJS({ start: '2015-01-26T01:00:00', end: '2015-01-26T02:00:00' }))
+          .union(TimeRange.fromJS({ start: "2015-01-26T01:00:00", end: "2015-01-26T02:00:00" }))
           .toJS(),
       ).to.deep.equal({
-        start: new Date('2015-01-26T00:00:00Z'),
-        end: new Date('2015-01-26T02:00:00Z'),
+        start: new Date("2015-01-26T00:00:00Z"),
+        end: new Date("2015-01-26T02:00:00Z"),
       });
     });
   });
 
-  describe('#intersect()', () => {
-    it('works correctly with a non-disjoint range', () => {
+  describe("#intersect()", () => {
+    it("works correctly with a non-disjoint range", () => {
       expect(
         TimeRange.fromJS({
-          start: '2015-01-26T00:00:00',
-          end: '2015-01-26T02:00:00',
+          start: "2015-01-26T00:00:00",
+          end: "2015-01-26T02:00:00",
         })
-          .intersect(TimeRange.fromJS({ start: '2015-01-26T01:00:00', end: '2015-01-26T03:00:00' }))
+          .intersect(TimeRange.fromJS({ start: "2015-01-26T01:00:00", end: "2015-01-26T03:00:00" }))
           .toJS(),
       ).to.deep.equal({
-        start: new Date('2015-01-26T01:00:00Z'),
-        end: new Date('2015-01-26T02:00:00Z'),
+        start: new Date("2015-01-26T01:00:00Z"),
+        end: new Date("2015-01-26T02:00:00Z"),
       });
     });
 
-    it('works correctly with a disjoint range', () => {
+    it("works correctly with a disjoint range", () => {
       expect(
         TimeRange.fromJS({
-          start: '2015-01-26T00:00:00',
-          end: '2015-01-26T01:00:00',
+          start: "2015-01-26T00:00:00",
+          end: "2015-01-26T01:00:00",
         }).intersect(
-          TimeRange.fromJS({ start: '2015-01-26T02:00:00', end: '2015-01-26T03:00:00' }),
+          TimeRange.fromJS({ start: "2015-01-26T02:00:00", end: "2015-01-26T03:00:00" }),
         ),
       ).to.deep.equal(null);
     });
 
-    it('works correctly with a adjacent range', () => {
+    it("works correctly with a adjacent range", () => {
       expect(
         TimeRange.fromJS({
-          start: '2015-01-26T00:00:00',
-          end: '2015-01-26T01:00:00',
+          start: "2015-01-26T00:00:00",
+          end: "2015-01-26T01:00:00",
         })
-          .intersect(TimeRange.fromJS({ start: '2015-01-26T01:00:00', end: '2015-01-26T02:00:00' }))
+          .intersect(TimeRange.fromJS({ start: "2015-01-26T01:00:00", end: "2015-01-26T02:00:00" }))
           .toJS(),
       ).to.deep.equal({ start: new Date(0), end: new Date(0) });
     });
   });
 
-  describe('#toInterval', () => {
-    it('works in general', () => {
+  describe("#toInterval", () => {
+    it("works in general", () => {
       const timeRange = TimeRange.fromJS({
-        start: '2015-01-26T04:54:10Z',
-        end: '2015-01-26T05:00:00Z',
+        start: "2015-01-26T04:54:10Z",
+        end: "2015-01-26T05:00:00Z",
       });
-      expect(timeRange.toInterval()).to.equal('2015-01-26T04:54:10Z/2015-01-26T05Z');
+      expect(timeRange.toInterval()).to.equal("2015-01-26T04:54:10Z/2015-01-26T05Z");
     });
 
-    it('works on a round interval', () => {
+    it("works on a round interval", () => {
       expect(
-        TimeRange.fromJS({ start: '2015-01-26T00:00:00', end: '2015-01-27T00:00:00' }).toInterval(),
-      ).to.deep.equal('2015-01-26T00Z/2015-01-27T00Z');
+        TimeRange.fromJS({ start: "2015-01-26T00:00:00", end: "2015-01-27T00:00:00" }).toInterval(),
+      ).to.deep.equal("2015-01-26T00Z/2015-01-27T00Z");
     });
 
-    it('works on a non round interval', () => {
+    it("works on a non round interval", () => {
       expect(
-        TimeRange.fromJS({ start: '2015-01-26T12:34:56', end: '2015-01-27T11:22:33' }).toInterval(),
-      ).to.deep.equal('2015-01-26T12:34:56Z/2015-01-27T11:22:33Z');
+        TimeRange.fromJS({ start: "2015-01-26T12:34:56", end: "2015-01-27T11:22:33" }).toInterval(),
+      ).to.deep.equal("2015-01-26T12:34:56Z/2015-01-27T11:22:33Z");
     });
 
-    it('works on an interval with different bounds', () => {
+    it("works on an interval with different bounds", () => {
       expect(
         TimeRange.fromJS({
-          start: '2015-01-26T00:00:00',
-          end: '2015-01-27T00:00:00',
-          bounds: '(]',
+          start: "2015-01-26T00:00:00",
+          end: "2015-01-27T00:00:00",
+          bounds: "(]",
         }).toInterval(),
-      ).to.deep.equal('2015-01-26T00:00:00.001Z/2015-01-27T00:00:00.001Z');
+      ).to.deep.equal("2015-01-26T00:00:00.001Z/2015-01-27T00:00:00.001Z");
     });
   });
 
-  describe('#rebaseOnStart', () => {
-    it('works in general', () => {
+  describe("#rebaseOnStart", () => {
+    it("works in general", () => {
       const timeRange = TimeRange.fromJS({
-        start: '2015-01-26T04:54:10Z',
-        end: '2015-01-26T05:00:00Z',
+        start: "2015-01-26T04:54:10Z",
+        end: "2015-01-26T05:00:00Z",
       });
-      expect(timeRange.rebaseOnStart(new Date('2015-02-26T04:54:10Z')).toJS()).to.deep.equal({
-        start: new Date('2015-02-26T04:54:10.000Z'),
-        end: new Date('2015-02-26T05:00:00.000Z'),
+      expect(timeRange.rebaseOnStart(new Date("2015-02-26T04:54:10Z")).toJS()).to.deep.equal({
+        start: new Date("2015-02-26T04:54:10.000Z"),
+        end: new Date("2015-02-26T05:00:00.000Z"),
       });
     });
   });
 
-  describe('Accepts bounds', () => {
-    it('Can create a Time Range from a time bucket with bounds', () => {
+  describe("Accepts bounds", () => {
+    it("Can create a Time Range from a time bucket with bounds", () => {
       const timeRange = TimeRange.timeBucket(
-        new Date('2015-02-26T05:00:00.000Z'),
-        Duration.fromJS('PT1H'),
-        Timezone.fromJS('Etc/UTC'),
-        '[]',
+        new Date("2015-02-26T05:00:00.000Z"),
+        Duration.fromJS("PT1H"),
+        Timezone.fromJS("Etc/UTC"),
+        "[]",
       );
       expect(timeRange.toJS()).to.deep.equal({
-        start: new Date('2015-02-26T05:00:00.000Z'),
-        end: new Date('2015-02-26T06:00:00.000Z'),
-        bounds: '[]',
+        start: new Date("2015-02-26T05:00:00.000Z"),
+        end: new Date("2015-02-26T06:00:00.000Z"),
+        bounds: "[]",
       });
     });
 
-    it('Can create a Time Range from a time bucket without explicit bounds', () => {
+    it("Can create a Time Range from a time bucket without explicit bounds", () => {
       const timeRange = TimeRange.timeBucket(
-        new Date('2015-02-26T05:00:00.000Z'),
-        Duration.fromJS('PT1H'),
-        Timezone.fromJS('Etc/UTC'),
+        new Date("2015-02-26T05:00:00.000Z"),
+        Duration.fromJS("PT1H"),
+        Timezone.fromJS("Etc/UTC"),
       );
 
       // does not include bounds in toJS if default bounds are used
       expect(timeRange.toJS()).to.deep.equal({
-        start: new Date('2015-02-26T05:00:00.000Z'),
-        end: new Date('2015-02-26T06:00:00.000Z'),
+        start: new Date("2015-02-26T05:00:00.000Z"),
+        end: new Date("2015-02-26T06:00:00.000Z"),
       });
       expect(timeRange.bounds).to.equal(Range.DEFAULT_BOUNDS);
     });
 
-    it('Can change bounds', () => {
+    it("Can change bounds", () => {
       const timeRange = TimeRange.timeBucket(
-        new Date('2015-02-26T05:00:00.000Z'),
-        Duration.fromJS('PT1H'),
-        Timezone.fromJS('Etc/UTC'),
+        new Date("2015-02-26T05:00:00.000Z"),
+        Duration.fromJS("PT1H"),
+        Timezone.fromJS("Etc/UTC"),
       );
 
       // does not include bounds in toJS if default bounds are used
-      expect(timeRange.changeBounds('()').toJS()).to.deep.equal({
-        start: new Date('2015-02-26T05:00:00.000Z'),
-        end: new Date('2015-02-26T06:00:00.000Z'),
-        bounds: '()',
+      expect(timeRange.changeBounds("()").toJS()).to.deep.equal({
+        start: new Date("2015-02-26T05:00:00.000Z"),
+        end: new Date("2015-02-26T06:00:00.000Z"),
+        bounds: "()",
       });
     });
   });

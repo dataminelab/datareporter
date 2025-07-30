@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const { PassThrough } = require('readable-stream');
-const toArray = require('stream-to-array');
+const { PassThrough } = require("readable-stream");
+const toArray = require("stream-to-array");
 
-const { retryRequesterFactory } = require('../../build/plywood');
+const { retryRequesterFactory } = require("../../build/plywood");
 
-describe('Retry Requester', () => {
+describe("Retry Requester", () => {
   const makeRequester = (failNumber, isTimeout) => {
     return request => {
       const stream = new PassThrough({ objectMode: true });
       setTimeout(() => {
         if (failNumber > 0) {
           failNumber--;
-          stream.emit('error', new Error(isTimeout ? 'timeout' : 'some error'));
+          stream.emit("error", new Error(isTimeout ? "timeout" : "some error"));
           stream.end();
         } else {
-          stream.emit('meta', { lol: 33 });
+          stream.emit("meta", { lol: 33 });
           stream.write(1);
           stream.write(2);
           stream.write(3);
@@ -46,13 +46,13 @@ describe('Retry Requester', () => {
   const noSuchDataSourceRequester = request => {
     const stream = new PassThrough({ objectMode: true });
     setTimeout(() => {
-      stream.emit('error', new Error('No such datasource'));
+      stream.emit("error", new Error("No such datasource"));
       stream.end();
     }, 1);
     return stream;
   };
 
-  it('no retry needed (no fail)', () => {
+  it("no retry needed (no fail)", () => {
     const retryRequester = retryRequesterFactory({
       requester: makeRequester(0),
       delay: 20,
@@ -64,7 +64,7 @@ describe('Retry Requester', () => {
     });
   });
 
-  it('one fail', () => {
+  it("one fail", () => {
     const retryRequester = retryRequesterFactory({
       requester: makeRequester(1),
       delay: 20,
@@ -76,7 +76,7 @@ describe('Retry Requester', () => {
     });
   });
 
-  it('two fails', () => {
+  it("two fails", () => {
     const retryRequester = retryRequesterFactory({
       requester: makeRequester(2),
       delay: 20,
@@ -88,7 +88,7 @@ describe('Retry Requester', () => {
     });
   });
 
-  it('two fails forwards meta', () => {
+  it("two fails forwards meta", () => {
     const retryRequester = retryRequesterFactory({
       requester: makeRequester(2),
       delay: 20,
@@ -98,7 +98,7 @@ describe('Retry Requester', () => {
     const rs = retryRequester({});
 
     let seenMeta = false;
-    rs.on('meta', meta => {
+    rs.on("meta", meta => {
       seenMeta = true;
       expect(meta).to.deep.equal({ lol: 33 });
     });
@@ -109,7 +109,7 @@ describe('Retry Requester', () => {
     });
   });
 
-  it('three fails', () => {
+  it("three fails", () => {
     const retryRequester = retryRequesterFactory({
       requester: makeRequester(3),
       delay: 20,
@@ -118,14 +118,14 @@ describe('Retry Requester', () => {
 
     return toArray(retryRequester({}))
       .then(() => {
-        throw new Error('DID_NOT_THROW');
+        throw new Error("DID_NOT_THROW");
       })
       .catch(err => {
-        expect(err.message).to.equal('some error');
+        expect(err.message).to.equal("some error");
       });
   });
 
-  it('timeout', () => {
+  it("timeout", () => {
     const retryRequester = retryRequesterFactory({
       requester: makeRequester(1, true),
       delay: 20,
@@ -134,14 +134,14 @@ describe('Retry Requester', () => {
 
     return toArray(retryRequester({}))
       .then(() => {
-        throw new Error('DID_NOT_THROW');
+        throw new Error("DID_NOT_THROW");
       })
       .catch(err => {
-        expect(err.message).to.equal('timeout');
+        expect(err.message).to.equal("timeout");
       });
   });
 
-  it('works with no such datasource', () => {
+  it("works with no such datasource", () => {
     const retryRequester = retryRequesterFactory({
       requester: noSuchDataSourceRequester,
       delay: 20,
@@ -150,10 +150,10 @@ describe('Retry Requester', () => {
 
     return toArray(retryRequester({}))
       .then(() => {
-        throw new Error('DID_NOT_THROW');
+        throw new Error("DID_NOT_THROW");
       })
       .catch(err => {
-        expect(err.message).to.equal('No such datasource');
+        expect(err.message).to.equal("No such datasource");
       });
   });
 });

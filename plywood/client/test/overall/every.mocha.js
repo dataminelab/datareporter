@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { Expression, $, ply, r } = plywood;
 
-describe('every', () => {
-  it('has sequential indexes', () => {
+describe("every", () => {
+  it("has sequential indexes", () => {
     const ex = ply()
-      .apply('num', 5)
+      .apply("num", 5)
       .apply(
-        'subData',
+        "subData",
         ply()
-          .apply('x', '$num + 1')
-          .apply('y', '$foo * 2')
-          .apply('z', ply().sum('$a + 3'))
-          .apply('w', ply().sum('$a + 4 + $b')),
+          .apply("x", "$num + 1")
+          .apply("y", "$foo * 2")
+          .apply("z", ply().sum("$a + 3"))
+          .apply("w", ply().sum("$a + 4 + $b")),
       );
 
     const indexes = [];

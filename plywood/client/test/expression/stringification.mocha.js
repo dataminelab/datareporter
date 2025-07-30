@@ -15,35 +15,35 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
-const { sane } = require('../utils');
+const { expect } = require("chai");
+const { sane } = require("../utils");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { Expression, Dataset, $, i$, ply, r } = plywood;
 
-describe('stringification', () => {
-  it('works in advanced case', () => {
+describe("stringification", () => {
+  it("works in advanced case", () => {
     const ex = ply()
-      .apply('diamonds', $('diamonds').filter($('color').is('D')))
-      .apply('Count', $('diamonds').count())
-      .apply('TotalPrice', $('diamonds').sum('$price'))
+      .apply("diamonds", $("diamonds").filter($("color").is("D")))
+      .apply("Count", $("diamonds").count())
+      .apply("TotalPrice", $("diamonds").sum("$price"))
       .apply(
-        'Cuts',
-        $('diamonds')
-          .split('$cut', 'Cut')
-          .apply('diamonds', $('diamonds').filter($('cut').is('$^Cut')))
-          .apply('Count', $('diamonds').count())
-          .sort('$Count', 'descending')
+        "Cuts",
+        $("diamonds")
+          .split("$cut", "Cut")
+          .apply("diamonds", $("diamonds").filter($("cut").is("$^Cut")))
+          .apply("Count", $("diamonds").count())
+          .sort("$Count", "descending")
           .limit(2)
           .apply(
-            'Carats',
-            $('diamonds')
-              .split($('carat').numberBucket(0.25), 'Carat')
-              .apply('diamonds', $('diamonds').filter($('carat').numberBucket(0.25).is('$^Carat')))
-              .apply('Count', $('diamonds').count())
-              .apply('Price :-)', $('diamonds').sum('$price'))
-              .sort('$Count', 'descending')
+            "Carats",
+            $("diamonds")
+              .split($("carat").numberBucket(0.25), "Carat")
+              .apply("diamonds", $("diamonds").filter($("carat").numberBucket(0.25).is("$^Carat")))
+              .apply("Count", $("diamonds").count())
+              .apply("Price :-)", $("diamonds").sum("$price"))
+              .sort("$Count", "descending")
               .limit(3),
           ),
       );
@@ -78,67 +78,67 @@ describe('stringification', () => {
     `);
   });
 
-  it('works with fancy ref', () => {
-    const ex = $('!T_0');
-    expect(ex.toString()).to.equal('${!T_0}');
+  it("works with fancy ref", () => {
+    const ex = $("!T_0");
+    expect(ex.toString()).to.equal("${!T_0}");
   });
 
-  it('works with case insensitive refs', () => {
-    const ex = i$('x').substr(1, 5);
-    expect(ex.toString(2)).to.equal('i$x.substr(1,5)');
+  it("works with case insensitive refs", () => {
+    const ex = i$("x").substr(1, 5);
+    expect(ex.toString(2)).to.equal("i$x.substr(1,5)");
   });
 
-  it('works with lookup', () => {
-    const ex = $('diamonds').split("$cut.lookup('hello_lookup')", 'CutLookup');
+  it("works with lookup", () => {
+    const ex = $("diamonds").split("$cut.lookup('hello_lookup')", "CutLookup");
     expect(ex.toString(2)).to.equal(
-      '$diamonds.split($cut.lookup(hello_lookup),CutLookup,diamonds)',
+      "$diamonds.split($cut.lookup(hello_lookup),CutLookup,diamonds)",
     );
   });
 
-  it('works with lookup with fancy name 1', () => {
-    const ex = $('diamonds').split("$cut.lookup('99hello')", 'CutLookup');
+  it("works with lookup with fancy name 1", () => {
+    const ex = $("diamonds").split("$cut.lookup('99hello')", "CutLookup");
     expect(ex.toString(2)).to.equal(`$diamonds.split($cut.lookup("99hello"),CutLookup,diamonds)`);
   });
 
-  it('works with lookup with fancy name 2', () => {
-    const ex = $('diamonds').split("$cut.lookup('hello=lookup')", 'CutLookup');
+  it("works with lookup with fancy name 2", () => {
+    const ex = $("diamonds").split("$cut.lookup('hello=lookup')", "CutLookup");
     expect(ex.toString(2)).to.equal(
       `$diamonds.split($cut.lookup("hello=lookup"),CutLookup,diamonds)`,
     );
   });
 
-  it('works with timePart', () => {
-    const ex = $('time').timePart('DAY_OF_WEEK');
-    expect(ex.toString(2)).to.equal('$time.timePart(DAY_OF_WEEK)');
+  it("works with timePart", () => {
+    const ex = $("time").timePart("DAY_OF_WEEK");
+    expect(ex.toString(2)).to.equal("$time.timePart(DAY_OF_WEEK)");
   });
 
-  it('works with timeShift', () => {
-    const ex = $('time').timeShift('P1D', 2);
-    expect(ex.toString(2)).to.equal('$time.timeShift(P1D,2)');
+  it("works with timeShift", () => {
+    const ex = $("time").timeShift("P1D", 2);
+    expect(ex.toString(2)).to.equal("$time.timeShift(P1D,2)");
   });
 
-  it('works with timeShift with timezone', () => {
-    const ex = $('time').timeShift('P1D', 2, 'Etc/UTC');
+  it("works with timeShift with timezone", () => {
+    const ex = $("time").timeShift("P1D", 2, "Etc/UTC");
     expect(ex.toString(2)).to.equal(`$time.timeShift(P1D,2,"Etc/UTC")`);
   });
 
-  it('works with timeRange', () => {
-    const ex = $('time').timeRange('P1D', 2);
-    expect(ex.toString(2)).to.equal('$time.timeRange(P1D,2)');
+  it("works with timeRange", () => {
+    const ex = $("time").timeRange("P1D", 2);
+    expect(ex.toString(2)).to.equal("$time.timeRange(P1D,2)");
   });
 
-  it('works with customAggregate', () => {
-    const ex = $('x').customAggregate('lol');
-    expect(ex.toString(2)).to.equal('$x.customAggregate(lol)');
+  it("works with customAggregate", () => {
+    const ex = $("x").customAggregate("lol");
+    expect(ex.toString(2)).to.equal("$x.customAggregate(lol)");
   });
 
-  it('works with substr', () => {
-    const ex = $('x').substr(1, 5);
-    expect(ex.toString(2)).to.equal('$x.substr(1,5)');
+  it("works with substr", () => {
+    const ex = $("x").substr(1, 5);
+    expect(ex.toString(2)).to.equal("$x.substr(1,5)");
   });
 
-  it('works with quantile with resolution', () => {
-    const ex = $('x').quantile('$hist', 0.98, 'resolution=2000');
+  it("works with quantile with resolution", () => {
+    const ex = $("x").quantile("$hist", 0.98, "resolution=2000");
     expect(ex.toString(2)).to.equal(`$x.quantile($hist,0.98,"resolution=2000")`);
   });
 });

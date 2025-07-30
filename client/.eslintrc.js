@@ -78,14 +78,15 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-var-requires": "warn",
     "react/react-in-jsx-scope": "off", // Disable the rule requiring React import
-    "no-unused-vars": ["error", {
+    "no-unused-vars": ["warn", {
       varsIgnorePattern: "^React$",
       argsIgnorePattern: "^_"
     }],
-    "@typescript-eslint/no-unused-vars": ["error", {
+    "@typescript-eslint/no-unused-vars": ["warn", {
       varsIgnorePattern: "^React$",
       argsIgnorePattern: "^_"
     }],
+    "react/prop-types": "off", // Disable prop-types as we use TypeScript
   },
   overrides: [
     {
@@ -102,9 +103,17 @@ module.exports = {
 
     },
     {
-      files: ["*.js", "*.jsx", ".*.js", ".*.jsx"],
+      files: ["**/*.js", "**/*.jsx"],
+      plugins: ["react"],
+      extends: ["eslint:recommended", "plugin:react/recommended"],
       rules: {
-        "@typescript-eslint/explicit-function-return-type": "off",
+        "react/react-in-jsx-scope": "off",
+        "no-unused-vars": ["error", { varsIgnorePattern: "^React$" }],
+        "react/display-name": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "react/prop-types": "warn",
       },
       settings: {
         react: {
@@ -150,10 +159,13 @@ module.exports = {
       },
     },
     {
-      files: ["**/*.jsx"],
+      files: ["**/*.ts", "**/*.tsx"],
+      parser: "@typescript-eslint/parser",
+      plugins: ["@typescript-eslint"],
+      extends: ["plugin:@typescript-eslint/recommended"],
       rules: {
-        "react/display-name": "off",
-        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "error",
+        "react/prop-types": "off",
       },
     },
   ],

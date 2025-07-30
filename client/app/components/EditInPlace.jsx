@@ -16,6 +16,7 @@ export default class EditInPlace extends React.Component {
     multiline: PropTypes.bool,
     editorProps: PropTypes.object,
     defaultEditing: PropTypes.bool,
+    className: PropTypes.string,
   };
 
   static defaultProps = {
@@ -27,6 +28,7 @@ export default class EditInPlace extends React.Component {
     multiline: false,
     editorProps: {},
     defaultEditing: false,
+    className: "",
   };
 
   constructor(props) {

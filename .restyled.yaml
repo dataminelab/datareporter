@@ -45,7 +45,7 @@ restylers:
       - --arrow-parens
       - avoid
       - --single-quote
-      - false
+      - "false"
       - --trailing-comma
       - all
       - --quote-props

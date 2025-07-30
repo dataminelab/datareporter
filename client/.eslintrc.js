@@ -14,6 +14,9 @@ module.exports = {
     "plugin:compat/recommended",
     'plugin:@typescript-eslint/recommended',
     "plugin:jsx-a11y/recommended",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime", // This tells ESLint about the new JSX transform
   ],
   plugins: [
     "jest",
@@ -22,6 +25,7 @@ module.exports = {
     "@typescript-eslint",
     "jsx-a11y",
     "cypress",
+    "react",
   ],
   settings: {
     "import/resolver": "webpack",
@@ -73,6 +77,15 @@ module.exports = {
     "@typescript-eslint/no-useless-constructor": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-var-requires": "warn",
+    "react/react-in-jsx-scope": "off", // Disable the rule requiring React import
+    "no-unused-vars": ["error", {
+      varsIgnorePattern: "^React$",
+      argsIgnorePattern: "^_"
+    }],
+    "@typescript-eslint/no-unused-vars": ["error", {
+      varsIgnorePattern: "^React$",
+      argsIgnorePattern: "^_"
+    }],
   },
   overrides: [
     {
@@ -80,12 +93,10 @@ module.exports = {
       files: ["cypress/**/*.js", "cypress/**/*.ts", "cypress.config.js"],
       rules: {
         "no-unused-expressions": "off",
-        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-expressions": "off",
         "cypress/no-assigning-return-values": "off",
         "cypress/unsafe-to-chain-command": "off",
         "cypress/no-unnecessary-waiting": "warn",
-        "@typescript-eslint/no-unused-vars": "warn",
         "@typescript-eslint/no-empty-function": "off",
       }
 
@@ -136,6 +147,13 @@ module.exports = {
         '@typescript-eslint/no-empty-function': 'off',
         "@typescript-eslint/explicit-module-boundary-types": "warn",
         "jest/no-done-callback": "off",
+      },
+    },
+    {
+      files: ["**/*.jsx"],
+      rules: {
+        "react/display-name": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
       },
     },
   ],

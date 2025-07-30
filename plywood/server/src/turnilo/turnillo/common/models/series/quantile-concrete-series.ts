@@ -32,7 +32,7 @@ export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
     return `${super.title(derivation)} p${this.definition.formattedPercentile()}`;
   }
 
-  protected applyExpression(
+  public applyExpression(
     quantileExpression: PlywoodExpression,
     name: string,
     nestingLevel: number,

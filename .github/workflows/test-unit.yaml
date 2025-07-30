@@ -175,16 +175,16 @@ jobs:
         working-directory: viz-lib
         run: npm run test
       - name: Install plywood-server dependencies
-        working-directory: plywood/server
+        working-directory: plywood
         run: npm install
       - name: Run plywood-server Tests
-        working-directory: plywood/server
+        working-directory: plywood
         run: npm run test
       - name: Install plywood-client dependencies
-        working-directory: plywood/server/client
+        working-directory: plywood/client
         run: npm install
       - name: Run plywood-client Tests
-        working-directory: plywood/server/client
+        working-directory: plywood/client
         run: npm run test
   frontend-e2e-tests:
     runs-on: ubuntu-latest

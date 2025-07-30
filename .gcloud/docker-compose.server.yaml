@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
   plywood:
     build:
-      context: ../plywood/server
+      context: ../plywood
       tags:
         - ${TAG-latest}
       cache_from:

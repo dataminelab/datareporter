@@ -1,7 +1,7 @@
 version: 2
 updates:
   # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-  - directory: "/plywood/server"
+  - directory: "/plywood"
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
@@ -12,7 +12,7 @@ updates:
     ignore:
       - dependency-name: "readable-stream"
         update-types: ["version-update:semver-minor"]
-  - directory: "/plywood/server/client"
+  - directory: "/plywood/client"
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:

@@ -10,7 +10,10 @@ permissions:
   pull-requests: write
   checks: write
 jobs:
+  restyled:
+    uses: ./.github/workflows/restyled.yml
   backend-lint:
+    needs: restyled
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:

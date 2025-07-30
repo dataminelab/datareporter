@@ -13,7 +13,6 @@ jobs:
   restyled:
     uses: ./.github/workflows/restyled.yml
   backend-lint:
-    needs: restyled
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -111,6 +110,7 @@ jobs:
           path: code-coverage-results.md
 
   frontend-lint:
+    needs: restyled
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:

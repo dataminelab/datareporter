@@ -89,7 +89,11 @@ export class ContainsExpression extends ChainableUnaryExpression {
     if (this.compare === ContainsExpression.NORMAL) {
       fn = (a: any, b: any) => String(a).indexOf(b) > -1;
     } else {
-      fn = (a: any, b: any) => String(a).toLowerCase().indexOf(String(b).toLowerCase()) > -1;
+      fn = (a: any, b: any) => {
+        const lowerA = String(a).toLowerCase();
+        const lowerB = String(b).toLowerCase();
+        return lowerA.indexOf(lowerB) > -1;
+      };
     }
     return Set.crossBinaryBoolean(operandValue, expressionValue, fn);
   }

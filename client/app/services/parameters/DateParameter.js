@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import Parameter from "./Parameter";
 
 const DATETIME_FORMATS = {
-  // eslint-disable-next-line quote-props
   "date": "YYYY-MM-DD",
   "datetime-local": "YYYY-MM-DD HH:mm",
   "datetime-with-seconds": "YYYY-MM-DD HH:mm:ss",

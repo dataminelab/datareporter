@@ -53,5 +53,3 @@ let ex = ply()
 console.log("The query plans are:");
 console.log(ex.simulateQueryPlan({ wiki: mysqlExternal }));
 console.log(ex.simulateQueryPlan({ wiki: druidExternal }));
-
-("Fin.");

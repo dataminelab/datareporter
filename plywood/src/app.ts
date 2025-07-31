@@ -1,5 +1,5 @@
 import "./instrument";
-import express, { NextFunction, Request } from "express";
+import express from "express";
 import { statusEndpoint } from "./endpoint/status-endpoint";
 import { plywoodEndpoint } from "./endpoint/plywood-endpoint";
 import { handleError } from "./middlewares/errorHandler";

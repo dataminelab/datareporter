@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import { Class, immutableEqual, Instance, NamedArray } from "immutable-class";
 
 import { Expression, ExpressionJS, RefExpression } from "../expressions";
@@ -231,5 +231,5 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
   }
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const check: Class<AttributeInfoValue, AttributeInfoJS> = AttributeInfo;

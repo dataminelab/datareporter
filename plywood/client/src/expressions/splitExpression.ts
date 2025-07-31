@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import { immutableLookupsEqual } from "immutable-class";
 
 import { Dataset, Datum, PlywoodValue, Set } from "../datatypes";

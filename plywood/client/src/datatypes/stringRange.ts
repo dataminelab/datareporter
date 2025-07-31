@@ -101,6 +101,6 @@ export class StringRange
   }
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const check: Class<StringRangeValue, StringRangeJS> = StringRange;
 Range.register(StringRange);

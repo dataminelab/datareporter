@@ -16,7 +16,7 @@
  */
 
 import { isDate } from "chronoshift";
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 
 import { Expression } from "../expressions/baseExpression";
 import { External } from "../external/baseExternal";

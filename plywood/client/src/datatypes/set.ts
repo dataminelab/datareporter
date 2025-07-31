@@ -16,7 +16,7 @@
  */
 
 import { Timezone } from "chronoshift";
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import { Class, generalEqual, Instance } from "immutable-class";
 
 import { PlyType } from "../types";
@@ -521,7 +521,7 @@ export class Set implements Instance<SetValue, SetJS> {
   }
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const check: Class<SetValue, SetJS> = Set;
 
 Set.EMPTY = Set.fromJS([]);

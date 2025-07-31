@@ -16,7 +16,7 @@
 
 import { Column, Introspect, QueryResult, SqlColumn, SqlQuery } from "druid-query-toolkit";
 import { PlywoodRequester } from "plywood-base-api";
-import * as toArray from "stream-to-array";
+import toArray from "stream-to-array";
 
 import { AttributeInfo, Attributes } from "../datatypes";
 import { DruidDialect } from "../dialect";

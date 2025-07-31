@@ -17,7 +17,7 @@
 
 /* eslint-disable prefer-rest-params */
 import { Duration, parseISODate, Timezone } from "chronoshift";
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import { generalLookupsEqual, Instance, isImmutableClass } from "immutable-class";
 import { PassThrough } from "readable-stream";
 

@@ -16,7 +16,7 @@
  */
 
 import { isDate, Timezone } from "chronoshift";
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import type { Class, Instance } from "immutable-class";
 import { generalEqual, NamedArray, SimpleArray } from "immutable-class";
 
@@ -163,35 +163,35 @@ function removeLineBreaks(v: string): string {
 }
 
 const typeOrder: Record<string, number> = {
-  NULL: 0,
-  TIME: 1,
-  TIME_RANGE: 2,
+  "NULL": 0,
+  "TIME": 1,
+  "TIME_RANGE": 2,
   "SET/TIME": 3,
   "SET/TIME_RANGE": 4,
-  STRING: 5,
+  "STRING": 5,
   "SET/STRING": 6,
-  BOOLEAN: 7,
-  NUMBER: 8,
-  NUMBER_RANGE: 9,
+  "BOOLEAN": 7,
+  "NUMBER": 8,
+  "NUMBER_RANGE": 9,
   "SET/NUMBER": 10,
   "SET/NUMBER_RANGE": 11,
-  DATASET: 12,
+  "DATASET": 12,
 };
 
 export interface Formatter extends Record<string, Function | undefined> {
-  NULL?: (v: any) => string;
-  TIME?: (v: Date, tz: Timezone) => string;
-  TIME_RANGE?: (v: TimeRange, tz: Timezone) => string;
+  "NULL"?: (v: any) => string;
+  "TIME"?: (v: Date, tz: Timezone) => string;
+  "TIME_RANGE"?: (v: TimeRange, tz: Timezone) => string;
   "SET/TIME"?: (v: Set, tz: Timezone) => string;
   "SET/TIME_RANGE"?: (v: Set, tz: Timezone) => string;
-  STRING?: (v: string) => string;
+  "STRING"?: (v: string) => string;
   "SET/STRING"?: (v: Set) => string;
-  BOOLEAN?: (v: boolean) => string;
-  NUMBER?: (v: number) => string;
-  NUMBER_RANGE?: (v: NumberRange) => string;
+  "BOOLEAN"?: (v: boolean) => string;
+  "NUMBER"?: (v: number) => string;
+  "NUMBER_RANGE"?: (v: NumberRange) => string;
   "SET/NUMBER"?: (v: Set) => string;
   "SET/NUMBER_RANGE"?: (v: Set) => string;
-  DATASET?: (v: Dataset) => string;
+  "DATASET"?: (v: Dataset) => string;
 }
 
 export type Finalizer = (v: string) => string;
@@ -294,20 +294,20 @@ export class Dataset implements Instance<DatasetValue, DatasetJS> {
   static type = "DATASET";
 
   static DEFAULT_FORMATTER: Formatter = {
-    NULL: (v: any) => (isDate(v) ? v.toISOString() : "" + v),
-    TIME: (v: Date, tz: Timezone) => Timezone.formatDateWithTimezone(v, tz),
-    TIME_RANGE: (v: TimeRange, tz: Timezone) => v.toString(tz),
+    "NULL": (v: any) => (isDate(v) ? v.toISOString() : "" + v),
+    "TIME": (v: Date, tz: Timezone) => Timezone.formatDateWithTimezone(v, tz),
+    "TIME_RANGE": (v: TimeRange, tz: Timezone) => v.toString(tz),
     "SET/TIME": (v: Set, tz: Timezone) => v.toString(tz),
     "SET/TIME_RANGE": (v: Set, tz: Timezone) => v.toString(tz),
-    STRING: (v: string) => "" + v,
+    "STRING": (v: string) => "" + v,
     "SET/STRING": (v: Set) => "" + v,
-    IP: (v: Ip) => "" + v.toString(),
-    BOOLEAN: (v: boolean) => "" + v,
-    NUMBER: (v: number) => "" + v,
-    NUMBER_RANGE: (v: NumberRange) => "" + v,
+    "IP": (v: Ip) => "" + v.toString(),
+    "BOOLEAN": (v: boolean) => "" + v,
+    "NUMBER": (v: number) => "" + v,
+    "NUMBER_RANGE": (v: NumberRange) => "" + v,
     "SET/NUMBER": (v: Set) => "" + v,
     "SET/NUMBER_RANGE": (v: Set) => "" + v,
-    DATASET: (_v: Dataset) => "DATASET",
+    "DATASET": (_v: Dataset) => "DATASET",
   };
 
   static CSV_FINALIZER: Finalizer = (v: string) => {
@@ -1327,5 +1327,5 @@ export class Dataset implements Instance<DatasetValue, DatasetJS> {
   }
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const check: Class<DatasetValue, DatasetJS> = Dataset;

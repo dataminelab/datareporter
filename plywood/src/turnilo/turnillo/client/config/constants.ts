@@ -169,7 +169,7 @@ export const STRINGS: any = {
 
 // Data cubes introspection strategies
 export const DATA_CUBES_STRATEGIES_LABELS = {
-  none: "None",
+  "none": "None",
   "no-autofill": "No autofill",
   "autofill-dimensions-only": "Autofill dimensions only",
   "autofill-measures-only": "Autofill measures only",

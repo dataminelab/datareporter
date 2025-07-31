@@ -15,7 +15,7 @@
  */
 
 import { Duration, Timezone } from "chronoshift";
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import {
   immutableArraysEqual,
   immutableLookupsEqual,

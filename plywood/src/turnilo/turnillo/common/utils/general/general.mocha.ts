@@ -101,8 +101,8 @@ describe("General", () => {
   describe("inlineVars", () => {
     it("works in simple case", () => {
       const json: any = {
-        hello: 1,
-        port: "%{PORT}%",
+        "hello": 1,
+        "port": "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%",
       };
 
@@ -112,16 +112,16 @@ describe("General", () => {
       };
 
       expect(inlineVars(json, vars)).to.deep.equal({
-        hello: 1,
-        port: "1234",
+        "hello": 1,
+        "port": "1234",
         "fox says %{}%": "Meow",
       });
     });
 
     it("throw error if can not find var", () => {
       const json: any = {
-        hello: 1,
-        port: "%{PORT}%",
+        "hello": 1,
+        "port": "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%",
       };
 

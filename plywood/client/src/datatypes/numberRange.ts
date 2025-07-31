@@ -114,6 +114,6 @@ export class NumberRange
   }
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const check: Class<NumberRangeValue, NumberRangeJS> = NumberRange;
 Range.register(NumberRange);

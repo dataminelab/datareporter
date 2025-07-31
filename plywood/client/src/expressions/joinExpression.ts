@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 
 import { PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";

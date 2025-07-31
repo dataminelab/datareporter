@@ -16,10 +16,10 @@
  */
 
 import * as Druid from "druid.d.ts";
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import { PlywoodRequester } from "plywood-base-api";
 import { Transform } from "readable-stream";
-import * as toArray from "stream-to-array";
+import toArray from "stream-to-array";
 
 import {
   AttributeInfo,

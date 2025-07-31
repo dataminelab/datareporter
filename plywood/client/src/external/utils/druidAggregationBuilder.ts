@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import { NamedArray } from "immutable-class";
 
 import { AttributeInfo } from "../../datatypes/index";

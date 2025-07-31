@@ -16,7 +16,7 @@
  */
 
 import { PlywoodRequester } from "plywood-base-api";
-import * as toArray from "stream-to-array";
+import toArray from "stream-to-array";
 
 import { AttributeInfo, Attributes, PseudoDatum } from "../datatypes";
 import { MySQLDialect } from "../dialect/mySqlDialect";

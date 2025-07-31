@@ -206,6 +206,6 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
   }
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const check: Class<TimeRangeValue, TimeRangeJS> = TimeRange;
 Range.register(TimeRange);

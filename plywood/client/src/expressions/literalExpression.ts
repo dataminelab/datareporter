@@ -16,7 +16,7 @@
  */
 
 import { parseISODate } from "chronoshift";
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import { isImmutableClass } from "immutable-class";
 
 import { ComputeFn, Dataset, Datum, PlywoodValue, Set, TimeRange } from "../datatypes";

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as hasOwnProp from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import { SimpleArray } from "immutable-class";
 
 import { ComputeFn, Datum, PlywoodValue } from "../datatypes";
@@ -26,15 +26,15 @@ import { DatasetFullType, PlyType } from "../types";
 import { Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
 
 export const POSSIBLE_TYPES: Record<string, number> = {
-  NULL: 1,
-  BOOLEAN: 1,
-  NUMBER: 1,
-  TIME: 1,
-  STRING: 1,
-  IP: 1,
-  NUMBER_RANGE: 1,
-  TIME_RANGE: 1,
-  SET: 1,
+  "NULL": 1,
+  "BOOLEAN": 1,
+  "NUMBER": 1,
+  "TIME": 1,
+  "STRING": 1,
+  "IP": 1,
+  "NUMBER_RANGE": 1,
+  "TIME_RANGE": 1,
+  "SET": 1,
   "SET/NULL": 1,
   "SET/BOOLEAN": 1,
   "SET/NUMBER": 1,
@@ -43,8 +43,8 @@ export const POSSIBLE_TYPES: Record<string, number> = {
   "SET/NUMBER_RANGE": 1,
   "SET/TIME_RANGE": 1,
   "SET/IP": 1,
-  DATASET: 1,
-  TIME_SERIES: 1,
+  "DATASET": 1,
+  "TIME_SERIES": 1,
 };
 
 const GENERATIONS_REGEXP = /^\^+/;

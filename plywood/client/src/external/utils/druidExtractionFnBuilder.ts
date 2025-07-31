@@ -155,8 +155,8 @@ export class DruidExtractionFnBuilder {
           map: {
             "0": "false",
             "1": "true",
-            false: "false",
-            true: "true",
+            "false": "false",
+            "true": "true",
           },
         },
       };

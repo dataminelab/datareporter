@@ -42,8 +42,7 @@ export class ImmutableUtils {
         lastObject = currentObject.change(bit, lastObject);
       } else {
         const message =
-          "Can't find \`change()\` method on " + currentObject.constructor.name;
-        console.error(message); // Leaving this console statement because the error might be caught and obfuscated
+          "Can't find `change()` method on " + currentObject.constructor.name;
         throw new Error(message);
       }
     }

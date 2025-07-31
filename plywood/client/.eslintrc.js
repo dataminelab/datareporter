@@ -1,6 +1,6 @@
 module.exports = {
   parserOptions: {
-    project: "./tsconfig.lint.json"
+    project: "./tsconfig.lint.json",
   },
   rules: {
     "compat/compat": "warn",
@@ -22,19 +22,19 @@ module.exports = {
       files: ["test/**/*.js"],
       env: {
         node: true,
-        jest: true
+        jest: true,
       },
       rules: {
         "@typescript-eslint/no-var-requires": "off",
-        "unused-imports/no-unused-vars": "off"
-      }
-    }
+        "unused-imports/no-unused-vars": "off",
+      },
+    },
   ],
   settings: {
     "import/resolver": {
       node: {
-        extensions: [".js", ".jsx", ".ts", ".tsx"]
-      }
-    }
-  }
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+      },
+    },
+  },
 };

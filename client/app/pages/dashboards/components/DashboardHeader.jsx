@@ -314,7 +314,7 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
     const question = writePrePrompt(promptValue, slug);
     if (selectedModel === "chatgpt") {
       // Use OpenAI API for ChatGPT model
-      answer = await getOpenAiAnswer(question);
+      answer = await getOpenAiAnswer(question, dashboard.id);
     } else {
       // Use DeepSeek ollama model for DeepSeek model
       answer = await getPromptAnswer(question);

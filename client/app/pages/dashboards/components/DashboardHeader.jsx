@@ -327,11 +327,12 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
     setSendingPrompt(false);
   };
   const aiOptions = [{
-      name: "deepseek",
-      value: "deepseek"
-  }, {
       name: "chatgpt",
       value: "chatgpt"
+  },
+  {
+      name: "deepseek",
+      value: "deepseek"
   }]
   const formId = `promptForm-${dashboard.id}`
   return (

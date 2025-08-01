@@ -87,7 +87,7 @@ module.exports = {
       varsIgnorePattern: "^React$",
       argsIgnorePattern: "^_"
     }],
-    "react/prop-types": "off", // Disable prop-types as we use TypeScript
+    "react/prop-types": "off",
   },
   overrides: [
     {
@@ -107,7 +107,6 @@ module.exports = {
     },
     {
       files: ["**/*.js", "**/*.jsx"],
-      plugins: ["react"],
       extends: ["eslint:recommended", "plugin:react/recommended"],
       rules: {
         "react/react-in-jsx-scope": "off",
@@ -115,11 +114,6 @@ module.exports = {
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "react/prop-types": "warn",
-      },
-      settings: {
-        react: {
-          version: "detect",
-        },
       },
     },
     {

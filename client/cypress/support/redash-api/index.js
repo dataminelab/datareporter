@@ -1,7 +1,7 @@
 const { extend, get, merge, find } = Cypress._;
 
 const post = (
-  options, //
+  options,
 ) =>
   cy
     .getCookie("csrf_token")

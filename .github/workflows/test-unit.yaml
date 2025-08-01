@@ -1,6 +1,10 @@
-name: "Unit tests"
+name: "Tests"
 on:
-  workflow_call:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main, develop]
 env:
   NODE_VERSION: 18
   NPM_VERSION: 9.5.1
@@ -13,9 +17,10 @@ jobs:
   restyled:
     uses: ./.github/workflows/restyled.yml
   backend-lint:
+    name: "Backend Lint"
+    needs: restyled
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    needs: restyled
     steps:
       - if: github.event.pull_request.mergeable == 'false'
         name: Exit if PR is not mergeable

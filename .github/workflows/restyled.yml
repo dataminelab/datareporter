@@ -1,7 +1,6 @@
 name: Restyled
 
 on:
-  pull_request:
   workflow_call:
 
 concurrency:
@@ -17,6 +16,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: restyled-io/actions/setup@v4
+      
       - id: restyler
         uses: restyled-io/actions/run@v4
         with:
@@ -35,3 +35,10 @@ jobs:
           labels: "restyled"
           reviewers: ${{ github.event.pull_request.user.login }}
           delete-branch: true
+      
+      # Explicitly fail if restyled found differences
+      - name: Fail if restyling is needed
+        if: steps.restyler.outputs.success != 'true'
+        run: |
+          echo "❌ Code styling issues found. Please check the restyled PR or fix manually."
+          exit 1

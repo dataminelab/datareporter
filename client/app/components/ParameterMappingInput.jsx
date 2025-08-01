@@ -574,7 +574,7 @@ export class ParameterMappingListInput extends React.Component {
   }
 
   render() {
-    const { existingParams } = this.props; // eslint-disable-line react/prop-types
+    const { existingParams } = this.props;
     const dataSource = this.props.mappings.map(mapping => ({ mapping }));
 
     return (

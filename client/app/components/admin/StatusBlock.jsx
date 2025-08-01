@@ -1,8 +1,6 @@
-/* eslint-disable react/prop-types */
-
-import { toPairs } from "lodash";
 import React from "react";
-
+import { toPairs } from "lodash";
+import PropTypes from "prop-types";
 import List from "antd/lib/list";
 import Card from "antd/lib/card";
 import TimeAgo from "@/components/TimeAgo";
@@ -69,6 +67,7 @@ export function Manager({ info }) {
   const items = info
     ? [
         <List.Item
+          key="lastRefresh"
           extra={
             <span className="badge">
               <TimeAgo date={info.lastRefreshAt} placeholder="n/a" />
@@ -77,6 +76,7 @@ export function Manager({ info }) {
           Last Refresh
         </List.Item>,
         <List.Item
+          key="started"
           extra={
             <span className="badge">
               <TimeAgo date={info.startedAt} placeholder="n/a" />
@@ -84,7 +84,7 @@ export function Manager({ info }) {
           }>
           Started
         </List.Item>,
-        <List.Item extra={<span className="badge">{info.outdatedQueriesCount}</span>}>
+        <List.Item key="outdatedQueriesCount" extra={<span className="badge">{info.outdatedQueriesCount}</span>}>
           Outdated Queries Count
         </List.Item>,
       ]
@@ -97,3 +97,11 @@ export function Manager({ info }) {
     </Card>
   );
 }
+
+Manager.propTypes = {
+  info: PropTypes.shape({
+    lastRefreshAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    startedAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    outdatedQueriesCount: PropTypes.number,
+  }),
+};

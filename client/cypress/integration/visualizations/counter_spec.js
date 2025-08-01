@@ -1,5 +1,3 @@
-/* global cy, Cypress */
-
 const SQL = `
   SELECT 27182.8182846 AS a, 20000 AS b, 'lorem' AS c UNION ALL
   SELECT 31415.9265359 AS a, 40000 AS b, 'ipsum' AS c

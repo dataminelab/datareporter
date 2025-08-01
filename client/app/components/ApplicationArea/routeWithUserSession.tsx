@@ -61,7 +61,6 @@ export function UserSessionWrapper<P>({ bodyClass, currentRoute, render }: UserS
   return (
     <ApplicationLayout>
       <React.Fragment key={currentRoute.key}>
-        {/* @ts-ignore */}
         <ErrorBoundary renderError={(error: Error) => <ErrorMessage error={error} />}>
           <ErrorBoundaryContext.Consumer>
             {({ handleError }: { handleError: (error: any) => void }) =>
@@ -83,11 +82,13 @@ export type RouteWithUserSessionOptions<P> = {
 
 export const UserSessionWrapperDynamicComponentName = "UserSessionWrapper";
 
-export default function routeWithUserSession<P extends {} = {}>({
+export default function routeWithUserSession<P extends Record<string, unknown> = Record<string, unknown>>({
   render: originalRender,
   bodyClass,
   ...rest
-}: RouteWithUserSessionOptions<P>) {
+}: RouteWithUserSessionOptions<P>): Omit<RouteWithUserSessionOptions<P>, "render"> & {
+  render: (currentRoute: CurrentRoute<P>) => React.ReactNode;
+} {
   return {
     ...rest,
     render: (currentRoute: CurrentRoute<P>) => {

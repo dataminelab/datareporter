@@ -1,5 +1,3 @@
-/* global cy, Cypress */
-
 import { getWidgetTestId } from "../../support/dashboard";
 
 describe("Dashboard", () => {

@@ -14,14 +14,9 @@ module.exports = {
     "max-classes-per-file": "off",
     "no-useless-escape": "off",
     "@typescript-eslint/consistent-type-imports": "off",
+    "@typescript-eslint/ban-ts-comment": "warn",
   },
   overrides: [
-    {
-      files: ["**/*.ts", "**/*.tsx"],
-      rules: {
-        "@typescript-eslint/ban-ts-comment": "off",
-      },
-    },
     {
       files: ["docs/**/*.js", "data/**/*.js"],
       parser: "espree",

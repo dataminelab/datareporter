@@ -1,5 +1,3 @@
-/* global cy, Cypress */
-
 const SQL = `
   SELECT 12 AS mn, 4967 AS mx UNION ALL
   SELECT 10 AS mn, 19430 AS mx UNION ALL

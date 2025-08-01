@@ -1,5 +1,3 @@
-/* global cy, Cypress */
-
 const { map } = Cypress._;
 
 const SQL = `

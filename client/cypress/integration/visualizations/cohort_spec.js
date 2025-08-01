@@ -1,5 +1,3 @@
-/* global cy, Cypress */
-
 const SQL = `
   SELECT '2019-01-01' AS "date", 21 AS "bucket", 5 AS "value", 1 AS "stage" UNION ALL
   SELECT '2019-01-01' AS "date", 21 AS "bucket", 8 AS "value", 2 AS "stage" UNION ALL

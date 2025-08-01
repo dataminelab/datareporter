@@ -10,7 +10,7 @@ Link.Component = DefaultLinkComponent;
 interface LinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "role" | "type" | "target"> {
   href: string;
 }
-function Link({ children, ...props }: LinkProps) {
+function Link({ children, ...props }: LinkProps): JSX.Element {
   return <Link.Component {...props}>{children}</Link.Component>;
 }
 

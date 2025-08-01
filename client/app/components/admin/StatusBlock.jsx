@@ -89,7 +89,7 @@ export function Manager({ info }) {
         </List.Item>,
       ]
     : [];
-
+s
   return (
     <Card title="Manager" size="small">
       {!info && <div className="text-muted text-center">No data</div>}

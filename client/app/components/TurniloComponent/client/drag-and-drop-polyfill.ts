@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @ts-ignore
 export default function dragAndDropPolyfill() {
   const div = document.createElement("div");
   const dragDiv = "draggable" in div;
@@ -24,9 +23,9 @@ export default function dragAndDropPolyfill() {
 
   if (needsPatch) {
     Promise.all([
-      // @ts-ignore
+      // @ts-ignore Dynamic import of polyfill
       import("../lib/polyfill/drag-drop-polyfill.min.js"),
-      // @ts-ignore
+      // @ts-expect-error: Dynamic import of CSS file for polyfill
       import("../lib/polyfill/drag-drop-polyfill.css")
     ]).then(([DragDropPolyfill, _]) => {
       DragDropPolyfill.Initialize({});

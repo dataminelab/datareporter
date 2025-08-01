@@ -32,6 +32,7 @@ describe.skip("TurniloApplication", () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    // eslint-disable-next-line react/no-find-dom-node
     expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("turnilo-application");
   });
 

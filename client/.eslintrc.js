@@ -73,7 +73,6 @@ module.exports = {
     "@typescript-eslint/no-use-before-define": "warn",
     "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "warn",
-    "@typescript-eslint/ban-ts-comment": "warn",
     "no-useless-constructor": "off",
     "@typescript-eslint/no-useless-constructor": "off",
     "@typescript-eslint/no-explicit-any": "off",
@@ -88,23 +87,14 @@ module.exports = {
       argsIgnorePattern: "^_"
     }],
     "react/prop-types": "off",
+    "compat/compat": "warn",
+    "react/no-deprecated": "warn",
+    "@typescript-eslint/ban-ts-comment": ["warn", {
+      "ts-ignore": "allow-with-description",
+      "minimumDescriptionLength": 3,
+    }],
   },
   overrides: [
-    {
-      // cypress tests
-      files: ["cypress/**/*.js", "cypress/**/*.ts", "cypress.config.js"],
-      rules: {
-        "no-unused-expressions": "off",
-        "@typescript-eslint/no-unused-expressions": "off",
-        "cypress/no-assigning-return-values": "off",
-        "cypress/unsafe-to-chain-command": "off",
-        "cypress/no-unnecessary-waiting": "warn",
-        "@typescript-eslint/no-empty-function": "off",
-        "no-unused-vars": "warn",
-        "@typescript-eslint/no-unused-vars": "warn",
-      }
-
-    },
     {
       files: ["**/*.js", "**/*.jsx"],
       extends: ["eslint:recommended", "plugin:react/recommended"],
@@ -137,7 +127,6 @@ module.exports = {
     {
       files: ["**/TurniloComponent/**/*.{js,jsx,ts,tsx}"],
       rules: {
-        "@typescript-eslint/ban-ts-comment": "warn",
         "@typescript-eslint/no-empty-interface": "off",
         "no-var": "warn",
         "prefer-const": "warn",
@@ -149,7 +138,6 @@ module.exports = {
         "jest/valid-expect": "off",
         'getter-return': 'off',
         '@typescript-eslint/no-empty-function': 'off',
-        "@typescript-eslint/explicit-module-boundary-types": "warn",
         "jest/no-done-callback": "off",
       },
     },
@@ -159,7 +147,6 @@ module.exports = {
       plugins: ["@typescript-eslint"],
       extends: ["plugin:@typescript-eslint/recommended"],
       rules: {
-        "@typescript-eslint/explicit-module-boundary-types": "error",
         "react/prop-types": "off",
       },
     },

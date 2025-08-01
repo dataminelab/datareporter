@@ -1,6 +1,8 @@
 const { extend, get, merge, find } = Cypress._;
 
-const post = options => //
+const post = (
+  options, //
+) =>
   cy
     .getCookie("csrf_token")
     .then(csrf => cy.request({ ...options, method: "POST", headers: { "X-CSRF-TOKEN": csrf.value } }));

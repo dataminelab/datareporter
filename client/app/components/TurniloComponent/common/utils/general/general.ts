@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import { Collection, List } from "immutable";
+import { Collection, List } from "immutable"; 
+// make em all hasOwnProperty to hasOwnProp
+import hasOwnProp from "has-own-prop";
 
 // The most generic function
 export type Fn = () => void;
 
-const objectHasOwnProperty = Object.prototype.hasOwnProperty;
-
 export function hasOwnProperty(obj: any, key: string | number): boolean {
   if (!obj) return false;
-  return objectHasOwnProperty.call(obj, key);
+  return hasOwnProp(obj, key);
 }
 
 export function isNil(obj: unknown): boolean {

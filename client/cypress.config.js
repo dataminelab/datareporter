@@ -20,14 +20,14 @@ export default defineConfig({
     },
     experimentalSessionAndOrigin: true,
     setupNodeEvents(on) {
-      on('before:browser:launch', (browser = {}, launchOptions) => {
-        if (browser.name === 'chrome' || browser.name === 'chromium') {
-          launchOptions.args.push('--disable-gpu')
-          launchOptions.args.push('--no-sandbox')
-          launchOptions.args.push('--disable-dev-shm-usage')
+      on("before:browser:launch", (browser = {}, launchOptions) => {
+        if (browser.name === "chrome" || browser.name === "chromium") {
+          launchOptions.args.push("--disable-gpu");
+          launchOptions.args.push("--no-sandbox");
+          launchOptions.args.push("--disable-dev-shm-usage");
         }
-        return launchOptions
-      })
+        return launchOptions;
+      });
     },
   },
 

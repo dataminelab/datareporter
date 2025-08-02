@@ -3,6 +3,11 @@ module.exports = {
   env: {
     "jest/globals": true,
   },
+  globals: {
+    int: "readonly",
+    ClientRect: "readonly",
+    JSX: "readonly",
+  },
   rules: {
     "jest/no-focused-tests": "off",
   },

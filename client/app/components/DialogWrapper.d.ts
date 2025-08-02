@@ -1,3 +1,4 @@
+import React from "react";
 import { ModalProps } from "antd/lib/modal/Modal";
 
 export interface DialogProps<ROk, RCancel> {

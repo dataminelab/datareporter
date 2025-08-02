@@ -108,7 +108,7 @@ function AddToDashboardDialog({ dialog, visualization }) {
               actions={
                 selectedDashboard
                   ? [
-                      <PlainButton onClick={() => setSelectedDashboard(null)}>
+                      <PlainButton key="close-selected-dashboard" onClick={() => setSelectedDashboard(null)}>
                         <CloseOutlinedIcon />
                       </PlainButton>,
                     ]

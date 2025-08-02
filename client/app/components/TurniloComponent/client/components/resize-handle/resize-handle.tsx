@@ -78,15 +78,15 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
       case Direction.TOP:
         if (150 > anchor) {
           const currentValue = this.constrainValue(this.getCoordinate(event)-150);
-          if (!!this.props.onResize) this.props.onResize(currentValue);
+          if (this.props.onResize) this.props.onResize(currentValue);
         } else {
           const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
-          if (!!this.props.onResize) this.props.onResize(currentValue);
+          if (this.props.onResize) this.props.onResize(currentValue);
         }
         break;
       default:
         const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
-        if (!!this.props.onResize) this.props.onResize(currentValue);
+        if (this.props.onResize) this.props.onResize(currentValue);
         break;
     }
   };

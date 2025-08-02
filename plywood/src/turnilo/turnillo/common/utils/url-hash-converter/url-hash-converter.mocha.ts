@@ -17,7 +17,7 @@
 import { expect } from "chai";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { Essence } from "../../models/essence/essence";
-//@ts-ignore
+// @ts-ignore Definition file is not available
 import { EssenceFixtures } from "../../models/essence/essence.fixtures";
 import { ViewDefinitionVersion } from "../../view-definitions";
 import { hashToObject } from "../../view-definitions/hash-conversions";
@@ -126,7 +126,7 @@ describe("urlHashConverter", () => {
         expect(essence.toJS()).to.deep.equal(decodedEssence.toJS());
       });
 
-      function decodeHash(hash: string): object {
+      function decodeHash(hash: string): Record<string, unknown> {
         const { encodedModel } = getHashSegments(hash);
         return hashToObject(encodedModel);
       }
@@ -138,14 +138,7 @@ describe("urlHashConverter", () => {
         );
         const encodedHash = urlHashConverter.toHash(decodedEssence, version);
 
-        try {
-          expect(encodedHash).to.equal(hash);
-        } catch (e) {
-          // rethrow assertion on decoded hashes for readability
-          // expect(decodeHash(encodedHash), "decoded hashes").to.deep.equal(decodeHash(hash));
-          // if test fails but expect on decoded succeeds (error in test definition) rethrow original assertion exception.
-          throw e;
-        }
+        expect(encodedHash).to.equal(hash);
       });
     });
   });

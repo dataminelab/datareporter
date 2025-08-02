@@ -77,7 +77,6 @@ function EmptyState({
   illustrationPath,
 }) {
   const isAvailable = {
-    dataSource: true,
     model: true,
     query: true,
     reports: true,
@@ -252,6 +251,7 @@ EmptyState.propTypes = {
   description: PropTypes.string.isRequired,
   illustration: PropTypes.string.isRequired,
   illustrationPath: PropTypes.string,
+  illustrationType: PropTypes.string,
   helpMessage: PropTypes.node,
   closable: PropTypes.bool,
   onClose: PropTypes.func,
@@ -261,12 +261,12 @@ EmptyState.propTypes = {
   showDashboardStep: PropTypes.bool,
   showDataSourceStep: PropTypes.bool,
   showInviteStep: PropTypes.bool,
-  getStepItems: PropTypes.func,
+  getStepsItems: PropTypes.func,
 };
-
 EmptyState.defaultProps = {
   icon: null,
   header: null,
+  illustrationType: ".svg",
   helpMessage: null,
   closable: false,
   onClose: () => {},
@@ -276,6 +276,7 @@ EmptyState.defaultProps = {
   showDashboardStep: false,
   showDataSourceStep: true,
   showInviteStep: false,
+  getStepsItems: null,
 };
 
 export default EmptyState;

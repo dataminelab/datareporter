@@ -804,7 +804,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
   }
 
   getBarsCoordinates(chartIndex: number, xScale: d3.ScaleBand<string>): BarCoordinates[] {
-    if (!!this.coordinatesCache[chartIndex]) {
+    if (this.coordinatesCache[chartIndex]) {
       return this.coordinatesCache[chartIndex];
     }
 

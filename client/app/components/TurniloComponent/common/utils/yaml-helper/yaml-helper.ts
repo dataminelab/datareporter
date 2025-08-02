@@ -230,7 +230,7 @@ function measureToYAML(measure: Measure): string[] {
   lines.push(`formula: ${measure.formula}`);
 
   const format = measure.format;
-  if (!!format) {
+  if (format) {
     lines.push(`format: ${format}`);
   }
 

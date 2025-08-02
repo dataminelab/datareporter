@@ -55,7 +55,7 @@ export class Stage implements Instance<StageValue, StageJS> {
     });
   }
 
-  static fromClientRect(rect: ClientRect): Stage {
+  static fromClientRect(rect: DOMRect): Stage {
     return new Stage({
       x: rect.left,
       y: rect.top,
@@ -203,5 +203,5 @@ export class Stage implements Instance<StageValue, StageJS> {
     return new Stage(value);
   }
 }
-
+// eslint-disable-next-line
 check = Stage;

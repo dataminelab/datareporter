@@ -148,7 +148,7 @@ export function formatTimeRange(range: { start: Date, end: Date }, timezone: Tim
 }
 
 export function datesEqual(d1: Date, d2: Date): boolean {
-  if (!Boolean(d1) === Boolean(d2)) return false;
+  if (!d1 === Boolean(d2)) return false;
   if (d1 === d2) return true;
   return d1.valueOf() === d2.valueOf();
 }

@@ -3,16 +3,16 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2020,
-    sourceType: 'module',
+    sourceType: "module",
     ecmaFeatures: {
       jsx: true,
-    }
+    },
   },
   extends: [
     "react-app",
     "prettier",
     "plugin:compat/recommended",
-    'plugin:@typescript-eslint/recommended',
+    "plugin:@typescript-eslint/recommended",
     "plugin:jsx-a11y/recommended",
     "eslint:recommended",
     "plugin:react/recommended",
@@ -20,6 +20,7 @@ module.exports = {
   ],
   plugins: [
     "jest",
+    "prettier",
     "compat",
     "no-only-tests",
     "@typescript-eslint",
@@ -35,7 +36,7 @@ module.exports = {
     node: true,
   },
   rules: {
-    "no-empty": ["warn", { "allowEmptyCatch": true }],
+    "no-empty": ["warn", { allowEmptyCatch: true }],
     // allow debugger during development
     "no-debugger": process.env.NODE_ENV === "production" ? 2 : 0,
     "jsx-a11y/anchor-is-valid": [
@@ -59,11 +60,13 @@ module.exports = {
         paths: [
           {
             name: "antd",
-            message: "Please use 'import XXX from antd/lib/XXX' import instead.",
+            message:
+              "Please use 'import XXX from antd/lib/XXX' import instead.",
           },
           {
             name: "antd/lib",
-            message: "Please use 'import XXX from antd/lib/XXX' import instead.",
+            message:
+              "Please use 'import XXX from antd/lib/XXX' import instead.",
           },
         ],
       },
@@ -77,27 +80,40 @@ module.exports = {
     "@typescript-eslint/no-useless-constructor": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-var-requires": "warn",
-    "react/react-in-jsx-scope": "off", // Disable the rule requiring React import
-    "no-unused-vars": ["warn", {
-      varsIgnorePattern: "^React$",
-      argsIgnorePattern: "^_"
-    }],
-    "@typescript-eslint/no-unused-vars": ["warn", {
-      varsIgnorePattern: "^React$",
-      argsIgnorePattern: "^_"
-    }],
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off",
+    "react/jsx-uses-vars": "warn",
+    "react/jsx-no-target-blank": "warn",
+    "react/no-string-refs": "warn",
+    "react/no-children-prop": "warn",
+    "react/no-direct-mutation-state": "warn",
+    "react/no-unknown-property": "warn",
+    "react/no-deprecated": "warn",
+    "react/no-unescaped-entities": "off",
+    "react/jsx-key": "warn",
+    "react/no-find-dom-node": "off",
+    "react/display-name": "off",
+    "react/jsx-no-comment-textnodes": "warn",
+    "no-unused-vars": ["warn", { varsIgnorePattern: "^React$" }],
+    "no-case-declarations": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { varsIgnorePattern: "^React$" },
+    ],
     "react/prop-types": "off",
     "compat/compat": "warn",
-    "react/no-deprecated": "warn",
-    "@typescript-eslint/ban-ts-comment": ["warn", {
-      "ts-ignore": "allow-with-description",
-      "minimumDescriptionLength": 3,
-    }],
+    "@typescript-eslint/ban-ts-comment": [
+      "warn",
+      {
+        "ts-ignore": "allow-with-description",
+        "minimumDescriptionLength": 3,
+      },
+    ],
+    "no-useless-escape": "warn",
   },
   overrides: [
     {
       files: ["**/*.js", "**/*.jsx"],
-      extends: ["eslint:recommended", "plugin:react/recommended"],
       rules: {
         "react/react-in-jsx-scope": "off",
         "react/display-name": "off",
@@ -107,7 +123,12 @@ module.exports = {
       },
     },
     {
-      files: ["**/*.mocha.ts", "**/*.mocha.tsx", "**/*.test.ts", "**/*.test.tsx"],
+      files: [
+        "**/*.mocha.ts",
+        "**/*.mocha.tsx",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
       parser: null,
       env: {
         mocha: true,
@@ -130,24 +151,15 @@ module.exports = {
         "@typescript-eslint/no-empty-interface": "off",
         "no-var": "warn",
         "prefer-const": "warn",
-        '@typescript-eslint/no-namespace': [
-          'warn',
+        "@typescript-eslint/no-namespace": [
+          "warn",
           { allowDeclarations: true },
         ],
-        "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
         "jest/valid-expect": "off",
-        'getter-return': 'off',
-        '@typescript-eslint/no-empty-function': 'off',
+        "getter-return": "off",
+        "@typescript-eslint/no-empty-function": "off",
         "jest/no-done-callback": "off",
-      },
-    },
-    {
-      files: ["**/*.ts", "**/*.tsx"],
-      parser: "@typescript-eslint/parser",
-      plugins: ["@typescript-eslint"],
-      extends: ["plugin:@typescript-eslint/recommended"],
-      rules: {
-        "react/prop-types": "off",
+        "no-undef": "error",
       },
     },
   ],

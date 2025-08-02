@@ -31,14 +31,13 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["./app/*"]
-    },
+    }
   },
   "include": ["app/**/*.ts", "app/**/*.tsx"],
   "exclude": [
     "node_modules",
     "**/*.json",
-    "**/*.js",
-    "**/*.jsx",
-    "app/components/TurniloComponent",
+    "**/*.{js, jsx}",
+    "app/components/TurniloComponent"
   ]
 }

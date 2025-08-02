@@ -94,12 +94,12 @@ module.exports = {
     "react/no-find-dom-node": "off",
     "react/display-name": "off",
     "react/jsx-no-comment-textnodes": "warn",
-    "no-unused-vars": ["warn", { varsIgnorePattern: "^React$" }],
-    "no-case-declarations": "off",
+    "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       { varsIgnorePattern: "^React$" },
     ],
+    "no-case-declarations": "off",
     "react/prop-types": "off",
     "compat/compat": "warn",
     "@typescript-eslint/ban-ts-comment": [
@@ -110,6 +110,8 @@ module.exports = {
       },
     ],
     "no-useless-escape": "warn",
+    "no-redeclare": "off",
+    "@typescript-eslint/no-redeclare": "warn",
   },
   overrides: [
     {
@@ -119,6 +121,16 @@ module.exports = {
         "react/display-name": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/no-useless-constructor": "off",
+        "@typescript-eslint/no-redeclare": "off",
+        "no-redeclare": "warn", // Re-enable base rule for JS files
+        "no-unused-vars": ["warn", { varsIgnorePattern: "^React$" }], // Re-enable base rule for JS files
         "react/prop-types": "warn",
       },
     },
@@ -137,7 +149,8 @@ module.exports = {
       plugins: [],
       rules: {
         "@typescript-eslint/no-empty-function": "off",
-        "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
+        "no-unused-expressions": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
         "jest/no-disabled-tests": "off",
         "jest/valid-expect": "off",
         "no-var": "warn",
@@ -155,11 +168,22 @@ module.exports = {
           "warn",
           { allowDeclarations: true },
         ],
-        "jest/valid-expect": "off",
         "getter-return": "off",
         "@typescript-eslint/no-empty-function": "off",
         "jest/no-done-callback": "off",
         "no-undef": "error",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "no-useless-catch": "off",
+      },
+    },
+    {
+      files: ["cypress/**/*.{js,jsx,ts,tsx}"],
+      env: {
+        "cypress/globals": true,
+      },
+      plugins: ["cypress"],
+      rules: {
+        "no-redeclare": "warn",
       },
     },
   ],

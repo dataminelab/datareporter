@@ -1,7 +1,40 @@
-namespace: staging
-bases:
+namespace: staging-kustomize-test
+
+namePrefix: kustomize-
+resources:
+- namespace.yaml
+- ../../base/dependencies
 - ../../base
-patches:
-- service.yaml
-- hpa.yaml
-- deployment.yaml
+images:
+  - name: europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:v2025.3.1
+    newTag: develop-2025.7.1-d6ac47d1
+  - name: europe-west1-docker.pkg.dev/datareporter/datareporter/plywood:v2025.3.1
+    newTag: develop-2025.7.1-d6ac47d1
+secretGenerator:
+  # For dependencies postgresql [optional]
+  - name: postgresql
+    literals:
+      - POSTGRES_USER="datareporter"
+      - POSTGRES_PASSWORD="datareporter1324"
+      - POSTGRES_POSTGRES_PASSWORD="datareporter1324"
+      - POSTGRES_DATABASE="datareporter"
+  # For dependencies redis [optional]
+  - name: redis
+    literals:
+      - REDIS_PASSWORD="datareporter1324"
+  - name: datareporter
+    literals:
+      - REDASH_DATABASE_HOSTNAME="kustomize-postgresql"
+      - REDASH_DATABASE_PORT="5432"
+      - REDASH_DATABASE_NAME="datareporter"
+      - REDASH_DATABASE_USER="datareporter"
+      - REDASH_DATABASE_PASSWORD="datareporter1324"
+      - REDASH_REDIS_SCHEMA="redis"
+      - REDASH_REDIS_USERNAME="default"
+      - REDASH_REDIS_HOSTNAME="kustomize-redis-master"
+      - REDASH_REDIS_PASSWORD="datareporter1324"
+      - REDASH_REDIS_PORT="6379"
+      - REDASH_REDIS_DB="0"
+      - REDASH_COOKIE_SECRET="1231asdjn130ncvf943gjdsa78$@$#SADt52r387v"
+      - REDASH_SECRET_KEY="123123986934jbnhcdikjlpeczxcshdfgpwe7132rf"
+      - PLYWOOD_SERVER_HOSTNAME="kustomize-plywood"

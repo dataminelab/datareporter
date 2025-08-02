@@ -44,7 +44,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   constructor(props: ModalProps) {
     super(props);
     this.state = {
-      id: null
+      id: null,
     };
   }
 
@@ -52,7 +52,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     const { id } = this.props;
 
     this.setState({
-      id: id || uniqueId("modal-")
+      id: id || uniqueId("modal-"),
     });
   }
 
@@ -89,7 +89,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
 
       const target = this.getChildByID(
         myElement.childNodes,
-        this.props.startUpFocusOn
+        this.props.startUpFocusOn,
       );
 
       if (!this.focusAlreadyGiven && !!target) {
@@ -131,29 +131,33 @@ export class Modal extends React.Component<ModalProps, ModalState> {
 
     let titleElement: JSX.Element = null;
     if (typeof title === "string") {
-      titleElement = <div className="modal-title">
-        <div className="text">{title}</div>
-        <div className="close" onClick={onClose}>
-          <SvgIcon svg={require("../../icons/full-remove.svg")} />
+      titleElement = (
+        <div className="modal-title">
+          <div className="text">{title}</div>
+          <div className="close" onClick={onClose}>
+            <SvgIcon svg={require("../../icons/full-remove.svg")} />
+          </div>
         </div>
-      </div>;
+      );
     }
 
-    return <BodyPortal fullSize={true}>
-      <div className={classNames("modal", className)}>
-        <GlobalEventListener
-          enter={this.onEnter}
-          escape={this.onEscape}
-          mouseDown={this.onMouseDown}
-        />
-        <div className="backdrop" />
-        <GoldenCenter>
-          <div className="modal-window" id={id}>
-            {titleElement}
-            {children}
-          </div>
-        </GoldenCenter>
-      </div>
-    </BodyPortal>;
+    return (
+      <BodyPortal fullSize={true}>
+        <div className={classNames("modal", className)}>
+          <GlobalEventListener
+            enter={this.onEnter}
+            escape={this.onEscape}
+            mouseDown={this.onMouseDown}
+          />
+          <div className="backdrop" />
+          <GoldenCenter>
+            <div className="modal-window" id={id}>
+              {titleElement}
+              {children}
+            </div>
+          </GoldenCenter>
+        </div>
+      </BodyPortal>
+    );
   }
 }

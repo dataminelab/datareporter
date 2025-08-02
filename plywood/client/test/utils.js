@@ -16,10 +16,8 @@
  */
 
 const { expect } = require("chai");
-
 const { Expression, toJS } = require("../build/plywood");
-
-const hasOwnProperty = Object.prototype.hasOwnProperty;
+const hasOwnProperty = require("has-own-prop");
 
 const uniformizeDoubles = v => {
   const t = typeof v;
@@ -41,7 +39,7 @@ const uniformizeDoubles = v => {
       let needNew = false;
       const newV = {};
       for (const k in v) {
-        if (!hasOwnProperty.call(v, k)) continue;
+        if (hasOwnProperty(v, k)) continue;
         const oldValue = v[k];
         const newValue = uniformizeDoubles(oldValue);
         newV[k] = newValue;

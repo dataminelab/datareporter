@@ -1,4 +1,13 @@
-import { isArray, indexOf, get, map, includes, every, some, toNumber } from "lodash";
+import {
+  isArray,
+  indexOf,
+  get,
+  map,
+  includes,
+  every,
+  some,
+  toNumber,
+} from "lodash";
 import moment from "moment";
 import React from "react";
 import PropTypes from "prop-types";
@@ -12,7 +21,10 @@ export const FilterType = PropTypes.shape({
   name: PropTypes.string.isRequired,
   friendlyName: PropTypes.string.isRequired,
   multiple: PropTypes.bool,
-  current: PropTypes.oneOfType([PropTypes.any, PropTypes.arrayOf(PropTypes.any)]),
+  current: PropTypes.oneOfType([
+    PropTypes.any,
+    PropTypes.arrayOf(PropTypes.any),
+  ]),
   values: PropTypes.arrayOf(PropTypes.any).isRequired,
 });
 
@@ -21,7 +33,10 @@ export const FiltersType = PropTypes.arrayOf(FilterType);
 function createFilterChangeHandler(filters, onChange) {
   return (filter, values) => {
     if (isArray(values)) {
-      values = map(values, value => filter.values[toNumber(value.key)] || value.key);
+      values = map(
+        values,
+        value => filter.values[toNumber(value.key)] || value.key,
+      );
     } else {
       const _values = filter.values[toNumber(values.key)];
       values = _values !== undefined ? _values : values.key;
@@ -33,7 +48,9 @@ function createFilterChangeHandler(filters, onChange) {
     if (filter.multiple && includes(values, NONE_VALUES)) {
       values = [];
     }
-    filters = map(filters, f => (f.name === filter.name ? { ...filter, current: values } : f));
+    filters = map(filters, f =>
+      f.name === filter.name ? { ...filter, current: values } : f,
+    );
     onChange(filters);
   };
 }
@@ -50,7 +67,9 @@ export function filterData(rows, filters = []) {
     result = result.filter(row =>
       every(filters, filter => {
         const rowValue = row[filter.name];
-        const filterValues = isArray(filter.current) ? filter.current : [filter.current];
+        const filterValues = isArray(filter.current)
+          ? filter.current
+          : [filter.current];
         return some(filterValues, filterValue => {
           if (moment.isMoment(rowValue)) {
             return rowValue.isSame(filterValue);
@@ -79,16 +98,21 @@ function Filters({ filters, onChange }) {
         <div className="row">
           {map(filters, filter => {
             const options = map(filter.values, (value, index) => (
-              <Select.Option key={index}>{formatColumnValue(value, get(filter, "column.type"))}</Select.Option>
+              <Select.Option key={index}>
+                {formatColumnValue(value, get(filter, "column.type"))}
+              </Select.Option>
             ));
 
             return (
               <div
                 key={filter.name}
                 className="col-sm-6 p-l-0 filter-container"
-                data-test={`FilterName-${filter.name}`}>
+                data-test={`FilterName-${filter.name}`}
+              >
                 <label>{filter.friendlyName}</label>
-                {options.length === 0 && <Select className="w-100" disabled value="No values" />}
+                {options.length === 0 && (
+                  <Select className="w-100" disabled value="No values" />
+                )}
                 {options.length > 0 && (
                   <Select
                     labelInValue
@@ -100,7 +124,10 @@ function Filters({ filters, onChange }) {
                             key: `${indexOf(filter.values, value)}`,
                             label: formatColumnValue(value),
                           }))
-                        : { key: `${indexOf(filter.values, filter.current)}`, label: formatColumnValue(filter.current) }
+                        : {
+                            key: `${indexOf(filter.values, filter.current)}`,
+                            label: formatColumnValue(filter.current),
+                          }
                     }
                     allowClear={filter.multiple}
                     optionFilterProp="children"
@@ -108,14 +135,18 @@ function Filters({ filters, onChange }) {
                     maxTagCount={3}
                     maxTagTextLength={10}
                     maxTagPlaceholder={num => `+${num.length} more`}
-                    onChange={values => onChange(filter, values)}>
+                    onChange={values => onChange(filter, values)}
+                  >
                     {!filter.multiple && options}
                     {filter.multiple && [
                       <Select.Option key={NONE_VALUES} data-test="ClearOption">
                         <i className="fa fa-square-o m-r-5" />
                         Clear
                       </Select.Option>,
-                      <Select.Option key={ALL_VALUES} data-test="SelectAllOption">
+                      <Select.Option
+                        key={ALL_VALUES}
+                        data-test="SelectAllOption"
+                      >
                         <i className="fa fa-check-square-o m-r-5" />
                         Select All
                       </Select.Option>,

@@ -33,21 +33,29 @@ describe("continuousRange", () => {
     });
 
     it("should add 1 second to date", () => {
-      expect(shiftByOne(new Date("2000-01-01T12:00:00"), tz)).to.be.equalDate(new Date("2000-01-01T12:00:01"));
+      expect(shiftByOne(new Date("2000-01-01T12:00:00"), tz)).to.be.equalDate(
+        new Date("2000-01-01T12:00:01"),
+      );
     });
   });
 
   describe("constructRange", () => {
     it("should construct range object", () => {
-      expect(constructRange(100, 200, tz)).to.be.equivalent(new NumberRange({ start: 100, end: 200 }));
+      expect(constructRange(100, 200, tz)).to.be.equivalent(
+        new NumberRange({ start: 100, end: 200 }),
+      );
     });
 
     it("should switch start and end to correct order", () => {
-      expect(constructRange(200, 100, tz)).to.be.equivalent(new NumberRange({ start: 100, end: 200 }));
+      expect(constructRange(200, 100, tz)).to.be.equivalent(
+        new NumberRange({ start: 100, end: 200 }),
+      );
     });
 
     it("should create minimal range when start is equal to end", () => {
-      expect(constructRange(100, 100, tz)).to.be.equivalent(new NumberRange({ start: 100, end: 101 }));
+      expect(constructRange(100, 100, tz)).to.be.equivalent(
+        new NumberRange({ start: 100, end: 101 }),
+      );
     });
   });
 });

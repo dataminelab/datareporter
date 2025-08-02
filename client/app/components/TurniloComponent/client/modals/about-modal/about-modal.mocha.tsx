@@ -22,16 +22,18 @@ import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { AboutModal } from "./about-modal";
 
 describe("AboutModal", () => {
-
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(
-      <AboutModal
-        version={"0.9.123"}
-        onClose={null}
-      />
+      <AboutModal version={"0.9.123"} onClose={null} />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("about-modal");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      findDOMNode(renderedComponent).className,
+      "should contain class",
+    ).to.contain("about-modal");
   });
 });

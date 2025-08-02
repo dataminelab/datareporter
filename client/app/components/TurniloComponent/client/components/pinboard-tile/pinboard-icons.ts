@@ -26,17 +26,19 @@ interface PinboardIconsProps {
 
 export function pinboardIcons(props: PinboardIconsProps): TileHeaderIcon[] {
   const { showSearch, onClose, onSearchClick } = props;
-  return [{
-    name: "search",
-    ref: "search",
-    onClick: onSearchClick,
-    svg: searchIcon,
-    active: showSearch
-  }, {
-    name: "close",
-    ref: "close",
-    onClick: onClose,
-    svg: removeIcon
-  }];
+  return [
+    {
+      name: "search",
+      ref: "search",
+      onClick: onSearchClick,
+      svg: searchIcon,
+      active: showSearch,
+    },
+    {
+      name: "close",
+      ref: "close",
+      onClick: onClose,
+      svg: removeIcon,
+    },
+  ];
 }
-

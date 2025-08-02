@@ -8,7 +8,9 @@ import Link from "@/components/Link";
 import PlainButton from "@/components/PlainButton";
 import CloseOutlinedIcon from "@ant-design/icons/CloseOutlined";
 import BigMessage from "@/components/BigMessage";
-import DynamicComponent, { registerComponent } from "@/components/DynamicComponent";
+import DynamicComponent, {
+  registerComponent,
+} from "@/components/DynamicComponent";
 
 import "./HelpTrigger.less";
 
@@ -20,30 +22,75 @@ const IFRAME_URL_UPDATE_MESSAGE = "iframe_url";
 export const TYPES = mapValues(
   {
     HOME: ["", "Help"],
-    VALUE_SOURCE_OPTIONS: ["/user-guide/querying/query-parameters#Value-Source-Options", "Guide: Value Source Options"],
-    SHARE_DASHBOARD: ["/user-guide/dashboards/sharing-dashboards", "Guide: Sharing and Embedding Dashboards"],
-    AUTHENTICATION_OPTIONS: ["/user-guide/users/authentication-options", "Guide: Authentication Options"],
-    USAGE_DATA_SHARING: ["/open-source/admin-guide/usage-data", "Help: Anonymous Usage Data Sharing"],
-    DS_ATHENA: ["/data-sources/amazon-athena-setup", "Guide: Help Setting up Amazon Athena"],
-    DS_BIGQUERY: ["/data-sources/bigquery-setup", "Guide: Help Setting up BigQuery"],
+    VALUE_SOURCE_OPTIONS: [
+      "/user-guide/querying/query-parameters#Value-Source-Options",
+      "Guide: Value Source Options",
+    ],
+    SHARE_DASHBOARD: [
+      "/user-guide/dashboards/sharing-dashboards",
+      "Guide: Sharing and Embedding Dashboards",
+    ],
+    AUTHENTICATION_OPTIONS: [
+      "/user-guide/users/authentication-options",
+      "Guide: Authentication Options",
+    ],
+    USAGE_DATA_SHARING: [
+      "/open-source/admin-guide/usage-data",
+      "Help: Anonymous Usage Data Sharing",
+    ],
+    DS_ATHENA: [
+      "/data-sources/amazon-athena-setup",
+      "Guide: Help Setting up Amazon Athena",
+    ],
+    DS_BIGQUERY: [
+      "/data-sources/bigquery-setup",
+      "Guide: Help Setting up BigQuery",
+    ],
     DS_URL: ["/data-sources/querying-urls", "Guide: Help Setting up URL"],
-    DS_MONGODB: ["/data-sources/mongodb-setup", "Guide: Help Setting up MongoDB"],
+    DS_MONGODB: [
+      "/data-sources/mongodb-setup",
+      "Guide: Help Setting up MongoDB",
+    ],
     DS_GOOGLE_SPREADSHEETS: [
       "/data-sources/querying-a-google-spreadsheet",
       "Guide: Help Setting up Google Spreadsheets",
     ],
-    DS_GOOGLE_ANALYTICS: ["/data-sources/google-analytics-setup", "Guide: Help Setting up Google Analytics"],
-    DS_AXIBASETSD: ["/data-sources/axibase-time-series-database", "Guide: Help Setting up Axibase Time Series"],
-    DS_RESULTS: ["/user-guide/querying/query-results-data-source", "Guide: Help Setting up Query Results"],
-    ALERT_SETUP: ["/user-guide/alerts/setting-up-an-alert", "Guide: Setting Up a New Alert"],
-    MAIL_CONFIG: ["/open-source/setup/#Mail-Configuration", "Guide: Mail Configuration"],
-    ALERT_NOTIF_TEMPLATE_GUIDE: ["/user-guide/alerts/custom-alert-notifications", "Guide: Custom Alerts Notifications"],
-    FAVORITES: ["/user-guide/querying/favorites-tagging/#Favorites", "Guide: Favorites"],
+    DS_GOOGLE_ANALYTICS: [
+      "/data-sources/google-analytics-setup",
+      "Guide: Help Setting up Google Analytics",
+    ],
+    DS_AXIBASETSD: [
+      "/data-sources/axibase-time-series-database",
+      "Guide: Help Setting up Axibase Time Series",
+    ],
+    DS_RESULTS: [
+      "/user-guide/querying/query-results-data-source",
+      "Guide: Help Setting up Query Results",
+    ],
+    ALERT_SETUP: [
+      "/user-guide/alerts/setting-up-an-alert",
+      "Guide: Setting Up a New Alert",
+    ],
+    MAIL_CONFIG: [
+      "/open-source/setup/#Mail-Configuration",
+      "Guide: Mail Configuration",
+    ],
+    ALERT_NOTIF_TEMPLATE_GUIDE: [
+      "/user-guide/alerts/custom-alert-notifications",
+      "Guide: Custom Alerts Notifications",
+    ],
+    FAVORITES: [
+      "/user-guide/querying/favorites-tagging/#Favorites",
+      "Guide: Favorites",
+    ],
     MANAGE_PERMISSIONS: [
       "/user-guide/querying/writing-queries#Managing-Query-Permissions",
       "Guide: Managing Query Permissions",
     ],
-    NUMBER_FORMAT_SPECS: ["/user-guide/visualizations/formatting-numbers", "Formatting Numbers"],
+    NUMBER_FORMAT_SPECS: [
+      "/user-guide/visualizations/formatting-numbers",
+      "Formatting Numbers",
+    ],
     GETTING_STARTED: ["/user-guide/getting-started", "Guide: Getting Started"],
     DASHBOARDS: ["/user-guide/dashboards", "Guide: Dashboards"],
     QUERIES: ["/user-guide/querying", "Guide: Queries"],
@@ -73,7 +120,11 @@ const HelpTriggerDefaultProps = {
   children: <i className="fa fa-question-circle" aria-hidden="true" />,
 };
 
-export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName = null) {
+export function helpTriggerWithTypes(
+  types,
+  allowedDomains = [],
+  drawerClassName = null,
+) {
   return class HelpTrigger extends React.Component {
     static propTypes = {
       ...HelpTriggerPropTypes,
@@ -162,7 +213,9 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
       const tooltip = get(types, `${this.props.type}[1]`, this.props.title);
       const className = cx("help-trigger", this.props.className);
       const url = this.state.currentUrl;
-      const isAllowedDomain = some(allowedDomains, domain => startsWith(url || targetUrl, domain));
+      const isAllowedDomain = some(allowedDomains, domain =>
+        startsWith(url || targetUrl, domain),
+      );
       const shouldRenderAsLink = this.props.renderAsLink || !isAllowedDomain;
 
       return (
@@ -175,19 +228,25 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
                   {shouldRenderAsLink && (
                     <>
                       {" "}
-                      <i className="fa fa-external-link" style={{ marginLeft: 5 }} aria-hidden="true" />
+                      <i
+                        className="fa fa-external-link"
+                        style={{ marginLeft: 5 }}
+                        aria-hidden="true"
+                      />
                       <span className="sr-only">(opens in a new tab)</span>
                     </>
                   )}
                 </>
               ) : null
-            }>
+            }
+          >
             <Link
               href={url || this.getUrl()}
               className={className}
               rel="noopener noreferrer"
               target="_blank"
-              onClick={shouldRenderAsLink ? () => {} : this.openDrawer}>
+              onClick={shouldRenderAsLink ? () => {} : this.openDrawer}
+            >
               {this.props.children}
             </Link>
           </Tooltip>
@@ -198,7 +257,8 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
             visible={this.state.visible}
             className={cx("help-drawer", drawerClassName)}
             destroyOnClose
-            width={400}>
+            width={400}
+          >
             <div className="drawer-wrapper">
               <div className="drawer-menu">
                 {url && (
@@ -230,12 +290,19 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
 
               {/* loading indicator */}
               {this.state.loading && (
-                <BigMessage icon="fa-spinner fa-2x fa-pulse" message="Loading..." className="help-message" />
+                <BigMessage
+                  icon="fa-spinner fa-2x fa-pulse"
+                  message="Loading..."
+                  className="help-message"
+                />
               )}
 
               {/* error message */}
               {this.state.error && (
-                <BigMessage icon="fa-exclamation-circle" className="help-message">
+                <BigMessage
+                  icon="fa-exclamation-circle"
+                  className="help-message"
+                >
                   Something went wrong.
                   <br />
                   {/* eslint-disable-next-line react/jsx-no-target-blank */}
@@ -248,7 +315,11 @@ export function helpTriggerWithTypes(types, allowedDomains = [], drawerClassName
             </div>
 
             {/* extra content */}
-            <DynamicComponent name="HelpDrawerExtraContent" onLeave={this.closeDrawer} openPageUrl={this.loadIframe} />
+            <DynamicComponent
+              name="HelpDrawerExtraContent"
+              onLeave={this.closeDrawer}
+              openPageUrl={this.loadIframe}
+            />
           </Drawer>
         </React.Fragment>
       );

@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function useSearchResults(fetch, { initialResults = null, debounceTimeout = 200 } = {}) {
+export default function useSearchResults(
+  fetch,
+  { initialResults = null, debounceTimeout = 200 } = {},
+) {
   const [result, setResult] = useState(initialResults);
   const [isLoading, setIsLoading] = useState(false);
   const currentSearchTerm = useRef(null);

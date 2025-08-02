@@ -3,7 +3,16 @@ import moment from "moment";
 import { axios } from "@/services/axios";
 import { QueryResultError } from "@/services/query";
 import { Auth } from "@/services/auth";
-import { isString, uniqBy, each, isNumber, includes, extend, forOwn, get } from "lodash";
+import {
+  isString,
+  uniqBy,
+  each,
+  isNumber,
+  includes,
+  extend,
+  forOwn,
+  get,
+} from "lodash";
 import JSONbig from "json-bigint";
 
 const { parse: jsonParse } = JSONbig({ storeAsString: true });
@@ -42,10 +51,13 @@ function getColumnNameWithoutType(column) {
 }
 
 function getColumnFriendlyName(column) {
-  return getColumnNameWithoutType(column).replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+  return getColumnNameWithoutType(column).replace(/(?:^|\s)\S/g, a =>
+    a.toUpperCase(),
+  );
 }
 
-const createOrSaveUrl = data => (data.id ? `api/query_results/${data.id}` : "api/query_results");
+const createOrSaveUrl = data =>
+  data.id ? `api/query_results/${data.id}` : "api/query_results";
 const QueryResultResource = {
   get: ({ id }) =>
     axios.get(`api/query_results/${id}`, {
@@ -95,7 +107,11 @@ function handleErrorResponse(queryResult, error) {
   logger("Unknown error", error);
   queryResult.update({
     job: {
-      error: get(error, "response.data.message", "Unknown error occurred. Please try again later."),
+      error: get(
+        error,
+        "response.data.message",
+        "Unknown error occurred. Please try again later.",
+      ),
       status: 4,
     },
   });
@@ -108,7 +124,10 @@ function sleep(ms) {
 export function fetchDataFromJob(jobId, interval = 1000) {
   return axios.get(`api/jobs/${jobId}`).then(data => {
     const status = statuses[data.job.status];
-    if (status === ExecutionStatus.WAITING || status === ExecutionStatus.PROCESSING) {
+    if (
+      status === ExecutionStatus.WAITING ||
+      status === ExecutionStatus.PROCESSING
+    ) {
       return sleep(interval).then(() => fetchDataFromJob(data.job.id));
     } else if (status === ExecutionStatus.DONE) {
       return data.job.result;
@@ -229,7 +248,11 @@ class QueryResult {
   }
 
   getLog() {
-    if (!this.query_result.data || !this.query_result.data.log || this.query_result.data.log.length === 0) {
+    if (
+      !this.query_result.data ||
+      !this.query_result.data.log ||
+      this.query_result.data.log.length === 0
+    ) {
       return null;
     }
 
@@ -237,7 +260,11 @@ class QueryResult {
   }
 
   getUpdatedAt() {
-    return this.query_result.retrieved_at || this.job.updated_at * 1000.0 || this.updatedAt;
+    return (
+      this.query_result.retrieved_at ||
+      this.job.updated_at * 1000.0 ||
+      this.updatedAt
+    );
   }
 
   getRuntime() {
@@ -395,25 +422,25 @@ class QueryResult {
           logger("Connection error while trying to load result", error);
           this.update({
             job: {
-              error: "failed communicating with server. Please check your Internet connection and try again.",
+              error:
+                "failed communicating with server. Please check your Internet connection and try again.",
               status: 4,
             },
           });
           this.isLoadingResult = false;
         } else {
-          setTimeout(
-            () => {
-              this.loadResult(tryCount + 1);
-            },
-            1000 * Math.pow(2, tryCount),
-          );
+          setTimeout(() => {
+            this.loadResult(tryCount + 1);
+          }, 1000 * Math.pow(2, tryCount));
         }
       });
   }
 
   refreshStatus(query, parameters, tryNumber = 1) {
     const loadResult = () =>
-      Auth.isAuthenticated() ? this.loadResult() : this.loadLatestCachedResult(query, parameters);
+      Auth.isAuthenticated()
+        ? this.loadResult()
+        : this.loadLatestCachedResult(query, parameters);
 
     const request = Auth.isAuthenticated()
       ? axios.get(`api/jobs/${this.job.id}`)
@@ -423,7 +450,11 @@ class QueryResult {
       .then(jobResponse => {
         this.update(jobResponse);
 
-        if (this.getStatus() === "processing" && this.job.query_result_id && this.job.query_result_id !== "None") {
+        if (
+          this.getStatus() === "processing" &&
+          this.job.query_result_id &&
+          this.job.query_result_id !== "None"
+        ) {
           loadResult();
         } else if (this.getStatus() !== "failed") {
           const waitTime = tryNumber > 10 ? 3000 : 500;
@@ -437,7 +468,8 @@ class QueryResult {
         // TODO: use QueryResultError, or better yet: exception/reject of promise.
         this.update({
           job: {
-            error: "failed communicating with server. Please check your Internet connection and try again.",
+            error:
+              "failed communicating with server. Please check your Internet connection and try again.",
             status: 4,
           },
         });
@@ -453,14 +485,22 @@ class QueryResult {
   }
 
   getName(queryName, fileType) {
-    return `${queryName.replace(/ /g, "_") + moment(this.getUpdatedAt()).format("_YYYY_MM_DD")}.${fileType}`;
+    return `${
+      queryName.replace(/ /g, "_") +
+      moment(this.getUpdatedAt()).format("_YYYY_MM_DD")
+    }.${fileType}`;
   }
 
   static getByQueryId(id, parameters, applyAutoLimit, maxAge) {
     const queryResult = new QueryResult();
 
     axios
-      .post(`api/queries/${id}/results`, { id, parameters, apply_auto_limit: applyAutoLimit, max_age: maxAge })
+      .post(`api/queries/${id}/results`, {
+        id,
+        parameters,
+        apply_auto_limit: applyAutoLimit,
+        max_age: maxAge,
+      })
       .then(response => {
         queryResult.update(response);
 

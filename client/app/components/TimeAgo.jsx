@@ -14,7 +14,10 @@ function toMoment(value) {
 export default function TimeAgo({ date, placeholder, autoUpdate, variation }) {
   const startDate = toMoment(date);
   const [value, setValue] = useState(null);
-  const title = useMemo(() => (startDate ? startDate.format(clientConfig.dateTimeFormat) : null), [startDate]);
+  const title = useMemo(
+    () => (startDate ? startDate.format(clientConfig.dateTimeFormat) : null),
+    [startDate],
+  );
 
   useEffect(() => {
     function update() {
@@ -43,7 +46,12 @@ export default function TimeAgo({ date, placeholder, autoUpdate, variation }) {
 }
 
 TimeAgo.propTypes = {
-  date: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date), Moment]),
+  date: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.instanceOf(Date),
+    Moment,
+  ]),
   placeholder: PropTypes.string,
   autoUpdate: PropTypes.bool,
   variation: PropTypes.oneOf(["timeAgoInTooltip"]),

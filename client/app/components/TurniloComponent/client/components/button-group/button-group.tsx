@@ -35,30 +35,37 @@ export interface ButtonGroupProps {
 }
 
 // eslint-disable-next-line
-export interface ButtonGroupState {
-}
+export interface ButtonGroupState {}
 
-export class ButtonGroup extends React.Component<ButtonGroupProps, ButtonGroupState> {
-
+export class ButtonGroup extends React.Component<
+  ButtonGroupProps,
+  ButtonGroupState
+> {
   renderMembers() {
     const { groupMembers } = this.props;
     return groupMembers.map(button => {
-      return <li
-        className={classNames("group-member", button.className, { selected: button.isSelected })}
-        key={button.key}
-        onClick={button.onClick}
-      >
-        {button.title}
-      </li>;
+      return (
+        <li
+          className={classNames("group-member", button.className, {
+            selected: button.isSelected,
+          })}
+          key={button.key}
+          onClick={button.onClick}
+        >
+          {button.title}
+        </li>
+      );
     });
   }
 
   render() {
     const { title, className } = this.props;
 
-    return <div className={classNames("button-group", className)}>
-      {title ? <div className="button-group-title">{title}</div> : null}
-      <ul className="group-container">{this.renderMembers()}</ul>
-    </div>;
+    return (
+      <div className={classNames("button-group", className)}>
+        {title ? <div className="button-group-title">{title}</div> : null}
+        <ul className="group-container">{this.renderMembers()}</ul>
+      </div>
+    );
   }
 }

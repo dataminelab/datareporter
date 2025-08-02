@@ -27,14 +27,17 @@ describe("Highlight Modal", () => {
     const title = "title";
     const left = 100;
     const top = 300;
-    const modal = shallow(<HighlightModal
-      title={title}
-      left={left}
-      top={top}
-      acceptHighlight={null}
-      dropHighlight={null}>
-      <div className="child">Child</div>
-    </HighlightModal>);
+    const modal = shallow(
+      <HighlightModal
+        title={title}
+        left={left}
+        top={top}
+        acceptHighlight={null}
+        dropHighlight={null}
+      >
+        <div className="child">Child</div>
+      </HighlightModal>,
+    );
 
     expect(modal.find(ModalBubble).prop("left")).to.eq(left);
     expect(modal.find(ModalBubble).prop("top")).to.eq(top);
@@ -51,12 +54,15 @@ describe("Highlight Modal", () => {
     beforeEach(() => {
       acceptHighlight = spy();
       dropHighlight = spy();
-      modal = mount(<HighlightModal
-        title="title"
-        left={0}
-        top={0}
-        dropHighlight={dropHighlight}
-        acceptHighlight={acceptHighlight} />);
+      modal = mount(
+        <HighlightModal
+          title="title"
+          left={0}
+          top={0}
+          dropHighlight={dropHighlight}
+          acceptHighlight={acceptHighlight}
+        />,
+      );
       actions = modal.find(".actions");
     });
 

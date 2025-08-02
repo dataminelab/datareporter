@@ -25,14 +25,16 @@ import { TileHeader } from "./tile-header";
 describe("TileHeader", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(
-      <TileHeader
-        onDragStart={null}
-        title={null}
-      />
+      <TileHeader onDragStart={null} title={null} />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("tile-header");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
+      "should contain class",
+    ).to.contain("tile-header");
   });
-
 });

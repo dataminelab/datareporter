@@ -21,13 +21,19 @@ function ListItem({ item, keySuffix }) {
     ),
   };
 
-  return item.href ? <Link href={item.href} {...commonProps} /> : <PlainButton type="link" {...commonProps} />;
+  return item.href ? (
+    <Link href={item.href} {...commonProps} />
+  ) : (
+    <PlainButton type="link" {...commonProps} />
+  );
 }
 
 export default function CardsList({ items = [], showSearch = false }) {
   const [searchText, setSearchText] = useState("");
   const filteredItems = items.filter(
-    item => isEmpty(searchText) || includes(item.title.toLowerCase(), searchText.toLowerCase()),
+    item =>
+      isEmpty(searchText) ||
+      includes(item.title.toLowerCase(), searchText.toLowerCase()),
   );
 
   return (

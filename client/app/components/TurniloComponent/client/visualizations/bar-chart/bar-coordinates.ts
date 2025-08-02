@@ -65,6 +65,6 @@ export class BarCoordinates {
   }
 
   get middleX(): number {
-    return this.x + this.barWidth * .5 + this.barOffset;
+    return this.x + this.barWidth * 0.5 + this.barOffset;
   }
 }

@@ -15,7 +15,11 @@
  */
 import { expect } from "chai";
 import { Dataset } from "plywood";
-import { error, loaded, loading } from "../../../../common/models/visualization-props/visualization-props";
+import {
+  error,
+  loaded,
+  loading,
+} from "../../../../common/models/visualization-props/visualization-props";
 import { range } from "../../../../common/utils/functional/functional";
 import { tileStyles } from "./tile-styles";
 
@@ -31,13 +35,17 @@ describe("tileStyles", () => {
 
   it("should return minimal maxHeight for errored dataset", () => {
     const erroredDataset = error(new Error("foobar"));
-    expect(tileStyles(erroredDataset)).to.include({ maxHeight: minimalMaxHeight });
+    expect(tileStyles(erroredDataset)).to.include({
+      maxHeight: minimalMaxHeight,
+    });
   });
 
   it("should return minimal maxHeight for dataset with less than 5 rows", () => {
     range(0, 5).forEach(n => {
       const datasetLoaded = loaded(datasetWithNRows(n));
-      expect(tileStyles(datasetLoaded)).to.include({ maxHeight: minimalMaxHeight });
+      expect(tileStyles(datasetLoaded)).to.include({
+        maxHeight: minimalMaxHeight,
+      });
     });
   });
 

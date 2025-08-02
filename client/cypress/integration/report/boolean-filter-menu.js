@@ -34,8 +34,14 @@ context("Boolean Filter Menu", () => {
     }
 
     booleanMenuTable().within(() => {
-      cy.get(".row:contains('true') .checkbox").should(selectionToPredicate(isTrueOptionSelected), "selected");
-      cy.get(".row:contains('false') .checkbox").should(selectionToPredicate(isFalseOptionSelected), "selected");
+      cy.get(".row:contains('true') .checkbox").should(
+        selectionToPredicate(isTrueOptionSelected),
+        "selected",
+      );
+      cy.get(".row:contains('false') .checkbox").should(
+        selectionToPredicate(isFalseOptionSelected),
+        "selected",
+      );
     });
   }
 

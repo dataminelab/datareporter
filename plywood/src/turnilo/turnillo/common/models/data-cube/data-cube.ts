@@ -1134,9 +1134,9 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
   }
 
   public change(propertyName: string, newValue: any): DataCube {
-    let v = this.valueOf();
+    const v = this.valueOf();
 
-    if (!v.hasOwnProperty(propertyName)) {
+    if (hasOwnProperty(v, propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
     }
 

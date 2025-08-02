@@ -53,8 +53,12 @@ function CreateDashboardDialog({ dialog }) {
       maskClosable={!saveInProgress}
       wrapProps={{
         "data-test": "CreateDashboardDialog",
-      }}>
-      <DynamicComponent name="CreateDashboardDialogExtra" disabled={!isCreateDashboardEnabled}>
+      }}
+    >
+      <DynamicComponent
+        name="CreateDashboardDialogExtra"
+        disabled={!isCreateDashboardEnabled}
+      >
         <Input
           defaultValue={name}
           onChange={handleNameChange}

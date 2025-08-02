@@ -15,6 +15,9 @@ module.exports = {
     "no-useless-escape": "off",
     "@typescript-eslint/consistent-type-imports": "off",
     "@typescript-eslint/ban-ts-comment": "warn",
+    "no-var": "warn",
+    "prefer-const": "warn",
+    "no-unused-vars": "warn",
   },
   overrides: [
     {

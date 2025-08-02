@@ -10,7 +10,12 @@ const post = debounce(() => {
   axios.post("api/events", eventsToSend);
 }, 1000);
 
-export default function recordEvent(action, objectType, objectId, additionalProperties) {
+export default function recordEvent(
+  action,
+  objectType,
+  objectId,
+  additionalProperties,
+) {
   const event = {
     action,
     object_type: objectType,

@@ -22,15 +22,20 @@ import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
 import "./ReportSource.less";
 
 function ReportSource(props) {
-  const { report, setReport, isDirty, showShareReportDialog } = useReport(props.report);
+  const { report, setReport, isDirty, showShareReportDialog } = useReport(
+    props.report,
+  );
   const reportFlags = useReportFlags(report, []);
-  const [selectedVisualization] = useVisualizationTabHandler(report.visualizations);
+  const [selectedVisualization] = useVisualizationTabHandler(
+    report.visualizations,
+  );
   const isMobile = !useMedia({ minWidth: 768 });
   const [reportChanged, setReportChanged] = useState(false);
 
   useUnsavedChangesAlert(isDirty);
 
-  const { reportResult, isExecuting: isReportExecuting } = useReportExecute(report);
+  const { reportResult, isExecuting: isReportExecuting } =
+    useReportExecute(report);
 
   useEffect(() => {
     // TODO: ignore new pages?
@@ -41,13 +46,21 @@ function ReportSource(props) {
     document.title = report.name;
   }, [report.name]);
 
-  const editVisualization = useEditVisualizationDialog(report, reportResult, newReport => {
-    setReport(newReport);
-    setReportChanged(true);
-  });
+  const editVisualization = useEditVisualizationDialog(
+    report,
+    reportResult,
+    newReport => {
+      setReport(newReport);
+      setReportChanged(true);
+    },
+  );
 
   return (
-    <div className={cx("report-page-wrapper", { "report-fixed-layout": !isMobile })}>
+    <div
+      className={cx("report-page-wrapper", {
+        "report-fixed-layout": !isMobile,
+      })}
+    >
       <div className="container w-100 p-b-10">
         <ReportPageHeader
           reportChanged={reportChanged}
@@ -64,8 +77,13 @@ function ReportSource(props) {
           <div className="flex-fill p-relative">
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
-              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
-              <ReportEditor report={report} reportChanged={reportChanged} setReportChanged={setReportChanged} />
+              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}
+            >
+              <ReportEditor
+                report={report}
+                reportChanged={reportChanged}
+                setReportChanged={setReportChanged}
+              />
             </div>
           </div>
           {reportResult && !reportResult.getError() && (
@@ -75,7 +93,9 @@ function ReportSource(props) {
                 reportResult={reportResult}
                 selectedVisualization={selectedVisualization}
                 isReportExecuting={isReportExecuting}
-                showEditVisualizationButton={!reportFlags.isNew && reportFlags.canEdit}
+                showEditVisualizationButton={
+                  !reportFlags.isNew && reportFlags.canEdit
+                }
                 onEditVisualization={editVisualization}
               />
             </div>

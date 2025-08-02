@@ -36,30 +36,38 @@ interface VisibleRowsProps {
 }
 
 export const VisibleRows: React.FunctionComponent<VisibleRowsProps> = props => {
-  const { renderRow, hoveredRowDatum, rowsData, visibleRowsIndexRange, highlightedRowIndex } = props;
+  const {
+    renderRow,
+    hoveredRowDatum,
+    rowsData,
+    visibleRowsIndexRange,
+    highlightedRowIndex,
+  } = props;
 
   const [start, end] = visibleRowsIndexRange;
   const visibleData = rowsData.slice(start, end);
 
-  return <React.Fragment>
-    {visibleData.map((datum, i) => {
-      const index = start + i;
-      const top = index * ROW_HEIGHT;
-      const selected = index === highlightedRowIndex;
-      const dimmed = !selected && highlightedRowIndex !== null;
-      const hovered = datum === hoveredRowDatum;
+  return (
+    <React.Fragment>
+      {visibleData.map((datum, i) => {
+        const index = start + i;
+        const top = index * ROW_HEIGHT;
+        const selected = index === highlightedRowIndex;
+        const dimmed = !selected && highlightedRowIndex !== null;
+        const hovered = datum === hoveredRowDatum;
 
-      const highlight = selected || hovered;
+        const highlight = selected || hovered;
 
-      const rowProps: RowProps = {
-        highlight,
-        dimmed,
-        top,
-        index,
-        datum
-      };
+        const rowProps: RowProps = {
+          highlight,
+          dimmed,
+          top,
+          index,
+          datum,
+        };
 
-      return renderRow(rowProps);
-    })}
-  </React.Fragment>;
+        return renderRow(rowProps);
+      })}
+    </React.Fragment>
+  );
 };

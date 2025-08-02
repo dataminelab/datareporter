@@ -43,7 +43,9 @@ class ParameterValueInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: props.parameter.hasPendingValue ? props.parameter.pendingValue : props.value,
+      value: props.parameter.hasPendingValue
+        ? props.parameter.pendingValue
+        : props.value,
       isDirty: props.parameter.hasPendingValue,
     };
   }
@@ -98,7 +100,8 @@ class ParameterValueInput extends React.Component {
     const { value } = this.state;
     const enumOptionsArray = enumOptions.split("\n").filter(v => v !== "");
     // Antd Select doesn't handle null in multiple mode
-    const normalize = val => (parameter.multiValuesOptions && val === null ? [] : val);
+    const normalize = val =>
+      parameter.multiValuesOptions && val === null ? [] : val;
 
     return (
       <SelectWithVirtualScroll
@@ -106,10 +109,15 @@ class ParameterValueInput extends React.Component {
         mode={parameter.multiValuesOptions ? "multiple" : "default"}
         value={normalize(value)}
         onChange={this.onSelect}
-        options={map(enumOptionsArray, opt => ({ label: String(opt), value: opt }))}
+        options={map(enumOptionsArray, opt => ({
+          label: String(opt),
+          value: opt,
+        }))}
         showSearch
         showArrow
-        notFoundContent={isEmpty(enumOptionsArray) ? "No options available" : null}
+        notFoundContent={
+          isEmpty(enumOptionsArray) ? "No options available" : null
+        }
         {...multipleValuesProps}
       />
     );
@@ -154,7 +162,10 @@ class ParameterValueInput extends React.Component {
 
     return (
       <React.Fragment>
-        <Tooltip title={`Regex to match: ${this.props.regex}`} placement="right">
+        <Tooltip
+          title={`Regex to match: ${this.props.regex}`}
+          placement="right"
+        >
           <Input
             className={className}
             value={value}
@@ -209,7 +220,11 @@ class ParameterValueInput extends React.Component {
     const { isDirty } = this.state;
 
     return (
-      <div className="parameter-input" data-dirty={isDirty || null} data-test="ParameterValueInput">
+      <div
+        className="parameter-input"
+        data-dirty={isDirty || null}
+        data-test="ParameterValueInput"
+      >
         {this.renderInput()}
       </div>
     );

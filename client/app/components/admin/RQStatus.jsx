@@ -39,7 +39,10 @@ const queryJobsColumns = [
   { title: "Org ID", dataIndex: "meta.org_id" },
   { title: "Data Source ID", dataIndex: "meta.data_source_id" },
   { title: "User ID", dataIndex: "meta.user_id" },
-  Columns.custom(scheduled => scheduled.toString(), { title: "Scheduled", dataIndex: "meta.scheduled" }),
+  Columns.custom(scheduled => scheduled.toString(), {
+    title: "Scheduled",
+    dataIndex: "meta.scheduled",
+  }),
   Columns.timeAgo({ title: "Start Time", dataIndex: "started_at" }),
   Columns.timeAgo({ title: "Enqueue Time", dataIndex: "enqueued_at" }),
 ];
@@ -55,7 +58,16 @@ const workersColumns = [
   Columns.custom(
     value => (
       <span>
-        <Badge status={{ busy: "processing", idle: "default", started: "success", suspended: "warning" }[value]} />{" "}
+        <Badge
+          status={
+            {
+              busy: "processing",
+              idle: "default",
+              started: "success",
+              suspended: "warning",
+            }[value]
+          }
+        />{" "}
         {value}
       </span>
     ),
@@ -63,17 +75,34 @@ const workersColumns = [
   ),
 ]
   .concat(
-    map(["Hostname", "PID", "Name", "Queues", "Current Job", "Successful Jobs", "Failed Jobs"], c => ({
-      title: c,
-      dataIndex: c.toLowerCase().replace(/\s/g, "_"),
-    })),
+    map(
+      [
+        "Hostname",
+        "PID",
+        "Name",
+        "Queues",
+        "Current Job",
+        "Successful Jobs",
+        "Failed Jobs",
+      ],
+      c => ({
+        title: c,
+        dataIndex: c.toLowerCase().replace(/\s/g, "_"),
+      }),
+    ),
   )
   .concat([
     Columns.dateTime({ title: "Birth Date", dataIndex: "birth_date" }),
-    Columns.duration({ title: "Total Working Time", dataIndex: "total_working_time" }),
+    Columns.duration({
+      title: "Total Working Time",
+      dataIndex: "total_working_time",
+    }),
   ]);
 
-const queuesColumns = map(["Name", "Started", "Queued"], c => ({ title: c, dataIndex: c.toLowerCase() }));
+const queuesColumns = map(["Name", "Started", "Queued"], c => ({
+  title: c,
+  dataIndex: c.toLowerCase(),
+}));
 
 const TablePropTypes = {
   loading: PropTypes.bool.isRequired,

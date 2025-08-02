@@ -14,14 +14,18 @@ export class ItemsSource {
 
   _beforeUpdate() {
     if (isFunction(this.onBeforeUpdate)) {
-      return Promise.resolve(this.onBeforeUpdate(this.getState(), this.getCallbackContext()));
+      return Promise.resolve(
+        this.onBeforeUpdate(this.getState(), this.getCallbackContext()),
+      );
     }
     return Promise.resolve();
   }
 
   _afterUpdate() {
     if (isFunction(this.onAfterUpdate)) {
-      return Promise.resolve(this.onAfterUpdate(this.getState(), this.getCallbackContext()));
+      return Promise.resolve(
+        this.onAfterUpdate(this.getState(), this.getCallbackContext()),
+      );
     }
     return Promise.resolve();
   }
@@ -59,7 +63,13 @@ export class ItemsSource {
     });
   }
 
-  constructor({ getRequest, doRequest, processResults, isPlainList = false, ...defaultState }) {
+  constructor({
+    getRequest,
+    doRequest,
+    processResults,
+    isPlainList = false,
+    ...defaultState
+  }) {
     if (!isFunction(getRequest)) {
       getRequest = identity;
     }
@@ -156,7 +166,9 @@ export class ItemsSource {
 
 export class ResourceItemsSource extends ItemsSource {
   constructor({ getResource, getItemProcessor, ...rest }) {
-    getItemProcessor = isFunction(getItemProcessor) ? getItemProcessor : () => null;
+    getItemProcessor = isFunction(getItemProcessor)
+      ? getItemProcessor
+      : () => null;
     super({
       ...rest,
       doRequest: (request, context) => {

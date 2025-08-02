@@ -1,12 +1,18 @@
 const { extend, get, merge, find } = Cypress._;
 
 const post = options =>
-  cy
-    .getCookie("csrf_token")
-    .then(csrf => cy.request({ ...options, method: "POST", headers: { "X-CSRF-TOKEN": csrf.value } }));
+  cy.getCookie("csrf_token").then(csrf =>
+    cy.request({
+      ...options,
+      method: "POST",
+      headers: { "X-CSRF-TOKEN": csrf.value },
+    }),
+  );
 
 Cypress.Commands.add("createDashboard", name => {
-  return post({ url: "api/dashboards", body: { name } }).then(({ body }) => body);
+  return post({ url: "api/dashboards", body: { name } }).then(
+    ({ body }) => body,
+  );
 });
 
 Cypress.Commands.add("createReport", data => {
@@ -23,7 +29,9 @@ Cypress.Commands.add("createReport", data => {
     data,
   );
 
-  return post({ url: "/api/reports", body: merged }).then(({ body }) => cy.visit(`/reports/${body.id}/source`));
+  return post({ url: "/api/reports", body: merged }).then(({ body }) =>
+    cy.visit(`/reports/${body.id}/source`),
+  );
 });
 
 Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {
@@ -41,10 +49,14 @@ Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {
   );
 
   // eslint-disable-next-line cypress/no-assigning-return-values
-  let request = post({ url: "/api/queries", body: merged }).then(({ body }) => body);
+  let request = post({ url: "/api/queries", body: merged }).then(
+    ({ body }) => body,
+  );
   if (shouldPublish) {
     request = request.then(query =>
-      post({ url: `/api/queries/${query.id}`, body: { is_draft: false } }).then(() => query),
+      post({ url: `/api/queries/${query.id}`, body: { is_draft: false } }).then(
+        () => query,
+      ),
     );
   }
 
@@ -59,44 +71,50 @@ Cypress.Commands.add("createVisualization", (queryId, type, name, options) => {
   }));
 });
 
-Cypress.Commands.add("addTextbox", (dashboardId, text = "text", options = {}) => {
-  const defaultOptions = {
-    position: { col: 0, row: 0, sizeX: 3, sizeY: 3 },
-  };
+Cypress.Commands.add(
+  "addTextbox",
+  (dashboardId, text = "text", options = {}) => {
+    const defaultOptions = {
+      position: { col: 0, row: 0, sizeX: 3, sizeY: 3 },
+    };
 
-  const data = {
-    width: 1,
-    dashboard_id: dashboardId,
-    visualization_id: null,
-    text,
-    options: merge(defaultOptions, options),
-  };
+    const data = {
+      width: 1,
+      dashboard_id: dashboardId,
+      visualization_id: null,
+      text,
+      options: merge(defaultOptions, options),
+    };
 
-  return post({ url: "api/widgets", body: data }).then(({ body }) => {
-    const id = get(body, "id");
-    assert.isDefined(id, "Widget api call returns widget id");
-    return body;
-  });
-});
+    return post({ url: "api/widgets", body: data }).then(({ body }) => {
+      const id = get(body, "id");
+      assert.isDefined(id, "Widget api call returns widget id");
+      return body;
+    });
+  },
+);
 
-Cypress.Commands.add("addWidget", (dashboardId, visualizationId, options = {}) => {
-  const defaultOptions = {
-    position: { col: 0, row: 0, sizeX: 3, sizeY: 3 },
-  };
+Cypress.Commands.add(
+  "addWidget",
+  (dashboardId, visualizationId, options = {}) => {
+    const defaultOptions = {
+      position: { col: 0, row: 0, sizeX: 3, sizeY: 3 },
+    };
 
-  const data = {
-    width: 1,
-    dashboard_id: dashboardId,
-    visualization_id: visualizationId,
-    options: merge(defaultOptions, options),
-  };
+    const data = {
+      width: 1,
+      dashboard_id: dashboardId,
+      visualization_id: visualizationId,
+      options: merge(defaultOptions, options),
+    };
 
-  return post({ url: "api/widgets", body: data }).then(({ body }) => {
-    const id = get(body, "id");
-    assert.isDefined(id, "Widget api call returns widget id");
-    return body;
-  });
-});
+    return post({ url: "api/widgets", body: data }).then(({ body }) => {
+      const id = get(body, "id");
+      assert.isDefined(id, "Widget api call returns widget id");
+      return body;
+    });
+  },
+);
 
 Cypress.Commands.add("createAlert", (queryId, options = {}, name) => {
   const defaultOptions = {
@@ -159,29 +177,34 @@ Cypress.Commands.add("getDestinations", () => {
   return cy.request("GET", "api/destinations").then(({ body }) => body);
 });
 
-Cypress.Commands.add("addDestinationSubscription", (alertId, destinationName) => {
-  return cy
-    .getDestinations()
-    .then(destinations => {
-      const destination = find(destinations, { name: destinationName });
-      if (!destination) {
-        throw new Error("Destination not found");
-      }
-      return post({
-        url: `api/alerts/${alertId}/subscriptions`,
-        body: {
-          alert_id: alertId,
-          destination_id: destination.id,
-        },
+Cypress.Commands.add(
+  "addDestinationSubscription",
+  (alertId, destinationName) => {
+    return cy
+      .getDestinations()
+      .then(destinations => {
+        const destination = find(destinations, { name: destinationName });
+        if (!destination) {
+          throw new Error("Destination not found");
+        }
+        return post({
+          url: `api/alerts/${alertId}/subscriptions`,
+          body: {
+            alert_id: alertId,
+            destination_id: destination.id,
+          },
+        });
+      })
+      .then(({ body }) => {
+        const id = get(body, "id");
+        assert.isDefined(id, "Subscription api call returns subscription id");
+        return body;
       });
-    })
-    .then(({ body }) => {
-      const id = get(body, "id");
-      assert.isDefined(id, "Subscription api call returns subscription id");
-      return body;
-    });
-});
+  },
+);
 
 Cypress.Commands.add("updateOrgSettings", settings => {
-  return post({ url: "api/settings/organization", body: settings }).then(({ body }) => body);
+  return post({ url: "api/settings/organization", body: settings }).then(
+    ({ body }) => body,
+  );
 });

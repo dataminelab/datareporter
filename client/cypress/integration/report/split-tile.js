@@ -16,26 +16,35 @@
 
 // not working
 context("Split Tile", () => {
-  const splitsContainer = () => cy.get(".center-top-bar:not(.fallback) .split-tile");
+  const splitsContainer = () =>
+    cy.get(".center-top-bar:not(.fallback) .split-tile");
   const dragMask = () => cy.get(".drag-mask");
-  const splitTile = dimension => splitsContainer().find(`.split.dimension:contains(${dimension})`);
+  const splitTile = dimension =>
+    splitsContainer().find(`.split.dimension:contains(${dimension})`);
   const addSplitButton = () => splitsContainer().find(".add-tile");
   const splitItemsRow = () => splitsContainer().find(".items");
   const splitItems = () => splitsContainer().find(".split.dimension");
-  const splitOverflow = () => splitsContainer().find(".items .overflow.dimension");
+  const splitOverflow = () =>
+    splitsContainer().find(".items .overflow.dimension");
   const splitOverflowMenu = () => cy.get(".overflow-menu");
   const addSplitMenu = () => cy.get(".add-tile-menu");
   const splitMenu = () => cy.get(".split-menu");
   const dimensionsList = () => cy.get(".dimension-list-tile");
-  const dimensionTile = dimension => cy.get(`.dimension-list-tile .dimension:contains(${dimension})`);
-  const dimensionAddSplitAction = () => cy.get(".dimension-actions-menu .subsplit.action");
-  const dimensionReplaceSplitAction = () => cy.get(".dimension-actions-menu .split.action");
+  const dimensionTile = dimension =>
+    cy.get(`.dimension-list-tile .dimension:contains(${dimension})`);
+  const dimensionAddSplitAction = () =>
+    cy.get(".dimension-actions-menu .subsplit.action");
+  const dimensionReplaceSplitAction = () =>
+    cy.get(".dimension-actions-menu .split.action");
 
   const shouldHaveSplits = (...splits) => {
     splitItems().should("have.length", splits.length);
     splitItemsRow().within(() => {
       splits.forEach((split, idx) => {
-        cy.get(`.split.dimension:nth-child(${idx + 1})`).should("contain", split);
+        cy.get(`.split.dimension:nth-child(${idx + 1})`).should(
+          "contain",
+          split,
+        );
       });
     });
   };
@@ -64,7 +73,10 @@ context("Split Tile", () => {
       addSplitMenu().within(() => {
         cy.get(".search-box input").type("Api Key");
 
-        cy.get(".label").should("have.length", 1).should("contain", "Api Key").click();
+        cy.get(".label")
+          .should("have.length", 1)
+          .should("contain", "Api Key")
+          .click();
       });
 
       shouldHaveSplits("Api Key");
@@ -82,7 +94,10 @@ context("Split Tile", () => {
       dimensionsList().within(() => {
         cy.get(".icon.search").click();
         cy.get(".search-box input").type("Api Key");
-        cy.get(".rows .dimension").should("have.length", 1).should("contain", "Api Key").click();
+        cy.get(".rows .dimension")
+          .should("have.length", 1)
+          .should("contain", "Api Key")
+          .click();
       });
 
       dimensionAddSplitAction().click();
@@ -167,7 +182,9 @@ context("Split Tile", () => {
     it("should show overflowed split after clicking tile", () => {
       splitOverflow().click();
 
-      splitOverflowMenu().find(".split.dimension").should("contain", "Is Archived");
+      splitOverflowMenu()
+        .find(".split.dimension")
+        .should("contain", "Is Archived");
     });
 
     it("should open split menu inside overflow tile", () => {
@@ -285,7 +302,9 @@ context("Split Tile", () => {
 
       splitMenu().find(".sort-direction .direction").click();
 
-      splitMenu().find(".button-bar .primary").should("not.have.attr", "disabled");
+      splitMenu()
+        .find(".button-bar .primary")
+        .should("not.have.attr", "disabled");
     });
 
     describe("Created At Split menu", () => {
@@ -304,7 +323,10 @@ context("Split Tile", () => {
             cy.get(".button-group-title").should("contain", "Granularity");
             cy.get(".group-container .group-member").should("have.length", 6);
             cy.get(".group-container .group-member.selected").should("exist");
-            cy.get(".group-container .group-member:last").should("contain", "…");
+            cy.get(".group-container .group-member:last").should(
+              "contain",
+              "…",
+            );
           });
       });
 

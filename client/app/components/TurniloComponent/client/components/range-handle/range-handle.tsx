@@ -34,11 +34,14 @@ export interface RangeHandleState {
   anchor: number;
 }
 
-export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleState> {
+export class RangeHandle extends React.Component<
+  RangeHandleProps,
+  RangeHandleState
+> {
   public mounted: boolean;
 
   state: RangeHandleState = {
-    anchor: null
+    anchor: null,
   };
 
   onGlobalMouseMove = (event: MouseEvent) => {
@@ -56,7 +59,7 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
     const anchor = x - offset - positionLeft;
 
     this.setState({
-      anchor
+      anchor,
     });
 
     event.preventDefault();
@@ -74,10 +77,16 @@ export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleSt
 
     const style = { left: positionLeft };
 
-    return <div
-      className={classNames("range-handle", { "empty": isAny, "beyond min": isBeyondMin, "beyond max": isBeyondMax })}
-      style={style}
-      onMouseDown={this.onMouseDown}
-    />;
+    return (
+      <div
+        className={classNames("range-handle", {
+          "empty": isAny,
+          "beyond min": isBeyondMin,
+          "beyond max": isBeyondMax,
+        })}
+        style={style}
+        onMouseDown={this.onMouseDown}
+      />
+    );
   }
 }

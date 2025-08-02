@@ -20,11 +20,37 @@ import { DimensionFixtures } from "./dimension.fixtures";
 
 export class DimensionsFixtures {
   static wikiNames(): string[] {
-    return ["time", "country", "channel", "comment", "commentLength", "commentLengthOver100", "isRobot", "namespace", "articleName", "page", "page_last_author", "userChars"];
+    return [
+      "time",
+      "country",
+      "channel",
+      "comment",
+      "commentLength",
+      "commentLengthOver100",
+      "isRobot",
+      "namespace",
+      "articleName",
+      "page",
+      "page_last_author",
+      "userChars",
+    ];
   }
 
   static wikiTitles(): string[] {
-    return ["Time", "Country", "Channel", "Comment", "Comment Length", "Comment Length Over 100", "Is Robot", "Namespace", "Article Name", "Page", "Page Author", "User Chars"];
+    return [
+      "Time",
+      "Country",
+      "Channel",
+      "Comment",
+      "Comment Length",
+      "Comment Length Over 100",
+      "Is Robot",
+      "Namespace",
+      "Article Name",
+      "Page",
+      "Page Author",
+      "User Chars",
+    ];
   }
 
   static wikiJS(): DimensionOrGroupJS[] {
@@ -34,51 +60,51 @@ export class DimensionsFixtures {
         kind: "string",
         name: "country",
         title: "Country",
-        formula: "$country"
+        formula: "$country",
       },
       {
         kind: "string",
         name: "channel",
         title: "Channel",
-        formula: "$channel"
+        formula: "$channel",
       },
       DimensionGroupFixtures.commentsJS(),
       {
         kind: "string",
         name: "isRobot",
         title: "Is Robot",
-        formula: "$isRobot"
+        formula: "$isRobot",
       },
       {
         kind: "string",
         name: "namespace",
         title: "Namespace",
-        formula: "$namespace"
+        formula: "$namespace",
       },
       {
         kind: "string",
         name: "articleName",
         title: "Article Name",
-        formula: "$articleName"
+        formula: "$articleName",
       },
       {
         kind: "string",
         name: "page",
         title: "Page",
-        formula: "$page"
+        formula: "$page",
       },
       {
         kind: "string",
         name: "page_last_author",
         title: "Page Author",
-        formula: "$page.lookup(page_last_author)"
+        formula: "$page.lookup(page_last_author)",
       },
       {
         kind: "string",
         name: "userChars",
         title: "User Chars",
-        formula: "$userChars"
-      }
+        formula: "$userChars",
+      },
     ];
   }
 
@@ -88,20 +114,20 @@ export class DimensionsFixtures {
         kind: "time",
         name: "time",
         title: "Time",
-        formula: "$time"
+        formula: "$time",
       },
       {
         kind: "string",
         name: "twitterHandle",
         title: "Twitter Handle",
-        formula: "$twitterHandle"
+        formula: "$twitterHandle",
       },
       {
         kind: "number",
         name: "tweetLength",
         title: "Tweet Length",
-        formula: "$tweetLength"
-      }
+        formula: "$tweetLength",
+      },
     ];
   }
 }

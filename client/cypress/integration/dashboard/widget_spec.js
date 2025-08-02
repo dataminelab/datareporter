@@ -1,6 +1,10 @@
 /* global cy */
 
-import { createQueryAndAddWidget, editDashboard, resizeBy } from "../../support/dashboard";
+import {
+  createQueryAndAddWidget,
+  editDashboard,
+  resizeBy,
+} from "../../support/dashboard";
 
 describe("Widget", () => {
   beforeEach(function () {
@@ -50,7 +54,9 @@ describe("Widget", () => {
 
       createQueryAndAddWidget(this.dashboardId, queryData).then(elTestId => {
         cy.visit(this.dashboardUrl);
-        cy.getByTestId(elTestId).its("0.offsetHeight").should("be.oneOf", [235, 335]);
+        cy.getByTestId(elTestId)
+          .its("0.offsetHeight")
+          .should("be.oneOf", [235, 335]);
       });
     });
 
@@ -61,7 +67,9 @@ describe("Widget", () => {
 
       createQueryAndAddWidget(this.dashboardId, queryData).then(elTestId => {
         cy.visit(this.dashboardUrl);
-        cy.getByTestId(elTestId).its("0.offsetHeight").should("be.oneOf", [335, 485]);
+        cy.getByTestId(elTestId)
+          .its("0.offsetHeight")
+          .should("be.oneOf", [335, 485]);
       });
     });
 
@@ -151,13 +159,19 @@ describe("Widget", () => {
       query: `select '${"loremipsum".repeat(15)}' FROM generate_series(1,15)`,
     };
 
-    const widgetOptions = { position: { col: 0, row: 0, sizeX: 3, sizeY: 10, autoHeight: false } };
+    const widgetOptions = {
+      position: { col: 0, row: 0, sizeX: 3, sizeY: 10, autoHeight: false },
+    };
 
-    createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(() => {
-      cy.visit(this.dashboardUrl);
-      cy.getByTestId("TableVisualization").its("0.offsetHeight").should("be.oneOf", [380, 381, 382]);
-      cy.percySnapshot("Shows correct height of table visualization");
-    });
+    createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(
+      () => {
+        cy.visit(this.dashboardUrl);
+        cy.getByTestId("TableVisualization")
+          .its("0.offsetHeight")
+          .should("be.oneOf", [380, 381, 382]);
+        cy.percySnapshot("Shows correct height of table visualization");
+      },
+    );
   });
 
   it("shows fixed pagination for overflowing tabular content ", function () {
@@ -165,19 +179,32 @@ describe("Widget", () => {
       query: "select 'lorem ipsum' FROM generate_series(1,50)",
     };
 
-    const widgetOptions = { position: { col: 0, row: 0, sizeX: 3, sizeY: 10, autoHeight: false } };
+    const widgetOptions = {
+      position: { col: 0, row: 0, sizeX: 3, sizeY: 10, autoHeight: false },
+    };
 
-    createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(() => {
-      cy.visit(this.dashboardUrl);
-      cy.getByTestId("TableVisualization").next(".ant-pagination.mini").should("be.visible");
-      cy.percySnapshot("Shows fixed mini pagination for overflowing tabular content");
-    });
+    createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(
+      () => {
+        cy.visit(this.dashboardUrl);
+        cy.getByTestId("TableVisualization")
+          .next(".ant-pagination.mini")
+          .should("be.visible");
+        cy.percySnapshot(
+          "Shows fixed mini pagination for overflowing tabular content",
+        );
+      },
+    );
   });
 
   it("keeps results on screen while refreshing", function () {
     const queryData = {
-      query: "select pg_sleep({{sleep-time}}), 'sleep time: {{sleep-time}}' as sleeptime",
-      options: { parameters: [{ name: "sleep-time", title: "Sleep time", type: "number", value: 0 }] },
+      query:
+        "select pg_sleep({{sleep-time}}), 'sleep time: {{sleep-time}}' as sleeptime",
+      options: {
+        parameters: [
+          { name: "sleep-time", title: "Sleep time", type: "number", value: 0 },
+        ],
+      },
     };
 
     createQueryAndAddWidget(this.dashboardId, queryData).then(elTestId => {

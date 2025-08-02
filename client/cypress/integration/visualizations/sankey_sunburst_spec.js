@@ -27,7 +27,9 @@ describe("Sankey and Sunburst", () => {
         cy.visit(`queries/${id}/source`);
         cy.getByTestId("ExecuteButton").click();
         cy.getByTestId("NewVisualization").click();
-        cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.SUNBURST_SEQUENCE");
+        cy.getByTestId("VisualizationType").selectAntdOption(
+          "VisualizationType.SUNBURST_SEQUENCE",
+        );
       });
     });
 
@@ -37,8 +39,12 @@ describe("Sankey and Sunburst", () => {
       cy.getByTestId("VisualizationName").clear().type(visualizationName);
       cy.getByTestId("VisualizationPreview").find("svg").should("exist");
 
-      cy.getByTestId("EditVisualizationDialog").contains("button", "Save").click();
-      cy.getByTestId("QueryPageVisualizationTabs").contains("span", visualizationName).should("exist");
+      cy.getByTestId("EditVisualizationDialog")
+        .contains("button", "Save")
+        .click();
+      cy.getByTestId("QueryPageVisualizationTabs")
+        .contains("span", visualizationName)
+        .should("exist");
     });
 
     it("creates Sankey", () => {
@@ -47,13 +53,21 @@ describe("Sankey and Sunburst", () => {
       cy.getByTestId("VisualizationName").clear().type(visualizationName);
       cy.getByTestId("VisualizationPreview").find("svg").should("exist");
 
-      cy.getByTestId("EditVisualizationDialog").contains("button", "Save").click();
-      cy.getByTestId("QueryPageVisualizationTabs").contains("span", visualizationName).should("exist");
+      cy.getByTestId("EditVisualizationDialog")
+        .contains("button", "Save")
+        .click();
+      cy.getByTestId("QueryPageVisualizationTabs")
+        .contains("span", visualizationName)
+        .should("exist");
     });
   });
 
   const STAGES_WIDGETS = [
-    { name: "1 stage", query: `SELECT s1,value FROM (${SQL}) q`, position: { autoHeight: false, sizeY: 10, sizeX: 2 } },
+    {
+      name: "1 stage",
+      query: `SELECT s1,value FROM (${SQL}) q`,
+      position: { autoHeight: false, sizeY: 10, sizeX: 2 },
+    },
     {
       name: "2 stages",
       query: `SELECT s1,s2,value FROM (${SQL}) q`,
@@ -84,15 +98,31 @@ describe("Sankey and Sunburst", () => {
           STAGES_WIDGETS.map(
             sunburst => () =>
               cy
-                .createQuery({ name: `Sunburst with ${sunburst.name}`, query: sunburst.query })
-                .then(queryData => cy.createVisualization(queryData.id, "SUNBURST_SEQUENCE", "Sunburst", {}))
-                .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: sunburst.position })),
+                .createQuery({
+                  name: `Sunburst with ${sunburst.name}`,
+                  query: sunburst.query,
+                })
+                .then(queryData =>
+                  cy.createVisualization(
+                    queryData.id,
+                    "SUNBURST_SEQUENCE",
+                    "Sunburst",
+                    {},
+                  ),
+                )
+                .then(visualization =>
+                  cy.addWidget(dashboard.id, visualization.id, {
+                    position: sunburst.position,
+                  }),
+                ),
           ),
         )
         .then(widgets => {
           cy.visit(this.dashboardUrl);
           widgets.forEach(widget => {
-            cy.getByTestId(getWidgetTestId(widget)).within(() => cy.get("svg").should("exist"));
+            cy.getByTestId(getWidgetTestId(widget)).within(() =>
+              cy.get("svg").should("exist"),
+            );
           });
 
           // wait a bit before taking snapshot
@@ -110,15 +140,26 @@ describe("Sankey and Sunburst", () => {
           STAGES_WIDGETS.map(
             sankey => () =>
               cy
-                .createQuery({ name: `Sankey with ${sankey.name}`, query: sankey.query })
-                .then(queryData => cy.createVisualization(queryData.id, "SANKEY", "Sankey", {}))
-                .then(visualization => cy.addWidget(dashboard.id, visualization.id, { position: sankey.position })),
+                .createQuery({
+                  name: `Sankey with ${sankey.name}`,
+                  query: sankey.query,
+                })
+                .then(queryData =>
+                  cy.createVisualization(queryData.id, "SANKEY", "Sankey", {}),
+                )
+                .then(visualization =>
+                  cy.addWidget(dashboard.id, visualization.id, {
+                    position: sankey.position,
+                  }),
+                ),
           ),
         )
         .then(widgets => {
           cy.visit(this.dashboardUrl);
           widgets.forEach(widget => {
-            cy.getByTestId(getWidgetTestId(widget)).within(() => cy.get("svg").should("exist"));
+            cy.getByTestId(getWidgetTestId(widget)).within(() =>
+              cy.get("svg").should("exist"),
+            );
           });
 
           // wait a bit before taking snapshot

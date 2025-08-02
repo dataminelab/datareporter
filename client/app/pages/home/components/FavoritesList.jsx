@@ -30,12 +30,19 @@ export function FavoriteList({ title, resource, itemUrl, emptyState }) {
       {!isEmpty(items) && (
         <div role="list" className="list-group">
           {items.map(item => (
-            <Link key={itemUrl(item)} role="listitem" className="list-group-item name-favorite" href={itemUrl(item)}>
+            <Link
+              key={itemUrl(item)}
+              role="listitem"
+              className="list-group-item name-favorite"
+              href={itemUrl(item)}
+            >
               <span className="btn-favorite m-r-5">
                 <i className="fa fa-star" aria-hidden="true" />
               </span>
               <span className="name-favorite">{item.name}</span>
-              {item.is_draft && <span className="label label-default m-l-5">Unpublished</span>}
+              {item.is_draft && (
+                <span className="label label-default m-l-5">Unpublished</span>
+              )}
             </Link>
           ))}
         </div>

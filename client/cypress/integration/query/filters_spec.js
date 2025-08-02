@@ -1,4 +1,7 @@
-import { expectTableToHaveLength, expectFirstColumnToHaveMembers } from "../../support/visualizations/table";
+import {
+  expectTableToHaveLength,
+  expectFirstColumnToHaveMembers,
+} from "../../support/visualizations/table";
 
 const SQL = `
 SELECT 'a' AS stage1, 'a1' AS stage2, 11 AS value UNION ALL
@@ -31,7 +34,9 @@ describe("Query Filters", () => {
     });
 
     it("filters rows in a Table Visualization", () => {
-      cy.getByTestId("FilterName-stage1::filter").find(".ant-select-selection-item").should("have.text", "a");
+      cy.getByTestId("FilterName-stage1::filter")
+        .find(".ant-select-selection-item")
+        .should("have.text", "a");
 
       expectTableToHaveLength(4);
       expectFirstColumnToHaveMembers(["a", "a", "a", "a"]);
@@ -59,8 +64,12 @@ describe("Query Filters", () => {
     function expectSelectedOptionsToHaveMembers(values) {
       cy.getByTestId("FilterName-stage1::multi-filter")
         .find(".ant-select-selection-item-content")
-        .then($selectedOptions => Cypress.$.map($selectedOptions, item => Cypress.$(item).text()))
-        .then(selectedOptions => expect(selectedOptions).to.have.members(values));
+        .then($selectedOptions =>
+          Cypress.$.map($selectedOptions, item => Cypress.$(item).text()),
+        )
+        .then(selectedOptions =>
+          expect(selectedOptions).to.have.members(values),
+        );
     }
 
     it("filters rows in a Table Visualization", () => {
@@ -68,11 +77,25 @@ describe("Query Filters", () => {
 
       expectSelectedOptionsToHaveMembers(["a", "b", "c"]);
       expectTableToHaveLength(11);
-      expectFirstColumnToHaveMembers(["a", "a", "a", "a", "b", "b", "b", "c", "c", "c", "c"]);
+      expectFirstColumnToHaveMembers([
+        "a",
+        "a",
+        "a",
+        "a",
+        "b",
+        "b",
+        "b",
+        "c",
+        "c",
+        "c",
+        "c",
+      ]);
 
       // Clear Option
 
-      cy.getByTestId("FilterName-stage1::multi-filter").find(".ant-select-selector").click();
+      cy.getByTestId("FilterName-stage1::multi-filter")
+        .find(".ant-select-selector")
+        .click();
       cy.getByTestId("ClearOption").click();
       cy.getByTestId("FilterName-stage1::multi-filter").click(); // close dropdown
 
@@ -80,8 +103,13 @@ describe("Query Filters", () => {
 
       // Single Option selected
 
-      cy.getByTestId("FilterName-stage1::multi-filter").find(".ant-select-selector").click();
-      cy.contains(".ant-select-item-option-grouped > .ant-select-item-option-content", "a").click();
+      cy.getByTestId("FilterName-stage1::multi-filter")
+        .find(".ant-select-selector")
+        .click();
+      cy.contains(
+        ".ant-select-item-option-grouped > .ant-select-item-option-content",
+        "a",
+      ).click();
       cy.getByTestId("FilterName-stage1::multi-filter").click(); // close dropdown
 
       expectSelectedOptionsToHaveMembers(["a"]);
@@ -90,7 +118,9 @@ describe("Query Filters", () => {
 
       // Two Options selected
 
-      cy.getByTestId("FilterName-stage1::multi-filter").find(".ant-select-selector").click();
+      cy.getByTestId("FilterName-stage1::multi-filter")
+        .find(".ant-select-selector")
+        .click();
       cy.contains(".ant-select-item-option-content", "b").click();
       cy.getByTestId("FilterName-stage1::multi-filter").click(); // close dropdown
 
@@ -100,13 +130,27 @@ describe("Query Filters", () => {
 
       // Select All Option
 
-      cy.getByTestId("FilterName-stage1::multi-filter").find(".ant-select-selector").click();
+      cy.getByTestId("FilterName-stage1::multi-filter")
+        .find(".ant-select-selector")
+        .click();
       cy.getByTestId("SelectAllOption").click();
       cy.getByTestId("FilterName-stage1::multi-filter").click(); // close dropdown
 
       expectSelectedOptionsToHaveMembers(["a", "b", "c"]);
       expectTableToHaveLength(11);
-      expectFirstColumnToHaveMembers(["a", "a", "a", "a", "b", "b", "b", "c", "c", "c", "c"]);
+      expectFirstColumnToHaveMembers([
+        "a",
+        "a",
+        "a",
+        "a",
+        "b",
+        "b",
+        "b",
+        "c",
+        "c",
+        "c",
+        "c",
+      ]);
     });
   });
 });

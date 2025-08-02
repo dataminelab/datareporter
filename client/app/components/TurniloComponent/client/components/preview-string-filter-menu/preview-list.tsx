@@ -32,20 +32,27 @@ interface PreviewListProps {
   filterMode: PreviewFilterMode;
 }
 
-const errorNotice = (content: string) => <div className="error-notice">{content}</div>;
+const errorNotice = (content: string) => (
+  <div className="error-notice">{content}</div>
+);
 
 interface RowProps {
   content: string;
   highlight: string;
 }
 
-const Row: React.FunctionComponent<RowProps> = ({ content, highlight }) => <div className="row no-select" title={content}>
-  <div className="row-wrapper">
-    <HighlightString className="label" text={content} highlight={highlight} />
+const Row: React.FunctionComponent<RowProps> = ({ content, highlight }) => (
+  <div className="row no-select" title={content}>
+    <div className="row-wrapper">
+      <HighlightString className="label" text={content} highlight={highlight} />
+    </div>
   </div>
-</div>;
+);
 
-function predicate(filterMode: PreviewFilterMode, searchText: string): Unary<unknown, boolean> {
+function predicate(
+  filterMode: PreviewFilterMode,
+  searchText: string,
+): Unary<unknown, boolean> {
   switch (filterMode) {
     case FilterMode.CONTAINS:
       return d => String(d).includes(searchText);
@@ -56,24 +63,46 @@ function predicate(filterMode: PreviewFilterMode, searchText: string): Unary<unk
   }
 }
 
-function filterValues<T>(list: T[], filterMode: PreviewFilterMode, searchText: string): T[] {
+function filterValues<T>(
+  list: T[],
+  filterMode: PreviewFilterMode,
+  searchText: string,
+): T[] {
   if (!searchText) return list;
   return list.filter(predicate(filterMode, searchText));
 }
 
 export const PreviewList: React.FunctionComponent<PreviewListProps> = props => {
-  const { regexErrorMessage, searchText, dataset, filterMode, dimension, limit } = props;
+  const {
+    regexErrorMessage,
+    searchText,
+    dataset,
+    filterMode,
+    dimension,
+    limit,
+  } = props;
 
   if (regexErrorMessage) return errorNotice(regexErrorMessage);
 
   const data = dataset.data;
-  if (searchText && data.length === 0) return errorNotice(`No results for "${searchText}"`);
+  if (searchText && data.length === 0)
+    return errorNotice(`No results for "${searchText}"`);
 
   const list = data.slice(0, limit).map(d => d[dimension.name]);
   const filtered = filterValues(list, filterMode, searchText);
 
-  return <React.Fragment>
-    {searchText && <div className="matching-values-message">Matching Values</div>}
-    {filtered.map(value => <Row content={String(value)} highlight={searchText} key={String(value)} />)}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {searchText && (
+        <div className="matching-values-message">Matching Values</div>
+      )}
+      {filtered.map(value => (
+        <Row
+          content={String(value)}
+          highlight={searchText}
+          key={String(value)}
+        />
+      ))}
+    </React.Fragment>
+  );
 };

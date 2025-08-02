@@ -44,14 +44,22 @@ function ApiKeyDialog({ dialog, ...props }) {
   const jsonResultsLabelId = useUniqueId("json-results-label");
 
   return (
-    <Modal {...dialog.props} width={600} footer={<Button onClick={() => dialog.close(query)}>Close</Button>}>
+    <Modal
+      {...dialog.props}
+      width={600}
+      footer={<Button onClick={() => dialog.close(query)}>Close</Button>}
+    >
       <div className="query-api-key-dialog-wrapper">
         <h5>API Key</h5>
         <div className="m-b-20">
           <Input.Group compact>
             <Input readOnly value={query.api_key} aria-label="Query API Key" />
             {policy.canEdit(query) && (
-              <Button disabled={updatingApiKey} loading={updatingApiKey} onClick={regenerateQueryApiKey}>
+              <Button
+                disabled={updatingApiKey}
+                loading={updatingApiKey}
+                onClick={regenerateQueryApiKey}
+              >
                 Regenerate
               </Button>
             )}

@@ -17,7 +17,7 @@
 
 import { Class, Instance } from "immutable-class";
 import { $, Expression } from "reporter-plywood";
-import { makeTitle, verifyUrlSafeName } from "../../utils/general/general";
+import { hasOwnProperty, makeTitle, verifyUrlSafeName } from "../../utils/general/general";
 import {
   granularityEquals,
   granularityFromJS,
@@ -277,9 +277,9 @@ export class Dimension implements Instance<DimensionValue, DimensionJS> {
   }
 
   change(propertyName: string, newValue: any): Dimension {
-    var v = this.valueOf();
+    const v = this.valueOf();
 
-    if (!v.hasOwnProperty(propertyName)) {
+    if (hasOwnProperty(v, propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
     }
 

@@ -26,7 +26,10 @@ import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
-import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
+import {
+  BaseVisualization,
+  BaseVisualizationState,
+} from "../base-visualization/base-visualization";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
@@ -49,23 +52,32 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
 
     const { preparedDataset: dataset } = this.state;
 
-    const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, this.series());
+    const { x, y, color } = this.getScales(
+      dataset.data,
+      TILE_SIZE,
+      this.series(),
+    );
 
-    return <div className="internals heatmap-container" style={{ maxHeight: stage.height }}>
-      <LabelledHeatmap
-        stage={stage}
-        dataset={dataset.data}
-        report={report}
-        xScale={x}
-        yScale={y}
-        colorScale={color}
-        saveHighlight={this.highlight}
-        highlight={this.getHighlight()}
-        acceptHighlight={this.acceptHighlight}
-        dropHighlight={this.dropHighlight}
-        essence={essence}
-      />
-    </div>;
+    return (
+      <div
+        className="internals heatmap-container"
+        style={{ maxHeight: stage.height }}
+      >
+        <LabelledHeatmap
+          stage={stage}
+          dataset={dataset.data}
+          report={report}
+          xScale={x}
+          yScale={y}
+          colorScale={color}
+          saveHighlight={this.highlight}
+          highlight={this.getHighlight()}
+          acceptHighlight={this.acceptHighlight}
+          dropHighlight={this.dropHighlight}
+          essence={essence}
+        />
+      </div>
+    );
   }
 
   deriveDatasetState(dataset: Dataset): Partial<HeatmapState> {
@@ -74,10 +86,10 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
     const secondSplit = essence.splits.splits.get(1);
 
     const preparedDataset = fillDatasetWithMissingValues(
-      (dataset.data[0][SPLIT] as Dataset),
+      dataset.data[0][SPLIT] as Dataset,
       this.series().plywoodKey(),
       secondSplit,
-      timezone
+      timezone,
     );
 
     return { preparedDataset };

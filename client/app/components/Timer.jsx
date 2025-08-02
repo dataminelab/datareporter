@@ -23,7 +23,12 @@ export default function Timer({ from }) {
 }
 
 Timer.propTypes = {
-  from: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date), Moment]),
+  from: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.instanceOf(Date),
+    Moment,
+  ]),
 };
 
 Timer.defaultProps = {

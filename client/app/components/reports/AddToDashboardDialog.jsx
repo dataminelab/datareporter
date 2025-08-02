@@ -51,10 +51,16 @@ function AddToDashboardDialog({ dialog, visualization }) {
         notification.success(
           "Widget added to dashboard",
           <React.Fragment>
-            <Link href={`${dashboard.url}`} onClick={() => notification.close(key)}>
+            <Link
+              href={`${dashboard.url}`}
+              onClick={() => notification.close(key)}
+            >
               {dashboard.name}
             </Link>
-            <ReportTagsControl isDraft={dashboard.is_draft} tags={dashboard.tags} />
+            <ReportTagsControl
+              isDraft={dashboard.is_draft}
+              tags={dashboard.tags}
+            />
           </React.Fragment>,
           { key },
         );
@@ -73,10 +79,16 @@ function AddToDashboardDialog({ dialog, visualization }) {
     <Modal
       {...dialog.props}
       title="Add to Dashboard"
-      okButtonProps={{ disabled: !selectedDashboard || saveInProgress, loading: saveInProgress }}
+      okButtonProps={{
+        disabled: !selectedDashboard || saveInProgress,
+        loading: saveInProgress,
+      }}
       cancelButtonProps={{ disabled: saveInProgress }}
-      onOk={addWidgetToDashboard}>
-      <label htmlFor="add-to-dashboard-dialog-dashboard">Choose the dashboard to add this query to:</label>
+      onOk={addWidgetToDashboard}
+    >
+      <label htmlFor="add-to-dashboard-dialog-dashboard">
+        Choose the dashboard to add this query to:
+      </label>
 
       {!selectedDashboard && (
         <Input
@@ -88,7 +100,10 @@ function AddToDashboardDialog({ dialog, visualization }) {
           value={searchTerm}
           onChange={event => setSearchTerm(event.target.value)}
           suffix={
-            <PlainButton className={searchTerm === "" ? "hidden" : null} onClick={() => setSearchTerm("")}>
+            <PlainButton
+              className={searchTerm === "" ? "hidden" : null}
+              onClick={() => setSearchTerm("")}
+            >
               <CloseOutlinedIcon />
             </PlainButton>
           }
@@ -97,7 +112,11 @@ function AddToDashboardDialog({ dialog, visualization }) {
 
       {(items.length > 0 || isLoading) && (
         <List
-          className={selectedDashboard ? "add-to-dashboard-dialog-selection" : "add-to-dashboard-dialog-search-results"}
+          className={
+            selectedDashboard
+              ? "add-to-dashboard-dialog-selection"
+              : "add-to-dashboard-dialog-search-results"
+          }
           bordered
           itemLayout="horizontal"
           loading={isLoading}
@@ -108,13 +127,17 @@ function AddToDashboardDialog({ dialog, visualization }) {
               actions={
                 selectedDashboard
                   ? [
-                      <PlainButton key="close-selected-dashboard" onClick={() => setSelectedDashboard(null)}>
+                      <PlainButton
+                        key="close-selected-dashboard"
+                        onClick={() => setSelectedDashboard(null)}
+                      >
                         <CloseOutlinedIcon />
                       </PlainButton>,
                     ]
                   : []
               }
-              onClick={selectedDashboard ? null : () => setSelectedDashboard(d)}>
+              onClick={selectedDashboard ? null : () => setSelectedDashboard(d)}
+            >
               <div className="add-to-dashboard-dialog-item-content">
                 {d.name}
                 <ReportTagsControl isDraft={d.is_draft} tags={d.tags} />

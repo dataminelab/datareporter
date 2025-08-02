@@ -32,9 +32,16 @@ export class UrlStateStorage extends StateStorage {
 
     // in search mode order by should be explicitly specified in url, otherwise use default
     const defaultOrderBy =
-      searchTerm !== "" ? "" : compileOrderBy(defaultState.orderByField, defaultState.orderByReverse);
+      searchTerm !== ""
+        ? ""
+        : compileOrderBy(
+            defaultState.orderByField,
+            defaultState.orderByReverse,
+          );
 
-    const { field: orderByField, reverse: orderByReverse } = parseOrderBy(params.order || defaultOrderBy);
+    const { field: orderByField, reverse: orderByReverse } = parseOrderBy(
+      params.order || defaultOrderBy,
+    );
 
     return {
       page: parseInt(params.page, 10) || defaultState.page,

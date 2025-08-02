@@ -41,7 +41,9 @@ export interface MeasureOrGroupVisitor<R> {
   visitMeasureGroup(measureGroup: MeasureGroup): R;
 }
 
-export function measureOrGroupFromJS(measureOrGroup: MeasureOrGroupJS): MeasureOrGroup {
+export function measureOrGroupFromJS(
+  measureOrGroup: MeasureOrGroupJS,
+): MeasureOrGroup {
   if (isMeasureGroupJS(measureOrGroup)) {
     return MeasureGroup.fromJS(measureOrGroup);
   } else {
@@ -49,11 +51,15 @@ export function measureOrGroupFromJS(measureOrGroup: MeasureOrGroupJS): MeasureO
   }
 }
 
-export function isMeasureGroupJS(measureOrGroupJS: MeasureOrGroupJS): measureOrGroupJS is MeasureGroupJS {
+export function isMeasureGroupJS(
+  measureOrGroupJS: MeasureOrGroupJS,
+): measureOrGroupJS is MeasureGroupJS {
   return (measureOrGroupJS as MeasureGroupJS).measures !== undefined;
 }
 
-export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS> {
+export class MeasureGroup
+  implements Instance<MeasureGroupValue, MeasureGroupJS>
+{
   static fromJS(parameters: MeasureGroupJS): MeasureGroup {
     const { name, title, description, measures } = parameters;
 
@@ -69,7 +75,7 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
       name,
       title,
       description,
-      measures: measures.map(measureOrGroupFromJS)
+      measures: measures.map(measureOrGroupFromJS),
     });
   }
 
@@ -95,15 +101,18 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
   }
 
   equals(other: any): boolean {
-    return this === other
-      || MeasureGroup.isMeasureGroup(other) && immutableArraysEqual(this.measures, other.measures);
+    return (
+      this === other ||
+      (MeasureGroup.isMeasureGroup(other) &&
+        immutableArraysEqual(this.measures, other.measures))
+    );
   }
 
   toJS(): MeasureGroupJS {
     const measureGroup: MeasureGroupJS = {
       name: this.name,
       measures: this.measures.map(measure => measure.toJS()),
-      title: this.title
+      title: this.title,
     };
     if (this.description) measureGroup.description = this.description;
     return measureGroup;
@@ -117,7 +126,7 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
     const measureGroup: MeasureGroupValue = {
       name: this.name,
       title: this.title,
-      measures: this.measures
+      measures: this.measures,
     };
     if (this.description) measureGroup.description = this.description;
     return measureGroup;

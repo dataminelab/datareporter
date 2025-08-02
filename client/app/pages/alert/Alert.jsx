@@ -23,7 +23,9 @@ const MODES = {
   EDIT: 2,
 };
 
-const defaultNameBuilder = template("<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>");
+const defaultNameBuilder = template(
+  "<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>",
+);
 
 export function getDefaultName(alert) {
   if (!alert.query) {
@@ -223,7 +225,13 @@ class Alert extends React.Component {
     const { queryResult, mode, canEdit, pendingRearm } = this.state;
 
     const menuButton = (
-      <MenuButton doDelete={this.delete} muted={muted} mute={this.mute} unmute={this.unmute} canEdit={canEdit} />
+      <MenuButton
+        doDelete={this.delete}
+        muted={muted}
+        mute={this.mute}
+        unmute={this.unmute}
+        canEdit={canEdit}
+      />
     );
 
     const commonProps = {
@@ -244,9 +252,17 @@ class Alert extends React.Component {
         <div className="container">
           {mode === MODES.NEW && <AlertNew {...commonProps} />}
           {mode === MODES.VIEW && (
-            <AlertView canEdit={canEdit} onEdit={this.edit} muted={muted} unmute={this.unmute} {...commonProps} />
+            <AlertView
+              canEdit={canEdit}
+              onEdit={this.edit}
+              muted={muted}
+              unmute={this.unmute}
+              {...commonProps}
+            />
           )}
-          {mode === MODES.EDIT && <AlertEdit cancel={this.cancel} {...commonProps} />}
+          {mode === MODES.EDIT && (
+            <AlertEdit cancel={this.cancel} {...commonProps} />
+          )}
         </div>
       </div>
     );

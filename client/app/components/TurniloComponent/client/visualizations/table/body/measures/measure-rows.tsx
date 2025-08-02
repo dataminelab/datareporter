@@ -34,26 +34,42 @@ interface MeasureRowsProps {
 }
 
 export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
-  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex, report } = props;
+  const {
+    rowWidth,
+    essence,
+    cellWidth,
+    hoverRow,
+    scales,
+    data,
+    visibleRowsIndexRange,
+    highlightedRowIndex,
+    report,
+  } = props;
 
-  return <VisibleRows
-    visibleRowsIndexRange={visibleRowsIndexRange}
-    highlightedRowIndex={highlightedRowIndex}
-    hoveredRowDatum={hoverRow}
-    rowsData={data}
-    renderRow={props => {
-      const { index, top, datum, highlight, dimmed } = props;
-      const rowStyle: React.CSSProperties = { top, width: rowWidth };
+  return (
+    <VisibleRows
+      visibleRowsIndexRange={visibleRowsIndexRange}
+      highlightedRowIndex={highlightedRowIndex}
+      hoveredRowDatum={hoverRow}
+      rowsData={data}
+      renderRow={props => {
+        const { index, top, datum, highlight, dimmed } = props;
+        const rowStyle: React.CSSProperties = { top, width: rowWidth };
 
-      return <MeasureRow
-        key={`row_${index}`}
-        essence={essence}
-        report={report}
-        highlight={highlight}
-        dimmed={dimmed}
-        style={rowStyle}
-        datum={datum}
-        cellWidth={cellWidth}
-        scales={scales} />;
-    }} />;
+        return (
+          <MeasureRow
+            key={`row_${index}`}
+            essence={essence}
+            report={report}
+            highlight={highlight}
+            dimmed={dimmed}
+            style={rowStyle}
+            datum={datum}
+            cellWidth={cellWidth}
+            scales={scales}
+          />
+        );
+      }}
+    />
+  );
 };

@@ -35,7 +35,11 @@ describe("EnumParameter", () => {
 
     describe("normalizeValue", () => {
       test("returns only valid values", () => {
-        const normalizedValue = param.normalizeValue(["value3", "anything", null]);
+        const normalizedValue = param.normalizeValue([
+          "value3",
+          "anything",
+          null,
+        ]);
         expect(normalizedValue).toEqual(["value3"]);
       });
 
@@ -48,7 +52,9 @@ describe("EnumParameter", () => {
     describe("getExecutionValue", () => {
       test("joins values when joinListValues is truthy", () => {
         param.setValue(["value1", "value3"]);
-        const executionValue = param.getExecutionValue({ joinListValues: true });
+        const executionValue = param.getExecutionValue({
+          joinListValues: true,
+        });
         expect(executionValue).toBe('"value1","value3"');
       });
     });

@@ -29,7 +29,9 @@ export default class AutoHeightController {
       .map(widget => widget.id.toString());
 
     // added
-    newWidgetIds.filter(id => !includes(Object.keys(this.widgets), id)).forEach(this.add);
+    newWidgetIds
+      .filter(id => !includes(Object.keys(this.widgets), id))
+      .forEach(this.add);
 
     // removed
     Object.keys(this.widgets)

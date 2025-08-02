@@ -31,15 +31,15 @@ interface FakeProps {
   object?: { label: string };
 }
 
-interface FakeState {
-}
+interface FakeState {}
 
 class Fake extends React.Component<FakeProps, FakeState> {
-
   render() {
     const { itemId, action, object } = this.props;
 
-    const str = `${action || ""}${itemId || ""}${object && object.label || ""}`;
+    const str = `${action || ""}${itemId || ""}${
+      (object && object.label) || ""
+    }`;
 
     return <div className="fakey-fakey">{str}</div>;
   }
@@ -59,7 +59,11 @@ describe("Router", () => {
     const wrapper = findDOMNode(element);
 
     if (wrapper.className !== "route-wrapper") {
-      throw new Error("Wrapper should have the proper class name, found " + wrapper.className + " instead");
+      throw new Error(
+        "Wrapper should have the proper class name, found " +
+          wrapper.className +
+          " instead",
+      );
     }
 
     return wrapper.childNodes;
@@ -69,7 +73,9 @@ describe("Router", () => {
     const children = findNodes(element);
 
     if (children.length !== 1) {
-      throw new Error("Looking for exactly one node, found " + children.length + " instead.");
+      throw new Error(
+        "Looking for exactly one node, found " + children.length + " instead.",
+      );
     }
 
     return children[0];
@@ -77,7 +83,6 @@ describe("Router", () => {
 
   beforeEach(() => {
     updateHash = (newHash: string) => {
-
       window.location.hash = newHash;
       const spy = sinon.spy();
 
@@ -86,12 +91,14 @@ describe("Router", () => {
         <Router rootFragment="root" onURLChange={spy}>
           {children.map((c, i) => React.cloneElement(c, { key: i }))}
         </Router>,
-        node
+        node,
       ) as unknown as React.Component;
     };
 
     isActiveRoute = (route: string) => {
-      expect(window.location.hash, "window.location.hash should be").to.equal(route);
+      expect(window.location.hash, "window.location.hash should be").to.equal(
+        route,
+      );
     };
   });
 
@@ -103,8 +110,10 @@ describe("Router", () => {
         <Route fragment=":itemId" alwaysShowOrphans={true}>
           <div className="pouet-class">baz</div>
           // Should alway be visible
-          <Route transmit={["itemId"]} fragment=":action"><Fake /></Route>
-        </Route>
+          <Route transmit={["itemId"]} fragment=":action">
+            <Fake />
+          </Route>
+        </Route>,
       ];
 
       updateHash("root/bar");
@@ -118,10 +127,14 @@ describe("Router", () => {
       const getChild = (i: number) => domNodes[i] as Element;
 
       // Orphan that's always visible
-      expect(getChild(0).className, "should contain class").to.equal("pouet-class");
+      expect(getChild(0).className, "should contain class").to.equal(
+        "pouet-class",
+      );
 
       // Fakey thing
-      expect(getChild(1).className, "should contain class").to.equal("fakey-fakey");
+      expect(getChild(1).className, "should contain class").to.equal(
+        "fakey-fakey",
+      );
       expect(getChild(1).innerHTML).to.equal("bliflu");
 
       isActiveRoute("#root/flu/bli");
@@ -132,7 +145,10 @@ describe("Router", () => {
     beforeEach(() => {
       node = window.document.createElement("div");
 
-      const pump = (key: string, value: string): { key: string, value: any } => {
+      const pump = (
+        key: string,
+        value: string,
+      ): { key: string; value: any } => {
         if (key === "action") return { key, value };
         return { key: "object", value: { label: value.toUpperCase() } };
       };
@@ -141,8 +157,10 @@ describe("Router", () => {
         <Route fragment=":itemId" alwaysShowOrphans={true}>
           <div className="pouet-class">baz</div>
           // Should alway be visible
-          <Route transmit={["itemId"]} fragment=":action" inflate={pump}><Fake /></Route>
-        </Route>
+          <Route transmit={["itemId"]} fragment=":action" inflate={pump}>
+            <Fake />
+          </Route>
+        </Route>,
       ];
 
       updateHash("root/bar");
@@ -156,10 +174,14 @@ describe("Router", () => {
       const getChild = (i: number) => domNodes[i] as Element;
 
       // Orphan that's always visible
-      expect(getChild(0).className, "should contain class").to.equal("pouet-class");
+      expect(getChild(0).className, "should contain class").to.equal(
+        "pouet-class",
+      );
 
       // Fakey thing
-      expect(getChild(1).className, "should contain class").to.equal("fakey-fakey");
+      expect(getChild(1).className, "should contain class").to.equal(
+        "fakey-fakey",
+      );
       expect(getChild(1).innerHTML).to.equal("bliFLU");
 
       isActiveRoute("#root/flu/bli");
@@ -187,13 +209,19 @@ describe("Router", () => {
 
         <Route fragment="baz">
           <div className="baz-class">baz</div>
-          <Route fragment=":itemId"><Fake /></Route> // Fake is gonna get passed whatever replaces :bazId in the hash
+          <Route fragment=":itemId">
+            <Fake />
+          </Route>{" "}
+          // Fake is gonna get passed whatever replaces :bazId in the hash
         </Route>,
 
         <Route fragment="qux">
           <div className="qux-class">qux</div>
-          <Route fragment=":itemId/:action=edit"><Fake /></Route> // default value for variable
-        </Route>
+          <Route fragment=":itemId/:action=edit">
+            <Fake />
+          </Route>{" "}
+          // default value for variable
+        </Route>,
       ];
 
       updateHash("root/bar");
@@ -201,14 +229,14 @@ describe("Router", () => {
 
     it("initializes to the location", (done: any) => {
       // Timeout because the router waits for a bit before initializing
-      setTimeout(
-        () => {
-          expect((findNode(component) as any).className, "should contain class").to.equal("bar-class");
-          isActiveRoute("#root/bar");
-          done();
-        },
-        2
-      );
+      setTimeout(() => {
+        expect(
+          (findNode(component) as any).className,
+          "should contain class",
+        ).to.equal("bar-class");
+        isActiveRoute("#root/bar");
+        done();
+      }, 2);
     });
 
     it("fixes multiple slashes", () => {
@@ -243,7 +271,10 @@ describe("Router", () => {
     it("follows the window.location.hash's changes", () => {
       updateHash("#root/baz");
 
-      expect((findNode(component) as any).className, "should contain class").to.equal("baz-class");
+      expect(
+        (findNode(component) as any).className,
+        "should contain class",
+      ).to.equal("baz-class");
       isActiveRoute("#root/baz");
     });
 
@@ -267,7 +298,6 @@ describe("Router", () => {
   });
 
   describe("without initial location", () => {
-
     beforeEach(() => {
       node = window.document.createElement("div");
 
@@ -282,7 +312,7 @@ describe("Router", () => {
 
         <Route fragment="baz">
           <div className="baz-class">baz</div>
-        </Route>
+        </Route>,
       ];
 
       updateHash("root");
@@ -290,19 +320,19 @@ describe("Router", () => {
 
     it("defaults to the first route", (done: any) => {
       // Timeout because the router waits for a bit before initializing
-      setTimeout(
-        () => {
-          isActiveRoute("#root/foo");
-          done();
-        },
-        2
-      );
+      setTimeout(() => {
+        isActiveRoute("#root/foo");
+        done();
+      }, 2);
     });
 
     it("follows the window.location.hash's changes", () => {
       updateHash("#root/baz");
 
-      expect((findNode(component) as any).className, "should contain class").to.equal("baz-class");
+      expect(
+        (findNode(component) as any).className,
+        "should contain class",
+      ).to.equal("baz-class");
       isActiveRoute("#root/baz");
     });
   });

@@ -24,7 +24,10 @@ function ReportPage({ dashboardSlug, dashboardId, onError }) {
   }, []);
   if (config.appSettings) {
     if (config.appSettings.customization.sentryDSN) {
-      errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
+      errorReporterInit(
+        config.appSettings.customization.sentryDSN,
+        config.version,
+      );
     }
 
     const version = config.version;

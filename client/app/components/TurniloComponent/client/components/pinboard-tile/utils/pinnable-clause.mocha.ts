@@ -15,7 +15,13 @@
  */
 import { expect } from "chai";
 import { TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
-import { boolean, numberRange, stringIn, timePeriod, timeRange } from "../../../../common/models/filter-clause/filter-clause.fixtures";
+import {
+  boolean,
+  numberRange,
+  stringIn,
+  timePeriod,
+  timeRange,
+} from "../../../../common/models/filter-clause/filter-clause.fixtures";
 import { isPinnableClause } from "./pinnable-clause";
 
 describe("PinnableClause", () => {
@@ -37,11 +43,14 @@ describe("PinnableClause", () => {
     });
 
     it("should return false for RelativeTimeFilterClause", () => {
-      expect(isPinnableClause(timePeriod("time", "P1D", TimeFilterPeriod.CURRENT))).to.be.false;
+      expect(
+        isPinnableClause(timePeriod("time", "P1D", TimeFilterPeriod.CURRENT)),
+      ).to.be.false;
     });
 
     it("should return false for FixedTimeFilterClause", () => {
-      expect(isPinnableClause(timeRange("time", new Date(0), new Date(1)))).to.be.false;
+      expect(isPinnableClause(timeRange("time", new Date(0), new Date(1)))).to
+        .be.false;
     });
   });
 });

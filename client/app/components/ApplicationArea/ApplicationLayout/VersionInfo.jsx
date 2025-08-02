@@ -8,16 +8,24 @@ export default function VersionInfo() {
     <React.Fragment>
       <div>
         Version: {clientConfig.version}
-        {frontendVersion !== clientConfig.version && ` (${frontendVersion.substring(0, 8)})`}
+        {frontendVersion !== clientConfig.version &&
+          ` (${frontendVersion.substring(0, 8)})`}
       </div>
-      {clientConfig.newVersionAvailable && currentUser.hasPermission("super_admin") && (
-        <div className="m-t-10">
-          <Link href="https://version.redash.io/" className="update-available" target="_blank" rel="noopener">
-            Update Available <i className="fa fa-external-link m-l-5" aria-hidden="true" />
-            <span className="sr-only">(opens in a new tab)</span>
-          </Link>
-        </div>
-      )}
+      {clientConfig.newVersionAvailable &&
+        currentUser.hasPermission("super_admin") && (
+          <div className="m-t-10">
+            <Link
+              href="https://version.redash.io/"
+              className="update-available"
+              target="_blank"
+              rel="noopener"
+            >
+              Update Available{" "}
+              <i className="fa fa-external-link m-l-5" aria-hidden="true" />
+              <span className="sr-only">(opens in a new tab)</span>
+            </Link>
+          </div>
+        )}
     </React.Fragment>
   );
 }

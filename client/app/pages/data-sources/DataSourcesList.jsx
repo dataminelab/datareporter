@@ -8,7 +8,9 @@ import navigateTo from "@/components/ApplicationArea/navigateTo";
 import CardsList from "@/components/cards-list/CardsList";
 import LoadingState from "@/components/items-list/components/LoadingState";
 import CreateSourceDialog from "@/components/CreateSourceDialog";
-import DynamicComponent, { registerComponent } from "@/components/DynamicComponent";
+import DynamicComponent, {
+  registerComponent,
+} from "@/components/DynamicComponent";
 import helper from "@/components/dynamic-form/dynamicFormHelper";
 import wrapSettingsTab from "@/components/SettingsWrapper";
 import PlainButton from "@/components/PlainButton";
@@ -30,7 +32,11 @@ export function DataSourcesListComponent({ dataSources, onClickCreate }) {
       There are no data sources yet.
       {policy.isCreateDataSourceEnabled() && (
         <div className="m-t-5">
-          <PlainButton type="link" onClick={onClickCreate} data-test="CreateDataSourceLink">
+          <PlainButton
+            type="link"
+            onClick={onClickCreate}
+            data-test="CreateDataSourceLink"
+          >
             Click here
           </PlainButton>{" "}
           to add one.
@@ -99,7 +105,9 @@ class DataSourcesList extends React.Component {
 
     return DataSource.create(target).then(dataSource => {
       this.setState({ loading: true });
-      DataSource.query().then(dataSources => this.setState({ dataSources, loading: false }));
+      DataSource.query().then(dataSources =>
+        this.setState({ dataSources, loading: false }),
+      );
       return dataSource;
     });
   };
@@ -130,7 +138,9 @@ class DataSourcesList extends React.Component {
   render() {
     const newDataSourceProps = {
       "type": "primary",
-      "onClick": policy.isCreateDataSourceEnabled() ? this.showCreateSourceDialog : null,
+      "onClick": policy.isCreateDataSourceEnabled()
+        ? this.showCreateSourceDialog
+        : null,
       "disabled": !policy.isCreateDataSourceEnabled(),
       "data-test": "CreateDataSourceButton",
     };
@@ -182,6 +192,8 @@ routes.register(
   routeWithUserSession({
     path: "/data_sources/new",
     title: "Data Sources",
-    render: pageProps => <DataSourcesListPage {...pageProps} isNewDataSourcePage />,
+    render: pageProps => (
+      <DataSourcesListPage {...pageProps} isNewDataSourcePage />
+    ),
   }),
 );

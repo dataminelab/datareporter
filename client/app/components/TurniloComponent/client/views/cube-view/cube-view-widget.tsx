@@ -60,13 +60,17 @@ export interface CubeViewLayout {
 
 const defaultLayout: CubeViewLayout = {
   factPanel: { width: 240 },
-  pinboard: { width: 240 }
+  pinboard: { width: 240 },
 };
 
 export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
-  setFilterParams: (widgetId: number, essence: Essence, clicker: Clicker) => void;
+  setFilterParams: (
+    widgetId: number,
+    essence: Essence,
+    clicker: Clicker,
+  ) => void;
   widgetId: number;
   hash: string;
   changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
@@ -109,7 +113,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.state = {
       essence: null,
       lastRefreshRequestTimestamp: 0,
-      updatingMaxTime: false
+      updatingMaxTime: false,
     };
 
     this.clicker = {
@@ -118,11 +122,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         this.setState(state => {
           return { ...state, essence };
         });
-        return essence
+        return essence;
       },
       changeComparisonShift: (timeShift: TimeShift) => {
-        this.setState(state =>
-          ({ ...state, essence: state.essence.changeComparisonShift(timeShift) }));
+        this.setState(state => ({
+          ...state,
+          essence: state.essence.changeComparisonShift(timeShift),
+        }));
       },
       changeSplits: (splits: Splits, strategy: VisStrategy) => {
         const { essence } = this.state;
@@ -152,9 +158,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSeries(series) });
       },
-      changeVisualization: (visualization: VisualizationManifest, settings: VisualizationSettings) => {
+      changeVisualization: (
+        visualization: VisualizationManifest,
+        settings: VisualizationSettings,
+      ) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeVisualization(visualization, settings) });
+        this.setState({
+          essence: essence.changeVisualization(visualization, settings),
+        });
       },
       pin: (dimension: Dimension) => {
         const { essence } = this.state;
@@ -167,17 +178,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       changePinnedSortSeries: (series: Series) => {
         const { essence } = this.state;
         this.setState({ essence: essence.changePinnedSortSeries(series) });
-      }
+      },
     };
   }
 
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
     if (!dataCube) throw new Error("Data cube is required.");
-    if (!dataCube.timeAttribute) throw new Error("DataCube must have a timeAttribute");
+    if (!dataCube.timeAttribute)
+      throw new Error("DataCube must have a timeAttribute");
 
     this.setState({
-      timekeeper: initTimekeeper || Timekeeper.EMPTY
+      timekeeper: initTimekeeper || Timekeeper.EMPTY,
     });
     this.updateEssenceFromHashOrDataCube(hash, dataCube);
   }
@@ -229,7 +241,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       deviceSize: Device.getSize(),
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
-      visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
+      visualizationStage: Stage.fromClientRect(
+        visualizationDOM.getBoundingClientRect(),
+      ),
     });
   };
 
@@ -253,9 +267,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       return { essence, clicker };
     },
     (
-      [nextEssence, nextClicker]: [Essence, Clicker], 
-      [prevEssence, prevClicker]: [Essence, Clicker]
-    ) => nextEssence.equals(prevEssence) && nextClicker === prevClicker
+      [nextEssence, nextClicker]: [Essence, Clicker],
+      [prevEssence, prevClicker]: [Essence, Clicker],
+    ) => nextEssence.equals(prevEssence) && nextClicker === prevClicker,
   );
 
   render() {
@@ -263,19 +277,26 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     if (!essence) return null;
 
-    return <CubeContext.Provider value={this.getCubeContext()}>
-      <div className="turnilo-widget-view">
-        <div className="main" ref={this.container}>
-          <GlobalEventListener resize={this.globalResizeListener} />
-          <div className="visualization" ref={this.visualization}>{this.visElement()}</div>
+    return (
+      <CubeContext.Provider value={this.getCubeContext()}>
+        <div className="turnilo-widget-view">
+          <div className="main" ref={this.container}>
+            <GlobalEventListener resize={this.globalResizeListener} />
+            <div className="visualization" ref={this.visualization}>
+              {this.visElement()}
+            </div>
+          </div>
         </div>
-      </div>
-    </CubeContext.Provider>;
+      </CubeContext.Provider>
+    );
   }
 
-
   private visElement() {
-    const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
+    const {
+      essence,
+      visualizationStage: stage,
+      lastRefreshRequestTimestamp,
+    } = this.state;
     if (!(essence.visResolve.isReady() && stage)) return null;
     const visProps: VisualizationProps = {
       refreshRequestTimestamp: lastRefreshRequestTimestamp,
@@ -284,10 +305,16 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       timekeeper: this.state.timekeeper,
       stage,
       registerDownloadableDataset: (dataset: Dataset) => {
-        this.downloadableDataset = { dataset, options: tabularOptions(essence) };
-      }
+        this.downloadableDataset = {
+          dataset,
+          options: tabularOptions(essence),
+        };
+      },
     };
 
-    return React.createElement(getVisualizationComponent(essence.visualization), visProps);
+    return React.createElement(
+      getVisualizationComponent(essence.visualization),
+      visProps,
+    );
   }
 }

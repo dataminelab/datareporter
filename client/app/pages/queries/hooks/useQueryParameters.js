@@ -3,11 +3,15 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 
 export default function useQueryParameters(query) {
   const parameters = useMemo(() => query.getParametersDefs(), [query]);
-  const [dirtyFlag, setDirtyFlag] = useState(query.getParameters().hasPendingValues());
+  const [dirtyFlag, setDirtyFlag] = useState(
+    query.getParameters().hasPendingValues(),
+  );
 
   const updateDirtyFlag = useCallback(
     flag => {
-      flag = isUndefined(flag) ? query.getParameters().hasPendingValues() : flag;
+      flag = isUndefined(flag)
+        ? query.getParameters().hasPendingValues()
+        : flag;
       setDirtyFlag(flag);
     },
     [query],
@@ -20,5 +24,8 @@ export default function useQueryParameters(query) {
     }
   }, [query, parameters, dirtyFlag]);
 
-  return useMemo(() => [parameters, dirtyFlag, updateDirtyFlag], [parameters, dirtyFlag, updateDirtyFlag]);
+  return useMemo(
+    () => [parameters, dirtyFlag, updateDirtyFlag],
+    [parameters, dirtyFlag, updateDirtyFlag],
+  );
 }

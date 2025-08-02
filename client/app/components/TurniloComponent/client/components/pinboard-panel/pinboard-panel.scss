@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .pinboard-panel {
   @include for-small-screens {
@@ -45,7 +45,7 @@
     &::after {
       @include unpin-full(4px, 0, 4px, 0);
       @include css-variable(background-color, drop-area-indicator);
-      content: '';
+      content: "";
       border-radius: $corner;
     }
   }
@@ -60,7 +60,7 @@
 
     &::after {
       @include unpin-full(10px);
-      content: '';
+      content: "";
       //border: 1px dashed $border-medium;
       border-radius: 5px;
     }

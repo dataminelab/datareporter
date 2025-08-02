@@ -60,7 +60,10 @@ export default function UserInfoForm(props) {
                 title: "Groups",
                 type: "select",
                 mode: "multiple",
-                options: map(allGroups, group => ({ name: group.name, value: group.id })),
+                options: map(allGroups, group => ({
+                  name: group.name,
+                  value: group.id,
+                })),
                 initialValue: user.groupIds,
                 loading: isLoadingGroups,
                 placeholder: isLoadingGroups ? "Loading..." : "",
@@ -70,7 +73,11 @@ export default function UserInfoForm(props) {
                 title: "Groups",
                 type: "content",
                 required: false,
-                content: isLoadingGroups ? "Loading..." : <UserGroups data-test="Groups" groups={groups} />,
+                content: isLoadingGroups ? (
+                  "Loading..."
+                ) : (
+                  <UserGroups data-test="Groups" groups={groups} />
+                ),
               },
         ],
         field => ({ readOnly: user.isDisabled, required: true, ...field }),
@@ -80,7 +87,11 @@ export default function UserInfoForm(props) {
 
   return (
     <DynamicComponent name="UserProfile.UserInfoForm" {...props}>
-      <DynamicForm fields={formFields} onSubmit={saveUser} hideSubmitButton={user.isDisabled} />
+      <DynamicForm
+        fields={formFields}
+        onSubmit={saveUser}
+        hideSubmitButton={user.isDisabled}
+      />
     </DynamicComponent>
   );
 }

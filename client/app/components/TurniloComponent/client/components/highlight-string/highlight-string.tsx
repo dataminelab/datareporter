@@ -27,13 +27,22 @@ export interface HighlightStringProps {
 
 function highlightByIndex(text: string, start: number, end: number) {
   return [
-    <span className="pre" key="pre">{text.substring(0, start)}</span>,
-    <span className="bold" key="bold">{text.substring(start, end)}</span>,
-    <span className="post" key="post">{text.substring(end)}</span>
+    <span className="pre" key="pre">
+      {text.substring(0, start)}
+    </span>,
+    <span className="bold" key="bold">
+      {text.substring(start, end)}
+    </span>,
+    <span className="post" key="post">
+      {text.substring(end)}
+    </span>,
   ];
 }
 
-function highlightBy(text: string, highlight: string | RegExp): string | JSX.Element[] {
+function highlightBy(
+  text: string,
+  highlight: string | RegExp,
+): string | JSX.Element[] {
   if (!highlight) return text;
 
   if (typeof highlight === "string") {
@@ -48,6 +57,14 @@ function highlightBy(text: string, highlight: string | RegExp): string | JSX.Ele
   return highlightByIndex(text, startIndex, startIndex + match[0].length);
 }
 
-export const HighlightString: React.SFC<HighlightStringProps> = ({ className, text, highlight }) => {
-  return <span className={classNames("highlight-string", className)}>{highlightBy(text, highlight)}</span>;
+export const HighlightString: React.SFC<HighlightStringProps> = ({
+  className,
+  text,
+  highlight,
+}) => {
+  return (
+    <span className={classNames("highlight-string", className)}>
+      {highlightBy(text, highlight)}
+    </span>
+  );
 };

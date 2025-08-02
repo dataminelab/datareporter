@@ -23,7 +23,7 @@ export class StageFixtures {
       x: 10,
       y: 5,
       height: 2,
-      width: 2
+      width: 2,
     };
   }
 
@@ -32,7 +32,7 @@ export class StageFixtures {
       x: 10,
       y: 500,
       height: 2,
-      width: 2
+      width: 2,
     };
   }
 
@@ -41,7 +41,7 @@ export class StageFixtures {
       x: 10,
       y: 5,
       height: 3,
-      width: 2
+      width: 2,
     };
   }
 

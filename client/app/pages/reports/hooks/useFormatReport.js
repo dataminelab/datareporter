@@ -13,7 +13,13 @@ export default function useFormatReport(report, syntax, onChange) {
         handleChange(extend(report.clone(), { report: queryText }));
       })
       .catch(error =>
-        notification.error(get(error, "response.data.message", "Failed to format report: unknown error.")),
+        notification.error(
+          get(
+            error,
+            "response.data.message",
+            "Failed to format report: unknown error.",
+          ),
+        ),
       );
   }, [report, syntax, handleChange]);
 }

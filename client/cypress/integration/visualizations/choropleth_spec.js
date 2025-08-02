@@ -37,7 +37,9 @@ describe("Choropleth", () => {
       cy.getByTestId("ExecuteButton").click();
     });
     cy.getByTestId("NewVisualization").click();
-    cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.CHOROPLETH");
+    cy.getByTestId("VisualizationType").selectAntdOption(
+      "VisualizationType.CHOROPLETH",
+    );
   });
 
   it("creates visualization", () => {
@@ -76,8 +78,12 @@ describe("Choropleth", () => {
 
     // Wait for proper initialization of visualization
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
-    cy.getByTestId("VisualizationPreview").find(".map-visualization-container.leaflet-container").should("exist");
+    cy.getByTestId("VisualizationPreview")
+      .find(".map-visualization-container.leaflet-container")
+      .should("exist");
 
-    cy.percySnapshot("Visualizations - Choropleth", { widths: [viewportWidth] });
+    cy.percySnapshot("Visualizations - Choropleth", {
+      widths: [viewportWidth],
+    });
   });
 });

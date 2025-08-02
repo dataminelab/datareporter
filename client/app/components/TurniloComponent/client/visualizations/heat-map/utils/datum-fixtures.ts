@@ -18,48 +18,55 @@ import { SPLIT } from "../../../config/constants";
 
 export const dataset: Datum[] = [
   {
-    channel: "en", [SPLIT]: {
+    channel: "en",
+    [SPLIT]: {
       data: [
         { namespace: "a", count: 123 },
         { namespace: "b", count: 12 },
         { namespace: "c", count: 0 },
         { namespace: "d", count: 2 },
         { namespace: "e", count: 90 },
-        { namespace: "f", count: 654 }
-      ]
-    }
-  }, {
-    channel: "de", [SPLIT]: {
+        { namespace: "f", count: 654 },
+      ],
+    },
+  },
+  {
+    channel: "de",
+    [SPLIT]: {
       data: [
         { namespace: "a", count: 543 },
         { namespace: "b", count: 10000 },
         { namespace: "c", count: 0 },
         { namespace: "d", count: 0 },
         { namespace: "e", count: 0 },
-        { namespace: "f", count: 1 }
-      ]
-    }
-  }, {
-    channel: "fr", [SPLIT]: {
+        { namespace: "f", count: 1 },
+      ],
+    },
+  },
+  {
+    channel: "fr",
+    [SPLIT]: {
       data: [
         { namespace: "a", count: 7 },
         { namespace: "b", count: 2 },
         { namespace: "c", count: 0 },
         { namespace: "d", count: 0 },
         { namespace: "e", count: 9 },
-        { namespace: "f", count: 0 }
-      ]
-    }
-  }, {
-    channel: "pl", [SPLIT]: {
+        { namespace: "f", count: 0 },
+      ],
+    },
+  },
+  {
+    channel: "pl",
+    [SPLIT]: {
       data: [
         { namespace: "a", count: 0 },
         { namespace: "b", count: 42 },
         { namespace: "c", count: 76 },
         { namespace: "d", count: 23 },
         { namespace: "e", count: 98 },
-        { namespace: "f", count: 0 }
-      ]
-    }
-  }
+        { namespace: "f", count: 0 },
+      ],
+    },
+  },
 ] as any;

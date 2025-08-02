@@ -7,12 +7,19 @@ export function getWidgetTestId(widget) {
   return `WidgetId${widget.id}`;
 }
 
-export function createQueryAndAddWidget(dashboardId, queryData = {}, widgetOptions = {}) {
+export function createQueryAndAddWidget(
+  dashboardId,
+  queryData = {},
+  widgetOptions = {},
+) {
   return cy
     .createQuery(queryData)
     .then(query => {
       const visualizationId = get(query, "visualizations.0.id");
-      assert.isDefined(visualizationId, "Query api call returns at least one visualization with id");
+      assert.isDefined(
+        visualizationId,
+        "Query api call returns at least one visualization with id",
+      );
       return cy.addWidget(dashboardId, visualizationId, widgetOptions);
     })
     .then(getWidgetTestId);

@@ -14,7 +14,10 @@ describe("Login", () => {
     cy.getByTestId("Email").type("admin@redash.io");
     cy.getByTestId("Password").type("wrongpassword{enter}");
 
-    cy.getByTestId("ErrorMessage").should("contain", "Wrong email or password.");
+    cy.getByTestId("ErrorMessage").should(
+      "contain",
+      "Wrong email or password.",
+    );
   });
 
   it("navigates to homepage with successful login", () => {

@@ -24,15 +24,14 @@ import {
   RelativeTimeFilterClause,
   StringFilterAction,
   StringFilterClause,
-  TimeFilterPeriod
+  TimeFilterPeriod,
 } from "../../models/filter-clause/filter-clause";
 
 export class FormatterFixtures {
-
   static fixedTimeFilter(start: Date, end: Date) {
     return new FixedTimeFilterClause({
       reference: "time",
-      values: List.of(new DateRange({ start, end }))
+      values: List.of(new DateRange({ start, end })),
     });
   }
 
@@ -40,7 +39,7 @@ export class FormatterFixtures {
     return new RelativeTimeFilterClause({
       reference: "time",
       period: TimeFilterPeriod.PREVIOUS,
-      duration: Duration.fromJS(duration)
+      duration: Duration.fromJS(duration),
     });
   }
 
@@ -48,7 +47,7 @@ export class FormatterFixtures {
     return new RelativeTimeFilterClause({
       reference: "time",
       period: TimeFilterPeriod.CURRENT,
-      duration: Duration.fromJS(duration)
+      duration: Duration.fromJS(duration),
     });
   }
 
@@ -56,7 +55,7 @@ export class FormatterFixtures {
     return new RelativeTimeFilterClause({
       reference: "time",
       period: TimeFilterPeriod.LATEST,
-      duration: Duration.fromJS(duration)
+      duration: Duration.fromJS(duration),
     });
   }
 
@@ -64,7 +63,7 @@ export class FormatterFixtures {
     return new NumberFilterClause({
       reference: "commentLength",
       not: true,
-      values: List.of(new NumberRange({ start: 1, end: 3 }))
+      values: List.of(new NumberRange({ start: 1, end: 3 })),
     });
   }
 
@@ -72,7 +71,7 @@ export class FormatterFixtures {
     return new StringFilterClause({
       action: StringFilterAction.IN,
       reference: "country",
-      values: Set.of("iceland")
+      values: Set.of("iceland"),
     });
   }
 }

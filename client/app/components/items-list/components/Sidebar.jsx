@@ -59,13 +59,20 @@ SearchInput.defaultProps = {
  */
 
 export function Menu({ items, selected }) {
-  items = filter(items, item => (isFunction(item.isAvailable) ? item.isAvailable() : true));
+  items = filter(items, item =>
+    isFunction(item.isAvailable) ? item.isAvailable() : true,
+  );
   if (items.length === 0) {
     return null;
   }
   return (
     <div className="m-b-10 tags-list tiled">
-      <AntdMenu className="invert-stripe-position" mode="inline" selectable={false} selectedKeys={[selected]}>
+      <AntdMenu
+        className="invert-stripe-position"
+        mode="inline"
+        selectable={false}
+        selectedKeys={[selected]}
+      >
         {map(items, item => (
           <AntdMenu.Item key={item.key} className="m-0">
             <Link href={item.href}>
@@ -126,7 +133,14 @@ export function ProfileImage({ user }) {
   if (!isString(user.profile_image_url) || user.profile_image_url === "") {
     return null;
   }
-  return <img src={user.profile_image_url} className="profile__image--sidebar m-r-5" width="13" alt={user.name} />;
+  return (
+    <img
+      src={user.profile_image_url}
+      className="profile__image--sidebar m-r-5"
+      width="13"
+      alt={user.name}
+    />
+  );
 }
 
 ProfileImage.propTypes = {
@@ -146,7 +160,11 @@ export function Tags({ url, onChange, showUnselectAll }) {
   }
   return (
     <div className="m-b-10">
-      <TagsList tagsUrl={url} onUpdate={onChange} showUnselectAll={showUnselectAll} />
+      <TagsList
+        tagsUrl={url}
+        onUpdate={onChange}
+        showUnselectAll={showUnselectAll}
+      />
     </div>
   );
 }

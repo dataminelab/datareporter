@@ -1,6 +1,18 @@
 /* eslint-disable react/no-multi-comp */
 
-import { isString, extend, each, has, map, includes, findIndex, find, fromPairs, clone, isEmpty } from "lodash";
+import {
+  isString,
+  extend,
+  each,
+  has,
+  map,
+  includes,
+  findIndex,
+  find,
+  fromPairs,
+  clone,
+  isEmpty,
+} from "lodash";
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -32,14 +44,20 @@ export const MappingType = {
   StaticValue: "static-value",
 };
 
-export function parameterMappingsToEditableMappings(mappings, parameters, existingParameterNames = []) {
+export function parameterMappingsToEditableMappings(
+  mappings,
+  parameters,
+  existingParameterNames = [],
+) {
   return map(mappings, mapping => {
     const result = extend({}, mapping);
     const alreadyExists = includes(existingParameterNames, mapping.mapTo);
     result.param = find(parameters, p => p.name === mapping.name);
     switch (mapping.type) {
       case ParameterMappingType.DashboardLevel:
-        result.type = alreadyExists ? MappingType.DashboardMapToExisting : MappingType.DashboardAddNew;
+        result.type = alreadyExists
+          ? MappingType.DashboardMapToExisting
+          : MappingType.DashboardAddNew;
         result.value = null;
         break;
       case ParameterMappingType.StaticValue:
@@ -148,7 +166,10 @@ export class ParameterMappingInput extends React.Component {
 
     // if mapped name doesn't already exists
     // default to first select option
-    if (type === MappingType.DashboardMapToExisting && !includes(existingParamNames, mapTo)) {
+    if (
+      type === MappingType.DashboardMapToExisting &&
+      !includes(existingParamNames, mapTo)
+    ) {
       mapTo = existingParamNames[0];
     }
 
@@ -175,11 +196,22 @@ export class ParameterMappingInput extends React.Component {
   renderMappingTypeSelector() {
     const noExisting = isEmpty(this.props.existingParamNames);
     return (
-      <Radio.Group value={this.props.mapping.type} onChange={e => this.updateSourceType(e.target.value)}>
-        <Radio className="radio" value={MappingType.DashboardAddNew} data-test="NewDashboardParameterOption">
+      <Radio.Group
+        value={this.props.mapping.type}
+        onChange={e => this.updateSourceType(e.target.value)}
+      >
+        <Radio
+          className="radio"
+          value={MappingType.DashboardAddNew}
+          data-test="NewDashboardParameterOption"
+        >
           New dashboard parameter
         </Radio>
-        <Radio className="radio" value={MappingType.DashboardMapToExisting} disabled={noExisting}>
+        <Radio
+          className="radio"
+          value={MappingType.DashboardMapToExisting}
+          disabled={noExisting}
+        >
           Existing dashboard parameter{" "}
           {noExisting ? (
             <Tooltip title="There are no dashboard parameters corresponding to this data type">
@@ -187,10 +219,18 @@ export class ParameterMappingInput extends React.Component {
             </Tooltip>
           ) : null}
         </Radio>
-        <Radio className="radio" value={MappingType.WidgetLevel} data-test="WidgetParameterOption">
+        <Radio
+          className="radio"
+          value={MappingType.WidgetLevel}
+          data-test="WidgetParameterOption"
+        >
           Widget parameter
         </Radio>
-        <Radio className="radio" value={MappingType.StaticValue} data-test="StaticValueOption">
+        <Radio
+          className="radio"
+          value={MappingType.StaticValue}
+          data-test="StaticValueOption"
+        >
           Static value
         </Radio>
       </Radio.Group>
@@ -212,9 +252,18 @@ export class ParameterMappingInput extends React.Component {
 
   renderDashboardMapToExisting() {
     const { mapping, existingParamNames } = this.props;
-    const options = map(existingParamNames, paramName => ({ label: paramName, value: paramName }));
+    const options = map(existingParamNames, paramName => ({
+      label: paramName,
+      value: paramName,
+    }));
 
-    return <Select value={mapping.mapTo} onChange={mapTo => this.updateParamMapping({ mapTo })} options={options} />;
+    return (
+      <Select
+        value={mapping.mapTo}
+        onChange={mapTo => this.updateParamMapping({ mapTo })}
+        options={options}
+      />
+    );
   }
 
   renderStaticValue() {
@@ -236,9 +285,17 @@ export class ParameterMappingInput extends React.Component {
     const { mapping } = this.props;
     switch (mapping.type) {
       case MappingType.DashboardAddNew:
-        return ["Key", "Enter a new parameter keyword", this.renderDashboardAddNew()];
+        return [
+          "Key",
+          "Enter a new parameter keyword",
+          this.renderDashboardAddNew(),
+        ];
       case MappingType.DashboardMapToExisting:
-        return ["Key", "Select from a list of existing parameters", this.renderDashboardMapToExisting()];
+        return [
+          "Key",
+          "Select from a list of existing parameters",
+          this.renderDashboardMapToExisting(),
+        ];
       case MappingType.StaticValue:
         return ["Value", null, this.renderStaticValue()];
       default:
@@ -324,7 +381,10 @@ class MappingEditor extends React.Component {
     const { mapping, inputError } = this.state;
 
     return (
-      <div className="parameter-mapping-editor" data-test="EditParamMappingPopover">
+      <div
+        className="parameter-mapping-editor"
+        data-test="EditParamMappingPopover"
+      >
         <header>
           Edit Source and Value <HelpTrigger type="VALUE_SOURCE_OPTIONS" />
         </header>
@@ -352,8 +412,13 @@ class MappingEditor extends React.Component {
         trigger="click"
         content={this.renderContent()}
         visible={visible}
-        onVisibleChange={this.onVisibleChange}>
-        <Button size="small" type="dashed" data-test={`EditParamMappingButton-${mapping.param.name}`}>
+        onVisibleChange={this.onVisibleChange}
+      >
+        <Button
+          size="small"
+          type="dashed"
+          data-test={`EditParamMappingButton-${mapping.param.name}`}
+        >
           <EditOutlinedIcon />
         </Button>
       </Popover>
@@ -407,7 +472,9 @@ class TitleEditor extends React.Component {
   }
 
   save = () => {
-    const newMapping = extend({}, this.props.mapping, { title: this.state.title });
+    const newMapping = extend({}, this.props.mapping, {
+      title: this.state.title,
+    });
     this.props.onChange(newMapping);
     this.hide();
   };
@@ -447,7 +514,10 @@ class TitleEditor extends React.Component {
     const { mapping } = this.props;
     if (mapping.type === MappingType.StaticValue) {
       return (
-        <Tooltip placement="right" title="Titles for static values don't appear in widgets">
+        <Tooltip
+          placement="right"
+          title="Titles for static values don't appear in widgets"
+        >
           {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
           <span tabIndex={0}>
             <i className="fa fa-eye-slash" aria-hidden="true" />
@@ -461,7 +531,8 @@ class TitleEditor extends React.Component {
         trigger="click"
         content={this.renderPopover()}
         visible={this.state.showPopup}
-        onVisibleChange={this.onPopupVisibleChange}>
+        onVisibleChange={this.onPopupVisibleChange}
+      >
         <Button size="small" type="dashed">
           <EditOutlinedIcon />
         </Button>
@@ -579,7 +650,12 @@ export class ParameterMappingListInput extends React.Component {
 
     return (
       <div className="parameters-mapping-list">
-        <Table dataSource={dataSource} size="middle" pagination={false} rowKey={(record, idx) => `row${idx}`}>
+        <Table
+          dataSource={dataSource}
+          size="middle"
+          pagination={false}
+          rowKey={(record, idx) => `row${idx}`}
+        >
           <Table.Column
             title="Title"
             dataIndex="mapping"
@@ -588,7 +664,9 @@ export class ParameterMappingListInput extends React.Component {
               <TitleEditor
                 existingParams={existingParams}
                 mapping={mapping}
-                onChange={newMapping => this.updateParamMapping(mapping, newMapping)}
+                onChange={newMapping =>
+                  this.updateParamMapping(mapping, newMapping)
+                }
               />
             )}
           />
@@ -603,7 +681,12 @@ export class ParameterMappingListInput extends React.Component {
             title="Default Value"
             dataIndex="mapping"
             key="value"
-            render={mapping => this.constructor.getDefaultValue(mapping, this.props.existingParams)}
+            render={mapping =>
+              this.constructor.getDefaultValue(
+                mapping,
+                this.props.existingParams,
+              )
+            }
           />
           <Table.Column
             title="Value Source"
@@ -620,7 +703,9 @@ export class ParameterMappingListInput extends React.Component {
                   <MappingEditor
                     mapping={mapping}
                     existingParamNames={existingParamsNames}
-                    onChange={(oldMapping, newMapping) => this.updateParamMapping(oldMapping, newMapping)}
+                    onChange={(oldMapping, newMapping) =>
+                      this.updateParamMapping(oldMapping, newMapping)
+                    }
                   />
                 </Fragment>
               );

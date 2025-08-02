@@ -25,29 +25,35 @@ const stage = Stage.fromSize(1000, 800);
 
 describe("calculateChartStage", () => {
   it("should fit one chart into stage with correct padding", () => {
-    expect(calculateChartStage(stage, 1)).to.be.equivalent(Stage.fromJS({
-      x: 10,
-      y: 0,
-      width: 980,
-      height: 770
-    }));
+    expect(calculateChartStage(stage, 1)).to.be.equivalent(
+      Stage.fromJS({
+        x: 10,
+        y: 0,
+        width: 980,
+        height: 770,
+      }),
+    );
   });
 
   it("should fit two chart into stage with correct padding", () => {
-    expect(calculateChartStage(stage, 2)).to.be.equivalent(Stage.fromJS({
-      x: 10,
-      y: 0,
-      width: 980,
-      height: 385
-    }));
+    expect(calculateChartStage(stage, 2)).to.be.equivalent(
+      Stage.fromJS({
+        x: 10,
+        y: 0,
+        width: 980,
+        height: 385,
+      }),
+    );
   });
 
   it("should respect minimal height for chart", () => {
-    expect(calculateChartStage(stage, 10)).to.be.equivalent(Stage.fromJS({
-      x: 10,
-      y: 0,
-      width: 980,
-      height: 200
-    }));
+    expect(calculateChartStage(stage, 10)).to.be.equivalent(
+      Stage.fromJS({
+        x: 10,
+        y: 0,
+        width: 980,
+        height: 200,
+      }),
+    );
   });
 });

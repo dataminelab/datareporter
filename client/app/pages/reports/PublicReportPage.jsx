@@ -36,7 +36,11 @@ function PublicReport({ currentReport }) {
     <div className="container p-t-10 p-b-20">
       <PageHeader title={report.name} />
       <div id="dashboard-container" className="dashboard-page">
-        <ReportEditor report={report} reportChanged={reportChanged} setReportChanged={setReportChanged} />
+        <ReportEditor
+          report={report}
+          reportChanged={reportChanged}
+          setReportChanged={setReportChanged}
+        />
       </div>
     </div>
   );
@@ -69,7 +73,11 @@ class PublicReportPage extends React.Component {
       <div className="public-dashboard-page">
         {loading ? (
           <div className="container loading-message">
-            <BigMessage className="" icon="fa-spinner fa-2x fa-pulse" message="Loading..." />
+            <BigMessage
+              className=""
+              icon="fa-spinner fa-2x fa-pulse"
+              message="Loading..."
+            />
           </div>
         ) : (
           <PublicReport currentReport={report} />

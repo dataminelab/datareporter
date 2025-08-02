@@ -25,7 +25,10 @@ const DYNAMIC_DATES = {
 export const DynamicDateType = PropTypes.oneOf(values(DYNAMIC_DATES));
 
 function isDynamicDateString(value) {
-  return startsWith(value, DYNAMIC_PREFIX) && has(DYNAMIC_DATES, value.substring(DYNAMIC_PREFIX.length));
+  return (
+    startsWith(value, DYNAMIC_PREFIX) &&
+    has(DYNAMIC_DATES, value.substring(DYNAMIC_PREFIX.length))
+  );
 }
 
 export function isDynamicDate(value) {

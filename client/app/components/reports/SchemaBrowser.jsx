@@ -69,10 +69,18 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
                   title="Insert column name into query text"
                   mouseEnterDelay={0}
                   mouseLeaveDelay={0}
-                  placement="rightTop">
-                  <PlainButton key={columnName} className="table-open-item" onClick={e => handleSelect(e, columnName)}>
+                  placement="rightTop"
+                >
+                  <PlainButton
+                    key={columnName}
+                    className="table-open-item"
+                    onClick={e => handleSelect(e, columnName)}
+                  >
                     <div>
-                      {columnName} {columnType && <span className="column-type">{columnType}</span>}
+                      {columnName}{" "}
+                      {columnType && (
+                        <span className="column-type">{columnType}</span>
+                      )}
                     </div>
 
                     <div className="copy-to-editor">
@@ -115,7 +123,13 @@ function SchemaLoadingState() {
   );
 }
 
-export function SchemaList({ loading, schema, expandedFlags, onTableExpand, onItemSelect }) {
+export function SchemaList({
+  loading,
+  schema,
+  expandedFlags,
+  onTableExpand,
+  onItemSelect,
+}) {
   const [listRef, setListRef] = useState(null);
 
   useEffect(() => {
@@ -138,7 +152,9 @@ export function SchemaList({ loading, schema, expandedFlags, onTableExpand, onIt
               rowHeight={({ index }) => {
                 const item = schema[index];
                 const columnsLength = !item.loading ? item.columns.length : 1;
-                const columnCount = expandedFlags[item.name] ? columnsLength : 0;
+                const columnCount = expandedFlags[item.name]
+                  ? columnsLength
+                  : 0;
                 return schemaTableHeight + schemaColumnHeight * columnCount;
               }}
               rowRenderer={({ key, index, style }) => {
@@ -163,7 +179,10 @@ export function SchemaList({ loading, schema, expandedFlags, onTableExpand, onIt
 }
 
 export function applyFilterOnSchema(schema, filterString) {
-  const filters = filter(filterString.toLowerCase().split(/\s+/), s => s.length > 0);
+  const filters = filter(
+    filterString.toLowerCase().split(/\s+/),
+    s => s.length > 0,
+  );
 
   // Empty string: return original schema
   if (filters.length === 0) {
@@ -178,7 +197,9 @@ export function applyFilterOnSchema(schema, filterString) {
       schema,
       item =>
         includes(item.name.toLowerCase(), nameFilter) ||
-        some(item.columns, column => includes(get(column, "name").toLowerCase(), columnFilter)),
+        some(item.columns, column =>
+          includes(get(column, "name").toLowerCase(), columnFilter),
+        ),
     );
   }
 
@@ -190,7 +211,9 @@ export function applyFilterOnSchema(schema, filterString) {
       if (includes(item.name.toLowerCase(), nameFilter)) {
         item = {
           ...item,
-          columns: filter(item.columns, column => includes(get(column, "name").toLowerCase(), columnFilter)),
+          columns: filter(item.columns, column =>
+            includes(get(column, "name").toLowerCase(), columnFilter),
+          ),
         };
         return item.columns.length > 0 ? item : null;
       }
@@ -208,7 +231,10 @@ export default function SchemaBrowser({
 }) {
   const [schema, isLoading, refreshSchema] = useDataSourceSchema(dataSource);
   const [filterString, setFilterString] = useState("");
-  const filteredSchema = useMemo(() => applyFilterOnSchema(schema, filterString), [schema, filterString]);
+  const filteredSchema = useMemo(
+    () => applyFilterOnSchema(schema, filterString),
+    [schema, filterString],
+  );
   const [handleFilterChange] = useDebouncedCallback(setFilterString, 500);
   const [expandedFlags, setExpandedFlags] = useState({});
 
@@ -242,8 +268,12 @@ export default function SchemaBrowser({
 
         <Tooltip title="Refresh Schema">
           <Button onClick={() => refreshSchema(true)}>
-            <i className={cx("zmdi zmdi-refresh", { "zmdi-hc-spin": isLoading })} />
-            <span className="sr-only">{isLoading ? "Loading, please wait." : "Press to refresh."}</span>
+            <i
+              className={cx("zmdi zmdi-refresh", { "zmdi-hc-spin": isLoading })}
+            />
+            <span className="sr-only">
+              {isLoading ? "Loading, please wait." : "Press to refresh."}
+            </span>
           </Button>
         </Tooltip>
       </div>

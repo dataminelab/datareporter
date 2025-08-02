@@ -23,24 +23,28 @@ describe("Timezone", () => {
   it("reads UTC timezone from string", () => {
     assertConversionToEssence(
       mockViewDefinition({ timezone: "Etc/UTC" }),
-      mockEssence({ timezone: Timezone.UTC }));
+      mockEssence({ timezone: Timezone.UTC }),
+    );
   });
 
   it("reads Europe/Warsaw timezone from string", () => {
     assertConversionToEssence(
       mockViewDefinition({ timezone: "Europe/Warsaw" }),
-      mockEssence({ timezone: Timezone.fromJS("Europe/Warsaw") }));
+      mockEssence({ timezone: Timezone.fromJS("Europe/Warsaw") }),
+    );
   });
 
   it.skip("defaults to UTC timezone for non recognized timezone", () => {
     assertConversionToEssence(
       mockViewDefinition({ timezone: "Foobar/Qvux" }),
-      mockEssence({ timezone: Timezone.UTC }));
+      mockEssence({ timezone: Timezone.UTC }),
+    );
   });
 
   it.skip("defaults to UTC timezone", () => {
     assertConversionToEssence(
       mockViewDefinition({ timezone: null }),
-      mockEssence({ timezone: Timezone.UTC }));
+      mockEssence({ timezone: Timezone.UTC }),
+    );
   });
 });

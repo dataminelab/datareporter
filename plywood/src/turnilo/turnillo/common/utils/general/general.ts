@@ -16,15 +16,14 @@
  */
 
 import { Collection, List } from "immutable";
+import hasOwnProp from "has-own-prop";
 
 // The most generic function
 export type Fn = () => void;
 
-const objectHasOwnProperty = Object.prototype.hasOwnProperty;
-
 export function hasOwnProperty(obj: any, key: string | number): boolean {
   if (!obj) return false;
-  return objectHasOwnProperty.call(obj, key);
+  return hasOwnProp(obj, key);
 }
 
 export function isNil(obj: unknown): boolean {
@@ -84,8 +83,8 @@ export function makeTitle(name: string): string {
 }
 
 export function collect(wait: number, fn: Fn): Fn {
-  var timeout: any;
-  var later = function () {
+  let timeout: any;
+  const later = function () {
     timeout = null;
     fn();
   };

@@ -51,11 +51,17 @@ class DashboardSettings extends React.Component {
       <div className="bg-white tiled">
         <Checkbox
           checked={!!dashboard.dashboard_filters_enabled}
-          onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
-          data-test="DashboardFiltersCheckbox">
+          onChange={({ target }) =>
+            updateDashboard({ dashboard_filters_enabled: target.checked })
+          }
+          data-test="DashboardFiltersCheckbox"
+        >
           Use Dashboard Level Filters
         </Checkbox>
-        <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
+        <AddWidgetContainer
+          dashboardOptions={dashboardOptions}
+          style={addWidgetStyle}
+        />
       </div>
     );
   }
@@ -69,23 +75,37 @@ class AddWidgetContainer extends React.Component {
 
   render() {
     const { dashboardOptions, className, ...props } = this.props;
-    const { showAddTextboxDialog, showAddWidgetDialog, showAddReportDialog } = dashboardOptions;
+    const { showAddTextboxDialog, showAddWidgetDialog, showAddReportDialog } =
+      dashboardOptions;
     return (
       <div className={cx("add-widget-container", className)} {...props}>
         <h2>
           <i className="zmdi zmdi-widgets" />
           <span className="hidden-xs hidden-sm">
-            You can arrange your queries and reports on a dashboard in the form of widgets.
+            You can arrange your queries and reports on a dashboard in the form
+            of widgets.
           </span>
         </h2>
         <div>
-          <Button onClick={showAddReportDialog} className="m-r-15 ant-btn-turnilo" data-test="AddReportButton">
+          <Button
+            onClick={showAddReportDialog}
+            className="m-r-15 ant-btn-turnilo"
+            data-test="AddReportButton"
+          >
             Add Report Widget
           </Button>
-          <Button className="m-r-15" onClick={showAddTextboxDialog} data-test="AddTextboxButton">
+          <Button
+            className="m-r-15"
+            onClick={showAddTextboxDialog}
+            data-test="AddTextboxButton"
+          >
             Add Textbox
           </Button>
-          <Button type="primary" onClick={showAddWidgetDialog} data-test="AddWidgetButton">
+          <Button
+            type="primary"
+            onClick={showAddWidgetDialog}
+            data-test="AddWidgetButton"
+          >
             Add Query Widget
           </Button>
         </div>
@@ -119,7 +139,9 @@ class DashboardComponent extends React.Component {
   }
 
   turniloWidgetsSetter() {
-    const turniloWidgets = this.props.dashboardOptions.dashboard.widgets.filter(w => w.options.type === "TURNILO");
+    const turniloWidgets = this.props.dashboardOptions.dashboard.widgets.filter(
+      w => w.options.type === "TURNILO",
+    );
     turniloWidgets.forEach(widget => {
       const param = widget.options.parameterMappings[0];
       if (!param || !param.value) return;
@@ -180,7 +202,8 @@ class DashboardComponent extends React.Component {
       this.state.clickerList.length === this.state.essenceList.length &&
       !this.state.shiftChanged
     ) {
-      if (this.state.turniloWidgetsLength !== this.state.widgetList.length) return;
+      if (this.state.turniloWidgetsLength !== this.state.widgetList.length)
+        return;
       // test if this is not happening more then once
       const filterInterval = setInterval(() => {
         if (!document.querySelector("div.loader")) {
@@ -190,10 +213,12 @@ class DashboardComponent extends React.Component {
         }
       }, 3333);
     }
-    const turniloWidgetsCount = this.props.dashboardOptions.dashboard.widgets.filter(
-      w => w.options.type === "TURNILO",
-    ).length;
-    if (this.state.turniloWidgetsLength !== turniloWidgetsCount) this.turniloWidgetsSetter();
+    const turniloWidgetsCount =
+      this.props.dashboardOptions.dashboard.widgets.filter(
+        w => w.options.type === "TURNILO",
+      ).length;
+    if (this.state.turniloWidgetsLength !== turniloWidgetsCount)
+      this.turniloWidgetsSetter();
   }
 
   setPageContainer = pageContainer => {
@@ -229,7 +254,10 @@ class DashboardComponent extends React.Component {
       const dimensionName = essence.filter.getReferenceNameByIndex(0);
       const { start, end } = this.state;
       const createDateRange = new DateRange({ start, end });
-      const clause = new FixedTimeFilterClause({ reference: dimensionName, values: List.of(createDateRange) });
+      const clause = new FixedTimeFilterClause({
+        reference: dimensionName,
+        values: List.of(createDateRange),
+      });
       let relativeFilter = essence.filter.setClause(clause);
       if (relativeFilter.length() > 1) {
         relativeFilter = relativeFilter.removeClauseByIndex(0);
@@ -243,7 +271,11 @@ class DashboardComponent extends React.Component {
   };
 
   constructFilter(period, duration, reference) {
-    return new RelativeTimeFilterClause({ period, duration: Duration.fromJS(duration), reference });
+    return new RelativeTimeFilterClause({
+      period,
+      duration: Duration.fromJS(duration),
+      reference,
+    });
   }
 
   setPresetDateRange = () => {
@@ -254,7 +286,9 @@ class DashboardComponent extends React.Component {
       const clicker = this.state.clickerList[i];
       const widget = this.state.widgetList[i];
       const dimensionName = essence.filter.getReferenceNameByIndex(0);
-      let relativeFilter = essence.filter.setClause(this.constructFilter(filterPeriod, filterDuration, dimensionName));
+      let relativeFilter = essence.filter.setClause(
+        this.constructFilter(filterPeriod, filterDuration, dimensionName),
+      );
       if (relativeFilter.length() > 1) {
         relativeFilter = relativeFilter.removeClauseByIndex(0);
       }
@@ -281,7 +315,9 @@ class DashboardComponent extends React.Component {
       if (widgetExists) {
         updatedClickerList[modelIndex] = clicker;
       } else {
-        updatedClickerList = isFirstCall ? [clicker] : clickerList.concat(clicker);
+        updatedClickerList = isFirstCall
+          ? [clicker]
+          : clickerList.concat(clicker);
       }
 
       // Update essence list
@@ -289,11 +325,15 @@ class DashboardComponent extends React.Component {
       if (widgetExists) {
         updatedEssenceList[modelIndex] = essence;
       } else {
-        updatedEssenceList = isFirstCall ? [essence] : essenceList.concat(essence);
+        updatedEssenceList = isFirstCall
+          ? [essence]
+          : essenceList.concat(essence);
       }
 
       // Update widget list if necessary
-      const updatedWidgetList = widgetExists ? widgetList : widgetList.concat(widgetId);
+      const updatedWidgetList = widgetExists
+        ? widgetList
+        : widgetList.concat(widgetId);
 
       return {
         clickerList: updatedClickerList,
@@ -359,7 +399,9 @@ class DashboardComponent extends React.Component {
 
   onParametersEdit = parameters => {
     const paramOrder = map(parameters, "name");
-    this.props.dashboardOptions.updateDashboard({ options: { globalParamOrder: paramOrder } });
+    this.props.dashboardOptions.updateDashboard({
+      options: { globalParamOrder: paramOrder },
+    });
   };
 
   getEssence = id => {
@@ -370,13 +412,18 @@ class DashboardComponent extends React.Component {
 
   render() {
     const { dashboardOptions, onParametersEdit } = this.props;
-    const { dashboard, filters, globalParameters, editingLayout } = dashboardOptions;
+    const { dashboard, filters, globalParameters, editingLayout } =
+      dashboardOptions;
     const { addWidgetStyle, turniloWidgetsLength } = this.state;
     const turniloWidgetsAvailable = turniloWidgetsLength > 0;
     const filterTile = React.createRef();
 
     return (
-      <div className="container" ref={this.setPageContainer} data-test={`DashboardId${dashboard.id}Container`}>
+      <div
+        className="container"
+        ref={this.setPageContainer}
+        data-test={`DashboardId${dashboard.id}Container`}
+      >
         <DashboardHeader
           dashboardConfiguration={dashboardOptions}
           headerExtra={
@@ -389,7 +436,10 @@ class DashboardComponent extends React.Component {
         />
         <div className="parameters-header">
           {!isEmpty(globalParameters) && (
-            <div className="dashboard-parameters m-b-10 p-15 bg-white tiled" data-test="DashboardParameters">
+            <div
+              className="dashboard-parameters m-b-10 p-15 bg-white tiled"
+              data-test="DashboardParameters"
+            >
               <Parameters
                 parameters={globalParameters}
                 onValuesChange={this.props.refreshDashboard}
@@ -399,8 +449,14 @@ class DashboardComponent extends React.Component {
             </div>
           )}
           {(!isEmpty(filters) || turniloWidgetsAvailable) && (
-            <div className="m-b-10 p-15 bg-white tiled dashboard-report-filters" data-test="DashboardFilters">
-              <Filters filters={filters} onChange={dashboardOptions.setFilters} />
+            <div
+              className="m-b-10 p-15 bg-white tiled dashboard-report-filters"
+              data-test="DashboardFilters"
+            >
+              <Filters
+                filters={filters}
+                onChange={dashboardOptions.setFilters}
+              />
               <FilterTile
                 ref={filterTile}
                 updateSelectedRange={this.updateSelectedRange}
@@ -414,14 +470,21 @@ class DashboardComponent extends React.Component {
             </div>
           )}
         </div>
-        {editingLayout && <DashboardSettings dashboardOptions={dashboardOptions} addWidgetStyle={addWidgetStyle} />}
+        {editingLayout && (
+          <DashboardSettings
+            dashboardOptions={dashboardOptions}
+            addWidgetStyle={addWidgetStyle}
+          />
+        )}
         <div id="dashboard-container">
           <DashboardGrid
             dashboard={dashboard}
             widgets={dashboard.widgets}
             filters={filters}
             isEditing={editingLayout}
-            onLayoutChange={editingLayout ? dashboardOptions.saveDashboardLayout : () => {}}
+            onLayoutChange={
+              editingLayout ? dashboardOptions.saveDashboardLayout : () => {}
+            }
             onBreakpointChange={dashboardOptions.setGridDisabled}
             onLoadWidget={dashboardOptions.loadWidget}
             onRefreshWidget={dashboardOptions.refreshWidget}
@@ -463,7 +526,11 @@ function DashboardPage({ dashboardSlug, dashboardId, onError }) {
       .catch(handleError);
   }, [dashboardId, dashboardSlug, handleError]);
 
-  return <div className="dashboard-page">{dashboard && <DashboardComponentWithOptions dashboard={dashboard} />}</div>;
+  return (
+    <div className="dashboard-page">
+      {dashboard && <DashboardComponentWithOptions dashboard={dashboard} />}
+    </div>
+  );
 }
 
 DashboardPage.propTypes = {
@@ -495,4 +562,9 @@ routes.register(
   }),
 );
 
-export { DashboardPage, DashboardComponent, AddWidgetContainer, DashboardSettings };
+export {
+  DashboardPage,
+  DashboardComponent,
+  AddWidgetContainer,
+  DashboardSettings,
+};

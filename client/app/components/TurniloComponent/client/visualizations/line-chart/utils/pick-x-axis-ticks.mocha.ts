@@ -36,7 +36,6 @@ describe("pickXAxisTicks", () => {
   });
 
   describe("Time axis", () => {
-
     const january = (n: number) => new Date(`2020-01-${n}Z`);
 
     it("should pick even ticks", () => {
@@ -48,7 +47,7 @@ describe("pickXAxisTicks", () => {
         january(5),
         january(6),
         january(7),
-        january(8)
+        january(8),
       ]);
     });
   });

@@ -15,12 +15,16 @@ class ItemsFetcher {
   constructor({ getRequest, doRequest, processResults }) {
     this._originalGetRequest = isFunction(getRequest) ? getRequest : identity;
     this._originalDoRequest = doRequest;
-    this._originalProcessResults = isFunction(processResults) ? processResults : identity;
+    this._originalProcessResults = isFunction(processResults)
+      ? processResults
+      : identity;
   }
 
   fetch(changes, state, context) {
     const request = this._getRequest(state, context);
-    return this._originalDoRequest(request, context).then(data => this._processResults(data, state, context));
+    return this._originalDoRequest(request, context).then(data =>
+      this._processResults(data, state, context),
+    );
   }
 }
 

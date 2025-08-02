@@ -29,8 +29,14 @@ describe("Create Data Source", () => {
       .as("deprecatedTypes");
 
     cy.getByTestId("PreviewItem")
-      .then($previewItems => Cypress.$.map($previewItems, item => Cypress.$(item).attr("data-test-type")))
-      .then(availableTypes => expect(availableTypes).not.to.contain.members(this.deprecatedTypes));
+      .then($previewItems =>
+        Cypress.$.map($previewItems, item =>
+          Cypress.$(item).attr("data-test-type"),
+        ),
+      )
+      .then(availableTypes =>
+        expect(availableTypes).not.to.contain.members(this.deprecatedTypes),
+      );
 
     cy.getByTestId("CreateSourceDialog").should("contain", "PostgreSQL");
     cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting

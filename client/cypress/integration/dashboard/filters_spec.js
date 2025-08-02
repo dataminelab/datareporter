@@ -1,5 +1,11 @@
-import { createQueryAndAddWidget, editDashboard } from "../../support/dashboard";
-import { expectTableToHaveLength, expectFirstColumnToHaveMembers } from "../../support/visualizations/table";
+import {
+  createQueryAndAddWidget,
+  editDashboard,
+} from "../../support/dashboard";
+import {
+  expectTableToHaveLength,
+  expectFirstColumnToHaveMembers,
+} from "../../support/visualizations/table";
 
 const SQL = `
 SELECT 'a' AS stage1, 'a1' AS stage2, 11 AS value UNION ALL
@@ -26,7 +32,11 @@ describe("Dashboard Filters", () => {
     cy.createDashboard("Dashboard Filters").then(dashboard => {
       createQueryAndAddWidget(dashboard.id, queryData)
         .as("widget1TestId")
-        .then(() => createQueryAndAddWidget(dashboard.id, queryData, { position: { col: 4 } }))
+        .then(() =>
+          createQueryAndAddWidget(dashboard.id, queryData, {
+            position: { col: 4 },
+          }),
+        )
         .as("widget2TestId")
         .then(() => cy.visit(`/dashboards/${dashboard.id}`));
     });
@@ -38,7 +48,9 @@ describe("Dashboard Filters", () => {
     cy.getByTestId("DashboardFiltersCheckbox").click();
 
     cy.getByTestId("DashboardFilters").within(() => {
-      cy.getByTestId("FilterName-stage1::filter").find(".ant-select-selection-item").should("have.text", "a");
+      cy.getByTestId("FilterName-stage1::filter")
+        .find(".ant-select-selection-item")
+        .should("have.text", "a");
     });
 
     cy.getByTestId(this.widget1TestId).within(() => {

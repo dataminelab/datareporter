@@ -7,7 +7,11 @@ export const QueryEditorComponents = {
   QUERY_EDITOR: "QueryEditor",
 };
 
-export function registerEditorComponent(componentName, component, dataSourceTypes) {
+export function registerEditorComponent(
+  componentName,
+  component,
+  dataSourceTypes,
+) {
   if (isNil(dataSourceTypes)) {
     dataSourceTypes = [null]; // use `null` entry for the default set of components
   }
@@ -17,10 +21,16 @@ export function registerEditorComponent(componentName, component, dataSourceType
   }
 
   each(dataSourceTypes, dataSourceType => {
-    componentsRegistry.set(dataSourceType, { ...componentsRegistry.get(dataSourceType), [componentName]: component });
+    componentsRegistry.set(dataSourceType, {
+      ...componentsRegistry.get(dataSourceType),
+      [componentName]: component,
+    });
   });
 }
 
 export function getEditorComponents(dataSourceType) {
-  return { ...componentsRegistry.get(null), ...componentsRegistry.get(dataSourceType) };
+  return {
+    ...componentsRegistry.get(null),
+    ...componentsRegistry.get(dataSourceType),
+  };
 }

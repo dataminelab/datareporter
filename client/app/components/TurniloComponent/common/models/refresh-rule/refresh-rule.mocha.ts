@@ -25,30 +25,28 @@ describe("RefreshRule", () => {
     testImmutableClass<RefreshRuleJS>(RefreshRule, [
       {
         rule: "fixed",
-        time: new Date("2015-10-15T19:21:00Z")
+        time: new Date("2015-10-15T19:21:00Z"),
       },
       {
-        rule: "query"
+        rule: "query",
       },
       {
-        rule: "realtime"
-      }
+        rule: "realtime",
+      },
     ]);
   });
 
   describe("Auto refresh rate", () => {
     it("works for query", () => {
       expect(RefreshRule.fromJS({ rule: "query" }).toJS()).to.deep.equal({
-        rule: "query"
+        rule: "query",
       });
     });
 
     it("works for realtime", () => {
       expect(RefreshRule.fromJS({ rule: "realtime" }).toJS()).to.deep.equal({
-        rule: "realtime"
+        rule: "realtime",
       });
     });
-
   });
-
 });

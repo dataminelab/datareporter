@@ -12,7 +12,9 @@ export default function wrapQueryPage(WrappedComponent) {
 
     useEffect(() => {
       let isCancelled = false;
-      const promise = queryId ? Query.get({ id: queryId }) : Promise.resolve(Query.newQuery());
+      const promise = queryId
+        ? Query.get({ id: queryId })
+        : Promise.resolve(Query.newQuery());
       promise
         .then(result => {
           if (!isCancelled) {

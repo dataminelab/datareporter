@@ -8,12 +8,17 @@ import navigateTo from "@/components/ApplicationArea/navigateTo";
 import Paginator from "@/components/Paginator";
 import QuerySnippetDialog from "@/components/query-snippets/QuerySnippetDialog";
 
-import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
+import {
+  wrap as itemsList,
+  ControllerType,
+} from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
 import { StateStorage } from "@/components/items-list/classes/StateStorage";
 
 import LoadingState from "@/components/items-list/components/LoadingState";
-import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
+import ItemsTable, {
+  Columns,
+} from "@/components/items-list/components/ItemsTable";
 import wrapSettingsTab from "@/components/SettingsWrapper";
 import PlainButton from "@/components/PlainButton";
 
@@ -25,7 +30,8 @@ import routes from "@/services/routes";
 
 import "./QuerySnippetsList.less";
 
-const canEditQuerySnippet = querySnippet => currentUser.isAdmin || currentUser.id === get(querySnippet, "user.id");
+const canEditQuerySnippet = querySnippet =>
+  currentUser.isAdmin || currentUser.id === get(querySnippet, "user.id");
 
 class QuerySnippetsList extends React.Component {
   static propTypes = {
@@ -35,7 +41,11 @@ class QuerySnippetsList extends React.Component {
   listColumns = [
     Columns.custom.sortable(
       (text, querySnippet) => (
-        <PlainButton type="link" className="table-main-title" onClick={() => this.showSnippetDialog(querySnippet)}>
+        <PlainButton
+          type="link"
+          className="table-main-title"
+          onClick={() => this.showSnippetDialog(querySnippet)}
+        >
           {querySnippet.trigger}
         </PlainButton>
       ),
@@ -50,11 +60,17 @@ class QuerySnippetsList extends React.Component {
       field: "description",
       className: "text-nowrap",
     }),
-    Columns.custom(snippet => <code className="snippet-content">{snippet}</code>, {
-      title: "Snippet",
-      field: "snippet",
-    }),
-    Columns.avatar({ field: "user", className: "p-l-0 p-r-0" }, name => `Created by ${name}`),
+    Columns.custom(
+      snippet => <code className="snippet-content">{snippet}</code>,
+      {
+        title: "Snippet",
+        field: "snippet",
+      },
+    ),
+    Columns.avatar(
+      { field: "user", className: "p-l-0 p-r-0" },
+      name => `Created by ${name}`,
+    ),
     Columns.date.sortable({
       title: "Created At",
       field: "created_at",
@@ -64,7 +80,11 @@ class QuerySnippetsList extends React.Component {
     Columns.custom(
       (text, querySnippet) =>
         canEditQuerySnippet(querySnippet) && (
-          <Button type="danger" className="w-100" onClick={e => this.deleteQuerySnippet(e, querySnippet)}>
+          <Button
+            type="danger"
+            className="w-100"
+            onClick={e => this.deleteQuerySnippet(e, querySnippet)}
+          >
             Delete
           </Button>
         ),
@@ -95,7 +115,9 @@ class QuerySnippetsList extends React.Component {
   }
 
   saveQuerySnippet = querySnippet => {
-    const saveSnippet = querySnippet.id ? QuerySnippet.save : QuerySnippet.create;
+    const saveSnippet = querySnippet.id
+      ? QuerySnippet.save
+      : QuerySnippet.create;
     return saveSnippet(querySnippet);
   };
 
@@ -145,7 +167,8 @@ class QuerySnippetsList extends React.Component {
           <Button
             type="primary"
             onClick={() => this.showSnippetDialog()}
-            disabled={!policy.isCreateQuerySnippetEnabled()}>
+            disabled={!policy.isCreateQuerySnippetEnabled()}
+          >
             <i className="fa fa-plus m-r-5" aria-hidden="true" />
             New Query Snippet
           </Button>
@@ -157,7 +180,10 @@ class QuerySnippetsList extends React.Component {
             There are no query snippets yet.
             {policy.isCreateQuerySnippetEnabled() && (
               <div className="m-t-5">
-                <PlainButton type="link" onClick={() => this.showSnippetDialog()}>
+                <PlainButton
+                  type="link"
+                  onClick={() => this.showSnippetDialog()}
+                >
                   Click here
                 </PlainButton>{" "}
                 to add one.
@@ -179,7 +205,9 @@ class QuerySnippetsList extends React.Component {
               showPageSizeSelect
               totalCount={controller.totalItemsCount}
               pageSize={controller.itemsPerPage}
-              onPageSizeChange={itemsPerPage => controller.updatePagination({ itemsPerPage })}
+              onPageSizeChange={itemsPerPage =>
+                controller.updatePagination({ itemsPerPage })
+              }
               page={controller.page}
               onChange={page => controller.updatePagination({ page })}
             />
@@ -219,7 +247,9 @@ routes.register(
   routeWithUserSession({
     path: "/query_snippets",
     title: "Query Snippets",
-    render: pageProps => <QuerySnippetsListPage {...pageProps} currentPage="query_snippets" />,
+    render: pageProps => (
+      <QuerySnippetsListPage {...pageProps} currentPage="query_snippets" />
+    ),
   }),
 );
 routes.register(
@@ -227,6 +257,12 @@ routes.register(
   routeWithUserSession({
     path: "/query_snippets/:querySnippetId",
     title: "Query Snippets",
-    render: pageProps => <QuerySnippetsListPage {...pageProps} currentPage="query_snippets" isNewOrEditPage />,
+    render: pageProps => (
+      <QuerySnippetsListPage
+        {...pageProps}
+        currentPage="query_snippets"
+        isNewOrEditPage
+      />
+    ),
   }),
 );

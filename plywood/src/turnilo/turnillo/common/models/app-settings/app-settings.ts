@@ -47,7 +47,7 @@ export interface AppSettingsContext {
   executorFactory?: (dataCube: DataCube) => Executor;
 }
 
-var check: Class<AppSettingsValue, AppSettingsJS>;
+let check: Class<AppSettingsValue, AppSettingsJS>;
 
 export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   static BLANK = AppSettings.fromJS({}, {});
@@ -61,14 +61,14 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     context?: AppSettingsContext,
   ): AppSettings {
     if (!context) throw new Error("AppSettings must have context");
-    var clusters: Cluster[];
+    let clusters: Cluster[];
     if (parameters.clusters) {
       clusters = parameters.clusters.map(cluster => Cluster.fromJS(cluster));
     } else if (
       hasOwnProperty(parameters, "druidHost") ||
       hasOwnProperty(parameters, "brokerHost")
     ) {
-      var clusterJS: any = JSON.parse(JSON.stringify(parameters));
+      const clusterJS: any = JSON.parse(JSON.stringify(parameters));
       clusterJS.name = "druid";
       clusterJS.type = "druid";
       clusterJS.host = clusterJS.druidHost || clusterJS.brokerHost;
@@ -77,31 +77,32 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       clusters = [];
     }
 
-    var executorFactory = context.executorFactory;
-    var dataCubes = (
+    const executorFactory = context.executorFactory;
+    const dataCubes = (
       parameters.dataCubes ||
       (parameters as any).dataSources ||
       []
     ).map((dataCubeJS: DataCubeJS) => {
-      var dataCubeClusterName =
+      const dataCubeClusterName =
         dataCubeJS.clusterName || (dataCubeJS as any).engine;
+      let cluster;
       if (dataCubeClusterName !== "native") {
-        var cluster = NamedArray.findByName(clusters, dataCubeClusterName);
+        cluster = NamedArray.findByName(clusters, dataCubeClusterName);
         if (!cluster)
           throw new Error(
             `Can not find cluster '${dataCubeClusterName}' for data cube '${dataCubeJS.name}'`,
           );
       }
 
-      var dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
+      let dataCubeObject = DataCube.fromJS(dataCubeJS, { cluster });
       if (executorFactory) {
-        var executor = executorFactory(dataCubeObject);
+        const executor = executorFactory(dataCubeObject);
         if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
       return dataCubeObject;
     });
 
-    var value: AppSettingsValue = {
+    const value: AppSettingsValue = {
       version: parameters.version,
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
@@ -274,4 +275,5 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   }
 }
 
+// eslint-disable-next-line
 check = AppSettings;

@@ -1,6 +1,10 @@
 /* global cy */
 
-import { editDashboard, shareDashboard, createQueryAndAddWidget } from "../../support/dashboard";
+import {
+  editDashboard,
+  shareDashboard,
+  createQueryAndAddWidget,
+} from "../../support/dashboard";
 
 describe("Dashboard Sharing", () => {
   beforeEach(function () {
@@ -84,16 +88,20 @@ describe("Dashboard Sharing", () => {
       };
 
       const position = { autoHeight: false, sizeY: 6 };
-      createQueryAndAddWidget(this.dashboardId, queryData, { position }).then(() => {
-        cy.visit(this.dashboardUrl);
+      createQueryAndAddWidget(this.dashboardId, queryData, { position }).then(
+        () => {
+          cy.visit(this.dashboardUrl);
 
-        shareDashboard().then(secretAddress => {
-          cy.logout();
-          cy.visit(secretAddress);
-          cy.getByTestId("TableVisualization", { timeout: 10000 }).should("exist");
-          cy.percySnapshot("Successfully Shared Unparameterized Dashboard");
-        });
-      });
+          shareDashboard().then(secretAddress => {
+            cy.logout();
+            cy.visit(secretAddress);
+            cy.getByTestId("TableVisualization", { timeout: 10000 }).should(
+              "exist",
+            );
+            cy.percySnapshot("Successfully Shared Unparameterized Dashboard");
+          });
+        },
+      );
     });
 
     it("when there are only safe parameters", function () {
@@ -111,16 +119,20 @@ describe("Dashboard Sharing", () => {
       };
 
       const position = { autoHeight: false, sizeY: 6 };
-      createQueryAndAddWidget(this.dashboardId, queryData, { position }).then(() => {
-        cy.visit(this.dashboardUrl);
+      createQueryAndAddWidget(this.dashboardId, queryData, { position }).then(
+        () => {
+          cy.visit(this.dashboardUrl);
 
-        shareDashboard().then(secretAddress => {
-          cy.logout();
-          cy.visit(secretAddress);
-          cy.getByTestId("TableVisualization", { timeout: 10000 }).should("exist");
-          cy.percySnapshot("Successfully Shared Parameterized Dashboard");
-        });
-      });
+          shareDashboard().then(secretAddress => {
+            cy.logout();
+            cy.visit(secretAddress);
+            cy.getByTestId("TableVisualization", { timeout: 10000 }).should(
+              "exist",
+            );
+            cy.percySnapshot("Successfully Shared Parameterized Dashboard");
+          });
+        },
+      );
     });
 
     it("even when there are suddenly some unsafe parameters", function () {
@@ -151,17 +163,23 @@ describe("Dashboard Sharing", () => {
 
           // then, after it is shared, add an unsafe parameterized query to it
           const secondWidgetPos = { autoHeight: false, col: 3, sizeY: 6 };
-          createQueryAndAddWidget(this.dashboardId, unsafeQueryData, { position: secondWidgetPos }).then(() => {
+          createQueryAndAddWidget(this.dashboardId, unsafeQueryData, {
+            position: secondWidgetPos,
+          }).then(() => {
             cy.logout();
             cy.title().should("eq", "Login to Data reporter"); // Make sure it's logged out
             cy.visit(secretAddress);
-            cy.getByTestId("TableVisualization", { timeout: 10000 }).should("exist");
+            cy.getByTestId("TableVisualization", { timeout: 10000 }).should(
+              "exist",
+            );
             cy.contains(
               ".alert",
               "This query contains potentially unsafe parameters" +
                 " and cannot be executed on a shared dashboard or an embedded visualization.",
             );
-            cy.percySnapshot("Successfully Shared Parameterized Dashboard With Some Unsafe Queries");
+            cy.percySnapshot(
+              "Successfully Shared Parameterized Dashboard With Some Unsafe Queries",
+            );
           });
         });
     });

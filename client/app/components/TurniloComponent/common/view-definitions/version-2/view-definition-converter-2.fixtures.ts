@@ -24,24 +24,24 @@ const baseViewDefinition: ViewDefinition2 = {
     op: "overlap",
     operand: {
       op: "ref",
-      name: "time"
+      name: "time",
     },
     expression: {
       op: "timeRange",
       operand: {
         op: "ref",
-        name: "m"
+        name: "m",
       },
       duration: "P1D",
-      step: -1
-    }
+      step: -1,
+    },
   },
   splits: [],
   singleMeasure: "delta",
   multiMeasureMode: true,
   selectedMeasures: ["count"],
   pinnedDimensions: [],
-  pinnedSort: "delta"
+  pinnedSort: "delta",
 };
 
 export class ViewDefinitionConverter2Fixtures {
@@ -52,10 +52,10 @@ export class ViewDefinitionConverter2Fixtures {
         op: "overlap",
         operand: {
           op: "ref",
-          name: "time"
+          name: "time",
         },
-        expression
-      }
+        expression,
+      },
     };
   }
 
@@ -66,17 +66,17 @@ export class ViewDefinitionConverter2Fixtures {
         op: "chain",
         expression: {
           op: "ref",
-          name: "time"
+          name: "time",
         },
-        actions
-      }
+        actions,
+      },
     };
   }
 
   static withSplits(splits: any[]): ViewDefinition2 {
     return {
       ...baseViewDefinition,
-      splits
+      splits,
     };
   }
 }

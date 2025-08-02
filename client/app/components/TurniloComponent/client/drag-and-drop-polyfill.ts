@@ -19,14 +19,15 @@ export default function dragAndDropPolyfill() {
   const evts = "ondragstart" in div && "ondrop" in div;
 
   // eslint-disable-next-line
-  const needsPatch = !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  const needsPatch =
+    !(dragDiv || evts) || /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
   if (needsPatch) {
     Promise.all([
       // @ts-ignore Dynamic import of polyfill
       import("../lib/polyfill/drag-drop-polyfill.min.js"),
       // @ts-expect-error: Dynamic import of CSS file for polyfill
-      import("../lib/polyfill/drag-drop-polyfill.css")
+      import("../lib/polyfill/drag-drop-polyfill.css"),
     ]).then(([DragDropPolyfill, _]) => {
       DragDropPolyfill.Initialize({});
     });

@@ -26,7 +26,9 @@ const SQL = `
 describe("Chart", () => {
   beforeEach(() => {
     cy.login();
-    cy.createQuery({ name: "Chart Visualization", query: SQL }).its("id").as("queryId");
+    cy.createQuery({ name: "Chart Visualization", query: SQL })
+      .its("id")
+      .as("queryId");
   });
 
   it("creates Bar charts", function () {
@@ -40,15 +42,24 @@ describe("Chart", () => {
         assertTabbedEditor();
 
         // standard chart should be bar
-        cy.getByTestId("Chart.GlobalSeriesType").contains(".ant-select-selection-item", "Bar");
+        cy.getByTestId("Chart.GlobalSeriesType").contains(
+          ".ant-select-selection-item",
+          "Bar",
+        );
 
         // checks the plot canvas exists and is empty
         assertPlotPreview("not.exist");
 
         // creates a chart and checks it is plotted
-        cy.getByTestId("Chart.ColumnMapping.x").selectAntdOption("Chart.ColumnMapping.x.stage");
-        cy.getByTestId("Chart.ColumnMapping.y").selectAntdOption("Chart.ColumnMapping.y.value1");
-        cy.getByTestId("Chart.ColumnMapping.y").selectAntdOption("Chart.ColumnMapping.y.value2");
+        cy.getByTestId("Chart.ColumnMapping.x").selectAntdOption(
+          "Chart.ColumnMapping.x.stage",
+        );
+        cy.getByTestId("Chart.ColumnMapping.y").selectAntdOption(
+          "Chart.ColumnMapping.y.value1",
+        );
+        cy.getByTestId("Chart.ColumnMapping.y").selectAntdOption(
+          "Chart.ColumnMapping.y.value2",
+        );
         assertPlotPreview("exist");
 
         specificBarChartAssertionFn();
@@ -67,15 +78,23 @@ describe("Chart", () => {
         alias: "horizontalBarChart",
         assertionFn: () => {
           cy.getByTestId("Chart.SwappedAxes").check();
-          cy.getByTestId("VisualizationEditor.Tabs.XAxis").should("have.text", "Y Axis");
-          cy.getByTestId("VisualizationEditor.Tabs.YAxis").should("have.text", "X Axis");
+          cy.getByTestId("VisualizationEditor.Tabs.XAxis").should(
+            "have.text",
+            "Y Axis",
+          );
+          cy.getByTestId("VisualizationEditor.Tabs.YAxis").should(
+            "have.text",
+            "X Axis",
+          );
         },
       },
       {
         name: "Stacked Bar Chart",
         alias: "stackedBarChart",
         assertionFn: () => {
-          cy.getByTestId("Chart.Stacking").selectAntdOption("Chart.Stacking.Stack");
+          cy.getByTestId("Chart.Stacking").selectAntdOption(
+            "Chart.Stacking.Stack",
+          );
         },
       },
       {
@@ -88,7 +107,9 @@ describe("Chart", () => {
     ];
 
     chartTests.forEach(({ name, alias, assertionFn }) => {
-      createChartThroughUI(name, getBarChartAssertionFunction(assertionFn)).as(alias);
+      createChartThroughUI(name, getBarChartAssertionFunction(assertionFn)).as(
+        alias,
+      );
     });
 
     const chartGetters = chartTests.map(({ alias }) => alias);
@@ -104,15 +125,23 @@ describe("Chart", () => {
       });
     };
 
-    createDashboardWithCharts("Bar chart visualizations", chartGetters, withDashboardWidgetsAssertionFn);
+    createDashboardWithCharts(
+      "Bar chart visualizations",
+      chartGetters,
+      withDashboardWidgetsAssertionFn,
+    );
     cy.percySnapshot("Visualizations - Charts - Bar");
   });
   it("colors Bar charts", function () {
     cy.visit(`queries/${this.queryId}/source`);
     cy.getByTestId("ExecuteButton").click();
     cy.getByTestId("NewVisualization").click();
-    cy.getByTestId("Chart.ColumnMapping.x").selectAntdOption("Chart.ColumnMapping.x.stage");
-    cy.getByTestId("Chart.ColumnMapping.y").selectAntdOption("Chart.ColumnMapping.y.value1");
+    cy.getByTestId("Chart.ColumnMapping.x").selectAntdOption(
+      "Chart.ColumnMapping.x.stage",
+    );
+    cy.getByTestId("Chart.ColumnMapping.y").selectAntdOption(
+      "Chart.ColumnMapping.y.value1",
+    );
     cy.getByTestId("VisualizationEditor.Tabs.Colors").click();
     cy.getByTestId("ColorScheme").click();
     cy.getByTestId("ColorOptionViridis").click();
@@ -127,8 +156,12 @@ describe("Chart", () => {
     cy.getByTestId("NewVisualization").click();
     cy.getByTestId("Chart.GlobalSeriesType").click();
     cy.getByTestId("Chart.ChartType.pie").click();
-    cy.getByTestId("Chart.ColumnMapping.x").selectAntdOption("Chart.ColumnMapping.x.stage");
-    cy.getByTestId("Chart.ColumnMapping.y").selectAntdOption("Chart.ColumnMapping.y.value1");
+    cy.getByTestId("Chart.ColumnMapping.x").selectAntdOption(
+      "Chart.ColumnMapping.x.stage",
+    );
+    cy.getByTestId("Chart.ColumnMapping.y").selectAntdOption(
+      "Chart.ColumnMapping.y.value1",
+    );
     cy.getByTestId("VisualizationEditor.Tabs.Colors").click();
     cy.getByTestId("ColorScheme").click();
     cy.getByTestId("ColorOptionViridis").click();

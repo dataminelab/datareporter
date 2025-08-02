@@ -24,16 +24,24 @@ import {
   NumberRange as PlywoodNumberRange,
   r,
   Set as PlywoodSet,
-  TimeRange
+  TimeRange,
 } from "plywood";
 import { constructFilter } from "../../../client/components/filter-menu/time-filter-menu/presets";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
 
-type OmitType<T extends FilterDefinition> = Partial<Pick<T, Exclude<keyof T, "type">>>;
+type OmitType<T extends FilterDefinition> = Partial<
+  Pick<T, Exclude<keyof T, "type">>
+>;
 
-export enum FilterTypes { BOOLEAN = "boolean", NUMBER = "number", STRING = "string", FIXED_TIME = "fixed_time", RELATIVE_TIME = "relative_time" }
+export enum FilterTypes {
+  BOOLEAN = "boolean",
+  NUMBER = "number",
+  STRING = "string",
+  FIXED_TIME = "fixed_time",
+  RELATIVE_TIME = "relative_time",
+}
 
 export interface FilterDefinition {
   reference: string;
@@ -50,10 +58,12 @@ const defaultBooleanFilter: BooleanFilterDefinition = {
   reference: null,
   type: FilterTypes.BOOLEAN,
   not: false,
-  values: ImmutableSet([])
+  values: ImmutableSet([]),
 };
 
-export class BooleanFilterClause extends Record<BooleanFilterDefinition>(defaultBooleanFilter) {
+export class BooleanFilterClause extends Record<BooleanFilterDefinition>(
+  defaultBooleanFilter,
+) {
   constructor(params: OmitType<BooleanFilterDefinition>) {
     super(params);
   }
@@ -65,10 +75,15 @@ interface NumberRangeDefinition {
   bounds?: string;
 }
 
-const defaultNumberRange: NumberRangeDefinition = { start: null, end: null, bounds: "[)" };
+const defaultNumberRange: NumberRangeDefinition = {
+  start: null,
+  end: null,
+  bounds: "[)",
+};
 
-export class NumberRange extends Record<NumberRangeDefinition>(defaultNumberRange) {
-}
+export class NumberRange extends Record<NumberRangeDefinition>(
+  defaultNumberRange,
+) {}
 
 interface NumberFilterDefinition extends FilterDefinition {
   not: boolean;
@@ -79,11 +94,12 @@ const defaultNumberFilter: NumberFilterDefinition = {
   reference: null,
   type: FilterTypes.NUMBER,
   not: false,
-  values: List([])
+  values: List([]),
 };
 
-export class NumberFilterClause extends Record<NumberFilterDefinition>(defaultNumberFilter) {
-
+export class NumberFilterClause extends Record<NumberFilterDefinition>(
+  defaultNumberFilter,
+) {
   constructor(params: OmitType<NumberFilterDefinition>) {
     super(params);
   }
@@ -92,7 +108,7 @@ export class NumberFilterClause extends Record<NumberFilterDefinition>(defaultNu
 export enum StringFilterAction {
   IN = "in",
   MATCH = "match",
-  CONTAINS = "contains"
+  CONTAINS = "contains",
 }
 
 interface StringFilterDefinition extends FilterDefinition {
@@ -108,11 +124,12 @@ const defaultStringFilter: StringFilterDefinition = {
   not: false,
   action: StringFilterAction.CONTAINS,
   values: ImmutableSet([]),
-  ignoreCase: false
+  ignoreCase: false,
 };
 
-export class StringFilterClause extends Record<StringFilterDefinition>(defaultStringFilter) {
-
+export class StringFilterClause extends Record<StringFilterDefinition>(
+  defaultStringFilter,
+) {
   constructor(params: OmitType<StringFilterDefinition>) {
     super(params);
   }
@@ -125,17 +142,22 @@ interface FixedTimeFilterDefinition extends FilterDefinition {
 const defaultFixedTimeFilter: FixedTimeFilterDefinition = {
   reference: null,
   type: FilterTypes.FIXED_TIME,
-  values: List([])
+  values: List([]),
 };
 
-export class FixedTimeFilterClause extends Record<FixedTimeFilterDefinition>(defaultFixedTimeFilter) {
-
+export class FixedTimeFilterClause extends Record<FixedTimeFilterDefinition>(
+  defaultFixedTimeFilter,
+) {
   constructor(params: OmitType<FixedTimeFilterDefinition>) {
     super(params);
   }
 }
 
-export enum TimeFilterPeriod { PREVIOUS = "previous", LATEST = "latest", CURRENT = "current" }
+export enum TimeFilterPeriod {
+  PREVIOUS = "previous",
+  LATEST = "latest",
+  CURRENT = "current",
+}
 
 interface RelativeTimeFilterDefinition extends FilterDefinition {
   period: TimeFilterPeriod;
@@ -146,34 +168,54 @@ const defaultRelativeTimeFilter: RelativeTimeFilterDefinition = {
   reference: null,
   type: FilterTypes.RELATIVE_TIME,
   period: TimeFilterPeriod.CURRENT,
-  duration: null
+  duration: null,
 };
 
-export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinition>(defaultRelativeTimeFilter) {
+export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinition>(
+  defaultRelativeTimeFilter,
+) {
   constructor(params: OmitType<RelativeTimeFilterDefinition>) {
     super(params);
   }
 
-  evaluate(now: Date, maxTime: Date, timezone: Timezone): FixedTimeFilterClause {
-    const selection: Expression = constructFilter(this.period, this.duration.toJS());
-    const maxTimeMinuteTop = minute.shift(minute.floor(maxTime || now, timezone), timezone, 1);
+  evaluate(
+    now: Date,
+    maxTime: Date,
+    timezone: Timezone,
+  ): FixedTimeFilterClause {
+    const selection: Expression = constructFilter(
+      this.period,
+      this.duration.toJS(),
+    );
+    const maxTimeMinuteTop = minute.shift(
+      minute.floor(maxTime || now, timezone),
+      timezone,
+      1,
+    );
     const datum: Datum = {};
     datum[NOW_REF_NAME] = now;
     datum[MAX_TIME_REF_NAME] = maxTimeMinuteTop;
-    const { start, end }: TimeRange = selection.defineEnvironment({ timezone }).getFn()(datum);
-    return new FixedTimeFilterClause({ reference: this.reference, values: List.of(new DateRange({ start, end })) });
+    const { start, end }: TimeRange = selection
+      .defineEnvironment({ timezone })
+      .getFn()(datum);
+    return new FixedTimeFilterClause({
+      reference: this.reference,
+      values: List.of(new DateRange({ start, end })),
+    });
   }
 
   equals(other: any): boolean {
-    return other instanceof RelativeTimeFilterClause &&
+    return (
+      other instanceof RelativeTimeFilterClause &&
       this.reference === other.reference &&
       this.period === other.period &&
-      this.duration.equals(other.duration);
+      this.duration.equals(other.duration)
+    );
   }
 
   toUrlParams(): object {
     return {
-      p_turnilo_daterange: this.duration.toJS()
+      p_turnilo_daterange: this.duration.toJS(),
     };
   }
 }
@@ -181,12 +223,23 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
 export type TimeFilterClause = FixedTimeFilterClause | RelativeTimeFilterClause;
 
 export function isTimeFilter(clause: FilterClause): clause is TimeFilterClause {
-  return clause instanceof FixedTimeFilterClause || clause instanceof RelativeTimeFilterClause;
+  return (
+    clause instanceof FixedTimeFilterClause ||
+    clause instanceof RelativeTimeFilterClause
+  );
 }
 
-export type FilterClause = BooleanFilterClause | NumberFilterClause | StringFilterClause | FixedTimeFilterClause | RelativeTimeFilterClause;
+export type FilterClause =
+  | BooleanFilterClause
+  | NumberFilterClause
+  | StringFilterClause
+  | FixedTimeFilterClause
+  | RelativeTimeFilterClause;
 
-export function toExpression(clause: FilterClause, { expression }: Dimension): Expression {
+export function toExpression(
+  clause: FilterClause,
+  { expression }: Dimension,
+): Expression {
   const { type } = clause;
   switch (type) {
     case FilterTypes.BOOLEAN: {
@@ -196,7 +249,9 @@ export function toExpression(clause: FilterClause, { expression }: Dimension): E
     }
     case FilterTypes.NUMBER: {
       const { not, values } = clause as NumberFilterClause;
-      const elements = values.toArray().map(range => new PlywoodNumberRange(range));
+      const elements = values
+        .toArray()
+        .map(range => new PlywoodNumberRange(range));
       const set = new PlywoodSet({ elements, setType: "NUMBER_RANGE" });
       const numExp = expression.overlap(r(set));
       return not ? numExp.not() : numExp;
@@ -206,7 +261,12 @@ export function toExpression(clause: FilterClause, { expression }: Dimension): E
       let stringExp: Expression = null;
       switch (action) {
         case StringFilterAction.CONTAINS:
-          stringExp = expression.contains(r(values.first()), ignoreCase ? ContainsExpression.IGNORE_CASE : ContainsExpression.NORMAL);
+          stringExp = expression.contains(
+            r(values.first()),
+            ignoreCase
+              ? ContainsExpression.IGNORE_CASE
+              : ContainsExpression.NORMAL,
+          );
           break;
         case StringFilterAction.IN:
           stringExp = expression.overlap(r(values.toArray()));
@@ -220,10 +280,14 @@ export function toExpression(clause: FilterClause, { expression }: Dimension): E
     case FilterTypes.FIXED_TIME: {
       const values = (clause as FixedTimeFilterClause).values.toArray();
       const elements = values.map(value => new TimeRange(value));
-      return expression.overlap(r(new PlywoodSet({ elements, setType: "TIME_RANGE" })));
+      return expression.overlap(
+        r(new PlywoodSet({ elements, setType: "TIME_RANGE" })),
+      );
     }
     case FilterTypes.RELATIVE_TIME: {
-      throw new Error("Can't call toExpression on RelativeFilterClause. Evaluate clause first");
+      throw new Error(
+        "Can't call toExpression on RelativeFilterClause. Evaluate clause first",
+      );
     }
   }
 }
@@ -236,7 +300,7 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
       return new BooleanFilterClause({
         reference,
         not,
-        values: ImmutableSet(values)
+        values: ImmutableSet(values),
       });
     }
     case FilterTypes.NUMBER: {
@@ -244,7 +308,7 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
       return new NumberFilterClause({
         reference,
         not,
-        values: List(values)
+        values: List(values),
       });
     }
     case FilterTypes.STRING: {
@@ -253,14 +317,14 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
         reference,
         action,
         not,
-        values: ImmutableSet(values)
+        values: ImmutableSet(values),
       });
     }
     case FilterTypes.FIXED_TIME: {
       const { values } = parameters as any;
       return new FixedTimeFilterClause({
         reference,
-        values: List(values)
+        values: List(values),
       });
     }
     case FilterTypes.RELATIVE_TIME: {
@@ -268,16 +332,20 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
       return new RelativeTimeFilterClause({
         reference,
         period,
-        duration: Duration.fromJS(duration)
+        duration: Duration.fromJS(duration),
       });
     }
   }
 }
 
-export function isStringFilterClause(clause: FilterClause): clause is StringFilterClause {
+export function isStringFilterClause(
+  clause: FilterClause,
+): clause is StringFilterClause {
   return clause.type === FilterTypes.STRING;
 }
 
-export function isBooleanFilterClause(clause: FilterClause): clause is BooleanFilterClause {
+export function isBooleanFilterClause(
+  clause: FilterClause,
+): clause is BooleanFilterClause {
   return clause.type === FilterTypes.BOOLEAN;
 }

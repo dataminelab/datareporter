@@ -16,7 +16,12 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { Instance } from "immutable-class";
-import { FilterTypes, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterClause } from "../filter-clause/filter-clause";
+import {
+  FilterTypes,
+  FixedTimeFilterClause,
+  RelativeTimeFilterClause,
+  TimeFilterClause,
+} from "../filter-clause/filter-clause";
 
 export function isValidTimeShift(input: string): boolean {
   try {
@@ -32,7 +37,6 @@ export type TimeShiftValue = Duration;
 export type TimeShiftJS = string;
 
 export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
-
   static fromJS(timeShift: string): TimeShift {
     if (timeShift === null) {
       return TimeShift.empty();
@@ -48,8 +52,7 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
     return candidate instanceof TimeShift;
   }
 
-  constructor(public value: Duration) {
-  }
+  constructor(public value: Duration) {}
 
   equals(other: any): boolean {
     if (!TimeShift.isTimeShift(other)) {
@@ -85,7 +88,10 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
     return this.toJS() || "";
   }
 
-  private isValidForTimeFilter(timeFilter: TimeFilterClause, timezone: Timezone): boolean {
+  private isValidForTimeFilter(
+    timeFilter: TimeFilterClause,
+    timezone: Timezone,
+  ): boolean {
     switch (timeFilter.type) {
       case FilterTypes.FIXED_TIME:
         const { values } = timeFilter as FixedTimeFilterClause;
@@ -99,7 +105,12 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
     }
   }
 
-  constrainToFilter(timeFilter: TimeFilterClause, timezone: Timezone): TimeShift {
-    return this.value && this.isValidForTimeFilter(timeFilter, timezone) ? this : TimeShift.empty();
+  constrainToFilter(
+    timeFilter: TimeFilterClause,
+    timezone: Timezone,
+  ): TimeShift {
+    return this.value && this.isValidForTimeFilter(timeFilter, timezone)
+      ? this
+      : TimeShift.empty();
   }
 }

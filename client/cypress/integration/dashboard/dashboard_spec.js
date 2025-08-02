@@ -52,16 +52,22 @@ describe("Dashboard", () => {
     cy.server();
     cy.route("GET", "**/api/dashboards/*").as("LoadDashboard");
     let randomSlug = Cypress._.random(0, 10000).toString(36);
-    cy.createDashboard("Dashboard multiple urls - " + randomSlug).then(({ id, slug }) => {
-      [`/dashboards/${id}`, `/dashboards/${id}-anything-here`, `/dashboard/${slug}`].forEach(url => {
-        cy.visit(url);
-        cy.wait("@LoadDashboard");
-        cy.getByTestId(`DashboardId${id}Container`).should("exist");
+    cy.createDashboard("Dashboard multiple urls - " + randomSlug).then(
+      ({ id, slug }) => {
+        [
+          `/dashboards/${id}`,
+          `/dashboards/${id}-anything-here`,
+          `/dashboard/${slug}`,
+        ].forEach(url => {
+          cy.visit(url);
+          cy.wait("@LoadDashboard");
+          cy.getByTestId(`DashboardId${id}Container`).should("exist");
 
-        // assert it always use the "/dashboards/{id}" path
-        cy.location("pathname").should("contain", `/dashboards/${id}`);
-      });
-    });
+          // assert it always use the "/dashboards/{id}" path
+          cy.location("pathname").should("contain", `/dashboards/${id}`);
+        });
+      },
+    );
   });
 
   context("viewport width is at 800px", () => {
@@ -99,7 +105,10 @@ describe("Dashboard", () => {
     it("hides edit option", () => {
       cy.getByTestId("DashboardMoreButton").click().should("be.visible");
 
-      cy.getByTestId("DashboardMoreButtonMenu").contains("Edit").as("editButton").should("not.be.visible");
+      cy.getByTestId("DashboardMoreButtonMenu")
+        .contains("Edit")
+        .as("editButton")
+        .should("not.be.visible");
 
       cy.viewport(801, 800);
       cy.get("@editButton").should("be.visible");

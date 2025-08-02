@@ -5,7 +5,14 @@ import notification from "@/services/notification";
 import { clientConfig } from "@/services/auth";
 
 function getErrorMessage(error) {
-  return find([get(error, "response.data.message"), get(error, "response.statusText"), "Unknown error"], isString);
+  return find(
+    [
+      get(error, "response.data.message"),
+      get(error, "response.statusText"),
+      "Unknown error",
+    ],
+    isString,
+  );
 }
 
 function disableResource(user) {
@@ -92,7 +99,10 @@ function sendPasswordReset(user) {
       notification.success("Password reset email sent.");
     })
     .catch(error => {
-      notification.error("Failed to send password reset email", getErrorMessage(error));
+      notification.error(
+        "Failed to send password reset email",
+        getErrorMessage(error),
+      );
     });
 }
 

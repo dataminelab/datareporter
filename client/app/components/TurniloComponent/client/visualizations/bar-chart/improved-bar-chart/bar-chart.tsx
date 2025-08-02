@@ -20,7 +20,10 @@ import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../../common/models/stage/stage";
-import { Binary, Nullary } from "../../../../common/utils/functional/functional";
+import {
+  Binary,
+  Nullary,
+} from "../../../../common/utils/functional/functional";
 import { Scroller } from "../../../components/scroller/scroller";
 import { Highlight } from "../../base-visualization/highlight";
 import { BarCharts } from "./bar-charts/bar-charts";
@@ -43,53 +46,75 @@ interface BarChartProps {
 }
 
 export const BarChart: React.SFC<BarChartProps> = props => {
-  const { dataset, essence, stage, highlight, acceptHighlight, dropHighlight, saveHighlight } = props;
+  const {
+    dataset,
+    essence,
+    stage,
+    highlight,
+    acceptHighlight,
+    dropHighlight,
+    saveHighlight,
+  } = props;
   const seriesCount = essence.series.count();
   const domain = getXDomain(essence, dataset);
   const barChartLayout = calculateLayout(stage, domain.length, seriesCount);
   const { scroller, segment } = barChartLayout;
   const xScale = createXScale(domain, segment.width);
 
-  return <InteractionController
-    xScale={xScale}
-    essence={essence}
-    dataset={dataset}
-    layout={barChartLayout}
-    saveHighlight={saveHighlight}
-    highlight={highlight}>
-    {({
+  return (
+    <InteractionController
+      xScale={xScale}
+      essence={essence}
+      dataset={dataset}
+      layout={barChartLayout}
+      saveHighlight={saveHighlight}
+      highlight={highlight}
+    >
+      {({
         onClick,
         onScroll,
         onMouseLeave,
         onMouseMove,
         interaction,
-        scrollLeft
-      }) => <Scroller
-      layout={scroller}
-      onMouseLeave={onMouseLeave}
-      onClick={onClick}
-      onScroll={onScroll}
-      onMouseMove={onMouseMove}
-      leftGutter={<Spacer />}
-      bottomLeftCorner={<Spacer />}
-      bottomRightCorner={<Spacer />}
-      body={<BarCharts
-        interaction={interaction}
-        dataset={dataset}
-        stage={segment}
-        scrollLeft={scrollLeft}
-        essence={essence}
-        xScale={xScale}
-        acceptHighlight={acceptHighlight}
-        dropHighlight={dropHighlight} />}
-      rightGutter={<YAxis
-        essence={essence}
-        dataset={dataset}
-        stage={Stage.fromSize(scroller.right, segment.height)} />}
-      bottomGutter={<XAxis
-        essence={essence}
-        scale={xScale}
-        stage={Stage.fromSize(segment.width, scroller.bottom)}
-      />} />}
-  </InteractionController>;
+        scrollLeft,
+      }) => (
+        <Scroller
+          layout={scroller}
+          onMouseLeave={onMouseLeave}
+          onClick={onClick}
+          onScroll={onScroll}
+          onMouseMove={onMouseMove}
+          leftGutter={<Spacer />}
+          bottomLeftCorner={<Spacer />}
+          bottomRightCorner={<Spacer />}
+          body={
+            <BarCharts
+              interaction={interaction}
+              dataset={dataset}
+              stage={segment}
+              scrollLeft={scrollLeft}
+              essence={essence}
+              xScale={xScale}
+              acceptHighlight={acceptHighlight}
+              dropHighlight={dropHighlight}
+            />
+          }
+          rightGutter={
+            <YAxis
+              essence={essence}
+              dataset={dataset}
+              stage={Stage.fromSize(scroller.right, segment.height)}
+            />
+          }
+          bottomGutter={
+            <XAxis
+              essence={essence}
+              scale={xScale}
+              stage={Stage.fromSize(segment.width, scroller.bottom)}
+            />
+          }
+        />
+      )}
+    </InteractionController>
+  );
 };

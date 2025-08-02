@@ -85,7 +85,9 @@ export default function Router({ routes, onRouteChange }) {
           .catch(error => {
             if (!isAbandoned && currentPathRef.current === pathname) {
               setCurrentRoute({
-                render: currentRoute => <ErrorMessage {...currentRoute.routeParams} />,
+                render: currentRoute => (
+                  <ErrorMessage {...currentRoute.routeParams} />
+                ),
                 routeParams: { error },
               });
             }
@@ -114,7 +116,10 @@ export default function Router({ routes, onRouteChange }) {
 
   return (
     <CurrentRouteContext.Provider value={currentRoute}>
-      <ErrorBoundary ref={errorHandlerRef} renderError={error => <ErrorMessage error={error} />}>
+      <ErrorBoundary
+        ref={errorHandlerRef}
+        renderError={error => <ErrorMessage error={error} />}
+      >
         {currentRoute.render(currentRoute)}
       </ErrorBoundary>
     </CurrentRouteContext.Provider>

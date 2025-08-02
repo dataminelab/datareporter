@@ -11,7 +11,9 @@ export function calculateTextWidth(text: string, container = document.body) {
     let actualWidth = textMetrics.width;
     if ("actualBoundingBoxLeft" in textMetrics) {
       // only available on evergreen browsers
-      actualWidth = Math.abs(textMetrics.actualBoundingBoxLeft) + Math.abs(textMetrics.actualBoundingBoxRight);
+      actualWidth =
+        Math.abs(textMetrics.actualBoundingBoxLeft) +
+        Math.abs(textMetrics.actualBoundingBoxRight);
     }
     return actualWidth;
   }

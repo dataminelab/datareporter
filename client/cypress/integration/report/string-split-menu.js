@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 context("String Split Menu", () => {
-  const splitTiles = () => cy.get(".center-top-bar:not(.fallback) .filter-split-section");
-  const channelTile = () => splitTiles().find(".split.dimension:contains(Api Key)");
+  const splitTiles = () =>
+    cy.get(".center-top-bar:not(.fallback) .filter-split-section");
+  const channelTile = () =>
+    splitTiles().find(".split.dimension:contains(Api Key)");
   const openChannelMenu = () => channelTile().click();
   const splitMenu = () => cy.get(".split-menu");
   const limitDropdown = () => splitMenu().find(".dropdown.down:nth-child(2)");
-  const limitOption = option => limitDropdown().find(`.dropdown-item:contains(${option})`);
+  const limitOption = option =>
+    limitDropdown().find(`.dropdown-item:contains(${option})`);
   const limitSelection = () => limitDropdown().find(".selected-item");
   const sortDirection = () => splitMenu().find(".sort-direction .direction");
   const sortByDropdown = () => splitMenu().find(".sort-direction .dropdown");
   const sortBySelection = () => sortByDropdown().find(".selected-item");
-  const sortByOption = option => sortByDropdown().find(`.dropdown-item:contains(${option})`);
+  const sortByOption = option =>
+    sortByDropdown().find(`.dropdown-item:contains(${option})`);
 
   const urls = {
     // tslint:disable-next-line:max-line-length
@@ -34,7 +38,10 @@ context("String Split Menu", () => {
 
   function assertSplitSettings(orderBy, descending, limit) {
     sortBySelection().should("contain", orderBy);
-    sortDirection().should("have.class", descending ? "descending" : "ascending");
+    sortDirection().should(
+      "have.class",
+      descending ? "descending" : "ascending",
+    );
     limitSelection().should("contain", limit);
   }
 

@@ -8,11 +8,16 @@ import PageHeader from "@/components/PageHeader";
 import Paginator from "@/components/Paginator";
 import DynamicComponent from "@/components/DynamicComponent";
 import { DashboardTagsControl } from "@/components/tags-control/TagsControl";
-import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
+import {
+  wrap as itemsList,
+  ControllerType,
+} from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
 import { UrlStateStorage } from "@/components/items-list/classes/StateStorage";
 import * as Sidebar from "@/components/items-list/components/Sidebar";
-import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
+import ItemsTable, {
+  Columns,
+} from "@/components/items-list/components/ItemsTable";
 import useItemsListExtraActions from "@/components/items-list/hooks/useItemsListExtraActions";
 import CreateDashboardDialog from "@/components/dashboards/CreateDashboardDialog";
 import Layout from "@/components/layouts/ContentWithSidebar";
@@ -51,7 +56,11 @@ const listColumns = [
   Columns.custom.sortable(
     (text, item) => (
       <React.Fragment>
-        <Link className="table-main-title" href={item.url} data-test={`DashboardId${item.id}`}>
+        <Link
+          className="table-main-title"
+          href={item.url}
+          data-test={`DashboardId${item.id}`}
+        >
           {item.name}
         </Link>
         <DashboardTagsControl
@@ -68,7 +77,10 @@ const listColumns = [
       width: null,
     },
   ),
-  Columns.custom((text, item) => item.user.name, { title: "Created By", width: "1%" }),
+  Columns.custom((text, item) => item.user.name, {
+    title: "Created By",
+    width: "1%",
+  }),
   Columns.dateTime.sortable({
     title: "Created At",
     field: "created_at",
@@ -86,7 +98,11 @@ function DashboardList({ controller }) {
     listColumns: tableColumns,
     Component: ExtraActionsComponent,
     selectedItems,
-  } = useItemsListExtraActions(controller, listColumns, DashboardListExtraActions);
+  } = useItemsListExtraActions(
+    controller,
+    listColumns,
+    DashboardListExtraActions,
+  );
 
   return (
     <div className="page-dashboard-list">
@@ -95,7 +111,11 @@ function DashboardList({ controller }) {
           title={controller.params.pageTitle}
           actions={
             currentUser.hasPermission("create_dashboard") ? (
-              <Button block type="primary" onClick={() => CreateDashboardDialog.showModal()}>
+              <Button
+                block
+                type="primary"
+                onClick={() => CreateDashboardDialog.showModal()}
+              >
                 <i className="fa fa-plus m-r-5" aria-hidden="true" />
                 New Dashboard
               </Button>
@@ -110,8 +130,15 @@ function DashboardList({ controller }) {
               value={controller.searchTerm}
               onChange={controller.updateSearch}
             />
-            <Sidebar.Menu items={sidebarMenu} selected={controller.params.currentPage} />
-            <Sidebar.Tags url="api/dashboards/tags" onChange={controller.updateSelectedTags} showUnselectAll />
+            <Sidebar.Menu
+              items={sidebarMenu}
+              selected={controller.params.currentPage}
+            />
+            <Sidebar.Tags
+              url="api/dashboards/tags"
+              onChange={controller.updateSelectedTags}
+              showUnselectAll
+            />
           </Layout.Sidebar>
           <Layout.Content>
             <div data-test="DashboardLayoutContent">
@@ -139,7 +166,9 @@ function DashboardList({ controller }) {
                       showPageSizeSelect
                       totalCount={controller.totalItemsCount}
                       pageSize={controller.itemsPerPage}
-                      onPageSizeChange={itemsPerPage => controller.updatePagination({ itemsPerPage })}
+                      onPageSizeChange={itemsPerPage =>
+                        controller.updatePagination({ itemsPerPage })
+                      }
                       page={controller.page}
                       onChange={page => controller.updatePagination({ page })}
                     />
@@ -173,7 +202,8 @@ const DashboardListPage = itemsList(
         return item => new Dashboard(item);
       },
     }),
-  () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
+  () =>
+    new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
 );
 
 routes.register(
@@ -189,7 +219,9 @@ routes.register(
   routeWithUserSession({
     path: "/dashboards/favorites",
     title: "Favorite Dashboards",
-    render: pageProps => <DashboardListPage {...pageProps} currentPage="favorites" />,
+    render: pageProps => (
+      <DashboardListPage {...pageProps} currentPage="favorites" />
+    ),
   }),
 );
 routes.register(

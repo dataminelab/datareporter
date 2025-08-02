@@ -4,7 +4,14 @@ import Button from "antd/lib/button";
 import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 import { ButtonTooltip } from "@/components/reports/ReportEditor/ReportEditorControls";
 
-export default function ReportViewButton({ title, shortcut, disabled, children, onClick, ...props }) {
+export default function ReportViewButton({
+  title,
+  shortcut,
+  disabled,
+  children,
+  onClick,
+  ...props
+}) {
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const eventHandlers = useMemo(
@@ -42,7 +49,8 @@ export default function ReportViewButton({ title, shortcut, disabled, children, 
           disabled={disabled}
           onClick={onClick}
           style={disabled ? { pointerEvents: "none" } : {}}
-          {...props}>
+          {...props}
+        >
           {children}
         </Button>
       </span>

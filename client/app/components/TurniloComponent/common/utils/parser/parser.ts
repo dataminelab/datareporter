@@ -35,8 +35,8 @@ export function parseJSON(text: string): any[] {
     } catch (e) {
       throw new Error("could not parse");
     }
-
-  } else if (firstChar[0] === "{") { // Also support line json
+  } else if (firstChar[0] === "{") {
+    // Also support line json
     return text.split(/\r?\n/).map((line, i) => {
       try {
         return JSON.parse(line);
@@ -44,10 +44,8 @@ export function parseJSON(text: string): any[] {
         throw new Error(`problem in line: ${i}: '${line}'`);
       }
     });
-
   } else {
     throw new Error(`Unsupported start, starts with '${firstChar[0]}'`);
-
   }
 }
 

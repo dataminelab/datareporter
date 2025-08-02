@@ -21,9 +21,7 @@ export class MeasureGroupFixtures {
   static noTitleJS(): MeasureGroupJS {
     return {
       name: "dummyName",
-      measures: [
-        MeasureFixtures.wikiCountJS()
-      ]
+      measures: [MeasureFixtures.wikiCountJS()],
     };
   }
 
@@ -31,28 +29,26 @@ export class MeasureGroupFixtures {
     return {
       name: "dummyName",
       title: "Dummy Name",
-      measures: [
-        MeasureFixtures.wikiCountJS()
-      ]
+      measures: [MeasureFixtures.wikiCountJS()],
     };
   }
 
   static noNameJS(): MeasureGroupJS {
     return {
-      measures: [MeasureFixtures.wikiCountJS()]
+      measures: [MeasureFixtures.wikiCountJS()],
     } as MeasureGroupJS;
   }
 
   static noMeasuresJS(): MeasureGroupJS {
     return {
-      name: "dummyName"
+      name: "dummyName",
     } as MeasureGroupJS;
   }
 
   static emptyMeasuresJS(): MeasureGroupJS {
     return {
       name: "dummyName",
-      measures: []
+      measures: [],
     } as MeasureGroupJS;
   }
 
@@ -64,14 +60,14 @@ export class MeasureGroupFixtures {
         {
           name: "added",
           title: "Added",
-          formula: "$main.sum($added)"
+          formula: "$main.sum($added)",
         },
         {
           name: "avg_added",
           title: "Avg Added",
-          formula: "$main.average($added)"
-        }
-      ]
+          formula: "$main.average($added)",
+        },
+      ],
     };
   }
 
@@ -83,14 +79,14 @@ export class MeasureGroupFixtures {
         {
           name: "delta",
           title: "Delta",
-          formula: "$main.sum($delta)"
+          formula: "$main.sum($delta)",
         },
         {
           name: "avg_delta",
           title: "Avg Delta",
-          formula: "$main.average($delta)"
-        }
-      ]
+          formula: "$main.average($delta)",
+        },
+      ],
     };
   }
 }

@@ -25,9 +25,11 @@ const defaults: ViewDefinition4 = {
   series: [{ reference: "count" }, { reference: "sum" }],
   pinnedDimensions: ["string_a"],
   timezone: Timezone.UTC.toString(),
-  visualization: TOTALS_MANIFEST.name
+  visualization: TOTALS_MANIFEST.name,
 };
 
-export function mockViewDefinition(opts: Partial<ViewDefinition4> = {}): ViewDefinition4 {
+export function mockViewDefinition(
+  opts: Partial<ViewDefinition4> = {},
+): ViewDefinition4 {
   return { ...defaults, ...opts };
 }

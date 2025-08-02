@@ -16,7 +16,10 @@
  */
 
 import { EMPTY_SPLITS } from "../../models/splits/splits";
-import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
+import {
+  Resolve,
+  VisualizationManifest,
+} from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -31,5 +34,5 @@ export const TOTALS_MANIFEST = new VisualizationManifest(
   "totals",
   "Totals",
   rulesEvaluator,
-  emptySettingsConfig
+  emptySettingsConfig,
 );

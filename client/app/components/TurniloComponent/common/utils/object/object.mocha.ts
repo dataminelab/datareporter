@@ -26,12 +26,12 @@ describe("Object utils", () => {
         c: undefined,
         d: null,
         e: 1,
-        f: "str"
+        f: "str",
       };
       const output: any = {
         a: 0,
         e: 1,
-        f: "str"
+        f: "str",
       };
       expect(omitFalsyValues(input)).to.be.deep.equal(output);
     });
@@ -45,7 +45,7 @@ describe("Object utils", () => {
         a: null,
         b: undefined,
         c: false,
-        d: "str"
+        d: "str",
       };
 
       const inputCopy = Object.assign({}, input);
@@ -62,30 +62,31 @@ describe("Object utils", () => {
         ["a", "foobar"],
         ["b", 42],
         ["c", true],
-        ["d", "qvux"]
-        ] as Array<[string, string | number | boolean]>;
-      expect(fromEntries<string, string | number | boolean>(input)).to.be.deep.equal({
+        ["d", "qvux"],
+      ] as Array<[string, string | number | boolean]>;
+      expect(
+        fromEntries<string, string | number | boolean>(input),
+      ).to.be.deep.equal({
         a: "foobar",
         b: 42,
         c: true,
-        d: "qvux"
+        d: "qvux",
       });
     });
   });
 
   describe("pickValues", () => {
-
     const greaterThan10 = (n: number) => n > 10;
 
     it("should left only values that pass predicate", () => {
       const input: any = {
         a: 9,
         b: 10,
-        c: 11
+        c: 11,
       };
 
       const expected = {
-        c: 11
+        c: 11,
       };
 
       expect(pickValues(input, greaterThan10)).to.be.deep.equal(expected);
@@ -99,7 +100,7 @@ describe("Object utils", () => {
       const input: any = {
         a: 9,
         b: 10,
-        c: 11
+        c: 11,
       };
 
       const inputCopy = Object.assign({}, input);
@@ -118,12 +119,12 @@ describe("Object utils", () => {
     it("should apply function to all values", () => {
       const input = {
         a: 1,
-        b: 2
+        b: 2,
       };
 
       const expected = {
         a: "2",
-        b: "3"
+        b: "3",
       };
 
       expect(mapValues(input, addAndStringify)).to.be.deep.equal(expected);
@@ -136,7 +137,7 @@ describe("Object utils", () => {
     it("should not modify input object", () => {
       const input: any = {
         a: 1,
-        b: 2
+        b: 2,
       };
 
       const inputCopy = Object.assign({}, input);

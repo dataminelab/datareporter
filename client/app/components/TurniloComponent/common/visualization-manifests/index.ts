@@ -28,9 +28,11 @@ export const MANIFESTS: VisualizationManifest[] = [
   TABLE_MANIFEST,
   LINE_CHART_MANIFEST,
   BAR_CHART_MANIFEST,
-  HEAT_MAP_MANIFEST
+  HEAT_MAP_MANIFEST,
 ];
 
-export function manifestByName(visualizationName: string): VisualizationManifest {
+export function manifestByName(
+  visualizationName: string,
+): VisualizationManifest {
   return NamedArray.findByName(MANIFESTS, visualizationName);
 }

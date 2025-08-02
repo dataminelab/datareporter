@@ -20,9 +20,15 @@ import { List, Record, Set } from "immutable";
 import { Unary } from "../../utils/functional/functional";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
-import { FixedTimeFilterClause, NumberFilterClause } from "../filter-clause/filter-clause";
+import {
+  FixedTimeFilterClause,
+  NumberFilterClause,
+} from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
-import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
+import {
+  getBestBucketUnitForRange,
+  getDefaultGranularityForKind,
+} from "../granularity/granularity";
 import { SeriesList } from "../series-list/series-list";
 import { DimensionSort, isSortEmpty, Sort, SortType } from "../sort/sort";
 import { Split } from "../split/split";
@@ -35,7 +41,6 @@ export interface SplitsValue {
 const defaultSplits: SplitsValue = { splits: List([]) };
 
 export class Splits extends Record<SplitsValue>(defaultSplits) {
-
   static fromSplit(split: Split): Splits {
     return new Splits({ splits: List([split]) });
   }
@@ -62,9 +67,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
       const newSplitIndex = splits.findIndex(split => split.equals(replace));
       if (newSplitIndex === -1) return splits.set(index, replace);
       const oldSplit = splits.get(index);
-      return splits
-        .set(index, replace)
-        .set(newSplitIndex, oldSplit);
+      return splits.set(index, replace).set(newSplitIndex, oldSplit);
     });
   }
 
@@ -72,7 +75,8 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     return this.updateSplits(splits =>
       splits
         .insert(index, insert)
-        .filterNot((split, idx) => split.equals(insert) && idx !== index));
+        .filterNot((split, idx) => split.equals(insert) && idx !== index),
+    );
   }
 
   public addSplit(split: Split): Splits {
@@ -81,7 +85,9 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   public removeSplit(split: Split): Splits {
-    return this.updateSplits(splits => splits.filter(s => s.reference !== split.reference));
+    return this.updateSplits(splits =>
+      splits.filter(s => s.reference !== split.reference),
+    );
   }
 
   public changeSort(sort: Sort): Splits {
@@ -91,7 +97,9 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   public setSortToDimension(): Splits {
     return this.updateSplits(splits =>
       splits.map(split =>
-        split.changeSort(new DimensionSort({ reference: split.reference }))));
+        split.changeSort(new DimensionSort({ reference: split.reference })),
+      ),
+    );
   }
 
   public length(): number {
@@ -111,72 +119,118 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   public replace(search: Split, replace: Split): Splits {
-    return this.updateSplits(splits => splits.map(s => s.equals(search) ? replace : s));
+    return this.updateSplits(splits =>
+      splits.map(s => (s.equals(search) ? replace : s)),
+    );
   }
 
   public removeBucketingFrom(references: Set<string>) {
-    return this.updateSplits(splits => splits.map(split => {
-      if (!split.bucket || !references.has(split.reference)) return split;
-      return split.changeBucket(null);
-    }));
+    return this.updateSplits(splits =>
+      splits.map(split => {
+        if (!split.bucket || !references.has(split.reference)) return split;
+        return split.changeBucket(null);
+      }),
+    );
   }
 
   public updateWithFilter(filter: Filter, dimensions: Dimensions): Splits {
-    const specificFilter = filter.getSpecificFilter(Timekeeper.globalNow(), Timekeeper.globalNow(), Timezone.UTC);
+    const specificFilter = filter.getSpecificFilter(
+      Timekeeper.globalNow(),
+      Timekeeper.globalNow(),
+      Timezone.UTC,
+    );
 
-    return this.updateSplits(splits => splits.map(split => {
-      const { bucket, reference } = split;
-      if (bucket) return split;
+    return this.updateSplits(splits =>
+      splits.map(split => {
+        const { bucket, reference } = split;
+        if (bucket) return split;
 
-      const splitDimension = dimensions.getDimensionByName(reference);
-      const splitKind = splitDimension.kind;
-      if (!splitDimension || !(splitKind === "time" || splitKind === "number") || !splitDimension.canBucketByDefault()) {
-        return split;
-      }
-      if (splitKind === "time") {
-        const clause = specificFilter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
-        return split.changeBucket(clause
-          ? getBestBucketUnitForRange(clause.values.first(), false, splitDimension.bucketedBy, splitDimension.granularities)
-          : getDefaultGranularityForKind("time", splitDimension.bucketedBy, splitDimension.granularities)
-        );
+        const splitDimension = dimensions.getDimensionByName(reference);
+        const splitKind = splitDimension.kind;
+        if (
+          !splitDimension ||
+          !(splitKind === "time" || splitKind === "number") ||
+          !splitDimension.canBucketByDefault()
+        ) {
+          return split;
+        }
+        if (splitKind === "time") {
+          const clause = specificFilter.clauses.find(
+            clause => clause instanceof FixedTimeFilterClause,
+          ) as FixedTimeFilterClause;
+          return split.changeBucket(
+            clause
+              ? getBestBucketUnitForRange(
+                  clause.values.first(),
+                  false,
+                  splitDimension.bucketedBy,
+                  splitDimension.granularities,
+                )
+              : getDefaultGranularityForKind(
+                  "time",
+                  splitDimension.bucketedBy,
+                  splitDimension.granularities,
+                ),
+          );
+        } else if (splitKind === "number") {
+          const clause = specificFilter.clauses.find(
+            clause => clause instanceof NumberFilterClause,
+          ) as NumberFilterClause;
+          return split.changeBucket(
+            clause
+              ? getBestBucketUnitForRange(
+                  clause.values.first(),
+                  false,
+                  splitDimension.bucketedBy,
+                  splitDimension.granularities,
+                )
+              : getDefaultGranularityForKind(
+                  "number",
+                  splitDimension.bucketedBy,
+                  splitDimension.granularities,
+                ),
+          );
+        }
 
-      } else if (splitKind === "number") {
-        const clause = specificFilter.clauses.find(clause => clause instanceof NumberFilterClause) as NumberFilterClause;
-        return split.changeBucket(clause
-          ? getBestBucketUnitForRange(clause.values.first(), false, splitDimension.bucketedBy, splitDimension.granularities)
-          : getDefaultGranularityForKind("number", splitDimension.bucketedBy, splitDimension.granularities)
-        );
-
-      }
-
-      throw new Error("unknown extent type");
-    }));
+        throw new Error("unknown extent type");
+      }),
+    );
   }
 
-  public constrainToDimensionsAndSeries(dimensions: Dimensions, series: SeriesList): Splits {
+  public constrainToDimensionsAndSeries(
+    dimensions: Dimensions,
+    series: SeriesList,
+  ): Splits {
     function validSplit(split: Split): boolean {
       if (!dimensions.getDimensionByName(split.reference)) return false;
       if (isSortEmpty(split.sort)) return true;
       const sortRef = split.sort.reference;
-      return dimensions.containsDimensionWithName(sortRef) || series.hasSeriesWithKey(sortRef);
+      return (
+        dimensions.containsDimensionWithName(sortRef) ||
+        series.hasSeriesWithKey(sortRef)
+      );
     }
 
     return this.updateSplits(splits => splits.filter(validSplit));
   }
 
   public changeSortIfOnMeasure(fromMeasure: string, toMeasure: string): Splits {
-    return this.updateSplits(splits => splits.map(split => {
-      const { sort } = split;
-      if (!sort || sort.reference !== fromMeasure) return split;
-      return split.setIn(["sort", "reference"], toMeasure);
-    }));
+    return this.updateSplits(splits =>
+      splits.map(split => {
+        const { sort } = split;
+        if (!sort || sort.reference !== fromMeasure) return split;
+        return split.setIn(["sort", "reference"], toMeasure);
+      }),
+    );
   }
 
   public getCommonSort(): Sort {
     const { splits } = this;
     if (splits.count() === 0) return null;
     const commonSort = splits.get(0).sort;
-    return splits.every(({ sort }) => sort.equals(commonSort)) ? commonSort : null;
+    return splits.every(({ sort }) => sort.equals(commonSort))
+      ? commonSort
+      : null;
   }
 
   private updateSplits(updater: Unary<List<Split>, List<Split>>) {

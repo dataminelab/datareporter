@@ -8,13 +8,18 @@ import Paginator from "@/components/Paginator";
 import DynamicComponent from "@/components/DynamicComponent";
 import { QueryTagsControl } from "@/components/tags-control/TagsControl";
 
-import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
+import {
+  wrap as itemsList,
+  ControllerType,
+} from "@/components/items-list/ItemsList";
 import useItemsListExtraActions from "@/components/items-list/hooks/useItemsListExtraActions";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
 import { UrlStateStorage } from "@/components/items-list/classes/StateStorage";
 
 import * as Sidebar from "@/components/items-list/components/Sidebar";
-import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
+import ItemsTable, {
+  Columns,
+} from "@/components/items-list/components/ItemsTable";
 
 import Layout from "@/components/layouts/ContentWithSidebar";
 
@@ -59,10 +64,18 @@ const listColumns = [
   Columns.custom.sortable(
     (text, item) => (
       <React.Fragment>
-        <Link className="table-main-title" href={"reports/" + item.id + "/source#" + item.report}>
+        <Link
+          className="table-main-title"
+          href={"reports/" + item.id + "/source#" + item.report}
+        >
           {item.name}
         </Link>
-        <QueryTagsControl className="d-block" tags={item.tags} isDraft={item.is_draft} isArchived={item.is_archived} />
+        <QueryTagsControl
+          className="d-block"
+          tags={item.tags}
+          isDraft={item.is_draft}
+          isArchived={item.is_archived}
+        />
       </React.Fragment>
     ),
     {
@@ -71,8 +84,15 @@ const listColumns = [
       width: null,
     },
   ),
-  Columns.custom((text, item) => item.user.name, { title: "Created By", width: "1%" }),
-  Columns.dateTime.sortable({ title: "Created At", field: "created_at", width: "1%" }),
+  Columns.custom((text, item) => item.user.name, {
+    title: "Created By",
+    width: "1%",
+  }),
+  Columns.dateTime.sortable({
+    title: "Created At",
+    field: "created_at",
+    width: "1%",
+  }),
   // below 2 is not implemented yet...
   // Columns.dateTime.sortable({
   //   title: "Last Executed At",
@@ -98,7 +118,10 @@ function ReportsList({ controller }) {
   useEffect(() => {
     const unlistenLocationChanges = location.listen((unused, action) => {
       const searchTerm = location.search.q || "";
-      if (action === "PUSH" && searchTerm !== controllerRef.current.searchTerm) {
+      if (
+        action === "PUSH" &&
+        searchTerm !== controllerRef.current.searchTerm
+      ) {
         controllerRef.current.updateSearch(searchTerm);
       }
     });
@@ -113,7 +136,11 @@ function ReportsList({ controller }) {
     listColumns: tableColumns,
     Component: ExtraActionsComponent,
     selectedItems,
-  } = useItemsListExtraActions(controller, listColumns, ReportsListExtraActions);
+  } = useItemsListExtraActions(
+    controller,
+    listColumns,
+    ReportsListExtraActions,
+  );
 
   return (
     <div className="page-reports-list">
@@ -137,8 +164,15 @@ function ReportsList({ controller }) {
               value={controller.searchTerm}
               onChange={controller.updateSearch}
             />
-            <Sidebar.Menu items={sidebarMenu} selected={controller.params.currentPage} />
-            <Sidebar.Tags url="api/queries/tags" onChange={controller.updateSelectedTags} showUnselectAll />
+            <Sidebar.Menu
+              items={sidebarMenu}
+              selected={controller.params.currentPage}
+            />
+            <Sidebar.Tags
+              url="api/queries/tags"
+              onChange={controller.updateSelectedTags}
+              showUnselectAll
+            />
           </Layout.Sidebar>
           <Layout.Content>
             {controller.isLoaded && controller.isEmpty ? (
@@ -165,7 +199,9 @@ function ReportsList({ controller }) {
                     showPageSizeSelect
                     totalCount={controller.totalItemsCount}
                     pageSize={controller.itemsPerPage}
-                    onPageSizeChange={itemsPerPage => controller.updatePagination({ itemsPerPage })}
+                    onPageSizeChange={itemsPerPage =>
+                      controller.updatePagination({ itemsPerPage })
+                    }
                     page={controller.page}
                     onChange={page => controller.updatePagination({ page })}
                   />
@@ -199,7 +235,8 @@ const ReportsListPage = itemsList(
         return item => new Report(item);
       },
     }),
-  () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
+  () =>
+    new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
 );
 
 routes.register(
@@ -215,7 +252,9 @@ routes.register(
   routeWithUserSession({
     path: "/reports/favorites",
     title: "Favorite Reports",
-    render: pageProps => <ReportsListPage {...pageProps} currentPage="favorites" />,
+    render: pageProps => (
+      <ReportsListPage {...pageProps} currentPage="favorites" />
+    ),
   }),
 );
 routes.register(
@@ -223,7 +262,9 @@ routes.register(
   routeWithUserSession({
     path: "/reports/archive",
     title: "Archived Reports",
-    render: pageProps => <ReportsListPage {...pageProps} currentPage="archive" />,
+    render: pageProps => (
+      <ReportsListPage {...pageProps} currentPage="archive" />
+    ),
   }),
 );
 routes.register(

@@ -45,14 +45,26 @@ function ApiKeyDialog({ dialog, ...props }) {
   const jsonResultsLabelId = useUniqueId("json-results-label");
 
   return (
-    <Modal {...dialog.props} width={600} footer={<Button onClick={() => dialog.close(report)}>Close</Button>}>
+    <Modal
+      {...dialog.props}
+      width={600}
+      footer={<Button onClick={() => dialog.close(report)}>Close</Button>}
+    >
       <div className="report-api-key-dialog-wrapper">
         <h5>API Key</h5>
         <div className="m-b-20">
           <Input.Group compact>
-            <Input readOnly value={report.api_key} aria-label="Report API Key" />
+            <Input
+              readOnly
+              value={report.api_key}
+              aria-label="Report API Key"
+            />
             {policy.canEdit(report) && (
-              <Button disabled={updatingApiKey} loading={updatingApiKey} onClick={regenerateReportApiKey}>
+              <Button
+                disabled={updatingApiKey}
+                loading={updatingApiKey}
+                onClick={regenerateReportApiKey}
+              >
                 Regenerate
               </Button>
             )}

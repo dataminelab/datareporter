@@ -43,21 +43,38 @@ function BeaconConsent() {
         <Card
           title={
             <>
-              Would you be ok with sharing anonymous usage data with the Redash team?{" "}
-              <HelpTrigger type="USAGE_DATA_SHARING" />
+              Would you be ok with sharing anonymous usage data with the Redash
+              team? <HelpTrigger type="USAGE_DATA_SHARING" />
             </>
           }
-          bordered={false}>
-          <Text>Help Redash improve by automatically sending anonymous usage data:</Text>
+          bordered={false}
+        >
+          <Text>
+            Help Redash improve by automatically sending anonymous usage data:
+          </Text>
           <div className="m-t-5">
             <ul>
-              <li> Number of users, queries, dashboards, alerts, widgets and visualizations.</li>
-              <li> Types of data sources, alert destinations and visualizations.</li>
+              <li>
+                {" "}
+                Number of users, queries, dashboards, alerts, widgets and
+                visualizations.
+              </li>
+              <li>
+                {" "}
+                Types of data sources, alert destinations and visualizations.
+              </li>
             </ul>
           </div>
-          <Text>All data is aggregated and will never include any sensitive or private data.</Text>
+          <Text>
+            All data is aggregated and will never include any sensitive or
+            private data.
+          </Text>
           <div className="m-t-5">
-            <Button type="primary" className="m-r-5" onClick={() => confirmConsent(true)}>
+            <Button
+              type="primary"
+              className="m-r-5"
+              onClick={() => confirmConsent(true)}
+            >
               Yes
             </Button>
             <Button type="default" onClick={() => confirmConsent(false)}>
@@ -66,7 +83,8 @@ function BeaconConsent() {
           </div>
           <div className="m-t-15">
             <Text type="secondary">
-              You can change this setting anytime from the <Link href="settings/general">Settings</Link> page.
+              You can change this setting anytime from the{" "}
+              <Link href="settings/general">Settings</Link> page.
             </Text>
           </div>
         </Card>

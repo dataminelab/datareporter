@@ -12,7 +12,10 @@ import recordEvent from "@/services/recordEvent";
 import OrgSettings from "@/services/organizationSettings";
 import routes from "@/services/routes";
 import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
-import { getHorizontalFormProps, getHorizontalFormItemWithoutLabelProps } from "@/styles/formStyle";
+import {
+  getHorizontalFormProps,
+  getHorizontalFormItemWithoutLabelProps,
+} from "@/styles/formStyle";
 
 import GeneralSettings from "./components/GeneralSettings";
 import AuthSettings from "./components/AuthSettings";
@@ -79,8 +82,16 @@ function OrganizationSettings({ onError }) {
           <LoadingState className="" />
         ) : (
           <Form {...getHorizontalFormProps()} onSubmit={handleSubmit}>
-            <GeneralSettings settings={settings} values={currentValues} onChange={handleChange} />
-            <AuthSettings settings={settings} values={currentValues} onChange={handleChange} />
+            <GeneralSettings
+              settings={settings}
+              values={currentValues}
+              onChange={handleChange}
+            />
+            <AuthSettings
+              settings={settings}
+              values={currentValues}
+              onChange={handleChange}
+            />
             <Form.Item {...getHorizontalFormItemWithoutLabelProps()}>
               <Button type="primary" htmlType="submit" loading={isSaving}>
                 Save

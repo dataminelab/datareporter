@@ -31,11 +31,16 @@ describe("DateRangeInput", () => {
         onChange={null}
         time={null}
         timezone={null}
-      />
+      />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("date-range-input");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
+      "should contain class",
+    ).to.contain("date-range-input");
   });
-
 });

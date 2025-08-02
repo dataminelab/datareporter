@@ -51,7 +51,9 @@ describe("Textbox", () => {
         cy.getByTestId(elTestId).within(() => {
           cy.getByTestId("WidgetDropdownButton").click();
         });
-        cy.getByTestId("WidgetDropdownButtonMenu").contains("Remove from Dashboard").click();
+        cy.getByTestId("WidgetDropdownButtonMenu")
+          .contains("Remove from Dashboard")
+          .click();
 
         confirmDeletionInModal();
         cy.getByTestId(elTestId).should("not.exist");

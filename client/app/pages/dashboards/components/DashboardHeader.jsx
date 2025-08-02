@@ -30,7 +30,8 @@ function buttonType(value) {
 }
 
 function DashboardPageTitle({ dashboardConfiguration }) {
-  const { dashboard, canEditDashboard, updateDashboard, editingLayout } = dashboardConfiguration;
+  const { dashboard, canEditDashboard, updateDashboard, editingLayout } =
+    dashboardConfiguration;
   return (
     <div className="title-with-tags">
       <div className="page-title">
@@ -44,7 +45,11 @@ function DashboardPageTitle({ dashboardConfiguration }) {
           />
         </h3>
         <Tooltip title={dashboard.user.name} placement="bottom">
-          <img src={dashboard.user.profile_image_url} className="profile-image" alt={dashboard.user.name} />
+          <img
+            src={dashboard.user.profile_image_url}
+            className="profile-image"
+            alt={dashboard.user.name}
+          />
         </Tooltip>
       </div>
       <DashboardTagsControl
@@ -64,7 +69,13 @@ DashboardPageTitle.propTypes = {
 };
 
 function RefreshButton({ dashboardConfiguration }) {
-  const { refreshRate, setRefreshRate, disableRefreshRate, refreshing, refreshDashboard } = dashboardConfiguration;
+  const {
+    refreshRate,
+    setRefreshRate,
+    disableRefreshRate,
+    refreshing,
+    refreshDashboard,
+  } = dashboardConfiguration;
   const allowedIntervals = policy.getDashboardRefreshIntervals();
   const refreshRateOptions = clientConfig.dashboardRefreshIntervals;
   const onRefreshRateSelected = ({ key }) => {
@@ -78,9 +89,23 @@ function RefreshButton({ dashboardConfiguration }) {
   };
   return (
     <Button.Group>
-      <Tooltip title={refreshRate ? `Auto Refreshing every ${durationHumanize(refreshRate)}` : null}>
-        <Button type={buttonType(refreshRate)} onClick={() => refreshDashboard()}>
-          <i className={cx("zmdi zmdi-refresh m-r-5", { "zmdi-hc-spin": refreshing })} aria-hidden="true" />
+      <Tooltip
+        title={
+          refreshRate
+            ? `Auto Refreshing every ${durationHumanize(refreshRate)}`
+            : null
+        }
+      >
+        <Button
+          type={buttonType(refreshRate)}
+          onClick={() => refreshDashboard()}
+        >
+          <i
+            className={cx("zmdi zmdi-refresh m-r-5", {
+              "zmdi-hc-spin": refreshing,
+            })}
+            aria-hidden="true"
+          />
           {refreshRate ? durationHumanize(refreshRate) : "Refresh"}
         </Button>
       </Tooltip>
@@ -88,16 +113,28 @@ function RefreshButton({ dashboardConfiguration }) {
         trigger={["click"]}
         placement="bottomRight"
         overlay={
-          <Menu onClick={onRefreshRateSelected} selectedKeys={[`${refreshRate}`]}>
+          <Menu
+            onClick={onRefreshRateSelected}
+            selectedKeys={[`${refreshRate}`]}
+          >
             {refreshRateOptions.map(option => (
-              <Menu.Item key={`${option}`} disabled={!includes(allowedIntervals, option)}>
+              <Menu.Item
+                key={`${option}`}
+                disabled={!includes(allowedIntervals, option)}
+              >
                 {durationHumanize(option)}
               </Menu.Item>
             ))}
-            {refreshRate && <Menu.Item key={null}>Disable auto refresh</Menu.Item>}
+            {refreshRate && (
+              <Menu.Item key={null}>Disable auto refresh</Menu.Item>
+            )}
           </Menu>
-        }>
-        <Button className="icon-button hidden-xs" type={buttonType(refreshRate)}>
+        }
+      >
+        <Button
+          className="icon-button hidden-xs"
+          type={buttonType(refreshRate)}
+        >
           <i className="fa fa-angle-down" aria-hidden="true" />
           <span className="sr-only">Split button!</span>
         </Button>
@@ -142,19 +179,24 @@ function DashboardMoreOptionsButton({ dashboardConfiguration }) {
       overlay={
         <Menu data-test="DashboardMoreButtonMenu">
           <Menu.Item className={cx({ hidden: gridDisabled })}>
-            <PlainButton onClick={() => setEditingLayout(true)}>Edit</PlainButton>
+            <PlainButton onClick={() => setEditingLayout(true)}>
+              Edit
+            </PlainButton>
           </Menu.Item>
           {!isDuplicating && dashboard.canEdit() && (
             <Menu.Item>
               <PlainButton onClick={duplicateDashboard}>
-                Fork <i className="fa fa-external-link m-l-5" aria-hidden="true" />
+                Fork{" "}
+                <i className="fa fa-external-link m-l-5" aria-hidden="true" />
                 <span className="sr-only">(opens in a new tab)</span>
               </PlainButton>
             </Menu.Item>
           )}
           {clientConfig.showPermissionsControl && isDashboardOwnerOrAdmin && (
             <Menu.Item>
-              <PlainButton onClick={managePermissions}>Manage Permissions</PlainButton>
+              <PlainButton onClick={managePermissions}>
+                Manage Permissions
+              </PlainButton>
             </Menu.Item>
           )}
           {!clientConfig.disablePublish && !dashboard.is_draft && (
@@ -166,8 +208,13 @@ function DashboardMoreOptionsButton({ dashboardConfiguration }) {
             <PlainButton onClick={archive}>Archive</PlainButton>
           </Menu.Item>
         </Menu>
-      }>
-      <Button className="icon-button m-l-5" data-test="DashboardMoreButton" aria-label="More actions">
+      }
+    >
+      <Button
+        className="icon-button m-l-5"
+        data-test="DashboardMoreButton"
+        aria-label="More actions"
+      >
         <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
       </Button>
     </Dropdown>
@@ -192,7 +239,9 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const showRefreshButton = true;
   const showFullscreenButton = !dashboard.is_draft;
   const canShareDashboard = canEditDashboard && !dashboard.is_draft;
-  const showShareButton = !clientConfig.disablePublicUrls && (dashboard.publicAccessEnabled || canShareDashboard);
+  const showShareButton =
+    !clientConfig.disablePublicUrls &&
+    (dashboard.publicAccessEnabled || canShareDashboard);
   const showMoreOptionsButton = canEditDashboard;
 
   const unarchiveDashboard = () => {
@@ -201,7 +250,9 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   };
   return (
     <div className="dashboard-control">
-      {dashboard.can_edit && dashboard.is_archived && <Button onClick={unarchiveDashboard}>Unarchive</Button>}
+      {dashboard.can_edit && dashboard.is_archived && (
+        <Button onClick={unarchiveDashboard}>Unarchive</Button>
+      )}
       {!dashboard.is_archived && (
         <span className="hidden-print">
           {showPublishButton && (
@@ -209,14 +260,20 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
               <span className="fa fa-paper-plane m-r-5" /> Publish
             </Button>
           )}
-          {showRefreshButton && <RefreshButton dashboardConfiguration={dashboardConfiguration} />}
+          {showRefreshButton && (
+            <RefreshButton dashboardConfiguration={dashboardConfiguration} />
+          )}
           {showFullscreenButton && (
-            <Tooltip className="hidden-xs" title="Enable/Disable Fullscreen display">
+            <Tooltip
+              className="hidden-xs"
+              title="Enable/Disable Fullscreen display"
+            >
               <Button
                 type={buttonType(fullscreen)}
                 className="icon-button m-l-5"
                 onClick={toggleFullscreen}
-                aria-label="Toggle fullscreen display">
+                aria-label="Toggle fullscreen display"
+              >
                 <i className="zmdi zmdi-fullscreen" aria-hidden="true" />
               </Button>
             </Tooltip>
@@ -229,12 +286,17 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                 type={buttonType(dashboard.publicAccessEnabled)}
                 onClick={showShareDashboardDialog}
                 data-test="OpenShareForm"
-                aria-label="Share">
+                aria-label="Share"
+              >
                 <i className="zmdi zmdi-share" aria-hidden="true" />
               </Button>
             </Tooltip>
           )}
-          {showMoreOptionsButton && <DashboardMoreOptionsButton dashboardConfiguration={dashboardConfiguration} />}
+          {showMoreOptionsButton && (
+            <DashboardMoreOptionsButton
+              dashboardConfiguration={dashboardConfiguration}
+            />
+          )}
         </span>
       )}
     </div>
@@ -247,8 +309,12 @@ DashboardControl.propTypes = {
 };
 
 function DashboardEditControl({ dashboardConfiguration, headerExtra }) {
-  const { setEditingLayout, doneBtnClickedWhileSaving, dashboardStatus, retrySaveDashboardLayout } =
-    dashboardConfiguration;
+  const {
+    setEditingLayout,
+    doneBtnClickedWhileSaving,
+    dashboardStatus,
+    retrySaveDashboardLayout,
+  } = dashboardConfiguration;
   let status;
   if (dashboardStatus === DashboardStatusEnum.SAVED) {
     status = <span className="save-status">Saved</span>;
@@ -273,8 +339,15 @@ function DashboardEditControl({ dashboardConfiguration, headerExtra }) {
           Retry
         </Button>
       ) : (
-        <Button loading={doneBtnClickedWhileSaving} type="primary" onClick={() => setEditingLayout(false)}>
-          {!doneBtnClickedWhileSaving && <i className="fa fa-check m-r-5" aria-hidden="true" />} Done Editing
+        <Button
+          loading={doneBtnClickedWhileSaving}
+          type="primary"
+          onClick={() => setEditingLayout(false)}
+        >
+          {!doneBtnClickedWhileSaving && (
+            <i className="fa fa-check m-r-5" aria-hidden="true" />
+          )}{" "}
+          Done Editing
         </Button>
       )}
       {headerExtra}
@@ -287,14 +360,22 @@ DashboardEditControl.propTypes = {
   headerExtra: PropTypes.node,
 };
 
-export default function DashboardHeader({ dashboardConfiguration, headerExtra }) {
+export default function DashboardHeader({
+  dashboardConfiguration,
+  headerExtra,
+}) {
   const { editingLayout } = dashboardConfiguration;
-  const DashboardControlComponent = editingLayout ? DashboardEditControl : DashboardControl;
+  const DashboardControlComponent = editingLayout
+    ? DashboardEditControl
+    : DashboardControl;
 
   return (
     <div className="dashboard-header">
       <DashboardPageTitle dashboardConfiguration={dashboardConfiguration} />
-      <DashboardControlComponent dashboardConfiguration={dashboardConfiguration} headerExtra={headerExtra} />
+      <DashboardControlComponent
+        dashboardConfiguration={dashboardConfiguration}
+        headerExtra={headerExtra}
+      />
     </div>
   );
 }

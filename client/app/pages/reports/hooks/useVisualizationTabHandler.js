@@ -3,11 +3,17 @@ import { first, orderBy, find } from "lodash";
 import location from "@/services/location";
 
 export default function useVisualizationTabHandler(visualizations) {
-  const firstVisualization = useMemo(() => first(orderBy(visualizations, ["id"])) || {}, [visualizations]);
-  const [selectedTab, setSelectedTab] = useState(+location.hash || firstVisualization.id);
+  const firstVisualization = useMemo(
+    () => first(orderBy(visualizations, ["id"])) || {},
+    [visualizations],
+  );
+  const [selectedTab, setSelectedTab] = useState(
+    +location.hash || firstVisualization.id,
+  );
 
   useEffect(() => {
-    const hashValue = selectedTab !== firstVisualization.id ? `${selectedTab}` : null;
+    const hashValue =
+      selectedTab !== firstVisualization.id ? `${selectedTab}` : null;
     if (location.hash !== hashValue) {
       location.setHash(hashValue);
     }

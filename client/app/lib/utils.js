@@ -38,7 +38,11 @@ export function formatDateTime(value) {
 }
 
 export function formatDateTimePrecise(value, withMilliseconds = false) {
-  return formatDateTimeValue(value, clientConfig.dateFormat + (withMilliseconds ? " HH:mm:ss.SSS" : " HH:mm:ss"));
+  return formatDateTimeValue(
+    value,
+    clientConfig.dateFormat +
+      (withMilliseconds ? " HH:mm:ss.SSS" : " HH:mm:ss"),
+  );
 }
 
 export function formatDate(value) {
@@ -129,7 +133,9 @@ export function remove(items, item) {
  * @return {string}
  */
 export function formatNumber(value, fractionDigits = 3) {
-  return Math.round(value) !== value ? value.toFixed(fractionDigits) : value.toString();
+  return Math.round(value) !== value
+    ? value.toFixed(fractionDigits)
+    : value.toString();
 }
 
 /**
@@ -140,7 +146,12 @@ export function formatNumber(value, fractionDigits = 3) {
  * @param [fractionDigits] {number}
  * @return {{unit: string, value: string, divisor: number}}
  */
-export function prettyNumberWithUnit(value, divisor, units = [], fractionDigits) {
+export function prettyNumberWithUnit(
+  value,
+  divisor,
+  units = [],
+  fractionDigits,
+) {
   if (isNaN(parseFloat(value)) || !isFinite(value)) {
     return {
       value: "",
@@ -166,7 +177,12 @@ export function prettyNumberWithUnit(value, divisor, units = [], fractionDigits)
 }
 
 export function prettySizeWithUnit(bytes, fractionDigits) {
-  return prettyNumberWithUnit(bytes, 1024, ["bytes", "KB", "MB", "GB", "TB", "PB"], fractionDigits);
+  return prettyNumberWithUnit(
+    bytes,
+    1024,
+    ["bytes", "KB", "MB", "GB", "TB", "PB"],
+    fractionDigits,
+  );
 }
 
 export function prettySize(bytes) {

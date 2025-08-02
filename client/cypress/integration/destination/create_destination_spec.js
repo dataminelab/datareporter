@@ -14,8 +14,14 @@ describe("Create Destination", () => {
       .as("deprecatedTypes");
 
     cy.getByTestId("PreviewItem")
-      .then($previewItems => Cypress.$.map($previewItems, item => Cypress.$(item).attr("data-test-type")))
-      .then(availableTypes => expect(availableTypes).not.to.contain.oneOf(this.deprecatedTypes));
+      .then($previewItems =>
+        Cypress.$.map($previewItems, item =>
+          Cypress.$(item).attr("data-test-type"),
+        ),
+      )
+      .then(availableTypes =>
+        expect(availableTypes).not.to.contain.oneOf(this.deprecatedTypes),
+      );
 
     cy.getByTestId("CreateSourceDialog").should("contain", "Email");
     cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -32,7 +38,9 @@ describe("Create Destination", () => {
       cy.getByTestId("Name").type("Slack Destination");
       cy.getByTestId("CreateSourceSaveButton").click();
 
-      cy.contains("Alert Destination with the name Slack Destination already exists.");
+      cy.contains(
+        "Alert Destination with the name Slack Destination already exists.",
+      );
     });
   });
 });

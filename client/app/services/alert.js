@@ -27,7 +27,8 @@ const transformRequest = data => {
   return newData;
 };
 
-const saveOrCreateUrl = data => (data.id ? `api/alerts/${data.id}` : "api/alerts");
+const saveOrCreateUrl = data =>
+  data.id ? `api/alerts/${data.id}` : "api/alerts";
 
 const Alert = {
   query: () => axios.get("api/alerts"),

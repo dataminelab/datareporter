@@ -19,7 +19,9 @@ const DataSource = {
   save: data => axios.post(`api/data_sources/${data.id}`, data),
   test: data => axios.post(`api/data_sources/${data.id}/test`),
   delete: ({ id }) =>
-    axios.delete(`api/data_sources/${id}`).catch(error => Promise.reject(error.response.data.message)),
+    axios
+      .delete(`api/data_sources/${id}`)
+      .catch(error => Promise.reject(error.response.data.message)),
   fetchSchema: (data, refresh = false) => {
     const params = {};
 
@@ -32,12 +34,19 @@ const DataSource = {
       .then(data => {
         if (has(data, "job")) {
           return fetchDataFromJob(data.job.id).catch(error =>
-            error.code === SCHEMA_NOT_SUPPORTED ? [] : Promise.reject(new Error(data.job.error)),
+            error.code === SCHEMA_NOT_SUPPORTED
+              ? []
+              : Promise.reject(new Error(data.job.error)),
           );
         }
         return has(data, "schema") ? data.schema : Promise.reject();
       })
-      .then(tables => map(tables, table => ({ ...table, columns: mapSchemaColumnsToObject(table.columns) })));
+      .then(tables =>
+        map(tables, table => ({
+          ...table,
+          columns: mapSchemaColumnsToObject(table.columns),
+        })),
+      );
   },
 };
 

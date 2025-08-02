@@ -19,7 +19,11 @@ type TagsListProps = {
   onUpdate?: (selectedTags: string[]) => void;
 };
 
-function TagsList({ tagsUrl, showUnselectAll = false, onUpdate }: TagsListProps): JSX.Element | null {
+function TagsList({
+  tagsUrl,
+  showUnselectAll = false,
+  onUpdate,
+}: TagsListProps): JSX.Element | null {
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -61,7 +65,7 @@ function TagsList({ tagsUrl, showUnselectAll = false, onUpdate }: TagsListProps)
         onUpdate([...newSelectedTags]);
       }
     },
-    [selectedTags, onUpdate]
+    [selectedTags, onUpdate],
   );
 
   const unselectAll = useCallback(() => {
@@ -88,12 +92,17 @@ function TagsList({ tagsUrl, showUnselectAll = false, onUpdate }: TagsListProps)
       </div>
 
       <div className="tiled">
-        <Menu className="invert-stripe-position" mode="inline" selectedKeys={selectedTags}>
+        <Menu
+          className="invert-stripe-position"
+          mode="inline"
+          selectedKeys={selectedTags}
+        >
           {map(allTags, tag => (
             <Menu.Item key={tag.name} className="m-0">
               <PlainButton
                 className="d-flex align-items-center justify-content-between"
-                onClick={event => toggleTag(event, tag.name)}>
+                onClick={event => toggleTag(event, tag.name)}
+              >
                 <span className="max-character col-xs-11">{tag.name}</span>
                 <Badge count={tag.count} />
               </PlainButton>

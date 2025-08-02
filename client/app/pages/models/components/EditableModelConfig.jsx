@@ -211,12 +211,19 @@ export default function EditableModelConfig({ model, saveConfig }) {
   const save = () => saveConfig(model.id, item);
   const handleSaveConfig = callback => {
     const yamlContent = item;
-    if (!yamlContent.includes("timeAttribute") || yamlContent.includes("timeAttribute: null")) {
+    if (
+      !yamlContent.includes("timeAttribute") ||
+      yamlContent.includes("timeAttribute: null")
+    ) {
       alert("timeAttribute cannot be null");
       return;
     }
-    const timeAttribute = yamlContent.split("timeAttribute: ")[1].split("\n")[0];
-    const attributes = yamlContent.split("attributes:")[1].split("dimensions:")[0];
+    const timeAttribute = yamlContent
+      .split("timeAttribute: ")[1]
+      .split("\n")[0];
+    const attributes = yamlContent
+      .split("attributes:")[1]
+      .split("dimensions:")[0];
     // if timeAttribute is not in attributes, then alert
     if (!attributes.includes(timeAttribute)) {
       alert("timeAttribute is not in the attributes list");
@@ -247,7 +254,9 @@ export default function EditableModelConfig({ model, saveConfig }) {
   }, [configYAML, getConfigModel, model]);
 
   useEffect(() => {
-    const buttons = [{ shortcut: "mod+s", onClick: () => saveConfig(model.id, item) }];
+    const buttons = [
+      { shortcut: "mod+s", onClick: () => saveConfig(model.id, item) },
+    ];
     const shortcuts = fromPairs(map(buttons, b => [b.shortcut, b.onClick]));
     KeyboardShortcuts.bind(shortcuts);
     return () => {
@@ -274,12 +283,17 @@ export default function EditableModelConfig({ model, saveConfig }) {
                 className="query-editor-controls-button m-l-5 right"
                 onClick={handleSaveConfig.bind(this, save)}
                 type={"primary"}
-                data-test="SaveButton">
+                data-test="SaveButton"
+              >
                 <span className="fa fa-floppy-o" />
                 &nbsp;Save
               </Button>
             </ButtonTooltip>
-            <Button className="query-editor-controls-button m-l-5 right" onClick={backToList} data-test="SaveButton">
+            <Button
+              className="query-editor-controls-button m-l-5 right"
+              onClick={backToList}
+              data-test="SaveButton"
+            >
               Cancel
             </Button>
           </h1>

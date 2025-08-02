@@ -20,7 +20,8 @@ const PREDEFINED_GROUPS = [
   },
   {
     created_at: "2024-05-10T14:27:17.589Z",
-    description: "See the selected daterange for selected reports in the dashboard",
+    description:
+      "See the selected daterange for selected reports in the dashboard",
     id: -1,
     name: "Turnilo",
     options: {},
@@ -36,7 +37,9 @@ function VisualizationSelect({ report, visualization, onChange }) {
 
   const handleChange = useCallback(
     visualizationId => {
-      const selectedVisualization = report ? find(PREDEFINED_GROUPS, { id: visualizationId }) : null;
+      const selectedVisualization = report
+        ? find(PREDEFINED_GROUPS, { id: visualizationId })
+        : null;
       onChange(selectedVisualization || null);
     },
     [report, onChange],
@@ -54,11 +57,15 @@ function VisualizationSelect({ report, visualization, onChange }) {
           id="choose-visualization"
           className="w-100"
           value={visualization ? visualization.id : undefined}
-          onChange={handleChange}>
+          onChange={handleChange}
+        >
           {map(visualizationGroups, (visualizations, groupKey) => (
             <Select.OptGroup key={groupKey} label={groupKey}>
               {map(visualizations, visualization => (
-                <Select.Option key={`${visualization.id}`} value={visualization.id}>
+                <Select.Option
+                  key={`${visualization.id}`}
+                  value={visualization.id}
+                >
                   {visualization.name}
                 </Select.Option>
               ))}
@@ -119,7 +126,10 @@ function AddReportDialog({ dialog }) {
       id: selectedVisualization.id,
     };
     dialog
-      .close({ text: `[turnilo-widget]${selectedReport.id}/4/${selectedReport.hash}`, options })
+      .close({
+        text: `[turnilo-widget]${selectedReport.id}/4/${selectedReport.hash}`,
+        options,
+      })
       .then(() => {
         notification.success("Report Widget added to dashboard.");
       })
@@ -138,9 +148,12 @@ function AddReportDialog({ dialog }) {
         disabled: !selectedReport || dialog.props.okButtonProps.disabled,
       }}
       okText="Add to Dashboard"
-      width={700}>
+      width={700}
+    >
       <div data-test="AddReportDialog">
-        <ReportSelector onChange={report => selectReport(report ? report.id : null)} />
+        <ReportSelector
+          onChange={report => selectReport(report ? report.id : null)}
+        />
 
         {selectedReport && (
           <VisualizationSelect

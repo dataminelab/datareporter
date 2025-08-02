@@ -38,15 +38,25 @@ export function getMIMEType(fileType: string) {
   }
 }
 
-export function download({ dataset, options }: DataSetWithTabOptions, fileFormat: FileFormat, fileName?: string): void {
+export function download(
+  { dataset, options }: DataSetWithTabOptions,
+  fileFormat: FileFormat,
+  fileName?: string,
+): void {
   const type = `${getMIMEType(fileFormat)};charset=utf-8`;
-  const blob = new Blob([datasetToFileString(dataset, fileFormat, options)], { type });
+  const blob = new Blob([datasetToFileString(dataset, fileFormat, options)], {
+    type,
+  });
   if (!fileName) fileName = `${new Date()}-data`;
   fileName += `.${fileFormat}`;
   filesaver.saveAs(blob, fileName, true); // true == disable auto BOM
 }
 
-export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, options?: TabulatorOptions): string {
+export function datasetToFileString(
+  dataset: Dataset,
+  fileFormat: FileFormat,
+  options?: TabulatorOptions,
+): string {
   if (fileFormat === "csv") {
     return dataset.toCSV(options);
   } else if (fileFormat === "tsv") {
@@ -58,11 +68,15 @@ export function datasetToFileString(dataset: Dataset, fileFormat: FileFormat, op
 }
 
 function dateToFileString(date: Date): string {
-  return getMomentWithTimezone(date, Timezone.UTC.toString()).format("YYYY-MM-DD_HH_mm_ss");
+  return getMomentWithTimezone(date, Timezone.UTC.toString()).format(
+    "YYYY-MM-DD_HH_mm_ss",
+  );
 }
 
 export function dateFromFilter(filter: Filter): string {
-  const timeFilter: FixedTimeFilterClause = filter.clauses.find(clause => clause instanceof FixedTimeFilterClause) as FixedTimeFilterClause;
+  const timeFilter: FixedTimeFilterClause = filter.clauses.find(
+    clause => clause instanceof FixedTimeFilterClause,
+  ) as FixedTimeFilterClause;
   if (!timeFilter) return "";
   const { start, end } = timeFilter.values.first();
   return `${dateToFileString(start)}_${dateToFileString(end)}`;

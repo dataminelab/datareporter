@@ -20,7 +20,7 @@ import { VisualizationSettingsConfig } from "./visualization-settings";
 export const emptySettingsConfig: VisualizationSettingsConfig<{}> = {
   converter: {
     read: constant(null),
-    print: constant(null)
+    print: constant(null),
   },
-  defaults: null
+  defaults: null,
 };

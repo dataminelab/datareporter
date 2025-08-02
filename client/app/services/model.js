@@ -4,7 +4,14 @@ import { axios } from "@/services/axios";
 import notification from "@/services/notification";
 
 function getErrorMessage(error) {
-  return find([get(error, "response.data.message"), get(error, "response.statusText"), "Unknown error"], isString);
+  return find(
+    [
+      get(error, "response.data.message"),
+      get(error, "response.statusText"),
+      "Unknown error",
+    ],
+    isString,
+  );
 }
 
 function deleteModel(model) {
@@ -27,7 +34,8 @@ const Model = {
   getReporterConfig: config_id => axios.get(`api/models/${config_id}/config`),
   create: data => axios.post(`api/models`, data),
   save: data => axios.post(`api/models/${data.id}`, data),
-  saveConfig: (id, content) => axios.post(`api/models/${id}/config`, { content }),
+  saveConfig: (id, content) =>
+    axios.post(`api/models/${id}/config`, { content }),
   deleteModel,
 };
 

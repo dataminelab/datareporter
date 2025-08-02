@@ -23,18 +23,17 @@ describe("DragPosition", () => {
   it("is an immutable class", () => {
     testImmutableClass(DragPosition, [
       {
-        insert: 0
+        insert: 0,
       },
       {
-        insert: 2
+        insert: 2,
       },
       {
-        replace: 0
+        replace: 0,
       },
       {
-        replace: 1
-      }
+        replace: 1,
+      },
     ]);
   });
-
 });

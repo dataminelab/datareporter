@@ -16,7 +16,7 @@
  */
 import { Record } from "immutable";
 import { Equalable } from "immutable-class";
-import { isObject } from "../general/general";
+import { hasOwnProperty, isObject } from "../general/general";
 
 export class ImmutableUtils {
   public static setProperty(instance: any, path: string, newValue: any): any {
@@ -62,7 +62,7 @@ export class ImmutableUtils {
   public static change<T>(instance: T, propertyName: string, newValue: any): T {
     const v = instance.valueOf();
 
-    if (!v.hasOwnProperty(propertyName)) {
+    if (hasOwnProperty(v, propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
     }
 

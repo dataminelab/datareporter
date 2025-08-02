@@ -11,7 +11,8 @@ export const urlForDashboard = ({ id, slug }) => `dashboards/${id}-${slug}`;
 export function collectDashboardFilters(dashboard, queryResults, urlParams) {
   const filters = {};
   _.each(queryResults, queryResult => {
-    const queryFilters = queryResult && queryResult.getFilters ? queryResult.getFilters() : [];
+    const queryFilters =
+      queryResult && queryResult.getFilters ? queryResult.getFilters() : [];
     _.each(queryFilters, queryFilter => {
       const hasQueryStringValue = _.has(urlParams, queryFilter.name);
 
@@ -29,7 +30,10 @@ export function collectDashboardFilters(dashboard, queryResults, urlParams) {
       if (!_.has(filters, queryFilter.name)) {
         filters[filter.name] = filter;
       } else {
-        filters[filter.name].values = _.union(filters[filter.name].values, filter.values);
+        filters[filter.name].values = _.union(
+          filters[filter.name].values,
+          filter.values,
+        );
       }
     });
   });
@@ -62,7 +66,9 @@ function prepareWidgetsForDashboard(widgets) {
       _.each(widgetsAtRow, widget => {
         height = Math.max(
           height,
-          widget.options.position.autoHeight ? defaultWidgetSizeY : widget.options.position.sizeY,
+          widget.options.position.autoHeight
+            ? defaultWidgetSizeY
+            : widget.options.position.sizeY,
         );
         widget.options.position.row = row;
         if (widget.options.position.sizeY < 1) {
@@ -81,7 +87,10 @@ function prepareWidgetsForDashboard(widgets) {
 }
 
 function calculateNewWidgetPosition(existingWidgets, newWidget) {
-  const width = _.extend({ sizeX: dashboardGridOptions.defaultSizeX }, _.extend({}, newWidget.options).position).sizeX;
+  const width = _.extend(
+    { sizeX: dashboardGridOptions.defaultSizeX },
+    _.extend({}, newWidget.options).position,
+  ).sizeX;
 
   // Find first free row for each column
   const bottomLine = _.chain(existingWidgets)
@@ -97,17 +106,14 @@ function calculateNewWidgetPosition(existingWidgets, newWidget) {
         height: position.sizeY,
       };
     })
-    .reduce(
-      (result, item) => {
-        const from = Math.max(item.left, 0);
-        const to = Math.min(item.right, result.length + 1);
-        for (let i = from; i < to; i += 1) {
-          result[i] = Math.max(result[i], item.bottom);
-        }
-        return result;
-      },
-      _.map(new Array(dashboardGridOptions.columns), _.constant(0)),
-    )
+    .reduce((result, item) => {
+      const from = Math.max(item.left, 0);
+      const to = Math.min(item.right, result.length + 1);
+      for (let i = from; i < to; i += 1) {
+        result[i] = Math.max(result[i], item.bottom);
+      }
+      return result;
+    }, _.map(new Array(dashboardGridOptions.columns), _.constant(0)))
     .value();
 
   // Go through columns, pick them by count necessary to hold new block,
@@ -136,7 +142,9 @@ export function Dashboard(dashboard) {
 }
 
 function prepareDashboardWidgets(widgets) {
-  return prepareWidgetsForDashboard(_.map(widgets, widget => new Widget(widget)));
+  return prepareWidgetsForDashboard(
+    _.map(widgets, widget => new Widget(widget)),
+  );
 }
 
 function transformSingle(dashboard) {
@@ -157,7 +165,8 @@ function transformResponse(data) {
   return data;
 }
 
-const saveOrCreateUrl = data => (data.id ? `api/dashboards/${data.id}` : "api/dashboards");
+const saveOrCreateUrl = data =>
+  data.id ? `api/dashboards/${data.id}` : "api/dashboards";
 const DashboardService = {
   get: async ({ id, slug }) => {
     const params = {};
@@ -167,17 +176,27 @@ const DashboardService = {
     const data = await axios.get(`api/dashboards/${id || slug}`, { params });
     return transformResponse(data);
   },
-  getByToken: ({ token }) => axios.get(`api/dashboards/public/${token}`).then(transformResponse),
-  getByTokenPublic: ({ token }) => axios.get(`api/dashboards/public/${token}?get_results=true`).then(transformResponse),
+  getByToken: ({ token }) =>
+    axios.get(`api/dashboards/public/${token}`).then(transformResponse),
+  getByTokenPublic: ({ token }) =>
+    axios
+      .get(`api/dashboards/public/${token}?get_results=true`)
+      .then(transformResponse),
   save: data => axios.post(saveOrCreateUrl(data), data).then(transformResponse),
-  delete: ({ id }) => axios.delete(`api/dashboards/${id}`).then(transformResponse),
-  query: params => axios.get("api/dashboards", { params }).then(transformResponse),
-  recent: params => axios.get("api/dashboards/recent", { params }).then(transformResponse),
-  myDashboards: params => axios.get("api/dashboards/my", { params }).then(transformResponse),
-  favorites: params => axios.get("api/dashboards/favorites", { params }).then(transformResponse),
+  delete: ({ id }) =>
+    axios.delete(`api/dashboards/${id}`).then(transformResponse),
+  query: params =>
+    axios.get("api/dashboards", { params }).then(transformResponse),
+  recent: params =>
+    axios.get("api/dashboards/recent", { params }).then(transformResponse),
+  myDashboards: params =>
+    axios.get("api/dashboards/my", { params }).then(transformResponse),
+  favorites: params =>
+    axios.get("api/dashboards/favorites", { params }).then(transformResponse),
   favorite: ({ id }) => axios.post(`api/dashboards/${id}/favorite`),
   unfavorite: ({ id }) => axios.delete(`api/dashboards/${id}/favorite`),
-  fork: ({ id }) => axios.post(`api/dashboards/${id}/fork`, { id }).then(transformResponse),
+  fork: ({ id }) =>
+    axios.post(`api/dashboards/${id}/fork`, { id }).then(transformResponse),
 };
 
 _.extend(Dashboard, DashboardService);
@@ -233,7 +252,10 @@ Dashboard.prototype.getParametersDefs = function getParametersDefs() {
   );
 };
 
-Dashboard.prototype.addWidget = async function addWidget(textOrVisualization, options = {}) {
+Dashboard.prototype.addWidget = async function addWidget(
+  textOrVisualization,
+  options = {},
+) {
   const props = {
     dashboard_id: this.id,
     options: {

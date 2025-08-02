@@ -31,9 +31,11 @@ const Components: SettingsComponents = {
   "line-chart": LineChartSettingsComponent,
   "heatmap": null,
   "totals": null,
-  "table": TableSettingsComponent
+  "table": TableSettingsComponent,
 };
 
-export function settingsComponent<T extends Visualization>(visualization: T): SettingsComponents[T] {
+export function settingsComponent<T extends Visualization>(
+  visualization: T,
+): SettingsComponents[T] {
   return Components[visualization];
 }

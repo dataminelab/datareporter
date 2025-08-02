@@ -32,8 +32,9 @@ import {
   replaceAt,
   thread,
   threadConditionally,
-  threadNullable, values,
-  zip
+  threadNullable,
+  values,
+  zip,
 } from "./functional";
 
 const inc = (x: number) => x + 1;
@@ -42,7 +43,6 @@ const nil = (): void => null;
 const wrap = (...numbers: number[]) => numbers;
 
 describe("Functional utilities", () => {
-
   describe("constant", () => {
     it("should return function that always returns initial argument", () => {
       const f = constant(42);
@@ -101,21 +101,21 @@ describe("Functional utilities", () => {
       expect(zip([1, 2, 3], ["a", "b", "c"])).to.deep.eq([
         [1, "a"],
         [2, "b"],
-        [3, "c"]
+        [3, "c"],
       ]);
     });
 
     it("should merge common subsets of arrays with different length (first array longer)", () => {
       expect(zip([1, 2, 3, 4], ["a", "b"])).to.deep.eq([
         [1, "a"],
-        [2, "b"]
+        [2, "b"],
       ]);
     });
 
     it("should merge common subsets of arrays with different length (second array longer)", () => {
       expect(zip([1, 2], ["a", "b", "c", "d"])).to.deep.eq([
         [1, "a"],
-        [2, "b"]
+        [2, "b"],
       ]);
     });
   });
@@ -127,7 +127,7 @@ describe("Functional utilities", () => {
         b: "bazz",
         c: 42,
         d: "qvux",
-        e: true
+        e: true,
       };
       expect(values(input)).to.deep.equal(["foobar", "bazz", 42, "qvux", true]);
     });
@@ -157,14 +157,26 @@ describe("Functional utilities", () => {
 
   describe("concatTruthy", () => {
     it("should omit falsy values", () => {
-      const result = concatTruthy<any>(0, 1, false, 2, 3, null, 4, undefined, 5);
+      const result = concatTruthy<any>(
+        0,
+        1,
+        false,
+        2,
+        3,
+        null,
+        4,
+        undefined,
+        5,
+      );
       expect(result).to.deep.eq([0, 1, 2, 3, 4, 5]);
     });
   });
 
   describe("mapTruthy", () => {
     it("should omit falsy values from mapper", () => {
-      const result = mapTruthy<any, any>([1, 2, 3, 4, 5], (i: number) => i % 2 ? i : null);
+      const result = mapTruthy<any, any>([1, 2, 3, 4, 5], (i: number) =>
+        i % 2 ? i : null,
+      );
       expect(result).to.deep.eq([1, 3, 5]);
     });
   });

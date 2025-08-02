@@ -18,20 +18,24 @@ import { Dataset, Datum } from "plywood";
 import { compose } from "../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../config/constants";
 
-export const selectMainDatum = (dataset: Dataset): Datum =>
-  dataset.data[0];
+export const selectMainDatum = (dataset: Dataset): Datum => dataset.data[0];
 
 export const selectSplitDataset = (datum: Datum): Dataset =>
   datum[SPLIT] as Dataset;
 
-export const selectDatums = (dataset: Dataset): Datum[] =>
-  dataset.data;
+export const selectDatums = (dataset: Dataset): Datum[] => dataset.data;
 
-export const selectSplitDatums: (datum: Datum) => Datum[] =
-  compose(selectSplitDataset, selectDatums);
+export const selectSplitDatums: (datum: Datum) => Datum[] = compose(
+  selectSplitDataset,
+  selectDatums,
+);
 
-export const selectFirstSplitDataset: (dataset: Dataset) => Dataset =
-  compose(selectMainDatum, selectSplitDataset);
+export const selectFirstSplitDataset: (dataset: Dataset) => Dataset = compose(
+  selectMainDatum,
+  selectSplitDataset,
+);
 
-export const selectFirstSplitDatums: (dataset: Dataset) => Datum[] =
-  compose(selectFirstSplitDataset, selectDatums);
+export const selectFirstSplitDatums: (dataset: Dataset) => Datum[] = compose(
+  selectFirstSplitDataset,
+  selectDatums,
+);

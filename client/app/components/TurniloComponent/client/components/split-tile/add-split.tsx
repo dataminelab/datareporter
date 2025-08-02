@@ -29,20 +29,28 @@ interface AddSplitProps {
 }
 
 export const AddSplit: React.FunctionComponent<AddSplitProps> = props => {
-  const { appendSplit, insertSplit, menuStage, essence: { dataCube, splits } } = props;
+  const {
+    appendSplit,
+    insertSplit,
+    menuStage,
+    essence: { dataCube, splits },
+  } = props;
   const tiles = dataCube.dimensions
     .filterDimensions(d => splits.findSplitForDimension(d) === undefined)
     .map(dimension => {
       return {
         key: dimension.name,
         label: dimension.title,
-        value: dimension
+        value: dimension,
       };
     });
 
-  return <AddTile<Dimension>
-    containerStage={menuStage}
-    appendSplit={appendSplit}
-    insertSplit={insertSplit}
-    tiles={tiles} />;
+  return (
+    <AddTile<Dimension>
+      containerStage={menuStage}
+      appendSplit={appendSplit}
+      insertSplit={insertSplit}
+      tiles={tiles}
+    />
+  );
 };

@@ -17,5 +17,4 @@
 
 import { Splits } from "./splits";
 
-describe("Splits", () => {
-});
+describe("Splits", () => {});

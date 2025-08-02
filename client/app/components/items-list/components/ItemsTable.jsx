@@ -1,4 +1,13 @@
-import { isFunction, map, filter, extend, omit, identity, range, isEmpty } from "lodash";
+import {
+  isFunction,
+  map,
+  filter,
+  extend,
+  omit,
+  identity,
+  range,
+  isEmpty,
+} from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -133,17 +142,23 @@ export default class ItemsTable extends React.Component {
 
     return map(
       map(
-        filter(this.props.columns, column => (isFunction(column.isAvailable) ? column.isAvailable() : true)),
-        column => extend(column, { orderByField: column.orderByField || column.field }),
+        filter(this.props.columns, column =>
+          isFunction(column.isAvailable) ? column.isAvailable() : true,
+        ),
+        column =>
+          extend(column, { orderByField: column.orderByField || column.field }),
       ),
       (column, index) => {
         // Wrap render function to pass correct arguments
-        const render = isFunction(column.render) ? (text, row) => column.render(text, row.item) : identity;
+        const render = isFunction(column.render)
+          ? (text, row) => column.render(text, row.item)
+          : identity;
 
         return extend(omit(column, ["field", "orderByField", "render"]), {
           key: "column" + index,
           dataIndex: ["item", column.field],
-          defaultSortOrder: column.orderByField === orderByField ? orderByDirection : null,
+          defaultSortOrder:
+            column.orderByField === orderByField ? orderByDirection : null,
           render,
         });
       },
@@ -164,7 +179,10 @@ export default class ItemsTable extends React.Component {
   render() {
     const tableDataProps = {
       columns: this.prepareColumns(),
-      dataSource: map(this.props.items, (item, index) => ({ key: "row" + index, item })),
+      dataSource: map(this.props.items, (item, index) => ({
+        key: "row" + index,
+        item,
+      })),
     };
 
     // Bind events only if `onRowClick` specified
@@ -179,7 +197,9 @@ export default class ItemsTable extends React.Component {
     const onChange = (pagination, filters, sorter, extra) => {
       const action = extra?.action;
       if (action === "sort") {
-        const propsColumn = this.props.columns.find(column => column.field === sorter.field[1]);
+        const propsColumn = this.props.columns.find(
+          column => column.field === sorter.field[1],
+        );
         if (!propsColumn.sorter) {
           return;
         }
@@ -213,7 +233,9 @@ export default class ItemsTable extends React.Component {
 
     return (
       <Table
-        className={classNames("table-data", { "ant-table-headerless": !showHeader })}
+        className={classNames("table-data", {
+          "ant-table-headerless": !showHeader,
+        })}
         showHeader={showHeader}
         rowKey={this.getRowKey}
         pagination={false}

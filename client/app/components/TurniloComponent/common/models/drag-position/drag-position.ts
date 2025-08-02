@@ -30,22 +30,28 @@ export interface DragPositionJS {
 
 let check: Class<DragPositionValue, DragPositionJS>;
 
-export class DragPosition implements Instance<DragPositionValue, DragPositionJS> {
-
+export class DragPosition
+  implements Instance<DragPositionValue, DragPositionJS>
+{
   static isDragPosition(candidate: any): candidate is DragPosition {
     return candidate instanceof DragPosition;
   }
 
-  static calculateFromOffset(offset: number, numItems: number, itemWidth: number, itemGap: number): DragPosition {
+  static calculateFromOffset(
+    offset: number,
+    numItems: number,
+    itemWidth: number,
+    itemGap: number,
+  ): DragPosition {
     if (!numItems) {
       return new DragPosition({
-        replace: 0
+        replace: 0,
       });
     }
 
     if (offset < 0) {
       return new DragPosition({
-        insert: 0
+        insert: 0,
       });
     }
 
@@ -53,18 +59,18 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
     const sectionNumber = Math.floor(offset / sectionWidth);
     if (numItems <= sectionNumber) {
       return new DragPosition({
-        replace: numItems
+        replace: numItems,
       });
     }
 
     const offsetWithinSection = offset - sectionWidth * sectionNumber;
     if (offsetWithinSection < itemWidth) {
       return new DragPosition({
-        replace: sectionNumber
+        replace: sectionNumber,
       });
     } else {
       return new DragPosition({
-        insert: sectionNumber + 1
+        insert: sectionNumber + 1,
       });
     }
   }
@@ -85,15 +91,20 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   public replace: number;
 
   constructor(parameters: DragPositionValue) {
-    this.insert = hasOwnProperty(parameters, "insert") ? parameters.insert : null;
-    this.replace = hasOwnProperty(parameters, "replace") ? parameters.replace : null;
-    if (this.insert == null && this.replace == null) throw new Error("invalid drag position");
+    this.insert = hasOwnProperty(parameters, "insert")
+      ? parameters.insert
+      : null;
+    this.replace = hasOwnProperty(parameters, "replace")
+      ? parameters.replace
+      : null;
+    if (this.insert == null && this.replace == null)
+      throw new Error("invalid drag position");
   }
 
   public valueOf(): DragPositionValue {
     return {
       insert: this.insert,
-      replace: this.replace
+      replace: this.replace,
     };
   }
 
@@ -117,9 +128,11 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   }
 
   public equals(other: DragPosition): boolean {
-    return DragPosition.isDragPosition(other) &&
+    return (
+      DragPosition.isDragPosition(other) &&
       this.insert === other.insert &&
-      this.replace === other.replace;
+      this.replace === other.replace
+    );
   }
 
   public isInsert(): boolean {
@@ -133,7 +146,6 @@ export class DragPosition implements Instance<DragPositionValue, DragPositionJS>
   public getIndex(): number {
     return this.isInsert() ? this.insert : this.replace;
   }
-
 }
 // eslint-disable-next-line
 check = DragPosition;

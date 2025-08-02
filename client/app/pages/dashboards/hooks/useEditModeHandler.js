@@ -18,17 +18,25 @@ function getChangedPositions(widgets, nextPositions = {}) {
 }
 
 export default function useEditModeHandler(canEditDashboard, widgets) {
-  const [editingLayout, setEditingLayout] = useState(canEditDashboard && has(location.search, "edit"));
-  const [dashboardStatus, setDashboardStatus] = useState(DashboardStatusEnum.SAVED);
+  const [editingLayout, setEditingLayout] = useState(
+    canEditDashboard && has(location.search, "edit"),
+  );
+  const [dashboardStatus, setDashboardStatus] = useState(
+    DashboardStatusEnum.SAVED,
+  );
   const [recentPositions, setRecentPositions] = useState([]);
-  const [doneBtnClickedWhileSaving, setDoneBtnClickedWhileSaving] = useState(false);
+  const [doneBtnClickedWhileSaving, setDoneBtnClickedWhileSaving] =
+    useState(false);
 
   useEffect(() => {
     location.setSearch({ edit: editingLayout ? true : null }, true);
   }, [editingLayout]);
 
   useEffect(() => {
-    if (doneBtnClickedWhileSaving && dashboardStatus === DashboardStatusEnum.SAVED) {
+    if (
+      doneBtnClickedWhileSaving &&
+      dashboardStatus === DashboardStatusEnum.SAVED
+    ) {
       setDoneBtnClickedWhileSaving(false);
       setEditingLayout(false);
     }
@@ -94,7 +102,9 @@ export default function useEditModeHandler(canEditDashboard, widgets) {
   return {
     editingLayout: canEditDashboard && editingLayout,
     setEditingLayout: setEditing,
-    saveDashboardLayout: editingLayout ? saveDashboardLayoutDebounced : saveDashboardLayout,
+    saveDashboardLayout: editingLayout
+      ? saveDashboardLayoutDebounced
+      : saveDashboardLayout,
     retrySaveDashboardLayout,
     doneBtnClickedWhileSaving,
     dashboardStatus,

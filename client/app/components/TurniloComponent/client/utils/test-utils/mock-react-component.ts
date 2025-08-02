@@ -40,7 +40,7 @@ export function mockReactComponent(_class: any) {
     prototype.render = (): any => null;
   }
 
-  _class.restore = function() {
+  _class.restore = function () {
     toUndo.map((fn: any) => fn());
     delete this.restore;
   };

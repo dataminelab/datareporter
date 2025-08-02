@@ -42,14 +42,8 @@ restylers:
     command:
       - prettier
       - --write
-      - --arrow-parens
-      - avoid
-      - --single-quote
-      - "false"
-      - --trailing-comma
-      - all
-      - --quote-props
-      - consistent
+      - --config
+      - .prettierrc.json
     include:
       - client/app/**/*.js
       - client/app/**/*.jsx

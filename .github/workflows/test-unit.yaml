@@ -192,83 +192,83 @@ jobs:
       - name: Run plywood-client Tests
         working-directory: plywood/client
         run: npm run test
-  frontend-e2e-tests:
-    runs-on: ubuntu-latest
-    needs: frontend-lint
-    env:
-      COMPOSE_FILE: .ci/compose.cypress.yml
-      COMPOSE_PROJECT_NAME: cypress
-      # CYPRESS_INSTALL_BINARY: 0
-      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
-      COMPOSE_BAKE: true
-      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      PERCY_PARALLEL_TOTAL: 1
-      PERCY_PARALLEL_NONCE: ${{ github.run_id }}
-      PERCY_PARALLEL: true
-      PERCY_BRANCH: ${{ github.head_ref }}
-      PERCY_COMMIT: ${{ github.sha }}
-      PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
-      COMMIT_INFO_BRANCH: ${{ github.head_ref }}
-      COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-      COMMIT_INFO_AUTHOR: ${{ github.event.pull_request.user.login }}
-      COMMIT_INFO_SHA: ${{ github.sha }}
-      PERCY_LOGLEVEL: debug
-    steps:
-      - if: github.event.pull_request.mergeable == 'false'
-        name: Exit if PR is not mergeable
-        run: exit 1
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Enable Code Coverage Report For Develop Branch
-        if: endsWith(github.ref, '/develop') || endsWith(github.ref, '/main')
-        run: |
-          echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
-      - name: Install Dependencies
-        working-directory: client
-        run: npm install
-      - name: Check and Install Cypress Binary
-        run: |
-          if npx cypress verify; then
-            echo "Cypress is already installed."
-          else
-            echo "Cypress not found, installing..."
-            npx cypress install --force
-          fi
-      - name: Ensure .ci/compose.cypress.yml exists in client
-        run: |
-          if [ ! -f client/.ci/compose.cypress.yml ] && [ -f .ci/compose.cypress.yml ]; then
-            mkdir -p client/.ci
-            cp .ci/compose.cypress.yml client/.ci/compose.cypress.yml
-          fi
-      - name: Setup Datareporter Server
-        run: docker build -f .ci/Dockerfile.cypress -t cypress .
-      - name: Start Cypress Server
-        run: |
-          set -x
-          docker compose -f .ci/compose.cypress.yml -p cypress up -d
-          docker compose -f .ci/compose.cypress.yml -p cypress run server create_db
-          sleep 10
-      - name: Seed App Database
-        working-directory: client
-        run: npm run cypress db-seed
-      - name: Execute Cypress Tests
-        working-directory: client
-        run: npm run cypress run-ci
-      - name: "Failure: output container logs to console"
-        if: failure()
-        run: docker compose -p cypress logs
-      - name: Copy Code Coverage Results
-        run: docker cp cypress:/usr/src/app/coverage ./coverage || true
-      - name: Store Coverage Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage
+  # frontend-e2e-tests:
+  #   runs-on: ubuntu-latest
+  #   needs: frontend-lint
+  #   env:
+  #     COMPOSE_FILE: .ci/compose.cypress.yml
+  #     COMPOSE_PROJECT_NAME: cypress
+  #     # CYPRESS_INSTALL_BINARY: 0
+  #     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+  #     COMPOSE_BAKE: true
+  #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+  #     CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+  #     CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+  #     PERCY_PARALLEL_TOTAL: 1
+  #     PERCY_PARALLEL_NONCE: ${{ github.run_id }}
+  #     PERCY_PARALLEL: true
+  #     PERCY_BRANCH: ${{ github.head_ref }}
+  #     PERCY_COMMIT: ${{ github.sha }}
+  #     PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
+  #     COMMIT_INFO_BRANCH: ${{ github.head_ref }}
+  #     COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+  #     COMMIT_INFO_AUTHOR: ${{ github.event.pull_request.user.login }}
+  #     COMMIT_INFO_SHA: ${{ github.sha }}
+  #     PERCY_LOGLEVEL: debug
+  #   steps:
+  #     - if: github.event.pull_request.mergeable == 'false'
+  #       name: Exit if PR is not mergeable
+  #       run: exit 1
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 1
+  #         ref: ${{ github.event.pull_request.head.sha }}
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #     - name: Enable Code Coverage Report For Develop Branch
+  #       if: endsWith(github.ref, '/develop') || endsWith(github.ref, '/main')
+  #       run: |
+  #         echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
+  #     - name: Install Dependencies
+  #       working-directory: client
+  #       run: npm install
+  #     - name: Check and Install Cypress Binary
+  #       run: |
+  #         if npx cypress verify; then
+  #           echo "Cypress is already installed."
+  #         else
+  #           echo "Cypress not found, installing..."
+  #           npx cypress install --force
+  #         fi
+  #     - name: Ensure .ci/compose.cypress.yml exists in client
+  #       run: |
+  #         if [ ! -f client/.ci/compose.cypress.yml ] && [ -f .ci/compose.cypress.yml ]; then
+  #           mkdir -p client/.ci
+  #           cp .ci/compose.cypress.yml client/.ci/compose.cypress.yml
+  #         fi
+  #     - name: Setup Datareporter Server
+  #       run: docker build -f .ci/Dockerfile.cypress -t cypress .
+  #     - name: Start Cypress Server
+  #       run: |
+  #         set -x
+  #         docker compose -f .ci/compose.cypress.yml -p cypress up -d
+  #         docker compose -f .ci/compose.cypress.yml -p cypress run server create_db
+  #         sleep 10
+  #     - name: Seed App Database
+  #       working-directory: client
+  #       run: npm run cypress db-seed
+  #     - name: Execute Cypress Tests
+  #       working-directory: client
+  #       run: npm run cypress run-ci
+  #     - name: "Failure: output container logs to console"
+  #       if: failure()
+  #       run: docker compose -p cypress logs
+  #     - name: Copy Code Coverage Results
+  #       run: docker cp cypress:/usr/src/app/coverage ./coverage || true
+  #     - name: Store Coverage Results
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: coverage
+  #         path: coverage

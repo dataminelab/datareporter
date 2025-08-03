@@ -1,7 +1,27 @@
+const fs = require('fs');
+const path = require('path');
+
+function extractGlobalsFromPrefix() {
+  const prefixPath = path.join(__dirname, 'extra/prefix.js');
+  const prefixContent = fs.readFileSync(prefixPath, 'utf8');
+  const varMatches = prefixContent.match(/var\s+(\w+)\s*=/g);
+  const globals = {};
+
+  if (varMatches) {
+    varMatches.forEach(match => {
+      const varName = match.match(/var\s+(\w+)/)[1];
+      globals[varName] = "readonly";
+    });
+  }
+
+  return globals;
+}
+
 module.exports = {
   parserOptions: {
     project: "./tsconfig.lint.json",
   },
+  globals: extractGlobalsFromPrefix(),
   rules: {
     "compat/compat": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "warn",

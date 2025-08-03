@@ -16,6 +16,7 @@ module.exports = {
     "no-useless-escape": "off",
     "@typescript-eslint/consistent-type-imports": "off",
     "prefer-const": "warn",
+    "no-dupe-class-members": "warn",
   },
   overrides: [
     {

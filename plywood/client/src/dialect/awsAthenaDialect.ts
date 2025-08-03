@@ -56,7 +56,8 @@ export class AwsAthenaDialect extends SQLDialect {
       "((extract(DAY_OF_YEAR from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
     //
     HOUR_OF_DAY: "extract(HOUR from $$)",
-    HOUR_OF_WEEK: "(mod((extract(DAY_OF_WEEK from $$) + 6), 7) * 24 + extract(HOUR from $$))",
+    HOUR_OF_WEEK:
+      "(mod((extract(DAY_OF_WEEK from $$) + 6), 7) * 24 + extract(HOUR from $$))",
     HOUR_OF_MONTH: "((extract(DAY from $$)-1)*24+extract(HOUR from $$))",
     HOUR_OF_YEAR: "((extract(DAY_OF_YEAR from $$)-1)*24+extract(HOUR from $$))",
     //
@@ -81,10 +82,16 @@ export class AwsAthenaDialect extends SQLDialect {
     return this.emptyGroupBy();
   }
 
-  public castExpression(inputType: PlyType, operand: string, cast: string): string {
+  public castExpression(
+    inputType: PlyType,
+    operand: string,
+    cast: string,
+  ): string {
     const castFunction = AwsAthenaDialect.CAST_TO_FUNCTION[cast][inputType];
     if (!castFunction)
-      throw new Error(`unsupported cast from ${inputType} to ${cast} in Amazon Athena dialect`);
+      throw new Error(
+        `unsupported cast from ${inputType} to ${cast} in Amazon Athena dialect`,
+      );
     return castFunction.replace(/\$\$/g, operand);
   }
 
@@ -97,11 +104,19 @@ export class AwsAthenaDialect extends SQLDialect {
     return `STRPOS(${str}, ${substr}) - 1`;
   }
 
-  public timeBucketExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeBucketExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     return this.timeFloorExpression(operand, duration, timezone);
   }
 
-  public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeFloorExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     const bucketFormat = AwsAthenaDialect.TIME_BUCKETING[duration.toString()];
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     if (duration.toString() === "P1W") {
@@ -122,10 +137,18 @@ export class AwsAthenaDialect extends SQLDialect {
     }
   }
 
-  public timePartExpression(operand: string, part: string, timezone: Timezone): string {
+  public timePartExpression(
+    operand: string,
+    part: string,
+    timezone: Timezone,
+  ): string {
     const timePartFunction = AwsAthenaDialect.TIME_PART_TO_FUNCTION[part];
-    if (!timePartFunction) throw new Error(`unsupported part ${part} in BigQuery dialect`);
-    return timePartFunction.replace(/\$\$/g, this.utcToWalltime(operand, timezone));
+    if (!timePartFunction)
+      throw new Error(`unsupported part ${part} in BigQuery dialect`);
+    return timePartFunction.replace(
+      /\$\$/g,
+      this.utcToWalltime(operand, timezone),
+    );
   }
 
   public regexpExpression(expression: string, regexp: string): string {
@@ -148,7 +171,12 @@ export class AwsAthenaDialect extends SQLDialect {
     return `(${a}=${b})`;
   }
 
-  timeShiftExpression(operand: string, duration: Duration, step: int, timezone: Timezone): string {
+  timeShiftExpression(
+    operand: string,
+    duration: Duration,
+    step: int,
+    timezone: Timezone,
+  ): string {
     if (step === 0) return operand;
 
     const mult = step < 0 ? "-1 * " : "";

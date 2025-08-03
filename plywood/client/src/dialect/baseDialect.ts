@@ -123,7 +123,11 @@ export abstract class SQLDialect {
     throw new Error("must implement");
   }
 
-  public containsExpression(_a: string, _b: string, _insensitive: boolean): string {
+  public containsExpression(
+    _a: string,
+    _b: string,
+    _insensitive: boolean,
+  ): string {
     throw new Error("must implement");
   }
 
@@ -147,7 +151,10 @@ export abstract class SQLDialect {
     return `COALESCE(${a}, ${b})`;
   }
 
-  public countDistinctExpression(a: string, _parameterAttributeName: string | undefined): string {
+  public countDistinctExpression(
+    a: string,
+    _parameterAttributeName: string | undefined,
+  ): string {
     return `COUNT(DISTINCT ${a})`;
   }
 
@@ -156,7 +163,10 @@ export abstract class SQLDialect {
     return `CASE WHEN ${a} THEN ${b}${elsePart} END`;
   }
 
-  public filterAggregatorExpression(aggregate: string, whereFilter: string): string {
+  public filterAggregatorExpression(
+    aggregate: string,
+    whereFilter: string,
+  ): string {
     const whereIndex = whereFilter.indexOf("WHERE");
     return `${aggregate}${whereIndex !== -1 ? `FILTER (${whereFilter.substr(whereIndex)})` : ""}`;
   }
@@ -172,7 +182,12 @@ export abstract class SQLDialect {
     return `(${expression} REGEXP ${this.escapeLiteral(regexp)})`;
   }
 
-  public inExpression(operand: string, start: string, end: string, bounds: string) {
+  public inExpression(
+    operand: string,
+    start: string,
+    end: string,
+    bounds: string,
+  ) {
     if (start === end && bounds === "[]") return `${operand}=${start}`;
     let startSQL: string = null;
     if (start !== this.nullConstant()) {
@@ -211,7 +226,11 @@ export abstract class SQLDialect {
     timezone: Timezone,
   ): string;
 
-  public abstract timePartExpression(operand: string, part: string, timezone: Timezone): string;
+  public abstract timePartExpression(
+    operand: string,
+    part: string,
+    timezone: Timezone,
+  ): string;
 
   public abstract timeShiftExpression(
     operand: string,

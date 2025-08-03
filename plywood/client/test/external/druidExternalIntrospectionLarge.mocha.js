@@ -42,7 +42,8 @@ function promiseFnToStream(promiseRq) {
 
 describe("DruidExternal Introspection Large", () => {
   const requesterDruid_0_21_0 = promiseFnToStream(({ query }) => {
-    if (query.queryType === "status") return Promise.resolve({ version: "0.21.0" });
+    if (query.queryType === "status")
+      return Promise.resolve({ version: "0.21.0" });
     expect(query.dataSource).to.equal("wikipedia");
 
     if (query.queryType === "segmentMetadata") {

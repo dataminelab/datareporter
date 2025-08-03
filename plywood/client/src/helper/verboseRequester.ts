@@ -44,7 +44,9 @@ export function verboseRequesterFactory<T>(
 
   // Back compat.
   if ((parameters as any).preQuery) {
-    console.warn("verboseRequesterFactory option preQuery has been renamed to onQuery");
+    console.warn(
+      "verboseRequesterFactory option preQuery has been renamed to onQuery",
+    );
     parameters.onQuery = (parameters as any).preQuery;
   }
 
@@ -58,8 +60,12 @@ export function verboseRequesterFactory<T>(
     parameters.onQuery ||
     ((param: CallbackParameters): void => {
       printLine("vvvvvvvvvvvvvvvvvvvvvvvvvv");
-      const ctx = param.context ? ` [context: ${JSON.stringify(param.context)}]` : "";
-      printLine(`Requester ${param.name} sending query ${param.queryNumber}:${ctx}`);
+      const ctx = param.context
+        ? ` [context: ${JSON.stringify(param.context)}]`
+        : "";
+      printLine(
+        `Requester ${param.name} sending query ${param.queryNumber}:${ctx}`,
+      );
       printLine(JSON.stringify(param.query, null, 2));
       printLine("^^^^^^^^^^^^^^^^^^^^^^^^^^");
     });

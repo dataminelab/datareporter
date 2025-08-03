@@ -82,7 +82,11 @@ describe("reference check", () => {
         .apply("num", 5)
         .apply(
           "subData",
-          ply().apply("x", "$num + 1").apply("z", "$num + 1").select("z").apply("y", "$x * 2"),
+          ply()
+            .apply("x", "$num + 1")
+            .apply("z", "$num + 1")
+            .select("z")
+            .apply("y", "$x * 2"),
         );
 
       expect(() => {
@@ -101,7 +105,9 @@ describe("reference check", () => {
     });
 
     it("fails when discovering that the types mismatch", () => {
-      const ex = ply().apply("str", "Hello").apply("subData", ply().apply("x", "$str + 1"));
+      const ex = ply()
+        .apply("str", "Hello")
+        .apply("subData", ply().apply("x", "$str + 1"));
 
       expect(() => {
         ex.referenceCheck({ str: "Hello World" });
@@ -111,7 +117,10 @@ describe("reference check", () => {
     it("fails when discovering that the types mismatch via split", () => {
       const ex = ply()
         .apply("diamonds", $("diamonds").filter($("color").is("D")))
-        .apply("Cuts", $("diamonds").split("$cut", "Cut").apply("TotalPrice", "$Cut * 10"));
+        .apply(
+          "Cuts",
+          $("diamonds").split("$cut", "Cut").apply("TotalPrice", "$Cut * 10"),
+        );
 
       expect(() => {
         ex.referenceCheck(context);
@@ -137,19 +146,25 @@ describe("reference check", () => {
     it("works in a simple reference case", () => {
       const ex1 = $("x");
       const ex2 = $("x", "NUMBER");
-      expect(ex1.changeInTypeContext(typeContext).toJS()).to.deep.equal(ex2.toJS());
+      expect(ex1.changeInTypeContext(typeContext).toJS()).to.deep.equal(
+        ex2.toJS(),
+      );
     });
 
     it("works in a nested reference case", () => {
       const ex1 = $("z");
       const ex2 = $("z", 1, "NUMBER");
-      expect(ex1.changeInTypeContext(typeContext).toJS()).to.deep.equal(ex2.toJS());
+      expect(ex1.changeInTypeContext(typeContext).toJS()).to.deep.equal(
+        ex2.toJS(),
+      );
     });
 
     it("works in a add case", () => {
       const ex1 = $("x").add($("y"));
       const ex2 = $("x", "NUMBER").add($("y", "NUMBER"));
-      expect(ex1.changeInTypeContext(typeContext).toJS()).to.deep.equal(ex2.toJS());
+      expect(ex1.changeInTypeContext(typeContext).toJS()).to.deep.equal(
+        ex2.toJS(),
+      );
     });
   });
 
@@ -167,7 +182,10 @@ describe("reference check", () => {
 
       const ex2 = ply()
         .apply("num", 5)
-        .apply("subData", ply().apply("x", "$^num:NUMBER + 1").apply("y", "$x:NUMBER + 2"));
+        .apply(
+          "subData",
+          ply().apply("x", "$^num:NUMBER + 1").apply("y", "$x:NUMBER + 2"),
+        );
 
       expect(ex1.referenceCheck(context).toJS()).to.deep.equal(ex2.toJS());
     });
@@ -181,7 +199,10 @@ describe("reference check", () => {
     });
 
     it("works with function", () => {
-      const ex1 = ply().apply("s1", "hello").apply("s2", "$s1.substr(0, 1)").apply("s3", "$s2");
+      const ex1 = ply()
+        .apply("s1", "hello")
+        .apply("s2", "$s1.substr(0, 1)")
+        .apply("s3", "$s2");
 
       const ex2 = ply()
         .apply("s1", "hello")
@@ -194,7 +215,10 @@ describe("reference check", () => {
     it("works from context 1", () => {
       const ex1 = $("diamonds").apply("pricePlus2", "$price + 2");
 
-      const ex2 = $("diamonds", "DATASET").apply("pricePlus2", "$price:NUMBER + 2");
+      const ex2 = $("diamonds", "DATASET").apply(
+        "pricePlus2",
+        "$price:NUMBER + 2",
+      );
 
       expect(ex1.referenceCheck(context).toJS()).to.deep.equal(ex2.toJS());
     });
@@ -206,7 +230,10 @@ describe("reference check", () => {
 
       const ex2 = ply()
         .apply("Diamonds", $("diamonds", 1, "DATASET"))
-        .apply("countPlusSeventy", "$Diamonds:DATASET.count() + $^seventy:NUMBER");
+        .apply(
+          "countPlusSeventy",
+          "$Diamonds:DATASET.count() + $^seventy:NUMBER",
+        );
 
       expect(ex1.referenceCheck(context).toJS()).to.deep.equal(ex2.toJS());
     });
@@ -218,7 +245,10 @@ describe("reference check", () => {
         .apply("Diff", "$DistinctColors - $DistinctCuts");
 
       const ex2 = ply()
-        .apply("DistinctColors", "$^diamonds:DATASET.countDistinct($color:STRING)")
+        .apply(
+          "DistinctColors",
+          "$^diamonds:DATASET.countDistinct($color:STRING)",
+        )
         .apply("DistinctCuts", "$^diamonds:DATASET.countDistinct($cut:STRING)")
         .apply("Diff", "$DistinctColors:NUMBER - $DistinctCuts:NUMBER");
 
@@ -232,7 +262,10 @@ describe("reference check", () => {
         .apply("TotalPrice", "$diamonds.sum($price)");
 
       const ex2 = ply()
-        .apply("diamonds", $("diamonds", 1, "DATASET").filter($("color", "STRING").is("D")))
+        .apply(
+          "diamonds",
+          $("diamonds", 1, "DATASET").filter($("color", "STRING").is("D")),
+        )
         .apply("Count", "$diamonds:DATASET.count()")
         .apply("TotalPrice", "$diamonds:DATASET.sum($price:NUMBER)");
 
@@ -256,7 +289,10 @@ describe("reference check", () => {
         );
 
       const ex2 = ply()
-        .apply("diamonds", $("diamonds", 1, "DATASET").filter($("color", "STRING").is("D")))
+        .apply(
+          "diamonds",
+          $("diamonds", 1, "DATASET").filter($("color", "STRING").is("D")),
+        )
         .apply("Count", "$diamonds:DATASET.count()")
         .apply("TotalPrice", "$diamonds:DATASET.sum($price:NUMBER)")
         .apply(
@@ -304,7 +340,9 @@ describe("reference check", () => {
     });
 
     it("works with dynamic derived attribute", () => {
-      const ex1 = $("wiki").apply("page3", "$page.substr(0, 3)").filter("$page3 == wik");
+      const ex1 = $("wiki")
+        .apply("page3", "$page.substr(0, 3)")
+        .filter("$page3 == wik");
 
       const ex2 = $("wiki", "DATASET")
         .apply("page3", "$page:STRING.substr(0, 3)")
@@ -361,7 +399,10 @@ describe("reference check", () => {
         );
 
       const ex2 = ply()
-        .apply("diamonds", $("diamonds", 1, "DATASET").filter($("color", "STRING").is("D")))
+        .apply(
+          "diamonds",
+          $("diamonds", 1, "DATASET").filter($("color", "STRING").is("D")),
+        )
         .apply("Count", $("diamonds", "DATASET").count())
         .apply("TotalPrice", $("diamonds", "DATASET").sum("$price:NUMBER"))
         .apply(
@@ -369,7 +410,10 @@ describe("reference check", () => {
           $("diamonds", "DATASET")
             .split("$cut:STRING", "Cut")
             .apply("Count", $("diamonds", "DATASET").count())
-            .apply("PercentOfTotal", "$diamonds:DATASET.sum($price:NUMBER) / $^TotalPrice:NUMBER")
+            .apply(
+              "PercentOfTotal",
+              "$diamonds:DATASET.sum($price:NUMBER) / $^TotalPrice:NUMBER",
+            )
             .sort("$Count:NUMBER", "descending")
             .limit(2)
             .apply(
@@ -388,7 +432,10 @@ describe("reference check", () => {
     it("works with join", () => {
       const ex1 = ply()
         .apply("Data1", $("diamonds").filter($("price").overlap(105, 305)))
-        .apply("Data2", $("diamonds").filter($("price").overlap(105, 305).not()))
+        .apply(
+          "Data2",
+          $("diamonds").filter($("price").overlap(105, 305).not()),
+        )
         .apply(
           "Cuts",
           $("Data1")
@@ -399,10 +446,17 @@ describe("reference check", () => {
         );
 
       const ex2 = ply()
-        .apply("Data1", $("diamonds", 1, "DATASET").filter($("price", "NUMBER").overlap(105, 305)))
+        .apply(
+          "Data1",
+          $("diamonds", 1, "DATASET").filter(
+            $("price", "NUMBER").overlap(105, 305),
+          ),
+        )
         .apply(
           "Data2",
-          $("diamonds", 1, "DATASET").filter($("price", "NUMBER").overlap(105, 305).not()),
+          $("diamonds", 1, "DATASET").filter(
+            $("price", "NUMBER").overlap(105, 305).not(),
+          ),
         )
         .apply(
           "Cuts",

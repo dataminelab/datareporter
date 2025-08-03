@@ -38,15 +38,20 @@ export interface TimeRangeJS {
 function toDate(date: any, name: string): Date | null {
   if (date === null) return null;
   const typeofDate = typeof date;
-  if (typeofDate === "undefined") throw new TypeError(`timeRange must have a ${name}`);
+  if (typeofDate === "undefined")
+    throw new TypeError(`timeRange must have a ${name}`);
   if (typeofDate === "string") {
-    const parsedDate = parseISODate(date as string, Expression.defaultParserTimezone);
+    const parsedDate = parseISODate(
+      date as string,
+      Expression.defaultParserTimezone,
+    );
     if (!parsedDate) throw new Error(`could not parse '${date}' as date`);
     date = parsedDate;
   } else if (typeofDate === "number") {
     date = new Date(date);
   }
-  if (!date.getDay) throw new TypeError(`timeRange must have a ${name} that is a Date`);
+  if (!date.getDay)
+    throw new TypeError(`timeRange must have a ${name} that is a Date`);
   return date;
 }
 
@@ -54,10 +59,17 @@ const START_OF_TIME = "1000";
 const END_OF_TIME = "3000";
 
 function dateToIntervalPart(date: Date): string {
-  return date.toISOString().replace(".000Z", "Z").replace(":00Z", "Z").replace(":00Z", "Z"); // Do not do a final .replace('T00Z', 'Z');
+  return date
+    .toISOString()
+    .replace(".000Z", "Z")
+    .replace(":00Z", "Z")
+    .replace(":00Z", "Z"); // Do not do a final .replace('T00Z', 'Z');
 }
 
-export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, TimeRangeJS> {
+export class TimeRange
+  extends Range<Date>
+  implements Instance<TimeRangeValue, TimeRangeJS>
+{
   static type = "TIME_RANGE";
 
   static isTimeRange(candidate: any): candidate is TimeRange {
@@ -65,7 +77,11 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
   }
 
   static intervalFromDate(date: Date): string {
-    return dateToIntervalPart(date) + "/" + dateToIntervalPart(new Date(date.valueOf() + 1));
+    return (
+      dateToIntervalPart(date) +
+      "/" +
+      dateToIntervalPart(new Date(date.valueOf() + 1))
+    );
   }
 
   static timeBucket(
@@ -175,7 +191,8 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
   public isAligned(duration: Duration, timezone: Timezone): boolean {
     const { start, end } = this;
     return (
-      (!start || duration.isAligned(start, timezone)) && (!end || duration.isAligned(end, timezone))
+      (!start || duration.isAligned(start, timezone)) &&
+      (!end || duration.isAligned(end, timezone))
     );
   }
 
@@ -184,7 +201,9 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
     if (!start) return this;
     return new TimeRange({
       start: newStart,
-      end: end ? new Date(end.valueOf() - start.valueOf() + newStart.valueOf()) : end,
+      end: end
+        ? new Date(end.valueOf() - start.valueOf() + newStart.valueOf())
+        : end,
       bounds,
     });
   }
@@ -195,7 +214,11 @@ export class TimeRange extends Range<Date> implements Instance<TimeRangeValue, T
     return TimeRange.fromJS(value);
   }
 
-  public shift(duration: Duration, timezone: Timezone, step?: number): TimeRange {
+  public shift(
+    duration: Duration,
+    timezone: Timezone,
+    step?: number,
+  ): TimeRange {
     const { start, end, bounds } = this;
     if (!start) return this;
     return new TimeRange({

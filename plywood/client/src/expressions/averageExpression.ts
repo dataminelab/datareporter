@@ -25,10 +25,15 @@ import {
 } from "./baseExpression";
 import { Aggregate } from "./mixins/aggregate";
 
-export class AverageExpression extends ChainableUnaryExpression implements Aggregate {
+export class AverageExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
   static op = "Average";
   static fromJS(parameters: ExpressionJS): AverageExpression {
-    return new AverageExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new AverageExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
@@ -39,8 +44,13 @@ export class AverageExpression extends ChainableUnaryExpression implements Aggre
     this.type = "NUMBER";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
-    return operandValue ? (operandValue as Dataset).average(this.expression) : null;
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
+    return operandValue
+      ? (operandValue as Dataset).average(this.expression)
+      : null;
   }
 
   protected _getSQLChainableUnaryHelper(
@@ -53,7 +63,9 @@ export class AverageExpression extends ChainableUnaryExpression implements Aggre
 
   public decomposeAverage(countEx?: Expression): Expression {
     const { operand, expression } = this;
-    return operand.sum(expression).divide(countEx ? operand.sum(countEx) : operand.count());
+    return operand
+      .sum(expression)
+      .divide(countEx ? operand.sum(countEx) : operand.count());
   }
 }
 

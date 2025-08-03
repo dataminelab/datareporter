@@ -32,7 +32,10 @@ export interface PlywoodRangeJS {
 export abstract class Range<T> {
   static DEFAULT_BOUNDS = "[)";
 
-  static areEquivalentBounds(bounds1: string | undefined, bounds2: string | undefined): boolean {
+  static areEquivalentBounds(
+    bounds1: string | undefined,
+    bounds2: string | undefined,
+  ): boolean {
     return (
       bounds1 === bounds2 ||
       (!bounds1 && bounds2 === Range.DEFAULT_BOUNDS) ||
@@ -50,7 +53,9 @@ export abstract class Range<T> {
 
   static unwrapRangeType(type: PlyType): PlyType | null {
     if (!type) return null;
-    return Range.isRangeType(type) ? <PlyType>type.substr(0, type.length - 6) : type;
+    return Range.isRangeType(type)
+      ? <PlyType>type.substr(0, type.length - 6)
+      : type;
   }
 
   static classMap: Record<string, typeof Range> = {};
@@ -62,9 +67,15 @@ export abstract class Range<T> {
 
   static fromJS(parameters: PlywoodRangeJS): PlywoodRange {
     let ctr: string;
-    if (typeof parameters.start === "number" || typeof parameters.end === "number") {
+    if (
+      typeof parameters.start === "number" ||
+      typeof parameters.end === "number"
+    ) {
       ctr = "number";
-    } else if (typeof parameters.start === "string" || typeof parameters.end === "string") {
+    } else if (
+      typeof parameters.start === "string" ||
+      typeof parameters.end === "string"
+    ) {
       ctr = "string";
     } else {
       ctr = "time";
@@ -180,13 +191,20 @@ export abstract class Range<T> {
       if (valBound[0] === "[") {
         if (!this.containsValue(valStart)) return false;
       } else {
-        if (!this.containsValue(valStart) && valStart.valueOf() !== this.start.valueOf())
+        if (
+          !this.containsValue(valStart) &&
+          valStart.valueOf() !== this.start.valueOf()
+        )
           return false;
       }
       if (valBound[1] === "]") {
         if (!this.containsValue(valEnd)) return false;
       } else {
-        if (!this.containsValue(valEnd) && valEnd.valueOf() !== this.end.valueOf()) return false;
+        if (
+          !this.containsValue(valEnd) &&
+          valEnd.valueOf() !== this.end.valueOf()
+        )
+          return false;
       }
       return true;
     } else {
@@ -237,8 +255,10 @@ export abstract class Range<T> {
    */
   public adjacent(other: Range<T>): boolean {
     return (
-      (this._endpointEqual(this.end, other.start) && this.openEnd() !== other.openStart()) ||
-      (this._endpointEqual(this.start, other.end) && this.openStart() !== other.openEnd())
+      (this._endpointEqual(this.end, other.start) &&
+        this.openEnd() !== other.openStart()) ||
+      (this._endpointEqual(this.start, other.end) &&
+        this.openStart() !== other.openEnd())
     );
   }
 
@@ -305,7 +325,11 @@ export abstract class Range<T> {
       endBound = this.bounds[1];
     }
 
-    return new (<any>this.constructor)({ start: start, end: end, bounds: startBound + endBound });
+    return new (<any>this.constructor)({
+      start: start,
+      end: end,
+      bounds: startBound + endBound,
+    });
   }
 
   /**
@@ -358,7 +382,11 @@ export abstract class Range<T> {
       endBound = this.bounds[1];
     }
 
-    return new (<any>this.constructor)({ start: start, end: end, bounds: startBound + endBound });
+    return new (<any>this.constructor)({
+      start: start,
+      end: end,
+      bounds: startBound + endBound,
+    });
   }
 
   /**

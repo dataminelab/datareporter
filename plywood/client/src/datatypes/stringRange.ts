@@ -63,7 +63,8 @@ export class StringRange
     const { start, end } = parameters;
     if (typeof start !== "string" && start !== null)
       throw new TypeError("`start` must be a string");
-    if (typeof end !== "string" && end !== null) throw new TypeError("`end` must be a string");
+    if (typeof end !== "string" && end !== null)
+      throw new TypeError("`end` must be a string");
     super(start, end, parameters.bounds);
   }
 

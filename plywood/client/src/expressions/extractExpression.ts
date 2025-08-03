@@ -17,7 +17,12 @@
 import { PlywoodValue, Set } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class ExtractExpression extends ChainableExpression {
   static op = "Extract";
@@ -60,14 +65,20 @@ export class ExtractExpression extends ChainableExpression {
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
     if (!operandValue) return null;
     const re = new RegExp(this.regexp);
-    return Set.crossUnary(operandValue, a => (String(a).match(re) || [])[1] || null);
+    return Set.crossUnary(
+      operandValue,
+      a => (String(a).match(re) || [])[1] || null,
+    );
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
     return `((''+${operandJS}).match(/${this.regexp}/) || [])[1] || null`;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.extractExpression(operandSQL, this.regexp);
   }
 }

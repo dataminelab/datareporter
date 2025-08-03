@@ -25,7 +25,10 @@ import {
 } from "./baseExpression";
 import { Aggregate } from "./mixins/aggregate";
 
-export class MinExpression extends ChainableUnaryExpression implements Aggregate {
+export class MinExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
   static op = "Min";
   static fromJS(parameters: ExpressionJS): MinExpression {
     return new MinExpression(ChainableUnaryExpression.jsToValue(parameters));
@@ -39,7 +42,10 @@ export class MinExpression extends ChainableUnaryExpression implements Aggregate
     this.type = Set.unwrapSetType(this.expression.type);
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue ? (operandValue as Dataset).min(this.expression) : null;
   }
 

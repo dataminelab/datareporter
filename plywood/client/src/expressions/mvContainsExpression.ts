@@ -20,7 +20,12 @@ import { PlywoodValue } from "../datatypes";
 import { SQLDialect } from "../dialect/baseDialect";
 import { handleNullCheckIfNeeded } from "../helper";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class MvContainsExpression extends ChainableExpression {
   static op = "MvContains";
@@ -53,7 +58,9 @@ export class MvContainsExpression extends ChainableExpression {
   }
 
   public equals(other: MvContainsExpression | undefined): boolean {
-    return super.equals(other) && generalArraysEqual(this.mvArray, other.mvArray);
+    return (
+      super.equals(other) && generalArraysEqual(this.mvArray, other.mvArray)
+    );
   }
 
   protected _toStringParameters(_indent?: int): string[] {
@@ -70,9 +77,15 @@ export class MvContainsExpression extends ChainableExpression {
     return operandArray.every(element => this.mvArray.includes(element));
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return handleNullCheckIfNeeded(this.mvArray, `${operandSQL} IS NULL`, "AND", withoutNull =>
-      dialect.mvContainsExpression(operandSQL, withoutNull),
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return handleNullCheckIfNeeded(
+      this.mvArray,
+      `${operandSQL} IS NULL`,
+      "AND",
+      withoutNull => dialect.mvContainsExpression(operandSQL, withoutNull),
     );
   }
 }

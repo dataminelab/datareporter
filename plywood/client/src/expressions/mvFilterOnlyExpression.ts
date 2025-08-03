@@ -18,7 +18,12 @@ import { generalArraysEqual } from "immutable-class";
 
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class MvFilterOnlyExpression extends ChainableExpression {
   static op = "MvFilterOnly";
@@ -51,14 +56,19 @@ export class MvFilterOnlyExpression extends ChainableExpression {
   }
 
   public equals(other: MvFilterOnlyExpression | undefined): boolean {
-    return super.equals(other) && generalArraysEqual(this.mvArray, other.mvArray);
+    return (
+      super.equals(other) && generalArraysEqual(this.mvArray, other.mvArray)
+    );
   }
 
   protected _toStringParameters(_indent?: int): string[] {
     return this.mvArray;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.mvFilterOnlyExpression(operandSQL, this.mvArray);
   }
 }

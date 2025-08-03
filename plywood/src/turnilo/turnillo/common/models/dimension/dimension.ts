@@ -17,7 +17,11 @@
 
 import { Class, Instance } from "immutable-class";
 import { $, Expression } from "reporter-plywood";
-import { hasOwnProperty, makeTitle, verifyUrlSafeName } from "../../utils/general/general";
+import {
+  hasOwnProperty,
+  makeTitle,
+  verifyUrlSafeName,
+} from "../../utils/general/general";
 import {
   granularityEquals,
   granularityFromJS,

@@ -47,7 +47,10 @@ describe("simulate MySQL", () => {
       .apply("TotalPrice", "$diamonds.sum($price)")
       .apply("PriceTimes2", "$diamonds.sum($price) * 2")
       .apply("PriceMinusTax", "$TotalPrice - $diamonds.sum($tax)")
-      .apply("Crazy", "$diamonds.sum($price) - $diamonds.sum($tax) + 10 - $diamonds.sum($carat)")
+      .apply(
+        "Crazy",
+        "$diamonds.sum($price) - $diamonds.sum($tax) + 10 - $diamonds.sum($carat)",
+      )
       .apply("PriceAndTax", "$diamonds.sum($price) + $diamonds.sum($tax)")
       .apply("PriceGoodCut", "$diamonds.filter($cut == good).sum($price)")
       .apply(
@@ -61,7 +64,10 @@ describe("simulate MySQL", () => {
           .apply(
             "Time",
             $("diamonds")
-              .split($("time").timeBucket("P1D", "America/Los_Angeles"), "Timestamp")
+              .split(
+                $("time").timeBucket("P1D", "America/Los_Angeles"),
+                "Timestamp",
+              )
               .apply("TotalPrice", $("diamonds").sum("$price"))
               .sort("$Timestamp", "ascending")
               // .limit(10)
@@ -240,7 +246,10 @@ describe("simulate MySQL", () => {
   });
 
   it("works with SELECT query", () => {
-    const ex = $("diamonds").filter('$color == "D"').sort("$cut", "descending").limit(10);
+    const ex = $("diamonds")
+      .filter('$color == "D"')
+      .sort("$cut", "descending")
+      .limit(10);
 
     const queryPlan = ex.simulateQueryPlan(context);
     expect(queryPlan).to.have.length(1);
@@ -297,7 +306,10 @@ describe("simulate MySQL", () => {
 
   it("works multi-dimensional GROUP BYs", () => {
     const ex = ply()
-      .apply("diamonds", $("diamonds").filter($("color").overlap(["A", "B", "some_color"])))
+      .apply(
+        "diamonds",
+        $("diamonds").filter($("color").overlap(["A", "B", "some_color"])),
+      )
       .apply(
         "Cuts",
         $("diamonds")

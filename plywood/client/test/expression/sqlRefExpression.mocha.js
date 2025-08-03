@@ -43,19 +43,27 @@ describe("SqlRefExpression", () => {
 
   describe("#isSqlFunction", () => {
     it("should return false if function is not a part of the SqlRefExpression", () => {
-      expect(s$(`IP_SEARCH('192', "t"."net_dst")`, "IP").isSqlFunction("ip_match")).to.equal(false);
+      expect(
+        s$(`IP_SEARCH('192', "t"."net_dst")`, "IP").isSqlFunction("ip_match"),
+      ).to.equal(false);
     });
 
     it("should return true if function is a part of the SqlRefExpression", () => {
-      expect(s$(`IP_SEARCH('192', "t"."net_dst")`, "IP").isSqlFunction("ip_search")).to.equal(true);
+      expect(
+        s$(`IP_SEARCH('192', "t"."net_dst")`, "IP").isSqlFunction("ip_search"),
+      ).to.equal(true);
     });
 
     it("should return false if column name is the same as function name", () => {
-      expect(s$(`"t"."ip_search"`, "IP").isSqlFunction("ip_search")).to.equal(false);
+      expect(s$(`"t"."ip_search"`, "IP").isSqlFunction("ip_search")).to.equal(
+        false,
+      );
     });
 
     it("should be case insensitive", () => {
-      expect(s$(`ip_search('192', "t"."net_dst")`, "IP").isSqlFunction("IP_SEARCH")).to.equal(true);
+      expect(
+        s$(`ip_search('192', "t"."net_dst")`, "IP").isSqlFunction("IP_SEARCH"),
+      ).to.equal(true);
     });
   });
 });

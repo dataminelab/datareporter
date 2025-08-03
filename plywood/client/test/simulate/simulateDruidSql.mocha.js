@@ -35,7 +35,12 @@ const attributes = [
   { name: "height_bucket", type: "NUMBER" },
   { name: "price", type: "NUMBER", unsplitable: true },
   { name: "tax", type: "NUMBER", unsplitable: true },
-  { name: "vendor_id", type: "NULL", nativeType: "hyperUnique", unsplitable: true },
+  {
+    name: "vendor_id",
+    type: "NULL",
+    nativeType: "hyperUnique",
+    unsplitable: true,
+  },
   { name: "ip_address", type: "IP" },
   { name: "ip_prefix", type: "IP" },
 
@@ -47,7 +52,13 @@ describe("simulate DruidSql", () => {
   it("casts columns to VARCHAR for contains", () => {
     const ex = ply()
       .apply("diamonds", $("diamonds").filter('$tags.contains("ta")'))
-      .apply("Tags", $("diamonds").split("$tags", "Tag").sort("$Tag", "descending").limit(10));
+      .apply(
+        "Tags",
+        $("diamonds")
+          .split("$tags", "Tag")
+          .sort("$Tag", "descending")
+          .limit(10),
+      );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
@@ -80,7 +91,13 @@ describe("simulate DruidSql", () => {
   it("casts columns to VARCHAR for regex", () => {
     const ex = ply()
       .apply("diamonds", $("diamonds").filter('$tags.match("^ta.*")'))
-      .apply("Tags", $("diamonds").split("$tags", "Tag").sort("$Tag", "descending").limit(10));
+      .apply(
+        "Tags",
+        $("diamonds")
+          .split("$tags", "Tag")
+          .sort("$Tag", "descending")
+          .limit(10),
+      );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
@@ -112,7 +129,10 @@ describe("simulate DruidSql", () => {
 
   it("works in basic case", () => {
     const ex = ply()
-      .apply("diamonds", $("diamonds").filter('$tags.overlap(["tagA", "tagB"])'))
+      .apply(
+        "diamonds",
+        $("diamonds").filter('$tags.overlap(["tagA", "tagB"])'),
+      )
       .apply(
         "Tags",
         $("diamonds")
@@ -168,8 +188,17 @@ describe("simulate DruidSql", () => {
 
   it("works with . in the datasource", () => {
     const ex = ply()
-      .apply("diamonds", $("diamonds").filter('$tags.overlap(["tagA", "tagB"])'))
-      .apply("Tags", $("diamonds").split("$tags", "Tag").sort("$Tag", "descending").limit(10));
+      .apply(
+        "diamonds",
+        $("diamonds").filter('$tags.overlap(["tagA", "tagB"])'),
+      )
+      .apply(
+        "Tags",
+        $("diamonds")
+          .split("$tags", "Tag")
+          .sort("$Tag", "descending")
+          .limit(10),
+      );
 
     const queryPlan = ex.simulateQueryPlan({
       diamonds: External.fromJS({
@@ -201,7 +230,10 @@ describe("simulate DruidSql", () => {
 
   it("works with null and null string are both included in a filter expression", () => {
     const ex = ply()
-      .apply("diamonds", $("diamonds").filter('$tags.overlap(["tagA", "tagB", null, "null"])'))
+      .apply(
+        "diamonds",
+        $("diamonds").filter('$tags.overlap(["tagA", "tagB", null, "null"])'),
+      )
       .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
     const queryPlan = ex.simulateQueryPlan({
@@ -252,7 +284,8 @@ describe("simulate DruidSql", () => {
           context: {
             sqlTimeZone: "Etc/UTC",
           },
-          query: 'SELECT\n"tags" AS "Tag"\nFROM "dia.monds" AS t\nWHERE "pugs" IS NULL\nGROUP BY 1',
+          query:
+            'SELECT\n"tags" AS "Tag"\nFROM "dia.monds" AS t\nWHERE "pugs" IS NULL\nGROUP BY 1',
         },
       ],
     ]);
@@ -260,7 +293,12 @@ describe("simulate DruidSql", () => {
 
   it("works with null and null string are both included in a filter expression (mvOverlap)", () => {
     const ex = ply()
-      .apply("diamonds", $("diamonds").filter($("tags").mvOverlap(["tagA", "tagB", null, "null"])))
+      .apply(
+        "diamonds",
+        $("diamonds").filter(
+          $("tags").mvOverlap(["tagA", "tagB", null, "null"]),
+        ),
+      )
       .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
     const queryPlan = ex.simulateQueryPlan({
@@ -290,7 +328,12 @@ describe("simulate DruidSql", () => {
 
   it("works with null and null string are both included in a filter expression (mvContains)", () => {
     const ex = ply()
-      .apply("diamonds", $("diamonds").filter($("tags").mvContains(["tagA", "tagB", null, "null"])))
+      .apply(
+        "diamonds",
+        $("diamonds").filter(
+          $("tags").mvContains(["tagA", "tagB", null, "null"]),
+        ),
+      )
       .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
     const queryPlan = ex.simulateQueryPlan({
@@ -322,7 +365,9 @@ describe("simulate DruidSql", () => {
     const ex = ply()
       .apply(
         "diamonds",
-        $("diamonds").filter('$tags.overlap(["tagA", "tagB", null, "null", "", ""])'),
+        $("diamonds").filter(
+          '$tags.overlap(["tagA", "tagB", null, "null", "", ""])',
+        ),
       )
       .apply("Tags", $("diamonds").split("$tags", "Tag"));
 
@@ -482,7 +527,10 @@ describe("simulate DruidSql", () => {
 
   it("works with mvContainsExpression", () => {
     const ex = ply()
-      .apply("diamonds", $("diamonds").filter($("tags").mvContains(["tagA", "tagB"])))
+      .apply(
+        "diamonds",
+        $("diamonds").filter($("tags").mvContains(["tagA", "tagB"])),
+      )
       .apply(
         "Tags",
         $("diamonds")
@@ -560,7 +608,10 @@ describe("simulate DruidSql", () => {
 
   it("works with inExpression with multiple values", () => {
     const ex = ply()
-      .apply("diamonds", $("diamonds").filter($("color").in(["red", "green", "blue"])))
+      .apply(
+        "diamonds",
+        $("diamonds").filter($("color").in(["red", "green", "blue"])),
+      )
       .apply(
         "Tags",
         $("diamonds")

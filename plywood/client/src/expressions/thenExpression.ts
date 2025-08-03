@@ -37,11 +37,17 @@ export class ThenExpression extends ChainableUnaryExpression {
     this.type = this.expression.type;
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue ? expressionValue : null;
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `((_=${operandJS}),(_?${expressionJS}:null))`;
   }
 

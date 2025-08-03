@@ -17,7 +17,12 @@
 import { Dataset, Datum, PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 import { Aggregate } from "./mixins/aggregate";
 
 export class CountExpression extends ChainableExpression implements Aggregate {
@@ -38,7 +43,10 @@ export class CountExpression extends ChainableExpression implements Aggregate {
     return inV ? (inV as Dataset).count() : 0;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return operandSQL.indexOf(" WHERE ") === -1
       ? `COUNT(*)`
       : `SUM(${dialect.aggregateFilterIfNeeded(operandSQL, "1", "0")})`;

@@ -26,13 +26,17 @@ describe("composition", () => {
     it("throws on a nameless apply", () => {
       expect(() => {
         ply().apply("$data.sum($x)");
-      }).to.throw("invalid arguments to .apply, did you forget to specify a name?");
+      }).to.throw(
+        "invalid arguments to .apply, did you forget to specify a name?",
+      );
     });
 
     it("throws on an expression in count", () => {
       expect(() => {
         ply().count("$x");
-      }).to.throw(".count() should not have arguments, did you want to .filter().count() ?");
+      }).to.throw(
+        ".count() should not have arguments, did you want to .filter().count() ?",
+      );
     });
   });
 
@@ -108,7 +112,12 @@ describe("composition", () => {
 
   it("works in semi-realistic case", () => {
     const ex = ply()
-      .apply("Diamonds", ply().filter($("color").is("D")).apply("priceOver2", $("price").divide(2)))
+      .apply(
+        "Diamonds",
+        ply()
+          .filter($("color").is("D"))
+          .apply("priceOver2", $("price").divide(2)),
+      )
       .apply("Count", $("Diamonds").count())
       .apply("TotalPrice", $("Diamonds").sum("$priceOver2"));
 
@@ -191,7 +200,10 @@ describe("composition", () => {
 
   it("works in semi-realistic case (using parser)", () => {
     const ex = ply()
-      .apply("Diamonds", ply().filter("$color == 'D'").apply("priceOver2", "$price/2"))
+      .apply(
+        "Diamonds",
+        ply().filter("$color == 'D'").apply("priceOver2", "$price/2"),
+      )
       .apply("Count", $("Diamonds").count())
       .apply("TotalPrice", $("Diamonds").sum("$priceOver2"));
 

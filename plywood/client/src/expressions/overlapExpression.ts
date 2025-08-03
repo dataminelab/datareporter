@@ -38,14 +38,20 @@ import { LiteralExpression } from "./literalExpression";
 export class OverlapExpression extends ChainableUnaryExpression {
   static op = "Overlap";
   static fromJS(parameters: ExpressionJS): OverlapExpression {
-    return new OverlapExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new OverlapExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     this._ensureOp("overlap");
-    const operandType = Range.unwrapRangeType(Set.unwrapSetType(this.operand.type));
-    const expressionType = Range.unwrapRangeType(Set.unwrapSetType(this.expression.type));
+    const operandType = Range.unwrapRangeType(
+      Set.unwrapSetType(this.operand.type),
+    );
+    const expressionType = Range.unwrapRangeType(
+      Set.unwrapSetType(this.expression.type),
+    );
     if (
       !(
         !operandType ||
@@ -62,7 +68,10 @@ export class OverlapExpression extends ChainableUnaryExpression {
     this.type = "BOOLEAN";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return Set.crossBinaryBoolean(operandValue, expressionValue, (a, b) => {
       if (a instanceof Range) {
         return b instanceof Range ? a.intersects(b) : a.containsValue(b);
@@ -72,7 +81,10 @@ export class OverlapExpression extends ChainableUnaryExpression {
     });
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     const { expression } = this;
     if (expression instanceof LiteralExpression) {
       if (Range.isRangeType(expression.type)) {
@@ -83,10 +95,14 @@ export class OverlapExpression extends ChainableUnaryExpression {
 
         const cmpStrings: string[] = [];
         if (r0 != null) {
-          cmpStrings.push(`${JSON.stringify(r0)}${bounds[0] === "(" ? "<" : "<="}_`);
+          cmpStrings.push(
+            `${JSON.stringify(r0)}${bounds[0] === "(" ? "<" : "<="}_`,
+          );
         }
         if (r1 != null) {
-          cmpStrings.push(`_${bounds[1] === ")" ? "<" : "<="}${JSON.stringify(r1)}`);
+          cmpStrings.push(
+            `_${bounds[1] === ")" ? "<" : "<="}${JSON.stringify(r1)}`,
+          );
         }
 
         return `((_=${operandJS}),${cmpStrings.join("&&")})`;
@@ -178,12 +194,18 @@ export class OverlapExpression extends ChainableUnaryExpression {
       return operand.is(expression);
 
     // X.indexOf(Y).overlap([start, end])
-    if (operand instanceof IndexOfExpression && literalValue instanceof NumberRange) {
+    if (
+      operand instanceof IndexOfExpression &&
+      literalValue instanceof NumberRange
+    ) {
       const { operand: x, expression: y } = operand;
       const { start, end, bounds } = literalValue;
 
       // contains could be either start less than 0 or start === 0 with inclusive bounds
-      if ((start < 0 && end === null) || (start === 0 && end === null && bounds[0] === "[")) {
+      if (
+        (start < 0 && end === null) ||
+        (start === 0 && end === null && bounds[0] === "[")
+      ) {
         return x.contains(y);
       }
     }

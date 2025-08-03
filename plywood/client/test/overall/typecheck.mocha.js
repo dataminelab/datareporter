@@ -49,7 +49,9 @@ describe("typecheck", () => {
   it("should throw on bad IN", () => {
     expect(() => {
       r(5).in("hello");
-    }).to.throw('in expression 5.in("hello") has a bad type combination NUMBER IN STRING');
+    }).to.throw(
+      'in expression 5.in("hello") has a bad type combination NUMBER IN STRING',
+    );
   });
 
   it("should throw on SET IN", () => {

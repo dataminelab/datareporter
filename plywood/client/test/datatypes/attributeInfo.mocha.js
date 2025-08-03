@@ -33,7 +33,12 @@ describe("AttributeInfo", () => {
       { name: "cut", type: "STRING", range: { start: "A", end: "F" } },
       { name: "tags", type: "SET/STRING" },
       { name: "carat", type: "NUMBER", nativeType: "STRING" },
-      { name: "count", type: "NUMBER", unsplitable: true, maker: { op: "count" } },
+      {
+        name: "count",
+        type: "NUMBER",
+        unsplitable: true,
+        maker: { op: "count" },
+      },
       {
         name: "price",
         type: "NUMBER",

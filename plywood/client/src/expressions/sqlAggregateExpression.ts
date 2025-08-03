@@ -19,7 +19,12 @@ import { SqlExpression } from "druid-query-toolkit";
 import { PlywoodValue } from "../datatypes";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 import { Aggregate } from "./mixins/aggregate";
 
 export class SqlAggregateExpression extends ChainableExpression {
@@ -59,7 +64,10 @@ export class SqlAggregateExpression extends ChainableExpression {
     SqlAggregateExpression.KNOWN_AGGREGATIONS.push(aggregation);
   }
 
-  static substituteFilter(sqlExpression: SqlExpression, condition: SqlExpression): SqlExpression {
+  static substituteFilter(
+    sqlExpression: SqlExpression,
+    condition: SqlExpression,
+  ): SqlExpression {
     return sqlExpression.addFilterToAggregations(
       condition,
       SqlAggregateExpression.KNOWN_AGGREGATIONS,
@@ -109,11 +117,16 @@ export class SqlAggregateExpression extends ChainableExpression {
     throw new Error("can not compute on SQL aggregate");
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     let sql = this.sql;
     if (operandSQL.includes(" WHERE ")) {
       const filterParse = SqlExpression.parse(operandSQL.split(" WHERE ")[1]);
-      sql = String(SqlAggregateExpression.substituteFilter(this.parsedSql, filterParse));
+      sql = String(
+        SqlAggregateExpression.substituteFilter(this.parsedSql, filterParse),
+      );
     }
     return `(${sql})`;
   }

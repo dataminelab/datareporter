@@ -23,7 +23,12 @@ import {
   SimpleArray,
 } from "immutable-class";
 import { PlywoodRequester } from "plywood-base-api";
-import { PassThrough, ReadableStream, Transform, Writable } from "readable-stream";
+import {
+  PassThrough,
+  ReadableStream,
+  Transform,
+  Writable,
+} from "readable-stream";
 
 import {
   AttributeInfo,
@@ -71,7 +76,10 @@ import { StreamConcat } from "../helper/streamConcat";
 import { nonEmptyLookup, pipeWithError, safeRange } from "../helper/utils";
 import { DatasetFullType, FullType, PlyType, PlyTypeSimple } from "../types";
 
-import { CustomDruidAggregations, CustomDruidTransforms } from "./utils/druidTypes";
+import {
+  CustomDruidAggregations,
+  CustomDruidTransforms,
+} from "./utils/druidTypes";
 
 export class TotalContainer {
   public datum: Datum;
@@ -87,7 +95,11 @@ export class TotalContainer {
   }
 }
 
-export type NextFn<Q> = (prevQuery: Q, prevResultLength: number, prevMeta: any) => Q;
+export type NextFn<Q> = (
+  prevQuery: Q,
+  prevResultLength: number,
+  prevMeta: any,
+) => Q;
 
 export interface QueryAndPostTransform<T> {
   query: T;
@@ -138,7 +150,10 @@ function filterToAnds(filter: Expression): Expression[] {
   return [filter];
 }
 
-function filterDiff(strongerFilter: Expression, weakerFilter: Expression): Expression {
+function filterDiff(
+  strongerFilter: Expression,
+  weakerFilter: Expression,
+): Expression {
   const strongerFilterAnds = filterToAnds(strongerFilter);
   const weakerFilterAnds = filterToAnds(weakerFilter);
   if (weakerFilterAnds.length > strongerFilterAnds.length) return null;
@@ -169,7 +184,10 @@ function mergeDerivedAttributes(
     derivedAttributes[k] = derivedAttributes1[k];
   }
   for (const k in derivedAttributes2) {
-    if (hasOwnProp(derivedAttributes, k) && !derivedAttributes[k].equals(derivedAttributes2[k])) {
+    if (
+      hasOwnProp(derivedAttributes, k) &&
+      !derivedAttributes[k].equals(derivedAttributes2[k])
+    ) {
       throw new Error(`can not currently redefine conflicting ${k}`);
     }
     derivedAttributes[k] = derivedAttributes2[k];
@@ -204,7 +222,10 @@ function getSampleValue(valueType: string, ex: Expression): PlywoodValue {
     case "TIME_RANGE":
       if (ex instanceof TimeBucketExpression) {
         const timezone = ex.timezone || Timezone.UTC;
-        const start = ex.duration.floor(new Date("2015-03-14T00:00:00Z"), timezone);
+        const start = ex.duration.floor(
+          new Date("2015-03-14T00:00:00Z"),
+          timezone,
+        );
         return new TimeRange({
           start,
           end: ex.duration.shift(start, timezone, 1),
@@ -249,7 +270,11 @@ function getSampleValue(valueType: string, ex: Expression): PlywoodValue {
   }
 }
 
-function immutableAdd<T>(obj: Record<string, T>, key: string, value: T): Record<string, T> {
+function immutableAdd<T>(
+  obj: Record<string, T>,
+  key: string,
+  value: T,
+): Record<string, T> {
   const newObj = Object.create(null);
   for (const k in obj) newObj[k] = obj[k];
   newObj[key] = value;
@@ -388,7 +413,8 @@ export abstract class External {
       uniqueExternals.push(external);
     }
 
-    for (let i = 1; i < externals.length; i++) addToUniqueExternals(externals[i]);
+    for (let i = 1; i < externals.length; i++)
+      addToUniqueExternals(externals[i]);
     return uniqueExternals;
   }
 
@@ -424,7 +450,8 @@ export abstract class External {
     const { attributes, applies } = attributesAndApplies;
 
     const expressions: Record<string, Expression> = Object.create(null);
-    for (const existingApply of applies) expressions[existingApply.name] = existingApply.expression;
+    for (const existingApply of applies)
+      expressions[existingApply.name] = existingApply.expression;
     apply = apply.changeExpression(
       apply.expression.resolveWithExpressions(expressions, "leave").simplify(),
     );
@@ -438,7 +465,9 @@ export abstract class External {
     };
   }
 
-  static segregationAggregateApplies(applies: ApplyExpression[]): ApplySegregation {
+  static segregationAggregateApplies(
+    applies: ApplyExpression[],
+  ): ApplySegregation {
     const aggregateApplies: ApplyExpression[] = [];
     const postAggregateApplies: ApplyExpression[] = [];
     let nameIndex = 0;
@@ -495,18 +524,28 @@ export abstract class External {
     if (!externals.length) throw new Error("must have externals");
     let derivedAttributes = externals[0].derivedAttributes;
     for (let i = 1; i < externals.length; i++) {
-      derivedAttributes = mergeDerivedAttributes(derivedAttributes, externals[i].derivedAttributes);
+      derivedAttributes = mergeDerivedAttributes(
+        derivedAttributes,
+        externals[i].derivedAttributes,
+      );
     }
     return derivedAttributes;
   }
 
   // ==== Inflaters
 
-  static getIntelligentInflater(expression: Expression, label: string): Inflater {
+  static getIntelligentInflater(
+    expression: Expression,
+    label: string,
+  ): Inflater {
     if (expression instanceof NumberBucketExpression) {
       return External.numberRangeInflaterFactory(label, expression.size);
     } else if (expression instanceof TimeBucketExpression) {
-      return External.timeRangeInflaterFactory(label, expression.duration, expression.timezone);
+      return External.timeRangeInflaterFactory(
+        label,
+        expression.duration,
+        expression.timezone,
+      );
     } else {
       return External.getSimpleInflater(expression.type, label);
     }
@@ -557,7 +596,11 @@ export abstract class External {
     };
   }
 
-  static timeRangeInflaterFactory(label: string, duration: Duration, timezone: Timezone): Inflater {
+  static timeRangeInflaterFactory(
+    label: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): Inflater {
     return (d: any) => {
       const v = d[label];
       if ("" + v === "null") {
@@ -579,7 +622,10 @@ export abstract class External {
     };
   }
 
-  static numberRangeInflaterFactory(label: string, rangeSize: number): Inflater {
+  static numberRangeInflaterFactory(
+    label: string,
+    rangeSize: number,
+  ): Inflater {
     return (d: any) => {
       const v = d[label];
       if ("" + v === "null") {
@@ -812,7 +858,9 @@ export abstract class External {
     });
   }
 
-  static valuePromiseToStream(valuePromise: Promise<PlywoodValue>): ReadableStream {
+  static valuePromiseToStream(
+    valuePromise: Promise<PlywoodValue>,
+  ): ReadableStream {
     const pt = new PassThrough({ objectMode: true });
 
     valuePromise
@@ -831,7 +879,10 @@ export abstract class External {
     return pt as any;
   }
 
-  static jsToValue(parameters: ExternalJS, requester: PlywoodRequester<any>): ExternalValue {
+  static jsToValue(
+    parameters: ExternalJS,
+    requester: PlywoodRequester<any>,
+  ): ExternalValue {
     const value: ExternalValue = {
       engine: parameters.engine,
       version: parameters.version,
@@ -845,20 +896,28 @@ export abstract class External {
       value.attributes = AttributeInfo.fromJSs(parameters.attributes);
     }
     if (parameters.attributeOverrides) {
-      value.attributeOverrides = AttributeInfo.fromJSs(parameters.attributeOverrides);
+      value.attributeOverrides = AttributeInfo.fromJSs(
+        parameters.attributeOverrides,
+      );
     }
     if (parameters.derivedAttributes) {
-      value.derivedAttributes = Expression.expressionLookupFromJS(parameters.derivedAttributes);
+      value.derivedAttributes = Expression.expressionLookupFromJS(
+        parameters.derivedAttributes,
+      );
     }
 
-    value.filter = parameters.filter ? Expression.fromJS(parameters.filter) : Expression.TRUE;
+    value.filter = parameters.filter
+      ? Expression.fromJS(parameters.filter)
+      : Expression.TRUE;
 
     return value;
   }
 
   static classMap: Record<string, typeof External> = {};
   static register(ex: typeof External): void {
-    const engine = (<any>ex).engine.replace(/^\w/, (s: string) => s.toLowerCase());
+    const engine = (<any>ex).engine.replace(/^\w/, (s: string) =>
+      s.toLowerCase(),
+    );
     External.classMap[engine] = ex;
   }
 
@@ -879,13 +938,18 @@ export abstract class External {
       const key = keyExternal.key;
       const external = keyExternal.external;
       if (!baseExternal) baseExternal = external;
-      applies.push(Expression._.apply(key, new ExternalExpression({ external })));
+      applies.push(
+        Expression._.apply(key, new ExternalExpression({ external })),
+      );
     }
 
     return keyExternals[0].external.getBase().makeTotal(applies);
   }
 
-  static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any> = null): External {
+  static fromJS(
+    parameters: ExternalJS,
+    requester: PlywoodRequester<any> = null,
+  ): External {
     if (!hasOwnProp(parameters, "engine")) {
       throw new Error("external `engine` must be defined");
     }
@@ -895,7 +959,9 @@ export abstract class External {
 
     // Back compat
     if (!requester && hasOwnProp(parameters, "requester")) {
-      console.warn("'requester' parameter should be passed as context (2nd argument)");
+      console.warn(
+        "'requester' parameter should be passed as context (2nd argument)",
+      );
       requester = (parameters as any).requester;
     }
     if (parameters.source == null) {
@@ -941,7 +1007,9 @@ export abstract class External {
 
   constructor(parameters: ExternalValue, dummy: any = null) {
     if (dummy !== dummyObject) {
-      throw new TypeError("can not call `new External` directly use External.fromJS instead");
+      throw new TypeError(
+        "can not call `new External` directly use External.fromJS instead",
+      );
     }
     this.engine = parameters.engine;
 
@@ -967,7 +1035,8 @@ export abstract class External {
     }
     this.concealBuckets = parameters.concealBuckets;
 
-    this.rawAttributes = parameters.rawAttributes || parameters.attributes || [];
+    this.rawAttributes =
+      parameters.rawAttributes || parameters.attributes || [];
     this.requester = parameters.requester;
 
     this.mode = parameters.mode || "raw";
@@ -1001,7 +1070,8 @@ export abstract class External {
         this.select = parameters.select;
         this.dataName = parameters.dataName;
         this.split = parameters.split;
-        if (!this.split) throw new Error("must have split action in split mode");
+        if (!this.split)
+          throw new Error("must have split action in split mode");
         this.applies = parameters.applies || [];
         this.sort = parameters.sort;
         this.limit = parameters.limit;
@@ -1016,13 +1086,17 @@ export abstract class External {
       return;
     }
     if (this.engine !== engine) {
-      throw new TypeError(`incorrect engine '${this.engine}' (needs to be: '${engine}')`);
+      throw new TypeError(
+        `incorrect engine '${this.engine}' (needs to be: '${engine}')`,
+      );
     }
   }
 
   protected _ensureMinVersion(minVersion: string) {
     if (this.version && External.versionLessThan(this.version, minVersion)) {
-      throw new Error(`only ${this.engine} versions >= ${minVersion} are supported`);
+      throw new Error(
+        `only ${this.engine} versions >= ${minVersion} are supported`,
+      );
     }
   }
 
@@ -1036,8 +1110,10 @@ export abstract class External {
     };
     if (this.suppress) value.suppress = this.suppress;
     if (this.attributes) value.attributes = this.attributes;
-    if (this.attributeOverrides) value.attributeOverrides = this.attributeOverrides;
-    if (nonEmptyLookup(this.derivedAttributes)) value.derivedAttributes = this.derivedAttributes;
+    if (this.attributeOverrides)
+      value.attributeOverrides = this.attributeOverrides;
+    if (nonEmptyLookup(this.derivedAttributes))
+      value.derivedAttributes = this.derivedAttributes;
     if (this.delegates) value.delegates = this.delegates;
     value.concealBuckets = this.concealBuckets;
 
@@ -1090,7 +1166,9 @@ export abstract class External {
     if (this.attributeOverrides)
       js.attributeOverrides = AttributeInfo.toJSs(this.attributeOverrides);
     if (nonEmptyLookup(this.derivedAttributes))
-      js.derivedAttributes = Expression.expressionLookupToJS(this.derivedAttributes);
+      js.derivedAttributes = Expression.expressionLookupToJS(
+        this.derivedAttributes,
+      );
     if (this.concealBuckets) js.concealBuckets = true;
 
     if (this.mode !== "raw" && this.rawAttributes)
@@ -1174,7 +1252,8 @@ export abstract class External {
 
   public getAttributesInfo(attributeName: string) {
     const attributeInfo = NamedArray.get(this.rawAttributes, attributeName);
-    if (!attributeInfo) throw new Error(`could not get attribute info for '${attributeName}'`);
+    if (!attributeInfo)
+      throw new Error(`could not get attribute info for '${attributeName}'`);
     return attributeInfo;
   }
 
@@ -1193,7 +1272,8 @@ export abstract class External {
 
   public hasAttribute(name: string): boolean {
     const { attributes, rawAttributes, derivedAttributes } = this;
-    if (SimpleArray.find(rawAttributes || attributes, a => a.name === name)) return true;
+    if (SimpleArray.find(rawAttributes || attributes, a => a.name === name))
+      return true;
     return hasOwnProp(derivedAttributes, name);
   }
 
@@ -1206,14 +1286,20 @@ export abstract class External {
       if (nestDiff) return true;
       if (ex instanceof RefExpression) {
         const refAttributeInfo = this.getAttributesInfo(ex.name);
-        if (refAttributeInfo && refAttributeInfo.maker instanceof TimeFloorExpression) {
+        if (
+          refAttributeInfo &&
+          refAttributeInfo.maker instanceof TimeFloorExpression
+        ) {
           return refAttributeInfo.maker.alignsWith(ex);
         }
       } else if (ex instanceof ChainableExpression) {
         const refExpression = ex.operand;
         if (refExpression instanceof RefExpression) {
           const refAttributeInfo = this.getAttributesInfo(refExpression.name);
-          if (refAttributeInfo && refAttributeInfo.maker instanceof TimeFloorExpression) {
+          if (
+            refAttributeInfo &&
+            refAttributeInfo.maker instanceof TimeFloorExpression
+          ) {
             return refAttributeInfo.maker.alignsWith(ex);
           }
         }
@@ -1222,7 +1308,9 @@ export abstract class External {
     });
   }
 
-  public changeSpecialApplyTransform(specialApplyTransform: SpecialApplyTransform): External {
+  public changeSpecialApplyTransform(
+    specialApplyTransform: SpecialApplyTransform,
+  ): External {
     const value = this.valueOf();
     value.specialApplyTransform = specialApplyTransform;
     return External.fromValue(value);
@@ -1298,7 +1386,8 @@ export abstract class External {
     value.mode = "total";
     value.suppress = false;
     value.rawAttributes = value.attributes;
-    value.derivedAttributes = External.getMergedDerivedAttributesFromExternals(externals);
+    value.derivedAttributes =
+      External.getMergedDerivedAttributesFromExternals(externals);
     value.filter = commonFilter;
     value.attributes = [];
     value.applies = [];
@@ -1326,7 +1415,10 @@ export abstract class External {
       ) {
         const mainOverlap = thenExpression.operand;
         const timeRef = timeShiftExpression.operand;
-        if (mainOverlap instanceof OverlapExpression && this.isTimeRef(timeRef)) {
+        if (
+          mainOverlap instanceof OverlapExpression &&
+          this.isTimeRef(timeRef)
+        ) {
           const mainOverlapLiteral = mainOverlap.expression;
           if (mainOverlapLiteral instanceof LiteralExpression) {
             return {
@@ -1351,9 +1443,13 @@ export abstract class External {
       if (possibleHybrid instanceof OverlapExpression) {
         const { operand, expression } = possibleHybrid;
 
-        const possibleHybridTimeBreakdown = this.getHybridTimeExpressionDecomposition(operand);
+        const possibleHybridTimeBreakdown =
+          this.getHybridTimeExpressionDecomposition(operand);
 
-        if (possibleHybridTimeBreakdown && expression instanceof LiteralExpression) {
+        if (
+          possibleHybridTimeBreakdown &&
+          expression instanceof LiteralExpression
+        ) {
           const literalValue = expression.getLiteralValue();
           if (literalValue instanceof TimeRange) {
             hybridTimeBreakdown = possibleHybridTimeBreakdown;
@@ -1383,7 +1479,9 @@ export abstract class External {
       );
 
       return this._addFilterExpression(
-        Expression._.filter(Expression.and([newTimeFilter, extractAndRest.rest])),
+        Expression._.filter(
+          Expression.and([newTimeFilter, extractAndRest.rest]),
+        ),
       ).changeSpecialApplyTransform({
         mainRangeLiteral, // Transform apply filters
         curTimeRange,
@@ -1427,7 +1525,8 @@ export abstract class External {
     const value = this.valueOf();
     switch (this.mode) {
       case "raw":
-        if (this.concealBuckets && !this.bucketsConcealed(expression)) return null;
+        if (this.concealBuckets && !this.bucketsConcealed(expression))
+          return null;
         if (!this.canHandleFilter(filter)) return null;
         if (value.filter.equals(Expression.TRUE)) {
           value.filter = expression;
@@ -1445,7 +1544,9 @@ export abstract class External {
         return null; // can not add filter in total mode
     }
 
-    value.delegates = nullMap(value.delegates, e => e._addFilterExpression(filter));
+    value.delegates = nullMap(value.delegates, e =>
+      e._addFilterExpression(filter),
+    );
     return External.fromValue(value);
   }
 
@@ -1462,10 +1563,14 @@ export abstract class External {
     const value = this.valueOf();
     value.suppress = false;
     value.select = selectExpression;
-    value.delegates = nullMap(value.delegates, e => e._addSelectExpression(selectExpression));
+    value.delegates = nullMap(value.delegates, e =>
+      e._addSelectExpression(selectExpression),
+    );
 
     if (mode === "split") {
-      value.applies = value.applies.filter(apply => attributes.indexOf(apply.name) !== -1);
+      value.applies = value.applies.filter(
+        apply => attributes.indexOf(apply.name) !== -1,
+      );
       value.attributes = value.attributes.filter(
         attribute => attributes.indexOf(attribute.name) !== -1,
       );
@@ -1480,7 +1585,8 @@ export abstract class External {
     for (const splitKey of splitKeys) {
       const splitExpression = split.splits[splitKey];
       if (!this.expressionDefined(splitExpression)) return null;
-      if (this.concealBuckets && !this.bucketsConcealed(splitExpression)) return null;
+      if (this.concealBuckets && !this.bucketsConcealed(splitExpression))
+        return null;
     }
 
     const value = this.valueOf();
@@ -1490,9 +1596,12 @@ export abstract class External {
     value.split = split;
     value.rawAttributes = value.attributes;
     value.attributes = split.mapSplits(
-      (name, expression) => new AttributeInfo({ name, type: Set.unwrapSetType(expression.type) }),
+      (name, expression) =>
+        new AttributeInfo({ name, type: Set.unwrapSetType(expression.type) }),
     );
-    value.delegates = nullMap(value.delegates, e => e._addSplitExpression(split));
+    value.delegates = nullMap(value.delegates, e =>
+      e._addSplitExpression(split),
+    );
     return External.fromValue(value);
   }
 
@@ -1505,10 +1614,15 @@ export abstract class External {
     let value: ExternalValue;
     if (this.mode === "raw") {
       value = this.valueOf();
-      value.derivedAttributes = immutableAdd(value.derivedAttributes, apply.name, apply.expression);
+      value.derivedAttributes = immutableAdd(
+        value.derivedAttributes,
+        apply.name,
+        apply.expression,
+      );
     } else {
       if (this.specialApplyTransform) {
-        const { mainRangeLiteral, curTimeRange, prevTimeRange } = this.specialApplyTransform;
+        const { mainRangeLiteral, curTimeRange, prevTimeRange } =
+          this.specialApplyTransform;
         apply = apply.changeExpression(
           apply.expression
             .substitute(ex => {
@@ -1518,7 +1632,11 @@ export abstract class External {
                 ex.expression instanceof LiteralExpression
               ) {
                 return ex.changeExpression(
-                  r(mainRangeLiteral.equals(ex.expression) ? curTimeRange : prevTimeRange),
+                  r(
+                    mainRangeLiteral.equals(ex.expression)
+                      ? curTimeRange
+                      : prevTimeRange,
+                  ),
                 );
               }
               return null;
@@ -1542,7 +1660,9 @@ export abstract class External {
       value.applies = added.applies;
       value.attributes = added.attributes;
     }
-    value.delegates = nullMap(value.delegates, e => e._addApplyExpression(apply));
+    value.delegates = nullMap(value.delegates, e =>
+      e._addApplyExpression(apply),
+    );
     return External.fromValue(value);
   }
 
@@ -1562,7 +1682,9 @@ export abstract class External {
     if (!value.limit || limit.value < value.limit.value) {
       value.limit = limit;
     }
-    value.delegates = nullMap(value.delegates, e => e._addLimitExpression(limit));
+    value.delegates = nullMap(value.delegates, e =>
+      e._addLimitExpression(limit),
+    );
     return External.fromValue(value);
   }
 
@@ -1584,7 +1706,9 @@ export abstract class External {
       value.suppress = false;
       value.valueExpression = valueExpression;
       value.attributes = null;
-      value.delegates = nullMap(value.delegates, e => e._addAggregateExpression(aggregate));
+      value.delegates = nullMap(value.delegates, e =>
+        e._addAggregateExpression(aggregate),
+      );
       return External.fromValue(value);
     }
 
@@ -1597,10 +1721,14 @@ export abstract class External {
       const value = this.valueOf();
       value.mode = "value";
       value.suppress = false;
-      value.valueExpression = aggregate.changeOperand($(External.SEGMENT_NAME, "DATASET"));
+      value.valueExpression = aggregate.changeOperand(
+        $(External.SEGMENT_NAME, "DATASET"),
+      );
       value.rawAttributes = value.attributes;
       value.attributes = null;
-      value.delegates = nullMap(value.delegates, e => e._addAggregateExpression(aggregate));
+      value.delegates = nullMap(value.delegates, e =>
+        e._addAggregateExpression(aggregate),
+      );
       return External.fromValue(value);
     } else {
       return null;
@@ -1609,7 +1737,9 @@ export abstract class External {
 
   private _addPostAggregateExpression(action: Expression): External {
     if (this.mode !== "value")
-      throw new Error("must be in value mode to call addPostAggregateExpression");
+      throw new Error(
+        "must be in value mode to call addPostAggregateExpression",
+      );
     if (action instanceof ChainableExpression) {
       if (!action.operand.equals(Expression._)) return null;
 
@@ -1627,7 +1757,9 @@ export abstract class External {
             otherExternal.valueExpressionWithinFilter(commonFilter),
           );
           newValueExpression =
-            this.valueExpressionWithinFilter(commonFilter).performAction(newExpression);
+            this.valueExpressionWithinFilter(commonFilter).performAction(
+              newExpression,
+            );
         } else if (!actionExpression.hasExternal()) {
           newValueExpression = this.valueExpression.performAction(action);
         } else {
@@ -1640,7 +1772,9 @@ export abstract class External {
       const value = this.valueOf();
       value.valueExpression = newValueExpression;
       value.filter = commonFilter;
-      value.delegates = nullMap(value.delegates, e => e._addPostAggregateExpression(action));
+      value.delegates = nullMap(value.delegates, e =>
+        e._addPostAggregateExpression(action),
+      );
       return External.fromValue(value);
     } else {
       return null;
@@ -1650,7 +1784,8 @@ export abstract class External {
   public prePush(ex: ChainableUnaryExpression): External {
     if (this.mode !== "value") return null;
     if (ex.type === "DATASET") return null;
-    if (!ex.operand.noRefs() || !ex.expression.equals(Expression._)) return null;
+    if (!ex.operand.noRefs() || !ex.expression.equals(Expression._))
+      return null;
 
     const value = this.valueOf();
     value.valueExpression = ex.changeExpression(value.valueExpression);
@@ -1696,7 +1831,10 @@ export abstract class External {
   public getQueryFilter(): Expression {
     let filter = this.inlineDerivedAttributes(this.filter).simplify();
 
-    if (filter instanceof RefExpression && !this.capability("filter-on-attribute")) {
+    if (
+      filter instanceof RefExpression &&
+      !this.capability("filter-on-attribute")
+    ) {
       filter = filter.is(true);
     }
 
@@ -1739,9 +1877,12 @@ export abstract class External {
 
   public addNextExternalToDatum(datum: Datum): void {
     const { mode, dataName, split } = this;
-    if (mode !== "split") throw new Error("must be in split mode to addNextExternalToDatum");
+    if (mode !== "split")
+      throw new Error("must be in split mode to addNextExternalToDatum");
     // sussy
-    datum[dataName] = this.getRaw()._addFilterForNext(split.filterFromDatum(datum));
+    datum[dataName] = this.getRaw()._addFilterForNext(
+      split.filterFromDatum(datum),
+    );
   }
 
   public getDelegate(): External {
@@ -1761,7 +1902,11 @@ export abstract class External {
 
     const delegate = this.getDelegate();
     if (delegate) {
-      return delegate.simulateValue(lastNode, simulatedQueries, externalForNext);
+      return delegate.simulateValue(
+        lastNode,
+        simulatedQueries,
+        externalForNext,
+      );
     }
 
     simulatedQueries.push(this.getQueryAndPostTransform().query);
@@ -1781,14 +1926,20 @@ export abstract class External {
     } else {
       if (mode === "split") {
         this.split.mapSplits((name, expression) => {
-          datum[name] = getSampleValue(Set.unwrapSetType(expression.type), expression);
+          datum[name] = getSampleValue(
+            Set.unwrapSetType(expression.type),
+            expression,
+          );
         });
         keys = this.split.mapSplits(name => name);
       }
 
       const applies = this.applies;
       for (const apply of applies) {
-        datum[apply.name] = getSampleValue(apply.expression.type, apply.expression);
+        datum[apply.name] = getSampleValue(
+          apply.expression.type,
+          apply.expression,
+        );
       }
     }
 
@@ -1819,7 +1970,9 @@ export abstract class External {
 
     if (this.mode === "total") {
       return valuePromise.then(v => {
-        return v instanceof Dataset && v.data.length === 1 ? new TotalContainer(v.data[0]) : v;
+        return v instanceof Dataset && v.data.length === 1
+          ? new TotalContainer(v.data[0])
+          : v;
       });
     }
 
@@ -1837,7 +1990,9 @@ export abstract class External {
           ).then(pv1 => {
             const ds1 = pv1 as Dataset;
             const ds1Filter = Expression.or(
-              ds1.data.map(datum => waterfallFilterExpression.filterFromDatum(datum)),
+              ds1.data.map(datum =>
+                waterfallFilterExpression.filterFromDatum(datum),
+              ),
             );
 
             // Add filter to second external
@@ -1861,45 +2016,54 @@ export abstract class External {
         );
 
         return External.valuePromiseToStream(
-          Promise.all([plywoodValue1Promise, plywoodValue2Promise]).then(([pv1, pv2]) => {
-            const ds1 = pv1 as Dataset;
-            let ds2 = pv2 as Dataset;
+          Promise.all([plywoodValue1Promise, plywoodValue2Promise]).then(
+            ([pv1, pv2]) => {
+              const ds1 = pv1 as Dataset;
+              let ds2 = pv2 as Dataset;
 
-            const { timeShift } = decomposed;
-            if (timeShift && ds2.data.length) {
-              const timeLabel = ds2.keys[0];
-              const timeShiftDuration = timeShift.duration;
-              const timeShiftTimezone = timeShift.timezone;
-              ds2 = ds2.applyFn(
-                timeLabel,
-                (d: Datum) => {
-                  const tr = d[timeLabel] as TimeRange;
-                  const shiftedStart = timeShiftDuration.shift(tr.start, timeShiftTimezone, 1);
-                  return new TimeRange({
-                    start: shiftedStart,
-                    end: shiftedStart, // We do not actually care about the end since later we compare by start only
-                    bounds: "[]", // Make this range represent a single data point
-                  });
-                },
-                "TIME_RANGE",
-              );
-            }
+              const { timeShift } = decomposed;
+              if (timeShift && ds2.data.length) {
+                const timeLabel = ds2.keys[0];
+                const timeShiftDuration = timeShift.duration;
+                const timeShiftTimezone = timeShift.timezone;
+                ds2 = ds2.applyFn(
+                  timeLabel,
+                  (d: Datum) => {
+                    const tr = d[timeLabel] as TimeRange;
+                    const shiftedStart = timeShiftDuration.shift(
+                      tr.start,
+                      timeShiftTimezone,
+                      1,
+                    );
+                    return new TimeRange({
+                      start: shiftedStart,
+                      end: shiftedStart, // We do not actually care about the end since later we compare by start only
+                      bounds: "[]", // Make this range represent a single data point
+                    });
+                  },
+                  "TIME_RANGE",
+                );
+              }
 
-            let joined = timeShift ? ds1.leftJoin(ds2) : ds1.fullJoin(ds2);
+              let joined = timeShift ? ds1.leftJoin(ds2) : ds1.fullJoin(ds2);
 
-            // Apply sort and limit
-            const mySort = this.sort;
-            if (mySort && !(this.sortOnLabel() && mySort.direction === "ascending")) {
-              joined = joined.sort(mySort.expression, mySort.direction);
-            }
+              // Apply sort and limit
+              const mySort = this.sort;
+              if (
+                mySort &&
+                !(this.sortOnLabel() && mySort.direction === "ascending")
+              ) {
+                joined = joined.sort(mySort.expression, mySort.direction);
+              }
 
-            const myLimit = this.limit;
-            if (myLimit) {
-              joined = joined.limit(myLimit.value);
-            }
+              const myLimit = this.limit;
+              if (myLimit) {
+                joined = joined.limit(myLimit.value);
+              }
 
-            return joined;
-          }),
+              return joined;
+            },
+          ),
         );
       }
     }
@@ -1941,7 +2105,8 @@ export abstract class External {
         new Transform({
           objectMode: true,
           transform: (chunk, enc, callback) => {
-            if (chunk.type === "datum") externalForNext.addNextExternalToDatum(chunk.datum);
+            if (chunk.type === "datum")
+              externalForNext.addNextExternalToDatum(chunk.datum);
             callback(null, chunk);
           },
         }),
@@ -1957,7 +2122,9 @@ export abstract class External {
     return !this.rawAttributes.length;
   }
 
-  protected abstract getIntrospectAttributes(depth: IntrospectionDepth): Promise<Attributes>;
+  protected abstract getIntrospectAttributes(
+    depth: IntrospectionDepth,
+  ): Promise<Attributes>;
 
   public introspect(options: IntrospectOptions = {}): Promise<External> {
     if (!this.requester) {
@@ -1965,11 +2132,16 @@ export abstract class External {
     }
 
     if (!this.version) {
-      return (this.constructor as any).getVersion(this.requester).then((version: string) => {
-        version = External.extractVersion(version);
-        if (!version) throw new Error("external version not found, please specify explicitly");
-        return this.changeVersion(version).introspect(options);
-      });
+      return (this.constructor as any)
+        .getVersion(this.requester)
+        .then((version: string) => {
+          version = External.extractVersion(version);
+          if (!version)
+            throw new Error(
+              "external version not found, please specify explicitly",
+            );
+          return this.changeVersion(version).introspect(options);
+        });
     }
 
     const depth = options.depth || (options.deep ? "deep" : "default");
@@ -1978,7 +2150,10 @@ export abstract class External {
 
       // Apply user provided (if any) overrides to the received attributes
       if (value.attributeOverrides) {
-        attributes = AttributeInfo.override(attributes, value.attributeOverrides);
+        attributes = AttributeInfo.override(
+          attributes,
+          value.attributeOverrides,
+        );
       }
 
       // Override any existing attributes (we do not just replace them)
@@ -1994,7 +2169,8 @@ export abstract class External {
 
   public getRawFullType(skipDerived = false): DatasetFullType {
     const { rawAttributes, derivedAttributes } = this;
-    if (!rawAttributes.length) throw new Error("dataset has not been introspected");
+    if (!rawAttributes.length)
+      throw new Error("dataset has not been introspected");
 
     const myDatasetType: Record<string, FullType> = {};
     for (const rawAttribute of rawAttributes) {
@@ -2087,7 +2263,10 @@ export abstract class External {
               ex.expression.getLiteralValue()
             ) {
               const myValue = ex.expression.getLiteralValue();
-              if (applyFilterValue && !(applyFilterValue as any).equals(myValue)) {
+              if (
+                applyFilterValue &&
+                !(applyFilterValue as any).equals(myValue)
+              ) {
                 badCondition = true;
               }
               applyFilterValue = myValue;
@@ -2101,9 +2280,13 @@ export abstract class External {
 
       if (badCondition || !applyFilterValue) return null;
 
-      const myGroup = groups.find(r => (applyFilterValue as any).equals(r.filterValue));
+      const myGroup = groups.find(r =>
+        (applyFilterValue as any).equals(r.filterValue),
+      );
       const mySort = Boolean(
-        sort && sort.expression instanceof RefExpression && newApply.name === sort.expression.name,
+        sort &&
+          sort.expression instanceof RefExpression &&
+          newApply.name === sort.expression.name,
       );
       if (myGroup) {
         myGroup.unfilteredApplies.push(newApply);
@@ -2135,30 +2318,37 @@ export abstract class External {
 
     // Applies must decompose into 2 things
     const appliesByTimeFilterValue = this.groupAppliesByTimeFilterValue();
-    if (!appliesByTimeFilterValue || appliesByTimeFilterValue.length !== 2) return null;
+    if (!appliesByTimeFilterValue || appliesByTimeFilterValue.length !== 2)
+      return null;
 
     // Those two things need to be TimeRanges
     const filterV0 = appliesByTimeFilterValue[0].filterValue;
     const filterV1 = appliesByTimeFilterValue[1].filterValue;
-    if (!(filterV0 instanceof TimeRange && filterV1 instanceof TimeRange)) return null;
+    if (!(filterV0 instanceof TimeRange && filterV1 instanceof TimeRange))
+      return null;
 
     // Make sure that the first value of appliesByTimeFilterValue is now
     if (filterV0.start < filterV1.start) appliesByTimeFilterValue.reverse();
 
     // Find the time split (must be only one)
     const timeSplitNames = this.split
-      .mapSplits((name, ex) => (ex instanceof TimeBucketExpression ? name : undefined))
+      .mapSplits((name, ex) =>
+        ex instanceof TimeBucketExpression ? name : undefined,
+      )
       .filter(Boolean);
 
     // Check for timeseries/groupBy decomposition
     if (timeSplitNames.length === 1) {
       const timeSplitName = timeSplitNames[0];
-      const timeSplitExpression = this.split.splits[timeSplitName] as TimeBucketExpression;
+      const timeSplitExpression = this.split.splits[
+        timeSplitName
+      ] as TimeBucketExpression;
 
       if (timeSplitExpression instanceof TimeBucketExpression) {
-        const hybridTimeDecomposition = this.getHybridTimeExpressionDecomposition(
-          timeSplitExpression.operand,
-        );
+        const hybridTimeDecomposition =
+          this.getHybridTimeExpressionDecomposition(
+            timeSplitExpression.operand,
+          );
 
         if (hybridTimeDecomposition) {
           const { timeRef, timeShift } = hybridTimeDecomposition;
@@ -2173,7 +2363,8 @@ export abstract class External {
             .and(external1Value.filter)
             .simplify();
           external1Value.split = simpleSplit;
-          external1Value.applies = appliesByTimeFilterValue[0].unfilteredApplies;
+          external1Value.applies =
+            appliesByTimeFilterValue[0].unfilteredApplies;
           external1Value.limit = null; // Remove limit and sort
           external1Value.sort = null; // So we get a timeseries
 
@@ -2183,7 +2374,8 @@ export abstract class External {
             .and(external2Value.filter)
             .simplify();
           external2Value.split = simpleSplit;
-          external2Value.applies = appliesByTimeFilterValue[1].unfilteredApplies;
+          external2Value.applies =
+            appliesByTimeFilterValue[1].unfilteredApplies;
           external2Value.limit = null;
           external2Value.sort = null;
 
@@ -2216,7 +2408,9 @@ export abstract class External {
         .and(external2Value.filter)
         .simplify();
       external2Value.applies = appliesByTimeFilterValue[1].unfilteredApplies;
-      external2Value.sort = external2Value.sort.changeExpression($(external2Value.applies[0].name));
+      external2Value.sort = external2Value.sort.changeExpression(
+        $(external2Value.applies[0].name),
+      );
 
       // ToDo: strictly speaking this is incorrect. This only works under the assumption that the havingFilter can be fully resolved using external1
       // the correct thing to do would be to decompose the havingFilter into `havingOnExternal1 AND havingOnExternal2` and then to assign them accordingly.

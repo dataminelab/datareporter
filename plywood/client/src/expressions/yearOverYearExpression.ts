@@ -192,7 +192,9 @@ export class YearOverYearExpression {
         break;
       case "split":
         if (!this.keys.length) {
-          while ((columnMatch = this.columnPattern.exec(this.queries[1])) !== null) {
+          while (
+            (columnMatch = this.columnPattern.exec(this.queries[1])) !== null
+          ) {
             this.keys.push(columnMatch[1] || columnMatch[2]);
           }
         }
@@ -204,16 +206,19 @@ export class YearOverYearExpression {
         while ((sumMatch = this.sumPattern.exec(this.queries[1])) !== null) {
           this.sumColumns.push(sumMatch[1] || sumMatch[2]);
         }
-        [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(
-          this.sumColumns
-            .filter((value, index, self) => self.indexOf(value) === index)
-            .map(
-              i =>
-                `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`,
-            )
-            .join(" "),
-        );
-        onQuery = this.keys.length ? `curr.${this.keys[0]} = prev.${this.keys[0]}` : "1=1";
+        [formattedSumQueries, fromQuery, where1, where2] =
+          this.splitFromAndWhereQueries(
+            this.sumColumns
+              .filter((value, index, self) => self.indexOf(value) === index)
+              .map(
+                i =>
+                  `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`,
+              )
+              .join(" "),
+          );
+        onQuery = this.keys.length
+          ? `curr.${this.keys[0]} = prev.${this.keys[0]}`
+          : "1=1";
         this.query = `
                     SELECT ${formattedColumnQueries} ${formattedSumQueries}
                     FROM ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where1} GROUP BY ${this.groupBy}) AS curr

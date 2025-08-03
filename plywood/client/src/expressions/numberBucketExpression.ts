@@ -21,7 +21,12 @@ import { NumberRange } from "../datatypes/numberRange";
 import { SQLDialect } from "../dialect/baseDialect";
 import { continuousFloorExpression } from "../helper/utils";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class NumberBucketExpression extends ChainableExpression {
   static op = "NumberBucket";
@@ -59,7 +64,11 @@ export class NumberBucketExpression extends ChainableExpression {
   }
 
   public equals(other: NumberBucketExpression | undefined): boolean {
-    return super.equals(other) && this.size === other.size && this.offset === other.offset;
+    return (
+      super.equals(other) &&
+      this.size === other.size &&
+      this.offset === other.offset
+    );
   }
 
   protected _toStringParameters(indent?: int): string[] {
@@ -80,8 +89,16 @@ export class NumberBucketExpression extends ChainableExpression {
     );
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return continuousFloorExpression(operandSQL, "FLOOR", this.size, this.offset);
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return continuousFloorExpression(
+      operandSQL,
+      "FLOOR",
+      this.size,
+      this.offset,
+    );
   }
 }
 

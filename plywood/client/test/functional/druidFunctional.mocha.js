@@ -407,7 +407,11 @@ describe("Druid Functional", function () {
           {
             name: "time",
             type: "TIME",
-            maker: { action: "timeFloor", duration: "PT1H", timezone: "Etc/UTC" },
+            maker: {
+              action: "timeFloor",
+              duration: "PT1H",
+              timezone: "Etc/UTC",
+            },
           },
           { name: "channel", type: "STRING" },
           { name: "isNew", type: "BOOLEAN" },
@@ -420,7 +424,12 @@ describe("Druid Functional", function () {
           { name: "delta", type: "NUMBER", unsplitable: true },
           { name: "added", type: "NUMBER", unsplitable: true },
           { name: "deleted", type: "NUMBER", unsplitable: true },
-          { name: "page_unique", type: "NULL", nativeType: "hyperUnique", unsplitable: true },
+          {
+            name: "page_unique",
+            type: "NULL",
+            nativeType: "hyperUnique",
+            unsplitable: true,
+          },
         ],
         filter: $("time").overlap(
           TimeRange.fromJS({
@@ -660,7 +669,10 @@ describe("Druid Functional", function () {
 
     it("works with time floor + timezone", () => {
       const ex = $("wiki")
-        .split({ t: $("time").timeFloor("P1D", "Europe/Paris"), robot: "$isRobot" })
+        .split({
+          t: $("time").timeFloor("P1D", "Europe/Paris"),
+          robot: "$isRobot",
+        })
         .apply("cnt", "$wiki.sum($count)")
         .sort("$cnt", "descending")
         .limit(10);
@@ -975,7 +987,10 @@ describe("Druid Functional", function () {
       const ex = $("wiki")
         .filter($("channel").transformCase("upperCase").is("EN"))
         .split($("page").transformCase("lowerCase"), "page")
-        .apply("SumIndexA", $("wiki").sum($("channel").transformCase("upperCase").indexOf("A")))
+        .apply(
+          "SumIndexA",
+          $("wiki").sum($("channel").transformCase("upperCase").indexOf("A")),
+        )
         .limit(5);
 
       return basicExecutor(ex).then(result => {
@@ -1023,8 +1038,15 @@ describe("Druid Functional", function () {
 
     it("works with custom transform in filter and split for numeric dimension", () => {
       const ex = $("wiki")
-        .filter($("commentLength").customTransform("concatWithConcat", "STRING").is("'100concat'"))
-        .split($("commentLength").customTransform("timesTwo", "STRING"), "Times Two")
+        .filter(
+          $("commentLength")
+            .customTransform("concatWithConcat", "STRING")
+            .is("'100concat'"),
+        )
+        .split(
+          $("commentLength").customTransform("timesTwo", "STRING"),
+          "Times Two",
+        )
         .apply("Temp", "$wiki.count()") // ToDo: Temp fix
         .limit(8);
 
@@ -1075,7 +1097,10 @@ describe("Druid Functional", function () {
 
     it("works with filtered unique (in expression)", () => {
       const ex = ply()
-        .apply("UniquePagesEn", $("wiki").filter("$channel == en").countDistinct("$page"))
+        .apply(
+          "UniquePagesEn",
+          $("wiki").filter("$channel == en").countDistinct("$page"),
+        )
         .apply("UniquePagesEnOver2", "$UniquePagesEn / 2");
 
       return basicExecutor(ex).then(result => {
@@ -1090,8 +1115,14 @@ describe("Druid Functional", function () {
 
     it("works with filtered uniques", () => {
       const ex = ply()
-        .apply("UniquePagesEn", $("wiki").filter("$channel == en").countDistinct("$page"))
-        .apply("UniquePagesEs", $("wiki").filter("$channel == es").countDistinct("$page_unique"))
+        .apply(
+          "UniquePagesEn",
+          $("wiki").filter("$channel == en").countDistinct("$page"),
+        )
+        .apply(
+          "UniquePagesEs",
+          $("wiki").filter("$channel == es").countDistinct("$page_unique"),
+        )
         .apply("UniquePagesChannelDiff", "$UniquePagesEn - $UniquePagesEs");
 
       return basicExecutor(ex).then(result => {
@@ -1409,18 +1440,36 @@ describe("Druid Functional", function () {
     it("works with all kinds of cool aggregates on totals level", () => {
       const ex = ply()
         .apply("NumPages", $("wiki").countDistinct("$page"))
-        .apply("NumEnPages", $("wiki").filter($("channel").is("en")).countDistinct("$page"))
+        .apply(
+          "NumEnPages",
+          $("wiki").filter($("channel").is("en")).countDistinct("$page"),
+        )
         .apply("ChannelAdded", $("wiki").sum("$added"))
-        .apply("ChannelENAdded", $("wiki").filter($("channel").is("en")).sum("$added"))
-        .apply("ChannelENishAdded", $("wiki").filter($("channel").contains("en")).sum("$added"))
+        .apply(
+          "ChannelENAdded",
+          $("wiki").filter($("channel").is("en")).sum("$added"),
+        )
+        .apply(
+          "ChannelENishAdded",
+          $("wiki").filter($("channel").contains("en")).sum("$added"),
+        )
         .apply("Count", $("wiki").sum("$count"))
         .apply("CountSquareRoot", $("wiki").sum("$count").power(0.5))
         .apply("CountSquared", $("wiki").sum("$count").power(2))
         .apply("One", $("wiki").sum("$count").power(0))
-        .apply("AddedByDeleted", $("wiki").sum("$added").divide($("wiki").sum("$deleted")))
+        .apply(
+          "AddedByDeleted",
+          $("wiki").sum("$added").divide($("wiki").sum("$deleted")),
+        )
         .apply("Delta95th", $("wiki").quantile("$delta_hist", 0.95))
-        .apply("Delta99thX2", $("wiki").quantile("$delta_hist", 0.99).multiply(2))
-        .apply("Delta98thEn", $("wiki").filter($("channel").is("en")).quantile("$delta_hist", 0.98))
+        .apply(
+          "Delta99thX2",
+          $("wiki").quantile("$delta_hist", 0.99).multiply(2),
+        )
+        .apply(
+          "Delta98thEn",
+          $("wiki").filter($("channel").is("en")).quantile("$delta_hist", 0.98),
+        )
         .apply(
           "Delta98thDe",
           $("wiki").filter($("channel").is("de")).quantile("$delta_hist", 0.98),
@@ -1452,10 +1501,19 @@ describe("Druid Functional", function () {
       const ex = $("wiki")
         .split("$isNew", "isNew")
         .apply("NumPages", $("wiki").countDistinct("$page"))
-        .apply("NumEnPages", $("wiki").filter($("channel").is("en")).countDistinct("$page"))
+        .apply(
+          "NumEnPages",
+          $("wiki").filter($("channel").is("en")).countDistinct("$page"),
+        )
         .apply("ChannelAdded", $("wiki").sum("$added"))
-        .apply("ChannelENAdded", $("wiki").filter($("channel").is("en")).sum("$added"))
-        .apply("ChannelENishAdded", $("wiki").filter($("channel").contains("en")).sum("$added"))
+        .apply(
+          "ChannelENAdded",
+          $("wiki").filter($("channel").is("en")).sum("$added"),
+        )
+        .apply(
+          "ChannelENishAdded",
+          $("wiki").filter($("channel").contains("en")).sum("$added"),
+        )
         .apply("Count", $("wiki").sum("$count"))
         .apply("CountSquareRoot", $("wiki").sum("$count").power(0.5))
         .apply("CountSquared", $("wiki").sum("$count").power(2))
@@ -1712,7 +1770,10 @@ describe("Druid Functional", function () {
     });
 
     it.skip("works with single apply on string column (total)", () => {
-      const ex = $("wiki").apply("count", '$wiki.sum($commentLengthStr.cast("NUMBER"))');
+      const ex = $("wiki").apply(
+        "count",
+        '$wiki.sum($commentLengthStr.cast("NUMBER"))',
+      );
 
       return basicExecutor(ex).then(result => {
         console.log("result", result);
@@ -1805,7 +1866,10 @@ describe("Druid Functional", function () {
 
     it("works with contains(ignoreCase) filter", () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("page").contains("wiki", "ignoreCase")))
+        .apply(
+          "wiki",
+          $("wiki").filter($("page").contains("wiki", "ignoreCase")),
+        )
         .apply(
           "Pages",
           $("wiki")
@@ -1923,7 +1987,10 @@ describe("Druid Functional", function () {
 
     it("works name reassignment", () => {
       const ex = $("wiki")
-        .split('$cityName.fallback("NA") ++ "-" ++ $countryIsoCode.fallback("NA")', "cityName")
+        .split(
+          '$cityName.fallback("NA") ++ "-" ++ $countryIsoCode.fallback("NA")',
+          "cityName",
+        )
         .apply("Count", "$wiki.sum($count)")
         .sort("$Count", "descending")
         .limit(3);
@@ -1949,7 +2016,10 @@ describe("Druid Functional", function () {
     it("works with split sort on string", () => {
       const ex = ply().apply(
         "Channels",
-        $("wiki").split("$channel", "Channel").sort("$Channel", "ascending").limit(3),
+        $("wiki")
+          .split("$channel", "Channel")
+          .sort("$Channel", "ascending")
+          .limit(3),
       );
 
       return basicExecutor(ex).then(result => {
@@ -2143,7 +2213,10 @@ describe("Druid Functional", function () {
         .apply(
           "ChannelFallbackLOL",
           $("wiki")
-            .split($("channel").lookup("channel-lookup").fallback("LOL"), "Channel")
+            .split(
+              $("channel").lookup("channel-lookup").fallback("LOL"),
+              "Channel",
+            )
             .apply("Count", "$wiki.sum($count)")
             .sort("$Count", "descending")
             .limit(4),
@@ -2151,7 +2224,10 @@ describe("Druid Functional", function () {
         .apply(
           "ChannelFallbackSelf",
           $("wiki")
-            .split($("channel").lookup("channel-lookup").fallback("$channel"), "Channel")
+            .split(
+              $("channel").lookup("channel-lookup").fallback("$channel"),
+              "Channel",
+            )
             .apply("Count", "$wiki.sum($count)")
             .sort("$Count", "descending")
             .limit(4),
@@ -2333,9 +2409,15 @@ describe("Druid Functional", function () {
         .apply("deltaHist95", $("wiki").quantile($("delta_hist"), 0.95))
         .apply("deltaHistMedian", $("wiki").quantile($("delta_hist"), 0.5))
         .apply("deltaBucket95", $("wiki").quantile($("deltaBucket100"), 0.95))
-        .apply("deltaBucketMedian", $("wiki").quantile($("deltaBucket100"), 0.5))
+        .apply(
+          "deltaBucketMedian",
+          $("wiki").quantile($("deltaBucket100"), 0.5),
+        )
         .apply("commentLength95", $("wiki").quantile($("commentLength"), 0.95))
-        .apply("commentLengthMedian", $("wiki").quantile($("commentLength"), 0.5));
+        .apply(
+          "commentLengthMedian",
+          $("wiki").quantile($("commentLength"), 0.5),
+        );
 
       return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
@@ -2353,20 +2435,33 @@ describe("Druid Functional", function () {
 
     it("works with quantiles (quantile doubles)", () => {
       const ex = ply()
-        .apply("deltaQuantiles95", $("wiki").quantile($("delta_quantilesDoublesSketch"), 0.95))
+        .apply(
+          "deltaQuantiles95",
+          $("wiki").quantile($("delta_quantilesDoublesSketch"), 0.95),
+        )
         .apply(
           "deltaQuantilesMedian",
           $("wiki").quantile($("delta_quantilesDoublesSketch"), 0.5, "k=256"),
         )
-        .apply("commentLength95", $("wiki").quantile($("commentLength"), 0.95, "v=2"))
-        .apply("commentLengthMedian", $("wiki").quantile($("commentLength"), 0.5, "v=2,k=256"))
+        .apply(
+          "commentLength95",
+          $("wiki").quantile($("commentLength"), 0.95, "v=2"),
+        )
+        .apply(
+          "commentLengthMedian",
+          $("wiki").quantile($("commentLength"), 0.5, "v=2,k=256"),
+        )
         .apply(
           "DeltaDq98thEn",
-          $("wiki").filter($("channel").is("en")).quantile("$delta_quantilesDoublesSketch", 0.98),
+          $("wiki")
+            .filter($("channel").is("en"))
+            .quantile("$delta_quantilesDoublesSketch", 0.98),
         )
         .apply(
           "DeltaDq98thDe",
-          $("wiki").filter($("channel").is("de")).quantile("$delta_quantilesDoublesSketch", 0.98),
+          $("wiki")
+            .filter($("channel").is("de"))
+            .quantile("$delta_quantilesDoublesSketch", 0.98),
         );
 
       return basicExecutor(ex).then(result => {
@@ -2381,7 +2476,8 @@ describe("Druid Functional", function () {
         );
 
         // These quantile doubles are non-deterministic - so just check against some bounds
-        const between = (k, min, max) => expect(min < datum[k] && datum[k] < max).to.equal(true);
+        const between = (k, min, max) =>
+          expect(min < datum[k] && datum[k] < max).to.equal(true);
         between("deltaQuantiles95", 500, 2000);
         between("commentLength95", 100, 200);
         between("deltaQuantilesMedian", 8, 40);
@@ -2402,7 +2498,10 @@ describe("Druid Functional", function () {
     it("works with lookup IS filter with fallback", () => {
       const ex = $("wiki")
         .filter(
-          $("channel").lookup("channel-lookup").fallback(r("LOL")).overlap(["English", "LOL"]),
+          $("channel")
+            .lookup("channel-lookup")
+            .fallback(r("LOL"))
+            .overlap(["English", "LOL"]),
         )
         .split($("channel").lookup("channel-lookup").fallback(r("LOL")), "C")
         .apply("Count", "$wiki.sum($count)")
@@ -2425,7 +2524,9 @@ describe("Druid Functional", function () {
 
     it("works with lookup CONTAINS filter", () => {
       const ex = $("wiki")
-        .filter($("channel").lookup("channel-lookup").contains("Eng", "ignoreCase"))
+        .filter(
+          $("channel").lookup("channel-lookup").contains("Eng", "ignoreCase"),
+        )
         .sum("$count");
 
       return basicExecutor(ex).then(result => {
@@ -2435,7 +2536,14 @@ describe("Druid Functional", function () {
 
     it("works with string manipulation after cast action", () => {
       const ex = $("wiki")
-        .filter($("deltaBucket100").absolute().cast("STRING").substr(0, 5).cast("NUMBER").is(1000))
+        .filter(
+          $("deltaBucket100")
+            .absolute()
+            .cast("STRING")
+            .substr(0, 5)
+            .cast("NUMBER")
+            .is(1000),
+        )
         .sum("$count");
 
       return basicExecutor(ex).then(result => {
@@ -2580,7 +2688,11 @@ describe("Druid Functional", function () {
         .apply(
           "SumCountDistinct",
           $("wiki")
-            .filter($("countryIsoCode").in(["US", "IT"]).and($("cityName").isnt(null)))
+            .filter(
+              $("countryIsoCode")
+                .in(["US", "IT"])
+                .and($("cityName").isnt(null)),
+            )
             .split("$time.timeBucket(PT1H)")
             .apply("C", "$wiki.countDistinct($user)")
             .sum("$C"),
@@ -3217,7 +3329,12 @@ describe("Druid Functional", function () {
     it("can timeBucket a secondary time column", () => {
       const ex = ply().apply(
         "TimeLater",
-        $("wiki").split($("sometimeLater").timeBucket("PT1H", "Etc/UTC"), "SometimeLater").limit(5),
+        $("wiki")
+          .split(
+            $("sometimeLater").timeBucket("PT1H", "Etc/UTC"),
+            "SometimeLater",
+          )
+          .limit(5),
       );
 
       return basicExecutor(ex).then(result => {
@@ -3273,7 +3390,10 @@ describe("Druid Functional", function () {
       const ex = ply().apply(
         "TimeLater",
         $("wiki")
-          .split($("sometimeLater").timeBucket("PT3H", "Asia/Kolkata"), "SometimeLater")
+          .split(
+            $("sometimeLater").timeBucket("PT3H", "Asia/Kolkata"),
+            "SometimeLater",
+          )
           .limit(5),
       );
 
@@ -3331,7 +3451,10 @@ describe("Druid Functional", function () {
       const ex = ply().apply(
         "TimeLater",
         $("wiki")
-          .split($("sometimeLater").timeBucket("PT3H", "Asia/Kathmandu"), "SometimeLater")
+          .split(
+            $("sometimeLater").timeBucket("PT3H", "Asia/Kathmandu"),
+            "SometimeLater",
+          )
           .limit(5),
       );
 
@@ -3395,8 +3518,14 @@ describe("Druid Functional", function () {
       });
       const ex = $("wiki")
         .split($("channel"), "Channel")
-        .apply("CountPrev", $("wiki").filter($("time").overlap(prevRange)).sum("$count"))
-        .apply("CountMain", $("wiki").filter($("time").overlap(mainRange)).sum("$count"))
+        .apply(
+          "CountPrev",
+          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
+        )
+        .apply(
+          "CountMain",
+          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
+        )
         .sort($("CountMain"), "descending")
         .limit(5);
 
@@ -3449,8 +3578,14 @@ describe("Druid Functional", function () {
             .timeBucket("PT2H"),
           "TimeJoin",
         )
-        .apply("CountPrev", $("wiki").filter($("time").overlap(prevRange)).sum("$count"))
-        .apply("CountMain", $("wiki").filter($("time").overlap(mainRange)).sum("$count"));
+        .apply(
+          "CountPrev",
+          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
+        )
+        .apply(
+          "CountMain",
+          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
+        );
 
       return basicExecutor(ex).then(result => {
         expect(result.toJS()).to.deep.equal({
@@ -3542,8 +3677,14 @@ describe("Druid Functional", function () {
           "TimeJoin",
         )
         .apply("CountAll", $("wiki").sum("$count"))
-        .apply("CountPrev", $("wiki").filter($("time").overlap(prevRange)).sum("$count"))
-        .apply("CountMain", $("wiki").filter($("time").overlap(mainRange)).sum("$count"))
+        .apply(
+          "CountPrev",
+          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
+        )
+        .apply(
+          "CountMain",
+          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
+        )
         .limit(3);
 
       return basicExecutor(ex).then(result => {
@@ -3597,8 +3738,14 @@ describe("Druid Functional", function () {
             .timeBucket("PT1H"),
           "TimeJoin",
         )
-        .apply("CountPrev", $("wiki").filter($("time").overlap(prevRange)).sum("$count"))
-        .apply("CountMain", $("wiki").filter($("time").overlap(mainRange)).sum("$count"))
+        .apply(
+          "CountPrev",
+          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
+        )
+        .apply(
+          "CountMain",
+          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
+        )
         .limit(6);
 
       return basicExecutor(ex).then(result => {
@@ -3673,8 +3820,14 @@ describe("Druid Functional", function () {
             .timeBucket("PT1H"),
           "TimeJoin",
         )
-        .apply("CountPrev", $("wiki").filter($("time").overlap(prevRange)).sum("$count"))
-        .apply("CountMain", $("wiki").filter($("time").overlap(mainRange)).sum("$count"))
+        .apply(
+          "CountPrev",
+          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
+        )
+        .apply(
+          "CountMain",
+          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
+        )
         .sort("$CountMain", "descending")
         .limit(6);
 
@@ -3751,15 +3904,27 @@ describe("Druid Functional", function () {
           "TimeJoin",
         )
         .apply("CountAll", $("wiki").sum("$count"))
-        .apply("CountPrev", $("wiki").filter($("time").overlap(prevRange)).sum("$count"))
-        .apply("CountMain", $("wiki").filter($("time").overlap(mainRange)).sum("$count"))
+        .apply(
+          "CountPrev",
+          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
+        )
+        .apply(
+          "CountMain",
+          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
+        )
         .limit(2)
         .apply(
           "Channels",
           $("wiki")
             .split("$channel", "Channel")
-            .apply("CountPrev", $("wiki").filter($("time").overlap(prevRange)).sum("$count"))
-            .apply("CountMain", $("wiki").filter($("time").overlap(mainRange)).sum("$count"))
+            .apply(
+              "CountPrev",
+              $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
+            )
+            .apply(
+              "CountMain",
+              $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
+            )
             .sort("$CountMain", "descending")
             .limit(2),
         );
@@ -3864,8 +4029,14 @@ describe("Druid Functional", function () {
             .timeBucket("PT2H"),
           "TimeJoin",
         )
-        .apply("CountPrev", $("wiki").filter($("time").overlap(prevRange)).sum("$count"))
-        .apply("CountMain", $("wiki").filter($("time").overlap(mainRange)).sum("$count"))
+        .apply(
+          "CountPrev",
+          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
+        )
+        .apply(
+          "CountMain",
+          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
+        )
         .apply("Delta", "$CountMain - $CountPrev")
         .sort("$Delta", "descending");
 
@@ -3980,7 +4151,10 @@ describe("Druid Functional", function () {
       const ex = $("wiki")
         .split("$channel", "Channel")
         .apply("Count", "$wiki.sum($count)")
-        .apply("MinByRobot", "$wiki.split($isRobot, Blah).apply(Cnt, $wiki.sum($count)).min($Cnt)")
+        .apply(
+          "MinByRobot",
+          "$wiki.split($isRobot, Blah).apply(Cnt, $wiki.sum($count)).min($Cnt)",
+        )
         .sort("$Count", "descending")
         .limit(3);
 
@@ -4476,7 +4650,20 @@ describe("Druid Functional", function () {
             time: new Date("2015-09-12T00:46:00.000Z"),
             user: "ChandraHelsinky",
             userChars: {
-              elements: ["A", "C", "D", "E", "H", "I", "K", "L", "N", "R", "S", "Y"],
+              elements: [
+                "A",
+                "C",
+                "D",
+                "E",
+                "H",
+                "I",
+                "K",
+                "L",
+                "N",
+                "R",
+                "S",
+                "Y",
+              ],
               setType: "STRING",
             },
             user_hll: "AgEHDAMIAQAsNv0H",
@@ -4521,7 +4708,10 @@ describe("Druid Functional", function () {
         .limit(5);
 
       return basicExecutor(ex).then(result => {
-        expect(result.toJS().data).to.deep.equal([{ userChar: "B" }, { userChar: "N" }]);
+        expect(result.toJS().data).to.deep.equal([
+          { userChar: "B" },
+          { userChar: "N" },
+        ]);
       });
     });
 
@@ -4533,7 +4723,10 @@ describe("Druid Functional", function () {
         .limit(5);
 
       return basicExecutor(ex).then(result => {
-        expect(result.toJS().data).to.deep.equal([{ userChar: "B" }, { userChar: "N" }]);
+        expect(result.toJS().data).to.deep.equal([
+          { userChar: "B" },
+          { userChar: "N" },
+        ]);
       });
     });
 
@@ -4650,7 +4843,10 @@ describe("Druid Functional", function () {
         .apply(
           "wiki",
           $("wiki").filter(
-            $("time").overlap(new Date("2015-09-11T23:59:00Z"), new Date("2015-09-12T23:59:00Z")),
+            $("time").overlap(
+              new Date("2015-09-11T23:59:00Z"),
+              new Date("2015-09-12T23:59:00Z"),
+            ),
           ),
         )
         .apply("count", "$wiki.sum($count)")
@@ -4772,13 +4968,19 @@ describe("Druid Functional", function () {
           .apply(
             "wikiA",
             $("wiki").filter(
-              $("time").overlap(new Date("2015-09-12T12:00:00Z"), new Date("2015-09-13T00:00:00Z")),
+              $("time").overlap(
+                new Date("2015-09-12T12:00:00Z"),
+                new Date("2015-09-13T00:00:00Z"),
+              ),
             ),
           )
           .apply(
             "wikiB",
             $("wiki").filter(
-              $("time").overlap(new Date("2015-09-12T00:00:00Z"), new Date("2015-09-12T12:00:00Z")),
+              $("time").overlap(
+                new Date("2015-09-12T00:00:00Z"),
+                new Date("2015-09-12T12:00:00Z"),
+              ),
             ),
           )
           .apply("CountA", "$wikiA.sum($count)")
@@ -4801,13 +5003,19 @@ describe("Druid Functional", function () {
           .apply(
             "wikiA",
             $("wiki").filter(
-              $("time").overlap(new Date("2015-09-12T12:00:00Z"), new Date("2015-09-13T00:00:00Z")),
+              $("time").overlap(
+                new Date("2015-09-12T12:00:00Z"),
+                new Date("2015-09-13T00:00:00Z"),
+              ),
             ),
           )
           .apply(
             "wikiB",
             $("wiki").filter(
-              $("time").overlap(new Date("2015-09-12T00:00:00Z"), new Date("2015-09-12T12:00:00Z")),
+              $("time").overlap(
+                new Date("2015-09-12T00:00:00Z"),
+                new Date("2015-09-12T12:00:00Z"),
+              ),
             ),
           )
           .apply("CountA", "$wikiA.sum($count)")
@@ -4949,7 +5157,9 @@ describe("Druid Functional", function () {
     it("introspects version and attributes", () => {
       return wikiExternal.introspect().then(introspectedExternal => {
         expect(introspectedExternal.version).to.deep.equal(info.druidVersion);
-        expect(introspectedExternal.toJS().attributes.slice(0, 3)).to.deep.equal([
+        expect(
+          introspectedExternal.toJS().attributes.slice(0, 3),
+        ).to.deep.equal([
           {
             name: "time",
             nativeType: "__time",
@@ -4983,39 +5193,47 @@ describe("Druid Functional", function () {
     });
 
     it("introspects attributes (shallow)", () => {
-      return wikiExternal.introspect({ depth: "shallow" }).then(introspectedExternal => {
-        expect(introspectedExternal.toJS().attributes.slice(0, 3)).to.deep.equal([
-          {
-            name: "time",
-            nativeType: "__time",
-            type: "TIME",
-          },
-          {
-            maker: {
-              expression: {
-                name: "added",
-                op: "ref",
-              },
-              op: "sum",
+      return wikiExternal
+        .introspect({ depth: "shallow" })
+        .then(introspectedExternal => {
+          expect(
+            introspectedExternal.toJS().attributes.slice(0, 3),
+          ).to.deep.equal([
+            {
+              name: "time",
+              nativeType: "__time",
+              type: "TIME",
             },
-            name: "added",
-            nativeType: "LONG",
-            type: "NUMBER",
-            unsplitable: true,
-          },
-          {
-            name: "channel",
-            nativeType: "STRING",
-            type: "STRING",
-          },
-        ]);
-      });
+            {
+              maker: {
+                expression: {
+                  name: "added",
+                  op: "ref",
+                },
+                op: "sum",
+              },
+              name: "added",
+              nativeType: "LONG",
+              type: "NUMBER",
+              unsplitable: true,
+            },
+            {
+              name: "channel",
+              nativeType: "STRING",
+              type: "STRING",
+            },
+          ]);
+        });
     });
 
     it("introspects attributes (deep)", () => {
-      return wikiExternal.introspect({ depth: "deep" }).then(introspectedExternal => {
-        expect(introspectedExternal.toJS().attributes).to.deep.equal(wikiAttributes);
-      });
+      return wikiExternal
+        .introspect({ depth: "deep" })
+        .then(introspectedExternal => {
+          expect(introspectedExternal.toJS().attributes).to.deep.equal(
+            wikiAttributes,
+          );
+        });
     });
 
     it("works with introspection", () => {

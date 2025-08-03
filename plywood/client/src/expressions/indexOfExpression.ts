@@ -27,7 +27,9 @@ import {
 export class IndexOfExpression extends ChainableUnaryExpression {
   static op = "IndexOf";
   static fromJS(parameters: ExpressionJS): IndexOfExpression {
-    return new IndexOfExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new IndexOfExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
@@ -38,11 +40,19 @@ export class IndexOfExpression extends ChainableUnaryExpression {
     this.type = "NUMBER";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
-    return operandValue ? (operandValue as string).indexOf(expressionValue) : null;
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
+    return operandValue
+      ? (operandValue as string).indexOf(expressionValue)
+      : null;
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return Expression.jsNullSafetyBinary(
       operandJS,
       expressionJS,

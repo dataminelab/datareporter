@@ -127,7 +127,11 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
       }
       return [splitStrings.join(", "), this.dataName];
     } else {
-      return [this.firstSplitExpression().toString(), this.firstSplitName(), this.dataName];
+      return [
+        this.firstSplitExpression().toString(),
+        this.firstSplitName(),
+        this.dataName,
+      ];
     }
   }
 
@@ -192,7 +196,9 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
   public calc(datum: Datum): PlywoodValue {
     const { operand, splits, dataName } = this;
     const operandValue = operand.calc(datum);
-    return operandValue ? (operandValue as Dataset).split(splits, dataName) : null;
+    return operandValue
+      ? (operandValue as Dataset).split(splits, dataName)
+      : null;
   }
 
   public getSQL(_dialect: SQLDialect): string {
@@ -235,7 +241,8 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
 
     const simpleOperand = this.operand.simplify();
     const simpleSplits = this.mapSplitExpressions(ex => ex.simplify());
-    const simpler: Expression = this.changeOperand(simpleOperand).changeSplits(simpleSplits);
+    const simpler: Expression =
+      this.changeOperand(simpleOperand).changeSplits(simpleSplits);
     if (simpler.fullyDefined()) return r(simpler.calc({}));
 
     if (simpler instanceof ChainableExpression) {
@@ -282,15 +289,21 @@ export class SplitExpression extends ChainableExpression implements Aggregate {
         operandSubs.typeContext,
       ).expression;
     });
-    const updatedThis = this.changeOperand(operandSubs.expression).changeSplits(splitsSubs);
+    const updatedThis = this.changeOperand(operandSubs.expression).changeSplits(
+      splitsSubs,
+    );
 
     return {
       expression: updatedThis,
-      typeContext: updatedThis.updateTypeContextIfNeeded(operandSubs.typeContext),
+      typeContext: updatedThis.updateTypeContextIfNeeded(
+        operandSubs.typeContext,
+      ),
     };
   }
 
-  public transformExpressions(fn: (expression: Expression, name?: string) => Expression) {
+  public transformExpressions(
+    fn: (expression: Expression, name?: string) => Expression,
+  ) {
     return this.changeSplits(this.mapSplitExpressions(fn));
   }
 

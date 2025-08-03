@@ -1,4 +1,5 @@
-let druidRequesterFactory = require("plywood-druid-requester").druidRequesterFactory;
+let druidRequesterFactory =
+  require("plywood-druid-requester").druidRequesterFactory;
 let plywood = require("../../build/plywood");
 let ply = plywood.ply;
 let $ = plywood.$;

@@ -19,14 +19,18 @@ const { expect } = require("chai");
 
 const plywood = require("../plywood");
 
-const { Expression, Dataset, External, ExternalExpression, $, i$, ply, r } = plywood;
+const { Expression, Dataset, External, ExternalExpression, $, i$, ply, r } =
+  plywood;
 
 describe("resolve", () => {
   describe("errors if", () => {
     it("went too deep", () => {
       const ex = ply()
         .apply("num", "$^foo + 1")
-        .apply("subData", ply().apply("x", "$^num * 3").apply("y", "$^^^foo * 10"));
+        .apply(
+          "subData",
+          ply().apply("x", "$^num * 3").apply("y", "$^^^foo * 10"),
+        );
 
       expect(() => {
         ex.resolve({ foo: 7 });
@@ -36,17 +40,25 @@ describe("resolve", () => {
     it("could not find something in context", () => {
       const ex = ply()
         .apply("num", "$^foo + 1")
-        .apply("subData", ply().apply("x", "$^num * 3").apply("y", "$^^foobar * 10"));
+        .apply(
+          "subData",
+          ply().apply("x", "$^num * 3").apply("y", "$^^foobar * 10"),
+        );
 
       expect(() => {
         ex.resolve({ foo: 7 });
-      }).to.throw("could not resolve $^^foobar because is was not in the context");
+      }).to.throw(
+        "could not resolve $^^foobar because is was not in the context",
+      );
     });
 
     it("ended up with bad types", () => {
       const ex = ply()
         .apply("num", "$^foo + 1")
-        .apply("subData", ply().apply("x", "$^num * 3").apply("y", "$^^foo * 10"));
+        .apply(
+          "subData",
+          ply().apply("x", "$^num * 3").apply("y", "$^^foo * 10"),
+        );
 
       expect(() => {
         ex.resolve({ foo: "bar" });
@@ -119,7 +131,10 @@ describe("resolve", () => {
     it("works in a nested case", () => {
       let ex = ply()
         .apply("num", "$^foo + 1")
-        .apply("subData", ply().apply("x", "$^num * 3").apply("y", "$^^foo * 10"));
+        .apply(
+          "subData",
+          ply().apply("x", "$^num * 3").apply("y", "$^^foo * 10"),
+        );
 
       const context = {
         foo: 7,

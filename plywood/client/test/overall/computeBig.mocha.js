@@ -42,7 +42,9 @@ describe("compute native nontrivial data", function () {
   const ds = Dataset.fromJS(wikiDayData).hide();
 
   it("works in simple agg case", () => {
-    const ex = ply().apply("Count", "$data.count()").apply("SumAdded", "$data.sum($added)");
+    const ex = ply()
+      .apply("Count", "$data.count()")
+      .apply("SumAdded", "$data.sum($added)");
 
     return ex.compute({ data: ds }).then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -77,7 +79,10 @@ describe("compute native nontrivial data", function () {
       .apply(
         "d1",
         $("data").filter(
-          $("time").overlap(new Date("2015-09-12T12:00:00Z"), new Date("2015-09-13T00:00:00Z")),
+          $("time").overlap(
+            new Date("2015-09-12T12:00:00Z"),
+            new Date("2015-09-13T00:00:00Z"),
+          ),
         ),
       )
       .apply("CountD1", "$d1.count()");
@@ -471,7 +476,13 @@ describe("compute native nontrivial data", function () {
   it("works with join timeBucket case", () => {
     const ex = $("data")
       .split("$time.timeBucket(PT6H)", "Time", "d1")
-      .join($("data").split("$time.timeShift(PT6H, 1).timeBucket(PT6H)", "Time", "d2"))
+      .join(
+        $("data").split(
+          "$time.timeShift(PT6H, 1).timeBucket(PT6H)",
+          "Time",
+          "d2",
+        ),
+      )
       .apply("CountD1", "$d1.count()")
       .apply("CountD2", "$d2.count()")
       .sort("$Time", "ascending");
@@ -519,13 +530,19 @@ describe("compute native nontrivial data", function () {
       .apply(
         "d1",
         $("data").filter(
-          $("time").overlap(new Date("2015-09-12T12:00:00Z"), new Date("2015-09-13T00:00:00Z")),
+          $("time").overlap(
+            new Date("2015-09-12T12:00:00Z"),
+            new Date("2015-09-13T00:00:00Z"),
+          ),
         ),
       )
       .apply(
         "d2",
         $("data").filter(
-          $("time").overlap(new Date("2015-09-12T00:00:00Z"), new Date("2015-09-12T12:00:00Z")),
+          $("time").overlap(
+            new Date("2015-09-12T00:00:00Z"),
+            new Date("2015-09-12T12:00:00Z"),
+          ),
         ),
       )
       .apply("CountD1", "$d1.count()")
@@ -534,7 +551,9 @@ describe("compute native nontrivial data", function () {
         "Sub",
         $("d1")
           .split("$time.timeBucket(PT3H)", "Time")
-          .join($("d2").split("$time.timeShift(PT12H, 1).timeBucket(PT3H)", "Time"))
+          .join(
+            $("d2").split("$time.timeShift(PT12H, 1).timeBucket(PT3H)", "Time"),
+          )
           .apply("CountD1", "$d1.count()")
           .apply("CountD2", "$d2.count()")
           .sort("$Time", "ascending"),

@@ -89,8 +89,14 @@ describe("Dataset", () => {
             FunTimes: {
               setType: "TIME_RANGE",
               elements: [
-                { start: new Date("2015-01-26T04:54:10Z"), end: new Date("2015-01-26T05:00:00Z") },
-                { start: new Date("2015-02-20T04:54:10Z"), end: new Date("2015-02-20T05:00:00Z") },
+                {
+                  start: new Date("2015-01-26T04:54:10Z"),
+                  end: new Date("2015-01-26T05:00:00Z"),
+                },
+                {
+                  start: new Date("2015-02-20T04:54:10Z"),
+                  end: new Date("2015-02-20T05:00:00Z"),
+                },
               ],
             },
             SubData: {
@@ -146,7 +152,9 @@ describe("Dataset", () => {
 
   describe("fromJS", () => {
     it("works in basic form", () => {
-      expect(Dataset.fromJS([{ nan: NaN }]).data).to.deep.equal([{ nan: null }]);
+      expect(Dataset.fromJS([{ nan: NaN }]).data).to.deep.equal([
+        { nan: null },
+      ]);
     });
   });
 
@@ -412,9 +420,19 @@ describe("Dataset", () => {
 
   describe("sorts", () => {
     const someDataset = Dataset.fromJS([
-      { time: new Date("2015-01-04T12:32:43Z"), resource: "A", value: 7, nice: false },
+      {
+        time: new Date("2015-01-04T12:32:43Z"),
+        resource: "A",
+        value: 7,
+        nice: false,
+      },
       { time: null, resource: "B", value: 2, nice: true },
-      { time: new Date("2015-01-03T12:32:43Z"), resource: null, value: null, nice: null },
+      {
+        time: new Date("2015-01-03T12:32:43Z"),
+        resource: null,
+        value: null,
+        nice: null,
+      },
     ]);
 
     it("STRING, ascending", () => {
@@ -651,7 +669,9 @@ describe("Dataset", () => {
 
     describe("#depthFirstTrimTo", () => {
       it("works", () => {
-        expect(carTotalAndSubSplitDataset.depthFirstTrimTo(3).toJS().data).to.deep.equal([
+        expect(
+          carTotalAndSubSplitDataset.depthFirstTrimTo(3).toJS().data,
+        ).to.deep.equal([
           {
             ByMake: {
               attributes: [
@@ -712,7 +732,9 @@ describe("Dataset", () => {
 
     describe("#findDatumByAttribute", () => {
       it("works with basic dataset", () => {
-        expect(carDataset.findDatumByAttribute("make", "Kaka")).to.deep.equal(undefined);
+        expect(carDataset.findDatumByAttribute("make", "Kaka")).to.deep.equal(
+          undefined,
+        );
 
         expect(carDataset.findDatumByAttribute("make", "Honda")).to.deep.equal({
           time: new Date("2015-01-04T12:32:43Z"),
@@ -722,7 +744,10 @@ describe("Dataset", () => {
         });
 
         expect(
-          carDataset.findDatumByAttribute("time", new Date("2015-01-04T12:32:43Z")),
+          carDataset.findDatumByAttribute(
+            "time",
+            new Date("2015-01-04T12:32:43Z"),
+          ),
         ).to.deep.equal({
           time: new Date("2015-01-04T12:32:43Z"),
           make: "Honda",
@@ -818,7 +843,9 @@ describe("Dataset", () => {
 
       it("works with totals dataset with split (columnOrdering: 'keys-first')", () => {
         expect(
-          totalsDatasetWithSplit.flatten({ columnOrdering: "keys-first" }).toJS(),
+          totalsDatasetWithSplit
+            .flatten({ columnOrdering: "keys-first" })
+            .toJS(),
         ).to.deep.equal({
           attributes: [
             {
@@ -861,7 +888,9 @@ describe("Dataset", () => {
       });
 
       it("works with sub-dataset with prefix", () => {
-        expect(carAndPartsDataset.flatten({ prefixColumns: true }).toJS()).to.deep.equal({
+        expect(
+          carAndPartsDataset.flatten({ prefixColumns: true }).toJS(),
+        ).to.deep.equal({
           attributes: [
             {
               name: "time",
@@ -926,8 +955,13 @@ describe("Dataset", () => {
       });
 
       it("works with two sub-datasets with prefix", () => {
-        const carAndPartsDatasetX2 = carAndPartsDataset.apply("smarts", $("parts", "DATASET"));
-        expect(carAndPartsDatasetX2.flatten({ prefixColumns: true }).toJS()).to.deep.equal({
+        const carAndPartsDatasetX2 = carAndPartsDataset.apply(
+          "smarts",
+          $("parts", "DATASET"),
+        );
+        expect(
+          carAndPartsDatasetX2.flatten({ prefixColumns: true }).toJS(),
+        ).to.deep.equal({
           attributes: [
             {
               name: "time",
@@ -1061,7 +1095,9 @@ describe("Dataset", () => {
       });
 
       it("works with total and sub-split with postorder", () => {
-        expect(carTotalAndSubSplitDataset.flatten({ order: "postorder" }).data).to.deep.equal([
+        expect(
+          carTotalAndSubSplitDataset.flatten({ order: "postorder" }).data,
+        ).to.deep.equal([
           {
             make: "Honda",
             model: "Civic",
@@ -1105,7 +1141,10 @@ describe("Dataset", () => {
 
       it("works with total and sub-split with preorder and nesting indicator", () => {
         expect(
-          carTotalAndSubSplitDataset.flatten({ order: "preorder", nestingName: "nest" }).data,
+          carTotalAndSubSplitDataset.flatten({
+            order: "preorder",
+            nestingName: "nest",
+          }).data,
         ).to.deep.equal([
           {
             nest: 0,
@@ -1157,7 +1196,8 @@ describe("Dataset", () => {
 
       it("works with timeseries with preorder and nesting indicator", () => {
         expect(
-          timeSeriesResult.flatten({ order: "preorder", nestingName: "nest" }).data[0],
+          timeSeriesResult.flatten({ order: "preorder", nestingName: "nest" })
+            .data[0],
         ).to.deep.equal({
           added: 6686857,
           count: 31427,
@@ -1168,9 +1208,15 @@ describe("Dataset", () => {
 
     describe("#toTabular", () => {
       it("does not auto remove line breaks", () => {
-        const dsLineBreak = Dataset.fromJS([{ letter: `dear john\nhow are you doing\nfish` }]);
-        expect(dsLineBreak.toTabular({ lineBreak: "\n", finalLineBreak: "suppress" })).to
-          .equal(sane`
+        const dsLineBreak = Dataset.fromJS([
+          { letter: `dear john\nhow are you doing\nfish` },
+        ]);
+        expect(
+          dsLineBreak.toTabular({
+            lineBreak: "\n",
+            finalLineBreak: "suppress",
+          }),
+        ).to.equal(sane`
           letter
           dear john
           how are you doing
@@ -1185,8 +1231,13 @@ describe("Dataset", () => {
           return `[${v}]`;
         };
 
-        expect(ds.toTabular({ finalizer: finalizer, lineBreak: "\n", finalLineBreak: "suppress" }))
-          .to.equal(sane`
+        expect(
+          ds.toTabular({
+            finalizer: finalizer,
+            lineBreak: "\n",
+            finalLineBreak: "suppress",
+          }),
+        ).to.equal(sane`
           [isEmpty],[number]
           [true],[2]
         `);
@@ -1195,7 +1246,9 @@ describe("Dataset", () => {
 
     describe("#toCSV", () => {
       it("works with basic dataset", () => {
-        expect(carDataset.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(
+          carDataset.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" }),
+        ).to.equal(sane`
           time,make,model,price
           2015-01-04T12:32:43Z,Honda,Civic,10000
           2015-01-04T14:00:40Z,Toyota,Prius,20000
@@ -1208,7 +1261,9 @@ describe("Dataset", () => {
           data: carDataset.data,
         });
 
-        expect(nullCarDataset.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(
+          nullCarDataset.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" }),
+        ).to.equal(sane`
           time,make,model,price
           2015-01-04T12:32:43.000Z,Honda,Civic,10000
           2015-01-04T14:00:40.000Z,Toyota,Prius,20000
@@ -1216,8 +1271,12 @@ describe("Dataset", () => {
       });
 
       it("works with sub-dataset", () => {
-        expect(carAndPartsDataset.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to
-          .equal(sane`
+        expect(
+          carAndPartsDataset.toCSV({
+            lineBreak: "\n",
+            finalLineBreak: "suppress",
+          }),
+        ).to.equal(sane`
           time,make,model,price,part,weight
           2015-01-04T12:32:43Z,Honda,Civic,10000,Engine,500
           2015-01-04T12:32:43Z,Honda,Civic,10000,Door,20
@@ -1227,17 +1286,23 @@ describe("Dataset", () => {
       });
 
       it("escapes commas by enclosing whole field in quotes", () => {
-        const dsComma = Dataset.fromJS([{ letter: "dear john, how are you doing" }]);
+        const dsComma = Dataset.fromJS([
+          { letter: "dear john, how are you doing" },
+        ]);
 
-        expect(dsComma.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(dsComma.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" }))
+          .to.equal(sane`
         letter
         "dear john, how are you doing"
         `);
       });
 
       it("escapes quotes by escaping quoted text but not if already quoted due to comma escape", () => {
-        const dsComma = Dataset.fromJS([{ letter: 'dear john, how are you "doing"' }]);
-        expect(dsComma.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        const dsComma = Dataset.fromJS([
+          { letter: 'dear john, how are you "doing"' },
+        ]);
+        expect(dsComma.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" }))
+          .to.equal(sane`
         letter
         "dear john, how are you ""doing"""
         `);
@@ -1257,7 +1322,8 @@ describe("Dataset", () => {
           { w: ["null"], x: 2, y: ["wo\r\nrld", "mo\ron"], z: ["stars"] },
         ]).select(["w", "x", "y", "z"]);
 
-        expect(ds.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(ds.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to
+          .equal(sane`
           w,x,y,z
           "1, 2",1,"hel,lo, mo on","Thu Feb 19 2015 16:00:00 GMT-0800 (PST), Fri Feb 20 2015 16:00:00 GMT-0800 (PST)"
           ,2,"wo rld, mo on",stars
@@ -1268,7 +1334,9 @@ describe("Dataset", () => {
         const dsLineBreak = Dataset.fromJS([
           { letter: `dear john\nhow are you doing?\r\nI'm good.\r-mildred` },
         ]);
-        expect(dsLineBreak.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(
+          dsLineBreak.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" }),
+        ).to.equal(sane`
         letter
         dear john how are you doing? I'm good. -mildred
         `);
@@ -1277,7 +1345,8 @@ describe("Dataset", () => {
       it("is ok with null", () => {
         const ds = Dataset.fromJS([{ letter: null }]);
 
-        expect(ds.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(ds.toCSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to
+          .equal(sane`
         letter
 
         `);
@@ -1328,8 +1397,11 @@ describe("Dataset", () => {
           },
         ]);
 
-        expect(carDataset.select(["model", "make", "price", "time"]).toCSV({ lineBreak: "\n" })).to
-          .deep.equal(sane`
+        expect(
+          carDataset
+            .select(["model", "make", "price", "time"])
+            .toCSV({ lineBreak: "\n" }),
+        ).to.deep.equal(sane`
           model,make,price,time
           Civic,Honda,10000,2015-01-04T12:32:43Z
           Prius,Toyota,20000,2015-01-04T14:00:40Z
@@ -1339,18 +1411,24 @@ describe("Dataset", () => {
 
     describe("#toTSV", () => {
       it("does not escape commas in text by enclosing whole field in quotes", () => {
-        const dsComma = Dataset.fromJS([{ letter: "dear john, how are you doing" }]);
+        const dsComma = Dataset.fromJS([
+          { letter: "dear john, how are you doing" },
+        ]);
 
-        expect(dsComma.toTSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(dsComma.toTSV({ lineBreak: "\n", finalLineBreak: "suppress" }))
+          .to.equal(sane`
         letter
         dear john, how are you doing
         `);
       });
 
       it("escapes tabs in text field", () => {
-        const dsComma = Dataset.fromJS([{ letter: "dear john, \thow are you doing" }]);
+        const dsComma = Dataset.fromJS([
+          { letter: "dear john, \thow are you doing" },
+        ]);
 
-        expect(dsComma.toTSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(dsComma.toTSV({ lineBreak: "\n", finalLineBreak: "suppress" }))
+          .to.equal(sane`
         letter
         dear john, how are you doing
         `);
@@ -1362,7 +1440,8 @@ describe("Dataset", () => {
           { x: 2, y: ["wo\r\nrld", "mo\ron"] },
         ]).select(["x", "y"]);
 
-        expect(ds.toTSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to.equal(sane`
+        expect(ds.toTSV({ lineBreak: "\n", finalLineBreak: "suppress" })).to
+          .equal(sane`
           x	y
           1	hel,lo, mo on
           2	wo rld, mo on
@@ -1402,7 +1481,10 @@ describe("Dataset", () => {
               favoriteTimes: {
                 type: "SET",
                 setType: "TIME",
-                elements: [new Date("2015-02-20T00:00:00Z"), new Date("2015-02-24T00:00:00Z")],
+                elements: [
+                  new Date("2015-02-20T00:00:00Z"),
+                  new Date("2015-02-24T00:00:00Z"),
+                ],
               },
             },
           ],
@@ -1708,7 +1790,9 @@ describe("Dataset", () => {
       });
 
       expect(
-        ds1.fullJoin(ds2, (a, b) => a.start.valueOf() - b.start.valueOf()).toJS().data,
+        ds1
+          .fullJoin(ds2, (a, b) => a.start.valueOf() - b.start.valueOf())
+          .toJS().data,
       ).to.deep.equal([
         {
           __time: {

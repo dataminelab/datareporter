@@ -71,18 +71,26 @@ export class InExpression extends ChainableUnaryExpression {
           expression.canHaveType("SET")
         )
       ) {
-        throw new TypeError(`in expression has invalid expression type ${expression.type}`);
+        throw new TypeError(
+          `in expression has invalid expression type ${expression.type}`,
+        );
       }
     }
     this.type = "BOOLEAN";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (!expressionValue) return null;
     return expressionValue.contains(operandValue);
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     throw new Error(`can not convert ${this} to JS function`);
   }
 
@@ -98,7 +106,8 @@ export class InExpression extends ChainableUnaryExpression {
     const { operand, expression } = this;
 
     // NotSet.in(Y) => NotSet.is(Y)
-    if (operand.type && !Set.isSetType(operand.type)) return operand.is(expression);
+    if (operand.type && !Set.isSetType(operand.type))
+      return operand.is(expression);
 
     return this;
   }

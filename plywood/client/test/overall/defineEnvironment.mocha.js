@@ -34,25 +34,52 @@ describe("defineEnvironment", () => {
   it("adds Etc/UTC", () => {
     const ex1 = ply()
       .apply("diamonds", $("diamonds").filter($("color").is("D")))
-      .apply("timeBucket", $("diamonds").split("$time.timeBucket(P1D)", "Split"))
+      .apply(
+        "timeBucket",
+        $("diamonds").split("$time.timeBucket(P1D)", "Split"),
+      )
       .apply("timeFloor", $("diamonds").split("$time.timeFloor(P1D)", "Split"))
-      .apply("timeShift", $("diamonds").split("$time.timeShift(P1D, 1)", "Split"))
-      .apply("timeRange", $("diamonds").split("$time.timeRange(P1D, 1)", "Split"))
+      .apply(
+        "timeShift",
+        $("diamonds").split("$time.timeShift(P1D, 1)", "Split"),
+      )
+      .apply(
+        "timeRange",
+        $("diamonds").split("$time.timeRange(P1D, 1)", "Split"),
+      )
       .apply("timePart", $("diamonds").split("$time.timePart(P1D)", "Split"))
       .apply(
         "multiSplit",
-        $("diamonds").split({ A: "$time.timePart(P1D)", B: "$time.timePart(P1D)" }),
+        $("diamonds").split({
+          A: "$time.timePart(P1D)",
+          B: "$time.timePart(P1D)",
+        }),
       );
 
     const environment = { timezone: "Etc/UTC" };
 
     const ex2 = ply()
       .apply("diamonds", $("diamonds").filter($("color").is("D")))
-      .apply("timeBucket", $("diamonds").split("$time.timeBucket(P1D, 'Etc/UTC')", "Split"))
-      .apply("timeFloor", $("diamonds").split("$time.timeFloor(P1D, 'Etc/UTC')", "Split"))
-      .apply("timeShift", $("diamonds").split("$time.timeShift(P1D, 1, 'Etc/UTC')", "Split"))
-      .apply("timeRange", $("diamonds").split("$time.timeRange(P1D, 1, 'Etc/UTC')", "Split"))
-      .apply("timePart", $("diamonds").split("$time.timePart(P1D, 'Etc/UTC')", "Split"))
+      .apply(
+        "timeBucket",
+        $("diamonds").split("$time.timeBucket(P1D, 'Etc/UTC')", "Split"),
+      )
+      .apply(
+        "timeFloor",
+        $("diamonds").split("$time.timeFloor(P1D, 'Etc/UTC')", "Split"),
+      )
+      .apply(
+        "timeShift",
+        $("diamonds").split("$time.timeShift(P1D, 1, 'Etc/UTC')", "Split"),
+      )
+      .apply(
+        "timeRange",
+        $("diamonds").split("$time.timeRange(P1D, 1, 'Etc/UTC')", "Split"),
+      )
+      .apply(
+        "timePart",
+        $("diamonds").split("$time.timePart(P1D, 'Etc/UTC')", "Split"),
+      )
       .apply(
         "multiSplit",
         $("diamonds").split({
@@ -67,14 +94,26 @@ describe("defineEnvironment", () => {
   it("adds America/Los_Angeles", () => {
     const ex1 = ply()
       .apply("diamonds", $("diamonds").filter($("color").is("D")))
-      .apply("timeBucket", $("diamonds").split("$time.timeBucket(P1D)", "Split"))
+      .apply(
+        "timeBucket",
+        $("diamonds").split("$time.timeBucket(P1D)", "Split"),
+      )
       .apply("timeFloor", $("diamonds").split("$time.timeFloor(P1D)", "Split"))
-      .apply("timeShift", $("diamonds").split("$time.timeShift(P1D, 1)", "Split"))
-      .apply("timeRange", $("diamonds").split("$time.timeRange(P1D, 1)", "Split"))
+      .apply(
+        "timeShift",
+        $("diamonds").split("$time.timeShift(P1D, 1)", "Split"),
+      )
+      .apply(
+        "timeRange",
+        $("diamonds").split("$time.timeRange(P1D, 1)", "Split"),
+      )
       .apply("timePart", $("diamonds").split("$time.timePart(P1D)", "Split"))
       .apply(
         "multiSplit",
-        $("diamonds").split({ A: "$time.timePart(P1D)", B: "$time.timePart(P1D)" }),
+        $("diamonds").split({
+          A: "$time.timePart(P1D)",
+          B: "$time.timePart(P1D)",
+        }),
       );
 
     const environment = { timezone: "America/Los_Angeles" };
@@ -83,21 +122,39 @@ describe("defineEnvironment", () => {
       .apply("diamonds", $("diamonds").filter($("color").is("D")))
       .apply(
         "timeBucket",
-        $("diamonds").split("$time.timeBucket(P1D, 'America/Los_Angeles')", "Split"),
+        $("diamonds").split(
+          "$time.timeBucket(P1D, 'America/Los_Angeles')",
+          "Split",
+        ),
       )
       .apply(
         "timeFloor",
-        $("diamonds").split("$time.timeFloor(P1D, 'America/Los_Angeles')", "Split"),
+        $("diamonds").split(
+          "$time.timeFloor(P1D, 'America/Los_Angeles')",
+          "Split",
+        ),
       )
       .apply(
         "timeShift",
-        $("diamonds").split("$time.timeShift(P1D, 1, 'America/Los_Angeles')", "Split"),
+        $("diamonds").split(
+          "$time.timeShift(P1D, 1, 'America/Los_Angeles')",
+          "Split",
+        ),
       )
       .apply(
         "timeRange",
-        $("diamonds").split("$time.timeRange(P1D, 1, 'America/Los_Angeles')", "Split"),
+        $("diamonds").split(
+          "$time.timeRange(P1D, 1, 'America/Los_Angeles')",
+          "Split",
+        ),
       )
-      .apply("timePart", $("diamonds").split("$time.timePart(P1D, 'America/Los_Angeles')", "Split"))
+      .apply(
+        "timePart",
+        $("diamonds").split(
+          "$time.timePart(P1D, 'America/Los_Angeles')",
+          "Split",
+        ),
+      )
       .apply(
         "multiSplit",
         $("diamonds").split({
@@ -112,12 +169,21 @@ describe("defineEnvironment", () => {
   it("does not override existing timezone", () => {
     const ex1 = ply()
       .apply("diamonds", $("diamonds").filter($("color").is("D")))
-      .apply("timeBucket", $("diamonds").split("$time.timeBucket(P1D)", "Split"))
+      .apply(
+        "timeBucket",
+        $("diamonds").split("$time.timeBucket(P1D)", "Split"),
+      )
       .apply("timeFloor", $("diamonds").split("$time.timeFloor(P1D)", "Split"))
-      .apply("timeShift", $("diamonds").split("$time.timeShift(P1D, 1, 'Etc/UTC')", "Split"))
+      .apply(
+        "timeShift",
+        $("diamonds").split("$time.timeShift(P1D, 1, 'Etc/UTC')", "Split"),
+      )
       .apply(
         "timeRange",
-        $("diamonds").split("$time.timeRange(P1D, 1, 'America/New_York')", "Split"),
+        $("diamonds").split(
+          "$time.timeRange(P1D, 1, 'America/New_York')",
+          "Split",
+        ),
       )
       .apply("timePart", $("diamonds").split("$time.timePart(P1D)", "Split"))
       .apply(
@@ -134,18 +200,36 @@ describe("defineEnvironment", () => {
       .apply("diamonds", $("diamonds").filter($("color").is("D")))
       .apply(
         "timeBucket",
-        $("diamonds").split("$time.timeBucket(P1D, 'America/Los_Angeles')", "Split"),
+        $("diamonds").split(
+          "$time.timeBucket(P1D, 'America/Los_Angeles')",
+          "Split",
+        ),
       )
       .apply(
         "timeFloor",
-        $("diamonds").split("$time.timeFloor(P1D, 'America/Los_Angeles')", "Split"),
+        $("diamonds").split(
+          "$time.timeFloor(P1D, 'America/Los_Angeles')",
+          "Split",
+        ),
       )
-      .apply("timeShift", $("diamonds").split("$time.timeShift(P1D, 1, 'Etc/UTC')", "Split"))
+      .apply(
+        "timeShift",
+        $("diamonds").split("$time.timeShift(P1D, 1, 'Etc/UTC')", "Split"),
+      )
       .apply(
         "timeRange",
-        $("diamonds").split("$time.timeRange(P1D, 1, 'America/New_York')", "Split"),
+        $("diamonds").split(
+          "$time.timeRange(P1D, 1, 'America/New_York')",
+          "Split",
+        ),
       )
-      .apply("timePart", $("diamonds").split("$time.timePart(P1D, 'America/Los_Angeles')", "Split"))
+      .apply(
+        "timePart",
+        $("diamonds").split(
+          "$time.timePart(P1D, 'America/Los_Angeles')",
+          "Split",
+        ),
+      )
       .apply(
         "multiSplit",
         $("diamonds").split({

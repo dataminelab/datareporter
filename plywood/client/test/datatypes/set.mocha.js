@@ -76,13 +76,22 @@ describe("Set", () => {
       },
       {
         setType: "TIME",
-        elements: [new Date("2015-02-20T00:00:00Z"), new Date("2015-02-21T00:00:00Z")],
+        elements: [
+          new Date("2015-02-20T00:00:00Z"),
+          new Date("2015-02-21T00:00:00Z"),
+        ],
       },
       {
         setType: "TIME_RANGE",
         elements: [
-          { start: new Date("2015-02-20T00:00:00Z"), end: new Date("2015-02-21T00:00:00Z") },
-          { start: new Date("2015-02-22T00:00:00Z"), end: new Date("2015-02-24T00:00:00Z") },
+          {
+            start: new Date("2015-02-20T00:00:00Z"),
+            end: new Date("2015-02-21T00:00:00Z"),
+          },
+          {
+            start: new Date("2015-02-22T00:00:00Z"),
+            end: new Date("2015-02-24T00:00:00Z"),
+          },
         ],
       },
     ]);
@@ -94,8 +103,14 @@ describe("Set", () => {
         Set.fromJS({
           setType: "TIME_RANGE",
           elements: [
-            { start: new Date("2015-02-20T00:00:00Z"), end: new Date("2015-02-21T00:00:00Z") },
-            { start: new Date("2015-02-22T00:00:00Z"), end: new Date("2015-02-24T00:00:00Z") },
+            {
+              start: new Date("2015-02-20T00:00:00Z"),
+              end: new Date("2015-02-21T00:00:00Z"),
+            },
+            {
+              start: new Date("2015-02-22T00:00:00Z"),
+              end: new Date("2015-02-24T00:00:00Z"),
+            },
           ],
         }).toString(),
       ).to.deep.equal(
@@ -106,8 +121,14 @@ describe("Set", () => {
         Set.fromJS({
           setType: "TIME_RANGE",
           elements: [
-            { start: new Date("2015-02-20T00:00:00Z"), end: new Date("2015-02-21T00:00:00Z") },
-            { start: new Date("2015-02-22T00:00:00Z"), end: new Date("2015-02-24T00:00:00Z") },
+            {
+              start: new Date("2015-02-20T00:00:00Z"),
+              end: new Date("2015-02-21T00:00:00Z"),
+            },
+            {
+              start: new Date("2015-02-22T00:00:00Z"),
+              end: new Date("2015-02-24T00:00:00Z"),
+            },
           ],
         }).toString(Timezone.fromJS("Asia/Kathmandu")),
       ).to.deep.equal(
@@ -125,7 +146,9 @@ describe("Set", () => {
             },
           ],
         }).toString(Timezone.fromJS("Asia/Kathmandu")),
-      ).to.deep.equal("null, [2015-02-22T05:45:00.001+05:45,2015-02-24T05:45:00.002+05:45]");
+      ).to.deep.equal(
+        "null, [2015-02-22T05:45:00.001+05:45,2015-02-24T05:45:00.002+05:45]",
+      );
     });
   });
 
@@ -186,7 +209,20 @@ describe("Set", () => {
       expect(
         Set.fromJS({
           setType: "STRING",
-          elements: ["A", "B", "C", "A", "B", "C", "A", "B", "C", "A", "B", "C"],
+          elements: [
+            "A",
+            "B",
+            "C",
+            "A",
+            "B",
+            "C",
+            "A",
+            "B",
+            "C",
+            "A",
+            "B",
+            "C",
+          ],
         }).toJS(),
       ).to.deep.equal({
         setType: "STRING",
@@ -228,12 +264,27 @@ describe("Set", () => {
         Set.fromJS({
           setType: "TIME_RANGE",
           elements: [
-            { start: new Date("2015-02-20T00:00:00Z"), end: new Date("2015-02-21T00:00:00Z") },
-            { start: new Date("2015-02-21T00:00:00Z"), end: new Date("2015-02-22T00:00:00Z") },
-            { start: new Date("2015-02-22T00:00:00Z"), end: new Date("2015-02-23T00:00:00Z") },
+            {
+              start: new Date("2015-02-20T00:00:00Z"),
+              end: new Date("2015-02-21T00:00:00Z"),
+            },
+            {
+              start: new Date("2015-02-21T00:00:00Z"),
+              end: new Date("2015-02-22T00:00:00Z"),
+            },
+            {
+              start: new Date("2015-02-22T00:00:00Z"),
+              end: new Date("2015-02-23T00:00:00Z"),
+            },
 
-            { start: new Date("2015-02-25T00:00:00Z"), end: new Date("2015-02-26T00:00:00Z") },
-            { start: new Date("2015-02-26T00:00:00Z"), end: new Date("2015-02-27T00:00:00Z") },
+            {
+              start: new Date("2015-02-25T00:00:00Z"),
+              end: new Date("2015-02-26T00:00:00Z"),
+            },
+            {
+              start: new Date("2015-02-26T00:00:00Z"),
+              end: new Date("2015-02-27T00:00:00Z"),
+            },
 
             { start: new Date("2015-02-28T00:00:00Z"), end: null },
           ],
@@ -243,8 +294,14 @@ describe("Set", () => {
       ).to.deep.equal({
         setType: "TIME_RANGE",
         elements: [
-          { start: new Date("2015-02-20T00:00:00Z"), end: new Date("2015-02-23T00:00:00Z") },
-          { start: new Date("2015-02-25T00:00:00Z"), end: new Date("2015-02-27T00:00:00Z") },
+          {
+            start: new Date("2015-02-20T00:00:00Z"),
+            end: new Date("2015-02-23T00:00:00Z"),
+          },
+          {
+            start: new Date("2015-02-25T00:00:00Z"),
+            end: new Date("2015-02-27T00:00:00Z"),
+          },
           { start: new Date("2015-02-28T00:00:00Z"), end: null },
         ],
       });
@@ -452,16 +509,22 @@ describe("Set", () => {
 
   describe("#overlap", () => {
     it("works correctly", () => {
-      expect(Set.fromJS(["A", "B"]).overlap(Set.fromJS(["B", "C"]))).to.equal(true);
+      expect(Set.fromJS(["A", "B"]).overlap(Set.fromJS(["B", "C"]))).to.equal(
+        true,
+      );
     });
 
     it("works correctly when false", () => {
-      expect(Set.fromJS(["A", "B"]).overlap(Set.fromJS(["D", "E"]))).to.equal(false);
+      expect(Set.fromJS(["A", "B"]).overlap(Set.fromJS(["D", "E"]))).to.equal(
+        false,
+      );
     });
 
     it("works with troll", () => {
       expect(
-        Set.fromJS(["A", "B", "hasOwnProperty"]).overlap(Set.fromJS(["B", "C", "hasOwnProperty"])),
+        Set.fromJS(["A", "B", "hasOwnProperty"]).overlap(
+          Set.fromJS(["B", "C", "hasOwnProperty"]),
+        ),
       ).to.equal(true);
     });
   });
@@ -500,8 +563,14 @@ describe("Set", () => {
     const trs = Set.fromJS({
       setType: "TIME_RANGE",
       elements: [
-        { start: new Date("2015-09-12T22:00:00Z"), end: new Date("2015-09-12T23:00:00Z") },
-        { start: new Date("2015-09-12T23:00:00Z"), end: new Date("2015-09-13T00:00:00Z") },
+        {
+          start: new Date("2015-09-12T22:00:00Z"),
+          end: new Date("2015-09-12T23:00:00Z"),
+        },
+        {
+          start: new Date("2015-09-12T23:00:00Z"),
+          end: new Date("2015-09-13T00:00:00Z"),
+        },
       ],
     });
 
@@ -514,8 +583,12 @@ describe("Set", () => {
     });
 
     it("works correctly with number ranges", () => {
-      expect(nrs.has(NumberRange.fromJS({ start: 1, end: 3 })), "1-3").to.equal(true);
-      expect(nrs.has(NumberRange.fromJS({ start: 2, end: 3 })), "2-3").to.equal(false);
+      expect(nrs.has(NumberRange.fromJS({ start: 1, end: 3 })), "1-3").to.equal(
+        true,
+      );
+      expect(nrs.has(NumberRange.fromJS({ start: 2, end: 3 })), "2-3").to.equal(
+        false,
+      );
 
       expect(nrs.has("lol"), '"lol"').to.equal(false);
       expect(nrs.has("null"), '"null"').to.equal(false);
@@ -559,8 +632,14 @@ describe("Set", () => {
     const trs = Set.fromJS({
       setType: "TIME_RANGE",
       elements: [
-        { start: new Date("2015-09-12T22:00:00Z"), end: new Date("2015-09-12T23:00:00Z") },
-        { start: new Date("2015-09-12T23:00:00Z"), end: new Date("2015-09-13T00:00:00Z") },
+        {
+          start: new Date("2015-09-12T22:00:00Z"),
+          end: new Date("2015-09-12T23:00:00Z"),
+        },
+        {
+          start: new Date("2015-09-12T23:00:00Z"),
+          end: new Date("2015-09-13T00:00:00Z"),
+        },
       ],
     });
 
@@ -577,9 +656,18 @@ describe("Set", () => {
     });
 
     it("works correctly with number ranges", () => {
-      expect(nrs.contains(NumberRange.fromJS({ start: 1, end: 2 })), "1-2").to.equal(true);
-      expect(nrs.contains(NumberRange.fromJS({ start: 2, end: 3 })), "2-3").to.equal(true);
-      expect(nrs.contains(NumberRange.fromJS({ start: 3, end: 4 })), "3-4").to.equal(false);
+      expect(
+        nrs.contains(NumberRange.fromJS({ start: 1, end: 2 })),
+        "1-2",
+      ).to.equal(true);
+      expect(
+        nrs.contains(NumberRange.fromJS({ start: 2, end: 3 })),
+        "2-3",
+      ).to.equal(true);
+      expect(
+        nrs.contains(NumberRange.fromJS({ start: 3, end: 4 })),
+        "3-4",
+      ).to.equal(false);
     });
 
     it("works correctly with time ranges", () => {
@@ -594,16 +682,32 @@ describe("Set", () => {
     });
 
     it("works correctly with string sets", () => {
-      expect(strNullSet.contains(Set.fromJS(["lol"])), '["lol"]').to.equal(false);
-      expect(strNullSet.contains(Set.fromJS(["null"])), '["null"]').to.equal(true);
+      expect(strNullSet.contains(Set.fromJS(["lol"])), '["lol"]').to.equal(
+        false,
+      );
+      expect(strNullSet.contains(Set.fromJS(["null"])), '["null"]').to.equal(
+        true,
+      );
       expect(strNullSet.contains(Set.fromJS([null])), "[null]").to.equal(false);
     });
 
     it("works correctly with number sets", () => {
-      expect(nrs.contains(Set.fromJS([{ start: 1, end: 2 }])), "[1-2]").to.equal(true);
-      expect(nrs.contains(Set.fromJS([{ start: 2, end: 3 }])), "[2-3]").to.equal(true);
-      expect(nrs.contains(Set.fromJS([{ start: 1, end: 3 }])), "[1-3]").to.equal(true);
-      expect(nrs.contains(Set.fromJS([{ start: 3, end: 4 }])), "[3-4]").to.equal(false);
+      expect(
+        nrs.contains(Set.fromJS([{ start: 1, end: 2 }])),
+        "[1-2]",
+      ).to.equal(true);
+      expect(
+        nrs.contains(Set.fromJS([{ start: 2, end: 3 }])),
+        "[2-3]",
+      ).to.equal(true);
+      expect(
+        nrs.contains(Set.fromJS([{ start: 1, end: 3 }])),
+        "[1-3]",
+      ).to.equal(true);
+      expect(
+        nrs.contains(Set.fromJS([{ start: 3, end: 4 }])),
+        "[3-4]",
+      ).to.equal(false);
 
       expect(
         nrs.contains(
@@ -633,7 +737,10 @@ describe("Set", () => {
       expect(
         trs.contains(
           Set.fromJS([
-            { start: new Date("2015-09-12T23:00:00Z"), end: new Date("2015-09-13T00:00:00Z") },
+            {
+              start: new Date("2015-09-12T23:00:00Z"),
+              end: new Date("2015-09-13T00:00:00Z"),
+            },
           ]),
         ),
       ).to.equal(true);
@@ -641,8 +748,14 @@ describe("Set", () => {
       expect(
         trs.contains(
           Set.fromJS([
-            { start: new Date("2015-09-12T23:00:00Z"), end: new Date("2015-09-12T23:20:00Z") },
-            { start: new Date("2015-09-12T23:40:00Z"), end: new Date("2015-09-13T00:00:00Z") },
+            {
+              start: new Date("2015-09-12T23:00:00Z"),
+              end: new Date("2015-09-12T23:20:00Z"),
+            },
+            {
+              start: new Date("2015-09-12T23:40:00Z"),
+              end: new Date("2015-09-13T00:00:00Z"),
+            },
           ]),
         ),
       ).to.equal(true);

@@ -17,7 +17,12 @@
 import { PlywoodValue, Set } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class CardinalityExpression extends ChainableExpression {
   static op = "Cardinality";
@@ -46,10 +51,16 @@ export class CardinalityExpression extends ChainableExpression {
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    return Expression.jsNullSafetyUnary(operandJS, (input: string) => `${input}.length`);
+    return Expression.jsNullSafetyUnary(
+      operandJS,
+      (input: string) => `${input}.length`,
+    );
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return `cardinality(${operandSQL})`;
   }
 }

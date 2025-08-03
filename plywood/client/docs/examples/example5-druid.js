@@ -1,4 +1,5 @@
-let druidRequesterFactory = require("plywood-druid-requester").druidRequesterFactory;
+let druidRequesterFactory =
+  require("plywood-druid-requester").druidRequesterFactory;
 let plywood = require("../../build/plywood");
 let ply = plywood.ply;
 let $ = plywood.$;
@@ -38,7 +39,10 @@ let ex = $("wiki")
   .apply(
     "DaysOfWeek",
     $("wiki")
-      .split($("__time").timePart("DAY_OF_WEEK", "America/New_York"), "DayOfWeek")
+      .split(
+        $("__time").timePart("DAY_OF_WEEK", "America/New_York"),
+        "DayOfWeek",
+      )
       .apply("Edits", "$wiki.count()")
       .sort("$DayOfWeek", "ascending"),
   );

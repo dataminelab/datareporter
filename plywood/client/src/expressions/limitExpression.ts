@@ -18,7 +18,12 @@ import { Dataset, PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
 import { ApplyExpression } from "./applyExpression";
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class LimitExpression extends ChainableExpression {
   static op = "Limit";
@@ -37,7 +42,8 @@ export class LimitExpression extends ChainableExpression {
 
     let value = parameters.value;
     if (value == null) value = Infinity;
-    if (value < 0) throw new Error(`limit value can not be negative (is ${value})`);
+    if (value < 0)
+      throw new Error(`limit value can not be negative (is ${value})`);
     this.value = value;
 
     this.type = "DATASET";
@@ -67,7 +73,10 @@ export class LimitExpression extends ChainableExpression {
     return operandValue ? (operandValue as Dataset).limit(this.value) : null;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return `LIMIT ${this.value}`;
   }
 

@@ -40,7 +40,8 @@ export class DruidDialect extends SQLDialect {
 
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
     SECOND_OF_MINUTE: "TIME_EXTRACT($$,'SECOND',##)",
-    SECOND_OF_HOUR: "(TIME_EXTRACT($$,'MINUTE',##)*60+TIME_EXTRACT($$,'SECOND',##))",
+    SECOND_OF_HOUR:
+      "(TIME_EXTRACT($$,'MINUTE',##)*60+TIME_EXTRACT($$,'SECOND',##))",
     SECOND_OF_DAY:
       "((TIME_EXTRACT($$,'HOUR',##)*60+TIME_EXTRACT($$,'MINUTE',##))*60+TIME_EXTRACT($$,'SECOND',##))",
     SECOND_OF_WEEK:
@@ -62,8 +63,10 @@ export class DruidDialect extends SQLDialect {
     HOUR_OF_DAY: "TIME_EXTRACT($$,'HOUR',##)",
     HOUR_OF_WEEK:
       "(MOD(CAST((TIME_EXTRACT($$,'DOW',##)+6) AS int),7)*24+TIME_EXTRACT($$,'HOUR',##))",
-    HOUR_OF_MONTH: "((TIME_EXTRACT($$,'DAY',##)-1)*24+TIME_EXTRACT($$,'HOUR',##))",
-    HOUR_OF_YEAR: "((TIME_EXTRACT($$,'DOY',##)-1)*24+TIME_EXTRACT($$,'HOUR',##))",
+    HOUR_OF_MONTH:
+      "((TIME_EXTRACT($$,'DAY',##)-1)*24+TIME_EXTRACT($$,'HOUR',##))",
+    HOUR_OF_YEAR:
+      "((TIME_EXTRACT($$,'DOY',##)-1)*24+TIME_EXTRACT($$,'HOUR',##))",
 
     DAY_OF_WEEK: "MOD(CAST((TIME_EXTRACT($$,'DOW',##)+6) AS int),7)+1",
     DAY_OF_MONTH: "TIME_EXTRACT($$,'DAY',##)",
@@ -150,7 +153,11 @@ export class DruidDialect extends SQLDialect {
     return `(${a}||${b})`;
   }
 
-  public containsExpression(a: string, b: string, insensitive: boolean): string {
+  public containsExpression(
+    a: string,
+    b: string,
+    insensitive: boolean,
+  ): string {
     return `${insensitive ? "ICONTAINS_STRING" : "CONTAINS_STRING"}(CAST(${a} AS VARCHAR),${b})`;
   }
 
@@ -170,8 +177,14 @@ export class DruidDialect extends SQLDialect {
     return `SUBSTRING(${a},${position + 1},${length})`;
   }
 
-  public countDistinctExpression(a: string, parameterAttributeName: string | undefined): string {
-    const attribute = NamedArray.findByName(this.attributes || [], parameterAttributeName);
+  public countDistinctExpression(
+    a: string,
+    parameterAttributeName: string | undefined,
+  ): string {
+    const attribute = NamedArray.findByName(
+      this.attributes || [],
+      parameterAttributeName,
+    );
     const nativeType = attribute ? attribute.nativeType : undefined;
     switch (nativeType) {
       case "HLLSketch":
@@ -213,7 +226,9 @@ export class DruidDialect extends SQLDialect {
   }
 
   private operandAsTimestamp(operand: string): string {
-    return operand.includes("__time") ? operand : `CAST(${operand} AS TIMESTAMP)`;
+    return operand.includes("__time")
+      ? operand
+      : `CAST(${operand} AS TIMESTAMP)`;
   }
 
   public timeFLoorOverTimeExpression(
@@ -231,19 +246,32 @@ export class DruidDialect extends SQLDialect {
     return `SUM(${operand}) FILTER(WHERE ${timeFloor} <= "__time" AND "__time" < ${timeFloorPrev})`;
   }
 
-  public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeFloorExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     return `TIME_FLOOR(${this.operandAsTimestamp(operand)}, ${this.escapeLiteral(
       duration.toString(),
     )}, NULL, ${this.escapeLiteral(timezone.toString())})`;
   }
 
-  public timeBucketExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeBucketExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     return this.timeFloorExpression(operand, duration, timezone);
   }
 
-  public timePartExpression(operand: string, part: string, timezone: Timezone): string {
+  public timePartExpression(
+    operand: string,
+    part: string,
+    timezone: Timezone,
+  ): string {
     const timePartFunction = DruidDialect.TIME_PART_TO_FUNCTION[part];
-    if (!timePartFunction) throw new Error(`unsupported part ${part} in Druid dialect`);
+    if (!timePartFunction)
+      throw new Error(`unsupported part ${part} in Druid dialect`);
     return timePartFunction
       .replace(/\$\$/g, this.operandAsTimestamp(operand))
       .replace(/##/g, this.escapeLiteral(timezone.toString()));
@@ -277,7 +305,10 @@ export class DruidDialect extends SQLDialect {
     quantile: number,
     parameterAttributeName: string | undefined,
   ): string {
-    const attribute = NamedArray.findByName(this.attributes || [], parameterAttributeName);
+    const attribute = NamedArray.findByName(
+      this.attributes || [],
+      parameterAttributeName,
+    );
     const nativeType = attribute ? attribute.nativeType : undefined;
     switch (nativeType) {
       case "approximateHistogram":
@@ -298,7 +329,11 @@ export class DruidDialect extends SQLDialect {
     return `LOOKUP(${base}, ${this.escapeLiteral(lookup)})`;
   }
 
-  public ipMatchExpression(columnName: string, searchString: string, ipSearchType: string): string {
+  public ipMatchExpression(
+    columnName: string,
+    searchString: string,
+    ipSearchType: string,
+  ): string {
     // TODO: remove toString hack
     return ipSearchType === "ipPrefix"
       ? `IP_MATCH(${this.escapeLiteral(searchString.toString())}, ${columnName})`

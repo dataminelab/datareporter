@@ -19,7 +19,14 @@ import { parseISODate } from "chronoshift";
 import hasOwnProp from "has-own-prop";
 import { isImmutableClass } from "immutable-class";
 
-import { ComputeFn, Dataset, Datum, PlywoodValue, Set, TimeRange } from "../datatypes";
+import {
+  ComputeFn,
+  Dataset,
+  Datum,
+  PlywoodValue,
+  Set,
+  TimeRange,
+} from "../datatypes";
 import { getValueType, valueFromJS } from "../datatypes/common";
 import { SQLDialect } from "../dialect/baseDialect";
 import { DatasetFullType, PlyType } from "../types";
@@ -33,7 +40,8 @@ export class LiteralExpression extends Expression {
       op: parameters.op,
       type: parameters.type,
     };
-    if (!hasOwnProp(parameters, "value")) throw new Error("literal expression must have value");
+    if (!hasOwnProp(parameters, "value"))
+      throw new Error("literal expression must have value");
     const v: any = parameters.value;
     if (isImmutableClass(v)) {
       value.value = v;
@@ -187,10 +195,17 @@ export class LiteralExpression extends Expression {
       if (!parse) throw new Error(`can not upgrade ${value} to TIME`);
       return r(parse);
     } else if (type === "STRING_RANGE" && targetType === "TIME_RANGE") {
-      const parseStart = parseISODate(value.start, Expression.defaultParserTimezone);
-      if (!parseStart) throw new Error(`can not upgrade ${value.start} to TIME`);
+      const parseStart = parseISODate(
+        value.start,
+        Expression.defaultParserTimezone,
+      );
+      if (!parseStart)
+        throw new Error(`can not upgrade ${value.start} to TIME`);
 
-      const parseEnd = parseISODate(value.end, Expression.defaultParserTimezone);
+      const parseEnd = parseISODate(
+        value.end,
+        Expression.defaultParserTimezone,
+      );
       if (!parseEnd) throw new Error(`can not upgrade ${value.end} to TIME`);
 
       return r(

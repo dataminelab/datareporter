@@ -48,7 +48,9 @@ export interface AttributeInfoJS {
   termsDelegate?: string;
 }
 
-export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfoJS> {
+export class AttributeInfo
+  implements Instance<AttributeInfoValue, AttributeInfoJS>
+{
   static isAttributeInfo(candidate: any): candidate is AttributeInfo {
     return candidate instanceof AttributeInfo;
   }
@@ -71,7 +73,8 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
 
     let nativeType = parameters.nativeType;
     if (!nativeType && hasOwnProp(parameters, "special")) {
-      nativeType = AttributeInfo.NATIVE_TYPE_FROM_SPECIAL[(parameters as any).special];
+      nativeType =
+        AttributeInfo.NATIVE_TYPE_FROM_SPECIAL[(parameters as any).special];
       value.type = "NULL";
     }
     value.nativeType = nativeType;
@@ -81,13 +84,15 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
     if (maker) value.maker = Expression.fromJS(maker);
     if (parameters.cardinality) value.cardinality = parameters.cardinality;
     if (parameters.range) value.range = Range.fromJS(parameters.range);
-    if (parameters.termsDelegate) value.termsDelegate = parameters.termsDelegate;
+    if (parameters.termsDelegate)
+      value.termsDelegate = parameters.termsDelegate;
 
     return new AttributeInfo(value);
   }
 
   static fromJSs(attributeJSs: AttributeJSs): Attributes {
-    if (!Array.isArray(attributeJSs)) throw new TypeError("invalid attributeJSs");
+    if (!Array.isArray(attributeJSs))
+      throw new TypeError("invalid attributeJSs");
     return attributeJSs.map(attributeJS => AttributeInfo.fromJS(attributeJS));
   }
 
@@ -95,7 +100,10 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
     return attributes.map(attribute => attribute.toJS());
   }
 
-  static override(attributes: Attributes, attributeOverrides: Attributes): Attributes {
+  static override(
+    attributes: Attributes,
+    attributeOverrides: Attributes,
+  ): Attributes {
     return NamedArray.overridesByName(attributes, attributeOverrides);
   }
 
@@ -115,7 +123,8 @@ export class AttributeInfo implements Instance<AttributeInfoValue, AttributeInfo
     }
     this.name = parameters.name;
     this.type = parameters.type || "NULL";
-    if (!RefExpression.validType(this.type)) throw new Error(`invalid type: ${this.type}`);
+    if (!RefExpression.validType(this.type))
+      throw new Error(`invalid type: ${this.type}`);
 
     this.unsplitable = Boolean(parameters.unsplitable);
     this.maker = parameters.maker;

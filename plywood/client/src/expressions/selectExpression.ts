@@ -19,7 +19,12 @@ import { SQLDialect } from "../dialect/baseDialect";
 import { DatasetFullType } from "../types";
 
 import { ApplyExpression } from "./applyExpression";
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class SelectExpression extends ChainableExpression {
   static op = "Select";
@@ -52,7 +57,10 @@ export class SelectExpression extends ChainableExpression {
   }
 
   public equals(other: SelectExpression | undefined): boolean {
-    return super.equals(other) && String(this.attributes) === String(other.attributes);
+    return (
+      super.equals(other) &&
+      String(this.attributes) === String(other.attributes)
+    );
   }
 
   protected _toStringParameters(indent?: int): string[] {
@@ -76,10 +84,15 @@ export class SelectExpression extends ChainableExpression {
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
-    return operandValue ? (operandValue as Dataset).select(this.attributes) : null;
+    return operandValue
+      ? (operandValue as Dataset).select(this.attributes)
+      : null;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     throw new Error("can not be expressed as SQL directly");
   }
 

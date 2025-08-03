@@ -69,7 +69,10 @@ export class JoinExpression extends ChainableUnaryExpression {
     return null;
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue ? operandValue.join(expressionValue) : null;
   }
 

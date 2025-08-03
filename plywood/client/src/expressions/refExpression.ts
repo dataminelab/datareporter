@@ -107,7 +107,10 @@ export class RefExpression extends Expression {
   static findPropertyCI(obj: any, key: string): any {
     const lowerKey = key.toLowerCase();
     if (obj == null) return null;
-    return SimpleArray.find(Object.keys(obj), v => v.toLowerCase() === lowerKey);
+    return SimpleArray.find(
+      Object.keys(obj),
+      v => v.toLowerCase() === lowerKey,
+    );
   }
 
   public nest: int;
@@ -190,7 +193,9 @@ export class RefExpression extends Expression {
     if (nest) throw new Error("can not getFn on a nested function");
 
     return (d: Datum) => {
-      const property = ignoreCase ? RefExpression.findPropertyCI(d, name) : name;
+      const property = ignoreCase
+        ? RefExpression.findPropertyCI(d, name)
+        : name;
       return property != null ? d[property] : null;
     };
   }
@@ -199,14 +204,17 @@ export class RefExpression extends Expression {
     const { name, nest, ignoreCase } = this;
     if (nest) throw new Error("can not calc on a nested expression");
 
-    const property = ignoreCase ? RefExpression.findPropertyCI(datum, name) : name;
+    const property = ignoreCase
+      ? RefExpression.findPropertyCI(datum, name)
+      : name;
     return property != null ? (datum[property] as any) : null;
   }
 
   public getJS(datumVar: string): string {
     const { name, nest, ignoreCase } = this;
     if (nest) throw new Error("can not call getJS on unresolved expression");
-    if (ignoreCase) throw new Error("can not express ignore case as js expression");
+    if (ignoreCase)
+      throw new Error("can not express ignore case as js expression");
 
     let expr: string;
     if (datumVar) {
@@ -225,7 +233,8 @@ export class RefExpression extends Expression {
   }
 
   public getSQL(dialect: SQLDialect, _minimal = false): string {
-    if (this.nest) throw new Error(`can not call getSQL on unresolved expression: ${this}`);
+    if (this.nest)
+      throw new Error(`can not call getSQL on unresolved expression: ${this}`);
     return dialect.maybeNamespacedName(this.name);
   }
 
@@ -265,7 +274,9 @@ export class RefExpression extends Expression {
     const myType = myFullType.type;
 
     if (this.type && this.type !== myType) {
-      throw new TypeError(`type mismatch in ${this} (has: ${this.type} needs: ${myType})`);
+      throw new TypeError(
+        `type mismatch in ${this} (has: ${this.type} needs: ${myType})`,
+      );
     }
 
     // Check if it needs to be replaced
@@ -287,7 +298,8 @@ export class RefExpression extends Expression {
     let myTypeContext = typeContext;
     for (let i = nest; i > 0; i--) {
       myTypeContext = myTypeContext.parent;
-      if (!myTypeContext) throw new Error("went too deep on " + this.toString());
+      if (!myTypeContext)
+        throw new Error("went too deep on " + this.toString());
     }
 
     const myFullType = myTypeContext.datasetType[name];

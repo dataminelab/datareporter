@@ -21,7 +21,12 @@ import { PlywoodValue, Range } from "../datatypes";
 import { TimeRange } from "../datatypes/timeRange";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 import { HasTimezone } from "./mixins/hasTimezone";
 
 export class TimeBucketExpression extends ChainableExpression {
@@ -29,7 +34,8 @@ export class TimeBucketExpression extends ChainableExpression {
   static fromJS(parameters: ExpressionJS): TimeBucketExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.duration = Duration.fromJS(parameters.duration);
-    if (parameters.timezone) value.timezone = Timezone.fromJS(parameters.timezone);
+    if (parameters.timezone)
+      value.timezone = Timezone.fromJS(parameters.timezone);
     if (parameters.bounds) value.bounds = parameters.bounds;
     return new TimeBucketExpression(value);
   }
@@ -86,14 +92,20 @@ export class TimeBucketExpression extends ChainableExpression {
 
   protected _toStringParameters(_indent?: int): string[] {
     const ret = [this.duration.toString()];
-    if (this.timezone) ret.push(Expression.safeString(this.timezone.toString()));
+    if (this.timezone)
+      ret.push(Expression.safeString(this.timezone.toString()));
     if (this.bounds) ret.push(this.bounds);
     return ret;
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
     return operandValue
-      ? TimeRange.timeBucket(operandValue, this.duration, this.getTimezone(), this.bounds)
+      ? TimeRange.timeBucket(
+          operandValue,
+          this.duration,
+          this.getTimezone(),
+          this.bounds,
+        )
       : null;
   }
 
@@ -101,8 +113,15 @@ export class TimeBucketExpression extends ChainableExpression {
     throw new Error("implement me");
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return dialect.timeBucketExpression(operandSQL, this.duration, this.getTimezone());
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return dialect.timeBucketExpression(
+      operandSQL,
+      this.duration,
+      this.getTimezone(),
+    );
   }
 
   public changeBounds(bounds: string): Expression {

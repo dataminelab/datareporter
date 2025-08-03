@@ -17,7 +17,12 @@
 import { PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class LengthExpression extends ChainableExpression {
   static op = "Length";
@@ -37,10 +42,16 @@ export class LengthExpression extends ChainableExpression {
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    return Expression.jsNullSafetyUnary(operandJS, (input: string) => `${input}.length`);
+    return Expression.jsNullSafetyUnary(
+      operandJS,
+      (input: string) => `${input}.length`,
+    );
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.lengthExpression(operandSQL);
   }
 }

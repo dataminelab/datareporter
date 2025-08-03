@@ -35,10 +35,15 @@ export class PowerExpression extends ChainableUnaryExpression {
     this._ensureOp("power");
     this._checkOperandTypes("NUMBER");
     this._checkExpressionTypes("NUMBER");
-    this.type = Set.isSetType(this.operand.type) ? this.operand.type : this.expression.type;
+    this.type = Set.isSetType(this.operand.type)
+      ? this.operand.type
+      : this.expression.type;
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (operandValue == null || expressionValue == null) return null;
     return Set.crossBinary(operandValue, expressionValue, (a, b) => {
       const pow = Math.pow(a, b);
@@ -46,7 +51,10 @@ export class PowerExpression extends ChainableUnaryExpression {
     });
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `Math.pow(${operandJS},${expressionJS})`;
   }
 

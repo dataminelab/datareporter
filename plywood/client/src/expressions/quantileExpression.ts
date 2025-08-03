@@ -26,7 +26,10 @@ import {
 import { Aggregate } from "./mixins/aggregate";
 import { RefExpression } from "./refExpression";
 
-export class QuantileExpression extends ChainableUnaryExpression implements Aggregate {
+export class QuantileExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
   static op = "Quantile";
   static fromJS(parameters: ExpressionJS): QuantileExpression {
     const value = ChainableUnaryExpression.jsToValue(parameters);
@@ -63,7 +66,11 @@ export class QuantileExpression extends ChainableUnaryExpression implements Aggr
   }
 
   public equals(other: QuantileExpression | undefined): boolean {
-    return super.equals(other) && this.value === other.value && this.tuning === other.tuning;
+    return (
+      super.equals(other) &&
+      this.value === other.value &&
+      this.tuning === other.tuning
+    );
   }
 
   protected _toStringParameters(indent?: int): string[] {
@@ -72,8 +79,13 @@ export class QuantileExpression extends ChainableUnaryExpression implements Aggr
     return params;
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
-    return operandValue ? (operandValue as Dataset).quantile(this.expression, this.value) : null;
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
+    return operandValue
+      ? (operandValue as Dataset).quantile(this.expression, this.value)
+      : null;
   }
 
   protected _getSQLChainableUnaryHelper(

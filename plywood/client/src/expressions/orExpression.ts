@@ -43,9 +43,13 @@ export class OrExpression extends ChainableUnaryExpression {
     const { operand: lhs1, expression: rhs1 } = ex1 as ChainableUnaryExpression;
     const { operand: lhs2, expression: rhs2 } = ex2 as ChainableUnaryExpression;
 
-    if (!lhs1.equals(lhs2) || !rhs1.isOp("literal") || !rhs2.isOp("literal")) return null;
+    if (!lhs1.equals(lhs2) || !rhs1.isOp("literal") || !rhs2.isOp("literal"))
+      return null;
 
-    const union = Set.unionCover(rhs1.getLiteralValue(), rhs2.getLiteralValue());
+    const union = Set.unionCover(
+      rhs1.getLiteralValue(),
+      rhs2.getLiteralValue(),
+    );
     if (union === null) return null;
 
     return lhs1.overlap(r(union)).simplify();
@@ -59,11 +63,17 @@ export class OrExpression extends ChainableUnaryExpression {
     this.type = "BOOLEAN";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue || expressionValue;
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `(${operandJS}||${expressionJS})`;
   }
 

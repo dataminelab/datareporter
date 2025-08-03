@@ -72,7 +72,8 @@ export class ApplyExpression extends ChainableUnaryExpression {
 
   protected _toStringParameters(indent?: int): string[] {
     let name = this.name;
-    if (!RefExpression.SIMPLE_NAME_REGEXP.test(name)) name = JSON.stringify(name);
+    if (!RefExpression.SIMPLE_NAME_REGEXP.test(name))
+      name = JSON.stringify(name);
     return [name, this.expression.toString(indent)];
   }
 
@@ -80,7 +81,10 @@ export class ApplyExpression extends ChainableUnaryExpression {
     if (indent == null) return super.toString();
     let param: string;
     if (this.expression.type === "DATASET") {
-      param = "\n    " + this._toStringParameters(indent + 2).join(",\n    ") + "\n  ";
+      param =
+        "\n    " +
+        this._toStringParameters(indent + 2).join(",\n    ") +
+        "\n  ";
     } else {
       param = this._toStringParameters(indent).join(",");
     }
@@ -98,7 +102,10 @@ export class ApplyExpression extends ChainableUnaryExpression {
     return new ApplyExpression(value);
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (!operandValue) return null;
     const { name, expression } = this;
     return (operandValue as Dataset).apply(name, expression);
@@ -124,7 +131,11 @@ export class ApplyExpression extends ChainableUnaryExpression {
     const { name, operand, expression } = this;
 
     // X.apply('hello', '$hello') => X
-    if (expression instanceof RefExpression && expression.name === name && expression.nest === 0) {
+    if (
+      expression instanceof RefExpression &&
+      expression.name === name &&
+      expression.nest === 0
+    ) {
       return operand;
     }
 
@@ -147,7 +158,9 @@ export class ApplyExpression extends ChainableUnaryExpression {
       const datum = dataset.data[0];
       if (
         datum &&
-        freeReferences.some(freeReference => datum[freeReference] instanceof Expression)
+        freeReferences.some(
+          freeReference => datum[freeReference] instanceof Expression,
+        )
       ) {
         return this;
       }

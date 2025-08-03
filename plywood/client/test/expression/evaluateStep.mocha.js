@@ -52,7 +52,12 @@ const diamonds = External.fromJS({
     { name: "height_bucket", type: "NUMBER" },
     { name: "price", type: "NUMBER", unsplitable: true },
     { name: "tax", type: "NUMBER", unsplitable: true },
-    { name: "vendor_id", type: "NULL", nativeType: "hyperUnique", unsplitable: true },
+    {
+      name: "vendor_id",
+      type: "NULL",
+      nativeType: "hyperUnique",
+      unsplitable: true,
+    },
   ],
   allowEternity: true,
   allowSelectQueries: true,
@@ -72,13 +77,18 @@ describe("evaluate step", () => {
         $("diamonds")
           .split("$color:STRING", "Color")
           .limit(10)
-          .apply("SubSplit", $("diamonds").split("$cut:STRING", "SubCut").limit(5)),
+          .apply(
+            "SubSplit",
+            $("diamonds").split("$cut:STRING", "SubCut").limit(5),
+          ),
       );
 
     const ex2 = ex1.simplify();
 
     let readyExternals = ex2.getReadyExternals();
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals))).to.deep.equal({
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+    ).to.deep.equal({
       0: [
         {
           external: "External",
@@ -103,8 +113,14 @@ describe("evaluate step", () => {
       ],
     });
 
-    fillExpressionExternalAlteration(readyExternals, external => `Ex(${external.mode})`);
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), "E1").to.deep.equal({
+    fillExpressionExternalAlteration(
+      readyExternals,
+      external => `Ex(${external.mode})`,
+    );
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E1",
+    ).to.deep.equal({
       0: [
         {
           external: "External",
@@ -132,8 +148,13 @@ describe("evaluate step", () => {
       ],
     });
 
-    fillExpressionExternalAlteration(readyExternals, external => external.simulateValue(false, []));
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), "E2").to.deep.equal({
+    fillExpressionExternalAlteration(readyExternals, external =>
+      external.simulateValue(false, []),
+    );
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E2",
+    ).to.deep.equal({
       0: [
         {
           external: "External",
@@ -201,7 +222,10 @@ describe("evaluate step", () => {
     });
 
     const ex3 = ex2.applyReadyExternals(readyExternals);
-    expect(JSON.parse(JSON.stringify(ex3, stringExternals)), "E3").to.deep.equal({
+    expect(
+      JSON.parse(JSON.stringify(ex3, stringExternals)),
+      "E3",
+    ).to.deep.equal({
       op: "literal",
       type: "DATASET",
       value: {
@@ -280,7 +304,10 @@ describe("evaluate step", () => {
     // ---------------------
 
     readyExternals = ex3.getReadyExternals();
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), "E4").to.deep.equal({
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E4",
+    ).to.deep.equal({
       0: [
         {
           datasetAlterations: [
@@ -297,8 +324,13 @@ describe("evaluate step", () => {
       ],
     });
 
-    fillExpressionExternalAlteration(readyExternals, external => external.simulateValue(false, []));
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), "E5").to.deep.equal({
+    fillExpressionExternalAlteration(readyExternals, external =>
+      external.simulateValue(false, []),
+    );
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E5",
+    ).to.deep.equal({
       0: [
         {
           datasetAlterations: [
@@ -334,7 +366,10 @@ describe("evaluate step", () => {
     });
 
     const ex4 = ex3.applyReadyExternals(readyExternals);
-    expect(JSON.parse(JSON.stringify(ex4, stringExternals)), "E6").to.deep.equal({
+    expect(
+      JSON.parse(JSON.stringify(ex4, stringExternals)),
+      "E6",
+    ).to.deep.equal({
       op: "literal",
       type: "DATASET",
       value: {
@@ -430,6 +465,9 @@ describe("evaluate step", () => {
     // ---------------------
 
     readyExternals = ex4.getReadyExternals();
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), "E7").to.deep.equal({}); // all done
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E7",
+    ).to.deep.equal({}); // all done
   });
 });

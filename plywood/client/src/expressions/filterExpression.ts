@@ -42,8 +42,13 @@ export class FilterExpression extends ChainableUnaryExpression {
     this.type = "DATASET";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
-    return operandValue ? (operandValue as Dataset).filter(this.expression) : null;
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
+    return operandValue
+      ? (operandValue as Dataset).filter(this.expression)
+      : null;
   }
 
   protected _getSQLChainableUnaryHelper(
@@ -88,7 +93,8 @@ export class FilterExpression extends ChainableUnaryExpression {
     if (operand instanceof SplitExpression && operand.isLinear()) {
       const { operand: x, splits, dataName } = operand;
       const newFilter = expression.substitute(ex => {
-        if (ex instanceof RefExpression && splits[ex.name]) return splits[ex.name];
+        if (ex instanceof RefExpression && splits[ex.name])
+          return splits[ex.name];
         return null;
       });
       return x.filter(newFilter).split(splits, dataName);

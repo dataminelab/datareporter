@@ -58,7 +58,12 @@ const diamonds = External.fromJS({
     { name: "height_bucket", type: "NUMBER" },
     { name: "price", type: "NUMBER", unsplitable: true },
     { name: "tax", type: "NUMBER", unsplitable: true },
-    { name: "vendor_id", type: "NULL", nativeType: "hyperUnique", unsplitable: true },
+    {
+      name: "vendor_id",
+      type: "NULL",
+      nativeType: "hyperUnique",
+      unsplitable: true,
+    },
   ],
   allowSelectQueries: true,
 });
@@ -138,7 +143,9 @@ describe("Simplify", () => {
     });
 
     it("transform case is idempotent", () => {
-      const ex1 = $("page").transformCase("lowerCase").transformCase("lowerCase");
+      const ex1 = $("page")
+        .transformCase("lowerCase")
+        .transformCase("lowerCase");
       const ex2 = $("page").transformCase("lowerCase");
       simplifiesTo(ex1, ex2);
     });
@@ -257,7 +264,14 @@ describe("Simplify", () => {
     });
 
     it("collapses long chain", () => {
-      const ex1 = $("x").negate().negate().negate().negate().negate().negate().negate();
+      const ex1 = $("x")
+        .negate()
+        .negate()
+        .negate()
+        .negate()
+        .negate()
+        .negate()
+        .negate();
       const ex2 = $("x").negate();
       simplifiesTo(ex1, ex2);
     });
@@ -389,7 +403,10 @@ describe("Simplify", () => {
     });
 
     it("works with different filters across filter", () => {
-      const ex1 = $("flight", "NUMBER").is(5).and($("lol").is(3)).and($("flight", "NUMBER").is(7));
+      const ex1 = $("flight", "NUMBER")
+        .is(5)
+        .and($("lol").is(3))
+        .and($("flight", "NUMBER").is(7));
       const ex2 = r(false);
       simplifiesTo(ex1, ex2);
     });
@@ -401,7 +418,10 @@ describe("Simplify", () => {
     });
 
     it("works with same filters across filter", () => {
-      const ex1 = $("flight", "NUMBER").is(5).and($("lol").is(3)).and($("flight", "NUMBER").is(5));
+      const ex1 = $("flight", "NUMBER")
+        .is(5)
+        .and($("lol").is(3))
+        .and($("flight", "NUMBER").is(5));
       const ex2 = $("flight", "NUMBER").is(5).and($("lol").is(3));
       simplifiesTo(ex1, ex2);
     });
@@ -447,7 +467,10 @@ describe("Simplify", () => {
 
     it("works with two time ranges", () => {
       const ex1 = $("time", "TIME")
-        .overlap({ start: new Date("2015-03-12T00:00:00Z"), end: new Date("2015-03-16T00:00:00Z") })
+        .overlap({
+          start: new Date("2015-03-12T00:00:00Z"),
+          end: new Date("2015-03-16T00:00:00Z"),
+        })
         .and(
           $("time", "TIME").overlap({
             start: new Date("2015-03-12T00:00:00Z"),
@@ -464,7 +487,9 @@ describe("Simplify", () => {
     it("works with time range to overlap statement", () => {
       const ex1 = $("time", "TIME")
         .greaterThan(r(new Date("2015-11-13T16:08:01.000Z")))
-        .and($("time", "TIME").lessThan(r(new Date("2019-01-14T01:54:41.000Z"))));
+        .and(
+          $("time", "TIME").lessThan(r(new Date("2019-01-14T01:54:41.000Z"))),
+        );
       const ex2 = $("time", "TIME").overlap(
         new NumberRange({
           start: new Date("2015-11-13T16:08:01.000Z"),
@@ -479,7 +504,11 @@ describe("Simplify", () => {
       const ex1 = $("cityName", "STRING")
         .greaterThan("Kab")
         .and($("cityName", "STRING").lessThan("Kar"));
-      const ex2 = $("cityName", "STRING").overlap({ start: "Kab", end: "Kar", bounds: "()" });
+      const ex2 = $("cityName", "STRING").overlap({
+        start: "Kab",
+        end: "Kar",
+        bounds: "()",
+      });
       simplifiesTo(ex1, ex2);
     });
 
@@ -769,7 +798,10 @@ describe("Simplify", () => {
     });
 
     it("leaves with lookup", () => {
-      const ex = $("channel").lookup("channel-lookup").fallback(r("LOL")).is(["English", "LOL"]);
+      const ex = $("channel")
+        .lookup("channel-lookup")
+        .fallback(r("LOL"))
+        .is(["English", "LOL"]);
       leavesAlone(ex);
     });
   });
@@ -863,13 +895,17 @@ describe("Simplify", () => {
 
   describe("contains", () => {
     it("works with transformCase Upper", () => {
-      const ex1 = $("x").transformCase("upperCase").contains($("y").transformCase("upperCase"));
+      const ex1 = $("x")
+        .transformCase("upperCase")
+        .contains($("y").transformCase("upperCase"));
       const ex2 = $("x").contains($("y"), "ignoreCase");
       simplifiesTo(ex1, ex2);
     });
 
     it("works with transformCase Lower", () => {
-      const ex1 = $("x").transformCase("lowerCase").contains($("y").transformCase("lowerCase"));
+      const ex1 = $("x")
+        .transformCase("lowerCase")
+        .contains($("y").transformCase("lowerCase"));
       const ex2 = $("x").contains($("y"), "ignoreCase");
       simplifiesTo(ex1, ex2);
     });
@@ -888,13 +924,18 @@ describe("Simplify", () => {
 
   describe("timeFloor", () => {
     it("with simple expression", () => {
-      const ex1 = r(new Date("2015-02-20T15:41:12Z")).timeFloor("P1D", "Etc/UTC");
+      const ex1 = r(new Date("2015-02-20T15:41:12Z")).timeFloor(
+        "P1D",
+        "Etc/UTC",
+      );
       const ex2 = r(new Date("2015-02-20T00:00:00Z"));
       simplifiesTo(ex1, ex2);
     });
 
     it("wipes out itself", () => {
-      const ex1 = $("x").timeFloor("P1D", "Etc/UTC").timeFloor("P1D", "Etc/UTC");
+      const ex1 = $("x")
+        .timeFloor("P1D", "Etc/UTC")
+        .timeFloor("P1D", "Etc/UTC");
       const ex2 = $("x").timeFloor("P1D", "Etc/UTC");
       simplifiesTo(ex1, ex2);
     });
@@ -902,7 +943,11 @@ describe("Simplify", () => {
 
   describe("timeShift", () => {
     it("with simple expression", () => {
-      const ex1 = r(new Date("2015-02-20T15:41:12Z")).timeShift("P1D", 1, "Etc/UTC");
+      const ex1 = r(new Date("2015-02-20T15:41:12Z")).timeShift(
+        "P1D",
+        1,
+        "Etc/UTC",
+      );
       const ex2 = r(new Date("2015-02-21T15:41:12Z"));
       simplifiesTo(ex1, ex2);
     });
@@ -914,7 +959,9 @@ describe("Simplify", () => {
     });
 
     it("combines with itself", () => {
-      const ex1 = $("x").timeShift("P1D", 10, "Etc/UTC").timeShift("P1D", -7, "Etc/UTC");
+      const ex1 = $("x")
+        .timeShift("P1D", 10, "Etc/UTC")
+        .timeShift("P1D", -7, "Etc/UTC");
       const ex2 = $("x").timeShift("P1D", 3, "Etc/UTC");
       simplifiesTo(ex1, ex2);
     });
@@ -922,7 +969,10 @@ describe("Simplify", () => {
 
   describe("timeBucket", () => {
     it("with simple expression", () => {
-      const ex1 = r(new Date("2015-02-19T05:59:02.822Z")).timeBucket("P1D", "Etc/UTC");
+      const ex1 = r(new Date("2015-02-19T05:59:02.822Z")).timeBucket(
+        "P1D",
+        "Etc/UTC",
+      );
       const ex2 = r(
         TimeRange.fromJS({
           start: new Date("2015-02-19T00:00:00.000Z"),
@@ -967,14 +1017,20 @@ describe("Simplify", () => {
       const ex1 = ply()
         .apply("Wiki", "$^wiki.sum($deleted)")
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)")
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        )
         .filter('$^x == "en"');
 
       const ex2 = ply()
         .filter('$^x == "en"')
         .apply("Wiki", "$^wiki.sum($deleted)")
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)");
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        );
 
       simplifiesTo(ex1, ex2);
     });
@@ -983,20 +1039,28 @@ describe("Simplify", () => {
       const ex1 = ply()
         .apply("Wiki", "$^wiki.sum($deleted)")
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)")
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        )
         .filter("$AddedByDeleted == 1");
 
       const ex2 = ply()
         .apply("Wiki", "$^wiki.sum($deleted)")
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
         .filter("$AddedByDeleted == 1")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)");
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        );
 
       simplifiesTo(ex1, ex2);
     });
 
     it("can move past a linear split", () => {
-      const ex1 = $("wiki").split("$page:STRING", "Page").filter('$Page.contains("hello world")');
+      const ex1 = $("wiki")
+        .split("$page:STRING", "Page")
+        .filter('$Page.contains("hello world")');
 
       const ex2 = $("wiki")
         .filter('$page:STRING.contains("hello world")')
@@ -1010,7 +1074,10 @@ describe("Simplify", () => {
         .split("$page:SET/STRING", "Page")
         .apply("Deleted", "$wiki.sum($deleted)")
         .apply("AddedByDeleted", "$wiki.sum($added) / $wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$wiki.sum($deleted) / $wiki.sum($inserted)")
+        .apply(
+          "DeletedByInserted",
+          "$wiki.sum($deleted) / $wiki.sum($inserted)",
+        )
         .filter('$Page.contains("hello world")');
 
       const ex2 = $("wiki")
@@ -1018,7 +1085,10 @@ describe("Simplify", () => {
         .filter('$Page.contains("hello world")')
         .apply("Deleted", "$wiki.sum($deleted)")
         .apply("AddedByDeleted", "$wiki.sum($added) / $wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$wiki.sum($deleted) / $wiki.sum($inserted)");
+        .apply(
+          "DeletedByInserted",
+          "$wiki.sum($deleted) / $wiki.sum($inserted)",
+        );
 
       simplifiesTo(ex1, ex2);
     });
@@ -1028,7 +1098,10 @@ describe("Simplify", () => {
         .split("$time.timeBucket(P1D)", "TimeByDay")
         .apply("Deleted", "$wiki.sum($deleted)")
         .apply("AddedByDeleted", "$wiki.sum($added) / $wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$wiki.sum($deleted) / $wiki.sum($inserted)")
+        .apply(
+          "DeletedByInserted",
+          "$wiki.sum($deleted) / $wiki.sum($inserted)",
+        )
         .filter("$TimeByDay != null");
 
       const ex2 = $("wiki")
@@ -1036,15 +1109,22 @@ describe("Simplify", () => {
         .split("$time.timeBucket(P1D)", "TimeByDay")
         .apply("Deleted", "$wiki.sum($deleted)")
         .apply("AddedByDeleted", "$wiki.sum($added) / $wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$wiki.sum($deleted) / $wiki.sum($inserted)");
+        .apply(
+          "DeletedByInserted",
+          "$wiki.sum($deleted) / $wiki.sum($inserted)",
+        );
 
       simplifiesTo(ex1, ex2);
     });
 
     it("can move past a sort", () => {
-      const ex1 = $("d").sort("$deleted", "ascending").filter("$^AddedByDeleted == 1");
+      const ex1 = $("d")
+        .sort("$deleted", "ascending")
+        .filter("$^AddedByDeleted == 1");
 
-      const ex2 = $("d").filter("$^AddedByDeleted == 1").sort("$deleted", "ascending");
+      const ex2 = $("d")
+        .filter("$^AddedByDeleted == 1")
+        .sort("$deleted", "ascending");
 
       simplifiesTo(ex1, ex2);
     });
@@ -1136,17 +1216,25 @@ describe("Simplify", () => {
     });
 
     it("sorts applies does not mess with sort if all are simple 1", () => {
-      const ex1 = ply().apply("Count", "$^wiki.count()").apply("Deleted", "$^wiki.sum($deleted)");
+      const ex1 = ply()
+        .apply("Count", "$^wiki.count()")
+        .apply("Deleted", "$^wiki.sum($deleted)");
 
-      const ex2 = ply().apply("Count", "$^wiki.count()").apply("Deleted", "$^wiki.sum($deleted)");
+      const ex2 = ply()
+        .apply("Count", "$^wiki.count()")
+        .apply("Deleted", "$^wiki.sum($deleted)");
 
       simplifiesTo(ex1, ex2);
     });
 
     it("sorts applies does not mess with sort if all are simple 2", () => {
-      const ex1 = ply().apply("Deleted", "$^wiki.sum($deleted)").apply("Count", "$^wiki.count()");
+      const ex1 = ply()
+        .apply("Deleted", "$^wiki.sum($deleted)")
+        .apply("Count", "$^wiki.count()");
 
-      const ex2 = ply().apply("Deleted", "$^wiki.sum($deleted)").apply("Count", "$^wiki.count()");
+      const ex2 = ply()
+        .apply("Deleted", "$^wiki.sum($deleted)")
+        .apply("Count", "$^wiki.count()");
 
       simplifiesTo(ex1, ex2);
     });
@@ -1154,13 +1242,19 @@ describe("Simplify", () => {
     it("sorts applies 2", () => {
       const ex1 = ply()
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)")
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        )
         .apply("Deleted", "$^wiki.sum($deleted)");
 
       const ex2 = ply()
         .apply("Deleted", "$^wiki.sum($deleted)")
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)");
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        );
 
       simplifiesTo(ex1, ex2);
     });
@@ -1235,7 +1329,10 @@ describe("Simplify", () => {
           $("diamonds")
             .split("$color:STRING", "Color")
             .limit(10)
-            .apply("SubSplit", $("diamonds").split("$cut:STRING", "SubCut").limit(5)),
+            .apply(
+              "SubSplit",
+              $("diamonds").split("$cut:STRING", "SubCut").limit(5),
+            ),
         );
 
       const ex2 = ex1.simplify();
@@ -1287,14 +1384,20 @@ describe("Simplify", () => {
       const ex1 = $("main")
         .apply("Wiki", "$^wiki.sum($deleted)")
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)")
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        )
         .limit(10);
 
       const ex2 = $("main")
         .limit(10)
         .apply("Wiki", "$^wiki.sum($deleted)")
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)");
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        );
 
       simplifiesTo(ex1, ex2);
     });
@@ -1320,7 +1423,10 @@ describe("Simplify", () => {
         .apply("Added", "$^wiki.sum($added)")
         .apply("Deleted", "$^wiki.sum($deleted)")
         .apply("AddedByDeleted", "$^wiki.sum($added) / $^wiki.sum($deleted)")
-        .apply("DeletedByInserted", "$^wiki.sum($deleted) / $^wiki.sum($inserted)")
+        .apply(
+          "DeletedByInserted",
+          "$^wiki.sum($deleted) / $^wiki.sum($inserted)",
+        )
         .select("Added", "Deleted");
 
       const ex2 = $("main")

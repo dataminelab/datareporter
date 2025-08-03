@@ -23,7 +23,9 @@ const { Expression, Action, Dataset, $, ply, r } = plywood;
 
 describe("free references", () => {
   const context = {
-    diamonds: Dataset.fromJS([{ color: "A", cut: "great", carat: 1.1, price: 300 }]),
+    diamonds: Dataset.fromJS([
+      { color: "A", cut: "great", carat: 1.1, price: 300 },
+    ]),
   };
 
   describe("works as expected", () => {
@@ -52,13 +54,19 @@ describe("free references", () => {
         .apply("num", 5)
         .apply(
           "subData",
-          ply().apply("x", "$num + 1").apply("y", "$x * 2").apply("z", "$diamonds.sum($price)"),
+          ply()
+            .apply("x", "$num + 1")
+            .apply("y", "$x * 2")
+            .apply("z", "$diamonds.sum($price)"),
         );
 
       ex = ex.referenceCheck(context);
       expect(ex.getFreeReferences()).to.deep.equal(["diamonds"]);
 
-      expect(ex.expression.getFreeReferences()).to.deep.equal(["^diamonds", "num"]);
+      expect(ex.expression.getFreeReferences()).to.deep.equal([
+        "^diamonds",
+        "num",
+      ]);
     });
 
     it("works in a consecutive actions case", () => {

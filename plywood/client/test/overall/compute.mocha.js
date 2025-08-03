@@ -20,11 +20,31 @@ const { Dataset, $, i$, ply, r, AttributeInfo, Set } = require("../plywood");
 
 describe("compute native", () => {
   const data = [
-    { cut: "Good", price: 400, time: new Date("2015-10-01T09:20:30Z"), tags: ["super", "cool"] },
-    { cut: "Good", price: 300, time: new Date("2015-10-02T08:20:30Z"), tags: ["super"] },
+    {
+      cut: "Good",
+      price: 400,
+      time: new Date("2015-10-01T09:20:30Z"),
+      tags: ["super", "cool"],
+    },
+    {
+      cut: "Good",
+      price: 300,
+      time: new Date("2015-10-02T08:20:30Z"),
+      tags: ["super"],
+    },
     { cut: "Great", price: 124, time: null, tags: ["cool"] },
-    { cut: "Wow", price: 160, time: new Date("2015-10-04T06:20:30Z"), tags: ["sweet"] },
-    { cut: "Wow", price: 100, time: new Date("2015-10-05T05:20:30Z"), tags: null },
+    {
+      cut: "Wow",
+      price: 160,
+      time: new Date("2015-10-04T06:20:30Z"),
+      tags: ["sweet"],
+    },
+    {
+      cut: "Wow",
+      price: 100,
+      time: new Date("2015-10-05T05:20:30Z"),
+      tags: null,
+    },
     {
       cut: null,
       price: null,
@@ -382,7 +402,11 @@ describe("compute native", () => {
         "between",
         $("unixTimestamp")
           .greaterThan(r(new Date("2015-09-12T00:00:00.000Z")).cast("NUMBER"))
-          .and($("unixTimestamp").lessThan(r(new Date("2015-09-12T11:59:30.000Z")).cast("NUMBER"))),
+          .and(
+            $("unixTimestamp").lessThan(
+              r(new Date("2015-09-12T11:59:30.000Z")).cast("NUMBER"),
+            ),
+          ),
       );
 
     return ex.compute().then(v => {
@@ -463,7 +487,9 @@ describe("compute native", () => {
   it("does cartesian concat", () => {
     const ds = Dataset.fromJS(data).hide();
 
-    const ex = ply(ds).apply("concat", "$tags ++ $cut").select("tags", "cut", "concat");
+    const ex = ply(ds)
+      .apply("concat", "$tags ++ $cut")
+      .select("tags", "cut", "concat");
 
     return ex.compute().then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -663,10 +689,22 @@ describe("compute native", () => {
     ]);
 
     const ex = ply(ds)
-      .apply("laterThanJan01", $("time").greaterThan(`'2015-01-01T00:00:00.000'`))
-      .apply("laterThanOrEqualJan01", $("time").greaterThanOrEqual(`'2015-01-01T00:00:00.000'`))
-      .apply("earlierThanJan04", $("time").lessThan(`'2015-01-04T00:00:00.000'`))
-      .apply("earlierThanOrEqualJan04", $("time").lessThan(`'2015-01-04T00:00:00.000'`));
+      .apply(
+        "laterThanJan01",
+        $("time").greaterThan(`'2015-01-01T00:00:00.000'`),
+      )
+      .apply(
+        "laterThanOrEqualJan01",
+        $("time").greaterThanOrEqual(`'2015-01-01T00:00:00.000'`),
+      )
+      .apply(
+        "earlierThanJan04",
+        $("time").lessThan(`'2015-01-04T00:00:00.000'`),
+      )
+      .apply(
+        "earlierThanOrEqualJan04",
+        $("time").lessThan(`'2015-01-04T00:00:00.000'`),
+      );
 
     return ex.compute().then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -707,9 +745,15 @@ describe("compute native", () => {
 
     const ex = ply(ds)
       .apply("laterThanJan01", $("time").greaterThan(`'2015-01-03T00:00:00Z'`))
-      .apply("laterThanOrEqualJan01", $("time").greaterThanOrEqual(`'2015-01-03T00:00:00Z'`))
+      .apply(
+        "laterThanOrEqualJan01",
+        $("time").greaterThanOrEqual(`'2015-01-03T00:00:00Z'`),
+      )
       .apply("earlierThanJan04", $("time").lessThan(`'2015-01-03T00:00:00Z'`))
-      .apply("earlierThanOrEqualJan04", $("time").lessThan(`'2015-01-03T00:00:00Z'`));
+      .apply(
+        "earlierThanOrEqualJan04",
+        $("time").lessThan(`'2015-01-03T00:00:00Z'`),
+      );
 
     return ex.compute().then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -748,7 +792,10 @@ describe("compute native", () => {
       { cut: "Wow", time: new Date("2015-01-05T00:00:00Z") },
     ]);
 
-    const ex = ply(ds).apply("Added_NullCities", `'2015-01-01T00:00:00.000' <= $time`);
+    const ex = ply(ds).apply(
+      "Added_NullCities",
+      `'2015-01-01T00:00:00.000' <= $time`,
+    );
 
     return ex.compute().then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -852,7 +899,11 @@ describe("compute native", () => {
     ]);
 
     const ex = ply(ds)
-      .split(i$("time").timeFloor("P3M").timePart("SECOND_OF_YEAR"), "soy", "data")
+      .split(
+        i$("time").timeFloor("P3M").timePart("SECOND_OF_YEAR"),
+        "soy",
+        "data",
+      )
       .select("soy");
 
     return ex.compute().then(v => {
@@ -976,7 +1027,10 @@ describe("compute native", () => {
       .apply("cutInGoodGreat", $("cut").in(["Good", "Great"]))
       .apply("cutIsGoodGreat", $("cut").is(["Good", "Great"]))
       .apply("cutIsNull", $("cut").is([null]))
-      .apply("cutThenFallback", $("cut").is("Good").then("Noice").fallback("Boo"))
+      .apply(
+        "cutThenFallback",
+        $("cut").is("Good").then("Noice").fallback("Boo"),
+      )
       .apply(
         "cutThenFallbackX2",
         $("cut")
@@ -1344,7 +1398,9 @@ describe("compute native", () => {
   it("works with simple split", () => {
     const ds = Dataset.fromJS(data).hide();
 
-    const ex = ply().apply("Data", ply(ds)).apply("Cuts", $("Data").split("$cut", "Cut"));
+    const ex = ply()
+      .apply("Data", ply(ds))
+      .apply("Cuts", $("Data").split("$cut", "Cut"));
 
     return ex.compute().then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -1773,7 +1829,9 @@ describe("compute native", () => {
   it("works with context", () => {
     const ds = Dataset.fromJS(data).hide();
 
-    const ex = ply().apply("Data", ply(ds)).apply("CountPlusX", "$Data.count() + $x");
+    const ex = ply()
+      .apply("Data", ply(ds))
+      .apply("CountPlusX", "$Data.count() + $x");
 
     return ex.compute({ x: 13 }).then(v => {
       expect(v.toJS().data).to.deep.equal([
@@ -2022,14 +2080,22 @@ describe("compute native", () => {
       const ex = ply(ds).sort("$n");
 
       return ex.compute().then(v => {
-        expect(v.toJS().data).to.deep.equal([{ n: 1 }, { n: 2 }, { n: 10 }, { n: 20 }]);
+        expect(v.toJS().data).to.deep.equal([
+          { n: 1 },
+          { n: 2 },
+          { n: 10 },
+          { n: 20 },
+        ]);
       });
     });
 
     it("sorts on number ranges", () => {
       const ds = Dataset.fromJS(data);
 
-      const ex = ply(ds).apply("nr", "$n.numberBucket(1)").select("nr").sort("$nr");
+      const ex = ply(ds)
+        .apply("nr", "$n.numberBucket(1)")
+        .select("nr")
+        .sort("$nr");
 
       return ex.compute().then(v => {
         expect(v.toJS().data).to.deep.equal([
@@ -2136,7 +2202,10 @@ describe("compute native", () => {
     it("re-selects", () => {
       const ex = ply(midData)
         .apply("CountOver2", "$Count / 2")
-        .apply("Cuts", $("Cuts").apply("AvgPrice", "$Data.sum($price) / $Data.count()"));
+        .apply(
+          "Cuts",
+          $("Cuts").apply("AvgPrice", "$Data.sum($price) / $Data.count()"),
+        );
 
       return ex.compute().then(v => {
         expect(v.toJS().data).to.deep.equal([

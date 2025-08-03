@@ -73,7 +73,8 @@ export class NumberRange
 
   constructor(parameters: NumberRangeValue) {
     // So isNaN(null) === false
-    if (isNaN(parameters.start)) throw new TypeError("`start` must be a number");
+    if (isNaN(parameters.start))
+      throw new TypeError("`start` must be a number");
     if (isNaN(parameters.end)) throw new TypeError("`end` must be a number");
     super(parameters.start, parameters.end, parameters.bounds);
   }

@@ -16,7 +16,13 @@
 
 import { NamedArray } from "immutable-class";
 
-import { AttributeInfo, NumberRange, Set, StringRange, TimeRange } from "../../datatypes";
+import {
+  AttributeInfo,
+  NumberRange,
+  Set,
+  StringRange,
+  TimeRange,
+} from "../../datatypes";
 import {
   AbsoluteExpression,
   AddExpression,
@@ -177,7 +183,11 @@ export class DruidExpressionBuilder {
       const ex1 = this.expressionToDruidExpression(myOperand);
 
       if (expression instanceof CastExpression) {
-        return this.castToType(ex1, expression.operand.type, expression.outputType);
+        return this.castToType(
+          ex1,
+          expression.operand.type,
+          expression.outputType,
+        );
       } else if (expression instanceof SubstrExpression) {
         return `substring(${ex1},${expression.position},${expression.len})`;
       } else if (expression instanceof ExtractExpression) {
@@ -209,11 +219,19 @@ export class DruidExpressionBuilder {
       } else if (expression instanceof AbsoluteExpression) {
         return `abs(${ex1})`;
       } else if (expression instanceof NumberBucketExpression) {
-        return continuousFloorExpression(ex1, "floor", expression.size, expression.offset);
+        return continuousFloorExpression(
+          ex1,
+          "floor",
+          expression.size,
+          expression.offset,
+        );
       } else if (expression instanceof TimePartExpression) {
-        const format = DruidExpressionBuilder.TIME_PART_TO_FORMAT[expression.part];
+        const format =
+          DruidExpressionBuilder.TIME_PART_TO_FORMAT[expression.part];
         if (!format)
-          throw new Error(`can not convert ${expression.part} to Druid expression format`);
+          throw new Error(
+            `can not convert ${expression.part} to Druid expression format`,
+          );
         return `timestamp_extract(${ex1},'${format}',${DruidExpressionBuilder.escapeLiteral(
           expression.timezone.toString(),
         )})`;
@@ -335,7 +353,9 @@ export class DruidExpressionBuilder {
                   range.bounds,
                 );
               }
-              throw new Error(`can not convert ${expression} to Druid expression`);
+              throw new Error(
+                `can not convert ${expression} to Druid expression`,
+              );
 
             case "STRING_RANGE":
               if (myExpression instanceof LiteralExpression) {
@@ -347,7 +367,9 @@ export class DruidExpressionBuilder {
                   stringRange.bounds,
                 );
               }
-              throw new Error(`can not convert ${expression} to Druid expression`);
+              throw new Error(
+                `can not convert ${expression} to Druid expression`,
+              );
 
             case "SET/NUMBER_RANGE":
             case "SET/TIME_RANGE":
@@ -364,10 +386,14 @@ export class DruidExpressionBuilder {
                   })
                   .join("||");
               }
-              throw new Error(`can not convert ${expression} to Druid expression`);
+              throw new Error(
+                `can not convert ${expression} to Druid expression`,
+              );
 
             default:
-              throw new Error(`can not convert ${expression} to Druid expression`);
+              throw new Error(
+                `can not convert ${expression} to Druid expression`,
+              );
           }
         } else if (expression instanceof IndexOfExpression) {
           return `strpos(${ex1},${ex2})`;
@@ -378,7 +404,11 @@ export class DruidExpressionBuilder {
     throw new Error(`can not convert ${expression} to Druid expression`);
   }
 
-  private castToType(operand: string, sourceType: PlyType, destType: PlyType): string {
+  private castToType(
+    operand: string,
+    sourceType: PlyType,
+    destType: PlyType,
+  ): string {
     switch (destType) {
       case "TIME":
         if (sourceType === "NUMBER") {
@@ -398,7 +428,12 @@ export class DruidExpressionBuilder {
     }
   }
 
-  private overlapExpression(operand: string, start: string, end: string, bounds: string) {
+  private overlapExpression(
+    operand: string,
+    start: string,
+    end: string,
+    bounds: string,
+  ) {
     if (start === end && bounds === "[]") return `(${operand}==${start})`;
     let startExpression: string = null;
     if (start !== "null") {
@@ -409,7 +444,9 @@ export class DruidExpressionBuilder {
       endExpression = operand + (bounds[1] === "]" ? "<=" : "<") + end;
     }
     if (startExpression) {
-      return endExpression ? `(${startExpression} && ${endExpression})` : startExpression;
+      return endExpression
+        ? `(${startExpression} && ${endExpression})`
+        : startExpression;
     } else {
       return endExpression ? endExpression : "true";
     }

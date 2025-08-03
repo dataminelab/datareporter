@@ -34,7 +34,10 @@ export class MySQLExternal extends SQLExternal {
   static engine = "mysql";
   static type = "DATASET";
 
-  static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): MySQLExternal {
+  static fromJS(
+    parameters: ExternalJS,
+    requester: PlywoodRequester<any>,
+  ): MySQLExternal {
     const value: ExternalValue = External.jsToValue(parameters, requester);
     return new MySQLExternal(value);
   }
@@ -47,7 +50,10 @@ export class MySQLExternal extends SQLExternal {
         const nativeType = column.Type.toLowerCase();
         if (nativeType === "datetime" || nativeType === "timestamp") {
           type = "TIME";
-        } else if (nativeType.indexOf("varchar(") === 0 || nativeType.indexOf("blob") === 0) {
+        } else if (
+          nativeType.indexOf("varchar(") === 0 ||
+          nativeType.indexOf("blob") === 0
+        ) {
           type = "STRING";
         } else if (
           nativeType.indexOf("int(") === 0 ||
@@ -72,6 +78,7 @@ export class MySQLExternal extends SQLExternal {
   }
 
   static getSourceList(requester: PlywoodRequester<any>): Promise<string[]> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(requester({ query: "SHOW TABLES" })).then(sources => {
       if (!Array.isArray(sources)) throw new Error("invalid sources response");
       if (!sources.length) return sources;
@@ -82,8 +89,10 @@ export class MySQLExternal extends SQLExternal {
   }
 
   static getVersion(requester: PlywoodRequester<any>): Promise<string> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(requester({ query: "SELECT @@version" })).then(res => {
-      if (!Array.isArray(res) || res.length !== 1) throw new Error("invalid version response");
+      if (!Array.isArray(res) || res.length !== 1)
+        throw new Error("invalid version response");
       const key = Object.keys(res[0])[0];
       if (!key) throw new Error("invalid version response (no key)");
       return res[0][key];
@@ -96,8 +105,11 @@ export class MySQLExternal extends SQLExternal {
   }
 
   protected getIntrospectAttributes(): Promise<Attributes> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(
-      this.requester({ query: `DESCRIBE ${this.dialect.escapeName(this.source as string)}` }),
+      this.requester({
+        query: `DESCRIBE ${this.dialect.escapeName(this.source as string)}`,
+      }),
     ).then(MySQLExternal.postProcessIntrospect);
   }
 }

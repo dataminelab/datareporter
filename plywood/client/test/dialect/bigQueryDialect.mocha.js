@@ -20,10 +20,17 @@ describe("BigQueryDialect", () => {
       1,
       new Timezone("UTC"),
     );
-    expect(str).to.be.equal("TIMESTAMP(DATE_ADD(DATE(CURRENT_DATETIME), INTERVAL 1 WEEK))");
+    expect(str).to.be.equal(
+      "TIMESTAMP(DATE_ADD(DATE(CURRENT_DATETIME), INTERVAL 1 WEEK))",
+    );
 
     const oneOfEach = Duration.fromJS("P1Y1M1DT1H1M1S");
-    str = dialect.timeShiftExpression("CURRENT_DATETIME", oneOfEach, 1, new Timezone("UTC"));
+    str = dialect.timeShiftExpression(
+      "CURRENT_DATETIME",
+      oneOfEach,
+      1,
+      new Timezone("UTC"),
+    );
 
     expect(str).to.be.equal(
       "TIMESTAMP(DATE_ADD(DATE(" +

@@ -23,9 +23,13 @@ const { $, ply, r, MatchExpression, Set } = plywood;
 
 describe("MatchExpression", () => {
   it(".likeToRegExp", () => {
-    expect(MatchExpression.likeToRegExp("%David\\_R_ss%")).to.equal("^.*David_R.ss.*$");
+    expect(MatchExpression.likeToRegExp("%David\\_R_ss%")).to.equal(
+      "^.*David_R.ss.*$",
+    );
 
-    expect(MatchExpression.likeToRegExp("%David|_R_ss||%", "|")).to.equal("^.*David_R.ss\\|.*$");
+    expect(MatchExpression.likeToRegExp("%David|_R_ss||%", "|")).to.equal(
+      "^.*David_R.ss\\|.*$",
+    );
   });
 
   it("matches on set (no comma)", () => {

@@ -27,7 +27,9 @@ import {
 export class SubtractExpression extends ChainableUnaryExpression {
   static op = "Subtract";
   static fromJS(parameters: ExpressionJS): SubtractExpression {
-    return new SubtractExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new SubtractExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
@@ -38,12 +40,18 @@ export class SubtractExpression extends ChainableUnaryExpression {
     this.type = "NUMBER";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (operandValue === null || expressionValue === null) return null;
     return Set.crossBinary(operandValue, expressionValue, (a, b) => a - b);
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `(${operandJS}-${expressionJS})`;
   }
 

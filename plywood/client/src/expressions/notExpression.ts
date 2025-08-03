@@ -17,7 +17,12 @@
 import { PlywoodValue } from "../datatypes";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class NotExpression extends ChainableExpression {
   static op = "Not";
@@ -40,7 +45,10 @@ export class NotExpression extends ChainableExpression {
     return `!(${operandJS})`;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return `(${operandSQL}) IS NOT TRUE`;
   }
 

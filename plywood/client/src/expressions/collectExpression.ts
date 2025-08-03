@@ -24,10 +24,15 @@ import {
 } from "./baseExpression";
 import { Aggregate } from "./mixins/aggregate";
 
-export class CollectExpression extends ChainableUnaryExpression implements Aggregate {
+export class CollectExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
   static op = "Collect";
   static fromJS(parameters: ExpressionJS): CollectExpression {
-    return new CollectExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new CollectExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
@@ -46,8 +51,13 @@ export class CollectExpression extends ChainableUnaryExpression implements Aggre
     this.type = Set.wrapSetType(this.expression.type);
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
-    return operandValue ? (operandValue as Dataset).collect(this.expression) : null;
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
+    return operandValue
+      ? (operandValue as Dataset).collect(this.expression)
+      : null;
   }
 }
 

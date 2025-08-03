@@ -101,7 +101,9 @@ describe("DruidExternal Rollup", () => {
   };
 
   it("works in basic case", () => {
-    const ex = ply().apply("Count", "$wiki.count()").apply("AvgAdded", "$wiki.average($added)");
+    const ex = ply()
+      .apply("Count", "$wiki.count()")
+      .apply("AvgAdded", "$wiki.average($added)");
 
     const queryPlan = ex.simulateQueryPlan(context);
     expect(queryPlan.length).to.equal(1);
@@ -137,7 +139,10 @@ describe("DruidExternal Rollup", () => {
   it("works in filtered average case", () => {
     const ex = ply()
       .apply("AvgEnAdded", '$wiki.filter($channel == "en").average($added)')
-      .apply("AvgHeDeleted", '$wiki.filter($channel == "he").average($deleted)');
+      .apply(
+        "AvgHeDeleted",
+        '$wiki.filter($channel == "he").average($deleted)',
+      );
 
     const queryPlan = ex.simulateQueryPlan(context);
     expect(queryPlan.length).to.equal(1);

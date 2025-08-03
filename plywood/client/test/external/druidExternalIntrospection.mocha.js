@@ -46,7 +46,8 @@ describe("DruidExternal Introspection", () => {
   });
 
   const requesterDruid_0_21_0 = promiseFnToStream(({ query }) => {
-    if (query.queryType === "status") return Promise.resolve({ version: "0.21.0" });
+    if (query.queryType === "status")
+      return Promise.resolve({ version: "0.21.0" });
     expect(query.dataSource).to.equal("wikipedia");
 
     if (query.queryType === "segmentMetadata") {
@@ -165,9 +166,11 @@ describe("DruidExternal Introspection", () => {
             type: "javascript",
             name: "delta",
             fieldNames: ["delta"],
-            fnAggregate: "function(partialA,partialB) {return partialA + partialB; }",
+            fnAggregate:
+              "function(partialA,partialB) {return partialA + partialB; }",
             fnReset: "function() {return 0; }",
-            fnCombine: "function(partialA,partialB) {return partialA + partialB; }",
+            fnCombine:
+              "function(partialA,partialB) {return partialA + partialB; }",
           },
 
           // A histogram
@@ -180,7 +183,11 @@ describe("DruidExternal Introspection", () => {
             lowerLimit: "-Infinity",
             upperLimit: "Infinity",
           },
-          user_unique: { type: "hyperUnique", name: "user_unique", fieldName: "user_unique" },
+          user_unique: {
+            type: "hyperUnique",
+            name: "user_unique",
+            fieldName: "user_unique",
+          },
         };
       }
 

@@ -41,7 +41,9 @@ export class Ip implements Instance<IpValue, IpJS> {
       // IPv4
       /^(\d+)\.(\d+?)\.(\d+?)\.(\d+?)$/.test(candidate) ||
       // IPv6
-      /^([\da-zA-Z]+):([\da-zA-Z]+):([\da-zA-Z]+):([\da-zA-Z]+):*$/.test(candidate)
+      /^([\da-zA-Z]+):([\da-zA-Z]+):([\da-zA-Z]+):([\da-zA-Z]+):*$/.test(
+        candidate,
+      )
     );
   }
 

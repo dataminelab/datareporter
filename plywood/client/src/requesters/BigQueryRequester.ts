@@ -10,7 +10,9 @@ interface BigQueryRequesterParams {
 /**
  * BigQueryRequester - depends on google-cloud sdk, runs queries, moved in from bigquery-plywood-requester repo for convenience
  */
-export function BigQueryRequester(parameters: BigQueryRequesterParams): PlywoodRequester<string> {
+export function BigQueryRequester(
+  parameters: BigQueryRequesterParams,
+): PlywoodRequester<string> {
   const client = new BigQuery({
     keyFilename: parameters.keyFilename,
   });

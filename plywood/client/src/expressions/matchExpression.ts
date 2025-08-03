@@ -17,7 +17,12 @@
 import { PlywoodValue, Set } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 const REGEXP_SPECIAL = "\\^$.|?*+()[{";
 
@@ -95,7 +100,10 @@ export class MatchExpression extends ChainableExpression {
     return `/${this.regexp}/.test(${operandJS})`;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.regexpExpression(operandSQL, this.regexp);
   }
 }

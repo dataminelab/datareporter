@@ -29,6 +29,9 @@ export class Aggregate {
 
   public fullyDefined(): boolean {
     const expression: Expression = (this as any).expression;
-    return this.operand.isOp("literal") && (expression ? expression.resolved() : true);
+    return (
+      this.operand.isOp("literal") &&
+      (expression ? expression.resolved() : true)
+    );
   }
 }

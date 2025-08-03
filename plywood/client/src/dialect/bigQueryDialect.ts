@@ -56,7 +56,8 @@ export class BigQueryDialect extends SQLDialect {
       "((extract(DAYOFYEAR from $$)-1)*24)+extract(HOUR from $$)*60+extract(MINUTE from $$)",
     //
     HOUR_OF_DAY: "extract(HOUR from $$)",
-    HOUR_OF_WEEK: "(mod((extract(DAYOFWEEK from $$) + 6), 7) * 24 + extract(HOUR from $$))",
+    HOUR_OF_WEEK:
+      "(mod((extract(DAYOFWEEK from $$) + 6), 7) * 24 + extract(HOUR from $$))",
     HOUR_OF_MONTH: "((extract(DAY from $$)-1)*24+extract(HOUR from $$))",
     HOUR_OF_YEAR: "((extract(DAYOFYEAR from $$)-1)*24+extract(HOUR from $$))",
     //
@@ -86,10 +87,16 @@ export class BigQueryDialect extends SQLDialect {
     return this.emptyGroupBy();
   }
 
-  public castExpression(inputType: PlyType, operand: string, cast: string): string {
+  public castExpression(
+    inputType: PlyType,
+    operand: string,
+    cast: string,
+  ): string {
     const castFunction = BigQueryDialect.CAST_TO_FUNCTION[cast][inputType];
     if (!castFunction)
-      throw new Error(`unsupported cast from ${inputType} to ${cast} in BigQuery dialect`);
+      throw new Error(
+        `unsupported cast from ${inputType} to ${cast} in BigQuery dialect`,
+      );
     return castFunction.replace(/\$\$/g, operand);
   }
 
@@ -103,11 +110,19 @@ export class BigQueryDialect extends SQLDialect {
     return `STRPOS(${substr}, ${str}) - 1`;
   }
 
-  public timeBucketExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeBucketExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     return this.timeFloorExpression(operand, duration, timezone);
   }
 
-  public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeFloorExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     const bucketFormat = BigQueryDialect.TIME_BUCKETING[duration.toString()];
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     if (duration.toString() === "P1W") {
@@ -133,11 +148,19 @@ export class BigQueryDialect extends SQLDialect {
     }
   }
 
-  public timePartExpression(operand: string, part: string, timezone: Timezone): string {
+  public timePartExpression(
+    operand: string,
+    part: string,
+    timezone: Timezone,
+  ): string {
     // https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#extract
     const timePartFunction = BigQueryDialect.TIME_PART_TO_FUNCTION[part];
-    if (!timePartFunction) throw new Error(`unsupported part ${part} in BigQuery dialect`);
-    return timePartFunction.replace(/\$\$/g, this.utcToWalltime(operand, timezone));
+    if (!timePartFunction)
+      throw new Error(`unsupported part ${part} in BigQuery dialect`);
+    return timePartFunction.replace(
+      /\$\$/g,
+      this.utcToWalltime(operand, timezone),
+    );
   }
 
   public regexpExpression(expression: string, regexp: string): string {
@@ -160,14 +183,21 @@ export class BigQueryDialect extends SQLDialect {
     return `(${a}=${b})`;
   }
 
-  timeShiftExpression(operand: string, duration: Duration, step: int, timezone: Timezone): string {
+  timeShiftExpression(
+    operand: string,
+    duration: Duration,
+    step: int,
+    timezone: Timezone,
+  ): string {
     if (step === 0) return operand;
 
     // https://cloud.google.com/bigquery/docs/reference/standard-sql/datetime_functions#datetime_add
-    const sqlFn = step > 0 ? "TIMESTAMP(DATE_ADD(DATE(" : "TIMESTAMP(DATE_SUB(DATE(";
+    const sqlFn =
+      step > 0 ? "TIMESTAMP(DATE_ADD(DATE(" : "TIMESTAMP(DATE_SUB(DATE(";
     const spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
-      operand = sqlFn + operand + "), INTERVAL " + String(spans.week) + " WEEK))";
+      operand =
+        sqlFn + operand + "), INTERVAL " + String(spans.week) + " WEEK))";
     }
     if (spans.month) {
       const expr = String(spans.month);

@@ -29,7 +29,10 @@ import { Aggregate } from "./mixins/aggregate";
 import { MultiplyExpression } from "./multiplyExpression";
 import { SubtractExpression } from "./subtractExpression";
 
-export class SumExpression extends ChainableUnaryExpression implements Aggregate {
+export class SumExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
   static op = "Sum";
   static fromJS(parameters: ExpressionJS): SumExpression {
     return new SumExpression(ChainableUnaryExpression.jsToValue(parameters));
@@ -43,7 +46,10 @@ export class SumExpression extends ChainableUnaryExpression implements Aggregate
     this.type = "NUMBER";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue ? (operandValue as Dataset).sum(this.expression) : null;
   }
 
@@ -74,7 +80,11 @@ export class SumExpression extends ChainableUnaryExpression implements Aggregate
     // X.sum(lhs - rhs)
     if (expression instanceof SubtractExpression) {
       const { operand: lhs, expression: rhs } = expression;
-      return operand.sum(lhs).distribute().subtract(operand.sum(rhs).distribute()).simplify();
+      return operand
+        .sum(lhs)
+        .distribute()
+        .subtract(operand.sum(rhs).distribute())
+        .simplify();
     }
 
     // X.sum(lhs * rhs)

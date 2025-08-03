@@ -40,8 +40,10 @@ export function getValueType(value: any): PlyType {
       return "IP";
     } else if (hasOwnProp(value, "start") && hasOwnProp(value, "end")) {
       if (isDate(value.start) || isDate(value.end)) return "TIME_RANGE";
-      if (typeof value.start === "number" || typeof value.end === "number") return "NUMBER_RANGE";
-      if (typeof value.start === "string" || typeof value.end === "string") return "STRING_RANGE";
+      if (typeof value.start === "number" || typeof value.end === "number")
+        return "NUMBER_RANGE";
+      if (typeof value.start === "string" || typeof value.end === "string")
+        return "STRING_RANGE";
       throw new Error("unrecognizable range");
     } else {
       let ctrType = value.constructor.type;
@@ -49,14 +51,20 @@ export function getValueType(value: any): PlyType {
         if (value instanceof Expression) {
           throw new Error(`expression used as datum value ${value}`);
         } else {
-          throw new Error(`can not have an object without a type: ${JSON.stringify(value)}`);
+          throw new Error(
+            `can not have an object without a type: ${JSON.stringify(value)}`,
+          );
         }
       }
       if (ctrType === "SET") ctrType += "/" + value.setType;
       return <PlyType>ctrType;
     }
   } else {
-    if (typeofValue !== "boolean" && typeofValue !== "number" && typeofValue !== "string") {
+    if (
+      typeofValue !== "boolean" &&
+      typeofValue !== "number" &&
+      typeofValue !== "string"
+    ) {
       throw new TypeError("unsupported JS type " + typeofValue);
     }
     return <PlyType>typeofValue.toUpperCase();
@@ -65,7 +73,9 @@ export function getValueType(value: any): PlyType {
 
 export function getFullType(value: any): FullType {
   const myType = getValueType(value);
-  return myType === "DATASET" ? (<Dataset>value).getFullType() : { type: myType };
+  return myType === "DATASET"
+    ? (<Dataset>value).getFullType()
+    : { type: myType };
 }
 
 export function getFullTypeFromDatum(datum: Datum): DatasetFullType {
@@ -139,14 +149,19 @@ export function valueFromJS(v: any, typeOverride: string | null = null): any {
           return Dataset.fromJS(v);
 
         default:
-          if (String(typeOverride).indexOf("SET") === 0 || Array.isArray(v.elements)) {
+          if (
+            String(typeOverride).indexOf("SET") === 0 ||
+            Array.isArray(v.elements)
+          ) {
             return Set.fromJS(v);
           }
           if (v.toISOString) {
             return v; // Allow native date
           }
           if (typeOverride) {
-            throw new Error(`unknown type ${typeOverride} on ${JSON.stringify(v)}`);
+            throw new Error(
+              `unknown type ${typeOverride} on ${JSON.stringify(v)}`,
+            );
           } else {
             throw new Error(
               `can not have an object without a 'type' as a datum value: ${JSON.stringify(v)}`,

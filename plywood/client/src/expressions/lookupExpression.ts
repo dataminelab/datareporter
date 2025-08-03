@@ -17,7 +17,12 @@
 import { PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class LookupExpression extends ChainableExpression {
   static op = "Lookup";
@@ -69,7 +74,10 @@ export class LookupExpression extends ChainableExpression {
     throw new Error("can not express as JS");
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.lookupExpression(operandSQL, this.lookupFn);
   }
 }

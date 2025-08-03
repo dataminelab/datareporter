@@ -36,8 +36,10 @@ export class MySQLDialect extends SQLDialect {
     SECOND_OF_HOUR: "(MINUTE($$)*60+SECOND($$))",
     SECOND_OF_DAY: "((HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
     SECOND_OF_WEEK: "(((WEEKDAY($$)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
-    SECOND_OF_MONTH: "((((DAYOFMONTH($$)-1)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
-    SECOND_OF_YEAR: "((((DAYOFYEAR($$)-1)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
+    SECOND_OF_MONTH:
+      "((((DAYOFMONTH($$)-1)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
+    SECOND_OF_YEAR:
+      "((((DAYOFYEAR($$)-1)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
 
     MINUTE_OF_HOUR: "MINUTE($$)",
     MINUTE_OF_DAY: "HOUR($$)*60+MINUTE($$)",
@@ -61,7 +63,9 @@ export class MySQLDialect extends SQLDialect {
     YEAR: "YEAR($$)",
   };
 
-  static CAST_TO_FUNCTION: { [outputType: string]: { [inputType: string]: string } } = {
+  static CAST_TO_FUNCTION: {
+    [outputType: string]: { [inputType: string]: string };
+  } = {
     TIME: {
       NUMBER: "FROM_UNIXTIME($$ / 1000)",
     },
@@ -101,7 +105,11 @@ export class MySQLDialect extends SQLDialect {
     return `CONCAT(${a},${b})`;
   }
 
-  public containsExpression(a: string, b: string, insensitive: boolean): string {
+  public containsExpression(
+    a: string,
+    b: string,
+    insensitive: boolean,
+  ): string {
     if (insensitive) {
       a = `LOWER(${a})`;
       b = `LOWER(${b})`;
@@ -113,10 +121,16 @@ export class MySQLDialect extends SQLDialect {
     return `(${a}<=>${b})`;
   }
 
-  public castExpression(inputType: PlyType, operand: string, targetType: string): string {
+  public castExpression(
+    inputType: PlyType,
+    operand: string,
+    targetType: string,
+  ): string {
     const castFunction = MySQLDialect.CAST_TO_FUNCTION[targetType][inputType];
     if (!castFunction) {
-      throw new Error(`unsupported cast from ${inputType} to ${targetType} in MySQL dialect`);
+      throw new Error(
+        `unsupported cast from ${inputType} to ${targetType} in MySQL dialect`,
+      );
     }
     return castFunction.replace(/\$\$/g, operand);
   }
@@ -131,7 +145,11 @@ export class MySQLDialect extends SQLDialect {
     return `CONVERT_TZ(${operand},'${timezone}','+0:00')`;
   }
 
-  public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeFloorExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     const bucketFormat = MySQLDialect.TIME_BUCKETING[duration.toString()];
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     return this.walltimeToUTC(
@@ -140,14 +158,26 @@ export class MySQLDialect extends SQLDialect {
     );
   }
 
-  public timeBucketExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeBucketExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     return this.timeFloorExpression(operand, duration, timezone);
   }
 
-  public timePartExpression(operand: string, part: string, timezone: Timezone): string {
+  public timePartExpression(
+    operand: string,
+    part: string,
+    timezone: Timezone,
+  ): string {
     const timePartFunction = MySQLDialect.TIME_PART_TO_FUNCTION[part];
-    if (!timePartFunction) throw new Error(`unsupported part ${part} in MySQL dialect`);
-    return timePartFunction.replace(/\$\$/g, this.utcToWalltime(operand, timezone));
+    if (!timePartFunction)
+      throw new Error(`unsupported part ${part} in MySQL dialect`);
+    return timePartFunction.replace(
+      /\$\$/g,
+      this.utcToWalltime(operand, timezone),
+    );
   }
 
   public timeShiftExpression(

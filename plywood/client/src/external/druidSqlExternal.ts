@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { Column, Introspect, QueryResult, SqlColumn, SqlQuery } from "druid-query-toolkit";
+import {
+  Column,
+  Introspect,
+  QueryResult,
+  SqlColumn,
+  SqlQuery,
+} from "druid-query-toolkit";
 import { PlywoodRequester } from "plywood-base-api";
 import toArray from "stream-to-array";
 
@@ -24,7 +30,12 @@ import { Expression, RefExpression, SqlRefExpression } from "../expressions";
 import { dictEqual } from "../helper";
 import { PlyType } from "../types";
 
-import { External, ExternalJS, ExternalValue, IntrospectionDepth } from "./baseExternal";
+import {
+  External,
+  ExternalJS,
+  ExternalValue,
+  IntrospectionDepth,
+} from "./baseExternal";
 import { DruidExternal } from "./druidExternal";
 import { SQLExternal } from "./sqlExternal";
 
@@ -37,7 +48,10 @@ export class DruidSQLExternal extends SQLExternal {
   static engine = "druidsql";
   static type = "DATASET";
 
-  static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): DruidSQLExternal {
+  static fromJS(
+    parameters: ExternalJS,
+    requester: PlywoodRequester<any>,
+  ): DruidSQLExternal {
     const value: ExternalValue = SQLExternal.jsToValue(parameters, requester);
     value.context = parameters.context;
     return new DruidSQLExternal(value);
@@ -97,7 +111,10 @@ export class DruidSQLExternal extends SQLExternal {
     });
   }
 
-  static async getSourceList(requester: PlywoodRequester<any>): Promise<string[]> {
+  static async getSourceList(
+    requester: PlywoodRequester<any>,
+  ): Promise<string[]> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     const sources = await toArray(
       requester({
         query: {
@@ -106,12 +123,15 @@ export class DruidSQLExternal extends SQLExternal {
       }),
     );
 
-    return Introspect.decodeTableIntrospectionResult(QueryResult.fromRawResult(sources))
+    return Introspect.decodeTableIntrospectionResult(
+      QueryResult.fromRawResult(sources),
+    )
       .map(s => s.name)
       .sort();
   }
 
   static getVersion(requester: PlywoodRequester<any>): Promise<string> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(
       requester({
         query: {
@@ -128,7 +148,9 @@ export class DruidSQLExternal extends SQLExternal {
   constructor(parameters: ExternalValue) {
     super(
       parameters,
-      new DruidDialect({ attributes: parameters.rawAttributes || parameters.attributes }),
+      new DruidDialect({
+        attributes: parameters.rawAttributes || parameters.attributes,
+      }),
     );
     this._ensureEngine("druidsql");
     this.context = parameters.context;
@@ -168,7 +190,9 @@ export class DruidSQLExternal extends SQLExternal {
     }
   }
 
-  protected async getIntrospectAttributes(depth: IntrospectionDepth): Promise<Attributes> {
+  protected async getIntrospectAttributes(
+    depth: IntrospectionDepth,
+  ): Promise<Attributes> {
     const { source, withQuery } = this;
 
     if (withQuery) {
@@ -179,9 +203,10 @@ export class DruidSQLExternal extends SQLExternal {
         throw new Error(`could not parse withQuery: ${e.message}`);
       }
 
-      const queryPayload = Introspect.getQueryColumnIntrospectionPayload(withQueryParsed);
+      const queryPayload =
+        Introspect.getQueryColumnIntrospectionPayload(withQueryParsed);
 
-      // Query for sample also
+      // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
       const rawResult = await toArray(
         this.requester({
           query: {

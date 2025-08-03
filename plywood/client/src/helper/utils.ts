@@ -29,7 +29,10 @@ export function indentBy(str: string, indent: int): string {
     .join("\n");
 }
 
-export function dictEqual(dictA: Record<string, any>, dictB: Record<string, any>): boolean {
+export function dictEqual(
+  dictA: Record<string, any>,
+  dictB: Record<string, any>,
+): boolean {
   if (dictA === dictB) return true;
   if (!dictA !== !dictB) return false;
   const keys = Object.keys(dictA);
@@ -59,7 +62,10 @@ export function deduplicateSort(a: string[]): string[] {
   return newA;
 }
 
-export function mapLookup<T, U>(thing: Record<string, T>, fn: (x: T) => U): Record<string, U> {
+export function mapLookup<T, U>(
+  thing: Record<string, T>,
+  fn: (x: T) => U,
+): Record<string, U> {
   const newThing: Record<string, U> = Object.create(null);
   for (const k in thing) {
     if (hasOwnProp(thing, k)) newThing[k] = fn(thing[k]);
@@ -94,7 +100,10 @@ export function safeAdd(num: number, delta: number): number {
   }
 }
 
-export function safeRange(num: number, delta: number): { start: number; end: number } {
+export function safeRange(
+  num: number,
+  delta: number,
+): { start: number; end: number } {
   const stringDelta = String(delta);
   const dotIndex = stringDelta.indexOf(".");
   if (dotIndex === -1 || stringDelta.length === 18) {

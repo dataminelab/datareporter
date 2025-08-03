@@ -144,7 +144,9 @@ describe("NumberRange", () => {
 
     it("works correctly with a disjoint range", () => {
       expect(
-        NumberRange.fromJS({ start: 0, end: 1 }).union(NumberRange.fromJS({ start: 2, end: 3 })),
+        NumberRange.fromJS({ start: 0, end: 1 }).union(
+          NumberRange.fromJS({ start: 2, end: 3 }),
+        ),
       ).to.deep.equal(null);
     });
 

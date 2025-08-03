@@ -25,10 +25,15 @@ import {
 } from "./baseExpression";
 import { Aggregate } from "./mixins/aggregate";
 
-export class CountDistinctExpression extends ChainableUnaryExpression implements Aggregate {
+export class CountDistinctExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
   static op = "CountDistinct";
   static fromJS(parameters: ExpressionJS): CountDistinctExpression {
-    return new CountDistinctExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new CountDistinctExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
@@ -38,8 +43,13 @@ export class CountDistinctExpression extends ChainableUnaryExpression implements
     this.type = "NUMBER";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
-    return operandValue ? (operandValue as Dataset).countDistinct(this.expression) : null;
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
+    return operandValue
+      ? (operandValue as Dataset).countDistinct(this.expression)
+      : null;
   }
 
   protected _getSQLChainableUnaryHelper(

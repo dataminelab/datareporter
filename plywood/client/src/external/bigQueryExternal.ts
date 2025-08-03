@@ -17,7 +17,10 @@ export class BigQueryExternal extends SQLExternal {
   static engine = "bigquery";
   static type = "DATASET";
 
-  static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): BigQueryExternal {
+  static fromJS(
+    parameters: ExternalJS,
+    requester: PlywoodRequester<any>,
+  ): BigQueryExternal {
     const value: ExternalValue = External.jsToValue(parameters, requester);
     return new BigQueryExternal(value);
   }
@@ -27,7 +30,11 @@ export class BigQueryExternal extends SQLExternal {
       const name = column.name;
       let type: PlyType;
       const nativeType = column.type.toLowerCase();
-      if (nativeType === "date" || nativeType === "datetime" || nativeType === "timestamp") {
+      if (
+        nativeType === "date" ||
+        nativeType === "datetime" ||
+        nativeType === "timestamp"
+      ) {
         type = "TIME";
       } else if (nativeType === "string") {
         type = "STRING";
@@ -68,7 +75,7 @@ export class BigQueryExternal extends SQLExternal {
   }
 
   protected getIntrospectAttributes(): Promise<Attributes> {
-    // NB: introspection is done in redash
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(
       this.requester({
         query: `select column_name as name, data_type as type
@@ -79,6 +86,7 @@ export class BigQueryExternal extends SQLExternal {
   }
 
   static getVersion(requester: PlywoodRequester<any>): Promise<string> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(
       requester({
         query: `SELECT version()`,
@@ -92,6 +100,7 @@ export class BigQueryExternal extends SQLExternal {
   }
 
   static getSourceList(requester: PlywoodRequester<any>): Promise<string[]> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(
       requester({
         query: `SELECT table_name AS name

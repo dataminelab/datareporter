@@ -17,7 +17,10 @@ export class AwsAthenaExternal extends SQLExternal {
   static engine = "athena";
   static type = "DATASET";
 
-  static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): AwsAthenaExternal {
+  static fromJS(
+    parameters: ExternalJS,
+    requester: PlywoodRequester<any>,
+  ): AwsAthenaExternal {
     const value: ExternalValue = External.jsToValue(parameters, requester);
     return new AwsAthenaExternal(value);
   }

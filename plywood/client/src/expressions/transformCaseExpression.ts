@@ -87,7 +87,10 @@ export class TransformCaseExpression extends ChainableExpression {
     });
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     const { transformType } = this;
     return transformType === TransformCaseExpression.UPPER_CASE
       ? `UPPER(${operandSQL})`
@@ -96,7 +99,8 @@ export class TransformCaseExpression extends ChainableExpression {
 
   public specialSimplify(): Expression {
     const { operand } = this;
-    if (operand instanceof TransformCaseExpression) return this.changeOperand(operand.operand);
+    if (operand instanceof TransformCaseExpression)
+      return this.changeOperand(operand.operand);
     return this;
   }
 }

@@ -30,7 +30,9 @@ import { LiteralExpression } from "./literalExpression";
 export class GreaterThanOrEqualExpression extends ChainableUnaryExpression {
   static op = "GreaterThanOrEqual";
   static fromJS(parameters: ExpressionJS): GreaterThanOrEqualExpression {
-    return new GreaterThanOrEqualExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new GreaterThanOrEqualExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
@@ -43,12 +45,22 @@ export class GreaterThanOrEqualExpression extends ChainableUnaryExpression {
     this.type = "BOOLEAN";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (operandValue === null || expressionValue === null) return null;
-    return Set.crossBinaryBoolean(operandValue, expressionValue, (a, b) => a >= b);
+    return Set.crossBinaryBoolean(
+      operandValue,
+      expressionValue,
+      (a, b) => a >= b,
+    );
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `(${operandJS}>=${expressionJS})`;
   }
 
@@ -65,12 +77,16 @@ export class GreaterThanOrEqualExpression extends ChainableUnaryExpression {
 
     if (expression instanceof LiteralExpression) {
       // x >= 7
-      return operand.overlap(r(Range.fromJS({ start: expression.value, end: null, bounds: "[)" })));
+      return operand.overlap(
+        r(Range.fromJS({ start: expression.value, end: null, bounds: "[)" })),
+      );
     }
 
     if (operand instanceof LiteralExpression) {
       // 7 >= x
-      return expression.overlap(r(Range.fromJS({ start: null, end: operand.value, bounds: "(]" })));
+      return expression.overlap(
+        r(Range.fromJS({ start: null, end: operand.value, bounds: "(]" })),
+      );
     }
 
     return this;

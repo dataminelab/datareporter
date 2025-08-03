@@ -22,7 +22,8 @@ const { testImmutableClass } = require("immutable-class-tester");
 const { Duration, Timezone } = require("chronoshift");
 const plywood = require("../plywood");
 
-const { Expression, Dataset, External, TimeRange, AttributeInfo, $, ply, r } = plywood;
+const { Expression, Dataset, External, TimeRange, AttributeInfo, $, ply, r } =
+  plywood;
 
 const wikiDataset = External.fromJS({
   engine: "druid",
@@ -247,7 +248,9 @@ describe("External", () => {
 
           expect(external.requester).to.equal(requester);
         }),
-      ).to.equal("'requester' parameter should be passed as context (2nd argument)\n");
+      ).to.equal(
+        "'requester' parameter should be passed as context (2nd argument)\n",
+      );
     });
 
     it("dataSource -> source", () => {
@@ -293,7 +296,9 @@ describe("External", () => {
     });
 
     it("works in multiple -s", () => {
-      expect(External.extractVersion("0.10.1-iap1-lol")).to.equal("0.10.1-iap1-lol");
+      expect(External.extractVersion("0.10.1-iap1-lol")).to.equal(
+        "0.10.1-iap1-lol",
+      );
     });
 
     it("works in bad case", () => {
@@ -323,7 +328,9 @@ describe("External", () => {
     });
 
     it("works with extra", () => {
-      expect(External.versionLessThan("0.1.2-iap1", "0.10.2-iap3")).to.equal(true);
+      expect(External.versionLessThan("0.1.2-iap1", "0.10.2-iap3")).to.equal(
+        true,
+      );
     });
 
     it("works in same inputs", () => {
@@ -335,9 +342,15 @@ describe("External", () => {
     });
 
     it("works as numbers in major, minor, patch", () => {
-      expect(External.versionLessThan("9.0.0", "10.0.0"), "major").to.equal(true);
-      expect(External.versionLessThan("0.9.0", "0.10.0"), "minor").to.equal(true);
-      expect(External.versionLessThan("0.0.9", "0.0.10"), "patch").to.equal(true);
+      expect(External.versionLessThan("9.0.0", "10.0.0"), "major").to.equal(
+        true,
+      );
+      expect(External.versionLessThan("0.9.0", "0.10.0"), "minor").to.equal(
+        true,
+      );
+      expect(External.versionLessThan("0.0.9", "0.0.10"), "patch").to.equal(
+        true,
+      );
     });
   });
 
@@ -349,7 +362,9 @@ describe("External", () => {
           engine: "druid",
           version: "0.20.0-yo",
           source: "moon_child",
-          attributeOverrides: [{ name: "unique_thing", nativeType: "hyperUnique", type: "NULL" }],
+          attributeOverrides: [
+            { name: "unique_thing", nativeType: "hyperUnique", type: "NULL" },
+          ],
         },
         dummyRequester,
       );
@@ -374,7 +389,9 @@ describe("External", () => {
             engine: "druid",
             version: "0.20.0-yo",
             source: "moon_child",
-            attributeOverrides: [{ name: "unique_thing", nativeType: "hyperUnique", type: "NULL" }],
+            attributeOverrides: [
+              { name: "unique_thing", nativeType: "hyperUnique", type: "NULL" },
+            ],
             attributes: [
               { name: "color", type: "STRING" },
               { name: "cut", type: "STRING" },
@@ -404,7 +421,9 @@ describe("External", () => {
             engine: "druid",
             version: "0.20.0-yo",
             source: "moon_child",
-            attributeOverrides: [{ name: "unique_thing", nativeType: "hyperUnique", type: "NULL" }],
+            attributeOverrides: [
+              { name: "unique_thing", nativeType: "hyperUnique", type: "NULL" },
+            ],
             attributes: [
               { name: "color", type: "STRING" },
               { name: "cut", type: "STRING" },
@@ -432,7 +451,11 @@ describe("External", () => {
       });
 
       external = external.updateAttribute(
-        AttributeInfo.fromJS({ name: "unique_thing", nativeType: "hyperUnique", type: "NULL" }),
+        AttributeInfo.fromJS({
+          name: "unique_thing",
+          nativeType: "hyperUnique",
+          type: "NULL",
+        }),
       );
 
       expect(external.toJS().attributes).to.deep.equal([
@@ -460,7 +483,10 @@ describe("External", () => {
 
     it("works in noop case", () => {
       const nextApply = Expression._.apply("Deleted", "$D.sum($deleted)");
-      const added = External.normalizeAndAddApply(attributesAndApplies, nextApply);
+      const added = External.normalizeAndAddApply(
+        attributesAndApplies,
+        nextApply,
+      );
 
       expect(added.attributes).to.have.length(4);
       expect(added.applies).to.have.length(4);
@@ -468,8 +494,14 @@ describe("External", () => {
     });
 
     it("works in simple case", () => {
-      const nextApply = Expression._.apply("AddedMinusDeleted", "$Added - $D.sum($deleted)");
-      const added = External.normalizeAndAddApply(attributesAndApplies, nextApply);
+      const nextApply = Expression._.apply(
+        "AddedMinusDeleted",
+        "$Added - $D.sum($deleted)",
+      );
+      const added = External.normalizeAndAddApply(
+        attributesAndApplies,
+        nextApply,
+      );
 
       expect(added.attributes.join("\n")).to.equal(sane`
         Count::NUMBER
@@ -487,8 +519,14 @@ describe("External", () => {
     });
 
     it("works in redefine case", () => {
-      const nextApply = Expression._.apply("Volatile", "$Added - $D.sum($deleted)");
-      const added = External.normalizeAndAddApply(attributesAndApplies, nextApply);
+      const nextApply = Expression._.apply(
+        "Volatile",
+        "$Added - $D.sum($deleted)",
+      );
+      const added = External.normalizeAndAddApply(
+        attributesAndApplies,
+        nextApply,
+      );
 
       expect(added.attributes.join("\n")).to.equal(sane`
         Count::NUMBER
@@ -506,11 +544,12 @@ describe("External", () => {
 
   describe(".segregationAggregateApplies", () => {
     it("breaks up correctly in simple case", () => {
-      const { aggregateApplies, postAggregateApplies } = External.segregationAggregateApplies([
-        Expression._.apply("Count", "$D.count()"),
-        Expression._.apply("Added", "$D.sum($added)"),
-        Expression._.apply("Volatile", "$D.max($added) - $D.min($deleted)"),
-      ]);
+      const { aggregateApplies, postAggregateApplies } =
+        External.segregationAggregateApplies([
+          Expression._.apply("Count", "$D.count()"),
+          Expression._.apply("Added", "$D.sum($added)"),
+          Expression._.apply("Volatile", "$D.max($added) - $D.min($deleted)"),
+        ]);
 
       expect(aggregateApplies.join("\n")).to.equal(sane`
         $_.apply(Count,$D.count())
@@ -525,11 +564,12 @@ describe("External", () => {
     });
 
     it("breaks up correctly in case of duplicate name", () => {
-      const { aggregateApplies, postAggregateApplies } = External.segregationAggregateApplies([
-        Expression._.apply("Count", "$D.count()"),
-        Expression._.apply("Added", "$D.sum($added)"),
-        Expression._.apply("Volatile", "$D.sum($added) - $D.sum($deleted)"),
-      ]);
+      const { aggregateApplies, postAggregateApplies } =
+        External.segregationAggregateApplies([
+          Expression._.apply("Count", "$D.count()"),
+          Expression._.apply("Added", "$D.sum($added)"),
+          Expression._.apply("Volatile", "$D.sum($added) - $D.sum($deleted)"),
+        ]);
 
       expect(aggregateApplies.join("\n")).to.equal(sane`
         $_.apply(Count,$D.count())
@@ -543,11 +583,12 @@ describe("External", () => {
     });
 
     it("breaks up correctly in case of variable reference", () => {
-      const { aggregateApplies, postAggregateApplies } = External.segregationAggregateApplies([
-        Expression._.apply("Count", "$D.count()"),
-        Expression._.apply("Added", "$D.sum($added)"),
-        Expression._.apply("Volatile", "$Added - $D.sum($deleted)"),
-      ]);
+      const { aggregateApplies, postAggregateApplies } =
+        External.segregationAggregateApplies([
+          Expression._.apply("Count", "$D.count()"),
+          Expression._.apply("Added", "$D.sum($added)"),
+          Expression._.apply("Volatile", "$Added - $D.sum($deleted)"),
+        ]);
 
       expect(aggregateApplies.join("\n")).to.equal(sane`
         $_.apply(Count,$D.count())
@@ -561,11 +602,18 @@ describe("External", () => {
     });
 
     it("breaks up correctly in complex case", () => {
-      const { aggregateApplies, postAggregateApplies } = External.segregationAggregateApplies([
-        Expression._.apply("AddedByDeleted", "$D.sum($added) / $D.sum($deleted)"),
-        Expression._.apply("DeletedByInserted", "$D.sum($deleted) / $D.sum($inserted)"),
-        Expression._.apply("Deleted", "$D.sum($deleted)"),
-      ]);
+      const { aggregateApplies, postAggregateApplies } =
+        External.segregationAggregateApplies([
+          Expression._.apply(
+            "AddedByDeleted",
+            "$D.sum($added) / $D.sum($deleted)",
+          ),
+          Expression._.apply(
+            "DeletedByInserted",
+            "$D.sum($deleted) / $D.sum($inserted)",
+          ),
+          Expression._.apply("Deleted", "$D.sum($deleted)"),
+        ]);
 
       expect(aggregateApplies.join("\n")).to.equal(sane`
         $_.apply(Deleted,$D.sum($deleted))
@@ -776,10 +824,14 @@ describe("External", () => {
 
     it("it checks that expressions are internally defined (filter raw)", () => {
       expect(
-        rawExternal.addExpression(Expression._.filter('$user:STRING.contains("lol")')),
+        rawExternal.addExpression(
+          Expression._.filter('$user:STRING.contains("lol")'),
+        ),
       ).to.equal(null);
       expect(
-        rawExternal.addExpression(Expression._.filter('$page:STRING.contains("lol")')),
+        rawExternal.addExpression(
+          Expression._.filter('$page:STRING.contains("lol")'),
+        ),
       ).to.not.equal(null);
     });
 
@@ -788,28 +840,40 @@ describe("External", () => {
         Expression._.split("$page:STRING", "Page", "blah"),
       );
       expect(
-        splitExternal.addExpression(Expression._.filter('$User:STRING.contains("lol")')),
+        splitExternal.addExpression(
+          Expression._.filter('$User:STRING.contains("lol")'),
+        ),
       ).to.equal(null);
       expect(
-        splitExternal.addExpression(Expression._.filter('$Page:STRING.contains("lol")')),
+        splitExternal.addExpression(
+          Expression._.filter('$Page:STRING.contains("lol")'),
+        ),
       ).to.not.equal(null);
     });
 
     it("it checks that expressions are internally defined (split)", () => {
       expect(
-        rawExternal.addExpression(Expression._.split("$user:STRING", "User", "blah")),
+        rawExternal.addExpression(
+          Expression._.split("$user:STRING", "User", "blah"),
+        ),
       ).to.equal(null);
       expect(
-        rawExternal.addExpression(Expression._.split("$page:STRING", "Page", "blah")),
+        rawExternal.addExpression(
+          Expression._.split("$page:STRING", "Page", "blah"),
+        ),
       ).to.not.equal(null);
     });
 
     it("it checks that expressions are internally defined (apply on raw)", () => {
       expect(
-        rawExternal.addExpression(Expression._.apply("DeltaPlusOne", "$delta:NUMBER + 1")),
+        rawExternal.addExpression(
+          Expression._.apply("DeltaPlusOne", "$delta:NUMBER + 1"),
+        ),
       ).to.equal(null);
       expect(
-        rawExternal.addExpression(Expression._.apply("AddedPlusOne", "$added:NUMBER + 1")),
+        rawExternal.addExpression(
+          Expression._.apply("AddedPlusOne", "$added:NUMBER + 1"),
+        ),
       ).to.not.equal(null);
     });
 
@@ -818,21 +882,31 @@ describe("External", () => {
         Expression._.split("$page:STRING", "Page", "blah"),
       );
       expect(
-        splitExternal.addExpression(Expression._.apply("DeltaPlusOne", "$blah.sum($delta:NUMBER)")),
+        splitExternal.addExpression(
+          Expression._.apply("DeltaPlusOne", "$blah.sum($delta:NUMBER)"),
+        ),
       ).to.equal(null);
       expect(
-        splitExternal.addExpression(Expression._.apply("AddedPlusOne", "$blah.sum($added:NUMBER)")),
+        splitExternal.addExpression(
+          Expression._.apply("AddedPlusOne", "$blah.sum($added:NUMBER)"),
+        ),
       ).to.not.equal(null);
     });
 
     it("it checks that expressions are internally defined (value / aggregate)", () => {
-      expect(rawExternal.addExpression(Expression._.sum("$delta:NUMBER"))).to.equal(null);
-      expect(rawExternal.addExpression(Expression._.sum("$added:NUMBER"))).to.not.equal(null);
+      expect(
+        rawExternal.addExpression(Expression._.sum("$delta:NUMBER")),
+      ).to.equal(null);
+      expect(
+        rawExternal.addExpression(Expression._.sum("$added:NUMBER")),
+      ).to.not.equal(null);
     });
 
     it("it checks that expressions are internally defined (select)", () => {
       // expect(rawExternal.addExpression(Expression._.select('user'))).to.equal(null);
-      expect(rawExternal.addExpression(Expression._.select("page"))).to.not.equal(null);
+      expect(
+        rawExternal.addExpression(Expression._.select("page")),
+      ).to.not.equal(null);
     });
   });
 
@@ -858,12 +932,19 @@ describe("External", () => {
         $("time").timeFloor("PT2H", "Etc/UTC"),
         $("time").timeFloor("P1D", "Etc/UTC"),
         $("time").timeBucket("P1D", "Etc/UTC"),
-        $("language").is("en").and($("time").timeFloor("PT1H", "Etc/UTC").is("$blah")),
-        $("time").overlap(new Date("2016-09-01T01:00:00Z"), new Date("2016-09-02T01:00:00Z")),
+        $("language")
+          .is("en")
+          .and($("time").timeFloor("PT1H", "Etc/UTC").is("$blah")),
+        $("time").overlap(
+          new Date("2016-09-01T01:00:00Z"),
+          new Date("2016-09-02T01:00:00Z"),
+        ),
       ];
 
       for (const ex of exs) {
-        expect(bucketedExternal.bucketsConcealed(ex), ex.toString()).to.equal(true);
+        expect(bucketedExternal.bucketsConcealed(ex), ex.toString()).to.equal(
+          true,
+        );
       }
     });
 
@@ -873,12 +954,19 @@ describe("External", () => {
         $("time").timeFloor("PT1H"),
         $("time").timeFloor("PT1M", "Etc/UTC"),
         $("time").timeFloor("PT1S", "Etc/UTC"),
-        $("language").is("en").and($("time").timeFloor("PT1M", "Etc/UTC").is("$blah")),
-        $("time").overlap(new Date("2016-09-01T01:00:00Z"), new Date("2016-09-02T01:00:01Z")),
+        $("language")
+          .is("en")
+          .and($("time").timeFloor("PT1M", "Etc/UTC").is("$blah")),
+        $("time").overlap(
+          new Date("2016-09-01T01:00:00Z"),
+          new Date("2016-09-02T01:00:01Z"),
+        ),
       ];
 
       for (const ex of exs) {
-        expect(bucketedExternal.bucketsConcealed(ex), ex.toString()).to.equal(false);
+        expect(bucketedExternal.bucketsConcealed(ex), ex.toString()).to.equal(
+          false,
+        );
       }
     });
   });
@@ -899,11 +987,17 @@ describe("External", () => {
         expect(ex.op).to.equal("external");
         const externalDataset = ex.external;
 
-        expect(externalDataset.select.attributes).to.deep.equal(["time", "language", "added"]);
+        expect(externalDataset.select.attributes).to.deep.equal([
+          "time",
+          "language",
+          "added",
+        ]);
       });
 
       it("works with a derived attribute and a filter", () => {
-        let ex = $("wiki").apply("addedTwice", "$added * 2").filter($("language").is("en"));
+        let ex = $("wiki")
+          .apply("addedTwice", "$added * 2")
+          .filter($("language").is("en"));
 
         ex = ex.referenceCheck(context).resolve(context).simplify();
         expect(ex.op).to.equal("external");
@@ -927,7 +1021,9 @@ describe("External", () => {
         expect(ex.op).to.equal("external");
         const externalDataset = ex.external;
 
-        expect(externalDataset.sort.toString()).to.equal("$_.sort($time:TIME,ascending)");
+        expect(externalDataset.sort.toString()).to.equal(
+          "$_.sort($time:TIME,ascending)",
+        );
         expect(externalDataset.limit.toString()).to.equal("$_.limit(10)");
       });
 
@@ -938,7 +1034,9 @@ describe("External", () => {
         expect(ex.op).to.equal("count");
         const externalDataset = ex.operand.external;
 
-        expect(externalDataset.sort.toString()).to.equal("$_.sort($time:TIME,ascending)");
+        expect(externalDataset.sort.toString()).to.equal(
+          "$_.sort($time:TIME,ascending)",
+        );
         expect(externalDataset.limit.toString()).to.equal("$_.limit(10)");
       });
     });
@@ -1011,7 +1109,10 @@ describe("External", () => {
       });
 
       it("works with aggregate that has a complex post process", () => {
-        let ex = $("wiki").filter("$page == USA").sum("$added").add($("wiki").sum("$deleted"));
+        let ex = $("wiki")
+          .filter("$page == USA")
+          .sum("$added")
+          .add($("wiki").sum("$deleted"));
 
         ex = ex.referenceCheck(context).resolve(context).simplify();
 
@@ -1045,7 +1146,10 @@ describe("External", () => {
       });
 
       it("works with aggregate that has LHS and RHS post process", () => {
-        let ex = r(5).subtract($("wiki").filter("$page == USA").sum("$added"), $("wiki").count());
+        let ex = r(5).subtract(
+          $("wiki").filter("$page == USA").sum("$added"),
+          $("wiki").count(),
+        );
 
         ex = ex.referenceCheck(context).resolve(context).simplify();
 
@@ -1082,7 +1186,9 @@ describe("External", () => {
       });
 
       it("works with a multiple applies", () => {
-        let ex = ply().apply("Count", "$wiki.count()").apply("TotalAdded", "$wiki.sum($added)");
+        let ex = ply()
+          .apply("Count", "$wiki.count()")
+          .apply("TotalAdded", "$wiki.sum($added)");
 
         ex = ex.referenceCheck(context).resolve(context).simplify();
 
@@ -1329,7 +1435,9 @@ describe("External", () => {
           { name: "Added", type: "NUMBER" },
         ]);
 
-        expect(externalDataset.simulateValue(true, []).toJS().data).to.deep.equal([
+        expect(
+          externalDataset.simulateValue(true, []).toJS().data,
+        ).to.deep.equal([
           {
             Added: 4,
             Count: 4,
@@ -1384,7 +1492,10 @@ describe("External", () => {
 
       it("works with a split on time", () => {
         let ex = $("wiki")
-          .split($("time").timeBucket("P1D", "America/Los_Angeles"), "Timestamp")
+          .split(
+            $("time").timeBucket("P1D", "America/Los_Angeles"),
+            "Timestamp",
+          )
           .apply("Count", "$wiki.count()")
           .apply("Added", "$wiki.sum($added)")
           .sort("$Count", "descending")
@@ -1401,7 +1512,9 @@ describe("External", () => {
           { name: "Added", type: "NUMBER" },
         ]);
 
-        expect(externalDataset.simulateValue(true, []).toJS().data).to.deep.equal([
+        expect(
+          externalDataset.simulateValue(true, []).toJS().data,
+        ).to.deep.equal([
           {
             Added: 4,
             Count: 4,
@@ -1438,7 +1551,9 @@ describe("External", () => {
           { name: "Added", type: "NUMBER" },
         ]);
 
-        expect(externalDataset.simulateValue(true, []).toJS().data).to.deep.equal([
+        expect(
+          externalDataset.simulateValue(true, []).toJS().data,
+        ).to.deep.equal([
           {
             Added: 4,
             Count: 4,
@@ -1452,7 +1567,10 @@ describe("External", () => {
           .filter('$language == "en"')
           .split("$page", "Page")
           .apply("Count", "$wiki.count()")
-          .apply("MinSum", "$wiki.split($user, Blah).apply(Added, $wiki.sum($added)).min($Added)")
+          .apply(
+            "MinSum",
+            "$wiki.split($user, Blah).apply(Added, $wiki.sum($added)).min($Added)",
+          )
           .sort("$Count", "descending")
           .limit(5);
 
@@ -1470,14 +1588,21 @@ describe("External", () => {
         expect(externalDataset.applies).to.have.length(2);
         expect(externalDataset.toJS().attributes).to.deep.equal([]);
 
-        expect(externalDataset.simulateValue(true, []).toJS().data).to.deep.equal([]);
+        expect(
+          externalDataset.simulateValue(true, []).toJS().data,
+        ).to.deep.equal([]);
       });
     });
 
     describe("complex cases (multi mode)", () => {
       it("works with a total and a split", () => {
         let ex = ply()
-          .apply("wiki", $("wiki").apply("addedTwice", "$added * 2").filter($("language").is("en")))
+          .apply(
+            "wiki",
+            $("wiki")
+              .apply("addedTwice", "$added * 2")
+              .filter($("language").is("en")),
+          )
           .apply("Count", "$wiki.count()")
           .apply("TotalAdded", "$wiki.sum($added)")
           .apply(
@@ -1579,7 +1704,9 @@ describe("External", () => {
         let ex = ply()
           .apply(
             "wiki",
-            $("wiki", 1).apply("addedTwice", "$added * 2").filter($("language").is("en")),
+            $("wiki", 1)
+              .apply("addedTwice", "$added * 2")
+              .filter($("language").is("en")),
           )
           .apply("Count", "$wiki.count()")
           .apply(
@@ -1672,7 +1799,9 @@ describe("External", () => {
           { name: "_br_1", type: "NUMBER" },
         ]);
 
-        expect(ex.actions[0].toString()).to.equal(".apply(CountDiff, ($_br_0 + $_br_1))");
+        expect(ex.actions[0].toString()).to.equal(
+          ".apply(CountDiff, ($_br_0 + $_br_1))",
+        );
       });
 
       it.skip("a join of two splits sort on delta", () => {
@@ -1732,11 +1861,9 @@ describe("External", () => {
         ex = ex.referenceCheck(context).resolve(context).simplify();
 
         const external = ex.external;
-        expect(external.getSelectedAttributes().map(a => a.name)).to.deep.equal([
-          "page",
-          "language",
-          "user",
-        ]);
+        expect(external.getSelectedAttributes().map(a => a.name)).to.deep.equal(
+          ["page", "language", "user"],
+        );
       });
 
       it("pure select: dimension order reflects select order", () => {
@@ -1744,11 +1871,9 @@ describe("External", () => {
 
         ex = ex.referenceCheck(context).resolve(context).simplify();
         const external = ex.external;
-        expect(external.getQueryAndPostTransform().query.columns).to.deep.equal([
-          "page",
-          "language",
-          "user",
-        ]);
+        expect(external.getQueryAndPostTransform().query.columns).to.deep.equal(
+          ["page", "language", "user"],
+        );
       });
     });
 
@@ -1762,11 +1887,9 @@ describe("External", () => {
         ex = ex.referenceCheck(context).resolve(context).simplify();
 
         const external = ex.external;
-        expect(external.getSelectedAttributes().map(a => a.name)).to.deep.equal([
-          "Page",
-          "Count",
-          "Added",
-        ]);
+        expect(external.getSelectedAttributes().map(a => a.name)).to.deep.equal(
+          ["Page", "Count", "Added"],
+        );
       });
 
       it("get selected attributes respects order with select", () => {
@@ -1779,11 +1902,9 @@ describe("External", () => {
         ex = ex.referenceCheck(context).resolve(context).simplify();
 
         const external = ex.external;
-        expect(external.getSelectedAttributes().map(a => a.name)).to.deep.equal([
-          "Count",
-          "Page",
-          "Added",
-        ]);
+        expect(external.getSelectedAttributes().map(a => a.name)).to.deep.equal(
+          ["Count", "Page", "Added"],
+        );
       });
 
       it("get selected attributes respects order with remove", () => {
@@ -1796,7 +1917,9 @@ describe("External", () => {
         ex = ex.referenceCheck(context).resolve(context).simplify();
 
         const external = ex.external;
-        expect(external.getQueryAndPostTransform().query.aggregations).to.deep.equal([
+        expect(
+          external.getQueryAndPostTransform().query.aggregations,
+        ).to.deep.equal([
           {
             name: "Count",
             type: "count",

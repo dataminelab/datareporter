@@ -497,7 +497,9 @@ describe("MySQL Functional", function () {
     });
 
     it("works with simple raw mode", () => {
-      const ex = $("wiki").filter('$cityName == "El Paso"').select("regionName", "added", "page");
+      const ex = $("wiki")
+        .filter('$cityName == "El Paso"')
+        .select("regionName", "added", "page");
 
       return basicExecutor(ex).then(result => {
         expect(result.toJS()).to.deep.equal({
@@ -604,7 +606,9 @@ describe("MySQL Functional", function () {
 
     it("works string range (two bounds)", () => {
       const ex = $("wiki")
-        .filter($("cityName").greaterThan("Kab").and($("cityName").lessThan("Kar")))
+        .filter(
+          $("cityName").greaterThan("Kab").and($("cityName").lessThan("Kar")),
+        )
         .split("$cityName", "City")
         .limit(5);
 
@@ -678,7 +682,10 @@ describe("MySQL Functional", function () {
     // Todo: invalid number casts return 0 in mysql. Also, something is happening when page is defined as a number that results in numbers being passed into the cast to date
     it("works with bad casts", () => {
       const ex = $("wiki")
-        .split({ numberCast: '$comment.cast("NUMBER")', dateCast: '$page.cast("TIME")' })
+        .split({
+          numberCast: '$comment.cast("NUMBER")',
+          dateCast: '$page.cast("TIME")',
+        })
         .apply("Count", "$wiki.sum($count)")
         .sort("$Count", "descending")
         .limit(3);

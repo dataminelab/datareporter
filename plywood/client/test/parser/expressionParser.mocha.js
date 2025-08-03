@@ -89,22 +89,40 @@ describe("expression parser", () => {
         .apply("agg_min", "$data.min($price)")
         .apply("agg_max", "$data.max($price)")
         .apply("agg_quantile", "$data.quantile($price, 0.5)")
-        .apply("agg_quantile_tuning", "$data.quantile($price, 0.5, 'resolution=400')")
+        .apply(
+          "agg_quantile_tuning",
+          "$data.quantile($price, 0.5, 'resolution=400')",
+        )
         .apply("custom_transform", '$city.customTransform("myExtractionFn")')
         .apply("agg_custom", "$data.custom(blah)")
         .apply("agg_customAggregate", "$data.customAggregate(blah)")
         .apply("agg_split", "$data.split($carat, 'Carat')")
         .apply("agg_filter_count", "$data.filter($country == 'USA').count()")
         .apply("time_bucket", "$time.timeBucket(P1D)")
-        .apply("time_bucket_timezone", "$time.timeBucket(P1D, 'America/Los_Angeles')")
+        .apply(
+          "time_bucket_timezone",
+          "$time.timeBucket(P1D, 'America/Los_Angeles')",
+        )
         .apply("time_floor", "$time.timeFloor(P1D)")
-        .apply("time_floor_timezone", "$time.timeFloor(P1D, 'America/Los_Angeles')")
+        .apply(
+          "time_floor_timezone",
+          "$time.timeFloor(P1D, 'America/Los_Angeles')",
+        )
         .apply("time_part", "$time.timePart(DAY_OF_WEEK)")
-        .apply("time_part_timezone", "$time.timePart(DAY_OF_WEEK, 'America/Los_Angeles')")
+        .apply(
+          "time_part_timezone",
+          "$time.timePart(DAY_OF_WEEK, 'America/Los_Angeles')",
+        )
         .apply("time_shift", "$time.timeShift(P1D, -3)")
-        .apply("time_shift_timezone", "$time.timeShift(P1D, -3, 'America/Los_Angeles')")
+        .apply(
+          "time_shift_timezone",
+          "$time.timeShift(P1D, -3, 'America/Los_Angeles')",
+        )
         .apply("time_range", "$time.timeRange(P1D, -3)")
-        .apply("time_range_timezone", "$time.timeRange(P1D, -3, 'America/Los_Angeles')");
+        .apply(
+          "time_range_timezone",
+          "$time.timeRange(P1D, -3, 'America/Los_Angeles')",
+        );
 
       const ex2 = ply()
         .apply("is1", $("color").is("Red"))
@@ -162,22 +180,43 @@ describe("expression parser", () => {
         .apply("agg_min", $("data").min($("price")))
         .apply("agg_max", $("data").max($("price")))
         .apply("agg_quantile", $("data").quantile($("price"), 0.5))
-        .apply("agg_quantile_tuning", $("data").quantile($("price"), 0.5, "resolution=400"))
+        .apply(
+          "agg_quantile_tuning",
+          $("data").quantile($("price"), 0.5, "resolution=400"),
+        )
         .apply("custom_transform", $("city").customTransform("myExtractionFn"))
         .apply("agg_custom", $("data").customAggregate("blah"))
         .apply("agg_customAggregate", $("data").customAggregate("blah"))
         .apply("agg_split", $("data").split($("carat"), "Carat"))
-        .apply("agg_filter_count", $("data").filter($("country").is("USA")).count())
+        .apply(
+          "agg_filter_count",
+          $("data").filter($("country").is("USA")).count(),
+        )
         .apply("time_bucket", $("time").timeBucket("P1D"))
-        .apply("time_bucket_timezone", $("time").timeBucket("P1D", "America/Los_Angeles"))
+        .apply(
+          "time_bucket_timezone",
+          $("time").timeBucket("P1D", "America/Los_Angeles"),
+        )
         .apply("time_floor", $("time").timeFloor("P1D"))
-        .apply("time_floor_timezone", $("time").timeFloor("P1D", "America/Los_Angeles"))
+        .apply(
+          "time_floor_timezone",
+          $("time").timeFloor("P1D", "America/Los_Angeles"),
+        )
         .apply("time_part", $("time").timePart("DAY_OF_WEEK"))
-        .apply("time_part_timezone", $("time").timePart("DAY_OF_WEEK", "America/Los_Angeles"))
+        .apply(
+          "time_part_timezone",
+          $("time").timePart("DAY_OF_WEEK", "America/Los_Angeles"),
+        )
         .apply("time_shift", $("time").timeShift("P1D", -3))
-        .apply("time_shift_timezone", $("time").timeShift("P1D", -3, "America/Los_Angeles"))
+        .apply(
+          "time_shift_timezone",
+          $("time").timeShift("P1D", -3, "America/Los_Angeles"),
+        )
         .apply("time_range", $("time").timeRange("P1D", -3))
-        .apply("time_range_timezone", $("time").timeRange("P1D", -3, "America/Los_Angeles"));
+        .apply(
+          "time_range_timezone",
+          $("time").timeRange("P1D", -3, "America/Los_Angeles"),
+        );
 
       expect(ex1.toJS()).to.deep.equal(ex2.toJS());
     });
@@ -342,7 +381,10 @@ describe("expression parser", () => {
             .apply(
               "TimePart",
               $("wiki")
-                .split($("time").timePart("DAY_OF_YEAR", "Etc/UTC"), "Timestamp")
+                .split(
+                  $("time").timePart("DAY_OF_YEAR", "Etc/UTC"),
+                  "Timestamp",
+                )
                 .apply("TotalAdded", "$wiki.sum($added)")
                 .sort("$TotalAdded", "descending")
                 .limit(3),

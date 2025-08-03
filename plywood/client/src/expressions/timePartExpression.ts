@@ -21,15 +21,24 @@ import * as moment from "moment-timezone";
 import { PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 import { HasTimezone } from "./mixins/hasTimezone";
 
-export class TimePartExpression extends ChainableExpression implements HasTimezone {
+export class TimePartExpression
+  extends ChainableExpression
+  implements HasTimezone
+{
   static op = "TimePart";
   static fromJS(parameters: ExpressionJS): TimePartExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.part = parameters.part;
-    if (parameters.timezone) value.timezone = Timezone.fromJS(parameters.timezone);
+    if (parameters.timezone)
+      value.timezone = Timezone.fromJS(parameters.timezone);
     return new TimePartExpression(value);
   }
 
@@ -38,16 +47,20 @@ export class TimePartExpression extends ChainableExpression implements HasTimezo
     SECOND_OF_MINUTE: d => d.seconds(),
     SECOND_OF_HOUR: d => d.minutes() * 60 + d.seconds(),
     SECOND_OF_DAY: d => (d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
-    SECOND_OF_WEEK: d => (d.day() * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
-    SECOND_OF_MONTH: d => ((d.date() - 1) * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
+    SECOND_OF_WEEK: d =>
+      (d.day() * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
+    SECOND_OF_MONTH: d =>
+      ((d.date() - 1) * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
     SECOND_OF_YEAR: d =>
-      ((d.dayOfYear() - 1) * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
+      ((d.dayOfYear() - 1) * 24 + d.hours() * 60 + d.minutes()) * 60 +
+      d.seconds(),
 
     MINUTE_OF_HOUR: d => d.minutes(),
     MINUTE_OF_DAY: d => d.hours() * 60 + d.minutes(),
     MINUTE_OF_WEEK: d => d.day() * 24 + d.hours() * 60 + d.minutes(),
     MINUTE_OF_MONTH: d => (d.date() - 1) * 24 + d.hours() * 60 + d.minutes(),
-    MINUTE_OF_YEAR: d => (d.dayOfYear() - 1) * 24 + d.hours() * 60 + d.minutes(),
+    MINUTE_OF_YEAR: d =>
+      (d.dayOfYear() - 1) * 24 + d.hours() * 60 + d.minutes(),
 
     HOUR_OF_DAY: d => d.hours(),
     HOUR_OF_WEEK: d => d.day() * 24 + d.hours(),
@@ -138,7 +151,8 @@ export class TimePartExpression extends ChainableExpression implements HasTimezo
 
   protected _toStringParameters(indent?: int): string[] {
     const ret = [this.part];
-    if (this.timezone) ret.push(Expression.safeString(this.timezone.toString()));
+    if (this.timezone)
+      ret.push(Expression.safeString(this.timezone.toString()));
     return ret;
   }
 
@@ -155,8 +169,15 @@ export class TimePartExpression extends ChainableExpression implements HasTimezo
     throw new Error("implement me");
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return dialect.timePartExpression(operandSQL, this.part, this.getTimezone());
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return dialect.timePartExpression(
+      operandSQL,
+      this.part,
+      this.getTimezone(),
+    );
   }
 
   public maxPossibleSplitValues(): number {

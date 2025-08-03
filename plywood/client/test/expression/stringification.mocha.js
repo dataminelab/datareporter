@@ -40,7 +40,12 @@ describe("stringification", () => {
             "Carats",
             $("diamonds")
               .split($("carat").numberBucket(0.25), "Carat")
-              .apply("diamonds", $("diamonds").filter($("carat").numberBucket(0.25).is("$^Carat")))
+              .apply(
+                "diamonds",
+                $("diamonds").filter(
+                  $("carat").numberBucket(0.25).is("$^Carat"),
+                ),
+              )
               .apply("Count", $("diamonds").count())
               .apply("Price :-)", $("diamonds").sum("$price"))
               .sort("$Count", "descending")
@@ -97,7 +102,9 @@ describe("stringification", () => {
 
   it("works with lookup with fancy name 1", () => {
     const ex = $("diamonds").split("$cut.lookup('99hello')", "CutLookup");
-    expect(ex.toString(2)).to.equal(`$diamonds.split($cut.lookup("99hello"),CutLookup,diamonds)`);
+    expect(ex.toString(2)).to.equal(
+      `$diamonds.split($cut.lookup("99hello"),CutLookup,diamonds)`,
+    );
   });
 
   it("works with lookup with fancy name 2", () => {
@@ -139,6 +146,8 @@ describe("stringification", () => {
 
   it("works with quantile with resolution", () => {
     const ex = $("x").quantile("$hist", 0.98, "resolution=2000");
-    expect(ex.toString(2)).to.equal(`$x.quantile($hist,0.98,"resolution=2000")`);
+    expect(ex.toString(2)).to.equal(
+      `$x.quantile($hist,0.98,"resolution=2000")`,
+    );
   });
 });

@@ -91,7 +91,12 @@ const attributes = [
   { name: "delta", type: "NUMBER", nativeType: "LONG", unsplitable: true },
   { name: "min_delta", type: "NUMBER", nativeType: "LONG", unsplitable: true },
   { name: "max_delta", type: "NUMBER", nativeType: "LONG", unsplitable: true },
-  { name: "deltaByTen", type: "NUMBER", nativeType: "FLOAT", unsplitable: true },
+  {
+    name: "deltaByTen",
+    type: "NUMBER",
+    nativeType: "FLOAT",
+    unsplitable: true,
+  },
   { name: "added", type: "NUMBER", nativeType: "LONG", unsplitable: true },
   { name: "deleted", type: "NUMBER", nativeType: "LONG", unsplitable: true },
 ];
@@ -198,7 +203,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druidSql", "mysql", "postgres"], // NULLS: 'druid'
         expression: ply()
-          .apply("wiki", '$wiki.filter($cityName == "this city does not exist")')
+          .apply(
+            "wiki",
+            '$wiki.filter($cityName == "this city does not exist")',
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -297,7 +305,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("wiki", "$wiki.filter(45.5 < $commentLength and $commentLength < 55.5)")
+          .apply(
+            "wiki",
+            "$wiki.filter(45.5 < $commentLength and $commentLength < 55.5)",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -308,7 +319,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("wiki", '$wiki.filter($cityName.contains("San") and $cityName == "San Francisco")')
+          .apply(
+            "wiki",
+            '$wiki.filter($cityName.contains("San") and $cityName == "San Francisco")',
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -377,7 +391,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("wiki", '$wiki.filter($channel.overlap(["en", "simple"]).not())')
+          .apply(
+            "wiki",
+            '$wiki.filter($channel.overlap(["en", "simple"]).not())',
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -388,7 +405,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("wiki", '$wiki.filter(("[" ++ $cityName ++ "]").contains("[san", "ignoreCase"))')
+          .apply(
+            "wiki",
+            '$wiki.filter(("[" ++ $cityName ++ "]").contains("[san", "ignoreCase"))',
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -413,7 +433,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("wiki", '$wiki.filter($channel == "en" or $cityName == "Tel Aviv")')
+          .apply(
+            "wiki",
+            '$wiki.filter($channel == "en" or $cityName == "Tel Aviv")',
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -424,7 +447,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "mysql", "postgres"], // PSQL: 'druidSql'
         expression: ply()
-          .apply("wiki", '$wiki.filter($cityName.match("San") or $cityName.match("San"))')
+          .apply(
+            "wiki",
+            '$wiki.filter($cityName.match("San") or $cityName.match("San"))',
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -466,7 +492,13 @@ describe("Cross Functional", function () {
     it(
       "works with primary time filter (single range)",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply(
             "wiki",
@@ -491,7 +523,10 @@ describe("Cross Functional", function () {
             "wiki",
             $("wiki").filter(
               $("__time")
-                .overlap(new Date("2015-09-12T01:00:00Z"), new Date("2015-09-12T02:30:00Z"))
+                .overlap(
+                  new Date("2015-09-12T01:00:00Z"),
+                  new Date("2015-09-12T02:30:00Z"),
+                )
                 .or("$channel == en"),
             ),
           )
@@ -503,7 +538,13 @@ describe("Cross Functional", function () {
     it(
       "works with alt time filter (single range)",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply(
             "wiki",
@@ -522,13 +563,22 @@ describe("Cross Functional", function () {
     it(
       "works with primary time filter (multi range)",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply(
             "wiki",
             $("wiki").filter(
               $("__time")
-                .overlap(new Date("2015-09-12T01:00:00Z"), new Date("2015-09-12T02:30:00Z"))
+                .overlap(
+                  new Date("2015-09-12T01:00:00Z"),
+                  new Date("2015-09-12T02:30:00Z"),
+                )
                 .or(
                   $("__time").overlap(
                     new Date("2015-09-12T03:00:00Z"),
@@ -549,13 +599,22 @@ describe("Cross Functional", function () {
     it(
       "works with alt time filter (multi range)",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply(
             "wiki",
             $("wiki").filter(
               $("sometimeLater")
-                .overlap(new Date("2016-09-12T01:00:00Z"), new Date("2016-09-12T02:30:00Z"))
+                .overlap(
+                  new Date("2016-09-12T01:00:00Z"),
+                  new Date("2016-09-12T02:30:00Z"),
+                )
                 .or(
                   $("sometimeLater").overlap(
                     new Date("2016-09-12T03:00:00Z"),
@@ -578,7 +637,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("wiki", $("wiki").filter($("__time").timePart("HOUR_OF_DAY").is([3, 7])))
+          .apply(
+            "wiki",
+            $("wiki").filter($("__time").timePart("HOUR_OF_DAY").is([3, 7])),
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -589,7 +651,12 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("wiki", $("wiki").filter($("sometimeLater").timePart("HOUR_OF_DAY").is([3, 7])))
+          .apply(
+            "wiki",
+            $("wiki").filter(
+              $("sometimeLater").timePart("HOUR_OF_DAY").is([3, 7]),
+            ),
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -598,12 +665,19 @@ describe("Cross Functional", function () {
     it(
       "works with cast from number to time and primary time filter (single range)",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply(
             "wiki",
             $("wiki").filter(
-              $("$deltaBucket100").absolute().cast("TIME") > new Date("1970-01-01T00:00:02.000Z"),
+              $("$deltaBucket100").absolute().cast("TIME") >
+                new Date("1970-01-01T00:00:02.000Z"),
             ),
           )
           .apply("TotalEdits", "$wiki.sum($count)")
@@ -614,9 +688,18 @@ describe("Cross Functional", function () {
     it(
       "works with cast from number to string in filter",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
-          .apply("wiki", $("wiki").filter($("commentLength").cast("STRING").is(r("15"))))
+          .apply(
+            "wiki",
+            $("wiki").filter($("commentLength").cast("STRING").is(r("15"))),
+          )
           .apply("TotalEdits", "$wiki.sum($count)"),
       }),
     );
@@ -624,9 +707,18 @@ describe("Cross Functional", function () {
     it(
       "works with cast from string to number in filter",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
-          .apply("wiki", $("wiki").filter($("commentLengthStr").cast("NUMBER").is(r(15))))
+          .apply(
+            "wiki",
+            $("wiki").filter($("commentLengthStr").cast("NUMBER").is(r(15))),
+          )
           .apply("TotalEdits", "$wiki.sum($count)"),
       }),
     );
@@ -634,7 +726,13 @@ describe("Cross Functional", function () {
     it(
       "works with .lessThan()",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply("wiki", "$wiki.filter($commentLength < 50)")
           .apply("TotalEdits", "$wiki.sum($count)")
@@ -645,7 +743,13 @@ describe("Cross Functional", function () {
     it(
       "works with .lessThanOrEqual()",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply("wiki", "$wiki.filter($commentLength <= 50)")
           .apply("TotalEdits", "$wiki.sum($count)")
@@ -656,9 +760,18 @@ describe("Cross Functional", function () {
     it(
       "works with numeric range, bounds: ()",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
-          .apply("wiki", "$wiki.filter(20 < $commentLength and $commentLength < 50)")
+          .apply(
+            "wiki",
+            "$wiki.filter(20 < $commentLength and $commentLength < 50)",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -667,9 +780,18 @@ describe("Cross Functional", function () {
     it(
       "works with numeric range, bounds: [)",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
-          .apply("wiki", "$wiki.filter(20 <= $commentLength and $commentLength < 50)")
+          .apply(
+            "wiki",
+            "$wiki.filter(20 <= $commentLength and $commentLength < 50)",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -678,9 +800,18 @@ describe("Cross Functional", function () {
     it(
       "works with numeric range, bounds: (]",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
-          .apply("wiki", "$wiki.filter(20 < $commentLength and $commentLength <= 50)")
+          .apply(
+            "wiki",
+            "$wiki.filter(20 < $commentLength and $commentLength <= 50)",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -689,9 +820,18 @@ describe("Cross Functional", function () {
     it(
       "works with numeric range, bounds: []",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
-          .apply("wiki", "$wiki.filter(20 <= $commentLength and $commentLength <= 50)")
+          .apply(
+            "wiki",
+            "$wiki.filter(20 <= $commentLength and $commentLength <= 50)",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -700,9 +840,18 @@ describe("Cross Functional", function () {
     it(
       "works with negative number in range",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
-          .apply("wiki", "$wiki.filter(-300 <= $deltaBucket100 and $deltaBucket100 <= 300)")
+          .apply(
+            "wiki",
+            "$wiki.filter(-300 <= $deltaBucket100 and $deltaBucket100 <= 300)",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -711,7 +860,13 @@ describe("Cross Functional", function () {
     it(
       "works with string range, bounds: []",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply("wiki", '$wiki.filter("b" >= $channel and $channel <= "z")')
           .apply("TotalEdits", "$wiki.sum($count)")
@@ -722,7 +877,13 @@ describe("Cross Functional", function () {
     it(
       "works with string range, bounds: ()",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: ply()
           .apply("wiki", '$wiki.filter("d" > $channel and $channel < "w")')
           .apply("TotalEdits", "$wiki.sum($count)")
@@ -746,7 +907,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("wiki", '$wiki.apply(city3, $cityName.substr(0, 3)).filter($city3 == "San")')
+          .apply(
+            "wiki",
+            '$wiki.apply(city3, $cityName.substr(0, 3)).filter($city3 == "San")',
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)"),
       }),
@@ -782,7 +946,13 @@ describe("Cross Functional", function () {
     it(
       "works with indexOf action on filter",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: $("wiki")
           .filter("$cityName.indexOf(x) > 5")
           .split("$cityName", "CityName")
@@ -795,7 +965,13 @@ describe("Cross Functional", function () {
     it(
       "works with transformCase action on filter",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: $("wiki")
           .filter('$cityName.transformCase("lowerCase") == "el paso"')
           .split("$cityName", "CityName")
@@ -836,7 +1012,9 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "mysql", "postgres"], // 'druidSql'
         expression: $("wiki")
-          .filter('$channel.concat(", ").concat($namespace).contains("ma", "ignoreCase")')
+          .filter(
+            '$channel.concat(", ").concat($namespace).contains("ma", "ignoreCase")',
+          )
           .split('$channel.concat(", ").concat($namespace)', "SPLIT")
           .apply("Count", "$wiki.sum($added)")
           .sort("$Count", "descending")
@@ -847,7 +1025,13 @@ describe("Cross Functional", function () {
     it(
       "works with sub-query filter",
       equalityTest({
-        executorNames: ["druid", "druidLegacy", "druidSql", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidLegacy",
+          "druidSql",
+          "mysql",
+          "postgres",
+        ],
         expression: $("wiki")
           .filter("$commentLength > $wiki.average($commentLength)")
           .split("$channel", "Channel")
@@ -875,7 +1059,9 @@ describe("Cross Functional", function () {
       "works with constant split",
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
-        expression: $("wiki").split("blah", "Constant").apply("TotalEdits", "$wiki.sum($count)"),
+        expression: $("wiki")
+          .split("blah", "Constant")
+          .apply("TotalEdits", "$wiki.sum($count)"),
       }),
     );
 
@@ -883,7 +1069,9 @@ describe("Cross Functional", function () {
       "works with plain split",
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
-        expression: $("wiki").split("$channel", "Channel").sort("$Channel", "ascending"),
+        expression: $("wiki")
+          .split("$channel", "Channel")
+          .sort("$Channel", "ascending"),
       }),
     );
 
@@ -952,7 +1140,10 @@ describe("Cross Functional", function () {
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
           .split(
-            $("__time").overlap(new Date("2015-09-12T01:00:00Z"), new Date("2015-09-12T02:30:00Z")),
+            $("__time").overlap(
+              new Date("2015-09-12T01:00:00Z"),
+              new Date("2015-09-12T02:30:00Z"),
+            ),
             "TheHour",
           )
           .apply("TotalEdits", "$wiki.sum($count)")
@@ -1006,7 +1197,13 @@ describe("Cross Functional", function () {
     it(
       "works with STRING transform case action",
       equalityTest({
-        executorNames: ["druid", "druidSql", "druidLegacy", "mysql", "postgres"],
+        executorNames: [
+          "druid",
+          "druidSql",
+          "druidLegacy",
+          "mysql",
+          "postgres",
+        ],
         expression: $("wiki")
           .split('$cityName.transformCase("lowerCase")', "CityLower")
           .apply("TotalEdits", "$wiki.sum($count)")
@@ -1074,7 +1271,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
-          .split("($commentLength - $channel.length()).numberBucket(2, 1)", "$complexBucket")
+          .split(
+            "($commentLength - $channel.length()).numberBucket(2, 1)",
+            "$complexBucket",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)")
           .sort("$TotalAdded", "descending")
@@ -1191,7 +1391,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
-          .split("($commentLength / 10).numberBucket(2, 0)", "CommentLengthDivBucket")
+          .split(
+            "($commentLength / 10).numberBucket(2, 0)",
+            "CommentLengthDivBucket",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)")
           .sort("$TotalEdits", "descending")
@@ -1293,7 +1496,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql"], // 'postgres'
         expression: $("wiki")
-          .split($("__time").timeShift("PT2H", 1).timeBucket("PT1H", "Etc/UTC"), "TimeShiftByHour")
+          .split(
+            $("__time").timeShift("PT2H", 1).timeBucket("PT1H", "Etc/UTC"),
+            "TimeShiftByHour",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)")
           .sort("$TotalAdded", "descending")
@@ -1449,7 +1655,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
-          .split($("sometimeLater").timePart("MINUTE_OF_HOUR", "Etc/UTC"), "HourOfDay")
+          .split(
+            $("sometimeLater").timePart("MINUTE_OF_HOUR", "Etc/UTC"),
+            "HourOfDay",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)")
           .sort("$HourOfDay", "ascending"),
@@ -1461,7 +1670,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
-          .split($("sometimeLater").timePart("MINUTE_OF_HOUR", "Etc/UTC"), "HourOfDay")
+          .split(
+            $("sometimeLater").timePart("MINUTE_OF_HOUR", "Etc/UTC"),
+            "HourOfDay",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)")
           .sort("$TotalAdded", "descending")
@@ -1474,7 +1686,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
-          .split($("sometimeLater").timePart("DAY_OF_YEAR", "America/New_York"), "HourOfDay")
+          .split(
+            $("sometimeLater").timePart("DAY_OF_YEAR", "America/New_York"),
+            "HourOfDay",
+          )
           .apply("TotalEdits", "$wiki.sum($count)")
           .apply("TotalAdded", "$wiki.sum($added)")
           .sort("$TotalAdded", "descending")
@@ -1489,11 +1704,17 @@ describe("Cross Functional", function () {
         expression: $("wiki")
           .split(
             $("__time")
-              .overlap(new Date("2015-09-12T01:00:00Z"), new Date("2015-09-12T03:00:00Z"))
+              .overlap(
+                new Date("2015-09-12T01:00:00Z"),
+                new Date("2015-09-12T03:00:00Z"),
+              )
               .then("Before")
               .fallback(
                 $("__time")
-                  .overlap(new Date("2015-09-12T05:00:00Z"), new Date("2015-09-12T07:00:00Z"))
+                  .overlap(
+                    new Date("2015-09-12T05:00:00Z"),
+                    new Date("2015-09-12T07:00:00Z"),
+                  )
                   .then("After"),
               )
               .fallback("Other"),
@@ -1516,7 +1737,12 @@ describe("Cross Functional", function () {
               .timePart("HOUR_OF_DAY")
               .lessThan(10)
               .then("Morning")
-              .fallback($("__time").timePart("HOUR_OF_DAY").lessThan(20).then("Afternoon"))
+              .fallback(
+                $("__time")
+                  .timePart("HOUR_OF_DAY")
+                  .lessThan(20)
+                  .then("Afternoon"),
+              )
               .fallback("Evening"),
             "Greeting",
           )
@@ -1533,7 +1759,10 @@ describe("Cross Functional", function () {
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
           .split(
-            $("channel").overlap(["en", "es", "he"]).then("$channel").fallback("Other"),
+            $("channel")
+              .overlap(["en", "es", "he"])
+              .then("$channel")
+              .fallback("Other"),
             "Channel",
           )
           .apply("TotalEdits", "$wiki.sum($count)")
@@ -1709,7 +1938,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
-          .split('("bo" < $channel and $channel < "mo") or $countryIsoCode.is(null)', "Split")
+          .split(
+            '("bo" < $channel and $channel < "mo") or $countryIsoCode.is(null)',
+            "Split",
+          )
           .apply("Count", "$wiki.sum($count)")
           .sort("$Count", "descending")
           .limit(5),
@@ -1898,7 +2130,10 @@ describe("Cross Functional", function () {
         expression: ply()
           .apply(
             "ys",
-            $("wiki").split("$__time.timeBucket(PT1H)", "v").sort("$v", "ascending").limit(3),
+            $("wiki")
+              .split("$__time.timeBucket(PT1H)", "v")
+              .sort("$v", "ascending")
+              .limit(3),
           )
           .apply(
             "xs",
@@ -1912,8 +2147,13 @@ describe("Cross Functional", function () {
           .apply(
             "cells",
             $("wiki")
-              .filter("$channel.overlap($xs.collect($v)).and($__time.overlap($ys.collect($v)))")
-              .split({ __time: "$__time.timeBucket(PT1H)", channel: "$channel" })
+              .filter(
+                "$channel.overlap($xs.collect($v)).and($__time.overlap($ys.collect($v)))",
+              )
+              .split({
+                __time: "$__time.timeBucket(PT1H)",
+                channel: "$channel",
+              })
               .apply("count", "$wiki.sum($count)")
               .sort("$count", "descending")
               .limit(9),
@@ -1949,7 +2189,10 @@ describe("Cross Functional", function () {
               .filter(
                 '($channel ++ "," ++ $user).overlap($xs.collect($v)).and($countryName.overlap($ys.collect($v)))',
               )
-              .split({ countryName: "$countryName", channelUser: '$channel ++ "," ++ $user' })
+              .split({
+                countryName: "$countryName",
+                channelUser: '$channel ++ "," ++ $user',
+              })
               .apply("count", "$wiki.sum($count)")
               .sort("$count", "descending")
               .limit(9),
@@ -1964,7 +2207,10 @@ describe("Cross Functional", function () {
         expression: ply()
           .apply(
             "ys",
-            $("wiki").split("$__time.timeBucket(PT1H)", "v").sort("$v", "ascending").limit(3),
+            $("wiki")
+              .split("$__time.timeBucket(PT1H)", "v")
+              .sort("$v", "ascending")
+              .limit(3),
           )
           .apply(
             "xs",
@@ -2033,7 +2279,10 @@ describe("Cross Functional", function () {
           .apply("Log2_SumAdded", "$wiki.sum($added).log(2)")
           .apply("Log7_SumAdded", "$wiki.sum($added).log(7)")
           .apply("Log10_SumAdded", "$wiki.sum($added).log(10)")
-          .apply("SumIndexOf", '$wiki.sum($user.transformCase("upperCase").indexOf("A"))')
+          .apply(
+            "SumIndexOf",
+            '$wiki.sum($user.transformCase("upperCase").indexOf("A"))',
+          )
           .sort("$Channel", "descending")
           .limit(50),
       }),
@@ -2046,9 +2295,18 @@ describe("Cross Functional", function () {
         expression: $("wiki")
           .split("$channel", "Channel")
           .apply("RowCount", "$wiki.count()")
-          .apply("Added_NullCities", "$wiki.filter($cityName == null).sum($added)")
-          .apply("Added_NullCities3", "$wiki.filter($cityName.substr(0, 3) == null).sum($added)")
-          .apply("Added_NullCity_lol", "$wiki.filter($cityName.concat(_lol) == null).sum($added)")
+          .apply(
+            "Added_NullCities",
+            "$wiki.filter($cityName == null).sum($added)",
+          )
+          .apply(
+            "Added_NullCities3",
+            "$wiki.filter($cityName.substr(0, 3) == null).sum($added)",
+          )
+          .apply(
+            "Added_NullCity_lol",
+            "$wiki.filter($cityName.concat(_lol) == null).sum($added)",
+          )
           // .apply('Added_NullCityExtract', '$wiki.filter($cityName.extract("^(...)") == null).sum($added)') // ToDo: issue with REGEXP_EXTRACT
           .sort("$Channel", "descending")
           .limit(50),
@@ -2113,7 +2371,10 @@ describe("Cross Functional", function () {
       equalityTest({
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: ply()
-          .apply("BLocation", "$wiki.sum($page.indexOf(thisasdsczxczvdprobablydoesntexist))")
+          .apply(
+            "BLocation",
+            "$wiki.sum($page.indexOf(thisasdsczxczvdprobablydoesntexist))",
+          )
           .sort("$BLocation", "descending")
           .limit(20),
       }),
@@ -2393,7 +2654,10 @@ describe("Cross Functional", function () {
         executorNames: ["druid", "druidSql", "mysql", "postgres"],
         expression: $("wiki")
           .filter('$cityName == "Ajax"')
-          .apply("formula", "(($added - 1) * 2 + 5 + $deleted.power(2)).absolute()")
+          .apply(
+            "formula",
+            "(($added - 1) * 2 + 5 + $deleted.power(2)).absolute()",
+          )
           .select("formula"),
       }),
     );

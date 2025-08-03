@@ -22,7 +22,15 @@ const { testImmutableClass } = require("immutable-class-tester");
 
 const plywood = require("../plywood");
 
-const { Expression, $, ply, r, RefExpression, LimitExpression, SortExpression } = plywood;
+const {
+  Expression,
+  $,
+  ply,
+  r,
+  RefExpression,
+  LimitExpression,
+  SortExpression,
+} = plywood;
 
 describe("Expression", () => {
   it("is immutable class", () => {
@@ -38,13 +46,21 @@ describe("Expression", () => {
         { op: "literal", value: "" },
         { op: "literal", value: "Honda" },
         { op: "literal", value: "$honda" },
-        { op: "literal", value: { setType: "STRING", elements: [] }, type: "SET" },
+        {
+          op: "literal",
+          value: { setType: "STRING", elements: [] },
+          type: "SET",
+        },
         {
           op: "literal",
           value: { setType: "STRING", elements: ["BMW", "Honda", "Suzuki"] },
           type: "SET",
         },
-        { op: "literal", value: { setType: "NUMBER", elements: [0.05, 0.1] }, type: "SET" },
+        {
+          op: "literal",
+          value: { setType: "NUMBER", elements: [0.05, 0.1] },
+          type: "SET",
+        },
         // { op: 'literal', value: [{}], type: 'DATASET' },
         { op: "literal", value: new Date("2015-10-10Z"), type: "TIME" },
         { op: "ref", name: "authors" },
@@ -56,8 +72,18 @@ describe("Expression", () => {
         { op: "ref", name: 'a fish will "save" you - lol / (or not)' },
         { op: "ref", name: "a thing", ignoreCase: true },
 
-        { op: "ref", name: "a thing", ignoreCase: true, options: { hello: "world" } },
-        { op: "ref", name: "a thing", ignoreCase: true, options: { hello: "druid" } },
+        {
+          op: "ref",
+          name: "a thing",
+          ignoreCase: true,
+          options: { hello: "world" },
+        },
+        {
+          op: "ref",
+          name: "a thing",
+          ignoreCase: true,
+          options: { hello: "druid" },
+        },
 
         { op: "sqlRef", sql: `A`, type: undefined },
         { op: "sqlRef", sql: `Substr(A, 1, 2)`, type: "IP" },
@@ -174,7 +200,11 @@ describe("Expression", () => {
         { op: "max", expression: { op: "ref", name: "myVar" } },
         { op: "average", expression: { op: "ref", name: "myVar" } },
         { op: "countDistinct", expression: { op: "ref", name: "myVar" } },
-        { op: "quantile", expression: { op: "ref", name: "myVar" }, value: 0.5 },
+        {
+          op: "quantile",
+          expression: { op: "ref", name: "myVar" },
+          value: 0.5,
+        },
         {
           op: "quantile",
           expression: { op: "ref", name: "myVar" },
@@ -186,13 +216,24 @@ describe("Expression", () => {
         { op: "cast", outputType: "NUMBER" },
 
         { op: "customAggregate", custom: "blah" },
-        { op: "customTransform", custom: "decodeURIComponentToLowerCaseAndTrim" },
+        {
+          op: "customTransform",
+          custom: "decodeURIComponentToLowerCaseAndTrim",
+        },
         { op: "customTransform", custom: "includes", outputType: "BOOLEAN" },
 
         { op: "concat", expression: { op: "literal", value: "myVar" } },
 
-        { op: "contains", expression: { op: "ref", name: "myVar" }, compare: "normal" },
-        { op: "contains", expression: { op: "ref", name: "myVar" }, compare: "ignoreCase" },
+        {
+          op: "contains",
+          expression: { op: "ref", name: "myVar" },
+          compare: "normal",
+        },
+        {
+          op: "contains",
+          expression: { op: "ref", name: "myVar" },
+          compare: "ignoreCase",
+        },
 
         { op: "match", regexp: "A[B]" },
         { op: "match", regexp: "^fu*$" },
@@ -201,7 +242,11 @@ describe("Expression", () => {
 
         {
           op: "lessThan",
-          expression: { op: "literal", type: "TIME", value: new Date("2015-10-10Z") },
+          expression: {
+            op: "literal",
+            type: "TIME",
+            value: new Date("2015-10-10Z"),
+          },
         },
 
         { op: "overlap", expression: { op: "ref", name: "myVar" } },
@@ -229,22 +274,46 @@ describe("Expression", () => {
         { op: "timeBucket", duration: "P1D" },
         { op: "timeBucket", duration: "PT2H", timezone: "Etc/UTC" },
         { op: "timeBucket", duration: "PT2H", timezone: "America/Los_Angeles" },
-        { op: "timeBucket", duration: "PT2H", timezone: "America/Los_Angeles", bounds: "[]" },
-        { op: "timeBucket", duration: "PT3H", timezone: "America/Los_Angeles", bounds: "[)" },
+        {
+          op: "timeBucket",
+          duration: "PT2H",
+          timezone: "America/Los_Angeles",
+          bounds: "[]",
+        },
+        {
+          op: "timeBucket",
+          duration: "PT3H",
+          timezone: "America/Los_Angeles",
+          bounds: "[)",
+        },
 
         { op: "timePart", part: "DAY_OF_WEEK" },
         { op: "timePart", part: "DAY_OF_MONTH", timezone: "Etc/UTC" },
-        { op: "timePart", part: "DAY_OF_MONTH", timezone: "America/Los_Angeles" },
+        {
+          op: "timePart",
+          part: "DAY_OF_MONTH",
+          timezone: "America/Los_Angeles",
+        },
 
         { op: "timeShift", duration: "P1D", step: 1 },
         { op: "timeShift", duration: "P1D", step: -2 },
         { op: "timeShift", duration: "P2D", step: 3, timezone: "Etc/UTC" },
-        { op: "timeShift", duration: "P2D", step: 3, timezone: "America/Los_Angeles" },
+        {
+          op: "timeShift",
+          duration: "P2D",
+          step: 3,
+          timezone: "America/Los_Angeles",
+        },
 
         { op: "timeRange", duration: "P1D", step: 1 },
         { op: "timeRange", duration: "P1D", step: -2 },
         { op: "timeRange", duration: "P2D", step: 3, timezone: "Etc/UTC" },
-        { op: "timeRange", duration: "P2D", step: 3, timezone: "America/Los_Angeles" },
+        {
+          op: "timeRange",
+          duration: "P2D",
+          step: 3,
+          timezone: "America/Los_Angeles",
+        },
         {
           op: "timeRange",
           duration: "P2D",
@@ -354,7 +423,9 @@ describe("Expression", () => {
     });
 
     it("works with fromJSLoose", () => {
-      expect(Expression.fromJSLoose("$^^{and do don't call me shirley}").toJS()).to.deep.equal({
+      expect(
+        Expression.fromJSLoose("$^^{and do don't call me shirley}").toJS(),
+      ).to.deep.equal({
         op: "ref",
         name: "and do don't call me shirley",
         nest: 2,
@@ -362,7 +433,9 @@ describe("Expression", () => {
     });
 
     it("works with ref expression parse", () => {
-      expect(RefExpression.parse("{how are you today?}:NUMBER").toJS()).to.deep.equal({
+      expect(
+        RefExpression.parse("{how are you today?}:NUMBER").toJS(),
+      ).to.deep.equal({
         op: "ref",
         name: "how are you today?",
         type: "NUMBER",
@@ -371,7 +444,9 @@ describe("Expression", () => {
 
     it("parses", () => {
       expect(
-        Expression.parse("$^{hello 'james'} + ${how are you today?}:NUMBER").toJS(),
+        Expression.parse(
+          "$^{hello 'james'} + ${how are you today?}:NUMBER",
+        ).toJS(),
       ).to.deep.equal({
         op: "add",
         operand: {
@@ -438,7 +513,10 @@ describe("Expression", () => {
     });
 
     it("works in more nested case", () => {
-      const ex1 = $("w").add($("data").average("$x"), $("data").average("$y + $z"));
+      const ex1 = $("w").add(
+        $("data").average("$x"),
+        $("data").average("$y + $z"),
+      );
       const ex2 = $("w").add(
         $("data").sum("$x").divide($("data").count()),
         $("data").sum("$y + $z").divide($("data").count()),
@@ -507,7 +585,11 @@ describe("Expression", () => {
       const ex2 = $("data")
         // eslint-disable-next-line no-undef
         .sum($x)
-        .add("$data.sum($y)", "($data.sum($z) * 5).negate()", "6 * $data.count()");
+        .add(
+          "$data.sum($y)",
+          "($data.sum($z) * 5).negate()",
+          "6 * $data.count()",
+        );
       expect(ex1.distribute().toJS()).to.deep.equal(ex2.toJS());
     });
   });
@@ -515,7 +597,10 @@ describe("Expression", () => {
   describe("fancy actions", () => {
     it("works with no operand", () => {
       expect(
-        new SortExpression({ expression: $("x"), direction: SortExpression.DESCENDING }).toJS(),
+        new SortExpression({
+          expression: $("x"),
+          direction: SortExpression.DESCENDING,
+        }).toJS(),
       ).to.deep.equal({
         op: "sort",
         expression: { op: "ref", name: "x" },
@@ -672,7 +757,10 @@ describe("Expression", () => {
       };
 
       const ex2 = ply()
-        .apply("Diamonds", ply().filter("$color == 'D'").apply("priceOver2", "$price/2"))
+        .apply(
+          "Diamonds",
+          ply().filter("$color == 'D'").apply("priceOver2", "$price/2"),
+        )
         .apply("Count", $("Diamonds").count())
         .apply("TotalPrice", $("Diamonds").sum("$priceOver2"));
 

@@ -16,7 +16,12 @@
 
 import type { Timezone } from "chronoshift";
 
-export type PlyTypeSingleValue = "NULL" | "BOOLEAN" | "NUMBER" | "TIME" | "STRING";
+export type PlyTypeSingleValue =
+  | "NULL"
+  | "BOOLEAN"
+  | "NUMBER"
+  | "TIME"
+  | "STRING";
 export type PlyTypeSimple =
   | PlyTypeSingleValue
   | "NUMBER_RANGE"

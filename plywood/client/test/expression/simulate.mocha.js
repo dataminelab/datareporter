@@ -46,7 +46,12 @@ const diamonds = External.fromJS({
     { name: "height_bucket", type: "NUMBER" },
     { name: "price", type: "NUMBER", unsplitable: true },
     { name: "tax", type: "NUMBER", unsplitable: true },
-    { name: "vendor_id", type: "NULL", nativeType: "hyperUnique", unsplitable: true },
+    {
+      name: "vendor_id",
+      type: "NULL",
+      nativeType: "hyperUnique",
+      unsplitable: true,
+    },
   ],
   allowEternity: true,
   allowSelectQueries: true,
@@ -63,7 +68,10 @@ describe("simulate", () => {
         $("diamonds")
           .split("$color:STRING", "Color")
           .limit(10)
-          .apply("SubSplit", $("diamonds").split("$cut:STRING", "SubCut").limit(5)),
+          .apply(
+            "SubSplit",
+            $("diamonds").split("$cut:STRING", "SubCut").limit(5),
+          ),
       );
 
     expect(ex.simulate({ diamonds: diamonds }).toJS().data).to.deep.equal([

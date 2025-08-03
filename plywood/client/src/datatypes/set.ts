@@ -149,7 +149,11 @@ export class Set implements Instance<SetValue, SetJS> {
     }
   }
 
-  static crossBinaryBoolean(as: any, bs: any, fn: (a: any, b: any) => boolean): boolean {
+  static crossBinaryBoolean(
+    as: any,
+    bs: any,
+    fn: (a: any, b: any) => boolean,
+  ): boolean {
     if (as instanceof Set || bs instanceof Set) {
       const aElements = as instanceof Set ? as.elements : [as];
       const bElements = bs instanceof Set ? bs.elements : [bs];
@@ -236,7 +240,8 @@ export class Set implements Instance<SetValue, SetJS> {
     const elements = parameters.elements;
     if (!setType) {
       setType = getValueType(elements.length ? elements[0] : null);
-      if (setType === "NULL" && elements.length > 1) setType = getValueType(elements[1]);
+      if (setType === "NULL" && elements.length > 1)
+        setType = getValueType(elements[1]);
     }
     return new Set({
       setType: setType,
@@ -304,7 +309,8 @@ export class Set implements Instance<SetValue, SetJS> {
     if (setType === "TIME_RANGE") {
       stringFn = (e: any) => (e ? e.toString(tz) : "null");
     } else if (setType === "TIME") {
-      stringFn = (e: any) => (e ? Timezone.formatDateWithTimezone(e, tz) : "null");
+      stringFn = (e: any) =>
+        e ? Timezone.formatDateWithTimezone(e, tz) : "null";
     } else {
       stringFn = String;
     }
@@ -317,7 +323,8 @@ export class Set implements Instance<SetValue, SetJS> {
       other instanceof Set &&
       this.setType === other.setType &&
       this.elements.length === other.elements.length &&
-      this.elements.slice().sort().join("") === other.elements.slice().sort().join("")
+      this.elements.slice().sort().join("") ===
+        other.elements.slice().sort().join("")
     );
   }
 
@@ -427,7 +434,9 @@ export class Set implements Instance<SetValue, SetJS> {
         throw new TypeError("can not union sets of different types");
       }
     }
-    return ret.changeElements(ret.elements.concat(other.elements)).unifyElements();
+    return ret
+      .changeElements(ret.elements.concat(other.elements))
+      .unifyElements();
   }
 
   public intersect(other: Set): Set {
@@ -440,7 +449,11 @@ export class Set implements Instance<SetValue, SetJS> {
 
     const thisElements = this.elements;
     let newElements: Array<any>;
-    if (setType === "NUMBER_RANGE" || setType === "TIME_RANGE" || setType === "STRING_RANGE") {
+    if (
+      setType === "NUMBER_RANGE" ||
+      setType === "TIME_RANGE" ||
+      setType === "STRING_RANGE"
+    ) {
       const otherElements = other.elements;
       newElements = Set.intersectElements(thisElements, otherElements);
     } else {
@@ -482,7 +495,9 @@ export class Set implements Instance<SetValue, SetJS> {
 
     if (Range.isRangeType(this.setType)) {
       if (value instanceof Range && this.has(value)) return true; // Shortcut
-      return this.elements.some(element => (element as PlywoodRange).contains(value));
+      return this.elements.some(element =>
+        (element as PlywoodRange).contains(value),
+      );
     } else {
       return this.has(value);
     }
@@ -492,7 +507,8 @@ export class Set implements Instance<SetValue, SetJS> {
     let setType = this.setType;
     const valueType = getValueType(value);
     if (setType === "NULL") setType = valueType;
-    if (valueType !== "NULL" && setType !== valueType) throw new Error("value type must match");
+    if (valueType !== "NULL" && setType !== valueType)
+      throw new Error("value type must match");
 
     if (this.contains(value)) return this;
     return new Set({

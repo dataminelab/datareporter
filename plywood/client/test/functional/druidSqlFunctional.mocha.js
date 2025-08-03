@@ -233,10 +233,9 @@ describe("DruidSQL Functional", function () {
 
   describe("source list", () => {
     it("does a source list", async () => {
-      expect(await DruidSQLExternal.getSourceList(druidRequester)).to.deep.equal([
-        "wikipedia",
-        "wikipedia-compact",
-      ]);
+      expect(
+        await DruidSQLExternal.getSourceList(druidRequester),
+      ).to.deep.equal(["wikipedia", "wikipedia-compact"]);
     });
   });
 
@@ -259,7 +258,10 @@ describe("DruidSQL Functional", function () {
       const ex = $("wiki")
         .split(s$(`CONCAT(channel, '~')`), "Channel")
         .apply("Count", $("wiki").sqlAggregate(r(`SUM(t."count")`)))
-        .apply("Fancy", $("wiki").sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)))
+        .apply(
+          "Fancy",
+          $("wiki").sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)),
+        )
         .sort("$Count", "descending")
         .limit(3);
 
@@ -297,11 +299,15 @@ describe("DruidSQL Functional", function () {
         .split($("channel"), "Channel")
         .apply(
           "CountPrev",
-          $("wiki").filter($("__time").overlap(prevRange)).sqlAggregate(r(`SUM(t."count")`)),
+          $("wiki")
+            .filter($("__time").overlap(prevRange))
+            .sqlAggregate(r(`SUM(t."count")`)),
         )
         .apply(
           "CountMain",
-          $("wiki").filter($("__time").overlap(mainRange)).sqlAggregate(r(`SUM(t."count")`)),
+          $("wiki")
+            .filter($("__time").overlap(mainRange))
+            .sqlAggregate(r(`SUM(t."count")`)),
         )
         .sort($("CountMain"), "descending")
         .limit(5);
@@ -358,7 +364,10 @@ describe("DruidSQL Functional", function () {
       const ex = $("wikiWith")
         .split(s$(`CONCAT(channel, '~')`), "Channel")
         .apply("Count", $("wikiWith").sqlAggregate(r(`SUM(t."count")`)))
-        .apply("Fancy", $("wikiWith").sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)))
+        .apply(
+          "Fancy",
+          $("wikiWith").sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)),
+        )
         .sort("$Count", "descending")
         .limit(3);
 

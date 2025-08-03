@@ -42,7 +42,10 @@ import {
 
 function getSplitInflaters(split: SplitExpression): Inflater[] {
   return split.mapSplits((label, splitExpression) => {
-    const simpleInflater = External.getIntelligentInflater(splitExpression, label);
+    const simpleInflater = External.getIntelligentInflater(
+      splitExpression,
+      label,
+    );
     if (simpleInflater) return simpleInflater;
     return undefined;
   });
@@ -69,10 +72,18 @@ function getApplies(
       if (apply.expression instanceof LiteralExpression) return sql;
       const sum = sql.split("AS")[0];
       const name = apply.name;
-      const currElementStart = dialect.dateToSQLDateString(new Date(timeRanges.currElement.start));
-      const currElementEnd = dialect.dateToSQLDateString(new Date(timeRanges.currElement.end));
-      const prevElementStart = dialect.dateToSQLDateString(new Date(timeRanges.prevElement.start));
-      const prevElementEnd = dialect.dateToSQLDateString(new Date(timeRanges.prevElement.end));
+      const currElementStart = dialect.dateToSQLDateString(
+        new Date(timeRanges.currElement.start),
+      );
+      const currElementEnd = dialect.dateToSQLDateString(
+        new Date(timeRanges.currElement.end),
+      );
+      const prevElementStart = dialect.dateToSQLDateString(
+        new Date(timeRanges.prevElement.start),
+      );
+      const prevElementEnd = dialect.dateToSQLDateString(
+        new Date(timeRanges.prevElement.end),
+      );
       if (name.startsWith("_previous__")) {
         sql = `IFNULL(${sum} FILTER(WHERE TIMESTAMP '${prevElementStart}' <= \"__time\" AND \"__time\" < TIMESTAMP '${prevElementEnd}'), 0) AS "${name}"`;
       } else if (name.startsWith("_delta__")) {
@@ -93,7 +104,10 @@ function getApplies(
 export abstract class SQLExternal extends External {
   static type = "DATASET";
 
-  static jsToValue(parameters: ExternalJS, requester: PlywoodRequester<any>): ExternalValue {
+  static jsToValue(
+    parameters: ExternalJS,
+    requester: PlywoodRequester<any>,
+  ): ExternalValue {
     const value: ExternalValue = External.jsToValue(parameters, requester);
     value.withQuery = parameters.withQuery;
     return value;
@@ -126,7 +140,8 @@ export abstract class SQLExternal extends External {
   }
 
   protected capability(cap: string): boolean {
-    if (cap === "filter-on-attribute" || cap === "shortcut-group-by") return true;
+    if (cap === "filter-on-attribute" || cap === "shortcut-group-by")
+      return true;
     return super.capability(cap);
   }
 
@@ -145,8 +160,19 @@ export abstract class SQLExternal extends External {
     return `FROM ${dialect.escapeName(source as string)} AS t`;
   }
 
-  public getQueryAndPostTransform(timeRanges: any = null): QueryAndPostTransform<string> {
-    const { mode, applies, sort, limit, derivedAttributes, dialect, withQuery, engine } = this;
+  public getQueryAndPostTransform(
+    timeRanges: any = null,
+  ): QueryAndPostTransform<string> {
+    const {
+      mode,
+      applies,
+      sort,
+      limit,
+      derivedAttributes,
+      dialect,
+      withQuery,
+      engine,
+    } = this;
     let query = [];
     if (withQuery) {
       query.push(`WITH __with__ AS (${withQuery})\n`);
@@ -200,7 +226,9 @@ export abstract class SQLExternal extends External {
             .map(a => {
               const name = a.name;
               if (derivedAttributes[name]) {
-                return Expression._.apply(name, derivedAttributes[name]).getSQL(dialect);
+                return Expression._.apply(name, derivedAttributes[name]).getSQL(
+                  dialect,
+                );
               } else {
                 return dialect.escapeName(name);
               }
@@ -217,7 +245,11 @@ export abstract class SQLExternal extends External {
         break;
 
       case "value":
-        query.push(this.toValueApply().getSQL(dialect), from, dialect.emptyGroupBy());
+        query.push(
+          this.toValueApply().getSQL(dialect),
+          from,
+          dialect.emptyGroupBy(),
+        );
         postTransform = External.valuePostTransformFactory();
         break;
 
@@ -270,7 +302,8 @@ export abstract class SQLExternal extends External {
         throw new Error(`can not get query for mode: ${mode}`);
     }
     const isYoyQuery =
-      !(dialect instanceof DruidDialect) && YearOverYearExpression.isYoyQuery(query[1]);
+      !(dialect instanceof DruidDialect) &&
+      YearOverYearExpression.isYoyQuery(query[1]);
     if (isYoyQuery) {
       const yoyExpression = new YearOverYearExpression(engine, query, mode);
       yoyExpression.setKeys(keys);
@@ -298,9 +331,16 @@ export abstract class SQLExternal extends External {
       query: this.sqlToQuery(query.join("\n")),
       postTransform:
         postTransform ||
-        External.postTransformFactory(inflaters, selectedAttributes, keys, zeroTotalApplies),
+        External.postTransformFactory(
+          inflaters,
+          selectedAttributes,
+          keys,
+          zeroTotalApplies,
+        ),
     };
   }
 
-  protected abstract getIntrospectAttributes(depth: IntrospectionDepth): Promise<Attributes>;
+  protected abstract getIntrospectAttributes(
+    depth: IntrospectionDepth,
+  ): Promise<Attributes>;
 }

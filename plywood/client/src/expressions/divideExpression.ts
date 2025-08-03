@@ -38,12 +38,20 @@ export class DivideExpression extends ChainableUnaryExpression {
     this.type = "NUMBER";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (operandValue === null || expressionValue === null) return null;
-    return Set.crossBinary(operandValue, expressionValue, (a, b) => (b !== 0 ? a / b : null));
+    return Set.crossBinary(operandValue, expressionValue, (a, b) =>
+      b !== 0 ? a / b : null,
+    );
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `(_=${expressionJS},(_===0||isNaN(_)?null:${operandJS}/${expressionJS}))`;
   }
 

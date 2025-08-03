@@ -25,7 +25,10 @@ import {
 } from "./baseExpression";
 import { Aggregate } from "./mixins/aggregate";
 
-export class MaxExpression extends ChainableUnaryExpression implements Aggregate {
+export class MaxExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
   static op = "Max";
   static fromJS(parameters: ExpressionJS): MaxExpression {
     return new MaxExpression(ChainableUnaryExpression.jsToValue(parameters));
@@ -39,7 +42,10 @@ export class MaxExpression extends ChainableUnaryExpression implements Aggregate
     this.type = Set.unwrapSetType(this.expression.type);
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue ? (operandValue as Dataset).max(this.expression) : null;
   }
 

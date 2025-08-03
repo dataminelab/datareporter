@@ -38,25 +38,27 @@ describe("utils", () => {
 
   describe("continuousFloorExpression", () => {
     it("should be minimalistic (no size / no offset)", () => {
-      expect(plywood.continuousFloorExpression("x", "Math.floor", 1, 0)).to.equal("Math.floor(x)");
+      expect(
+        plywood.continuousFloorExpression("x", "Math.floor", 1, 0),
+      ).to.equal("Math.floor(x)");
     });
 
     it("should be minimalistic (no size)", () => {
-      expect(plywood.continuousFloorExpression("x", "Math.floor", 1, 0.3)).to.equal(
-        "Math.floor(x - 0.3) + 0.3",
-      );
+      expect(
+        plywood.continuousFloorExpression("x", "Math.floor", 1, 0.3),
+      ).to.equal("Math.floor(x - 0.3) + 0.3");
     });
 
     it("should be minimalistic (no offset)", () => {
-      expect(plywood.continuousFloorExpression("x", "Math.floor", 5, 0)).to.equal(
-        "Math.floor(x / 5) * 5",
-      );
+      expect(
+        plywood.continuousFloorExpression("x", "Math.floor", 5, 0),
+      ).to.equal("Math.floor(x / 5) * 5");
     });
 
     it("should be work in general", () => {
-      expect(plywood.continuousFloorExpression("x", "Math.floor", 5, 3)).to.equal(
-        "Math.floor((x - 3) / 5) * 5 + 3",
-      );
+      expect(
+        plywood.continuousFloorExpression("x", "Math.floor", 5, 3),
+      ).to.equal("Math.floor((x - 3) / 5) * 5 + 3");
     });
   });
 });

@@ -60,7 +60,12 @@ describe("Streaming Functional", function () {
     { name: "comment", type: "STRING" },
     { name: "commentLength", type: "NUMBER" },
     { name: "commentLengthStr", type: "STRING" },
-    { name: "count", maker: { op: "count" }, type: "NUMBER", unsplitable: true },
+    {
+      name: "count",
+      maker: { op: "count" },
+      type: "NUMBER",
+      unsplitable: true,
+    },
     { name: "countryIsoCode", type: "STRING" },
     { name: "countryName", type: "STRING" },
     {

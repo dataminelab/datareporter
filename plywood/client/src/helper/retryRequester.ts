@@ -33,8 +33,10 @@ export function retryRequesterFactory<T>(
   const retry = parameters.retry || 3;
   const retryOnTimeout = Boolean(parameters.retryOnTimeout);
 
-  if (typeof delay !== "number") throw new TypeError("delay should be a number");
-  if (typeof retry !== "number") throw new TypeError("retry should be a number");
+  if (typeof delay !== "number")
+    throw new TypeError("delay should be a number");
+  if (typeof retry !== "number")
+    throw new TypeError("retry should be a number");
 
   return (request: DatabaseRequest<T>) => {
     let tries = 0;
@@ -48,7 +50,11 @@ export function retryRequesterFactory<T>(
       const rs = requester(request);
       rs.on("error", (e: Error) => {
         errored = true;
-        if (seenData || tries > retry || (e.message === "timeout" && !retryOnTimeout)) {
+        if (
+          seenData ||
+          tries > retry ||
+          (e.message === "timeout" && !retryOnTimeout)
+        ) {
           rs.unpipe(output);
           output.emit("error", e);
           ended = true;

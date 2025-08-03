@@ -17,7 +17,12 @@
 import { Ip } from "../datatypes/ip";
 import { SQLDialect } from "../dialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class IpSearchExpression extends ChainableExpression {
   static op = "IpSearch";
@@ -62,8 +67,15 @@ export class IpSearchExpression extends ChainableExpression {
     return js;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return dialect.ipSearchExpression(operandSQL, this.ipToSearch.toString(), this.ipSearchType);
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return dialect.ipSearchExpression(
+      operandSQL,
+      this.ipToSearch.toString(),
+      this.ipSearchType,
+    );
   }
 }
 

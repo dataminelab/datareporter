@@ -17,7 +17,12 @@
 import { PlywoodValue, Set } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class AbsoluteExpression extends ChainableExpression {
   static op = "Absolute";
@@ -41,7 +46,10 @@ export class AbsoluteExpression extends ChainableExpression {
     return `Math.abs(${operandJS})`;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return `ABS(${operandSQL})`;
   }
 

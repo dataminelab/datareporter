@@ -395,7 +395,8 @@ describe("Druid Functional (Full Text)", function () {
             Count: 18,
           },
           {
-            Comment: "/* Adding parameters: employer, client, affiliation */ re",
+            Comment:
+              "/* Adding parameters: employer, client, affiliation */ re",
             Count: 3,
           },
           {
@@ -408,11 +409,13 @@ describe("Druid Functional (Full Text)", function () {
             Count: 1,
           },
           {
-            Comment: "/* Adding parameters: employer, client, affiliation */ new section",
+            Comment:
+              "/* Adding parameters: employer, client, affiliation */ new section",
             Count: 1,
           },
           {
-            Comment: "/* Adding parameters: employer, client, affiliation */ subst",
+            Comment:
+              "/* Adding parameters: employer, client, affiliation */ subst",
             Count: 1,
           },
           {

@@ -51,7 +51,10 @@ export class SortExpression extends ChainableUnaryExpression {
     }
 
     const direction = parameters.direction || SortExpression.DEFAULT_DIRECTION;
-    if (direction !== SortExpression.DESCENDING && direction !== SortExpression.ASCENDING) {
+    if (
+      direction !== SortExpression.DESCENDING &&
+      direction !== SortExpression.ASCENDING
+    ) {
       throw new Error(
         `direction must be '${SortExpression.DESCENDING}' or '${SortExpression.ASCENDING}'`,
       );
@@ -81,8 +84,13 @@ export class SortExpression extends ChainableUnaryExpression {
     return [this.expression.toString(indent), this.direction];
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
-    return operandValue ? (operandValue as Dataset).sort(this.expression, this.direction) : null;
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
+    return operandValue
+      ? (operandValue as Dataset).sort(this.expression, this.direction)
+      : null;
   }
 
   protected _getSQLChainableUnaryHelper(
@@ -126,7 +134,10 @@ export class SortExpression extends ChainableUnaryExpression {
     const { operand, expression } = this;
 
     // X.sort(Y, d1).sort(Y, d2)
-    if (operand instanceof SortExpression && operand.expression.equals(expression))
+    if (
+      operand instanceof SortExpression &&
+      operand.expression.equals(expression)
+    )
       return this.changeOperand(operand.operand);
 
     return this;

@@ -17,7 +17,12 @@
 import { PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 import { Aggregate } from "./mixins/aggregate";
 
 export class CustomAggregateExpression extends ChainableExpression {
@@ -62,7 +67,10 @@ export class CustomAggregateExpression extends ChainableExpression {
     throw new Error("can not compute on custom action");
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     throw new Error("custom action not implemented");
   }
 }

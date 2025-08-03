@@ -30,7 +30,9 @@ import { LiteralExpression } from "./literalExpression";
 export class LessThanOrEqualExpression extends ChainableUnaryExpression {
   static op = "LessThanOrEqual";
   static fromJS(parameters: ExpressionJS): LessThanOrEqualExpression {
-    return new LessThanOrEqualExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new LessThanOrEqualExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
@@ -43,12 +45,22 @@ export class LessThanOrEqualExpression extends ChainableUnaryExpression {
     this.type = "BOOLEAN";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (operandValue === null || expressionValue === null) return null;
-    return Set.crossBinaryBoolean(operandValue, expressionValue, (a, b) => a <= b);
+    return Set.crossBinaryBoolean(
+      operandValue,
+      expressionValue,
+      (a, b) => a <= b,
+    );
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `(${operandJS}<=${expressionJS})`;
   }
 
@@ -65,12 +77,16 @@ export class LessThanOrEqualExpression extends ChainableUnaryExpression {
 
     if (expression instanceof LiteralExpression) {
       // x <= 7
-      return operand.overlap(r(Range.fromJS({ start: null, end: expression.value, bounds: "(]" })));
+      return operand.overlap(
+        r(Range.fromJS({ start: null, end: expression.value, bounds: "(]" })),
+      );
     }
 
     if (operand instanceof LiteralExpression) {
       // 7 <= x
-      return expression.overlap(r(Range.fromJS({ start: operand.value, end: null, bounds: "[)" })));
+      return expression.overlap(
+        r(Range.fromJS({ start: operand.value, end: null, bounds: "[)" })),
+      );
     }
 
     return this;

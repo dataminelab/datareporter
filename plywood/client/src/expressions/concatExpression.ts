@@ -35,15 +35,23 @@ export class ConcatExpression extends ChainableUnaryExpression {
     this._ensureOp("concat");
     this._checkOperandTypes("STRING");
     this._checkExpressionTypes("STRING");
-    this.type = Set.isSetType(this.operand.type) ? this.operand.type : this.expression.type;
+    this.type = Set.isSetType(this.operand.type)
+      ? this.operand.type
+      : this.expression.type;
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (operandValue === null || expressionValue === null) return null;
     return Set.crossBinary(operandValue, expressionValue, (a, b) => "" + a + b);
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return Expression.jsNullSafetyBinary(
       operandJS,
       expressionJS,

@@ -59,7 +59,9 @@ exports.wrapVerbose = (requester, name) => {
     const startTime = Date.now();
     return requester(request).then(
       result => {
-        console.log(`GOT RESULT FROM ${name} (took ${Date.now() - startTime}ms)`);
+        console.log(
+          `GOT RESULT FROM ${name} (took ${Date.now() - startTime}ms)`,
+        );
         return result;
       },
       err => {

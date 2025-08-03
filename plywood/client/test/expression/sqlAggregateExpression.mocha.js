@@ -64,7 +64,9 @@ describe("SqlAggregateExpression", () => {
             SqlExpression.parse(`t."browser" = 'Chrome'`),
           ),
         ),
-      ).to.equal(`COUNT(*) FILTER (WHERE t."os" = 'Windows' AND t."browser" = 'Chrome')`);
+      ).to.equal(
+        `COUNT(*) FILTER (WHERE t."os" = 'Windows' AND t."browser" = 'Chrome')`,
+      );
     });
 
     it("works in more complex case", () => {

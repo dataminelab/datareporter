@@ -106,14 +106,17 @@ function calculateNewWidgetPosition(existingWidgets, newWidget) {
         height: position.sizeY,
       };
     })
-    .reduce((result, item) => {
-      const from = Math.max(item.left, 0);
-      const to = Math.min(item.right, result.length + 1);
-      for (let i = from; i < to; i += 1) {
-        result[i] = Math.max(result[i], item.bottom);
-      }
-      return result;
-    }, _.map(new Array(dashboardGridOptions.columns), _.constant(0)))
+    .reduce(
+      (result, item) => {
+        const from = Math.max(item.left, 0);
+        const to = Math.min(item.right, result.length + 1);
+        for (let i = from; i < to; i += 1) {
+          result[i] = Math.max(result[i], item.bottom);
+        }
+        return result;
+      },
+      _.map(new Array(dashboardGridOptions.columns), _.constant(0)),
+    )
     .value();
 
   // Go through columns, pick them by count necessary to hold new block,

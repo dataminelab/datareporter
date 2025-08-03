@@ -20,17 +20,26 @@ import { immutableEqual } from "immutable-class";
 import { PlywoodValue, Set, TimeRange } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 import { HasTimezone } from "./mixins/hasTimezone";
 import { OverlapExpression } from "./overlapExpression";
 import { TimeBucketExpression } from "./timeBucketExpression";
 
-export class TimeFloorExpression extends ChainableExpression implements HasTimezone {
+export class TimeFloorExpression
+  extends ChainableExpression
+  implements HasTimezone
+{
   static op = "TimeFloor";
   static fromJS(parameters: ExpressionJS): TimeFloorExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.duration = Duration.fromJS(parameters.duration);
-    if (parameters.timezone) value.timezone = Timezone.fromJS(parameters.timezone);
+    if (parameters.timezone)
+      value.timezone = Timezone.fromJS(parameters.timezone);
     return new TimeFloorExpression(value);
   }
 
@@ -78,27 +87,40 @@ export class TimeFloorExpression extends ChainableExpression implements HasTimez
 
   protected _toStringParameters(indent?: int): string[] {
     const ret = [this.duration.toString()];
-    if (this.timezone) ret.push(Expression.safeString(this.timezone.toString()));
+    if (this.timezone)
+      ret.push(Expression.safeString(this.timezone.toString()));
     return ret;
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
-    return operandValue ? this.duration.floor(operandValue, this.getTimezone()) : null;
+    return operandValue
+      ? this.duration.floor(operandValue, this.getTimezone())
+      : null;
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
     throw new Error("implement me");
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return dialect.timeFloorExpression(operandSQL, this.duration, this.getTimezone());
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return dialect.timeFloorExpression(
+      operandSQL,
+      this.duration,
+      this.getTimezone(),
+    );
   }
 
   public alignsWith(ex: Expression): boolean {
     const { timezone, duration } = this;
     if (!timezone) return false;
 
-    if (ex instanceof TimeFloorExpression || ex instanceof TimeBucketExpression) {
+    if (
+      ex instanceof TimeFloorExpression ||
+      ex instanceof TimeBucketExpression
+    ) {
       return timezone.equals(ex.timezone) && ex.duration.dividesBy(duration);
     }
 

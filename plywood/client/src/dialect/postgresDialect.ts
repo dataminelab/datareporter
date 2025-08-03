@@ -35,7 +35,8 @@ export class PostgresDialect extends SQLDialect {
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
     SECOND_OF_MINUTE: "DATE_PART('second',$$)",
     SECOND_OF_HOUR: "(DATE_PART('minute',$$)*60+DATE_PART('second',$$))",
-    SECOND_OF_DAY: "((DATE_PART('hour',$$)*60+DATE_PART('minute',$$))*60+DATE_PART('second',$$))",
+    SECOND_OF_DAY:
+      "((DATE_PART('hour',$$)*60+DATE_PART('minute',$$))*60+DATE_PART('second',$$))",
     SECOND_OF_WEEK:
       "((((CAST((DATE_PART('dow',$$)+6) AS int)%7)*24)+DATE_PART('hour',$$)*60+DATE_PART('minute',$$))*60+DATE_PART('second',$$))",
     SECOND_OF_MONTH:
@@ -47,11 +48,14 @@ export class PostgresDialect extends SQLDialect {
     MINUTE_OF_DAY: "DATE_PART('hour',$$)*60+DATE_PART('minute',$$)",
     MINUTE_OF_WEEK:
       "((CAST((DATE_PART('dow',$$)+6) AS int)%7)*24)+DATE_PART('hour',$$)*60+DATE_PART('minute',$$)",
-    MINUTE_OF_MONTH: "((DATE_PART('day',$$)-1)*24)+DATE_PART('hour',$$)*60+DATE_PART('minute',$$)",
-    MINUTE_OF_YEAR: "((DATE_PART('doy',$$)-1)*24)+DATE_PART('hour',$$)*60+DATE_PART('minute',$$)",
+    MINUTE_OF_MONTH:
+      "((DATE_PART('day',$$)-1)*24)+DATE_PART('hour',$$)*60+DATE_PART('minute',$$)",
+    MINUTE_OF_YEAR:
+      "((DATE_PART('doy',$$)-1)*24)+DATE_PART('hour',$$)*60+DATE_PART('minute',$$)",
 
     HOUR_OF_DAY: "DATE_PART('hour',$$)",
-    HOUR_OF_WEEK: "((CAST((DATE_PART('dow',$$)+6) AS int)%7)*24+DATE_PART('hour',$$))",
+    HOUR_OF_WEEK:
+      "((CAST((DATE_PART('dow',$$)+6) AS int)%7)*24+DATE_PART('hour',$$))",
     HOUR_OF_MONTH: "((DATE_PART('day',$$)-1)*24+DATE_PART('hour',$$))",
     HOUR_OF_YEAR: "((DATE_PART('doy',$$)-1)*24+DATE_PART('hour',$$))",
 
@@ -107,7 +111,11 @@ export class PostgresDialect extends SQLDialect {
     return `(${a}||${b})`;
   }
 
-  public containsExpression(a: string, b: string, insensitive: boolean): string {
+  public containsExpression(
+    a: string,
+    b: string,
+    insensitive: boolean,
+  ): string {
     if (insensitive) {
       a = `LOWER(${a})`;
       b = `LOWER(${b})`;
@@ -119,10 +127,17 @@ export class PostgresDialect extends SQLDialect {
     return `(${expression} ~ '${regexp}')`; // ToDo: escape this.regexp
   }
 
-  public castExpression(inputType: PlyType, operand: string, targetType: string): string {
-    const castFunction = PostgresDialect.CAST_TO_FUNCTION[targetType][inputType];
+  public castExpression(
+    inputType: PlyType,
+    operand: string,
+    targetType: string,
+  ): string {
+    const castFunction =
+      PostgresDialect.CAST_TO_FUNCTION[targetType][inputType];
     if (!castFunction) {
-      throw new Error(`unsupported cast from ${inputType} to ${targetType} in Postgres dialect`);
+      throw new Error(
+        `unsupported cast from ${inputType} to ${targetType} in Postgres dialect`,
+      );
     }
     return castFunction.replace(/\$\$/g, operand);
   }
@@ -137,7 +152,11 @@ export class PostgresDialect extends SQLDialect {
     return `(${operand} AT TIME ZONE '${timezone}' AT TIME ZONE 'UTC')`;
   }
 
-  public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeFloorExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     const bucketFormat = PostgresDialect.TIME_BUCKETING[duration.toString()];
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     return this.walltimeToUTC(
@@ -146,14 +165,26 @@ export class PostgresDialect extends SQLDialect {
     );
   }
 
-  public timeBucketExpression(operand: string, duration: Duration, timezone: Timezone): string {
+  public timeBucketExpression(
+    operand: string,
+    duration: Duration,
+    timezone: Timezone,
+  ): string {
     return this.timeFloorExpression(operand, duration, timezone);
   }
 
-  public timePartExpression(operand: string, part: string, timezone: Timezone): string {
+  public timePartExpression(
+    operand: string,
+    part: string,
+    timezone: Timezone,
+  ): string {
     const timePartFunction = PostgresDialect.TIME_PART_TO_FUNCTION[part];
-    if (!timePartFunction) throw new Error(`unsupported part ${part} in Postgres dialect`);
-    return timePartFunction.replace(/\$\$/g, this.utcToWalltime(operand, timezone));
+    if (!timePartFunction)
+      throw new Error(`unsupported part ${part} in Postgres dialect`);
+    return timePartFunction.replace(
+      /\$\$/g,
+      this.utcToWalltime(operand, timezone),
+    );
   }
 
   public timeShiftExpression(

@@ -72,7 +72,9 @@ describe.skip("breakdown", () => {
   });
 
   it("breakdown two datasets correctly", () => {
-    let ex = Expression.parse("$diamonds.count() * $diamonds2.count() + $diamonds.sum($carat)");
+    let ex = Expression.parse(
+      "$diamonds.count() * $diamonds2.count() + $diamonds.sum($carat)",
+    );
 
     ex = ex.referenceCheck(context);
 
@@ -80,17 +82,23 @@ describe.skip("breakdown", () => {
     expect(breakdown.singleDatasetActions.join(" | ")).to.equal(
       ".apply(b0, $diamonds:DATASET.count()) | .apply(b1, $diamonds2:DATASET.count()) | .apply(b2, $diamonds:DATASET.sum($carat:NUMBER))",
     );
-    expect(breakdown.combineExpression.toString()).to.equal("(($b0 * $b1) + $b2)");
+    expect(breakdown.combineExpression.toString()).to.equal(
+      "(($b0 * $b1) + $b2)",
+    );
   });
 
   it("breakdown two datasets correctly (and de-duplicates expression)", () => {
-    let ex = Expression.parse("$diamonds.count() * $diamonds2.sum($carat) + $diamonds.count()");
+    let ex = Expression.parse(
+      "$diamonds.count() * $diamonds2.sum($carat) + $diamonds.count()",
+    );
 
     ex = ex.referenceCheck(context);
     const breakdown = ex.breakdownByDataset();
     expect(breakdown.singleDatasetActions.join(" | ")).to.equal(
       ".apply(b0, $diamonds:DATASET.count()) | .apply(b1, $diamonds2:DATASET.sum($carat:NUMBER))",
     );
-    expect(breakdown.combineExpression.toString()).to.equal("(($b0 * $b1) + $b0)");
+    expect(breakdown.combineExpression.toString()).to.equal(
+      "(($b0 * $b1) + $b0)",
+    );
   });
 });

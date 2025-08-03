@@ -20,7 +20,15 @@ const { Timezone } = require("chronoshift");
 const { sane } = require("../utils");
 const plywood = require("../plywood");
 
-const { Dataset, AttributeInfo, $, Set, r, iteratorFactory, PlywoodValueBuilder } = plywood;
+const {
+  Dataset,
+  AttributeInfo,
+  $,
+  Set,
+  r,
+  iteratorFactory,
+  PlywoodValueBuilder,
+} = plywood;
 
 function toJSON(obj) {
   return JSON.parse(JSON.stringify(obj));

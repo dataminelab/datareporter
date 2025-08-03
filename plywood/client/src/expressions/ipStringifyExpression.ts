@@ -16,7 +16,12 @@
 
 import { SQLDialect } from "../dialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class IpStringifyExpression extends ChainableExpression {
   static op = "IpStringify";
@@ -42,7 +47,10 @@ export class IpStringifyExpression extends ChainableExpression {
     return js;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.ipStringifyExpression(operandSQL);
   }
 }

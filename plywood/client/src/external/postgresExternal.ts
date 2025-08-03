@@ -35,7 +35,10 @@ export class PostgresExternal extends SQLExternal {
   static engine = "postgres";
   static type = "DATASET";
 
-  static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): PostgresExternal {
+  static fromJS(
+    parameters: ExternalJS,
+    requester: PlywoodRequester<any>,
+  ): PostgresExternal {
     const value: ExternalValue = External.jsToValue(parameters, requester);
     return new PostgresExternal(value);
   }
@@ -48,12 +51,18 @@ export class PostgresExternal extends SQLExternal {
         let nativeType = column.sqlType.toLowerCase();
         if (nativeType.indexOf("timestamp") !== -1) {
           type = "TIME";
-        } else if (nativeType === "character varying" || nativeType === "text") {
+        } else if (
+          nativeType === "character varying" ||
+          nativeType === "text"
+        ) {
           type = "STRING";
         } else if (nativeType === "integer" || nativeType === "bigint") {
           // ToDo: make something special for integers
           type = "NUMBER";
-        } else if (nativeType === "double precision" || nativeType === "float") {
+        } else if (
+          nativeType === "double precision" ||
+          nativeType === "float"
+        ) {
           type = "NUMBER";
         } else if (nativeType === "boolean") {
           type = "BOOLEAN";
@@ -89,6 +98,7 @@ export class PostgresExternal extends SQLExternal {
   }
 
   static getSourceList(requester: PlywoodRequester<any>): Promise<string[]> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(
       requester({
         query: `SELECT table_name AS "tab" FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_schema = 'public'`,
@@ -100,13 +110,16 @@ export class PostgresExternal extends SQLExternal {
   }
 
   static getVersion(requester: PlywoodRequester<any>): Promise<string> {
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(requester({ query: "SELECT version()" })).then(res => {
-      if (!Array.isArray(res) || res.length !== 1) throw new Error("invalid version response");
+      if (!Array.isArray(res) || res.length !== 1)
+        throw new Error("invalid version response");
       const key = Object.keys(res[0])[0];
       if (!key) throw new Error("invalid version response (no key)");
       let versionString = res[0][key];
       let match: string[];
-      if ((match = versionString.match(/^PostgreSQL (\S+) on/))) versionString = match[1];
+      if ((match = versionString.match(/^PostgreSQL (\S+) on/)))
+        versionString = match[1];
       return versionString;
     });
   }
@@ -117,7 +130,7 @@ export class PostgresExternal extends SQLExternal {
   }
 
   protected getIntrospectAttributes(): Promise<Attributes> {
-    // from https://www.postgresql.org/docs/9.1/static/infoschema-element-types.html
+    // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
     return toArray(
       this.requester({
         query: `SELECT c.column_name as "name", c.data_type as "sqlType", e.data_type AS "arrayType"

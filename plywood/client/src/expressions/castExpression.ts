@@ -18,7 +18,12 @@ import { PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
 import { PlyTypeSimple } from "../types";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 interface Caster {
   TIME: {
@@ -47,7 +52,10 @@ const CAST_TYPE_TO_FN: Caster = {
   },
 };
 
-const CAST_TYPE_TO_JS: Record<string, Record<string, (operandJS: string) => string>> = {
+const CAST_TYPE_TO_JS: Record<
+  string,
+  Record<string, (operandJS: string) => string>
+> = {
   TIME: {
     NUMBER: operandJS => `new Date(${operandJS})`,
   },
@@ -105,10 +113,12 @@ export class CastExpression extends ChainableExpression {
     if (outputType === inputType) return operandValue;
 
     const caster = (CAST_TYPE_TO_FN as any)[outputType];
-    if (!caster) throw new Error(`unsupported cast type in calc '${outputType}'`);
+    if (!caster)
+      throw new Error(`unsupported cast type in calc '${outputType}'`);
 
     const castFn = caster[inputType] || caster["_"];
-    if (!castFn) throw new Error(`unsupported cast from ${inputType} to '${outputType}'`);
+    if (!castFn)
+      throw new Error(`unsupported cast from ${inputType} to '${outputType}'`);
     return operandValue ? castFn(operandValue) : null;
   }
 
@@ -118,16 +128,26 @@ export class CastExpression extends ChainableExpression {
     if (outputType === inputType) return operandJS;
 
     const castJS = CAST_TYPE_TO_JS[outputType];
-    if (!castJS) throw new Error(`unsupported cast type in getJS '${outputType}'`);
+    if (!castJS)
+      throw new Error(`unsupported cast type in getJS '${outputType}'`);
 
     const js = castJS[inputType] || castJS["_"];
     if (!js)
-      throw new Error(`unsupported combo in getJS of cast action: ${inputType} to ${outputType}`);
+      throw new Error(
+        `unsupported combo in getJS of cast action: ${inputType} to ${outputType}`,
+      );
     return js(operandJS);
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return dialect.castExpression(this.operand.type, operandSQL, this.outputType);
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return dialect.castExpression(
+      this.operand.type,
+      operandSQL,
+      this.outputType,
+    );
   }
 
   protected specialSimplify(): Expression {

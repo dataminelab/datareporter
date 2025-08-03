@@ -1,9 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function extractGlobalsFromPrefix() {
-  const prefixPath = path.join(__dirname, 'extra/prefix.js');
-  const prefixContent = fs.readFileSync(prefixPath, 'utf8');
+  const prefixPath = path.join(__dirname, "extra/prefix.js");
+  const prefixContent = fs.readFileSync(prefixPath, "utf8");
   const varMatches = prefixContent.match(/var\s+(\w+)\s*=/g);
   const globals = {};
 

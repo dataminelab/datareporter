@@ -1,4 +1,4 @@
-name: "Unit tests"
+name: "unit_tests"
 on:
   push:
     branches:

@@ -1,9 +1,8 @@
-name: "unit_tests"
+name: "Unit Tests"
 on:
   push:
     branches:
       - main
-      - develop
   pull_request:
     branches: [main, develop]
 env:
@@ -16,12 +15,10 @@ permissions:
   checks: write
 jobs:
   restyled:
-    name: "restyled"
     uses: ./.github/workflows/restyled.yml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
   backend-lint:
-    name: "backend-lint"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -39,7 +36,6 @@ jobs:
       - run: sudo pip install flake8==6.0.0
       - run: flake8 --config=.flake8 --show-source --statistics .
   backend-unit-tests:
-    name: "backend-unit-tests"
     timeout-minutes: 60
     runs-on: ubuntu-latest
     needs: backend-lint
@@ -118,7 +114,6 @@ jobs:
           recreate: true
           path: code-coverage-results.md
   frontend-lint:
-    name: "frontend-lint"
     timeout-minutes: 60
     runs-on: ubuntu-latest
     needs: restyled
@@ -147,7 +142,6 @@ jobs:
           name: frontend-test-results
           path: /tmp/test-results
   frontend-unit-tests:
-    name: "frontend-unit-tests"
     runs-on: ubuntu-latest
     needs: frontend-lint
     steps:
@@ -198,7 +192,6 @@ jobs:
         working-directory: plywood/client
         run: npm run test
   frontend-e2e-tests:
-    name: "frontend-e2e-tests"
     runs-on: ubuntu-latest
     needs: frontend-lint
     env:

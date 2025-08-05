@@ -6,11 +6,10 @@ type Schedule = {
 };
 
 type ReportSchedulerProps = {
-    value: string;
     onSchedule: (schedule: Schedule) => void;
 };
 
-const ReportScheduler: React.FC<ReportSchedulerProps> = ({ value, onSchedule }) => {
+const ReportScheduler: React.FC<ReportSchedulerProps> = ({ onSchedule }) => {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
 

@@ -47,30 +47,9 @@ nvm use v18.20 > /dev/null
 docker compose up --build # or make up to start required services like postgres app server
 docker compose run --rm server create_db # start server and run. exec /app/manage.py database create_tables. 
 # Database Update process
-docker compose exec ollama ollama pull deepseek-r1:7b # Pull deepseek-r1:7b model from ollama
 docker compose run server manage db stamp head # If you get an error saying "target database is not up to date" you can run this command
 docker compose run server manage db migrate # Any change to back-end models requires to create a migration
 docker compose run --rm server manage db upgrade # Upgrade database with recent migration
-cd client && npm run cypress db-seed # Seed the database with initial data for cypress tests
-```
-
-## Local Development
-
-Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Data Reporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
-
-```sh
-# install necessary python version
-pyenv install 3.8.7
-# make sure you run below command in the datareported folder
-# automatically select whenever you are in the current directory (or its subdirectories)
-pyenv local 3.8.7
-# note that on certani linux distros you might need to also run below command
-# $ git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
-# create virtualenv
-pyenv virtualenv 3.8.7 .venv
-source ./.venv/bin/activate
-# note that in some system .venv might be created in your home folder: /.pyenv/versions/.venv
-# $ source ~/.pyenv/versions/.venv/bin/activate
 ```
 
 ## Installation in Linux using virtualenvwrapper
@@ -105,6 +84,12 @@ npm run test
 
 ```sh
 bash bin/restart_cypress.sh
+```
+
+use below to seed client so that you wont need to setup an account
+
+```sh
+cd client && npm run cypress db-seed # Seed the database with initial data for cypress tests
 ```
 
 ### Components
@@ -143,6 +128,41 @@ bash bin/restart_cypress.sh
     and should rebuild at any source code change.
   * To see details/logs of build go into repo root dir and run `docker compose logs plywood`
 
+## Local Development
+
+Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Data Reporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
+
+```sh
+# install necessary python version
+pyenv install 3.8.7
+# make sure you run below command in the datareported folder
+# automatically select whenever you are in the current directory (or its subdirectories)
+pyenv local 3.8.7
+# note that on certani linux distros you might need to also run below command
+# $ git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+# create virtualenv
+pyenv virtualenv 3.8.7 .venv
+source ./.venv/bin/activate
+# note that in some system .venv might be created in your home folder: /.pyenv/versions/.venv
+# $ source ~/.pyenv/versions/.venv/bin/activate
+```
+
+### Settting up environment
+
+You have to set up environment variables in the `.env` file in the root directory of the project. This file is used to configure various settings for the application, such as database connections, API keys, and other configurations.
+For reference, see the `.env.example` file in the project root. It contains sample environment variables and their expected formats. Copy this file to `.env` and adjust the values as needed for your local setup.
+
+```sh
+cp .env.example .env
+# Edit .env to set your configuration
+```
+
+if you setup the deepseek wth ollama server on local you need to download the model first
+
+```sh
+docker compose exec ollama ollama pull deepseek-r1:7b # Pull deepseek-r1:7b model from ollama
+```
+
 ### Debugging notes
 
 If you are working on Visual Studio Code follow this [tutorial](https://redash.io/help/open-source/dev-guide/debugging) then you can run the debugging session following below:
@@ -160,7 +180,7 @@ if you are having issue building docker images, try to remove `config.json` file
 rm  ~/.docker/config.json
 ```
 
-## Docker connectivity issues for testing connection between containers
+### Docker connectivity issues for testing connection between containers
 
 This is useful when testing fresh datasources so cross server connections are needed. For example, if you want to connect to a router container from the datareporter-server container.
 
@@ -198,12 +218,3 @@ poetry add <package-name>
 poetry remove <package-name>
 ```
 
-### Settting up environment variables
-
-You have to set up environment variables in the `.env` file in the root directory of the project. This file is used to configure various settings for the application, such as database connections, API keys, and other configurations.
-For reference, see the `.env.example` file in the project root. It contains sample environment variables and their expected formats. Copy this file to `.env` and adjust the values as needed for your local setup.
-
-```sh
-cp .env.example .env
-# Edit .env to set your configuration
-```

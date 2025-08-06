@@ -9,8 +9,5 @@ module.exports = {
   },
   rules: {
     "jest/no-focused-tests": "off",
-    react: {
-      "version": "detect"
-    }
   },
 };

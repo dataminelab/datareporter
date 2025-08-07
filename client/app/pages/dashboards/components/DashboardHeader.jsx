@@ -180,6 +180,9 @@ DashboardMoreOptionsButton.propTypes = {
 };
 
 function writePrePrompt(question, slug) {
+  if (!window.loadedDatasetsByUrl || !window.loadedDatasetsByUrl[slug]) {
+    return "No datasets available for this dashboard.";
+  }
   const datasets = window.loadedDatasetsByUrl[slug];
   const datasetHeaders = Array.from(document.querySelectorAll(".widget-header")).filter(header => header.innerText && header.innerText.trim() !== "");
   let prompt = "You are a data analyst reviewing a dashboard containing several datasets (widgets). Given a user question, analyze the datasets and provide a clear, concise, and human-readable answer based on the available data.\n\n";
@@ -210,7 +213,7 @@ async function getOpenAiAnswer(question, dashboardId) {
 
 async function getPromptAnswer(question) {
   try {
-    const response = await fetch("ollama-api", {
+    const response = await fetch("ollama-api/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

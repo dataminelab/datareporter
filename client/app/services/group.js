@@ -13,6 +13,11 @@ const Group = {
   addDataSource: ({ id }, data) => axios.post(`api/groups/${id}/data_sources`, data),
   removeDataSource: ({ id, dataSourceId }) => axios.delete(`api/groups/${id}/data_sources/${dataSourceId}`),
   updateDataSource: ({ id, dataSourceId }, data) => axios.post(`api/groups/${id}/data_sources/${dataSourceId}`, data),
+  permissions: ({ id }) => axios.get(`api/groups/${id}/permissions`),
+  addPermission: ({ id }, data) => axios.post(`api/groups/${id}/permissions`, data),
+  removePermission: ({ id }, data) => axios.delete(`api/groups/${id}/permissions`, { data }),
+  updatePermission: ({ id, permissionId }, data) =>
+    axios.post(`api/groups/${id}/permissions/${permissionId}`, data),
 };
 
 export default Group;

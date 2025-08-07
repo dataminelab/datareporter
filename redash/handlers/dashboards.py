@@ -17,6 +17,7 @@ from redash.permissions import (
     require_admin_or_owner,
     require_object_modify_permission,
     require_permission,
+    require_permissions,
 )
 from redash.security import csp_allows_embeding
 from redash.serializers import DashboardSerializer, public_dashboard
@@ -138,7 +139,7 @@ class MyDashboardsResource(BaseResource):
 
 
 class DashboardPromptResource(BaseResource):
-    @require_permission("edit_dashboard")
+    @require_permissions(["edit_dashboard", "ai:ask"])
     def post(self, dashboard_id):
         """
         Retrieve a prompt for a dashboard.
@@ -148,9 +149,6 @@ class DashboardPromptResource(BaseResource):
         """
         dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
         require_object_modify_permission(dashboard, self.current_user)
-
-        # Assuming getPromptAnswer is a method that generates a prompt based on the dashboard
-        # prompt = dashboard.get_prompt_answer()
 
         data = request.get_json(force=True)
         question = data.get("question", "")

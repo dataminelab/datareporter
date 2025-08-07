@@ -55,6 +55,7 @@ from redash.handlers.groups import (
     GroupMemberListResource,
     GroupMemberResource,
     GroupResource,
+    GroupPermissionResource,
 )
 from redash.handlers.model_configs import ModelsConfigResource, ModelsConfigGetResource
 from redash.handlers.models import ModelsListResource, ModelsResource
@@ -183,6 +184,7 @@ api.add_org_resource(DataSourceResource, "/api/data_sources/<data_source_id>", e
 
 api.add_org_resource(GroupListResource, "/api/groups", endpoint="groups")
 api.add_org_resource(GroupResource, "/api/groups/<group_id>", endpoint="group")
+api.add_org_resource(GroupPermissionResource, "/api/groups/<group_id>/permissions", endpoint="group_permissions")
 api.add_org_resource(GroupMemberListResource, "/api/groups/<group_id>/members", endpoint="group_members")
 api.add_org_resource(
     GroupMemberResource,

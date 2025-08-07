@@ -1,3 +1,4 @@
+from typing import Union
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from .base import db, Column
@@ -28,7 +29,7 @@ class BelongsToOrgMixin(object):
         return query.one()
 
     @classmethod
-    def get_by_id_and_org_safe(cls, object_id, org, org_cls=None) -> object or None:
+    def get_by_id_and_org_safe(cls, object_id, org, org_cls=None) -> Union[object, None]:
         try:
             return cls.get_by_id_and_org(object_id, org, org_cls)
         except NoResultFound:

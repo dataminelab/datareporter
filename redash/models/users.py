@@ -5,6 +5,7 @@ import time
 from functools import reduce
 from operator import or_
 
+from typing import Any, Dict, List
 from flask import current_app as app, request_started, url_for
 from flask_login import AnonymousUserMixin, UserMixin, current_user
 from passlib.apps import custom_app_context as pwd_context
@@ -252,7 +253,7 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
 
 @generic_repr("id", "name", "type", "org_id")
 class Group(db.Model, BelongsToOrgMixin):
-    DEFAULT_PERMISSIONS = [
+    DEFAULT_PERMISSIONS: List[str] = [
         "create_dashboard",
         "create_query",
         "edit_dashboard",
@@ -275,18 +276,19 @@ class Group(db.Model, BelongsToOrgMixin):
         "create_report",
         "generate_report",
     ]
-    ADMIN_PERMISSIONS = ["admin", "super_admin"]
+    ADMIN_PERMISSIONS: List[str] = ["admin", "super_admin"]
+    AI_PERMISSIONS: List[str] = ["ai:ask", "ai:use", "ai:manage", "ai:admin", "ai:generate_report", "ai:edit_report"]
 
-    BUILTIN_GROUP = "builtin"
-    REGULAR_GROUP = "regular"
+    BUILTIN_GROUP: str = "builtin"
+    REGULAR_GROUP: str = "regular"
 
-    id = primary_key("Group")
+    id: int = primary_key("Group")
     data_sources = db.relationship("DataSourceGroup", back_populates="group", cascade="all")
-    org_id = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
+    org_id: int = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
     org = db.relationship("Organization", back_populates="groups")
-    type = Column(db.String(255), default=REGULAR_GROUP)
-    name = Column(db.String(100))
-    permissions = Column(ARRAY(db.String(255)), default=DEFAULT_PERMISSIONS)
+    type: str = Column(db.String(255), default=REGULAR_GROUP)
+    name: str = Column(db.String(100))
+    permissions: List[str] = Column(MutableList.as_mutable(ARRAY(db.String(255))), default=DEFAULT_PERMISSIONS)
     created_at = Column(db.DateTime(True), default=db.func.now())
 
     __tablename__ = "groups"
@@ -294,7 +296,7 @@ class Group(db.Model, BelongsToOrgMixin):
     def __str__(self):
         return str(self.id)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -315,6 +317,28 @@ class Group(db.Model, BelongsToOrgMixin):
     def find_by_name(cls, org, group_names):
         result = cls.query.filter(cls.org == org, cls.name.in_(group_names))
         return list(result)
+
+    def add_permission(self, permission):
+        """
+        Adds a permission to the group if it doesn't already exist.
+        """
+        if permission not in self.permissions:
+            self.permissions.append(permission)
+            db.session.add(self)
+            db.session.commit()
+            return True
+        return False
+
+    def remove_permission(self, permission):
+        """
+        Removes a permission from the group if it exists.
+        """
+        if permission in self.permissions:
+            self.permissions.remove(permission)
+            db.session.add(self)
+            db.session.commit()
+            return True
+        return False
 
 
 @generic_repr("id", "object_type", "object_id", "access_type", "grantor_id", "grantee_id")

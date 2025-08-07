@@ -1,3 +1,4 @@
+from typing import Union
 import calendar
 import datetime
 import logging
@@ -829,7 +830,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         return self.data_source.groups
 
     @hybrid_property
-    def lowercase_name(self):
+    def lowercase_name(self):  # type: ignore[reportRedeclaration]
         "Optional property useful for sorting purposes."
         return self.name.lower()
 
@@ -942,6 +943,7 @@ OPERATORS = {
 
 
 def next_state(op, value, threshold):
+    value_is_number = False
     if isinstance(value, bool):
         # If it's a boolean cast to string and lower case, because upper cased
         # boolean value is Python specific and most likely will be confusing to
@@ -1217,7 +1219,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
         return forked_dashboard
 
     @hybrid_property
-    def lowercase_name(self):
+    def lowercase_name(self):  # type: ignore[reportRedeclaration]
         "Optional property useful for sorting purposes."
         return self.name.lower()
 
@@ -1560,11 +1562,17 @@ def init_db():
         org=default_org,
         type=Group.BUILTIN_GROUP,
     )
+    ai_group = Group(
+        name="ai",
+        permissions=Group.AI_PERMISSIONS,
+        org=default_org,
+        type=Group.BUILTIN_GROUP,
+    )
 
-    db.session.add_all([default_org, admin_group, default_group])
+    db.session.add_all([default_org, admin_group, default_group, ai_group])
     # XXX remove after fixing User.group_ids
     db.session.commit()
-    return default_org, admin_group, default_group
+    return default_org, admin_group, default_group, ai_group
 
 
 @gfk_type
@@ -1731,13 +1739,13 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         )
 
     @classmethod
-    def get_by_id_and_org(self, _id, org, org_cls=None) -> object:
-        return self.query.filter(and_(Report.id == _id, Report.user.has(org=org))).one()
+    def get_by_id_and_org(cls, _id, org, org_cls=None) -> object:
+        return cls.query.filter(and_(Report.id == _id, Report.user.has(org=org))).one()
 
     @classmethod
-    def get_by_id_and_org_safe(self, _id, org) -> object or None:
+    def get_by_id_and_org_safe(cls, _id, org) -> Union[object, None]:
         try:
-            return self.get_by_id_and_org(_id, org)
+            return cls.get_by_id_and_org(_id, org)
         except NoResultFound:
             return None
         except MultipleResultsFound:

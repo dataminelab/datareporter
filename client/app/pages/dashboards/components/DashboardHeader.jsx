@@ -210,7 +210,7 @@ async function getOpenAiAnswer(question, dashboardId) {
 
 async function getPromptAnswer(question) {
   try {
-    const response = await fetch(`http://localhost:11434/api/generate`, {
+    const response = await fetch("ollama-api", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -334,7 +334,7 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
       name: "deepseek",
       value: "deepseek"
   }]
-  const formId = `promptForm-${dashboard.id}`
+  const formId = `promptForm-${dashboard.id}`;
   return (
     <div className="dashboard-control">
       {dashboard.can_edit && dashboard.is_archived && <Button onClick={unarchiveDashboard}>Unarchive</Button>}

@@ -22,7 +22,7 @@
     "@sentry/node": "^7.119.0",
     "@types/express": "^4.17.8",
     "@types/node": "^15.12.2",
-    "body-parser": "^1.20.1",
+    "body-parser": "^2.2.0",
     "chronoshift": "^0.10.0",
     "concurrently": "^5.3.0",
     "d3": "^3.5.17",

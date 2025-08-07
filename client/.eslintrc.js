@@ -138,5 +138,12 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ["**/*.min.js"],
+  ignorePatterns: [
+    "**/*.min.js",
+    "build/*.js",
+    "dist",
+    "config/*.js",
+    "client/dist",
+    "node_modules",
+  ],
 };

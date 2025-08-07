@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 $action-padding: 12px;
 $icon-size: 30px;
@@ -42,7 +42,7 @@ $icon-size: 30px;
     }
 
     path {
-      @include css-variable(fill, border-darker)
+      @include css-variable(fill, border-darker);
     }
   }
 }

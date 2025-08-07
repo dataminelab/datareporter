@@ -34,7 +34,10 @@ function createMenu(menu) {
   const groups = map(menu, group =>
     filter(
       map(group, (props, key) => {
-        props = extend({ isAvailable: true, isEnabled: true, onClick: () => {} }, props);
+        props = extend(
+          { isAvailable: true, isEnabled: true, onClick: () => {} },
+          props,
+        );
         if (props.isAvailable) {
           handlers[key] = props.onClick;
           return (
@@ -44,8 +47,8 @@ function createMenu(menu) {
           );
         }
         return null;
-      })
-    )
+      }),
+    ),
   );
 
   return (
@@ -53,10 +56,11 @@ function createMenu(menu) {
       {reduce(
         filter(groups, group => group.length > 0),
         (result, items, key) => {
-          const divider = result.length > 0 ? <Menu.Divider key={`divider${key}`} /> : null;
+          const divider =
+            result.length > 0 ? <Menu.Divider key={`divider${key}`} /> : null;
           return [...result, divider, ...items];
         },
-        []
+        [],
       )}
     </Menu>
   );
@@ -87,10 +91,12 @@ export default function QueryPageHeader({
       createMenu([
         {
           fork: {
-            isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+            isEnabled:
+              !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
             title: (
               <React.Fragment>
-                Fork <i className="fa fa-external-link m-l-5" aria-hidden="true" />
+                Fork{" "}
+                <i className="fa fa-external-link m-l-5" aria-hidden="true" />
                 <span className="sr-only">(opens in a new tab)</span>
               </React.Fragment>
             ),
@@ -99,24 +105,36 @@ export default function QueryPageHeader({
         },
         {
           archive: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
             title: "Archive",
             onClick: archiveQuery,
           },
           managePermissions: {
             isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isArchived &&
+              clientConfig.showPermissionsControl,
             title: "Manage Permissions",
             onClick: openPermissionsEditorDialog,
           },
           publish: {
             isAvailable:
-              !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
+              !isDesktop &&
+              queryFlags.isDraft &&
+              !queryFlags.isArchived &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit,
             title: "Publish",
             onClick: publishQuery,
           },
           unpublish: {
-            isAvailable: !clientConfig.disablePublish && !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
+            isAvailable:
+              !clientConfig.disablePublish &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isDraft,
             title: "Unpublish",
             onClick: unpublishQuery,
           },
@@ -143,7 +161,7 @@ export default function QueryPageHeader({
       publishQuery,
       unpublishQuery,
       openApiKeyDialog,
-    ]
+    ],
   );
 
   return (
@@ -153,7 +171,12 @@ export default function QueryPageHeader({
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={query} />}
             <h3>
-              <EditInPlace isEditable={queryFlags.canEdit} onDone={updateName} ignoreBlanks value={query.name} />
+              <EditInPlace
+                isEditable={queryFlags.canEdit}
+                onDone={updateName}
+                ignoreBlanks
+                value={query.name}
+              />
             </h3>
           </div>
         </div>
@@ -171,16 +194,24 @@ export default function QueryPageHeader({
       </div>
       <div className="header-actions">
         {headerExtra}
-        {isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit && (
-          <Button className="m-r-5" onClick={publishQuery}>
-            <i className="fa fa-paper-plane m-r-5" aria-hidden="true" /> Publish
-          </Button>
-        )}
+        {isDesktop &&
+          queryFlags.isDraft &&
+          !queryFlags.isArchived &&
+          !queryFlags.isNew &&
+          queryFlags.canEdit && (
+            <Button className="m-r-5" onClick={publishQuery}>
+              <i className="fa fa-paper-plane m-r-5" aria-hidden="true" />{" "}
+              Publish
+            </Button>
+          )}
 
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
             {!sourceMode && (
-              <Link.Button className="m-r-5" href={query.getUrl(true, selectedVisualization)}>
+              <Link.Button
+                className="m-r-5"
+                href={query.getUrl(true, selectedVisualization)}
+              >
                 <i className="fa fa-pencil-square-o" aria-hidden="true" />
                 <span className="m-l-5">Edit Source</span>
               </Link.Button>
@@ -189,7 +220,8 @@ export default function QueryPageHeader({
               <Link.Button
                 className="m-r-5"
                 href={query.getUrl(false, selectedVisualization)}
-                data-test="QueryPageShowResultOnly">
+                data-test="QueryPageShowResultOnly"
+              >
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Results Only</span>
               </Link.Button>
@@ -199,7 +231,10 @@ export default function QueryPageHeader({
 
         {!queryFlags.isNew && (
           <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
-            <Button data-test="QueryPageHeaderMoreButton" aria-label="More actions">
+            <Button
+              data-test="QueryPageHeaderMoreButton"
+              aria-label="More actions"
+            >
               <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
             </Button>
           </Dropdown>

@@ -36,27 +36,42 @@ interface FlattenedSplitsProps {
   splitLabel: React.ComponentType<SplitLabelProps>;
 }
 
-export const FlattenedSplits: React.FunctionComponent<FlattenedSplitsProps> = props => {
-  const { splitLabel: SplitLabel, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth } = props;
+export const FlattenedSplits: React.FunctionComponent<
+  FlattenedSplitsProps
+> = props => {
+  const {
+    splitLabel: SplitLabel,
+    data,
+    highlightedRowIndex,
+    hoverRow,
+    visibleRowsIndexRange,
+    segmentWidth,
+  } = props;
 
-  return <div className="flattened-splits-rows">
-    <VisibleRows
-      visibleRowsIndexRange={visibleRowsIndexRange}
-      highlightedRowIndex={highlightedRowIndex}
-      rowsData={data}
-      hoveredRowDatum={hoverRow}
-      renderRow={props => {
-        const { index, top, datum, highlight, dimmed } = props;
-        const segmentStyle = { width: segmentWidth - SPACE_LEFT, top };
+  return (
+    <div className="flattened-splits-rows">
+      <VisibleRows
+        visibleRowsIndexRange={visibleRowsIndexRange}
+        highlightedRowIndex={highlightedRowIndex}
+        rowsData={data}
+        hoveredRowDatum={hoverRow}
+        renderRow={props => {
+          const { index, top, datum, highlight, dimmed } = props;
+          const segmentStyle = { width: segmentWidth - SPACE_LEFT, top };
 
-        return <SplitValue
-          key={`splits_${index}`}
-          className="flattened-splits-row"
-          style={segmentStyle}
-          dimmed={dimmed}
-          highlight={highlight}>
-          <SplitLabel datum={datum} />
-        </SplitValue>;
-      }} />
-  </div>;
+          return (
+            <SplitValue
+              key={`splits_${index}`}
+              className="flattened-splits-row"
+              style={segmentStyle}
+              dimmed={dimmed}
+              highlight={highlight}
+            >
+              <SplitLabel datum={datum} />
+            </SplitValue>
+          );
+        }}
+      />
+    </div>
+  );
 };

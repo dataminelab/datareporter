@@ -21,9 +21,7 @@ export default function useDataSourceSchema(dataSource) {
   const reloadSchema = useCallback(
     (refresh = undefined) => {
       setLoadingSchema(true);
-      const refreshToken = Math.random()
-        .toString(36)
-        .substr(2);
+      const refreshToken = Math.random().toString(36).substr(2);
       refreshSchemaTokenRef.current = refreshToken;
       getSchema(dataSource, refresh)
         .then(data => {
@@ -37,7 +35,7 @@ export default function useDataSourceSchema(dataSource) {
           }
         });
     },
-    [dataSource]
+    [dataSource],
   );
 
   useEffect(() => {
@@ -51,5 +49,8 @@ export default function useDataSourceSchema(dataSource) {
     };
   }, []);
 
-  return useMemo(() => [schema, loadingSchema, reloadSchema], [schema, loadingSchema, reloadSchema]);
+  return useMemo(
+    () => [schema, loadingSchema, reloadSchema],
+    [schema, loadingSchema, reloadSchema],
+  );
 }

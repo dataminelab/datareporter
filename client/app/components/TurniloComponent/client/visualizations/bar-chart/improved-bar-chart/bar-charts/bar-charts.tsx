@@ -35,22 +35,37 @@ interface BarChartsProps {
 }
 
 export const BarCharts: React.FunctionComponent<BarChartsProps> = props => {
-  const { dropHighlight, acceptHighlight, interaction, essence, dataset, xScale, scrollLeft, stage } = props;
+  const {
+    dropHighlight,
+    acceptHighlight,
+    interaction,
+    essence,
+    dataset,
+    xScale,
+    scrollLeft,
+    stage,
+  } = props;
   const seriesList = essence.getConcreteSeries().toArray();
-  return <React.Fragment>
-    {seriesList.map(series => {
-      const hasInteraction = !!interaction && interaction.key === series.plywoodKey();
-      return <Bars
-        key={series.reactKey()}
-        stage={stage}
-        scrollLeft={scrollLeft}
-        interaction={hasInteraction && interaction}
-        essence={essence}
-        series={series}
-        xScale={xScale}
-        dataset={dataset}
-        acceptHighlight={acceptHighlight}
-        dropHighlight={dropHighlight} />;
-    })}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {seriesList.map(series => {
+        const hasInteraction =
+          !!interaction && interaction.key === series.plywoodKey();
+        return (
+          <Bars
+            key={series.reactKey()}
+            stage={stage}
+            scrollLeft={scrollLeft}
+            interaction={hasInteraction && interaction}
+            essence={essence}
+            series={series}
+            xScale={xScale}
+            dataset={dataset}
+            acceptHighlight={acceptHighlight}
+            dropHighlight={dropHighlight}
+          />
+        );
+      })}
+    </React.Fragment>
+  );
 };

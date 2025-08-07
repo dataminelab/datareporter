@@ -25,24 +25,29 @@ import { Checkbox } from "./checkbox";
 
 describe("Checkbox", () => {
   it("adds the correct class", () => {
-    const renderedComponent = renderIntoDocument(
-      <Checkbox
-        selected={true}
-      />
-    );
+    const renderedComponent = renderIntoDocument(<Checkbox selected={true} />);
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("checkbox");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
+      "should contain class",
+    ).to.contain("checkbox");
   });
 
   it("not checked + check", () => {
     const onClick = sinon.spy();
 
     const renderedComponent = renderIntoDocument(
-      <Checkbox selected={false} onClick={onClick} />
+      <Checkbox selected={false} onClick={onClick} />,
     );
 
-    const svgs = TestUtils.scryRenderedDOMComponentsWithTag(renderedComponent as React.Component, "svg");
+    const svgs = TestUtils.scryRenderedDOMComponentsWithTag(
+      renderedComponent as React.Component,
+      "svg",
+    );
     expect(svgs.length).to.equal(0);
 
     expect(onClick.callCount).to.equal(0);

@@ -27,14 +27,16 @@ import { Button } from "./button";
 describe("Button", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(
-      <Button
-        title="Important button"
-        type="primary"
-      />
+      <Button title="Important button" type="primary" />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("button");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
+      "should contain class",
+    ).to.contain("button");
   });
-
 });

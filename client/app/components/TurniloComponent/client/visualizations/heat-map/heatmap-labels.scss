@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-@import './utils/sizes';
-@import '../../imports';
+@import "./utils/sizes";
+@import "../../imports";
 
 .top-labels {
   @include border-css-variable(border-bottom, 1px, solid, border-super-light);
@@ -62,7 +62,7 @@
     &::after {
       @include unpin-full(-1px, 0, -1px, 0);
       @include border-css-variable(border, 1px, dashed, highlight-border);
-      content: '';
+      content: "";
       border-left: 0;
     }
   }
@@ -73,7 +73,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    content: '';
+    content: "";
     pointer-events: none;
     box-shadow: inset -65px 0 50px -40px #fff;
     border-radius: 2px;
@@ -123,7 +123,7 @@
     &::after {
       @include unpin-full(-1px, 0, -1px, 0);
       @include border-css-variable(border, 1px, dashed, highlight-border);
-      content: '';
+      content: "";
       border-right: 0;
     }
   }
@@ -134,10 +134,9 @@
     bottom: 0;
     left: 0;
     right: 0;
-    content: '';
+    content: "";
     pointer-events: none;
     box-shadow: inset 0 -65px 50px -40px #fff;
     border-radius: 2px;
   }
 }
-

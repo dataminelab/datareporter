@@ -23,13 +23,13 @@ import { Fn } from "../../../common/utils/general/general";
 import { GlobalEventListener } from "../global-event-listener/global-event-listener";
 import { ModalBubble } from "./modal-bubble";
 
-const mountModalBubbleInDiv = (onClose: Fn = noop) => mount(<div className="root">
-  <ModalBubble
-    left={100}
-    top={200}
-    onClose={onClose} />
-  <div className="outside" />
-</div>);
+const mountModalBubbleInDiv = (onClose: Fn = noop) =>
+  mount(
+    <div className="root">
+      <ModalBubble left={100} top={200} onClose={onClose} />
+      <div className="outside" />
+    </div>,
+  );
 
 describe("ModalBubble", () => {
   describe("onMouseDown handler", () => {

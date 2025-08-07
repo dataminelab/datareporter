@@ -99,12 +99,12 @@ describe("ScheduleDialog", () => {
     });
 
     describe("TimeEditor", () => {
-      const defaultValue = moment()
-        .hour(5)
-        .minute(25); // 05:25
+      const defaultValue = moment().hour(5).minute(25); // 05:25
 
       test("UTC set correctly on init", () => {
-        const editor = mount(<TimeEditor defaultValue={defaultValue} onChange={() => {}} />);
+        const editor = mount(
+          <TimeEditor defaultValue={defaultValue} onChange={() => {}} />,
+        );
         const utc = findByTestID(editor, "utc");
 
         // expect utc to be 2h below initial time
@@ -113,7 +113,9 @@ describe("ScheduleDialog", () => {
 
       test("UTC time should not render", () => {
         const utcValue = moment.utc(defaultValue);
-        const editor = mount(<TimeEditor defaultValue={utcValue} onChange={() => {}} />);
+        const editor = mount(
+          <TimeEditor defaultValue={utcValue} onChange={() => {}} />,
+        );
         const utc = findByTestID(editor, "utc");
 
         // expect utc to not render
@@ -132,18 +134,16 @@ describe("ScheduleDialog", () => {
         const timePickerPanel = editor.find(".ant-picker-panel");
 
         // select hour "07"
-        const hourSelector = timePickerPanel.find(".ant-picker-time-panel-column").at(0);
-        hourSelector
-          .find("li")
-          .at(7)
-          .simulate("click");
+        const hourSelector = timePickerPanel
+          .find(".ant-picker-time-panel-column")
+          .at(0);
+        hourSelector.find("li").at(7).simulate("click");
 
         // select minute "30"
-        const minuteSelector = timePickerPanel.find(".ant-picker-time-panel-column").at(1);
-        minuteSelector
-          .find("li")
-          .at(6)
-          .simulate("click");
+        const minuteSelector = timePickerPanel
+          .find(".ant-picker-time-panel-column")
+          .at(1);
+        minuteSelector.find("li").at(6).simulate("click");
 
         timePickerPanel
           .find(".ant-picker-ok")
@@ -213,16 +213,11 @@ describe("ScheduleDialog", () => {
       const [wrapper] = getWrapper(null, { refreshOptions });
 
       // click select
-      findByTestID(wrapper, "interval")
-        .find(".ant-select")
-        .simulate("click");
+      findByTestID(wrapper, "interval").find(".ant-select").simulate("click");
 
       // get dropdown menu items
       const options = mount(
-        wrapper
-          .find("Trigger")
-          .instance()
-          .getComponent()
+        wrapper.find("Trigger").instance().getComponent(),
       ).find(".ant-select-item-option-content");
 
       const texts = options.map(node => node.text());

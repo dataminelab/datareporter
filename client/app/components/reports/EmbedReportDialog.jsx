@@ -27,9 +27,11 @@ class EmbedReportDialog extends React.Component {
   constructor(props) {
     super(props);
     const { query, visualization } = props;
-    this.embedUrl = `${clientConfig.basePath}embed/query/${query.id}/visualization/${visualization.id}?api_key=${
-      query.api_key
-    }&${query.getParameters().toUrlParams()}`;
+    this.embedUrl = `${clientConfig.basePath}embed/query/${
+      query.id
+    }/visualization/${visualization.id}?api_key=${query.api_key}&${query
+      .getParameters()
+      .toUrlParams()}`;
 
     if (window.snapshotUrlBuilder) {
       this.snapshotUrl = window.snapshotUrlBuilder(query, visualization);
@@ -45,7 +47,8 @@ class EmbedReportDialog extends React.Component {
         {...dialog.props}
         className="embed-query-dialog"
         title="Embed Report"
-        footer={<Button onClick={dialog.dismiss}>Close</Button>}>
+        footer={<Button onClick={dialog.dismiss}>Close</Button>}
+      >
         {query.is_safe ? (
           <React.Fragment>
             <h5 className="m-t-0">Public URL</h5>
@@ -63,7 +66,11 @@ class EmbedReportDialog extends React.Component {
                 <Form.Item>
                   <Checkbox
                     checked={enableChangeIframeSize}
-                    onChange={e => this.setState({ enableChangeIframeSize: e.target.checked })}
+                    onChange={e =>
+                      this.setState({
+                        enableChangeIframeSize: e.target.checked,
+                      })
+                    }
                   />
                 </Form.Item>
                 <Form.Item label="Width">

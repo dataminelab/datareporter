@@ -24,7 +24,7 @@ class DynamicDatePicker extends React.Component {
           name: PropTypes.string,
           value: PropTypes.object,
           label: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-        })
+        }),
       ),
     }),
     dateOptions: PropTypes.any, // eslint-disable-line react/forbid-prop-types
@@ -63,7 +63,14 @@ class DynamicDatePicker extends React.Component {
   };
 
   render() {
-    const { type, value, className, dateOptions, dynamicButtonOptions, onSelect } = this.props;
+    const {
+      type,
+      value,
+      className,
+      dateOptions,
+      dynamicButtonOptions,
+      onSelect,
+    } = this.props;
     const hasDynamicValue = isDynamicDate(value);
     const isDateTime = includes(type, "datetime");
 
@@ -92,7 +99,9 @@ class DynamicDatePicker extends React.Component {
         <DateComponent
           {...dateOptions}
           ref={this.dateComponentRef}
-          className={classNames("redash-datepicker", type, { "dynamic-value": hasDynamicValue })}
+          className={classNames("redash-datepicker", type, {
+            "dynamic-value": hasDynamicValue,
+          })}
           onSelect={onSelect}
           suffixIcon={null}
           {...additionalAttributes}

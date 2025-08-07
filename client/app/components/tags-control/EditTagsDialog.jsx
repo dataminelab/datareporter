@@ -39,7 +39,8 @@ function EditTagsDialog({ dialog, tags, getAvailableTags }) {
       onOk={() => dialog.close(values)}
       title="Add/Edit Tags"
       className="shortModal"
-      wrapProps={{ "data-test": "EditTagsDialog" }}>
+      wrapProps={{ "data-test": "EditTagsDialog" }}
+    >
       <Select
         ref={setSelectRef}
         mode="tags"
@@ -48,7 +49,8 @@ function EditTagsDialog({ dialog, tags, getAvailableTags }) {
         defaultValue={values}
         onChange={v => setValues(compact(map(v, trim)))}
         disabled={isLoading}
-        loading={isLoading}>
+        loading={isLoading}
+      >
         {map(availableTags, tag => (
           <Select.Option key={tag}>{tag}</Select.Option>
         ))}

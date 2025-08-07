@@ -35,8 +35,16 @@ DisabledInput.propTypes = {
   minWidth: PropTypes.number.isRequired,
 };
 
-export default function Criteria({ columnNames, resultValues, alertOptions, onChange, editMode }) {
-  const columnValue = !isEmpty(resultValues) ? head(resultValues)[alertOptions.column] : null;
+export default function Criteria({
+  columnNames,
+  resultValues,
+  alertOptions,
+  onChange,
+  editMode,
+}) {
+  const columnValue = !isEmpty(resultValues)
+    ? head(resultValues)[alertOptions.column]
+    : null;
   const invalidMessage = (() => {
     // bail if condition is valid for strings
     if (includes(VALID_STRING_CONDITIONS, alertOptions.op)) {
@@ -59,7 +67,8 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
   if (alertOptions.selector === "first") {
     columnHint = (
       <small className="alert-criteria-hint">
-        Top row value is <code className="p-0">{toString(columnValue) || "unknown"}</code>
+        Top row value is{" "}
+        <code className="p-0">{toString(columnValue) || "unknown"}</code>
       </small>
     );
   } else if (alertOptions.selector === "max") {
@@ -68,7 +77,11 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
         Max column value is{" "}
         <code className="p-0">
           {toString(
-            Math.max(...resultValues.map((o) => Number(o[alertOptions.column])).filter((value) => !isNaN(value)))
+            Math.max(
+              ...resultValues
+                .map(o => Number(o[alertOptions.column]))
+                .filter(value => !isNaN(value)),
+            ),
           ) || "unknown"}
         </code>
       </small>
@@ -79,7 +92,11 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
         Min column value is{" "}
         <code className="p-0">
           {toString(
-            Math.min(...resultValues.map((o) => Number(o[alertOptions.column])).filter((value) => !isNaN(value)))
+            Math.min(
+              ...resultValues
+                .map(o => Number(o[alertOptions.column]))
+                .filter(value => !isNaN(value)),
+            ),
           ) || "unknown"}
         </code>
       </small>
@@ -93,7 +110,7 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
         {editMode ? (
           <Select
             value={alertOptions.selector}
-            onChange={(selector) => onChange({ selector })}
+            onChange={selector => onChange({ selector })}
             optionLabelProp="label"
             dropdownMatchSelectWidth={false}
             style={{ width: 80 }}
@@ -117,11 +134,11 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
         {editMode ? (
           <Select
             value={alertOptions.column}
-            onChange={(column) => onChange({ column })}
+            onChange={column => onChange({ column })}
             dropdownMatchSelectWidth={false}
             style={{ minWidth: 100 }}
           >
-            {columnNames.map((name) => (
+            {columnNames.map(name => (
               <Select.Option key={name}>{name}</Select.Option>
             ))}
           </Select>
@@ -134,7 +151,7 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
         {editMode ? (
           <Select
             value={alertOptions.op}
-            onChange={(op) => onChange({ op })}
+            onChange={op => onChange({ op })}
             optionLabelProp="label"
             dropdownMatchSelectWidth={false}
             style={{ width: 55 }}
@@ -165,7 +182,9 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
             </Select.Option>
           </Select>
         ) : (
-          <DisabledInput minWidth={50}>{CONDITIONS[alertOptions.op]}</DisabledInput>
+          <DisabledInput minWidth={50}>
+            {CONDITIONS[alertOptions.op]}
+          </DisabledInput>
         )}
       </div>
       <div className="input-title">
@@ -177,7 +196,7 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
             id="threshold-criterion"
             style={{ width: 90 }}
             value={alertOptions.value}
-            onChange={(e) => onChange({ value: e.target.value })}
+            onChange={e => onChange({ value: e.target.value })}
           />
         ) : (
           <DisabledInput minWidth={50}>{alertOptions.value}</DisabledInput>
@@ -188,7 +207,8 @@ export default function Criteria({ columnNames, resultValues, alertOptions, onCh
         <br />
         {invalidMessage && (
           <small>
-            <WarningFilledIcon className="warning-icon-danger" /> {invalidMessage}
+            <WarningFilledIcon className="warning-icon-danger" />{" "}
+            {invalidMessage}
           </small>
         )}
       </div>

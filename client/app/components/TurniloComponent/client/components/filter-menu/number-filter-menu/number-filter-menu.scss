@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-@import '../../../imports';
+@import "../../../imports";
 
 .number-filter-menu {
-
   .side-by-side {
     @extend %side-by-side;
   }
@@ -39,7 +38,8 @@
     }
   }
 
-  input, .filter-options-dropdown {
+  input,
+  .filter-options-dropdown {
     margin-top: 6px;
   }
 }

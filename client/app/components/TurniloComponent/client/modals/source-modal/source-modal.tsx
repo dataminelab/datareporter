@@ -33,32 +33,46 @@ interface SourceModalProps {
   source: string;
 }
 
-export const SourceModal: React.FunctionComponent<SourceModalProps> = ({ copyLabel = STRINGS.copyDefinition, onClose, source, title, className, header }) => {
+export const SourceModal: React.FunctionComponent<SourceModalProps> = ({
+  copyLabel = STRINGS.copyDefinition,
+  onClose,
+  source,
+  title,
+  className,
+  header,
+}) => {
   const [copied, setCopied] = useState(false);
 
   const onCopy = useCallback(() => setCopied(true), [setCopied]);
 
-  const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter"));
+  const SyntaxHighlighter = React.lazy(
+    () => import(/* webpackChunkName: "highlighter" */ "./highlighter"),
+  );
 
-  return <Modal
-    onClose={onClose}
-    title={title}
-    className={classNames("source-modal", className)}
-  >
-    <div className="content">
-      {header}
-      <React.Suspense fallback={Loader}>
-        <SyntaxHighlighter>
-          {source}
-        </SyntaxHighlighter>
-      </React.Suspense>
-      <div className="button-bar">
-        <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
-        <SafeCopyToClipboard text={source} onCopy={onCopy}>
-          <Button type="secondary" title={copyLabel} />
-        </SafeCopyToClipboard>
-        {copied && <div className="copied-hint">{STRINGS.copied}</div>}
+  return (
+    <Modal
+      onClose={onClose}
+      title={title}
+      className={classNames("source-modal", className)}
+    >
+      <div className="content">
+        {header}
+        <React.Suspense fallback={Loader}>
+          <SyntaxHighlighter>{source}</SyntaxHighlighter>
+        </React.Suspense>
+        <div className="button-bar">
+          <Button
+            type="primary"
+            className="close"
+            onClick={onClose}
+            title={STRINGS.close}
+          />
+          <SafeCopyToClipboard text={source} onCopy={onCopy}>
+            <Button type="secondary" title={copyLabel} />
+          </SafeCopyToClipboard>
+          {copied && <div className="copied-hint">{STRINGS.copied}</div>}
+        </div>
       </div>
-    </div>
-  </Modal>;
+    </Modal>
+  );
 };

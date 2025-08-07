@@ -9,5 +9,7 @@ export function dragParam(paramName, offsetLeft, offsetTop) {
 }
 
 export function expectParamOrder(expectedOrder) {
-  cy.get(".parameter-container label").each(($label, index) => expect($label).to.have.text(expectedOrder[index]));
+  cy.get(".parameter-container label").each(($label, index) =>
+    expect($label).to.have.text(expectedOrder[index]),
+  );
 }

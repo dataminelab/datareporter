@@ -58,7 +58,7 @@
       &.ant-menu-submenu-active,
       &:hover,
       &:active {
-        color:  @text-color;
+        color: @text-color;
       }
 
       a,
@@ -81,7 +81,7 @@
 
     &:hover,
     &:active {
-      color:  @text-color;;
+      color: @text-color;
     }
 
     &:after {
@@ -115,7 +115,8 @@
         // styles from Antd
         opacity: 1;
         transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
-          margin-left 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+          margin-left 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+          width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
       }
     }
 
@@ -143,7 +144,8 @@
   padding: 0 15px;
   margin: 0 15px;
   border-radius: 0 0 5px 5px;
-  .desktop-navbar-profile-menu, .settings-menu {
+  .desktop-navbar-profile-menu,
+  .settings-menu {
     float: right;
   }
   .desktop-navbar-logo {
@@ -188,7 +190,7 @@
   .left-border {
     position: relative;
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       top: 20px;
@@ -196,14 +198,17 @@
       height: 20px;
     }
   }
-  .ant-menu-dark, .ant-menu-sub {
+  .ant-menu-dark,
+  .ant-menu-sub {
     background-color: transparent;
     color: @text-color;
   }
   .desktop-navbar-logo.ant-menu.ant-menu-inline-collapsed img {
     height: 33px;
   }
-  .ant-menu-item, .ant-menu-item-group-title, .ant-menu-item > a {
+  .ant-menu-item,
+  .ant-menu-item-group-title,
+  .ant-menu-item > a {
     color: @text-color;
   }
   .ant-menu-vertical > .ant-menu-item,
@@ -278,13 +283,12 @@
 
           &:hover,
           &:active {
-            color:  @text-color;
+            color: @text-color;
           }
         }
       }
     }
   }
-
 }
 
 .ant-menu-vertical .ant-menu-item:not(:last-child),
@@ -294,7 +298,8 @@
   margin-bottom: 0 !important;
 }
 
-.ant-menu-dark, .ant-menu-sub {
+.ant-menu-dark,
+.ant-menu-sub {
   background-color: #ffffff !important;
   color: @text-color !important;
 }
@@ -311,4 +316,3 @@
 .ant-menu-root.ant-menu-inline {
   border: none;
 }
-

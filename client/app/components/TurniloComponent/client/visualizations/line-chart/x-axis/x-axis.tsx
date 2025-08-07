@@ -20,7 +20,10 @@ import * as d3 from "d3";
 import * as React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
-import { getMoment, scaleTicksFormatter } from "../../../../common/utils/time/time";
+import {
+  getMoment,
+  scaleTicksFormatter,
+} from "../../../../common/utils/time/time";
 import { roundToHalfPx } from "../../../utils/dom/dom";
 import { ContinuousScale } from "../utils/continuous-types";
 import "./x-axis.scss";
@@ -38,7 +41,10 @@ export interface XAxisProps {
 
 const floatFormat = d3.format(".1f");
 
-function labelFormatter(scale: ContinuousScale, timezone: Timezone): Unary<Date | number, string> {
+function labelFormatter(
+  scale: ContinuousScale,
+  timezone: Timezone,
+): Unary<Date | number, string> {
   const [start] = scale.domain();
   if (start instanceof Date) {
     const formatter = scaleTicksFormatter(scale as any);
@@ -77,13 +83,24 @@ export const XAxis: React.SFC<XAxisProps> = props => {
       innerText = "";
       tickIndex += x - prevElementX;
     }
-    return <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: index === 0 ? "start" : "middle" }}>{innerText}</text>;
+    return (
+      <text
+        key={String(tick)}
+        x={x}
+        y={labelY}
+        style={{ textAnchor: index === 0 ? "start" : "middle" }}
+      >
+        {innerText}
+      </text>
+    );
   });
 
-  return <svg className="bottom-axis" width={stage.width} height={stage.height}>
-    <g className="line-chart-axis" transform={stage.getTransform()}>
-      {lines}
-      {labels}
-    </g>
-  </svg>;
+  return (
+    <svg className="bottom-axis" width={stage.width} height={stage.height}>
+      <g className="line-chart-axis" transform={stage.getTransform()}>
+        {lines}
+        {labels}
+      </g>
+    </svg>
+  );
 };

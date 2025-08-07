@@ -28,14 +28,22 @@ const timekeeper = TimekeeperFixtures.fixed();
 describe("Time filter canonical length", () => {
   it("returns canonical length of time filter for one day", () => {
     const essence = EssenceFixtures.wikiTable();
-    expect(timeFilterCanonicalLength(essence, timekeeper)).to.equal(day.canonicalLength);
+    expect(timeFilterCanonicalLength(essence, timekeeper)).to.equal(
+      day.canonicalLength,
+    );
   });
 
   it("returns canonical length of time filter for one month", () => {
     const essence = EssenceFixtures.wikiTable();
-    const oneMonthTimeClause = timePeriod("time", "P1M", TimeFilterPeriod.CURRENT);
+    const oneMonthTimeClause = timePeriod(
+      "time",
+      "P1M",
+      TimeFilterPeriod.CURRENT,
+    );
     const oneMonthFilter = new Filter({ clauses: List.of(oneMonthTimeClause) });
     const essenceWithOneMonthFilter = essence.changeFilter(oneMonthFilter);
-    expect(timeFilterCanonicalLength(essenceWithOneMonthFilter, timekeeper)).to.equal(month.canonicalLength);
+    expect(
+      timeFilterCanonicalLength(essenceWithOneMonthFilter, timekeeper),
+    ).to.equal(month.canonicalLength);
   });
 });

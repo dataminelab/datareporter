@@ -43,7 +43,7 @@ services:
       PYTHONUNBUFFERED: 0
   plywood:
     build:
-      context: ../plywood/server
+      context: ../plywood
       dockerfile: Dockerfile
     ports:
       - "3000:3000"

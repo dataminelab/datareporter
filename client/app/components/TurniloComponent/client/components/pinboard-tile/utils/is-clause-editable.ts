@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-import { BooleanFilterClause, StringFilterAction, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+} from "../../../../common/models/filter-clause/filter-clause";
 
-export function isClauseEditable(clause: StringFilterClause | BooleanFilterClause): boolean {
+export function isClauseEditable(
+  clause: StringFilterClause | BooleanFilterClause,
+): boolean {
   if (clause.not) return false;
-  if (clause instanceof StringFilterClause && clause.action !== StringFilterAction.IN) return false;
+  if (
+    clause instanceof StringFilterClause &&
+    clause.action !== StringFilterAction.IN
+  )
+    return false;
   return true;
 }

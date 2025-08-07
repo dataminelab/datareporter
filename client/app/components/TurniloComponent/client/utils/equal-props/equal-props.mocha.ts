@@ -22,8 +22,8 @@ const propsMock = {
   propNumber: 42,
   propBoolean: true,
   propObject: {
-    bazz: true
-  }
+    bazz: true,
+  },
 };
 
 describe("equalProps", () => {

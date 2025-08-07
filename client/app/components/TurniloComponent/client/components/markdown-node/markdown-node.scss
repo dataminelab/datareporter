@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .markdown-content {
-
   a {
     @include css-variable(color, brand);
     cursor: pointer;
   }
 
   code {
-    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   }
 
   em {

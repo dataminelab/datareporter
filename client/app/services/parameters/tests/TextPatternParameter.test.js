@@ -4,7 +4,12 @@ describe("TextPatternParameter", () => {
   let param;
 
   beforeEach(() => {
-    param = createParameter({ name: "param", title: "Param", type: "text-pattern", regex: "a+" });
+    param = createParameter({
+      name: "param",
+      title: "Param",
+      type: "text-pattern",
+      regex: "a+",
+    });
   });
 
   describe("noramlizeValue", () => {

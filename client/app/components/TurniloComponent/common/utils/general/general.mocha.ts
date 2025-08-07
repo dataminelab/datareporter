@@ -17,7 +17,15 @@
 
 import { expect } from "chai";
 import { List } from "immutable";
-import { ensureOneOf, inlineVars, isDecimalInteger, makeTitle, moveInList, readNumber, verifyUrlSafeName } from "./general";
+import {
+  ensureOneOf,
+  inlineVars,
+  isDecimalInteger,
+  makeTitle,
+  moveInList,
+  readNumber,
+  verifyUrlSafeName,
+} from "./general";
 
 describe("General", () => {
   describe("moveInList", () => {
@@ -45,7 +53,6 @@ describe("General", () => {
       const list = List("ABCD".split(""));
       expect(moveInList(list, 0, 4).join("")).to.equal("BCDA");
     });
-
   });
 
   describe("verifyUrlSafeName", () => {
@@ -56,9 +63,10 @@ describe("General", () => {
     it("works in bad case", () => {
       expect(() => {
         verifyUrlSafeName("abcd%po#@$moon is!cool");
-      }).to.throw("'abcd%po#@$moon is!cool' is not a URL safe name. Try 'abcd_po_moon_is_cool' instead?");
+      }).to.throw(
+        "'abcd%po#@$moon is!cool' is not a URL safe name. Try 'abcd_po_moon_is_cool' instead?",
+      );
     });
-
   });
 
   describe("makeTitle", () => {
@@ -81,7 +89,6 @@ describe("General", () => {
     it("works with trailing numbers at the end", () => {
       expect(makeTitle("hello_world99")).to.equal("Hello World99");
     });
-
   });
 
   describe("inlineVars", () => {
@@ -89,18 +96,18 @@ describe("General", () => {
       const json: any = {
         "hello": 1,
         "port": "%{PORT}%",
-        "fox says %{}%": "%{FOX_SAYS}%"
+        "fox says %{}%": "%{FOX_SAYS}%",
       };
 
       const vars: Record<string, string> = {
         PORT: "1234",
-        FOX_SAYS: "Meow"
+        FOX_SAYS: "Meow",
       };
 
       expect(inlineVars(json, vars)).to.deep.equal({
         "hello": 1,
         "port": "1234",
-        "fox says %{}%": "Meow"
+        "fox says %{}%": "Meow",
       });
     });
 
@@ -108,16 +115,17 @@ describe("General", () => {
       const json: any = {
         "hello": 1,
         "port": "%{PORT}%",
-        "fox says %{}%": "%{FOX_SAYS}%"
+        "fox says %{}%": "%{FOX_SAYS}%",
       };
 
       const vars: Record<string, string> = {
-        PORT: "1234"
+        PORT: "1234",
       };
 
-      expect(() => inlineVars(json, vars)).to.throw("could not find variable 'FOX_SAYS'");
+      expect(() => inlineVars(json, vars)).to.throw(
+        "could not find variable 'FOX_SAYS'",
+      );
     });
-
   });
 
   describe("ensureOneOf", () => {
@@ -128,15 +136,18 @@ describe("General", () => {
     it("throw error not one of", () => {
       expect(() => {
         ensureOneOf("United Kingdom", ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw("Car must be on of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
+      }).to.throw(
+        "Car must be on of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')",
+      );
     });
 
     it("throw error not one of (undefined)", () => {
       expect(() => {
         ensureOneOf(undefined, ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw("Car must be on of 'Honda', 'Toyota', 'BMW' (is not defined)");
+      }).to.throw(
+        "Car must be on of 'Honda', 'Toyota', 'BMW' (is not defined)",
+      );
     });
-
   });
 
   describe("isDecimalInteger", () => {

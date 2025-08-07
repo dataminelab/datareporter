@@ -29,32 +29,36 @@ interface LegendValuesProps {
 
 const LegendValues: React.SFC<LegendValuesProps> = props => {
   const { values } = props;
-  return <div className="legend-values">
-    <table className="legend-values-table">
-      <tbody>
-      {values.map((value, i) => {
-        const style = { background: NORMAL_COLORS[i] };
-        return <tr key={value} className="legend-value">
-          <td className="legend-value-color-cell">
-            <div className="legend-value-color" style={style} />
-          </td>
-          <td className="legend-value-label">
-            <span className="legend-value-name">{value}</span>
-          </td>
-        </tr>;
-      })}
-      </tbody>
-    </table>
-  </div>;
+  return (
+    <div className="legend-values">
+      <table className="legend-values-table">
+        <tbody>
+          {values.map((value, i) => {
+            const style = { background: NORMAL_COLORS[i] };
+            return (
+              <tr key={value} className="legend-value">
+                <td className="legend-value-color-cell">
+                  <div className="legend-value-color" style={style} />
+                </td>
+                <td className="legend-value-label">
+                  <span className="legend-value-name">{value}</span>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export const Legend: React.SFC<LegendProps> = props => {
   const { values, title } = props;
 
-  return <div className="line-chart-legend">
-    <div className="legend-header">
-      {title}
+  return (
+    <div className="line-chart-legend">
+      <div className="legend-header">{title}</div>
+      <LegendValues values={values} />
     </div>
-    <LegendValues values={values} />
-  </div>;
+  );
 };

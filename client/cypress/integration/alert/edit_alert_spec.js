@@ -5,7 +5,9 @@ describe("Edit Alert", () => {
 
   it("renders the page and takes a screenshot", () => {
     cy.createQuery({ query: "select 1 as col_name" })
-      .then(({ id: queryId }) => cy.createAlert(queryId, { column: "col_name" }))
+      .then(({ id: queryId }) =>
+        cy.createAlert(queryId, { column: "col_name" }),
+      )
       .then(({ id: alertId }) => {
         cy.visit(`/alerts/${alertId}/edit`);
         cy.getByTestId("Criteria").should("exist");
@@ -15,7 +17,9 @@ describe("Edit Alert", () => {
 
   it("edits the notification template and takes a screenshot", () => {
     cy.createQuery()
-      .then(({ id: queryId }) => cy.createAlert(queryId, { custom_subject: "FOO", custom_body: "BAR" }))
+      .then(({ id: queryId }) =>
+        cy.createAlert(queryId, { custom_subject: "FOO", custom_body: "BAR" }),
+      )
       .then(({ id: alertId }) => {
         cy.visit(`/alerts/${alertId}/edit`);
         cy.getByTestId("AlertCustomTemplate").should("exist");

@@ -6,12 +6,17 @@ import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSess
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import Paginator from "@/components/Paginator";
 
-import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
+import {
+  wrap as itemsList,
+  ControllerType,
+} from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
 import { StateStorage } from "@/components/items-list/classes/StateStorage";
 
 import LoadingState from "@/components/items-list/components/LoadingState";
-import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
+import ItemsTable, {
+  Columns,
+} from "@/components/items-list/components/ItemsTable";
 import SelectItemsDialog from "@/components/SelectItemsDialog";
 import { UserPreviewCard } from "@/components/PreviewCard";
 
@@ -67,7 +72,11 @@ class GroupMembers extends React.Component {
           return null;
         }
         return (
-          <Button className="w-100" type="danger" onClick={event => this.removeGroupMember(event, user)}>
+          <Button
+            className="w-100"
+            type="danger"
+            onClick={event => this.removeGroupMember(event, user)}
+          >
             Remove
           </Button>
         );
@@ -75,7 +84,7 @@ class GroupMembers extends React.Component {
       {
         width: "1%",
         isAvailable: () => currentUser.isAdmin,
-      }
+      },
     ),
   ];
 
@@ -106,13 +115,17 @@ class GroupMembers extends React.Component {
       dialogTitle: "Add Members",
       inputPlaceholder: "Search users...",
       selectedItemsTitle: "New Members",
-      searchItems: searchTerm => User.query({ q: searchTerm }).then(({ results }) => results),
+      searchItems: searchTerm =>
+        User.query({ q: searchTerm }).then(({ results }) => results),
       renderItem: (item, { isSelected }) => {
         const alreadyInGroup = includes(alreadyAddedUsers, item.id);
         return {
           content: (
             <UserPreviewCard user={item}>
-              <ListItemAddon isSelected={isSelected} alreadyInGroup={alreadyInGroup} />
+              <ListItemAddon
+                isSelected={isSelected}
+                alreadyInGroup={alreadyInGroup}
+              />
             </UserPreviewCard>
           ),
           isDisabled: alreadyInGroup,
@@ -127,7 +140,9 @@ class GroupMembers extends React.Component {
         ),
       }),
     }).onClose(items => {
-      const promises = map(items, u => Group.addMember({ id: this.groupId }, { user_id: u.id }));
+      const promises = map(items, u =>
+        Group.addMember({ id: this.groupId }, { user_id: u.id }),
+      );
       return Promise.all(promises).then(() => this.props.controller.update());
     });
   };
@@ -136,7 +151,11 @@ class GroupMembers extends React.Component {
     const { controller } = this.props;
     return (
       <div data-test="Group">
-        <GroupName className="d-block m-t-0 m-b-15" group={this.group} onChange={() => this.forceUpdate()} />
+        <GroupName
+          className="d-block m-t-0 m-b-15"
+          group={this.group}
+          onChange={() => this.forceUpdate()}
+        />
         <Layout>
           <Layout.Sidebar>
             <Sidebar
@@ -176,7 +195,9 @@ class GroupMembers extends React.Component {
                   showPageSizeSelect
                   totalCount={controller.totalItemsCount}
                   pageSize={controller.itemsPerPage}
-                  onPageSizeChange={itemsPerPage => controller.updatePagination({ itemsPerPage })}
+                  onPageSizeChange={itemsPerPage =>
+                    controller.updatePagination({ itemsPerPage })
+                  }
                   page={controller.page}
                   onChange={page => controller.updatePagination({ page })}
                 />
@@ -204,8 +225,8 @@ const GroupMembersPage = wrapSettingsTab(
           return Group.members.bind(Group);
         },
       }),
-    () => new StateStorage({ orderByField: "name" })
-  )
+    () => new StateStorage({ orderByField: "name" }),
+  ),
 );
 
 routes.register(
@@ -213,6 +234,8 @@ routes.register(
   routeWithUserSession({
     path: "/groups/:groupId",
     title: "Group Members",
-    render: pageProps => <GroupMembersPage {...pageProps} currentPage="users" />,
-  })
+    render: pageProps => (
+      <GroupMembersPage {...pageProps} currentPage="users" />
+    ),
+  }),
 );

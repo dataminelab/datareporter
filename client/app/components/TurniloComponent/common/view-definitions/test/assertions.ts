@@ -26,6 +26,12 @@ export function assertEqlEssence(actual: Essence, expected: Essence) {
   }
 }
 
-export function assertEqlEssenceWithoutVisResolve(actual: Essence, expected: Essence) {
-  assertEqlEssence(actual.set("visResolve", null), expected.set("visResolve", null));
+export function assertEqlEssenceWithoutVisResolve(
+  actual: Essence,
+  expected: Essence,
+) {
+  assertEqlEssence(
+    actual.set("visResolve", null),
+    expected.set("visResolve", null),
+  );
 }

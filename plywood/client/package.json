@@ -1,0 +1,115 @@
+{
+  "name": "reporter-plywood",
+  "version": "1.1.0",
+  "description": "A query planner and executor",
+  "keywords": [
+    "split",
+    "apply",
+    "combine",
+    "druid",
+    "query planner",
+    "data reporter"
+  ],
+  "author": {
+    "name": "Vadim Ogievetsky",
+    "url": "http://vadim.ogievetsky.com"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/dataminelab/datareporter.git"
+  },
+  "main": "build/plywood.js",
+  "types": "build/index.d.ts",
+  "typings": "build/index.d.ts",
+  "files": [
+    "build/",
+    "package/",
+    "typings/"
+  ],
+  "prettier": {
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 100,
+    "endOfLine": "lf"
+  },
+  "watch": {
+    "compile": {
+      "patterns": [
+        "src/**/*js",
+        "src/**/*ts",
+        "typings",
+        "*.json"
+      ]
+    }
+  },
+  "scripts": {
+    "watch": "nodemon",
+    "prepare": "tdi -q",
+    "build": "./compile",
+    "compile": "./compile",
+    "pretest": "./compile",
+    "test": "./travis-test",
+    "test:watch": "node --inspect-brk node_modules/.bin/mocha test/*",
+    "full-test": "./run-tests",
+    "eslint": "eslint 'src/**/*.ts?(x)'",
+    "eslint-fix": "npm run eslint -- --fix --report-unused-disable-directives",
+    "eslint-changed-only": "git diff --diff-filter=ACMR --cached --name-only | grep -E \\.tsx\\?$ | xargs ./node_modules/.bin/eslint",
+    "eslint-fix-changed-only": "npm run eslint-changed-only -- --fix",
+    "prettify": "prettier --write '{src,test}/**/*.{ts,js}'",
+    "prettify-check": "echo prettify-check pass",
+    "prettify-check_BB_LATER": "prettier --check '{src,test}/**/*.{ts,js}'",
+    "clear": "rm -rf build node_modules"
+  },
+  "nodemonConfig": {
+    "ext": "*.ts,*.json,*.js",
+    "exec": "npm run compile",
+    "ignore": [
+      "build/"
+    ]
+  },
+  "tonicExampleFilename": "docs/examples/tonic.js",
+  "dependencies": {
+    "@aws-sdk/client-athena": "^3.3.0",
+    "@google-cloud/bigquery": "5.2.0",
+    "chronoshift": "^0.10.0",
+    "druid-query-toolkit": "^1.0.0",
+    "druid.d.ts": "^0.12.1",
+    "has-own-prop": "^1.0.1",
+    "immutable-class": "^0.9.4",
+    "moment-timezone": "^0.5.26",
+    "plywood-base-api": "^0.2.8",
+    "readable-stream": "^2.3.5",
+    "stream-to-array": "^2.3.0",
+    "tslib": "^2.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "14.18.3",
+    "@types/stream-to-array": "^2.3.0",
+    "axios": "0.18.0",
+    "chai": "4.2.0",
+    "eslint": "^8.8.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-compat": "^6.0.2",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-unicorn": "^40.1.0",
+    "f-tool": "0.1.3",
+    "immutable-class-tester": "0.7.4",
+    "imonit": "0.2.0",
+    "istanbul": "0.4.5",
+    "mocha": "5.2.0",
+    "nodemon": "^2.0.4",
+    "pegjs": "0.10.0",
+    "plywood-druid-requester": "2.6.5",
+    "plywood-mysql-requester": "2.3.0",
+    "plywood-postgres-requester": "1.4.0",
+    "prettier": "^2.5.1",
+    "stylelint": "^14.3.0",
+    "tdi": "^0.6.5",
+    "typescript": "^4.5.5"
+  }
+}

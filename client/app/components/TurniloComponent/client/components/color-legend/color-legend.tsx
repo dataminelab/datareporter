@@ -37,68 +37,87 @@ const stripeWidth = 30;
 const stripeHeight = 200;
 const panelWidth = 100;
 
-export const ColorLegend: React.FunctionComponent<ColorLegendProps> = ({ title, width = panelWidth, height = stripeHeight, formatter, colorScale }) => {
+export const ColorLegend: React.FunctionComponent<ColorLegendProps> = ({
+  title,
+  width = panelWidth,
+  height = stripeHeight,
+  formatter,
+  colorScale,
+}) => {
   const [min, max] = colorScale.domain();
   if (isNaN(min) || isNaN(max)) return null;
 
   const stripeLength = height - topMargin - bottomMargin;
   const [startColor, endColor] = colorScale.range();
 
-  return <div className="color-legend">
-    <div className="color-legend-header">
-      {title}
-    </div>
-    <div className="color-legend-stripe">
-      <svg
-        className="color-legend"
-        width={`${width}px`}
-        height={`${height}px`}>
-        <defs>
-          <linearGradient id="color-stripe" gradientTransform="rotate(90)">
-            <stop offset="0%" stopColor={endColor}/>
-            <stop offset="10%" stopColor={endColor}/>
-            <stop offset="90%" stopColor={startColor}/>
-            <stop offset="100%" stopColor={startColor}/>
-          </linearGradient>
-        </defs>
-        <g transform={`translate(${leftMargin}, ${topMargin})`}>
-          <rect className="color-legend-stripe"
-            x={0}
-            y={0}
-            width={stripeWidth}
-            height={stripeLength}
-            fill="url(#color-stripe)"/>
-          <line className="color-legend-stripe-axis"
-            x1={0.5}
-            x2={0.5}
-            y1={0}
-            y2={stripeLength}/>
-          <g className="color-upper-bound">
-            <line className="color-upper-bound-tick"
-              x1={0}
-              x2={tickLength + stripeWidth}
-              y1={0.5}
-              y2={0.5}/>
-            <text className="color-upper-bound-value"
-              x={tickLabelLeftOffset + stripeWidth}
-              y={tickLabelTopOffset}>
-              {formatter(max)}
-            </text>
+  return (
+    <div className="color-legend">
+      <div className="color-legend-header">{title}</div>
+      <div className="color-legend-stripe">
+        <svg
+          className="color-legend"
+          width={`${width}px`}
+          height={`${height}px`}
+        >
+          <defs>
+            <linearGradient id="color-stripe" gradientTransform="rotate(90)">
+              <stop offset="0%" stopColor={endColor} />
+              <stop offset="10%" stopColor={endColor} />
+              <stop offset="90%" stopColor={startColor} />
+              <stop offset="100%" stopColor={startColor} />
+            </linearGradient>
+          </defs>
+          <g transform={`translate(${leftMargin}, ${topMargin})`}>
+            <rect
+              className="color-legend-stripe"
+              x={0}
+              y={0}
+              width={stripeWidth}
+              height={stripeLength}
+              fill="url(#color-stripe)"
+            />
+            <line
+              className="color-legend-stripe-axis"
+              x1={0.5}
+              x2={0.5}
+              y1={0}
+              y2={stripeLength}
+            />
+            <g className="color-upper-bound">
+              <line
+                className="color-upper-bound-tick"
+                x1={0}
+                x2={tickLength + stripeWidth}
+                y1={0.5}
+                y2={0.5}
+              />
+              <text
+                className="color-upper-bound-value"
+                x={tickLabelLeftOffset + stripeWidth}
+                y={tickLabelTopOffset}
+              >
+                {formatter(max)}
+              </text>
+            </g>
+            <g className="color-lower-bound">
+              <line
+                className="color-lower-bound-tick"
+                x1={0}
+                x2={tickLength + stripeWidth}
+                y1={stripeLength + 0.5}
+                y2={stripeLength + 0.5}
+              />
+              <text
+                className="color-lower-bound-value"
+                x={tickLabelLeftOffset + stripeWidth}
+                y={stripeLength + tickLabelTopOffset}
+              >
+                {formatter(min)}
+              </text>
+            </g>
           </g>
-          <g className="color-lower-bound">
-            <line className="color-lower-bound-tick"
-              x1={0}
-              x2={tickLength + stripeWidth}
-              y1={stripeLength + 0.5}
-              y2={stripeLength + 0.5}/>
-            <text className="color-lower-bound-value"
-              x={tickLabelLeftOffset + stripeWidth}
-              y={stripeLength + tickLabelTopOffset}>
-              {formatter(min)}
-            </text>
-          </g>
-        </g>
-      </svg>
+        </svg>
+      </div>
     </div>
-  </div>;
+  );
 };

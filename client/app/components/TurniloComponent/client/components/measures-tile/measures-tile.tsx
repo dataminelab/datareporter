@@ -25,7 +25,11 @@ import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
+import {
+  findParentWithClass,
+  setDragData,
+  setDragGhost,
+} from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { MeasureActionsMenu } from "../measure-actions-menu/measure-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
@@ -48,18 +52,35 @@ export interface MeasuresTileState {
   searchText?: string;
 }
 
-export type MeasureClickHandler = (measureName: string, e: MouseEvent<HTMLElement>) => void;
-export type MeasureDragStartHandler = (measureName: string, e: DragEvent<HTMLElement>) => void;
+export type MeasureClickHandler = (
+  measureName: string,
+  e: MouseEvent<HTMLElement>,
+) => void;
+export type MeasureDragStartHandler = (
+  measureName: string,
+  e: DragEvent<HTMLElement>,
+) => void;
 
-const hasSearchTextPredicate = (searchText: string) => (measure: Measure): boolean => {
-  return searchText != null && searchText !== "" && measure.title.toLowerCase().includes(searchText.toLowerCase());
-};
+const hasSearchTextPredicate =
+  (searchText: string) =>
+  (measure: Measure): boolean => {
+    return (
+      searchText != null &&
+      searchText !== "" &&
+      measure.title.toLowerCase().includes(searchText.toLowerCase())
+    );
+  };
 
-const isSelectedMeasurePredicate = (seriesList: SeriesList) => (measure: Measure): boolean => {
-  return seriesList.hasMeasure(measure);
-};
+const isSelectedMeasurePredicate =
+  (seriesList: SeriesList) =>
+  (measure: Measure): boolean => {
+    return seriesList.hasMeasure(measure);
+  };
 
-export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
+export class MeasuresTile extends Component<
+  MeasuresTileProps,
+  MeasuresTileState
+> {
   private searchRef: React.RefObject<any>;
   constructor(props: Readonly<any>) {
     super(props);
@@ -69,7 +90,7 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     showSearch: false,
     searchText: "",
     menuOpenOn: null,
-    menuMeasure: null
+    menuMeasure: null,
   };
 
   measureClick = (measureName: string, e: MouseEvent<HTMLElement>) => {
@@ -80,12 +101,14 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
       return;
     }
 
-    const { essence: { dataCube } } = this.props;
+    const {
+      essence: { dataCube },
+    } = this.props;
     const measure = dataCube.measures.getMeasureByName(measureName);
 
     this.setState({
       menuOpenOn: target,
-      menuMeasure: measure
+      menuMeasure: measure,
     });
   };
 
@@ -94,12 +117,14 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     if (!menuOpenOn) return;
     this.setState({
       menuOpenOn: null,
-      menuMeasure: null
+      menuMeasure: null,
     });
   };
 
   dragStart = (measureName: string, e: DragEvent<HTMLElement>) => {
-    const { essence: { dataCube } } = this.props;
+    const {
+      essence: { dataCube },
+    } = this.props;
     const measure = dataCube.getMeasure(measureName);
 
     const dataTransfer = e.dataTransfer;
@@ -123,14 +148,17 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     if (searchText === newSearchText) return; // nothing to do;
 
     this.setState({
-      searchText: newSearchText
+      searchText: newSearchText,
     });
   };
 
-  renderMessageIfNoMeasuresFound(measuresForView: MeasureOrGroupForView[]): JSX.Element {
+  renderMessageIfNoMeasuresFound(
+    measuresForView: MeasureOrGroupForView[],
+  ): JSX.Element {
     const { searchText } = this.state;
 
-    if (!searchText || measuresForView.some(measure => measure.hasSearchText)) return null;
+    if (!searchText || measuresForView.some(measure => measure.hasSearchText))
+      return null;
     const noMeasuresFound = `No measures for "${searchText}"`;
     return <div className="message">{noMeasuresFound}</div>;
   }
@@ -142,38 +170,47 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
 
     const measuresConverter = new MeasuresConverter(
       hasSearchTextPredicate(searchText),
-      isSelectedMeasurePredicate(essence.series));
+      isSelectedMeasurePredicate(essence.series),
+    );
     const measuresForView = dataCube.measures.accept(measuresConverter);
 
-    const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText);
+    const measuresRenderer = new MeasuresRenderer(
+      this.measureClick,
+      this.dragStart,
+      searchText,
+    );
     const rows = measuresRenderer.render(measuresForView);
     const message = this.renderMessageIfNoMeasuresFound(measuresForView);
 
-    const icons = [{
-      name: "search",
-      ref: this.searchRef,
-      onClick: this.toggleSearch,
-      svg: require("../../icons/full-search.svg"),
-      active: showSearch
-    }];
+    const icons = [
+      {
+        name: "search",
+        ref: this.searchRef,
+        onClick: this.toggleSearch,
+        svg: require("../../icons/full-search.svg"),
+        active: showSearch,
+      },
+    ];
 
-    return <SearchableTile
-      style={style}
-      title={STRINGS.measures}
-      toggleChangeFn={this.toggleSearch}
-      onSearchChange={this.onSearchChange}
-      searchText={searchText}
-      showSearch={showSearch}
-      icons={icons}
-      className="measures-tile"
-    >
-      <div className="rows">
-        {rows}
-        {message}
-      </div>
+    return (
+      <SearchableTile
+        style={style}
+        title={STRINGS.measures}
+        toggleChangeFn={this.toggleSearch}
+        onSearchChange={this.onSearchChange}
+        searchText={searchText}
+        showSearch={showSearch}
+        icons={icons}
+        className="measures-tile"
+      >
+        <div className="rows">
+          {rows}
+          {message}
+        </div>
 
-      {this.renderMenu()}
-    </SearchableTile>;
+        {this.renderMenu()}
+      </SearchableTile>
+    );
   }
 
   private addSeries = (series: Series) => {
@@ -186,15 +223,17 @@ export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState
     const { menuOpenOn, menuMeasure } = this.state;
     if (!menuMeasure) return null;
 
-    return <MeasureActionsMenu
-      appendDirtySeries={appendDirtySeries}
-      addSeries={this.addSeries}
-      series={essence.series}
-      direction="right"
-      containerStage={menuStage}
-      openOn={menuOpenOn}
-      measure={menuMeasure}
-      onClose={this.closeMenu}
-    />;
+    return (
+      <MeasureActionsMenu
+        appendDirtySeries={appendDirtySeries}
+        addSeries={this.addSeries}
+        series={essence.series}
+        direction="right"
+        containerStage={menuStage}
+        openOn={menuOpenOn}
+        measure={menuMeasure}
+        onClose={this.closeMenu}
+      />
+    );
   }
 }

@@ -16,7 +16,11 @@
 
 import { expect } from "chai";
 import { Stage } from "../../../../common/models/stage/stage";
-import { calculateLeft, calculateTop, CoordinatesProps } from "./highlight-modal-position";
+import {
+  calculateLeft,
+  calculateTop,
+  CoordinatesProps,
+} from "./highlight-modal-position";
 
 const defaults: CoordinatesProps = {
   layout: {
@@ -25,22 +29,24 @@ const defaults: CoordinatesProps = {
     top: 50,
     right: 0,
     bottom: 0,
-    left: 100
+    left: 100,
   },
   position: {
     column: 5,
-    row: 7
+    row: 7,
   },
   scroll: { left: 30, top: 10 },
   stage: Stage.fromJS({
     height: 200,
     width: 300,
     x: 20,
-    y: 50
-  })
+    y: 50,
+  }),
 };
 
-const mockProps = (props: Partial<CoordinatesProps> = {}): CoordinatesProps => ({ ...defaults, ...props });
+const mockProps = (
+  props: Partial<CoordinatesProps> = {},
+): CoordinatesProps => ({ ...defaults, ...props });
 
 describe("highlightModalPosition", () => {
   describe("calculateLeft", () => {
@@ -55,13 +61,13 @@ describe("highlightModalPosition", () => {
         const props = mockProps({
           position: {
             ...defaults.position,
-            column: null
+            column: null,
           },
           layout: {
             ...defaults.layout,
             bodyWidth: 200,
-            left: 10
-          }
+            left: 10,
+          },
         });
         expect(calculateLeft(props)).to.be.eq(130);
       });
@@ -70,8 +76,8 @@ describe("highlightModalPosition", () => {
         const props = mockProps({
           position: {
             ...defaults.position,
-            column: null
-          }
+            column: null,
+          },
         });
         expect(calculateLeft(props)).to.be.eq(170);
       });
@@ -90,13 +96,13 @@ describe("highlightModalPosition", () => {
         const props = mockProps({
           position: {
             ...defaults.position,
-            row: null
+            row: null,
           },
           layout: {
             ...defaults.layout,
             bodyHeight: 100,
-            top: 20
-          }
+            top: 20,
+          },
         });
         expect(calculateTop(props)).to.be.eq(120);
       });
@@ -105,8 +111,8 @@ describe("highlightModalPosition", () => {
         const props = mockProps({
           position: {
             ...defaults.position,
-            row: null
-          }
+            row: null,
+          },
         });
         expect(calculateTop(props)).to.be.eq(150);
       });

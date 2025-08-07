@@ -33,19 +33,29 @@ interface HighlightModalProps {
 }
 
 export const HighlightModal: React.SFC<HighlightModalProps> = props => {
-  const { rect: { left, top }, interaction, timezone, dropHighlight, acceptHighlight, xScale } = props;
+  const {
+    rect: { left, top },
+    interaction,
+    timezone,
+    dropHighlight,
+    acceptHighlight,
+    xScale,
+  } = props;
   const currentPage = window.location.href.split("/")[3];
   if (currentPage === "dashboards") {
-      // The URL contains "dashboard"
-      dropHighlight();
-      return <></>;
+    // The URL contains "dashboard"
+    dropHighlight();
+    return <></>;
   }
   const range = toPlywoodRange(interaction.clause);
   const x = xScale(range.midpoint());
-  return <BaseHighlightModal
-    title={formatValue(range, timezone)}
-    left={left + x}
-    top={top + 80}
-    dropHighlight={dropHighlight}
-    acceptHighlight={acceptHighlight} />;
+  return (
+    <BaseHighlightModal
+      title={formatValue(range, timezone)}
+      left={left + x}
+      top={top + 80}
+      dropHighlight={dropHighlight}
+      acceptHighlight={acceptHighlight}
+    />
+  );
 };

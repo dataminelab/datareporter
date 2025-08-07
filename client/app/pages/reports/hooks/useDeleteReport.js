@@ -11,8 +11,13 @@ function confirmDelete() {
       title: "Delete Report",
       content: (
         <React.Fragment>
-          <div className="m-b-5">Are you sure you want to delete this report?</div>
-          <div>All alerts and dashboard widgets created with its visualizations will be deleted.</div>
+          <div className="m-b-5">
+            Are you sure you want to delete this report?
+          </div>
+          <div>
+            All alerts and dashboard widgets created with its visualizations
+            will be deleted.
+          </div>
         </React.Fragment>
       ),
       okText: "Delete",
@@ -53,6 +58,8 @@ export default function useDeleteReport(report, onChange) {
     confirmDelete()
       .then(() => doDeleteReport(report))
       .then(handleChange)
-      .catch(() => {console.error("Delete report cancelled")});
+      .catch(() => {
+        console.error("Delete report cancelled");
+      });
   }, [report, handleChange]);
 }

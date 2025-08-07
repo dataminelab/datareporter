@@ -3,7 +3,15 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import Form from "antd/lib/form";
 import Button from "antd/lib/button";
-import { includes, isFunction, filter, find, difference, isEmpty, mapValues } from "lodash";
+import {
+  includes,
+  isFunction,
+  filter,
+  find,
+  difference,
+  isEmpty,
+  mapValues,
+} from "lodash";
 import notification from "@/services/notification";
 import Collapse from "@/components/Collapse";
 import DynamicFormField, { FieldType } from "./DynamicFormField";
@@ -26,20 +34,29 @@ const AntdFormType = PropTypes.shape({
 
 const fieldRules = ({ type, required, minLength }) => {
   const requiredRule = required;
-  const minLengthRule = minLength && includes(["text", "email", "password"], type);
+  const minLengthRule =
+    minLength && includes(["text", "email", "password"], type);
   const emailTypeRule = type === "email";
 
   return [
     requiredRule && { required, message: "This field is required." },
     minLengthRule && { min: minLength, message: "This field is too short." },
-    emailTypeRule && { type: "email", message: "This field must be a valid email." },
+    emailTypeRule && {
+      type: "email",
+      message: "This field must be a valid email.",
+    },
   ].filter(rule => rule);
 };
 
 function normalizeEmptyValuesToNull(fields, values) {
   return mapValues(values, (value, key) => {
     const { initialValue } = find(fields, { name: key }) || {};
-    if ((initialValue === null || initialValue === undefined || initialValue === "") && value === "") {
+    if (
+      (initialValue === null ||
+        initialValue === undefined ||
+        initialValue === "") &&
+      value === ""
+    ) {
       return null;
     }
     return value;
@@ -73,13 +90,14 @@ function DynamicFormFields({ fields, feedbackIcons, form }) {
       };
     }
 
-
     return (
       <React.Fragment key={name}>
         <Form.Item {...formItemProps}>
           <DynamicFormField field={field} form={form} />
         </Form.Item>
-        {isFunction(contentAfter) ? contentAfter(form.getFieldValue(name)) : contentAfter}
+        {isFunction(contentAfter)
+          ? contentAfter(form.getFieldValue(name))
+          : contentAfter}
       </React.Fragment>
     );
   });
@@ -106,7 +124,10 @@ const reducerForActionSet = (state, action) => {
 };
 
 function DynamicFormActions({ actions, isFormDirty }) {
-  const [inProgressActions, setActionInProgress] = useReducer(reducerForActionSet, new Set());
+  const [inProgressActions, setActionInProgress] = useReducer(
+    reducerForActionSet,
+    new Set(),
+  );
 
   const handleAction = useCallback(action => {
     const actionName = action.name;
@@ -126,7 +147,8 @@ function DynamicFormActions({ actions, isFormDirty }) {
       type={action.type}
       disabled={isFormDirty && action.disableWhenDirty}
       loading={inProgressActions.has(action.name)}
-      onClick={() => handleAction(action)}>
+      onClick={() => handleAction(action)}
+    >
       {action.name}
     </Button>
   ));
@@ -154,7 +176,9 @@ export default function DynamicForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
-  const [showExtraFields, setShowExtraFields] = useState(defaultShowExtraFields);
+  const [showExtraFields, setShowExtraFields] = useState(
+    defaultShowExtraFields,
+  );
   const [form] = Form.useForm();
   const extraFields = filter(fields, { extra: true });
   const regularFields = difference(fields, extraFields);
@@ -173,17 +197,17 @@ export default function DynamicForm({
         msg => {
           setIsSubmitting(false);
           notification.error(msg);
-        }
+        },
       );
     },
-    [fields, onSubmit]
+    [fields, onSubmit],
   );
 
   const handleFinishFailed = useCallback(
     ({ errorFields }) => {
       form.scrollToField(errorFields[0].name);
     },
-    [form]
+    [form],
   );
   return (
     <Form
@@ -195,28 +219,53 @@ export default function DynamicForm({
       className="dynamic-form"
       layout="vertical"
       onFinish={handleFinish}
-      onFinishFailed={handleFinishFailed}>
-      <DynamicFormFields fields={regularFields} feedbackIcons={feedbackIcons} form={form}/>
+      onFinishFailed={handleFinishFailed}
+    >
+      <DynamicFormFields
+        fields={regularFields}
+        feedbackIcons={feedbackIcons}
+        form={form}
+      />
       {!isEmpty(extraFields) && (
         <div className="extra-options">
           <Button
             type="dashed"
             block
             className="extra-options-button"
-            onClick={() => setShowExtraFields(currentShowExtraFields => !currentShowExtraFields)}>
+            onClick={() =>
+              setShowExtraFields(
+                currentShowExtraFields => !currentShowExtraFields,
+              )
+            }
+          >
             Additional Settings
             <i
-              className={cx("fa m-l-5", { "fa-caret-up": showExtraFields, "fa-caret-down": !showExtraFields })}
+              className={cx("fa m-l-5", {
+                "fa-caret-up": showExtraFields,
+                "fa-caret-down": !showExtraFields,
+              })}
               aria-hidden="true"
             />
           </Button>
-          <Collapse collapsed={!showExtraFields} className="extra-options-content">
-            <DynamicFormFields fields={extraFields} feedbackIcons={feedbackIcons} form={form} />
+          <Collapse
+            collapsed={!showExtraFields}
+            className="extra-options-content"
+          >
+            <DynamicFormFields
+              fields={extraFields}
+              feedbackIcons={feedbackIcons}
+              form={form}
+            />
           </Collapse>
         </div>
       )}
       {!hideSubmitButton && (
-        <Button className="w-100 m-t-20" type="primary" htmlType="submit" disabled={isSubmitting}>
+        <Button
+          className="w-100 m-t-20"
+          type="primary"
+          htmlType="submit"
+          disabled={isSubmitting}
+        >
           {saveText}
         </Button>
       )}

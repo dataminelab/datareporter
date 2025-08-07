@@ -36,30 +36,38 @@ interface ChartsPerSeriesProps {
   stage: Stage;
 }
 
-export const ChartsPerSeries: React.FunctionComponent<ChartsPerSeriesProps> = props => {
+export const ChartsPerSeries: React.FunctionComponent<
+  ChartsPerSeriesProps
+> = props => {
   const { interactions, xScale, xTicks, essence, dataset, stage } = props;
 
   const concreteSeries = essence.getConcreteSeries().toArray();
   const chartStage = calculateChartStage(stage, essence.series.count());
 
-  return <React.Fragment>
-    {hasNominalSplit(essence) && <LegendSpot>
-      <SplitLegend dataset={dataset} essence={essence}/>
-    </LegendSpot>}
-    {concreteSeries.map((series: any) => {
-      const key = series.reactKey();
-      return <SeriesChart
-          interactions={interactions}
-          key={key}
-          chartId={key}
-          dataset={dataset}
-          essence={essence}
-          series={series}
-          chartStage={chartStage}
-          visualisationStage={stage}
-          xScale={xScale}
-          xTicks={xTicks} />;
-      }
-    )}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {hasNominalSplit(essence) && (
+        <LegendSpot>
+          <SplitLegend dataset={dataset} essence={essence} />
+        </LegendSpot>
+      )}
+      {concreteSeries.map((series: any) => {
+        const key = series.reactKey();
+        return (
+          <SeriesChart
+            interactions={interactions}
+            key={key}
+            chartId={key}
+            dataset={dataset}
+            essence={essence}
+            series={series}
+            chartStage={chartStage}
+            visualisationStage={stage}
+            xScale={xScale}
+            xTicks={xTicks}
+          />
+        );
+      })}
+    </React.Fragment>
+  );
 };

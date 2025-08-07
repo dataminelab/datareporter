@@ -43,7 +43,8 @@ class ShareReportDialog extends React.Component {
       <React.Fragment>
         Share Report
         <div className="modal-header-desc">
-          Allow public access to this report with a secret address. <HelpTrigger type="SHARE_DASHBOARD" />
+          Allow public access to this report with a secret address.{" "}
+          <HelpTrigger type="SHARE_DASHBOARD" />
         </div>
       </React.Fragment>
     );
@@ -119,7 +120,10 @@ class ShareReportDialog extends React.Component {
           </Form.Item>
           {report.public_url && (
             <Form.Item label="Secret address" {...this.formItemProps}>
-              <InputWithCopy value={report.public_url} data-test="SecretAddress" />
+              <InputWithCopy
+                value={report.public_url}
+                data-test="SecretAddress"
+              />
             </Form.Item>
           )}
         </Form>

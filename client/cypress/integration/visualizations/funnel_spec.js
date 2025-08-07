@@ -1,5 +1,3 @@
-/* global cy, Cypress */
-
 const SQL = `
   SELECT 'a.01' AS a, 1.758831600227 AS b UNION ALL
   SELECT 'a.02' AS a, 613.4456936572 AS b UNION ALL
@@ -33,7 +31,9 @@ describe("Funnel", () => {
     cy.clickThrough(`
       NewVisualization
     `);
-    cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.FUNNEL");
+    cy.getByTestId("VisualizationType").selectAntdOption(
+      "VisualizationType.FUNNEL",
+    );
     cy.clickThrough(`
       VisualizationEditor.Tabs.General
 
@@ -54,15 +54,15 @@ describe("Funnel", () => {
         "Funnel.StepColumnTitle": "Column A",
         "Funnel.ValueColumnTitle": "Column B",
       },
-      { wait: 200 }
+      { wait: 200 },
     ); // inputs are debounced
 
     // Wait for proper initialization of visualization
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
-    cy.getByTestId("VisualizationPreview")
-      .find("table")
-      .should("exist");
-    cy.percySnapshot("Visualizations - Funnel (basic)", { widths: [viewportWidth] });
+    cy.getByTestId("VisualizationPreview").find("table").should("exist");
+    cy.percySnapshot("Visualizations - Funnel (basic)", {
+      widths: [viewportWidth],
+    });
 
     cy.clickThrough(`
       VisualizationEditor.Tabs.Appearance
@@ -76,14 +76,14 @@ describe("Funnel", () => {
         "Funnel.PercentRangeMin": "10",
         "Funnel.PercentRangeMax": "90",
       },
-      { wait: 200 }
+      { wait: 200 },
     ); // inputs are debounced
 
     // Wait for proper initialization of visualization
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
-    cy.getByTestId("VisualizationPreview")
-      .find("table")
-      .should("exist");
-    cy.percySnapshot("Visualizations - Funnel (extra options)", { widths: [viewportWidth] });
+    cy.getByTestId("VisualizationPreview").find("table").should("exist");
+    cy.percySnapshot("Visualizations - Funnel (extra options)", {
+      widths: [viewportWidth],
+    });
   });
 });

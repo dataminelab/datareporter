@@ -10,6 +10,6 @@ export default function useUpdateReportDescription(report, onChange) {
       recordEvent("edit_description", "report", report.id);
       updateReport({ description });
     },
-    [report.id, updateReport]
+    [report.id, updateReport],
   );
 }

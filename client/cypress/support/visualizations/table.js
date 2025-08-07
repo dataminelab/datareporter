@@ -1,7 +1,11 @@
 export function expectTableToHaveLength(length) {
   cy.getByTestId("TableVisualization")
     .find("tbody tr")
-    .then($rows => ($rows[0].classList.contains("ant-table-measure-row") ? $rows.slice(1) : $rows))
+    .then($rows =>
+      $rows[0].classList.contains("ant-table-measure-row")
+        ? $rows.slice(1)
+        : $rows,
+    )
     .should("have.length", length);
 }
 

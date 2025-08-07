@@ -14,16 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../imports';
+@import "../../imports";
 
 .short-url-modal {
-
   .url-shortener {
-
     .url-group {
       display: flex;
 
-      .short-url, .copy-button {
+      .short-url,
+      .copy-button {
         padding: 8px 8px 6px 8px;
         display: inline-block;
         border-radius: 0;
@@ -44,7 +43,6 @@
         flex: 0;
         border-top-right-radius: $corner;
         border-bottom-right-radius: $corner;
-
       }
     }
 

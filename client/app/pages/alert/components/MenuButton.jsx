@@ -11,7 +11,14 @@ import LoadingOutlinedIcon from "@ant-design/icons/LoadingOutlined";
 import EllipsisOutlinedIcon from "@ant-design/icons/EllipsisOutlined";
 import PlainButton from "@/components/PlainButton";
 
-export default function MenuButton({ doDelete, canEdit, mute, unmute, evaluate, muted }) {
+export default function MenuButton({
+  doDelete,
+  canEdit,
+  mute,
+  unmute,
+  evaluate,
+  muted,
+}) {
   const [loading, setLoading] = useState(false);
 
   const execute = useCallback(action => {
@@ -47,21 +54,32 @@ export default function MenuButton({ doDelete, canEdit, mute, unmute, evaluate, 
         <Menu>
           <Menu.Item>
             {muted ? (
-              <PlainButton onClick={() => execute(unmute)}>Unmute Notifications</PlainButton>
+              <PlainButton onClick={() => execute(unmute)}>
+                Unmute Notifications
+              </PlainButton>
             ) : (
-              <PlainButton onClick={() => execute(mute)}>Mute Notifications</PlainButton>
+              <PlainButton onClick={() => execute(mute)}>
+                Mute Notifications
+              </PlainButton>
             )}
           </Menu.Item>
           <Menu.Item>
             <PlainButton onClick={confirmDelete}>Delete</PlainButton>
           </Menu.Item>
           <Menu.Item>
-            <PlainButton onClick={() => execute(evaluate)}>Evaluate</PlainButton>
+            <PlainButton onClick={() => execute(evaluate)}>
+              Evaluate
+            </PlainButton>
           </Menu.Item>
         </Menu>
-      }>
+      }
+    >
       <Button aria-label="More actions">
-        {loading ? <LoadingOutlinedIcon /> : <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />}
+        {loading ? (
+          <LoadingOutlinedIcon />
+        ) : (
+          <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
+        )}
       </Button>
     </Dropdown>
   );

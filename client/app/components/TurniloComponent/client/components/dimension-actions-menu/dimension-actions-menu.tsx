@@ -44,10 +44,21 @@ export interface DimensionActionsProps {
   triggerFilterMenu: (dimension: Dimension) => void;
 }
 
-export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionActionsMenuProps> =
-  (props: DimensionActionsMenuProps & DimensionActionsProps) => {
-    const { triggerFilterMenu, clicker, essence, direction, containerStage, openOn, dimension, onClose } = props;
-    return <BubbleMenu
+export const DimensionActionsMenu: React.SFC<
+  DimensionActionsProps & DimensionActionsMenuProps
+> = (props: DimensionActionsMenuProps & DimensionActionsProps) => {
+  const {
+    triggerFilterMenu,
+    clicker,
+    essence,
+    direction,
+    containerStage,
+    openOn,
+    dimension,
+    onClose,
+  } = props;
+  return (
+    <BubbleMenu
       className="dimension-actions-menu"
       direction={direction}
       containerStage={containerStage}
@@ -61,12 +72,22 @@ export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionAc
         clicker={clicker}
         dimension={dimension}
         onClose={onClose}
-        triggerFilterMenu={triggerFilterMenu} />
-    </BubbleMenu>;
-  };
+        triggerFilterMenu={triggerFilterMenu}
+      />
+    </BubbleMenu>
+  );
+};
 
-export const DimensionActions: React.SFC<DimensionActionsProps> = (props: DimensionActionsProps) => {
-  const { onClose, triggerFilterMenu, clicker, essence: { splits }, dimension } = props;
+export const DimensionActions: React.SFC<DimensionActionsProps> = (
+  props: DimensionActionsProps,
+) => {
+  const {
+    onClose,
+    triggerFilterMenu,
+    clicker,
+    essence: { splits },
+    dimension,
+  } = props;
   if (!dimension) return null;
 
   const hasSplitOn = splits.hasSplitOn(dimension);
@@ -79,14 +100,18 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
   }
 
   function onSplit() {
-    if (!isOnlySplit) clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+    if (!isOnlySplit)
+      clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     onClose();
   }
 
   function onSubSplit() {
     if (!hasSplitOn) {
       if (dimension.kind !== "time") {
-        clicker.changeSplits(splits.insertByIndex(0, Split.fromDimension(dimension)), VisStrategy.FairGame);
+        clicker.changeSplits(
+          splits.insertByIndex(0, Split.fromDimension(dimension)),
+          VisStrategy.FairGame,
+        );
       } else {
         clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
       }
@@ -99,22 +124,33 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (props: Dimens
     onClose();
   }
 
-  return <React.Fragment>
-    <div className={classNames("filter", "action")} onClick={onFilter}>
-      <SvgIcon svg={require("../../icons/preview-filter.svg")} />
-      <div className="action-label">{STRINGS.filter}</div>
-    </div>
-    <div className={classNames("pin", "action", { disabled: !isPinable })} onClick={onPin}>
-      <SvgIcon svg={require("../../icons/preview-pin.svg")} />
-      <div className="action-label">{STRINGS.pin}</div>
-    </div>
-    <div className={classNames("split", "action", { disabled: isOnlySplit })} onClick={onSplit}>
-      <SvgIcon svg={require("../../icons/preview-split.svg")} />
-      <div className="action-label">{STRINGS.split}</div>
-    </div>
-    <div className={classNames("subsplit", "action", { disabled: hasSplitOn })} onClick={onSubSplit}>
-      <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
-      <div className="action-label">{STRINGS.subsplit}</div>
-    </div>
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <div className={classNames("filter", "action")} onClick={onFilter}>
+        <SvgIcon svg={require("../../icons/preview-filter.svg")} />
+        <div className="action-label">{STRINGS.filter}</div>
+      </div>
+      <div
+        className={classNames("pin", "action", { disabled: !isPinable })}
+        onClick={onPin}
+      >
+        <SvgIcon svg={require("../../icons/preview-pin.svg")} />
+        <div className="action-label">{STRINGS.pin}</div>
+      </div>
+      <div
+        className={classNames("split", "action", { disabled: isOnlySplit })}
+        onClick={onSplit}
+      >
+        <SvgIcon svg={require("../../icons/preview-split.svg")} />
+        <div className="action-label">{STRINGS.split}</div>
+      </div>
+      <div
+        className={classNames("subsplit", "action", { disabled: hasSplitOn })}
+        onClick={onSubSplit}
+      >
+        <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
+        <div className="action-label">{STRINGS.subsplit}</div>
+      </div>
+    </React.Fragment>
+  );
 };

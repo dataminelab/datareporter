@@ -21,7 +21,9 @@ import { nestedDataset } from "./nested-dataset";
 
 describe("nestedDataset", () => {
   it("should pick data under SPLIT key", () => {
-    expect(nestedDataset({ [SPLIT]: { data: "foobar" } } as any as Datum)).to.equal("foobar");
+    expect(
+      nestedDataset({ [SPLIT]: { data: "foobar" } } as any as Datum),
+    ).to.equal("foobar");
   });
 
   it("should handle empty datum", () => {

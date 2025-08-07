@@ -1,4 +1,13 @@
-import { isNil, isUndefined, isFunction, isObject, trimStart, mapValues, omitBy, extend } from "lodash";
+import {
+  isNil,
+  isUndefined,
+  isFunction,
+  isObject,
+  trimStart,
+  mapValues,
+  omitBy,
+  extend,
+} from "lodash";
 import qs from "query-string";
 import { createBrowserHistory } from "history";
 
@@ -9,7 +18,9 @@ function normalizeLocation(rawLocation) {
   const result = {};
 
   result.path = pathname;
-  result.search = mapValues(qs.parse(search), value => (isNil(value) ? true : value));
+  result.search = mapValues(qs.parse(search), value =>
+    isNil(value) ? true : value,
+  );
   result.hash = trimStart(hash, "#");
   result.url = `${pathname}${search}${hash}`;
 
@@ -44,7 +55,7 @@ const location = {
           search: newLocation.search,
           hash: newLocation.hash,
         },
-        isUndefined
+        isUndefined,
       );
 
       // keep existing fields (!)
@@ -54,13 +65,18 @@ const location = {
           search: location.search,
           hash: location.hash,
         },
-        newLocation
+        newLocation,
       );
 
       // serialize search and keep existing search parameters (!)
       if (isObject(newLocation.search)) {
-        newLocation.search = omitBy(extend({}, location.search, newLocation.search), isNil);
-        newLocation.search = mapValues(newLocation.search, value => (value === true ? null : value));
+        newLocation.search = omitBy(
+          extend({}, location.search, newLocation.search),
+          isNil,
+        );
+        newLocation.search = mapValues(newLocation.search, value =>
+          value === true ? null : value,
+        );
         newLocation.search = qs.stringify(newLocation.search);
       }
     }

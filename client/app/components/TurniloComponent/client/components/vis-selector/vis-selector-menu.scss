@@ -14,22 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../imports';
+@import "../../imports";
 
 .vis-selector-menu {
-
   .vis-items {
-
     .vis-item {
       margin: 1px;
       border-radius: $corner;
 
       &:hover {
-        @include box-shadow-css-variable(0, 0, 0, 1px, border-extra-light)
+        @include box-shadow-css-variable(0, 0, 0, 1px, border-extra-light);
       }
 
       &.selected {
-        @include box-shadow-css-variable(0, 0, 0, 1px, border-light)
+        @include box-shadow-css-variable(0, 0, 0, 1px, border-light);
       }
     }
   }

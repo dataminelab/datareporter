@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../utils/dimensions';
-@import '../../../../imports';
+@import "../../utils/dimensions";
+@import "../../../../imports";
 
 .measure-background-container {
   position: absolute;
@@ -30,7 +30,6 @@
     @include border-css-variable(border-bottom, 1px, solid, highlight-border);
     width: 0;
     height: 100%;
-
 
     &.highlight {
       @include css-variable(background-color, highlight);

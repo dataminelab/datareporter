@@ -37,10 +37,13 @@ export interface InfoBubbleProps {
   className?: string;
 }
 
-export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState> {
-
+export class InfoBubble extends React.Component<
+  InfoBubbleProps,
+  InfoBubbleState
+> {
   showDescription = ({ currentTarget }: React.MouseEvent<HTMLElement>) => {
-    const willBubbleFit = currentTarget.getBoundingClientRect().top > BUBBLE_MAX_VERTICAL_SPACE;
+    const willBubbleFit =
+      currentTarget.getBoundingClientRect().top > BUBBLE_MAX_VERTICAL_SPACE;
     const direction = willBubbleFit ? "up" : "down";
     this.setState({ showInfo: { target: currentTarget, direction } });
   };
@@ -58,18 +61,27 @@ export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState
     const { showInfo } = this.state;
     const { description, icon, className, title } = this.props;
 
-    return <React.Fragment>
-      <div className={classNames("info-button", className)} title={title || defaultTitle} onClick={this.showDescription}>
-        <SvgIcon svg={icon || defaultIcon} />
-      </div>
-      {showInfo && <BubbleMenu
-        className="description-menu"
-        direction={showInfo.direction}
-        onClose={this.closeDescription}
-        stage={Stage.fromSize(300, 200)}
-        openOn={showInfo.target}>
-        <MarkdownNode markdown={description} />
-      </BubbleMenu>}
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <div
+          className={classNames("info-button", className)}
+          title={title || defaultTitle}
+          onClick={this.showDescription}
+        >
+          <SvgIcon svg={icon || defaultIcon} />
+        </div>
+        {showInfo && (
+          <BubbleMenu
+            className="description-menu"
+            direction={showInfo.direction}
+            onClose={this.closeDescription}
+            stage={Stage.fromSize(300, 200)}
+            openOn={showInfo.target}
+          >
+            <MarkdownNode markdown={description} />
+          </BubbleMenu>
+        )}
+      </React.Fragment>
+    );
   }
 }

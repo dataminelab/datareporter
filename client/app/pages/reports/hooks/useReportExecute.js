@@ -63,7 +63,10 @@ export default function useReportExecute(report) {
 
     const onStatusChange = status => {
       if (queryResultInExecution.current === newReportResult) {
-        setExecutionState({ updatedAt: newReportResult.getUpdatedAt(), executionStatus: status });
+        setExecutionState({
+          updatedAt: newReportResult.getUpdatedAt(),
+          executionStatus: status,
+        });
       }
     };
 
@@ -72,13 +75,19 @@ export default function useReportExecute(report) {
       .then(queryResult => {
         if (queryResultInExecution.current === newReportResult) {
           // TODO: this should probably belong in the ReportEditor page.
-          if (queryResult && queryResult.query_result.report === report.report) {
+          if (
+            queryResult &&
+            queryResult.query_result.report === report.report
+          ) {
             report.latest_query_data_id = queryResult.getId();
             report.queryResult = queryResult;
           }
 
           if (executionState.loadedInitialResults) {
-            notifications.showNotification("Data reporter", `${report.name} updated.`);
+            notifications.showNotification(
+              "Data reporter",
+              `${report.name} updated.`,
+            );
           }
 
           setExecutionState({
@@ -94,7 +103,10 @@ export default function useReportExecute(report) {
       .catch(queryResult => {
         if (queryResultInExecution.current === newReportResult) {
           if (executionState.loadedInitialResults) {
-            notifications.showNotification("Data reporter", `${report.name} failed to run: ${queryResult.getError()}`);
+            notifications.showNotification(
+              "Data reporter",
+              `${report.name} failed to run: ${queryResult.getError()}`,
+            );
           }
 
           setExecutionState({

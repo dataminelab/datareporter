@@ -26,13 +26,11 @@ export function get(key: string): any {
 export function set(key: string, value: any) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
-  }
+  } catch (e) {}
 }
 
 export function remove(key: string) {
   try {
     localStorage.removeItem(key);
-  } catch (e) {
-  }
+  } catch (e) {}
 }

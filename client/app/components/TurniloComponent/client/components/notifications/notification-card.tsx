@@ -35,14 +35,17 @@ export interface NotificationCardState {
 
 const DEFAULT_DURATION = 6; // seconds
 
-export class NotificationCard extends React.Component<NotificationCardProps, NotificationCardState> {
+export class NotificationCard extends React.Component<
+  NotificationCardProps,
+  NotificationCardState
+> {
   private timeoutID: number;
 
   state: NotificationCardState = {
     appearing: false,
     disappearing: false,
     hovered: false,
-    timerExpired: false
+    timerExpired: false,
   };
 
   componentDidMount() {
@@ -71,7 +74,10 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
       this.setState({ appearing: false });
     } else {
       this.setState({ appearing: false }, () => {
-        this.timeoutID = window.setTimeout(this.onDisappearTimerEnd, (d ? d : DEFAULT_DURATION) * 1000);
+        this.timeoutID = window.setTimeout(
+          this.onDisappearTimerEnd,
+          (d ? d : DEFAULT_DURATION) * 1000,
+        );
       });
     }
   };
@@ -79,7 +85,7 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
   onDisappearTimerEnd = () => {
     if (this.state.hovered) {
       this.setState({
-        timerExpired: true
+        timerExpired: true,
       });
 
       return;
@@ -92,7 +98,10 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
     if (this.timeoutID !== undefined) window.clearTimeout(this.timeoutID);
 
     this.setState({ disappearing: true }, () => {
-      this.timeoutID = window.setTimeout(this.removeMe.bind(this, this.props.model), 200);
+      this.timeoutID = window.setTimeout(
+        this.removeMe.bind(this, this.props.model),
+        200,
+      );
     });
   }
 
@@ -107,13 +116,13 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
 
   onMouseOver = () => {
     this.setState({
-      hovered: true
+      hovered: true,
     });
   };
 
   onMouseLeave = () => {
     this.setState({
-      hovered: false
+      hovered: false,
     });
 
     if (this.state.timerExpired) {
@@ -139,18 +148,28 @@ export class NotificationCard extends React.Component<NotificationCardProps, Not
       this.disappear();
     };
 
-    return <div
-      style={{ top }}
-      onClick={onClick}
-      onMouseOver={this.onMouseOver}
-      onFocus={this.onMouseOver}
-      onMouseLeave={this.onMouseLeave}
-      onBlur={this.onMouseLeave}
-      className={classNames(`notification-card ${priority} ${rowsClass}`, { appearing, disappearing, muted })}
-    >
-      <div className="title">{title}</div>
-      {message ? <div className="message">{message}</div> : null}
-      {action ? <div className="action"><span>{action.label}</span></div> : null}
-    </div>;
+    return (
+      <div
+        style={{ top }}
+        onClick={onClick}
+        onMouseOver={this.onMouseOver}
+        onFocus={this.onMouseOver}
+        onMouseLeave={this.onMouseLeave}
+        onBlur={this.onMouseLeave}
+        className={classNames(`notification-card ${priority} ${rowsClass}`, {
+          appearing,
+          disappearing,
+          muted,
+        })}
+      >
+        <div className="title">{title}</div>
+        {message ? <div className="message">{message}</div> : null}
+        {action ? (
+          <div className="action">
+            <span>{action.label}</span>
+          </div>
+        ) : null}
+      </div>
+    );
   }
 }

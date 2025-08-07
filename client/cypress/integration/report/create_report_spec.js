@@ -1,7 +1,7 @@
 describe("Create Report", () => {
   beforeEach(() => {
     cy.login();
-    cy.createReport()
+    cy.createReport();
   });
 
   it("executes and saves a report", () => {

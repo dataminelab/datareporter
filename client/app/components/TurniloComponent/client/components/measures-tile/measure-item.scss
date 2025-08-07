@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../imports';
+@import "../../imports";
 
 .measure-item {
   display: flex;
@@ -46,7 +46,6 @@
     flex-grow: 0;
     display: block;
     padding: 7px 0.15em;
-
   }
 
   .approximate-measure-icon {
@@ -66,4 +65,3 @@
   height: 19px;
   flex-shrink: 0;
 }
-

@@ -9,9 +9,7 @@ import url from "@/services/url";
 import ErrorMessage from "./ErrorMessage";
 
 function generateRouteKey() {
-  return Math.random()
-    .toString(32)
-    .slice(2);
+  return Math.random().toString(32).slice(2);
 }
 
 export const CurrentRouteContext = React.createContext(null);
@@ -87,7 +85,9 @@ export default function Router({ routes, onRouteChange }) {
           .catch(error => {
             if (!isAbandoned && currentPathRef.current === pathname) {
               setCurrentRoute({
-                render: currentRoute => <ErrorMessage {...currentRoute.routeParams} />,
+                render: currentRoute => (
+                  <ErrorMessage {...currentRoute.routeParams} />
+                ),
                 routeParams: { error },
               });
             }
@@ -116,7 +116,10 @@ export default function Router({ routes, onRouteChange }) {
 
   return (
     <CurrentRouteContext.Provider value={currentRoute}>
-      <ErrorBoundary ref={errorHandlerRef} renderError={error => <ErrorMessage error={error} />}>
+      <ErrorBoundary
+        ref={errorHandlerRef}
+        renderError={error => <ErrorMessage error={error} />}
+      >
         {currentRoute.render(currentRoute)}
       </ErrorBoundary>
     </CurrentRouteContext.Provider>
@@ -134,7 +137,7 @@ Router.propTypes = {
       // - after previous step, if value is a promise - router will wait for it to resolve; resolved value then will be used;
       //   otherwise value will be used directly.
       resolve: PropTypes.objectOf(PropTypes.any),
-    })
+    }),
   ),
   onRouteChange: PropTypes.func,
 };

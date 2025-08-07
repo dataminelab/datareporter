@@ -41,13 +41,13 @@ export interface HeatMapRectanglesProps {
 const bins = (d: Datum) => (d[SPLIT] as Dataset).data;
 
 export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
-
   shouldComponentUpdate(nextProps: Readonly<HeatMapRectanglesProps>): boolean {
     return !equalProps(this.props, nextProps);
   }
 
   render() {
-    const { series, colorScale, xScale, yScale, gap, tileSize, dataset } = this.props;
+    const { series, colorScale, xScale, yScale, gap, tileSize, dataset } =
+      this.props;
 
     const [height] = yScale.range();
     const [, width] = xScale.range();
@@ -67,11 +67,14 @@ export class HeatMapRectangles extends React.Component<HeatMapRectanglesProps> {
             binHeight={tileSize}
             gap={gap}
           >
-            {heatmap => heatmap.map(bins => (
-              <HeatMapRectangleRow
-                key={`heatmap-rect-row-${bins[0].column}`}
-                bins={bins} />
-            ))}
+            {heatmap =>
+              heatmap.map(bins => (
+                <HeatMapRectangleRow
+                  key={`heatmap-rect-row-${bins[0].column}`}
+                  bins={bins}
+                />
+              ))
+            }
           </HeatmapRect>
         </svg>
       </div>

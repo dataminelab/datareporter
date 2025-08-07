@@ -17,4 +17,5 @@
 import { Dataset, Datum } from "plywood";
 import { SPLIT } from "../../../config/constants";
 
-export const nestedDataset = (d: Datum) => (d && d[SPLIT] && (d[SPLIT] as Dataset).data) || [];
+export const nestedDataset = (d: Datum) =>
+  (d && d[SPLIT] && (d[SPLIT] as Dataset).data) || [];

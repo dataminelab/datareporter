@@ -7,7 +7,12 @@ interface SrNotifyProps {
   politeness: HTMLAttributes<HTMLDivElement>["aria-live"];
 }
 
-export function srNotify({ text, expiry = 1000, container = document.body, politeness = "polite" }: SrNotifyProps) {
+export function srNotify({
+  text,
+  expiry = 1000,
+  container = document.body,
+  politeness = "polite",
+}: SrNotifyProps) {
   const element = document.createElement("div");
   const id = `speak-${Date.now()}`;
 

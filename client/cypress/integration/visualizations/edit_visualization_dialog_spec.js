@@ -10,9 +10,7 @@ describe("Edit visualization dialog", () => {
   });
 
   it("opens New Visualization dialog", () => {
-    cy.getByTestId("NewVisualization")
-      .should("exist")
-      .click();
+    cy.getByTestId("NewVisualization").should("exist").click();
     cy.getByTestId("EditVisualizationDialog").should("exist");
     // Default visualization should be selected
     cy.getByTestId("VisualizationType")
@@ -39,11 +37,11 @@ describe("Edit visualization dialog", () => {
     const visualizationName = "Custom name";
 
     cy.getByTestId("NewVisualization").click();
-    cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.DETAILS");
-  
-    cy.getByTestId("VisualizationName")
-      .clear()
-      .type(visualizationName);
+    cy.getByTestId("VisualizationType").selectAntdOption(
+      "VisualizationType.DETAILS",
+    );
+
+    cy.getByTestId("VisualizationName").clear().type(visualizationName);
 
     cy.getByTestId("EditVisualizationDialog")
       .contains("button", "Save")

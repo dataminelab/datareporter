@@ -23,10 +23,7 @@ import { ClearableInput } from "./clearable-input";
 describe("ClearableInput", () => {
   it("should add empty class name", () => {
     const renderedComponent = shallow(
-      <ClearableInput
-        onChange={null}
-        value={null}
-      />
+      <ClearableInput onChange={null} value={null} />,
     );
 
     expect(renderedComponent.hasClass("empty")).to.be.true;
@@ -34,11 +31,7 @@ describe("ClearableInput", () => {
 
   it("should add custom class name", () => {
     const renderedComponent = shallow(
-      <ClearableInput
-        onChange={null}
-        value={null}
-        className="foobar"
-      />
+      <ClearableInput onChange={null} value={null} className="foobar" />,
     );
 
     expect(renderedComponent.hasClass("foobar")).to.be.true;

@@ -1,10 +1,13 @@
 /* global cy */
 
-import { getWidgetTestId, editDashboard, resizeBy } from "../../support/dashboard";
-
+import {
+  getWidgetTestId,
+  editDashboard,
+  resizeBy,
+} from "../../support/dashboard";
 
 describe("Grid compliant widgets", () => {
-  beforeEach(function() {
+  beforeEach(function () {
     cy.login();
     cy.viewport(1215, 800);
     cy.createDashboard("Foo Bar")
@@ -105,7 +108,9 @@ describe("Grid compliant widgets", () => {
 
       it("shrinks to minimum", () => {
         cy.get("@textboxEl")
-          .then($el => resizeBy(cy.get("@textboxEl"), -$el.width(), -$el.height())) // resize to 0,0
+          .then($el =>
+            resizeBy(cy.get("@textboxEl"), -$el.width(), -$el.height()),
+          ) // resize to 0,0
           .then(() => cy.get("@textboxEl"))
           .should($el => {
             expect($el.width()).to.eq(185); // min textbox width

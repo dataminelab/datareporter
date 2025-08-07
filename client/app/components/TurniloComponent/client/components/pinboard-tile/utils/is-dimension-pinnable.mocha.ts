@@ -19,19 +19,20 @@ import { DimensionFixtures } from "../../../../common/models/dimension/dimension
 import { isDimensionPinnable } from "./is-dimension-pinnable";
 
 describe("isDimensionPinnable", () => {
-    it("should return true for string dimension", () => {
-      expect(isDimensionPinnable(DimensionFixtures.countryString())).to.be.true;
-    });
+  it("should return true for string dimension", () => {
+    expect(isDimensionPinnable(DimensionFixtures.countryString())).to.be.true;
+  });
 
-    it("should return true for boolean dimension", () => {
-      expect(isDimensionPinnable(DimensionFixtures.wikiIsRobot())).to.be.true;
-    });
+  it("should return true for boolean dimension", () => {
+    expect(isDimensionPinnable(DimensionFixtures.wikiIsRobot())).to.be.true;
+  });
 
-    it("should return false for number dimension", () => {
-      expect(isDimensionPinnable(DimensionFixtures.wikiCommentLength())).to.be.false;
-    });
+  it("should return false for number dimension", () => {
+    expect(isDimensionPinnable(DimensionFixtures.wikiCommentLength())).to.be
+      .false;
+  });
 
-    it("should return false for time dimension", () => {
-      expect(isDimensionPinnable(DimensionFixtures.wikiTime())).to.be.false;
-    });
+  it("should return false for time dimension", () => {
+    expect(isDimensionPinnable(DimensionFixtures.wikiTime())).to.be.false;
+  });
 });

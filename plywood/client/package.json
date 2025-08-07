@@ -74,7 +74,7 @@
   "dependencies": {
     "@aws-sdk/client-athena": "^3.3.0",
     "@google-cloud/bigquery": "5.2.0",
-    "chronoshift": "^0.10.0",
+    "chronoshift": "^1.2.1",
     "druid-query-toolkit": "^1.0.0",
     "druid.d.ts": "^0.12.1",
     "has-own-prop": "^1.0.1",

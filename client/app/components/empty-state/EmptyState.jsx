@@ -21,7 +21,12 @@ export function Step({ show, completed, text, url, urlText, onClick }) {
 
   return (
     <li className={classNames({ done: completed })}>
-      {url ? <Link href={url} {...commonProps} /> : <PlainButton type="link" {...commonProps} />} {text}
+      {url ? (
+        <Link href={url} {...commonProps} />
+      ) : (
+        <PlainButton type="link" {...commonProps} />
+      )}{" "}
+      {text}
     </li>
   );
 }
@@ -64,7 +69,7 @@ function EmptyState({
   header,
   description,
   illustration,
-  illustrationType=".svg",
+  illustrationType = ".svg",
   helpMessage,
   closable,
   onClose,
@@ -77,7 +82,6 @@ function EmptyState({
   illustrationPath,
 }) {
   const isAvailable = {
-    dataSource: true,
     model: true,
     query: true,
     reports: true,
@@ -102,7 +106,9 @@ function EmptyState({
   }, []);
 
   // Show if `onboardingMode=false` or any requested step not completed
-  const shouldShow = !onboardingMode || some(keys(isAvailable), step => isAvailable[step] && !isCompleted[step]);
+  const shouldShow =
+    !onboardingMode ||
+    some(keys(isAvailable), step => isAvailable[step] && !isCompleted[step]);
 
   if (!shouldShow) {
     return null;
@@ -215,8 +221,12 @@ function EmptyState({
     },
   ];
 
-  const stepsItems = getStepsItems ? getStepsItems(defaultStepsItems) : defaultStepsItems;
-  const imageSource = illustrationPath ? illustrationPath : "static/images/illustrations/" + illustration + illustrationType;
+  const stepsItems = getStepsItems
+    ? getStepsItems(defaultStepsItems)
+    : defaultStepsItems;
+  const imageSource = illustrationPath
+    ? illustrationPath
+    : "static/images/illustrations/" + illustration + illustrationType;
 
   return (
     <div className="empty-state-wrapper">
@@ -227,7 +237,11 @@ function EmptyState({
             <i className={icon} aria-hidden="true" />
           </h2>
           <p>{description}</p>
-          <img src={imageSource} alt={illustration + " Illustration"} width="75%" />
+          <img
+            src={imageSource}
+            alt={illustration + " Illustration"}
+            width="75%"
+          />
         </div>
         <div className="empty-state__steps">
           <h4>Let&apos;s get started</h4>
@@ -236,7 +250,11 @@ function EmptyState({
         </div>
       </div>
       {closable && (
-        <PlainButton className="close-button" aria-label="Close" onClick={onClose}>
+        <PlainButton
+          className="close-button"
+          aria-label="Close"
+          onClick={onClose}
+        >
           <CloseOutlinedIcon />
         </PlainButton>
       )}
@@ -250,6 +268,7 @@ EmptyState.propTypes = {
   description: PropTypes.string.isRequired,
   illustration: PropTypes.string.isRequired,
   illustrationPath: PropTypes.string,
+  illustrationType: PropTypes.string,
   helpMessage: PropTypes.node,
   closable: PropTypes.bool,
   onClose: PropTypes.func,
@@ -259,12 +278,12 @@ EmptyState.propTypes = {
   showDashboardStep: PropTypes.bool,
   showDataSourceStep: PropTypes.bool,
   showInviteStep: PropTypes.bool,
-  getStepItems: PropTypes.func,
+  getStepsItems: PropTypes.func,
 };
-
 EmptyState.defaultProps = {
   icon: null,
   header: null,
+  illustrationType: ".svg",
   helpMessage: null,
   closable: false,
   onClose: () => {},
@@ -274,6 +293,7 @@ EmptyState.defaultProps = {
   showDashboardStep: false,
   showDataSourceStep: true,
   showInviteStep: false,
+  getStepsItems: null,
 };
 
 export default EmptyState;

@@ -165,7 +165,7 @@ export const STRINGS: any = {
   displayDruidQuery: "Display Druid query",
   displayViewDefinition: "Display view definition",
   viewDefinition: "View definition",
-  yes: "Yes"
+  yes: "Yes",
 };
 
 // Data cubes introspection strategies
@@ -174,13 +174,26 @@ export const DATA_CUBES_STRATEGIES_LABELS = {
   "no-autofill": "No autofill",
   "autofill-dimensions-only": "Autofill dimensions only",
   "autofill-measures-only": "Autofill measures only",
-  "autofill-all": "Autofill all"
+  "autofill-all": "Autofill all",
 };
 
 const EN_US: Locale = {
   shortDays: ["S", "M", "T", "W", "T", "F", "S"],
-  shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
-  weekStart: 0
+  shortMonths: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+  weekStart: 0,
 };
 
 export function getLocale(): Locale {
@@ -189,5 +202,5 @@ export function getLocale(): Locale {
 
 export const exportOptions: Array<{ label: string; fileFormat: FileFormat }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },
-  { label: STRINGS.exportToTSV, fileFormat: "tsv" }
+  { label: STRINGS.exportToTSV, fileFormat: "tsv" },
 ];

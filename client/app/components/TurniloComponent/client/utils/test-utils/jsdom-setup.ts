@@ -23,7 +23,7 @@ const kickstart = () => {
   g.document = document;
   g.window = (document as any).defaultView;
   g.navigator = {
-    userAgent: "testing"
+    userAgent: "testing",
   };
 };
 

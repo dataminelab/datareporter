@@ -12,8 +12,8 @@ USER datareporter
 WORKDIR /frontend
 COPY --chown=datareporter client /frontend/client
 COPY --chown=datareporter viz-lib/ /frontend/viz-lib
-COPY --chown=datareporter plywood/server /frontend/plywood/server/
-COPY --chown=datareporter plywood/server/client /frontend/plywood/server/client
+COPY --chown=datareporter plywood /frontend/plywood/
+COPY --chown=datareporter plywood/client /frontend/plywood/client
 
 RUN <<EOF
   if [ "x$skip_frontend_build" = "x" ]; then

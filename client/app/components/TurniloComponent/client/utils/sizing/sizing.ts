@@ -20,7 +20,11 @@ export interface Positioning {
   shownColumns: number;
 }
 
-export function getVisibleSegments(segmentWidths: number[], offset: number, visibleSize: number): Positioning {
+export function getVisibleSegments(
+  segmentWidths: number[],
+  offset: number,
+  visibleSize: number,
+): Positioning {
   let startIndex = 0;
   let shownColumns = 0;
 
@@ -37,6 +41,6 @@ export function getVisibleSegments(segmentWidths: number[], offset: number, visi
 
   return {
     startIndex,
-    shownColumns
+    shownColumns,
   };
 }

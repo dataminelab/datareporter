@@ -6,13 +6,18 @@ import Link from "@/components/Link";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
 import Paginator from "@/components/Paginator";
 
-import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
+import {
+  wrap as itemsList,
+  ControllerType,
+} from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
 import { StateStorage } from "@/components/items-list/classes/StateStorage";
 
 import LoadingState from "@/components/items-list/components/LoadingState";
 import EmptyState from "@/components/items-list/components/EmptyState";
-import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
+import ItemsTable, {
+  Columns,
+} from "@/components/items-list/components/ItemsTable";
 
 import CreateGroupDialog from "@/components/groups/CreateGroupDialog";
 import DeleteGroupButton from "@/components/groups/DeleteGroupButton";
@@ -32,13 +37,15 @@ class GroupsList extends React.Component {
       (text, group) => (
         <div>
           <Link href={"groups/" + group.id}>{group.name}</Link>
-          {group.type === "builtin" && <span className="label label-default m-l-10">built-in</span>}
+          {group.type === "builtin" && (
+            <span className="label label-default m-l-10">built-in</span>
+          )}
         </div>
       ),
       {
         field: "name",
         width: null,
-      }
+      },
     ),
     Columns.custom(
       (text, group) => (
@@ -51,7 +58,7 @@ class GroupsList extends React.Component {
       {
         width: "1%",
         className: "text-nowrap",
-      }
+      },
     ),
     Columns.custom(
       (text, group) => {
@@ -62,7 +69,8 @@ class GroupsList extends React.Component {
             disabled={!canRemove}
             group={group}
             title={canRemove ? null : "Cannot delete built-in group"}
-            onClick={() => this.onGroupDeleted()}>
+            onClick={() => this.onGroupDeleted()}
+          >
             Delete
           </DeleteGroupButton>
         );
@@ -71,13 +79,13 @@ class GroupsList extends React.Component {
         width: "1%",
         className: "text-nowrap p-l-0",
         isAvailable: () => currentUser.isAdmin,
-      }
+      },
     ),
   ];
 
   createGroup = () => {
     CreateGroupDialog.showModal().onClose(group =>
-      Group.create(group).then(newGroup => navigateTo(`groups/${newGroup.id}`))
+      Group.create(group).then(newGroup => navigateTo(`groups/${newGroup.id}`)),
     );
   };
 
@@ -101,7 +109,9 @@ class GroupsList extends React.Component {
         )}
 
         {!controller.isLoaded && <LoadingState className="" />}
-        {controller.isLoaded && controller.isEmpty && <EmptyState className="" />}
+        {controller.isLoaded && controller.isEmpty && (
+          <EmptyState className="" />
+        )}
         {controller.isLoaded && !controller.isEmpty && (
           <div className="table-responsive">
             <ItemsTable
@@ -117,7 +127,9 @@ class GroupsList extends React.Component {
               showPageSizeSelect
               totalCount={controller.totalItemsCount}
               pageSize={controller.itemsPerPage}
-              onPageSizeChange={itemsPerPage => controller.updatePagination({ itemsPerPage })}
+              onPageSizeChange={itemsPerPage =>
+                controller.updatePagination({ itemsPerPage })
+              }
               page={controller.page}
               onChange={page => controller.updatePagination({ page })}
             />
@@ -148,8 +160,8 @@ const GroupsListPage = wrapSettingsTab(
           return Group.query.bind(Group);
         },
       }),
-    () => new StateStorage({ orderByField: "name", itemsPerPage: 10 })
-  )
+    () => new StateStorage({ orderByField: "name", itemsPerPage: 10 }),
+  ),
 );
 
 routes.register(
@@ -158,5 +170,5 @@ routes.register(
     path: "/groups",
     title: "Groups",
     render: pageProps => <GroupsListPage {...pageProps} currentPage="groups" />,
-  })
+  }),
 );

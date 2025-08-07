@@ -39,7 +39,12 @@ function ApiKeySessionWrapper({ apiKey, currentRoute, renderChildren }) {
 
   return (
     <React.Fragment key={currentRoute.key}>
-      {renderChildren({ ...currentRoute.routeParams, pageTitle: currentRoute.title, onError: handleError, apiKey })}
+      {renderChildren({
+        ...currentRoute.routeParams,
+        pageTitle: currentRoute.title,
+        onError: handleError,
+        apiKey,
+      })}
     </React.Fragment>
   );
 }
@@ -57,7 +62,11 @@ export default function routeWithApiKeySession({ render, getApiKey, ...rest }) {
   return {
     ...rest,
     render: currentRoute => (
-      <ApiKeySessionWrapper apiKey={getApiKey(currentRoute)} currentRoute={currentRoute} renderChildren={render} />
+      <ApiKeySessionWrapper
+        apiKey={getApiKey(currentRoute)}
+        currentRoute={currentRoute}
+        renderChildren={render}
+      />
     ),
   };
 }

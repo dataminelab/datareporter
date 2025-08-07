@@ -15,7 +15,11 @@
  */
 
 import { Splits } from "../../models/splits/splits";
-import { HIGH_PRIORITY_ACTION, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/visualization-manifest/visualization-manifest";
+import {
+  HIGH_PRIORITY_ACTION,
+  NORMAL_PRIORITY_ACTION,
+  Resolve,
+} from "../../models/visualization-manifest/visualization-manifest";
 import { Resolutions } from "./resolutions";
 import { Action } from "./rules-evaluator-builder";
 import { VisualizationDependentAction } from "./visualization-dependent-evaluator";
@@ -26,35 +30,56 @@ export class Actions {
     return () => Resolve.ready(score);
   }
 
-  static manualDimensionSelection(message: string): VisualizationDependentAction {
+  static manualDimensionSelection(
+    message: string,
+  ): VisualizationDependentAction {
     return ({ dataCube }) => {
-      return Resolve.manual(HIGH_PRIORITY_ACTION, message, Resolutions.someDimensions(dataCube));
+      return Resolve.manual(
+        HIGH_PRIORITY_ACTION,
+        message,
+        Resolutions.someDimensions(dataCube),
+      );
     };
   }
 
-  static removeExcessiveSplits(visualizationName = "Visualization"): VisualizationDependentAction {
+  static removeExcessiveSplits(
+    visualizationName = "Visualization",
+  ): VisualizationDependentAction {
     return ({ splits, dataCube }) => {
       const newSplits = splits.splits.take(dataCube.getMaxSplits());
       const excessiveSplits = splits.splits
         .skip(dataCube.getMaxSplits())
         .map(split => dataCube.getDimension(split.reference).title);
-      return Resolve.manual(NORMAL_PRIORITY_ACTION, `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`, [
-        {
-          description: `Remove excessive splits: ${excessiveSplits.toArray().join(", ")}`,
-          adjustment: {
-            splits: Splits.fromSplits(newSplits.toArray())
-          }
-        }
-      ]);
+      return Resolve.manual(
+        NORMAL_PRIORITY_ACTION,
+        `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`,
+        [
+          {
+            description: `Remove excessive splits: ${excessiveSplits
+              .toArray()
+              .join(", ")}`,
+            adjustment: {
+              splits: Splits.fromSplits(newSplits.toArray()),
+            },
+          },
+        ],
+      );
     };
   }
 
   static manualMeasuresSelection(): VisualizationIndependentAction {
     return ({ dataCube }) => {
       const selectDefault = Resolutions.defaultSelectedMeasures(dataCube);
-      const resolutions = selectDefault.length > 0 ? selectDefault : Resolutions.firstMeasure(dataCube);
+      const resolutions =
+        selectDefault.length > 0
+          ? selectDefault
+          : Resolutions.firstMeasure(dataCube);
 
-      return Resolve.manual(NORMAL_PRIORITY_ACTION, "At least one of the measures should be selected", resolutions);
+      return Resolve.manual(
+        NORMAL_PRIORITY_ACTION,
+        "At least one of the measures should be selected",
+        resolutions,
+      );
     };
   }
 }

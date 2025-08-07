@@ -26,34 +26,45 @@ interface LegendValuesProps {
   colors: StackedBarChartModel["colors"];
 }
 
-const LegendValues: React.FunctionComponent<LegendValuesProps> = ({ colors }) => {
-  return <div className="legend-values">
-    <table className="legend-values-table">
-      <tbody>
-      {colors.entrySeq().toArray().map(([segment, color]) => {
-        const style = { background: color };
-        return <tr key={segment} className="legend-value">
-          <td className="legend-value-color-cell">
-            <div className="legend-value-color" style={style} />
-          </td>
-          <td className="legend-value-label">
-            <span className="legend-value-name">{segment}</span>
-          </td>
-        </tr>;
-      })}
-      </tbody>
-    </table>
-  </div>;
+const LegendValues: React.FunctionComponent<LegendValuesProps> = ({
+  colors,
+}) => {
+  return (
+    <div className="legend-values">
+      <table className="legend-values-table">
+        <tbody>
+          {colors
+            .entrySeq()
+            .toArray()
+            .map(([segment, color]) => {
+              const style = { background: color };
+              return (
+                <tr key={segment} className="legend-value">
+                  <td className="legend-value-color-cell">
+                    <div className="legend-value-color" style={style} />
+                  </td>
+                  <td className="legend-value-label">
+                    <span className="legend-value-name">{segment}</span>
+                  </td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
 export const Legend: React.FunctionComponent<LegendProps> = props => {
-  const { model: { nominalSplit, nominalDimension, colors } } = props;
+  const {
+    model: { nominalSplit, nominalDimension, colors },
+  } = props;
   const title = nominalSplit.getTitle(nominalDimension);
 
-  return <div className="bar-chart-legend">
-    <div className="legend-header">
-      {title}
+  return (
+    <div className="bar-chart-legend">
+      <div className="legend-header">{title}</div>
+      <LegendValues colors={colors} />
     </div>
-    <LegendValues colors={colors} />
-  </div>;
+  );
 };

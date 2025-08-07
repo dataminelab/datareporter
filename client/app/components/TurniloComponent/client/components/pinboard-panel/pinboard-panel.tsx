@@ -41,18 +41,24 @@ const Legend = createTeleporter();
 
 export const LegendSpot = Legend.Source;
 
-export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardPanelState> {
-
+export class PinboardPanel extends React.Component<
+  PinboardPanelProps,
+  PinboardPanelState
+> {
   constructor(props: PinboardPanelProps) {
     super(props);
     this.state = {
-      dragOver: false
+      dragOver: false,
     };
   }
 
   canDrop(): boolean {
     const dimension = DragManager.draggingDimension();
-    return dimension && this.isStringOrBoolean(dimension) && !this.alreadyPinned(dimension);
+    return (
+      dimension &&
+      this.isStringOrBoolean(dimension) &&
+      !this.alreadyPinned(dimension)
+    );
   }
 
   isStringOrBoolean({ kind }: Dimension): boolean {
@@ -90,28 +96,35 @@ export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardP
   };
 
   render() {
-    const { clicker, essence, timekeeper, style, refreshRequestTimestamp } = this.props;
+    const { clicker, essence, timekeeper, style, refreshRequestTimestamp } =
+      this.props;
     const { dragOver } = this.state;
 
-    return <div
-      className="pinboard-panel"
-      onDragEnter={this.dragEnter}
-      style={style}>
-      <Legend.Target />
-      <PinboardTiles
-        hidePlaceholder={dragOver}
-        essence={essence}
-        clicker={clicker}
-        timekeeper={timekeeper}
-        refreshRequestTimestamp={refreshRequestTimestamp} />
-      {dragOver && <div className="drop-indicator-tile" />}
-      {dragOver && <div
-        className="drag-mask"
-        onDragOver={this.dragOver}
-        onDragLeave={this.dragLeave}
-        onDragExit={this.dragLeave}
-        onDrop={this.drop}
-      />}
-    </div>;
+    return (
+      <div
+        className="pinboard-panel"
+        onDragEnter={this.dragEnter}
+        style={style}
+      >
+        <Legend.Target />
+        <PinboardTiles
+          hidePlaceholder={dragOver}
+          essence={essence}
+          clicker={clicker}
+          timekeeper={timekeeper}
+          refreshRequestTimestamp={refreshRequestTimestamp}
+        />
+        {dragOver && <div className="drop-indicator-tile" />}
+        {dragOver && (
+          <div
+            className="drag-mask"
+            onDragOver={this.dragOver}
+            onDragLeave={this.dragLeave}
+            onDragExit={this.dragLeave}
+            onDrop={this.drop}
+          />
+        )}
+      </div>
+    );
   }
 }

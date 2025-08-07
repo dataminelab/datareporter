@@ -1,4 +1,13 @@
-import { isFunction, map, filter, extend, omit, identity, range, isEmpty } from "lodash";
+import {
+  isFunction,
+  map,
+  filter,
+  extend,
+  omit,
+  identity,
+  range,
+  isEmpty,
+} from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -21,7 +30,7 @@ export const Columns = {
         width: "1%",
         render: (text, item) => <FavoritesControl item={item} />,
       },
-      overrides
+      overrides,
     );
   },
   avatar(overrides, formatTitle) {
@@ -38,7 +47,7 @@ export const Columns = {
           />
         ),
       },
-      overrides
+      overrides,
     );
   },
   date(overrides) {
@@ -46,7 +55,7 @@ export const Columns = {
       {
         render: text => formatDate(text),
       },
-      overrides
+      overrides,
     );
   },
   dateTime(overrides) {
@@ -54,7 +63,7 @@ export const Columns = {
       {
         render: text => formatDateTime(text),
       },
-      overrides
+      overrides,
     );
   },
   duration(overrides) {
@@ -64,7 +73,7 @@ export const Columns = {
         className: "text-nowrap",
         render: text => durationHumanize(text),
       },
-      overrides
+      overrides,
     );
   },
   timeAgo(overrides, timeAgoCustomProps = undefined) {
@@ -72,7 +81,7 @@ export const Columns = {
       {
         render: value => <TimeAgo date={value} {...timeAgoCustomProps} />,
       },
-      overrides
+      overrides,
     );
   },
   custom(render, overrides) {
@@ -80,7 +89,7 @@ export const Columns = {
       {
         render,
       },
-      overrides
+      overrides,
     );
   },
 };
@@ -93,28 +102,28 @@ Columns.custom.sortable = sortable;
 
 export default class ItemsTable extends React.Component {
   static propTypes = {
-    loading: PropTypes.bool,
-    items: PropTypes.oneOfType([
+    "loading": PropTypes.bool,
+    "items": PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.object),
       PropTypes.array,
     ]),
-    columns: PropTypes.arrayOf(
+    "columns": PropTypes.arrayOf(
       PropTypes.shape({
         field: PropTypes.string, // data field
         orderByField: PropTypes.string, // field to order by (defaults to `field`)
         render: PropTypes.func, // (prop, item) => text | node; `prop` is `item[field]`
         isAvailable: PropTypes.func, // return `true` to show column and `false` to hide; if omitted: show column
-      })
+      }),
     ),
-    showHeader: PropTypes.bool,
-    onRowClick: PropTypes.func, // (event, item) => void
+    "showHeader": PropTypes.bool,
+    "onRowClick": PropTypes.func, // (event, item) => void
 
-    orderByField: PropTypes.string,
-    orderByReverse: PropTypes.bool,
-    toggleSorting: PropTypes.func,
-    setSorting: PropTypes.func,
+    "orderByField": PropTypes.string,
+    "orderByReverse": PropTypes.bool,
+    "toggleSorting": PropTypes.func,
+    "setSorting": PropTypes.func,
     "data-test": PropTypes.string,
-    rowKey: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    "rowKey": PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   };
 
   static defaultProps = {
@@ -135,20 +144,26 @@ export default class ItemsTable extends React.Component {
 
     return map(
       map(
-        filter(this.props.columns, column => (isFunction(column.isAvailable) ? column.isAvailable() : true)),
-        column => extend(column, { orderByField: column.orderByField || column.field })
+        filter(this.props.columns, column =>
+          isFunction(column.isAvailable) ? column.isAvailable() : true,
+        ),
+        column =>
+          extend(column, { orderByField: column.orderByField || column.field }),
       ),
       (column, index) => {
         // Wrap render function to pass correct arguments
-        const render = isFunction(column.render) ? (text, row) => column.render(text, row.item) : identity;
+        const render = isFunction(column.render)
+          ? (text, row) => column.render(text, row.item)
+          : identity;
 
         return extend(omit(column, ["field", "orderByField", "render"]), {
           key: "column" + index,
           dataIndex: ["item", column.field],
-          defaultSortOrder: column.orderByField === orderByField ? orderByDirection : null,
+          defaultSortOrder:
+            column.orderByField === orderByField ? orderByDirection : null,
           render,
         });
-      }
+      },
     );
   }
 
@@ -166,7 +181,10 @@ export default class ItemsTable extends React.Component {
   render() {
     const tableDataProps = {
       columns: this.prepareColumns(),
-      dataSource: map(this.props.items, (item, index) => ({ key: "row" + index, item })),
+      dataSource: map(this.props.items, (item, index) => ({
+        key: "row" + index,
+        item,
+      })),
     };
 
     // Bind events only if `onRowClick` specified
@@ -177,11 +195,13 @@ export default class ItemsTable extends React.Component {
           },
         })
       : null;
-    
+
     const onChange = (pagination, filters, sorter, extra) => {
       const action = extra?.action;
       if (action === "sort") {
-        const propsColumn = this.props.columns.find((column) => column.field === sorter.field[1]);
+        const propsColumn = this.props.columns.find(
+          column => column.field === sorter.field[1],
+        );
         if (!propsColumn.sorter) {
           return;
         }
@@ -215,7 +235,9 @@ export default class ItemsTable extends React.Component {
 
     return (
       <Table
-        className={classNames("table-data", { "ant-table-headerless": !showHeader })}
+        className={classNames("table-data", {
+          "ant-table-headerless": !showHeader,
+        })}
         showHeader={showHeader}
         rowKey={this.getRowKey}
         pagination={false}

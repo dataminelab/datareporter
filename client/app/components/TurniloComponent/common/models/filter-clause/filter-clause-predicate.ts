@@ -17,7 +17,11 @@
 import { complement, Predicate } from "../../utils/functional/functional";
 import { StringFilterAction, StringFilterClause } from "./filter-clause";
 
-export function clausePredicate({ action, values, not }: StringFilterClause): Predicate<string> {
+export function clausePredicate({
+  action,
+  values,
+  not,
+}: StringFilterClause): Predicate<string> {
   switch (action) {
     case StringFilterAction.IN:
       const predicate = (str: string) => values.has(str);

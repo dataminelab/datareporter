@@ -6,13 +6,16 @@ import Tooltip from "@/components/Tooltip";
 
 export default function AutoLimitCheckbox({ available, checked, onChange }) {
   const handleClick = useCallback(() => {
-    recordEvent("checkbox_auto_limit", "screen", "query_editor", { state: !checked });
+    recordEvent("checkbox_auto_limit", "screen", "query_editor", {
+      state: !checked,
+    });
     onChange(!checked);
   }, [checked, onChange]);
 
   let tooltipMessage = null;
   if (!available) {
-    tooltipMessage = "Auto limiting is not available for this Data Source type.";
+    tooltipMessage =
+      "Auto limiting is not available for this Data Source type.";
   } else {
     tooltipMessage = "Auto limit results to first 1000 rows.";
   }
@@ -23,7 +26,8 @@ export default function AutoLimitCheckbox({ available, checked, onChange }) {
         className="query-editor-controls-checkbox"
         disabled={!available}
         onClick={handleClick}
-        checked={available && checked}>
+        checked={available && checked}
+      >
         LIMIT 1000
       </Checkbox>
     </Tooltip>

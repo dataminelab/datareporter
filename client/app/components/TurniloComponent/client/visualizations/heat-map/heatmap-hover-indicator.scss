@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-@import '../../imports';
-@import './utils/sizes';
+@import "../../imports";
+@import "./utils/sizes";
 
 .heatmap-hover-indicator {
   @include border-css-variable(border, 1px, solid, highlight-border);

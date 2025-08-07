@@ -23,12 +23,15 @@ const twitter = DataCubeFixtures.twitter();
 const custom = DataCubeFixtures.customCube;
 
 describe("DataCubes Filter", () => {
-
   it("should leave unchanged with empty filter", () => {
     const dataCubes = [twitter, wiki];
 
-    expect(filterDataCubes(dataCubes, ""), "empty string").to.be.deep.equal(dataCubes);
-    expect(filterDataCubes(dataCubes, "   "), "blank string").to.be.deep.equal(dataCubes);
+    expect(filterDataCubes(dataCubes, ""), "empty string").to.be.deep.equal(
+      dataCubes,
+    );
+    expect(filterDataCubes(dataCubes, "   "), "blank string").to.be.deep.equal(
+      dataCubes,
+    );
   });
 
   it("should filter based on title", () => {
@@ -78,13 +81,46 @@ describe("DataCubes Filter", () => {
     const withTitle = custom("foobar", "lorem ipsum lorem ipsum");
     const withTitleShifted = custom("lorem foobar", "lorem ipsum lorem ipsum");
     const withDescription = custom("bazz", "foobar lorem ipsum lorem ipsum");
-    const withDoubleDescription = custom("bazz", "foobar lorem ipsum foobar lorem ipsum");
+    const withDoubleDescription = custom(
+      "bazz",
+      "foobar lorem ipsum foobar lorem ipsum",
+    );
 
-    expect(filterDataCubes([withDescription, wiki, twitter, withTitle], "foobar"), "title then description").to.be.deep.equal([withTitle, withDescription]);
-    expect(filterDataCubes([twitter, withTitleShifted, withTitle, wiki], "foobar"), "earlier title first").to.be.deep.equal([withTitle, withTitleShifted]);
-    expect(filterDataCubes([withDescription, twitter, wiki, withDoubleDescription], "foobar"), "counts occurrences in description").to.be.deep.equal([withDoubleDescription, withDescription]);
+    expect(
+      filterDataCubes([withDescription, wiki, twitter, withTitle], "foobar"),
+      "title then description",
+    ).to.be.deep.equal([withTitle, withDescription]);
+    expect(
+      filterDataCubes([twitter, withTitleShifted, withTitle, wiki], "foobar"),
+      "earlier title first",
+    ).to.be.deep.equal([withTitle, withTitleShifted]);
+    expect(
+      filterDataCubes(
+        [withDescription, twitter, wiki, withDoubleDescription],
+        "foobar",
+      ),
+      "counts occurrences in description",
+    ).to.be.deep.equal([withDoubleDescription, withDescription]);
 
-    expect(filterDataCubes([withDescription, twitter, withTitleShifted, twitter, withTitle, wiki, withDoubleDescription], "foobar"), "all")
-      .to.be.deep.equal([withTitle, withTitleShifted, withDoubleDescription, withDescription]);
+    expect(
+      filterDataCubes(
+        [
+          withDescription,
+          twitter,
+          withTitleShifted,
+          twitter,
+          withTitle,
+          wiki,
+          withDoubleDescription,
+        ],
+        "foobar",
+      ),
+      "all",
+    ).to.be.deep.equal([
+      withTitle,
+      withTitleShifted,
+      withDoubleDescription,
+      withDescription,
+    ]);
   });
 });

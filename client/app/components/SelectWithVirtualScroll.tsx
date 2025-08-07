@@ -9,10 +9,14 @@ interface VirtualScrollLabeledValue extends LabeledValue {
   label: string;
 }
 
-interface VirtualScrollSelectProps extends Omit<SelectProps<string>, "optionFilterProp" | "children"> {
+interface VirtualScrollSelectProps
+  extends Omit<SelectProps<string>, "optionFilterProp" | "children"> {
   options: Array<VirtualScrollLabeledValue>;
 }
-function SelectWithVirtualScroll({ options, ...props }: VirtualScrollSelectProps): JSX.Element {
+function SelectWithVirtualScroll({
+  options,
+  ...props
+}: VirtualScrollSelectProps): JSX.Element {
   const dropdownMatchSelectWidth = useMemo<number | boolean>(() => {
     if (options && options.length > MIN_LEN_FOR_VIRTUAL_SCROLL) {
       const largestOpt = maxBy(options, "label.length");

@@ -1,5 +1,11 @@
-import { createQueryAndAddWidget, editDashboard } from "../../support/dashboard";
-import { expectTableToHaveLength, expectFirstColumnToHaveMembers } from "../../support/visualizations/table";
+import {
+  createQueryAndAddWidget,
+  editDashboard,
+} from "../../support/dashboard";
+import {
+  expectTableToHaveLength,
+  expectFirstColumnToHaveMembers,
+} from "../../support/visualizations/table";
 
 const SQL = `
 SELECT 'a' AS stage1, 'a1' AS stage2, 11 AS value UNION ALL
@@ -26,13 +32,17 @@ describe("Dashboard Filters", () => {
     cy.createDashboard("Dashboard Filters").then(dashboard => {
       createQueryAndAddWidget(dashboard.id, queryData)
         .as("widget1TestId")
-        .then(() => createQueryAndAddWidget(dashboard.id, queryData, { position: { col: 4 } }))
+        .then(() =>
+          createQueryAndAddWidget(dashboard.id, queryData, {
+            position: { col: 4 },
+          }),
+        )
         .as("widget2TestId")
         .then(() => cy.visit(`/dashboards/${dashboard.id}`));
     });
   });
 
-  it("filters rows in a Table Visualization", function() {
+  it("filters rows in a Table Visualization", function () {
     editDashboard();
     cy.getByTestId("DashboardFilters").should("not.exist");
     cy.getByTestId("DashboardFiltersCheckbox").click();
@@ -47,9 +57,7 @@ describe("Dashboard Filters", () => {
       expectTableToHaveLength(4);
       expectFirstColumnToHaveMembers(["a", "a", "a", "a"]);
 
-      cy.getByTestId("FilterName-stage1::filter")
-        .find(".ant-select")
-        .click();
+      cy.getByTestId("FilterName-stage1::filter").find(".ant-select").click();
     });
 
     cy.contains(".ant-select-item:visible", "b").click();
@@ -69,9 +77,7 @@ describe("Dashboard Filters", () => {
     // assert that changing a global filter affects all widgets
 
     cy.getByTestId("DashboardFilters").within(() => {
-      cy.getByTestId("FilterName-stage1::filter")
-        .find(".ant-select")
-        .click();
+      cy.getByTestId("FilterName-stage1::filter").find(".ant-select").click();
     });
 
     cy.contains(".ant-select-item:visible", "c").click();
@@ -80,7 +86,7 @@ describe("Dashboard Filters", () => {
       cy.getByTestId(widgetTestId).within(() => {
         expectTableToHaveLength(4);
         expectFirstColumnToHaveMembers(["c", "c", "c", "c"]);
-      })
+      }),
     );
   });
 });

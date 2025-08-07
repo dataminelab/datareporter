@@ -88,5 +88,5 @@ routes.register(
     path: "/admin/status",
     title: "System Status",
     render: pageProps => <SystemStatus {...pageProps} />,
-  })
+  }),
 );

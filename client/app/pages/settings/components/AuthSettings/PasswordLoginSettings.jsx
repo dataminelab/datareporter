@@ -6,16 +6,24 @@ import Tooltip from "@/components/Tooltip";
 import Skeleton from "antd/lib/skeleton";
 import DynamicComponent from "@/components/DynamicComponent";
 import { clientConfig } from "@/services/auth";
-import { SettingsEditorPropTypes, SettingsEditorDefaultProps } from "../prop-types";
+import {
+  SettingsEditorPropTypes,
+  SettingsEditorDefaultProps,
+} from "../prop-types";
 
 export default function PasswordLoginSettings(props) {
   const { settings, values, onChange, loading } = props;
 
   const isTheOnlyAuthMethod =
-    !clientConfig.googleLoginEnabled && !clientConfig.ldapLoginEnabled && !values.auth_saml_enabled;
+    !clientConfig.googleLoginEnabled &&
+    !clientConfig.ldapLoginEnabled &&
+    !values.auth_saml_enabled;
 
   return (
-    <DynamicComponent name="OrganizationSettings.PasswordLoginSettings" {...props}>
+    <DynamicComponent
+      name="OrganizationSettings.PasswordLoginSettings"
+      {...props}
+    >
       {!loading && !settings.auth_password_login_enabled && (
         <Alert
           message="Password based login is currently disabled and users will
@@ -31,12 +39,18 @@ export default function PasswordLoginSettings(props) {
           <Checkbox
             checked={values.auth_password_login_enabled}
             disabled={isTheOnlyAuthMethod}
-            onChange={e => onChange({ auth_password_login_enabled: e.target.checked })}>
+            onChange={e =>
+              onChange({ auth_password_login_enabled: e.target.checked })
+            }
+          >
             <Tooltip
               title={
-                isTheOnlyAuthMethod ? "Password login can be disabled only if another login method is enabled." : null
+                isTheOnlyAuthMethod
+                  ? "Password login can be disabled only if another login method is enabled."
+                  : null
               }
-              placement="right">
+              placement="right"
+            >
               Password Login Enabled
             </Tooltip>
           </Checkbox>

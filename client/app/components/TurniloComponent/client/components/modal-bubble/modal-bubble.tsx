@@ -30,7 +30,6 @@ interface ModalProps {
 }
 
 export class ModalBubble extends React.Component<ModalProps, {}> {
-
   modalRef: HTMLDivElement;
 
   setModalRef = (el: HTMLDivElement) => {
@@ -45,14 +44,19 @@ export class ModalBubble extends React.Component<ModalProps, {}> {
 
   render() {
     const { className, children, left, top } = this.props;
-    return <React.Fragment>
-      <GlobalEventListener mouseDown={this.onMouseDown} />
-      <BodyPortal left={left} top={top}>
-        <div className={classNames("modal-bubble", className)} ref={this.setModalRef}>
-          {children}
-          <Shpitz direction="up" />
-        </div>
-      </BodyPortal>
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <GlobalEventListener mouseDown={this.onMouseDown} />
+        <BodyPortal left={left} top={top}>
+          <div
+            className={classNames("modal-bubble", className)}
+            ref={this.setModalRef}
+          >
+            {children}
+            <Shpitz direction="up" />
+          </div>
+        </BodyPortal>
+      </React.Fragment>
+    );
   }
 }

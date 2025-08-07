@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { BooleanFilterClause, FilterClause, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  FilterClause,
+  StringFilterClause,
+} from "../../../../common/models/filter-clause/filter-clause";
 
 export type PinnableClause = StringFilterClause | BooleanFilterClause;
 
-export function isPinnableClause(clause?: FilterClause): clause is PinnableClause {
-  return clause instanceof StringFilterClause || clause instanceof BooleanFilterClause;
+export function isPinnableClause(
+  clause?: FilterClause,
+): clause is PinnableClause {
+  return (
+    clause instanceof StringFilterClause ||
+    clause instanceof BooleanFilterClause
+  );
 }

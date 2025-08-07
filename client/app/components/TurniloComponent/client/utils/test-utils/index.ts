@@ -28,5 +28,5 @@ export * from "./sleep";
 
 Object.defineProperty(ExecutionEnvironment, "canUseDOM", {
   value: true,
-  configurable: true
+  configurable: true,
 });

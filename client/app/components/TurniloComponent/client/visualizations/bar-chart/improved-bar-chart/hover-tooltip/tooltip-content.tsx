@@ -21,7 +21,11 @@ import { createColorEntry } from "../../../../components/color-swabs/color-entry
 import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
 import { SeriesBubbleContent } from "../../../../components/series-bubble-content/series-bubble-content";
 import { selectSplitDatums } from "../../../../utils/dataset/selectors/selectors";
-import { BarChartModel, isStacked, StackedBarChartModel } from "../utils/bar-chart-model";
+import {
+  BarChartModel,
+  isStacked,
+  StackedBarChartModel,
+} from "../utils/bar-chart-model";
 
 interface ContentProps {
   model: BarChartModel;
@@ -29,12 +33,18 @@ interface ContentProps {
   series: ConcreteSeries;
 }
 
-function colorEntries(datum: Datum, series: ConcreteSeries, model: StackedBarChartModel) {
+function colorEntries(
+  datum: Datum,
+  series: ConcreteSeries,
+  model: StackedBarChartModel,
+) {
   const { nominalSplit, colors, hasComparison } = model;
   const datums = selectSplitDatums(datum);
   const colorEntries = colors.entrySeq().toArray();
   return colorEntries.map(([name, color]) => {
-    const datum = datums.find(d => String(nominalSplit.selectValue(d)) === name);
+    const datum = datums.find(
+      d => String(nominalSplit.selectValue(d)) === name,
+    );
 
     if (!datum) {
       return { color, name, value: "-" };
@@ -50,5 +60,11 @@ export const Content: React.FunctionComponent<ContentProps> = props => {
     const entries = colorEntries(datum, series, model);
     return <ColorSwabs colorEntries={entries} />;
   }
-  return <SeriesBubbleContent series={series} datum={datum} showPrevious={model.hasComparison}/>;
+  return (
+    <SeriesBubbleContent
+      series={series}
+      datum={datum}
+      showPrevious={model.hasComparison}
+    />
+  );
 };

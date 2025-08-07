@@ -29,14 +29,16 @@ describe("filterByDimensionValue", () => {
       { [name]: "also foobar in the middle" },
       { [name]: "written with capitals FOOBAR" },
       { [name]: "wirtten with weird casing FooBAr" },
-      { [name]: "and inside another word bazfoobarqvux" }
+      { [name]: "and inside another word bazfoobarqvux" },
     ];
     const input = [
       { [name]: "without searched word" },
       ...output,
       { [name]: "qvuuuuux" },
-      { [name]: "jibberish" }
+      { [name]: "jibberish" },
     ];
-    expect(filterByDimensionValue(input, dimension, searchText)).to.be.deep.equal(output);
+    expect(
+      filterByDimensionValue(input, dimension, searchText),
+    ).to.be.deep.equal(output);
   });
 });

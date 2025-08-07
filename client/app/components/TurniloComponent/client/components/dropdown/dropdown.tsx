@@ -43,9 +43,12 @@ export interface DropdownState {
   open: boolean;
 }
 
-export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState> {
+export class Dropdown<T> extends React.Component<
+  DropdownProps<T>,
+  DropdownState
+> {
   state: DropdownState = {
-    open: false
+    open: false,
   };
 
   componentDidMount() {
@@ -87,34 +90,64 @@ export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState
   };
 
   renderMenu() {
-    const { items, renderItem = String, keyItem = renderItem, selectedItem, equal = simpleEqual, menuClassName } = this.props;
+    const {
+      items,
+      renderItem = String,
+      keyItem = renderItem,
+      selectedItem,
+      equal = simpleEqual,
+      menuClassName,
+    } = this.props;
     if (!items || !items.length) return null;
     const itemElements = items.map(item => {
-      return <div
-        className={classNames("dropdown-item", { selected: selectedItem && equal(item, selectedItem) })}
-        key={keyItem(item) as string}
-        onClick={() => this.handleOnSelect(item)}>
-        {renderItem(item)}
-      </div>;
+      return (
+        <div
+          className={classNames("dropdown-item", {
+            selected: selectedItem && equal(item, selectedItem),
+          })}
+          key={keyItem(item) as string}
+          onClick={() => this.handleOnSelect(item)}
+        >
+          {renderItem(item)}
+        </div>
+      );
     });
 
-    return <div className={classNames("dropdown-menu", menuClassName)}>
-      {itemElements}
-    </div>;
+    return (
+      <div className={classNames("dropdown-menu", menuClassName)}>
+        {itemElements}
+      </div>
+    );
   }
 
   render() {
-    const { label, renderItem = String, selectedItem, direction = "down", renderSelectedItem = renderItem, className } = this.props;
+    const {
+      label,
+      renderItem = String,
+      selectedItem,
+      direction = "down",
+      renderSelectedItem = renderItem,
+      className,
+    } = this.props;
     const { open } = this.state;
 
     const labelElement = label && <div className="dropdown-label">{label}</div>;
 
-    return <div className={classNames("dropdown", direction, className)} onClick={this.onClick}>
-      {labelElement}
-      <div className={classNames("selected-item", { active: open })}>{renderSelectedItem(selectedItem)}
-        <SvgIcon className="caret-icon" svg={require("../../icons/dropdown-caret.svg")} />
+    return (
+      <div
+        className={classNames("dropdown", direction, className)}
+        onClick={this.onClick}
+      >
+        {labelElement}
+        <div className={classNames("selected-item", { active: open })}>
+          {renderSelectedItem(selectedItem)}
+          <SvgIcon
+            className="caret-icon"
+            svg={require("../../icons/dropdown-caret.svg")}
+          />
+        </div>
+        {open ? this.renderMenu() : null}
       </div>
-      {open ? this.renderMenu() : null}
-    </div>;
+    );
   }
 }

@@ -7,7 +7,10 @@ const SESSION_RESTORED_MESSAGE = "redash_session_restored";
 
 export function notifySessionRestored() {
   if (window.opener) {
-    window.opener.postMessage({ type: SESSION_RESTORED_MESSAGE }, window.location.origin);
+    window.opener.postMessage(
+      { type: SESSION_RESTORED_MESSAGE },
+      window.location.origin,
+    );
   }
 }
 
@@ -56,7 +59,11 @@ function showRestoreSessionPrompt(loginUrl, onSuccess) {
         status: "yes",
       };
 
-      popup = window.open(loginUrl, "Restore Session", map(popupOptions, (value, key) => `${key}=${value}`).join(","));
+      popup = window.open(
+        loginUrl,
+        "Restore Session",
+        map(popupOptions, (value, key) => `${key}=${value}`).join(","),
+      );
 
       const handlePostMessage = event => {
         if (event.data.type === SESSION_RESTORED_MESSAGE) {

@@ -24,7 +24,7 @@ use(chaiDatetime);
 function makeRange(startIso: string, endIso: string): DateRange {
   return new DateRange({
     start: new Date(startIso),
-    end: new Date(endIso)
+    end: new Date(endIso),
   });
 }
 

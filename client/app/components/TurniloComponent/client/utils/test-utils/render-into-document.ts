@@ -21,6 +21,8 @@ import * as TestUtils from "react-dom/test-utils";
 //
 // This wrapper is needed for correct type inference
 // Current @types/react-dom declare wrong (IMHO) return type which includes void
-export function renderIntoDocument<P>(element: React.ReactElement<P>): React.Component<P> | Element {
+export function renderIntoDocument<P>(
+  element: React.ReactElement<P>,
+): React.Component<P> | Element {
   return TestUtils.renderIntoDocument(element) as React.Component<P> | Element;
 }

@@ -15,7 +15,6 @@
  */
 
 context("Boolean Filter Menu", () => {
-
   const booleanMenu = () => cy.get(".boolean-filter-menu");
   const booleanMenuTable = () => booleanMenu().find(".menu-table");
   const falseOption = () => booleanMenuTable().find(".row:contains('false')");
@@ -24,21 +23,26 @@ context("Boolean Filter Menu", () => {
   const booleanMenuCancelButton = () => booleanMenu().find(".button.secondary");
 
   const urls = {
-    isRobotAllValues: "#reports/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvggvAHoZAAmAProVupkAAqOWBEuoBEwDuhYuAQJAIwAIlZQ9sL4ALT5qp7eQvalIEoAuiputcHEmAJkcLjUAUEE0DEOvAAWEGCRVmCIMGQuCghizdTYmGj4y8prIFDCSGhphB0EpQ4QnFYRvmTYUDnB/AiYDlH5JW9beKCDwRF0HAolBMJleGQohAInEzvtkosbhAArxGLkQBFFhDsLdrtQvJdMDCCE1qEg1BAfgBWAAMLWoYkuiLwrhAg0c9whAKBILBY0h0Kscjealiv1OXgBgTgMDss3m3lJEu8GjgsACTT2wiu2EihTuDxyLi1OsiTG+3KIvPBAphSiAA",
-    isRobotOnlyTrueValues: "#reports/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvggvAHoZAAmAProVupkAAqOWBEuoBEwDuhYuAQJAIwAIlZQ9sL4ALT5qp7eQvalIEoAui3UUMJIaGmEtcGlDhCcVhG+ZNhQOcH8CJgOUfklc2g8IAFBBBHocFFQmJm8ZFEQEXF9BGKDZNzUowG8jLkgEdeH2KPD1F6DmKcETdQkGoICs8ABWAAMbRAlwg13wrjWgUc40OwS2RF2+wch2Op2ocjmalieDc52egTgMDsVjAiBg3gBvS8wQ0cFgASazS+Q2wkUKYwmORc3JAwl5kSYy3R2yxByOJyaQA",
-  }
+    isRobotAllValues:
+      "#reports/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvggvAHoZAAmAProVupkAAqOWBEuoBEwDuhYuAQJAIwAIlZQ9sL4ALT5qp7eQvalIEoAuiputcHEmAJkcLjUAUEE0DEOvAAWEGCRVmCIMGQuCghizdTYmGj4y8prIFDCSGhphB0EpQ4QnFYRvmTYUDnB/AiYDlH5JW9beKCDwRF0HAolBMJleGQohAInEzvtkosbhAArxGLkQBFFhDsLdrtQvJdMDCCE1qEg1BAfgBWAAMLWoYkuiLwrhAg0c9whAKBILBY0h0Kscjealiv1OXgBgTgMDss3m3lJEu8GjgsACTT2wiu2EihTuDxyLi1OsiTG+3KIvPBAphSiAA",
+    isRobotOnlyTrueValues:
+      "#reports/4/N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvggvAHoZAAmAProVupkAAqOWBEuoBEwDuhYuAQJAIwAIlZQ9sL4ALT5qp7eQvalIEoAui3UUMJIaGmEtcGlDhCcVhG+ZNhQOcH8CJgOUfklc2g8IAFBBBHocFFQmJm8ZFEQEXF9BGKDZNzUowG8jLkgEdeH2KPD1F6DmKcETdQkGoICs8ABWAAMbRAlwg13wrjWgUc40OwS2RF2+wch2Op2ocjmalieDc52egTgMDsVjAiBg3gBvS8wQ0cFgASazS+Q2wkUKYwmORc3JAwl5kSYy3R2yxByOJyaQA",
+  };
   function assertSelection(isTrueOptionSelected, isFalseOptionSelected) {
     function selectionToPredicate(isSelected) {
       return isSelected ? "have.class" : "not.have.class";
     }
 
-    booleanMenuTable()
-      .within(() => {
-        cy.get(".row:contains('true') .checkbox")
-          .should(selectionToPredicate(isTrueOptionSelected), "selected");
-        cy.get(".row:contains('false') .checkbox")
-          .should(selectionToPredicate(isFalseOptionSelected), "selected");
-      });
+    booleanMenuTable().within(() => {
+      cy.get(".row:contains('true') .checkbox").should(
+        selectionToPredicate(isTrueOptionSelected),
+        "selected",
+      );
+      cy.get(".row:contains('false') .checkbox").should(
+        selectionToPredicate(isFalseOptionSelected),
+        "selected",
+      );
+    });
   }
 
   beforeEach(() => {
@@ -56,9 +60,7 @@ context("Boolean Filter Menu", () => {
     });
 
     it("should load possible values", () => {
-      booleanMenuTable()
-        .find(".row")
-        .should("have.length", 2);
+      booleanMenuTable().find(".row").should("have.length", 2);
     });
 
     it("should mark selected values", () => {
@@ -86,7 +88,7 @@ context("Boolean Filter Menu", () => {
 
     it("should not change url after closing menu without changes", () => {
       booleanMenuCancelButton().click();
-      cy.location('hash').should('equal', urls.isRobotOnlyTrueValues);
+      cy.location("hash").should("equal", urls.isRobotOnlyTrueValues);
     });
   });
 
@@ -125,14 +127,14 @@ context("Boolean Filter Menu", () => {
       falseOption().click();
 
       booleanMenuOkButton().click();
-      cy.location('hash').should('equal', urls.isRobotAllValues);
+      cy.location("hash").should("equal", urls.isRobotAllValues);
     });
 
     it("should not change url after canceling selection", () => {
       falseOption().click();
 
       booleanMenuCancelButton().click();
-      cy.location('hash').should('equal', urls.isRobotOnlyTrueValues);
+      cy.location("hash").should("equal", urls.isRobotOnlyTrueValues);
     });
   });
 });

@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-@import '../../../imports';
-@import 'dimensions';
+@import "../../../imports";
+@import "dimensions";
 
 @mixin row-style {
-  @include border-css-variable('border-bottom', 1px, solid, 'border-super-light');
+  @include border-css-variable(
+    "border-bottom",
+    1px,
+    solid,
+    "border-super-light"
+  );
   position: absolute;
   height: $row-height;
   left: 0;

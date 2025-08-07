@@ -107,7 +107,7 @@ cd client && npm run cypress db-seed # Seed the database with initial data for c
   * Lib viz
     * **directory:** `viz-lib`
   * Plywood client
-    * **directory:** `plywood/server/client`
+    * **directory:** `plywood/client`
   * main client
     * **directory:** `client`
   * **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
@@ -121,7 +121,7 @@ cd client && npm run cypress db-seed # Seed the database with initial data for c
 
 #### Plywood server
 
-* **directory:** `plywood/server`
+* **directory:** `plywood`
 * **debug:** connect nodejs debugger to `localhost:9231`
 * **changes:**
   * All changes should be reflected automatically. The server is running in watch mode with incremental build support

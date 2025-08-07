@@ -23,7 +23,10 @@ function roundTo(v: number, roundTo: number) {
   return Math.round(Math.floor(v / roundTo)) * roundTo;
 }
 
-export function snapRangeToGrid(range: PlywoodRange, essence: Essence): ContinuousRange {
+export function snapRangeToGrid(
+  range: PlywoodRange,
+  essence: Essence,
+): ContinuousRange {
   // floors range to scale ranges
   const continuousSplit = getContinuousSplit(essence);
 
@@ -32,7 +35,7 @@ export function snapRangeToGrid(range: PlywoodRange, essence: Essence): Continuo
     const duration = continuousSplit.bucket as Duration;
     return TimeRange.fromJS({
       start: duration.floor(range.start, timezone),
-      end: duration.shift(duration.floor(range.end, timezone), timezone, 1)
+      end: duration.shift(duration.floor(range.end, timezone), timezone, 1),
     });
   }
   if (NumberRange.isNumberRange(range)) {
@@ -46,7 +49,7 @@ export function snapRangeToGrid(range: PlywoodRange, essence: Essence): Continuo
 
     return NumberRange.fromJS({
       start: startFloored,
-      end: endFloored
+      end: endFloored,
     });
   }
 

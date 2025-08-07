@@ -18,7 +18,11 @@ import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
-import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
+import {
+  Binary,
+  Ternary,
+  Unary,
+} from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { transformStyle } from "../../utils/dom/dom";
 import { SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
@@ -41,29 +45,47 @@ interface SplitTilesProps {
 }
 
 export const SplitTiles: React.SFC<SplitTilesProps> = props => {
-  const { overflowOpen, closeOverflowMenu, openOverflowMenu, essence, maxItems, removeSplit, updateSplit, openedSplit, openMenu, closeMenu, dragStart, menuStage } = props;
+  const {
+    overflowOpen,
+    closeOverflowMenu,
+    openOverflowMenu,
+    essence,
+    maxItems,
+    removeSplit,
+    updateSplit,
+    openedSplit,
+    openMenu,
+    closeMenu,
+    dragStart,
+    menuStage,
+  } = props;
 
   const splits = essence.splits.splits.toArray();
 
   const splitTiles = splits.map(split => {
     const dimension = essence.dataCube.getDimension(split.reference);
-    return <SplitTile
-      key={split.toKey()}
-      split={split}
-      dimension={dimension}
-      removeSplit={removeSplit}
-      updateSplit={updateSplit}
-      open={split.equals(openedSplit)}
-      openMenu={openMenu}
-      closeMenu={closeMenu}
-      dragStart={dragStart}
-      containerStage={menuStage}
-      essence={essence} />;
+    return (
+      <SplitTile
+        key={split.toKey()}
+        split={split}
+        dimension={dimension}
+        removeSplit={removeSplit}
+        updateSplit={updateSplit}
+        open={split.equals(openedSplit)}
+        openMenu={openMenu}
+        closeMenu={closeMenu}
+        dragStart={dragStart}
+        containerStage={menuStage}
+        essence={essence}
+      />
+    );
   });
 
   const visibleSplits = splitTiles
     .slice(0, maxItems)
-    .map((el, idx) => React.cloneElement(el, { style: transformStyle(idx * SECTION_WIDTH, 0) }));
+    .map((el, idx) =>
+      React.cloneElement(el, { style: transformStyle(idx * SECTION_WIDTH, 0) }),
+    );
 
   const overflowSplits = splitTiles.slice(maxItems);
 
@@ -71,19 +93,22 @@ export const SplitTiles: React.SFC<SplitTilesProps> = props => {
     return <React.Fragment>{visibleSplits}</React.Fragment>;
   }
 
-  const anyOverflowTileOpen = splits.slice(maxItems).some(split => split.equals(openedSplit));
+  const anyOverflowTileOpen = splits
+    .slice(maxItems)
+    .some(split => split.equals(openedSplit));
   const overflowOpened = overflowOpen || anyOverflowTileOpen;
 
-  const splitOverflow = <TileOverflowContainer
-    className="dimension"
-    key="overflow-menu"
-    items={overflowSplits}
-    open={overflowOpened}
-    openOverflowMenu={openOverflowMenu}
-    closeOverflowMenu={closeOverflowMenu}
-    x={visibleSplits.length * SECTION_WIDTH} />;
+  const splitOverflow = (
+    <TileOverflowContainer
+      className="dimension"
+      key="overflow-menu"
+      items={overflowSplits}
+      open={overflowOpened}
+      openOverflowMenu={openOverflowMenu}
+      closeOverflowMenu={closeOverflowMenu}
+      x={visibleSplits.length * SECTION_WIDTH}
+    />
+  );
 
-  return <React.Fragment>
-    {[...visibleSplits, splitOverflow]}
-  </React.Fragment>;
+  return <React.Fragment>{[...visibleSplits, splitOverflow]}</React.Fragment>;
 };

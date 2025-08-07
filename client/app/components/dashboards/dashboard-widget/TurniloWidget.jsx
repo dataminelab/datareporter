@@ -1,13 +1,14 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
+import { TurniloApplication } from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application-widget";
 import Widget from "./Widget";
-import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
-import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
+import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
+import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 
 function TurniloWidget(props) {
   const { widget, canEdit, config, setFilterParams, getEssence } = props;
-  const turniloHash = config.hash || widget.text.replace('[turnilo-widget]', '');
+  const turniloHash =
+    config.hash || widget.text.replace("[turnilo-widget]", "");
   const TurniloMenuOptions = [];
 
   if (!widget.width) {
@@ -16,13 +17,20 @@ function TurniloWidget(props) {
 
   if (config.appSettings) {
     if (config.appSettings.customization.sentryDSN) {
-      errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
+      errorReporterInit(
+        config.appSettings.customization.sentryDSN,
+        config.version,
+      );
     }
 
     const version = config.version;
 
     return (
-      <Widget {...props} menuOptions={canEdit ? TurniloMenuOptions : null} className="widget-report">
+      <Widget
+        {...props}
+        menuOptions={canEdit ? TurniloMenuOptions : null}
+        className="widget-report"
+      >
         <turnilo-widget>
           <TurniloApplication
             widget={widget}
@@ -30,7 +38,11 @@ function TurniloWidget(props) {
             version={version}
             hashWidget={turniloHash}
             appSettings={config.appSettings}
-            initTimekeeper={config.timekeeper ? Timekeeper.fromJS(config.timekeeper) : new Timekeeper({ timeTags: [] })}
+            initTimekeeper={
+              config.timekeeper
+                ? Timekeeper.fromJS(config.timekeeper)
+                : new Timekeeper({ timeTags: [] })
+            }
             setFilterParams={setFilterParams}
             getEssence={getEssence}
           />
@@ -39,7 +51,11 @@ function TurniloWidget(props) {
     );
   } else {
     return (
-      <Widget {...props} menuOptions={canEdit ? TurniloMenuOptions : null} className="widget-text">
+      <Widget
+        {...props}
+        menuOptions={canEdit ? TurniloMenuOptions : null}
+        className="widget-text"
+      >
         <h4>Loading...</h4>
       </Widget>
     );

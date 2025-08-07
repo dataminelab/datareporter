@@ -3,7 +3,12 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import Form from "antd/lib/form";
 
-export default function HorizontalFormItem({ children, label, className, ...props }) {
+export default function HorizontalFormItem({
+  children,
+  label,
+  className,
+  ...props
+}) {
   const labelCol = { span: 4 };
   const wrapperCol = { span: 16 };
   if (!label) {
@@ -13,7 +18,13 @@ export default function HorizontalFormItem({ children, label, className, ...prop
   className = cx("alert-form-item", className);
 
   return (
-    <Form.Item labelCol={labelCol} wrapperCol={wrapperCol} label={label} className={className} {...props}>
+    <Form.Item
+      labelCol={labelCol}
+      wrapperCol={wrapperCol}
+      label={label}
+      className={className}
+      {...props}
+    >
       {children}
     </Form.Item>
   );

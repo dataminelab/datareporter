@@ -22,7 +22,10 @@ import { DimensionFixtures } from "../../../../common/models/dimension/dimension
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import { StageFixtures } from "../../../../common/models/stage/stage.fixtures";
 import { TimekeeperFixtures } from "../../../../common/models/timekeeper/timekeeper.fixtures";
-import { findDOMNode, renderIntoDocument } from "../../../utils/test-utils/index";
+import {
+  findDOMNode,
+  renderIntoDocument,
+} from "../../../utils/test-utils/index";
 import { NumberFilterMenu } from "./number-filter-menu";
 
 describe("NumberFilterMenu", () => {
@@ -40,12 +43,16 @@ describe("NumberFilterMenu", () => {
         containerStage={StageFixtures.defaultA()}
         openOn={div}
         inside={div}
-
-      />
+      />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("number-filter-menu");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      findDOMNode(renderedComponent).className,
+      "should contain class",
+    ).to.contain("number-filter-menu");
   });
-
 });

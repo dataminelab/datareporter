@@ -15,25 +15,35 @@
  * limitations under the License.
  */
 
-import { Visualization, VisualizationManifest } from "../../common/models/visualization-manifest/visualization-manifest";
+import {
+  Visualization,
+  VisualizationManifest,
+} from "../../common/models/visualization-manifest/visualization-manifest";
 import { VisualizationProps } from "../../common/models/visualization-props/visualization-props";
 import { BarChart } from "./bar-chart/bar-chart";
-import { BaseVisualization, BaseVisualizationState } from "./base-visualization/base-visualization";
+import {
+  BaseVisualization,
+  BaseVisualizationState,
+} from "./base-visualization/base-visualization";
 import { HeatMap } from "./heat-map/heat-map";
 import { LineChart } from "./line-chart/line-chart";
 import { Table } from "./table/table";
 import { Totals } from "./totals/totals";
 
-type VisualizationComponent<S extends BaseVisualizationState = BaseVisualizationState> = new(props: VisualizationProps) => BaseVisualization<S>;
+type VisualizationComponent<
+  S extends BaseVisualizationState = BaseVisualizationState,
+> = new (props: VisualizationProps) => BaseVisualization<S>;
 
 const VIS_COMPONENTS: Record<Visualization, VisualizationComponent> = {
   "totals": Totals,
   "table": Table,
   "line-chart": LineChart,
   "bar-chart": BarChart,
-  "heatmap": HeatMap
+  "heatmap": HeatMap,
 };
 
-export function getVisualizationComponent({ name }: VisualizationManifest): VisualizationComponent {
+export function getVisualizationComponent({
+  name,
+}: VisualizationManifest): VisualizationComponent {
   return VIS_COMPONENTS[name];
 }

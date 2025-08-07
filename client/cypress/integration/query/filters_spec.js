@@ -1,4 +1,7 @@
-import { expectTableToHaveLength, expectFirstColumnToHaveMembers } from "../../support/visualizations/table";
+import {
+  expectTableToHaveLength,
+  expectFirstColumnToHaveMembers,
+} from "../../support/visualizations/table";
 
 const SQL = `
 SELECT 'a' AS stage1, 'a1' AS stage2, 11 AS value UNION ALL
@@ -38,9 +41,7 @@ describe("Query Filters", () => {
       expectTableToHaveLength(4);
       expectFirstColumnToHaveMembers(["a", "a", "a", "a"]);
 
-      cy.getByTestId("FilterName-stage1::filter")
-        .find(".ant-select")
-        .click();
+      cy.getByTestId("FilterName-stage1::filter").find(".ant-select").click();
 
       cy.contains(".ant-select-item-option-content", "b").click();
 
@@ -63,8 +64,12 @@ describe("Query Filters", () => {
     function expectSelectedOptionsToHaveMembers(values) {
       cy.getByTestId("FilterName-stage1::multi-filter")
         .find(".ant-select-selection-item-content")
-        .then($selectedOptions => Cypress.$.map($selectedOptions, item => Cypress.$(item).text()))
-        .then(selectedOptions => expect(selectedOptions).to.have.members(values));
+        .then($selectedOptions =>
+          Cypress.$.map($selectedOptions, item => Cypress.$(item).text()),
+        )
+        .then(selectedOptions =>
+          expect(selectedOptions).to.have.members(values),
+        );
     }
 
     it("filters rows in a Table Visualization", () => {
@@ -72,7 +77,19 @@ describe("Query Filters", () => {
 
       expectSelectedOptionsToHaveMembers(["a", "b", "c"]);
       expectTableToHaveLength(11);
-      expectFirstColumnToHaveMembers(["a", "a", "a", "a", "b", "b", "b", "c", "c", "c", "c"]);
+      expectFirstColumnToHaveMembers([
+        "a",
+        "a",
+        "a",
+        "a",
+        "b",
+        "b",
+        "b",
+        "c",
+        "c",
+        "c",
+        "c",
+      ]);
 
       // Clear Option
 
@@ -89,7 +106,10 @@ describe("Query Filters", () => {
       cy.getByTestId("FilterName-stage1::multi-filter")
         .find(".ant-select-selector")
         .click();
-      cy.contains(".ant-select-item-option-grouped > .ant-select-item-option-content", "a").click();
+      cy.contains(
+        ".ant-select-item-option-grouped > .ant-select-item-option-content",
+        "a",
+      ).click();
       cy.getByTestId("FilterName-stage1::multi-filter").click(); // close dropdown
 
       expectSelectedOptionsToHaveMembers(["a"]);
@@ -118,7 +138,19 @@ describe("Query Filters", () => {
 
       expectSelectedOptionsToHaveMembers(["a", "b", "c"]);
       expectTableToHaveLength(11);
-      expectFirstColumnToHaveMembers(["a", "a", "a", "a", "b", "b", "b", "c", "c", "c", "c"]);
+      expectFirstColumnToHaveMembers([
+        "a",
+        "a",
+        "a",
+        "a",
+        "b",
+        "b",
+        "b",
+        "c",
+        "c",
+        "c",
+        "c",
+      ]);
     });
   });
 });

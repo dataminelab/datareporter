@@ -42,9 +42,11 @@ restylers:
     command:
       - prettier
       - --write
-      - --arrow-parens
-      - avoid
+      - --config
+      - .prettierrc.json
     include:
       - client/app/**/*.js
       - client/app/**/*.jsx
       - client/cypress/**/*.js
+      - plywood/**/*.js
+      - plywood/**/*.ts

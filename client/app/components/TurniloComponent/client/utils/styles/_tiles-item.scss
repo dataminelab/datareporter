@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import './tech-mixins';
+@import "./tech-mixins";
 
 %tiles-item {
   padding: 0 0 0 9px;
@@ -30,7 +30,8 @@
     @include css-variable(background-color, item-dimension);
     @include css-variable(color, item-dimension-text);
 
-    &:hover, &.selected {
+    &:hover,
+    &.selected {
       @include css-variable(background-color, item-dimension-hover);
     }
   }
@@ -39,7 +40,8 @@
     @include css-variable(background-color, item-measure);
     @include css-variable(color, item-measure-text);
 
-    &:hover, &.selected {
+    &:hover,
+    &.selected {
       @include css-variable(background-color, item-measure-hover);
     }
   }
@@ -75,7 +77,6 @@
       fill: hsla(0, 0, 0, 0.5);
     }
   }
-
 }
 
 %tiles-item-h {

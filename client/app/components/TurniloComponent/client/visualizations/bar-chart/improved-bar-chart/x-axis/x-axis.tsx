@@ -44,18 +44,22 @@ function calculateTicks(domain: XDomain, essence: Essence): DomainValue[] {
 export const XAxis: React.SFC<XAxisProps> = props => {
   const { essence, stage, scale } = props;
   const ticks = calculateTicks(scale.domain(), essence);
-  return <svg width={stage.width} height={stage.height}>
-    <g className="bar-chart-x-axis">
-      {ticks.map((value, index) => {
-        const x = roundToHalfPx(scale.calculate(value));
-        const textAnchor = index === 0 ? "start" : "middle";
-        return <g key={String(value)} transform={`translate(${x}, 0)`}>
-          <line x1={0} x2={0} y1={0} y2={TICK_HEIGHT} />
-          <text y={TICK_HEIGHT + TICK_TEXT_OFFSET} style={{ textAnchor }}>
-            {formatStartOfTimeRange(value as TimeRange, essence.timezone)}
-          </text>
-        </g>;
-      })}
-    </g>
-  </svg>;
+  return (
+    <svg width={stage.width} height={stage.height}>
+      <g className="bar-chart-x-axis">
+        {ticks.map((value, index) => {
+          const x = roundToHalfPx(scale.calculate(value));
+          const textAnchor = index === 0 ? "start" : "middle";
+          return (
+            <g key={String(value)} transform={`translate(${x}, 0)`}>
+              <line x1={0} x2={0} y1={0} y2={TICK_HEIGHT} />
+              <text y={TICK_HEIGHT + TICK_TEXT_OFFSET} style={{ textAnchor }}>
+                {formatStartOfTimeRange(value as TimeRange, essence.timezone)}
+              </text>
+            </g>
+          );
+        })}
+      </g>
+    </svg>
+  );
 };

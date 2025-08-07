@@ -21,18 +21,31 @@ import { identity, noop } from "../../../common/utils/functional/functional";
 import { ButtonGroup, GroupMember } from "../button-group/button-group";
 import { InputWithPresets, Preset } from "./input-with-presets";
 
-const PRESETS: Array<Preset<string>> = [{
-  name: "A", identity: "a"
-}, {
-  name: "B", identity: "b"
-}];
+const PRESETS: Array<Preset<string>> = [
+  {
+    name: "A",
+    identity: "a",
+  },
+  {
+    name: "B",
+    identity: "b",
+  },
+];
 
 function renderInputWithPresets(selected: string, errorMessage?: string) {
-  return shallow(<InputWithPresets<string> presets={PRESETS} errorMessage={errorMessage} onChange={noop} selected={selected} formatCustomValue={identity} parseCustomValue={identity} />);
+  return shallow(
+    <InputWithPresets<string>
+      presets={PRESETS}
+      errorMessage={errorMessage}
+      onChange={noop}
+      selected={selected}
+      formatCustomValue={identity}
+      parseCustomValue={identity}
+    />,
+  );
 }
 
 describe("<InputWithPresets>", () => {
-
   it("should select one of <ButtonGroup> members if one of presets selected", () => {
     const inputWithPresets = renderInputWithPresets("a");
     const buttonGroup = inputWithPresets.find(ButtonGroup);
@@ -41,7 +54,10 @@ describe("<InputWithPresets>", () => {
 
     expect(selectedMember, "one member is selected").to.exist;
     expect(selectedMember.title, "member has correct title").to.equal("A");
-    expect(selectedMember.key, "members key is equal to selected prop").to.equal("a");
+    expect(
+      selectedMember.key,
+      "members key is equal to selected prop",
+    ).to.equal("a");
   });
 
   it("should hide input if one of presets selected", () => {

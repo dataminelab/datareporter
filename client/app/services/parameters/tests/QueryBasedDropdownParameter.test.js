@@ -24,10 +24,13 @@ describe("QueryBasedDropdownParameter", () => {
     describe("Empty values", () => {
       const emptyValues = [null, undefined, []];
 
-      test.each(emptyValues)("normalizes empty value '%s' as null", emptyValue => {
-        const normalizedValue = param.normalizeValue(emptyValue);
-        expect(normalizedValue).toBeNull();
-      });
+      test.each(emptyValues)(
+        "normalizes empty value '%s' as null",
+        emptyValue => {
+          const normalizedValue = param.normalizeValue(emptyValue);
+          expect(normalizedValue).toBeNull();
+        },
+      );
     });
   });
 
@@ -46,7 +49,9 @@ describe("QueryBasedDropdownParameter", () => {
     describe("getExecutionValue", () => {
       test("joins values when joinListValues is truthy", () => {
         param.setValue(["value1", "value3"]);
-        const executionValue = param.getExecutionValue({ joinListValues: true });
+        const executionValue = param.getExecutionValue({
+          joinListValues: true,
+        });
         expect(executionValue).toBe('"value1","value3"');
       });
     });

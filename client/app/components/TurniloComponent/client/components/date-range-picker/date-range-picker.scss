@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .date-range-picker {
-
   .side-by-side {
     display: flex;
 
@@ -120,16 +119,16 @@
             background: rgba($black, 0.06);
             &::after {
               @include pin-full;
-              content: '';
+              content: "";
               pointer-events: none;
             }
           }
-          
+
           &.beyond-max-range {
             text-decoration: line-through;
             &::after {
               @include pin-full;
-              content: '';
+              content: "";
               pointer-events: none;
             }
           }

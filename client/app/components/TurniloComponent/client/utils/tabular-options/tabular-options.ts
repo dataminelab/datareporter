@@ -17,16 +17,28 @@
 import { List } from "immutable";
 import { AttributeInfo, TabulatorOptions, TimeRange } from "plywood";
 import { Essence } from "../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import {
+  ConcreteSeries,
+  SeriesDerivation,
+} from "../../../common/models/series/concrete-series";
 
 interface SeriesWithDerivation {
   series: ConcreteSeries;
   derivation: SeriesDerivation;
 }
 
-function findSeriesAndDerivation(name: string, concreteSeriesList: List<ConcreteSeries>): SeriesWithDerivation {
-  for (const derivation of [SeriesDerivation.CURRENT, SeriesDerivation.PREVIOUS, SeriesDerivation.DELTA]) {
-    const series = concreteSeriesList.find(s => s.plywoodKey(derivation) === name);
+function findSeriesAndDerivation(
+  name: string,
+  concreteSeriesList: List<ConcreteSeries>,
+): SeriesWithDerivation {
+  for (const derivation of [
+    SeriesDerivation.CURRENT,
+    SeriesDerivation.PREVIOUS,
+    SeriesDerivation.DELTA,
+  ]) {
+    const series = concreteSeriesList.find(
+      s => s.plywoodKey(derivation) === name,
+    );
     if (series) {
       return { series, derivation };
     }
@@ -38,14 +50,20 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
   return {
     formatter: {
       //@ts-ignore
-      TIME_RANGE: (range: TimeRange) => range.start ? range.start.toISOString() : range
+      TIME_RANGE: (range: TimeRange) =>
+        range.start ? range.start.toISOString() : range,
     },
     attributeFilter: ({ name }: AttributeInfo) => {
-      return findSeriesAndDerivation(name, essence.getConcreteSeries()) !== null
-        || essence.dataCube.getDimension(name) !== undefined;
+      return (
+        findSeriesAndDerivation(name, essence.getConcreteSeries()) !== null ||
+        essence.dataCube.getDimension(name) !== undefined
+      );
     },
     attributeTitle: ({ name }: AttributeInfo) => {
-      const seriesWithDerivation = findSeriesAndDerivation(name, essence.getConcreteSeries());
+      const seriesWithDerivation = findSeriesAndDerivation(
+        name,
+        essence.getConcreteSeries(),
+      );
       if (seriesWithDerivation) {
         const { series, derivation } = seriesWithDerivation;
         return series.title(derivation);
@@ -56,6 +74,6 @@ export default function tabularOptions(essence: Essence): TabulatorOptions {
       }
       return name;
     },
-    timezone: essence.timezone
+    timezone: essence.timezone,
   };
 }

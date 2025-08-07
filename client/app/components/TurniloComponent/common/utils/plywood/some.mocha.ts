@@ -29,7 +29,8 @@ describe("Plywood Expression.some", () => {
   });
 
   it("should return false when nothing satisfies predicate", () => {
-    const isCountDistinct = (e: Expression) => e instanceof CountDistinctExpression;
+    const isCountDistinct = (e: Expression) =>
+      e instanceof CountDistinctExpression;
     expect(some($("main").multiply(2), isCountDistinct)).to.be.false;
   });
 });

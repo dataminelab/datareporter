@@ -36,15 +36,16 @@ function focus(textArea: HTMLTextAreaElement): void {
 }
 
 export class PasteForm extends React.Component<PasteFormProps, PasteFormState> {
-
   state: PasteFormState = { value: "" };
 
   values = (): Set<string> => {
     const { value } = this.state;
-    return Set(value
-      .split("\n")
-      .map(s => s.trim())
-      .filter(s => s.length > 0));
+    return Set(
+      value
+        .split("\n")
+        .map(s => s.trim())
+        .filter(s => s.length > 0),
+    );
   };
 
   select = () => {
@@ -57,17 +58,30 @@ export class PasteForm extends React.Component<PasteFormProps, PasteFormState> {
 
   cancel = () => this.props.onClose();
 
-  saveValue = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({ value });
+  saveValue = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) =>
+    this.setState({ value });
 
   render() {
     const { value } = this.state;
     const disabled = this.values().isEmpty();
-    return <div>
-      <textarea ref={focus} className="paste-field" value={value} onChange={this.saveValue} />
-      <div className="paste-actions">
-        <Button type="primary" title="Select" disabled={disabled} onClick={this.select} />
-        <Button type="secondary" title="Cancel" onClick={this.cancel} />
+    return (
+      <div>
+        <textarea
+          ref={focus}
+          className="paste-field"
+          value={value}
+          onChange={this.saveValue}
+        />
+        <div className="paste-actions">
+          <Button
+            type="primary"
+            title="Select"
+            disabled={disabled}
+            onClick={this.select}
+          />
+          <Button type="secondary" title="Cancel" onClick={this.cancel} />
+        </div>
       </div>
-    </div>;
+    );
   }
 }

@@ -19,20 +19,22 @@ import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./drop-indicator.scss";
 
-export interface DropIndicatorProps {
-}
+export interface DropIndicatorProps {}
 
-export interface DropIndicatorState {
-}
+export interface DropIndicatorState {}
 
-export class DropIndicator extends React.Component<DropIndicatorProps, DropIndicatorState> {
-
+export class DropIndicator extends React.Component<
+  DropIndicatorProps,
+  DropIndicatorState
+> {
   render() {
-    return <div className="drop-indicator">
-      <div className="white-out"></div>
-      <div className="action">
-        <SvgIcon svg={require("../../icons/split-replace.svg")} />
+    return (
+      <div className="drop-indicator">
+        <div className="white-out"></div>
+        <div className="action">
+          <SvgIcon svg={require("../../icons/split-replace.svg")} />
+        </div>
       </div>
-    </div>;
+    );
   }
 }

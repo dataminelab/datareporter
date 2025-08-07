@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../imports';
-
+@import "../../imports";
 
 .search-box {
   height: 30px;
@@ -35,7 +34,6 @@
   width: 100%;
 
   .menu-table {
-
     @extend %white-shadow;
     @include css-variable(color, text-standard);
     background: $white;

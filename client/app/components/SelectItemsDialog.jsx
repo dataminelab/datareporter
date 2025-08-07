@@ -21,13 +21,21 @@ function ItemsList({ items, renderItem, onItemClick }) {
 
       return (
         <List.Item
-          className={classNames("select-items-list", "w-100", "p-l-10", "p-r-10", { disabled: isDisabled }, className)}
-          onClick={isDisabled ? null : () => onItemClick(item)}>
+          className={classNames(
+            "select-items-list",
+            "w-100",
+            "p-l-10",
+            "p-r-10",
+            { disabled: isDisabled },
+            className,
+          )}
+          onClick={isDisabled ? null : () => onItemClick(item)}
+        >
           {content}
         </List.Item>
       );
     },
-    [renderItem, onItemClick]
+    [renderItem, onItemClick],
   );
 
   return <List size="small" dataSource={items} renderItem={renderListItem} />;
@@ -59,7 +67,9 @@ function SelectItemsDialog({
   extraFooterContent,
 }) {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [search, items, isLoading] = useSearchResults(searchItems, { initialResults: [] });
+  const [search, items, isLoading] = useSearchResults(searchItems, {
+    initialResults: [],
+  });
   const hasResults = items.length > 0;
 
   useEffect(() => {
@@ -71,7 +81,7 @@ function SelectItemsDialog({
       const key = itemKey(item);
       return !!find(selectedItems, i => itemKey(i) === key);
     },
-    [selectedItems, itemKey]
+    [selectedItems, itemKey],
   );
 
   const toggleItem = useCallback(
@@ -83,7 +93,7 @@ function SelectItemsDialog({
         setSelectedItems([...selectedItems, item]);
       }
     },
-    [selectedItems, itemKey, isItemSelected]
+    [selectedItems, itemKey, isItemSelected],
   );
 
   const save = useCallback(() => {
@@ -102,7 +112,10 @@ function SelectItemsDialog({
       title={dialogTitle}
       footer={
         <div className="d-flex align-items-center">
-          <span className="flex-fill m-r-5" style={{ textAlign: "left", color: "rgba(0, 0, 0, 0.5)" }}>
+          <span
+            className="flex-fill m-r-5"
+            style={{ textAlign: "left", color: "rgba(0, 0, 0, 0.5)" }}
+          >
             {extraFooterContent}
           </span>
           <Button {...dialog.props.cancelButtonProps} onClick={dialog.dismiss}>
@@ -111,13 +124,19 @@ function SelectItemsDialog({
           <Button
             {...dialog.props.okButtonProps}
             onClick={save}
-            disabled={selectedItems.length === 0 || dialog.props.okButtonProps.disabled}
-            type="primary">
+            disabled={
+              selectedItems.length === 0 || dialog.props.okButtonProps.disabled
+            }
+            type="primary"
+          >
             Save
-            {showCount && !isEmpty(selectedItems) ? ` (${size(selectedItems)})` : null}
+            {showCount && !isEmpty(selectedItems)
+              ? ` (${size(selectedItems)})`
+              : null}
           </Button>
         </div>
-      }>
+      }
+    >
       <div className="d-flex align-items-center m-b-10">
         <div className="flex-fill">
           <Input.Search
@@ -134,16 +153,25 @@ function SelectItemsDialog({
         )}
       </div>
 
-      <div className="d-flex align-items-stretch" style={{ minHeight: "30vh", maxHeight: "50vh" }}>
+      <div
+        className="d-flex align-items-stretch"
+        style={{ minHeight: "30vh", maxHeight: "50vh" }}
+      >
         <div className="flex-fill scrollbox">
           {isLoading && <LoadingState className="" />}
           {!isLoading && !hasResults && (
-            <BigMessage icon="fa-search" message="No items match your search." className="" />
+            <BigMessage
+              icon="fa-search"
+              message="No items match your search."
+              className=""
+            />
           )}
           {!isLoading && hasResults && (
             <ItemsList
               items={items}
-              renderItem={item => renderItem(item, { isSelected: isItemSelected(item) })}
+              renderItem={item =>
+                renderItem(item, { isSelected: isItemSelected(item) })
+              }
               onItemClick={toggleItem}
             />
           )}
@@ -153,7 +181,9 @@ function SelectItemsDialog({
             {selectedItems.length > 0 && (
               <ItemsList
                 items={selectedItems}
-                renderItem={item => renderStagedItem(item, { isSelected: true })}
+                renderItem={item =>
+                  renderStagedItem(item, { isSelected: true })
+                }
                 onItemClick={toggleItem}
               />
             )}

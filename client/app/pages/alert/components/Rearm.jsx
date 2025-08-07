@@ -49,7 +49,12 @@ function RearmByDuration({ value, onChange, editMode }) {
   if (editMode) {
     return (
       <>
-        <InputNumber value={count} onChange={onChangeCount} min={1} precision={0} />
+        <InputNumber
+          value={count}
+          onChange={onChangeCount}
+          min={1}
+          precision={0}
+        />
         <Select value={durationIdx} onChange={onChangeIdx}>
           {DURATIONS.map(([name], idx) => (
             <Select.Option value={idx} key={name}>
@@ -90,7 +95,8 @@ function RearmEditor({ value, onChange }) {
         optionLabelProp="label"
         defaultValue={selected || 0}
         dropdownMatchSelectWidth={false}
-        onChange={_onChange}>
+        onChange={_onChange}
+      >
         <Select.Option value={0} label="Just once">
           Just once <em>until back to normal</em>
         </Select.Option>
@@ -101,7 +107,9 @@ function RearmEditor({ value, onChange }) {
           At most every ... <em>when alert is evaluated</em>
         </Select.Option>
       </Select>
-      {selected === 2 && value && <RearmByDuration value={value} onChange={onChange} editMode />}
+      {selected === 2 && value && (
+        <RearmByDuration value={value} onChange={onChange} editMode />
+      )}
     </div>
   );
 }
@@ -123,7 +131,8 @@ function RearmViewer({ value }) {
     default:
       phrase = (
         <>
-          at most every <RearmByDuration value={value} editMode={false} />, when alert is evaluated
+          at most every <RearmByDuration value={value} editMode={false} />, when
+          alert is evaluated
         </>
       );
   }

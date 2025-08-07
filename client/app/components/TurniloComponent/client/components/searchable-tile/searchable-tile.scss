@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 $search-box-gap: 3px;
 $search-box-height: 26px;
@@ -72,7 +72,6 @@ $search-box-height: 26px;
   &.continuous .rows .row {
     pointer-events: none;
   }
-
 
   .hidden {
     display: none;

@@ -16,28 +16,35 @@
 
 // not working
 context("Split Tile", () => {
-
-  const splitsContainer = () => cy.get(".center-top-bar:not(.fallback) .split-tile");
+  const splitsContainer = () =>
+    cy.get(".center-top-bar:not(.fallback) .split-tile");
   const dragMask = () => cy.get(".drag-mask");
-  const splitTile = (dimension) => splitsContainer().find(`.split.dimension:contains(${dimension})`);
+  const splitTile = dimension =>
+    splitsContainer().find(`.split.dimension:contains(${dimension})`);
   const addSplitButton = () => splitsContainer().find(".add-tile");
   const splitItemsRow = () => splitsContainer().find(".items");
   const splitItems = () => splitsContainer().find(".split.dimension");
-  const splitOverflow = () => splitsContainer().find(".items .overflow.dimension");
+  const splitOverflow = () =>
+    splitsContainer().find(".items .overflow.dimension");
   const splitOverflowMenu = () => cy.get(".overflow-menu");
   const addSplitMenu = () => cy.get(".add-tile-menu");
   const splitMenu = () => cy.get(".split-menu");
   const dimensionsList = () => cy.get(".dimension-list-tile");
-  const dimensionTile = (dimension) => cy.get(`.dimension-list-tile .dimension:contains(${dimension})`);
-  const dimensionAddSplitAction = () => cy.get(".dimension-actions-menu .subsplit.action");
-  const dimensionReplaceSplitAction = () => cy.get(".dimension-actions-menu .split.action");
+  const dimensionTile = dimension =>
+    cy.get(`.dimension-list-tile .dimension:contains(${dimension})`);
+  const dimensionAddSplitAction = () =>
+    cy.get(".dimension-actions-menu .subsplit.action");
+  const dimensionReplaceSplitAction = () =>
+    cy.get(".dimension-actions-menu .split.action");
 
   const shouldHaveSplits = (...splits) => {
     splitItems().should("have.length", splits.length);
     splitItemsRow().within(() => {
       splits.forEach((split, idx) => {
-        cy.get(`.split.dimension:nth-child(${idx + 1})`)
-          .should("contain", split);
+        cy.get(`.split.dimension:nth-child(${idx + 1})`).should(
+          "contain",
+          split,
+        );
       });
     });
   };
@@ -114,8 +121,7 @@ context("Split Tile", () => {
     it("Api Key should not be available in add split list", () => {
       addSplitButton().click();
 
-      addSplitMenu().find(".label:contains('Api Key')")
-        .should("not.exist");
+      addSplitMenu().find(".label:contains('Api Key')").should("not.exist");
     });
 
     it("should add split with plus button", () => {
@@ -129,9 +135,7 @@ context("Split Tile", () => {
     it("Api Key dimension should not have Add split action", () => {
       dimensionTile("Api Key").click();
 
-      dimensionAddSplitAction()
-        .should("have.class", "disabled")
-        .click();
+      dimensionAddSplitAction().should("have.class", "disabled").click();
 
       shouldHaveSplits("Api Key");
     });
@@ -178,15 +182,15 @@ context("Split Tile", () => {
     it("should show overflowed split after clicking tile", () => {
       splitOverflow().click();
 
-      splitOverflowMenu().find(".split.dimension")
+      splitOverflowMenu()
+        .find(".split.dimension")
         .should("contain", "Is Archived");
     });
 
     it("should open split menu inside overflow tile", () => {
       splitOverflow().click();
 
-      splitOverflowMenu().find(".split.dimension")
-        .click();
+      splitOverflowMenu().find(".split.dimension").click();
 
       splitMenu().should("exist");
     });
@@ -205,8 +209,7 @@ context("Split Tile", () => {
     });
 
     it('should remove split after clicking "x" icon', () => {
-      splitTile("Color 1").find(".remove")
-        .click();
+      splitTile("Color 1").find(".remove").click();
 
       shouldHaveSplits("Is Archived", "Api Key");
     });
@@ -222,8 +225,7 @@ context("Split Tile", () => {
     });
 
     it("adds split by dropping dimension", () => {
-      dimensionTile("Color 1")
-        .trigger("dragstart", { dataTransfer });
+      dimensionTile("Color 1").trigger("dragstart", { dataTransfer });
 
       splitsContainer().trigger("dragenter");
 
@@ -233,8 +235,7 @@ context("Split Tile", () => {
     });
 
     it("replaces split by dropping dimension on existing split", () => {
-      dimensionTile("Color 1")
-        .trigger("dragstart", { dataTransfer });
+      dimensionTile("Color 1").trigger("dragstart", { dataTransfer });
 
       splitsContainer().trigger("dragenter");
 
@@ -248,8 +249,7 @@ context("Split Tile", () => {
     });
 
     it("can not drop dimension for which split already exists", () => {
-      dimensionTile("Api Key")
-        .trigger("dragstart", { dataTransfer });
+      dimensionTile("Api Key").trigger("dragstart", { dataTransfer });
 
       splitsContainer().trigger("dragenter");
 
@@ -262,19 +262,17 @@ context("Split Tile", () => {
       addSplitButton().click();
       addSplitMenu().find(".label:contains('Color 1')").click();
 
-      splitTile("Api Key")
-        .trigger("dragstart", { dataTransfer });
+      splitTile("Api Key").trigger("dragstart", { dataTransfer });
 
       splitsContainer().trigger("dragenter");
 
-      splitTile("Color 1")
-        .then(([timeSplit]) => {
-          const { left, width } = timeSplit.getBoundingClientRect();
+      splitTile("Color 1").then(([timeSplit]) => {
+        const { left, width } = timeSplit.getBoundingClientRect();
 
-          dragMask().trigger("drop", { clientX: left + width });
+        dragMask().trigger("drop", { clientX: left + width });
 
-          shouldHaveSplits("Api Key", "Color 1", "Is Archived");
-        });
+        shouldHaveSplits("Api Key", "Color 1", "Is Archived");
+      });
     });
   });
 
@@ -304,7 +302,9 @@ context("Split Tile", () => {
 
       splitMenu().find(".sort-direction .direction").click();
 
-      splitMenu().find(".button-bar .primary").should("not.have.attr", "disabled");
+      splitMenu()
+        .find(".button-bar .primary")
+        .should("not.have.attr", "disabled");
     });
 
     describe("Created At Split menu", () => {
@@ -317,12 +317,17 @@ context("Split Tile", () => {
       it("time split menu has granularity controls", () => {
         splitTile("Created At").click();
 
-        splitMenu().find(".button-group").within(() => {
-          cy.get(".button-group-title").should("contain", "Granularity");
-          cy.get(".group-container .group-member").should("have.length", 6);
-          cy.get(".group-container .group-member.selected").should("exist");
-          cy.get(".group-container .group-member:last").should("contain", "…");
-        });
+        splitMenu()
+          .find(".button-group")
+          .within(() => {
+            cy.get(".button-group-title").should("contain", "Granularity");
+            cy.get(".group-container .group-member").should("have.length", 6);
+            cy.get(".group-container .group-member.selected").should("exist");
+            cy.get(".group-container .group-member:last").should(
+              "contain",
+              "…",
+            );
+          });
       });
 
       it('granularity "…" option show input box', () => {
@@ -330,7 +335,8 @@ context("Split Tile", () => {
 
         splitMenu().find(".button-group .group-member:last").click();
 
-        splitMenu().find(".custom-input")
+        splitMenu()
+          .find(".custom-input")
           .should("have.class", "invalid")
           .should("have.value", "")
           .should("have.attr", "placeholder", "e.g. PT2H or P3M");
@@ -339,11 +345,13 @@ context("Split Tile", () => {
       it("time split menu has sort controls", () => {
         splitTile("Created At").click();
 
-        splitMenu().find(".sort-direction").within(() => {
-          cy.get(".direction").should("have.class", "ascending");
-          cy.get(".dropdown-label").should("contain", "Sort by");
-          cy.get(".dropdown .selected-item").should("contain", "Created At");
-        });
+        splitMenu()
+          .find(".sort-direction")
+          .within(() => {
+            cy.get(".direction").should("have.class", "ascending");
+            cy.get(".dropdown-label").should("contain", "Sort by");
+            cy.get(".dropdown .selected-item").should("contain", "Created At");
+          });
       });
 
       it("time split menu has limit controls", () => {

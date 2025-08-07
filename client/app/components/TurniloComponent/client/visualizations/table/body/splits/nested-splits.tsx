@@ -33,28 +33,44 @@ interface NestedSplitsProps {
   color: string;
 }
 
-export const NestedSplits: React.FunctionComponent<NestedSplitsProps> = props => {
-  const { essence, data, highlightedRowIndex, hoverRow, visibleRowsIndexRange, segmentWidth, color } = props;
+export const NestedSplits: React.FunctionComponent<
+  NestedSplitsProps
+> = props => {
+  const {
+    essence,
+    data,
+    highlightedRowIndex,
+    hoverRow,
+    visibleRowsIndexRange,
+    segmentWidth,
+    color,
+  } = props;
 
-  return <div className="nested-splits-rows">
-    <VisibleRows
-      hoveredRowDatum={hoverRow}
-      visibleRowsIndexRange={visibleRowsIndexRange}
-      highlightedRowIndex={highlightedRowIndex}
-      rowsData={data}
-      renderRow={props => {
-        const { index, top, datum, highlight, dimmed } = props;
-        const nest = datum.__nest;
-        const left = Math.max(0, nest - 1) * INDENT_WIDTH;
-        const segmentStyle = { left, width: segmentWidth - left, top, color };
+  return (
+    <div className="nested-splits-rows">
+      <VisibleRows
+        hoveredRowDatum={hoverRow}
+        visibleRowsIndexRange={visibleRowsIndexRange}
+        highlightedRowIndex={highlightedRowIndex}
+        rowsData={data}
+        renderRow={props => {
+          const { index, top, datum, highlight, dimmed } = props;
+          const nest = datum.__nest;
+          const left = Math.max(0, nest - 1) * INDENT_WIDTH;
+          const segmentStyle = { left, width: segmentWidth - left, top, color };
 
-        return <SplitValue
-          key={`segment_${index}`}
-          highlight={highlight}
-          dimmed={dimmed}
-          style={segmentStyle}>
-          {nestedSplitName(datum, essence)}
-        </SplitValue>;
-      }} />
-  </div>;
+          return (
+            <SplitValue
+              key={`segment_${index}`}
+              highlight={highlight}
+              dimmed={dimmed}
+              style={segmentStyle}
+            >
+              {nestedSplitName(datum, essence)}
+            </SplitValue>
+          );
+        }}
+      />
+    </div>
+  );
 };

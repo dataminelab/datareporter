@@ -34,8 +34,10 @@ export interface DataCubeCardState {
   showingMore: boolean;
 }
 
-export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCardState> {
-
+export class DataCubeCard extends React.Component<
+  DataCubeCardProps,
+  DataCubeCardState
+> {
   state = { showingMore: false };
 
   showLess = () => {
@@ -53,28 +55,44 @@ export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCar
     }
 
     const { showingMore } = this.state;
-    const content = showingMore ? `${description}\n\n${extendedDescription}` : description;
+    const content = showingMore
+      ? `${description}\n\n${extendedDescription}`
+      : description;
     const actionLabel = showingMore ? "Show less" : "Show more";
     const action = showingMore ? this.showLess : this.showMore;
 
-    return <React.Fragment>
-      <MarkdownNode markdown={content} />
-      <div className="show-more-action" onClick={action}>{actionLabel}</div>
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <MarkdownNode markdown={content} />
+        <div className="show-more-action" onClick={action}>
+          {actionLabel}
+        </div>
+      </React.Fragment>
+    );
   }
 
   render() {
     const { title, icon, count, onClick } = this.props;
-    return <div className="data-cube-card">
-      <div className="inner-container">
-        <div className="view-icon-container" onClick={onClick}>
-          <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)} />
-        </div>
-        <div className="text">
-          <div className="title" onClick={onClick}>{title} {count !== undefined ? <span className="count">{count}</span> : null}</div>
-          <div className="description">{this.renderDescription()}</div>
+    return (
+      <div className="data-cube-card">
+        <div className="inner-container">
+          <div className="view-icon-container" onClick={onClick}>
+            <SvgIcon
+              className="view-icon"
+              svg={require(`../../../icons/${icon}.svg`)}
+            />
+          </div>
+          <div className="text">
+            <div className="title" onClick={onClick}>
+              {title}{" "}
+              {count !== undefined ? (
+                <span className="count">{count}</span>
+              ) : null}
+            </div>
+            <div className="description">{this.renderDescription()}</div>
+          </div>
         </div>
       </div>
-    </div>;
+    );
   }
 }

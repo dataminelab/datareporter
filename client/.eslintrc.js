@@ -3,25 +3,30 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2020,
-    sourceType: 'module',
+    sourceType: "module",
     ecmaFeatures: {
       jsx: true,
-    }
+    },
   },
   extends: [
     "react-app",
     "prettier",
     "plugin:compat/recommended",
-    'plugin:@typescript-eslint/recommended',
+    "plugin:@typescript-eslint/recommended",
     "plugin:jsx-a11y/recommended",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime", // This tells ESLint about the new JSX transform
   ],
   plugins: [
     "jest",
+    "prettier",
     "compat",
     "no-only-tests",
     "@typescript-eslint",
     "jsx-a11y",
     "cypress",
+    "react",
   ],
   settings: {
     "import/resolver": "webpack",
@@ -34,6 +39,7 @@ module.exports = {
     node: true,
   },
   rules: {
+    "no-empty": ["warn", { allowEmptyCatch: true }],
     // allow debugger during development
     "no-debugger": process.env.NODE_ENV === "production" ? 2 : 0,
     "jsx-a11y/anchor-is-valid": [
@@ -57,11 +63,13 @@ module.exports = {
         paths: [
           {
             name: "antd",
-            message: "Please use 'import XXX from antd/lib/XXX' import instead.",
+            message:
+              "Please use 'import XXX from antd/lib/XXX' import instead.",
           },
           {
             name: "antd/lib",
-            message: "Please use 'import XXX from antd/lib/XXX' import instead.",
+            message:
+              "Please use 'import XXX from antd/lib/XXX' import instead.",
           },
         ],
       },
@@ -71,37 +79,72 @@ module.exports = {
     "@typescript-eslint/no-use-before-define": "warn",
     "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "warn",
-    "@typescript-eslint/ban-ts-comment": "warn",
     "no-useless-constructor": "off",
     "@typescript-eslint/no-useless-constructor": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-var-requires": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off",
+    "react/jsx-uses-vars": "warn",
+    "react/jsx-no-target-blank": "warn",
+    "react/no-string-refs": "warn",
+    "react/no-children-prop": "warn",
+    "react/no-direct-mutation-state": "warn",
+    "react/no-unknown-property": "warn",
+    "react/no-deprecated": "warn",
+    "react/no-unescaped-entities": "off",
+    "react/jsx-key": "warn",
+    "react/no-find-dom-node": "off",
+    "react/display-name": "off",
+    "react/jsx-no-comment-textnodes": "warn",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { varsIgnorePattern: "^React$" },
+    ],
+    "no-case-declarations": "off",
+    "react/prop-types": "off",
+    "compat/compat": "warn",
+    "@typescript-eslint/ban-ts-comment": [
+      "warn",
+      {
+        "ts-ignore": "allow-with-description",
+        "minimumDescriptionLength": 3,
+      },
+    ],
+    "no-useless-escape": "warn",
+    "no-redeclare": "off",
+    "@typescript-eslint/no-redeclare": "warn",
   },
   overrides: [
     {
-      // cypress tests
-      files: ["cypress/**/*.js", "cypress/**/*.ts", "cypress.config.js"],
+      files: ["**/*.js", "**/*.jsx"],
       rules: {
-        "no-unused-expressions": "off",
-        "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-expressions": "off",
-        "cypress/no-assigning-return-values": "off",
-        "cypress/unsafe-to-chain-command": "off",
-        "cypress/no-unnecessary-waiting": "warn",
-        "@typescript-eslint/no-unused-vars": "warn",
+        "react/react-in-jsx-scope": "off",
+        "react/display-name": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/no-useless-constructor": "off",
+        "@typescript-eslint/no-redeclare": "off",
+        "no-redeclare": "warn", // Re-enable base rule for JS files
+        "no-unused-vars": ["warn", { varsIgnorePattern: "^React$" }], // Re-enable base rule for JS files
+        "react/prop-types": "warn",
       }
 
     },
     {
-      files: ["*.js", "*.jsx"],
-      rules: {
-        "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/explicit-module-boundary-types": "off",
-      },
-    },
-    {
-      files: ["**/*.mocha.ts", "**/*.mocha.tsx", "**/*.test.ts", "**/*.test.tsx"],
+      files: [
+        "**/*.mocha.ts",
+        "**/*.mocha.tsx",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
       parser: null,
       env: {
         mocha: true,
@@ -110,7 +153,8 @@ module.exports = {
       plugins: [],
       rules: {
         "@typescript-eslint/no-empty-function": "off",
-        "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
+        "no-unused-expressions": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
         "jest/no-disabled-tests": "off",
         "jest/valid-expect": "off",
         "no-var": "warn",
@@ -121,20 +165,29 @@ module.exports = {
     {
       files: ["**/TurniloComponent/**/*.{js,jsx,ts,tsx}"],
       rules: {
-        "@typescript-eslint/ban-ts-comment": "warn",
         "@typescript-eslint/no-empty-interface": "off",
         "no-var": "warn",
         "prefer-const": "warn",
-        '@typescript-eslint/no-namespace': [
-          'warn',
+        "@typescript-eslint/no-namespace": [
+          "warn",
           { allowDeclarations: true },
         ],
-        "@typescript-eslint/no-unused-expressions": "off", // allow chai-like expect().to.be.true;
-        "jest/valid-expect": "off",
-        'getter-return': 'off',
-        '@typescript-eslint/no-empty-function': 'off',
-        "@typescript-eslint/explicit-module-boundary-types": "warn",
+        "getter-return": "off",
+        "@typescript-eslint/no-empty-function": "off",
         "jest/no-done-callback": "off",
+        "no-undef": "error",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "no-useless-catch": "off",
+      },
+    },
+    {
+      files: ["cypress/**/*.{js,jsx,ts,tsx}"],
+      env: {
+        "cypress/globals": true,
+      },
+      plugins: ["cypress"],
+      rules: {
+        "no-redeclare": "warn",
       },
     },
   ],

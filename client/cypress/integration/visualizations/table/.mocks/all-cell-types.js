@@ -61,7 +61,8 @@ export const config = {
     {
       name: "img",
       displayAs: "image",
-      imageUrlTemplate: "https://raw.githubusercontent.com/linssen/country-flag-icons/master/images/png/{{ @ }}.png",
+      imageUrlTemplate:
+        "https://raw.githubusercontent.com/linssen/country-flag-icons/master/images/png/{{ @ }}.png",
       imageTitleTemplate: "ISO: {{ @ }}",
       imageWidth: "30",
       imageHeight: "",

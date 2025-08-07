@@ -20,7 +20,11 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { flatMap } from "../../../../common/utils/functional/functional";
 import { selectSplitDataset } from "../../../utils/dataset/selectors/selectors";
-import { datumsExtent, Extent, seriesSelectors } from "../../../utils/extent/extent";
+import {
+  datumsExtent,
+  Extent,
+  seriesSelectors,
+} from "../../../utils/extent/extent";
 import { hasNominalSplit } from "./splits";
 
 export function extentAcrossSeries(dataset: Dataset, essence: Essence): Extent {
@@ -30,15 +34,22 @@ export function extentAcrossSeries(dataset: Dataset, essence: Essence): Extent {
   return datumsExtent(dataset.data, getters);
 }
 
-export function extentAcrossSplits(dataset: Dataset, essence: Essence, series: ConcreteSeries): Extent {
+export function extentAcrossSplits(
+  dataset: Dataset,
+  essence: Essence,
+  series: ConcreteSeries,
+): Extent {
   const getters = seriesSelectors(series, essence.hasComparison());
   if (hasNominalSplit(essence)) {
-    return dataset.data.reduce((acc, datum) => {
-      const splitDataset = selectSplitDataset(datum);
-      if (!splitDataset) return acc;
-      const extent = datumsExtent(splitDataset.data, getters);
-      return d3.extent([...acc, ...extent]);
-    }, [0, 0]) as Extent;
+    return dataset.data.reduce(
+      (acc, datum) => {
+        const splitDataset = selectSplitDataset(datum);
+        if (!splitDataset) return acc;
+        const extent = datumsExtent(splitDataset.data, getters);
+        return d3.extent([...acc, ...extent]);
+      },
+      [0, 0],
+    ) as Extent;
   }
 
   return datumsExtent(dataset.data, getters);

@@ -4,7 +4,15 @@ import classNames from "classnames";
 import Link from "@/components/Link";
 
 
-export function PreviewCard({ imageUrl, roundedImage, title, body, children, className, ...props }) {
+export function PreviewCard({
+  imageUrl,
+  roundedImage,
+  title,
+  body,
+  children,
+  className,
+  ...props
+}) {
   return (
     <div {...props} className={className + " w-100 d-flex align-items-center"}>
       {imageUrl && (
@@ -12,7 +20,10 @@ export function PreviewCard({ imageUrl, roundedImage, title, body, children, cla
           src={imageUrl}
           width="32"
           height="32"
-          className={classNames({ "profile__image--settings": roundedImage }, "m-r-5")}
+          className={classNames(
+          { "profile__image--settings": roundedImage },
+          "m-r-5",
+        )}
           alt="Logo/Avatar"
         />
       )}
@@ -43,9 +54,18 @@ PreviewCard.defaultProps = {
 
 
 export function UserPreviewCard({ user, withLink, children, ...props }) {
-  const title = withLink ? <Link href={"users/" + user.id}>{user.name}</Link> : user.name;
+  const title = withLink ? (
+    <Link href={"users/" + user.id}>{user.name}</Link>
+  ) : (
+    user.name
+  );
   return (
-    <PreviewCard {...props} imageUrl={user.profile_image_url} title={title} body={user.email}>
+    <PreviewCard
+      {...props}
+      imageUrl={user.profile_image_url}
+      title={title}
+      body={user.email}
+    >
       {children}
     </PreviewCard>
   );
@@ -66,9 +86,18 @@ UserPreviewCard.defaultProps = {
   children: null,
 };
 
-export function DataSourcePreviewCard({ dataSource, withLink, children, ...props }) {
+export function DataSourcePreviewCard({
+  dataSource,
+  withLink,
+  children,
+  ...props
+}) {
   const imageUrl = `static/images/db-logos/${dataSource.type}.png`;
-  const title = withLink ? <Link href={"data_sources/" + dataSource.id}>{dataSource.name}</Link> : dataSource.name;
+  const title = withLink ? (
+    <Link href={"data_sources/" + dataSource.id}>{dataSource.name}</Link>
+  ) : (
+    dataSource.name
+  );
   return (
     <PreviewCard {...props} imageUrl={imageUrl} title={title}>
       {children}

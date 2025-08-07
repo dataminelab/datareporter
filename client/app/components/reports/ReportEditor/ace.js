@@ -16,10 +16,14 @@ const snippetsModule = ace.acequire("ace/snippets");
 // By default Ace will try to load snippet files for the different modes and fail.
 // We don't need them, so we use these placeholders until we define our own.
 function defineDummySnippets(mode) {
-  ace.define(`ace/snippets/${mode}`, ["require", "exports", "module"], (require, exports) => {
-    exports.snippetText = "";
-    exports.scope = mode;
-  });
+  ace.define(
+    `ace/snippets/${mode}`,
+    ["require", "exports", "module"],
+    (require, exports) => {
+      exports.snippetText = "";
+      exports.scope = mode;
+    },
+  );
 }
 
 defineDummySnippets("python");
@@ -75,7 +79,9 @@ function buildKeywordsFromSchema(schema) {
 const schemaCompleterKeywords = {};
 
 export function updateSchemaCompleter(editorKey, schema = null) {
-  schemaCompleterKeywords[editorKey] = isNil(schema) ? null : buildKeywordsFromSchema(schema);
+  schemaCompleterKeywords[editorKey] = isNil(schema)
+    ? null
+    : buildKeywordsFromSchema(schema);
 }
 
 langTools.setCompleters([
@@ -85,7 +91,9 @@ langTools.setCompleters([
   {
     identifierRegexps: [/[a-zA-Z_0-9.\-\u00A2-\uFFFF]/],
     getCompletions: (editor, session, pos, prefix, callback) => {
-      const { table, column, tableColumn } = schemaCompleterKeywords[editor.id] || {
+      const { table, column, tableColumn } = schemaCompleterKeywords[
+        editor.id
+      ] || {
         table: [],
         column: [],
         tableColumn: [],

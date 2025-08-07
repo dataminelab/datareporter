@@ -22,22 +22,40 @@ import { ContinuousDomain } from "./continuous-types";
 
 export type ContinuousTicks = Array<Date | number>;
 
-function generateDateTicks(bucket: Duration, start: Date, end: Date, timezone: Timezone): Date[] {
+function generateDateTicks(
+  bucket: Duration,
+  start: Date,
+  end: Date,
+  timezone: Timezone,
+): Date[] {
   return bucket.materialize(start, end as Date, timezone);
 }
 
-function generateNumberTicks(bucket: number, start: number, end: number): number[] {
+function generateNumberTicks(
+  bucket: number,
+  start: number,
+  end: number,
+): number[] {
   const sequence = range(start, end, bucket);
   return [...sequence, end];
 }
 
-export default function pickXAxisTicks([start, end]: ContinuousDomain, timezone: Timezone): ContinuousTicks {
+export default function pickXAxisTicks(
+  [start, end]: ContinuousDomain,
+  timezone: Timezone,
+): ContinuousTicks {
   if (start instanceof Date && end instanceof Date) {
-    const bucket = getBestBucketUnitForRange(TimeRange.fromJS({ start, end }), true) as Duration;
+    const bucket = getBestBucketUnitForRange(
+      TimeRange.fromJS({ start, end }),
+      true,
+    ) as Duration;
     return generateDateTicks(bucket, start, end, timezone);
   }
   if (typeof start === "number" && typeof end === "number") {
-    const bucket = getBestBucketUnitForRange(NumberRange.fromJS({ start, end }), true) as number;
+    const bucket = getBestBucketUnitForRange(
+      NumberRange.fromJS({ start, end }),
+      true,
+    ) as number;
     return generateNumberTicks(bucket, start, end);
   }
   throw new Error(`Expected domain to be continuous. Got [${start}, ${end}]`);

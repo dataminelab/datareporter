@@ -19,7 +19,11 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
-import { Interaction, isHighlight, isHover } from "../../interactions/interaction";
+import {
+  Interaction,
+  isHighlight,
+  isHover,
+} from "../../interactions/interaction";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { HighlightModal } from "./highlight-modal";
 import { HoverTooltip } from "./hover-tooltip";
@@ -38,26 +42,45 @@ interface ForegroundProps {
 }
 
 export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, interaction, container, xScale, timezone, visualisationStage, hoverContent, dropHighlight, acceptHighlight } = props;
+  const {
+    stage,
+    interaction,
+    container,
+    xScale,
+    timezone,
+    visualisationStage,
+    hoverContent,
+    dropHighlight,
+    acceptHighlight,
+  } = props;
 
-  return <React.Fragment>
-    <SelectionOverlay
-      stage={stage}
-      interaction={interaction}
-      timezone={timezone}
-      xScale={xScale} />
-    {isHover(interaction) && <HoverTooltip
-      stage={visualisationStage}
-      interaction={interaction}
-      xScale={xScale}
-      content={hoverContent}
-      timezone={timezone} />}
-    {isHighlight(interaction) && <HighlightModal
-      rect={container.current.getBoundingClientRect()}
-      interaction={interaction}
-      xScale={xScale}
-      timezone={timezone}
-      dropHighlight={dropHighlight}
-      acceptHighlight={acceptHighlight} />}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <SelectionOverlay
+        stage={stage}
+        interaction={interaction}
+        timezone={timezone}
+        xScale={xScale}
+      />
+      {isHover(interaction) && (
+        <HoverTooltip
+          stage={visualisationStage}
+          interaction={interaction}
+          xScale={xScale}
+          content={hoverContent}
+          timezone={timezone}
+        />
+      )}
+      {isHighlight(interaction) && (
+        <HighlightModal
+          rect={container.current.getBoundingClientRect()}
+          interaction={interaction}
+          xScale={xScale}
+          timezone={timezone}
+          dropHighlight={dropHighlight}
+          acceptHighlight={acceptHighlight}
+        />
+      )}
+    </React.Fragment>
+  );
 };

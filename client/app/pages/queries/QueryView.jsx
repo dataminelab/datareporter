@@ -44,8 +44,10 @@ function QueryView(props) {
   const [query, setQuery] = useState(props.query);
   const [dataSource, setDataSource] = useState();
   const queryFlags = useQueryFlags(query, dataSource);
-  const [parameters, areParametersDirty, updateParametersDirtyFlag] = useQueryParameters(query);
-  const [selectedVisualization, setSelectedVisualization] = useVisualizationTabHandler(query.visualizations);
+  const [parameters, areParametersDirty, updateParametersDirtyFlag] =
+    useQueryParameters(query);
+  const [selectedVisualization, setSelectedVisualization] =
+    useVisualizationTabHandler(query.visualizations);
   const isDesktop = useMedia({ minWidth: 768 });
   const isFixedLayout = useMedia({ minHeight: 500 }) && isDesktop;
   const [fullscreen, toggleFullscreen] = useFullscreenHandler(isDesktop);
@@ -67,21 +69,32 @@ function QueryView(props) {
 
   const updateQueryDescription = useUpdateQueryDescription(query, setQuery);
   const editSchedule = useEditScheduleDialog(query, setQuery);
-  const addVisualization = useEditVisualizationDialog(query, queryResult, (newQuery, visualization) => {
-    setQuery(newQuery);
-    setSelectedVisualization(visualization.id);
-  });
-  const editVisualization = useEditVisualizationDialog(query, queryResult, newQuery => setQuery(newQuery));
+  const addVisualization = useEditVisualizationDialog(
+    query,
+    queryResult,
+    (newQuery, visualization) => {
+      setQuery(newQuery);
+      setSelectedVisualization(visualization.id);
+    },
+  );
+  const editVisualization = useEditVisualizationDialog(
+    query,
+    queryResult,
+    newQuery => setQuery(newQuery),
+  );
   const deleteVisualization = useDeleteVisualization(query, setQuery);
 
   const doExecuteQuery = useCallback(
     (skipParametersDirtyFlag = false) => {
-      if (!queryFlags.canExecute || (!skipParametersDirtyFlag && (areParametersDirty || isExecuting))) {
+      if (
+        !queryFlags.canExecute ||
+        (!skipParametersDirtyFlag && (areParametersDirty || isExecuting))
+      ) {
         return;
       }
       executeQuery();
     },
-    [areParametersDirty, executeQuery, isExecuting, queryFlags.canExecute]
+    [areParametersDirty, executeQuery, isExecuting, queryFlags.canExecute],
   );
 
   useEffect(() => {
@@ -97,7 +110,8 @@ function QueryView(props) {
       className={cx("query-page-wrapper", {
         "query-view-fullscreen": fullscreen,
         "query-fixed-layout": isFixedLayout,
-      })}>
+      })}
+    >
       <div className="container w-100">
         <QueryPageHeader
           query={query}
@@ -111,8 +125,11 @@ function QueryView(props) {
                   className="m-r-5"
                   type="primary"
                   shortcut="mod+enter, alt+enter, ctrl+enter"
-                  disabled={!queryFlags.canExecute || isExecuting || areParametersDirty}
-                  onClick={doExecuteQuery}>
+                  disabled={
+                    !queryFlags.canExecute || isExecuting || areParametersDirty
+                  }
+                  onClick={doExecuteQuery}
+                >
                   Refresh
                 </QueryViewButton>
               )}
@@ -123,7 +140,11 @@ function QueryView(props) {
             queryFlags.canEdit &&
             !addingDescription &&
             !fullscreen && (
-              <PlainButton className="label label-tag hidden-xs" role="none" onClick={() => setAddingDescription(true)}>
+              <PlainButton
+                className="label label-tag hidden-xs"
+                role="none"
+                onClick={() => setAddingDescription(true)}
+              >
                 <i className="zmdi zmdi-plus m-r-5" aria-hidden="true" />
                 Add description
               </PlainButton>
@@ -149,7 +170,11 @@ function QueryView(props) {
       </div>
       <div className="query-view-content">
         {query.hasParameters() && (
-          <div className={cx("bg-white tiled p-15 m-t-15 m-l-15 m-r-15", { hidden: fullscreen })}>
+          <div
+            className={cx("bg-white tiled p-15 m-t-15 m-l-15 m-r-15", {
+              hidden: fullscreen,
+            })}
+          >
             <Parameters
               parameters={parameters}
               onValuesChange={() => {
@@ -165,7 +190,10 @@ function QueryView(props) {
             <QueryVisualizationTabs
               queryResult={queryResult}
               visualizations={query.visualizations}
-              showNewVisualizationButton={queryFlags.canEdit && queryResultData.status === ExecutionStatus.DONE}
+              showNewVisualizationButton={
+                queryFlags.canEdit &&
+                queryResultData.status === ExecutionStatus.DONE
+              }
               canDeleteVisualizations={queryFlags.canEdit}
               selectedTab={selectedVisualization}
               onChangeTab={setSelectedVisualization}
@@ -177,8 +205,14 @@ function QueryView(props) {
                     type="primary"
                     disabled={!queryFlags.canExecute || areParametersDirty}
                     loading={isExecuting}
-                    onClick={doExecuteQuery}>
-                    {!isExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
+                    onClick={doExecuteQuery}
+                  >
+                    {!isExecuting && (
+                      <i
+                        className="zmdi zmdi-refresh m-r-5"
+                        aria-hidden="true"
+                      />
+                    )}
                     Refresh Now
                   </Button>
                 )
@@ -201,8 +235,13 @@ function QueryView(props) {
                     title="Toggle Fullscreen"
                     type="default"
                     shortcut="alt+f"
-                    onClick={toggleFullscreen}>
-                    {fullscreen ? <FullscreenExitOutlinedIcon /> : <FullscreenOutlinedIcon />}
+                    onClick={toggleFullscreen}
+                  >
+                    {fullscreen ? (
+                      <FullscreenExitOutlinedIcon />
+                    ) : (
+                      <FullscreenOutlinedIcon />
+                    )}
                   </QueryViewButton>
                 }
               />
@@ -221,7 +260,12 @@ function QueryView(props) {
           </div>
         </div>
         <div className={cx("p-t-15 p-r-15 p-l-15", { hidden: fullscreen })}>
-          <QueryMetadata layout="horizontal" query={query} dataSource={dataSource} onEditSchedule={editSchedule} />
+          <QueryMetadata
+            layout="horizontal"
+            query={query}
+            dataSource={dataSource}
+            onEditSchedule={editSchedule}
+          />
         </div>
       </div>
     </div>
@@ -237,5 +281,5 @@ routes.register(
   routeWithUserSession({
     path: "/queries/:queryId",
     render: pageProps => <QueryViewPage {...pageProps} />,
-  })
+  }),
 );

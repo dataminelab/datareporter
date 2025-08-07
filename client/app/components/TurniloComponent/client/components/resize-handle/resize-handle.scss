@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .resize-handle {
   $size: 18px;
 
   z-index: 1;
   position: absolute;
-
 
   > .svg-icon {
     width: 20px;
@@ -36,7 +35,8 @@
     }
   }
 
-  &.left, &.right {
+  &.left,
+  &.right {
     cursor: ew-resize;
     height: 100%;
     width: $size;
@@ -56,7 +56,8 @@
     margin-right: -$tile-margin-h / 2;
   }
 
-  &.top, &.bottom {
+  &.top,
+  &.bottom {
     cursor: ns-resize;
     height: $size;
     width: 100%;

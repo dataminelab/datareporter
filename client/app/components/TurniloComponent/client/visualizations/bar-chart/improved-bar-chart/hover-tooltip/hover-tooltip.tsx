@@ -33,22 +33,27 @@ interface HoverTooltipProps {
   rect: ClientRect | DOMRect;
 }
 
-export const HoverTooltip: React.FunctionComponent<HoverTooltipProps> = props => {
+export const HoverTooltip: React.FunctionComponent<
+  HoverTooltipProps
+> = props => {
   const {
     model,
     rect: { left, top },
     interaction: { datum },
     series,
     xScale,
-    yScale
+    yScale,
   } = props;
   const { continuousSplit, timezone } = model;
   const y = yScale(series.selectValue(datum));
   const xValue = continuousSplit.selectValue<DomainValue>(datum);
-  const x = xScale.calculate(xValue) + (xScale.bandwidth() / 2);
-  return <SegmentBubble
-    top={top + y}
-    left={left + x}
-    title={continuousSplit.formatValue(datum, timezone)}
-    content={<Content model={model} datum={datum} series={series}/>} />;
+  const x = xScale.calculate(xValue) + xScale.bandwidth() / 2;
+  return (
+    <SegmentBubble
+      top={top + y}
+      left={left + x}
+      title={continuousSplit.formatValue(datum, timezone)}
+      content={<Content model={model} datum={datum} series={series} />}
+    />
+  );
 };

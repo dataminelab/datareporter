@@ -19,7 +19,7 @@ export default function navigateTo(href, replace = false) {
         search: href.search,
         hash: href.hash,
       },
-      replace
+      replace,
     );
   }, 10);
 }

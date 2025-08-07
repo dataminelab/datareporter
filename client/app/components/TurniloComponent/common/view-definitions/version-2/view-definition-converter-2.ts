@@ -31,7 +31,7 @@ import {
   TimeBucketExpression,
   TimeFloorExpression,
   TimeRange,
-  TimeRangeExpression
+  TimeRangeExpression,
 } from "plywood";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { DateRange } from "../../models/date-range/date-range";
@@ -46,7 +46,7 @@ import {
   RelativeTimeFilterClause,
   StringFilterAction,
   StringFilterClause,
-  TimeFilterPeriod
+  TimeFilterPeriod,
 } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
 import { SeriesList } from "../../models/series-list/series-list";
@@ -60,19 +60,30 @@ import { ViewDefinition2 } from "./view-definition-2";
 
 export type FilterSelection = Expression | string;
 
-export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDefinition2, Essence> {
+export class ViewDefinitionConverter2
+  implements ViewDefinitionConverter<ViewDefinition2, Essence>
+{
   version = 2;
 
   fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube): Essence {
     const visualization = manifestByName(definition.visualization);
     const visualizationSettings = visualization.visualizationSettings.defaults;
 
-    const measureNames = definition.multiMeasureMode ? definition.selectedMeasures : [definition.singleMeasure];
-    const series = SeriesList.fromMeasures(dataCube.measures.getMeasuresByNames(measureNames));
-    const timezone = definition.timezone && Timezone.fromJS(definition.timezone);
-    const filter = Filter.fromClauses(filterJSConverter(definition.filter, dataCube));
+    const measureNames = definition.multiMeasureMode
+      ? definition.selectedMeasures
+      : [definition.singleMeasure];
+    const series = SeriesList.fromMeasures(
+      dataCube.measures.getMeasuresByNames(measureNames),
+    );
+    const timezone =
+      definition.timezone && Timezone.fromJS(definition.timezone);
+    const filter = Filter.fromClauses(
+      filterJSConverter(definition.filter, dataCube),
+    );
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions);
-    const splits = Splits.fromSplits(splitJSConverter(definition.splits, dataCube));
+    const splits = Splits.fromSplits(
+      splitJSConverter(definition.splits, dataCube),
+    );
     const timeShift = TimeShift.empty();
     const pinnedSort = definition.pinnedSort;
 
@@ -86,7 +97,7 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
       splits,
       pinnedDimensions,
       series,
-      pinnedSort
+      pinnedSort,
     });
   }
 
@@ -95,78 +106,140 @@ export class ViewDefinitionConverter2 implements ViewDefinitionConverter<ViewDef
   }
 }
 
-function isBooleanFilterSelection(selection: FilterSelection): selection is LiteralExpression {
-  return selection instanceof LiteralExpression && selection.type === "SET/BOOLEAN";
+function isBooleanFilterSelection(
+  selection: FilterSelection,
+): selection is LiteralExpression {
+  return (
+    selection instanceof LiteralExpression && selection.type === "SET/BOOLEAN"
+  );
 }
 
-function isNumberFilterSelection(selection: FilterSelection): selection is LiteralExpression {
-  return selection instanceof LiteralExpression && selection.type === "SET/NUMBER_RANGE";
+function isNumberFilterSelection(
+  selection: FilterSelection,
+): selection is LiteralExpression {
+  return (
+    selection instanceof LiteralExpression &&
+    selection.type === "SET/NUMBER_RANGE"
+  );
 }
 
-function isFixedTimeRangeSelection(selection: FilterSelection): selection is LiteralExpression {
-  return selection instanceof LiteralExpression && selection.type === "TIME_RANGE";
+function isFixedTimeRangeSelection(
+  selection: FilterSelection,
+): selection is LiteralExpression {
+  return (
+    selection instanceof LiteralExpression && selection.type === "TIME_RANGE"
+  );
 }
 
-function isRelativeTimeRangeSelection(selection: FilterSelection): selection is TimeRangeExpression {
-  return selection instanceof TimeRangeExpression || selection instanceof TimeBucketExpression;
+function isRelativeTimeRangeSelection(
+  selection: FilterSelection,
+): selection is TimeRangeExpression {
+  return (
+    selection instanceof TimeRangeExpression ||
+    selection instanceof TimeBucketExpression
+  );
 }
 
 function filterJSConverter(filter: any, dataCube: DataCube): FilterClause[] {
   const filterExpression = Expression.fromJSLoose(filter);
-  if (filterExpression instanceof LiteralExpression && filterExpression.simple) return [];
+  if (filterExpression instanceof LiteralExpression && filterExpression.simple)
+    return [];
   if (filterExpression instanceof AndExpression) {
-    return filterExpression.getExpressionList().map(exp => convertFilterExpression(exp as ChainableUnaryExpression, dataCube));
+    return filterExpression
+      .getExpressionList()
+      .map(exp =>
+        convertFilterExpression(exp as ChainableUnaryExpression, dataCube),
+      );
   } else {
-    return [convertFilterExpression(filterExpression as ChainableUnaryExpression, dataCube)];
+    return [
+      convertFilterExpression(
+        filterExpression as ChainableUnaryExpression,
+        dataCube,
+      ),
+    ];
   }
 }
 
 enum SupportedAction {
   overlap = "overlap",
   contains = "contains",
-  match = "match"
+  match = "match",
 }
 
-function readBooleanFilterClause(selection: LiteralExpression, dimension: Dimension, not: boolean): BooleanFilterClause {
+function readBooleanFilterClause(
+  selection: LiteralExpression,
+  dimension: Dimension,
+  not: boolean,
+): BooleanFilterClause {
   const { name: reference } = dimension;
 
-  return new BooleanFilterClause({ reference, values: Set(selection.value.elements), not });
+  return new BooleanFilterClause({
+    reference,
+    values: Set(selection.value.elements),
+    not,
+  });
 }
 
-function readNumberFilterClause(selection: LiteralExpression, dimension: Dimension, not: boolean): NumberFilterClause {
+function readNumberFilterClause(
+  selection: LiteralExpression,
+  dimension: Dimension,
+  not: boolean,
+): NumberFilterClause {
   const { name: reference } = dimension;
 
-  if (isNumberFilterSelection(selection) && selection.value instanceof PlywoodSet) {
-    const values = List(selection.value.elements.map((range: NumberRange) => new NumberRange(range)));
+  if (
+    isNumberFilterSelection(selection) &&
+    selection.value instanceof PlywoodSet
+  ) {
+    const values = List(
+      selection.value.elements.map(
+        (range: NumberRange) => new NumberRange(range),
+      ),
+    );
     return new NumberFilterClause({ reference, not, values });
   } else {
-    throw new Error(`Number filterClause expected, found: ${selection}. Dimension: ${reference}`);
+    throw new Error(
+      `Number filterClause expected, found: ${selection}. Dimension: ${reference}`,
+    );
   }
 }
 
-function readFixedTimeFilter(selection: LiteralExpression, dimension: Dimension): FixedTimeFilterClause {
+function readFixedTimeFilter(
+  selection: LiteralExpression,
+  dimension: Dimension,
+): FixedTimeFilterClause {
   const { name: reference } = dimension;
 
-  return new FixedTimeFilterClause({ reference, values: List.of(new DateRange(selection.value as TimeRange)) });
+  return new FixedTimeFilterClause({
+    reference,
+    values: List.of(new DateRange(selection.value as TimeRange)),
+  });
 }
 
-function readRelativeTimeFilterClause({ step, duration, operand }: TimeRangeExpression, dimension: Dimension): RelativeTimeFilterClause {
+function readRelativeTimeFilterClause(
+  { step, duration, operand }: TimeRangeExpression,
+  dimension: Dimension,
+): RelativeTimeFilterClause {
   const { name: reference } = dimension;
   if (operand instanceof TimeFloorExpression) {
     return new RelativeTimeFilterClause({
       reference,
       duration: duration.multiply(Math.abs(step)),
-      period: TimeFilterPeriod.PREVIOUS
+      period: TimeFilterPeriod.PREVIOUS,
     });
   }
   return new RelativeTimeFilterClause({
     reference,
     period: step ? TimeFilterPeriod.LATEST : TimeFilterPeriod.CURRENT,
-    duration: step ? duration.multiply(Math.abs(step)) : duration
+    duration: step ? duration.multiply(Math.abs(step)) : duration,
   });
 }
 
-function readStringFilterClause(selection: ChainableExpression, dimension: Dimension, exclude: boolean): StringFilterClause {
+function readStringFilterClause(
+  selection: ChainableExpression,
+  dimension: Dimension,
+  exclude: boolean,
+): StringFilterClause {
   const action = expressionAction(selection);
   const { name: reference } = dimension;
 
@@ -175,15 +248,20 @@ function readStringFilterClause(selection: ChainableExpression, dimension: Dimen
       return new StringFilterClause({
         reference,
         action: StringFilterAction.CONTAINS,
-        values: Set.of(((selection as ChainableUnaryExpression).expression as LiteralExpression).value),
-        not: exclude
+        values: Set.of(
+          (
+            (selection as ChainableUnaryExpression)
+              .expression as LiteralExpression
+          ).value,
+        ),
+        not: exclude,
       });
     case SupportedAction.match:
       return new StringFilterClause({
         reference,
         action: StringFilterAction.MATCH,
         values: Set.of((selection as MatchExpression).regexp),
-        not: exclude
+        not: exclude,
       });
     case SupportedAction.overlap:
     case undefined:
@@ -191,21 +269,36 @@ function readStringFilterClause(selection: ChainableExpression, dimension: Dimen
       return new StringFilterClause({
         reference,
         action: StringFilterAction.IN,
-        values: Set(((selection as ChainableUnaryExpression).expression as LiteralExpression).value.elements),
-        not: exclude
+        values: Set(
+          (
+            (selection as ChainableUnaryExpression)
+              .expression as LiteralExpression
+          ).value.elements,
+        ),
+        not: exclude,
       });
   }
 }
 
-function extractExclude(expression: ChainableUnaryExpression): { exclude: boolean; expression: ChainableUnaryExpression } {
+function extractExclude(expression: ChainableUnaryExpression): {
+  exclude: boolean;
+  expression: ChainableUnaryExpression;
+} {
   if (expression instanceof NotExpression) {
-    return { exclude: true, expression: expression.operand as ChainableUnaryExpression };
+    return {
+      exclude: true,
+      expression: expression.operand as ChainableUnaryExpression,
+    };
   }
   return { exclude: false, expression };
 }
 
 function expressionAction(expression: ChainableExpression): SupportedAction {
-  if (expression instanceof InExpression || expression instanceof OverlapExpression || expression instanceof ContainsExpression) {
+  if (
+    expression instanceof InExpression ||
+    expression instanceof OverlapExpression ||
+    expression instanceof ContainsExpression
+  ) {
     return expression.op as SupportedAction;
   }
   if (expression instanceof MatchExpression) {
@@ -214,7 +307,10 @@ function expressionAction(expression: ChainableExpression): SupportedAction {
   throw new Error(`Unrecognized Supported Action for expression ${expression}`);
 }
 
-function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: DataCube): FilterClause {
+function convertFilterExpression(
+  filter: ChainableUnaryExpression,
+  dataCube: DataCube,
+): FilterClause {
   const { expression, exclude } = extractExclude(filter);
   const dimension = dataCube.getDimensionByExpression(expression.operand);
 
@@ -224,8 +320,13 @@ function convertFilterExpression(filter: ChainableUnaryExpression, dataCube: Dat
     return readNumberFilterClause(expression.expression, dimension, exclude);
   } else if (isFixedTimeRangeSelection(expression.expression)) {
     return readFixedTimeFilter(expression.expression, dimension);
-  } else if (isRelativeTimeRangeSelection(expression.expression as ChainableExpression)) {
-    return readRelativeTimeFilterClause(expression.expression as TimeRangeExpression, dimension);
+  } else if (
+    isRelativeTimeRangeSelection(expression.expression as ChainableExpression)
+  ) {
+    return readRelativeTimeFilterClause(
+      expression.expression as TimeRangeExpression,
+      dimension,
+    );
   } else {
     return readStringFilterClause(expression, dimension, exclude);
   }
@@ -259,10 +360,17 @@ function convertSplit(split: any, dataCube: DataCube): Split {
   const sort = createSort(sortAction, dataCube);
   const type = kindToType(dimension.kind);
   const limit = limitAction && limitValue(limitAction);
-  const bucket = bucketAction && (isTimeBucket(bucketAction) ? Duration.fromJS(bucketAction.duration) : bucketAction.size);
+  const bucket =
+    bucketAction &&
+    (isTimeBucket(bucketAction)
+      ? Duration.fromJS(bucketAction.duration)
+      : bucketAction.size);
   return new Split({ type, reference, sort, limit, bucket });
 }
 
-export default function splitJSConverter(splits: any[], dataCube: DataCube): Split[] {
+export default function splitJSConverter(
+  splits: any[],
+  dataCube: DataCube,
+): Split[] {
   return splits.map(split => convertSplit(split, dataCube));
 }

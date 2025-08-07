@@ -10,7 +10,13 @@ export default function UserGroups({ groups, linkGroups, ...props }) {
   return (
     <div className="user-groups" {...props}>
       {map(groups, group => (
-        <Tag key={group.id}>{linkGroups ? <Link href={`groups/${group.id}`}>{group.name}</Link> : group.name}</Tag>
+        <Tag key={group.id}>
+          {linkGroups ? (
+            <Link href={`groups/${group.id}`}>{group.name}</Link>
+          ) : (
+            group.name
+          )}
+        </Tag>
       ))}
     </div>
   );
@@ -21,7 +27,7 @@ UserGroups.propTypes = {
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
       name: PropTypes.string,
-    })
+    }),
   ),
   linkGroups: PropTypes.bool,
 };

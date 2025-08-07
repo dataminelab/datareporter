@@ -19,17 +19,16 @@ import * as React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./loader.scss";
 
-export interface LoaderProps {
-}
+export interface LoaderProps {}
 
-export interface LoaderState {
-}
+export interface LoaderState {}
 
 export class Loader extends React.Component<LoaderProps, LoaderState> {
-
   render() {
-    return <div className="loader">
-      <SvgIcon svg={require("../../icons/grid-loader.svg")} />
-    </div>;
+    return (
+      <div className="loader">
+        <SvgIcon svg={require("../../icons/grid-loader.svg")} />
+      </div>
+    );
   }
 }

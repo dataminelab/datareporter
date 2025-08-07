@@ -1,6 +1,10 @@
-name: "Unit tests"
+name: "Unit Tests"
 on:
-  workflow_call:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main, develop]
 env:
   NODE_VERSION: 18
   NPM_VERSION: 9.5.1
@@ -10,6 +14,10 @@ permissions:
   pull-requests: write
   checks: write
 jobs:
+  restyled:
+    uses: ./.github/workflows/restyled.yml
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
   backend-lint:
     timeout-minutes: 5
     runs-on: ubuntu-latest
@@ -27,7 +35,6 @@ jobs:
       - run: python -m ensurepip --upgrade
       - run: sudo pip install flake8==6.0.0
       - run: flake8 --config=.flake8 --show-source --statistics .
-
   backend-unit-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -106,10 +113,10 @@ jobs:
         with:
           recreate: true
           path: code-coverage-results.md
-
   frontend-lint:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    needs: restyled
     steps:
       - if: github.event.pull_request.mergeable == 'false'
         name: Exit if PR is not mergeable
@@ -134,7 +141,6 @@ jobs:
         with:
           name: frontend-test-results
           path: /tmp/test-results
-
   frontend-unit-tests:
     runs-on: ubuntu-latest
     needs: frontend-lint
@@ -174,18 +180,17 @@ jobs:
         working-directory: viz-lib
         run: npm run test
       - name: Install plywood-server dependencies
-        working-directory: plywood/server
+        working-directory: plywood
         run: npm install
       - name: Run plywood-server Tests
-        working-directory: plywood/server
+        working-directory: plywood
         run: npm run test
       - name: Install plywood-client dependencies
-        working-directory: plywood/server/client
+        working-directory: plywood/client
         run: npm install
       - name: Run plywood-client Tests
-        working-directory: plywood/server/client
+        working-directory: plywood/client
         run: npm run test
-
   frontend-e2e-tests:
     runs-on: ubuntu-latest
     needs: frontend-lint

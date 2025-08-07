@@ -29,7 +29,7 @@
     pointer-events: none;
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       width: $shpitz-size;
       height: $shpitz-size;
@@ -90,5 +90,4 @@
       }
     }
   }
-
 }

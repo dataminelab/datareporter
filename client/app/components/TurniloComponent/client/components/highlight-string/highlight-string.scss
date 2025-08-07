@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .highlight-string {
   .bold {
-    @include border-css-variable('color', 1px, solid, 'text-standard');
+    @include border-css-variable("color", 1px, solid, "text-standard");
   }
 }

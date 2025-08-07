@@ -20,16 +20,33 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import { Binary, Nullary, Unary } from "../../../../common/utils/functional/functional";
+import {
+  Binary,
+  Nullary,
+  Unary,
+} from "../../../../common/utils/functional/functional";
 import { GlobalEventListener } from "../../../components/global-event-listener/global-event-listener";
 import { toFilterClause } from "../../../utils/highlight-clause/highlight-clause";
 import { mouseEventOffset } from "../../../utils/mouse-event-offset/mouse-event-offset";
 import { Highlight } from "../../base-visualization/highlight";
-import { ContinuousRange, ContinuousScale, ContinuousValue } from "../utils/continuous-types";
+import {
+  ContinuousRange,
+  ContinuousScale,
+  ContinuousValue,
+} from "../utils/continuous-types";
 import { getContinuousReference } from "../utils/splits";
 import { constructRange, shiftByOne } from "./continuous-range";
 import { findClosestDatum } from "./find-closest-datum";
-import { createDragging, createHighlight, createHover, Interaction, isDragging, isHighlight, isHover, MouseInteraction } from "./interaction";
+import {
+  createDragging,
+  createHighlight,
+  createHover,
+  Interaction,
+  isDragging,
+  isHighlight,
+  isHover,
+  MouseInteraction,
+} from "./interaction";
 import { snapRangeToGrid } from "./snap-range-to-grid";
 
 interface InteractionControllerProps {
@@ -58,8 +75,10 @@ export interface InteractionsProps {
   mouseLeave: Nullary<void>;
 }
 
-export class InteractionController extends React.Component<InteractionControllerProps, InteractionsState> {
-
+export class InteractionController extends React.Component<
+  InteractionControllerProps,
+  InteractionsState
+> {
   state: InteractionsState = { interaction: null, scrollTop: 0 };
 
   handleHover = (chartId: string, offset: number) => {
@@ -91,7 +110,9 @@ export class InteractionController extends React.Component<InteractionController
   };
 
   handleDragStart = (chartId: string, offset: number) => {
-    const { essence: { timezone } } = this.props;
+    const {
+      essence: { timezone },
+    } = this.props;
     const start = this.findValueUnderOffset(offset);
     const end = shiftByOne(start, timezone);
     this.setState({ interaction: createDragging(chartId, start, end) });
@@ -124,8 +145,14 @@ export class InteractionController extends React.Component<InteractionController
     const { essence, saveHighlight } = this.props;
     const { start, key } = interaction;
     const end = this.findValueUnderOffset(offset);
-    const range = snapRangeToGrid(constructRange(start, end, essence.timezone), essence);
-    saveHighlight(List.of(toFilterClause(range, getContinuousReference(essence))), key);
+    const range = snapRangeToGrid(
+      constructRange(start, end, essence.timezone),
+      essence,
+    );
+    saveHighlight(
+      List.of(toFilterClause(range, getContinuousReference(essence))),
+      key,
+    );
   };
 
   private findValueUnderOffset(offset: number): ContinuousValue {
@@ -146,7 +173,7 @@ export class InteractionController extends React.Component<InteractionController
 
     this.setState({
       interaction: null,
-      scrollTop
+      scrollTop,
     });
   };
 
@@ -165,14 +192,17 @@ export class InteractionController extends React.Component<InteractionController
       dropHighlight,
       dragStart: this.handleDragStart,
       handleHover: this.handleHover,
-      mouseLeave: this.onMouseLeave
+      mouseLeave: this.onMouseLeave,
     };
-    return <React.Fragment>
-      <GlobalEventListener
-        mouseUp={this.stopDragging}
-        mouseMove={this.dragging}
-        scroll={this.scrollCharts} />
-      {children(hocProps)}
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <GlobalEventListener
+          mouseUp={this.stopDragging}
+          mouseMove={this.dragging}
+          scroll={this.scrollCharts}
+        />
+        {children(hocProps)}
+      </React.Fragment>
+    );
   }
 }

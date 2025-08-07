@@ -34,23 +34,28 @@ export interface ImmutableDropdownProps<T> {
   onChange: ChangeFn;
 }
 
-export interface ImmutableDropdownState {
-}
+export interface ImmutableDropdownState {}
 
-export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps<T>, ImmutableDropdownState> {
-
+export class ImmutableDropdown<T> extends React.Component<
+  ImmutableDropdownProps<T>,
+  ImmutableDropdownState
+> {
   static simpleGenerator(instance: any, changeFn: ChangeFn) {
-    return (name: string, items: ListItem[]) => {
-      return <ImmutableDropdown<ListItem>
-        items={items}
-        instance={instance}
-        path={name}
-        equal={(a: ListItem, b: ListItem) => a.value === b.value}
-        renderItem={(a: ListItem) => a ? a.label : ""}
-        keyItem={(a: ListItem) => a.value || "default_value"}
-        onChange={changeFn}
-      />;
+    const generator = (name: string, items: ListItem[]): JSX.Element => {
+      return (
+        <ImmutableDropdown<ListItem>
+          items={items}
+          instance={instance}
+          path={name}
+          equal={(a: ListItem, b: ListItem) => a.value === b.value}
+          renderItem={(a: ListItem) => (a ? a.label : "")}
+          keyItem={(a: ListItem) => a.value || "default_value"}
+          onChange={changeFn}
+        />
+      );
     };
+    generator.displayName = "ImmutableDropdownSimpleGenerator";
+    return generator;
   }
 
   onChange = (newSelectedItem: T) => {
@@ -60,25 +65,29 @@ export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps
       ImmutableUtils.setProperty(instance, path, keyItem(newSelectedItem)),
       true,
       path,
-      undefined
+      undefined,
     );
   };
 
   render() {
-    const { label, items, equal, renderItem, keyItem, instance, path } = this.props;
+    const { label, items, equal, renderItem, keyItem, instance, path } =
+      this.props;
     const selectedValue = ImmutableUtils.getProperty(instance, path);
 
-    const selectedItem: T = items.filter(item => keyItem(item) === selectedValue)[0] || items[0];
+    const selectedItem: T =
+      items.filter(item => keyItem(item) === selectedValue)[0] || items[0];
 
-    return <Dropdown<T>
-      className="immutable-dropdown input"
-      label={label}
-      items={items}
-      selectedItem={selectedItem}
-      equal={equal}
-      renderItem={renderItem}
-      keyItem={keyItem}
-      onSelect={this.onChange}
-    />;
+    return (
+      <Dropdown<T>
+        className="immutable-dropdown input"
+        label={label}
+        items={items}
+        selectedItem={selectedItem}
+        equal={equal}
+        renderItem={renderItem}
+        keyItem={keyItem}
+        onSelect={this.onChange}
+      />
+    );
   }
 }

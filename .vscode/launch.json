@@ -24,7 +24,7 @@
             "request": "attach",
             "name": "Attach jest or mocha",
             "port": 9229
-            // plywood/server/client
+            // plywood/client
             // node --inspect-brk node_modules/.bin/mocha test/expression/*
 
             // client

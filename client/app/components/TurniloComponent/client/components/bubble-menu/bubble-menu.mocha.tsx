@@ -28,13 +28,13 @@ const anchor = {
   top: 101,
   left: 102,
   height: 201,
-  width: 202
+  width: 202,
 };
 const stage = StageFixtures.defaultB();
 const containerStage = StageFixtures.container();
 
 const openOn = {
-  getBoundingClientRect: () => anchor
+  getBoundingClientRect: () => anchor,
 } as Element;
 
 const contentClassName = "js-bubble-menu";
@@ -45,25 +45,29 @@ const defaultProps = {
   openOn,
   stage,
   containerStage,
-  onClose: () => {
-  }
+  onClose: () => {},
 };
 
 let oldInnerHeight: number;
 
 function renderBubble(direction: Direction, align: Align = "center") {
-  return shallow(<BubbleMenu{...defaultProps} direction={direction} align={align} />);
+  return shallow(
+    <BubbleMenu {...defaultProps} direction={direction} align={align} />,
+  );
 }
 
 describe("<BubbleMenu>", () => {
-
   describe("Right direction", () => {
     it("should pass correct coordinates to bubble", () => {
       const bubble = renderBubble("right");
       const portal = bubble.find(BodyPortal);
 
-      expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width - OFFSET_H);
-      expect(portal.prop("top")).to.be.equal(anchor.top + anchor.height / 2 - stage.height / 2);
+      expect(portal.prop("left")).to.be.equal(
+        anchor.left + anchor.width - OFFSET_H,
+      );
+      expect(portal.prop("top")).to.be.equal(
+        anchor.top + anchor.height / 2 - stage.height / 2,
+      );
       expect(portal.prop("bottom")).to.be.equal(undefined);
     });
 
@@ -75,7 +79,7 @@ describe("<BubbleMenu>", () => {
         height: stage.height,
         width: undefined,
         maxHeight: undefined,
-        maxWidth: containerStage.width
+        maxWidth: containerStage.width,
       });
     });
 
@@ -84,7 +88,10 @@ describe("<BubbleMenu>", () => {
       const shpitz = bubble.find(Shpitz);
 
       expect(shpitz.prop("direction")).to.be.equal("right");
-      expect(shpitz.prop("style")).to.be.deep.equal({ top: stage.height / 2, left: 0 });
+      expect(shpitz.prop("style")).to.be.deep.equal({
+        top: stage.height / 2,
+        left: 0,
+      });
     });
   });
 
@@ -94,10 +101,11 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("down", "center");
         const portal = bubble.find(BodyPortal);
 
-        expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width / 2 - stage.width / 2);
+        expect(portal.prop("left")).to.be.equal(
+          anchor.left + anchor.width / 2 - stage.width / 2,
+        );
         expect(portal.prop("top")).to.be.equal(anchor.top + anchor.height);
         expect(portal.prop("bottom")).to.be.equal(undefined);
-
       });
 
       it("should set correct dimensions to content", () => {
@@ -108,7 +116,7 @@ describe("<BubbleMenu>", () => {
           height: undefined,
           width: stage.width,
           maxWidth: undefined,
-          maxHeight: containerStage.height
+          maxHeight: containerStage.height,
         });
       });
 
@@ -117,7 +125,10 @@ describe("<BubbleMenu>", () => {
         const shpitz = bubble.find(Shpitz);
 
         expect(shpitz.prop("direction")).to.be.equal("down");
-        expect(shpitz.prop("style")).to.be.deep.equal({ top: 0, left: stage.width / 2 });
+        expect(shpitz.prop("style")).to.be.deep.equal({
+          top: 0,
+          left: stage.width / 2,
+        });
       });
     });
 
@@ -129,7 +140,6 @@ describe("<BubbleMenu>", () => {
         expect(portal.prop("left")).to.be.equal(anchor.left);
         expect(portal.prop("top")).to.be.equal(anchor.top + anchor.height);
         expect(portal.prop("bottom")).to.be.equal(undefined);
-
       });
 
       it("should set correct dimensions to content", () => {
@@ -140,7 +150,7 @@ describe("<BubbleMenu>", () => {
           height: undefined,
           width: stage.width,
           maxWidth: undefined,
-          maxHeight: containerStage.height
+          maxHeight: containerStage.height,
         });
       });
 
@@ -157,7 +167,9 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("down", "end");
         const portal = bubble.find(BodyPortal);
 
-        expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width - stage.width);
+        expect(portal.prop("left")).to.be.equal(
+          anchor.left + anchor.width - stage.width,
+        );
         expect(portal.prop("top")).to.be.equal(anchor.top + anchor.height);
         expect(portal.prop("bottom")).to.be.equal(undefined);
       });
@@ -170,7 +182,7 @@ describe("<BubbleMenu>", () => {
           height: undefined,
           width: stage.width,
           maxHeight: containerStage.height,
-          maxWidth: undefined
+          maxWidth: undefined,
         });
       });
 
@@ -184,7 +196,6 @@ describe("<BubbleMenu>", () => {
   });
 
   describe("Up direction", () => {
-
     beforeEach(() => {
       oldInnerHeight = window.innerHeight;
       // Because innerHeight is readonly on window
@@ -201,10 +212,11 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("up", "center");
         const portal = bubble.find(BodyPortal);
 
-        expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width / 2 - stage.width / 2);
+        expect(portal.prop("left")).to.be.equal(
+          anchor.left + anchor.width / 2 - stage.width / 2,
+        );
         expect(portal.prop("bottom")).to.be.equal(windowHeight - anchor.top);
         expect(portal.prop("top")).to.be.equal(undefined);
-
       });
 
       it("should set correct dimensions to content", () => {
@@ -215,7 +227,7 @@ describe("<BubbleMenu>", () => {
           width: stage.width,
           height: undefined,
           maxHeight: containerStage.height,
-          maxWidth: undefined
+          maxWidth: undefined,
         });
       });
 
@@ -224,7 +236,10 @@ describe("<BubbleMenu>", () => {
         const shpitz = bubble.find(Shpitz);
 
         expect(shpitz.prop("direction")).to.be.equal("up");
-        expect(shpitz.prop("style")).to.be.deep.equal({ bottom: 0, left: stage.width / 2 });
+        expect(shpitz.prop("style")).to.be.deep.equal({
+          bottom: 0,
+          left: stage.width / 2,
+        });
       });
     });
 
@@ -246,7 +261,7 @@ describe("<BubbleMenu>", () => {
           width: stage.width,
           height: undefined,
           maxWidth: undefined,
-          maxHeight: containerStage.height
+          maxHeight: containerStage.height,
         });
       });
 
@@ -263,7 +278,9 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("up", "end");
         const portal = bubble.find(BodyPortal);
 
-        expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width - stage.width);
+        expect(portal.prop("left")).to.be.equal(
+          anchor.left + anchor.width - stage.width,
+        );
         expect(portal.prop("bottom")).to.be.equal(windowHeight - anchor.top);
         expect(portal.prop("top")).to.be.equal(undefined);
       });
@@ -276,7 +293,7 @@ describe("<BubbleMenu>", () => {
           height: undefined,
           width: stage.width,
           maxHeight: containerStage.height,
-          maxWidth: undefined
+          maxWidth: undefined,
         });
       });
 
@@ -296,7 +313,7 @@ describe("<BubbleMenu>", () => {
         direction="right"
         id="custom-id"
         inside={{ id: "parent" } as Element}
-      />
+      />,
     );
     const div = bubble.find(contentSelector);
 
@@ -307,11 +324,7 @@ describe("<BubbleMenu>", () => {
 
   it("should respect fixed size property", () => {
     const bubble = shallow(
-      <BubbleMenu
-        {...defaultProps}
-        direction="right"
-        fixedSize={true}
-      />
+      <BubbleMenu {...defaultProps} direction="right" fixedSize={true} />,
     );
     const div = bubble.find(contentSelector);
 

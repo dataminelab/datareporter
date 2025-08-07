@@ -37,9 +37,12 @@ interface ChartsProps {
 
 export const Charts: React.SFC<ChartsProps> = props => {
   const { essence } = props;
-  const { groupSeries } = essence.visualizationSettings as ImmutableRecord<LineChartSettings>;
+  const { groupSeries } =
+    essence.visualizationSettings as ImmutableRecord<LineChartSettings>;
 
-  return groupSeries
-    ? <ChartsPerSplit {...props} />
-    : <ChartsPerSeries {...props} />;
+  return groupSeries ? (
+    <ChartsPerSplit {...props} />
+  ) : (
+    <ChartsPerSeries {...props} />
+  );
 };

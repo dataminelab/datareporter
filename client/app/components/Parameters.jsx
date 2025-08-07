@@ -1,7 +1,11 @@
 import { size, filter, forEach, extend, isEmpty, each } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
-import { SortableContainer, SortableElement, DragHandle } from "@redash/viz/lib/components/sortable";
+import {
+  SortableContainer,
+  SortableElement,
+  DragHandle,
+} from "@redash/viz/lib/components/sortable";
 import location from "@/services/location";
 import { Parameter, createParameter } from "@/services/parameters";
 import ParameterApplyButton from "@/components/ParameterApplyButton";
@@ -45,7 +49,7 @@ export default class Parameters extends React.Component {
     appendSortableToParent: true,
   };
 
-  toCamelCase = (str) => {
+  toCamelCase = str => {
     if (isEmpty(str)) {
       return "";
     }
@@ -61,13 +65,14 @@ export default class Parameters extends React.Component {
     }
     const hideRegex = /hide_filter=([^&]+)/g;
     const matches = window.location.search.matchAll(hideRegex);
-    this.hideValues = Array.from(matches, (match) => match[1]);
+    this.hideValues = Array.from(matches, match => match[1]);
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = prevProps => {
     const { parameters, disableUrlUpdate } = this.props;
     const parametersChanged = prevProps.parameters !== parameters;
-    const disableUrlUpdateChanged = prevProps.disableUrlUpdate !== disableUrlUpdate;
+    const disableUrlUpdateChanged =
+      prevProps.disableUrlUpdate !== disableUrlUpdate;
     if (parametersChanged) {
       this.setState({ parameters });
     }
@@ -76,7 +81,7 @@ export default class Parameters extends React.Component {
     }
   };
 
-  handleKeyDown = (e) => {
+  handleKeyDown = e => {
     // Cmd/Ctrl/Alt + Enter
     if (e.keyCode === 13 && (e.ctrlKey || e.metaKey || e.altKey)) {
       e.stopPropagation();
@@ -111,8 +116,10 @@ export default class Parameters extends React.Component {
   applyChanges = () => {
     const { onValuesChange, disableUrlUpdate } = this.props;
     this.setState(({ parameters }) => {
-      const parametersWithPendingValues = parameters.filter((p) => p.hasPendingValue);
-      forEach(parameters, (p) => p.applyPendingValue());
+      const parametersWithPendingValues = parameters.filter(
+        p => p.hasPendingValue,
+      );
+      forEach(parameters, p => p.applyPendingValue());
       if (!disableUrlUpdate) {
         updateUrl(parameters);
       }
@@ -123,10 +130,13 @@ export default class Parameters extends React.Component {
 
   showParameterSettings = (parameter, index) => {
     const { onParametersEdit } = this.props;
-    EditParameterSettingsDialog.showModal({ parameter }).onClose((updated) => {
+    EditParameterSettingsDialog.showModal({ parameter }).onClose(updated => {
       this.setState(({ parameters }) => {
         const updatedParameter = extend(parameter, updated);
-        parameters[index] = createParameter(updatedParameter, updatedParameter.parentQueryId);
+        parameters[index] = createParameter(
+          updatedParameter,
+          updatedParameter.parentQueryId,
+        );
         onParametersEdit(parameters);
         return { parameters };
       });
@@ -134,7 +144,11 @@ export default class Parameters extends React.Component {
   };
 
   renderParameter(param, index) {
-    if (this.hideValues.some((value) => this.toCamelCase(value) === this.toCamelCase(param.name))) {
+    if (
+      this.hideValues.some(
+        value => this.toCamelCase(value) === this.toCamelCase(param.name),
+      )
+    ) {
       return null;
     }
     const { editable } = this.props;
@@ -142,7 +156,11 @@ export default class Parameters extends React.Component {
       return null;
     }
     return (
-      <div key={param.name} className={`di-block  ParameterName-${param.name} parameter-${index}`} data-test={`ParameterName-${param.name}`}>
+      <div
+        key={param.name}
+        className={`di-block  ParameterName-${param.name} parameter-${index}`}
+        data-test={`ParameterName-${param.name}`}
+      >
         <div className="parameter-heading">
           <label>{param.title || toHuman(param.name)}</label>
           {editable && (
@@ -164,7 +182,9 @@ export default class Parameters extends React.Component {
           parameter={param}
           enumOptions={param.enumOptions}
           queryId={param.queryId}
-          onSelect={(value, isDirty) => this.setPendingValue(param, value, isDirty)}
+          onSelect={(value, isDirty) =>
+            this.setPendingValue(param, value, isDirty)
+          }
           regex={param.regex}
         />
       </div>
@@ -182,7 +202,9 @@ export default class Parameters extends React.Component {
         useDragHandle
         lockToContainerEdges
         helperClass="parameter-dragged"
-        helperContainer={(containerEl) => (appendSortableToParent ? containerEl : document.body)}
+        helperContainer={containerEl =>
+          appendSortableToParent ? containerEl : document.body
+        }
         updateBeforeSortStart={this.onBeforeSortStart}
         onSortEnd={this.moveParameter}
         containerProps={{
@@ -198,12 +220,17 @@ export default class Parameters extends React.Component {
                 data-editable={sortable || null}
                 data-test={`ParameterBlock-${param.name}`}
               >
-                {sortable && <DragHandle data-test={`DragHandle-${param.name}`} />}
+                {sortable && (
+                  <DragHandle data-test={`DragHandle-${param.name}`} />
+                )}
                 {this.renderParameter(param, index)}
               </div>
             </SortableElement>
           ))}
-        <ParameterApplyButton onClick={this.applyChanges} paramCount={dirtyParamCount} />
+        <ParameterApplyButton
+          onClick={this.applyChanges}
+          paramCount={dirtyParamCount}
+        />
       </SortableContainer>
     );
   }

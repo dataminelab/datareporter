@@ -30,8 +30,14 @@ export interface DebugMenuProps {
   dataCube: DataCube;
 }
 
-export const DebugMenu: React.SFC<DebugMenuProps> = ({ dataCube, openOn, onClose, openDruidQueryModal, openRawDataModal, openViewDefinitionModal }) => {
-
+export const DebugMenu: React.SFC<DebugMenuProps> = ({
+  dataCube,
+  openOn,
+  onClose,
+  openDruidQueryModal,
+  openRawDataModal,
+  openViewDefinitionModal,
+}) => {
   const isNativeCluster = dataCube.clusterName === "native";
 
   function displayRawData() {
@@ -49,23 +55,27 @@ export const DebugMenu: React.SFC<DebugMenuProps> = ({ dataCube, openOn, onClose
     onClose();
   }
 
-  return <BubbleMenu
-    className="header-menu"
-    direction="down"
-    stage={Stage.fromSize(200, 200)}
-    openOn={openOn}
-    onClose={onClose}
-  >
-    <ul className="bubble-list">
-      <li key="view-raw-data" onClick={displayRawData}>
-        {STRINGS.displayRawData}
-      </li>
-      <li key="display-view-definition" onClick={displayViewDefinition}>
-        {STRINGS.displayViewDefinition}
-      </li>
-      {!isNativeCluster && <li key="view-druid-query" onClick={displayDruidQuery}>
-        {STRINGS.displayDruidQuery}
-      </li>}
-    </ul>
-  </BubbleMenu>;
+  return (
+    <BubbleMenu
+      className="header-menu"
+      direction="down"
+      stage={Stage.fromSize(200, 200)}
+      openOn={openOn}
+      onClose={onClose}
+    >
+      <ul className="bubble-list">
+        <li key="view-raw-data" onClick={displayRawData}>
+          {STRINGS.displayRawData}
+        </li>
+        <li key="display-view-definition" onClick={displayViewDefinition}>
+          {STRINGS.displayViewDefinition}
+        </li>
+        {!isNativeCluster && (
+          <li key="view-druid-query" onClick={displayDruidQuery}>
+            {STRINGS.displayDruidQuery}
+          </li>
+        )}
+      </ul>
+    </BubbleMenu>
+  );
 };

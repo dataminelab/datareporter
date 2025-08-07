@@ -1,0 +1,7 @@
+resources:
+  - configmap.yaml
+  - scripts-configmap.yaml
+  - serviceaccount.yaml
+  - health-configmap.yaml
+  - headless-svc.yaml
+  - master

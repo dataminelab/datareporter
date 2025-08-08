@@ -19,6 +19,7 @@ import { policy } from "@/services/policy";
 import recordEvent from "@/services/recordEvent";
 import { durationHumanize } from "@/lib/utils";
 import { DashboardStatusEnum } from "../hooks/useDashboard";
+import { conversationService } from '@/services/conversationService';
 
 import "./DashboardHeader.less";
 
@@ -261,8 +262,17 @@ async function getOpenAiAnswer(question, dashboardId) {
   return data.prompt;
 }
 
-async function getPromptAnswer(question) {
+async function getPromptAnswer(question, conversation) {
   try {
+    // Build the prompt with conversation history
+    let fullPrompt = question;
+    if (conversation && conversation.length > 0) {
+      const conversationContext = conversation.map(entry => 
+        `Human: ${entry.question}\nAssistant: ${entry.answer}`
+      ).join('\n\n');
+      fullPrompt = `${conversationContext}\n\nHuman: ${question}\nAssistant:`;
+    }
+
     const response = await fetch("ollama-api/generate", {
       method: "POST",
       headers: {
@@ -270,7 +280,7 @@ async function getPromptAnswer(question) {
       },
       body: JSON.stringify({
         model: "deepseek-r1:7b",
-        prompt: question,
+        prompt: fullPrompt,
         stream: true,
       }),
     });
@@ -299,8 +309,8 @@ async function getPromptAnswer(question) {
         try {
           let chunkJson = JSON.parse(line);
           compiledResponse += chunkJson.response;
-          compiledResponse = compiledResponse.replace("<think>", ``);
-          compiledResponse = compiledResponse.replace("</think>", ``);
+          compiledResponse = compiledResponse.replace(/<think>/g, '');
+          compiledResponse = compiledResponse.replace(/<\/think>/g, '');
         } catch (e) {
           // Ignore parse errors for incomplete lines
         }
@@ -311,8 +321,8 @@ async function getPromptAnswer(question) {
       try {
         let chunkJson = JSON.parse(buffer);
         compiledResponse += chunkJson.response;
-        compiledResponse = compiledResponse.replace("<think>", ``);
-        compiledResponse = compiledResponse.replace("</think>", ``);
+        compiledResponse = compiledResponse.replace(/<think>/g, '');
+        compiledResponse = compiledResponse.replace(/<\/think>/g, '');
       } catch (e) {
         // Ignore parse errors for incomplete buffer
       }
@@ -354,6 +364,12 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const [promptAnswerValue, setPromptAnswerValue] = React.useState("");
   const [selectedModel, setSelectedModel] = React.useState("deepseek");
   const [sendingPrompt, setSendingPrompt] = React.useState(false);
+  const [conversationHistory, setConversationHistory] = React.useState([]);
+
+  React.useEffect(() => {
+    conversationService.loadFromStorage(dashboard.id);
+    setConversationHistory(conversationService.getConversation(dashboard.id));
+  }, [dashboard.id]);
 
   const handleSetSelectedModel = value => {
     setSelectedModel(value);
@@ -366,25 +382,33 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const handlePromptSend = async () => {
     if (!promptValue) return;
     setSendingPrompt(true);
+    
+    const conversation = conversationService.getConversation(dashboard.id);
     let answer = "";
     const question = writePrePrompt(promptValue, slug);
+    
     if (selectedModel === "chatgpt") {
-      // Use OpenAI API for ChatGPT model
-      answer = await getOpenAiAnswer(question, dashboard.id);
+      answer = await getOpenAiAnswer(question, dashboard.id, conversation);
     } else {
-      // Use DeepSeek ollama model for DeepSeek model
-      answer = await getPromptAnswer(question);
+      answer = await getPromptAnswer(question, conversation);
     }
+    
     setPromptAnswerValue(answer);
+    conversationService.addMessage(dashboard.id, promptValue, answer);
+    conversationService.saveToStorage(dashboard.id);
+    
+    // Update the conversation history state
+    setConversationHistory(conversationService.getConversation(dashboard.id));
+    
     recordEvent("send_prompt", "dashboard", dashboard.id, {
       model: selectedModel,
-      answer: promptAnswerValue,
+      answer: answer,
     });
     setSendingPrompt(false);
   };
   const aiOptions = [
     {
-      name: "chatgpt",
+      name: "apenAI",
       value: "chatgpt",
     },
     {
@@ -393,6 +417,12 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
     },
   ];
   const formId = `promptForm-${dashboard.id}`;
+  const handleClearConversation = () => {
+    conversationService.clearConversation(dashboard.id);
+    conversationService.saveToStorage(dashboard.id);
+    setConversationHistory([]);
+  };
+  console.log(promptAnswerValue, conversationHistory, conversationHistory.length)
   return (
     <div className="dashboard-control">
       {dashboard.can_edit && dashboard.is_archived && (
@@ -455,9 +485,36 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                       onChange: () => {},
                       props: { disabled: true },
                     },
+                    {
+                      required: false,
+                      name: "conversation_history",
+                      title: "Conversation History",
+                      type: "textarea", 
+                      value: conversationHistory.map(entry => 
+                        `Q: ${entry.question}\nA: ${entry.answer}`
+                      ).join('\n\n---\n\n'),
+                      props: { 
+                        disabled: true,
+                        rows: 6
+                      },
+                      loading: !sendingPrompt,
+                      onChange: () => {},
+                    },
                   ]}
                   hideSubmitButton={true}
                 />
+                {conversationHistory.length > 0 && (
+                  <div style={{ marginTop: 16, textAlign: 'right' }}>
+                    <Button 
+                      size="small" 
+                      onClick={handleClearConversation}
+                      type="warning"
+                      danger
+                    >
+                      Clear Conversation History
+                    </Button>
+                  </div>
+                )}
               </Modal>
             </>
           )}

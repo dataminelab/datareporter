@@ -151,18 +151,15 @@ class DashboardPromptResource(BaseResource):
         require_object_modify_permission(dashboard, self.current_user)
 
         data = request.get_json(force=True)
-        question = data.get("question", "")
+        messages = data.get("messages", [])
 
-        if not question:
-            abort(400, message="Missing 'question' in request body.")
+        if not messages or not isinstance(messages, list):
+            abort(400, message="Missing or invalid 'messages' in request body.")
 
         headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
         payload = {
             "model": "gpt-3.5-turbo",
-            "messages": [
-                {"role": "system", "content": "You are a helpful assistant for dashboard analytics."},
-                {"role": "user", "content": question},
-            ],
+            "messages": messages,
         }
 
         openai_response = requests.post(

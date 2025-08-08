@@ -227,7 +227,7 @@ DashboardMoreOptionsButton.propTypes = {
   dashboardConfiguration: PropTypes.object.isRequired,
 };
 
-function writePrePrompt(question, slug) {
+function writePrePrompt(slug) {
   if (!window.loadedDatasetsByUrl || !window.loadedDatasetsByUrl[slug]) {
     return "No datasets available for this dashboard.";
   }
@@ -242,18 +242,34 @@ function writePrePrompt(question, slug) {
     prompt += `Dataset[${i + 1}]${datasetHeaders[i] ? ` (${datasetHeaders[i].innerText.trim()})` : ""}: ${JSON.stringify(d)}\n`;
   });
   prompt += "\n---\n";
-  prompt += `User question: ${question}\n`;
-  prompt += "Answer:";
   return prompt;
 }
 
-async function getOpenAiAnswer(question, dashboardId) {
+async function getOpenAiAnswer(question, dashboardId, conversation, prePrompt) {
+  // Build messages array for ChatGPT API format
+  let messages = [
+    { role: "system", content: prePrompt }
+  ];
+  
+  // Add conversation history
+  if (conversation && conversation.length > 0) {
+    conversation.forEach(entry => {
+      messages.push(
+        { role: "user", content: entry.question },
+        { role: "assistant", content: entry.answer }
+      );
+    });
+  }
+  
+  // Add current question
+  messages.push({ role: "user", content: question });
+  
   const response = await fetch(`/api/dashboards/${dashboardId}/prompt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ question: question }),
+    body: JSON.stringify({ messages: messages }),
   });
   if (!response.ok) {
     return "Sorry, there was a problem retrieving the answer from the server.";
@@ -262,10 +278,10 @@ async function getOpenAiAnswer(question, dashboardId) {
   return data.prompt;
 }
 
-async function getPromptAnswer(question, conversation) {
+async function getDeepseekAnswer(question, conversation, prePrompt) {
   try {
     // Build the prompt with conversation history
-    let fullPrompt = question;
+    let fullPrompt = prePrompt + question;
     if (conversation && conversation.length > 0) {
       const conversationContext = conversation.map(entry => 
         `Human: ${entry.question}\nAssistant: ${entry.answer}`
@@ -362,9 +378,15 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const [isPromptModalVisible, setPromptModalVisible] = React.useState(false);
   const [promptValue, setPromptValue] = React.useState("");
   const [promptAnswerValue, setPromptAnswerValue] = React.useState("");
-  const [selectedModel, setSelectedModel] = React.useState("deepseek");
+  const [selectedModel, setSelectedModel] = React.useState("chatgpt");
   const [sendingPrompt, setSendingPrompt] = React.useState(false);
   const [conversationHistory, setConversationHistory] = React.useState([]);
+  const [prePrompt, setPrePrompt] = React.useState("");
+
+  React.useEffect(() => {
+    const prePrompt = writePrePrompt(slug);
+    setPrePrompt(prePrompt);
+  }, [window.loadedDatasetsByUrl]);
 
   React.useEffect(() => {
     conversationService.loadFromStorage(dashboard.id);
@@ -385,12 +407,11 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
     
     const conversation = conversationService.getConversation(dashboard.id);
     let answer = "";
-    const question = writePrePrompt(promptValue, slug);
     
     if (selectedModel === "chatgpt") {
-      answer = await getOpenAiAnswer(question, dashboard.id, conversation);
+      answer = await getOpenAiAnswer(promptValue, dashboard.id, conversation, prePrompt);
     } else {
-      answer = await getPromptAnswer(question, conversation);
+      answer = await getDeepseekAnswer(promptValue, conversation, prePrompt);
     }
     
     setPromptAnswerValue(answer);
@@ -408,11 +429,11 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   };
   const aiOptions = [
     {
-      name: "apenAI",
+      name: "OpenAI",
       value: "chatgpt",
     },
     {
-      name: "deepseek",
+      name: "DeepSeek",
       value: "deepseek",
     },
   ];
@@ -422,7 +443,6 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
     conversationService.saveToStorage(dashboard.id);
     setConversationHistory([]);
   };
-  console.log(promptAnswerValue, conversationHistory, conversationHistory.length)
   return (
     <div className="dashboard-control">
       {dashboard.can_edit && dashboard.is_archived && (
@@ -462,7 +482,7 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                         onSelect: handleSetSelectedModel,
                         disabled: sendingPrompt,
                       },
-                      initialValue: "deepseek",
+                      initialValue: "chatgpt",
                     },
                     {
                       required: true,

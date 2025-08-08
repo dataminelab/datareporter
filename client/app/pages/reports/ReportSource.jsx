@@ -107,7 +107,7 @@ function ReportSource(props) {
 }
 
 ReportSource.propTypes = {
-  report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  report: PropTypes.object.isRequired,
 };
 
 const ReportSourcePage = wrapReportPage(ReportSource);

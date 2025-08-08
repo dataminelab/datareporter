@@ -66,7 +66,7 @@ function DashboardPageTitle({ dashboardConfiguration }) {
 }
 
 DashboardPageTitle.propTypes = {
-  dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  dashboardConfiguration: PropTypes.object.isRequired,
 };
 
 function RefreshButton({ dashboardConfiguration }) {
@@ -145,7 +145,7 @@ function RefreshButton({ dashboardConfiguration }) {
 }
 
 RefreshButton.propTypes = {
-  dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  dashboardConfiguration: PropTypes.object.isRequired,
 };
 
 function DashboardMoreOptionsButton({ dashboardConfiguration }) {
@@ -223,7 +223,7 @@ function DashboardMoreOptionsButton({ dashboardConfiguration }) {
 }
 
 DashboardMoreOptionsButton.propTypes = {
-  dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  dashboardConfiguration: PropTypes.object.isRequired,
 };
 
 function writePrePrompt(question, slug) {
@@ -285,6 +285,7 @@ async function getPromptAnswer(question) {
 
     let compiledResponse = "";
     let buffer = "";
+    /* eslint-disable-next-line no-constant-condition */
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -509,7 +510,7 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
 }
 
 DashboardControl.propTypes = {
-  dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  dashboardConfiguration: PropTypes.object.isRequired,
   headerExtra: PropTypes.node,
 };
 
@@ -561,7 +562,7 @@ function DashboardEditControl({ dashboardConfiguration, headerExtra }) {
 }
 
 DashboardEditControl.propTypes = {
-  dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  dashboardConfiguration: PropTypes.object.isRequired,
   headerExtra: PropTypes.node,
 };
 
@@ -586,6 +587,6 @@ export default function DashboardHeader({
 }
 
 DashboardHeader.propTypes = {
-  dashboardConfiguration: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  dashboardConfiguration: PropTypes.object.isRequired,
   headerExtra: PropTypes.node,
 };

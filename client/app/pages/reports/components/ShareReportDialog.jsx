@@ -15,7 +15,7 @@ const API_SHARE_URL = "api/reports/{id}/share";
 
 class ShareReportDialog extends React.Component {
   static propTypes = {
-    report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    report: PropTypes.object.isRequired,
     hasOnlySafeQueries: PropTypes.bool.isRequired,
     dialog: DialogPropType.isRequired,
   };

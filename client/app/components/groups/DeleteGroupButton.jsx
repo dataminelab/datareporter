@@ -55,7 +55,7 @@ export default function DeleteGroupButton({
 }
 
 DeleteGroupButton.propTypes = {
-  group: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  group: PropTypes.object,
   title: PropTypes.string,
   onClick: PropTypes.func,
   children: PropTypes.node,

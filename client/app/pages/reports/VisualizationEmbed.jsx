@@ -175,8 +175,8 @@ function VisualizationEmbedFooter({
 }
 
 VisualizationEmbedFooter.propTypes = {
-  report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  queryResults: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  report: PropTypes.object.isRequired,
+  queryResults: PropTypes.object,
   updatedAt: PropTypes.string,
   refreshStartedAt: Moment,
   queryUrl: PropTypes.string,

@@ -27,8 +27,8 @@ class DynamicDateRangePicker extends React.Component {
       "datetime-range-with-seconds",
     ]).isRequired,
     className: PropTypes.string,
-    value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-    parameter: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+    value: PropTypes.any,
+    parameter: PropTypes.any,
     onSelect: PropTypes.func,
     dynamicButtonOptions: PropTypes.shape({
       staticValueLabel: PropTypes.string,
@@ -40,7 +40,7 @@ class DynamicDateRangePicker extends React.Component {
         }),
       ),
     }),
-    dateRangeOptions: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+    dateRangeOptions: PropTypes.any,
   };
 
   static defaultProps = {

@@ -186,7 +186,7 @@ export default function ReportVisualizationTabs({
 }
 
 ReportVisualizationTabs.propTypes = {
-  queryResult: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  queryResult: PropTypes.object,
   visualizations: PropTypes.arrayOf(PropTypes.object),
   selectedTab: PropTypes.number,
   showNewVisualizationButton: PropTypes.bool,

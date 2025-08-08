@@ -77,8 +77,8 @@ export default function ReportExecutionMetadata({
 }
 
 ReportExecutionMetadata.propTypes = {
-  report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  queryResult: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  report: PropTypes.object.isRequired,
+  queryResult: PropTypes.object.isRequired,
   isReportExecuting: PropTypes.bool,
   selectedVisualization: PropTypes.number,
   showEditVisualizationButton: PropTypes.bool,

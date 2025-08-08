@@ -41,7 +41,7 @@ import { DateRange } from "@/components/TurniloComponent/common/models/date-rang
 
 class AddWidgetContainer extends React.Component {
   static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    dashboardOptions: PropTypes.object.isRequired,
     className: PropTypes.string,
   };
 
@@ -88,7 +88,7 @@ class AddWidgetContainer extends React.Component {
 
 class DashboardSettings extends React.Component {
   static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    dashboardOptions: PropTypes.object.isRequired
   };
 
   render() {
@@ -118,7 +118,8 @@ const essence = EssenceFixtures.wikiHeatmap();
 
 class DashboardComponent extends React.Component {
   static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    dashboardOptions: PropTypes.object.isRequired,
+    onParametersEdit: PropTypes.func,
   };
 
   constructor(props) {

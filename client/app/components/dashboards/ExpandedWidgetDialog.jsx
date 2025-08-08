@@ -30,7 +30,7 @@ function ExpandedWidgetDialog({ dialog, widget }) {
 
 ExpandedWidgetDialog.propTypes = {
   dialog: DialogPropType.isRequired,
-  widget: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  widget: PropTypes.object.isRequired,
 };
 
 export default wrapDialog(ExpandedWidgetDialog);

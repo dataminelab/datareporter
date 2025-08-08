@@ -197,7 +197,7 @@ export default class AlertView extends React.Component {
 
 AlertView.propTypes = {
   alert: AlertType.isRequired,
-  queryResult: PropTypes.object,,
+  queryResult: PropTypes.object,
   canEdit: PropTypes.bool.isRequired,
   onEdit: PropTypes.func.isRequired,
   menuButton: PropTypes.node.isRequired,

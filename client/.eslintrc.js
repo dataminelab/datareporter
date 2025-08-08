@@ -122,6 +122,7 @@ module.exports = {
       rules: {
         "react/react-in-jsx-scope": "off",
         "react/display-name": "off",
+        "react/forbid-prop-types": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": "off",

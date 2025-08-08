@@ -39,34 +39,6 @@ import {
 import { TimeShift } from "@/components/TurniloComponent/common/models/time-shift/time-shift";
 import { DateRange } from "@/components/TurniloComponent/common/models/date-range/date-range";
 
-class DashboardSettings extends React.Component {
-  static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  };
-
-  render() {
-    const { dashboardOptions } = this.props;
-    const { dashboard, updateDashboard, addWidgetStyle } = dashboardOptions;
-    return (
-      <div className="bg-white tiled">
-        <Checkbox
-          checked={!!dashboard.dashboard_filters_enabled}
-          onChange={({ target }) =>
-            updateDashboard({ dashboard_filters_enabled: target.checked })
-          }
-          data-test="DashboardFiltersCheckbox"
-        >
-          Use Dashboard Level Filters
-        </Checkbox>
-        <AddWidgetContainer
-          dashboardOptions={dashboardOptions}
-          style={addWidgetStyle}
-        />
-      </div>
-    );
-  }
-}
-
 class AddWidgetContainer extends React.Component {
   static propTypes = {
     dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
@@ -126,11 +98,17 @@ class DashboardSettings extends React.Component {
       <div className="bg-white tiled">
         <Checkbox
           checked={!!dashboard.dashboard_filters_enabled}
-          onChange={({ target }) => updateDashboard({ dashboard_filters_enabled: target.checked })}
-          data-test="DashboardFiltersCheckbox">
+          onChange={({ target }) =>
+            updateDashboard({ dashboard_filters_enabled: target.checked })
+          }
+          data-test="DashboardFiltersCheckbox"
+        >
           Use Dashboard Level Filters
         </Checkbox>
-        <AddWidgetContainer dashboardOptions={dashboardOptions} style={addWidgetStyle} />
+        <AddWidgetContainer
+          dashboardOptions={dashboardOptions}
+          style={addWidgetStyle}
+        />
       </div>
     );
   }

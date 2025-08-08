@@ -37,15 +37,15 @@ def upgrade():
     # Update all groups to ensure permissions arrays are properly formatted
     # This forces SQLAlchemy to recognize changes to the permissions array
     connection.execute(text("""
-        UPDATE groups 
-        SET permissions = permissions 
+        UPDATE groups
+        SET permissions = permissions
         WHERE permissions IS NOT NULL
     """))
     print("Updated existing groups with non-null permissions")
 
     # Set default permissions for any groups that have NULL permissions
     connection.execute(text("""
-        UPDATE groups 
+        UPDATE groups
         SET permissions = ARRAY[
             'create_dashboard',
             'create_query',
@@ -75,13 +75,13 @@ def upgrade():
     # Check how many were updated
     result = connection.execute(text("SELECT COUNT(*) FROM groups WHERE permissions IS NULL"))
     null_count = result.scalar()
-    print(f"Set default permissions for groups with NULL permissions")
+    print("Set default permissions for groups with NULL permissions")
     print(f"Remaining groups with NULL permissions: {null_count}")
 
     # Verify the update worked
     result = connection.execute(text("""
-        SELECT id, name, array_length(permissions, 1) as perm_count 
-        FROM groups 
+        SELECT id, name, array_length(permissions, 1) as perm_count
+        FROM groups
         LIMIT 5
     """))
 

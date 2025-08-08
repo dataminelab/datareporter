@@ -51,8 +51,16 @@ class GroupsList extends React.Component {
       (text, group) => (
         <Button.Group>
           <Link.Button href={`groups/${group.id}`}>Members</Link.Button>
-          {currentUser.isAdmin && <Link.Button href={`groups/${group.id}/data_sources`}>Data Sources</Link.Button>}
-          {currentUser.isAdmin && <Link.Button href={`groups/${group.id}/permissions`}>Permissions</Link.Button>}
+          {currentUser.isAdmin && (
+            <Link.Button href={`groups/${group.id}/data_sources`}>
+              Data Sources
+            </Link.Button>
+          )}
+          {currentUser.isAdmin && (
+            <Link.Button href={`groups/${group.id}/permissions`}>
+              Permissions
+            </Link.Button>
+          )}
         </Button.Group>
       ),
       {

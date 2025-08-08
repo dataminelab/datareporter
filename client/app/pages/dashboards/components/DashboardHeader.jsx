@@ -231,11 +231,14 @@ function writePrePrompt(question, slug) {
     return "No datasets available for this dashboard.";
   }
   const datasets = window.loadedDatasetsByUrl[slug];
-  const datasetHeaders = Array.from(document.querySelectorAll(".widget-header")).filter(header => header.innerText && header.innerText.trim() !== "");
-  let prompt = "You are a data analyst reviewing a dashboard containing several datasets (widgets). Given a user question, analyze the datasets and provide a clear, concise, and human-readable answer based on the available data.\n\n";
+  const datasetHeaders = Array.from(
+    document.querySelectorAll(".widget-header"),
+  ).filter(header => header.innerText && header.innerText.trim() !== "");
+  let prompt =
+    "You are a data analyst reviewing a dashboard containing several datasets (widgets). Given a user question, analyze the datasets and provide a clear, concise, and human-readable answer based on the available data.\n\n";
   prompt += "Datasets:\n";
   datasets.forEach((d, i) => {
-    prompt += `Dataset[${i + 1}]${datasetHeaders[i] ? ` (${datasetHeaders[i].innerText.trim()})` : ''}: ${JSON.stringify(d)}\n`;
+    prompt += `Dataset[${i + 1}]${datasetHeaders[i] ? ` (${datasetHeaders[i].innerText.trim()})` : ""}: ${JSON.stringify(d)}\n`;
   });
   prompt += "\n---\n";
   prompt += `User question: ${question}\n`;
@@ -268,11 +271,11 @@ async function getPromptAnswer(question) {
       body: JSON.stringify({
         model: "deepseek-r1:7b",
         prompt: question,
-        stream: true
-      })
+        stream: true,
+      }),
     });
     if (!response.ok || !response.body) {
-      console.error(response.message)
+      console.error(response.message);
       return "Sorry, there was a problem connecting to the AI server.";
     }
 
@@ -315,7 +318,7 @@ async function getPromptAnswer(question) {
     }
     return compiledResponse;
   } catch (error) {
-    console.error(error.message)
+    console.error(error.message);
     return "Sorry, there was a problem connecting to the AI server.";
   }
 }
@@ -351,11 +354,11 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const [selectedModel, setSelectedModel] = React.useState("deepseek");
   const [sendingPrompt, setSendingPrompt] = React.useState(false);
 
-  const handleSetSelectedModel = (value) => {
+  const handleSetSelectedModel = value => {
     setSelectedModel(value);
   };
 
-  const handleSetPromptValue = (e) => {
+  const handleSetPromptValue = e => {
     setPromptValue(e.target.value);
   };
 
@@ -378,14 +381,16 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
     });
     setSendingPrompt(false);
   };
-  const aiOptions = [{
+  const aiOptions = [
+    {
       name: "chatgpt",
-      value: "chatgpt"
-  },
-  {
+      value: "chatgpt",
+    },
+    {
       name: "deepseek",
-      value: "deepseek"
-  }]
+      value: "deepseek",
+    },
+  ];
   const formId = `promptForm-${dashboard.id}`;
   return (
     <div className="dashboard-control">
@@ -413,15 +418,45 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                 okText="Send"
                 confirmLoading={sendingPrompt}
               >
-              <DynamicForm 
-                id={formId}
-                fields={[
-                  { required: true, name: "model", title: "Select AI model", type: "select", options: aiOptions, props: { onSelect: handleSetSelectedModel, disabled: sendingPrompt }, initialValue: "deepseek" },
-                  { required: true, name: "prompt", title: "Enter your prompt", type: "text", autoFocus: true, props: { onSelect: handleSetPromptValue, disabled: sendingPrompt } },
-                  { required: false, name: "response", title: "Response will appear here...", type: "textarea", loading: !sendingPrompt, value: promptAnswerValue, onChange: () => {}, props: { disabled: true } }
-                ]}
-                hideSubmitButton={true}
-              />
+                <DynamicForm
+                  id={formId}
+                  fields={[
+                    {
+                      required: true,
+                      name: "model",
+                      title: "Select AI model",
+                      type: "select",
+                      options: aiOptions,
+                      props: {
+                        onSelect: handleSetSelectedModel,
+                        disabled: sendingPrompt,
+                      },
+                      initialValue: "deepseek",
+                    },
+                    {
+                      required: true,
+                      name: "prompt",
+                      title: "Enter your prompt",
+                      type: "text",
+                      autoFocus: true,
+                      props: {
+                        onSelect: handleSetPromptValue,
+                        disabled: sendingPrompt,
+                      },
+                    },
+                    {
+                      required: false,
+                      name: "response",
+                      title: "Response will appear here...",
+                      type: "textarea",
+                      loading: !sendingPrompt,
+                      value: promptAnswerValue,
+                      onChange: () => {},
+                      props: { disabled: true },
+                    },
+                  ]}
+                  hideSubmitButton={true}
+                />
               </Modal>
             </>
           )}

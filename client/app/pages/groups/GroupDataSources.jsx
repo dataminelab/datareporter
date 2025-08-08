@@ -57,7 +57,7 @@ class GroupDataSources extends React.Component {
       isAvailable: () => currentUser.isAdmin,
     },
   ];
-  
+
   constructor(props) {
     super(props);
 

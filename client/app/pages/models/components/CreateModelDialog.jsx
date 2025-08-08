@@ -58,7 +58,7 @@ function CreateModelDialog({ dialog, dataSources, model }) {
   }, []);
 
   const formFields = useMemo(() => {
-    const common = { required: true  };
+    const common = { required: true };
     const dataSourceProps = {
       required: true,
       props: { onSelect: id => onChangeConnection(id) },

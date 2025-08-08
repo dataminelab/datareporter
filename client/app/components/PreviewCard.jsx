@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import Link from "@/components/Link";
 
-
 export function PreviewCard({
   imageUrl,
   roundedImage,
@@ -21,9 +20,9 @@ export function PreviewCard({
           width="32"
           height="32"
           className={classNames(
-          { "profile__image--settings": roundedImage },
-          "m-r-5",
-        )}
+            { "profile__image--settings": roundedImage },
+            "m-r-5",
+          )}
           alt="Logo/Avatar"
         />
       )}
@@ -51,7 +50,6 @@ PreviewCard.defaultProps = {
   className: "",
   children: null,
 };
-
 
 export function UserPreviewCard({ user, withLink, children, ...props }) {
   const title = withLink ? (

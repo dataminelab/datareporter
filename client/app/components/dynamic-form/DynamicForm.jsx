@@ -188,7 +188,10 @@ export default function DynamicForm({
   const controlledOnChange = {};
 
   fields.forEach(field => {
-    if (typeof field.value !== "undefined" && typeof field.onChange === "function") {
+    if (
+      typeof field.value !== "undefined" &&
+      typeof field.onChange === "function"
+    ) {
       controlledValues[field.name] = field.value;
       controlledOnChange[field.name] = field.onChange;
     }
@@ -212,13 +215,19 @@ export default function DynamicForm({
 
   // Patch fields to inject value/onChange if controlled
   const patchedFields = fields.map(field => {
-    if (typeof field.value !== "undefined" && typeof field.onChange === "function") {
+    if (
+      typeof field.value !== "undefined" &&
+      typeof field.onChange === "function"
+    ) {
       return {
         ...field,
         props: {
           ...field.props,
           value: field.value,
-          onChange: handleFieldChange(field.name, field.props && field.props.onChange),
+          onChange: handleFieldChange(
+            field.name,
+            field.props && field.props.onChange,
+          ),
         },
       };
     }

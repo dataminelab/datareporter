@@ -54,7 +54,7 @@ class GroupMembers extends React.Component {
       isAvailable: () => currentUser.isAdmin,
     },
   ];
-    
+
   constructor(props) {
     super(props);
 

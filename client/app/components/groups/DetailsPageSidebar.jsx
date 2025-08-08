@@ -47,7 +47,11 @@ export default function DetailsPageSidebar({
         </Button>
       )}
       {canAddPermissions && (
-        <Button className="w-100 m-t-5" type="primary" onClick={onAddPermissionsClick}>
+        <Button
+          className="w-100 m-t-5"
+          type="primary"
+          onClick={onAddPermissionsClick}
+        >
           <i className="fa fa-plus m-r-5" />
           Add Permissions
         </Button>

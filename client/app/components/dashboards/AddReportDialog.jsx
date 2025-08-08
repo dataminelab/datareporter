@@ -120,7 +120,9 @@ function AddReportDialog({ dialog }) {
 
   const saveWidget = useCallback(() => {
     if (!selectedVisualization || !selectedReport) {
-      notification.error("Please select a report and visualization before saving.");
+      notification.error(
+        "Please select a report and visualization before saving.",
+      );
       return;
     }
     const options = {

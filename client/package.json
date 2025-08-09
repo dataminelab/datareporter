@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm-run-all --parallel watch:viz webpack-dev-server",
+    "localhost": "npm-run-all --parallel watch:viz webpack-dev-server-localhost",
     "dev": "NODE_OPTIONS=--openssl-legacy-provider npm-run-all --parallel watch:viz webpack-dev-server",
     "clean": "rm -rf ./dist/",
     "clean-install:viz": "cd ../viz-lib && npm ci",
@@ -20,6 +21,7 @@
     "watch:viz": "(cd ../viz-lib && npm run watch:babel)",
     "watch": "npm-run-all --parallel watch:*",
     "webpack-dev-server": "webpack-dev-server",
+    "webpack-dev-server-localhost": "webpack-dev-server -- --host 0.0.0.0",    
     "analyze": "npm run clean && BUNDLE_ANALYZER=on NODE_OPTIONS=\"--max_old_space_size=4096 --openssl-legacy-provider\" webpack",
     "analyze:build": "npm run clean && NODE_ENV=production BUNDLE_ANALYZER=on NODE_OPTIONS=\"--max_old_space_size=4096 --openssl-legacy-provider\" webpack",
     "lint": "npm run lint:base -- --ext .js --ext .jsx --ext .ts --ext .tsx .",

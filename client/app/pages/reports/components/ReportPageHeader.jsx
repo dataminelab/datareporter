@@ -796,7 +796,7 @@ export default function ReportPageHeader(props) {
                 <span className="m-l-5">Edit Source</span>
               </Link.Button>
             )}
-            {props.sourceMode && (
+            {false && props.sourceMode && (
               <Link.Button
                 disabled
                 className="m-r-5"

@@ -16,5 +16,7 @@
       "reportMissingTypeStubs": "warning",
       "reportUnknownMemberType": "none",
       "reportUnknownVariableType": "information",
+      "reportPossiblyUnboundVariable": "warning",
+      "reportIncompatibleMethodOverride": "warning",
   },
 }

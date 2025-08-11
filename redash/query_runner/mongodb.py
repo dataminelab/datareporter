@@ -108,7 +108,7 @@ def _parse_dict(dic: dict, flatten: bool = False) -> dict:
     return res
 
 
-def parse_results(results: list, flatten: bool = False) -> list:
+def parse_results(results: list, flatten: bool = False) -> tuple[list, list]:
     rows = []
     columns = []
 
@@ -177,10 +177,10 @@ class MongoDB(BaseQueryRunner):
             },
             "secret": ["password"],
             "required": ["connectionString", "dbName"],
-        }
+        } # pyright: ignore[reportUnknownVariableType]
 
     @classmethod
-    def enabled(cls):
+    def enabled(cls): # pyright: ignore[reportIncompatibleMethodOverride]
         return enabled
 
     def __init__(self, configuration):

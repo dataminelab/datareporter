@@ -25,7 +25,7 @@ RUN <<EOF
   fi
 EOF
 
-FROM python:3.10-slim-bookworm
+FROM python:3.10.14-slim-bookworm
 
 EXPOSE 5000
 
@@ -62,6 +62,7 @@ RUN apt-get update && \
   python3-distutils \
   python3-venv \
   libsasl2-modules-gssapi-mit && \
+  apt-get upgrade -y && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 

@@ -193,7 +193,7 @@ report_factory = ModelFactory(
 
 class Factory(object):
     def __init__(self):
-        self.org, self.admin_group, self.default_group = redash.models.init_db()
+        self.org, self.admin_group, self.default_group, self.ai_group = redash.models.init_db()
         self._data_source = None
         self._user = None
 

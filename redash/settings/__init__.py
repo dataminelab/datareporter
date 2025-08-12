@@ -59,10 +59,13 @@ SCHEMAS_REFRESH_TIMEOUT = int(os.environ.get("REDASH_SCHEMAS_REFRESH_TIMEOUT", 3
 AUTH_TYPE = os.environ.get("REDASH_AUTH_TYPE", "api_key")
 INVITATION_TOKEN_MAX_AGE = int(os.environ.get("REDASH_INVITATION_TOKEN_MAX_AGE", 60 * 60 * 24 * 7))
 
-# The secret key to use in the Flask app for various cryptographic features
-if not os.environ.get("REDASH_COOKIE_SECRET"):
-    raise ValueError("REDASH_COOKIE_SECRET environment variable is not set. Please set it to a secure, random value.")
-SECRET_KEY = os.environ["REDASH_COOKIE_SECRET"]
+SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET")
+if SECRET_KEY is None:
+    raise Exception(
+        "You must set the REDASH_COOKIE_SECRET environment variable. \
+        Visit http://redash.io/help/open-source/admin-guide/secrets for more information."
+    )
+
 # The secret key to use when encrypting data source options
 DATASOURCE_SECRET_KEY = os.environ.get("REDASH_SECRET_KEY", SECRET_KEY)
 

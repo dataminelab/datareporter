@@ -88,7 +88,7 @@ class AddWidgetContainer extends React.Component {
 
 class DashboardSettings extends React.Component {
   static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired
+    dashboardOptions: PropTypes.object.isRequired,
   };
 
   render() {

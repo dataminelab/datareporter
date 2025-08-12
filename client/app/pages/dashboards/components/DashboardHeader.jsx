@@ -19,7 +19,7 @@ import { policy } from "@/services/policy";
 import recordEvent from "@/services/recordEvent";
 import { durationHumanize } from "@/lib/utils";
 import { DashboardStatusEnum } from "../hooks/useDashboard";
-import { conversationService } from '@/services/conversationService';
+import { conversationService } from "@/services/conversationService";
 
 import "./DashboardHeader.less";
 
@@ -247,23 +247,21 @@ function writePrePrompt(slug) {
 
 async function getOpenAiAnswer(question, dashboardId, conversation, prePrompt) {
   // Build messages array for ChatGPT API format
-  let messages = [
-    { role: "system", content: prePrompt }
-  ];
-  
+  let messages = [{ role: "system", content: prePrompt }];
+
   // Add conversation history
   if (conversation && conversation.length > 0) {
     conversation.forEach(entry => {
       messages.push(
         { role: "user", content: entry.question },
-        { role: "assistant", content: entry.answer }
+        { role: "assistant", content: entry.answer },
       );
     });
   }
-  
+
   // Add current question
   messages.push({ role: "user", content: question });
-  
+
   const response = await fetch(`/api/dashboards/${dashboardId}/prompt`, {
     method: "POST",
     headers: {
@@ -283,9 +281,9 @@ async function getDeepseekAnswer(question, conversation, prePrompt) {
     // Build the prompt with conversation history
     let fullPrompt = prePrompt + question;
     if (conversation && conversation.length > 0) {
-      const conversationContext = conversation.map(entry => 
-        `Human: ${entry.question}\nAssistant: ${entry.answer}`
-      ).join('\n\n');
+      const conversationContext = conversation
+        .map(entry => `Human: ${entry.question}\nAssistant: ${entry.answer}`)
+        .join("\n\n");
       fullPrompt = `${conversationContext}\n\nHuman: ${question}\nAssistant:`;
     }
 
@@ -325,8 +323,8 @@ async function getDeepseekAnswer(question, conversation, prePrompt) {
         try {
           let chunkJson = JSON.parse(line);
           compiledResponse += chunkJson.response;
-          compiledResponse = compiledResponse.replace(/<think>/g, '');
-          compiledResponse = compiledResponse.replace(/<\/think>/g, '');
+          compiledResponse = compiledResponse.replace(/<think>/g, "");
+          compiledResponse = compiledResponse.replace(/<\/think>/g, "");
         } catch (e) {
           // Ignore parse errors for incomplete lines
         }
@@ -337,8 +335,8 @@ async function getDeepseekAnswer(question, conversation, prePrompt) {
       try {
         let chunkJson = JSON.parse(buffer);
         compiledResponse += chunkJson.response;
-        compiledResponse = compiledResponse.replace(/<think>/g, '');
-        compiledResponse = compiledResponse.replace(/<\/think>/g, '');
+        compiledResponse = compiledResponse.replace(/<think>/g, "");
+        compiledResponse = compiledResponse.replace(/<\/think>/g, "");
       } catch (e) {
         // Ignore parse errors for incomplete buffer
       }
@@ -404,23 +402,28 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
   const handlePromptSend = async () => {
     if (!promptValue) return;
     setSendingPrompt(true);
-    
+
     const conversation = conversationService.getConversation(dashboard.id);
     let answer = "";
-    
+
     if (selectedModel === "chatgpt") {
-      answer = await getOpenAiAnswer(promptValue, dashboard.id, conversation, prePrompt);
+      answer = await getOpenAiAnswer(
+        promptValue,
+        dashboard.id,
+        conversation,
+        prePrompt,
+      );
     } else {
       answer = await getDeepseekAnswer(promptValue, conversation, prePrompt);
     }
-    
+
     setPromptAnswerValue(answer);
     conversationService.addMessage(dashboard.id, promptValue, answer);
     conversationService.saveToStorage(dashboard.id);
-    
+
     // Update the conversation history state
     setConversationHistory(conversationService.getConversation(dashboard.id));
-    
+
     recordEvent("send_prompt", "dashboard", dashboard.id, {
       model: selectedModel,
       answer: answer,
@@ -509,13 +512,15 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                       required: false,
                       name: "conversation_history",
                       title: "Conversation History",
-                      type: "textarea", 
-                      value: conversationHistory.map(entry => 
-                        `Q: ${entry.question}\nA: ${entry.answer}`
-                      ).join('\n\n---\n\n'),
-                      props: { 
+                      type: "textarea",
+                      value: conversationHistory
+                        .map(
+                          entry => `Q: ${entry.question}\nA: ${entry.answer}`,
+                        )
+                        .join("\n\n---\n\n"),
+                      props: {
                         disabled: true,
-                        rows: 6
+                        rows: 6,
                       },
                       loading: !sendingPrompt,
                       onChange: () => {},
@@ -524,9 +529,9 @@ function DashboardControl({ dashboardConfiguration, headerExtra }) {
                   hideSubmitButton={true}
                 />
                 {conversationHistory.length > 0 && (
-                  <div style={{ marginTop: 16, textAlign: 'right' }}>
-                    <Button 
-                      size="small" 
+                  <div style={{ marginTop: 16, textAlign: "right" }}>
+                    <Button
+                      size="small"
                       onClick={handleClearConversation}
                       type="warning"
                       danger

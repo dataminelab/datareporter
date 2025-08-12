@@ -481,14 +481,16 @@ export default function ReportPageHeader(props) {
             onClick: unpublishReport,
           },
           delete: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit,
+            isAvailable: !queryFlags.isNew && queryFlags.canEdit,
             title: "Delete",
             onClick: deleteReport,
           },
           share: {
             isAvailable:
-              report.publicAccessEnabled && !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+              report.publicAccessEnabled &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isArchived,
             title: "Share",
             onClick: showShareReportDialog,
           },
@@ -516,7 +518,8 @@ export default function ReportPageHeader(props) {
             onClick: openApiKeyDialog,
           },
           sessionCost: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
             title: "Show Session Cost",
             onClick: () => handleGivenModal("meta-modal"),
           },

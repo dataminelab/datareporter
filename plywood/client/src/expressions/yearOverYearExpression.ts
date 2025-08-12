@@ -61,6 +61,8 @@ export class YearOverYearExpression {
       this._whereRegex = this.globalDateRangeRegex;
     } else if (this.engine === "athena") {
       this._whereRegex = this.globalDateRangeRegex;
+    } else if (this.engine === "mongodb") {
+      this._whereRegex = this.globalDateRangeRegex;
     }
   }
 

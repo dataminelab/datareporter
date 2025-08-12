@@ -22,7 +22,7 @@ from redash.utils import json_loads
 logger = logging.getLogger(__name__)
 
 try:
-    import apiclient.errors
+    import apiclient.errors # XXX enable
     import google.auth
     from apiclient.discovery import build
     from apiclient.errors import HttpError  # noqa: F401

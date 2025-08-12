@@ -11,6 +11,7 @@ REDASH_PLYWOOD_DB = {
     'bigquery': 'bigquery',
     'mysql': 'mysql',
     'druid': 'druid',
+    'mongodb': 'mongodb',
 }
 
 

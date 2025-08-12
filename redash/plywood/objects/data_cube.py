@@ -30,6 +30,8 @@ class DataCube:
             return "IS NULL"
         elif self.ply_engine == 'druid':
             return "IS NULL"
+        elif self.ply_engine == 'mongodb':
+            return "IS NULL"
         return "IS NULL"
 
     def get_meta(self, queries: List[dict]) -> Union[ReportMetaData, None]:
@@ -42,8 +44,7 @@ class DataCube:
                     meta.price += meta_data['query_cost']
                 if 'data_scanned' in meta_data:
                     meta.proceed_data += meta_data['data_scanned']
-
-        if self.ply_engine == 'bigquery':
+        elif self.ply_engine == 'bigquery':
             for query in queries:
                 meta_data = query['query_result']['data']['metadata']
 
@@ -55,7 +56,13 @@ class DataCube:
 
             price = get_price_for_query(meta.proceed_data)
             meta.price = price
-        return meta if meta.has_data else None
+        elif self.ply_engine == 'mongodb':
+            for query in queries:
+                meta_data = query['query_result']['data']['metadata']
+                if 'query_cost' in meta_data:
+                    meta.price += meta_data['query_cost']
+                if 'data_scanned' in meta_data:
+                    meta.proceed_data += meta_data['data_scanned']
 
     @property
     def redash_engine(self):

@@ -16,7 +16,7 @@ from redash.query_runner import (
 from redash.utils import json_loads, parse_human_time
 
 logger = logging.getLogger(__name__)
-
+# XXX test here
 try:
     import pymongo
     from bson.decimal128 import Decimal128

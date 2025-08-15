@@ -41,7 +41,7 @@ class TestGroupResourceList(BaseTestCase):
 
         self.assertEqual(
             filtergroups(response.json),
-            filtergroups(g.to_dict() for g in [self.factory.admin_group, self.factory.default_group]),
+            filtergroups(g.to_dict() for g in [self.factory.admin_group, self.factory.default_group, self.factory.ai_group]),
         )
 
     def test_list(self):

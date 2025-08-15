@@ -64,4 +64,11 @@ module.exports = {
       version: "detect",
     },
   },
+  ignorePatterns: [
+    "build/",
+    "dist/",
+    "node_modules/",
+    "**/*.js",
+    "*.js",
+  ],
 };

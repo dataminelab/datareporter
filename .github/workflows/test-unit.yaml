@@ -267,7 +267,7 @@ jobs:
         run: docker compose -p cypress logs
       - name: send snapshots
         if: failure()
-        run: docker cp cypress:/usr/src/app/snapshots ./snapshots || true
+        run: docker cp cypress:/usr/src/app/client/cypress/screenshots ./snapshots || true
       - name: send snapshots results into percy
         if: failure()
         run: |

@@ -14,21 +14,26 @@ nodenv local 18.20
 Alternatively you can use nvm
 
 ```sh
-sudo apt update
-sudo apt install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 # Set nvm version
 nvm install v18.20
 nvm alias default v18.20
 ```
 
-Now you can enhance `.bashrc` in order to use v18.20 automatically or you might need to run `nvm use v18.20` every time you open a new terminal
+Now you can enhance `.bashrc` or `.bash_profile` in order to use v18.20 automatically or you might need to run `nvm use v18.20` every time you open a new terminal in case above technique didnt work
 
 ```sh
-# Add the following lines to your .bashrc or .bash_profile
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 nvm use v18.20 > /dev/null
+```
+
+In order to install python3 dependencies on your local environment, use below
+```sh
+sudo apt install python3-poetry
+POETRY_OPTIONS="--no-root --no-interaction --no-ansi"
+install_groups="main,all_ds,dev"
+poetry install --only $install_groups $POETRY_OPTIONS
 ```
 
 ## Build UI - Required to build ui for

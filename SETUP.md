@@ -28,9 +28,14 @@ export NVM_DIR="$HOME/.nvm"
 nvm use v18.20 > /dev/null
 ```
 
-In order to install python3 dependencies on your local environment, use below
+## Install python3 and it's dependencies on your local environment
+
 ```sh
-sudo apt install python3-poetry
+sudo apt install -y python3.10 python3.10-venv python3.10-dev
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+python3.10 --version
+curl -sSL https://install.python-poetry.org | POETRY_VERSION=2.1.1 python3 -
+poetry --version
 POETRY_OPTIONS="--no-root --no-interaction --no-ansi"
 install_groups="main,all_ds,dev"
 poetry install --only $install_groups $POETRY_OPTIONS

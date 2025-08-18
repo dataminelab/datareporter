@@ -20,14 +20,9 @@ class QueryBasedDropdownParameter extends Parameter {
   }
 
   normalizeValue(value) {
-    if (
-      isUndefined(value) ||
-      isNull(value) ||
-      (isArray(value) && isEmpty(value))
-    ) {
-      return null;
+    if (isUndefined(value) || isNull(value)) {
+      return this.multiValuesOptions ? [] : null;
     }
-
     if (this.multiValuesOptions) {
       value = isArray(value) ? value : [value];
     } else {

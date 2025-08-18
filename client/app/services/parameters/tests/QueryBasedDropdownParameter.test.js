@@ -22,15 +22,25 @@ describe("QueryBasedDropdownParameter", () => {
     });
 
     describe("Empty values", () => {
-      const emptyValues = [null, undefined, []];
+      test("normalizes null as null", () => {
+        expect(param.normalizeValue(null)).toBeNull();
+      });
 
-      test.each(emptyValues)(
-        "normalizes empty value '%s' as null",
-        emptyValue => {
-          const normalizedValue = param.normalizeValue(emptyValue);
-          expect(normalizedValue).toBeNull();
-        },
-      );
+      test("normalizes undefined as null", () => {
+        expect(param.normalizeValue(undefined)).toBeNull();
+      });
+
+      test("normalizes [] as [] for multi-value", () => {
+        // Simulate multiValuesOptions enabled
+        param.multiValuesOptions = { prefix: '"', suffix: '"', separator: "," };
+        expect(param.normalizeValue([])).toEqual([]);
+      });
+
+      test("normalizes [] as null for single-value", () => {
+        // Simulate multiValuesOptions disabled
+        param.multiValuesOptions = null;
+        expect(param.normalizeValue([])).toBeNull();
+      });
     });
   });
 

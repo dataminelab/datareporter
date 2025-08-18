@@ -6,9 +6,7 @@ describe("Create Report", () => {
   });
 
   it("executes and saves a report", () => {
-    cy.contains("Save As")
-      .should("exist")
-      .click();
+    cy.contains("Save As").should("exist").click();
   });
 
   it("archives a report", () => {

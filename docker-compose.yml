@@ -14,9 +14,7 @@ x-redash-service: &redash-service
 x-redash-environment: &redash-environment
   REDASH_LOG_LEVEL: "DEBUG"
   REDASH_REDIS_URL: "redis://redis:6379/0"
-  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-  REDASH_DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres/postgres"
-  REDASH_COOKIE_SECRET: "${REDASH_COOKIE_SECRET}"
+  REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
   REDASH_MAIL_DEFAULT_SENDER: noreply@datareporter.com
   REDASH_AUTH_TYPE: "api_key"
@@ -24,18 +22,16 @@ x-redash-environment: &redash-environment
   REDASH_MAIL_PORT: 1025
   REDASH_ENFORCE_CSRF: "true"
   MAILCHIMP_SERVER: "us1"
-  MAILCHIMP_API_KEY: "${MAILCHIMP_API_KEY}"
-  MAILCHIMP_LIST_ID: "${MAILCHIMP_LIST_ID}"
   REDASH_DEBUG: "true"
   CLIENT_TIMEOUT_DELTA: 100000
   REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
-  OPENAI_API_KEY: "${OPENAI_API_KEY}"
   OLLAMA_API_URL: "http://ollama:11434"
   REDASH_SCHEMAS_REFRESH_TIMEOUT: 500
   # every 60 mins
   REDASH_SCHEMAS_REFRESH_SCHEDULE: 60
   WORKERS_COUNT: 10
   QUEUES: 100
+  # Set secret keys in the .env file (github secrets)
 services:
   server:
     <<: *redash-service

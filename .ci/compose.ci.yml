@@ -17,6 +17,7 @@ services:
       - "5000:5000"
       - "5678:5678"
     environment:
+      PYTHONUNBUFFERED: 0
       REDASH_LOG_LEVEL: "INFO"
       REDASH_REDIS_URL: "redis://redis:6379/0"
       POSTGRES_PASSWORD: "FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb"
@@ -25,7 +26,6 @@ services:
       REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
       OPENAI_API_KEY: "${OPENAI_API_KEY}"
       OLLAMA_API_URL: "http://ollama:11434"
-      PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
       NODE_VERSION: 18
       NPM_VERSION: 9.5.1

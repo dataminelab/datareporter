@@ -250,15 +250,14 @@ jobs:
           fi
       - name: Setup Datareporter Server
         run: docker build -f .ci/Dockerfile.cypress -t cypress .
-      - name: Start Cypress Server
+      - name: Setup Cypress Server
+        working-directory: client
         run: |
           set -x
-          docker compose -f .ci/compose.cypress.yml -p cypress up -d
-          docker compose -f .ci/compose.cypress.yml -p cypress run server create_db
+          npm run cypress build
+          npm run cypress start -- --skip-db-seed
+          docker compose run cypress npm run cypress db-seed
           sleep 10
-      - name: Seed App Database
-        working-directory: client
-        run: npm run cypress db-seed
       - name: Execute Cypress Tests
         working-directory: client
         run: npm run cypress run-ci

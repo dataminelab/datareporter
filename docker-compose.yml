@@ -11,6 +11,8 @@ x-redash-service: &redash-service
       skip_ds_deps: "${skip_ds_deps-}"
   volumes:
     - .:/app
+  env_file:
+    - .env
 x-redash-environment: &redash-environment
   REDASH_LOG_LEVEL: "DEBUG"
   REDASH_REDIS_URL: "redis://redis:6379/0"

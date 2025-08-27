@@ -1,20 +1,20 @@
-import os
 import importlib
+import os
 import ssl
-from funcy import distinct, remove
-from flask_talisman import talisman
 
-from .helpers import (
-    fix_assets_path,
+from flask_talisman import talisman
+from funcy import distinct, remove
+
+from redash.settings.helpers import (
+    add_decode_responses_to_redis_url,
     array_from_string,
     cast_int_or_default,
-    parse_boolean,
+    fix_assets_path,
     int_or_none,
+    parse_boolean,
     set_from_string,
-    add_decode_responses_to_redis_url,
 )
-from .organization import DATE_FORMAT, TIME_FORMAT  # noqa
-
+from redash.settings.organization import DATE_FORMAT, TIME_FORMAT  # noqa
 PLYWOOD_SERVER_URL = os.environ.get("PLYWOOD_SERVER_URL", "http://plywood-server:3000")
 OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://ollama:11434")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
@@ -33,7 +33,7 @@ STATSD_USE_TAGS = parse_boolean(os.environ.get("REDASH_STATSD_USE_TAGS", "false"
 
 # Connection settings for Redash's own database (where we store the queries, results, etc)
 SQLALCHEMY_DATABASE_URI = os.environ.get(
-    "REDASH_DATABASE_URL", os.environ.get("DATABASE_URL", "postgresql://postgres@localhost:5432/postgres")
+    "REDASH_DATABASE_URL", os.environ.get("DATABASE_URL", "postgresql:///postgres")
 )
 SQLALCHEMY_MAX_OVERFLOW = int_or_none(os.environ.get("SQLALCHEMY_MAX_OVERFLOW"))
 SQLALCHEMY_POOL_SIZE = int_or_none(os.environ.get("SQLALCHEMY_POOL_SIZE"))
@@ -59,11 +59,12 @@ SCHEMAS_REFRESH_TIMEOUT = int(os.environ.get("REDASH_SCHEMAS_REFRESH_TIMEOUT", 3
 AUTH_TYPE = os.environ.get("REDASH_AUTH_TYPE", "api_key")
 INVITATION_TOKEN_MAX_AGE = int(os.environ.get("REDASH_INVITATION_TOKEN_MAX_AGE", 60 * 60 * 24 * 7))
 
+# The secret key to use in the Flask app for various cryptographic features
 SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET")
+
 if SECRET_KEY is None:
     raise Exception(
-        "You must set the REDASH_COOKIE_SECRET environment variable. \
-        Visit http://redash.io/help/open-source/admin-guide/secrets for more information."
+        "You must set the REDASH_COOKIE_SECRET environment variable. Visit http://redash.io/help/open-source/admin-guide/secrets for more information."
     )
 
 # The secret key to use when encrypting data source options
@@ -84,11 +85,8 @@ COOKIES_SECURE = parse_boolean(os.environ.get("REDASH_COOKIES_SECURE", str(ENFOR
 SESSION_COOKIE_SECURE = parse_boolean(os.environ.get("REDASH_SESSION_COOKIE_SECURE") or str(COOKIES_SECURE))
 # Whether the session cookie is set HttpOnly.
 SESSION_COOKIE_HTTPONLY = parse_boolean(os.environ.get("REDASH_SESSION_COOKIE_HTTPONLY", "true"))
-# Whether the session cookie is set to secure.
-REMEMBER_COOKIE_SECURE = parse_boolean(os.environ.get("REDASH_REMEMBER_COOKIE_SECURE") or str(COOKIES_SECURE))
-# Whether the session cookie is set HttpOnly.
-SESSION_COOKIE_HTTPONLY = parse_boolean(os.environ.get("REDASH_SESSION_COOKIE_HTTPONLY", "true"))
 SESSION_EXPIRY_TIME = int(os.environ.get("REDASH_SESSION_EXPIRY_TIME", 60 * 60 * 6))
+SESSION_COOKIE_NAME = os.environ.get("REDASH_SESSION_COOKIE_NAME", "session")
 
 # Whether the session cookie is set to secure.
 REMEMBER_COOKIE_SECURE = parse_boolean(os.environ.get("REDASH_REMEMBER_COOKIE_SECURE") or str(COOKIES_SECURE))
@@ -138,9 +136,16 @@ REFERRER_POLICY = os.environ.get("REDASH_REFERRER_POLICY", "strict-origin-when-c
 # an empty value.
 # See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy
 # for more information.
-FEATURE_POLICY = os.environ.get("REDASH_REFERRER_POLICY", "")
+FEATURE_POLICY = os.environ.get("REDASH_FEATURE_POLICY", "")
 
 MULTI_ORG = parse_boolean(os.environ.get("REDASH_MULTI_ORG", "false"))
+
+# If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
+# even if your actual Redash URL scheme is HTTPS. This will cause Flask to build
+# the OAuth redirect URL incorrectly thus failing auth. This is especially common if
+# you're behind a SSL/TCP configured AWS ELB or similar.
+# This setting will force the URL scheme.
+GOOGLE_OAUTH_SCHEME_OVERRIDE = os.environ.get("REDASH_GOOGLE_OAUTH_SCHEME_OVERRIDE", "")
 
 GOOGLE_CLIENT_ID = os.environ.get("REDASH_GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("REDASH_GOOGLE_CLIENT_SECRET", "")
@@ -267,7 +272,7 @@ SEND_FAILURE_EMAIL_INTERVAL = int(os.environ.get("REDASH_SEND_FAILURE_EMAIL_INTE
 MAX_FAILURE_REPORTS_PER_QUERY = int(os.environ.get("REDASH_MAX_FAILURE_REPORTS_PER_QUERY", 100))
 
 ALERTS_DEFAULT_MAIL_SUBJECT_TEMPLATE = os.environ.get(
-    "REDASH_ALERTS_DEFAULT_MAIL_SUBJECT_TEMPLATE", "({state}) {alert_name}"
+    "REDASH_ALERTS_DEFAULT_MAIL_SUBJECT_TEMPLATE", "Alert: {alert_name} changed status to {state}"
 )
 
 REDASH_ALERTS_DEFAULT_MAIL_BODY_TEMPLATE_FILE = os.environ.get(
@@ -283,7 +288,7 @@ THROTTLE_LOGIN_PATTERN = os.environ.get("REDASH_THROTTLE_LOGIN_PATTERN", "50/hou
 LIMITER_STORAGE = os.environ.get("REDASH_LIMITER_STORAGE", REDIS_URL)
 THROTTLE_PASS_RESET_PATTERN = os.environ.get("REDASH_THROTTLE_PASS_RESET_PATTERN", "10/hour")
 
-# CORS settings for the Query Result API (and possbily future external APIs).
+# CORS settings for the Query Result API (and possibly future external APIs).
 # In most cases all you need to do is set REDASH_CORS_ACCESS_CONTROL_ALLOW_ORIGIN
 # to the calling domain (or domains in a comma separated list).
 ACCESS_CONTROL_ALLOW_ORIGIN = set_from_string(os.environ.get("REDASH_CORS_ACCESS_CONTROL_ALLOW_ORIGIN", ""))
@@ -305,15 +310,21 @@ default_query_runners = [
     "redash.query_runner.pg",
     "redash.query_runner.url",
     "redash.query_runner.influx_db",
+    "redash.query_runner.influx_db_v2",
     "redash.query_runner.elasticsearch",
+    "redash.query_runner.elasticsearch2",
     "redash.query_runner.amazon_elasticsearch",
+    "redash.query_runner.trino",
     "redash.query_runner.presto",
+    "redash.query_runner.pinot",
     "redash.query_runner.databricks",
     "redash.query_runner.hive_ds",
     "redash.query_runner.impala_ds",
     "redash.query_runner.vertica",
     "redash.query_runner.clickhouse",
+    "redash.query_runner.tinybird",
     "redash.query_runner.yandex_metrica",
+    "redash.query_runner.yandex_disk",
     "redash.query_runner.rockset",
     "redash.query_runner.treasuredata",
     "redash.query_runner.sqlite",
@@ -341,6 +352,19 @@ default_query_runners = [
     "redash.query_runner.exasol",
     "redash.query_runner.cloudwatch",
     "redash.query_runner.cloudwatch_insights",
+    "redash.query_runner.corporate_memory",
+    "redash.query_runner.sparql_endpoint",
+    "redash.query_runner.excel",
+    "redash.query_runner.csv",
+    "redash.query_runner.databend",
+    "redash.query_runner.nz",
+    "redash.query_runner.arango",
+    "redash.query_runner.google_analytics4",
+    "redash.query_runner.google_search_console",
+    "redash.query_runner.ignite",
+    "redash.query_runner.oracle",
+    "redash.query_runner.e6data",
+    "redash.query_runner.risingwave",
 ]
 
 enabled_query_runners = array_from_string(
@@ -399,7 +423,7 @@ QUERY_REFRESH_INTERVALS = list(
         array_from_string(
             os.environ.get(
                 "REDASH_QUERY_REFRESH_INTERVALS",
-                "60, 300, 600, 900, 1800, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 86400, 604800, 1209600, 2592000",  # noqa: E501
+                "60, 300, 600, 900, 1800, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 86400, 604800, 1209600, 2592000",
             )
         ),
     )
@@ -414,10 +438,11 @@ PAGE_SIZE_OPTIONS = list(
 TABLE_CELL_MAX_JSON_SIZE = int(os.environ.get("REDASH_TABLE_CELL_MAX_JSON_SIZE", 50000))
 
 # Features:
+VERSION_CHECK = parse_boolean(os.environ.get("REDASH_VERSION_CHECK", "true"))
 FEATURE_DISABLE_REFRESH_QUERIES = parse_boolean(os.environ.get("REDASH_FEATURE_DISABLE_REFRESH_QUERIES", "false"))
 FEATURE_SHOW_QUERY_RESULTS_COUNT = parse_boolean(os.environ.get("REDASH_FEATURE_SHOW_QUERY_RESULTS_COUNT", "true"))
 FEATURE_ALLOW_CUSTOM_JS_VISUALIZATIONS = parse_boolean(
-    os.environ.get("REDASH_FEATURE_ALLOW_CUSTOM_JS_VISUALIZATIONS", "false")
+    os.environ.get("REDASH_FEATURE_ALLOW_CUSTOM_JS_VISUALIZATIONS", "true")
 )
 FEATURE_AUTO_PUBLISH_NAMED_QUERIES = parse_boolean(os.environ.get("REDASH_FEATURE_AUTO_PUBLISH_NAMED_QUERIES", "true"))
 FEATURE_EXTENDED_ALERT_OPTIONS = parse_boolean(os.environ.get("REDASH_FEATURE_EXTENDED_ALERT_OPTIONS", "false"))
@@ -450,7 +475,7 @@ SQLPARSE_FORMAT_OPTIONS = {
 REQUESTS_ALLOW_REDIRECTS = parse_boolean(os.environ.get("REDASH_REQUESTS_ALLOW_REDIRECTS", "false"))
 
 # Enforces CSRF token validation on API requests.
-# This is turned off by default to avoid breaking any existing deployments,
+# This is turned off by default to avoid breaking any existing deployments
 # but it is highly recommended to turn this toggle on to prevent CSRF attacks.
 ENFORCE_CSRF = parse_boolean(os.environ.get("REDASH_ENFORCE_CSRF", "false"))
 

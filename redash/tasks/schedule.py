@@ -8,7 +8,7 @@ from rq_scheduler import Scheduler
 
 from redash import rq_redis_connection, settings
 from redash.tasks.failure_report import send_aggregated_errors
-from redash.tasks.general import sync_user_details
+from redash.tasks.general import sync_user_details, version_check
 from redash.tasks.queries import (
     cleanup_query_results,
     empty_schedules,
@@ -63,31 +63,34 @@ def schedule(kwargs):
 
 def periodic_job_definitions():
     jobs = [
-        {"func": refresh_queries, "timeout": 10, "interval": 30, "result_ttl": 600},
+        {"func": refresh_queries, "timeout": 600, "interval": 30, "result_ttl": 600},
         {
             "func": remove_ghost_locks,
-            "interval": 1 * 60,
+            "interval": timedelta(minutes=1),
             "result_ttl": 600,
         },
-        {"func": empty_schedules, "interval": 60 * 60},
+        {"func": empty_schedules, "interval": timedelta(minutes=60)},
         {
             "func": refresh_schemas,
-            "interval": settings.SCHEMAS_REFRESH_SCHEDULE * 60,
+            "interval": timedelta(minutes=settings.SCHEMAS_REFRESH_SCHEDULE),
         },
         {
             "func": sync_user_details,
             "timeout": 60,
-            "interval": 1 * 60,
+            "interval": timedelta(minutes=1),
             "result_ttl": 600,
         },
         {
             "func": send_aggregated_errors,
-            "interval": settings.SEND_FAILURE_EMAIL_INTERVAL * 60,
+            "interval": timedelta(minutes=settings.SEND_FAILURE_EMAIL_INTERVAL),
         },
     ]
 
+    if settings.VERSION_CHECK:
+        jobs.append({"func": version_check, "interval": timedelta(days=1)})
+
     if settings.QUERY_RESULTS_CLEANUP_ENABLED:
-        jobs.append({"func": cleanup_query_results, "interval": 5 * 60})
+        jobs.append({"func": cleanup_query_results, "interval": timedelta(minutes=5)})
 
     # Add your own custom periodic jobs in your dynamic_settings module.
     jobs.extend(settings.dynamic_settings.periodic_jobs() or [])

@@ -183,6 +183,60 @@ export default function DynamicForm({
   const extraFields = filter(fields, { extra: true });
   const regularFields = difference(fields, extraFields);
 
+  // Build controlled values and onChange from fields
+  const controlledValues = {};
+  const controlledOnChange = {};
+
+  fields.forEach(field => {
+    if (
+      typeof field.value !== "undefined" &&
+      typeof field.onChange === "function"
+    ) {
+      controlledValues[field.name] = field.value;
+      controlledOnChange[field.name] = field.onChange;
+    }
+  });
+
+  // Patch form values if controlled
+  React.useEffect(() => {
+    Object.keys(controlledValues).forEach(name => {
+      if (form.getFieldValue(name) !== controlledValues[name]) {
+        form.setFieldsValue({ [name]: controlledValues[name] });
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(controlledValues)]);
+
+  // Patch onChange for controlled fields
+  const handleFieldChange = (name, originalOnChange) => value => {
+    if (controlledOnChange[name]) controlledOnChange[name](value);
+    if (originalOnChange) originalOnChange(value);
+  };
+
+  // Patch fields to inject value/onChange if controlled
+  const patchedFields = fields.map(field => {
+    if (
+      typeof field.value !== "undefined" &&
+      typeof field.onChange === "function"
+    ) {
+      return {
+        ...field,
+        props: {
+          ...field.props,
+          value: field.value,
+          onChange: handleFieldChange(
+            field.name,
+            field.props && field.props.onChange,
+          ),
+        },
+      };
+    }
+    return field;
+  });
+
+  const patchedExtraFields = filter(patchedFields, { extra: true });
+  const patchedRegularFields = difference(patchedFields, patchedExtraFields);
+
   const handleFinish = useCallback(
     values => {
       setIsSubmitting(true);
@@ -222,11 +276,11 @@ export default function DynamicForm({
       onFinishFailed={handleFinishFailed}
     >
       <DynamicFormFields
-        fields={regularFields}
+        fields={patchedRegularFields}
         feedbackIcons={feedbackIcons}
         form={form}
       />
-      {!isEmpty(extraFields) && (
+      {!isEmpty(patchedExtraFields) && (
         <div className="extra-options">
           <Button
             type="dashed"
@@ -252,7 +306,7 @@ export default function DynamicForm({
             className="extra-options-content"
           >
             <DynamicFormFields
-              fields={extraFields}
+              fields={patchedExtraFields}
               feedbackIcons={feedbackIcons}
               form={form}
             />

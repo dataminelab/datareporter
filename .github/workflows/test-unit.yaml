@@ -8,6 +8,7 @@ on:
 env:
   NODE_VERSION: 18
   NPM_VERSION: 9.5.1
+  REDASH_COOKIE_SECRET: "${secrets.REDASH_COOKIE_SECRET}"
 
 permissions:
   contents: read
@@ -249,21 +250,44 @@ jobs:
           fi
       - name: Setup Datareporter Server
         run: docker build -f .ci/Dockerfile.cypress -t cypress .
-      - name: Start Cypress Server
+      - name: Setup Cypress Server
+        working-directory: client
         run: |
           set -x
-          docker compose -f .ci/compose.cypress.yml -p cypress up -d
-          docker compose -f .ci/compose.cypress.yml -p cypress run server create_db
+          npm run cypress build
+          npm run cypress start -- --skip-db-seed
+          docker compose run cypress npm run cypress db-seed
           sleep 10
-      - name: Seed App Database
-        working-directory: client
-        run: npm run cypress db-seed
       - name: Execute Cypress Tests
         working-directory: client
         run: npm run cypress run-ci
       - name: "Failure: output container logs to console"
         if: failure()
         run: docker compose -p cypress logs
+      - name: send snapshots
+        if: failure()
+        run: docker cp cypress:/usr/src/app/client/cypress/screenshots ./snapshots || true
+      - name: send snapshots results into percy
+        if: failure()
+        run: |
+          curl -X POST \
+            -H "Authorization: Token ${{ secrets.PERCY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{
+              "version": 1,
+              "name": "Cypress Tests",
+              "env": {
+                "CYPRESS_RECORD_KEY": "${{ secrets.CYPRESS_RECORD_KEY }}",
+                "CYPRESS_PROJECT_ID": "${{ secrets.CYPRESS_PROJECT_ID }}"
+              },
+              "snapshots": [
+                {
+                  "name": "snapshot",
+                  "path": "./snapshots"
+                }
+              ]
+            }' \
+            https://percy.io/api/v1/projects/${{ secrets.PERCY_PROJECT_ID }}/snapshots
       - name: Copy Code Coverage Results
         run: docker cp cypress:/usr/src/app/coverage ./coverage || true
       - name: Store Coverage Results

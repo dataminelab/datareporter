@@ -7,6 +7,7 @@ from redash import mail, models, settings
 from redash.models import users
 from redash.query_runner import NotSupported
 from redash.tasks.worker import Queue
+from redash.version_check import run_version_check
 from redash.worker import get_job_logger, job
 
 logger = get_job_logger(__name__)
@@ -44,6 +45,10 @@ def record_event(raw_event):
                 logger.error("Failed posting to %s: %s", hook, response.content)
         except Exception:
             logger.exception("Failed posting to %s", hook)
+
+
+def version_check():
+    run_version_check()
 
 
 @job("default")

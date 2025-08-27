@@ -74,7 +74,7 @@ function DynamicButton({
 }
 
 DynamicButton.propTypes = {
-  options: PropTypes.arrayOf(PropTypes.object), // eslint-disable-line react/forbid-prop-types
+  options: PropTypes.arrayOf(PropTypes.object),
   selectedDynamicValue: PropTypes.oneOfType([
     DynamicDateType,
     DynamicDateRangeType,

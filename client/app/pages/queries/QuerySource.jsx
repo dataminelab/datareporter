@@ -528,7 +528,7 @@ function QuerySource(props) {
 }
 
 QuerySource.propTypes = {
-  query: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  query: PropTypes.object.isRequired,
 };
 
 const QuerySourcePage = wrapQueryPage(QuerySource);

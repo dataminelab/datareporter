@@ -289,7 +289,7 @@ export default function SchemaBrowser({
 }
 
 SchemaBrowser.propTypes = {
-  dataSource: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  dataSource: PropTypes.object,
   onSchemaUpdate: PropTypes.func,
   onItemSelect: PropTypes.func,
 };

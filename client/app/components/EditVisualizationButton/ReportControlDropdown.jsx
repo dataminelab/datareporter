@@ -104,8 +104,8 @@ export default function ReportControlDropdown(props) {
 }
 
 ReportControlDropdown.propTypes = {
-  report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  queryResult: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  report: PropTypes.object.isRequired,
+  queryResult: PropTypes.object,
   queryExecuting: PropTypes.bool.isRequired,
   showEmbedDialog: PropTypes.func.isRequired,
   embed: PropTypes.bool,

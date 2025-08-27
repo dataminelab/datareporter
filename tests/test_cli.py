@@ -296,14 +296,21 @@ class GroupCommandTests(BaseTestCase):
         Permissions: [admin,super_admin]
         Users:
         --------------------
-        Id: 4
+        Id: 5
         Name: agroup
         Type: regular
         Organization: default
         Permissions: [list_dashboards]
         Users:
         --------------------
-        Id: 5
+        Id: 3
+        Name: ai
+        Type: builtin
+        Organization: default
+        Permissions: [ai:ask,ai:use,ai:manage,ai:admin,ai:generate_report,ai:edit_report]
+        Users:
+        --------------------
+        Id: 6
         Name: bgroup
         Type: regular
         Organization: default
@@ -317,7 +324,7 @@ class GroupCommandTests(BaseTestCase):
         Permissions: [create_dashboard,create_query,edit_dashboard,edit_query,view_query,view_source,execute_query,list_users,schedule_query,list_dashboards,list_alerts,list_data_sources,view_model,edit_model,create_model,edit_model_config,view_model_config,view_report,edit_report,create_report,generate_report]
         Users: Fred Foobar
         --------------------
-        Id: 3
+        Id: 4
         Name: test
         Type: regular
         Organization: default

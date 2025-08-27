@@ -39,37 +39,9 @@ import {
 import { TimeShift } from "@/components/TurniloComponent/common/models/time-shift/time-shift";
 import { DateRange } from "@/components/TurniloComponent/common/models/date-range/date-range";
 
-class DashboardSettings extends React.Component {
-  static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  };
-
-  render() {
-    const { dashboardOptions } = this.props;
-    const { dashboard, updateDashboard, addWidgetStyle } = dashboardOptions;
-    return (
-      <div className="bg-white tiled">
-        <Checkbox
-          checked={!!dashboard.dashboard_filters_enabled}
-          onChange={({ target }) =>
-            updateDashboard({ dashboard_filters_enabled: target.checked })
-          }
-          data-test="DashboardFiltersCheckbox"
-        >
-          Use Dashboard Level Filters
-        </Checkbox>
-        <AddWidgetContainer
-          dashboardOptions={dashboardOptions}
-          style={addWidgetStyle}
-        />
-      </div>
-    );
-  }
-}
-
 class AddWidgetContainer extends React.Component {
   static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    dashboardOptions: PropTypes.object.isRequired,
     className: PropTypes.string,
   };
 
@@ -114,11 +86,40 @@ class AddWidgetContainer extends React.Component {
   }
 }
 
+class DashboardSettings extends React.Component {
+  static propTypes = {
+    dashboardOptions: PropTypes.object.isRequired,
+  };
+
+  render() {
+    const { dashboardOptions } = this.props;
+    const { dashboard, updateDashboard, addWidgetStyle } = dashboardOptions;
+    return (
+      <div className="bg-white tiled">
+        <Checkbox
+          checked={!!dashboard.dashboard_filters_enabled}
+          onChange={({ target }) =>
+            updateDashboard({ dashboard_filters_enabled: target.checked })
+          }
+          data-test="DashboardFiltersCheckbox"
+        >
+          Use Dashboard Level Filters
+        </Checkbox>
+        <AddWidgetContainer
+          dashboardOptions={dashboardOptions}
+          style={addWidgetStyle}
+        />
+      </div>
+    );
+  }
+}
+
 const essence = EssenceFixtures.wikiHeatmap();
 
 class DashboardComponent extends React.Component {
   static propTypes = {
-    dashboardOptions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    dashboardOptions: PropTypes.object.isRequired,
+    onParametersEdit: PropTypes.func,
   };
 
   constructor(props) {
@@ -483,7 +484,7 @@ class DashboardComponent extends React.Component {
             filters={filters}
             isEditing={editingLayout}
             onLayoutChange={
-              editingLayout ? dashboardOptions.saveDashboardLayout : () => {}
+              editingLayout ? dashboardOptions.saveDashboardLayout : undefined
             }
             onBreakpointChange={dashboardOptions.setGridDisabled}
             onLoadWidget={dashboardOptions.loadWidget}

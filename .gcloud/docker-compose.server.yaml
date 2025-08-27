@@ -28,6 +28,8 @@ services:
     environment:
       <<: *redash-environment
       REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      OLLAMA_API_URL: "http://ollama:11434"
       PYTHONUNBUFFERED: 0
       PLYWOOD_SERVER_URL: "http://plywood:3000"
     volumes:

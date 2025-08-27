@@ -228,7 +228,7 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
 
 PermissionsEditorDialog.propTypes = {
   dialog: DialogPropType.isRequired,
-  author: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  author: PropTypes.object.isRequired,
   context: PropTypes.oneOf(["query", "dashboard"]),
   aclUrl: PropTypes.string.isRequired,
 };

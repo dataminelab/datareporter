@@ -139,7 +139,7 @@ export function synchronizeWidgetTitles(sourceMappings, widgets) {
 
 export class ParameterMappingInput extends React.Component {
   static propTypes = {
-    mapping: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    mapping: PropTypes.object,
     existingParamNames: PropTypes.arrayOf(PropTypes.string),
     onChange: PropTypes.func,
     inputError: PropTypes.string,
@@ -328,7 +328,7 @@ export class ParameterMappingInput extends React.Component {
 
 class MappingEditor extends React.Component {
   static propTypes = {
-    mapping: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    mapping: PropTypes.object.isRequired,
     existingParamNames: PropTypes.arrayOf(PropTypes.string).isRequired,
     onChange: PropTypes.func.isRequired,
   };
@@ -429,7 +429,7 @@ class MappingEditor extends React.Component {
 class TitleEditor extends React.Component {
   static propTypes = {
     existingParams: PropTypes.arrayOf(PropTypes.object),
-    mapping: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    mapping: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
   };
 

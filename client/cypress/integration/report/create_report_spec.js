@@ -2,16 +2,15 @@ describe("Create Report", () => {
   beforeEach(() => {
     cy.login();
     cy.createReport();
+    cy.getByTestId("ReportPageHeaderMoreButton").click();
   });
 
   it("executes and saves a report", () => {
-    cy.contains("Save as...").should("exist");
-    cy.contains("Save as").click();
+    cy.contains("Save As").should("exist").click();
   });
 
   it("archives a report", () => {
-    cy.contains("Save as...").should("exist");
-    cy.getByTestId("ReportPageHeaderMoreButton").click();
+    cy.contains("Save As").should("exist");
     cy.wait(500);
     cy.get(".ant-dropdown-menu").contains("Archive").click();
     cy.wait(500);

@@ -18,6 +18,8 @@ export default function DetailsPageSidebar({
   canAddDataSources,
   onAddDataSourcesClick,
   onGroupDeleted,
+  canAddPermissions,
+  onAddPermissionsClick,
 }) {
   const canRemove = group && currentUser.isAdmin && group.type !== "builtin";
 
@@ -44,6 +46,16 @@ export default function DetailsPageSidebar({
           Add Data Sources
         </Button>
       )}
+      {canAddPermissions && (
+        <Button
+          className="w-100 m-t-5"
+          type="primary"
+          onClick={onAddPermissionsClick}
+        >
+          <i className="fa fa-plus m-r-5" />
+          Add Permissions
+        </Button>
+      )}
       {canRemove && (
         <React.Fragment>
           <Divider dashed className="m-t-10 m-b-10" />
@@ -62,8 +74,8 @@ export default function DetailsPageSidebar({
 
 DetailsPageSidebar.propTypes = {
   controller: ControllerType.isRequired,
-  group: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  items: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
+  group: PropTypes.object,
+  items: PropTypes.array.isRequired,
 
   canAddMembers: PropTypes.bool,
   onAddMembersClick: PropTypes.func,

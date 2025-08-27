@@ -1,6 +1,9 @@
-import { includes, map } from "lodash";
+import { filter, map, includes, toLower } from "lodash";
 import React from "react";
 import Button from "antd/lib/button";
+import Dropdown from "antd/lib/dropdown";
+import Menu from "antd/lib/menu";
+import DownOutlinedIcon from "@ant-design/icons/DownOutlined";
 
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
@@ -18,7 +21,7 @@ import ItemsTable, {
   Columns,
 } from "@/components/items-list/components/ItemsTable";
 import SelectItemsDialog from "@/components/SelectItemsDialog";
-import { UserPreviewCard } from "@/components/PreviewCard";
+import { PermissionPreviewCard } from "@/components/PreviewCard";
 
 import GroupName from "@/components/groups/GroupName";
 import ListItemAddon from "@/components/groups/ListItemAddon";
@@ -29,10 +32,9 @@ import wrapSettingsTab from "@/components/SettingsWrapper";
 import notification from "@/services/notification";
 import { currentUser } from "@/services/auth";
 import Group from "@/services/group";
-import User from "@/services/user";
 import routes from "@/services/routes";
 
-class GroupMembers extends React.Component {
+class GroupPermissions extends React.Component {
   static propTypes = {
     controller: ControllerType.isRequired,
   };
@@ -69,31 +71,24 @@ class GroupMembers extends React.Component {
   }
 
   listColumns = [
-    Columns.custom((text, user) => <UserPreviewCard user={user} withLink />, {
-      title: "Name",
-      field: "name",
-      width: null,
-    }),
     Columns.custom(
-      (text, user) => {
-        if (!this.group) {
-          return null;
-        }
-
-        // cannot remove self from built-in groups
-        if (this.group.type === "builtin" && currentUser.id === user.id) {
-          return null;
-        }
-        return (
-          <Button
-            className="w-100"
-            type="danger"
-            onClick={event => this.removeGroupMember(event, user)}
-          >
-            Remove
-          </Button>
-        );
+      (text, permission) => <PermissionPreviewCard permission={permission} />,
+      {
+        title: "Name",
+        field: "name",
+        width: null,
       },
+    ),
+    Columns.custom(
+      (text, permission) => (
+        <Button
+          className="w-100"
+          type="danger"
+          onClick={() => this.removePermission(permission)}
+        >
+          Remove
+        </Button>
+      ),
       {
         width: "1%",
         isAvailable: () => currentUser.isAdmin,
@@ -112,34 +107,40 @@ class GroupMembers extends React.Component {
       });
   }
 
-  removeGroupMember = (event, user) =>
-    Group.removeMember({ id: this.groupId, userId: user.id })
+  removePermission = perm => {
+    Group.removePermission({ id: this.groupId }, { permission: perm })
       .then(() => {
-        this.props.controller.updatePagination({ page: 1 });
         this.props.controller.update();
       })
       .catch(() => {
-        notification.error("Failed to remove member from group.");
+        notification.error("Failed to remove permission from group.");
       });
+  };
 
-  addMembers = () => {
-    const alreadyAddedUsers = map(this.props.controller.allItems, u => u.id);
+  addPermission = () => {
+    const allPermissionsPromise = Group.permissions({ id: "all" });
+    const alreadyAddedPermissions = this.props.controller.allItems;
+
     SelectItemsDialog.showModal({
-      dialogTitle: "Add Members",
-      inputPlaceholder: "Search users...",
-      selectedItemsTitle: "New Members",
-      searchItems: searchTerm =>
-        User.query({ q: searchTerm }).then(({ results }) => results),
+      dialogTitle: "Add Permissions",
+      inputPlaceholder: "Search permissions...",
+      selectedItemsTitle: "New Permissions",
+      searchItems: searchTerm => {
+        searchTerm = toLower(searchTerm);
+        return allPermissionsPromise.then(items =>
+          filter(items, perm => includes(toLower(perm.name), searchTerm)),
+        );
+      },
       renderItem: (item, { isSelected }) => {
-        const alreadyInGroup = includes(alreadyAddedUsers, item.id);
+        const alreadyInGroup = includes(alreadyAddedPermissions, item);
         return {
           content: (
-            <UserPreviewCard user={item}>
+            <PermissionPreviewCard permission={item}>
               <ListItemAddon
                 isSelected={isSelected}
                 alreadyInGroup={alreadyInGroup}
               />
-            </UserPreviewCard>
+            </PermissionPreviewCard>
           ),
           isDisabled: alreadyInGroup,
           className: isSelected || alreadyInGroup ? "selected" : "",
@@ -147,17 +148,33 @@ class GroupMembers extends React.Component {
       },
       renderStagedItem: (item, { isSelected }) => ({
         content: (
-          <UserPreviewCard user={item}>
+          <PermissionPreviewCard permission={item}>
             <ListItemAddon isSelected={isSelected} isStaged />
-          </UserPreviewCard>
+          </PermissionPreviewCard>
         ),
       }),
     }).onClose(items => {
-      const promises = map(items, u =>
-        Group.addMember({ id: this.groupId }, { user_id: u.id }),
+      const promises = map(items, perm =>
+        Group.addPermission({ id: this.groupId }, { permission: perm }),
       );
-      return Promise.all(promises).then(() => this.props.controller.update());
+      return Promise.all(promises)
+        .then(() => this.props.controller.update())
+        .catch(() => notification.error("Failed to add permission to group."));
     });
+  };
+
+  permissions = () => {
+    return Group.permissions({ id: this.groupId });
+  };
+
+  updatePermission = (permission, data) => {
+    Group.updatePermission({ id: this.groupId, permission }, data)
+      .then(() => {
+        this.props.controller.update();
+      })
+      .catch(() => {
+        notification.error("Failed to update group permission.");
+      });
   };
 
   render() {
@@ -175,8 +192,8 @@ class GroupMembers extends React.Component {
               controller={controller}
               group={this.group}
               items={this.sidebarMenu}
-              canAddMembers={currentUser.isAdmin}
-              onAddMembersClick={this.addMembers}
+              canAddPermissions={currentUser.isAdmin}
+              onAddPermissionsClick={this.addPermission}
               onGroupDeleted={() => navigateTo("groups")}
             />
           </Layout.Sidebar>
@@ -184,11 +201,11 @@ class GroupMembers extends React.Component {
             {!controller.isLoaded && <LoadingState className="" />}
             {controller.isLoaded && controller.isEmpty && (
               <div className="text-center">
-                <p>There are no members in this group yet.</p>
+                <p>There are no permissions in this group yet.</p>
                 {currentUser.isAdmin && (
-                  <Button type="primary" onClick={this.addMembers}>
+                  <Button type="primary" onClick={this.addPermission}>
                     <i className="fa fa-plus m-r-5" aria-hidden="true" />
-                    Add Members
+                    Add Permissions
                   </Button>
                 )}
               </div>
@@ -223,11 +240,11 @@ class GroupMembers extends React.Component {
   }
 }
 
-const GroupMembersPage = wrapSettingsTab(
-  "Groups.Members",
+const GroupPermissionsPage = wrapSettingsTab(
+  "Groups.Permissions",
   null,
   itemsList(
-    GroupMembers,
+    GroupPermissions,
     () =>
       new ResourceItemsSource({
         isPlainList: true,
@@ -235,7 +252,7 @@ const GroupMembersPage = wrapSettingsTab(
           return { id: groupId };
         },
         getResource() {
-          return Group.members.bind(Group);
+          return Group.permissions.bind(Group);
         },
       }),
     () => new StateStorage({ orderByField: "name" }),
@@ -243,12 +260,12 @@ const GroupMembersPage = wrapSettingsTab(
 );
 
 routes.register(
-  "Groups.Members",
+  "Groups.Permissions",
   routeWithUserSession({
-    path: "/groups/:groupId",
-    title: "Group Members",
+    path: "/groups/:groupId/permissions",
+    title: "Group Permissions",
     render: pageProps => (
-      <GroupMembersPage {...pageProps} currentPage="users" />
+      <GroupPermissionsPage {...pageProps} currentPage="permissions" />
     ),
   }),
 );

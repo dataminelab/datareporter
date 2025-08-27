@@ -1,7 +1,5 @@
-from typing import List
-
+from typing import List, Union
 import yaml
-
 import pydash
 
 from redash.models.models import Model
@@ -34,7 +32,7 @@ class DataCube:
             return "IS NULL"
         return "IS NULL"
 
-    def get_meta(self, queries: List[dict]) -> ReportMetaData:
+    def get_meta(self, queries: List[dict]) -> Union[ReportMetaData, None]:
         meta = ReportMetaData()
         if self.ply_engine == 'athena':
             for query in queries:

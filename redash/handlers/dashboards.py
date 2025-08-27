@@ -2,6 +2,7 @@ from flask import request, url_for
 from flask_restful import abort
 from funcy import partial, project
 from sqlalchemy.orm.exc import StaleDataError
+import requests
 
 from redash import models
 from redash.handlers.base import (
@@ -16,9 +17,11 @@ from redash.permissions import (
     require_admin_or_owner,
     require_object_modify_permission,
     require_permission,
+    require_permissions,
 )
 from redash.security import csp_allows_embeding
 from redash.serializers import DashboardSerializer, public_dashboard
+from redash.settings import OPENAI_API_KEY
 
 # Ordering map for relationships
 order_map = {
@@ -133,6 +136,43 @@ class MyDashboardsResource(BaseResource):
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)
         return paginate(ordered_results, page, page_size, DashboardSerializer)
+
+
+class DashboardPromptResource(BaseResource):
+    @require_permissions(["edit_dashboard", "ai:ask"])
+    def post(self, dashboard_id):
+        """
+        Retrieve a prompt for a dashboard.
+
+        :param dashboard_id: The numeric ID of the dashboard to retrieve the prompt for.
+        :>json string prompt: The prompt text for the dashboard.
+        """
+        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
+        require_object_modify_permission(dashboard, self.current_user)
+
+        data = request.get_json(force=True)
+        messages = data.get("messages", [])
+
+        if not messages or not isinstance(messages, list):
+            abort(400, message="Missing or invalid 'messages' in request body.")
+
+        headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
+        payload = {
+            "model": "gpt-3.5-turbo",
+            "messages": messages,
+        }
+
+        openai_response = requests.post(
+            "https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=30
+        )
+
+        if openai_response.status_code != 200:
+            abort(502, message="Failed to get response from OpenAI.")
+
+        openai_data = openai_response.json()
+        prompt = openai_data["choices"][0]["message"]["content"]
+
+        return {"prompt": prompt}
 
 
 class DashboardResource(BaseResource):

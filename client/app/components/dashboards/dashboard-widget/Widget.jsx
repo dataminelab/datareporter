@@ -122,7 +122,7 @@ WidgetDeleteButton.defaultProps = { onClick: () => {} };
 
 class Widget extends React.Component {
   static propTypes = {
-    widget: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    widget: PropTypes.object.isRequired,
     className: PropTypes.string,
     children: PropTypes.node,
     header: PropTypes.node,
@@ -131,7 +131,7 @@ class Widget extends React.Component {
     isPublic: PropTypes.bool,
     refreshStartedAt: Moment,
     menuOptions: PropTypes.node,
-    tileProps: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    tileProps: PropTypes.object,
     onDelete: PropTypes.func,
   };
 

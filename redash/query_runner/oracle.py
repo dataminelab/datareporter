@@ -1,4 +1,3 @@
-# pylint: disable=too-many-lines
 import logging
 import os
 
@@ -68,7 +67,7 @@ class Oracle(BaseSQLQueryRunner):
                 "password": {"type": "string"},
                 "host": {
                     "type": "string",
-                    "title": "Host: To use a DSN Service Name instead, use the text string `_useservicename` in the host name field.",  # noqa: E501
+                    "title": "Host: To use a DSN Service Name instead, use the text string `_useservicename` in the host name field.",
                 },
                 "port": {"type": "number"},
                 "servicename": {"type": "string", "title": "DSN Service Name"},
@@ -91,12 +90,15 @@ class Oracle(BaseSQLQueryRunner):
             all_tab_cols.COLUMN_NAME
         FROM all_tab_cols
         WHERE all_tab_cols.OWNER NOT IN('SYS','SYSTEM','ORDSYS','CTXSYS','WMSYS','MDSYS','ORDDATA','XDB','OUTLN','DMSYS','DSSYS','EXFSYS','LBACSYS','TSMSYS')
-        """  # noqa: E501
+        """
 
         results, error = self.run_query(query, None)
 
         if error is not None:
             self._handle_run_query_error(error)
+
+        if results is None:
+            return []
 
         for row in results["rows"]:
             if row["OWNER"] is not None:

@@ -1,17 +1,17 @@
-import os
 import logging
+import os
 import re
 
 from dateutil import parser
 
 from redash.query_runner import (
-    BaseHTTPQueryRunner,
-    register,
-    TYPE_DATETIME,
-    TYPE_INTEGER,
-    TYPE_FLOAT,
     TYPE_BOOLEAN,
+    TYPE_DATETIME,
+    TYPE_FLOAT,
+    TYPE_INTEGER,
+    BaseHTTPQueryRunner,
     guess_type,
+    register,
 )
 
 logger = logging.getLogger(__name__)
@@ -50,9 +50,7 @@ def parse_response(data):
     types = {}
 
     for c in cols:
-        columns.append(
-            {"name": c, "type": guess_type(first_row[c]), "friendly_name": c}
-        )
+        columns.append({"name": c, "type": guess_type(first_row[c]), "friendly_name": c})
 
     for col in columns:
         types[col["name"]] = col["type"]
@@ -95,9 +93,7 @@ class Drill(BaseHTTPQueryRunner):
 
         payload = {"queryType": "SQL", "query": query}
 
-        response, error = self.get_response(
-            drill_url, http_method="post", json=payload
-        )
+        response, error = self.get_response(drill_url, http_method="post", json=payload)
         if error is not None:
             return None, error
 

@@ -3,8 +3,8 @@ import hmac
 import logging
 import time
 from datetime import timedelta
-from urllib.parse import urlsplit, urlunsplit
 from typing import Optional
+from urllib.parse import urlsplit, urlunsplit
 
 from flask import redirect, request, session, url_for
 from flask_login import LoginManager, login_user, logout_user, user_logged_in

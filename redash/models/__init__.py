@@ -1,24 +1,24 @@
-from typing import Union
 import calendar
 import datetime
 import logging
 import numbers
 import time
+from typing import Union
+
 import pytz
-from sqlalchemy import Integer
-from sqlalchemy import UniqueConstraint, and_, cast, distinct, func, or_
+from sqlalchemy import Integer, UniqueConstraint, and_, cast, distinct, func, or_
 from sqlalchemy.dialects.postgresql import ARRAY, DOUBLE_PRECISION, JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import (
+    aliased,
     backref,
     contains_eager,
     joinedload,
     load_only,
     subqueryload,
-    aliased,
 )
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound  # noqa: F401
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound  # noqa: F401
 from sqlalchemy_utils import generic_relationship
 from sqlalchemy_utils.models import generic_repr
 from sqlalchemy_utils.types import TSVectorType
@@ -68,6 +68,7 @@ from redash.query_runner import (
     get_query_runner,
     with_ssh_tunnel,
 )
+from redash.services.expression import ExpressionBase64Parser
 from redash.utils import (
     base_url,
     gen_query_hash,
@@ -79,8 +80,8 @@ from redash.utils import (
     sentry,
 )
 from redash.utils.configuration import ConfigurationContainer
-from redash.services.expression import ExpressionBase64Parser
-from .changes import ChangeTrackingMixin, Change  # noqa
+
+from .changes import Change, ChangeTrackingMixin  # noqa
 from .mixins import BelongsToOrgMixin, TimestampMixin
 from .organizations import Organization
 from .users import AccessPermission, AnonymousUser, ApiUser, Group, User  # noqa

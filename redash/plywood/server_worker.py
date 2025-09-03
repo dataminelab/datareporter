@@ -1,17 +1,15 @@
 import logging
+
 import requests
+
 from redash.settings import SERVER_WORKER_URL
 
 logger = logging.getLogger(__name__)
 
-REDASH_PLYWOOD_DB = {
-    'pg': 'postgres',
-    'bigquery': 'bigquery',
-    'mysql': 'mysql'
-}
+REDASH_PLYWOOD_DB = {"pg": "postgres", "bigquery": "bigquery", "mysql": "mysql"}
 
 
-class ServerWorkerApi(object):
+class ServerWorkerApi:
 
     @classmethod
     def health(cls):

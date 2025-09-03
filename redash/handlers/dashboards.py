@@ -1,17 +1,17 @@
+import requests
 from flask import request, url_for
 from flask_restful import abort
 from funcy import partial, project
 from sqlalchemy.orm.exc import StaleDataError
-import requests
 
 from redash import models
 from redash.handlers.base import (
     BaseResource,
     filter_by_tags,
     get_object_or_404,
+    paginate,
 )
 from redash.handlers.base import order_results as _order_results
-from redash.handlers.base import paginate
 from redash.permissions import (
     can_modify,
     require_admin_or_owner,

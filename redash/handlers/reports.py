@@ -1,33 +1,43 @@
 import json
 from datetime import datetime
-from flask import request, make_response, url_for
+
+from flask import make_response, request, url_for
 from flask_restful import abort
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
-from redash.security import csp_allows_embeding
-from redash import models
-from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 
-from redash.handlers.queries import order_results
-from redash.models.models import Model
-from redash.models import Report, QueryResult
-from redash.permissions import (
-    require_permission,
-    require_admin_or_owner,
-    require_object_modify_permission,
-    require_object_delete_permission,
-    require_object_view_permission,
+from redash import models
+from redash.handlers.base import (
+    BaseResource,
+    get_object_or_404,
+    paginate,
+    require_fields,
 )
-from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expression_to_result
+from redash.handlers.queries import order_results
+from redash.models import QueryResult, Report
+from redash.models.models import Model
+from redash.permissions import (
+    require_admin_or_owner,
+    require_object_delete_permission,
+    require_object_modify_permission,
+    require_object_view_permission,
+    require_permission,
+)
+from redash.plywood.hash_manager import (
+    filter_expression_to_result,
+    get_data_cube,
+    hash_report,
+    hash_to_result,
+)
 from redash.plywood.objects.expression import ExpressionNotSupported
-from redash.services.expression import ExpressionBase64Parser
-from redash.settings import parse_boolean
-from redash.plywood.hash_manager import get_data_cube
+from redash.security import csp_allows_embeding
 from redash.serializers.report_result import (
-    serialize_report_result_to_dsv,
     serialize_query_result_to_xlsx_with_multiple_sheets,
+    serialize_report_result_to_dsv,
 )
 from redash.serializers.report_serializer import ReportSerializer
+from redash.services.expression import ExpressionBase64Parser
+from redash.settings import parse_boolean
 from redash.utils import json_dumps
 
 HASH = "hash"

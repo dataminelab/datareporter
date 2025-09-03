@@ -36,8 +36,7 @@ class WorkerProcess:
         logger.info("running - %s", command)
         result = subprocess.run(command, shell=True, capture_output=True, check=True)
         logger.warning(
-            "worker execution result: %s\nstdout:\n %s\nstderr:\n %s",
-            result.returncode, result.stdout, result.stderr
+            "worker execution result: %s\nstdout:\n %s\nstderr:\n %s", result.returncode, result.stdout, result.stderr
         )
 
 

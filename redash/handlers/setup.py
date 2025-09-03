@@ -2,6 +2,7 @@ from flask import g, redirect, render_template, request, url_for
 from flask_login import login_user
 from wtforms import Form, PasswordField, StringField, validators
 from wtforms.fields.html5 import EmailField
+
 from redash import settings
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import routes

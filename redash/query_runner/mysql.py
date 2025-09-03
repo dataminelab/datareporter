@@ -3,11 +3,11 @@ import os
 import threading
 
 from redash.query_runner import (
+    TYPE_DATE,
+    TYPE_DATETIME,
     TYPE_FLOAT,
     TYPE_INTEGER,
-    TYPE_DATETIME,
     TYPE_STRING,
-    TYPE_DATE,
     BaseSQLQueryRunner,
     InterruptException,
     JobTimeoutException,
@@ -43,7 +43,7 @@ types_map = {
 }
 
 
-class Result(object):
+class Result:
     def __init__(self):
         pass
 

@@ -1,8 +1,8 @@
 from unittest import mock
 
+from redash.models import db
 from redash.models.models import ModelConfig
 from tests import BaseTestCase
-from redash.models import db
 
 
 class TestModelsCreateResource(BaseTestCase):

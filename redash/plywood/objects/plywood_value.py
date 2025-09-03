@@ -57,7 +57,6 @@ class DataEntry:
 
 
 class PlywoodValue:
-
     def __init__(
         self,
         keys: Optional[List[str]] = None,
@@ -118,7 +117,6 @@ class PlywoodValue:
 
     @staticmethod
     def from_json(data_input: dict) -> "PlywoodValue":
-
         attributes = Attribute.from_array(data_input["attributes"]) if "attributes" in data_input else None
 
         data_entry_list = PlywoodValue.from_array(data_input) if "data" in data_input else None

@@ -88,7 +88,6 @@ class GooglePubSubNotifier:
 
 
 class NotifyWorkerQueue(BaseQueue):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if GOOGLE_PUBSUB_WORKER_TOPIC_ID:

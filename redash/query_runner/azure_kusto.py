@@ -91,7 +91,6 @@ class AzureKusto(BaseQueryRunner):
         return "Azure Data Explorer (Kusto)"
 
     def run_query(self, query, user):
-
         kcsb = KustoConnectionStringBuilder.with_aad_application_key_authentication(
             connection_string=self.configuration["cluster"],
             aad_app_id=self.configuration["azure_ad_client_id"],

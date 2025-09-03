@@ -133,7 +133,6 @@ class PlywoodQueryParserV2:
 
             str_date = iso_format(real_date)
             if inner_index + 1 < size:
-
                 next_value = split["data"][top_index]["SPLIT"]["data"][inner_index + 1]
                 next_tmp_value = copy.deepcopy(next_value[column_name])
                 real_date_next = None

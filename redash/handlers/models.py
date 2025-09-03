@@ -21,10 +21,8 @@ from redash.services.model_config_validator import ModelConfigValidator
 
 
 class ModelsListResource(BaseResource):
-
     @require_permission("create_model")
     def post(self):
-
         req = request.get_json(True)
 
         require_fields(req, ("name", "data_source_id", "table"))
@@ -63,7 +61,6 @@ class ModelsListResource(BaseResource):
 
     @require_permission("view_model")
     def get(self):
-
         data_source = request.args.get("data_source", None)
 
         if data_source:
@@ -91,7 +88,6 @@ class ModelsListResource(BaseResource):
 
 
 class ModelsResource(BaseResource):
-
     @require_permission("view_model")
     def get(self, model_id):
         model = get_object_or_404(Model.get_by_id, model_id)

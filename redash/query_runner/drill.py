@@ -100,7 +100,6 @@ class Drill(BaseHTTPQueryRunner):
         return parse_response(response.json()), None
 
     def get_schema(self, get_stats=False):
-
         query = """
         SELECT DISTINCT
             TABLE_SCHEMA,

@@ -106,7 +106,6 @@ class Expression:
 
     @property
     def expression(self):
-
         cube = self._data_cube.data_cube
         old_name = cube["name"]
         cube["name"] = REPLACE_DATA_CUBE_NAME

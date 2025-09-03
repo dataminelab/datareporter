@@ -3,7 +3,6 @@ from tests import BaseTestCase
 
 
 class TestModelsConfigCreateResource(BaseTestCase):
-
     def test_user_without_model_permission(self):
         group1 = self.factory.create_group(org=self.factory.create_org(), permissions=[""])
         db.session.flush()

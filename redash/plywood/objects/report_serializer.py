@@ -34,7 +34,6 @@ class Progress:
 
 
 class ReportSerializer:
-
     def __init__(
         self,
         queries: List[dict],

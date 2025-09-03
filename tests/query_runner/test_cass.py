@@ -5,7 +5,6 @@ from redash.query_runner.cass import generate_ssl_options_dict
 
 
 class TestCassandra(TestCase):
-
     def test_generate_ssl_options_dict_creates_plain_protocol_dict(self):
         expected = {"ssl_version": ssl.PROTOCOL_TLSv1_2}
         actual = generate_ssl_options_dict("PROTOCOL_TLSv1_2")

@@ -325,7 +325,6 @@ NAME = "Test report"
 
 
 class TestReportListCreateResource(BaseTestCase):
-
     def test_create_without_permission(self):
         group1 = self.factory.create_group(permissions=[""])
         user = self.factory.create_user(group_ids=[group1.id])
@@ -439,7 +438,6 @@ class TestReportListCreateResource(BaseTestCase):
 
 
 class TestReportListGetResource(BaseTestCase):
-
     def test_without_user_permission(self):
         group1 = self.factory.create_group(permissions=[""])
         db.session.flush()
@@ -499,7 +497,6 @@ class TestReportListGetResource(BaseTestCase):
 
 
 class TestReportGetResource(BaseTestCase):
-
     def test_get_report_does_not_exist(self):
         response = self.make_request("get", f"/api/reports/{20}")
 

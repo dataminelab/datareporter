@@ -5,7 +5,6 @@ from flask_restful import abort
 
 
 class ExpressionBase64Parser(lzstring.LZString):
-
     @classmethod
     def parse_base64_to_dict(cls, expression: str) -> dict:
         try:

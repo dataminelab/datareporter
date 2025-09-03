@@ -54,7 +54,6 @@ def get_job_logger(name):
 
 
 class FirstJobExecutor(Worker):
-
     def __init__(self, queue):
         queues = chain(queue.split(","))
         super().__init__(queues=queues, default_worker_ttl=1)
@@ -101,7 +100,6 @@ class FirstJobExecutor(Worker):
                 self.queues, timeout, connection=self.connection, job_class=self.job_class
             )
             if result is not None:
-
                 next_job, queue = result
                 if self.log_job_description:
                     self.log.info("%s: %s (%s)", green(queue.name), blue(next_job.description), next_job.id)

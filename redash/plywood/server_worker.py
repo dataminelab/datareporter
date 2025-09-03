@@ -10,7 +10,6 @@ REDASH_PLYWOOD_DB = {"pg": "postgres", "bigquery": "bigquery", "mysql": "mysql"}
 
 
 class ServerWorkerApi:
-
     @classmethod
     def health(cls):
         return cls.execute(SERVER_WORKER_URL + "/health")

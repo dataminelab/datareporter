@@ -1,8 +1,9 @@
+# noqa: F401
+from .execution import enqueue_query, execute_query  # noqa: F401
 from .maintenance import (
-    refresh_queries,
-    refresh_schemas,
     cleanup_query_results,
     empty_schedules,
+    refresh_queries,
+    refresh_schemas,
     remove_ghost_locks,
-)  # noqa: F401
-from .execution import execute_query, enqueue_query  # noqa: F401
+)

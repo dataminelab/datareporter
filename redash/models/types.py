@@ -1,4 +1,5 @@
 from json import JSONDecodeError
+
 from sqlalchemy.ext.indexable import index_property
 from sqlalchemy.ext.mutable import Mutable
 from sqlalchemy.types import TypeDecorator

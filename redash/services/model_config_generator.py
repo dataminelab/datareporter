@@ -27,7 +27,7 @@ class ConfigDumper(yaml.SafeDumper):
         return super(ConfigDumper, self).increase_indent(flow, False)
 
 
-class BaseConfig(object):
+class BaseConfig:
     def to_json(self):
         raise NotImplementedError()
 
@@ -132,7 +132,7 @@ class ModelConfigAttributes(BaseConfig):
         return None
 
 
-class ModelConfigGenerator(object):
+class ModelConfigGenerator:
     @staticmethod
     def yaml(model: Model, refresh=False):
         config_attributes = ModelConfigGenerator._build(model, refresh)

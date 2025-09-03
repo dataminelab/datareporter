@@ -4,15 +4,17 @@ import logging
 import time
 from functools import reduce
 from operator import or_
-
 from typing import Any, Dict, List
-from flask import current_app as app, request_started, url_for
+
+from flask import current_app as app
+from flask import request_started, url_for
 from flask_login import AnonymousUserMixin, UserMixin, current_user
 from passlib.apps import custom_app_context as pwd_context
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy_utils import EmailType
 from sqlalchemy_utils.models import generic_repr
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+
 from redash import redis_connection
 from redash.utils import dt_from_timestamp, generate_token
 
@@ -61,7 +63,7 @@ def init_app(app):
     request_started.connect(update_user_active_at, app)
 
 
-class PermissionsCheckMixin(object):
+class PermissionsCheckMixin:
     def has_permission(self, permission):
         return self.has_permissions((permission,))
 

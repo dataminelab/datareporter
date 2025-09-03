@@ -1,7 +1,7 @@
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
 
-SPLIT = 'SPLIT'
-KEYS = 'keys'
+SPLIT = "SPLIT"
+KEYS = "keys"
 
 
 class Attribute:
@@ -21,20 +21,20 @@ class Attribute:
         return self.__type
 
     def __str__(self):
-        return f'<Attribute [Name: {self.name}. Type: {self.type}]>'
+        return f"<Attribute [Name: {self.name}. Type: {self.type}]>"
 
     @staticmethod
-    def from_array(data: List[Dict]) -> List['Attribute']:
-        return [Attribute(name=v['name'], type=v["type"]) for v in data]
+    def from_array(data: List[Dict]) -> List["Attribute"]:
+        return [Attribute(name=v["name"], type=v["type"]) for v in data]
 
 
 class DataEntry:
-    def __init__(self, split: Optional['PlywoodValue'] = None, extra: dict = None):
+    def __init__(self, split: Optional["PlywoodValue"] = None, extra: dict = None):
         self.__split = split
         self.__extra = extra
 
     @property
-    def split(self) -> Optional['PlywoodValue']:
+    def split(self) -> Optional["PlywoodValue"]:
         return self.__split
 
     @property
@@ -53,16 +53,17 @@ class DataEntry:
         return obj
 
     def __str__(self):
-        return f'<DataEntry [Split: {self.split}. Extra: {self.extra}]>'
+        return f"<DataEntry [Split: {self.split}. Extra: {self.extra}]>"
 
 
 class PlywoodValue:
 
-    def __init__(self,
-                 keys: Optional[List[str]] = None,
-                 attributes: Optional[List[Attribute]] = None,
-                 data: Optional[List[DataEntry]] = None,
-                 ):
+    def __init__(
+        self,
+        keys: Optional[List[str]] = None,
+        attributes: Optional[List[Attribute]] = None,
+        data: Optional[List[DataEntry]] = None,
+    ):
         self.__keys = keys
         self.__attributes = attributes
         self.__data = data
@@ -86,15 +87,15 @@ class PlywoodValue:
             res[KEYS] = [*self.keys]
 
         if self.attributes:
-            res['attributes'] = [v.dict() for v in self.attributes]
+            res["attributes"] = [v.dict() for v in self.attributes]
 
         if self.data:
-            res['data'] = [v.dict() for v in self.data]
+            res["data"] = [v.dict() for v in self.data]
 
         return res
 
     @staticmethod
-    def from_array(data_input: List[Dict]) -> List['PlywoodValue']:
+    def from_array(data_input: List[Dict]) -> List["PlywoodValue"]:
         data_entry_list = []
 
         for item in data_input["data"]:
@@ -116,11 +117,11 @@ class PlywoodValue:
         return data_entry_list
 
     @staticmethod
-    def from_json(data_input: dict) -> 'PlywoodValue':
+    def from_json(data_input: dict) -> "PlywoodValue":
 
-        attributes = Attribute.from_array(data_input["attributes"]) if 'attributes' in data_input else None
+        attributes = Attribute.from_array(data_input["attributes"]) if "attributes" in data_input else None
 
-        data_entry_list = PlywoodValue.from_array(data_input) if 'data' in data_input else None
+        data_entry_list = PlywoodValue.from_array(data_input) if "data" in data_input else None
 
         keys = data_input[KEYS] if KEYS in data_input else None
 
@@ -131,4 +132,4 @@ class PlywoodValue:
         )
 
     def __str__(self):
-        return f'<PlywoodValue [Keys {self.keys}. Attributes {self.attributes}. DataEntry {self.data}]>'
+        return f"<PlywoodValue [Keys {self.keys}. Attributes {self.attributes}. DataEntry {self.data}]>"

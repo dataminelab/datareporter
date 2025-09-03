@@ -1,4 +1,5 @@
 from passlib.apps import custom_app_context as pwd_context
+
 import redash.models
 import redash.models.models
 from redash.models import db
@@ -7,7 +8,7 @@ from redash.utils import gen_query_hash, utcnow
 from redash.utils.configuration import ConfigurationContainer
 
 
-class ModelFactory(object):
+class ModelFactory:
     def __init__(self, model, **kwargs):
         self.model = model
         self.kwargs = kwargs
@@ -30,7 +31,7 @@ class ModelFactory(object):
         return obj
 
 
-class Sequence(object):
+class Sequence:
     def __init__(self, string):
         self.sequence = 0
         self.string = string
@@ -191,7 +192,7 @@ report_factory = ModelFactory(
 )
 
 
-class Factory(object):
+class Factory:
     def __init__(self):
         self.org, self.admin_group, self.default_group, self.ai_group = redash.models.init_db()
         self._data_source = None

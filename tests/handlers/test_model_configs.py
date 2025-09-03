@@ -1,5 +1,5 @@
-from tests import BaseTestCase
 from redash.models import db
+from tests import BaseTestCase
 
 
 class TestModelsConfigCreateResource(BaseTestCase):
@@ -150,9 +150,7 @@ class TestModelsConfigCreateResource(BaseTestCase):
         formula: $main.sum($deltaByTen)
 """
 
-        response = self.make_request(
-            "post", f"/api/models/{model.id}/config", data={"content": content}, user=user
-        )
+        response = self.make_request("post", f"/api/models/{model.id}/config", data={"content": content}, user=user)
 
         self.assertEqual(200, response.status_code)
         self.assertEqual(content, response.json["content"])

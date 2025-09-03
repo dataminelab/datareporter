@@ -1,9 +1,9 @@
-from .elasticsearch import ElasticSearch
 from . import register
+from .elasticsearch import ElasticSearch
 
 try:
+    from botocore import credentials, session
     from requests_aws_sign import AWSV4Sign
-    from botocore import session, credentials
 
     enabled = True
 except ImportError:

@@ -1,4 +1,5 @@
 import json
+
 import lzstring
 from flask_restful import abort
 
@@ -11,9 +12,9 @@ class ExpressionBase64Parser(lzstring.LZString):
             expression_obj = json.loads(cls.decompressFromBase64(expression))
             return expression_obj
         except Exception:
-            abort(400, message='Error during reading expression string')
+            abort(400, message="Error during reading expression string")
 
     @classmethod
     def parse_dict_to_base64(cls, expression: dict) -> str:
-        expression = cls.compressToBase64(json.dumps(expression, separators=(',', ':')))
+        expression = cls.compressToBase64(json.dumps(expression, separators=(",", ":")))
         return expression

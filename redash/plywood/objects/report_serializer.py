@@ -14,8 +14,8 @@ class ReportMetaData:
 
     def to_dict(self):
         return {
-            'price': self.price,
-            'proceed_data': self.proceed_data,
+            "price": self.price,
+            "proceed_data": self.proceed_data,
         }
 
 
@@ -27,9 +27,9 @@ class Progress:
     def dict(self):
         total = self.jobs + self.results or 1
         return {
-            'all': self.jobs + self.results,
-            'results': self.results,
-            'progress': int(self.results / total * 100),
+            "all": self.jobs + self.results,
+            "results": self.results,
+            "progress": int(self.results / total * 100),
         }
 
 
@@ -58,7 +58,7 @@ class ReportSerializer:
         query_result = 0
 
         for query in self.queries:
-            if 'job' in query:
+            if "job" in query:
                 jobs += 1
             else:
                 query_result += 1
@@ -76,12 +76,12 @@ class ReportSerializer:
 
         progress = self._get_progress()
         return {
-            'data': data,
-            'status': self.status,
-            'queries': self.queries,
-            'failed': self.failed,
-            'meta': self.meta.to_dict() if self.meta else None,
-            'shape': self.shape,
-            'progress': progress.dict(),
+            "data": data,
+            "status": self.status,
+            "queries": self.queries,
+            "failed": self.failed,
+            "meta": self.meta.to_dict() if self.meta else None,
+            "shape": self.shape,
+            "progress": progress.dict(),
             "expression_queries": self.expression_queries,
         }

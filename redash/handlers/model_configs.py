@@ -1,10 +1,11 @@
 from typing import List
+
 from flask import request
 
 from redash import models
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
 from redash.models.models import Model, ModelConfig
-from redash.permissions import require_permission, require_admin_or_owner
+from redash.permissions import require_admin_or_owner, require_permission
 from redash.plywood.objects.data_cube import DataCube
 from redash.serializers.model_serializer import ModelConfigSerializer
 from redash.services.model_config_validator import ModelConfigValidator

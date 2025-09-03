@@ -1,9 +1,10 @@
 from flask_login import current_user, login_required
-from redash.models.models import Model
-from redash.models import Report, Query, Alert, User, DataSource, Dashboard
+
+from redash.authentication import current_org
 from redash.handlers import routes
 from redash.handlers.base import json_response, org_scoped_rule
-from redash.authentication import current_org
+from redash.models import Alert, Dashboard, DataSource, Query, Report, User
+from redash.models.models import Model
 
 
 @routes.route(org_scoped_rule("/api/organization/status"), methods=["GET"])

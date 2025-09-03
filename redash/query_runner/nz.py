@@ -158,7 +158,10 @@ class Netezza(BaseSQLQueryRunner):
                 else:
                     columns = self.fetch_columns(
                         [
-                            (val[0], self.type_map(val[1], cursor.ps["row_desc"][i]["func"])) # pylint: disable=unsubscriptable-object
+                            (
+                                val[0],
+                                self.type_map(val[1], cursor.ps["row_desc"][i]["func"]),
+                            )  # pylint: disable=unsubscriptable-object
                             for i, val in enumerate(cursor.description)
                         ]
                     )

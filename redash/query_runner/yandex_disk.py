@@ -13,7 +13,7 @@ if pandas_installed and openpyxl_installed:
     import openpyxl  # noqa: F401
     import pandas as pd
 
-    from redash.utils.pandas import pandas_to_result # pylint: disable=ungrouped-imports
+    from redash.utils.pandas import pandas_to_result
 
     enabled = True
 
@@ -26,8 +26,10 @@ if pandas_installed and openpyxl_installed:
 else:
     enabled = False
     EXTENSIONS_READERS = {}
+
     def pandas_to_result(df):
         raise NotImplementedError("Pandas is not installed")
+
 
 logger = logging.getLogger(__name__)
 

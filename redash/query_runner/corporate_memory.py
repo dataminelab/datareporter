@@ -164,7 +164,7 @@ class CorporateMemoryQueryRunner(BaseQueryRunner):
             logger.info("Error: {}".format(error))
             try:
                 # try to load Problem Details for HTTP API JSON
-                details = json.loads(error.response.text) # pylint: disable=no-member
+                details = json.loads(error.response.text)  # pylint: disable=no-member
                 error = ""
                 if "title" in details:
                     error += details["title"] + ": "

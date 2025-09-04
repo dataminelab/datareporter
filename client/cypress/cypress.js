@@ -89,7 +89,7 @@ function runCypressCI() {
     { stdio: "inherit" },
   );
   execSync(
-    "docker compose run --rm cypress ./node_modules/.bin/percy finalize",
+    "docker compose run --rm cypress ./node_modules/.bin/percy finalize --all",
     { stdio: "inherit" },
   );
 }

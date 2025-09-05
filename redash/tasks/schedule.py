@@ -29,21 +29,14 @@ class StatsdRecordingScheduler(Scheduler):
     queue_class = Queue
 
 
-# peridoc job scheduler here
 rq_scheduler = StatsdRecordingScheduler(connection=rq_redis_connection, queue_name="periodic", interval=5)
-
-
-def serialize_timedelta(obj):
-    if isinstance(obj, timedelta):
-        return {"days": obj.days, "seconds": obj.seconds, "microseconds": obj.microseconds}
-    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
 
 
 def job_id(kwargs):
     metadata = kwargs.copy()
     metadata["func"] = metadata["func"].__name__
 
-    return hashlib.sha1(json.dumps(metadata, sort_keys=True, default=serialize_timedelta).encode()).hexdigest()
+    return hashlib.sha1(json.dumps(metadata, sort_keys=True).encode()).hexdigest()
 
 
 def prep(kwargs):
@@ -63,31 +56,31 @@ def schedule(kwargs):
 
 def periodic_job_definitions():
     jobs = [
-        {"func": refresh_queries, "timeout": 10, "interval": 30, "result_ttl": 600},
+        {"func": refresh_queries, "timeout": 600, "interval": 30, "result_ttl": 600},
         {
             "func": remove_ghost_locks,
-            "interval": 1 * 60,
+            "interval": timedelta(minutes=1),
             "result_ttl": 600,
         },
-        {"func": empty_schedules, "interval": 60 * 60},
+        {"func": empty_schedules, "interval": timedelta(minutes=60)},
         {
             "func": refresh_schemas,
-            "interval": settings.SCHEMAS_REFRESH_SCHEDULE * 60,
+            "interval": timedelta(minutes=settings.SCHEMAS_REFRESH_SCHEDULE),
         },
         {
             "func": sync_user_details,
             "timeout": 60,
-            "interval": 1 * 60,
+            "interval": timedelta(minutes=1),
             "result_ttl": 600,
         },
         {
             "func": send_aggregated_errors,
-            "interval": settings.SEND_FAILURE_EMAIL_INTERVAL * 60,
+            "interval": timedelta(minutes=settings.SEND_FAILURE_EMAIL_INTERVAL),
         },
     ]
 
     if settings.QUERY_RESULTS_CLEANUP_ENABLED:
-        jobs.append({"func": cleanup_query_results, "interval": 5 * 60})
+        jobs.append({"func": cleanup_query_results, "interval": timedelta(minutes=5)})
 
     # Add your own custom periodic jobs in your dynamic_settings module.
     jobs.extend(settings.dynamic_settings.periodic_jobs() or [])

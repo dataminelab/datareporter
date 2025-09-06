@@ -86,7 +86,7 @@
     "tslib": "^2.6.3"
   },
   "devDependencies": {
-    "@types/node": "14.18.3",
+    "@types/node": "24.3.1",
     "@types/stream-to-array": "^2.3.0",
     "axios": "0.18.0",
     "chai": "4.2.0",

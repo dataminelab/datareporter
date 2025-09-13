@@ -21,6 +21,7 @@ import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { MarkdownNode } from "../markdown-node/markdown-node";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
+// @ts-ignore: SVG import
 import defaultIcon from "../../icons/info.svg";
 
 const defaultTitle = "More info";

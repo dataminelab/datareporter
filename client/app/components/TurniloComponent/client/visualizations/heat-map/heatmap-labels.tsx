@@ -46,8 +46,8 @@ export class HeatmapLabels extends React.Component<HeatmapLabelsProps> {
     const maxWidth = Array.from(
       this.container.current.querySelectorAll(`.${heatmapLabelClassName}`),
     ).reduce(
-      (maxWidth, element: HTMLSpanElement) =>
-        Math.max(element.offsetWidth, maxWidth),
+      (maxWidth, element) =>
+        Math.max((element as HTMLSpanElement).offsetWidth, maxWidth),
       0,
     );
 

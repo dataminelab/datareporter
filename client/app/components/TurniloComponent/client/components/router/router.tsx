@@ -117,7 +117,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     return `#${rootFragment}/${fragments.join("/")}`;
   }
 
-  replaceHash(newHash: string) {
+  replaceHash(newHash: string): void {
     replaceHash(newHash);
     this.onHashChange(newHash);
   }
@@ -148,7 +148,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     this.replaceHash("#" + strippedCrumbs.join("/"));
   }
 
-  onHashChange(hash: string) {
+  onHashChange(hash: string): void {
     const { rootFragment } = this.props;
 
     const safeHash = this.sanitizeHash(hash);

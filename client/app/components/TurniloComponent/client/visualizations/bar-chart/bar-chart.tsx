@@ -803,7 +803,6 @@ export class BarChart extends BaseVisualization<BarChartState> {
           style={xAxisStage.getWidthHeight()}
           viewBox={xAxisStage.getViewBox()}
         >
-          {/* @ts-ignore */}
           <BucketMarks stage={xAxisStage} ticks={xTicks} scale={xScale} />
         </svg>
         {labels}
@@ -1003,7 +1002,7 @@ export class BarChart extends BaseVisualization<BarChartState> {
     }
   }
 
-  getPrimaryXScale(): d3.ScaleBand<string> {
+  getPrimaryXScale(): d3.ScaleBand<any> {
     const { datasetLoad, maxNumberOfLeaves } = this.state;
     if (!isLoaded(datasetLoad)) return null;
     const data = (datasetLoad.dataset.data[0][SPLIT] as Dataset).data;
@@ -1013,12 +1012,13 @@ export class BarChart extends BaseVisualization<BarChartState> {
     const firstSplit = splits.splits.first();
     const dimension = dataCube.getDimension(firstSplit.reference);
 
-    const getX = (d: Datum) => d[dimension.name] as string;
+    // Use PlywoodValue type for domain values
+    const getX = (d: Datum) => d[dimension.name] as any;
 
     const { usedWidth, padLeft } = this.getXValues(maxNumberOfLeaves);
 
     return d3
-      .scaleBand()
+      .scaleBand<any>()
       .domain(data.map(getX))
       .range([padLeft, padLeft + usedWidth]);
   }

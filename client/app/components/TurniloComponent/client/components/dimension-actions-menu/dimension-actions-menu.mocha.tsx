@@ -161,7 +161,7 @@ describe("<DimensionActions>", () => {
       const dimActions = (dimension: Dimension) =>
         mount(
           <DimensionActions
-            clicker={{ addSplit: addSplitSpy }}
+            clicker={{ addSplit: addSplitSpy, changeSplits: () => {} }}
             essence={EssenceFixtures.wikiTable()}
             dimension={dimension}
             onClose={onCloseSpy}

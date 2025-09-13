@@ -1,6 +1,5 @@
 /*
- * Copyright 2015-2016 Imply Data, Inc.
- * Copyright 2017-2019 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +14,23 @@
  * limitations under the License.
  */
 
-export function replaceHash(newHash: string): void {
-  // Fallback to directly setting window.location.hash for better jsdom compatibility
-  if (typeof window !== "undefined" && window.location && typeof window.location.hash === "string") {
-    window.location.hash = newHash.startsWith("#") ? newHash : `#${newHash}`;
-  }
-}
+require("@babel/register")({
+    cache: true,
+    configFile: false,
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
+    presets: [
+        "@babel/preset-typescript",
+        ["@babel/preset-env", {
+            targets: {
+                node: 'current'
+            }
+        }],
+        "@babel/preset-react",
+    ]
+ });
+require("ignore-styles");
+
+const enzyme = require("enzyme");
+const Adapter = require("enzyme-adapter-react-16");
+
+enzyme.configure({ adapter: new Adapter() });

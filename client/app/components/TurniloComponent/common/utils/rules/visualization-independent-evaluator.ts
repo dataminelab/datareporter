@@ -42,7 +42,8 @@ export type VisualizationIndependentEvaluator = RulesEvaluator<
 >;
 
 export const visualizationIndependentEvaluator: VisualizationIndependentEvaluator =
-  RulesEvaluatorBuilder.empty()
+  RulesEvaluatorBuilder
+    .empty<PredicateVariables, ActionVariables>()
     .when(Predicates.noSelectedMeasures())
     .then(Actions.manualMeasuresSelection())
     .otherwise(Actions.ready())

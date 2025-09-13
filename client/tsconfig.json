@@ -33,7 +33,7 @@
       "@/*": ["./app/*"]
     }
   },
-  "include": ["app/**/*.ts", "app/**/*.tsx", "app/**/*.jsx"],
+  "include": ["app/**/*.ts", "app/**/*.tsx", "app/**/*.jsx", "app/components/TurniloComponent/client/utils/test-utils/jsdom-setup.js"],
   "exclude": [
     "node_modules",
     "**/*.json",

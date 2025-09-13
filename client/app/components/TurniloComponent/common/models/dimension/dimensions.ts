@@ -33,6 +33,10 @@ export interface DimensionsInterface {
   byName: Record<DimensionId, Dimension>;
 }
 
+export function isDimensionId(o: DimensionOrGroup): boolean {
+  return typeof o === "string";
+}
+
 export function findDimensionByName(
   dimensions: DimensionsInterface,
   name: string,

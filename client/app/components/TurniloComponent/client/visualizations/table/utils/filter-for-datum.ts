@@ -51,10 +51,6 @@ export function getFilterFromDatum(
     .take(splitNesting)
     .map(({ reference, type }) => {
       const segment: any = flatDatum[reference];
-      // if (!segment && segment !== 0) {
-      //   segment = reference;
-      // }
-
       switch (type) {
         case SplitType.number:
           return new NumberFilterClause({
@@ -73,6 +69,8 @@ export function getFilterFromDatum(
             action: StringFilterAction.IN,
             values: Set.of(segment),
           });
+        default:
+          throw new Error(`Unsupported split type: ${type}`);
       }
     });
 

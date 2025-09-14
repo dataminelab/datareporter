@@ -37,9 +37,11 @@ const createSettings = (
 
 export const settings: LineChartVisualizationSettings = {
   converter: {
-    print: (settings: ImmutableRecord<LineChartSettings>) => settings.toJS(),
-    read: (input: LineChartSettings) =>
-      createSettings({ groupSeries: !!input.groupSeries }),
+    print: (settings: LineChartSettings) => ({ ...settings }),
+    read: (input: unknown) =>
+      createSettings({
+        groupSeries: !!(input as Partial<LineChartSettings>).groupSeries
+      }),
   },
   defaults: createSettings(
     defaults,

@@ -21,14 +21,15 @@
     "turnilo": "./bin/turnilo"
   },
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "test": "npm-run-all -s test:*",
     "watch:test": "npm-run-all -p watch:test:*",
-    "test:common": "mocha --exit --require ./test/setup/mocha.js 'src/common/**/*.mocha.{ts,tsx}'",
-    "test:client": "mocha --exit --require ./test/setup/mocha.js 'src/client/**/*.mocha.{ts,tsx}' --file 'src/client/utils/test-utils/jsdom-setup.ts'",
-    "test:server": "mocha --exit --require ./test/setup/mocha.js 'src/server/**/*.mocha.ts'",
-    "watch:test:common": "npm run test:common -- --watch --watch-files 'src/common/**/*.mocha.ts'",
-    "watch:test:client": "npm run test:client -- --watch --watch-files 'src/client/**/*.mocha.tsx' --watch-files 'src/client/**/*.mocha.ts'",
-    "watch:test:server": "npm run test:server -- --watch --watch-files 'src/server/**/*.mocha.ts'",
+    "test:common": "mocha --exit --require ./test/setup/mocha.js 'common/**/*.mocha.{ts,tsx}'",
+    "test:client": "mocha --exit --require ts-node/register --require client/utils/test-utils/jsdom-setup.js --require ./test/setup/mocha.js 'client/**/*.mocha.{ts,tsx}'",
+    "test:server": "mocha --exit --require ./test/setup/mocha.js 'server/**/*.mocha.ts'",
+    "watch:test:common": "npm run test:common -- --watch --watch-files 'common/**/*.mocha.ts'",
+    "watch:test:client": "npm run test:client -- --watch --watch-files 'client/**/*.mocha.tsx' --watch-files 'client/**/*.mocha.ts'",
+    "watch:test:server": "npm run test:server -- --watch --watch-files 'server/**/*.mocha.ts'",
     "start": "./bin/turnilo",
     "start:examples": "npm run start -- run-examples",
     "start:dev": "NODE_ENV=dev-hmr ./bin/turnilo",
@@ -96,7 +97,7 @@
     "@babel/preset-env": "7.16.11",
     "@babel/preset-react": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
-    "@babel/register": "7.17.0",
+    "@babel/register": "^7.17.0",
     "@babel/runtime": "7.17.2",
     "@size-limit/preset-small-lib": "7.0.8",
     "@statoscope/webpack-plugin": "5.20.1",
@@ -132,6 +133,7 @@
     "base64-arraybuffer": "0.2.0",
     "chai": "4.3.7",
     "chai-datetime": "1.8.0",
+    "cheerio": "0.22.0",
     "css-loader": "5.2.7",
     "css-minimizer-webpack-plugin": "1.3.0",
     "css-modules-require-hook": "4.2.3",
@@ -142,7 +144,7 @@
     "iconv-lite": "0.4.19",
     "ignore-styles": "5.0.1",
     "immutable-class-tester": "0.7.3",
-    "jsdom": "9.12.0",
+    "jsdom": "^26.1.0",
     "memoize-one": "5.1.1",
     "mime": "2.6.0",
     "mini-css-extract-plugin": "1.6.2",
@@ -150,6 +152,7 @@
     "nock": "13.2.9",
     "node-sass": "8.0.0",
     "npm-run-all": "4.1.5",
+    "patch-package": "^8.0.0",
     "querystring": "0.2.0",
     "randomstring": "1.1.5",
     "react-test-renderer": "16.14.0",
@@ -167,6 +170,7 @@
     "svg-inline-loader": "0.8.2",
     "svg-loader": "0.0.2",
     "terser-webpack-plugin": "2.3.8",
+    "ts-node": "^10.9.2",
     "tslint": "5.20.1",
     "tslint-eslint-rules": "5.4.0",
     "tslint-no-focused-test": "0.5.0",
@@ -194,5 +198,11 @@
       "limit": "4.75 kB",
       "gzip": false
     }
-  ]
+  ],
+  "resolutions": {
+    "cheerio": "0.22.0"
+  },
+  "overrides": {
+    "cheerio": "0.22.0"
+  }
 }

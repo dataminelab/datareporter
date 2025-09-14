@@ -15,7 +15,9 @@
  */
 import { Fn } from "../../../common/utils/general/general";
 import { TileHeaderIcon } from "../tile-header/tile-header";
+// @ts-ignore
 import searchIcon from "../../icons/full-search.svg";
+// @ts-ignore
 import removeIcon from "../../icons/full-remove.svg";
 
 interface PinboardIconsProps {

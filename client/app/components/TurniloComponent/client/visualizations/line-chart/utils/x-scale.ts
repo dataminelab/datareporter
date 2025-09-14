@@ -120,8 +120,9 @@ function getDatasetXRange(
   if (typeof flatDataset[0] === "object") {
     return flatDataset.reduce(safeRangeSum, null);
   } else if (typeof flatDataset[0] === "string") {
-    // ["21-05-2022:HH:MM:SS", ...]
+    // @ts-ignore TS2769
     let start = new Date(flatDataset[0]);
+    // @ts-ignore TS2769
     let end = new Date(flatDataset[0]);
     flatDataset.map(datum => {
       const currentDate = new Date(datum.toString());

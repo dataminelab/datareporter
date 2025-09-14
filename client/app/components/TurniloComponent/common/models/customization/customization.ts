@@ -16,7 +16,9 @@
  */
 
 import { Timezone } from "chronoshift";
+import { VisualizationColors } from "../colors/colors";
 import { Class, immutableArraysEqual, Instance } from "immutable-class";
+import { Locale } from "../locale/locale";
 import { LOGGER } from "../../logger/logger";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
 import {
@@ -83,6 +85,12 @@ const availableCssVariables = [
   "text-standard",
 ];
 
+type CssVariables = Record<string, string>;
+
+interface Messages {
+  dataCubeNotFound?: string;
+}
+
 export interface CustomizationValue {
   title?: string;
   headerBackground?: string;
@@ -105,6 +113,30 @@ export interface CustomizationJS {
   urlShortener?: UrlShortenerDef;
   sentryDSN?: string;
   cssVariables?: Record<string, string>;
+}
+
+export interface SerializedCustomization {
+  headerBackground?: string;
+  customLogoSvg?: string;
+  timezones: string[];
+  externalViews: ExternalViewValue[];
+  hasUrlShortener: boolean;
+  sentryDSN?: string;
+  locale: Locale;
+  messages: Messages;
+  visualizationColors: VisualizationColors;
+}
+
+export interface ClientCustomization {
+  headerBackground?: string;
+  customLogoSvg?: string;
+  timezones: Timezone[];
+  externalViews: ExternalViewValue[];
+  hasUrlShortener: boolean;
+  sentryDSN?: string;
+  locale: Locale;
+  messages: Messages;
+  visualizationColors: VisualizationColors;
 }
 
 let check: Class<CustomizationValue, CustomizationJS>;

@@ -39,6 +39,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
     <React.Fragment>
       <GridLines
         orientation="horizontal"
+        // @ts-ignore
         scale={yScale}
         ticks={ticks}
         stage={gridStage}

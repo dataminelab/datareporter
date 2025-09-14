@@ -120,6 +120,7 @@ export class RawDataModal extends React.Component<
       .limit(LIMIT);
     this.setState({ loading: true });
     dataCube.executor(query, { timezone: essence.timezone }).then(
+      // @ts-ignore
       (dataset: Dataset) => {
         if (!this.mounted) return;
         this.setState({

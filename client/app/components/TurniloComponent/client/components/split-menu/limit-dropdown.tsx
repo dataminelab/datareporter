@@ -41,6 +41,7 @@ export const LimitDropdown: React.SFC<LimitDropdownProps> = ({
   includeNone,
 }) => {
   return (
+    // @ts-ignore
     <Dropdown<number | string>
       label={STRINGS.limit}
       items={calculateLimits(includeNone)}

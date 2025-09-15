@@ -15,19 +15,22 @@
  */
 
 require("@babel/register")({
-    cache: true,
-    configFile: false,
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
-    presets: [
-        "@babel/preset-typescript",
-        ["@babel/preset-env", {
-            targets: {
-                node: 'current'
-            }
-        }],
-        "@babel/preset-react",
-    ]
- });
+  cache: true,
+  configFile: false,
+  extensions: [".ts", ".tsx", ".js", ".jsx"],
+  presets: [
+    "@babel/preset-typescript",
+    [
+      "@babel/preset-env",
+      {
+        targets: {
+          node: "current",
+        },
+      },
+    ],
+    "@babel/preset-react",
+  ],
+});
 require("ignore-styles");
 
 const enzyme = require("enzyme");

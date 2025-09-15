@@ -41,7 +41,7 @@ import {
   replaceHash,
   hexToRgb,
   setPriceButton,
-} from "../components/ReportPageHeaderUtils";
+} from "../../../components/TurniloComponent/client/utils/ajax/ReportPageHeaderUtils";
 import getTags from "@/services/getTags";
 import { reportPageStyles } from "./reportPageStyles";
 import FolderOutlinedIcon from "@ant-design/icons/FolderOutlined";

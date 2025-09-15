@@ -30,7 +30,7 @@ import {
 } from "plywood";
 import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { setPriceButton } from "../../../../../pages/reports/components/ReportPageHeaderUtils";
+import { setPriceButton } from "../ajax/ReportPageHeaderUtils";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { Essence } from "../../../common/models/essence/essence";
 
@@ -62,14 +62,17 @@ function getSplitsDescription(ex: Expression): string {
   return splits.join(";");
 }
 
-const docker_timeout = localStorage.getItem("CLIENT_TIMEOUT_DELTA");
-const timeout: number =
-  docker_timeout && docker_timeout !== "undefined"
+function getClientTimeoutDefault(): number {
+  const ls = safeLocalStorage();
+  const docker_timeout = ls ? ls.getItem("CLIENT_TIMEOUT_DELTA") : undefined;
+  return docker_timeout && docker_timeout !== "undefined"
     ? Number(docker_timeout)
     : 100000;
+}
+
 function clientTimeout(cluster: Cluster): number {
   const clusterTimeout = Number(cluster ? cluster.getTimeout() : 0);
-  return timeout + clusterTimeout;
+  return getClientTimeoutDefault() + clusterTimeout;
 }
 
 let reloadRequested = false;
@@ -147,10 +150,15 @@ export class Ajax {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    
+    const ls = safeLocalStorage();
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
       const { data, method, timeout, url } = input;
-      data.bypass_cache = localStorage.getItem("bypass_cache") === "true";
-      localStorage.removeItem("bypass_cache");
+      const ls = safeLocalStorage();
+      if (ls) {
+        data.bypass_cache = ls.getItem("bypass_cache") === "true";
+        ls.removeItem("bypass_cache");
+      }
       const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
       const urlHash = getHash();
       if (!url.endsWith("filter") && urlHash && data.hash !== urlHash) {
@@ -205,6 +213,7 @@ export class Ajax {
       // @ts-ignore
       if (
         ex instanceof LimitExpression ||
+        // @ts-ignore
         ex.operand instanceof FilterExpression
       ) {
         // @ts-ignore
@@ -239,3 +248,19 @@ export class Ajax {
     };
   }
 }
+
+function safeLocalStorage() {
+  try {
+    if (typeof window !== "undefined" && window.localStorage) {
+      // Try a test write to check for SecurityError
+      const testKey = "__test__";
+      window.localStorage.setItem(testKey, "1");
+      window.localStorage.removeItem(testKey);
+      return window.localStorage;
+    }
+  } catch {
+    // localStorage is not available
+  }
+  return null;
+}
+

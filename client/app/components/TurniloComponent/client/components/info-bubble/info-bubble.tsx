@@ -21,8 +21,6 @@ import { BubbleMenu, Direction } from "../bubble-menu/bubble-menu";
 import { MarkdownNode } from "../markdown-node/markdown-node";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./info-bubble.scss";
-// @ts-ignore: SVG import
-import defaultIcon from "../../icons/info.svg";
 
 const defaultTitle = "More info";
 const BUBBLE_MAX_VERTICAL_SPACE = 120;
@@ -69,7 +67,7 @@ export class InfoBubble extends React.Component<
           title={title || defaultTitle}
           onClick={this.showDescription}
         >
-          <SvgIcon svg={icon || defaultIcon} />
+          <SvgIcon svg={icon || require("../../icons/info.svg")} />
         </div>
         {showInfo && (
           <BubbleMenu

@@ -41,10 +41,12 @@ export default function scales(
   dataset: Datum[],
   tileSize: number,
   series: ConcreteSeries,
+  report?: { colorBody?: string },
 ): Scales {
-  const { report } = this.props;
+  //@ts-ignore ['this' implicitly has type 'any' because it does not have a type annotation]
+  report = report || this.props.report;
   const colorChart = (report && report.colorBody) || orange;
-  const bucketSizeMax = max(dataset, d => nestedDataset(d).length) || 0; // d3.max returns undefined if collection is empty
+  const bucketSizeMax = max(dataset, d => nestedDataset(d).length) || 0;
   const dataLength = dataset.length;
 
   const width = bucketSizeMax * tileSize;
@@ -64,7 +66,7 @@ export default function scales(
 
   const colorMin = min(dataset, d => min(nestedDataset(d), select));
   const colorMax = max(dataset, d => max(nestedDataset(d), select));
-
+  // @ts-ignore TS2558
   const color = scaleLinear<string, string>({
     range: [white, colorChart],
     domain: [Math.min(colorMin, 0), colorMax],

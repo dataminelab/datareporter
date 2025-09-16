@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// For some reason tsc compiler does not see this file.
+// For some reason tsc compiler does not see this
+import "../../../types/index.d.ts";
 import memoizeOne from "memoize-one";
 import { Dataset } from "plywood";
 import * as React from "react";

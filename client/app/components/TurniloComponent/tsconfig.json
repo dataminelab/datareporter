@@ -26,7 +26,7 @@
   },
   "include": [
     "client/**/*",
-    "types/**/*"
+    "client/types/**/*"
   ],
   "exclude": []
 }

@@ -18,32 +18,27 @@ import { Record } from "immutable";
 import { VisualizationSettingsConfig } from "../../models/visualization-settings/visualization-settings";
 import { ImmutableRecord } from "../../utils/immutable-utils/immutable-utils";
 
-export type LineChartVisualizationSettings =
-  VisualizationSettingsConfig<LineChartSettings>;
+export type LineChartVisualizationSettings = VisualizationSettingsConfig<LineChartSettings>;
 
 export interface LineChartSettings {
   groupSeries: boolean;
 }
 
 const defaults: LineChartSettings = {
-  groupSeries: false,
+  groupSeries: false
 };
 
 const settingsFactory = Record<LineChartSettings>(defaults);
 
-const createSettings = (
-  settings: Partial<LineChartSettings>,
-): ImmutableRecord<LineChartSettings> => new settingsFactory(settings);
+const createSettings = (settings: Partial<LineChartSettings>): ImmutableRecord<LineChartSettings> => new (settingsFactory)(settings);
 
 export const settings: LineChartVisualizationSettings = {
   converter: {
-    print: (settings: LineChartSettings) => ({ ...settings }),
-    read: (input: unknown) =>
-      createSettings({
-        groupSeries: !!(input as Partial<LineChartSettings>).groupSeries
-      }),
+    // @ts-ignore not assignable to type
+    print: (settings: ImmutableRecord<LineChartSettings>) => settings.toJS(),
+    // @ts-ignore not assignable to type
+    read: (input: LineChartSettings) => createSettings({ groupSeries: !!input.groupSeries })
   },
-  defaults: createSettings(
-    defaults,
-  ) as unknown as VisualizationSettingsConfig<LineChartSettings>["defaults"],
+  // @ts-ignore not assignable to type
+  defaults: createSettings({}) as ImmutableRecord<object>
 };

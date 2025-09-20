@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-import { Duration } from "chronoshift";
+import { Duration, Timezone } from "chronoshift";
 import { Record } from "immutable";
-// @ts-ignore
 import {
+  Datum,
   Expression,
   NumberBucketExpression,
   TimeBucketExpression,
+  PlywoodValue,
 } from "reporter-plywood";
+import { formatValue } from "../../utils/formatter/formatter";
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
-import { Dimension } from "../dimension/dimension";
+import { Dimension, DimensionKind } from "../dimension/dimension";
 import { DimensionSort, Sort } from "../sort/sort";
 import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 
@@ -33,6 +35,11 @@ export enum SplitType {
   number = "number",
   string = "string",
   time = "time",
+  boolean = "boolean"
+}
+
+export function isContinuousSplit({ type }: Split): boolean {
+  return  type === SplitType.time || type === SplitType.number;
 }
 
 export type Bucket = number | Duration;
@@ -83,13 +90,15 @@ export function toExpression(
   return expWithShift.performAction(bucketToAction(bucket));
 }
 
-export function kindToType(kind: string): SplitType {
+export function kindToType(kind: DimensionKind): SplitType {
   switch (kind) {
     case "time":
       return SplitType.time;
     case "number":
       return SplitType.number;
-    default:
+    case "boolean":
+      return SplitType.boolean;
+    case "string":
       return SplitType.string;
   }
 }
@@ -128,8 +137,15 @@ export class Split extends Record<SplitValue>(defaultSplit) {
     return (dimension ? dimension.title : "?") + this.getBucketTitle();
   }
 
+  public selectValue<T extends PlywoodValue>(datum: Datum): T {
+    return datum[this.toKey()] as T;
+  }
+
+  public formatValue(datum: Datum, timezone: Timezone): string {
+    return formatValue(datum[this.toKey()], timezone);
+  }
+
   public getBucketTitle(): string {
-    //@ts-ignore
     const { bucket } = this;
     if (!isTruthy(bucket)) {
       return "";

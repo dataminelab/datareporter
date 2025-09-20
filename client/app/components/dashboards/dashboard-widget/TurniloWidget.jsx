@@ -41,7 +41,7 @@ function TurniloWidget(props) {
             initTimekeeper={
               config.timekeeper
                 ? Timekeeper.fromJS(config.timekeeper)
-                : new Timekeeper({ timeTags: [] })
+                : new Timekeeper({ timeTags: {} })
             }
             setFilterParams={setFilterParams}
             getEssence={getEssence}

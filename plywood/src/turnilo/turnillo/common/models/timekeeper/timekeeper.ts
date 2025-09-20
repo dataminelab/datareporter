@@ -82,12 +82,10 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
     return this.changeTimeTags(timeTags);
   }
 
-  addTimeTagFor(name: string, checkInterval: number): Timekeeper {
-    const timeTags = this.timeTags.set(
-      name,
-      new TimeTag({ name, checkInterval }),
-    );
-    return this.changeTimeTags(timeTags);
+  addTimeTagFor(name: string): Timekeeper {
+    var value = this.valueOf();
+    value.timeTags = value.timeTags.set(name, new TimeTag({ name }));
+    return new Timekeeper(value);
   }
 
   removeTimeTagFor(name: string): Timekeeper {

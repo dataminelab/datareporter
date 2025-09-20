@@ -51,6 +51,7 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
       dataset.data,
       TILE_SIZE,
       this.series(),
+      report,
     );
 
     return (

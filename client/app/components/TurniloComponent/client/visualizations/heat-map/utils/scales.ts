@@ -43,8 +43,6 @@ export default function scales(
   series: ConcreteSeries,
   report?: { colorBody?: string },
 ): Scales {
-  //@ts-ignore ['this' implicitly has type 'any' because it does not have a type annotation]
-  report = report || this.props.report;
   const colorChart = (report && report.colorBody) || orange;
   const bucketSizeMax = max(dataset, d => nestedDataset(d).length) || 0;
   const dataLength = dataset.length;

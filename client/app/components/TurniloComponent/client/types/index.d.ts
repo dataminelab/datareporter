@@ -25,40 +25,6 @@ declare module "react-syntax-highlighter/src/styles/hljs/github-gist" {
   export { default } from "react-syntax-highlighter/dist/esm/styles/hljs/github-gist";
 }
 
-declare module "@vx/*";
-
-declare module "@vx/heatmap" {
-
-  interface Bin {
-    width: number;
-    height: number;
-    x: number;
-    y: number;
-    color: string;
-    opacity: number;
-    row: number;
-    column: number;
-  }
-
-
-  export interface HeatmapRectProps {
-    bins(rawDataPoint: any): any;
-    count(rawDataPoint: any): number;
-    data: any[];
-    xScale: ScaleLinear<number, number>;
-    yScale: ScaleLinear<number, number>;
-    colorScale: ScaleLinear<string, string>;
-    binWidth: number;
-    binHeight: number;
-    gap: number;
-    children?: (heatmap: Bin[][]) => React.ReactNode;
-  }
-
-  export class HeatmapRect extends React.Component<HeatmapRectProps> {
-
-  }
-}
-
 declare module "@vx/scale" {
 
   interface ScaleLinearOptions<Range, Output> {

@@ -255,8 +255,7 @@ export class Table extends BaseVisualization<TableState> {
       essence: { visualizationSettings },
     } = this.props;
     // @ts-ignore
-    const { collapseRows } =
-      visualizationSettings as ImmutableRecord<TableSettings>;
+    const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
     return collapseRows;
   }
 
@@ -323,7 +322,7 @@ export class Table extends BaseVisualization<TableState> {
           }
           leftGutter={
             <SplitRows
-              color={report ? report.colorText : null}
+              color={report.colorText}
               collapseRows={collapseRows}
               highlightedRowIndex={highlightedRowIndex}
               visibleRowsIndexRange={visibleRowsRange}
@@ -339,7 +338,7 @@ export class Table extends BaseVisualization<TableState> {
           body={
             flatData && (
               <MeasureRows
-                report={report || null}
+                report={report}
                 hoverRow={hoverRow}
                 visibleRowsIndexRange={visibleRowsRange}
                 essence={essence}

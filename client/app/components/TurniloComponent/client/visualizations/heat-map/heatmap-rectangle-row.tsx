@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Bin } from "@vx/heatmap";
+import { Bin } from "../../types/vx-heatmap";
 import * as React from "react";
 
 interface HeatMapRectangleRowProps {

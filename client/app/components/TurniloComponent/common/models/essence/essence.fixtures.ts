@@ -113,7 +113,6 @@ export class EssenceFixtures {
   }
 
   static wikiHeatmap(): Essence {
-    console.log("wikiHeatmap");
     const filterClauses = [
       timeRange(
         "time",

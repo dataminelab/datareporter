@@ -49,8 +49,11 @@ export class ViewDefinitionConverter3
     );
 
     const splitDefinitions = List(definition.splits);
-    const splits = new Splits({ splits: splitDefinitions.map(sd => splitConverter.toSplitCombine(sd, dataCube)) });
-
+    const splits = new Splits({
+      splits: splitDefinitions.map(sd =>
+        splitConverter.toSplitCombine(sd, dataCube),
+      ),
+    });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const pinnedSort = definition.pinnedSort;

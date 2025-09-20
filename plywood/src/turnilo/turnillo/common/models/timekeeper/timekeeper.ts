@@ -46,7 +46,7 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
     const tags = mapValues(timeTags, (tag: TimeTagJS) => TimeTag.fromJS(tag));
     return new Timekeeper({
       timeTags: Map(tags),
-      nowOverride: nowOverride && new Date(nowOverride)
+      nowOverride: nowOverride && new Date(nowOverride),
     });
   }
 
@@ -71,7 +71,7 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   private changeTimeTags(timeTags: Map<string, TimeTag>): Timekeeper {
     return new Timekeeper({
       ...this.valueOf(),
-      timeTags
+      timeTags,
     });
   }
 
@@ -83,7 +83,10 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   }
 
   addTimeTagFor(name: string, checkInterval: number): Timekeeper {
-    const timeTags = this.timeTags.set(name, new TimeTag({ name, checkInterval }));
+    const timeTags = this.timeTags.set(
+      name,
+      new TimeTag({ name, checkInterval }),
+    );
     return this.changeTimeTags(timeTags);
   }
 
@@ -93,16 +96,18 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   }
 
   equals(other: Instance<TimekeeperValue, TimekeeperJS> | undefined): boolean {
-    return Timekeeper.isTimekeeper(other)
-      && datesEqual(this.nowOverride, other.nowOverride)
-      && immutableLookupsEqual(this.timeTags.toObject(), other.timeTags.toObject());
+    return (
+      Timekeeper.isTimekeeper(other) &&
+      datesEqual(this.nowOverride, other.nowOverride) &&
+      immutableLookupsEqual(this.timeTags.toObject(), other.timeTags.toObject())
+    );
   }
 
   toJS(): TimekeeperJS {
     const tags = this.timeTags.toObject();
     return {
       nowOverride: this.nowOverride,
-      timeTags: mapValues(tags, tag => tag.toJS())
+      timeTags: mapValues(tags, tag => tag.toJS()),
     };
   }
 
@@ -117,10 +122,9 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   valueOf(): TimekeeperValue {
     return {
       timeTags: this.timeTags,
-      nowOverride: this.nowOverride
+      nowOverride: this.nowOverride,
     };
   }
-
 }
 
 Timekeeper.EMPTY = new Timekeeper({ timeTags: Map<string, TimeTag>() });

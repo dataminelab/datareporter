@@ -193,12 +193,15 @@ jobs:
       - name: Run plywood-client Tests
         working-directory: plywood/client
         run: npm run test
+      - name: install turnilo dependencies
+        working-directory: client/app/components/TurniloComponent
+        run: npm install
       - name: turnilo client tests
         working-directory: client/app/components/TurniloComponent
-        run: npm install && npm run test:client
+        run: npm run test:client
       - name: turnilo common tests
         working-directory: plywood/src/turnilo
-        run: npm install && npm run test:common
+        run: npm run test:common
   frontend-e2e-tests:
     runs-on: ubuntu-latest
     needs: frontend-lint

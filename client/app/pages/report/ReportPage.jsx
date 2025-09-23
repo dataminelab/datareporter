@@ -42,7 +42,9 @@ function ReportPage({ dashboardSlug, dashboardId, onError }) {
         <TurniloApplication
           version={version}
           appSettings={appSettings}
-          initTimekeeper={Timekeeper.fromJS(config.timekeeper || {timeTags: {}})}
+          initTimekeeper={Timekeeper.fromJS(
+            config.timekeeper || { timeTags: {} },
+          )}
         />
       </turnilo-widget>
     );

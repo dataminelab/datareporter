@@ -54,7 +54,9 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   public nowOverride: Date = null;
 
   constructor({ timeTags, nowOverride = null }: TimekeeperValue) {
-    this.timeTags = timeTags;
+    this.timeTags = (timeTags && typeof timeTags === "object" && !(timeTags instanceof Map) && Object.keys(timeTags).length === 0)
+      ? Map()
+      : timeTags;
     this.nowOverride = nowOverride;
   }
 

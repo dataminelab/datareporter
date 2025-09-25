@@ -15,10 +15,7 @@
  */
 
 context("Boolean Filter Menu", () => {
-  const booleanMenu = () => {
-    cy.wait(3000);
-    return cy.get(".boolean-filter-menu");
-  };
+  const booleanMenu = () => cy.get(".boolean-filter-menu");
   const booleanMenuTable = () => booleanMenu().find(".menu-table");
   const falseOption = () => booleanMenuTable().find(".row:contains('false')");
   const trueOption = () => booleanMenuTable().find(".row:contains('true')");

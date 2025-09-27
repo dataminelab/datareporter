@@ -1,9 +1,14 @@
 from redash.query_runner import (
     TYPE_BOOLEAN,
+    TYPE_BOOLEAN,
     TYPE_DATE,
     TYPE_DATETIME,
     TYPE_FLOAT,
+    TYPE_FLOAT,
     TYPE_INTEGER,
+    TYPE_STRING,
+    BaseQueryRunner,
+    register,
     TYPE_STRING,
     BaseQueryRunner,
     register,
@@ -17,6 +22,11 @@ try:
         KustoConnectionStringBuilder,
     )
     from azure.kusto.data.exceptions import KustoServiceError
+    from azure.kusto.data.request import (
+        ClientRequestProperties,
+        KustoClient,
+        KustoConnectionStringBuilder,
+    )
 
     enabled = True
 except ImportError:

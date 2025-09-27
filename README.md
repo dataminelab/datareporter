@@ -1,5 +1,5 @@
 <p align="center">
-  <img title="DataReporter" style="background-color: white" src="https://github.com/dataminelab/website/raw/master/src/assets/images/logo.png" width="200px"/>
+  ![DataReporter logo](https://github.com/dataminelab/website/raw/master/src/assets/images/logo.png)
 </p>
 
 [![Documentation](https://img.shields.io/badge/docs-redash.io/help-brightgreen.svg)](https://redash.io/help/)
@@ -17,10 +17,11 @@ DataReporter manifesto:
 * Focus on the "big data" cloud databases
 * Browser-based: Everything in your browser, with a shareable URL.
 * Ease-of-use: Become immediately productive with data without the need to master complex software.
-4. **Visualization and dashboards**: Create [beautiful visualizations](https://redash.io/help/user-guide/visualizations/visualization-types) with drag and drop, and combine them into a single dashboard.
-5. **Sharing**: Collaborate easily by sharing visualizations and their associated queries, enabling peer review of reports and queries.
-6. **Schedule refreshes**: Automatically update your charts and dashboards at regular intervals you define.
-8. **REST API**: Everything that can be done in the UI is also available through REST API.
+
+1. **Visualization and dashboards**: Create [beautiful visualizations](https://redash.io/help/user-guide/visualizations/visualization-types) with drag and drop, and combine them into a single dashboard.
+2. **Sharing**: Collaborate easily by sharing visualizations and their associated queries, enabling peer review of reports and queries.
+3. **Schedule refreshes**: Automatically update your charts and dashboards at regular intervals you define.
+4. **REST API**: Everything that can be done in the UI is also available through REST API.
 
 ## Getting Started
 
@@ -31,11 +32,11 @@ DataReporter manifesto:
 
 DataReporter supports initially 5 SQL. It can also be extended to support more. Below is a list of built-in sources:
 
-- Amazon Athena
-- Druid
-- Google BigQuery
-- MySQL
-- PostgreSQL
+* Amazon Athena
+* Druid
+* Google BigQuery
+* MySQL
+* PostgreSQL
 
 ## Getting Help
 
@@ -49,7 +50,7 @@ DataReporter supports initially 5 SQL. It can also be extended to support more. 
 
 ## Security
 
-Please email security@datareporter.com to report any security vulnerabilities. We will acknowledge receipt of your vulnerability and strive to send you regular updates about our progress. If you're curious about the status of your disclosure please feel free to email us again.
+Please email [security@datareporter.com](mailto:security@datareporter.com) to report any security vulnerabilities. We will acknowledge receipt of your vulnerability and strive to send you regular updates about our progress. If you're curious about the status of your disclosure please feel free to email us again.
 
 ## License
 

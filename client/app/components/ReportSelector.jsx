@@ -190,7 +190,7 @@ export default function ReportSelector(props) {
 
 ReportSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
-  selectedQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  selectedQuery: PropTypes.object,
   type: PropTypes.oneOf(["select", "default"]),
   className: PropTypes.string,
   disabled: PropTypes.bool,

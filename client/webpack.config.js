@@ -35,6 +35,7 @@ const isHotReloadingEnabled =
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
 const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
+const ollamaBackend = process.env.OLLAMA_BACKEND || "http://localhost:11434";
 const baseHref = CONFIG.baseHref || "/";
 const staticPath = CONFIG.staticPath || "/static/";
 const htmlTitle = CONFIG.title || "Data Reporter";
@@ -340,6 +341,19 @@ const config = {
         target: turniloBackend + "/",
         changeOrigin: true,
         secure: false,
+      },
+      {
+        context: [
+          '/ollama',
+          '/ollama-api'
+        ],
+        target: ollamaBackend + "/",
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          '^/ollama/': '/',
+          '^/ollama-api': '/api' 
+        }
       },
       {
         context: path => {

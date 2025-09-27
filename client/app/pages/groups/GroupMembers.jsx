@@ -55,6 +55,19 @@ class GroupMembers extends React.Component {
     },
   ];
 
+  constructor(props) {
+    super(props);
+
+    if (currentUser.isAdmin) {
+      this.sidebarMenu.push({
+        key: "permissions",
+        href: `groups/${this.groupId}/permissions`,
+        title: "Permissions",
+        isAvailable: () => currentUser.isAdmin,
+      });
+    }
+  }
+
   listColumns = [
     Columns.custom((text, user) => <UserPreviewCard user={user} withLink />, {
       title: "Name",
@@ -174,7 +187,7 @@ class GroupMembers extends React.Component {
                 <p>There are no members in this group yet.</p>
                 {currentUser.isAdmin && (
                   <Button type="primary" onClick={this.addMembers}>
-                    <i className="fa fa-plus m-r-5" />
+                    <i className="fa fa-plus m-r-5" aria-hidden="true" />
                     Add Members
                   </Button>
                 )}

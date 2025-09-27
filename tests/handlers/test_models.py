@@ -1,12 +1,11 @@
 from unittest import mock
 
+from redash.models import db
 from redash.models.models import ModelConfig
 from tests import BaseTestCase
-from redash.models import db
 
 
 class TestModelsCreateResource(BaseTestCase):
-
     def test_user_without_model_permission(self):
         group1 = self.factory.create_group(org=self.factory.create_org(), permissions=[""])
         db.session.flush()
@@ -160,7 +159,6 @@ class TestModelsCreateResource(BaseTestCase):
 
 
 class TestModelsListResource(BaseTestCase):
-
     def test_user_without_view_model_permission(self):
         response = self.make_request("get", "/api/models", user=self.factory.create_user(group_ids=[3]))
 
@@ -205,7 +203,6 @@ class TestModelsListResource(BaseTestCase):
 
 
 class TestModelsGetResource(BaseTestCase):
-
     def test_requires_user_with_view_model(self):
         group = self.factory.create_group(permissions=["view_model"])
         db.session.commit()
@@ -231,7 +228,6 @@ class TestModelsGetResource(BaseTestCase):
 
 
 class TestModelsEditResource(BaseTestCase):
-
     def test_requires_owner_or_admin(self):
         group = self.factory.create_group(permissions=["edit_model"])
         db.session.commit()

@@ -58,6 +58,19 @@ class GroupDataSources extends React.Component {
     },
   ];
 
+  constructor(props) {
+    super(props);
+
+    if (currentUser.isAdmin) {
+      this.sidebarMenu.push({
+        key: "permissions",
+        href: `groups/${this.groupId}/permissions`,
+        title: "Permissions",
+        isAvailable: () => currentUser.isAdmin,
+      });
+    }
+  }
+
   listColumns = [
     Columns.custom(
       (text, datasource) => (

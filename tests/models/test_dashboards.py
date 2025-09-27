@@ -1,5 +1,5 @@
+from redash.models import Dashboard, db
 from tests import BaseTestCase
-from redash.models import db, Dashboard
 
 
 class DashboardTest(BaseTestCase):

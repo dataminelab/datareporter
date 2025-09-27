@@ -275,7 +275,7 @@ function ReportView(props) {
   );
 }
 
-ReportView.propTypes = { report: PropTypes.object.isRequired }; // eslint-disable-line react/forbid-prop-types
+ReportView.propTypes = { report: PropTypes.object.isRequired };
 
 const ReportViewPage = wrapReportPage(ReportView);
 

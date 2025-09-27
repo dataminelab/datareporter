@@ -33,11 +33,11 @@
       "@/*": ["./app/*"]
     }
   },
-  "include": ["app/**/*.ts", "app/**/*.tsx"],
+  "include": ["app/**/*.ts", "app/**/*.tsx", "app/**/*.jsx"],
   "exclude": [
     "node_modules",
     "**/*.json",
-    "**/*.{js, jsx}",
-    "app/components/TurniloComponent"
+    "**/*.js",
+    "app/components/TurniloComponent/*",
   ]
 }

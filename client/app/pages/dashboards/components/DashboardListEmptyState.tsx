@@ -21,7 +21,7 @@ export default function DashboardListEmptyState({
   page,
   searchTerm,
   selectedTags,
-}: DashboardListEmptyStateProps) {
+}: DashboardListEmptyStateProps): React.ReactElement {
   if (searchTerm !== "") {
     return (
       <BigMessage

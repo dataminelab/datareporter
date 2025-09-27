@@ -14,5 +14,7 @@
     "../../node_modules/highlight.js/types/index.d.ts",
     "./**/*.ts*",
     "../**/*.ts*",
+    "./**/*.js*",
+    "../**/*.js*",
   ]
 }

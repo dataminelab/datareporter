@@ -1,5 +1,4 @@
 # Ignore general files and directories
-.*
 .venv/
 venv/
 .git/

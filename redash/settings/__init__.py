@@ -1,21 +1,24 @@
-import os
 import importlib
+import os
 import ssl
-from funcy import distinct, remove
+
 from flask_talisman import talisman
+from funcy import distinct, remove
 
 from .helpers import (
-    fix_assets_path,
+    add_decode_responses_to_redis_url,
     array_from_string,
     cast_int_or_default,
-    parse_boolean,
+    fix_assets_path,
     int_or_none,
+    parse_boolean,
     set_from_string,
-    add_decode_responses_to_redis_url,
 )
 from .organization import DATE_FORMAT, TIME_FORMAT  # noqa
 
 PLYWOOD_SERVER_URL = os.environ.get("PLYWOOD_SERVER_URL", "http://plywood-server:3000")
+OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://ollama:11434")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 SERVER_WORKER_URL = os.environ.get("SERVER_WORKER_URL", "")
 
 # _REDIS_URL is the unchanged REDIS_URL we get from env vars, to be used later with RQ
@@ -57,8 +60,13 @@ SCHEMAS_REFRESH_TIMEOUT = int(os.environ.get("REDASH_SCHEMAS_REFRESH_TIMEOUT", 3
 AUTH_TYPE = os.environ.get("REDASH_AUTH_TYPE", "api_key")
 INVITATION_TOKEN_MAX_AGE = int(os.environ.get("REDASH_INVITATION_TOKEN_MAX_AGE", 60 * 60 * 24 * 7))
 
-# The secret key to use in the Flask app for various cryptographic features
-SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET", "c292a0a3aa32397cdb050e233733900f")
+SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET")
+if SECRET_KEY is None:
+    raise Exception(
+        "You must set the REDASH_COOKIE_SECRET environment variable. \
+        Visit http://redash.io/help/open-source/admin-guide/secrets for more information."
+    )
+
 # The secret key to use when encrypting data source options
 DATASOURCE_SECRET_KEY = os.environ.get("REDASH_SECRET_KEY", SECRET_KEY)
 
@@ -153,6 +161,7 @@ SAML_ENCRYPTION_ENABLED = SAML_ENCRYPTION_PEM_PATH != "" and SAML_ENCRYPTION_CER
 GOOGLE_PRODUCT_ID = os.environ.get("REDASH_GOOGLE_PROJECT_ID", "")
 GOOGLE_PUBSUB_WORKER_TOPIC_ID = os.environ.get("REDASH_GOOGLE_PUBSUB_WORKER_TOPIC_ID", "")
 WORKER_NOTIFY_URL = os.environ.get("REDASH_WORKER_NOTIFY_URL", "")
+OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "")
 
 # If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
 # even if your actual Redash URL scheme is HTTPS. This will cause Flask to build

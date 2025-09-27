@@ -1,6 +1,6 @@
 import moment from "moment";
 import { axios } from "@/services/axios";
-import { hasOwnProp } from "has-own-prop";
+import hasOwnProp from "has-own-prop";
 import {
   each,
   pick,

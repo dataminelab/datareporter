@@ -1,9 +1,12 @@
+from typing import Union
+
 from sqlalchemy.event import listens_for
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from .base import db, Column
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
+
+from .base import Column, db
 
 
-class TimestampMixin(object):
+class TimestampMixin:
     updated_at = Column(db.DateTime(True), default=db.func.now(), nullable=False)
     created_at = Column(db.DateTime(True), default=db.func.now(), nullable=False)
 
@@ -17,7 +20,7 @@ def timestamp_before_update(mapper, connection, target):
     target.updated_at = db.func.now()
 
 
-class BelongsToOrgMixin(object):
+class BelongsToOrgMixin:
     @classmethod
     def get_by_id_and_org(cls, object_id, org, org_cls=None):
         query = cls.query.filter(cls.id == object_id)
@@ -28,7 +31,7 @@ class BelongsToOrgMixin(object):
         return query.one()
 
     @classmethod
-    def get_by_id_and_org_safe(cls, object_id, org, org_cls=None) -> object or None:
+    def get_by_id_and_org_safe(cls, object_id, org, org_cls=None) -> Union[object, None]:
         try:
             return cls.get_by_id_and_org(object_id, org, org_cls)
         except NoResultFound:

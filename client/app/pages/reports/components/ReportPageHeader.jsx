@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import "abortcontroller-polyfill/dist/abortcontroller-polyfill-only";
 import PropTypes, { any } from "prop-types";
-import Tooltip from "@/components/Tooltip";
+import notification from "@/services/notification";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
@@ -152,7 +152,6 @@ export default function ReportPageHeader(props) {
   const [saveButtonClicked, setSaveButtonClicked] = useState(false);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
-  const showShareButton = report.publicAccessEnabled || !queryFlags.isNew;
 
   const handleReportChanged = useCallback(state => {
     if (!report.data_source_id) return;
@@ -380,9 +379,10 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     // this function is waiting for page to render again for saving report after handleSaveReport click
     if (saveButtonClicked && !report.id) saveReport();
-  }, [saveButtonClicked]);
+  }, [saveButtonClicked, report.id, saveReport]);
 
   const handleSaveReport = () => {
+    if (!reportChanged) return notification.warning("No changes to save");
     if (
       window.location.hash.substring(window.location.hash.indexOf("4/") + 2)
     ) {
@@ -432,6 +432,20 @@ export default function ReportPageHeader(props) {
           },
         },
         {
+          save: {
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            title: "Save",
+            onClick: handleSaveReport,
+          },
+          saveAs: {
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            title: "Save As",
+            onClick: () => handleGivenModal("save-as-ul"),
+          },
+        },
+        {
           archive: {
             isAvailable:
               !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
@@ -466,6 +480,20 @@ export default function ReportPageHeader(props) {
             title: "Unpublish",
             onClick: unpublishReport,
           },
+          delete: {
+            isAvailable: !queryFlags.isNew && queryFlags.canEdit,
+            title: "Delete",
+            onClick: deleteReport,
+          },
+          share: {
+            isAvailable:
+              report.publicAccessEnabled &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isArchived,
+            title: "Share",
+            onClick: showShareReportDialog,
+          },
         },
         {
           downloadCSV: {
@@ -489,6 +517,12 @@ export default function ReportPageHeader(props) {
             title: "Show API Key",
             onClick: openApiKeyDialog,
           },
+          sessionCost: {
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            title: "Show Session Cost",
+            onClick: () => handleGivenModal("meta-modal"),
+          },
         },
       ]),
     [
@@ -505,6 +539,10 @@ export default function ReportPageHeader(props) {
       publishReport,
       unpublishReport,
       openApiKeyDialog,
+      deleteReport,
+      handleSaveReport,
+      report.publicAccessEnabled,
+      showShareReportDialog,
     ],
   );
 
@@ -630,13 +668,6 @@ export default function ReportPageHeader(props) {
       <div className="header-actions">
         {props.headerExtra}
         <div>
-          <Button
-            className="ant-menu-submenu-title m-r-5"
-            id="meta-button"
-            onClick={() => handleGivenModal("meta-modal")}
-          >
-            <span className="icon icon-ribbon m-r-5"></span>Meta
-          </Button>
           <ul
             id="meta-modal"
             className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
@@ -766,25 +797,6 @@ export default function ReportPageHeader(props) {
             ))}
           </Select>
         </div>
-        {!queryFlags.isNew && queryFlags.canEdit && (
-          <Button className="m-r-5" onClick={deleteReport}>
-            <i className="fa fa-trash m-r-5" /> Delete
-          </Button>
-        )}
-
-        {showShareButton && (
-          <Tooltip title="Report Sharing Options">
-            <Button
-              className="icon-button m-r-5"
-              type={buttonType(report.publicAccessEnabled)}
-              onClick={showShareReportDialog}
-              data-test="OpenShareForm"
-            >
-              <i className="zmdi zmdi-share" />
-            </Button>
-          </Tooltip>
-        )}
-
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
             {!props.sourceMode && (
@@ -796,7 +808,7 @@ export default function ReportPageHeader(props) {
                 <span className="m-l-5">Edit Source</span>
               </Link.Button>
             )}
-            {props.sourceMode && (
+            {false && props.sourceMode && (
               <Link.Button
                 disabled
                 className="m-r-5"
@@ -809,30 +821,21 @@ export default function ReportPageHeader(props) {
             )}
           </span>
         )}
-        <Button
-          disabled={!reportChanged}
-          className="m-r-5"
-          onClick={() => handleSaveReport()}
-        >
-          <span className="icon icon-save-floppy-disc m-r-5"></span> Save
-        </Button>
         {report.id && (
           <>
-            <Button
-              className="m-r-5"
-              id="_handleSaveAs"
-              onClick={() => handleGivenModal("save-as-ul")}
-            >
-              Save as...
-            </Button>
             <ul
               id="save-as-ul"
               className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
               role="menu"
               onClick={e => e.stopPropagation()}
             >
+              <div
+                style={styles.cover}
+                onClick={() => handleGivenModal("save-as-ul")}
+              />
               <p className="new-name-label">name</p>
               <input
+                id="new-name-input"
                 className="new-name-input"
                 type="text"
                 value={newName}

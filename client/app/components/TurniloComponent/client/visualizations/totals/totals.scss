@@ -17,11 +17,11 @@
 
 .totals {
   .total-container {
-    margin: 60px 10%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-flow: row wrap;
     align-content: center;
+    row-gap: 1rem;
   }
 }

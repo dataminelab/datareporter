@@ -30,6 +30,9 @@ module.exports = {
   ],
   settings: {
     "import/resolver": "webpack",
+    react: {
+      "version": "16.14"
+    }
   },
   env: {
     browser: true,
@@ -119,6 +122,7 @@ module.exports = {
       rules: {
         "react/react-in-jsx-scope": "off",
         "react/display-name": "off",
+        "react/forbid-prop-types": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": "off",
@@ -132,7 +136,8 @@ module.exports = {
         "no-redeclare": "warn", // Re-enable base rule for JS files
         "no-unused-vars": ["warn", { varsIgnorePattern: "^React$" }], // Re-enable base rule for JS files
         "react/prop-types": "warn",
-      },
+      }
+
     },
     {
       files: [
@@ -187,5 +192,12 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ["**/*.min.js"],
+  ignorePatterns: [
+    "**/*.min.js",
+    "build/*.js",
+    "dist",
+    "config/*.js",
+    "client/dist",
+    "node_modules",
+  ],
 };

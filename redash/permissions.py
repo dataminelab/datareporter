@@ -54,7 +54,7 @@ def require_access(obj, user, need_view_only):
         abort(403)
 
 
-class require_permissions(object):
+class require_permissions:
     def __init__(self, permissions, allow_one=False):
         self.permissions = permissions
         self.allow_one = allow_one
@@ -114,8 +114,11 @@ def can_modify(obj, user):
 
 
 def can_view(obj, user):
-    return is_admin_or_owner(obj.user_id) or user.has_access(obj, ACCESS_TYPE_VIEW) or \
-        any(id in obj.user.group_ids for id in user.group_ids)
+    return (
+        is_admin_or_owner(obj.user_id)
+        or user.has_access(obj, ACCESS_TYPE_VIEW)
+        or any(id in obj.user.group_ids for id in user.group_ids)
+    )
 
 
 def can_delete(obj, user):

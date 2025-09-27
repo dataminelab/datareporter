@@ -331,7 +331,7 @@ function EditParameterSettingsDialog(props) {
 }
 
 EditParameterSettingsDialog.propTypes = {
-  parameter: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  parameter: PropTypes.object.isRequired,
   dialog: DialogPropType.isRequired,
   existingParams: PropTypes.arrayOf(PropTypes.string),
 };

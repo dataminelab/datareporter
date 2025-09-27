@@ -1,6 +1,8 @@
-import io
 import csv
+import io
+
 import xlsxwriter
+
 from .query_result import _get_column_lists
 
 

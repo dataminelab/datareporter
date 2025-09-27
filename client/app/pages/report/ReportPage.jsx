@@ -7,7 +7,6 @@ import { TurniloApplication } from "@/components/TurniloComponent/client/applica
 import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
 import { Ajax } from "@/components/TurniloComponent/client/utils/ajax/ajax";
 import { AppSettings } from "@/components/TurniloComponent/common/models/app-settings/app-settings";
-//import applyDragAndDropPolyfill from "../TurniloComponent/client/drag-and-drop-polyfill";
 import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 import { axios } from "@/services/axios";

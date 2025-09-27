@@ -2,6 +2,7 @@ from flask import g, redirect, render_template, request, url_for
 from flask_login import login_user
 from wtforms import Form, PasswordField, StringField, validators
 from wtforms.fields.html5 import EmailField
+
 from redash import settings
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import routes
@@ -29,15 +30,21 @@ def create_org(org_name, user_name, email, password):
         org=default_org,
         type=Group.BUILTIN_GROUP,
     )
+    ai_group = Group(
+        name="ai",
+        permissions=Group.AI_PERMISSIONS,
+        org=default_org,
+        type=Group.BUILTIN_GROUP,
+    )
 
-    db.session.add_all([default_org, admin_group, default_group])
+    db.session.add_all([default_org, admin_group, default_group, ai_group])
     db.session.commit()
 
     user = User(
         org=default_org,
         name=user_name,
         email=email,
-        group_ids=[admin_group.id, default_group.id],
+        group_ids=[admin_group.id, default_group.id, ai_group.id],
     )
     user.hash_password(password)
 

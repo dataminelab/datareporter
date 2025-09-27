@@ -40,9 +40,7 @@ class ModelSerializer(Serializer):
         if isinstance(self.object_or_list, Model):
             result = _serialize_model(self.object_or_list)
         else:
-            result = [
-                _serialize_model(query) for query in self.object_or_list
-            ]
+            result = [_serialize_model(query) for query in self.object_or_list]
 
         return result
 
@@ -56,8 +54,6 @@ class ModelConfigSerializer(Serializer):
         if isinstance(self.object_or_list, ModelConfig):
             result = _serialize_model_config(self.object_or_list)
         else:
-            result = [
-                _serialize_model_config(query) for query in self.object_or_list
-            ]
+            result = [_serialize_model_config(query) for query in self.object_or_list]
 
         return result

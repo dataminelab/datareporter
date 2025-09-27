@@ -6,7 +6,6 @@ from funcy import partial
 from sqlalchemy.orm.exc import StaleDataError
 
 from redash import models, settings
-from redash.models import Report
 from redash.authentication.org_resolving import current_org
 from redash.handlers.base import (
     BaseResource,
@@ -18,6 +17,7 @@ from redash.handlers.base import (
 )
 from redash.handlers.base import order_results as _order_results
 from redash.handlers.query_results import run_query
+from redash.models import Report
 from redash.models.parameterized_query import ParameterizedQuery
 from redash.permissions import (
     can_modify,
@@ -28,9 +28,9 @@ from redash.permissions import (
     require_permission,
     view_only,
 )
-from redash.utils import collect_parameters_from_request
 from redash.serializers import QuerySerializer
 from redash.serializers.report_serializer import ReportSerializer
+from redash.utils import collect_parameters_from_request
 
 # Ordering map for relationships
 order_map = {

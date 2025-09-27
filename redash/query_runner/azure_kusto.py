@@ -1,14 +1,9 @@
 from redash.query_runner import (
     TYPE_BOOLEAN,
-    TYPE_BOOLEAN,
     TYPE_DATE,
     TYPE_DATETIME,
     TYPE_FLOAT,
-    TYPE_FLOAT,
     TYPE_INTEGER,
-    TYPE_STRING,
-    BaseQueryRunner,
-    register,
     TYPE_STRING,
     BaseQueryRunner,
     register,
@@ -16,11 +11,6 @@ from redash.query_runner import (
 from redash.utils import json_loads
 
 try:
-    from azure.kusto.data import (
-        ClientRequestProperties,
-        KustoClient,
-        KustoConnectionStringBuilder,
-    )
     from azure.kusto.data.exceptions import KustoServiceError
     from azure.kusto.data.request import (
         ClientRequestProperties,

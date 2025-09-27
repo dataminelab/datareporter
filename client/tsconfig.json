@@ -39,5 +39,7 @@
     "**/*.json",
     "**/*.js",
     "app/components/TurniloComponent/*",
+    "**/*.js",
+    "app/components/TurniloComponent/*",
   ]
 }

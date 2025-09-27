@@ -6,7 +6,9 @@
   "scripts": {
     "start": "npm-run-all --parallel watch:viz webpack-dev-server",
     "localhost": "npm-run-all --parallel watch:viz webpack-dev-server-localhost",
+    "localhost": "npm-run-all --parallel watch:viz webpack-dev-server-localhost",
     "dev": "NODE_OPTIONS=--openssl-legacy-provider npm-run-all --parallel watch:viz webpack-dev-server",
+    "clean": "rm -rf dist",
     "clean": "rm -rf dist",
     "clean-install:viz": "cd ../viz-lib && npm ci",
     "install:turnilo": "(cd app/components/TurniloComponent && npm i)",

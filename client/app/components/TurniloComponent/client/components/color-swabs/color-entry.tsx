@@ -16,7 +16,10 @@
 
 import { Datum } from "plywood";
 import React from "react";
-import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import {
+  ConcreteSeries,
+  SeriesDerivation,
+} from "../../../common/models/series/concrete-series";
 import { Delta } from "../delta/delta";
 
 export interface ColorEntry {
@@ -35,11 +38,17 @@ interface Parameters {
   hasComparison: boolean;
 }
 
-export function createColorEntry({ color, name, series, datum, hasComparison }: Parameters): ColorEntry {
+export function createColorEntry({
+  color,
+  name,
+  series,
+  datum,
+  hasComparison,
+}: Parameters): ColorEntry {
   const current = {
     color,
     name,
-    value: series.formatValue(datum)
+    value: series.formatValue(datum),
   };
 
   if (!hasComparison) return current;
@@ -47,10 +56,13 @@ export function createColorEntry({ color, name, series, datum, hasComparison }: 
   return {
     ...current,
     previous: series.formatValue(datum, SeriesDerivation.PREVIOUS),
-    delta: <Delta
-      currentValue={series.selectValue(datum)}
-      previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-      lowerIsBetter={series.measure.lowerIsBetter}
-      formatter={series.formatter()} />
+    delta: (
+      <Delta
+        currentValue={series.selectValue(datum)}
+        previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
+        lowerIsBetter={series.measure.lowerIsBetter}
+        formatter={series.formatter()}
+      />
+    ),
   };
 }

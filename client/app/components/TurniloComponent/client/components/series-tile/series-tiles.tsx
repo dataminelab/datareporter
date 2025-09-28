@@ -20,7 +20,11 @@ import { Essence } from "../../../common/models/essence/essence";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { insert } from "../../../common/utils/array/array";
-import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
+import {
+  Binary,
+  Ternary,
+  Unary,
+} from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { transformStyle } from "../../utils/dom/dom";
 import { SECTION_WIDTH } from "../../utils/pill-tile/pill-tile";
@@ -65,38 +69,46 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
     openSeriesMenu,
     overflowOpen,
     placeholderSeries,
-    maxItems
+    maxItems,
   } = props;
 
   const series = essence.getConcreteSeries().toArray();
 
-  const seriesTiles = series.map(item => <SeriesTile
-    seriesList={essence.series}
-    measures={essence.dataCube.measures}
-    key={item.definition.key()}
-    item={item}
-    open={item.definition.equals(openedSeriesMenu)}
-    closeSeriesMenu={closeSeriesMenu}
-    removeSeries={removeSeries}
-    dragStart={dragStart}
-    containerStage={menuStage}
-    openSeriesMenu={openSeriesMenu}
-    updateSeries={updateSeries} />);
+  const seriesTiles = series.map(item => (
+    <SeriesTile
+      seriesList={essence.series}
+      measures={essence.dataCube.measures}
+      key={item.definition.key()}
+      item={item}
+      open={item.definition.equals(openedSeriesMenu)}
+      closeSeriesMenu={closeSeriesMenu}
+      removeSeries={removeSeries}
+      dragStart={dragStart}
+      containerStage={menuStage}
+      openSeriesMenu={openSeriesMenu}
+      updateSeries={updateSeries}
+    />
+  ));
 
-  function insertPlaceholder<T>(tiles: Array<ReactElement<T>>): Array<ReactElement<T>> {
+  function insertPlaceholder<T>(
+    tiles: Array<ReactElement<T>>,
+  ): Array<ReactElement<T>> {
     if (!placeholderSeries) return tiles;
     const { series, index } = placeholderSeries;
     const measure = essence.dataCube.getMeasure(series.reference);
 
-    const placeholderTile = <PlaceholderSeriesTile
-      key="placeholder-series-tile"
-      measure={measure}
-      seriesList={essence.series}
-      measures={essence.dataCube.measures}
-      series={series}
-      containerStage={menuStage}
-      saveSeries={savePlaceholderSeries}
-      closeItem={removePlaceholderSeries} />;
+    const placeholderTile = (
+      <PlaceholderSeriesTile
+        key="placeholder-series-tile"
+        measure={measure}
+        seriesList={essence.series}
+        measures={essence.dataCube.measures}
+        series={series}
+        containerStage={menuStage}
+        saveSeries={savePlaceholderSeries}
+        closeItem={removePlaceholderSeries}
+      />
+    );
 
     return insert(tiles, index, placeholderTile);
   }
@@ -105,25 +117,38 @@ export const SeriesTiles: React.SFC<SeriesTilesProps> = props => {
 
   const visibleItems = tilesWithPlaceholder
     .slice(0, maxItems)
-    .map((element, idx) => React.cloneElement(element, { style: transformStyle(idx * SECTION_WIDTH, 0) }));
+    .map((element, idx) =>
+      React.cloneElement(element, {
+        style: transformStyle(idx * SECTION_WIDTH, 0),
+      }),
+    );
   const overflowItems = tilesWithPlaceholder.slice(maxItems);
 
-  if (overflowItems.length <= 0) return <React.Fragment>{visibleItems}</React.Fragment>;
+  if (overflowItems.length <= 0)
+    return <React.Fragment>{visibleItems}</React.Fragment>;
 
-  const anyOverflowItemOpen = series.slice(maxItems).some(({ definition }) => definition.equals(openedSeriesMenu));
-  const isDummySeriesInOverflow = overflowItems.some(element => element.type === PlaceholderSeriesTile);
-  const overflowOpened = overflowOpen || anyOverflowItemOpen || isDummySeriesInOverflow;
+  const anyOverflowItemOpen = series
+    .slice(maxItems)
+    .some(({ definition }) => definition.equals(openedSeriesMenu));
+  const isDummySeriesInOverflow = overflowItems.some(
+    element => element.type === PlaceholderSeriesTile,
+  );
+  const overflowOpened =
+    overflowOpen || anyOverflowItemOpen || isDummySeriesInOverflow;
 
-  const seriesItemOverflow = <TileOverflowContainer
-    key="overflow-menu"
-    items={overflowItems}
-    open={overflowOpened}
-    openOverflowMenu={openOverflowMenu}
-    x={visibleItems.length * SECTION_WIDTH}
-    closeOverflowMenu={closeOverflowMenu}
-    className="measure" />;
+  const seriesItemOverflow = (
+    <TileOverflowContainer
+      key="overflow-menu"
+      items={overflowItems}
+      open={overflowOpened}
+      openOverflowMenu={openOverflowMenu}
+      x={visibleItems.length * SECTION_WIDTH}
+      closeOverflowMenu={closeOverflowMenu}
+      className="measure"
+    />
+  );
 
-  return <React.Fragment>
-    {[...visibleItems, seriesItemOverflow]}
-  </React.Fragment>;
+  return (
+    <React.Fragment>{[...visibleItems, seriesItemOverflow]}</React.Fragment>
+  );
 };

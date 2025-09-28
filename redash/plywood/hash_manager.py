@@ -3,16 +3,16 @@ import json
 from typing import List, Union
 
 import lzstring
-from flask_restful import abort
 from flask import url_for
+from flask_restful import abort
 
+from redash import redis_connection
 from redash.handlers.base import get_object_or_404
 from redash.handlers.query_results import run_query
-from redash.models import ParameterizedQuery, User, Organization, ApiKey, QueryResult
+from redash.models import ApiKey, Organization, ParameterizedQuery, QueryResult, User
 from redash.models.models import Model
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
-from redash import redis_connection
 from redash.plywood.objects.report_serializer import ReportSerializer
 from redash.plywood.parsers.filter_parser import PlywoodFilterParser
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2

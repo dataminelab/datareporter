@@ -24,7 +24,15 @@ interface MeasureBackgroundProps {
   colo?: string;
 }
 
-export const MeasureBackground: React.SFC<MeasureBackgroundProps> = ({ highlight, width, backgroundColor }) =>
+export const MeasureBackground: React.SFC<MeasureBackgroundProps> = ({
+  highlight,
+  width,
+  backgroundColor,
+}) => (
   <div className="measure-background-container">
-    <div className={classNames("measure-background", { highlight })} style={{ width: width + "%", backgroundColor }} />
-  </div>;
+    <div
+      className={classNames("measure-background", { highlight })}
+      style={{ width: width + "%", backgroundColor }}
+    />
+  </div>
+);

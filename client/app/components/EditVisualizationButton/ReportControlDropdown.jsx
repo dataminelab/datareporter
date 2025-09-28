@@ -17,18 +17,24 @@ import ReportResultsLink from "./ReportResultsLink";
 export default function ReportControlDropdown(props) {
   const menu = (
     <Menu>
-      {!props.report.isNew() && (!props.report.is_draft || !props.report.is_archived) && (
-        <Menu.Item>
-          <PlainButton onClick={() => props.openAddToDashboardForm(props.selectedTab)}>
-            <PlusCircleFilledIcon /> Add to Dashboard
-          </PlainButton>
-        </Menu.Item>
-      )}
+      {!props.report.isNew() &&
+        (!props.report.is_draft || !props.report.is_archived) && (
+          <Menu.Item>
+            <PlainButton
+              onClick={() => props.openAddToDashboardForm(props.selectedTab)}
+            >
+              <PlusCircleFilledIcon /> Add to Dashboard
+            </PlainButton>
+          </Menu.Item>
+        )}
       {!clientConfig.disablePublicUrls && !props.query.isNew() && (
         <Menu.Item>
           <PlainButton
-            onClick={() => props.showEmbedDialog(props.query, props.selectedTab)}
-            data-test="ShowEmbedDialogButton">
+            onClick={() =>
+              props.showEmbedDialog(props.query, props.selectedTab)
+            }
+            data-test="ShowEmbedDialogButton"
+          >
             <ShareAltOutlinedIcon /> Embed Elsewhere
           </PlainButton>
         </Menu.Item>
@@ -36,33 +42,48 @@ export default function ReportControlDropdown(props) {
       <Menu.Item>
         <ReportResultsLink
           fileType="csv"
-          disabled={props.queryExecuting || !props.queryResult.getData || !props.queryResult.getData()}
+          disabled={
+            props.queryExecuting ||
+            !props.queryResult.getData ||
+            !props.queryResult.getData()
+          }
           report={props.report}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}>
+          apiKey={props.apiKey}
+        >
           <FileOutlinedIcon /> Download as CSV File
         </ReportResultsLink>
       </Menu.Item>
       <Menu.Item>
         <ReportResultsLink
           fileType="tsv"
-          disabled={props.queryExecuting || !props.queryResult.getData || !props.queryResult.getData()}
+          disabled={
+            props.queryExecuting ||
+            !props.queryResult.getData ||
+            !props.queryResult.getData()
+          }
           report={props.report}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}>
+          apiKey={props.apiKey}
+        >
           <FileOutlinedIcon /> Download as TSV File
         </ReportResultsLink>
       </Menu.Item>
       <Menu.Item>
         <ReportResultsLink
           fileType="xlsx"
-          disabled={props.queryExecuting || !props.queryResult.getData || !props.queryResult.getData()}
+          disabled={
+            props.queryExecuting ||
+            !props.queryResult.getData ||
+            !props.queryResult.getData()
+          }
           report={props.report}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}>
+          apiKey={props.apiKey}
+        >
           <FileExcelOutlinedIcon /> Download as Excel File
         </ReportResultsLink>
       </Menu.Item>
@@ -70,7 +91,11 @@ export default function ReportControlDropdown(props) {
   );
 
   return (
-    <Dropdown trigger={["click"]} overlay={menu} overlayClassName="query-control-dropdown-overlay">
+    <Dropdown
+      trigger={["click"]}
+      overlay={menu}
+      overlayClassName="query-control-dropdown-overlay"
+    >
       <Button data-test="QueryControlDropdownButton">
         <EllipsisOutlinedIcon rotate={90} />
       </Button>
@@ -79,8 +104,8 @@ export default function ReportControlDropdown(props) {
 }
 
 ReportControlDropdown.propTypes = {
-  report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  queryResult: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  report: PropTypes.object.isRequired,
+  queryResult: PropTypes.object,
   queryExecuting: PropTypes.bool.isRequired,
   showEmbedDialog: PropTypes.func.isRequired,
   embed: PropTypes.bool,

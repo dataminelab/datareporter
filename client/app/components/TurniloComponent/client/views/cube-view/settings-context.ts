@@ -23,8 +23,10 @@ export interface SettingsContextValue {
 
 export const SettingsContext = React.createContext<SettingsContextValue>({
   get customization(): ClientCustomization {
-    throw new Error("Attempted to consume SettingsContext when there was no Provider in place.");
-  }
+    throw new Error(
+      "Attempted to consume SettingsContext when there was no Provider in place.",
+    );
+  },
 });
 
 export function useSettingsContext(): SettingsContextValue {

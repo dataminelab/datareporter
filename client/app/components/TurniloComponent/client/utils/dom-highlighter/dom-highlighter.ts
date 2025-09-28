@@ -29,7 +29,9 @@ export class DOMHighlighter {
     }
 
     if (!element || element === document) {
-      console.warn(`Selector '${selector}' returned no element in DOMHighlighter`);
+      console.warn(
+        `Selector '${selector}' returned no element in DOMHighlighter`,
+      );
       return null;
     }
 

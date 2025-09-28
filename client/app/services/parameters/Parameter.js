@@ -1,4 +1,14 @@
-import { isNull, isObject, isFunction, isUndefined, isEqual, has, omit, isArray, each } from "lodash";
+import {
+  isNull,
+  isObject,
+  isFunction,
+  isUndefined,
+  isEqual,
+  has,
+  omit,
+  isArray,
+  each,
+} from "lodash";
 
 class Parameter {
   constructor(parameter, parentQueryId) {
@@ -36,7 +46,10 @@ class Parameter {
   }
 
   get hasPendingValue() {
-    return this.pendingValue !== undefined && !isEqual(this.pendingValue, this.normalizedValue);
+    return (
+      this.pendingValue !== undefined &&
+      !isEqual(this.pendingValue, this.normalizedValue)
+    );
   }
 
   /** Get normalized value to be used in inputs */
@@ -117,7 +130,12 @@ class Parameter {
 
   /** Get a saveable version of the Parameter by omitting unnecessary props */
   toSaveableObject() {
-    return omit(this, ["$$value", "urlPrefix", "pendingValue", "parentQueryId"]);
+    return omit(this, [
+      "$$value",
+      "urlPrefix",
+      "pendingValue",
+      "parentQueryId",
+    ]);
   }
 }
 

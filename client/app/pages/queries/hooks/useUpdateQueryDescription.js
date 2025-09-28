@@ -10,6 +10,6 @@ export default function useUpdateQueryDescription(query, onChange) {
       recordEvent("edit_description", "query", query.id);
       updateQuery({ description });
     },
-    [query.id, updateQuery]
+    [query.id, updateQuery],
   );
 }

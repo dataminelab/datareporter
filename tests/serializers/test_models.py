@@ -8,12 +8,17 @@ class TestModelSerializer(BaseTestCase):
         serializer = ModelSerializer(model)
         serialized = serializer.serialize()
 
-        self.assertSetEqual({"id",
-                             "name",
-                             "user_id",
-                             "data_source_id",
-                             "data_source_name",
-                             "model_config_id",
-                             "table",
-                             "created_at",
-                             "updated_at"}, set(serialized.keys()))
+        self.assertSetEqual(
+            {
+                "id",
+                "name",
+                "user_id",
+                "data_source_id",
+                "data_source_name",
+                "model_config_id",
+                "table",
+                "created_at",
+                "updated_at",
+            },
+            set(serialized.keys()),
+        )

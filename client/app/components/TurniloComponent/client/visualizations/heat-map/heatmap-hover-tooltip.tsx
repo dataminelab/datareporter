@@ -18,7 +18,10 @@ import { TooltipWithBounds } from "@vx/tooltip";
 import { Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
-import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import {
+  ConcreteSeries,
+  SeriesDerivation,
+} from "../../../common/models/series/concrete-series";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import datumByPosition from "./utils/datum-by-position";
@@ -43,30 +46,43 @@ const Content: React.SFC<ContentProps> = props => {
   if (!showComparison) {
     return <React.Fragment>{series.formatValue(datum)}</React.Fragment>;
   }
-  return <MeasureBubbleContent
-    lowerIsBetter={series.measure.lowerIsBetter}
-    formatter={series.formatter()}
-    current={series.selectValue(datum)}
-    previous={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-  />;
+  return (
+    <MeasureBubbleContent
+      lowerIsBetter={series.measure.lowerIsBetter}
+      formatter={series.formatter()}
+      current={series.selectValue(datum)}
+      previous={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
+    />
+  );
 };
 
 export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = props => {
-  const { dataset, essence, scroll, position: { column, row, top, left } } = props;
+  const {
+    dataset,
+    essence,
+    scroll,
+    position: { column, row, top, left },
+  } = props;
   const [, datum] = datumByPosition(dataset, { row, column });
   if (!datum) return null;
 
   const series = essence.getConcreteSeries().first();
-  return <TooltipWithBounds
-    key={`${row}-${column}`}
-    top={top - scroll.top}
-    left={left - scroll.left}>
-    <SegmentBubbleContent
-      title={modalTitle({ row, column }, dataset, essence)}
-      content={<Content
-        datum={datum}
-        showComparison={essence.hasComparison()}
-        series={series} />}
-    />
-  </TooltipWithBounds>;
+  return (
+    <TooltipWithBounds
+      key={`${row}-${column}`}
+      top={top - scroll.top}
+      left={left - scroll.left}
+    >
+      <SegmentBubbleContent
+        title={modalTitle({ row, column }, dataset, essence)}
+        content={
+          <Content
+            datum={datum}
+            showComparison={essence.hasComparison()}
+            series={series}
+          />
+        }
+      />
+    </TooltipWithBounds>
+  );
 };

@@ -34,25 +34,39 @@ interface MeasureRowProps {
 }
 
 export const MeasureRow: React.SFC<MeasureRowProps> = props => {
-  const { datum, scales, cellWidth, highlight, dimmed, style, essence, report } = props;
+  const {
+    datum,
+    scales,
+    cellWidth,
+    highlight,
+    dimmed,
+    style,
+    essence,
+    report,
+  } = props;
   const concreteSeries = essence.getConcreteSeries().toArray();
   const splitLength = essence.splits.length();
 
-  return <div
-    className={classNames("measure-row", { highlight, dimmed })}
-    style={style}
-  >
-    {concreteSeries.map((series, i) => {
-      return <MeasureValue
-        key={series.reactKey()}
-        series={series}
-        report={report}
-        datum={datum}
-        highlight={highlight}
-        scale={scales[i]}
-        cellWidth={cellWidth}
-        lastLevel={datum["__nest"] === splitLength}
-        showPrevious={essence.hasComparison()} />;
-    })}
-  </div>;
+  return (
+    <div
+      className={classNames("measure-row", { highlight, dimmed })}
+      style={style}
+    >
+      {concreteSeries.map((series, i) => {
+        return (
+          <MeasureValue
+            key={series.reactKey()}
+            series={series}
+            report={report}
+            datum={datum}
+            highlight={highlight}
+            scale={scales[i]}
+            cellWidth={cellWidth}
+            lastLevel={datum["__nest"] === splitLength}
+            showPrevious={essence.hasComparison()}
+          />
+        );
+      })}
+    </div>
+  );
 };

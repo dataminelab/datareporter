@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 $shpitz-size: 12px;
 $shpitz-clip-size: 40px;
@@ -31,7 +31,7 @@ $shpitz-clip-size: 40px;
     position: absolute;
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       width: $shpitz-size;
       height: $shpitz-size;

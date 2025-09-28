@@ -20,7 +20,10 @@ import { Unary } from "../../../../../common/utils/functional/functional";
 import { BottomBorder } from "../../../../components/grid-border/grid-border";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
-import { LinearScale, pickTicks } from "../../../../utils/linear-scale/linear-scale";
+import {
+  LinearScale,
+  pickTicks,
+} from "../../../../utils/linear-scale/linear-scale";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 
@@ -38,27 +41,29 @@ interface BackgroundProps {
 export const Background: React.SFC<BackgroundProps> = props => {
   const { formatter, gridStage, axisStage, xScale, yScale, xTicks } = props;
 
-  return <React.Fragment>
-    <GridLines
-      orientation="horizontal"
-      scale={yScale}
-      ticks={pickTicks(yScale)}
-      stage={gridStage}
-    />
-    {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
-    <GridLines
-      orientation="vertical"
-      scale={xScale}
-      ticks={xTicks}
-      stage={gridStage}
-    />
-    <VerticalAxis
-      tickSize={TICK_WIDTH}
-      stage={axisStage}
-      formatter={formatter}
-      ticks={pickTicks(yScale)}
-      scale={yScale}
-    />
-    <BottomBorder stage={gridStage} tickLength={TICK_WIDTH} />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <GridLines
+        orientation="horizontal"
+        scale={yScale}
+        ticks={pickTicks(yScale)}
+        stage={gridStage}
+      />
+      {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
+      <GridLines
+        orientation="vertical"
+        scale={xScale}
+        ticks={xTicks}
+        stage={gridStage}
+      />
+      <VerticalAxis
+        tickSize={TICK_WIDTH}
+        stage={axisStage}
+        formatter={formatter}
+        ticks={pickTicks(yScale)}
+        scale={yScale}
+      />
+      <BottomBorder stage={gridStage} tickLength={TICK_WIDTH} />
+    </React.Fragment>
+  );
 };

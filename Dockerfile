@@ -1,4 +1,4 @@
-FROM node:18-bookworm AS frontend-builder
+FROM node:18-bookworm-slim AS frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
@@ -11,9 +11,12 @@ USER datareporter
 
 WORKDIR /frontend
 COPY --chown=datareporter client /frontend/client
-COPY --chown=datareporter viz-lib/ /frontend/viz-lib
-COPY --chown=datareporter plywood/server /frontend/plywood/server/
-COPY --chown=datareporter plywood/server/client /frontend/plywood/server/client
+COPY --chown=datareporter viz-lib /frontend/viz-lib
+COPY --chown=datareporter plywood /frontend/plywood/
+
+# Controls whether to instrument code for coverage information
+ARG code_coverage
+ENV BABEL_ENV=${code_coverage:+test}
 
 RUN <<EOF
   if [ "x$skip_frontend_build" = "x" ]; then
@@ -64,6 +67,7 @@ RUN apt-get update && \
   libsasl2-modules-gssapi-mit && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
+
 
 ARG TARGETPLATFORM
 ARG databricks_odbc_driver_url=https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/odbc/2.6.26/SimbaSparkODBC-2.6.26.1045-Debian-64bit.zip

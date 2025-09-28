@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .message-card {
   @include pin-full;
@@ -27,4 +27,3 @@
     font-size: 20px;
   }
 }
-

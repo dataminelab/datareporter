@@ -30,14 +30,19 @@ export function FavoriteList({ title, resource, itemUrl, emptyState }) {
       {!isEmpty(items) && (
         <div role="list" className="list-group">
           {items.map(item => (
-            <Link key={itemUrl(item)} role="listitem" className="list-group-item name-favorite" href={itemUrl(item)}>
+            <Link
+              key={itemUrl(item)}
+              role="listitem"
+              className="list-group-item name-favorite"
+              href={itemUrl(item)}
+            >
               <span className="btn-favorite m-r-5">
                 <i className="fa fa-star" aria-hidden="true" />
               </span>
-              <span className="name-favorite">
-                {item.name}
-              </span>
-              {item.is_draft && <span className="label label-default m-l-5">Unpublished</span>}
+              <span className="name-favorite">{item.name}</span>
+              {item.is_draft && (
+                <span className="label label-default m-l-5">Unpublished</span>
+              )}
             </Link>
           ))}
         </div>
@@ -49,7 +54,7 @@ export function FavoriteList({ title, resource, itemUrl, emptyState }) {
 
 FavoriteList.propTypes = {
   title: PropTypes.string.isRequired,
-  resource: PropTypes.func.isRequired, // eslint-disable-line react/forbid-prop-types
+  resource: PropTypes.func.isRequired,
   itemUrl: PropTypes.func.isRequired,
   emptyState: PropTypes.node,
 };
@@ -70,7 +75,11 @@ export function DashboardAndQueryFavoritesList() {
                   <span className="btn-favorite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <Link className="will-appear-a-tag" href="dashboards">Dashboards</Link> will appear here
+                  Favorite{" "}
+                  <Link className="will-appear-a-tag" href="dashboards">
+                    Dashboards
+                  </Link>{" "}
+                  will appear here
                 </p>
               }
             />
@@ -85,7 +94,11 @@ export function DashboardAndQueryFavoritesList() {
                   <span className="btn-favorite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <Link className="will-appear-a-tag" href="queries">Queries</Link> will appear here
+                  Favorite{" "}
+                  <Link className="will-appear-a-tag" href="queries">
+                    Queries
+                  </Link>{" "}
+                  will appear here
                 </p>
               }
             />
@@ -100,7 +113,11 @@ export function DashboardAndQueryFavoritesList() {
                   <span className="btn-favorite m-r-5">
                     <i className="fa fa-star" aria-hidden="true" />
                   </span>
-                  Favorite <Link className="will-appear-a-tag" href="reports">Reports</Link> will appear here
+                  Favorite{" "}
+                  <Link className="will-appear-a-tag" href="reports">
+                    Reports
+                  </Link>{" "}
+                  will appear here
                 </p>
               }
             />

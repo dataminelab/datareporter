@@ -16,7 +16,10 @@
 
 import * as React from "react";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
-import { PercentExpression, PercentOperation } from "../../../common/models/expression/percent";
+import {
+  PercentExpression,
+  PercentOperation,
+} from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
@@ -38,11 +41,16 @@ interface Operation {
   label: string;
 }
 
-const OPERATIONS: Operation[] = [{
-  id: ExpressionSeriesOperation.PERCENT_OF_PARENT, label: "Percent of parent"
-}, {
-  id: ExpressionSeriesOperation.PERCENT_OF_TOTAL, label: "Percent of total"
-}];
+const OPERATIONS: Operation[] = [
+  {
+    id: ExpressionSeriesOperation.PERCENT_OF_PARENT,
+    label: "Percent of parent",
+  },
+  {
+    id: ExpressionSeriesOperation.PERCENT_OF_TOTAL,
+    label: "Percent of total",
+  },
+];
 
 function operationToExpression(operation: PercentOperation): PercentExpression {
   return new PercentExpression({ operation });
@@ -50,8 +58,12 @@ function operationToExpression(operation: PercentOperation): PercentExpression {
 
 const renderOperation = (op: Operation): string => op.label;
 
-export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
-
+export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({
+  series,
+  seriesList,
+  measure,
+  onChange,
+}) => {
   const selectedOperations = seriesList
     .getExpressionSeriesFor(measure.name)
     .filter(s => !s.equals(series))
@@ -75,20 +87,25 @@ export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({ series, s
     onSeriesChange(series.set("expression", operationToExpression(id)));
   }
 
-  return <React.Fragment>
-    <Dropdown<Operation>
-      className="percent-operation-picker"
-      items={OPERATIONS.filter(({ id }) => !selectedOperations.has(id))}
-      renderItem={renderOperation}
-      renderSelectedItem={renderOperation}
-      equal={(a, b) => a.id === b.id}
-      selectedItem={series.expression && OPERATIONS.find(op => op.id === series.expression.operation)}
-      onSelect={onOperationSelect}
-    />
-    <FormatPicker
-      measure={measure}
-      format={series.format}
-      formatChange={onFormatChange}
-    />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <Dropdown<Operation>
+        className="percent-operation-picker"
+        items={OPERATIONS.filter(({ id }) => !selectedOperations.has(id))}
+        renderItem={renderOperation}
+        renderSelectedItem={renderOperation}
+        equal={(a, b) => a.id === b.id}
+        selectedItem={
+          series.expression &&
+          OPERATIONS.find(op => op.id === series.expression.operation)
+        }
+        onSelect={onOperationSelect}
+      />
+      <FormatPicker
+        measure={measure}
+        format={series.format}
+        formatChange={onFormatChange}
+      />
+    </React.Fragment>
+  );
 };

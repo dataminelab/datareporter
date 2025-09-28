@@ -27,7 +27,7 @@ class ConfigDumper(yaml.SafeDumper):
         return super(ConfigDumper, self).increase_indent(flow, False)
 
 
-class BaseConfig(object):
+class BaseConfig:
     def to_json(self):
         raise NotImplementedError()
 
@@ -36,7 +36,6 @@ class BaseConfig(object):
 
 
 class PlywoodAttribute(BaseConfig):
-
     def __init__(self, name, type_: str, native_type: str, is_supported: bool):
         self.name = name
         self.type_ = type_
@@ -132,7 +131,7 @@ class ModelConfigAttributes(BaseConfig):
         return None
 
 
-class ModelConfigGenerator(object):
+class ModelConfigGenerator:
     @staticmethod
     def yaml(model: Model, refresh=False):
         config_attributes = ModelConfigGenerator._build(model, refresh)
@@ -147,7 +146,6 @@ class ModelConfigGenerator(object):
 
     @staticmethod
     def _build(model: Model, refresh):
-
         schemas = model.data_source.get_schema(refresh=refresh)
         table_schema = next((schema for schema in schemas if schema["name"] == model.table), None)
         if table_schema is None:
@@ -165,7 +163,6 @@ class ModelConfigGenerator(object):
 
     @staticmethod
     def convert_attributes(model: Model, attributes: List[Attribute]) -> List[PlywoodAttribute]:
-
         db_type = model.data_source.type
         plywood_attributes = PlywoodApi.convert_attributes(db_type, [a.to_json() for a in attributes])
         res = []

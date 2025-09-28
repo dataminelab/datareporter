@@ -26,11 +26,9 @@ export interface SvgIconProps {
   style?: any;
 }
 
-export interface SvgIconState {
-}
+export interface SvgIconState {}
 
 export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
-
   render() {
     const { className, style, svg } = this.props;
 
@@ -55,7 +53,7 @@ export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
       viewBox,
       preserveAspectRatio: "xMidYMid meet",
       style,
-      dangerouslySetInnerHTML: { __html: svgInsides }
+      dangerouslySetInnerHTML: { __html: svgInsides },
     });
   }
 }

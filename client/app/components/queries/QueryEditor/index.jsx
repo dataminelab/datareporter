@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState, useCallback, useImperativeHandle } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useImperativeHandle,
+} from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { AceEditor, snippetsModule, updateSchemaCompleter } from "./ace";
@@ -12,9 +18,18 @@ import "./index.less";
 
 const editorProps = { $blockScrolling: Infinity };
 
-const QueryEditor = React.forwardRef(function(
-  { className, syntax, value, autocompleteEnabled, schema, onChange, onSelectionChange, ...props },
-  ref
+const QueryEditor = React.forwardRef(function (
+  {
+    className,
+    syntax,
+    value,
+    autocompleteEnabled,
+    schema,
+    onChange,
+    onSelectionChange,
+    ...props
+  },
+  ref,
 ) {
   const [container, setContainer] = useState(null);
   const [editorRef, setEditorRef] = useState(null);
@@ -31,7 +46,7 @@ const QueryEditor = React.forwardRef(function(
       setCurrentValue(str);
       onChange(str);
     },
-    [onChange]
+    [onChange],
   );
 
   const editorOptions = useMemo(
@@ -42,7 +57,7 @@ const QueryEditor = React.forwardRef(function(
       enableLiveAutocompletion: autocompleteEnabled,
       autoScrollEditorIntoView: true,
     }),
-    [autocompleteEnabled]
+    [autocompleteEnabled],
   );
 
   useEffect(() => {
@@ -71,11 +86,14 @@ const QueryEditor = React.forwardRef(function(
 
   const handleSelectionChange = useCallback(
     selection => {
-      const rawSelectedQueryText = editorRef.editor.session.doc.getTextRange(selection.getRange());
-      const selectedQueryText = rawSelectedQueryText.length > 1 ? rawSelectedQueryText : null;
+      const rawSelectedQueryText = editorRef.editor.session.doc.getTextRange(
+        selection.getRange(),
+      );
+      const selectedQueryText =
+        rawSelectedQueryText.length > 1 ? rawSelectedQueryText : null;
       onSelectionChange(selectedQueryText);
     },
-    [editorRef, onSelectionChange]
+    [editorRef, onSelectionChange],
   );
 
   const initEditor = useCallback(editor => {
@@ -111,7 +129,11 @@ const QueryEditor = React.forwardRef(function(
 
     // Reset Completer in case dot is pressed
     editor.commands.on("afterExec", e => {
-      if (e.command.name === "insertstring" && e.args === "." && editor.completer) {
+      if (
+        e.command.name === "insertstring" &&
+        e.args === "." &&
+        editor.completer
+      ) {
         editor.completer.showPopup(editor);
       }
     });
@@ -149,11 +171,15 @@ const QueryEditor = React.forwardRef(function(
         }
       },
     }),
-    [editorRef, onChange]
+    [editorRef, onChange],
   );
 
   return (
-    <div className={cx("query-editor-container", className)} {...props} ref={setContainer}>
+    <div
+      className={cx("query-editor-container", className)}
+      {...props}
+      ref={setContainer}
+    >
       <AceEditor
         ref={setEditorRef}
         theme="textmate"

@@ -21,7 +21,10 @@ export type Rect = ClientRect | DOMRect;
 
 export type Position = Pick<React.CSSProperties, "left" | "top">;
 
-export function calculatePosition(props: TooltipWithinStageProps, rect?: Rect): Position {
+export function calculatePosition(
+  props: TooltipWithinStageProps,
+  rect?: Rect,
+): Position {
   const { top: initialTop, left: initialLeft, stage, margin = 10 } = props;
   if (!rect) {
     const top = initialTop + margin;
@@ -32,15 +35,17 @@ export function calculatePosition(props: TooltipWithinStageProps, rect?: Rect): 
   const stageBottom = stage.y + stage.height;
   const stageRight = stage.x + stage.width;
 
-  const top = rect.bottom > stageBottom
-    ? initialTop - margin - rect.height
-    : rect.top < stage.y
+  const top =
+    rect.bottom > stageBottom
+      ? initialTop - margin - rect.height
+      : rect.top < stage.y
       ? initialTop + rect.height
       : initialTop + margin;
 
-  const left = rect.right > stageRight
-    ? initialLeft - margin - rect.width
-    : rect.left < stage.x
+  const left =
+    rect.right > stageRight
+      ? initialLeft - margin - rect.width
+      : rect.left < stage.x
       ? initialLeft + rect.width
       : initialLeft + margin;
 

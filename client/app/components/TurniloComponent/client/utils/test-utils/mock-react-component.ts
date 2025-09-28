@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
+import hasOwnProp from "has-own-prop";
+
 export function mockReactComponent(_class: any) {
   const prototype = _class.prototype;
   const toUndo: Array<() => void> = [];
 
-  if (prototype.hasOwnProperty("componentDidMount") === true) {
+  if (hasOwnProp(prototype, "componentDidMount")) {
     const oldComponentDidMount = prototype.componentDidMount;
     toUndo.push(() => {
       prototype.componentDidMount = oldComponentDidMount;
@@ -29,7 +31,7 @@ export function mockReactComponent(_class: any) {
     };
   }
 
-  if (prototype.hasOwnProperty("render") === true) {
+  if (hasOwnProp(prototype, "render")) {
     const oldRender = prototype.render;
     toUndo.push(() => {
       prototype.render = oldRender;
@@ -38,7 +40,7 @@ export function mockReactComponent(_class: any) {
     prototype.render = (): any => null;
   }
 
-  _class.restore = function() {
+  _class.restore = function () {
     toUndo.map((fn: any) => fn());
     delete this.restore;
   };

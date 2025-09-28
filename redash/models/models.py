@@ -1,14 +1,16 @@
-from . import DataSource
-from .users import User
-from .changes import ChangeTrackingMixin, Change  # noqa
-from .mixins import TimestampMixin
-from .base import db, primary_key, Column, key_type, gfk_type
+from sqlalchemy import and_, func, or_, text  # noqa: F401
 from sqlalchemy.orm import load_only  # noqa: F401
-from sqlalchemy import and_, or_, func, text  # noqa: F401
-from ..services.expression import ExpressionBase64Parser  # noqa: F401
+
 from redash.models import Favorite  # noqa: F401
-from .types import MutableList  # noqa: F401
 from redash.utils import generate_token  # noqa: F401
+
+from ..services.expression import ExpressionBase64Parser  # noqa: F401
+from . import DataSource
+from .base import Column, db, gfk_type, key_type, primary_key
+from .changes import Change, ChangeTrackingMixin  # noqa
+from .mixins import TimestampMixin
+from .types import MutableList  # noqa: F401
+from .users import User
 
 
 @gfk_type

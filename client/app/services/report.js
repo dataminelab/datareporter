@@ -78,7 +78,6 @@ export class ReportResultError {
   }
 }
 
-
 export class Parameters {
   constructor(report, reportString) {
     this.report = report;
@@ -109,17 +108,22 @@ export class Parameters {
   updateParameters(update) {
     if (this.report.report === this.cachedReportText) {
       const parameters = this.report.options.parameters;
-      const hasUnprocessedParameters = find(parameters, p => !(p instanceof Parameter));
+      const hasUnprocessedParameters = find(
+        parameters,
+        p => !(p instanceof Parameter),
+      );
       if (hasUnprocessedParameters) {
         this.report.options.parameters = map(parameters, p =>
-          p instanceof Parameter ? p : createParameter(p, this.report.id)
+          p instanceof Parameter ? p : createParameter(p, this.report.id),
         );
       }
       return;
     }
 
     this.cachedReportText = this.report.report;
-    const parameterNames = update ? this.parseReport() : map(this.report.options.parameters, p => p.name);
+    const parameterNames = update
+      ? this.parseReport()
+      : map(this.report.options.parameters, p => p.name);
 
     this.report.options.parameters = this.report.options.parameters || [];
 
@@ -137,7 +141,7 @@ export class Parameters {
             type: "text",
             value: null,
             global: false,
-          })
+          }),
         );
       }
     });
@@ -146,7 +150,9 @@ export class Parameters {
     const parameters = this.report.options.parameters;
     this.report.options.parameters = parameters
       .filter(parameterExists)
-      .map(p => (p instanceof Parameter ? p : createParameter(p, this.report.id)));
+      .map(p =>
+        p instanceof Parameter ? p : createParameter(p, this.report.id),
+      );
   }
 
   initFromReportString(report) {
@@ -161,7 +167,9 @@ export class Parameters {
   }
 
   add(parameterDef) {
-    this.report.options.parameters = this.report.options.parameters.filter(p => p.name !== parameterDef.name);
+    this.report.options.parameters = this.report.options.parameters.filter(
+      p => p.name !== parameterDef.name,
+    );
     const param = createParameter(parameterDef);
     this.report.options.parameters.push(param);
     return param;
@@ -170,7 +178,7 @@ export class Parameters {
   getMissing() {
     return map(
       filter(this.get(), p => p.isEmpty),
-      i => i.title
+      i => i.title,
     );
   }
 
@@ -182,7 +190,7 @@ export class Parameters {
     const params = this.get();
     return zipObject(
       map(params, i => i.name),
-      map(params, i => i.getExecutionValue(extra))
+      map(params, i => i.getExecutionValue(extra)),
     );
   }
 
@@ -200,7 +208,9 @@ export class Parameters {
     }
 
     const params = Object.assign(...this.get().map(p => p.toUrlParams()));
-    Object.keys(params).forEach(key => params[key] == null && delete params[key]);
+    Object.keys(params).forEach(
+      key => params[key] == null && delete params[key],
+    );
     return Object.keys(params)
       .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
       .join("&");
@@ -252,7 +262,7 @@ export class Report {
     if (!queries || queries.length === 0) return 0;
     const lastAvailableQuery = queries[queries.length - 1];
     if (!lastAvailableQuery || !lastAvailableQuery.query_result) return 0;
-    return lastAvailableQuery.query_result.data.rows
+    return lastAvailableQuery.query_result.data.rows;
   }
 
   isNew() {
@@ -265,12 +275,7 @@ export class Report {
 
   scheduleInLocalTime() {
     const parts = this.schedule.split(":");
-    return moment
-      .utc()
-      .hour(parts[0])
-      .minute(parts[1])
-      .local()
-      .format("HH:mm");
+    return moment.utc().hour(parts[0]).minute(parts[1]).local().format("HH:mm");
   }
 
   hasResult() {
@@ -299,7 +304,9 @@ export class Report {
 
       return new ReportResult({
         job: {
-          error: `missing ${valuesWord} for ${missingParams.join(", ")} ${paramsWord}.`,
+          error: `missing ${valuesWord} for ${missingParams.join(
+            ", ",
+          )} ${paramsWord}.`,
           status: 4,
         },
       });
@@ -319,7 +326,10 @@ export class Report {
       }
     } else if (this.latest_report_data_id && maxAge !== 0) {
       if (!this.reportResult) {
-        this.reportResult = ReportResult.getById(this.id, this.latest_report_data_id);
+        this.reportResult = ReportResult.getById(
+          this.id,
+          this.latest_report_data_id,
+        );
       }
     } else {
       this.reportResult = execute();
@@ -329,7 +339,12 @@ export class Report {
   }
 
   getReportResult(maxAge) {
-    const execute = () => ReportResult.getByReportId(this.id, this.getParameters().getExecutionValues(), maxAge);
+    const execute = () =>
+      ReportResult.getByReportId(
+        this.id,
+        this.getParameters().getExecutionValues(),
+        maxAge,
+      );
     return this.prepareReportResultExecution(execute, maxAge);
   }
 
@@ -339,8 +354,17 @@ export class Report {
       return new ReportResultError("Can't execute empty report.");
     }
 
-    const parameters = this.getParameters().getExecutionValues({ joinListValues: true });
-    const execute = () => ReportResult.get(this.data_source_id, reportText, parameters, maxAge, this.id);
+    const parameters = this.getParameters().getExecutionValues({
+      joinListValues: true,
+    });
+    const execute = () =>
+      ReportResult.get(
+        this.data_source_id,
+        reportText,
+        parameters,
+        maxAge,
+        this.id,
+      );
     return this.prepareReportResultExecution(execute, maxAge);
   }
 
@@ -357,8 +381,14 @@ export class Report {
         extend(params, param.toUrlParams());
       });
     }
-    Object.keys(params).forEach(key => params[key] == null && delete params[key]);
-    params = map(params, (value, name) => `${encodeURIComponent(name)}=${encodeURIComponent(value)}`).join("&");
+    Object.keys(params).forEach(
+      key => params[key] == null && delete params[key],
+    );
+    params = map(
+      params,
+      (value, name) =>
+        `${encodeURIComponent(name)}=${encodeURIComponent(value)}`,
+    ).join("&");
 
     if (params !== "") {
       url += `?${params}`;
@@ -406,16 +436,16 @@ export class Report {
 const getReport = report => new Report(report);
 const saveOrCreateUrl = function (data) {
   if (data.id) {
-    return `api/reports/${data.id}`
+    return `api/reports/${data.id}`;
   } else {
-    return "api/reports"
+    return "api/reports";
   }
-}
+};
 const mapResults = data => ({ ...data, results: map(data.results, getReport) });
 const normalizeCondition = {
   "greater than": ">",
   "less than": "<",
-  equals: "=",
+  "equals": "=",
 };
 const transformResponse = data => {
   merge({}, data, {
@@ -423,10 +453,11 @@ const transformResponse = data => {
       op: normalizeCondition[data.options.op] || data.options.op,
     },
   });
-}
+};
 
 function transformPublicState(report) {
-  if (report.results && !report.queries.length) throw new Error("Report has no queries.");
+  if (report.results && !report.queries.length)
+    throw new Error("Report has no queries.");
   if (report.public_url) report.publicAccessEnabled = true;
   else report.publicAccessEnabled = false;
   return report;
@@ -434,31 +465,46 @@ function transformPublicState(report) {
 
 const ReportService = {
   report: params => axios.get("api/reports", { params }).then(mapResults),
-  get: data => axios.get("api/reports/" + data.id).then(getReport).then(transformPublicState),
+  get: data =>
+    axios
+      .get("api/reports/" + data.id)
+      .then(getReport)
+      .then(transformPublicState),
   save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
   saveAs: data => axios.post("api/reports", data).then(getReport),
-  delete: data => axios.delete(`api/reports/${data.id}`)
-    .then(() => {
-      window.location.href = '/reports';
+  delete: data =>
+    axios.delete(`api/reports/${data.id}`).then(() => {
+      window.location.href = "/reports";
     }),
-  recent: params => axios.get(`api/reports/recent`, { params }).then(data => map(data, getReport)),
-  archive: params => axios.get(`api/reports/archive`, { params })
-    .then(mapResults),
-  archiveReport: params => axios.delete(`api/reports/archive`, { params })
-    .then(() => {
-      window.location.href = '/reports/archive';
+  recent: params =>
+    axios
+      .get(`api/reports/recent`, { params })
+      .then(data => map(data, getReport)),
+  archive: params =>
+    axios.get(`api/reports/archive`, { params }).then(mapResults),
+  archiveReport: params =>
+    axios.delete(`api/reports/archive`, { params }).then(() => {
+      window.location.href = "/reports/archive";
     }),
-  myReports: params => axios.get("api/reports?type=my", { params }).then(mapResults),
-  fork: ({ id }) => axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
+  myReports: params =>
+    axios.get("api/reports?type=my", { params }).then(mapResults),
+  fork: ({ id }) =>
+    axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
   resultById: data => axios.get(`api/reports/${data.id}/results.json`),
   asDropdown: data => axios.get(`api/reports/${data.id}/dropdown`),
   associatedDropdown: ({ reportId, dropdownReportId }) =>
     axios.get(`api/reports/${reportId}/dropdowns/${dropdownReportId}`),
-  favorites: params => axios.get("api/reports/favorites", { params }).then(mapResults),
+  favorites: params =>
+    axios.get("api/reports/favorites", { params }).then(mapResults),
   favorite: data => axios.post(`api/reports/${data.id}/favorite`),
   unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),
-  getByToken: ({ token }) => axios.get(`api/reports/public/${token}`).then(transformPublicState),
-  getByTokenPublic: ({ token }) => axios.get(`api/reports/public/${token}?get_results=true`).then(getReport).then(transformPublicState),
+  getByToken: ({ token }) =>
+    axios.get(`api/reports/public/${token}`).then(transformPublicState),
+  getByTokenPublic: ({ token }) =>
+    axios
+      .get(`api/reports/public/${token}?get_results=true`)
+      .then(getReport)
+      .then(transformPublicState),
 };
 
 ReportService.newReport = function newReport() {
@@ -482,9 +528,13 @@ ReportService.format = function formatReport(syntax, report) {
       return Promise.reject(String(err));
     }
   } else if (syntax === "sql") {
-    return axios.post("api/reports/format", { report }).then(data => data.report);
+    return axios
+      .post("api/reports/format", { report })
+      .then(data => data.report);
   } else {
-    return Promise.reject("Report formatting is not supported for your data source syntax.");
+    return Promise.reject(
+      "Report formatting is not supported for your data source syntax.",
+    );
   }
 };
 

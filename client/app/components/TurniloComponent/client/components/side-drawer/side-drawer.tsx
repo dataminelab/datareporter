@@ -48,8 +48,10 @@ export interface SideDrawerState {
   query: string;
 }
 
-export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
-
+export class SideDrawer extends React.Component<
+  SideDrawerProps,
+  SideDrawerState
+> {
   state = { query: "" };
 
   queryChange = (query: string) => {
@@ -86,15 +88,14 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   }
 
   private renderHomeLink() {
-    return <div className="home-container">
-      <div
-        className={classNames("home-link")}
-        onClick={openHome}
-      >
-        <SvgIcon svg={require("../../icons/home.svg")} />
-        <span>Home</span>
+    return (
+      <div className="home-container">
+        <div className={classNames("home-link")} onClick={openHome}>
+          <SvgIcon svg={require("../../icons/home.svg")} />
+          <span>Home</span>
+        </div>
       </div>
-    </div>;
+    );
   }
 
   navigateToCube = (dataCube: DataCube) => {
@@ -104,40 +105,52 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
   };
 
   private renderDataCubeList(): JSX.Element {
-    const { dataCubes, essence: { dataCube } } = this.props;
+    const {
+      dataCubes,
+      essence: { dataCube },
+    } = this.props;
     const { query } = this.state;
 
     const cubes = filterDataCubes(dataCubes, query, false);
     if (cubes.length === 0) {
-      const message = query ? `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
+      const message = query
+        ? `${STRINGS.noDataCubesFound}${query}`
+        : STRINGS.noDataCubes;
       return <div className="data-cubes__message">{message}</div>;
     }
     const navLinks = cubes.map(dataCube => {
-        const { name, title } = dataCube;
-        return {
-          name,
-          title,
-          onClick: () => this.navigateToCube(dataCube)
-        };
-      }
-    );
+      const { name, title } = dataCube;
+      return {
+        name,
+        title,
+        onClick: () => this.navigateToCube(dataCube),
+      };
+    });
 
-    return <NavList
-      selected={dataCube.name}
-      navLinks={navLinks}
-      iconSvg={require("../../icons/full-cube.svg")}
-    />;
+    return (
+      <NavList
+        selected={dataCube.name}
+        navLinks={navLinks}
+        iconSvg={require("../../icons/full-cube.svg")}
+      />
+    );
   }
 
   private renderDataCubes(): JSX.Element {
     const { query } = this.state;
 
-    return <div className="data-cubes__list">
-      <div className="search-input">
-        <ClearableInput value={query} onChange={this.queryChange} placeholder="Search data cubes..." />
+    return (
+      <div className="data-cubes__list">
+        <div className="search-input">
+          <ClearableInput
+            value={query}
+            onChange={this.queryChange}
+            placeholder="Search data cubes..."
+          />
+        </div>
+        {this.renderDataCubeList()}
       </div>
-      {this.renderDataCubeList()}
-    </div>;
+    );
   }
 
   private infoLink(): NavAction {
@@ -150,16 +163,18 @@ export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState
       onClick: () => {
         onClose();
         onOpenAbout();
-      }
+      },
     };
   }
 
   render() {
-    return <div className="side-drawer">
-      {this.renderNavLogo()}
-      {this.renderHomeLink()}
-      {this.renderDataCubes()}
-      <NavList navLinks={[this.infoLink()]} />
-    </div>;
+    return (
+      <div className="side-drawer">
+        {this.renderNavLogo()}
+        {this.renderHomeLink()}
+        {this.renderDataCubes()}
+        <NavList navLinks={[this.infoLink()]} />
+      </div>
+    );
   }
 }

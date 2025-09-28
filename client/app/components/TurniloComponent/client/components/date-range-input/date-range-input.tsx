@@ -17,7 +17,15 @@
 
 import { Timezone } from "chronoshift";
 import * as React from "react";
-import { combineDateAndTimeIntoMoment, formatISODate, formatISOTime, normalizeISODate, normalizeISOTime, validateISODate, validateISOTime } from "../../../common/utils/time/time";
+import {
+  combineDateAndTimeIntoMoment,
+  formatISODate,
+  formatISOTime,
+  normalizeISODate,
+  normalizeISOTime,
+  validateISODate,
+  validateISOTime,
+} from "../../../common/utils/time/time";
 import "./date-range-input.scss";
 
 export interface DateRangeInputProps {
@@ -34,10 +42,13 @@ export interface DateRangeInputState {
   timeString?: string;
 }
 
-export class DateRangeInput extends React.Component<DateRangeInputProps, DateRangeInputState> {
+export class DateRangeInput extends React.Component<
+  DateRangeInputProps,
+  DateRangeInputState
+> {
   state = {
     dateString: "",
-    timeString: ""
+    timeString: "",
   };
 
   componentDidMount() {
@@ -54,21 +65,21 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     if (!time) return;
     if (isNaN(time.valueOf())) {
       this.setState({
-        dateString: ""
+        dateString: "",
       });
       return;
     }
 
     this.setState({
       dateString: formatISODate(time, timezone),
-      timeString: formatISOTime(time, timezone)
+      timeString: formatISOTime(time, timezone),
     });
   }
 
   dateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const dateString = normalizeISODate(e.target.value);
     this.setState({
-      dateString
+      dateString,
     });
     if (validateISODate(dateString)) {
       this.changeDate(dateString, this.state.timeString);
@@ -78,7 +89,7 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
   timeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const timeString = normalizeISOTime(e.target.value);
     this.setState({
-      timeString
+      timeString,
     });
     if (validateISOTime(timeString)) {
       this.changeDate(this.state.dateString, timeString);
@@ -88,7 +99,11 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
   changeDate(possibleDateString: string, possibleTimeString: string): void {
     const { timezone, onChange } = this.props;
 
-    const possibleMoment = combineDateAndTimeIntoMoment(possibleDateString, possibleTimeString, timezone);
+    const possibleMoment = combineDateAndTimeIntoMoment(
+      possibleDateString,
+      possibleTimeString,
+      timezone,
+    );
     if (possibleMoment && possibleMoment.isValid()) {
       onChange(possibleMoment.toDate());
     }
@@ -100,10 +115,22 @@ export class DateRangeInput extends React.Component<DateRangeInputProps, DateRan
     const dateValue = hide ? "" : dateString;
     const timeValue = hide ? "" : timeString;
 
-    return <div className="date-range-input">
-      <div className="label">{label}</div>
-      <input placeholder="YYYY-MM-DD" className="date-field" value={dateValue} onChange={this.dateChange} />
-      <input placeholder="HH:MM" className="time-field" value={timeValue} onChange={this.timeChange} />
-    </div>;
+    return (
+      <div className="date-range-input">
+        <div className="label">{label}</div>
+        <input
+          placeholder="YYYY-MM-DD"
+          className="date-field"
+          value={dateValue}
+          onChange={this.dateChange}
+        />
+        <input
+          placeholder="HH:MM"
+          className="time-field"
+          value={timeValue}
+          onChange={this.timeChange}
+        />
+      </div>
+    );
   }
 }

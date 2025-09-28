@@ -27,7 +27,10 @@ function getDataColumn(dataset: Datum, column: number): Datum {
   return dataColumn ? dataColumn : null;
 }
 
-export default function datumByPosition(dataset: Datum[], position: Position): [Datum, Datum] {
+export default function datumByPosition(
+  dataset: Datum[],
+  position: Position,
+): [Datum, Datum] {
   const { column, row } = position;
   const dataRow = dataset[row];
   if (!dataRow) return [null, getDataColumn(dataset[0], column)];

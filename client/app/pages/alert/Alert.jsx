@@ -23,7 +23,9 @@ const MODES = {
   EDIT: 2,
 };
 
-const defaultNameBuilder = template("<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>");
+const defaultNameBuilder = template(
+  "<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>",
+);
 
 export function getDefaultName(alert) {
   if (!alert.query) {
@@ -85,7 +87,7 @@ class Alert extends React.Component {
               notification.warn(
                 "You cannot edit this alert",
                 "You do not have sufficient permissions to edit this alert, and have been redirected to the view-only page.",
-                { duration: 0 }
+                { duration: 0 },
               );
             }
 
@@ -223,7 +225,13 @@ class Alert extends React.Component {
     const { queryResult, mode, canEdit, pendingRearm } = this.state;
 
     const menuButton = (
-      <MenuButton doDelete={this.delete} muted={muted} mute={this.mute} unmute={this.unmute} canEdit={canEdit} />
+      <MenuButton
+        doDelete={this.delete}
+        muted={muted}
+        mute={this.mute}
+        unmute={this.unmute}
+        canEdit={canEdit}
+      />
     );
 
     const commonProps = {
@@ -244,9 +252,17 @@ class Alert extends React.Component {
         <div className="container">
           {mode === MODES.NEW && <AlertNew {...commonProps} />}
           {mode === MODES.VIEW && (
-            <AlertView canEdit={canEdit} onEdit={this.edit} muted={muted} unmute={this.unmute} {...commonProps} />
+            <AlertView
+              canEdit={canEdit}
+              onEdit={this.edit}
+              muted={muted}
+              unmute={this.unmute}
+              {...commonProps}
+            />
           )}
-          {mode === MODES.EDIT && <AlertEdit cancel={this.cancel} {...commonProps} />}
+          {mode === MODES.EDIT && (
+            <AlertEdit cancel={this.cancel} {...commonProps} />
+          )}
         </div>
       </div>
     );
@@ -259,7 +275,7 @@ routes.register(
     path: "/alerts/new",
     title: "New Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.NEW} />,
-  })
+  }),
 );
 routes.register(
   "Alerts.View",
@@ -267,7 +283,7 @@ routes.register(
     path: "/alerts/:alertId",
     title: "Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.VIEW} />,
-  })
+  }),
 );
 routes.register(
   "Alerts.Edit",
@@ -275,5 +291,5 @@ routes.register(
     path: "/alerts/:alertId/edit",
     title: "Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.EDIT} />,
-  })
+  }),
 );

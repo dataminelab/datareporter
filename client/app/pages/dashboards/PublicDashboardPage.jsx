@@ -20,16 +20,24 @@ import useDashboard from "./hooks/useDashboard";
 import "./PublicDashboardPage.less";
 
 function PublicDashboard({ dashboard }) {
-  const { globalParameters, filters, setFilters, refreshDashboard, loadWidget, refreshWidget } = useDashboard(
-    dashboard
-  );
+  const {
+    globalParameters,
+    filters,
+    setFilters,
+    refreshDashboard,
+    loadWidget,
+    refreshWidget,
+  } = useDashboard(dashboard);
 
   return (
     <div className="container p-t-10 p-b-20">
       <PageHeader title={dashboard.name} />
       {!isEmpty(globalParameters) && (
         <div className="m-b-10 p-15 bg-white tiled">
-          <Parameters parameters={globalParameters} onValuesChange={refreshDashboard} />
+          <Parameters
+            parameters={globalParameters}
+            onValuesChange={refreshDashboard}
+          />
         </div>
       )}
       {!isEmpty(filters) && (
@@ -55,7 +63,7 @@ function PublicDashboard({ dashboard }) {
 }
 
 PublicDashboard.propTypes = {
-  dashboard: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  dashboard: PropTypes.object.isRequired,
 };
 
 class PublicDashboardPage extends React.Component {
@@ -85,7 +93,11 @@ class PublicDashboardPage extends React.Component {
       <div className="public-dashboard-page">
         {loading ? (
           <div className="container loading-message">
-            <BigMessage className="" icon="fa-spinner fa-2x fa-pulse" message="Loading..." />
+            <BigMessage
+              className=""
+              icon="fa-spinner fa-2x fa-pulse"
+              message="Loading..."
+            />
           </div>
         ) : (
           <PublicDashboard dashboard={dashboard} />
@@ -109,5 +121,5 @@ routes.register(
     path: "/public/dashboards/:token",
     render: pageProps => <PublicDashboardPage {...pageProps} />,
     getApiKey: currentRoute => currentRoute.routeParams.token,
-  })
+  }),
 );

@@ -26,7 +26,11 @@ import { Unary } from "../../../common/utils/functional/functional";
 import { clamp } from "../../utils/dom/dom";
 import { DimensionListTile } from "../dimension-list-tile/dimension-list-tile";
 import { MeasuresTile } from "../measures-tile/measures-tile";
-import { Direction, DragHandle, ResizeHandle } from "../resize-handle/resize-handle";
+import {
+  Direction,
+  DragHandle,
+  ResizeHandle,
+} from "../resize-handle/resize-handle";
 import "./dimension-measure-panel.scss";
 
 export const MIN_PANEL_SIZE = 100;
@@ -61,11 +65,13 @@ export function initialPosition(height: number, dataCube: DataCube) {
   return clamp(height * ratio, minDividerPosition, maxDividerPosition);
 }
 
-export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanelProps, DimensionMeasurePanelState> {
-
+export class DimensionMeasurePanel extends React.Component<
+  DimensionMeasurePanelProps,
+  DimensionMeasurePanelState
+> {
   state: DimensionMeasurePanelState = {
     containerHeight: 2 * MIN_PANEL_SIZE,
-    dividerPosition: MIN_PANEL_SIZE
+    dividerPosition: MIN_PANEL_SIZE,
   };
 
   containerRef: Element = null;
@@ -74,15 +80,23 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
     if (!container) return;
 
     this.containerRef = container;
-    const { height: containerHeight } = this.containerRef.getBoundingClientRect();
-    const dividerPosition = initialPosition(containerHeight, this.props.essence.dataCube);
+    const { height: containerHeight } =
+      this.containerRef.getBoundingClientRect();
+    const dividerPosition = initialPosition(
+      containerHeight,
+      this.props.essence.dataCube,
+    );
 
     this.setState({ dividerPosition, containerHeight });
   };
 
-  saveDividerPosition = (dividerPosition: number) => this.setState({ dividerPosition });
+  saveDividerPosition = (dividerPosition: number) =>
+    this.setState({ dividerPosition });
 
-  saveContainerRect = () => this.setState({ containerHeight: this.containerRef.getBoundingClientRect().height });
+  saveContainerRect = () =>
+    this.setState({
+      containerHeight: this.containerRef.getBoundingClientRect().height,
+    });
 
   componentDidMount() {
     window.addEventListener("resize", this.saveContainerRect);
@@ -93,46 +107,61 @@ export class DimensionMeasurePanel extends React.Component<DimensionMeasurePanel
   }
 
   render() {
-    const { clicker, essence, menuStage, triggerFilterMenu, appendDirtySeries, style } = this.props;
+    const {
+      clicker,
+      essence,
+      menuStage,
+      triggerFilterMenu,
+      appendDirtySeries,
+      style,
+    } = this.props;
     const { dividerPosition, containerHeight } = this.state;
-    const { maxDividerPosition, minDividerPosition } = dividerConstraints(containerHeight);
+    const { maxDividerPosition, minDividerPosition } =
+      dividerConstraints(containerHeight);
 
     const dimensionListStyle: React.CSSProperties = {
-      height: dividerPosition
+      height: dividerPosition,
     };
 
     const measureListStyle: React.CSSProperties = {
-      height: containerHeight - dividerPosition - RESIZE_HANDLE_SIZE
+      height: containerHeight - dividerPosition - RESIZE_HANDLE_SIZE,
     };
 
     const showResizeHandle = this.containerRef !== null;
 
-    return <div className="dimension-measure-panel" style={style}>
-      <div ref={this.getInitialState} className="dimension-measure-panel--container">
-        <DimensionListTile
-          clicker={clicker}
-          essence={essence}
-          menuStage={menuStage}
-          triggerFilterMenu={triggerFilterMenu}
-          style={dimensionListStyle}
-        />
-        {showResizeHandle &&
-        <ResizeHandle
-          onResize={this.saveDividerPosition}
-          direction={Direction.TOP}
-          min={minDividerPosition}
-          max={maxDividerPosition}
-          value={dividerPosition}>
-          <DragHandle />
-        </ResizeHandle>}
-        <MeasuresTile
-          menuStage={menuStage}
-          style={measureListStyle}
-          clicker={clicker}
-          essence={essence}
-          appendDirtySeries={appendDirtySeries}
-        />
+    return (
+      <div className="dimension-measure-panel" style={style}>
+        <div
+          ref={this.getInitialState}
+          className="dimension-measure-panel--container"
+        >
+          <DimensionListTile
+            clicker={clicker}
+            essence={essence}
+            menuStage={menuStage}
+            triggerFilterMenu={triggerFilterMenu}
+            style={dimensionListStyle}
+          />
+          {showResizeHandle && (
+            <ResizeHandle
+              onResize={this.saveDividerPosition}
+              direction={Direction.TOP}
+              min={minDividerPosition}
+              max={maxDividerPosition}
+              value={dividerPosition}
+            >
+              <DragHandle />
+            </ResizeHandle>
+          )}
+          <MeasuresTile
+            menuStage={menuStage}
+            style={measureListStyle}
+            clicker={clicker}
+            essence={essence}
+            appendDirtySeries={appendDirtySeries}
+          />
+        </div>
       </div>
-    </div>;
+    );
   }
 }

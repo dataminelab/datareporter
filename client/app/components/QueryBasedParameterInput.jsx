@@ -1,12 +1,21 @@
-import { find, isArray, get, first, map, intersection, isEqual, isEmpty } from "lodash";
+import {
+  find,
+  isArray,
+  get,
+  first,
+  map,
+  intersection,
+  isEqual,
+  isEmpty,
+} from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import SelectWithVirtualScroll from "@/components/SelectWithVirtualScroll";
 
 export default class QueryBasedParameterInput extends React.Component {
   static propTypes = {
-    parameter: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-    value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+    parameter: PropTypes.any,
+    value: PropTypes.any,
     mode: PropTypes.oneOf(["default", "multiple"]),
     queryId: PropTypes.number,
     onSelect: PropTypes.func,
@@ -53,7 +62,8 @@ export default class QueryBasedParameterInput extends React.Component {
       this.setState({ value: validValues });
       return validValues;
     }
-    const found = find(options, option => option.value === this.props.value) !== undefined;
+    const found =
+      find(options, option => option.value === this.props.value) !== undefined;
     value = found ? value : get(first(options), "value");
     this.setState({ value });
     return value;
@@ -77,7 +87,7 @@ export default class QueryBasedParameterInput extends React.Component {
   }
 
   render() {
-    const { className, mode, onSelect, queryId, value, ...otherProps } = this.props;
+    const { className, mode, onSelect, ...otherProps } = this.props;
     const { loading, options } = this.state;
     return (
       <span>
@@ -88,7 +98,10 @@ export default class QueryBasedParameterInput extends React.Component {
           mode={mode}
           value={this.state.value}
           onChange={onSelect}
-          options={map(options, ({ value, name }) => ({ label: String(name), value }))}
+          options={map(options, ({ value, name }) => ({
+            label: String(name),
+            value,
+          }))}
           showSearch
           showArrow
           notFoundContent={isEmpty(options) ? "No options available" : null}

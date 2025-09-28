@@ -32,13 +32,11 @@ export interface CheckboxProps {
 }
 
 // eslint-disable-next-line
-export interface CheckboxState {
-}
+export interface CheckboxState {}
 
 export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
-
   static defaultProps: Partial<CheckboxProps> = {
-    type: "check"
+    type: "check",
   };
 
   renderIcon() {
@@ -60,10 +58,15 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
       style = { background: color };
     }
 
-    return <div className={classNames("checkbox", type, className, { selected, color })} onClick={onClick}>
-      <div className="checkbox-body" style={style} />
-      {this.renderIcon()}
-      {label ? <div className="label">{label}</div> : null}
-    </div>;
+    return (
+      <div
+        className={classNames("checkbox", type, className, { selected, color })}
+        onClick={onClick}
+      >
+        <div className="checkbox-body" style={style} />
+        {this.renderIcon()}
+        {label ? <div className="label">{label}</div> : null}
+      </div>
+    );
   }
 }

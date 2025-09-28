@@ -35,7 +35,7 @@ function useNavbarActiveState() {
           "Dashboards.ViewOrEdit",
           "Dashboards.LegacyViewOrEdit",
         ],
-        currentRoute.id
+        currentRoute.id,
       ),
       queries: includes(
         [
@@ -47,13 +47,19 @@ function useNavbarActiveState() {
           "Queries.New",
           "Queries.Edit",
         ],
-        currentRoute.id
+        currentRoute.id,
       ),
       dataSources: includes(["DataSources.List"], currentRoute.id),
-      alerts: includes(["Alerts.List", "Alerts.New", "Alerts.View", "Alerts.Edit"], currentRoute.id),
-      reports: includes(["Reports.List", "Reports.View", "Reports.Edit", "Reports.New"], currentRoute.id),
+      alerts: includes(
+        ["Alerts.List", "Alerts.New", "Alerts.View", "Alerts.Edit"],
+        currentRoute.id,
+      ),
+      reports: includes(
+        ["Reports.List", "Reports.View", "Reports.Edit", "Reports.New"],
+        currentRoute.id,
+      ),
     }),
-    [currentRoute.id]
+    [currentRoute.id],
   );
 }
 
@@ -66,13 +72,13 @@ export default function DesktopNavbar() {
   const canCreateDashboard = currentUser.hasPermission("create_dashboard");
   const canCreateAlert = currentUser.hasPermission("list_alerts");
 
-  const handleDeepRefresh = (event) => {
+  const handleDeepRefresh = event => {
     event.stopPropagation();
     localStorage.setItem("bypass_cache", true);
     window.location.reload();
-  }
+  };
 
-  const handleNewReportButton = (event) => {
+  const handleNewReportButton = event => {
     event.preventDefault();
     window.location.hash = "#";
     if (window.location.pathname !== "/reports/new") {
@@ -80,25 +86,31 @@ export default function DesktopNavbar() {
     } else {
       window.location.reload();
     }
-  }
+  };
 
   return (
     <div className="desktop-navbar-report">
       <NavbarSection className="desktop-navbar-logo">
         <div role="menuitem">
           <Link href="./">
-            <img className="logo" src={logoUrl} alt="Data reporter" width="25" height="26" />
+            <img
+              className="logo"
+              src={logoUrl}
+              alt="Data reporter"
+              width="25"
+              height="26"
+            />
           </Link>
         </div>
       </NavbarSection>
 
       <NavbarSection className="left-border">
         {currentUser.hasPermission("list_dashboards") && (
-          <Menu.Item key="dashboards" className={activeState.dashboards ? "navbar-active-item" : null}>
-            <Tooltip
-              placement="bottom"
-              title="Dashboards"
-            >
+          <Menu.Item
+            key="dashboards"
+            className={activeState.dashboards ? "navbar-active-item" : null}
+          >
+            <Tooltip placement="bottom" title="Dashboards">
               <Link href="dashboards">
                 <i className="icon-ui icon-dashboard"></i>
               </Link>
@@ -106,35 +118,35 @@ export default function DesktopNavbar() {
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
-          <Menu.Item key="queries" className={activeState.queries ? "navbar-active-item" : null}>
-            <Tooltip
-              placement="bottom"
-              title="Queries"
-            >
+          <Menu.Item
+            key="queries"
+            className={activeState.queries ? "navbar-active-item" : null}
+          >
+            <Tooltip placement="bottom" title="Queries">
               <Link href="queries">
-                  <i className="icon-ui  icon-command-line"></i>
-                </Link>
+                <i className="icon-ui  icon-command-line"></i>
+              </Link>
             </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("view_query") && (
-          <Menu.Item key="reports" className={activeState.reports ? "navbar-active-item" : null}>
-            <Tooltip
-              placement="bottom"
-              title="Reports"
-            >
+          <Menu.Item
+            key="reports"
+            className={activeState.reports ? "navbar-active-item" : null}
+          >
+            <Tooltip placement="bottom" title="Reports">
               <Link href="reports">
-                  <i className="icon-ui  icon-bar-chart"></i>
-                </Link>
-              </Tooltip>
+                <i className="icon-ui  icon-bar-chart"></i>
+              </Link>
+            </Tooltip>
           </Menu.Item>
         )}
         {currentUser.hasPermission("list_alerts") && (
-          <Menu.Item key="alerts" className={activeState.alerts ? "navbar-active-item" : null}>
-            <Tooltip
-              placement="bottom"
-              title="Alerts"
-            >
+          <Menu.Item
+            key="alerts"
+            className={activeState.alerts ? "navbar-active-item" : null}
+          >
+            <Tooltip placement="bottom" title="Alerts">
               <Link href="alerts">
                 <i className="icon-ui  icon-notifications-allerts-bell"></i>
               </Link>
@@ -144,18 +156,21 @@ export default function DesktopNavbar() {
       </NavbarSection>
 
       <NavbarSection className="desktop-navbar-spacer">
-        {(canCreateQuery || canCreateDashboard || canCreateAlert) && <Menu.Divider />}
+        {(canCreateQuery || canCreateDashboard || canCreateAlert) && (
+          <Menu.Divider />
+        )}
         {(canCreateQuery || canCreateDashboard || canCreateAlert) && (
           <Menu.SubMenu
             key="create"
             popupOffset={[-36, 60]}
             title={
               <React.Fragment>
-              <Link data-test="CreateButton">
-                <i className="icon-ui  icon-plus"></i>
-              </Link>
-            </React.Fragment>
-            }>
+                <Link data-test="CreateButton">
+                  <i className="icon-ui  icon-plus"></i>
+                </Link>
+              </React.Fragment>
+            }
+          >
             {canCreateQuery && (
               <Menu.Item key="new-query">
                 <Link href="queries/new" data-test="CreateQueryMenuItem">
@@ -165,14 +180,21 @@ export default function DesktopNavbar() {
             )}
             {canCreateQuery && (
               <Menu.Item key="new-report">
-                <Link href="reports/new" onClick={handleNewReportButton} data-test="CreateReportMenuItem">
+                <Link
+                  href="reports/new"
+                  onClick={handleNewReportButton}
+                  data-test="CreateReportMenuItem"
+                >
                   New Report
                 </Link>
               </Menu.Item>
             )}
             {canCreateDashboard && (
               <Menu.Item key="new-dashboard">
-                <PlainButton data-test="CreateDashboardMenuItem" onClick={() => CreateDashboardDialog.showModal()}>
+                <PlainButton
+                  data-test="CreateDashboardMenuItem"
+                  onClick={() => CreateDashboardDialog.showModal()}
+                >
                   New Dashboard
                 </PlainButton>
               </Menu.Item>
@@ -194,10 +216,18 @@ export default function DesktopNavbar() {
           popupOffset={[-36, 60]}
           tabIndex={0}
           title={
-            <span data-test="ProfileDropdown" className="desktop-navbar-profile-menu-title">
-              <img className="profile__image_thumb" src={currentUser.profile_image_url} alt={currentUser.name} />
+            <span
+              data-test="ProfileDropdown"
+              className="desktop-navbar-profile-menu-title"
+            >
+              <img
+                className="profile__image_thumb"
+                src={currentUser.profile_image_url}
+                alt={currentUser.name}
+              />
             </span>
-          }>
+          }
+        >
           <Menu.Item key="profile">
             <Link href="users/me">Profile</Link>
           </Menu.Item>
@@ -213,7 +243,12 @@ export default function DesktopNavbar() {
             </PlainButton>
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item key="version" role="presentation" disabled className="version-info">
+          <Menu.Item
+            key="version"
+            role="presentation"
+            disabled
+            className="version-info"
+          >
             <VersionInfo />
           </Menu.Item>
         </Menu.SubMenu>

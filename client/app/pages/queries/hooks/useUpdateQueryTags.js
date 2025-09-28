@@ -10,6 +10,6 @@ export default function useUpdateQueryTags(query, onChange) {
       recordEvent("edit_tags", "query", query.id);
       updateQuery({ tags });
     },
-    [query.id, updateQuery]
+    [query.id, updateQuery],
   );
 }

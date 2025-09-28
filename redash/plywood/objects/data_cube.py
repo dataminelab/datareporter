@@ -1,8 +1,7 @@
-from typing import List
-
-import yaml
+from typing import List, Union
 
 import pydash
+import yaml
 
 from redash.models.models import Model
 from redash.plywood.objects.report_serializer import ReportMetaData
@@ -11,9 +10,9 @@ from redash.utils.big_query_utils import get_price_for_query
 
 
 def lower_kind(obj: dict):
-    for v in obj['dimensions']:
-        if 'kind' in v:
-            v['kind'] = v['kind'].lower()
+    for v in obj["dimensions"]:
+        if "kind" in v:
+            v["kind"] = v["kind"].lower()
 
 
 class DataCube:
@@ -22,38 +21,38 @@ class DataCube:
 
     @property
     def null_value(self):
-        if self.ply_engine == 'postgres':
+        if self.ply_engine == "postgres":
             return "IS NULL"
-        elif self.ply_engine == 'bigquery':
+        elif self.ply_engine == "bigquery":
             return "IS NULL"
-        elif self.ply_engine == 'mysql':
+        elif self.ply_engine == "mysql":
             return "IS NULL"
-        elif self.ply_engine == 'athena':
+        elif self.ply_engine == "athena":
             return "IS NULL"
-        elif self.ply_engine == 'druid':
+        elif self.ply_engine == "druid":
             return "IS NULL"
         return "IS NULL"
 
-    def get_meta(self, queries: List[dict]) -> ReportMetaData:
+    def get_meta(self, queries: List[dict]) -> Union[ReportMetaData, None]:
         meta = ReportMetaData()
-        if self.ply_engine == 'athena':
+        if self.ply_engine == "athena":
             for query in queries:
-                meta_data = query['query_result']['data']['metadata']
+                meta_data = query["query_result"]["data"]["metadata"]
 
-                if 'query_cost' in meta_data:
-                    meta.price += meta_data['query_cost']
-                if 'data_scanned' in meta_data:
-                    meta.proceed_data += meta_data['data_scanned']
+                if "query_cost" in meta_data:
+                    meta.price += meta_data["query_cost"]
+                if "data_scanned" in meta_data:
+                    meta.proceed_data += meta_data["data_scanned"]
 
-        if self.ply_engine == 'bigquery':
+        if self.ply_engine == "bigquery":
             for query in queries:
-                meta_data = query['query_result']['data']['metadata']
+                meta_data = query["query_result"]["data"]["metadata"]
 
-                cache_hit = meta_data.get('cache_hit', False)
+                cache_hit = meta_data.get("cache_hit", False)
 
                 if cache_hit is False:
-                    if 'data_scanned' in meta_data:
-                        meta.proceed_data += meta_data['data_scanned']
+                    if "data_scanned" in meta_data:
+                        meta.proceed_data += meta_data["data_scanned"]
 
             price = get_price_for_query(meta.proceed_data)
             meta.price = price
@@ -103,8 +102,4 @@ class DataCube:
     @property
     def context(self) -> dict:
         """Returns context of the DataCube in dict format"""
-        return {
-            "engine": self.ply_engine,
-            "source": self._get_table_name(),
-            "attributes": self.attributes
-        }
+        return {"engine": self.ply_engine, "source": self._get_table_name(), "attributes": self.attributes}

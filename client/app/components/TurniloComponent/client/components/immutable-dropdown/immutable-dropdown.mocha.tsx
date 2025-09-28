@@ -27,7 +27,10 @@ import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 
 import { ImmutableDropdown } from "./immutable-dropdown";
 
-const ITEMS = [{ value: "value1", label: "label1" }, { value: "value2", label: "label2" }];
+const ITEMS = [
+  { value: "value1", label: "label1" },
+  { value: "value2", label: "label2" },
+];
 
 describe("ImmutableDropdown", () => {
   let component: any;
@@ -35,7 +38,6 @@ describe("ImmutableDropdown", () => {
   let onChange: any;
 
   beforeEach(() => {
-
     onChange = sinon.spy();
 
     component = renderIntoDocument(
@@ -43,23 +45,25 @@ describe("ImmutableDropdown", () => {
         instance={DataCubeFixtures.twitter()}
         path={"clusterName"}
         label="Cluster"
-
         onChange={onChange}
-
         items={ITEMS}
-
         equal={(a: ListItem, b: ListItem) => a.value === b.value}
         renderItem={(a: ListItem) => a.label}
         keyItem={(a: ListItem) => a.value}
-      />
+      />,
     );
 
     node = findDOMNode(component) as any;
   });
 
   it("adds the correct class", () => {
-    expect(TestUtils.isCompositeComponent(component), "should be composite").to.equal(true);
-    expect(node.className, "should contain class").to.contain("immutable-dropdown");
+    expect(
+      TestUtils.isCompositeComponent(component),
+      "should be composite",
+    ).to.equal(true);
+    expect(node.className, "should contain class").to.contain(
+      "immutable-dropdown",
+    );
   });
 
   it("selects an item and calls onChange", () => {
@@ -67,7 +71,10 @@ describe("ImmutableDropdown", () => {
 
     TestUtils.Simulate.click(node);
 
-    const items = TestUtils.scryRenderedDOMComponentsWithClass(component, "dropdown-item");
+    const items = TestUtils.scryRenderedDOMComponentsWithClass(
+      component,
+      "dropdown-item",
+    );
 
     TestUtils.Simulate.click(items[1]);
 
@@ -82,5 +89,4 @@ describe("ImmutableDropdown", () => {
 
     expect(args[2]).to.equal("clusterName");
   });
-
 });

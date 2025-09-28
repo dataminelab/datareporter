@@ -24,7 +24,7 @@ export enum ExpressionSeriesOperation {
   SUBTRACT = "subtract",
   ADD = "add",
   MULTIPLY = "multiply",
-  DIVIDE = "divide"
+  DIVIDE = "divide",
 }
 
 export type Expression = PercentExpression | ArithmeticExpression;
@@ -34,7 +34,11 @@ export interface ExpressionValue {
 }
 
 export interface ConcreteExpression {
-  toExpression(expression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression;
+  toExpression(
+    expression: PlywoodExpression,
+    name: string,
+    nestingLevel: number,
+  ): ApplyExpression;
   title(): string;
 }
 

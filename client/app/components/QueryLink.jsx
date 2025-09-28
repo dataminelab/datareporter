@@ -21,17 +21,19 @@ function QueryLink({ query, visualization, readOnly }) {
     return query.getUrl(false, hash);
   };
 
-  const QueryLinkWrapper = props => (readOnly ? <span {...props} /> : <Link href={getUrl()} {...props} />);
+  const QueryLinkWrapper = props =>
+    readOnly ? <span {...props} /> : <Link href={getUrl()} {...props} />;
 
   return (
     <QueryLinkWrapper className="query-link">
-      <VisualizationName visualization={visualization} /> <span>{query.name}</span>
+      <VisualizationName visualization={visualization} />{" "}
+      <span>{query.name}</span>
     </QueryLinkWrapper>
   );
 }
 
 QueryLink.propTypes = {
-  query: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  query: PropTypes.object.isRequired,
   visualization: VisualizationType,
   readOnly: PropTypes.bool,
 };

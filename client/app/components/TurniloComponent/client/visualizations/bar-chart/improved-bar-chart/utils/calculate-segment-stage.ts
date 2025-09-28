@@ -19,7 +19,11 @@ import { Stage } from "../../../../../common/models/stage/stage";
 const BAR_MIN_WIDTH = 30;
 const MIN_CHART_HEIGHT = 200;
 
-export function calculateSegmentStage(bodyStage: Stage, domainSize: number, seriesCount: number): Stage {
+export function calculateSegmentStage(
+  bodyStage: Stage,
+  domainSize: number,
+  seriesCount: number,
+): Stage {
   const width = Math.max(bodyStage.width, domainSize * BAR_MIN_WIDTH);
   const availableHeight = bodyStage.height;
   const heightFromEvenDivision = Math.floor(availableHeight / seriesCount);

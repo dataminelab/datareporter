@@ -6,7 +6,8 @@ import UploadOutlinedIcon from "@ant-design/icons/UploadOutlined";
 export default function FileField({ form, field, ...otherProps }) {
   const { name, initialValue } = field;
   const { getFieldValue } = form;
-  const disabled = getFieldValue(name) !== undefined && getFieldValue(name) !== initialValue;
+  const disabled =
+    getFieldValue(name) !== undefined && getFieldValue(name) !== initialValue;
 
   return (
     <Upload {...otherProps} beforeUpload={() => false}>

@@ -34,24 +34,41 @@ describe("Measures", () => {
   });
 
   it("should throw when converting tree with duplicate measure names", () => {
-    const measuresWithDuplicateMeasureName = [MeasureFixtures.wikiCountJS(), MeasureFixtures.wikiCountJS()];
-    expect(() => Measures.fromJS(measuresWithDuplicateMeasureName)).to.throw("found duplicate measure or group with names: 'count'");
+    const measuresWithDuplicateMeasureName = [
+      MeasureFixtures.wikiCountJS(),
+      MeasureFixtures.wikiCountJS(),
+    ];
+    expect(() => Measures.fromJS(measuresWithDuplicateMeasureName)).to.throw(
+      "found duplicate measure or group with names: 'count'",
+    );
   });
 
   it("should throw when converting tree with duplicate measure or group names", () => {
-    const fakeMeasureWithDuplicateName: MeasureJS = { name: "added_group", formula: "$main.sum($count)" };
-    const measuresWithDuplicateMeasureName = [fakeMeasureWithDuplicateName, ...MeasuresFixtures.wikiJS()];
-    expect(() => Measures.fromJS(measuresWithDuplicateMeasureName)).to.throw("found duplicate measure or group with names: 'added_group'");
+    const fakeMeasureWithDuplicateName: MeasureJS = {
+      name: "added_group",
+      formula: "$main.sum($count)",
+    };
+    const measuresWithDuplicateMeasureName = [
+      fakeMeasureWithDuplicateName,
+      ...MeasuresFixtures.wikiJS(),
+    ];
+    expect(() => Measures.fromJS(measuresWithDuplicateMeasureName)).to.throw(
+      "found duplicate measure or group with names: 'added_group'",
+    );
   });
 
   it("should throw when converting tree with previous measure name", () => {
     const measureWithForbiddenNames = [MeasureFixtures.previousWikiCountJS()];
-    expect(() => Measures.fromJS(measureWithForbiddenNames)).to.throw("found measure that starts with forbidden prefixes: '_previous__count' (prefix: '_previous__')");
+    expect(() => Measures.fromJS(measureWithForbiddenNames)).to.throw(
+      "found measure that starts with forbidden prefixes: '_previous__count' (prefix: '_previous__')",
+    );
   });
 
   it("should throw when converting tree with delta measure name", () => {
     const measureWithForbiddenNames = [MeasureFixtures.deltaWikiCountJS()];
-    expect(() => Measures.fromJS(measureWithForbiddenNames)).to.throw("found measure that starts with forbidden prefixes: '_delta__count' (prefix: '_delta__')");
+    expect(() => Measures.fromJS(measureWithForbiddenNames)).to.throw(
+      "found measure that starts with forbidden prefixes: '_delta__count' (prefix: '_delta__')",
+    );
   });
 
   it("should count measures", () => {
@@ -59,7 +76,9 @@ describe("Measures", () => {
   });
 
   it("should return the first measure", () => {
-    expect(measures.first().toJS()).to.deep.equal(MeasureFixtures.wikiCountJS());
+    expect(measures.first().toJS()).to.deep.equal(
+      MeasureFixtures.wikiCountJS(),
+    );
   });
 
   it("should treat measures with the same structure as equal", () => {
@@ -103,7 +122,9 @@ describe("Measures", () => {
   });
 
   it("should find measure by expression", () => {
-    const measure = measures.getMeasureByExpression(Expression.fromJSLoose("$main.sum($count)"));
+    const measure = measures.getMeasureByExpression(
+      Expression.fromJSLoose("$main.sum($count)"),
+    );
 
     expect(measure.toJS()).to.deep.equal(MeasureFixtures.wikiCountJS());
   });

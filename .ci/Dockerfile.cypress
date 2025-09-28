@@ -7,8 +7,8 @@ USER datareporter
 WORKDIR $APP
 COPY --chown=datareporter client $APP/client
 COPY --chown=datareporter viz-lib/ $APP/viz-lib
-COPY --chown=datareporter plywood/server $APP/plywood/server/
-COPY --chown=datareporter plywood/server/client $APP/plywood/server/client
+COPY --chown=datareporter plywood $APP/plywood
+COPY --chown=datareporter plywood/client $APP/plywood/client
 
 WORKDIR $APP/client
 RUN npm i && npm run build

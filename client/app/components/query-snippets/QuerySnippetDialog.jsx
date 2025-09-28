@@ -21,16 +21,26 @@ function QuerySnippetDialog({ querySnippet, dialog, readOnly }) {
         .then(() => successCallback("Saved."))
         .catch(() => errorCallback("Failed saving snippet."));
     },
-    [dialog, querySnippet]
+    [dialog, querySnippet],
   );
 
   const isEditing = !!get(querySnippet, "id");
 
   const formFields = [
-    { name: "trigger", title: "Trigger", type: "text", required: true, autoFocus: !isEditing },
+    {
+      name: "trigger",
+      title: "Trigger",
+      type: "text",
+      required: true,
+      autoFocus: !isEditing,
+    },
     { name: "description", title: "Description", type: "text" },
     { name: "snippet", title: "Snippet", type: "ace", required: true },
-  ].map(field => ({ ...field, readOnly, initialValue: get(querySnippet, field.name, "") }));
+  ].map(field => ({
+    ...field,
+    readOnly,
+    initialValue: get(querySnippet, field.name, ""),
+  }));
 
   const querySnippetsFormId = useUniqueId("querySnippetForm");
 
@@ -39,7 +49,11 @@ function QuerySnippetDialog({ querySnippet, dialog, readOnly }) {
       {...dialog.props}
       title={isEditing ? querySnippet.trigger : "Create Query Snippet"}
       footer={[
-        <Button key="cancel" {...dialog.props.cancelButtonProps} onClick={dialog.dismiss}>
+        <Button
+          key="cancel"
+          {...dialog.props.cancelButtonProps}
+          onClick={dialog.dismiss}
+        >
           {readOnly ? "Close" : "Cancel"}
         </Button>,
         !readOnly && (
@@ -50,14 +64,16 @@ function QuerySnippetDialog({ querySnippet, dialog, readOnly }) {
             htmlType="submit"
             type="primary"
             form={querySnippetsFormId}
-            data-test="SaveQuerySnippetButton">
+            data-test="SaveQuerySnippetButton"
+          >
             {isEditing ? "Save" : "Create"}
           </Button>
         ),
       ]}
       wrapProps={{
         "data-test": "QuerySnippetDialog",
-      }}>
+      }}
+    >
       <DynamicForm
         id={querySnippetsFormId}
         fields={formFields}

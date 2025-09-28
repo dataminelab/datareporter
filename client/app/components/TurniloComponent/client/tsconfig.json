@@ -9,9 +9,12 @@
     "outDir": "../../build",
     "experimentalDecorators": true
   },
+  "types": ["types/index.d.ts", "highlight.js"],
   "include": [
     "../../node_modules/highlight.js/types/index.d.ts",
     "./**/*.ts*",
     "../**/*.ts*",
+    "./**/*.js*",
+    "../**/*.js*",
   ]
 }

@@ -19,31 +19,31 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { Split } from "../../../../common/models/split/split";
 
 function dimensionForSplit(essence: Essence, split: Split): Dimension {
-   return essence.dataCube.getDimension(split.reference);
+  return essence.dataCube.getDimension(split.reference);
 }
 
 export function getContinuousSplit({ splits: { splits } }: Essence): Split {
-   return splits.last();
+  return splits.last();
 }
 
 export function getContinuousDimension(essence: Essence): Dimension {
-   const split = getContinuousSplit(essence);
-   return dimensionForSplit(essence, split);
+  const split = getContinuousSplit(essence);
+  return dimensionForSplit(essence, split);
 }
 
 export function getContinuousReference(essence: Essence): string {
-   return getContinuousSplit(essence).reference;
+  return getContinuousSplit(essence).reference;
 }
 
 export function getNominalSplit({ splits: { splits } }: Essence): Split | null {
-   return splits.count() === 1 ? null : splits.first();
+  return splits.count() === 1 ? null : splits.first();
 }
 
 export function hasNominalSplit(essence: Essence): boolean {
-   return getNominalSplit(essence) !== null;
+  return getNominalSplit(essence) !== null;
 }
 
 export function getNominalDimension(essence: Essence): Dimension | null {
-   const split = getNominalSplit(essence);
-   return split && dimensionForSplit(essence, split);
+  const split = getNominalSplit(essence);
+  return split && dimensionForSplit(essence, split);
 }

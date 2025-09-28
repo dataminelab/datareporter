@@ -27,7 +27,7 @@ function AddToDashboardDialog({ dialog, visualization }) {
       }
       return Promise.resolve([]);
     },
-    { initialResults: [] }
+    { initialResults: [] },
   );
 
   const [selectedDashboard, setSelectedDashboard] = useState(null);
@@ -47,18 +47,22 @@ function AddToDashboardDialog({ dialog, visualization }) {
       })
       .then(dashboard => {
         dialog.close();
-        const key = `notification-${Math.random()
-          .toString(36)
-          .slice(2, 12)}`;
+        const key = `notification-${Math.random().toString(36).slice(2, 12)}`;
         notification.success(
           "Widget added to dashboard",
           <React.Fragment>
-            <Link href={`${dashboard.url}`} onClick={() => notification.close(key)}>
+            <Link
+              href={`${dashboard.url}`}
+              onClick={() => notification.close(key)}
+            >
               {dashboard.name}
             </Link>
-            <QueryTagsControl isDraft={dashboard.is_draft} tags={dashboard.tags} />
+            <QueryTagsControl
+              isDraft={dashboard.is_draft}
+              tags={dashboard.tags}
+            />
           </React.Fragment>,
-          { key }
+          { key },
         );
       })
       .catch(() => {
@@ -75,10 +79,16 @@ function AddToDashboardDialog({ dialog, visualization }) {
     <Modal
       {...dialog.props}
       title="Add to Dashboard"
-      okButtonProps={{ disabled: !selectedDashboard || saveInProgress, loading: saveInProgress }}
+      okButtonProps={{
+        disabled: !selectedDashboard || saveInProgress,
+        loading: saveInProgress,
+      }}
       cancelButtonProps={{ disabled: saveInProgress }}
-      onOk={addWidgetToDashboard}>
-      <label htmlFor="add-to-dashboard-dialog-dashboard">Choose the dashboard to add this query to:</label>
+      onOk={addWidgetToDashboard}
+    >
+      <label htmlFor="add-to-dashboard-dialog-dashboard">
+        Choose the dashboard to add this query to:
+      </label>
 
       {!selectedDashboard && (
         <Input
@@ -90,7 +100,10 @@ function AddToDashboardDialog({ dialog, visualization }) {
           value={searchTerm}
           onChange={event => setSearchTerm(event.target.value)}
           suffix={
-            <PlainButton className={searchTerm === "" ? "hidden" : null} onClick={() => setSearchTerm("")}>
+            <PlainButton
+              className={searchTerm === "" ? "hidden" : null}
+              onClick={() => setSearchTerm("")}
+            >
               <CloseOutlinedIcon />
             </PlainButton>
           }
@@ -99,7 +112,11 @@ function AddToDashboardDialog({ dialog, visualization }) {
 
       {(items.length > 0 || isLoading) && (
         <List
-          className={selectedDashboard ? "add-to-dashboard-dialog-selection" : "add-to-dashboard-dialog-search-results"}
+          className={
+            selectedDashboard
+              ? "add-to-dashboard-dialog-selection"
+              : "add-to-dashboard-dialog-search-results"
+          }
           bordered
           itemLayout="horizontal"
           loading={isLoading}
@@ -116,7 +133,8 @@ function AddToDashboardDialog({ dialog, visualization }) {
                     ]
                   : []
               }
-              onClick={selectedDashboard ? null : () => setSelectedDashboard(d)}>
+              onClick={selectedDashboard ? null : () => setSelectedDashboard(d)}
+            >
               <div className="add-to-dashboard-dialog-item-content">
                 {d.name}
                 <QueryTagsControl isDraft={d.is_draft} tags={d.tags} />
@@ -131,7 +149,7 @@ function AddToDashboardDialog({ dialog, visualization }) {
 
 AddToDashboardDialog.propTypes = {
   dialog: DialogPropType.isRequired,
-  visualization: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  visualization: PropTypes.object.isRequired,
 };
 
 export default wrapDialog(AddToDashboardDialog);

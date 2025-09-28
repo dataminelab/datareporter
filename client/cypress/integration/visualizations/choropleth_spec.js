@@ -37,7 +37,9 @@ describe("Choropleth", () => {
       cy.getByTestId("ExecuteButton").click();
     });
     cy.getByTestId("NewVisualization").click();
-    cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.CHOROPLETH");
+    cy.getByTestId("VisualizationType").selectAntdOption(
+      "VisualizationType.CHOROPLETH",
+    );
   });
 
   it("creates visualization", () => {
@@ -80,6 +82,8 @@ describe("Choropleth", () => {
       .find(".map-visualization-container.leaflet-container")
       .should("exist");
 
-    cy.percySnapshot("Visualizations - Choropleth", { widths: [viewportWidth] });
+    cy.percySnapshot("Visualizations - Choropleth", {
+      widths: [viewportWidth],
+    });
   });
 });

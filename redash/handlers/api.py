@@ -15,6 +15,7 @@ from redash.handlers.dashboards import (
     DashboardFavoriteListResource,
     DashboardForkResource,
     DashboardListResource,
+    DashboardPromptResource,
     DashboardResource,
     DashboardShareResource,
     DashboardTagsResource,
@@ -24,12 +25,12 @@ from redash.handlers.dashboards import (
 from redash.handlers.data_source_tables import DataSourceTablesResource
 from redash.handlers.data_sources import (
     DataSourceListResource,
+    DataSourceModelsResource,
     DataSourcePauseResource,
     DataSourceResource,
     DataSourceSchemaResource,
     DataSourceTestResource,
     DataSourceTypeListResource,
-    DataSourceModelsResource,
 )
 from redash.handlers.databricks import (
     DatabricksDatabaseListResource,
@@ -53,9 +54,10 @@ from redash.handlers.groups import (
     GroupListResource,
     GroupMemberListResource,
     GroupMemberResource,
+    GroupPermissionResource,
     GroupResource,
 )
-from redash.handlers.model_configs import ModelsConfigResource, ModelsConfigGetResource
+from redash.handlers.model_configs import ModelsConfigGetResource, ModelsConfigResource
 from redash.handlers.models import ModelsListResource, ModelsResource
 from redash.handlers.permissions import (
     CheckPermissionResource,
@@ -70,10 +72,10 @@ from redash.handlers.queries import (
     QueryRecentResource,
     QueryRefreshResource,
     QueryRegenerateApiKeyResource,
-    ReportRegenerateApiKeyResource,
     QueryResource,
     QuerySearchResource,
     QueryTagsResource,
+    ReportRegenerateApiKeyResource,
 )
 from redash.handlers.query_results import (
     JobResource,
@@ -87,17 +89,17 @@ from redash.handlers.query_snippets import (
     QuerySnippetResource,
 )
 from redash.handlers.reports import (
-    ReportsListResource,
-    ReportGenerateResource,
-    ReportGeneratePublicResource,
-    ReportResource,
-    ReportFilter,
-    ReportFavoriteListResource,
-    ReportTagsResource,
-    ReportsArchiveResource,
     PublicReportResource,
-    ReportShareResource,
     ReportApiKeyAccess,
+    ReportFavoriteListResource,
+    ReportFilter,
+    ReportGeneratePublicResource,
+    ReportGenerateResource,
+    ReportResource,
+    ReportsArchiveResource,
+    ReportShareResource,
+    ReportsListResource,
+    ReportTagsResource,
 )
 from redash.handlers.settings import OrganizationSettings
 from redash.handlers.users import (
@@ -152,6 +154,7 @@ api.add_org_resource(AlertListResource, "/api/alerts", endpoint="alerts")
 
 api.add_org_resource(DashboardListResource, "/api/dashboards", endpoint="dashboards")
 api.add_org_resource(DashboardResource, "/api/dashboards/<dashboard_id>", endpoint="dashboard")
+api.add_org_resource(DashboardPromptResource, "/api/dashboards/<dashboard_id>/prompt", endpoint="dashboard_prompt")
 api.add_org_resource(
     PublicDashboardResource,
     "/api/dashboards/public/<token>",
@@ -181,6 +184,7 @@ api.add_org_resource(DataSourceResource, "/api/data_sources/<data_source_id>", e
 
 api.add_org_resource(GroupListResource, "/api/groups", endpoint="groups")
 api.add_org_resource(GroupResource, "/api/groups/<group_id>", endpoint="group")
+api.add_org_resource(GroupPermissionResource, "/api/groups/<group_id>/permissions", endpoint="group_permissions")
 api.add_org_resource(GroupMemberListResource, "/api/groups/<group_id>/members", endpoint="group_members")
 api.add_org_resource(
     GroupMemberResource,

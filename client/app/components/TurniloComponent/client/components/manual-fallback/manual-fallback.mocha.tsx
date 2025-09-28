@@ -22,12 +22,13 @@ import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures
 import { MessageCard } from "../message-card/message-card";
 import { ManualFallback } from "./manual-fallback";
 
-const renderFallback = () => shallow(
-  <ManualFallback
-    clicker={null}
-    essence={EssenceFixtures.wikiLineChartNoSplits()}
-  />
-);
+const renderFallback = () =>
+  shallow(
+    <ManualFallback
+      clicker={null}
+      essence={EssenceFixtures.wikiLineChartNoSplits()}
+    />,
+  );
 
 describe("ManualFallback", () => {
   it("should render MessageCard", () => {
@@ -41,7 +42,9 @@ describe("ManualFallback", () => {
     const fallback = renderFallback();
     const titleProp = fallback.find(MessageCard).prop("title");
 
-    expect(titleProp).to.be.equal("This visualization requires a continuous dimension split");
+    expect(titleProp).to.be.equal(
+      "This visualization requires a continuous dimension split",
+    );
   });
 
   it("should render resolutions", () => {
@@ -62,6 +65,8 @@ describe("ManualFallback", () => {
     const fallback = renderFallback();
     const secondResolution = fallback.find(".resolution-item").at(1);
 
-    expect(secondResolution.text()).to.be.equal("Add a split on Comment Length");
+    expect(secondResolution.text()).to.be.equal(
+      "Add a split on Comment Length",
+    );
   });
 });

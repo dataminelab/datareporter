@@ -63,7 +63,10 @@ export default function useQueryExecute(query) {
 
     const onStatusChange = status => {
       if (queryResultInExecution.current === newQueryResult) {
-        setExecutionState({ updatedAt: newQueryResult.getUpdatedAt(), executionStatus: status });
+        setExecutionState({
+          updatedAt: newQueryResult.getUpdatedAt(),
+          executionStatus: status,
+        });
       }
     };
 
@@ -78,7 +81,10 @@ export default function useQueryExecute(query) {
           }
 
           if (executionState.loadedInitialResults) {
-            notifications.showNotification("Data reporter", `${query.name} updated.`);
+            notifications.showNotification(
+              "Data reporter",
+              `${query.name} updated.`,
+            );
           }
 
           setExecutionState({
@@ -94,7 +100,10 @@ export default function useQueryExecute(query) {
       .catch(queryResult => {
         if (queryResultInExecution.current === newQueryResult) {
           if (executionState.loadedInitialResults) {
-            notifications.showNotification("Data reporter", `${query.name} failed to run: ${queryResult.getError()}`);
+            notifications.showNotification(
+              "Data reporter",
+              `${query.name} failed to run: ${queryResult.getError()}`,
+            );
           }
 
           setExecutionState({

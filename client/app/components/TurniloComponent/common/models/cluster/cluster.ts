@@ -77,7 +77,9 @@ function validateUrl(url: string): void {
   try {
     new URL(url);
   } catch (e) {
-    throw new Error(`Cluster url: ${url} has invalid format. It should be http[s]://hostname[:port]`);
+    throw new Error(
+      `Cluster url: ${url} has invalid format. It should be http[s]://hostname[:port]`,
+    );
   }
 }
 
@@ -102,12 +104,24 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
       parameters.timeout = parseInt(parameters.timeout, 10);
     }
     if (typeof parameters.sourceListRefreshInterval === "string") {
-      parameters.sourceListRefreshInterval = parseInt(parameters.sourceListRefreshInterval, 10);
+      parameters.sourceListRefreshInterval = parseInt(
+        parameters.sourceListRefreshInterval,
+        10,
+      );
     }
     if (typeof parameters.sourceReintrospectInterval === "string") {
-      parameters.sourceReintrospectInterval = parseInt(parameters.sourceReintrospectInterval, 10);
+      parameters.sourceReintrospectInterval = parseInt(
+        parameters.sourceReintrospectInterval,
+        10,
+      );
     }
-    return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters, Cluster.BACKWARD_COMPATIBILITY));
+    return new Cluster(
+      BaseImmutable.jsToValue(
+        Cluster.PROPERTIES,
+        parameters,
+        Cluster.BACKWARD_COMPATIBILITY,
+      ),
+    );
   }
 
   static PROPERTIES: Property[] = [
@@ -116,35 +130,56 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     { name: "title", defaultValue: "" },
     { name: "version", defaultValue: null },
     { name: "timeout", defaultValue: Cluster.DEFAULT_TIMEOUT },
-    { name: "healthCheckTimeout", defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT },
-    { name: "sourceListScan", defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN, possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES },
-    { name: "sourceListRefreshOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD },
+    {
+      name: "healthCheckTimeout",
+      defaultValue: Cluster.DEFAULT_HEALTH_CHECK_TIMEOUT,
+    },
+    {
+      name: "sourceListScan",
+      defaultValue: Cluster.DEFAULT_SOURCE_LIST_SCAN,
+      possibleValues: Cluster.SOURCE_LIST_SCAN_VALUES,
+    },
+    {
+      name: "sourceListRefreshOnLoad",
+      defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_ON_LOAD,
+    },
     {
       name: "sourceListRefreshInterval",
       defaultValue: Cluster.DEFAULT_SOURCE_LIST_REFRESH_INTERVAL,
-      validate: [BaseImmutable.ensure.number, ensureNotTiny]
+      validate: [BaseImmutable.ensure.number, ensureNotTiny],
     },
-    { name: "sourceReintrospectOnLoad", defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD },
+    {
+      name: "sourceReintrospectOnLoad",
+      defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_ON_LOAD,
+    },
     {
       name: "sourceReintrospectInterval",
       defaultValue: Cluster.DEFAULT_SOURCE_REINTROSPECT_INTERVAL,
-      validate: [BaseImmutable.ensure.number, ensureNotTiny]
+      validate: [BaseImmutable.ensure.number, ensureNotTiny],
     },
-    { name: "introspectionStrategy", defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY },
+    {
+      name: "introspectionStrategy",
+      defaultValue: Cluster.DEFAULT_INTROSPECTION_STRATEGY,
+    },
     { name: "requestDecorator", defaultValue: null },
     { name: "decoratorOptions", defaultValue: null },
-    { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES }
+    { name: "guardDataCubes", defaultValue: Cluster.DEFAULT_GUARD_DATA_CUBES },
   ];
 
   static HTTP_PROTOCOL_TEST = /^http(s?):/;
 
-  static BACKWARD_COMPATIBILITY: BackCompat[] = [{
-    condition: cluster => !isTruthy(cluster.url) && isTruthy(oldHostParameter(cluster)),
-    action: cluster => {
-      const oldHost = oldHostParameter(cluster);
-      cluster.url = Cluster.HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
-    }
-  }];
+  static BACKWARD_COMPATIBILITY: BackCompat[] = [
+    {
+      condition: cluster =>
+        !isTruthy(cluster.url) && isTruthy(oldHostParameter(cluster)),
+      action: cluster => {
+        const oldHost = oldHostParameter(cluster);
+        cluster.url = Cluster.HTTP_PROTOCOL_TEST.test(oldHost)
+          ? oldHost
+          : `http://${oldHost}`;
+      },
+    },
+  ];
 
   public type = "druid";
 
@@ -173,16 +208,21 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public getIntrospectionStrategy: () => string;
   public changeUrl: (newUrl: string) => Cluster;
   public changeTimeout: (newTimeout: string) => Cluster;
-  public changeSourceListRefreshInterval: (newSourceListRefreshInterval: string) => Cluster;
+  public changeSourceListRefreshInterval: (
+    newSourceListRefreshInterval: string,
+  ) => Cluster;
 
   public toClientCluster(): Cluster {
     return new Cluster({
       name: this.name,
-      timeout: this.timeout
+      timeout: this.timeout,
     });
   }
 
-  public makeExternalFromSourceName(source: string, version?: string): External {
+  public makeExternalFromSourceName(
+    source: string,
+    version?: string,
+  ): External {
     return External.fromValue({
       engine: "druid",
       source,
@@ -190,7 +230,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
       suppress: true,
 
       allowSelectQueries: true,
-      allowEternity: false
+      allowEternity: false,
     });
   }
 

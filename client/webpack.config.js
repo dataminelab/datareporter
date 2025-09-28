@@ -7,8 +7,8 @@ const ManifestPlugin = require("webpack-manifest-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
@@ -35,6 +35,7 @@ const isHotReloadingEnabled =
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
 const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
+const ollamaBackend = process.env.OLLAMA_BACKEND || "http://localhost:11434";
 const baseHref = CONFIG.baseHref || "/";
 const staticPath = CONFIG.staticPath || "/static/";
 const htmlTitle = CONFIG.title || "Data Reporter";
@@ -48,7 +49,8 @@ const extensionPath = path.join(__dirname, extensionsRelativePath);
 
 // Function to apply configuration overrides (see scripts/README)
 function maybeApplyOverrides(config) {
-  const overridesLocation = process.env.REDASH_WEBPACK_OVERRIDES || "./scripts/webpack/overrides";
+  const overridesLocation =
+    process.env.REDASH_WEBPACK_OVERRIDES || "./scripts/webpack/overrides";
   const applyOverrides = optionalRequire(overridesLocation);
   if (!applyOverrides) {
     return config;
@@ -70,7 +72,7 @@ const babelLoader = {
           modules: false,
         },
       ],
-      "@babel/preset-typescript"
+      "@babel/preset-typescript",
     ],
     plugins: [
       ...(isHotReloadingEnabled ? ["react-refresh/babel"] : []),
@@ -79,33 +81,32 @@ const babelLoader = {
   },
 };
 
-
 const config = {
   mode: isProduction ? "production" : "development",
   entry: {
     app: [
       "./app/index.js",
       "./app/assets/less/main.less",
-      "./app/assets/less/ant.less"
+      "./app/assets/less/ant.less",
     ],
-    server: ["./app/assets/less/server.less"]
+    server: ["./app/assets/less/server.less"],
   },
   output: {
     path: path.join(basePath, "./dist"),
     filename: isProduction ? "[name].[chunkhash].js" : "[name].js",
-    publicPath: staticPath
+    publicPath: staticPath,
   },
   node: {
     fs: "empty",
-    path: "empty"
+    path: "empty",
   },
   resolve: {
     symlinks: false,
     extensions: [".js", ".jsx", ".ts", ".tsx"],
     alias: {
       "@": appPath,
-      extensions: extensionPath
-    }
+      "extensions": extensionPath,
+    },
   },
   plugins: [
     new WebpackBuildNotifierPlugin({ title: "Data Reporter" }),
@@ -118,19 +119,19 @@ const config = {
       release: process.env.BUILD_VERSION || "dev",
       staticPath,
       baseHref,
-      title: htmlTitle
+      title: htmlTitle,
     }),
     new HtmlWebpackPlugin({
       template: "./app/multi_org.html",
       filename: "multi_org.html",
-      excludeChunks: ["server"]
+      excludeChunks: ["server"],
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].[chunkhash].css"
+      filename: "[name].[chunkhash].css",
     }),
     new ManifestPlugin({
       fileName: "asset-manifest.json",
-      publicPath: ""
+      publicPath: "",
     }),
     new IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,
@@ -142,16 +143,16 @@ const config = {
       { from: "app/unsupported.html" },
       { from: "app/unsupportedRedirect.js" },
       { from: "app/assets/css/*.css", to: "styles/", flatten: true },
-      { from: "app/assets/fonts", to: "fonts/" }
+      { from: "app/assets/fonts", to: "fonts/" },
     ]),
-    isHotReloadingEnabled && new ReactRefreshWebpackPlugin({ overlay: false })
+    isHotReloadingEnabled && new ReactRefreshWebpackPlugin({ overlay: false }),
   ].filter(Boolean),
   optimization: {
     splitChunks: {
       chunks: chunk => {
         return chunk.name != "server";
-      }
-    }
+      },
+    },
   },
   module: {
     rules: [
@@ -169,62 +170,60 @@ const config = {
         exclude: {
           and: [/node_modules/],
           not: [
-            /react-syntax-highlighter/ // Include react-syntax-highlighter for transpiling
-          ]
+            /react-syntax-highlighter/, // Include react-syntax-highlighter for transpiling
+          ],
         },
-        use: [
-          babelLoader
-        ]
+        use: [babelLoader],
       },
       {
         test: /\.html$/,
         exclude: [/node_modules/, /index\.html/, /multi_org\.html/],
         use: [
           {
-            loader: "raw-loader"
-          }
-        ]
+            loader: "raw-loader",
+          },
+        ],
       },
       {
         test: /\.css$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
           },
           {
-            loader: "css-loader"
-          }
-        ]
+            loader: "css-loader",
+          },
+        ],
       },
       {
         test: /\.less$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
           },
           {
-            loader: "css-loader"
+            loader: "css-loader",
           },
           {
             loader: "less-loader",
             options: {
               plugins: [
-                new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })
+                new LessPluginAutoPrefix({ browsers: ["last 3 versions"] }),
               ],
-              javascriptEnabled: true
-            }
-          }
-        ]
+              javascriptEnabled: true,
+            },
+          },
+        ],
       },
       {
         test: /\.s[ac]ss$/i,
         use: [
           // Creates `style` nodes from JS strings
-          'style-loader',
+          "style-loader",
           // Translates CSS into CommonJS
-          'css-loader',
+          "css-loader",
           // Compiles Sass to CSS
-          'sass-loader',
+          "sass-loader",
         ],
       },
       {
@@ -235,10 +234,10 @@ const config = {
             options: {
               context: path.resolve(appPath, "./assets/images/"),
               outputPath: "images/",
-              name: "[path][name].[ext]"
-            }
-          }
-        ]
+              name: "[path][name].[ext]",
+            },
+          },
+        ],
       },
       {
         test: /\.(svg)(\?.*)?$/,
@@ -249,10 +248,10 @@ const config = {
             options: {
               context: path.resolve(appPath, "./assets/images/"),
               outputPath: "images/",
-              name: "[path][name].[ext]"
-            }
-          }
-        ]
+              name: "[path][name].[ext]",
+            },
+          },
+        ],
       },
       {
         test: /\.svg$/,
@@ -267,10 +266,10 @@ const config = {
             loader: "file-loader",
             options: {
               outputPath: "data/",
-              name: "[hash:7].[name].[ext]"
-            }
-          }
-        ]
+              name: "[hash:7].[name].[ext]",
+            },
+          },
+        ],
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
@@ -279,30 +278,32 @@ const config = {
             loader: "url-loader",
             options: {
               limit: 10000,
-              name: "fonts/[name].[hash:7].[ext]"
-            }
-          }
-        ]
-      }
-    ]
+              name: "fonts/[name].[hash:7].[ext]",
+            },
+          },
+        ],
+      },
+    ],
   },
   devtool: isProduction ? "source-map" : "cheap-eval-module-source-map",
   stats: {
     children: false,
     modules: false,
-    chunkModules: false
+    chunkModules: false,
   },
   watchOptions: {
-    ignored: /\.sw.$/
+    ignored: /\.sw.$/,
   },
   devServer: {
     client: {
       overlay: {
-        runtimeErrors: (error) => {
-          if(error?.message === "ResizeObserver loop completed with undelivered notifications.")
-          {
-             console.error(error)
-             return false;
+        runtimeErrors: error => {
+          if (
+            error?.message ===
+            "ResizeObserver loop completed with undelivered notifications."
+          ) {
+            console.error(error);
+            return false;
           }
           return true;
         },
@@ -313,12 +314,12 @@ const config = {
       publicPath: staticPath,
       stats: {
         modules: false,
-        chunkModules: false
+        chunkModules: false,
       },
     },
     historyApiFallback: {
       index: "/static/index.html",
-      rewrites: [{ from: /./, to: "/static/index.html" }]
+      rewrites: [{ from: /./, to: "/static/index.html" }],
     },
     proxy: [
       {
@@ -329,20 +330,30 @@ const config = {
           "/setup",
           "/status.json",
           "/api",
-          "/oauth"
+          "/oauth",
         ],
         target: redashBackend + "/",
         changeOrigin: false,
-        secure: false
+        secure: false,
+      },
+      {
+        context: ["/plywood", "/config-turnilo"],
+        target: turniloBackend + "/",
+        changeOrigin: true,
+        secure: false,
       },
       {
         context: [
-          '/plywood',
-          '/config-turnilo'
+          '/ollama',
+          '/ollama-api'
         ],
-        target: turniloBackend + "/",
+        target: ollamaBackend + "/",
         changeOrigin: true,
-        secure: false
+        secure: false,
+        pathRewrite: {
+          '^/ollama/': '/',
+          '^/ollama-api': '/api' 
+        }
       },
       {
         context: path => {
@@ -351,14 +362,14 @@ const config = {
         },
         target: redashBackend + "/",
         changeOrigin: true,
-        secure: false
-      }
+        secure: false,
+      },
     ],
-    hot: isHotReloadingEnabled
+    hot: isHotReloadingEnabled,
   },
   performance: {
-    hints: false
-  }
+    hints: false,
+  },
 };
 
 if (process.env.DEV_SERVER_HOST) {

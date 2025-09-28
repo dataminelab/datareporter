@@ -15,7 +15,7 @@ const API_SHARE_URL = "api/dashboards/{id}/share";
 
 class ShareDashboardDialog extends React.Component {
   static propTypes = {
-    dashboard: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    dashboard: PropTypes.object.isRequired,
     hasOnlySafeQueries: PropTypes.bool.isRequired,
     dialog: DialogPropType.isRequired,
   };
@@ -47,7 +47,8 @@ class ShareDashboardDialog extends React.Component {
 
     const paramValue = params["p_turnilo_daterange"];
     this.apiUrl = `${this.apiUrl}?p_turnilo_daterange=${paramValue}`;
-    this.enabled = this.props.hasOnlySafeQueries || dashboard.publicAccessEnabled;
+    this.enabled =
+      this.props.hasOnlySafeQueries || dashboard.publicAccessEnabled;
   }
 
   static get headerContent() {
@@ -55,7 +56,8 @@ class ShareDashboardDialog extends React.Component {
       <React.Fragment>
         Share Dashboard
         <div className="modal-header-desc">
-          Allow public access to this dashboard with a secret address. <HelpTrigger type="SHARE_DASHBOARD" />
+          Allow public access to this dashboard with a secret address.{" "}
+          <HelpTrigger type="SHARE_DASHBOARD" />
         </div>
       </React.Fragment>
     );
@@ -131,7 +133,10 @@ class ShareDashboardDialog extends React.Component {
           </Form.Item>
           {dashboard.public_url && (
             <Form.Item label="Secret address" {...this.formItemProps}>
-              <InputWithCopy value={dashboard.public_url} data-test="SecretAddress" />
+              <InputWithCopy
+                value={dashboard.public_url}
+                data-test="SecretAddress"
+              />
             </Form.Item>
           )}
         </Form>

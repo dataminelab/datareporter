@@ -1,22 +1,24 @@
 import base64
-import logging
 import errno
+import logging
 import os
 import signal
 import sys
 from concurrent.futures import ThreadPoolExecutor
-import requests
 
+import requests
 from rq import Queue as BaseQueue
-from rq.job import Job as BaseJob, JobStatus
+from rq.job import Job as BaseJob
+from rq.job import JobStatus
 from rq.timeouts import HorseMonitorTimeoutException, UnixSignalDeathPenalty
 from rq.utils import utcnow
 from rq.worker import (
     HerokuWorker,  # HerokuWorker implements graceful shutdown on SIGTERM
     Worker,
 )
-from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
+
 from redash import statsd_client
+from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
 
 # HerokuWorker does not work in OSX https://github.com/getredash/redash/issues/5413
 if sys.platform == "darwin":
@@ -86,7 +88,6 @@ class GooglePubSubNotifier:
 
 
 class NotifyWorkerQueue(BaseQueue):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if GOOGLE_PUBSUB_WORKER_TOPIC_ID:

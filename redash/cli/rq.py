@@ -1,5 +1,5 @@
-import socket
 import datetime
+import socket
 from itertools import chain
 
 from click import argument, option

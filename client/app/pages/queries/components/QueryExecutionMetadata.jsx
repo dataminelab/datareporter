@@ -41,7 +41,10 @@ export default function QueryExecutionMetadata({
       </span>
       {extraActions}
       {showEditVisualizationButton && (
-        <EditVisualizationButton openVisualizationEditor={onEditVisualization} selectedTab={selectedVisualization} />
+        <EditVisualizationButton
+          openVisualizationEditor={onEditVisualization}
+          selectedTab={selectedVisualization}
+        />
       )}
       <span className="m-l-5 m-r-10">
         <span>
@@ -58,7 +61,8 @@ export default function QueryExecutionMetadata({
               </Tooltip>
             </span>
           )}
-          <strong>{queryResultData.rows.length}</strong> {pluralize("row", queryResultData.rows.length)}
+          <strong>{queryResultData.rows.length}</strong>{" "}
+          {pluralize("row", queryResultData.rows.length)}
         </span>
         <span className="m-l-5">
           {!isQueryExecuting && (
@@ -69,11 +73,15 @@ export default function QueryExecutionMetadata({
           )}
           {isQueryExecuting && <span>Running&hellip;</span>}
         </span>
-        {!isUndefined(queryResultData.metadata.data_scanned) && !isQueryExecuting && (
-          <span className="m-l-5">
-            Data Scanned <strong>{prettySize(queryResultData.metadata.data_scanned)}</strong>
-          </span>
-        )}
+        {!isUndefined(queryResultData.metadata.data_scanned) &&
+          !isQueryExecuting && (
+            <span className="m-l-5">
+              Data Scanned{" "}
+              <strong>
+                {prettySize(queryResultData.metadata.data_scanned)}
+              </strong>
+            </span>
+          )}
       </span>
       <div>
         <span className="m-r-10">
@@ -88,8 +96,8 @@ export default function QueryExecutionMetadata({
 }
 
 QueryExecutionMetadata.propTypes = {
-  query: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  queryResult: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  query: PropTypes.object.isRequired,
+  queryResult: PropTypes.object.isRequired,
   isQueryExecuting: PropTypes.bool,
   selectedVisualization: PropTypes.number,
   showEditVisualizationButton: PropTypes.bool,

@@ -42,7 +42,6 @@ interface AddTileState {
 }
 
 export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
-
   state: AddTileState = { openMenu: false, query: "" };
 
   private menuOpenOn: HTMLElement = null;
@@ -72,12 +71,15 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
 
   renderRows(rows: Array<Tile<T>>) {
     const { query } = this.state;
-    return rows.map(({ value, key, label }) => <div
-      className="tile-row"
-      key={key}
-      onClick={() => this.selectTile(value)}>
-      <HighlightString className="label" text={label} highlight={query} />
-    </div>);
+    return rows.map(({ value, key, label }) => (
+      <div
+        className="tile-row"
+        key={key}
+        onClick={() => this.selectTile(value)}
+      >
+        <HighlightString className="label" text={label} highlight={query} />
+      </div>
+    ));
   }
 
   renderTable() {
@@ -85,11 +87,10 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
     const { query } = this.state;
     if (query.length === 0) return this.renderRows(tiles);
     const filteredRows = tiles.filter(({ label }) =>
-      label.toLowerCase().includes(query.toLowerCase()));
+      label.toLowerCase().includes(query.toLowerCase()),
+    );
     if (filteredRows.length > 0) return this.renderRows(filteredRows);
-    return <div className="tile-row no-results">
-      No results for {query}
-    </div>;
+    return <div className="tile-row no-results">No results for {query}</div>;
   }
 
   renderMenu() {
@@ -97,32 +98,36 @@ export class AddTile<T> extends React.Component<AddTileProps<T>, AddTileState> {
     const { openMenu, query } = this.state;
     if (!openMenu) return null;
 
-    return <BubbleMenu
-      className="add-tile-menu"
-      direction="down"
-      stage={Stage.fromSize(250, 410)}
-      containerStage={containerStage}
-      openOn={this.menuOpenOn}
-      onClose={this.closeMenu}>
-      <div className="search-box">
-        <ClearableInput
-          placeholder="Search"
-          focusOnMount={true}
-          value={query}
-          onChange={this.setQuery} />
-      </div>
-      <div className="tile-rows">
-        {this.renderTable()}
-      </div>
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        className="add-tile-menu"
+        direction="down"
+        stage={Stage.fromSize(250, 410)}
+        containerStage={containerStage}
+        openOn={this.menuOpenOn}
+        onClose={this.closeMenu}
+      >
+        <div className="search-box">
+          <ClearableInput
+            placeholder="Search"
+            focusOnMount={true}
+            value={query}
+            onChange={this.setQuery}
+          />
+        </div>
+        <div className="tile-rows">{this.renderTable()}</div>
+      </BubbleMenu>
+    );
   }
 
   render() {
-    return <div className="add-tile">
-      <div className="add-button" ref={this.mountAdd} onClick={this.openMenu}>
-        <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
+    return (
+      <div className="add-tile">
+        <div className="add-button" ref={this.mountAdd} onClick={this.openMenu}>
+          <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
+        </div>
+        {this.renderMenu()}
       </div>
-      {this.renderMenu()}
-    </div>;
+    );
   }
 }

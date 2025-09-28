@@ -25,7 +25,7 @@ describe("Timekeeper", () => {
     testImmutableClass(Timekeeper, [
       {
         timeTags: {},
-        nowOverride: null
+        nowOverride: null,
       },
       {
         timeTags: {
@@ -33,10 +33,10 @@ describe("Timekeeper", () => {
             name: "lol",
             time: new Date("2016-01-01T01:02:03Z"),
             lastTimeChecked: new Date("2016-01-01T01:02:03Z"),
-            checkInterval: 42000
-          }
+            checkInterval: 42000,
+          },
         },
-        nowOverride: null
+        nowOverride: null,
       },
       {
         timeTags: {
@@ -44,18 +44,18 @@ describe("Timekeeper", () => {
             name: "lol",
             time: new Date("2016-01-01T01:02:03Z"),
             lastTimeChecked: new Date("2016-01-01T01:02:03Z"),
-            checkInterval: 42000
-          }
+            checkInterval: 42000,
+          },
         },
-        nowOverride: new Date("2016-01-01T01:02:03Z")
-      }
+        nowOverride: new Date("2016-01-01T01:02:03Z"),
+      },
     ]);
   });
 
   it("works with now", () => {
     const timekeeper = Timekeeper.fromJS({
       timeTags: [],
-      nowOverride: new Date("2016-01-01T01:02:03Z")
+      nowOverride: new Date("2016-01-01T01:02:03Z"),
     });
 
     expect(timekeeper.now()).to.deep.equal(new Date("2016-01-01T01:02:03Z"));

@@ -28,20 +28,27 @@ interface HoverGuideProps {
 }
 
 export const HoverGuide: React.FunctionComponent<HoverGuideProps> = props => {
-  const { stage, hover: { range }, xScale } = props;
+  const {
+    stage,
+    hover: { range },
+    xScale,
+  } = props;
   let x;
   if (range.midpoint) {
     const midpoint = range.midpoint();
     x = xScale(midpoint);
   } else {
     // @ts-ignore
-    x = xScale(new Date(range))
+    x = xScale(new Date(range));
   }
-  return <line
-    transform={stage.getTransform()}
-    x1={x}
-    x2={x}
-    y1={0}
-    y2={stage.height}
-    className="hover-guide" />;
+  return (
+    <line
+      transform={stage.getTransform()}
+      x1={x}
+      x2={x}
+      y1={0}
+      y2={stage.height}
+      className="hover-guide"
+    />
+  );
 };

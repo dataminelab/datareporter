@@ -15,7 +15,11 @@ function wrapSettingsTab(id, options, WrappedComponent) {
         <div className="container">
           <PageHeader title="Settings" />
           <div className="bg-white tiled">
-            <Menu selectedKeys={[activeItem && activeItem.title]} selectable={false} mode="horizontal">
+            <Menu
+              selectedKeys={[activeItem && activeItem.title]}
+              selectable={false}
+              mode="horizontal"
+            >
               {settingsMenu.getAvailableItems().map(item => (
                 <Menu.Item key={item.title}>
                   <Link href={item.path} data-test="SettingsScreenItem">

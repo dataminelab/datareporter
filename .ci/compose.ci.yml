@@ -17,13 +17,15 @@ services:
       - "5000:5000"
       - "5678:5678"
     environment:
+      PYTHONUNBUFFERED: 0
       REDASH_LOG_LEVEL: "INFO"
       REDASH_REDIS_URL: "redis://redis:6379/0"
       POSTGRES_PASSWORD: "FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb"
       REDASH_DATABASE_URL: "postgresql://postgres:FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb@postgres/postgres"
       REDASH_COOKIE_SECRET: "2H9gNG9obnAQ9qnR9BDTQUph6CbXKCzF"
       REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
-      PYTHONUNBUFFERED: 0
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      OLLAMA_API_URL: "http://ollama:11434"
       PLYWOOD_SERVER_URL: "http://plywood:3000"
       NODE_VERSION: 18
       NPM_VERSION: 9.5.1
@@ -49,6 +51,6 @@ services:
       - "3000:3000"
       - "9231:9229"
     volumes:
-      - ./plywood/server:/app
+      - ./plywood:/app
     environment:
       - LOG_MODE=request_and_response

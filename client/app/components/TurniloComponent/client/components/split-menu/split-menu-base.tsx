@@ -16,7 +16,10 @@
 
 import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { coerceGranularity, isGranularityValid } from "../../../common/models/granularity/granularity";
+import {
+  coerceGranularity,
+  isGranularityValid,
+} from "../../../common/models/granularity/granularity";
 import { Sort } from "../../../common/models/sort/sort";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
@@ -35,7 +38,11 @@ interface SplitAssembly {
 }
 
 export function validateSplit(splitAssembly: SplitAssembly): boolean {
-  const { granularity, split, dimension: { kind } } = splitAssembly;
+  const {
+    granularity,
+    split,
+    dimension: { kind },
+  } = splitAssembly;
   if (!isGranularityValid(kind, granularity)) {
     return false;
   }
@@ -44,12 +51,12 @@ export function validateSplit(splitAssembly: SplitAssembly): boolean {
 }
 
 export function createSplit({
-                              split: { type, reference },
-                              limit,
-                              granularity,
-                              sort,
-                              dimension: { kind }
-                            }: SplitAssembly): Split {
+  split: { type, reference },
+  limit,
+  granularity,
+  sort,
+  dimension: { kind },
+}: SplitAssembly): Split {
   const bucket = coerceGranularity(granularity, kind);
   return new Split({ type, reference, limit, sort, bucket });
 }
@@ -64,7 +71,6 @@ interface SplitMenuBaseProps {
 }
 
 export class SplitMenuBase extends React.Component<SplitMenuBaseProps> {
-
   componentDidMount() {
     window.addEventListener("keydown", this.globalKeyDownListener);
   }
@@ -85,22 +91,35 @@ export class SplitMenuBase extends React.Component<SplitMenuBaseProps> {
   };
 
   render() {
-    const { containerStage, openOn, dimension, onClose, children, isValid } = this.props;
+    const { containerStage, openOn, dimension, onClose, children, isValid } =
+      this.props;
     if (!dimension) return null;
 
-    return <BubbleMenu
-      className="split-menu"
-      direction="down"
-      containerStage={containerStage}
-      stage={Stage.fromSize(250, 240)}
-      openOn={openOn}
-      onClose={onClose}
-    >
-      {children}
-      <div className="button-bar">
-        <Button className="ok" type="primary" disabled={!isValid} onClick={this.onOkClick} title={STRINGS.ok}/>
-        <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel}/>
-      </div>
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        className="split-menu"
+        direction="down"
+        containerStage={containerStage}
+        stage={Stage.fromSize(250, 240)}
+        openOn={openOn}
+        onClose={onClose}
+      >
+        {children}
+        <div className="button-bar">
+          <Button
+            className="ok"
+            type="primary"
+            disabled={!isValid}
+            onClick={this.onOkClick}
+            title={STRINGS.ok}
+          />
+          <Button
+            type="secondary"
+            onClick={this.onCancelClick}
+            title={STRINGS.cancel}
+          />
+        </div>
+      </BubbleMenu>
+    );
   }
 }

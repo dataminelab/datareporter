@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .bar-chart {
   .measure-bar-charts {
@@ -77,7 +77,7 @@
 
   .measure-bar-chart {
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       right: 0;

@@ -46,7 +46,7 @@ export const FieldType = PropTypes.shape({
   placeholder: PropTypes.string,
   contentAfter: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   loading: PropTypes.bool,
-  props: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  props: PropTypes.object,
 });
 
 const FieldTypeComponent = {
@@ -65,12 +65,12 @@ export default function DynamicFormField({ form, field, ...otherProps }) {
 
   const fieldProps = {
     ...field.props,
-    className: "w-100",
+    "className": "w-100",
     name,
     type,
     readOnly,
     autoFocus,
-    placeholder: field.placeholder,
+    "placeholder": field.placeholder,
     "data-test": fieldLabel,
     ...otherProps,
   };

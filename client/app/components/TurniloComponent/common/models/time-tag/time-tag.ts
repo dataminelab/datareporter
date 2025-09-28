@@ -34,7 +34,6 @@ export interface TimeTagJS {
 }
 
 export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
-
   static isTimeTag(candidate: any): candidate is TimeTag {
     return candidate instanceof TimeTag;
   }
@@ -43,7 +42,7 @@ export class TimeTag extends BaseImmutable<TimeTagValue, TimeTagJS> {
     { name: "name" },
     { name: "time", type: PropertyType.DATE, defaultValue: null },
     { name: "updated", type: PropertyType.DATE, defaultValue: null },
-    { name: "spacial", defaultValue: null }
+    { name: "spacial", defaultValue: null },
   ];
 
   static fromJS(parameters: TimeTagJS): TimeTag {

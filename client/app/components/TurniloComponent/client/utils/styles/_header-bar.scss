@@ -73,14 +73,28 @@
         margin-left: 3px;
       }
 
-      &:active::after { display: none; }
+      &:active::after {
+        display: none;
+      }
 
-      &.help::after { content: 'Google Groups'; }
-      &.auto-refresh::after { content: 'Refresh options';  }
-      &.hiluk::after { content: 'Share link'; }
-      &.user::after { content: 'User'; }
-      &.github::after { content: 'Turnilo on Github'; }
-      &.settings::after { content: 'Settings'; }
+      &.help::after {
+        content: "Google Groups";
+      }
+      &.auto-refresh::after {
+        content: "Refresh options";
+      }
+      &.hiluk::after {
+        content: "Share link";
+      }
+      &.user::after {
+        content: "User";
+      }
+      &.github::after {
+        content: "Turnilo on Github";
+      }
+      &.settings::after {
+        content: "Settings";
+      }
 
       &:hover::after {
         opacity: 1;

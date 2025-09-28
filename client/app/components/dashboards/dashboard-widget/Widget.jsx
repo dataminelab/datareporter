@@ -14,8 +14,10 @@ import "./Widget.less";
 
 function downloadCSV(data) {
   const headers = Object.keys(data[0]);
-  const csvContent = "data:text/csv;charset=utf-8," +
-    headers.join(",") + "\n" +
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    headers.join(",") +
+    "\n" +
     data.map(row => headers.map(header => row[header]).join(",")).join("\n");
 
   const encodedUri = encodeURI(csvContent);
@@ -29,18 +31,32 @@ function downloadCSV(data) {
 
 function getExtraOptions(report) {
   const extraOptions = [];
-  const data = Report.getFirstDataAvailable(report.results && report.results.queries);
+  const data = Report.getFirstDataAvailable(
+    report.results && report.results.queries,
+  );
   extraOptions.push(
-    <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>Download as CSV File</Menu.Item>
+    <Menu.Item key="download_report" onClick={() => downloadCSV(data)}>
+      Download as CSV File
+    </Menu.Item>,
   );
   extraOptions.push(<Menu.Divider key="divider_report" />);
   extraOptions.push(
-    <Menu.Item key="view_report" onClick={() => window.location.href=`/reports/${report.id}/source`}>View Report</Menu.Item>
+    <Menu.Item
+      key="view_report"
+      onClick={() => (window.location.href = `/reports/${report.id}/source`)}
+    >
+      View Report
+    </Menu.Item>,
   );
   return extraOptions;
 }
 
-function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete }) {
+function WidgetDropdownButton({
+  report,
+  extraOptions,
+  showDeleteOption,
+  onDelete,
+}) {
   if (report && report.hash) {
     extraOptions = getExtraOptions(report);
   }
@@ -48,14 +64,24 @@ function WidgetDropdownButton({ report, extraOptions, showDeleteOption, onDelete
     <Menu data-test="WidgetDropdownButtonMenu">
       {extraOptions}
       {showDeleteOption && extraOptions && <Menu.Divider />}
-      {showDeleteOption && <Menu.Item onClick={onDelete}>Remove from Dashboard</Menu.Item>}
+      {showDeleteOption && (
+        <Menu.Item onClick={onDelete}>Remove from Dashboard</Menu.Item>
+      )}
     </Menu>
   );
 
   return (
     <div className="widget-menu-regular">
-      <Dropdown overlay={WidgetMenu} placement="bottomRight" trigger={["click"]}>
-        <PlainButton className="action p-l-15 p-r-15" data-test="WidgetDropdownButton" aria-label="More options">
+      <Dropdown
+        overlay={WidgetMenu}
+        placement="bottomRight"
+        trigger={["click"]}
+      >
+        <PlainButton
+          className="action p-l-15 p-r-15"
+          data-test="WidgetDropdownButton"
+          aria-label="More options"
+        >
           <i className="zmdi zmdi-more-vert" aria-hidden="true" />
         </PlainButton>
       </Dropdown>
@@ -83,7 +109,8 @@ function WidgetDeleteButton({ onClick }) {
         title="Remove From Dashboard"
         onClick={onClick}
         data-test="WidgetDeleteButton"
-        aria-label="Close">
+        aria-label="Close"
+      >
         <i className="zmdi zmdi-close" aria-hidden="true" />
       </PlainButton>
     </div>
@@ -95,7 +122,7 @@ WidgetDeleteButton.defaultProps = { onClick: () => {} };
 
 class Widget extends React.Component {
   static propTypes = {
-    widget: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    widget: PropTypes.object.isRequired,
     className: PropTypes.string,
     children: PropTypes.node,
     header: PropTypes.node,
@@ -104,7 +131,7 @@ class Widget extends React.Component {
     isPublic: PropTypes.bool,
     refreshStartedAt: Moment,
     menuOptions: PropTypes.node,
-    tileProps: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    tileProps: PropTypes.object,
     onDelete: PropTypes.func,
   };
 
@@ -131,7 +158,8 @@ class Widget extends React.Component {
 
     Modal.confirm({
       title: "Delete Widget",
-      content: "Are you sure you want to remove this widget from the dashboard?",
+      content:
+        "Are you sure you want to remove this widget from the dashboard?",
       okText: "Delete",
       okType: "danger",
       onOk: () => widget.delete().then(onDelete),
@@ -141,7 +169,17 @@ class Widget extends React.Component {
   };
 
   render() {
-    const { className, children, header, footer, canEdit, isPublic, menuOptions, tileProps, config } = this.props;
+    const {
+      className,
+      children,
+      header,
+      footer,
+      canEdit,
+      isPublic,
+      menuOptions,
+      tileProps,
+      config,
+    } = this.props;
     const showDropdownButton = !isPublic && (canEdit || !isEmpty(menuOptions));
     return (
       <div className="widget-wrapper">
@@ -159,7 +197,9 @@ class Widget extends React.Component {
           </div>
           <div className="body-row widget-header">{config?.name || header}</div>
           {children}
-          {footer && <div className="body-row tile__bottom-control">{footer}</div>}
+          {footer && (
+            <div className="body-row tile__bottom-control">{footer}</div>
+          )}
         </div>
       </div>
     );

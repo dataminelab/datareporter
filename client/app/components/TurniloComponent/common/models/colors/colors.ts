@@ -27,7 +27,7 @@ export const DEFAULT_SERIES_COLORS = [
   "#E68EE0",
   "#218C35",
   "#B0B510",
-  "#904064"
+  "#904064",
 ];
 
 export const NORMAL_COLORS = DEFAULT_SERIES_COLORS;
@@ -36,7 +36,7 @@ export const DEFAULT_MAIN_COLOR = "#FF5900";
 
 export const DEFAULT_COLORS: VisualizationColors = {
   main: DEFAULT_MAIN_COLOR,
-  series: DEFAULT_SERIES_COLORS
+  series: DEFAULT_SERIES_COLORS,
 };
 
 export interface VisualizationColors {

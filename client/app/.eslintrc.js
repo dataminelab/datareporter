@@ -1,8 +1,12 @@
 module.exports = {
-  extends: ["plugin:jest/recommended"],
-  plugins: ["jest"],
+  extends: ["../.eslintrc.js"],
   env: {
     "jest/globals": true,
+  },
+  globals: {
+    int: "readonly",
+    ClientRect: "readonly",
+    JSX: "readonly",
   },
   rules: {
     "jest/no-focused-tests": "off",

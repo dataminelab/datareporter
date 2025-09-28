@@ -32,14 +32,20 @@ interface SelectableRowProps {
 export const SelectableRow: React.SFC<SelectableRowProps> = props => {
   const { measure, value, selected, searchText, onSelect } = props;
   const strValue = String(value);
-  return <div
-    className={classNames("pinboard-selectable-row", { selected })}
-    onClick={() => onSelect(value)}
-  >
-    <div className="segment-value" title={strValue}>
-      <Checkbox selected={selected} type="check" />
-      <HighlightString className="label" text={strValue} highlight={searchText} />
+  return (
+    <div
+      className={classNames("pinboard-selectable-row", { selected })}
+      onClick={() => onSelect(value)}
+    >
+      <div className="segment-value" title={strValue}>
+        <Checkbox selected={selected} type="check" />
+        <HighlightString
+          className="label"
+          text={strValue}
+          highlight={searchText}
+        />
+      </div>
+      {measure && <div className="measure-value">{measure}</div>}
     </div>
-    {measure && <div className="measure-value">{measure}</div>}
-  </div>;
+  );
 };

@@ -1,4 +1,13 @@
-import { isNull, isUndefined, isArray, isEmpty, get, map, join, has } from "lodash";
+import {
+  isNull,
+  isUndefined,
+  isArray,
+  isEmpty,
+  get,
+  map,
+  join,
+  has,
+} from "lodash";
 import { Query } from "@/services/query";
 import Parameter from "./Parameter";
 
@@ -11,16 +20,20 @@ class QueryBasedDropdownParameter extends Parameter {
   }
 
   normalizeValue(value) {
-    if (isUndefined(value) || isNull(value) || (isArray(value) && isEmpty(value))) {
-      return null;
+    if (isUndefined(value) || isNull(value)) {
+      return this.multiValuesOptions ? [] : null;
     }
-
     if (this.multiValuesOptions) {
       value = isArray(value) ? value : [value];
+      return value;
     } else {
-      value = isArray(value) ? value[0] : value;
+      if (isArray(value)) {
+        // If empty array, return null for single-value
+        if (value.length === 0) return null;
+        return value[0];
+      }
+      return value;
     }
-    return value;
   }
 
   getExecutionValue(extra = {}) {
@@ -67,9 +80,10 @@ class QueryBasedDropdownParameter extends Parameter {
 
   loadDropdownValues() {
     if (this.parentQueryId) {
-      return Query.associatedDropdown({ queryId: this.parentQueryId, dropdownQueryId: this.queryId }).catch(() =>
-        Promise.resolve([])
-      );
+      return Query.associatedDropdown({
+        queryId: this.parentQueryId,
+        dropdownQueryId: this.queryId,
+      }).catch(() => Promise.resolve([]));
     }
 
     return Query.asDropdown({ id: this.queryId }).catch(Promise.resolve([]));

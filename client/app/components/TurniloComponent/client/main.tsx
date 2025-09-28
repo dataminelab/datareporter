@@ -17,8 +17,14 @@
 
 import React from "react";
 import * as ReactDOM from "react-dom";
-import { AppSettings, AppSettingsJS } from "../common/models/app-settings/app-settings";
-import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper";
+import {
+  AppSettings,
+  AppSettingsJS,
+} from "../common/models/app-settings/app-settings";
+import {
+  Timekeeper,
+  TimekeeperJS,
+} from "../common/models/timekeeper/timekeeper";
 import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
 import { Loader } from "./components/loader/loader";
 import applyDragAndDropPolyfill from "./drag-and-drop-polyfill";
@@ -31,10 +37,7 @@ const container = document.getElementsByClassName("app-container")[0];
 if (!container) throw new Error("container not found");
 
 // Add the loader
-ReactDOM.render(
-  React.createElement(Loader),
-  container
-);
+ReactDOM.render(React.createElement(Loader), container);
 
 interface Config {
   version: string;
@@ -56,15 +59,16 @@ const version = config.version;
 Ajax.version = version;
 
 const appSettings = AppSettings.fromJS(config.appSettings, {
-  executorFactory: Ajax.queryUrlExecutorFactory.bind(config)
+  executorFactory: Ajax.queryUrlExecutorFactory.bind(config),
 });
 
-const app =
+const app = (
   <TurniloApplication
     version={version}
     appSettings={appSettings}
     initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
-  />;
+  />
+);
 
 ReactDOM.render(app, container);
 

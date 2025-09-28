@@ -38,7 +38,9 @@ function areFiltersEqual(a, b) {
 
 export default function VisualizationRenderer(props) {
   const data = useQueryResultData(props.queryResult);
-  const [filters, setFilters] = useState(() => combineFilters(data.filters, props.filters)); // lazy initialization
+  const [filters, setFilters] = useState(() =>
+    combineFilters(data.filters, props.filters),
+  ); // lazy initialization
   const filtersRef = useRef();
   filtersRef.current = filters;
 
@@ -66,7 +68,7 @@ export default function VisualizationRenderer(props) {
       columns: data.columns,
       rows: filterData(data.rows, filters),
     }),
-    [data, filters]
+    [data, filters],
   );
 
   const { showFilters, visualization } = props;
@@ -85,14 +87,18 @@ export default function VisualizationRenderer(props) {
       options={options}
       data={filteredData}
       visualizationName={visualization.name}
-      addonBefore={showFilters && <Filters filters={filters} onChange={handleFiltersChange} />}
+      addonBefore={
+        showFilters && (
+          <Filters filters={filters} onChange={handleFiltersChange} />
+        )
+      }
     />
   );
 }
 
 VisualizationRenderer.propTypes = {
   visualization: VisualizationType.isRequired,
-  queryResult: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  queryResult: PropTypes.object.isRequired,
   showFilters: PropTypes.bool,
   filters: FiltersType,
   onFiltersChange: PropTypes.func,

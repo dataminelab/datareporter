@@ -17,7 +17,13 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { Record } from "immutable";
-import { Datum, Expression, NumberBucketExpression, PlywoodValue, TimeBucketExpression } from "plywood";
+import {
+  Datum,
+  Expression,
+  NumberBucketExpression,
+  PlywoodValue,
+  TimeBucketExpression,
+} from "plywood";
 import { formatValue } from "../../utils/formatter/formatter";
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
@@ -29,11 +35,11 @@ export enum SplitType {
   number = "number",
   string = "string",
   time = "time",
-  boolean = "boolean"
+  boolean = "boolean",
 }
 
 export function isContinuousSplit({ type }: Split): boolean {
-  return  type === SplitType.time || type === SplitType.number;
+  return type === SplitType.time || type === SplitType.number;
 }
 
 export type Bucket = number | Duration;
@@ -52,7 +58,7 @@ const defaultSplit: SplitValue = {
   reference: null,
   bucket: null,
   sort: new DimensionSort({ reference: null }),
-  limit: null
+  limit: null,
 };
 
 export function bucketToAction(bucket: Bucket): Expression {
@@ -61,14 +67,24 @@ export function bucketToAction(bucket: Bucket): Expression {
     : new NumberBucketExpression({ size: bucket });
 }
 
-function applyTimeShift(type: SplitType, expression: Expression, env: TimeShiftEnv): Expression {
+function applyTimeShift(
+  type: SplitType,
+  expression: Expression,
+  env: TimeShiftEnv,
+): Expression {
   if (env.type === TimeShiftEnvType.WITH_PREVIOUS && type === SplitType.time) {
-    return env.currentFilter.then(expression).fallback(expression.timeShift(env.shift));
+    return env.currentFilter
+      .then(expression)
+      .fallback(expression.timeShift(env.shift));
   }
   return expression;
 }
 
-export function toExpression({ bucket, type }: Split, { expression }: Dimension, env: TimeShiftEnv): Expression {
+export function toExpression(
+  { bucket, type }: Split,
+  { expression }: Dimension,
+  env: TimeShiftEnv,
+): Expression {
   const expWithShift = applyTimeShift(type, expression, env);
   if (!bucket) return expWithShift;
   return expWithShift.performAction(bucketToAction(bucket));
@@ -88,7 +104,6 @@ export function kindToType(kind: DimensionKind): SplitType {
 }
 
 export class Split extends Record<SplitValue>(defaultSplit) {
-
   static fromDimension({ name, kind }: Dimension): Split {
     return new Split({ reference: name, type: kindToType(kind) });
   }
@@ -138,11 +153,13 @@ export class Split extends Record<SplitValue>(defaultSplit) {
 
   public equals(other: any): boolean {
     if (this.type !== SplitType.time) return super.equals(other);
-    return other instanceof Split &&
+    return (
+      other instanceof Split &&
       this.type === other.type &&
       this.reference === other.reference &&
       this.sort.equals(other.sort) &&
       this.limit === other.limit &&
-      nullableEquals(this.bucket as Duration, other.bucket as Duration);
+      nullableEquals(this.bucket as Duration, other.bucket as Duration)
+    );
   }
 }

@@ -1,10 +1,11 @@
-from flask import request
 from typing import List
+
+from flask import request
 
 from redash import models
 from redash.handlers.base import BaseResource, get_object_or_404, require_fields
 from redash.models.models import Model, ModelConfig
-from redash.permissions import require_permission, require_admin_or_owner
+from redash.permissions import require_admin_or_owner, require_permission
 from redash.plywood.objects.data_cube import DataCube
 from redash.serializers.model_serializer import ModelConfigSerializer
 from redash.services.model_config_validator import ModelConfigValidator
@@ -44,9 +45,9 @@ class ModelsConfigResource(BaseResource):
     @require_permission("view_model_config")
     def get(self, model_id):
         model: Model = get_object_or_404(Model.get_by_id, model_id)
-        models: list(Model) = Model.query.filter(Model.data_source_id == model.data_source_id).all()
+        models: list[Model] = Model.query.filter(Model.data_source_id == model.data_source_id).all()
         data_cubes: List[DataCube.data_cube] = []
-        table_names: list(str) = []
+        table_names: list[str] = []
         for model in models:
             cube = DataCube(model).data_cube
             if cube["name"] not in table_names:

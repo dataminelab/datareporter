@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../../imports';
+@import "../../../imports";
 
 .chart-line {
   pointer-events: none;
@@ -23,7 +23,7 @@
   .area {
     @include css-variable(fill, main-time-area);
     stroke: none;
-    fill-opacity: .9;
+    fill-opacity: 0.9;
   }
 
   .line {

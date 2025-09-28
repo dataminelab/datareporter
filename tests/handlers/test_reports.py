@@ -1,12 +1,13 @@
 import json
 
+import lzstring
 import mock
 from sqlalchemy.orm.exc import NoResultFound
-from redash.models import db, Report
+
+from redash import models
+from redash.models import Report, db
 from redash.models.models import ModelConfig
 from tests import BaseTestCase
-import lzstring
-from redash import models
 
 EXPRESSION_BASE64 = "N4IgbglgzgrghgGwgLzgFwgewHYgFwhpwBGCApiADTjTxKoY4DKZaG2A5lPqAMaYIEcAA5QyAJUwB3bngBmiMQF9qGALZlkOCgQCiaXgHoAqgBUAwlRByICNGQBOsgNqg0AT2E7CEDVYdkcvg+fqq+ZAAKjlgAJi6gMTAO6Fi4BBEAjAAiVlD2wvgAtBmqnt5C9nkgSgC6Km5lwcSYAmRwuNQBQQTQAHJkUlZgiDBkLmgOozXU2Jho+AoIytMgUMJIaPGEjQR5DhCcVjHh2FCpwfww2BPuAJJQmLmYDvN4oF3BcDExZDFWHl5gmJ9mMjhAArxGGkQD8oLwyNhjodqF59pg/gRqtQkGoIK8AKwABnq20BuwmBw4YI0p3OPSgAEFZth3GpMDBuNQHi8eCAPgQvj8/qUyatoqDqMcIVDgrD4YjKVZUbFgliQDi8fh8bUueKtl1HAj4Z9vr8rHJnmp0LyAd4fgoYHYhiNvGrbcENHBYAFqithAdsL8siczjgXCBeAALdqBhBWbBwDRrODG6jQSTNeZ+gO/JjPV4gQVmpRAA="
 
@@ -324,7 +325,6 @@ NAME = "Test report"
 
 
 class TestReportListCreateResource(BaseTestCase):
-
     def test_create_without_permission(self):
         group1 = self.factory.create_group(permissions=[""])
         user = self.factory.create_user(group_ids=[group1.id])
@@ -438,7 +438,6 @@ class TestReportListCreateResource(BaseTestCase):
 
 
 class TestReportListGetResource(BaseTestCase):
-
     def test_without_user_permission(self):
         group1 = self.factory.create_group(permissions=[""])
         db.session.flush()
@@ -498,7 +497,6 @@ class TestReportListGetResource(BaseTestCase):
 
 
 class TestReportGetResource(BaseTestCase):
-
     def test_get_report_does_not_exist(self):
         response = self.make_request("get", f"/api/reports/{20}")
 

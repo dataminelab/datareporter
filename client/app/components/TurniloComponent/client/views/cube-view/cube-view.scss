@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import '../../imports';
+@import "../../imports";
 
 $toggle-width: 15px;
 $toggle-icon-width: 12px;
@@ -51,7 +51,12 @@ $control-panel-height: 3 * $control-tile-height + 2px;
       @include pin-top($control-panel-height);
 
       .filter-split-section {
-        @include unpin-full(0, $vis-selector-width + 1px + $toggle-width - 15px, 0, $toggle-width);
+        @include unpin-full(
+          0,
+          $vis-selector-width + 1px + $toggle-width - 15px,
+          0,
+          $toggle-width
+        );
 
         .filter-tile,
         .series-tile,
@@ -83,7 +88,8 @@ $control-panel-height: 3 * $control-tile-height + 2px;
         border-radius: 0 $corner $corner 0;
       }
 
-      .dimension-panel-toggle, .pinboard-toggle {
+      .dimension-panel-toggle,
+      .pinboard-toggle {
         @include css-variable(background-color, background-lightest);
         display: flex;
         align-items: center;
@@ -153,5 +159,4 @@ $control-panel-height: 3 * $control-tile-height + 2px;
       }
     }
   }
-
 }

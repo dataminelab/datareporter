@@ -1,5 +1,6 @@
-from flask_login import current_user
 import lzstring
+from flask_login import current_user
+
 from redash import models
 from redash.models import Report
 from redash.serializers import Serializer

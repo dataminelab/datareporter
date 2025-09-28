@@ -1,5 +1,4 @@
 # Ignore general files and directories
-.*
 .venv/
 venv/
 .git/
@@ -19,8 +18,8 @@ setup
 client/.tmp/
 client/dist/
 client/node_modules/
-plywood/server/node_modules/
-plywood/server/client/node_modules/
+plywood/node_modules/
+plywood/client/node_modules/
 node_modules/
 viz-lib/node_modules/
 .tmp/

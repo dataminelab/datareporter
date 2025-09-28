@@ -4,15 +4,15 @@ from functools import partial
 from itertools import chain
 
 from flask import Blueprint, request
-
 from rq import VERSION, get_current_job
 from rq.decorators import job as rq_job
 from rq.exceptions import DequeueTimeout
 from rq.logutils import setup_loghandlers
 from rq.worker import WorkerStatus, blue, green
 
-from redash import settings, rq_redis_connection
-from redash.tasks.worker import Queue as RedashQueue, Worker
+from redash import rq_redis_connection, settings
+from redash.tasks.worker import Queue as RedashQueue
+from redash.tasks.worker import Worker
 
 default_operational_queues = ["periodic", "emails", "default"]
 default_query_queues = ["scheduled_queries", "queries", "schemas"]
@@ -54,7 +54,6 @@ def get_job_logger(name):
 
 
 class FirstJobExecutor(Worker):
-
     def __init__(self, queue):
         queues = chain(queue.split(","))
         super().__init__(queues=queues, default_worker_ttl=1)
@@ -101,7 +100,6 @@ class FirstJobExecutor(Worker):
                 self.queues, timeout, connection=self.connection, job_class=self.job_class
             )
             if result is not None:
-
                 next_job, queue = result
                 if self.log_job_description:
                     self.log.info("%s: %s (%s)", green(queue.name), blue(next_job.description), next_job.id)

@@ -24,7 +24,7 @@ const LEFT_PADDING = 5;
 const MARGINS: Margins = {
   left: LEFT_PADDING,
   right: Y_AXIS_WIDTH,
-  bottom: X_AXIS_HEIGHT
+  bottom: X_AXIS_HEIGHT,
 };
 
 interface Margins {
@@ -38,9 +38,17 @@ export interface BarChartLayout {
   segment: Stage;
 }
 
-export function calculateLayout(visualisationStage: Stage, domainLength: number, seriesCount: number): BarChartLayout {
+export function calculateLayout(
+  visualisationStage: Stage,
+  domainLength: number,
+  seriesCount: number,
+): BarChartLayout {
   const bodyStage = visualisationStage.within(MARGINS);
-  const segmentStage = calculateSegmentStage(bodyStage, domainLength, seriesCount);
+  const segmentStage = calculateSegmentStage(
+    bodyStage,
+    domainLength,
+    seriesCount,
+  );
   const innerBodyHeight = segmentStage.height * seriesCount;
   return {
     scroller: {
@@ -49,9 +57,9 @@ export function calculateLayout(visualisationStage: Stage, domainLength: number,
       top: 0,
       left: MARGINS.left,
       right: MARGINS.right,
-      bottom: MARGINS.bottom
+      bottom: MARGINS.bottom,
     },
-    segment: segmentStage
+    segment: segmentStage,
   };
 }
 
@@ -67,6 +75,6 @@ export function calculateYAxisStage(segmentStage: Stage): Stage {
     x: 0,
     y: TOP_MARGIN,
     width: Y_AXIS_WIDTH,
-    height: segmentStage.height - TOP_MARGIN - BOTTOM_MARGIN
+    height: segmentStage.height - TOP_MARGIN - BOTTOM_MARGIN,
   });
 }

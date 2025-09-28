@@ -26,7 +26,7 @@ $gray: #ccc;
 
 $brand: hsl(21, 100%, 50%);
 $background-base: #e1e1e1;
-$error: hsla(0, 72%, 59%, 1.00);
+$error: hsla(0, 72%, 59%, 1);
 $hover: lighten($brand, 40%);
 $text-standard: hsl(0, 0%, 13%);
 $item-dimension: hsl(21, 100%, 80%);
@@ -92,17 +92,15 @@ $theme-colors: (
 
 // Fonts -------------------
 
-
 $bold: 600;
 
 // other
 
-$input-height:            30px;
-$input-height-mini:       28px;
-$form-spacing-compact:    14px;
-
+$input-height: 30px;
+$input-height-mini: 28px;
+$form-spacing-compact: 14px;
 
 // Transitions ----------------
 
-$duration: .2s;
+$duration: 0.2s;
 $corner: 2px;

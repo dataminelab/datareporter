@@ -16,19 +16,34 @@
 
 import { second, Timezone } from "chronoshift";
 import { Range } from "plywood";
-import { ContinuousDomain, ContinuousRange, ContinuousValue } from "../utils/continuous-types";
+import {
+  ContinuousDomain,
+  ContinuousRange,
+  ContinuousValue,
+} from "../utils/continuous-types";
 
-function orderValues(a: ContinuousValue, b: ContinuousValue, timezone: Timezone): ContinuousDomain {
+function orderValues(
+  a: ContinuousValue,
+  b: ContinuousValue,
+  timezone: Timezone,
+): ContinuousDomain {
   if (a > b) return [b, a];
   if (b > a) return [a, b];
   return [a, shiftByOne(a, timezone)];
 }
 
-export function constructRange(a: ContinuousValue, b: ContinuousValue, timezone: Timezone): ContinuousRange {
+export function constructRange(
+  a: ContinuousValue,
+  b: ContinuousValue,
+  timezone: Timezone,
+): ContinuousRange {
   const [start, end] = orderValues(a, b, timezone);
   return Range.fromJS({ start, end }) as ContinuousRange;
 }
 
-export function shiftByOne(value: ContinuousValue, timezone: Timezone): ContinuousValue {
+export function shiftByOne(
+  value: ContinuousValue,
+  timezone: Timezone,
+): ContinuousValue {
   return value instanceof Date ? second.shift(value, timezone, 1) : value + 1;
 }

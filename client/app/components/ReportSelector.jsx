@@ -28,7 +28,9 @@ function search(term) {
 export default function ReportSelector(props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedQuery, setSelectedQuery] = useState();
-  const [doSearch, searchResults, searching] = useSearchResults(search, { initialResults: [] });
+  const [doSearch, searchResults, searching] = useSearchResults(search, {
+    initialResults: [],
+  });
 
   function selectQuery(queryId) {
     let report = null;
@@ -57,7 +59,12 @@ export default function ReportSelector(props) {
   );
   const spinIcon = (
     <span role="status" aria-live="polite" aria-relevant="additions removals">
-      <i className={cx("fa fa-spinner fa-pulse hide-in-percy", { hidden: !searching })} aria-hidden="true" />
+      <i
+        className={cx("fa fa-spinner fa-pulse hide-in-percy", {
+          hidden: !searching,
+        })}
+        aria-hidden="true"
+      />
       <span className="sr-only">Searching...</span>
     </span>
   );
@@ -81,12 +88,20 @@ export default function ReportSelector(props) {
       <ul className="list-group">
         {searchResults.map(q => (
           <PlainButton
-            className={cx("report-selector-result", "list-group-item", { inactive: q.is_draft })}
+            className={cx("report-selector-result", "list-group-item", {
+              inactive: q.is_draft,
+            })}
             key={q.id}
             role="listitem"
             onClick={() => selectQuery(q.id)}
-            data-test={`QueryId${q.id}`}>
-            {q.name} <QueryTagsControl isDraft={q.is_draft} tags={q.tags} className="inline-tags-control" />
+            data-test={`QueryId${q.id}`}
+          >
+            {q.name}{" "}
+            <QueryTagsControl
+              isDraft={q.is_draft}
+              tags={q.tags}
+              className="inline-tags-control"
+            />
           </PlainButton>
         ))}
       </ul>
@@ -95,7 +110,12 @@ export default function ReportSelector(props) {
 
   if (props.disabled) {
     return (
-      <Input value={selectedQuery && selectedQuery.name} aria-label="Tied report" placeholder={placeholder} disabled />
+      <Input
+        value={selectedQuery && selectedQuery.name}
+        aria-label="Tied report"
+        placeholder={placeholder}
+        disabled
+      />
     );
   }
 
@@ -116,7 +136,8 @@ export default function ReportSelector(props) {
         filterOption={false}
         defaultActiveFirstOption={false}
         className={props.className}
-        data-test="ReportSelector">
+        data-test="ReportSelector"
+      >
         {searchResults &&
           searchResults.map(q => {
             const disabled = q.is_draft;
@@ -126,7 +147,8 @@ export default function ReportSelector(props) {
                 key={q.id}
                 disabled={disabled}
                 className="report-selector-result"
-                data-test={`QueryId${q.id}`}>
+                data-test={`QueryId${q.id}`}
+              >
                 {q.name}{" "}
                 <QueryTagsControl
                   isDraft={q.is_draft}
@@ -144,7 +166,12 @@ export default function ReportSelector(props) {
   return (
     <span data-test="ReportSelector">
       {selectedQuery ? (
-        <Input value={selectedQuery.name} aria-label="Tied report"  suffix={clearIcon} readOnly />
+        <Input
+          value={selectedQuery.name}
+          aria-label="Tied report"
+          suffix={clearIcon}
+          readOnly
+        />
       ) : (
         <Input
           placeholder={placeholder}
@@ -163,7 +190,7 @@ export default function ReportSelector(props) {
 
 ReportSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
-  selectedQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  selectedQuery: PropTypes.object,
   type: PropTypes.oneOf(["select", "default"]),
   className: PropTypes.string,
   disabled: PropTypes.bool,

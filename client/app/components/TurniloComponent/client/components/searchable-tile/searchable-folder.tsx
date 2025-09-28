@@ -34,18 +34,26 @@ export interface SearchableFolderState {
   opened: boolean;
 }
 
-export class SearchableFolder extends PureComponent<SearchableFolderProps, SearchableFolderState> {
-
+export class SearchableFolder extends PureComponent<
+  SearchableFolderProps,
+  SearchableFolderState
+> {
   readonly folderState: SearchableFolderState;
 
-  private readonly openIcon = <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />;
-  private readonly closedIcon = <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />;
+  private readonly openIcon = (
+    <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />
+  );
+  private readonly closedIcon = (
+    <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />
+  );
 
   constructor(props: SearchableFolderProps) {
     super(props);
 
     const { inSearchMode, hasItemsWithSearchText, shouldBeOpened } = this.props;
-    this.folderState = { opened: inSearchMode && hasItemsWithSearchText || shouldBeOpened };
+    this.folderState = {
+      opened: (inSearchMode && hasItemsWithSearchText) || shouldBeOpened,
+    };
   }
 
   componentWillReceiveProps(nextProps: Readonly<SearchableFolderProps>) {
@@ -63,25 +71,35 @@ export class SearchableFolder extends PureComponent<SearchableFolderProps, Searc
   };
 
   render() {
-    const { title, description, inSearchMode, hasItemsWithSearchText, children } = this.props;
+    const {
+      title,
+      description,
+      inSearchMode,
+      hasItemsWithSearchText,
+      children,
+    } = this.props;
     const { opened } = this.folderState;
 
-    const isGroupOpen = opened || inSearchMode && hasItemsWithSearchText;
+    const isGroupOpen = opened || (inSearchMode && hasItemsWithSearchText);
     const hidden = inSearchMode && !hasItemsWithSearchText;
 
-    return <div className={classNames("folder", { hidden })}>
-      <div className="folder-header">
-        <div className="icon-label-container" onClick={this.handleClick}>
-          <div className="folder-icon">
-            {isGroupOpen ? this.openIcon : this.closedIcon}
+    return (
+      <div className={classNames("folder", { hidden })}>
+        <div className="folder-header">
+          <div className="icon-label-container" onClick={this.handleClick}>
+            <div className="folder-icon">
+              {isGroupOpen ? this.openIcon : this.closedIcon}
+            </div>
+            <span className="label">{title}</span>
           </div>
-          <span className="label">{title}</span>
+          {description && (
+            <InfoBubble className="info-icon" description={description} />
+          )}
         </div>
-        {description && <InfoBubble className="info-icon" description={description} />}
+        <div className={classNames("folder-items", { closed: !isGroupOpen })}>
+          {children}
+        </div>
       </div>
-      <div className={classNames("folder-items", { closed: !isGroupOpen })}>
-        {children}
-      </div>
-    </div>;
+    );
   }
 }

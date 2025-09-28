@@ -16,8 +16,8 @@ import "./EmbedQueryDialog.less";
 class EmbedQueryDialog extends React.Component {
   static propTypes = {
     dialog: DialogPropType.isRequired,
-    query: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    visualization: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    query: PropTypes.object.isRequired,
+    visualization: PropTypes.object.isRequired,
   };
 
   state = {
@@ -29,9 +29,11 @@ class EmbedQueryDialog extends React.Component {
   constructor(props) {
     super(props);
     const { query, visualization } = props;
-    this.embedUrl = `${clientConfig.basePath}embed/query/${query.id}/visualization/${visualization.id}?api_key=${
-      query.api_key
-    }&${query.getParameters().toUrlParams()}`;
+    this.embedUrl = `${clientConfig.basePath}embed/query/${
+      query.id
+    }/visualization/${visualization.id}?api_key=${query.api_key}&${query
+      .getParameters()
+      .toUrlParams()}`;
 
     if (window.snapshotUrlBuilder) {
       this.snapshotUrl = window.snapshotUrlBuilder(query, visualization);
@@ -50,14 +52,19 @@ class EmbedQueryDialog extends React.Component {
         {...dialog.props}
         className="embed-query-dialog"
         title="Embed Query"
-        footer={<Button onClick={dialog.dismiss}>Close</Button>}>
+        footer={<Button onClick={dialog.dismiss}>Close</Button>}
+      >
         {query.is_safe ? (
           <React.Fragment>
             <h5 id={this.urlEmbedLabelId} className="m-t-0">
               Public URL
             </h5>
             <div className="m-b-30">
-              <CodeBlock aria-labelledby={this.urlEmbedLabelId} data-test="EmbedIframe" copyable>
+              <CodeBlock
+                aria-labelledby={this.urlEmbedLabelId}
+                data-test="EmbedIframe"
+                copyable
+              >
                 {this.embedUrl}
               </CodeBlock>
             </div>
@@ -72,7 +79,11 @@ class EmbedQueryDialog extends React.Component {
                 <Form.Item>
                   <Checkbox
                     checked={enableChangeIframeSize}
-                    onChange={e => this.setState({ enableChangeIframeSize: e.target.checked })}
+                    onChange={e =>
+                      this.setState({
+                        enableChangeIframeSize: e.target.checked,
+                      })
+                    }
                   />
                 </Form.Item>
                 <Form.Item label="Width">

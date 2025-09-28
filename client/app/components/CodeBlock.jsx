@@ -21,7 +21,8 @@ export default class CodeBlock extends React.Component {
   constructor(props) {
     super(props);
     this.ref = React.createRef();
-    this.copyFeatureEnabled = props.copyable && document.queryCommandSupported("copy");
+    this.copyFeatureEnabled =
+      props.copyable && document.queryCommandSupported("copy");
     this.resetCopyState = null;
   }
 
@@ -52,15 +53,23 @@ export default class CodeBlock extends React.Component {
     window.getSelection().removeAllRanges();
 
     // reset tooltip
-    this.resetCopyState = setTimeout(() => this.setState({ copied: null }), 2000);
+    this.resetCopyState = setTimeout(
+      () => this.setState({ copied: null }),
+      2000,
+    );
   };
 
   render() {
-    const { copyable, children, ...props } = this.props;
+    const { children, ...props } = this.props;
 
     const copyButton = (
       <Tooltip title={this.state.copied || "Copy"}>
-        <Button icon={<CopyOutlinedIcon />} type="dashed" size="small" onClick={this.copy} />
+        <Button
+          icon={<CopyOutlinedIcon />}
+          type="dashed"
+          size="small"
+          onClick={this.copy}
+        />
       </Tooltip>
     );
 

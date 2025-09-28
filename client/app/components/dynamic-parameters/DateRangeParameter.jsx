@@ -9,57 +9,41 @@ const DYNAMIC_DATE_OPTIONS = [
     name: "This week",
     value: getDynamicDateRangeFromString("d_this_week"),
     label: () =>
-      getDynamicDateRangeFromString("d_this_week")
-        .value()[0]
-        .format("MMM D") +
+      getDynamicDateRangeFromString("d_this_week").value()[0].format("MMM D") +
       " - " +
-      getDynamicDateRangeFromString("d_this_week")
-        .value()[1]
-        .format("MMM D"),
+      getDynamicDateRangeFromString("d_this_week").value()[1].format("MMM D"),
   },
   {
     name: "This month",
     value: getDynamicDateRangeFromString("d_this_month"),
     label: () =>
-      getDynamicDateRangeFromString("d_this_month")
-        .value()[0]
-        .format("MMMM"),
+      getDynamicDateRangeFromString("d_this_month").value()[0].format("MMMM"),
   },
   {
     name: "This year",
     value: getDynamicDateRangeFromString("d_this_year"),
     label: () =>
-      getDynamicDateRangeFromString("d_this_year")
-        .value()[0]
-        .format("YYYY"),
+      getDynamicDateRangeFromString("d_this_year").value()[0].format("YYYY"),
   },
   {
     name: "Last week",
     value: getDynamicDateRangeFromString("d_last_week"),
     label: () =>
-      getDynamicDateRangeFromString("d_last_week")
-        .value()[0]
-        .format("MMM D") +
+      getDynamicDateRangeFromString("d_last_week").value()[0].format("MMM D") +
       " - " +
-      getDynamicDateRangeFromString("d_last_week")
-        .value()[1]
-        .format("MMM D"),
+      getDynamicDateRangeFromString("d_last_week").value()[1].format("MMM D"),
   },
   {
     name: "Last month",
     value: getDynamicDateRangeFromString("d_last_month"),
     label: () =>
-      getDynamicDateRangeFromString("d_last_month")
-        .value()[0]
-        .format("MMMM"),
+      getDynamicDateRangeFromString("d_last_month").value()[0].format("MMMM"),
   },
   {
     name: "Last year",
     value: getDynamicDateRangeFromString("d_last_year"),
     label: () =>
-      getDynamicDateRangeFromString("d_last_year")
-        .value()[0]
-        .format("YYYY"),
+      getDynamicDateRangeFromString("d_last_year").value()[0].format("YYYY"),
   },
   {
     name: "Last 7 days",
@@ -113,31 +97,31 @@ const DYNAMIC_DATETIME_OPTIONS = [
     name: "Today",
     value: getDynamicDateRangeFromString("d_today"),
     label: () =>
-      getDynamicDateRangeFromString("d_today")
-        .value()[0]
-        .format("MMM D"),
+      getDynamicDateRangeFromString("d_today").value()[0].format("MMM D"),
   },
   {
     name: "Yesterday",
     value: getDynamicDateRangeFromString("d_yesterday"),
     label: () =>
-      getDynamicDateRangeFromString("d_yesterday")
-        .value()[0]
-        .format("MMM D"),
+      getDynamicDateRangeFromString("d_yesterday").value()[0].format("MMM D"),
   },
   ...DYNAMIC_DATE_OPTIONS,
 ];
 
 function DateRangeParameter(props) {
-  const options = includes(props.type, "datetime-range") ? DYNAMIC_DATETIME_OPTIONS : DYNAMIC_DATE_OPTIONS;
-  return <DynamicDateRangePicker {...props} dynamicButtonOptions={{ options }} />;
+  const options = includes(props.type, "datetime-range")
+    ? DYNAMIC_DATETIME_OPTIONS
+    : DYNAMIC_DATE_OPTIONS;
+  return (
+    <DynamicDateRangePicker {...props} dynamicButtonOptions={{ options }} />
+  );
 }
 
 DateRangeParameter.propTypes = {
   type: PropTypes.string,
   className: PropTypes.string,
-  value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-  parameter: PropTypes.any, // eslint-disable-line react/forbid-prop-types
+  value: PropTypes.any,
+  parameter: PropTypes.any,
   onSelect: PropTypes.func,
 };
 

@@ -20,7 +20,10 @@ import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { NumberFilterClause, NumberRange } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  NumberFilterClause,
+  NumberRange,
+} from "../../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../../common/models/filter/filter";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
@@ -29,8 +32,14 @@ import { STRINGS } from "../../../config/constants";
 import { enterKey } from "../../../utils/dom/dom";
 import { BubbleMenu } from "../../bubble-menu/bubble-menu";
 import { Button } from "../../button/button";
-import { FilterOption, FilterOptionsDropdown } from "../../filter-options-dropdown/filter-options-dropdown";
-import { ANY_VALUE, NumberRangePicker } from "../../number-range-picker/number-range-picker";
+import {
+  FilterOption,
+  FilterOptionsDropdown,
+} from "../../filter-options-dropdown/filter-options-dropdown";
+import {
+  ANY_VALUE,
+  NumberRangePicker,
+} from "../../number-range-picker/number-range-picker";
 import "./number-filter-menu.scss";
 
 function numberOrAnyToString(start: number): string {
@@ -44,7 +53,10 @@ function stringToNumberOrAny(startInput: string): number {
 }
 
 const MENU_WIDTH = 250;
-const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
+const filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(
+  FilterMode.INCLUDE,
+  FilterMode.EXCLUDE,
+);
 
 export interface NumberFilterMenuProps {
   clicker: Clicker;
@@ -66,14 +78,17 @@ export interface NumberFilterMenuState {
   filterMode?: FilterMode;
 }
 
-export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, NumberFilterMenuState> {
+export class NumberFilterMenu extends React.Component<
+  NumberFilterMenuProps,
+  NumberFilterMenuState
+> {
   public mounted: boolean;
 
   state: NumberFilterMenuState = {
     leftOffset: null,
     rightBound: null,
     start: ANY_VALUE,
-    end: ANY_VALUE
+    end: ANY_VALUE,
   };
 
   componentWillMount() {
@@ -90,7 +105,8 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
       this.setState({
         start,
         end,
-        filterMode: essence.filter.getModeForDimension(dimension) || FilterMode.INCLUDE
+        filterMode:
+          essence.filter.getModeForDimension(dimension) || FilterMode.INCLUDE,
       });
     }
   }
@@ -104,17 +120,24 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   }
 
   constructFilter(): Filter {
-    const { essence: { filter }, dimension } = this.props;
+    const {
+      essence: { filter },
+      dimension,
+    } = this.props;
     const { start, end, filterMode } = this.state;
 
     if (isNaN(start) || isNaN(end)) return null;
     if (start === null && end === null) return null;
     if (start !== null && end !== null && start > end) return null;
-    return filter.setClause(new NumberFilterClause({
-      reference: dimension.name,
-      not: filterMode === FilterMode.EXCLUDE,
-      values: List.of(new NumberRange({ start, end, bounds: start === end ? "[]" : "[)" }))
-    }));
+    return filter.setClause(
+      new NumberFilterClause({
+        reference: dimension.name,
+        not: filterMode === FilterMode.EXCLUDE,
+        values: List.of(
+          new NumberRange({ start, end, bounds: start === end ? "[]" : "[)" }),
+        ),
+      }),
+    );
   }
 
   globalKeyDownListener = (e: KeyboardEvent) => {
@@ -138,14 +161,14 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   onRangeInputStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const startInput = e.target.value;
     this.setState({
-      start: stringToNumberOrAny(startInput)
+      start: stringToNumberOrAny(startInput),
     });
   };
 
   onRangeInputEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const endInput = e.target.value;
     this.setState({
-      end: stringToNumberOrAny(endInput)
+      end: stringToNumberOrAny(endInput),
     });
   };
 
@@ -168,54 +191,82 @@ export class NumberFilterMenu extends React.Component<NumberFilterMenuProps, Num
   }
 
   render() {
-    const { essence, timekeeper, dimension, onClose, containerStage, openOn, inside } = this.props;
+    const {
+      essence,
+      timekeeper,
+      dimension,
+      onClose,
+      containerStage,
+      openOn,
+      inside,
+    } = this.props;
     const { end, start, filterMode } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
 
-    return <BubbleMenu
-      className="number-filter-menu"
-      direction="down"
-      containerStage={containerStage}
-      stage={menuSize}
-      openOn={openOn}
-      onClose={onClose}
-      inside={inside}
-    >
-      <div className="side-by-side">
-        <div className="group">
-          <label className="input-top-label">Type</label>
-          <FilterOptionsDropdown
-            id="filter-type"
-            selectedOption={filterMode}
-            onSelectOption={this.onSelectFilterOption}
-            filterOptions={filterOptions}
+    return (
+      <BubbleMenu
+        className="number-filter-menu"
+        direction="down"
+        containerStage={containerStage}
+        stage={menuSize}
+        openOn={openOn}
+        onClose={onClose}
+        inside={inside}
+      >
+        <div className="side-by-side">
+          <div className="group">
+            <label className="input-top-label">Type</label>
+            <FilterOptionsDropdown
+              id="filter-type"
+              selectedOption={filterMode}
+              onSelectOption={this.onSelectFilterOption}
+              filterOptions={filterOptions}
+            />
+          </div>
+          <div className="group">
+            <label className="input-top-label" htmlFor="min-input">
+              Min
+            </label>
+            <input
+              id="min-input"
+              value={numberOrAnyToString(start)}
+              onChange={this.onRangeInputStartChange}
+            />
+          </div>
+          <div className="group">
+            <label className="input-top-label">Max</label>
+            <input
+              value={numberOrAnyToString(end)}
+              onChange={this.onRangeInputEndChange}
+            />
+          </div>
+        </div>
+
+        <NumberRangePicker
+          onRangeEndChange={this.onRangeEndChange}
+          onRangeStartChange={this.onRangeStartChange}
+          start={start}
+          end={end}
+          dimension={dimension}
+          essence={essence}
+          timekeeper={timekeeper}
+          exclude={filterMode === FilterMode.EXCLUDE}
+        />
+
+        <div className="ok-cancel-bar">
+          <Button
+            type="primary"
+            title={STRINGS.ok}
+            onClick={this.onOkClick}
+            disabled={!this.actionEnabled()}
+          />
+          <Button
+            type="secondary"
+            title={STRINGS.cancel}
+            onClick={this.onCancelClick}
           />
         </div>
-        <div className="group">
-          <label className="input-top-label" htmlFor="min-input">Min</label>
-          <input id="min-input" value={numberOrAnyToString(start)} onChange={this.onRangeInputStartChange} />
-        </div>
-        <div className="group">
-          <label className="input-top-label">Max</label>
-          <input value={numberOrAnyToString(end)} onChange={this.onRangeInputEndChange} />
-        </div>
-      </div>
-
-      <NumberRangePicker
-        onRangeEndChange={this.onRangeEndChange}
-        onRangeStartChange={this.onRangeStartChange}
-        start={start}
-        end={end}
-        dimension={dimension}
-        essence={essence}
-        timekeeper={timekeeper}
-        exclude={filterMode === FilterMode.EXCLUDE}
-      />
-
-      <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
-      </div>
-    </BubbleMenu>;
+      </BubbleMenu>
+    );
   }
 }

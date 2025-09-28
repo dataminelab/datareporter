@@ -38,19 +38,26 @@ interface ExpressionSeriesDefinition extends BaseSeriesDefinition {
   type: SeriesType.EXPRESSION;
 }
 
-export type SeriesDefinition = BaseSeriesDefinition | MeasureSeriesDefinition | QuantileSeriesDefinition | ExpressionSeriesDefinition;
+export type SeriesDefinition =
+  | BaseSeriesDefinition
+  | MeasureSeriesDefinition
+  | QuantileSeriesDefinition
+  | ExpressionSeriesDefinition;
 
 type SeriesDefinitionsList = SeriesDefinition[];
 
 export interface SeriesDefinitionConverter {
   fromEssenceSeries(series: SeriesList): SeriesDefinitionsList;
 
-  toEssenceSeries(seriesDefs: SeriesDefinitionsList, measures: Measures): SeriesList;
+  toEssenceSeries(
+    seriesDefs: SeriesDefinitionsList,
+    measures: Measures,
+  ): SeriesList;
 }
 
 export const seriesDefinitionConverter: SeriesDefinitionConverter = {
   fromEssenceSeries: (seriesList: SeriesList) =>
     seriesList.series.toArray().map(series => series.toJS()),
   toEssenceSeries: (seriesDefs: SeriesDefinitionsList, measures: Measures) =>
-    SeriesList.fromJS(seriesDefs, measures)
+    SeriesList.fromJS(seriesDefs, measures),
 };

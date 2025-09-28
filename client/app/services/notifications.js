@@ -4,13 +4,15 @@ import recordEvent from "@/services/recordEvent";
 import redashIconUrl from "@/assets/images/report_icon_small.png";
 
 const logger = debug("redash:notifications");
-// eslint-disable-next-line compat/compat
 const Notification = window.Notification || null;
 if (!Notification) {
   logger("HTML5 notifications are not supported.");
 }
 
-const hidden = find(["hidden", "webkitHidden", "mozHidden", "msHidden"], prop => prop in document);
+const hidden = find(
+  ["hidden", "webkitHidden", "mozHidden", "msHidden"],
+  prop => prop in document,
+);
 
 function isPageVisible() {
   return !document[hidden];
@@ -23,7 +25,11 @@ function getPermissions() {
 }
 
 function showNotification(title, content) {
-  if (!Notification || isPageVisible() || Notification.permission !== "granted") {
+  if (
+    !Notification ||
+    isPageVisible() ||
+    Notification.permission !== "granted"
+  ) {
     return;
   }
 

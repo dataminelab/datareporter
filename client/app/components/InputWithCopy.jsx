@@ -37,7 +37,10 @@ export default class InputWithCopy extends React.Component {
     }
 
     // reset tooltip
-    this.resetCopyState = setTimeout(() => this.setState({ copied: null }), 2000);
+    this.resetCopyState = setTimeout(
+      () => this.setState({ copied: null }),
+      2000,
+    );
   };
 
   render() {
@@ -50,6 +53,12 @@ export default class InputWithCopy extends React.Component {
       </Tooltip>
     );
 
-    return <Input {...this.props} ref={this.ref} addonAfter={this.copyFeatureSupported && copyButton} />;
+    return (
+      <Input
+        {...this.props}
+        ref={this.ref}
+        addonAfter={this.copyFeatureSupported && copyButton}
+      />
+    );
   }
 }

@@ -34,23 +34,27 @@ function useGrantees(url) {
         });
         return resultGrantees;
       }),
-    [url]
+    [url],
   );
 
   const addPermission = useCallback(
     (userId, accessType = "modify") =>
       axios
         .post(url, { access_type: accessType, user_id: userId })
-        .catch(() => notification.error("Could not grant permission to the user")),
-    [url]
+        .catch(() =>
+          notification.error("Could not grant permission to the user"),
+        ),
+    [url],
   );
 
   const removePermission = useCallback(
     (userId, accessType = "modify") =>
       axios
         .delete(url, { data: { access_type: accessType, user_id: userId } })
-        .catch(() => notification.error("Could not remove permission from the user")),
-    [url]
+        .catch(() =>
+          notification.error("Could not remove permission from the user"),
+        ),
+    [url],
   );
 
   return { loadGrantees, addPermission, removePermission };
@@ -73,7 +77,9 @@ function PermissionsEditorDialogHeader({ context }) {
   );
 }
 
-PermissionsEditorDialogHeader.propTypes = { context: PropTypes.oneOf(["query", "dashboard"]) };
+PermissionsEditorDialogHeader.propTypes = {
+  context: PropTypes.oneOf(["query", "dashboard"]),
+};
 PermissionsEditorDialogHeader.defaultProps = { context: "query" };
 
 function UserSelect({ onSelect, shouldShowUser }) {
@@ -87,9 +93,9 @@ function UserSelect({ onSelect, shouldShowUser }) {
         searchUsers(search)
           .then(setUsers)
           .finally(() => setLoadingUsers(false)),
-      DEBOUNCE_SEARCH_DURATION
+      DEBOUNCE_SEARCH_DURATION,
     ),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -105,7 +111,11 @@ function UserSelect({ onSelect, shouldShowUser }) {
       onSearch={setSearchTerm}
       suffixIcon={
         loadingUsers ? (
-          <span role="status" aria-live="polite" aria-relevant="additions removals">
+          <span
+            role="status"
+            aria-live="polite"
+            aria-relevant="additions removals"
+          >
             <i className="fa fa-spinner fa-pulse" aria-hidden="true" />
             <span className="sr-only">Loading...</span>
           </span>
@@ -117,7 +127,8 @@ function UserSelect({ onSelect, shouldShowUser }) {
       notFoundContent={null}
       value={undefined}
       getPopupContainer={trigger => trigger.parentNode}
-      onSelect={onSelect}>
+      onSelect={onSelect}
+    >
       {users.filter(shouldShowUser).map(user => (
         <Option key={user.id} value={user.id}>
           <UserPreviewCard user={user} />
@@ -146,8 +157,10 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
   }, [loadGrantees]);
 
   const userHasPermission = useCallback(
-    user => user.id === author.id || !!get(find(grantees, { id: user.id }), "accessType"),
-    [author.id, grantees]
+    user =>
+      user.id === author.id ||
+      !!get(find(grantees, { id: user.id }), "accessType"),
+    [author.id, grantees],
   );
 
   useEffect(() => {
@@ -159,15 +172,22 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
       {...dialog.props}
       className="permissions-editor-dialog"
       title={<PermissionsEditorDialogHeader context={context} />}
-      footer={<Button onClick={dialog.dismiss}>Close</Button>}>
+      footer={<Button onClick={dialog.dismiss}>Close</Button>}
+    >
       <UserSelect
-        onSelect={userId => addPermission(userId).then(loadUsersWithPermissions)}
+        onSelect={userId =>
+          addPermission(userId).then(loadUsersWithPermissions)
+        }
         shouldShowUser={user => !userHasPermission(user)}
       />
       <div className="d-flex align-items-center m-t-5">
         <h5 className="flex-fill">Users with permissions</h5>
         {loadingGrantees && (
-          <span role="status" aria-live="polite" aria-relevant="additions removals">
+          <span
+            role="status"
+            aria-live="polite"
+            aria-relevant="additions removals"
+          >
             <i className="fa fa-spinner fa-pulse" aria-hidden="true" />
             <span className="sr-only">Loading...</span>
           </span>
@@ -186,8 +206,14 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
                   <Tooltip title="Remove user permissions">
                     <PlainButton
                       aria-label="Remove permissions"
-                      onClick={() => removePermission(user.id).then(loadUsersWithPermissions)}>
-                      <i className="fa fa-remove clickable" aria-hidden="true" />
+                      onClick={() =>
+                        removePermission(user.id).then(loadUsersWithPermissions)
+                      }
+                    >
+                      <i
+                        className="fa fa-remove clickable"
+                        aria-hidden="true"
+                      />
                     </PlainButton>
                   </Tooltip>
                 )}
@@ -202,7 +228,7 @@ function PermissionsEditorDialog({ dialog, author, context, aclUrl }) {
 
 PermissionsEditorDialog.propTypes = {
   dialog: DialogPropType.isRequired,
-  author: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  author: PropTypes.object.isRequired,
   context: PropTypes.oneOf(["query", "dashboard"]),
   aclUrl: PropTypes.string.isRequired,
 };

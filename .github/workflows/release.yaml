@@ -71,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: plywood/server
+          context: plywood
           tags: europe-west1-docker.pkg.dev/datareporter/datareporter/plywood:${{needs.get_version.outputs.version}}
           build-args: version="${{needs.get_version.outputs.version}}"
   tag_release:

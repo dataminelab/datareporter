@@ -3,14 +3,18 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 
 export default function useReportParameters(report) {
   const parameters = useMemo(() => report.getParametersDefs(), [report]);
-  const [dirtyFlag, setDirtyFlag] = useState(report.getParameters().hasPendingValues());
+  const [dirtyFlag, setDirtyFlag] = useState(
+    report.getParameters().hasPendingValues(),
+  );
 
   const updateDirtyFlag = useCallback(
     flag => {
-      flag = isUndefined(flag) ? report.getParameters().hasPendingValues() : flag;
+      flag = isUndefined(flag)
+        ? report.getParameters().hasPendingValues()
+        : flag;
       setDirtyFlag(flag);
     },
-    [report]
+    [report],
   );
 
   useEffect(() => {
@@ -20,5 +24,8 @@ export default function useReportParameters(report) {
     }
   }, [report, parameters, dirtyFlag]);
 
-  return useMemo(() => [parameters, dirtyFlag, updateDirtyFlag], [parameters, dirtyFlag, updateDirtyFlag]);
+  return useMemo(
+    () => [parameters, dirtyFlag, updateDirtyFlag],
+    [parameters, dirtyFlag, updateDirtyFlag],
+  );
 }

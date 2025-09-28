@@ -4,6 +4,7 @@ classes we have. This will ensure cleaner code and better
 separation of concerns.
 """
 
+from flask import url_for
 from flask_login import current_user
 from funcy import project
 from rq.job import JobStatus
@@ -18,9 +19,8 @@ from redash.serializers.query_result import (
     serialize_query_result_to_dsv,
     serialize_query_result_to_xlsx,
 )
-from redash.utils import json_loads
 from redash.services.expression import ExpressionBase64Parser
-from flask import url_for
+from redash.utils import json_loads
 
 
 def is_admin(user):

@@ -5,7 +5,10 @@ try:
 except ImportError:
     enabled = False
 import json
-from psycopg2.extensions import register_adapter, AsIs
+import logging
+
+from psycopg2.extensions import AsIs, register_adapter
+
 from redash.query_runner import (
     TYPE_BOOLEAN,
     TYPE_INTEGER,
@@ -13,7 +16,6 @@ from redash.query_runner import (
     BaseQueryRunner,
     register,
 )
-import logging
 
 logger = logging.getLogger(__name__)
 TYPES_MAP = {1: TYPE_STRING, 2: TYPE_INTEGER, 3: TYPE_BOOLEAN}

@@ -32,15 +32,25 @@ import routes from "@/services/routes";
 
 import logoUrl from "@/assets/images/report_icon_small.png";
 
-function VisualizationEmbedHeader({ queryName, queryDescription, visualization }) {
+function VisualizationEmbedHeader({
+  queryName,
+  queryDescription,
+  visualization,
+}) {
   return (
     <div className="embed-heading p-b-10 p-r-15 p-l-15">
       <h3>
-        <img src={logoUrl} alt="Data reporter Logo" style={{ height: "24px", verticalAlign: "text-bottom" }} />
+        <img
+          src={logoUrl}
+          alt="Data reporter Logo"
+          style={{ height: "24px", verticalAlign: "text-bottom" }}
+        />
         <VisualizationName visualization={visualization} /> {queryName}
         {queryDescription && (
           <small>
-            <HtmlContent className="markdown text-muted">{markdown.toHTML(queryDescription || "")}</HtmlContent>
+            <HtmlContent className="markdown text-muted">
+              {markdown.toHTML(queryDescription || "")}
+            </HtmlContent>
           </small>
         )}
       </h3>
@@ -73,8 +83,11 @@ function VisualizationEmbedFooter({
           query={query}
           queryResult={queryResults}
           apiKey={apiKey}
-          disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
+          disabled={
+            !queryResults || !queryResults.getData || !queryResults.getData()
+          }
+          embed
+        >
           <FileOutlinedIcon /> Download as CSV File
         </QueryResultsLink>
       </Menu.Item>
@@ -84,8 +97,11 @@ function VisualizationEmbedFooter({
           query={query}
           queryResult={queryResults}
           apiKey={apiKey}
-          disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
+          disabled={
+            !queryResults || !queryResults.getData || !queryResults.getData()
+          }
+          embed
+        >
           <FileOutlinedIcon /> Download as TSV File
         </QueryResultsLink>
       </Menu.Item>
@@ -95,8 +111,11 @@ function VisualizationEmbedFooter({
           query={query}
           queryResult={queryResults}
           apiKey={apiKey}
-          disabled={!queryResults || !queryResults.getData || !queryResults.getData()}
-          embed>
+          disabled={
+            !queryResults || !queryResults.getData || !queryResults.getData()
+          }
+          embed
+        >
           <FileExcelOutlinedIcon /> Download as Excel File
         </QueryResultsLink>
       </Menu.Item>
@@ -109,24 +128,41 @@ function VisualizationEmbedFooter({
         <span>
           <span className="small hidden-print">
             <i className="zmdi zmdi-time-restore" aria-hidden="true" />{" "}
-            {refreshStartedAt ? <Timer from={refreshStartedAt} /> : <TimeAgo date={updatedAt} />}
+            {refreshStartedAt ? (
+              <Timer from={refreshStartedAt} />
+            ) : (
+              <TimeAgo date={updatedAt} />
+            )}
           </span>
           <span className="small visible-print">
-            <i className="zmdi zmdi-time-restore" aria-hidden="true" /> {formatDateTime(updatedAt)}
+            <i className="zmdi zmdi-time-restore" aria-hidden="true" />{" "}
+            {formatDateTime(updatedAt)}
           </span>
         </span>
       )}
       {queryUrl && (
         <span className="hidden-print">
           <Tooltip title="Open in Data Reporter">
-            <Link.Button className="icon-button" href={queryUrl} target="_blank">
+            <Link.Button
+              className="icon-button"
+              href={queryUrl}
+              target="_blank"
+            >
               <i className="fa fa-external-link" aria-hidden="true" />
               <span className="sr-only">Open in Data Reporter</span>
             </Link.Button>
           </Tooltip>
           {!query.hasParameters() && (
-            <Dropdown overlay={downloadMenu} disabled={!queryResults} trigger={["click"]} placement="topLeft">
-              <Button loading={!queryResults && !!refreshStartedAt} className="m-l-5">
+            <Dropdown
+              overlay={downloadMenu}
+              disabled={!queryResults}
+              trigger={["click"]}
+              placement="topLeft"
+            >
+              <Button
+                loading={!queryResults && !!refreshStartedAt}
+                className="m-l-5"
+              >
                 Download Dataset
                 <i className="fa fa-caret-up m-l-5" aria-hidden="true" />
               </Button>
@@ -139,8 +175,8 @@ function VisualizationEmbedFooter({
 }
 
 VisualizationEmbedFooter.propTypes = {
-  query: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  queryResults: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  query: PropTypes.object.isRequired,
+  queryResults: PropTypes.object,
   updatedAt: PropTypes.string,
   refreshStartedAt: Moment,
   queryUrl: PropTypes.string,
@@ -212,7 +248,10 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
 
   const showQueryDescription = has(location.search, "showDescription");
   visualizationId = parseInt(visualizationId, 10);
-  const visualization = find(query.visualizations, vis => vis.id === visualizationId);
+  const visualization = find(
+    query.visualizations,
+    vis => vis.id === visualizationId,
+  );
 
   if (!visualization) {
     // call error handler async, otherwise it will destroy the component on render phase
@@ -223,7 +262,10 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
   }
 
   return (
-    <div className="tile m-t-10 m-l-10 m-r-10 p-t-10 embed__vis" data-test="VisualizationEmbed">
+    <div
+      className="tile m-t-10 m-l-10 m-r-10 p-t-10 embed__vis"
+      data-test="VisualizationEmbed"
+    >
       {!hideHeader && (
         <VisualizationEmbedHeader
           queryName={query.name}
@@ -234,17 +276,32 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
       <div className="col-md-12 query__vis">
         {!hideParametersUI && query.hasParameters() && (
           <div className="p-t-15 p-b-10">
-            <Parameters parameters={query.getParametersDefs()} onValuesChange={refreshQueryResults} />
+            <Parameters
+              parameters={query.getParametersDefs()}
+              onValuesChange={refreshQueryResults}
+            />
           </div>
         )}
-        {error && <div className="alert alert-danger" data-test="ErrorMessage">{`Error: ${error}`}</div>}
+        {error && (
+          <div
+            className="alert alert-danger"
+            data-test="ErrorMessage"
+          >{`Error: ${error}`}</div>
+        )}
         {!error && queryResults && (
-          <VisualizationRenderer visualization={visualization} queryResult={queryResults} context="widget" />
+          <VisualizationRenderer
+            visualization={visualization}
+            queryResult={queryResults}
+            context="widget"
+          />
         )}
         {!queryResults && refreshStartedAt && (
           <div className="d-flex justify-content-center">
             <div className="spinner">
-              <i className="zmdi zmdi-refresh zmdi-hc-spin zmdi-hc-5x" aria-hidden="true" />
+              <i
+                className="zmdi zmdi-refresh zmdi-hc-spin zmdi-hc-5x"
+                aria-hidden="true"
+              />
               <span className="sr-only">Refreshing...</span>
             </div>
           </div>
@@ -280,5 +337,5 @@ routes.register(
     path: "/embed/query/:queryId/visualization/:visualizationId",
     render: pageProps => <VisualizationEmbed {...pageProps} />,
     getApiKey: () => location.search.api_key,
-  })
+  }),
 );

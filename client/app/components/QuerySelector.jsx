@@ -18,7 +18,9 @@ function search(term) {
 
   // get recent
   if (!term) {
-    return Query.recent().then(results => results.filter(item => !item.is_draft)); // filter out draft
+    return Query.recent().then(results =>
+      results.filter(item => !item.is_draft),
+    ); // filter out draft
   }
 
   // search by query
@@ -28,7 +30,9 @@ function search(term) {
 export default function QuerySelector(props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedQuery, setSelectedQuery] = useState();
-  const [doSearch, searchResults, searching] = useSearchResults(search, { initialResults: [] });
+  const [doSearch, searchResults, searching] = useSearchResults(search, {
+    initialResults: [],
+  });
 
   const placeholder = "Search a query by name";
   const clearIcon = (
@@ -42,7 +46,12 @@ export default function QuerySelector(props) {
   );
   const spinIcon = (
     <span role="status" aria-live="polite" aria-relevant="additions removals">
-      <i className={cx("fa fa-spinner fa-pulse hide-in-percy", { hidden: !searching })} aria-hidden="true" />
+      <i
+        className={cx("fa fa-spinner fa-pulse hide-in-percy", {
+          hidden: !searching,
+        })}
+        aria-hidden="true"
+      />
       <span className="sr-only">Searching...</span>
     </span>
   );
@@ -82,12 +91,20 @@ export default function QuerySelector(props) {
       <ul className="list-group">
         {searchResults.map(q => (
           <PlainButton
-            className={cx("query-selector-result", "list-group-item", { inactive: q.is_draft })}
+            className={cx("query-selector-result", "list-group-item", {
+              inactive: q.is_draft,
+            })}
             key={q.id}
             role="listitem"
             onClick={() => selectQuery(q.id)}
-            data-test={`QueryId${q.id}`}>
-            {q.name} <QueryTagsControl isDraft={q.is_draft} tags={q.tags} className="inline-tags-control" />
+            data-test={`QueryId${q.id}`}
+          >
+            {q.name}{" "}
+            <QueryTagsControl
+              isDraft={q.is_draft}
+              tags={q.tags}
+              className="inline-tags-control"
+            />
           </PlainButton>
         ))}
       </ul>
@@ -96,7 +113,12 @@ export default function QuerySelector(props) {
 
   if (props.disabled) {
     return (
-      <Input value={selectedQuery && selectedQuery.name} aria-label="Tied query" placeholder={placeholder} disabled />
+      <Input
+        value={selectedQuery && selectedQuery.name}
+        aria-label="Tied query"
+        placeholder={placeholder}
+        disabled
+      />
     );
   }
 
@@ -117,7 +139,8 @@ export default function QuerySelector(props) {
         filterOption={false}
         defaultActiveFirstOption={false}
         className={props.className}
-        data-test="QuerySelector">
+        data-test="QuerySelector"
+      >
         {searchResults &&
           searchResults.map(q => {
             const disabled = q.is_draft;
@@ -127,7 +150,8 @@ export default function QuerySelector(props) {
                 key={q.id}
                 disabled={disabled}
                 className="query-selector-result"
-                data-test={`QueryId${q.id}`}>
+                data-test={`QueryId${q.id}`}
+              >
                 {q.name}{" "}
                 <QueryTagsControl
                   isDraft={q.is_draft}
@@ -144,7 +168,12 @@ export default function QuerySelector(props) {
   return (
     <span data-test="QuerySelector">
       {selectedQuery ? (
-        <Input value={selectedQuery.name} aria-label="Tied query" suffix={clearIcon} readOnly />
+        <Input
+          value={selectedQuery.name}
+          aria-label="Tied query"
+          suffix={clearIcon}
+          readOnly
+        />
       ) : (
         <Input
           placeholder={placeholder}
@@ -163,7 +192,7 @@ export default function QuerySelector(props) {
 
 QuerySelector.propTypes = {
   onChange: PropTypes.func.isRequired,
-  selectedQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  selectedQuery: PropTypes.object,
   type: PropTypes.oneOf(["select", "default"]),
   className: PropTypes.string,
   disabled: PropTypes.bool,

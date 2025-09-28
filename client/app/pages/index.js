@@ -22,12 +22,12 @@ import "./destinations/EditDestination";
 import "./groups/GroupsList";
 import "./groups/GroupDataSources";
 import "./groups/GroupMembers";
+import "./groups/GroupPermissions";
 
 import "./queries-list/QueriesList";
 import "./queries/QuerySource";
 import "./queries/QueryView";
 import "./queries/VisualizationEmbed";
-
 
 import "./reports-list/ReportsList";
 import "./reports/ReportSource";

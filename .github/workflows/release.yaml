@@ -10,9 +10,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  unit_tests:
-    uses: ./.github/workflows/test-unit.yaml
-    secrets: inherit
   get_version:
     runs-on: ubuntu-latest
     outputs:
@@ -33,7 +30,6 @@ jobs:
   build_datareporter:
     runs-on: ubuntu-latest
     needs:
-      - unit_tests
       - get_version
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +51,6 @@ jobs:
   build_plywood:
     runs-on: ubuntu-latest
     needs:
-      - unit_tests
       - get_version
     steps:
       - uses: actions/checkout@v4

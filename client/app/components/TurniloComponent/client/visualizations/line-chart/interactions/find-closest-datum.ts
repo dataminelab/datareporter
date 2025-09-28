@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
-const MAX_HOVER_DIST = 50;
-
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
+import {
+  selectFirstSplitDataset,
+  selectFirstSplitDatums,
+} from "../../../utils/dataset/selectors/selectors";
 import { ContinuousScale, ContinuousValue } from "../utils/continuous-types";
 import { getContinuousDimension, hasNominalSplit } from "../utils/splits";
 
-function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousScale, continuousDimension: Dimension): Datum | null {
+const MAX_HOVER_DIST = 50;
+
+function findClosest(
+  data: Datum[],
+  value: ContinuousValue,
+  scaleX: ContinuousScale,
+  continuousDimension: Dimension,
+): Datum | null {
   let closestDatum: Datum = null;
   let minDist = Infinity;
   for (const datum of data) {
-    var mid;
-    const continuousSegmentValue = datum[continuousDimension.name] as (TimeRange | NumberRange);
+    let mid;
+    const continuousSegmentValue = datum[continuousDimension.name] as
+      | TimeRange
+      | NumberRange;
     if (!continuousSegmentValue) continue;
     else if (continuousSegmentValue.midpoint) {
       mid = continuousSegmentValue.midpoint();
@@ -37,7 +47,8 @@ function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousSc
     }
     const dist = Math.abs(mid.valueOf() - value.valueOf());
     const distPx = Math.abs(scaleX(mid) - scaleX(value));
-    if ((!closestDatum || dist < minDist) && distPx < MAX_HOVER_DIST) { // Make sure it is not too far way
+    if ((!closestDatum || dist < minDist) && distPx < MAX_HOVER_DIST) {
+      // Make sure it is not too far way
       closestDatum = datum;
       minDist = dist;
     }
@@ -45,11 +56,21 @@ function findClosest(data: Datum[], value: ContinuousValue, scaleX: ContinuousSc
   return closestDatum;
 }
 
-export function findClosestDatum(value: ContinuousValue, essence: Essence, dataset: Dataset, xScale: ContinuousScale): Datum | null {
+export function findClosestDatum(
+  value: ContinuousValue,
+  essence: Essence,
+  dataset: Dataset,
+  xScale: ContinuousScale,
+): Datum | null {
   const continuousDimension = getContinuousDimension(essence);
   if (hasNominalSplit(essence)) {
     const flattened = selectFirstSplitDataset(dataset).flatten();
     return findClosest(flattened.data, value, xScale, continuousDimension);
   }
-  return findClosest(selectFirstSplitDatums(dataset), value, xScale, continuousDimension);
+  return findClosest(
+    selectFirstSplitDatums(dataset),
+    value,
+    xScale,
+    continuousDimension,
+  );
 }

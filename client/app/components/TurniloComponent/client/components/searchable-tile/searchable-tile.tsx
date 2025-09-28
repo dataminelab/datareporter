@@ -48,7 +48,10 @@ export interface SearchableTileState {
   actionsMenuAlignOn?: Element;
 }
 
-export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
+export class SearchableTile extends React.Component<
+  SearchableTileProps,
+  SearchableTileState
+> {
   public mounted: boolean;
   private header: React.RefObject<any>;
   private searchBox: React.RefObject<any>;
@@ -60,12 +63,12 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   }
 
   state: SearchableTileState = {
-    actionsMenuOpenOn: null
+    actionsMenuOpenOn: null,
   };
 
   componentDidMount() {
     this.mounted = true;
-    this.setState({ actionsMenuAlignOn: (this.header.current) as Element });
+    this.setState({ actionsMenuAlignOn: this.header.current as Element });
     window.addEventListener("mousedown", this.globalMouseDownListener);
     window.addEventListener("keydown", this.globalKeyDownListener);
   }
@@ -77,7 +80,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
   }
 
   globalMouseDownListener = (e: MouseEvent) => {
-    var { searchText, toggleChangeFn } = this.props;
+    const { searchText, toggleChangeFn } = this.props;
 
     // Remove search if it looses focus while empty
     if (searchText !== "") return;
@@ -86,7 +89,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
     const searchBoxElement = this.searchBox.current;
     if (!searchBoxElement || isInside(target, searchBoxElement)) return;
-    
+
     const headerRef = this.header.current;
     if (!headerRef || headerRef instanceof Element) return;
     const searchButtonElement = this.searchBox.current;
@@ -106,7 +109,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     const { actionsMenuOpenOn } = this.state;
     if (!actionsMenuOpenOn) return;
     this.setState({
-      actionsMenuOpenOn: null
+      actionsMenuOpenOn: null,
     });
   };
 
@@ -114,7 +117,7 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     const { actionsMenuOpenOn } = this.state;
     if (actionsMenuOpenOn) return this.onActionsMenuClose();
     this.setState({
-      actionsMenuOpenOn: e.target as Element
+      actionsMenuOpenOn: e.target as Element,
     });
   };
 
@@ -127,13 +130,15 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
     const { actions } = this.props;
 
     return actions.map((action: TileAction) => {
-      return <li
-        className={classNames({ selected: action.selected })}
-        key={action.keyString || action.toString()}
-        onClick={this.onSelectGranularity.bind(this, action)}
-      >
-        {action.displayValue || action.toString()}
-      </li>;
+      return (
+        <li
+          className={classNames({ selected: action.selected })}
+          key={action.keyString || action.toString()}
+          onClick={this.onSelectGranularity.bind(this, action)}
+        >
+          {action.displayValue || action.toString()}
+        </li>
+      );
     });
   }
 
@@ -142,66 +147,85 @@ export class SearchableTile extends React.Component<SearchableTileProps, Searcha
 
     const stage = Stage.fromSize(180, 200);
 
-    return <BubbleMenu
-      align="end"
-      className="dimension-tile-actions"
-      direction="down"
-      stage={stage}
-      onClose={this.onActionsMenuClose}
-      openOn={actionsMenuOpenOn}
-      alignOn={actionsMenuAlignOn}
-    >
-      <ul className="bubble-list">
-        {this.renderGranularityElements()}
-      </ul>
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        align="end"
+        className="dimension-tile-actions"
+        direction="down"
+        stage={stage}
+        onClose={this.onActionsMenuClose}
+        openOn={actionsMenuOpenOn}
+        alignOn={actionsMenuAlignOn}
+      >
+        <ul className="bubble-list">{this.renderGranularityElements()}</ul>
+      </BubbleMenu>
+    );
   }
 
   render() {
     const {
-      className, style, icons, title, onSearchChange, showSearch, searchText,
-      children, onDragStart, actions
+      className,
+      style,
+      icons,
+      title,
+      onSearchChange,
+      showSearch,
+      searchText,
+      children,
+      onDragStart,
+      actions,
     } = this.props;
     const { actionsMenuOpenOn } = this.state;
     let tileIcons = icons;
 
     if (actions && actions.length > 0) {
-      tileIcons = [({
-        name: "more",
-        ref: "more",
-        onClick: this.onActionsMenuClick,
-        svg: require("../../icons/full-more.svg"),
-        active: Boolean(actionsMenuOpenOn)
-      } as TileHeaderIcon)].concat(icons);
+      tileIcons = [
+        {
+          name: "more",
+          ref: "more",
+          onClick: this.onActionsMenuClick,
+          svg: require("../../icons/full-more.svg"),
+          active: Boolean(actionsMenuOpenOn),
+        } as TileHeaderIcon,
+      ].concat(icons);
     }
 
-    var qualifiedClassName = "searchable-tile " + className;
-    const header = <TileHeader
-      title={title}
-      ref={this.header}
-      icons={tileIcons}
-      onDragStart={onDragStart}
-    />;
+    let qualifiedClassName = "searchable-tile " + className;
+    const header = (
+      <TileHeader
+        title={title}
+        ref={this.header}
+        icons={tileIcons}
+        onDragStart={onDragStart}
+      />
+    );
 
     let searchBar: JSX.Element = null;
     if (showSearch) {
-      searchBar = <div className="search-box" ref={this.searchBox}>
-        <ClearableInput
-          placeholder="Search"
-          focusOnMount={true}
-          value={searchText}
-          onChange={onSearchChange}
-        />
-      </div>;
+      searchBar = (
+        <div className="search-box" ref={this.searchBox}>
+          <ClearableInput
+            placeholder="Search"
+            focusOnMount={true}
+            value={searchText}
+            onChange={onSearchChange}
+          />
+        </div>
+      );
     }
 
-    qualifiedClassName = classNames(qualifiedClassName, (showSearch ? "has-search" : "no-search"));
+    qualifiedClassName = classNames(
+      qualifiedClassName,
+      showSearch ? "has-search" : "no-search",
+    );
 
-    return <div className={qualifiedClassName} style={style}>
-      {header}
-      {searchBar}
-      {actionsMenuOpenOn ? this.renderActionsMenu() : null}
-      {children}
-    </div>;
+    return (
+      <div className={qualifiedClassName} style={style}>
+        {header}
+        {searchBar}
+        {actionsMenuOpenOn ? this.renderActionsMenu() : null}
+        {children}
+      </div>
+    );
   }
 }

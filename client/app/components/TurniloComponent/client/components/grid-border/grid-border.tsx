@@ -24,27 +24,35 @@ interface BottomBorderProps {
   tickLength: number;
 }
 
-export const BottomBorder: React.SFC<BottomBorderProps> = ({ stage, tickLength }) => {
-  return <line
-    className="grid-border grid-bottom-border"
-    transform={stage.getTransform()}
-    x1={0}
-    x2={stage.width + tickLength}
-    y1={roundToHalfPx(stage.height - 1)}
-    y2={roundToHalfPx(stage.height - 1)}
-  />;
+export const BottomBorder: React.SFC<BottomBorderProps> = ({
+  stage,
+  tickLength,
+}) => {
+  return (
+    <line
+      className="grid-border grid-bottom-border"
+      transform={stage.getTransform()}
+      x1={0}
+      x2={stage.width + tickLength}
+      y1={roundToHalfPx(stage.height - 1)}
+      y2={roundToHalfPx(stage.height - 1)}
+    />
+  );
 };
 
 interface RightBorderProps {
- stage: Stage;
+  stage: Stage;
 }
 
 export const RightBorder: React.SFC<RightBorderProps> = ({ stage }) => {
-  return <line
-    className="grid-border grid-right-border"
-    transform={stage.getTransform()}
-    x1={roundToHalfPx(stage.width - 1)}
-    x2={roundToHalfPx(stage.width - 1)}
-    y1={0}
-    y2={stage.height} />;
+  return (
+    <line
+      className="grid-border grid-right-border"
+      transform={stage.getTransform()}
+      x1={roundToHalfPx(stage.width - 1)}
+      x2={roundToHalfPx(stage.width - 1)}
+      y1={0}
+      y2={stage.height}
+    />
+  );
 };

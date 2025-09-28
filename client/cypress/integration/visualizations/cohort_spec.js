@@ -1,5 +1,3 @@
-/* global cy, Cypress */
-
 const SQL = `
   SELECT '2019-01-01' AS "date", 21 AS "bucket", 5 AS "value", 1 AS "stage" UNION ALL
   SELECT '2019-01-01' AS "date", 21 AS "bucket", 8 AS "value", 2 AS "stage" UNION ALL
@@ -26,15 +24,13 @@ describe("Cohort", () => {
       cy.visit(`queries/${id}/source`);
       cy.getByTestId("ExecuteButton").click();
     });
+    cy.getByTestId("NewVisualization").click();
+    cy.getByTestId("VisualizationType").selectAntdOption(
+      "VisualizationType.COHORT",
+    );
   });
 
   it("creates visualization", () => {
-    cy.clickThrough(`
-      NewVisualization
-      VisualizationType
-      VisualizationType.COHORT
-    `);
-
     cy.clickThrough(`
       VisualizationEditor.Tabs.Options
       Cohort.TimeInterval
@@ -55,10 +51,10 @@ describe("Cohort", () => {
 
     // Wait for proper initialization of visualization
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
-    cy.getByTestId("VisualizationPreview")
-      .find("table")
-      .should("exist");
-    cy.percySnapshot("Visualizations - Cohort (simple)", { widths: [viewportWidth] });
+    cy.getByTestId("VisualizationPreview").find("table").should("exist");
+    cy.percySnapshot("Visualizations - Cohort (simple)", {
+      widths: [viewportWidth],
+    });
 
     cy.clickThrough(`
       VisualizationEditor.Tabs.Options
@@ -68,9 +64,9 @@ describe("Cohort", () => {
 
     // Wait for proper initialization of visualization
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
-    cy.getByTestId("VisualizationPreview")
-      .find("table")
-      .should("exist");
-    cy.percySnapshot("Visualizations - Cohort (diagonal)", { widths: [viewportWidth] });
+    cy.getByTestId("VisualizationPreview").find("table").should("exist");
+    cy.percySnapshot("Visualizations - Cohort (diagonal)", {
+      widths: [viewportWidth],
+    });
   });
 });

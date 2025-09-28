@@ -1,0 +1,54 @@
+substitutions:
+  _IMAGE_TAG: "$TAG_NAME"
+
+steps:
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: [
+      "-c",
+      "gcloud secrets versions access latest --secret=kubeconfig-digitalocean-k8s > /config/kubeconfig.conf"
+    ]
+    entrypoint: "bash"
+    volumes:
+      - name: "config"
+        path: "/config"
+  - name: "alpine/k8s:1.26.10"
+    env: [ "KUBECONFIG=/config/kubeconfig.conf" ]
+    entrypoint: "helm"
+    args: [
+      "repo",
+      "add",
+      "datareporter",
+      "https://dataminelab.github.io/contrib-helm-chart/"
+    ]
+    volumes:
+      - name: "config"
+        path: "/config"
+
+  - name: "alpine/k8s:1.26.10"
+    env: [
+      "KUBECONFIG=/config/kubeconfig.conf",
+      "PROJECT_ID=$PROJECT_ID",
+      "BRANCH_NAME=$BRANCH_NAME",
+    ]
+    entrypoint: "ash"
+    args:
+      - "-c"
+      - |
+        <<EOT
+         kubectl get ns || exit 1
+         echo Deployment of $BRANCH_NAME
+         echo Will deploy to $(kubectl get ns -l 'datarepoter.com/branch=$BRANCH_NAME' -o jsonpath={.items[*].metadata.name})
+         for ns in $(kubectl get ns -l 'datarepoter.com/branch=$BRANCH_NAME' -o jsonpath={.items[*].metadata.name});
+         do
+         echo Deploy to $ns;
+         helm -n $ns upgrade --install --reuse-values datareporter datareporter/datareporter \
+         --set plywood.image.tag=$_IMAGE_TAG \
+         --set datareporter.image.tag=$_IMAGE_TAG \
+         --timeout=15m --atomic || helm  -n $ns rollback datareporter
+         done
+         EOT
+
+    volumes:
+      - name: "config"
+        path: "/config"
+

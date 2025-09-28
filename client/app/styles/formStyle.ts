@@ -13,6 +13,10 @@ export function getHorizontalFormProps(): FormProps {
 
 export function getHorizontalFormItemWithoutLabelProps(): FormItemProps {
   return {
-    wrapperCol: { xs: { span: 24 }, sm: { span: 12, offset: 6 }, lg: { span: 12, offset: 4 } },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 12, offset: 6 },
+      lg: { span: 12, offset: 4 },
+    },
   };
 }

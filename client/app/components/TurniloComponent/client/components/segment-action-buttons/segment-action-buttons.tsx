@@ -40,12 +40,14 @@ export interface SegmentActionButtonsState {
   moreMenuOpenOn?: Element;
 }
 
-export class SegmentActionButtons extends React.Component<SegmentActionButtonsProps, SegmentActionButtonsState> {
-
+export class SegmentActionButtons extends React.Component<
+  SegmentActionButtonsProps,
+  SegmentActionButtonsState
+> {
   constructor(props: SegmentActionButtonsProps) {
     super(props);
     this.state = {
-      moreMenuOpenOn: null
+      moreMenuOpenOn: null,
     };
   }
 
@@ -65,13 +67,13 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     const { moreMenuOpenOn } = this.state;
     if (moreMenuOpenOn) return this.closeMoreMenu();
     this.setState({
-      moreMenuOpenOn: e.target as any
+      moreMenuOpenOn: e.target as any,
     });
   };
 
   closeMoreMenu = () => {
     this.setState({
-      moreMenuOpenOn: null
+      moreMenuOpenOn: null,
     });
   };
 
@@ -93,55 +95,76 @@ export class SegmentActionButtons extends React.Component<SegmentActionButtonsPr
     const menuSize = Stage.fromSize(160, 160);
 
     const url = this.getUrl();
-    return <BubbleMenu
-      className="more-menu"
-      direction="down"
-      stage={menuSize}
-      openOn={moreMenuOpenOn}
-      align="start"
-      onClose={this.closeMoreMenu}
-    >
-      <ul className="bubble-list">
-        {segmentValue && <SafeCopyToClipboard key="copyValue" text={segmentValue}>
-          <li className="clipboard" onClick={this.closeMoreMenu}>{STRINGS.copyValue}</li>
-        </SafeCopyToClipboard>}
-        <li
-          className="view-raw-data"
-          key="view-raw-data"
-          onClick={this.openRawDataModal}
-        >{STRINGS.displayRawData}</li>
-        {url && <li key="goToUrl">
-          <a href={url} onClick={this.closeMoreMenu} target="_blank">{STRINGS.goToUrl}</a>
-        </li>}
-      </ul>
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        className="more-menu"
+        direction="down"
+        stage={menuSize}
+        openOn={moreMenuOpenOn}
+        align="start"
+        onClose={this.closeMoreMenu}
+      >
+        <ul className="bubble-list">
+          {segmentValue && (
+            <SafeCopyToClipboard key="copyValue" text={segmentValue}>
+              <li className="clipboard" onClick={this.closeMoreMenu}>
+                {STRINGS.copyValue}
+              </li>
+            </SafeCopyToClipboard>
+          )}
+          <li
+            className="view-raw-data"
+            key="view-raw-data"
+            onClick={this.openRawDataModal}
+          >
+            {STRINGS.displayRawData}
+          </li>
+          {url && (
+            <li key="goToUrl">
+              <a
+                href={url}
+                onClick={this.closeMoreMenu}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {STRINGS.goToUrl}
+              </a>
+            </li>
+          )}
+        </ul>
+      </BubbleMenu>
+    );
   }
 
   render() {
     const { disableMoreMenu } = this.props;
     const { moreMenuOpenOn } = this.state;
 
-    return <div className="segment-action-buttons">
-      <Button
-        type="primary"
-        className="mini"
-        onClick={this.onSelect}
-        title={STRINGS.select}
-      />
-      <Button
-        type="secondary"
-        className="mini"
-        onClick={this.onCancel}
-        title={STRINGS.cancel}
-      />
-      {disableMoreMenu ? null : <Button
-        type="secondary"
-        className="mini"
-        onClick={this.onMore}
-        svg={require("../../icons/full-more-mini.svg")}
-        active={Boolean(moreMenuOpenOn)}
-      />}
-      {this.renderMoreMenu()}
-    </div>;
+    return (
+      <div className="segment-action-buttons">
+        <Button
+          type="primary"
+          className="mini"
+          onClick={this.onSelect}
+          title={STRINGS.select}
+        />
+        <Button
+          type="secondary"
+          className="mini"
+          onClick={this.onCancel}
+          title={STRINGS.cancel}
+        />
+        {disableMoreMenu ? null : (
+          <Button
+            type="secondary"
+            className="mini"
+            onClick={this.onMore}
+            svg={require("../../icons/full-more-mini.svg")}
+            active={Boolean(moreMenuOpenOn)}
+          />
+        )}
+        {this.renderMoreMenu()}
+      </div>
+    );
   }
 }

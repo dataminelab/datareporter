@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./clearable-input.scss";
 
@@ -36,8 +36,17 @@ export interface ClearableInputProps {
   onBlur?: React.FocusEventHandler<HTMLElement>;
 }
 
-export const ClearableInput: React.SFC<ClearableInputProps> = ({ className, placeholder, focusOnMount, onBlur, onChange, value = "", type = "text" }) => {
-  const change = (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value);
+export const ClearableInput: React.FunctionComponent<ClearableInputProps> = ({
+  className,
+  placeholder,
+  focusOnMount,
+  onBlur,
+  onChange,
+  value = "",
+  type = "text",
+}) => {
+  const change = (e: React.ChangeEvent<HTMLInputElement>) =>
+    onChange(e.target.value);
 
   const clear = () => onChange("");
 
@@ -47,17 +56,19 @@ export const ClearableInput: React.SFC<ClearableInputProps> = ({ className, plac
   if (className) classNames.push(className);
   if (!value) classNames.push("empty");
 
-  return <div className={classNames.join(" ")}>
-    <input
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={change}
-      onBlur={onBlur}
-      ref={ref}
-    />
-    <div className="clear" onClick={clear}>
-      <SvgIcon svg={require("../../icons/x.svg")} />
+  return (
+    <div className={classNames.join(" ")}>
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={change}
+        onBlur={onBlur}
+        ref={ref}
+      />
+      <div className="clear" onClick={clear}>
+        <SvgIcon svg={require("../../icons/x.svg")} />
+      </div>
     </div>
-  </div>;
+  );
 };

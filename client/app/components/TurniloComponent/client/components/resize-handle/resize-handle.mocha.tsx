@@ -25,17 +25,22 @@ import { Direction, ResizeHandle } from "./resize-handle";
 
 describe("ResizeHandle", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <ResizeHandle
         direction={Direction.LEFT}
         min={240}
         max={400}
         value={300}
-      />
+      />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("resize-handle");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      findDOMNode(renderedComponent).className,
+      "should contain class",
+    ).to.contain("resize-handle");
   });
-
 });

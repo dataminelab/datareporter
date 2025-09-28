@@ -23,7 +23,7 @@ import { ContinuousRange, ContinuousScale } from "../utils/continuous-types";
 import "./chart-line.scss";
 import { prepareDataPoints } from "./prepare-data-points";
 
-export type Scale = d3.scale.Linear<number, number>;
+export type Scale = d3.ScaleLinear<number, number>;
 
 export interface ChartLineProps {
   xScale: ContinuousScale;
@@ -37,32 +37,61 @@ export interface ChartLineProps {
   stage: Stage;
 }
 
-const stroke = (color: string, dashed: boolean): Pick<React.CSSProperties, "stroke" | "strokeDasharray"> => ({
+const stroke = (
+  color: string,
+  dashed: boolean,
+): Pick<React.CSSProperties, "stroke" | "strokeDasharray"> => ({
   stroke: color,
-  strokeDasharray: dashed ? "4 2" : undefined
+  strokeDasharray: dashed ? "4 2" : undefined,
 });
 
 export const ChartLine: React.SFC<ChartLineProps> = props => {
-  const { color, dashed, getX, getY, dataset, showArea, stage, xScale, yScale } = props;
+  const {
+    color,
+    dashed,
+    getX,
+    getY,
+    dataset,
+    showArea,
+    stage,
+    xScale,
+    yScale,
+  } = props;
 
-  const area = d3.svg.area().y0(yScale(0));
-  const line = d3.svg.line();
+  const area = d3.area().y0(yScale(0));
+  const line = d3.line();
 
   const points = prepareDataPoints(dataset, getX, getY);
-  const scaledPoints = points.map(([x, y]) => [xScale(x), yScale(y)] as [number, number]);
+  const scaledPoints = points.map(
+    ([x, y]) => [xScale(x), yScale(y)] as [number, number],
+  );
   const hasMultiplePoints = points.length > 1;
   const hasSinglePoint = points.length === 1;
-  return <g className="chart-line" transform={stage.getTransform()}>
-    {hasMultiplePoints && <path ref={node => {
-        if (node) node.style.setProperty("fill", "transparent", "important");
-    }} className="line" d={line(scaledPoints)}  style={stroke(color, dashed)} />}
-    {hasMultiplePoints && showArea && <path className="area" d={area(scaledPoints)} />}
-    {hasSinglePoint && <circle
-      className="singleton"
-      cx={scaledPoints[0][0]}
-      cy={scaledPoints[0][1]}
-      r="2"
-      style={{ fill: color }}
-    />}
-  </g>;
+  return (
+    <g className="chart-line" transform={stage.getTransform()}>
+      {hasMultiplePoints && (
+        <path
+          ref={node => {
+            if (node)
+              node.style.setProperty("fill", "transparent", "important");
+          }}
+          className="line"
+          d={line(scaledPoints)}
+          style={stroke(color, dashed)}
+        />
+      )}
+      {hasMultiplePoints && showArea && (
+        <path className="area" d={area(scaledPoints)} />
+      )}
+      {hasSinglePoint && (
+        <circle
+          className="singleton"
+          cx={scaledPoints[0][0]}
+          cy={scaledPoints[0][1]}
+          r="2"
+          style={{ fill: color }}
+        />
+      )}
+    </g>
+  );
 };

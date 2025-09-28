@@ -21,7 +21,12 @@ import { DataCube } from "../data-cube/data-cube";
 import { Filter } from "../filter/filter";
 import { Splits } from "../splits/splits";
 
-export type LinkGenerator = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => string;
+export type LinkGenerator = (
+  dataCube: DataCube,
+  timezone: Timezone,
+  filter: Filter,
+  splits: Splits,
+) => string;
 
 export interface ExternalViewValue {
   title: string;
@@ -30,21 +35,22 @@ export interface ExternalViewValue {
   sameWindow?: boolean;
 }
 
-var check: Class<ExternalViewValue, ExternalViewValue>;
+let check: Class<ExternalViewValue, ExternalViewValue>;
 
-export class ExternalView implements Instance<ExternalViewValue, ExternalViewValue> {
-
+export class ExternalView
+  implements Instance<ExternalViewValue, ExternalViewValue>
+{
   static isExternalView(candidate: any): candidate is ExternalView {
     return candidate instanceof ExternalView;
   }
 
   static fromJS(parameters: ExternalViewValue): ExternalView {
-    var value = parameters;
+    const value = parameters;
     return new ExternalView({
       title: value.title,
       linkGenerator: value.linkGenerator,
       linkGeneratorFn: value.linkGeneratorFn,
-      sameWindow: value.sameWindow
+      sameWindow: value.sameWindow,
     });
   }
 
@@ -56,23 +62,40 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
   constructor(parameters: ExternalViewValue) {
     const { title, linkGenerator } = parameters;
     if (!title) throw new Error("External view must have title");
-    if (typeof linkGenerator !== "string") throw new Error("Must provide link generator function");
+    if (typeof linkGenerator !== "string")
+      throw new Error("Must provide link generator function");
 
     this.title = title;
     this.linkGenerator = linkGenerator;
-    var linkGeneratorFnRaw: any = null;
+    let linkGeneratorFnRaw: any = null;
     try {
       // dataSource is for back compat.
-      linkGeneratorFnRaw = new Function("dataCube", "dataSource", "timezone", "filter", "splits", linkGenerator) as LinkGenerator;
+      linkGeneratorFnRaw = new Function(
+        "dataCube",
+        "dataSource",
+        "timezone",
+        "filter",
+        "splits",
+        linkGenerator,
+      ) as LinkGenerator;
     } catch (e) {
-      throw new Error(`Error constructing link generator function: ${e.message}`);
+      throw new Error(
+        `Error constructing link generator function: ${e.message}`,
+      );
     }
 
-    this.linkGeneratorFn = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => {
+    this.linkGeneratorFn = (
+      dataCube: DataCube,
+      timezone: Timezone,
+      filter: Filter,
+      splits: Splits,
+    ) => {
       try {
         return linkGeneratorFnRaw(dataCube, dataCube, timezone, filter, splits);
       } catch (e) {
-        console.warn(`Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`);
+        console.warn(
+          `Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`,
+        );
         return null;
       }
     };
@@ -81,18 +104,18 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
   }
 
   public toJS(): ExternalViewValue {
-    var js: ExternalViewValue = {
+    const js: ExternalViewValue = {
       title: this.title,
-      linkGenerator: this.linkGenerator
+      linkGenerator: this.linkGenerator,
     };
     if (this.sameWindow === true) js.sameWindow = true;
     return js;
   }
 
   public valueOf(): ExternalViewValue {
-    var value: ExternalViewValue = {
+    const value: ExternalViewValue = {
       title: this.title,
-      linkGenerator: this.linkGenerator
+      linkGenerator: this.linkGenerator,
     };
     if (this.sameWindow === true) value.sameWindow = true;
     return value;
@@ -103,10 +126,12 @@ export class ExternalView implements Instance<ExternalViewValue, ExternalViewVal
   }
 
   public equals(other: ExternalView): boolean {
-    return ExternalView.isExternalView(other) &&
+    return (
+      ExternalView.isExternalView(other) &&
       this.title === other.title &&
       this.linkGenerator === other.linkGenerator &&
-      this.sameWindow === other.sameWindow;
+      this.sameWindow === other.sameWindow
+    );
   }
 
   public toString(): string {

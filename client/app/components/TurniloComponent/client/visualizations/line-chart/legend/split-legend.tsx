@@ -33,9 +33,9 @@ export const SplitLegend: React.SFC<SplitLegendProps> = props => {
   const title = legendSplit.getTitle(legendDimension);
 
   const nestedDataset = selectFirstSplitDatums(dataset);
-  const values = nestedDataset.map(datum => String(datum[legendSplit.reference]));
+  const values = nestedDataset.map(datum =>
+    String(datum[legendSplit.reference]),
+  );
 
-  return <Legend
-    values={values}
-    title={title}/>;
+  return <Legend values={values} title={title} />;
 };

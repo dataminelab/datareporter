@@ -22,7 +22,10 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
 import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
-import { selectFirstSplitDatums, selectMainDatum } from "../../../../utils/dataset/selectors/selectors";
+import {
+  selectFirstSplitDatums,
+  selectMainDatum,
+} from "../../../../utils/dataset/selectors/selectors";
 import getScale from "../../../../utils/linear-scale/linear-scale";
 import { Foreground } from "../foreground/foreground";
 import { Interaction } from "../interactions/interaction";
@@ -49,11 +52,20 @@ interface BarsProps {
 const TOTAL_LABEL_OFFSET = 10;
 
 export class Bars extends React.Component<BarsProps> {
-
   private container = React.createRef<HTMLDivElement>();
 
   render() {
-    const { dropHighlight, acceptHighlight, interaction, stage, scrollLeft, series, dataset, essence, xScale } = this.props;
+    const {
+      dropHighlight,
+      acceptHighlight,
+      interaction,
+      stage,
+      scrollLeft,
+      series,
+      dataset,
+      essence,
+      xScale,
+    } = this.props;
     const chartStage = calculateChartStage(stage);
     const firstSplitReference = firstSplitRef(essence);
     const getX = xGetter(firstSplitReference);
@@ -61,43 +73,58 @@ export class Bars extends React.Component<BarsProps> {
     const extent = yExtent(datums, series, essence);
     const yScale = getScale(extent, chartStage.height);
 
-    return <div
-      ref={this.container}
-      className="bar-chart-bars"
-      style={stage.getWidthHeight()}>
-      <div className="bar-chart-total" style={{ left: scrollLeft + TOTAL_LABEL_OFFSET }}>
-        <VisMeasureLabel
-          series={series}
-          datum={selectMainDatum(dataset)}
-          showPrevious={essence.hasComparison()} />
+    return (
+      <div
+        ref={this.container}
+        className="bar-chart-bars"
+        style={stage.getWidthHeight()}
+      >
+        <div
+          className="bar-chart-total"
+          style={{ left: scrollLeft + TOTAL_LABEL_OFFSET }}
+        >
+          <VisMeasureLabel
+            series={series}
+            datum={selectMainDatum(dataset)}
+            showPrevious={essence.hasComparison()}
+          />
+        </div>
+        {yScale && (
+          <React.Fragment>
+            <svg viewBox={chartStage.getViewBox()}>
+              <Background gridStage={chartStage} yScale={yScale} />
+              <g transform={chartStage.getTransform()}>
+                {datums.map((datum: Datum, index: number) => (
+                  <Bar
+                    key={index}
+                    datum={datum}
+                    yScale={yScale}
+                    xScale={xScale}
+                    series={series}
+                    showPrevious={essence.hasComparison()}
+                    getX={getX}
+                    maxHeight={chartStage.height}
+                  />
+                ))}
+              </g>
+            </svg>
+            {interaction && (
+              <Foreground
+                interaction={interaction}
+                container={this.container}
+                stage={chartStage}
+                dropHighlight={dropHighlight}
+                acceptHighlight={acceptHighlight}
+                essence={essence}
+                xScale={xScale}
+                series={series}
+                getX={getX}
+                yScale={yScale}
+              />
+            )}
+          </React.Fragment>
+        )}
       </div>
-      {yScale && <React.Fragment>
-        <svg viewBox={chartStage.getViewBox()}>
-          <Background gridStage={chartStage} yScale={yScale} />
-          <g transform={chartStage.getTransform()}>
-            {datums.map((datum: Datum, index: number) => <Bar
-              key={index}
-              datum={datum}
-              yScale={yScale}
-              xScale={xScale}
-              series={series}
-              showPrevious={essence.hasComparison()}
-              getX={getX}
-              maxHeight={chartStage.height} />)}
-          </g>
-        </svg>
-        {interaction && <Foreground
-          interaction={interaction}
-          container={this.container}
-          stage={chartStage}
-          dropHighlight={dropHighlight}
-          acceptHighlight={acceptHighlight}
-          essence={essence}
-          xScale={xScale}
-          series={series}
-          getX={getX}
-          yScale={yScale} />}
-      </React.Fragment>}
-    </div>;
+    );
   }
 }

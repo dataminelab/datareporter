@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .split-tile {
   @extend %module;
@@ -53,5 +53,5 @@
 }
 
 .overflow-menu {
-  @extend %overflow-menu
+  @extend %overflow-menu;
 }

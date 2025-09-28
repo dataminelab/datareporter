@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .date-range-input {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 15px;
 
   .label {
     width: 40px;

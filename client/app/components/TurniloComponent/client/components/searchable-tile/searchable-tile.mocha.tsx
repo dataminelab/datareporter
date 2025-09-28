@@ -25,7 +25,7 @@ import { SearchableTile } from "./searchable-tile";
 
 describe("SearchableTile", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <SearchableTile
         toggleChangeFn={null}
         onSearchChange={null}
@@ -35,11 +35,16 @@ describe("SearchableTile", () => {
         className=""
         title=""
         style={null}
-      />
+      />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("searchable-tile");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      findDOMNode(renderedComponent).className,
+      "should contain class",
+    ).to.contain("searchable-tile");
   });
-
 });

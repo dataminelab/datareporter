@@ -15,14 +15,14 @@
  */
 
 import { scaleLinear } from "@vx/scale";
-import { max, min, scale } from "d3";
+import d3, { max, min } from "d3";
 import { Datum } from "plywood";
 import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 import { nestedDataset } from "./nested-dataset";
 
-export type ColorScale = scale.Linear<string, string>;
+export type ColorScale = d3.ScaleLinear<string, string>;
 
 const white = "#fff";
 const orange = "#ff5a00";
@@ -37,7 +37,11 @@ function seriesSelector(series: ConcreteSeries): Unary<Datum, number> {
   return (d: Datum) => series.selectValue(d);
 }
 
-export default function scales(dataset: Datum[], tileSize: number, series: ConcreteSeries): Scales {
+export default function scales(
+  dataset: Datum[],
+  tileSize: number,
+  series: ConcreteSeries,
+): Scales {
   const { report } = this.props;
   const colorChart = (report && report.colorBody) || orange;
   const bucketSizeMax = max(dataset, d => nestedDataset(d).length) || 0; // d3.max returns undefined if collection is empty
@@ -48,12 +52,12 @@ export default function scales(dataset: Datum[], tileSize: number, series: Concr
 
   const x = scaleLinear({
     domain: [0, bucketSizeMax],
-    range: [0, width]
+    range: [0, width],
   });
 
   const y = scaleLinear({
     domain: [dataLength, 0],
-    range: [height, 0]
+    range: [height, 0],
   });
 
   const select = seriesSelector(series);
@@ -63,7 +67,7 @@ export default function scales(dataset: Datum[], tileSize: number, series: Concr
 
   const color = scaleLinear<string, string>({
     range: [white, colorChart],
-    domain: [Math.min(colorMin, 0), colorMax]
+    domain: [Math.min(colorMin, 0), colorMax],
   });
 
   return { x, y, color };

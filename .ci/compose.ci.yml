@@ -1,0 +1,56 @@
+# This configuration file is for the **development** setup.
+# For a production example please refer to kubernetes or CloudRun setups
+
+services:
+  server:
+    build:
+      context: ../
+      args:
+        skip_frontend_build: true
+        skip_dev_deps: ""
+        skip_ds_deps: ""
+    command: server
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "5000:5000"
+      - "5678:5678"
+    environment:
+      PYTHONUNBUFFERED: 0
+      REDASH_LOG_LEVEL: "INFO"
+      REDASH_REDIS_URL: "redis://redis:6379/0"
+      POSTGRES_PASSWORD: "FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb"
+      REDASH_DATABASE_URL: "postgresql://postgres:FmTKs5vX52ufKR1rd8tn4MoSP7zvCJwb@postgres/postgres"
+      REDASH_COOKIE_SECRET: "2H9gNG9obnAQ9qnR9BDTQUph6CbXKCzF"
+      REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      OLLAMA_API_URL: "http://ollama:11434"
+      PLYWOOD_SERVER_URL: "http://plywood:3000"
+      NODE_VERSION: 18
+      NPM_VERSION: 9.5.1
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379"
+  postgres:
+    image: pgautoupgrade/pgautoupgrade:latest
+    command: "postgres -c fsync=off -c full_page_writes=off -c synchronous_commit=OFF"
+    ports:
+      - "15432:5432"
+      - "5432:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+  plywood:
+    image: node:16.20.0-alpine
+    working_dir: /app
+    command: npm run watch-node
+    ports:
+      - "3000:3000"
+      - "9231:9229"
+    volumes:
+      - ./plywood:/app
+    environment:
+      - LOG_MODE=request_and_response

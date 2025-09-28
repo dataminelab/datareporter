@@ -1,6 +1,7 @@
 import {
   createParameter,
   TextParameter,
+  TextPatternParameter,
   NumberParameter,
   EnumParameter,
   QueryBasedDropdownParameter,
@@ -12,6 +13,7 @@ describe("Parameter", () => {
   describe("create", () => {
     const parameterTypes = [
       ["text", TextParameter],
+      ["text-pattern", TextPatternParameter],
       ["number", NumberParameter],
       ["enum", EnumParameter],
       ["query", QueryBasedDropdownParameter],
@@ -24,9 +26,16 @@ describe("Parameter", () => {
       [null, TextParameter],
     ];
 
-    test.each(parameterTypes)("when type is '%s' creates a %p", (type, expectedClass) => {
-      const parameter = createParameter({ name: "param", title: "Param", type });
-      expect(parameter).toBeInstanceOf(expectedClass);
-    });
+    test.each(parameterTypes)(
+      "when type is '%s' creates a %p",
+      (type, expectedClass) => {
+        const parameter = createParameter({
+          name: "param",
+          title: "Param",
+          type,
+        });
+        expect(parameter).toBeInstanceOf(expectedClass);
+      },
+    );
   });
 });

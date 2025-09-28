@@ -19,12 +19,18 @@ import { VisualizationSettingsComponent } from "../../../common/models/visualiza
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { Checkbox } from "../../components/checkbox/checkbox";
 
-export const TableSettingsComponent: VisualizationSettingsComponent<TableSettings> = ({ settings, onChange }) => {
-  const toggleCollapseRows = () => onChange(settings.update("collapseRows", collapse => !collapse));
-  return <div className="settings-row">
-    <Checkbox
-      selected={settings.collapseRows}
-      label="Collapse rows"
-      onClick={toggleCollapseRows} />
-  </div>;
+export const TableSettingsComponent: VisualizationSettingsComponent<
+  TableSettings
+> = ({ settings, onChange }) => {
+  const toggleCollapseRows = () =>
+    onChange(settings.update("collapseRows", collapse => !collapse));
+  return (
+    <div className="settings-row">
+      <Checkbox
+        selected={settings.collapseRows}
+        label="Collapse rows"
+        onClick={toggleCollapseRows}
+      />
+    </div>
+  );
 };

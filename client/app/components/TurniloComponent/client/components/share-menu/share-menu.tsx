@@ -24,7 +24,12 @@ import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Binary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions, STRINGS } from "../../config/constants";
-import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
+import {
+  dateFromFilter,
+  download,
+  FileFormat,
+  makeFileName,
+} from "../../utils/download/download";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { SafeCopyToClipboard } from "../safe-copy-to-clipboard/safe-copy-to-clipboard";
@@ -40,7 +45,10 @@ export interface ShareMenuProps {
   getDownloadableDataset?: () => DataSetWithTabOptions;
 }
 
-type ExportProps = Pick<ShareMenuProps, "onClose" | "essence" | "timekeeper" | "getDownloadableDataset">;
+type ExportProps = Pick<
+  ShareMenuProps,
+  "onClose" | "essence" | "timekeeper" | "getDownloadableDataset"
+>;
 
 function onExport(fileFormat: FileFormat, props: ExportProps) {
   const { onClose, getDownloadableDataset, essence, timekeeper } = props;
@@ -56,79 +64,132 @@ function onExport(fileFormat: FileFormat, props: ExportProps) {
 }
 
 function exportItems(props: ExportProps) {
-  return exportOptions.map(({ label, fileFormat }) =>
-    <li key={`export-${fileFormat}`} onClick={() => onExport(fileFormat, props)}>
+  return exportOptions.map(({ label, fileFormat }) => (
+    <li
+      key={`export-${fileFormat}`}
+      onClick={() => onExport(fileFormat, props)}
+    >
       {label}
     </li>
-  );
+  ));
 }
 
-type LinkProps = Pick<ShareMenuProps, "essence" | "customization" | "onClose" | "urlForEssence" | "openUrlShortenerModal" | "timekeeper">;
+type LinkProps = Pick<
+  ShareMenuProps,
+  | "essence"
+  | "customization"
+  | "onClose"
+  | "urlForEssence"
+  | "openUrlShortenerModal"
+  | "timekeeper"
+>;
 
-function linkItems({ essence, customization, timekeeper, onClose, urlForEssence, openUrlShortenerModal }: LinkProps) {
+function linkItems({
+  essence,
+  customization,
+  timekeeper,
+  onClose,
+  urlForEssence,
+  openUrlShortenerModal,
+}: LinkProps) {
   const isRelative = essence.filter.isRelative();
   const hash = urlForEssence(essence);
-  const specificHash = urlForEssence(essence.convertToSpecificFilter(timekeeper));
+  const specificHash = urlForEssence(
+    essence.convertToSpecificFilter(timekeeper),
+  );
 
   function openShortenerModal(url: string, title: string) {
     openUrlShortenerModal(url, title);
     onClose();
   }
 
-  return <React.Fragment>
-    <SafeCopyToClipboard key="copy-url" text={hash}>
-      <li onClick={onClose}>
-        {isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}
-      </li>
-    </SafeCopyToClipboard>
-    {isRelative && <SafeCopyToClipboard key="copy-specific-url" text={specificHash}>
-      <li onClick={onClose}>
-        {STRINGS.copyFixedTimeUrl}
-      </li>
-    </SafeCopyToClipboard>}
+  return (
+    <React.Fragment>
+      <SafeCopyToClipboard key="copy-url" text={hash}>
+        <li onClick={onClose}>
+          {isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl}
+        </li>
+      </SafeCopyToClipboard>
+      {isRelative && (
+        <SafeCopyToClipboard key="copy-specific-url" text={specificHash}>
+          <li onClick={onClose}>{STRINGS.copyFixedTimeUrl}</li>
+        </SafeCopyToClipboard>
+      )}
 
-    {customization.urlShortener && <React.Fragment>
-      <li
-        key="short-url"
-        onClick={() => openShortenerModal(hash, isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl)}>
-        {isRelative ? STRINGS.createShortRelativeUrl : STRINGS.createShortUrl}
-      </li>
-      {isRelative && <li
-        key="short-url-specific"
-        onClick={() => openShortenerModal(specificHash, STRINGS.copyFixedTimeUrl)}>
-        {STRINGS.createShortFixedUrl}
-      </li>}
-    </React.Fragment>}
-  </React.Fragment>;
+      {customization.urlShortener && (
+        <React.Fragment>
+          <li
+            key="short-url"
+            onClick={() =>
+              openShortenerModal(
+                hash,
+                isRelative ? STRINGS.copyRelativeTimeUrl : STRINGS.copyUrl,
+              )
+            }
+          >
+            {isRelative
+              ? STRINGS.createShortRelativeUrl
+              : STRINGS.createShortUrl}
+          </li>
+          {isRelative && (
+            <li
+              key="short-url-specific"
+              onClick={() =>
+                openShortenerModal(specificHash, STRINGS.copyFixedTimeUrl)
+              }
+            >
+              {STRINGS.createShortFixedUrl}
+            </li>
+          )}
+        </React.Fragment>
+      )}
+    </React.Fragment>
+  );
 }
 
 type ExternalViewsProps = Pick<ShareMenuProps, "customization" | "essence">;
 
-function externalViewItems({ customization: { externalViews = [] }, essence }: ExternalViewsProps) {
+function externalViewItems({
+  customization: { externalViews = [] },
+  essence,
+}: ExternalViewsProps) {
   return externalViews.map((externalView: ExternalView, i: number) => {
-    const url = externalView.linkGeneratorFn(essence.dataCube, essence.timezone, essence.filter, essence.splits);
-    return <li key={`custom-url-${i}`}>
-      <a href={url} target={externalView.sameWindow ? "_self" : "_blank"}>
-        {`${STRINGS.openIn} ${externalView.title}`}
-      </a>
-    </li>;
+    const url = externalView.linkGeneratorFn(
+      essence.dataCube,
+      essence.timezone,
+      essence.filter,
+      essence.splits,
+    );
+    return (
+      <li key={`custom-url-${i}`}>
+        <a
+          href={url}
+          target={externalView.sameWindow ? "_self" : "_blank"}
+          rel="noreferrer"
+        >
+          {`${STRINGS.openIn} ${externalView.title}`}
+        </a>
+      </li>
+    );
   });
 }
 
 export const ShareMenu: React.SFC<ShareMenuProps> = props => {
   const { openOn, onClose } = props;
 
-  return <BubbleMenu
-    className="header-menu"
-    direction="down"
-    stage={Stage.fromSize(230, 200)}
-    openOn={openOn}
-    onClose={onClose}
-  >
-    <ul className="bubble-list">
-      {linkItems(props)}
-      {exportItems(props)}
-      {externalViewItems(props)}
-    </ul>
-  </BubbleMenu>;
+  return (
+    <BubbleMenu
+      className="header-menu"
+      direction="down"
+      stage={Stage.fromSize(230, 200)}
+      openOn={openOn}
+      onClose={onClose}
+    >
+      <ul className="bubble-list">
+        {linkItems(props)}
+        {exportItems(props)}
+        {externalViewItems(props)}
+      </ul>
+    </BubbleMenu>
+  );
 };

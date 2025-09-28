@@ -1,9 +1,14 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { chain, cloneDeep, find } from "lodash";
 import cx from "classnames";
 import { Responsive, WidthProvider } from "react-grid-layout";
-import { VisualizationWidget, TextboxWidget, RestrictedWidget, TurniloWidget } from "@/components/dashboards/dashboard-widget";
+import {
+  VisualizationWidget,
+  TextboxWidget,
+  RestrictedWidget,
+  TurniloWidget,
+} from "@/components/dashboards/dashboard-widget";
 import { FiltersType } from "@/components/Filters";
 import cfg from "@/config/dashboard-grid-options";
 import AutoHeightController from "./AutoHeightController";
@@ -11,7 +16,6 @@ import { WidgetTypeEnum } from "@/services/widget";
 
 import "react-grid-layout/css/styles.css";
 import "./dashboard-grid.less";
-import {axios} from "@/services/axios";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -42,71 +46,77 @@ const DashboardWidget = React.memo(
     onRefreshWidget,
     onRemoveWidget,
     onParameterMappingsChange,
+    isEditing,
     canEdit,
     isPublic,
     isLoading,
     filters,
+    setFilterParams,
+    getEssence,
   }) {
     const { type } = widget;
     const onLoad = () => onLoadWidget(widget);
     const onRefresh = () => onRefreshWidget(widget);
     const onDelete = () => onRemoveWidget(widget.id);
-    const [config, setConfig] = useState({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect( () => {
-      async function getConfigTurnilo() {
-        if (!config.appSettings) {
-          if (widget.is_public) {
-            const token = window.location.pathname.split('/')[3];
-            if (!widget.report_id) return; 
-            const report_config =  await axios.get(`/api/reports/public/${token}?report_id=${widget.report_id}`);
-            setConfig(report_config);
-          } else {
-            const report_config =  await axios.get('/api/reports/' + widget.report_id);
-            setConfig(report_config);
-          }
-        }
-      }
-      getConfigTurnilo()
-    }, [widget]);
+    switch (type) {
+      case WidgetTypeEnum.VISUALIZATION:
+        return (
+          <VisualizationWidget
+            widget={widget}
+            dashboard={dashboard}
+            filters={filters}
+            isEditing={isEditing}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            isLoading={isLoading}
+            onLoad={onLoad}
+            onRefresh={onRefresh}
+            onDelete={onDelete}
+            onParameterMappingsChange={onParameterMappingsChange}
+          />
+        );
 
-    if (type === WidgetTypeEnum.VISUALIZATION) {
-      return (
-        <VisualizationWidget
-          widget={widget}
-          dashboard={dashboard}
-          filters={filters}
-          canEdit={canEdit}
-          isPublic={isPublic}
-          isLoading={isLoading}
-          onLoad={onLoad}
-          onRefresh={onRefresh}
-          onDelete={onDelete}
-          onParameterMappingsChange={onParameterMappingsChange}
-        />
-      );
+      case WidgetTypeEnum.TEXTBOX:
+        return (
+          <TextboxWidget
+            widget={widget}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            onDelete={onDelete}
+          />
+        );
+
+      case WidgetTypeEnum.TURNILO:
+        return (
+          <TurniloWidget
+            config={widget.report}
+            widget={widget}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            onDelete={onDelete}
+            setFilterParams={setFilterParams}
+            getEssence={getEssence}
+          />
+        );
+
+      default:
+        return <RestrictedWidget widget={widget} />;
     }
-    if (type === WidgetTypeEnum.TEXTBOX) {
-      return <TextboxWidget widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
-    }
-    if (type === WidgetTypeEnum.TURNILO) {
-      return <TurniloWidget config={config} widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
-    }
-    return <RestrictedWidget widget={widget} />;
   },
   (prevProps, nextProps) =>
     prevProps.widget === nextProps.widget &&
     prevProps.canEdit === nextProps.canEdit &&
     prevProps.isPublic === nextProps.isPublic &&
     prevProps.isLoading === nextProps.isLoading &&
-    prevProps.filters === nextProps.filters
+    prevProps.filters === nextProps.filters &&
+    prevProps.isEditing === nextProps.isEditing,
 );
 
 class DashboardGrid extends React.Component {
   static propTypes = {
     isEditing: PropTypes.bool.isRequired,
     isPublic: PropTypes.bool,
-    dashboard: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    dashboard: PropTypes.object.isRequired,
     widgets: PropTypes.arrayOf(WidgetType).isRequired,
     filters: FiltersType,
     onBreakpointChange: PropTypes.func,
@@ -163,14 +173,15 @@ class DashboardGrid extends React.Component {
     // init AutoHeightController
     this.autoHeightCtrl = new AutoHeightController(this.onWidgetHeightUpdated);
     this.autoHeightCtrl.update(this.props.widgets);
-    this.widgetResizeEvent = new Event('widgetResize');
+    this.widgetResizeEvent = new Event("widgetResize");
     // Define that the event name is 'build'.
-    this.widgetResizeEvent.initEvent('widgetResize', true, true);
-
+    this.widgetResizeEvent.initEvent("widgetResize", true, true);
   }
 
   componentDidMount() {
-    this.onBreakpointChange(document.body.offsetWidth <= cfg.mobileBreakPoint ? SINGLE : MULTI);
+    this.onBreakpointChange(
+      document.body.offsetWidth <= cfg.mobileBreakPoint ? SINGLE : MULTI,
+    );
     // Work-around to disable initial animation on widgets; `measureBeforeMount` doesn't work properly:
     // it disables animation, but it cannot detect scrollbars.
     setTimeout(() => {
@@ -197,7 +208,8 @@ class DashboardGrid extends React.Component {
 
     // workaround for https://github.com/STRML/react-grid-layout/issues/889
     // remove next line when fix lands
-    this.mode = document.body.offsetWidth <= cfg.mobileBreakPoint ? SINGLE : MULTI;
+    this.mode =
+      document.body.offsetWidth <= cfg.mobileBreakPoint ? SINGLE : MULTI;
     // end workaround
 
     // don't save single column mode layout
@@ -251,7 +263,6 @@ class DashboardGrid extends React.Component {
   });
 
   render() {
-    const className = cx("dashboard-wrapper", this.props.isEditing ? "editing-mode" : "preview-mode");
     const {
       onLoadWidget,
       onRefreshWidget,
@@ -260,23 +271,35 @@ class DashboardGrid extends React.Component {
       filters,
       dashboard,
       isPublic,
+      isEditing,
       widgets,
+      setFilterParams,
+      getEssence,
     } = this.props;
+    const className = cx(
+      "dashboard-wrapper",
+      isEditing ? "editing-mode" : "preview-mode",
+    );
+
     return (
       <div className={className}>
         <ResponsiveGridLayout
-          className={cx("layout", { "disable-animations": this.state.disableAnimations })}
+          draggableCancel="input,.sortable-container"
+          className={cx("layout", {
+            "disable-animations": this.state.disableAnimations,
+          })}
           cols={{ [MULTI]: cfg.columns, [SINGLE]: 1 }}
           rowHeight={cfg.rowHeight - cfg.margins}
           margin={[cfg.margins, cfg.margins]}
-          isDraggable={this.props.isEditing}
-          isResizable={this.props.isEditing}
+          isDraggable={isEditing}
+          isResizable={isEditing}
           onResizeStart={this.autoHeightCtrl.stop}
           onResizeStop={this.onWidgetResize}
           layouts={this.state.layouts}
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
-          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}>
+          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}
+        >
           {widgets.map(widget => (
             <div
               key={widget.id}
@@ -284,8 +307,11 @@ class DashboardGrid extends React.Component {
               data-widgetid={widget.id}
               data-test={`WidgetId${widget.id}`}
               className={cx("dashboard-widget-wrapper", {
-                "widget-auto-height-enabled": this.autoHeightCtrl.exists(widget.id),
-              })}>
+                "widget-auto-height-enabled": this.autoHeightCtrl.exists(
+                  widget.id,
+                ),
+              })}
+            >
               <DashboardWidget
                 dashboard={dashboard}
                 configTurnilo={this.state.configTurnilo}
@@ -293,11 +319,14 @@ class DashboardGrid extends React.Component {
                 filters={filters}
                 isPublic={isPublic}
                 isLoading={widget.loading}
+                isEditing={isEditing}
                 canEdit={dashboard.canEdit()}
                 onLoadWidget={onLoadWidget}
                 onRefreshWidget={onRefreshWidget}
                 onRemoveWidget={onRemoveWidget}
                 onParameterMappingsChange={onParameterMappingsChange}
+                setFilterParams={setFilterParams}
+                getEssence={getEssence}
               />
             </div>
           ))}

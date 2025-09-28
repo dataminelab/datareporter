@@ -17,11 +17,19 @@
 import { List } from "immutable";
 import { NumberRange as PlywoodNumberRange, Range, TimeRange } from "plywood";
 import { DateRange } from "../../../common/models/date-range/date-range";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause, NumberRange } from "../../../common/models/filter-clause/filter-clause";
+import {
+  FilterClause,
+  FixedTimeFilterClause,
+  NumberFilterClause,
+  NumberRange,
+} from "../../../common/models/filter-clause/filter-clause";
 import { ContinuousRange } from "../../visualizations/line-chart/utils/continuous-types";
 import { isValidClause } from "../../visualizations/line-chart/utils/is-valid-clause";
 
-export function toFilterClause(range: ContinuousRange, reference: string): FilterClause {
+export function toFilterClause(
+  range: ContinuousRange,
+  reference: string,
+): FilterClause {
   if (TimeRange.isTimeRange(range)) {
     const dateRange = new DateRange(range);
     const values = List.of(dateRange);
@@ -37,7 +45,9 @@ export function toFilterClause(range: ContinuousRange, reference: string): Filte
 
 export function toPlywoodRange(clause: FilterClause): ContinuousRange {
   if (!isValidClause(clause)) {
-    throw new Error(`Expected Number or FixedTime Filter Clause. Got ${clause}`);
+    throw new Error(
+      `Expected Number or FixedTime Filter Clause. Got ${clause}`,
+    );
   }
   const value = clause.values.first();
   return Range.fromJS(value) as ContinuousRange;

@@ -41,7 +41,9 @@ export interface DimensionOrGroupVisitor<R> {
   visitDimensionGroup(dimensionGroup: DimensionGroup): R;
 }
 
-export function dimensionOrGroupFromJS(dimensionOrGroup: DimensionOrGroupJS): DimensionOrGroup {
+export function dimensionOrGroupFromJS(
+  dimensionOrGroup: DimensionOrGroupJS,
+): DimensionOrGroup {
   if (isDimensionGroupJS(dimensionOrGroup)) {
     return DimensionGroup.fromJS(dimensionOrGroup);
   } else {
@@ -49,11 +51,15 @@ export function dimensionOrGroupFromJS(dimensionOrGroup: DimensionOrGroupJS): Di
   }
 }
 
-function isDimensionGroupJS(dimensionOrGroup: DimensionOrGroupJS): dimensionOrGroup is DimensionGroupJS {
+function isDimensionGroupJS(
+  dimensionOrGroup: DimensionOrGroupJS,
+): dimensionOrGroup is DimensionGroupJS {
   return (dimensionOrGroup as DimensionGroupJS).dimensions !== undefined;
 }
 
-export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGroupJS> {
+export class DimensionGroup
+  implements Instance<DimensionGroupValue, DimensionGroupJS>
+{
   static fromJS(dimensionGroup: DimensionGroupJS) {
     const { name, title, dimensions, description } = dimensionGroup;
 
@@ -69,7 +75,7 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
       name,
       title,
       description,
-      dimensions: dimensions.map(dimensionOrGroupFromJS)
+      dimensions: dimensions.map(dimensionOrGroupFromJS),
     });
   }
 
@@ -95,15 +101,18 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
   }
 
   equals(other: any): boolean {
-    return this === other
-      || DimensionGroup.isDimensionGroup(other) && immutableArraysEqual(this.dimensions, other.dimensions);
+    return (
+      this === other ||
+      (DimensionGroup.isDimensionGroup(other) &&
+        immutableArraysEqual(this.dimensions, other.dimensions))
+    );
   }
 
   toJS(): DimensionGroupJS {
-    let dimensionGroup: DimensionGroupJS = {
+    const dimensionGroup: DimensionGroupJS = {
       name: this.name,
       title: this.title,
-      dimensions: this.dimensions.map(dimension => dimension.toJS())
+      dimensions: this.dimensions.map(dimension => dimension.toJS()),
     };
     if (this.description) dimensionGroup.description = this.description;
     return dimensionGroup;
@@ -114,10 +123,10 @@ export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGr
   }
 
   valueOf(): DimensionGroupValue {
-    let dimensionGroup: DimensionGroupValue = {
+    const dimensionGroup: DimensionGroupValue = {
       name: this.name,
       title: this.title,
-      dimensions: this.dimensions
+      dimensions: this.dimensions,
     };
     if (this.description) dimensionGroup.description = this.description;
     return dimensionGroup;

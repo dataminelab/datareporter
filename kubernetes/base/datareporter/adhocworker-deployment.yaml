@@ -1,0 +1,58 @@
+---
+# Source: datareporter/templates/adhocworker-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datareporter-adhocworker
+  labels:
+
+    app.kubernetes.io/name: datareporter
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2025.3.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: adhocworker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: datareporter
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: adhocworker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: datareporter
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: adhocworker
+    spec:
+      serviceAccountName: datareporter
+      securityContext:
+        {}
+      containers:
+        - name: datareporter-adhocworker
+          securityContext:
+            {}
+          image: "europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:v2025.3.1"
+          imagePullPolicy: "IfNotPresent"
+          command: ["/bin/sh"]
+          args: ["-c", ". /config/dynamicenv.sh && /app/bin/docker-entrypoint worker"]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+
+          envFrom:
+            - configMapRef:
+                name: datareporter-env
+            - secretRef:
+                name: datareporter
+          env:
+            - name: "QUEUES"
+              value: "queries"
+            - name: "WORKERS_COUNT"
+              value: "2"
+
+          resources: {}
+      volumes:
+        - name: config
+          configMap:
+            name: datareporter

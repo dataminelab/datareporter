@@ -32,11 +32,10 @@ describe("mockReactComponent", () => {
   it("should stub render and componentDidMount", () => {
     mockReactComponent(TestClass);
 
-    let myInstance = new TestClass();
+    const myInstance = new TestClass();
 
     expect(myInstance.render()).to.equal(null);
     expect(myInstance.componentDidMount()).to.equal(undefined);
-
   });
 
   // This is not ideal since it relies on the previous test to have ran
@@ -45,12 +44,14 @@ describe("mockReactComponent", () => {
   it("should restore render and componentDidMount", () => {
     (TestClass as any).restore();
 
-    let myInstance = new TestClass();
+    const myInstance = new TestClass();
 
-    expect(() => myInstance.render())
-      .to.throw("Hey, render is supposed to be stubbed !");
+    expect(() => myInstance.render()).to.throw(
+      "Hey, render is supposed to be stubbed !",
+    );
 
-    expect(() => myInstance.componentDidMount())
-      .to.throw("Hey, componentDidMount is supposed to be stubbed !");
+    expect(() => myInstance.componentDidMount()).to.throw(
+      "Hey, componentDidMount is supposed to be stubbed !",
+    );
   });
 });

@@ -27,22 +27,27 @@ import { noop } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { AddMeasureSeriesButton } from "./add-measure-series";
 
-const renderButton = (measure: Measure) => shallow(<AddMeasureSeriesButton
-  series={EssenceFixtures.wikiTable().series}
-  measure={measure}
-  addSeries={null}
-  onClose={noop}
-/>);
+const renderButton = (measure: Measure) =>
+  shallow(
+    <AddMeasureSeriesButton
+      series={EssenceFixtures.wikiTable().series}
+      measure={measure}
+      addSeries={null}
+      onClose={noop}
+    />,
+  );
 
-const mountButton = (measure: Measure, addSeries: Fn, onClose: Fn) => mount(<AddMeasureSeriesButton
-  series={EssenceFixtures.wikiTable().series}
-  measure={measure}
-  onClose={onClose}
-  addSeries={addSeries} />)
-  .find(".add-series");
+const mountButton = (measure: Measure, addSeries: Fn, onClose: Fn) =>
+  mount(
+    <AddMeasureSeriesButton
+      series={EssenceFixtures.wikiTable().series}
+      measure={measure}
+      onClose={onClose}
+      addSeries={addSeries}
+    />,
+  ).find(".add-series");
 
 describe("Add Measure Series Button", () => {
-
   it("renders enabled add action when measure is not selected", () => {
     const actions = renderButton(MeasureFixtures.wikiUniqueUsers());
 
@@ -56,7 +61,6 @@ describe("Add Measure Series Button", () => {
   });
 
   describe("click action", () => {
-
     describe("when measure is not selected", () => {
       let onCloseSpy: SinonSpy;
       let addSeriesSpy: SinonSpy;

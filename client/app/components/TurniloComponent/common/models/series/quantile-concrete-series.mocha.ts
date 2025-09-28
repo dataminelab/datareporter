@@ -24,15 +24,18 @@ import { QuantileSeries } from "./quantile-series";
 const quantileMeasure = Measure.fromJS({
   title: "Quantile Title",
   name: "my-quantile",
-  formula: "$main.quantile($histogram, 0.93, 'tuning')"
+  formula: "$main.quantile($histogram, 0.93, 'tuning')",
 });
 
 const quantileSeries = new QuantileSeries({
   reference: "my-quantile",
-  percentile: 75
+  percentile: 75,
 });
 
-const quantileConcreteSeries = new QuantileConcreteSeries(quantileSeries, quantileMeasure);
+const quantileConcreteSeries = new QuantileConcreteSeries(
+  quantileSeries,
+  quantileMeasure,
+);
 
 describe("QuantileConcreteSeries", () => {
   describe("reactKey", () => {
@@ -40,10 +43,14 @@ describe("QuantileConcreteSeries", () => {
       expect(quantileConcreteSeries.reactKey()).to.be.eq("my-quantile__p75");
     });
     it("constructs react key for previous period", () => {
-      expect(quantileConcreteSeries.reactKey(SeriesDerivation.PREVIOUS)).to.be.eq("my-quantile__p75-previous");
+      expect(
+        quantileConcreteSeries.reactKey(SeriesDerivation.PREVIOUS),
+      ).to.be.eq("my-quantile__p75-previous");
     });
     it("constructs react key for delta", () => {
-      expect(quantileConcreteSeries.reactKey(SeriesDerivation.DELTA)).to.be.eq("my-quantile__p75-delta");
+      expect(quantileConcreteSeries.reactKey(SeriesDerivation.DELTA)).to.be.eq(
+        "my-quantile__p75-delta",
+      );
     });
   });
 
@@ -52,10 +59,14 @@ describe("QuantileConcreteSeries", () => {
       expect(quantileConcreteSeries.title()).to.be.eq("Quantile Title p75");
     });
     it("constructs title for previous period", () => {
-      expect(quantileConcreteSeries.title(SeriesDerivation.PREVIOUS)).to.be.eq("Previous Quantile Title p75");
+      expect(quantileConcreteSeries.title(SeriesDerivation.PREVIOUS)).to.be.eq(
+        "Previous Quantile Title p75",
+      );
     });
     it("constructs title for delta", () => {
-      expect(quantileConcreteSeries.title(SeriesDerivation.DELTA)).to.be.eq("Difference Quantile Title p75");
+      expect(quantileConcreteSeries.title(SeriesDerivation.DELTA)).to.be.eq(
+        "Difference Quantile Title p75",
+      );
     });
   });
 
@@ -63,27 +74,39 @@ describe("QuantileConcreteSeries", () => {
     it("should throw if expression is not a quantile expression", () => {
       const expression = Expression.parse("$main.count()");
       // @ts-ignore: access protected property
-      expect(() => quantileConcreteSeries.applyExpression(expression, "name", 0)).throws();
+      expect(() =>
+        quantileConcreteSeries.applyExpression(expression, "name", 0),
+      ).throws();
     });
 
     it("should create ApplyExpression", () => {
       const expression = quantileMeasure.expression;
       // @ts-ignore: access protected property
-      expect(quantileConcreteSeries.applyExpression(expression, "name", 0)).to.be.instanceOf(ApplyExpression);
+      expect(
+        quantileConcreteSeries.applyExpression(expression, "name", 0),
+      ).to.be.instanceOf(ApplyExpression);
     });
 
     it("should pass name to new ApplyExpression", () => {
       const expression = quantileMeasure.expression;
       // @ts-ignore: access protected property
-      expect(quantileConcreteSeries.applyExpression(expression, "new-name", 0).name).to.be.eq("new-name");
+      expect(
+        quantileConcreteSeries.applyExpression(expression, "new-name", 0).name,
+      ).to.be.eq("new-name");
     });
 
     it("should override percentile in inner expression", () => {
       const expression = quantileMeasure.expression;
       // @ts-ignore: access protected property
-      const applyExpression = quantileConcreteSeries.applyExpression(expression, "name", 0);
+      const applyExpression = quantileConcreteSeries.applyExpression(
+        expression,
+        "name",
+        0,
+      );
       expect(applyExpression.expression).to.be.instanceOf(QuantileExpression);
-      expect((applyExpression.expression as QuantileExpression).value).to.be.eq(0.75);
+      expect((applyExpression.expression as QuantileExpression).value).to.be.eq(
+        0.75,
+      );
     });
   });
 });

@@ -17,7 +17,10 @@
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
 import { Fn, makeTitle } from "../../../common/utils/general/general";
-import { DEFAULT_VIEW_DEFINITION_VERSION, defaultDefinitionConverter } from "../../../common/view-definitions";
+import {
+  DEFAULT_VIEW_DEFINITION_VERSION,
+  defaultDefinitionConverter,
+} from "../../../common/view-definitions";
 import { STRINGS } from "../../config/constants";
 import { SourceModal } from "../source-modal/source-modal";
 import "./view-definition-modal.scss";
@@ -27,22 +30,37 @@ export interface ViewDefinitionModalProps {
   essence: Essence;
 }
 
-const header = <React.Fragment>
-  View definition for <a className="mkurl-link" target="_blank" href="https://github.com/allegro/turnilo/blob/master/docs/generating-links.md">mkurl</a>
-</React.Fragment>;
+const header = (
+  <React.Fragment>
+    View definition for{" "}
+    <a
+      className="mkurl-link"
+      target="_blank"
+      href="https://github.com/allegro/turnilo/blob/master/docs/generating-links.md"
+      rel="noreferrer"
+    >
+      mkurl
+    </a>
+  </React.Fragment>
+);
 
-export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = ({ essence, onClose }) => {
-
+export const ViewDefinitionModal: React.SFC<ViewDefinitionModalProps> = ({
+  essence,
+  onClose,
+}) => {
   const viewDefinition = {
     dataCubeName: essence.dataCube.name,
     viewDefinitionVersion: DEFAULT_VIEW_DEFINITION_VERSION,
-    viewDefinition: defaultDefinitionConverter.toViewDefinition(essence)
+    viewDefinition: defaultDefinitionConverter.toViewDefinition(essence),
   };
   const viewDefinitionAsJson = JSON.stringify(viewDefinition, null, 2);
 
-  return <SourceModal
-    onClose={onClose}
-    header={header}
-    title={`${makeTitle(STRINGS.viewDefinition)}`}
-    source={viewDefinitionAsJson} />;
+  return (
+    <SourceModal
+      onClose={onClose}
+      header={header}
+      title={`${makeTitle(STRINGS.viewDefinition)}`}
+      source={viewDefinitionAsJson}
+    />
+  );
 };

@@ -19,7 +19,10 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
-import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
+import {
+  Nullary,
+  Unary,
+} from "../../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../../components/highlight-modal/highlight-modal";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Highlight } from "../interactions/interaction";
@@ -48,15 +51,19 @@ export const HighlightModal: React.SFC<HighlightModalProps> = props => {
     yScale,
     getX,
     series,
-    xScale } = props;
+    xScale,
+  } = props;
   const xValue = getX(datum);
-  const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
+  const x = xScale.calculate(xValue) + xScale.bandwidth() / 2;
   const yValue = series.selectValue(datum);
   const y = yScale(yValue);
-  return <BaseHighlightModal
-    title={formatValue(xValue, timezone)}
-    left={left + x}
-    top={top + y}
-    dropHighlight={dropHighlight}
-    acceptHighlight={acceptHighlight} />;
+  return (
+    <BaseHighlightModal
+      title={formatValue(xValue, timezone)}
+      left={left + x}
+      top={top + y}
+      dropHighlight={dropHighlight}
+      acceptHighlight={acceptHighlight}
+    />
+  );
 };

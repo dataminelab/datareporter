@@ -17,7 +17,13 @@
 import { Duration } from "chronoshift";
 import { AVAILABLE_LIMITS } from "../../limit/limit";
 import { SeriesDerivation } from "../../models/series/concrete-series";
-import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
+import {
+  DimensionSort,
+  SeriesSort,
+  Sort,
+  SortDirection,
+  SortType,
+} from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
 import { isFiniteNumber, isNumber } from "../../utils/general/general";
 
@@ -49,7 +55,15 @@ export interface TimeSplitDefinition extends BaseSplitDefinition {
   granularity: string;
 }
 
-export type SplitDefinition = NumberSplitDefinition | StringSplitDefinition | TimeSplitDefinition;
+export interface BooleanSplitDefinition extends BaseSplitDefinition {
+  type: SplitType.boolean;
+}
+
+export type SplitDefinition =
+  | BaseSplitDefinition
+  | NumberSplitDefinition
+  | StringSplitDefinition
+  | TimeSplitDefinition;
 
 interface SplitDefinitionConversion<In extends SplitDefinition> {
   toSplitCombine(split: In): Split;
@@ -71,10 +85,24 @@ function inferType(type: string, reference: string, dimensionName: string) {
   }
 }
 
-function inferPeriodAndReference({ ref, period }: { ref: string, period?: SeriesDerivation }): { reference: string, period: SeriesDerivation } {
+function inferPeriodAndReference({
+  ref,
+  period,
+}: {
+  ref: string;
+  period?: SeriesDerivation;
+}): { reference: string; period: SeriesDerivation } {
   if (period) return { period, reference: ref };
-  if (ref.indexOf(PREVIOUS_PREFIX) === 0) return { reference: ref.substring(PREVIOUS_PREFIX.length), period: SeriesDerivation.PREVIOUS };
-  if (ref.indexOf(DELTA_PREFIX) === 0) return { reference: ref.substring(DELTA_PREFIX.length), period: SeriesDerivation.DELTA };
+  if (ref.indexOf(PREVIOUS_PREFIX) === 0)
+    return {
+      reference: ref.substring(PREVIOUS_PREFIX.length),
+      period: SeriesDerivation.PREVIOUS,
+    };
+  if (ref.indexOf(DELTA_PREFIX) === 0)
+    return {
+      reference: ref.substring(DELTA_PREFIX.length),
+      period: SeriesDerivation.DELTA,
+    };
   return { reference: ref, period: SeriesDerivation.CURRENT };
 }
 
@@ -101,32 +129,63 @@ function toLimit(limit: unknown): number | null {
   return AVAILABLE_LIMITS[0];
 }
 
-const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
-  toSplitCombine(split: NumberSplitDefinition): Split {
-    const { dimension, limit, sort, granularity } = split;
-    return new Split({
-      type: SplitType.number,
-      reference: dimension,
-      bucket: granularity,
-      sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
-    });
-  },
-
-  fromSplitCombine({ bucket, sort, reference, limit }: Split): NumberSplitDefinition {
-    if (typeof bucket === "number") {
+const booleanSplitConversion: SplitDefinitionConversion<BooleanSplitDefinition> =
+  {
+    fromSplitCombine({
+      limit,
+      sort,
+      reference,
+    }: Split): BooleanSplitDefinition {
       return {
-        type: SplitType.number,
+        type: SplitType.boolean,
         dimension: reference,
-        granularity: bucket,
         sort: sort && fromSort(sort),
-        limit
+        limit,
       };
-    } else {
-      throw new Error("");
-    }
-  }
-};
+    },
+
+    toSplitCombine(split: BooleanSplitDefinition): Split {
+      const { dimension, limit, sort } = split;
+      return new Split({
+        reference: dimension,
+        sort: sort && toSort(sort, dimension),
+        limit: toLimit(limit),
+      });
+    },
+  };
+
+const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> =
+  {
+    toSplitCombine(split: NumberSplitDefinition): Split {
+      const { dimension, limit, sort, granularity } = split;
+      return new Split({
+        type: SplitType.number,
+        reference: dimension,
+        bucket: granularity,
+        sort: sort && toSort(sort, dimension),
+        limit: toLimit(limit),
+      });
+    },
+
+    fromSplitCombine({
+      bucket,
+      sort,
+      reference,
+      limit,
+    }: Split): NumberSplitDefinition {
+      if (typeof bucket === "number") {
+        return {
+          type: SplitType.number,
+          dimension: reference,
+          granularity: bucket,
+          sort: sort && fromSort(sort),
+          limit,
+        };
+      } else {
+        throw new Error("");
+      }
+    },
+  };
 
 const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
   toSplitCombine(split: TimeSplitDefinition): Split {
@@ -136,50 +195,58 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
       reference: dimension,
       bucket: Duration.fromJS(granularity),
       sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
+      limit: toLimit(limit),
     });
   },
 
-  fromSplitCombine({ limit, sort, reference, bucket }: Split): TimeSplitDefinition {
+  fromSplitCombine({
+    limit,
+    sort,
+    reference,
+    bucket,
+  }: Split): TimeSplitDefinition {
     if (bucket instanceof Duration) {
       return {
         type: SplitType.time,
         dimension: reference,
         granularity: bucket.toJS(),
         sort: sort && fromSort(sort),
-        limit
+        limit,
       };
     } else {
       throw new Error("");
     }
-  }
-
-};
-
-const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = {
-  toSplitCombine(split: StringSplitDefinition): Split {
-    const { dimension, limit, sort } = split;
-    return new Split({
-      reference: dimension,
-      sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
-    });
   },
-
-  fromSplitCombine({ limit, sort, reference }: Split): StringSplitDefinition {
-    return {
-      type: SplitType.string,
-      dimension: reference,
-      sort: sort && fromSort(sort),
-      limit
-    };
-  }
 };
 
-const splitConversions: { [type in SplitType]: SplitDefinitionConversion<SplitDefinition> } = {
+const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> =
+  {
+    toSplitCombine(split: StringSplitDefinition): Split {
+      const { dimension, limit, sort } = split;
+      return new Split({
+        reference: dimension,
+        sort: sort && toSort(sort, dimension),
+        limit: toLimit(limit),
+      });
+    },
+
+    fromSplitCombine({ limit, sort, reference }: Split): StringSplitDefinition {
+      return {
+        type: SplitType.string,
+        dimension: reference,
+        sort: sort && fromSort(sort),
+        limit,
+      };
+    },
+  };
+
+const splitConversions: {
+  [type in SplitType]: SplitDefinitionConversion<SplitDefinition>;
+} = {
+  boolean: booleanSplitConversion,
   number: numberSplitConversion,
   string: stringSplitConversion,
-  time: timeSplitConversion
+  time: timeSplitConversion,
 };
 
 export interface SplitDefinitionConverter {
@@ -203,5 +270,5 @@ export const splitConverter: SplitDefinitionConverter = {
     } else {
       return stringSplitConversion.fromSplitCombine(splitCombine);
     }
-  }
+  },
 };

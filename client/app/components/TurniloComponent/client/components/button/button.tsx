@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./button.scss";
@@ -32,26 +32,28 @@ export interface ButtonProps {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-export interface ButtonState {
-}
+// eslint-disable-next-line
+export interface ButtonState {}
 
 export class Button extends React.Component<ButtonProps, ButtonState> {
-
   render() {
-    const { title, type, className, svg, active, disabled, onClick } = this.props;
+    const { title, type, className, svg, active, disabled, onClick } =
+      this.props;
 
-    var icon: JSX.Element = null;
+    let icon: JSX.Element = null;
     if (svg) {
       icon = <SvgIcon svg={svg} />;
     }
 
-    return <button
-      className={classNames("button", type, className, { icon, active })}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {icon}
-      {title}
-    </button>;
+    return (
+      <button
+        className={classNames("button", type, className, { icon, active })}
+        onClick={onClick}
+        disabled={disabled}
+      >
+        {icon}
+        {title}
+      </button>
+    );
   }
 }

@@ -16,7 +16,10 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
+import {
+  ConcreteSeries,
+  SeriesDerivation,
+} from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { Highlighter } from "../../../../components/highlighter/highlighter";
@@ -36,18 +39,33 @@ interface HighlightOverlayProps {
   showPrevious: boolean;
 }
 
-function getYValue(datum: Datum, series: ConcreteSeries, includePrevious: boolean): number {
+function getYValue(
+  datum: Datum,
+  series: ConcreteSeries,
+  includePrevious: boolean,
+): number {
   if (!includePrevious) {
     return series.selectValue(datum);
   }
-  return Math.max(series.selectValue(datum), series.selectValue(datum, SeriesDerivation.PREVIOUS));
+  return Math.max(
+    series.selectValue(datum),
+    series.selectValue(datum, SeriesDerivation.PREVIOUS),
+  );
 }
 
 export const HighlightOverlay: React.SFC<HighlightOverlayProps> = props => {
-  const { stage, yScale, series, xScale, showPrevious, interaction: { datum }, getX } = props;
+  const {
+    stage,
+    yScale,
+    series,
+    xScale,
+    showPrevious,
+    interaction: { datum },
+    getX,
+  } = props;
   const xValue = getX(datum);
   const left = xScale.calculate(xValue);
-  const right = left + xScale.rangeBand();
+  const right = left + xScale.bandwidth();
   const yValue = getYValue(datum, series, showPrevious);
   const top = yScale(yValue) + stage.y - TOP_PADDING;
   return <Highlighter left={left} right={right} top={top} />;

@@ -17,20 +17,29 @@
 import * as React from "react";
 import { SearchableFolder } from "../searchable-tile/searchable-folder";
 import { DimensionClickHandler, DimensionItem } from "./dimension-item";
-import { DimensionForView, DimensionForViewType, DimensionGroupForView, DimensionOrGroupForView } from "./dimensions-converter";
+import {
+  DimensionForView,
+  DimensionForViewType,
+  DimensionGroupForView,
+  DimensionOrGroupForView,
+} from "./dimensions-converter";
 
 export class DimensionsRenderer {
   constructor(
     private readonly dimensionClick: DimensionClickHandler,
     private readonly dimensionDragStart: DimensionClickHandler,
-    private readonly searchText: string
-  ) {
-  }
+    private readonly searchText: string,
+  ) {}
 
   render(children: DimensionOrGroupForView[]): JSX.Element[] {
     const { searchText } = this;
     return children
-      .filter(child => !searchText || child.hasSearchText || child.type === DimensionForViewType.group)
+      .filter(
+        child =>
+          !searchText ||
+          child.hasSearchText ||
+          child.type === DimensionForViewType.group,
+      )
       .map(child => {
         if (child.type === DimensionForViewType.group) {
           return this.renderFolder(child);
@@ -42,35 +51,46 @@ export class DimensionsRenderer {
 
   private renderFolder(groupView: DimensionGroupForView): JSX.Element {
     const { searchText } = this;
-    const { name, title, description, hasSearchText, isFilteredOrSplit, children } = groupView;
+    const {
+      name,
+      title,
+      description,
+      hasSearchText,
+      isFilteredOrSplit,
+      children,
+    } = groupView;
 
-    return <SearchableFolder
-      key={name}
-      name={name}
-      title={title}
-      description={description}
-      inSearchMode={!!searchText}
-      hasItemsWithSearchText={hasSearchText}
-      shouldBeOpened={isFilteredOrSplit}
-    >
-      {this.render(children)}
-    </SearchableFolder>;
+    return (
+      <SearchableFolder
+        key={name}
+        name={name}
+        title={title}
+        description={description}
+        inSearchMode={!!searchText}
+        hasItemsWithSearchText={hasSearchText}
+        shouldBeOpened={isFilteredOrSplit}
+      >
+        {this.render(children)}
+      </SearchableFolder>
+    );
   }
 
   private renderDimension(dimensionView: DimensionForView): JSX.Element {
     const { dimensionClick, dimensionDragStart, searchText } = this;
     const { name, title, description, classSuffix, selected } = dimensionView;
 
-    return <DimensionItem
-      key={name}
-      name={name}
-      title={title}
-      description={description}
-      selected={selected}
-      dimensionClick={dimensionClick}
-      dimensionDragStart={dimensionDragStart}
-      classSuffix={classSuffix}
-      searchText={searchText}
-    />;
+    return (
+      <DimensionItem
+        key={name}
+        name={name}
+        title={title}
+        description={description}
+        selected={selected}
+        dimensionClick={dimensionClick}
+        dimensionDragStart={dimensionDragStart}
+        classSuffix={classSuffix}
+        searchText={searchText}
+      />
+    );
   }
 }

@@ -9,18 +9,18 @@ export default function YAxisSettings({ options, onOptionsChange }) {
 
   return (
     <React.Fragment>
-      <Section.Title>Left Y Axis</Section.Title>
+      <Section.Title>{!options.swappedAxes ? "Left Y Axis" : "X Axis"}</Section.Title>
 
       <Section>
         <AxisSettings
           id="LeftYAxis"
           features={{ range: true }}
           options={leftYAxis}
-          onChange={axis => onOptionsChange({ yAxis: [axis, rightYAxis] })}
+          onChange={(axis) => onOptionsChange({ yAxis: [axis, rightYAxis] })}
         />
       </Section>
 
-      {options.globalSeriesType !== "heatmap" && (
+      {options.globalSeriesType !== "heatmap" && !options.swappedAxes && (
         <React.Fragment>
           <Section.Title>Right Y Axis</Section.Title>
 
@@ -29,8 +29,18 @@ export default function YAxisSettings({ options, onOptionsChange }) {
               id="RightYAxis"
               features={{ range: true }}
               options={rightYAxis}
-              onChange={axis => onOptionsChange({ yAxis: [leftYAxis, axis] })}
+              onChange={(axis) => onOptionsChange({ yAxis: [leftYAxis, axis] })}
             />
+          </Section>
+
+          <Section>
+            <Switch
+              id="chart-editor-y-axis-align-at-zero"
+              data-test="Chart.YAxis.AlignAtZero"
+              defaultChecked={options.alignYAxesAtZero}
+              onChange={(alignYAxesAtZero) => onOptionsChange({ alignYAxesAtZero })}>
+              Align Y Axes at Zero
+            </Switch>
           </Section>
         </React.Fragment>
       )}
@@ -42,7 +52,7 @@ export default function YAxisSettings({ options, onOptionsChange }) {
               id="chart-editor-y-axis-sort"
               data-test="Chart.LeftYAxis.Sort"
               defaultChecked={options.sortY}
-              onChange={sortY => onOptionsChange({ sortY })}>
+              onChange={(sortY) => onOptionsChange({ sortY })}>
               Sort Values
             </Switch>
           </Section>
@@ -52,7 +62,7 @@ export default function YAxisSettings({ options, onOptionsChange }) {
               id="chart-editor-y-axis-reverse"
               data-test="Chart.LeftYAxis.Reverse"
               defaultChecked={options.reverseY}
-              onChange={reverseY => onOptionsChange({ reverseY })}>
+              onChange={(reverseY) => onOptionsChange({ reverseY })}>
               Reverse Order
             </Switch>
           </Section>

@@ -17,7 +17,9 @@ settingsMenu.add(null, usersItem);
 describe("SettingsMenu", () => {
   describe("isActive", () => {
     test("works with non multi org paths", () => {
-      expect(settingsMenu.getActiveItem("/data_sources/").title).toBe(dataSourcesItem.title);
+      expect(settingsMenu.getActiveItem("/data_sources/").title).toBe(
+        dataSourcesItem.title,
+      );
     });
 
     test("works with multi org paths", () => {
@@ -27,7 +29,9 @@ describe("SettingsMenu", () => {
       document.head.appendChild(base);
 
       expect(settingsMenu.getActiveItem("/acme/data_sources/")).toBeTruthy();
-      expect(settingsMenu.getActiveItem("/acme/data_sources/").title).toBe(dataSourcesItem.title);
+      expect(settingsMenu.getActiveItem("/acme/data_sources/").title).toBe(
+        dataSourcesItem.title,
+      );
     });
   });
 });

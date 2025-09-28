@@ -25,16 +25,28 @@ interface DateRangeDefinition {
 
 const defaultDateRange: DateRangeDefinition = { start: null, end: null };
 
-const plywoodRange = ({ start, end }: DateRange) => Range.fromJS({ start, end, bounds: "()" });
+const plywoodRange = ({ start, end }: DateRange) =>
+  Range.fromJS({ start, end, bounds: "()" });
 
 export class DateRange extends Record<DateRangeDefinition>(defaultDateRange) {
   intersects(other: DateRange | null): boolean {
-    return other instanceof DateRange && plywoodRange(this).intersects(plywoodRange(other));
+    return (
+      other instanceof DateRange &&
+      plywoodRange(this).intersects(plywoodRange(other))
+    );
+  }
+
+  toUrlParams(): object {
+    const { start, end } = this;
+    return {
+      p_turnilo_daterange: `${start.toISOString()}_${end.toISOString()}`,
+    };
   }
 
   shift(duration: Duration, timezone: Timezone): DateRange {
-    return this
-      .set("start", duration.shift(this.start, timezone, -1))
-      .set("end", duration.shift(this.end, timezone, -1));
+    return this.set("start", duration.shift(this.start, timezone, -1)).set(
+      "end",
+      duration.shift(this.end, timezone, -1),
+    );
   }
 }

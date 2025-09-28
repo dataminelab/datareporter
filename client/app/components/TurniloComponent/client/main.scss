@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-@import '../lib/style/reset';
-@import '../lib/style/sanity';
-@import '../lib/style/open-sans-regular';
-@import '../lib/style/open-sans-600';
-@import 'imports';
-
+@import "../lib/style/reset";
+@import "../lib/style/sanity";
+@import "imports";
 
 svg {
   width: auto;
@@ -60,13 +57,22 @@ svg {
   }
 }
 
+.row {
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
 .report-widget {
   .label {
     color: #160f66;
     text-align: left;
     font-weight: bold;
   }
-  .series-tile .items .measure.series, .overflow-menu .measure.split, .overflow-menu .measure.series, .overflow-menu .measure.filter, .series-tile .measure.overflow {
+  .series-tile .items .measure.series,
+  .overflow-menu .measure.split,
+  .overflow-menu .measure.series,
+  .overflow-menu .measure.filter,
+  .series-tile .measure.overflow {
     background-color: #160f66 !important;
     color: #ffffff !important;
   }
@@ -108,7 +114,8 @@ svg {
   }
 }
 
-.dimension-actions-menu .action, .measure-actions-menu .action {
+.dimension-actions-menu .action,
+.measure-actions-menu .action {
   color: rgb(22, 15, 102);
 }
 
@@ -117,11 +124,11 @@ svg {
 }
 
 .ant-btn {
- .icon {
-   font-size: 16px;
-   top: 2px;
-   position: relative;
- }
+  .icon {
+    font-size: 16px;
+    top: 2px;
+    position: relative;
+  }
 }
 
 .filter-split-section .title,
@@ -131,8 +138,11 @@ svg {
   color: #160f66;
 }
 
-.filter-tile .items .dimension.filter, .overflow-menu .dimension.split,
-.overflow-menu .dimension.series, .overflow-menu .dimension.filter, .filter-tile .dimension.overflow {
+.filter-tile .items .dimension.filter,
+.overflow-menu .dimension.split,
+.overflow-menu .dimension.series,
+.overflow-menu .dimension.filter,
+.filter-tile .dimension.overflow {
   background-color: #ff9b5d;
   color: #ffffff;
 }
@@ -175,9 +185,11 @@ svg {
     }
     a span {
       cursor: pointer;
-      color: #0000EE;
+      color: #0000ee;
     }
-    a:visited span { color: #551A8B; }
+    a:visited span {
+      color: #551a8b;
+    }
   }
 }
 
@@ -190,6 +202,5 @@ svg {
     }
   }
 }
-
 
 @import "custom";

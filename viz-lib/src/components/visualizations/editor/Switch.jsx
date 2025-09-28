@@ -10,7 +10,7 @@ export default function Switch({ id, children, disabled, ...props }) {
     () =>
       `visualization-editor-control-${Math.random()
         .toString(36)
-        .substr(2, 10)}`,
+        .substring(2, 10)}`,
     []
   );
   id = id || fallbackId;

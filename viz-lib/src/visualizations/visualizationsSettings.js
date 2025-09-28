@@ -3,6 +3,7 @@ import { extend } from "lodash";
 import PropTypes from "prop-types";
 import Tooltip from "antd/lib/tooltip";
 
+
 function HelpTrigger({ title, href, className, children }) {
   return (
     <Tooltip
@@ -32,11 +33,16 @@ HelpTrigger.defaultValues = {
   children: null,
 };
 
+function Link(props) {
+  return <a {...props} />;
+}
+
 export const visualizationsSettings = {
   HelpTriggerComponent: HelpTrigger,
+  LinkComponent: Link,
   dateFormat: "DD/MM/YYYY",
   dateTimeFormat: "DD/MM/YYYY HH:mm",
-  integetFormat: "0,0",
+  integerFormat: "0,0",
   floatFormat: "0,0.00",
   booleanValues: ["false", "true"],
   tableCellMaxJSONSize: 50000,

@@ -3,8 +3,9 @@ import React, { useMemo, useCallback } from "react";
 import Table from "antd/lib/table";
 import ColorPicker from "@/components/ColorPicker";
 import { EditorPropTypes } from "@/visualizations/prop-types";
-import ColorPalette from "@/visualizations/ColorPalette";
+import { AllColorPalettes } from "@/visualizations/ColorPalette";
 import getChartData from "../getChartData";
+import { Section, Select } from "@/components/visualizations/editor";
 
 function getUniqueValues(chartData) {
   const uniqueValuesNames = new Set();
@@ -20,9 +21,9 @@ export default function PieColorsSettings({ options, data, onOptionsChange }) {
   const colors = useMemo(
     () => ({
       Automatic: null,
-      ...ColorPalette,
+      ...AllColorPalettes[options.color_scheme],
     }),
-    []
+    [options.color_scheme]
   );
 
   const series = useMemo(
@@ -63,14 +64,29 @@ export default function PieColorsSettings({ options, data, onOptionsChange }) {
           presetColors={colors}
           placement="topRight"
           color={item.color}
-          onChange={value => updateValuesOption(item.key, "color", value)}
+          onChange={(value) => updateValuesOption(item.key, "color", value)}
           addonAfter={<ColorPicker.Label color={item.color} presetColors={colors} />}
         />
       ),
     },
   ];
 
-  return <Table showHeader={false} dataSource={series} columns={columns} pagination={false} />;
+  return (
+    <React.Fragment>
+      <Section>
+          <Select
+            label="Color Scheme"
+            defaultValue={options.color_scheme}
+            data-test="ColorScheme"
+            onChange={(val ) => onOptionsChange({ color_scheme: val })}>
+            {Object.keys(AllColorPalettes).map(option => (
+             <Select.Option data-test={`ColorOption${option}`} key={option} value={option}>{option}</Select.Option>
+            ))}
+          </Select>
+        </Section>
+      <Table showHeader={false} dataSource={series} columns={columns} pagination={false} />
+    </React.Fragment>
+  )
 }
 
 PieColorsSettings.propTypes = EditorPropTypes;

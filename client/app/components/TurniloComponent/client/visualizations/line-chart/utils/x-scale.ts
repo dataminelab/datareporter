@@ -27,23 +27,36 @@ import { toPlywoodRange } from "../../../utils/highlight-clause/highlight-clause
 import { ContinuousRange, ContinuousScale } from "./continuous-types";
 import { getContinuousDimension, getContinuousSplit } from "./splits";
 // This function is responsible for aligning d3 types with our domain types.
-export function createContinuousScale(essence: Essence, domainRange: PlywoodRange, width: number): ContinuousScale {
+export function createContinuousScale(
+  essence: Essence,
+  domainRange: PlywoodRange,
+  width: number,
+): ContinuousScale {
   const continuousDimension = getContinuousDimension(essence);
   const kind = continuousDimension.kind as ContinuousDimensionKind;
   const range = [0, width];
   switch (kind) {
     case "number": {
       const domain = [domainRange.start, domainRange.end] as [number, number];
-      return (d3.scale.linear().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
+      return (d3.scaleLinear().clamp(true) as unknown as ContinuousScale)
+        .domain(domain)
+        .range(range);
     }
     case "time": {
       const domain = [domainRange.start, domainRange.end] as [Date, Date];
-      return (d3.time.scale().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
+      return (d3.scaleTime().clamp(true) as unknown as ContinuousScale)
+        .domain(domain)
+        .range(range);
     }
   }
 }
 
-function includeMaxTimeBucket(filterRange: PlywoodRange, maxTime: Date, continuousSplit: Split, timezone: Timezone) {
+function includeMaxTimeBucket(
+  filterRange: PlywoodRange,
+  maxTime: Date,
+  continuousSplit: Split,
+  timezone: Timezone,
+) {
   const continuousBucket = continuousSplit.bucket;
   /*
     Special treatment for realtime data:
@@ -51,45 +64,67 @@ function includeMaxTimeBucket(filterRange: PlywoodRange, maxTime: Date, continuo
   */
   if (maxTime && continuousBucket instanceof Duration) {
     const filterRangeEnd = filterRange.end as Date;
-    const filterRangeEndFloored = continuousBucket.floor(filterRangeEnd, timezone);
-    const filterRangeEndCeiled = continuousBucket.shift(filterRangeEndFloored, timezone);
+    const filterRangeEndFloored = continuousBucket.floor(
+      filterRangeEnd,
+      timezone,
+    );
+    const filterRangeEndCeiled = continuousBucket.shift(
+      filterRangeEndFloored,
+      timezone,
+    );
     if (filterRangeEndFloored < maxTime && maxTime < filterRangeEndCeiled) {
-      return Range.fromJS({ start: filterRange.start, end: filterRangeEndCeiled });
+      return Range.fromJS({
+        start: filterRange.start,
+        end: filterRangeEndCeiled,
+      });
     }
   }
   return filterRange;
 }
 
-function getFilterRange(essence: Essence, timekeeper: Timekeeper): PlywoodRange | null {
+function getFilterRange(
+  essence: Essence,
+  timekeeper: Timekeeper,
+): PlywoodRange | null {
   const continuousSplit = getContinuousSplit(essence);
   const effectiveFilter = essence.getEffectiveFilter(timekeeper);
-  const continuousFilterClause = effectiveFilter.clauseForReference(continuousSplit.reference);
+  const continuousFilterClause = effectiveFilter.clauseForReference(
+    continuousSplit.reference,
+  );
   if (!continuousFilterClause) return null;
   const filterRange = toPlywoodRange(continuousFilterClause);
   const maxTime = essence.dataCube.getMaxTime(timekeeper);
-  return includeMaxTimeBucket(filterRange, maxTime, continuousSplit, essence.timezone);
+  return includeMaxTimeBucket(
+    filterRange,
+    maxTime,
+    continuousSplit,
+    essence.timezone,
+  );
 }
 
-function safeRangeSum(a: PlywoodRange | null, b: PlywoodRange | null): PlywoodRange {
-  return (a && b) ? a.extend(b) : (a || b);
+function safeRangeSum(
+  a: PlywoodRange | null,
+  b: PlywoodRange | null,
+): PlywoodRange {
+  return a && b ? a.extend(b) : a || b;
 }
 
-function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange | null {
+function getDatasetXRange(
+  dataset: Dataset,
+  continuousDimension: Dimension,
+): PlywoodRange | null {
   const continuousDimensionKey = continuousDimension.name;
-  const flatDataset = dataset.flatten()
-    .data
-    .map(datum => datum[continuousDimensionKey] as PlywoodRange);
+  const flatDataset = dataset
+    .flatten()
+    .data.map(datum => datum[continuousDimensionKey] as PlywoodRange);
   if (typeof flatDataset[0] === "object") {
-    return flatDataset
-      .reduce(safeRangeSum, null);
+    return flatDataset.reduce(safeRangeSum, null);
   } else if (typeof flatDataset[0] === "string") {
     // ["21-05-2022:HH:MM:SS", ...]
-    //@ts-ignore
-    var start = new Date(flatDataset[0]);
-    //@ts-ignore
-    var end = new Date(flatDataset[0]);
+    let start = new Date(flatDataset[0]);
+    let end = new Date(flatDataset[0]);
     flatDataset.map(datum => {
-      let currentDate = new Date(datum.toString());
+      const currentDate = new Date(datum.toString());
       if (currentDate < start) {
         start = currentDate;
       }
@@ -103,7 +138,11 @@ function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): Ply
   }
 }
 
-export function calculateXRange(essence: Essence, timekeeper: Timekeeper, dataset: Dataset): ContinuousRange | null {
+export function calculateXRange(
+  essence: Essence,
+  timekeeper: Timekeeper,
+  dataset: Dataset,
+): ContinuousRange | null {
   const continuousDimension = getContinuousDimension(essence);
   const filterRange = getFilterRange(essence, timekeeper);
   const datasetRange = getDatasetXRange(dataset, continuousDimension);

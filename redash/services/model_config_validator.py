@@ -23,11 +23,7 @@ schema = {
                     "maxlength": 120,
                     "required": True,
                 },
-                "description": {
-                    "type": "string",
-                    "maxlength": 256,
-                    "required": False
-                },
+                "description": {"type": "string", "maxlength": 256, "required": False},
                 "timeAttribute": {
                     "type": "string",
                     "required": True,
@@ -36,36 +32,19 @@ schema = {
                     "type": "string",
                     "required": True,
                 },
-                "defaultSelectedMeasures": {
-                    "type": "list",
-                    "required": True,
-                    "schema": {
-                        "type": "string"
-                    }
-                },
-                "clusterName": {
-                    "type": "string",
-                    "required": True
-                },
+                "defaultSelectedMeasures": {"type": "list", "required": True, "schema": {"type": "string"}},
+                "clusterName": {"type": "string", "required": True},
                 "attributes": {
                     "type": "list",
                     "required": True,
                     "schema": {
                         "type": "dict",
                         "schema": {
-                            "name": {
-                                "type": "string",
-                                "required": True
-                            },
-                            "type": {
-                                "type": "string",
-                                "required": True
-                            }, "nativeType": {
-                                "type": "string",
-                                "required": False
-                            }
-                        }
-                    }
+                            "name": {"type": "string", "required": True},
+                            "type": {"type": "string", "required": True},
+                            "nativeType": {"type": "string", "required": False},
+                        },
+                    },
                 },
                 "dimensions": {
                     "type": "list",
@@ -73,32 +52,14 @@ schema = {
                     "schema": {
                         "type": "dict",
                         "schema": {
-                            "name": {
-                                "type": "string",
-                                "required": True
-                            },
-                            "title": {
-                                "type": "string",
-                                "required": True
-                            },
-                            "formula": {
-                                "type": "string",
-                                "required": True
-                            },
-                            "kind": {
-                                "type": "string"
-                            },
-                            "description": {
-                                "type": "string",
-                                "maxlength": 100,
-                                "required": False
-                            },
-                            "multiValue": {
-                                "type": "boolean",
-                                "required": False
-                            }
-                        }
-                    }
+                            "name": {"type": "string", "required": True},
+                            "title": {"type": "string", "required": True},
+                            "formula": {"type": "string", "required": True},
+                            "kind": {"type": "string"},
+                            "description": {"type": "string", "maxlength": 100, "required": False},
+                            "multiValue": {"type": "boolean", "required": False},
+                        },
+                    },
                 },
                 "measures": {
                     "type": "list",
@@ -106,54 +67,28 @@ schema = {
                     "schema": {
                         "type": "dict",
                         "schema": {
-                            "name": {
-                                "type": "string",
-                                "required": True
-                            },
-                            "title": {
-                                "type": "string",
-                                "required": True
-                            },
-                            "formula": {
-                                "type": "string",
-                                "required": True
-                            },
-                            "description": {
-                                "type": "string",
-                                "maxlength": 100,
-                                "required": False
-                            },
-                            "units": {
-                                "type": "string",
-                                "required": False
-                            },
-                            "lowerIsBetter": {
-                                "type": "boolean",
-                                "required": False
-                            },
-                            "format": {
-                                "type": "string",
-                                "required": False
-                            },
+                            "name": {"type": "string", "required": True},
+                            "title": {"type": "string", "required": True},
+                            "formula": {"type": "string", "required": True},
+                            "description": {"type": "string", "maxlength": 100, "required": False},
+                            "units": {"type": "string", "required": False},
+                            "lowerIsBetter": {"type": "boolean", "required": False},
+                            "format": {"type": "string", "required": False},
                             "transformation": {
                                 "type": "string",
                                 "required": False,
-                                "allowed": [
-                                    "none",
-                                    "percent-of-parent",
-                                    "percent-of-total"
-                                ]
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                                "allowed": ["none", "percent-of-parent", "percent-of-total"],
+                            },
+                        },
+                    },
+                },
+            },
+        },
     }
 }
 
 
-class ModelConfigValidator(object):
+class ModelConfigValidator:
     def __init__(self, content: str):
         self._set_content(content)
 

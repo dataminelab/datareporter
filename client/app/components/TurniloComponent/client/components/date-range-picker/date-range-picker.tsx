@@ -18,7 +18,11 @@
 import { day, month, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
 import * as React from "react";
-import { datesEqual, formatYearMonth, getDayInMonth } from "../../../common/utils/time/time";
+import {
+  datesEqual,
+  formatYearMonth,
+  getDayInMonth,
+} from "../../../common/utils/time/time";
 import { getLocale } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
@@ -41,12 +45,17 @@ export interface DateRangePickerState {
   selectionSet?: boolean;
 }
 
-export class DateRangePicker extends React.Component<DateRangePickerProps, DateRangePickerState> {
-
+export class DateRangePicker extends React.Component<
+  DateRangePickerProps,
+  DateRangePickerState
+> {
   state: DateRangePickerState = {
-    activeMonthStartDate: month.floor(this.props.startTime || new Date(), this.props.timezone),
+    activeMonthStartDate: month.floor(
+      this.props.startTime || new Date(),
+      this.props.timezone,
+    ),
     hoverTimeRange: null,
-    selectionSet: true
+    selectionSet: true,
   };
 
   navigateToMonth(offset: number): void {
@@ -54,7 +63,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const { activeMonthStartDate } = this.state;
     const newDate = month.shift(activeMonthStartDate, timezone, offset);
     this.setState({
-      activeMonthStartDate: newDate
+      activeMonthStartDate: newDate,
     });
   }
 
@@ -115,7 +124,7 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
   getIsSelectable(date: Date): boolean {
     const { hoverTimeRange, selectionSet } = this.state;
-    let inHoverTimeRange = hoverTimeRange && hoverTimeRange.contains(date);
+    const inHoverTimeRange = hoverTimeRange && hoverTimeRange.contains(date);
     return inHoverTimeRange && !selectionSet;
   }
 
@@ -126,30 +135,38 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
     const nextMonthStart = month.shift(monthStart, timezone, 1);
 
     return weeks.map((daysInWeek: Date[], row: number) => {
-      return <div className="week" key={row}> {daysInWeek.map((dayDate: Date, column: number) => {
-        const isPast = dayDate < monthStart;
-        const isFuture = dayDate >= nextMonthStart;
-        const isBeyondMaxRange = dayDate > maxTime;
-        const isSelected = startDay <= dayDate && dayDate < endTime;
-        const isSelectedEdgeStart = datesEqual(dayDate, startTime);
-        const isSelectedEdgeEnd = datesEqual(dayDate, dayBeforeEnd);
-        const className = classNames("day", "value",
-          {
-            "past": isPast,
-            "future": isFuture,
-            "beyond-max-range": isBeyondMaxRange,
-            "selectable": this.getIsSelectable(dayDate),
-            "selected": isSelected,
-            "selected-edge": isSelectedEdgeStart || isSelectedEdgeEnd
-          });
+      return (
+        <div className="week" key={row}>
+          {" "}
+          {daysInWeek.map((dayDate: Date, column: number) => {
+            const isPast = dayDate < monthStart;
+            const isFuture = dayDate >= nextMonthStart;
+            const isBeyondMaxRange = dayDate > maxTime;
+            const isSelected = startDay <= dayDate && dayDate < endTime;
+            const isSelectedEdgeStart = datesEqual(dayDate, startTime);
+            const isSelectedEdgeEnd = datesEqual(dayDate, dayBeforeEnd);
+            const className = classNames("day", "value", {
+              "past": isPast,
+              "future": isFuture,
+              "beyond-max-range": isBeyondMaxRange,
+              "selectable": this.getIsSelectable(dayDate),
+              "selected": isSelected,
+              "selected-edge": isSelectedEdgeStart || isSelectedEdgeEnd,
+            });
 
-        return <div
-          className={className}
-          key={column}
-          onClick={this.selectDay.bind(this, dayDate)}
-          onMouseEnter={this.calculateHoverTimeRange.bind(this, dayDate)}
-        >{getDayInMonth(dayDate, timezone)}</div>;
-      })}</div>;
+            return (
+              <div
+                className={className}
+                key={column}
+                onClick={this.selectDay.bind(this, dayDate)}
+                onMouseEnter={this.calculateHoverTimeRange.bind(this, dayDate)}
+              >
+                {getDayInMonth(dayDate, timezone)}
+              </div>
+            );
+          })}
+        </div>
+      );
     });
   }
 
@@ -164,53 +181,66 @@ export class DateRangePicker extends React.Component<DateRangePickerProps, DateR
 
     const handleParentClick = (e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
-      e.currentTarget.parentElement.click();      
+      e.currentTarget.parentElement.click();
     };
 
-    return <div className="calendar-nav">
-      <div
-        className="caret left"
-        onClick={this.goToPreviousMonth}
-      > 
-        <div className="caret-svg" onClick={handleParentClick}>
-          <SvgIcon svg={require("../../icons/full-caret-left.svg")}/>
+    return (
+      <div className="calendar-nav">
+        <div className="caret left" onClick={this.goToPreviousMonth}>
+          <div className="caret-svg" onClick={handleParentClick}>
+            <SvgIcon svg={require("../../icons/full-caret-left.svg")} />
+          </div>
+        </div>
+        {formatYearMonth(startDate, timezone)}
+        <div className="caret right" onClick={this.goToNextMonth}>
+          <div className="caret-svg" onClick={handleParentClick}>
+            <SvgIcon svg={require("../../icons/full-caret-right.svg")} />
+          </div>
         </div>
       </div>
-      {formatYearMonth(startDate, timezone)}
-      <div
-        className="caret right"
-        onClick={this.goToNextMonth}
-      > 
-        <div className="caret-svg" onClick={handleParentClick}>
-          <SvgIcon svg={require("../../icons/full-caret-right.svg")}/>
-        </div>
-      </div>
-    </div>;
+    );
   }
 
   render() {
-    const { startTime, endTime, timezone, onStartChange, onEndChange } = this.props;
+    const { startTime, endTime, timezone, onStartChange, onEndChange } =
+      this.props;
     const { activeMonthStartDate, selectionSet } = this.state;
     if (!activeMonthStartDate) return null;
 
-    return <div className="date-range-picker">
-      <div>
-        <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange} />
-        <DateRangeInput label="End" type="end" time={endTime} timezone={timezone} onChange={onEndChange} hide={!selectionSet} />
-      </div>
-      <div
-        className="calendar"
-        onMouseLeave={this.onCalendarMouseLeave}
-      >
-        {this.renderCalendarNav(activeMonthStartDate)}
-        <div className="week">
-          {getLocale().shortDays.map((day, i) => {
-            return <div className="day label" key={day + i}><span className="space" />{day}</div>;
-          })
-          }
+    return (
+      <div className="date-range-picker">
+        <div>
+          <DateRangeInput
+            label="Start"
+            type="start"
+            time={startTime}
+            timezone={timezone}
+            onChange={onStartChange}
+          />
+          <DateRangeInput
+            label="End"
+            type="end"
+            time={endTime}
+            timezone={timezone}
+            onChange={onEndChange}
+            hide={!selectionSet}
+          />
         </div>
-        {this.renderCalendar(activeMonthStartDate)}
+        <div className="calendar" onMouseLeave={this.onCalendarMouseLeave}>
+          {this.renderCalendarNav(activeMonthStartDate)}
+          <div className="week">
+            {getLocale().shortDays.map((day, i) => {
+              return (
+                <div className="day label" key={day + i}>
+                  <span className="space" />
+                  {day}
+                </div>
+              );
+            })}
+          </div>
+          {this.renderCalendar(activeMonthStartDate)}
+        </div>
       </div>
-    </div>;
+    );
   }
 }

@@ -21,11 +21,18 @@ import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { QuantileSeries } from "../../../common/models/series/quantile-series";
 import { fromMeasure, Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
+import {
+  CORE_ITEM_GAP,
+  CORE_ITEM_WIDTH,
+  STRINGS,
+} from "../../config/constants";
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
-import { CubeContext, CubeContextValue } from "../../views/cube-view/cube-context";
+import {
+  CubeContext,
+  CubeContextValue,
+} from "../../views/cube-view/cube-context";
 import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSeries } from "./add-series";
 import { SeriesTiles } from "./series-tiles";
@@ -47,7 +54,10 @@ interface SeriesTilesRowState {
   placeholderSeries?: Placeholder;
 }
 
-export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesTilesRowState> {
+export class SeriesTilesRow extends React.Component<
+  SeriesTilesRowProps,
+  SeriesTilesRowState
+> {
   static contextType = CubeContext;
   context: CubeContextValue;
 
@@ -55,7 +65,9 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   private items = React.createRef<HTMLDivElement>();
 
   private maxItems(): number {
-    const { essence: { series } } = this.context;
+    const {
+      essence: { series },
+    } = this.context;
     const { menuStage } = this.props;
     return menuStage && getMaxItems(menuStage.width, series.count());
   }
@@ -69,8 +81,8 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     this.setState({
       placeholderSeries: {
         series,
-        index: this.context.essence.series.count()
-      }
+        index: this.context.essence.series.count(),
+      },
     });
   }
 
@@ -102,13 +114,19 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   };
 
   canDrop(): boolean {
-    const { essence: { series: seriesList } } = this.context;
+    const {
+      essence: { series: seriesList },
+    } = this.context;
     const measure = DragManager.draggingMeasure();
     if (measure) return !seriesList.hasMeasure(measure);
     return DragManager.isDraggingSeries();
   }
 
-  dragStart = (label: string, series: Series, e: React.DragEvent<HTMLElement>) => {
+  dragStart = (
+    label: string,
+    series: Series,
+    e: React.DragEvent<HTMLElement>,
+  ) => {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     setDragData(dataTransfer, "text/plain", label);
@@ -125,7 +143,12 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     const rect = this.items.current.getBoundingClientRect();
     const x = getXFromEvent(e);
     const offset = x - rect.left;
-    const position = DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
+    const position = DragPosition.calculateFromOffset(
+      offset,
+      numItems,
+      CORE_ITEM_WIDTH,
+      CORE_ITEM_GAP,
+    );
     if (position.replace === this.maxItems()) {
       return new DragPosition({ insert: position.replace });
     }
@@ -136,7 +159,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({
-      dragPosition: this.calculateDragPosition(e)
+      dragPosition: this.calculateDragPosition(e),
     });
   };
 
@@ -151,7 +174,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   dragLeave = () => {
     if (!this.canDrop()) return;
     this.setState({
-      dragPosition: null
+      dragPosition: null,
     });
   };
 
@@ -161,21 +184,35 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     this.setState({ dragPosition: null });
 
     if (DragManager.isDraggingSeries()) {
-      this.rearrangeSeries(DragManager.draggingSeries(), this.calculateDragPosition(e));
+      this.rearrangeSeries(
+        DragManager.draggingSeries(),
+        this.calculateDragPosition(e),
+      );
     } else {
-      this.dropNewSeries(fromMeasure(DragManager.draggingMeasure()), this.calculateDragPosition(e));
+      this.dropNewSeries(
+        fromMeasure(DragManager.draggingMeasure()),
+        this.calculateDragPosition(e),
+      );
     }
   };
 
   private dropNewSeries(newSeries: Series, dragPosition: DragPosition) {
-    const { clicker, essence: { series } } = this.context;
-    const isDuplicateQuantile = newSeries instanceof QuantileSeries && series.hasSeries(newSeries);
+    const {
+      clicker,
+      essence: { series },
+    } = this.context;
+    const isDuplicateQuantile =
+      newSeries instanceof QuantileSeries && series.hasSeries(newSeries);
     if (isDuplicateQuantile) {
       if (dragPosition.isReplace()) {
         clicker.removeSeries(series.series.get(dragPosition.replace));
-        this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.replace } });
+        this.setState({
+          placeholderSeries: { series: newSeries, index: dragPosition.replace },
+        });
       } else {
-        this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.insert } });
+        this.setState({
+          placeholderSeries: { series: newSeries, index: dragPosition.insert },
+        });
       }
     } else {
       this.rearrangeSeries(newSeries, dragPosition);
@@ -186,9 +223,13 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     const { clicker, essence } = this.context;
 
     if (dragPosition.isReplace()) {
-      clicker.changeSeriesList(essence.series.replaceByIndex(dragPosition.replace, series));
+      clicker.changeSeriesList(
+        essence.series.replaceByIndex(dragPosition.replace, series),
+      );
     } else {
-      clicker.changeSeriesList(essence.series.insertByIndex(dragPosition.insert, series));
+      clicker.changeSeriesList(
+        essence.series.insertByIndex(dragPosition.insert, series),
+      );
     }
   }
 
@@ -204,31 +245,44 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   };
 
   render() {
-    const { dragPosition, openedSeries, overflowOpen, placeholderSeries } = this.state;
+    const { dragPosition, openedSeries, overflowOpen, placeholderSeries } =
+      this.state;
     const { essence } = this.context;
     const { menuStage } = this.props;
-    return <div className="series-tile" onDragEnter={this.dragEnter}>
-      <div className="title">{STRINGS.series}</div>
-      <div className="items" ref={this.items}>
-        <SeriesTiles
+    return (
+      <div className="series-tile" onDragEnter={this.dragEnter}>
+        <div className="title">{STRINGS.series}</div>
+        <div className="items" ref={this.items}>
+          <SeriesTiles
+            menuStage={menuStage}
+            placeholderSeries={placeholderSeries}
+            maxItems={this.maxItems()}
+            essence={essence}
+            removeSeries={this.removeSeries}
+            updateSeries={this.updateSeries}
+            openSeriesMenu={this.openSeriesMenu}
+            closeSeriesMenu={this.closeSeriesMenu}
+            dragStart={this.dragStart}
+            removePlaceholderSeries={this.removePlaceholderSeries}
+            savePlaceholderSeries={this.savePlaceholderSeries}
+            overflowOpen={overflowOpen}
+            closeOverflowMenu={this.closeOverflowMenu}
+            openOverflowMenu={this.openOverflowMenu}
+            openedSeriesMenu={openedSeries}
+          />
+        </div>
+        <AddSeries
           menuStage={menuStage}
-          placeholderSeries={placeholderSeries}
-          maxItems={this.maxItems()}
           essence={essence}
-          removeSeries={this.removeSeries}
-          updateSeries={this.updateSeries}
-          openSeriesMenu={this.openSeriesMenu}
-          closeSeriesMenu={this.closeSeriesMenu}
-          dragStart={this.dragStart}
-          removePlaceholderSeries={this.removePlaceholderSeries}
-          savePlaceholderSeries={this.savePlaceholderSeries}
-          overflowOpen={overflowOpen}
-          closeOverflowMenu={this.closeOverflowMenu}
-          openOverflowMenu={this.openOverflowMenu}
-          openedSeriesMenu={openedSeries} />
+          appendMeasureSeries={this.appendMeasureSeries}
+        />
+        <DragIndicator
+          dragOver={this.dragOver}
+          dragLeave={this.dragLeave}
+          drop={this.drop}
+          dragPosition={dragPosition}
+        />
       </div>
-      <AddSeries menuStage={menuStage} essence={essence} appendMeasureSeries={this.appendMeasureSeries} />
-      <DragIndicator dragOver={this.dragOver} dragLeave={this.dragLeave} drop={this.drop} dragPosition={dragPosition} />
-    </div>;
+    );
   }
 }

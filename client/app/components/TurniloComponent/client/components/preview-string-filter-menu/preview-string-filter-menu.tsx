@@ -21,10 +21,22 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import {
+  FilterClause,
+  StringFilterAction,
+  StringFilterClause,
+} from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
+import {
+  DatasetLoad,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading,
+} from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { previewStringFilterQuery } from "../../../common/utils/query/preview-string-filter-query";
@@ -74,32 +86,41 @@ interface QueryProps {
   filterMode: PreviewFilterMode;
 }
 
-export class PreviewStringFilterMenu extends React.Component<PreviewStringFilterMenuProps, PreviewStringFilterMenuState> {
+export class PreviewStringFilterMenu extends React.Component<
+  PreviewStringFilterMenuProps,
+  PreviewStringFilterMenuState
+> {
   private lastSearchText: string;
 
   initialSearchText = (): string => {
     const { essence, dimension } = this.props;
     const clause = essence.filter.getClauseForDimension(dimension);
-    if (clause && clause instanceof StringFilterClause && clause.action !== StringFilterAction.IN) {
+    if (
+      clause &&
+      clause instanceof StringFilterClause &&
+      clause.action !== StringFilterAction.IN
+    ) {
       return clause.values.first();
     }
     return "";
   };
 
-  state: PreviewStringFilterMenuState = { dataset: loading, searchText: this.initialSearchText() };
+  state: PreviewStringFilterMenuState = {
+    dataset: loading,
+    searchText: this.initialSearchText(),
+  };
 
   updateSearchText = (searchText: string) => this.setState({ searchText });
 
   private loadRows() {
     if (this.regexErrorMessage()) return;
     this.setState({ dataset: loading });
-    this.sendQueryFilter()
-      .then(dataset => {
-        // TODO: encode it better
-        // null is here when we get out of order request, so we just ignore it
-        if (!dataset) return;
-        this.setState({ dataset });
-      });
+    this.sendQueryFilter().then(dataset => {
+      // TODO: encode it better
+      // null is here when we get out of order request, so we just ignore it
+      if (!dataset) return;
+      this.setState({ dataset });
+    });
   }
 
   private sendQueryFilter(): Promise<DatasetLoad> {
@@ -111,28 +132,37 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
   private regexErrorMessage(): string {
     const { filterMode } = this.props;
     const { searchText } = this.state;
-    return filterMode === FilterMode.REGEX && searchText && checkRegex(searchText);
+    return (
+      filterMode === FilterMode.REGEX && searchText && checkRegex(searchText)
+    );
   }
 
   private queryFilter = (props: QueryProps): Promise<DatasetLoad> => {
     const { essence } = props;
     const { searchText } = this.state;
-    const query = previewStringFilterQuery({ ...props, searchText, limit: TOP_N + 1 });
+    const query = previewStringFilterQuery({
+      ...props,
+      searchText,
+      limit: TOP_N + 1,
+    });
 
-    return essence.dataCube.executor(query, { timezone: essence.timezone })
+    return essence.dataCube
+      .executor(query, { timezone: essence.timezone })
       .then((dataset: Dataset) => {
         if (this.lastSearchText !== searchText) return null;
         return loaded(dataset);
       })
       .catch(err => {
-          if (this.lastSearchText !== searchText) return null;
-          reportError(err);
-          return error(err);
-        }
-      );
+        if (this.lastSearchText !== searchText) return null;
+        reportError(err);
+        return error(err);
+      });
   };
 
-  private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
+  private debouncedQueryFilter = debounceWithPromise(
+    this.queryFilter,
+    SEARCH_WAIT,
+  );
 
   componentWillMount() {
     this.loadRows();
@@ -142,7 +172,10 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     this.debouncedQueryFilter.cancel();
   }
 
-  componentDidUpdate(prevProps: PreviewStringFilterMenuProps, prevState: PreviewStringFilterMenuState): void {
+  componentDidUpdate(
+    prevProps: PreviewStringFilterMenuProps,
+    prevState: PreviewStringFilterMenuState,
+  ): void {
     if (this.state.searchText !== prevState.searchText) {
       this.loadRows();
     }
@@ -162,17 +195,21 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
 
     switch (filterMode) {
       case FilterMode.CONTAINS:
-        return onClauseChange(new StringFilterClause({
-          reference,
-          values: Set.of(searchText),
-          action: StringFilterAction.CONTAINS
-        }));
+        return onClauseChange(
+          new StringFilterClause({
+            reference,
+            values: Set.of(searchText),
+            action: StringFilterAction.CONTAINS,
+          }),
+        );
       case FilterMode.REGEX:
-        return onClauseChange(new StringFilterClause({
-          reference,
-          values: Set.of(searchText),
-          action: StringFilterAction.MATCH
-        }));
+        return onClauseChange(
+          new StringFilterClause({
+            reference,
+            values: Set.of(searchText),
+            action: StringFilterAction.MATCH,
+          }),
+        );
     }
   }
 
@@ -199,35 +236,54 @@ export class PreviewStringFilterMenu extends React.Component<PreviewStringFilter
     const { dataset, searchText } = this.state;
 
     const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
-    return <React.Fragment>
-      <GlobalEventListener keyDown={this.globalKeyDownListener} />
-      <div className="search-box">
-        <ClearableInput
-          placeholder="Search"
-          focusOnMount={true}
-          value={searchText}
-          onChange={this.updateSearchText}
-        />
-      </div>
-      <div className="preview-string-filter-menu">
-        <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
-          <div className="rows">
-            {isLoaded(dataset) && <PreviewList
-              dimension={dimension}
-              dataset={dataset.dataset}
-              searchText={searchText}
-              regexErrorMessage={this.regexErrorMessage()}
-              limit={TOP_N}
-              filterMode={filterMode} />}
-            {isError(dataset) ? <QueryError error={dataset.error} /> : null}
-            {isLoading(dataset) ? <Loader /> : null}
+    return (
+      <React.Fragment>
+        <GlobalEventListener keyDown={this.globalKeyDownListener} />
+        <div className="search-box">
+          <ClearableInput
+            placeholder="Search"
+            focusOnMount={true}
+            value={searchText}
+            onChange={this.updateSearchText}
+          />
+        </div>
+        <div className="preview-string-filter-menu">
+          <div
+            className={classNames(
+              "menu-table",
+              hasMore ? "has-more" : "no-more",
+            )}
+          >
+            <div className="rows">
+              {isLoaded(dataset) && (
+                <PreviewList
+                  dimension={dimension}
+                  dataset={dataset.dataset}
+                  searchText={searchText}
+                  regexErrorMessage={this.regexErrorMessage()}
+                  limit={TOP_N}
+                  filterMode={filterMode}
+                />
+              )}
+              {isError(dataset) ? <QueryError error={dataset.error} /> : null}
+              {isLoading(dataset) ? <Loader /> : null}
+            </div>
+          </div>
+          <div className="ok-cancel-bar">
+            <Button
+              type="primary"
+              title={STRINGS.ok}
+              onClick={this.onOkClick}
+              disabled={!this.actionEnabled()}
+            />
+            <Button
+              type="secondary"
+              title={STRINGS.cancel}
+              onClick={this.onCancelClick}
+            />
           </div>
         </div>
-        <div className="ok-cancel-bar">
-          <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
-          <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
-        </div>
-      </div>
-    </React.Fragment>;
+      </React.Fragment>
+    );
   }
 }

@@ -19,8 +19,14 @@ import { Duration } from "chronoshift";
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
-import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
+import {
+  granularityToString,
+  isGranularityValid,
+} from "../../../common/models/granularity/granularity";
+import {
+  DimensionSortOn,
+  SortOn,
+} from "../../../common/models/sort-on/sort-on";
 import { Sort } from "../../../common/models/sort/sort";
 import { Bucket, Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
@@ -53,7 +59,6 @@ export interface SplitMenuState {
 }
 
 export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
-
   state: SplitMenuState = {};
 
   componentWillMount() {
@@ -64,7 +69,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
       reference,
       sort,
       limit,
-      granularity: bucket && granularityToString(bucket)
+      granularity: bucket && granularityToString(bucket),
     });
   }
 
@@ -95,7 +100,9 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   };
 
   private constructGranularity(): Bucket {
-    const { dimension: { kind } } = this.props;
+    const {
+      dimension: { kind },
+    } = this.props;
     const { granularity } = this.state;
     if (kind === "time") {
       return Duration.fromJS(granularity);
@@ -107,14 +114,19 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
   }
 
   private constructSplitCombine(): Split {
-    const { split: { type } } = this.props;
+    const {
+      split: { type },
+    } = this.props;
     const { limit, sort, reference } = this.state;
     const bucket = this.constructGranularity();
     return new Split({ type, reference, limit, sort, bucket });
   }
 
   validate() {
-    const { dimension: { kind }, split: originalSplit  } = this.props;
+    const {
+      dimension: { kind },
+      split: originalSplit,
+    } = this.props;
     if (!isGranularityValid(kind, this.state.granularity)) {
       return false;
     }
@@ -128,12 +140,14 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     const seriesSortOns = essence.seriesSortOns(true).toArray();
     const options = [new DimensionSortOn(dimension), ...seriesSortOns];
     const selected = SortOn.fromSort(sort, essence);
-    return <SortDropdown
-      direction={sort.direction}
-      selected={selected}
-      options={options}
-      onChange={this.saveSort}
-    />;
+    return (
+      <SortDropdown
+        direction={sort.direction}
+        selected={selected}
+        options={options}
+        onChange={this.saveSort}
+      />
+    );
   }
 
   render() {
@@ -141,28 +155,41 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     const { granularity, limit } = this.state;
     if (!dimension) return null;
 
-    return <BubbleMenu
-      className="split-menu"
-      direction="down"
-      containerStage={containerStage}
-      stage={Stage.fromSize(250, 240)}
-      openOn={openOn}
-      onClose={onClose}
-    >
-      <GranularityPicker
-        dimension={dimension}
-        granularityChange={this.saveGranularity}
-        granularity={granularity}
-      />
-      {this.renderSortDropdown()}
-      <LimitDropdown
-        onLimitSelect={this.saveLimit}
-        limit={limit}
-        includeNone={dimension.isContinuous()} />
-      <div className="button-bar">
-        <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
-        <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
-      </div>
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        className="split-menu"
+        direction="down"
+        containerStage={containerStage}
+        stage={Stage.fromSize(250, 240)}
+        openOn={openOn}
+        onClose={onClose}
+      >
+        <GranularityPicker
+          dimension={dimension}
+          granularityChange={this.saveGranularity}
+          granularity={granularity}
+        />
+        {this.renderSortDropdown()}
+        <LimitDropdown
+          onLimitSelect={this.saveLimit}
+          limit={limit}
+          includeNone={dimension.isContinuous()}
+        />
+        <div className="button-bar">
+          <Button
+            className="ok"
+            type="primary"
+            disabled={!this.validate()}
+            onClick={this.onOkClick}
+            title={STRINGS.ok}
+          />
+          <Button
+            type="secondary"
+            onClick={this.onCancelClick}
+            title={STRINGS.cancel}
+          />
+        </div>
+      </BubbleMenu>
+    );
   }
 }

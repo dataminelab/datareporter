@@ -16,15 +16,15 @@
 
 import * as Chai from "chai";
 
-export default function(chai: typeof Chai) {
-  chai.Assertion.addMethod("equivalent", function(other: unknown) {
+export default function (chai: typeof Chai) {
+  chai.Assertion.addMethod("equivalent", function (other: unknown) {
     this.assert(
       this._obj.equals(other),
       "expected objects to be equivalent",
       "expected objects to not be equivalent",
       other,
       this._obj,
-      true
+      true,
     );
   });
 }

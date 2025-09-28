@@ -16,7 +16,7 @@
  */
 
 import { expect } from "chai";
-import * as React from "react";
+import React from "react";
 import * as TestUtils from "react-dom/test-utils";
 
 import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
@@ -27,15 +27,17 @@ import { Modal } from "./modal";
 
 describe("Modal", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
-      <Modal
-        title="Modal"
-        onClose={null}
-      />
+    const renderedComponent = renderIntoDocument(
+      <Modal title="Modal" onClose={null} />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("modal");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      findDOMNode(renderedComponent).className,
+      "should contain class",
+    ).to.contain("modal");
   });
-
 });

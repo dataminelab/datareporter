@@ -16,7 +16,10 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import {
+  ConcreteSeries,
+  SeriesDerivation,
+} from "../../../common/models/series/concrete-series";
 import { Delta } from "../../components/delta/delta";
 import "./total.scss";
 
@@ -25,19 +28,25 @@ interface DifferenceProps {
   series: ConcreteSeries;
 }
 
-const Difference: React.SFC<DifferenceProps> = ({ datum, series }) => {
-  return <React.Fragment>
-    <div className="measure-value measure-value--previous">
-      {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
-    </div>
-    <div className="measure-delta-value">
-      <Delta
-        previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
-        currentValue={series.selectValue(datum, SeriesDerivation.CURRENT)}
-        lowerIsBetter={series.measure.lowerIsBetter}
-        formatter={series.formatter()} />
-    </div>
-  </React.Fragment>;
+const Difference: React.FunctionComponent<DifferenceProps> = ({
+  datum,
+  series,
+}) => {
+  return (
+    <React.Fragment>
+      <div className="measure-value measure-value--previous">
+        {series.formatValue(datum, SeriesDerivation.PREVIOUS)}
+      </div>
+      <div className="measure-delta-value">
+        <Delta
+          previousValue={series.selectValue(datum, SeriesDerivation.PREVIOUS)}
+          currentValue={series.selectValue(datum, SeriesDerivation.CURRENT)}
+          lowerIsBetter={series.measure.lowerIsBetter}
+          formatter={series.formatter()}
+        />
+      </div>
+    </React.Fragment>
+  );
 };
 
 export interface TotalProps {
@@ -47,10 +56,22 @@ export interface TotalProps {
   color: string;
 }
 
-export const Total: React.SFC<TotalProps> = ({ showPrevious, datum, series, color }) => {
-  return <div className="total">
-    <div className="measure-name" title={series.title()}>{series.title()}</div>
-    <div className="measure-value" style={{ color }}>{series.formatValue(datum, SeriesDerivation.CURRENT)}</div>
-    {showPrevious && <Difference series={series} datum={datum} />}
-  </div>;
+export const Total: React.FunctionComponent<TotalProps> = ({
+  showPrevious,
+  datum,
+  series,
+  color,
+}) => {
+  if (!datum) datum = {} as Datum;
+  return (
+    <div className="total">
+      <div className="measure-name" title={series.title()}>
+        {series.title()}
+      </div>
+      <div className="measure-value" style={{ color }}>
+        {series.formatValue(datum, SeriesDerivation.CURRENT)}
+      </div>
+      {showPrevious && <Difference series={series} datum={datum} />}
+    </div>
+  );
 };

@@ -1,12 +1,11 @@
 import logging
+
 from flask import render_template
+from itsdangerous import URLSafeTimedSerializer
 
 from redash import settings
 from redash.tasks import send_mail
 from redash.utils import base_url
-
-# noinspection PyUnresolvedReferences
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 logger = logging.getLogger(__name__)
 serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
@@ -68,7 +67,6 @@ def send_password_reset_email(user):
     subject = "Reset your password"
 
     send_mail.delay([user.email], subject, html_content, text_content)
-
     return reset_link
 
 

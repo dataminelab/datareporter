@@ -1,28 +1,27 @@
+import requests
 from flask import request, url_for
-from funcy import project, partial
-
 from flask_restful import abort
+from funcy import partial, project
+from sqlalchemy.orm.exc import StaleDataError
+
 from redash import models
 from redash.handlers.base import (
     BaseResource,
+    filter_by_tags,
     get_object_or_404,
     paginate,
-    filter_by_tags,
-    order_results as _order_results,
 )
+from redash.handlers.base import order_results as _order_results
 from redash.permissions import (
     can_modify,
     require_admin_or_owner,
     require_object_modify_permission,
     require_permission,
+    require_permissions,
 )
 from redash.security import csp_allows_embeding
-from redash.serializers import (
-    DashboardSerializer,
-    public_dashboard,
-)
-from sqlalchemy.orm.exc import StaleDataError
-
+from redash.serializers import DashboardSerializer, public_dashboard
+from redash.settings import OPENAI_API_KEY
 
 # Ordering map for relationships
 order_map = {
@@ -32,9 +31,7 @@ order_map = {
     "-created_at": "-created_at",
 }
 
-order_results = partial(
-    _order_results, default_order="-created_at", allowed_orders=order_map
-)
+order_results = partial(_order_results, default_order="-created_at", allowed_orders=order_map)
 
 
 class DashboardListResource(BaseResource):
@@ -61,9 +58,7 @@ class DashboardListResource(BaseResource):
                 search_term,
             )
         else:
-            results = models.Dashboard.all(
-                self.current_org, self.current_user.group_ids, self.current_user.id
-            )
+            results = models.Dashboard.all(self.current_org, self.current_user.group_ids, self.current_user.id)
 
         results = filter_by_tags(results, models.Dashboard.tags)
 
@@ -83,9 +78,7 @@ class DashboardListResource(BaseResource):
         )
 
         if search_term:
-            self.record_event(
-                {"action": "search", "object_type": "dashboard", "term": search_term}
-            )
+            self.record_event({"action": "search", "object_type": "dashboard", "term": search_term})
         else:
             self.record_event({"action": "list", "object_type": "dashboard"})
 
@@ -106,11 +99,80 @@ class DashboardListResource(BaseResource):
             org=self.current_org,
             user=self.current_user,
             is_draft=True,
-            layout="[]",
+            layout=[],
         )
         models.db.session.add(dashboard)
         models.db.session.commit()
         return DashboardSerializer(dashboard).serialize()
+
+
+class MyDashboardsResource(BaseResource):
+    @require_permission("list_dashboards")
+    def get(self):
+        """
+        Retrieve a list of dashboards created by the current user.
+
+        :qparam number page_size: Number of dashboards to return per page
+        :qparam number page: Page number to retrieve
+        :qparam number order: Name of column to order by
+        :qparam number search: Full text search term
+
+        Responds with an array of :ref:`dashboard <dashboard-response-label>`
+        objects.
+        """
+        search_term = request.args.get("q", "")
+        if search_term:
+            results = models.Dashboard.search_by_user(search_term, self.current_user)
+        else:
+            results = models.Dashboard.by_user(self.current_user)
+
+        results = filter_by_tags(results, models.Dashboard.tags)
+
+        # order results according to passed order parameter,
+        # special-casing search queries where the database
+        # provides an order by search rank
+        ordered_results = order_results(results, fallback=not bool(search_term))
+
+        page = request.args.get("page", 1, type=int)
+        page_size = request.args.get("page_size", 25, type=int)
+        return paginate(ordered_results, page, page_size, DashboardSerializer)
+
+
+class DashboardPromptResource(BaseResource):
+    @require_permissions(["edit_dashboard", "ai:ask"])
+    def post(self, dashboard_id):
+        """
+        Retrieve a prompt for a dashboard.
+
+        :param dashboard_id: The numeric ID of the dashboard to retrieve the prompt for.
+        :>json string prompt: The prompt text for the dashboard.
+        """
+        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
+        require_object_modify_permission(dashboard, self.current_user)
+
+        data = request.get_json(force=True)
+        messages = data.get("messages", [])
+
+        if not messages or not isinstance(messages, list):
+            abort(400, message="Missing or invalid 'messages' in request body.")
+
+        headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
+        payload = {
+            "model": "gpt-3.5-turbo",
+            "messages": messages,
+        }
+
+        openai_response = requests.post(
+            "https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=30
+        )
+
+        if openai_response.status_code != 200:
+            abort(502, message="Failed to get response from OpenAI.")
+
+        openai_data = openai_response.json()
+        prompt = openai_data["choices"][0]["message"]["content"]
+
+        return {"prompt": prompt}
 
 
 class DashboardResource(BaseResource):
@@ -123,18 +185,20 @@ class DashboardResource(BaseResource):
 
         .. _dashboard-response-label:
 
-        :>json number id: Dashboard ID
-        :>json string name:
-        :>json string slug:
-        :>json number user_id: ID of the dashboard creator
-        :>json string created_at: ISO format timestamp for dashboard creation
-        :>json string updated_at: ISO format timestamp for last dashboard modification
-        :>json number version: Revision number of dashboard
-        :>json boolean dashboard_filters_enabled: Whether filters are enabled or not
-        :>json boolean is_archived: Whether this dashboard has been removed from the index or not
-        :>json boolean is_draft: Whether this dashboard is a draft or not.
-        :>json array layout: Array of arrays containing widget IDs, corresponding to the rows and columns the widgets are displayed in
-        :>json array widgets: Array of arrays containing :ref:`widget <widget-response-label>` data
+        - json number id: Dashboard ID
+        - json string name:
+        - json string slug:
+        - json number user_id: ID of the dashboard creator
+        - json string created_at: ISO format timestamp for dashboard creation
+        - json string updated_at: ISO format timestamp for last dashboard modification
+        - json number version: Revision number of dashboard
+        - json boolean dashboard_filters_enabled: Whether filters are enabled or not
+        - json boolean is_archived: Whether this dashboard has been removed from the index or not
+        - json boolean is_draft: Whether this dashboard is a draft or not.
+        - json array layout: Array of arrays containing widget IDs,
+            corresponding to the rows and columns the widgets are displayed in
+        - json array widgets: Array of arrays containing :ref:`widget <widget-response-label>` data
+        - json object options: Dashboard options
 
         .. _widget-response-label:
 
@@ -155,9 +219,7 @@ class DashboardResource(BaseResource):
             fn = models.Dashboard.get_by_id_and_org
 
         dashboard = get_object_or_404(fn, dashboard_id, self.current_org)
-        response = DashboardSerializer(
-            dashboard, with_widgets=True, user=self.current_user
-        ).serialize()
+        response = DashboardSerializer(dashboard, with_widgets=True, user=self.current_user).serialize()
 
         api_key = models.ApiKey.get_by_object(dashboard)
         if api_key:
@@ -171,9 +233,7 @@ class DashboardResource(BaseResource):
 
         response["can_edit"] = can_modify(dashboard, self.current_user)
 
-        self.record_event(
-            {"action": "view", "object_id": dashboard.id, "object_type": "dashboard"}
-        )
+        self.record_event({"action": "view", "object_id": dashboard.id, "object_type": "dashboard"})
 
         return response
 
@@ -205,6 +265,7 @@ class DashboardResource(BaseResource):
                 "is_draft",
                 "is_archived",
                 "dashboard_filters_enabled",
+                "options",
             ),
         )
 
@@ -223,13 +284,9 @@ class DashboardResource(BaseResource):
         except StaleDataError:
             abort(409)
 
-        result = DashboardSerializer(
-            dashboard, with_widgets=True, user=self.current_user
-        ).serialize()
+        result = DashboardSerializer(dashboard, with_widgets=True, user=self.current_user).serialize()
 
-        self.record_event(
-            {"action": "edit", "object_id": dashboard.id, "object_type": "dashboard"}
-        )
+        self.record_event({"action": "edit", "object_id": dashboard.id, "object_type": "dashboard"})
 
         return result
 
@@ -246,28 +303,28 @@ class DashboardResource(BaseResource):
         dashboard.is_archived = True
         dashboard.record_changes(changed_by=self.current_user)
         models.db.session.add(dashboard)
-        d = DashboardSerializer(
-            dashboard, with_widgets=True, user=self.current_user
-        ).serialize()
+        d = DashboardSerializer(dashboard, with_widgets=True, user=self.current_user).serialize()
         models.db.session.commit()
 
-        self.record_event(
-            {"action": "archive", "object_id": dashboard.id, "object_type": "dashboard"}
-        )
+        self.record_event({"action": "archive", "object_id": dashboard.id, "object_type": "dashboard"})
 
         return d
 
 
 class PublicDashboardResource(BaseResource):
-    decorators = BaseResource.decorators + [csp_allows_embeding]
+    decorators = [csp_allows_embeding]
 
     def get(self, token):
         """
         Retrieve a public dashboard.
 
         :param token: An API key for a public dashboard.
-        :>json array widgets: An array of arrays of :ref:`public widgets <public-widget-label>`, corresponding to the rows and columns the widgets are displayed in
+        - json array widgets: An array of arrays of :ref:`public widgets <public-widget-label>`,
+            corresponding to the rows and columns the widgets are displayed in
         """
+        if self.current_org.get_setting("disable_public_urls"):
+            abort(400, message="Public URLs are disabled.")
+
         if not isinstance(self.current_user, models.ApiUser):
             api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
             dashboard = api_key.object
@@ -298,6 +355,10 @@ class DashboardShareResource(BaseResource):
             org_slug=self.current_org.slug,
             _external=True,
         )
+        # get p_turnilo_daterange argument in the URL using request.args.get
+        p_turnilo_daterange = request.args.get("p_turnilo_daterange", None)
+        if p_turnilo_daterange:
+            public_url = f"{public_url}?p_turnilo_daterange={p_turnilo_daterange}"
 
         self.record_event(
             {
@@ -354,9 +415,7 @@ class DashboardFavoriteListResource(BaseResource):
                 self.current_user.id,
                 search_term,
             )
-            favorites = models.Dashboard.favorites(
-                self.current_user, base_query=base_query
-            )
+            favorites = models.Dashboard.favorites(self.current_user, base_query=base_query)
         else:
             favorites = models.Dashboard.favorites(self.current_user)
 
@@ -385,3 +444,16 @@ class DashboardFavoriteListResource(BaseResource):
         )
 
         return response
+
+
+class DashboardForkResource(BaseResource):
+    @require_permission("edit_dashboard")
+    def post(self, dashboard_id):
+        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
+
+        fork_dashboard = dashboard.fork(self.current_user)
+        models.db.session.commit()
+
+        self.record_event({"action": "fork", "object_id": dashboard_id, "object_type": "dashboard"})
+
+        return DashboardSerializer(fork_dashboard, with_widgets=True).serialize()

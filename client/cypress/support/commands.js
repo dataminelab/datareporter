@@ -2,41 +2,48 @@
 
 import "@percy/cypress"; // eslint-disable-line import/no-extraneous-dependencies, import/no-unresolved
 
+import "@testing-library/cypress/add-commands";
+
 const { each } = Cypress._;
 
-Cypress.Commands.add("login", (email = "admin@redash.io", password = "password") => {
-  let csrf;
-  cy.visit("/login");
-  cy.getCookie("csrf_token")
-    .then(cookie => {
-      if (cookie) {
-        csrf = cookie.value;
-      } else {
-        cy.visit("/login").then(() => {
-          cy.get('input[name="csrf_token"]')
-            .invoke("val")
-            .then(csrf_token => {
-              csrf = csrf_token;
-            });
+Cypress.Commands.add(
+  "login",
+  (email = "admin@redash.io", password = "password") => {
+    let csrf;
+    cy.visit("/login");
+    cy.getCookie("csrf_token")
+      .then(cookie => {
+        if (cookie) {
+          csrf = cookie.value;
+        } else {
+          cy.visit("/login").then(() => {
+            cy.get('input[name="csrf_token"]')
+              .invoke("val")
+              .then(csrf_token => {
+                csrf = csrf_token;
+              });
+          });
+        }
+      })
+      .then(() => {
+        cy.request({
+          url: "/login",
+          method: "POST",
+          form: true,
+          body: {
+            email,
+            password,
+            csrf_token: csrf,
+          },
         });
-      }
-    })
-    .then(() => {
-      cy.request({
-        url: "/login",
-        method: "POST",
-        form: true,
-        body: {
-          email,
-          password,
-          csrf_token: csrf,
-        },
       });
-    });
-});
+  },
+);
 
 Cypress.Commands.add("logout", () => cy.visit("/logout"));
-Cypress.Commands.add("getByTestId", element => cy.get('[data-test="' + element + '"]'));
+Cypress.Commands.add("getByTestId", element =>
+  cy.get('[data-test="' + element + '"]'),
+);
 
 /* Clicks a series of elements. Pass in a newline-seperated string in order to click all elements by their test id,
  or enclose the above string in an object with 'button' as key to click the buttons by name. For example:
@@ -57,45 +64,57 @@ Cypress.Commands.add("clickThrough", (...args) => {
     const names = elements.button || elements;
 
     const click = element =>
-      (elements.button ? cy.contains("button", element.trim()) : cy.getByTestId(element.trim())).click();
+      (elements.button
+        ? cy.contains("button", element.trim())
+        : cy.getByTestId(element.trim())
+      ).click();
 
-    names
-      .trim()
-      .split(/\n/)
-      .filter(Boolean)
-      .forEach(click);
+    names.trim().split(/\n/).filter(Boolean).forEach(click);
   });
 
   return undefined;
 });
 
+/**
+ * Selects ANTD selector option
+ */
+Cypress.Commands.add(
+  "selectAntdOption",
+  { prevSubject: "element" },
+  (subject, testId) => {
+    cy.wrap(subject).click();
+    return cy.getByTestId(testId).click({ force: true });
+  },
+);
+
 Cypress.Commands.add("fillInputs", (elements, { wait = 0 } = {}) => {
   each(elements, (value, testId) => {
-    cy.getByTestId(testId)
-      .filter(":visible")
-      .clear()
-      .type(value);
+    cy.getByTestId(testId).filter(":visible").clear();
+    cy.getByTestId(testId).filter(":visible").type(value);
     if (wait > 0) {
       cy.wait(wait); // eslint-disable-line cypress/no-unnecessary-waiting
     }
   });
 });
 
-Cypress.Commands.add("dragBy", { prevSubject: true }, (subject, offsetLeft, offsetTop, force = false) => {
-  if (!offsetLeft) {
-    offsetLeft = 1;
-  }
-  if (!offsetTop) {
-    offsetTop = 1;
-  }
-  return cy
-    .wrap(subject)
-    .trigger("mouseover", { force })
-    .trigger("mousedown", "topLeft", { force })
-    .trigger("mousemove", 1, 1, { force }) // must have at least 2 mousemove events for react-grid-layout to trigger onLayoutChange
-    .trigger("mousemove", offsetLeft, offsetTop, { force })
-    .trigger("mouseup", { force });
-});
+Cypress.Commands.add(
+  "dragBy",
+  { prevSubject: true },
+  (subject, offsetLeft, offsetTop, force = false) => {
+    if (!offsetLeft) {
+      offsetLeft = 1;
+    }
+    if (!offsetTop) {
+      offsetTop = 1;
+    }
+    cy.wrap(subject).trigger("mouseover", { force });
+    cy.wrap(subject).trigger("mousedown", "topLeft", { force });
+    cy.wrap(subject).trigger("mousemove", 1, 1, { force }); // must have at least 2 mousemove events for react-grid-layout to trigger onLayoutChange
+    cy.wrap(subject).trigger("mousemove", offsetLeft, offsetTop, { force });
+    cy.wrap(subject).trigger("mouseup", { force });
+    return cy.wrap(subject);
+  },
+);
 
 Cypress.Commands.add("all", (...functions) => {
   if (Cypress._.isEmpty(functions)) {

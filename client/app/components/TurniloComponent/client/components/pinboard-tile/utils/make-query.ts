@@ -24,27 +24,43 @@ import { QueryParams } from "./query-params";
 
 const TOP_N = 100;
 
-function filterExpression({ essence, searchText, timekeeper, dimension }: QueryParams): Expression {
-
+function filterExpression({
+  essence,
+  searchText,
+  timekeeper,
+  dimension,
+}: QueryParams): Expression {
   const expression = essence
     .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
     .toExpression(essence.dataCube);
   if (!searchText) return expression;
-  return expression.and(dimension.expression.contains(r(searchText), "ignoreCase"));
+  return expression.and(
+    dimension.expression.contains(r(searchText), "ignoreCase"),
+  );
 }
 
-function insertSortReferenceExpression({ essence, sortOn, timekeeper }: QueryParams) {
+function insertSortReferenceExpression({
+  essence,
+  sortOn,
+  timekeeper,
+}: QueryParams) {
   const sortSeries = essence.findConcreteSeries(sortOn.key);
   return (query: Expression): Expression => {
     if (!sortSeries) return query;
     return query
-      .apply(CANONICAL_LENGTH_ID, timeFilterCanonicalLength(essence, timekeeper))
-      .performAction(sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }));
+      .apply(
+        CANONICAL_LENGTH_ID,
+        timeFilterCanonicalLength(essence, timekeeper),
+      )
+      .performAction(
+        sortSeries.plywoodExpression(0, { type: TimeShiftEnvType.CURRENT }),
+      );
   };
 }
 
 function applySort(sortOn: SortOn) {
-  return (query: Expression) => query.sort($(sortOn.key), SortExpression.DESCENDING);
+  return (query: Expression) =>
+    query.sort($(sortOn.key), SortExpression.DESCENDING);
 }
 
 function limit(query: Expression): Expression {
@@ -60,6 +76,6 @@ export function makeQuery(params: QueryParams): Expression {
       .split(dimension.expression, dimension.name),
     insertSortReferenceExpression(params),
     applySort(sortOn),
-    limit
+    limit,
   );
 }

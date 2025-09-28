@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import { BaseImmutable, NamedArray, Property, PropertyType } from "immutable-class";
+import {
+  BaseImmutable,
+  NamedArray,
+  Property,
+  PropertyType,
+} from "immutable-class";
 import { TimeTag, TimeTagJS } from "../time-tag/time-tag";
 
 // I am: export * from './timekeeper/timekeeper';
@@ -42,17 +47,24 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
   static fromJS(parameters: TimekeeperJS): Timekeeper {
-    return new Timekeeper(BaseImmutable.jsToValue(Timekeeper.PROPERTIES, parameters));
+    return new Timekeeper(
+      BaseImmutable.jsToValue(Timekeeper.PROPERTIES, parameters),
+    );
   }
 
   static PROPERTIES: Property[] = [
-    { name: "timeTags", type: PropertyType.ARRAY, immutableClassArray: TimeTag },
-    { name: "nowOverride", type: PropertyType.DATE, defaultValue: null }
+    {
+      name: "timeTags",
+      type: PropertyType.ARRAY,
+      immutableClassArray: TimeTag,
+    },
+    { name: "nowOverride", type: PropertyType.DATE, defaultValue: null },
   ];
 
   public timeTags: TimeTag[];
   public nowOverride: Date;
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(parameters: TimekeeperValue) {
     super(parameters);
   }
@@ -62,31 +74,33 @@ export class Timekeeper extends BaseImmutable<TimekeeperValue, TimekeeperJS> {
   }
 
   getTime(name: string): Date {
-    var timeTag = NamedArray.findByName(this.timeTags, name);
+    const timeTag = NamedArray.findByName(this.timeTags, name);
     if (!timeTag || timeTag.special === "realtime") return this.now();
     return timeTag.time || this.now();
   }
 
   updateTime(name: string, time: Date): Timekeeper {
-    var value = this.valueOf();
-    var tag = NamedArray.findByName(value.timeTags, name);
+    const value = this.valueOf();
+    const tag = NamedArray.findByName(value.timeTags, name);
     if (!tag) return this;
-    value.timeTags = NamedArray.overrideByName(value.timeTags, tag.changeTime(time, this.now()));
+    value.timeTags = NamedArray.overrideByName(
+      value.timeTags,
+      tag.changeTime(time, this.now()),
+    );
     return new Timekeeper(value);
   }
 
   addTimeTagFor(name: string): Timekeeper {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.timeTags = value.timeTags.concat(new TimeTag({ name }));
     return new Timekeeper(value);
   }
 
   removeTimeTagFor(name: string): Timekeeper {
-    var value = this.valueOf();
+    const value = this.valueOf();
     value.timeTags = value.timeTags.filter(tag => tag.name !== name);
     return new Timekeeper(value);
   }
-
 }
 
 BaseImmutable.finalize(Timekeeper);

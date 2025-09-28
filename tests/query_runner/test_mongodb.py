@@ -1,15 +1,41 @@
 import datetime
 from unittest import TestCase
 
-from pytz import utc
 from freezegun import freeze_time
+from mock import patch
+from pytz import utc
 
 from redash.query_runner.mongodb import (
+    MongoDB,
+    _get_column_by_name,
     parse_query_json,
     parse_results,
-    _get_column_by_name,
 )
 from redash.utils import json_dumps, parse_human_time
+
+
+@patch("redash.query_runner.mongodb.pymongo.MongoClient")
+class TestUserPassOverride(TestCase):
+    def test_username_password_present_overrides_username_from_uri(self, mongo_client):
+        config = {
+            "connectionString": "mongodb://localhost:27017/test",
+            "username": "test_user",
+            "password": "test_pass",
+            "dbName": "test",
+        }
+        mongo_qr = MongoDB(config)
+        _ = mongo_qr._get_db()
+
+        self.assertIn("username", mongo_client.call_args.kwargs)
+        self.assertIn("password", mongo_client.call_args.kwargs)
+
+    def test_username_password_absent_does_not_pass_args(self, mongo_client):
+        config = {"connectionString": "mongodb://user:pass@localhost:27017/test", "dbName": "test"}
+        mongo_qr = MongoDB(config)
+        _ = mongo_qr._get_db()
+
+        self.assertNotIn("username", mongo_client.call_args.kwargs)
+        self.assertNotIn("password", mongo_client.call_args.kwargs)
 
 
 class TestParseQueryJson(TestCase):
@@ -29,9 +55,7 @@ class TestParseQueryJson(TestCase):
 
         query_data = parse_query_json(json_dumps(query))
 
-        self.assertEqual(
-            query_data["testIsoDate"], datetime.datetime(2014, 10, 3, 0, 0)
-        )
+        self.assertEqual(query_data["testIsoDate"], datetime.datetime(2014, 10, 3, 0, 0))
 
     def test_parses_isodate_in_nested_fields(self):
         query = {
@@ -43,12 +67,8 @@ class TestParseQueryJson(TestCase):
 
         query_data = parse_query_json(json_dumps(query))
 
-        self.assertEqual(
-            query_data["testIsoDate"], datetime.datetime(2014, 10, 3, 0, 0)
-        )
-        self.assertEqual(
-            query_data["test_dict"]["b"]["date"], datetime.datetime(2014, 10, 4, 0, 0)
-        )
+        self.assertEqual(query_data["testIsoDate"], datetime.datetime(2014, 10, 3, 0, 0))
+        self.assertEqual(query_data["test_dict"]["b"]["date"], datetime.datetime(2014, 10, 4, 0, 0))
 
     def test_handles_nested_fields(self):
         # https://github.com/getredash/redash/issues/597
@@ -121,15 +141,19 @@ class TestMongoResults(TestCase):
                 "column": 2,
                 "column2": "test",
                 "column3": "hello",
-                "nested": {"a": 2, "b": "str2", "c": "c"},
+                "nested": {
+                    "a": 2,
+                    "b": "str2",
+                    "c": "c",
+                    "d": {"e": 3},
+                    "f": {"h": {"i": ["j", "k", "l"]}},
+                },
             },
         ]
 
         rows, columns = parse_results(raw_results)
 
-        self.assertDictEqual(
-            rows[0], {"column": 1, "column2": "test", "nested.a": 1, "nested.b": "str"}
-        )
+        self.assertDictEqual(rows[0], {"column": 1, "column2": "test", "nested.a": 1, "nested.b": "str"})
         self.assertDictEqual(
             rows[1],
             {
@@ -139,6 +163,8 @@ class TestMongoResults(TestCase):
                 "nested.a": 2,
                 "nested.b": "str2",
                 "nested.c": "c",
+                "nested.d.e": 3,
+                "nested.f.h.i": ["j", "k", "l"],
             },
         )
 
@@ -148,3 +174,49 @@ class TestMongoResults(TestCase):
         self.assertIsNotNone(_get_column_by_name(columns, "nested.a"))
         self.assertIsNotNone(_get_column_by_name(columns, "nested.b"))
         self.assertIsNotNone(_get_column_by_name(columns, "nested.c"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.d.e"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.f.h.i"))
+
+    def test_parses_flatten_nested_results(self):
+        raw_results = [
+            {
+                "column": 2,
+                "column2": "test",
+                "column3": "hello",
+                "nested": {
+                    "a": 2,
+                    "b": "str2",
+                    "c": "c",
+                    "d": {"e": 3},
+                    "f": {"h": {"i": ["j", "k", "l"]}},
+                },
+            }
+        ]
+
+        rows, columns = parse_results(raw_results, flatten=True)
+        self.assertDictEqual(
+            rows[0],
+            {
+                "column": 2,
+                "column2": "test",
+                "column3": "hello",
+                "nested.a": 2,
+                "nested.b": "str2",
+                "nested.c": "c",
+                "nested.d.e": 3,
+                "nested.f.h.i.0": "j",
+                "nested.f.h.i.1": "k",
+                "nested.f.h.i.2": "l",
+            },
+        )
+
+        self.assertIsNotNone(_get_column_by_name(columns, "column"))
+        self.assertIsNotNone(_get_column_by_name(columns, "column2"))
+        self.assertIsNotNone(_get_column_by_name(columns, "column3"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.a"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.b"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.c"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.d.e"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.f.h.i.0"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.f.h.i.1"))
+        self.assertIsNotNone(_get_column_by_name(columns, "nested.f.h.i.2"))

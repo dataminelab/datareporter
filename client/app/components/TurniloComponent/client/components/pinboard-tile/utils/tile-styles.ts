@@ -15,8 +15,15 @@
  */
 
 import * as React from "react";
-import { DatasetLoad, isLoaded } from "../../../../common/models/visualization-props/visualization-props";
-import { PIN_ITEM_HEIGHT, PIN_PADDING_BOTTOM, PIN_TITLE_HEIGHT } from "../../../config/constants";
+import {
+  DatasetLoad,
+  isLoaded,
+} from "../../../../common/models/visualization-props/visualization-props";
+import {
+  PIN_ITEM_HEIGHT,
+  PIN_PADDING_BOTTOM,
+  PIN_TITLE_HEIGHT,
+} from "../../../config/constants";
 
 export function tileStyles(datasetLoad: DatasetLoad): React.CSSProperties {
   const topOffset = PIN_TITLE_HEIGHT + PIN_PADDING_BOTTOM;

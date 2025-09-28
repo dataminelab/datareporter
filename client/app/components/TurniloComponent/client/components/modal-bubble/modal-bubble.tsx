@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, isInside } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
@@ -30,7 +30,6 @@ interface ModalProps {
 }
 
 export class ModalBubble extends React.Component<ModalProps, {}> {
-
   modalRef: HTMLDivElement;
 
   setModalRef = (el: HTMLDivElement) => {
@@ -45,14 +44,19 @@ export class ModalBubble extends React.Component<ModalProps, {}> {
 
   render() {
     const { className, children, left, top } = this.props;
-    return <React.Fragment>
-      <GlobalEventListener mouseDown={this.onMouseDown} />
-      <BodyPortal left={left} top={top}>
-        <div className={classNames("modal-bubble", className)} ref={this.setModalRef}>
-          {children}
-          <Shpitz direction="up" />
-        </div>
-      </BodyPortal>
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <GlobalEventListener mouseDown={this.onMouseDown} />
+        <BodyPortal left={left} top={top}>
+          <div
+            className={classNames("modal-bubble", className)}
+            ref={this.setModalRef}
+          >
+            {children}
+            <Shpitz direction="up" />
+          </div>
+        </BodyPortal>
+      </React.Fragment>
+    );
   }
 }

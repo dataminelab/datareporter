@@ -25,18 +25,21 @@ import { RangeHandle } from "./range-handle";
 
 describe("RangeHandle", () => {
   it("adds the correct class", () => {
-
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <RangeHandle
         positionLeft={20}
-        onChange={() => {
-        }}
+        onChange={() => {}}
         isAny={false}
         offset={600}
-
-      />
+      />,
     );
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("range-handle");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      findDOMNode(renderedComponent).className,
+      "should contain class",
+    ).to.contain("range-handle");
   });
 });

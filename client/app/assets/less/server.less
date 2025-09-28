@@ -1,29 +1,34 @@
 /** LESS Plugins **/
-@import 'inc/less-plugins/for';
+@import "inc/less-plugins/for";
 
 /** Load Main Bootstrap LESS files **/
-@import '~bootstrap/less/bootstrap';
-@import '~material-design-iconic-font/dist/css/material-design-iconic-font.css';
+@import "~bootstrap/less/bootstrap";
+@import "~material-design-iconic-font/dist/css/material-design-iconic-font.css";
 
-@import 'inc/variables';
-@import 'inc/mixins';
-@import 'inc/font';
-@import 'inc/print';
+@import "inc/variables";
+@import "inc/mixins";
+@import "inc/font";
+@import "inc/print";
 
-@import 'inc/bootstrap-overrides';
-@import 'inc/base';
-@import 'inc/generics';
-@import 'inc/form';
-@import 'inc/button';
-@import 'inc/404';
-@import 'inc/ie-warning';
-@import 'inc/flex';
+@import "inc/bootstrap-overrides";
+@import "inc/base";
+@import "inc/generics";
+@import "inc/form";
+@import "inc/button";
+@import "inc/404";
+@import "inc/ie-warning";
+@import "inc/flex";
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background: #F6F8F9;
+  background: #f6f8f9;
+}
+
+.signed-out {
+  width: auto;
 }
 
 .logo {
@@ -80,8 +85,4 @@ hr {
     display: inline-block;
     height: 25px;
   }
-}
-
-.radio > ul {
-  padding-left: 20px;
 }

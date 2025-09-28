@@ -41,6 +41,15 @@ export function SortableContainer({ disabled, containerComponent, containerProps
         updateBeforeSortStart(...args);
       }
     });
+    wrapperProps.onSortStart = wrap(wrapperProps.onSortStart, (onSortStart, ...args) => {
+      if (isFunction(onSortStart)) {
+        onSortStart(...args);
+      } else {
+        const event = args[1];
+        event.preventDefault();
+      }
+    });
+
     wrapperProps.onSortEnd = wrap(wrapperProps.onSortEnd, (onSortEnd, ...args) => {
       setIsDragging(false);
       if (isFunction(onSortEnd)) {

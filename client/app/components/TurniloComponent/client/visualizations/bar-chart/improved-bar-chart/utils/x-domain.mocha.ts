@@ -40,7 +40,7 @@ describe("getXDomain", () => {
         { "dummy-ref": "foo" },
         { "dummy-ref": "bar" },
         { "dummy-ref": "bazz" },
-        { "dummy-ref": "qvux" }
+        { "dummy-ref": "qvux" },
       ]);
   });
 

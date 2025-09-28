@@ -29,7 +29,7 @@ const mockQueryParams = (): QueryParams => ({
   dimension: wikiTime,
   timekeeper: Timekeeper.EMPTY,
   searchText: "search",
-  sortOn: SortOnFixtures.defaultA()
+  sortOn: SortOnFixtures.defaultA(),
 });
 
 describe("QueryParams", () => {
@@ -41,7 +41,10 @@ describe("QueryParams", () => {
 
     it("should return false if dimension is different", () => {
       const params = mockQueryParams();
-      const changedDimension = { ...params, dimension: DimensionFixtures.countryURL() };
+      const changedDimension = {
+        ...params,
+        dimension: DimensionFixtures.countryURL(),
+      };
       expect(equalParams(params, changedDimension)).to.be.false;
     });
 
@@ -53,7 +56,10 @@ describe("QueryParams", () => {
     });
     it("should return false if essence is different", () => {
       const params = mockQueryParams();
-      const changedEssence = { ...params, essence: EssenceFixtures.wikiLineChart() };
+      const changedEssence = {
+        ...params,
+        essence: EssenceFixtures.wikiLineChart(),
+      };
       expect(equalParams(params, changedEssence)).to.be.false;
     });
     it("should return false if searchText is different", () => {

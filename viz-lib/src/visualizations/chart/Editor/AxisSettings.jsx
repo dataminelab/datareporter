@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { useDebouncedCallback } from "use-debounce";
 import * as Grid from "antd/lib/grid";
-import { Section, Select, Input, InputNumber } from "@/components/visualizations/editor";
+import { Section, Select, Input, InputNumber, ContextHelp } from "@/components/visualizations/editor";
 
 function toNumber(value) {
   value = isNumber(value) ? value : parseFloat(value);
@@ -22,6 +22,8 @@ export default function AxisSettings({ id, options, features, onChange }) {
 
   const [handleMinMaxChange] = useDebouncedCallback(opts => optionsChanged(opts), 200);
 
+  const [handleTickFormatChange] = useDebouncedCallback(opts => optionsChanged(opts), 200);
+
   return (
     <React.Fragment>
       <Section>
@@ -29,7 +31,7 @@ export default function AxisSettings({ id, options, features, onChange }) {
           label="Scale"
           data-test={`Chart.${id}.Type`}
           defaultValue={options.type}
-          onChange={type => optionsChanged({ type })}>
+          onChange={(type) => optionsChanged({ type })}>
           {features.autoDetectType && (
             <Select.Option value="-" data-test={`Chart.${id}.Type.Auto`}>
               Auto Detect
@@ -55,7 +57,21 @@ export default function AxisSettings({ id, options, features, onChange }) {
           label="Name"
           data-test={`Chart.${id}.Name`}
           defaultValue={isObject(options.title) ? options.title.text : null}
-          onChange={event => handleNameChange(event.target.value)}
+          onChange={(event) => handleNameChange(event.target.value)}
+        />
+      </Section>
+
+      <Section>
+        <Input
+          label={
+            <React.Fragment>
+              Tick Format
+              <ContextHelp.TickFormatSpecs />
+            </React.Fragment>
+          }
+          data-test={`Chart.${id}.TickFormat`}
+          defaultValue={options.tickFormat}
+          onChange={(event) => handleTickFormatChange({ tickFormat: event.target.value })}
         />
       </Section>
 
@@ -68,7 +84,7 @@ export default function AxisSettings({ id, options, features, onChange }) {
                 placeholder="Auto"
                 data-test={`Chart.${id}.RangeMin`}
                 defaultValue={toNumber(options.rangeMin)}
-                onChange={value => handleMinMaxChange({ rangeMin: toNumber(value) })}
+                onChange={(value) => handleMinMaxChange({ rangeMin: toNumber(value) })}
               />
             </Grid.Col>
             <Grid.Col span={12}>
@@ -77,7 +93,7 @@ export default function AxisSettings({ id, options, features, onChange }) {
                 placeholder="Auto"
                 data-test={`Chart.${id}.RangeMax`}
                 defaultValue={toNumber(options.rangeMax)}
-                onChange={value => handleMinMaxChange({ rangeMax: toNumber(value) })}
+                onChange={(value) => handleMinMaxChange({ rangeMax: toNumber(value) })}
               />
             </Grid.Col>
           </Grid.Row>

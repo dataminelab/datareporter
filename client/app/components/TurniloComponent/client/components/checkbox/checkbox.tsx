@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { classNames } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./checkbox.scss";
@@ -31,13 +31,12 @@ export interface CheckboxProps {
   className?: string;
 }
 
-export interface CheckboxState {
-}
+// eslint-disable-next-line
+export interface CheckboxState {}
 
 export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
-
   static defaultProps: Partial<CheckboxProps> = {
-    type: "check"
+    type: "check",
   };
 
   renderIcon() {
@@ -54,15 +53,20 @@ export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
   render() {
     const { onClick, type, color, selected, label, className } = this.props;
 
-    var style: React.CSSProperties = null;
+    let style: React.CSSProperties = null;
     if (color) {
       style = { background: color };
     }
 
-    return <div className={classNames("checkbox", type, className, { selected, color })} onClick={onClick}>
-      <div className="checkbox-body" style={style}></div>
-      {this.renderIcon()}
-      {label ? <div className="label">{label}</div> : null}
-    </div>;
+    return (
+      <div
+        className={classNames("checkbox", type, className, { selected, color })}
+        onClick={onClick}
+      >
+        <div className="checkbox-body" style={style} />
+        {this.renderIcon()}
+        {label ? <div className="label">{label}</div> : null}
+      </div>
+    );
   }
 }

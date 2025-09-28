@@ -1,26 +1,18 @@
 from unittest import mock
 
+from redash.models import db
 from redash.models.models import ModelConfig
 from tests import BaseTestCase
-from redash.models import db
 
 
 class TestModelsCreateResource(BaseTestCase):
-
     def test_user_without_model_permission(self):
-        group1 = self.factory.create_group(
-            org=self.factory.create_org(), permissions=[""]
-        )
+        group1 = self.factory.create_group(org=self.factory.create_org(), permissions=[""])
         db.session.flush()
-        user = self.factory.create_user(
-            group_ids=[group1.id]
-        )
+        user = self.factory.create_user(group_ids=[group1.id])
         db.session.flush()
         response = self.make_request(
-            "post",
-            "/api/models",
-            data={"name": "Test Model", "data_source_id": 1, 'table': 'users'},
-            user=user
+            "post", "/api/models", data={"name": "Test Model", "data_source_id": 1, "table": "users"}, user=user
         )
 
         self.assertEqual(403, response.status_code)
@@ -32,10 +24,7 @@ class TestModelsCreateResource(BaseTestCase):
         db.session.commit()
 
         response = self.make_request(
-            "post",
-            "/api/models",
-            data={"name": "Test Model", "data_source_id": 1000},
-            user=user
+            "post", "/api/models", data={"name": "Test Model", "data_source_id": 1000}, user=user
         )
 
         self.assertEqual(400, response.status_code)
@@ -126,10 +115,10 @@ class TestModelsCreateResource(BaseTestCase):
         response = self.make_request(
             "post",
             "/api/models",
-            data={"name": "Test Model", "data_source_id": data_source.id, "table": "models", 'content': content},
-            user=user
+            data={"name": "Test Model", "data_source_id": data_source.id, "table": "models", "content": content},
+            user=user,
         )
-        config_id = response.json['model_config_id']
+        config_id = response.json["model_config_id"]
         config: ModelConfig = ModelConfig.query.get(config_id)
 
         self.assertEqual(200, response.status_code)
@@ -145,7 +134,7 @@ class TestModelsCreateResource(BaseTestCase):
             "post",
             "/api/models",
             data={"name": "Test Model", "data_source_id": 1000, "table": "wikitracker"},
-            user=user
+            user=user,
         )
 
         self.assertEqual(404, response.status_code)
@@ -163,14 +152,13 @@ class TestModelsCreateResource(BaseTestCase):
             "post",
             "/api/models",
             data={"name": "Test Model", "data_source_id": data_source.id, "table": "models"},
-            user=user
+            user=user,
         )
 
         self.assertEqual(200, response.status_code)
 
 
 class TestModelsListResource(BaseTestCase):
-
     def test_user_without_view_model_permission(self):
         response = self.make_request("get", "/api/models", user=self.factory.create_user(group_ids=[3]))
 
@@ -194,7 +182,7 @@ class TestModelsListResource(BaseTestCase):
         user = self.factory.create_admin(group_ids=[group.id])
         db.session.commit()
         model_1 = self.factory.create_model(user=user)
-        model_2 = self.factory.create_model(user=user)
+        self.factory.create_model(user=user)
         db.session.commit()
 
         response = self.make_request("get", f"/api/models?data_source={model_1.data_source_id}", user=user)
@@ -209,13 +197,12 @@ class TestModelsListResource(BaseTestCase):
         self.factory.create_model(user=user)
         self.factory.create_model(user=user)
         db.session.commit()
-        response = self.make_request("get", f"/api/models?data_source=10", user=user)
+        response = self.make_request("get", "/api/models?data_source=10", user=user)
 
         assert len(response.json["results"]) == 0
 
 
 class TestModelsGetResource(BaseTestCase):
-
     def test_requires_user_with_view_model(self):
         group = self.factory.create_group(permissions=["view_model"])
         db.session.commit()
@@ -241,7 +228,6 @@ class TestModelsGetResource(BaseTestCase):
 
 
 class TestModelsEditResource(BaseTestCase):
-
     def test_requires_owner_or_admin(self):
         group = self.factory.create_group(permissions=["edit_model"])
         db.session.commit()
@@ -252,12 +238,7 @@ class TestModelsEditResource(BaseTestCase):
         db.session.flush()
 
         response = self.make_request(
-            "post",
-            "/api/models/{}".format(model.id),
-            user=current_user,
-            data={
-                "name": "New Test Model Name"
-            }
+            "post", "/api/models/{}".format(model.id), user=current_user, data={"name": "New Test Model Name"}
         )
 
         self.assertEqual(403, response.status_code)
@@ -272,12 +253,7 @@ class TestModelsEditResource(BaseTestCase):
         db.session.flush()
 
         response = self.make_request(
-            "post",
-            "/api/models/{}".format(model.id),
-            user=user,
-            data={
-                "name": "New Test Model Name"
-            }
+            "post", "/api/models/{}".format(model.id), user=user, data={"name": "New Test Model Name"}
         )
 
         self.assertEqual(200, response.status_code)
@@ -298,10 +274,7 @@ class TestModelsEditResource(BaseTestCase):
             "post",
             "/api/models/{}".format(model.id),
             user=user,
-            data={
-                "name": "New Test Model Name",
-                "data_source_id": data_source.id
-            }
+            data={"name": "New Test Model Name", "data_source_id": data_source.id},
         )
 
         self.assertEqual(200, response.status_code)

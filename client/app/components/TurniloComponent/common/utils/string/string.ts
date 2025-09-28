@@ -17,7 +17,8 @@
 
 // Shamelessly stolen from http://stackoverflow.com/a/10006499
 // (well, traded for an upvote)
-export const IP_REGEX = /^(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))$/;
+export const IP_REGEX =
+  /^(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.(\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))$/;
 
 export const NUM_REGEX = /^\d+$/;
 
@@ -26,7 +27,7 @@ export function firstUp(str: string): string {
 }
 
 export function pad(n: number, padding = 3): string {
-  var str = String(n);
+  let str = String(n);
 
   if (str.length > padding) return str;
 
@@ -35,10 +36,13 @@ export function pad(n: number, padding = 3): string {
   return str;
 }
 
-export function generateUniqueName(prefix: string, isUnique: (name: string) => boolean) {
-  var i = 0;
+export function generateUniqueName(
+  prefix: string,
+  isUnique: (name: string) => boolean,
+) {
+  let i = 0;
 
-  var name = prefix + pad(i);
+  let name = prefix + pad(i);
 
   while (!isUnique(name)) {
     name = prefix + pad(++i);

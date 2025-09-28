@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
+import React from "react";
+import { ScaleLinear } from "d3-scale";
+
+declare module "react-syntax-highlighter/src/light" {
+  export { default } from "react-syntax-highlighter/dist/esm/light";
+}
+
+declare module "react-syntax-highlighter/src/styles/hljs/github-gist" {
+  export { default } from "react-syntax-highlighter/dist/esm/styles/hljs/github-gist";
+}
+
 declare module "@vx/*";
 
 declare module "@vx/heatmap" {
-
-  import { ColorScale, LinearScale } from "./visualizations/heat-map/utils/scales";
 
   interface Bin {
     width: number;
@@ -31,13 +40,14 @@ declare module "@vx/heatmap" {
     column: number;
   }
 
+
   export interface HeatmapRectProps {
     bins(rawDataPoint: any): any;
     count(rawDataPoint: any): number;
     data: any[];
-    xScale: LinearScale;
-    yScale: LinearScale;
-    colorScale: ColorScale;
+    xScale: ScaleLinear<number, number>;
+    yScale: ScaleLinear<number, number>;
+    colorScale: ScaleLinear<string, string>;
     binWidth: number;
     binHeight: number;
     gap: number;
@@ -56,7 +66,7 @@ declare module "@vx/scale" {
     domain: [number, number];
   }
 
-  export const scaleLinear: <Range = number, Output = number>(options: ScaleLinearOptions<Range, Output>) => d3.scale.Linear<Range, Output>;
+  export const scaleLinear: <Range = number, Output = number>(options: ScaleLinearOptions<Range, Output>) => ScaleLinear<Range, Output>;
 }
 
 declare module "@vx/tooltip" {
@@ -67,4 +77,14 @@ declare module "@vx/tooltip" {
     children: React.ReactNode;
   }
   const TooltipWithBounds: React.ComponentType<TooltipWithBoundsProps>;
+}
+
+declare module "*.svg" {
+  const content: string;
+  export default content;
+}
+
+declare module 'has-own-prop' {
+  function hasOwnProp(obj: any, prop: string | number | symbol): boolean;
+  export default hasOwnProp;
 }

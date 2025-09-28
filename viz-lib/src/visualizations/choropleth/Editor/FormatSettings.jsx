@@ -1,4 +1,5 @@
-import React from "react";
+import { map } from "lodash";
+import React, { useMemo } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import * as Grid from "antd/lib/grid";
 import {
@@ -12,49 +13,29 @@ import {
 } from "@/components/visualizations/editor";
 import { EditorPropTypes } from "@/visualizations/prop-types";
 
-function TemplateFormatHint({ mapType }) {
-  // eslint-disable-line react/prop-types
+import useLoadGeoJson from "../hooks/useLoadGeoJson";
+import { getGeoJsonFields } from "./utils";
+
+function TemplateFormatHint({ geoJsonProperties }) {
   return (
     <ContextHelp placement="topLeft" arrowPointAtCenter>
       <div style={{ paddingBottom: 5 }}>
-        All query result columns can be referenced using <code>{"{{ column_name }}"}</code> syntax.
+        <div>
+          All query result columns can be referenced using <code>{"{{ column_name }}"}</code> syntax.
+        </div>
+        <div>
+          Use <code>{"{{ @@value }}"}</code> to access formatted value.
+        </div>
       </div>
-      <div style={{ paddingBottom: 5 }}>Use special names to access additional properties:</div>
-      <div>
-        <code>{"{{ @@value }}"}</code> formatted value;
-      </div>
-      {mapType === "countries" && (
+      {geoJsonProperties.length > 0 && (
         <React.Fragment>
-          <div>
-            <code>{"{{ @@name }}"}</code> short country name;
-          </div>
-          <div>
-            <code>{"{{ @@name_long }}"}</code> full country name;
-          </div>
-          <div>
-            <code>{"{{ @@abbrev }}"}</code> abbreviated country name;
-          </div>
-          <div>
-            <code>{"{{ @@iso_a2 }}"}</code> two-letter ISO country code;
-          </div>
-          <div>
-            <code>{"{{ @@iso_a3 }}"}</code> three-letter ISO country code;
-          </div>
-          <div>
-            <code>{"{{ @@iso_n3 }}"}</code> three-digit ISO country code.
-          </div>
-        </React.Fragment>
-      )}
-      {mapType === "subdiv_japan" && (
-        <React.Fragment>
-          <div>
-            <code>{"{{ @@name }}"}</code> Prefecture name in English;
-          </div>
-          <div>
-            <code>{"{{ @@name_local }}"}</code> Prefecture name in Kanji;
-          </div>
-          <div>
-            <code>{"{{ @@iso_3166_2 }}"}</code> five-letter ISO subdivision code (JP-xx);
+          <div className="p-b-5">GeoJSON properties could be accessed by these names:</div>
+          <div style={{ maxHeight: 300, overflow: "auto" }}>
+            {map(geoJsonProperties, property => (
+              <div key={property}>
+                <code>{`{{ @@${property}}}`}</code>
+              </div>
+            ))}
           </div>
         </React.Fragment>
       )}
@@ -62,10 +43,16 @@ function TemplateFormatHint({ mapType }) {
   );
 }
 
+TemplateFormatHint.defaultProps = {
+  geoJsonProperties: [],
+};
+
 export default function GeneralSettings({ options, onOptionsChange }) {
   const [onOptionsChangeDebounced] = useDebouncedCallback(onOptionsChange, 200);
+  const [geoJson] = useLoadGeoJson(options.mapType);
+  const geoJsonFields = useMemo(() => getGeoJsonFields(geoJson), [geoJson]);
 
-  const templateFormatHint = <TemplateFormatHint mapType={options.mapType} />;
+  const templateFormatHint = <TemplateFormatHint geoJsonProperties={geoJsonFields} />;
 
   return (
     <div className="choropleth-visualization-editor-format-settings">
@@ -75,21 +62,21 @@ export default function GeneralSettings({ options, onOptionsChange }) {
             <Input
               label={
                 <React.Fragment>
-                  Value format
+                  Value Format
                   <ContextHelp.NumberFormatSpecs />
                 </React.Fragment>
               }
               data-test="Choropleth.Editor.ValueFormat"
               defaultValue={options.valueFormat}
-              onChange={event => onOptionsChangeDebounced({ valueFormat: event.target.value })}
+              onChange={(event) => onOptionsChangeDebounced({ valueFormat: event.target.value })}
             />
           </Grid.Col>
           <Grid.Col span={12}>
             <Input
-              label="Value placeholder"
+              label="Value Placeholder"
               data-test="Choropleth.Editor.ValuePlaceholder"
               defaultValue={options.noValuePlaceholder}
-              onChange={event => onOptionsChangeDebounced({ noValuePlaceholder: event.target.value })}
+              onChange={(event) => onOptionsChangeDebounced({ noValuePlaceholder: event.target.value })}
             />
           </Grid.Col>
         </Grid.Row>
@@ -100,7 +87,7 @@ export default function GeneralSettings({ options, onOptionsChange }) {
           data-test="Choropleth.Editor.LegendVisibility"
           checked={options.legend.visible}
           onChange={event => onOptionsChange({ legend: { visible: event.target.checked } })}>
-          Show legend
+          Show Legend
         </Checkbox>
       </Section>
 
@@ -108,11 +95,11 @@ export default function GeneralSettings({ options, onOptionsChange }) {
         <Grid.Row gutter={15}>
           <Grid.Col span={12}>
             <Select
-              label="Legend position"
+              label="Legend Position"
               data-test="Choropleth.Editor.LegendPosition"
               disabled={!options.legend.visible}
               defaultValue={options.legend.position}
-              onChange={position => onOptionsChange({ legend: { position } })}>
+              onChange={(position) => onOptionsChange({ legend: { position } })}>
               <Select.Option value="top-left" data-test="Choropleth.Editor.LegendPosition.TopLeft">
                 top / left
               </Select.Option>
@@ -122,6 +109,7 @@ export default function GeneralSettings({ options, onOptionsChange }) {
               <Select.Option value="bottom-left" data-test="Choropleth.Editor.LegendPosition.BottomLeft">
                 bottom / left
               </Select.Option>
+              {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
               <Select.Option value="bottom-right" data-test="Choropleth.Editor.LegendPosition.BottomRight">
                 bottom / right
               </Select.Option>
@@ -130,10 +118,10 @@ export default function GeneralSettings({ options, onOptionsChange }) {
           <Grid.Col span={12}>
             <TextAlignmentSelect
               data-test="Choropleth.Editor.LegendTextAlignment"
-              label="Legend text alignment"
+              label="Legend Text Alignment"
               disabled={!options.legend.visible}
               defaultValue={options.legend.alignText}
-              onChange={event => onOptionsChange({ legend: { alignText: event.target.value } })}
+              onChange={(event) => onOptionsChange({ legend: { alignText: event.target.value } })}
             />
           </Grid.Col>
         </Grid.Row>
@@ -144,17 +132,17 @@ export default function GeneralSettings({ options, onOptionsChange }) {
           data-test="Choropleth.Editor.TooltipEnabled"
           checked={options.tooltip.enabled}
           onChange={event => onOptionsChange({ tooltip: { enabled: event.target.checked } })}>
-          Show tooltip
+          Show Tooltip
         </Checkbox>
       </Section>
 
       <Section>
         <Input
-          label={<React.Fragment>Tooltip template {templateFormatHint}</React.Fragment>}
+          label={<React.Fragment>Tooltip Template {templateFormatHint}</React.Fragment>}
           data-test="Choropleth.Editor.TooltipTemplate"
           disabled={!options.tooltip.enabled}
           defaultValue={options.tooltip.template}
-          onChange={event => onOptionsChangeDebounced({ tooltip: { template: event.target.value } })}
+          onChange={(event) => onOptionsChangeDebounced({ tooltip: { template: event.target.value } })}
         />
       </Section>
 
@@ -163,18 +151,18 @@ export default function GeneralSettings({ options, onOptionsChange }) {
           data-test="Choropleth.Editor.PopupEnabled"
           checked={options.popup.enabled}
           onChange={event => onOptionsChange({ popup: { enabled: event.target.checked } })}>
-          Show popup
+          Show Popup
         </Checkbox>
       </Section>
 
       <Section>
         <TextArea
-          label={<React.Fragment>Popup template {templateFormatHint}</React.Fragment>}
+          label={<React.Fragment>Popup Template {templateFormatHint}</React.Fragment>}
           data-test="Choropleth.Editor.PopupTemplate"
           disabled={!options.popup.enabled}
           rows={4}
           defaultValue={options.popup.template}
-          onChange={event => onOptionsChangeDebounced({ popup: { template: event.target.value } })}
+          onChange={(event) => onOptionsChangeDebounced({ popup: { template: event.target.value } })}
         />
       </Section>
     </div>

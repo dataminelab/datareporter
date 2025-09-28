@@ -34,7 +34,7 @@ Editor.propTypes = {
 
 export default function initNumberColumn(column) {
   const format = createNumberFormatter(column.numberFormat);
-
+  
   function prepareData(row) {
     return {
       text: format(row[column.name]),

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .simple-list {
   overflow: auto;
@@ -29,7 +29,12 @@
     border-bottom: 1px solid transparent;
 
     &:not(:first-child) {
-      @include border-css-variable('border-top', 1px, solid, 'border-super-light');
+      @include border-css-variable(
+        "border-top",
+        1px,
+        solid,
+        "border-super-light"
+      );
     }
 
     &.dragged {
@@ -42,7 +47,7 @@
 
     &.drop-before::after {
       @include css-variable(border-color, brand);
-      content: '';
+      content: "";
       position: absolute;
       top: -1px;
       left: 0;
@@ -55,7 +60,7 @@
 
     &.drop-after::after {
       @include css-variable(border-bottom-color, brand);
-      content: '';
+      content: "";
       position: absolute;
       bottom: -1px;
       left: 0;

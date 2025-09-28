@@ -39,7 +39,7 @@ describe("Visualizations -> Chart -> Editor -> Y-Axis Settings", () => {
 
     findByTestID(el, "Chart.LeftYAxis.Type")
       .last()
-      .simulate("click");
+      .simulate("mouseDown");
     findByTestID(el, "Chart.LeftYAxis.Type.Category")
       .last()
       .simulate("click");
@@ -57,6 +57,20 @@ describe("Visualizations -> Chart -> Editor -> Y-Axis Settings", () => {
     findByTestID(el, "Chart.LeftYAxis.Name")
       .last()
       .simulate("change", { target: { value: "test" } });
+  });
+
+  test("Changes axis tick format", done => {
+    const el = mount(
+      {
+        globalSeriesType: "column",
+        yAxis: [],
+      },
+      done
+    );
+
+    findByTestID(el, "Chart.LeftYAxis.TickFormat")
+      .last()
+      .simulate("change", { target: { value: "s" } });
   });
 
   test("Changes axis min value", done => {

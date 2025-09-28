@@ -4,8 +4,7 @@ import PropTypes from "prop-types";
 import Parameter from "./Parameter";
 
 const DATETIME_FORMATS = {
-  // eslint-disable-next-line quote-props
-  date: "YYYY-MM-DD",
+  "date": "YYYY-MM-DD",
   "datetime-local": "YYYY-MM-DD HH:mm",
   "datetime-with-seconds": "YYYY-MM-DD HH:mm:ss",
 };
@@ -26,7 +25,10 @@ const DYNAMIC_DATES = {
 export const DynamicDateType = PropTypes.oneOf(values(DYNAMIC_DATES));
 
 function isDynamicDateString(value) {
-  return startsWith(value, DYNAMIC_PREFIX) && has(DYNAMIC_DATES, value.substring(DYNAMIC_PREFIX.length));
+  return (
+    startsWith(value, DYNAMIC_PREFIX) &&
+    has(DYNAMIC_DATES, value.substring(DYNAMIC_PREFIX.length))
+  );
 }
 
 export function isDynamicDate(value) {

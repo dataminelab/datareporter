@@ -4,24 +4,26 @@ import logging
 import time
 from functools import reduce
 from operator import or_
+from typing import Any, Dict, List
 
-from flask import current_app as app, url_for, request_started
-from flask_login import current_user, AnonymousUserMixin, UserMixin
+from flask import current_app as app
+from flask import request_started, url_for
+from flask_login import AnonymousUserMixin, UserMixin, current_user
 from passlib.apps import custom_app_context as pwd_context
-from sqlalchemy.exc import DBAPIError
-from sqlalchemy.dialects import postgresql
-
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy_utils import EmailType
 from sqlalchemy_utils.models import generic_repr
 
 from redash import redis_connection
-from redash.utils import generate_token, utcnow, dt_from_timestamp
+from redash.utils import dt_from_timestamp, generate_token
 
-from .base import db, Column, GFKBase, key_type, primary_key
-from .mixins import TimestampMixin, BelongsToOrgMixin
-from .types import json_cast_property, MutableDict, MutableList
+from .base import Column, GFKBase, db, key_type, primary_key
+from .mixins import BelongsToOrgMixin, TimestampMixin
+from .types import MutableDict, MutableList, json_cast_property
 
 logger = logging.getLogger(__name__)
+
 
 LAST_ACTIVE_KEY = "users:last_active_at"
 
@@ -61,7 +63,7 @@ def init_app(app):
     request_started.connect(update_user_active_at, app)
 
 
-class PermissionsCheckMixin(object):
+class PermissionsCheckMixin:
     def has_permission(self, permission):
         return self.has_permissions((permission,))
 
@@ -76,37 +78,31 @@ class PermissionsCheckMixin(object):
 
 
 @generic_repr("id", "name", "email")
-class User(
-    TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCheckMixin
-):
+class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCheckMixin):
     id = primary_key("User")
     org_id = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
     org = db.relationship("Organization", backref=db.backref("users", lazy="dynamic"))
     name = Column(db.String(320))
     email = Column(EmailType)
-    _profile_image_url = Column("profile_image_url", db.String(320), nullable=True)
     password_hash = Column(db.String(128), nullable=True)
     group_ids = Column(
-        "groups", MutableList.as_mutable(postgresql.ARRAY(key_type("Group"))), nullable=True
+        "groups",
+        MutableList.as_mutable(ARRAY(key_type("Group"))),
+        nullable=True,
     )
     api_key = Column(db.String(40), default=lambda: generate_token(40), unique=True)
 
     disabled_at = Column(db.DateTime(True), default=None, nullable=True)
     details = Column(
-        MutableDict.as_mutable(postgresql.JSON),
+        MutableDict.as_mutable(JSONB),
         nullable=True,
         server_default="{}",
         default={},
     )
-    active_at = json_cast_property(
-        db.DateTime(True), "details", "active_at", default=None
-    )
-    is_invitation_pending = json_cast_property(
-        db.Boolean(True), "details", "is_invitation_pending", default=False
-    )
-    is_email_verified = json_cast_property(
-        db.Boolean(True), "details", "is_email_verified", default=True
-    )
+    active_at = json_cast_property(db.DateTime(True), "details", "active_at", default=None)
+    _profile_image_url = json_cast_property(db.Text(), "details", "profile_image_url", default=None)
+    is_invitation_pending = json_cast_property(db.Boolean(True), "details", "is_invitation_pending", default=False)
+    is_email_verified = json_cast_property(db.Boolean(True), "details", "is_email_verified", default=True)
 
     __tablename__ = "users"
     __table_args__ = (db.Index("users_org_id_email", "org_id", "email", unique=True),)
@@ -169,7 +165,7 @@ class User(
 
     @property
     def profile_image_url(self):
-        if self._profile_image_url is not None:
+        if self._profile_image_url:
             return self._profile_image_url
 
         email_md5 = hashlib.md5(self.email.lower().encode()).hexdigest()
@@ -178,14 +174,7 @@ class User(
     @property
     def permissions(self):
         # TODO: this should be cached.
-        return list(
-            itertools.chain(
-                *[
-                    g.permissions
-                    for g in Group.query.filter(Group.id.in_(self.group_ids))
-                ]
-            )
-        )
+        return list(itertools.chain(*[g.permissions for g in Group.query.filter(Group.id.in_(self.group_ids))]))
 
     @classmethod
     def get_by_org(cls, org):
@@ -201,7 +190,18 @@ class User(
 
     @classmethod
     def get_by_api_key_and_org(cls, api_key, org):
-        return cls.get_by_org(org).filter(cls.api_key == api_key).one()
+        return cls.get_by_org(org).filter(cls.api_key == api_key).one()  # cant find available api key for reports
+
+    @classmethod
+    def get_by_api_key_and_org_safe(cls, api_key, org):
+        try:
+            return cls.get_by_api_key_and_org(api_key, org)
+        except NoResultFound:
+            logger.error(f"API key {api_key} not found for org {org}")
+            return None
+        except MultipleResultsFound:
+            logger.error(f"Multiple results found for API key {api_key} in org {org}")
+            return None
 
     @classmethod
     def all(cls, org):
@@ -223,9 +223,7 @@ class User(
         if pending:
             return base_query.filter(cls.is_invitation_pending.is_(True))
         else:
-            return base_query.filter(
-                cls.is_invitation_pending.isnot(True)
-            )  # check for both `false`/`null`
+            return base_query.filter(cls.is_invitation_pending.isnot(True))  # check for both `false`/`null`
 
     @classmethod
     def find_by_email(cls, email):
@@ -248,15 +246,16 @@ class User(
         return AccessPermission.exists(obj, access_type, grantee=self)
 
     def get_id(self):
-        identity = hashlib.md5(
-            "{},{}".format(self.email, self.password_hash).encode()
-        ).hexdigest()
+        identity = hashlib.md5("{},{}".format(self.email, self.password_hash).encode()).hexdigest()
         return "{0}-{1}".format(self.id, identity)
+
+    def get_actual_user(self):
+        return repr(self) if self.is_api_user() else self.email
 
 
 @generic_repr("id", "name", "type", "org_id")
 class Group(db.Model, BelongsToOrgMixin):
-    DEFAULT_PERMISSIONS = [
+    DEFAULT_PERMISSIONS: List[str] = [
         "create_dashboard",
         "create_query",
         "edit_dashboard",
@@ -279,19 +278,19 @@ class Group(db.Model, BelongsToOrgMixin):
         "create_report",
         "generate_report",
     ]
+    ADMIN_PERMISSIONS: List[str] = ["admin", "super_admin"]
+    AI_PERMISSIONS: List[str] = ["ai:ask", "ai:use", "ai:manage", "ai:admin", "ai:generate_report", "ai:edit_report"]
 
-    BUILTIN_GROUP = "builtin"
-    REGULAR_GROUP = "regular"
+    BUILTIN_GROUP: str = "builtin"
+    REGULAR_GROUP: str = "regular"
 
-    id = primary_key("Group")
-    data_sources = db.relationship(
-        "DataSourceGroup", back_populates="group", cascade="all"
-    )
-    org_id = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
+    id: int = primary_key("Group")
+    data_sources = db.relationship("DataSourceGroup", back_populates="group", cascade="all")
+    org_id: int = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
     org = db.relationship("Organization", back_populates="groups")
-    type = Column(db.String(255), default=REGULAR_GROUP)
-    name = Column(db.String(100))
-    permissions = Column(postgresql.ARRAY(db.String(255)), default=DEFAULT_PERMISSIONS)
+    type: str = Column(db.String(255), default=REGULAR_GROUP)
+    name: str = Column(db.String(100))
+    permissions: List[str] = Column(MutableList.as_mutable(ARRAY(db.String(255))), default=DEFAULT_PERMISSIONS)
     created_at = Column(db.DateTime(True), default=db.func.now())
 
     __tablename__ = "groups"
@@ -299,7 +298,7 @@ class Group(db.Model, BelongsToOrgMixin):
     def __str__(self):
         return str(self.id)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -321,10 +320,30 @@ class Group(db.Model, BelongsToOrgMixin):
         result = cls.query.filter(cls.org == org, cls.name.in_(group_names))
         return list(result)
 
+    def add_permission(self, permission):
+        """
+        Adds a permission to the group if it doesn't already exist.
+        """
+        if permission not in self.permissions:
+            self.permissions.append(permission)
+            db.session.add(self)
+            db.session.commit()
+            return True
+        return False
 
-@generic_repr(
-    "id", "object_type", "object_id", "access_type", "grantor_id", "grantee_id"
-)
+    def remove_permission(self, permission):
+        """
+        Removes a permission from the group if it exists.
+        """
+        if permission in self.permissions:
+            self.permissions.remove(permission)
+            db.session.add(self)
+            db.session.commit()
+            return True
+        return False
+
+
+@generic_repr("id", "object_type", "object_id", "access_type", "grantor_id", "grantee_id")
 class AccessPermission(GFKBase, db.Model):
     id = primary_key("AccessPermission")
     # 'object' defined in GFKBase
@@ -373,9 +392,7 @@ class AccessPermission(GFKBase, db.Model):
 
     @classmethod
     def _query(cls, obj, access_type=None, grantee=None, grantor=None):
-        q = cls.query.filter(
-            cls.object_id == obj.id, cls.object_type == obj.__tablename__
-        )
+        q = cls.query.filter(cls.object_id == obj.id, cls.object_type == obj.__tablename__)
 
         if access_type:
             q = q.filter(AccessPermission.access_type == access_type)
@@ -400,7 +417,16 @@ class AccessPermission(GFKBase, db.Model):
         return d
 
 
+class PseudoOrg:
+    id = None
+    slug = None
+
+
 class AnonymousUser(AnonymousUserMixin, PermissionsCheckMixin):
+    org = PseudoOrg()
+    id = None
+    name = "anonymous"
+
     @property
     def permissions(self):
         return []
@@ -418,10 +444,7 @@ class ApiUser(UserMixin, PermissionsCheckMixin):
         else:
             self.id = api_key.api_key
             self.name = "ApiKey: {}".format(api_key.id)
-            if api_key.object_type == "reports":
-                self.object = api_key.object_id
-            else:
-                self.object = api_key.object
+            self.object = api_key.object
         self.group_ids = groups
         self.org = org
 
@@ -441,5 +464,9 @@ class ApiUser(UserMixin, PermissionsCheckMixin):
     def permissions(self):
         return ["view_query"]
 
-    def has_access(self, obj, access_type):
+    @staticmethod
+    def has_access(obj, access_type):
         return False
+
+    def get_actual_user(self):
+        return repr(self)

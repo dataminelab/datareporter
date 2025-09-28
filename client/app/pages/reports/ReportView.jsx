@@ -3,15 +3,20 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import useMedia from "use-media";
 import Button from "antd/lib/button";
-import Icon from "antd/lib/icon";
+
+import FullscreenOutlinedIcon from "@ant-design/icons/FullscreenOutlined";
+import FullscreenExitOutlinedIcon from "@ant-design/icons/FullscreenExitOutlined";
 
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import EditInPlace from "@/components/EditInPlace";
 import Parameters from "@/components/Parameters";
+import DynamicComponent from "@/components/DynamicComponent";
+import PlainButton from "@/components/PlainButton";
 
 import DataSource from "@/services/data-source";
 import { ExecutionStatus } from "@/services/report-result";
 import routes from "@/services/routes";
+import { policy } from "@/services/policy";
 
 import useReportResultData from "@/lib/useReportResultData";
 
@@ -39,8 +44,10 @@ function ReportView(props) {
   const [report, setReport] = useState(props.report);
   const [dataSource, setDataSource] = useState();
   const queryFlags = useReportFlags(report, dataSource);
-  const [parameters, areParametersDirty, updateParametersDirtyFlag] = useReportParameters(report);
-  const [selectedVisualization, setSelectedVisualization] = useVisualizationTabHandler(report.visualizations);
+  const [parameters, areParametersDirty, updateParametersDirtyFlag] =
+    useReportParameters(report);
+  const [selectedVisualization, setSelectedVisualization] =
+    useVisualizationTabHandler(report.visualizations);
   const isDesktop = useMedia({ minWidth: 768 });
   const isFixedLayout = useMedia({ minHeight: 500 }) && isDesktop;
   const [fullscreen, toggleFullscreen] = useFullscreenHandler(isDesktop);
@@ -63,21 +70,32 @@ function ReportView(props) {
 
   const updateReportDescription = useUpdateReportDescription(report, setReport);
   const editSchedule = useEditScheduleDialog(report, setReport);
-  const addVisualization = useEditVisualizationDialog(report, queryResult, (newReport, visualization) => {
-    setReport(newReport);
-    setSelectedVisualization(visualization.id);
-  });
-  const editVisualization = useEditVisualizationDialog(report, queryResult, newReport => setReport(newReport));
+  const addVisualization = useEditVisualizationDialog(
+    report,
+    queryResult,
+    (newReport, visualization) => {
+      setReport(newReport);
+      setSelectedVisualization(visualization.id);
+    },
+  );
+  const editVisualization = useEditVisualizationDialog(
+    report,
+    queryResult,
+    newReport => setReport(newReport),
+  );
   const deleteVisualization = useDeleteVisualization(report, setReport);
 
   const doExecuteReport = useCallback(
     (skipParametersDirtyFlag = false) => {
-      if (!queryFlags.canExecute || (!skipParametersDirtyFlag && (areParametersDirty || isExecuting))) {
+      if (
+        !queryFlags.canExecute ||
+        (!skipParametersDirtyFlag && (areParametersDirty || isExecuting))
+      ) {
         return;
       }
       executeReport();
     },
-    [areParametersDirty, executeReport, isExecuting, queryFlags.canExecute]
+    [areParametersDirty, executeReport, isExecuting, queryFlags.canExecute],
   );
 
   useEffect(() => {
@@ -93,7 +111,8 @@ function ReportView(props) {
       className={cx("report-page-wrapper", {
         "report-view-fullscreen": fullscreen,
         "report-fixed-layout": isFixedLayout,
-      })}>
+      })}
+    >
       <div className="container w-100">
         <ReportPageHeader
           report={report}
@@ -103,24 +122,35 @@ function ReportView(props) {
           onChange={setReport}
           selectedVisualization={selectedVisualization}
           headerExtra={
-            <ReportViewButton
-              className="m-r-5"
-              type="primary"
-              shortcut="mod+enter, alt+enter, ctrl+enter"
-              disabled={!queryFlags.canExecute || isExecuting || areParametersDirty}
-              onClick={doExecuteReport}>
-              Refresh
-            </ReportViewButton>
+            <DynamicComponent name="ReportView.HeaderExtra" report={report}>
+              {policy.canRun(report) && (
+                <ReportViewButton
+                  className="m-r-5"
+                  type="primary"
+                  shortcut="mod+enter, alt+enter, ctrl+enter"
+                  disabled={
+                    !queryFlags.canExecute || isExecuting || areParametersDirty
+                  }
+                  onClick={doExecuteReport}
+                >
+                  Refresh
+                </ReportViewButton>
+              )}
+            </DynamicComponent>
           }
           tagsExtra={
             !report.description &&
             queryFlags.canEdit &&
             !addingDescription &&
             !fullscreen && (
-              <a className="label label-tag hidden-xs" role="none" onClick={() => setAddingDescription(true)}>
-                <i className="zmdi zmdi-plus m-r-5" />
+              <PlainButton
+                className="label label-tag hidden-xs"
+                role="none"
+                onClick={() => setAddingDescription(true)}
+              >
+                <i className="zmdi zmdi-plus m-r-5" aria-hidden="true" />
                 Add description
-              </a>
+              </PlainButton>
             )
           }
         />
@@ -134,7 +164,7 @@ function ReportView(props) {
               onStopEditing={() => setAddingDescription(false)}
               placeholder="Add description"
               ignoreBlanks={false}
-              editorProps={{ autosize: { minRows: 2, maxRows: 4 } }}
+              editorProps={{ autoSize: { minRows: 2, maxRows: 4 } }}
               defaultEditing={addingDescription}
               multiline
             />
@@ -143,7 +173,11 @@ function ReportView(props) {
       </div>
       <div className="report-view-content">
         {report.hasParameters() && (
-          <div className={cx("bg-white tiled p-15 m-t-15 m-l-15 m-r-15", { hidden: fullscreen })}>
+          <div
+            className={cx("bg-white tiled p-15 m-t-15 m-l-15 m-r-15", {
+              hidden: fullscreen,
+            })}
+          >
             <Parameters
               parameters={parameters}
               onValuesChange={() => {
@@ -159,22 +193,34 @@ function ReportView(props) {
             <ReportVisualizationTabs
               queryResult={queryResult}
               visualizations={report.visualizations}
-              showNewVisualizationButton={queryFlags.canEdit && queryResultData.status === ExecutionStatus.DONE}
+              showNewVisualizationButton={
+                queryFlags.canEdit &&
+                queryResultData.status === ExecutionStatus.DONE
+              }
               canDeleteVisualizations={queryFlags.canEdit}
               selectedTab={selectedVisualization}
               onChangeTab={setSelectedVisualization}
               onAddVisualization={addVisualization}
               onDeleteVisualization={deleteVisualization}
               refreshButton={
-                <Button
-                  type="primary"
-                  disabled={!queryFlags.canExecute || areParametersDirty}
-                  loading={isExecuting}
-                  onClick={doExecuteReport}>
-                  {!isExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
-                  Refresh Now
-                </Button>
+                policy.canRun(report) && (
+                  <Button
+                    type="primary"
+                    disabled={!queryFlags.canExecute || areParametersDirty}
+                    loading={isExecuting}
+                    onClick={doExecuteReport}
+                  >
+                    {!isExecuting && (
+                      <i
+                        className="zmdi zmdi-refresh m-r-5"
+                        aria-hidden="true"
+                      />
+                    )}
+                    Refresh Now
+                  </Button>
+                )
               }
+              canRefresh={policy.canRun(report)}
             />
           )}
           <div className="report-results-footer">
@@ -192,8 +238,13 @@ function ReportView(props) {
                     title="Toggle Fullscreen"
                     type="default"
                     shortcut="alt+f"
-                    onClick={toggleFullscreen}>
-                    <Icon type={fullscreen ? "fullscreen-exit" : "fullscreen"} />
+                    onClick={toggleFullscreen}
+                  >
+                    {fullscreen ? (
+                      <FullscreenExitOutlinedIcon />
+                    ) : (
+                      <FullscreenOutlinedIcon />
+                    )}
                   </ReportViewButton>
                 }
               />
@@ -212,21 +263,26 @@ function ReportView(props) {
           </div>
         </div>
         <div className={cx("p-t-15 p-r-15 p-l-15", { hidden: fullscreen })}>
-          <ReportMetadata layout="horizontal" report={report} dataSource={dataSource} onEditSchedule={editSchedule} />
+          <ReportMetadata
+            layout="horizontal"
+            report={report}
+            dataSource={dataSource}
+            onEditSchedule={editSchedule}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-ReportView.propTypes = { report: PropTypes.object.isRequired }; // eslint-disable-line react/forbid-prop-types
+ReportView.propTypes = { report: PropTypes.object.isRequired };
 
 const ReportViewPage = wrapReportPage(ReportView);
 
 routes.register(
   "Reports.View",
   routeWithUserSession({
-    path: "/reports/:queryId",
+    path: "/reports/:reportId",
     render: pageProps => <ReportViewPage {...pageProps} />,
-  })
+  }),
 );

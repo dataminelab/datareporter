@@ -17,8 +17,16 @@
 import { Datum } from "plywood";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import { datumsExtent, Extent, seriesSelectors } from "../../../../utils/extent/extent";
+import {
+  datumsExtent,
+  Extent,
+  seriesSelectors,
+} from "../../../../utils/extent/extent";
 
-export function yExtent(datums: Datum[], series: ConcreteSeries, essence: Essence): Extent {
+export function yExtent(
+  datums: Datum[],
+  series: ConcreteSeries,
+  essence: Essence,
+): Extent {
   return datumsExtent(datums, seriesSelectors(series, essence.hasComparison()));
 }

@@ -31,7 +31,7 @@ module.exports = {
   settings: {
     "import/resolver": "webpack",
     react: {
-      "version": "16.14"
+      "version": "detect"
     }
   },
   env: {

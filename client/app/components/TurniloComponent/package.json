@@ -58,7 +58,7 @@
     "body-parser": "1.20.1",
     "chronoshift": "0.9.6",
     "commander": "9.4.1",
-    "compression": "1.7.4",
+    "compression": "1.8.1",
     "core-js": "^2.6.12",
     "d3": "4.13.0",
     "d3-dsv": "2.0.0",

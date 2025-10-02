@@ -33,7 +33,7 @@ interface MeasureRowProps {
   scales: Array<d3.ScaleLinear<number, number>>;
 }
 
-export const MeasureRow: React.SFC<MeasureRowProps> = props => {
+export const MeasureRow: React.FunctionComponent<MeasureRowProps> = props => {
   const {
     datum,
     scales,

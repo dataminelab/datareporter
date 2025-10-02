@@ -226,6 +226,7 @@ export class DimensionListTile extends Component<
 
     const dimensionsRenderer = new DimensionsRenderer(
       this.clickDimension,
+      // @ts-ignore 
       this.dragStart,
       searchText,
     );

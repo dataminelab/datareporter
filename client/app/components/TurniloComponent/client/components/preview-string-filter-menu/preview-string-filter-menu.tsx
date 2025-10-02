@@ -55,7 +55,7 @@ function checkRegex(text: string): string {
   try {
     new RegExp(text);
   } catch (e) {
-    return e.message;
+    return (e as Error).message;
   }
   return null;
 }
@@ -84,6 +84,7 @@ interface QueryProps {
   timekeeper: Timekeeper;
   dimension: Dimension;
   filterMode: PreviewFilterMode;
+  searchText: string;
 }
 
 export class PreviewStringFilterMenu extends React.Component<
@@ -148,11 +149,12 @@ export class PreviewStringFilterMenu extends React.Component<
 
     return essence.dataCube
       .executor(query, { timezone: essence.timezone })
+      // @ts-ignore
       .then((dataset: Dataset) => {
         if (this.lastSearchText !== searchText) return null;
         return loaded(dataset);
       })
-      .catch(err => {
+      .catch((err: Error) => {
         if (this.lastSearchText !== searchText) return null;
         reportError(err);
         return error(err);

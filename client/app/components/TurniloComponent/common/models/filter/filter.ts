@@ -220,10 +220,10 @@ export class Filter extends Record<FilterValue>(defaultFilter) {
     );
   }
 
-  public mergeClauses(clauses: List<FilterClause>): Filter {
-    return clauses.reduce(
-      (filter, deltaClause) => filter.setClause(deltaClause),
-      this,
+  public mergeClauses(clauses: List<FilterClause>): this {
+    return clauses.reduce<this>(
+      (filter, deltaClause) => filter.setClause(deltaClause) as this,
+      this
     );
   }
 

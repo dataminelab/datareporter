@@ -115,7 +115,8 @@ export class BaseVisualization<
       .then(loadedDataset => {
         if (!loadedDataset) return;
         if (typeof window !== "undefined") {
-            const slug = window.location.pathname.split('/').pop()?.split('?')[0] || '';
+            const popResult = window.location.pathname.split('/').pop();
+            const slug = popResult ? popResult.split('?')[0] : '';
             (window as any).loadedDatasetsByUrl = (window as any).loadedDatasetsByUrl || {};
             (window as any).loadedDatasetsByUrl[slug] = (window as any).loadedDatasetsByUrl[slug] || [];
             (window as any).loadedDatasetsByUrl[slug].push(loadedDataset);

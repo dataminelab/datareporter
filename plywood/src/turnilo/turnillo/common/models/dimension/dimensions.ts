@@ -28,13 +28,9 @@ import {
 } from "./dimension-group";
 
 type DimensionId = string;
-export interface DimensionsInterface {
-  tree: DimensionOrGroup[];
-  byName: Record<DimensionId, Dimension>;
-}
 
 export function findDimensionByName(
-  dimensions: DimensionsInterface,
+  dimensions: Dimensions,
   name: string,
 ): Dimension | null {
   return dimensions.byName[name] || null;
@@ -156,15 +152,15 @@ export class Dimensions {
     return this.flattenedDimensions.map(dimension => dimension.name).toList();
   }
 
-  containsDimensionWithName(name: string) {
+  containsDimensionWithName(name: string): boolean {
     return this.flattenedDimensions.some(dimension => dimension.name === name);
   }
 
-  append(...dimensions: Dimension[]) {
+  append(...dimensions: Dimension[]): Dimensions {
     return new Dimensions([...this.dimensions, ...dimensions]);
   }
 
-  prepend(...dimensions: Dimension[]) {
+  prepend(...dimensions: Dimension[]): Dimensions {
     return new Dimensions([...dimensions, ...this.dimensions]);
   }
 
@@ -182,5 +178,13 @@ export class Dimensions {
 
   toArray(): Dimension[] {
     return this.flattenedDimensions.toArray();
+  }
+
+  get byName(): { [name: string]: Dimension } {
+    const map: { [name: string]: Dimension } = {};
+    this.flattenedDimensions.forEach(dimension => {
+      map[dimension.name] = dimension;
+    });
+    return map;
   }
 }

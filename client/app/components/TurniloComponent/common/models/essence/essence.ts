@@ -21,7 +21,7 @@ import { RefExpression } from "plywood";
 import { thread } from "../../utils/functional/functional";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
-import { MANIFESTS } from "../../visualization-manifests";
+import { MANIFESTS, AnyVisualizationManifest } from "../../visualization-manifests";
 import { DataCube } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
@@ -67,7 +67,7 @@ function constrainDimensions(
 }
 
 export interface VisualizationAndResolve {
-  visualization: VisualizationManifest;
+  visualization: AnyVisualizationManifest;
   resolve: Resolve;
 }
 
@@ -174,9 +174,9 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     dataCube: DataCube,
     splits: Splits,
     series: SeriesList,
-    currentVisualization: VisualizationManifest,
+    currentVisualization: AnyVisualizationManifest,
   ): VisualizationAndResolve {
-    const visAndResolves = MANIFESTS.map(visualization => {
+    const visAndResolves = MANIFESTS.map((visualization: AnyVisualizationManifest) => {
       const isSelectedVisualization = visualization === currentVisualization;
       const ruleVariables = {
         dataCube,
@@ -190,8 +190,9 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       };
     });
 
-    return visAndResolves.sort((vr1, vr2) =>
-      Resolve.compare(vr1.resolve, vr2.resolve),
+    return visAndResolves.sort(
+      (vr1: VisualizationAndResolve, vr2: VisualizationAndResolve) =>
+        Resolve.compare(vr1.resolve, vr2.resolve),
     )[0];
   }
 
@@ -804,9 +805,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public changeVisualization(
-    visualization: VisualizationManifest,
-    settings: VisualizationSettings = visualization.visualizationSettings
-      .defaults,
+    visualization: AnyVisualizationManifest,
+    settings: VisualizationSettings = visualization.visualizationSettings.defaults,
   ): Essence {
     return this.set("visualization", visualization)
       .set("visualizationSettings", settings)

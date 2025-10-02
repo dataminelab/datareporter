@@ -123,11 +123,12 @@ export class SelectableStringFilterMenu extends React.Component<
 
     return essence.dataCube
       .executor(query, { timezone: essence.timezone })
+      // @ts-ignore
       .then((dataset: Dataset) => {
         if (this.lastSearchText !== searchText) return null;
         return loaded(dataset);
       })
-      .catch(err => {
+      .catch((err: Error) => {
         if (this.lastSearchText !== searchText) return null;
         reportError(err);
         return error(err);
@@ -258,6 +259,7 @@ export class SelectableStringFilterMenu extends React.Component<
             <div className="rows">
               {isLoaded(dataset) && (
                 <StringValuesList
+                  // @ts-ignore
                   onRowSelect={this.onValueClick}
                   dimension={dimension}
                   dataset={dataset.dataset}

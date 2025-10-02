@@ -28,9 +28,7 @@ import { ViewDefinitionConverter } from "../view-definition-converter";
 import { seriesDefinitionConverter } from "./measures-definition";
 import { ViewDefinition3 } from "./view-definition-3";
 
-export class ViewDefinitionConverter3
-  implements ViewDefinitionConverter<ViewDefinition3, Essence>
-{
+export class ViewDefinitionConverter3 implements ViewDefinitionConverter<ViewDefinition3, Essence> {
   version = 3;
 
   fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube): Essence {
@@ -38,27 +36,16 @@ export class ViewDefinitionConverter3
 
     const visualization = manifestByName(definition.visualization);
     const visualizationSettings = visualization.visualizationSettings.defaults;
-    const timeShift = definition.timeShift
-      ? TimeShift.fromJS(definition.timeShift)
-      : TimeShift.empty();
+    const timeShift = definition.timeShift ? TimeShift.fromJS(definition.timeShift) : TimeShift.empty();
 
-    const filter = Filter.fromClauses(
-      definition.filters.map(fc =>
-        filterDefinitionConverter.toFilterClause(fc, dataCube),
-      ),
-    );
+    const filter = Filter.fromClauses(definition.filters.map(fc => filterDefinitionConverter.toFilterClause(fc, dataCube)));
 
     const splitDefinitions = List(definition.splits);
-    const splits = new Splits({
-      splits: splitDefinitions.map(splitConverter.toSplitCombine),
-    });
+    const splits = new Splits({ splits: splitDefinitions.map(sd => splitConverter.toSplitCombine(sd, dataCube)) });
 
     const pinnedDimensions = OrderedSet(definition.pinnedDimensions || []);
     const pinnedSort = definition.pinnedSort;
-    const series = seriesDefinitionConverter.toEssenceSeries(
-      definition.measures,
-      dataCube.measures,
-    );
+    const series = seriesDefinitionConverter.toEssenceSeries(definition.measures, dataCube.measures);
 
     return new Essence({
       dataCube,

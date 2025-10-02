@@ -15,6 +15,7 @@
  */
 
 import { Duration } from "chronoshift";
+import { DataCube } from "../../models/data-cube/data-cube";
 import { AVAILABLE_LIMITS } from "../../limit/limit";
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import {
@@ -250,7 +251,7 @@ const splitConversions: {
 };
 
 export interface SplitDefinitionConverter {
-  toSplitCombine(split: SplitDefinition): Split;
+  toSplitCombine(split: SplitDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): Split;
 
   fromSplitCombine(splitCombine: Split): SplitDefinition;
 }

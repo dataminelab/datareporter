@@ -40,7 +40,7 @@ describe("ModalBubble", () => {
       const mouseDownHandler = globalEventListener.prop("mouseDown");
       const outside = modal.find(".outside");
       const target = outside.getDOMNode();
-
+      // @ts-ignore TS2345
       mouseDownHandler.call(null, { target });
 
       expect(onCloseSpy.called).to.be.true;
@@ -53,7 +53,7 @@ describe("ModalBubble", () => {
       const mouseDownHandler = globalEventListener.prop("mouseDown");
       const modalBubble = modal.find(ModalBubble);
       const target = modalBubble.getDOMNode();
-
+      // @ts-ignore TS2345
       mouseDownHandler.call(null, { target });
 
       expect(onCloseSpy.called).to.be.false;

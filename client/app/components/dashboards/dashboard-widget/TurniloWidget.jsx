@@ -38,11 +38,9 @@ function TurniloWidget(props) {
             version={version}
             hashWidget={turniloHash}
             appSettings={config.appSettings}
-            initTimekeeper={
-              config.timekeeper
-                ? Timekeeper.fromJS(config.timekeeper)
-                : new Timekeeper({ timeTags: [] })
-            }
+            initTimekeeper={Timekeeper.fromJS(
+              config.timekeeper || { timeTags: {} },
+            )}
             setFilterParams={setFilterParams}
             getEssence={getEssence}
           />

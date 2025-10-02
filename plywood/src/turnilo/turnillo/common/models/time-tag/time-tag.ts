@@ -21,6 +21,7 @@ export type Special = "static" | "realtime";
 
 export interface TimeTagValue {
   name: string;
+  checkInterval?: number;
   time?: Date;
   updated?: Date;
   spacial?: Special;

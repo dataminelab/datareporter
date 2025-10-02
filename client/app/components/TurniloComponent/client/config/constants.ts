@@ -77,6 +77,7 @@ export const STRINGS: any = {
   create: "Create",
   cubes: "cubes",
   dataCubes: "Data Cubes",
+  noDataCube: "DataCube not found",
   noDataCubes: "No Data Cubes present",
   noDataCubesFound: "No Data Cubes found for query: ",
   delete: "Delete",
@@ -200,7 +201,7 @@ export function getLocale(): Locale {
   return EN_US;
 }
 
-export const exportOptions: Array<{ label: string; fileFormat: FileFormat }> = [
+export const exportOptions: Array<{ label: string, fileFormat: FileFormat }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },
-  { label: STRINGS.exportToTSV, fileFormat: "tsv" },
+  { label: STRINGS.exportToTSV, fileFormat: "tsv" }
 ];

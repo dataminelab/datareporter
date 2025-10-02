@@ -27,20 +27,17 @@ import { FilterTile } from "./filter-tile";
 describe("FilterTile", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(
+      // @ts-ignore TS2739
       <FilterTile
         clicker={null}
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
-        // clause={essence.filter.clauses.first()} // Example clause
-        open={false} // Example value
-        // dimension={essence.dataCube.dimensions.first()} // Example dimension
-        saveClause={() => {}} // Example function
-        removeClause={() => {}} // Example function
-        openFilterMenu={() => {}} // Example function
-        closeFilterMenu={() => {}} // Example function
-        dragStart={() => {}} // Example function
-        // stage={visualizationStage} // Example stage
-        // locale={LOCALES["en-US"]} // Example locale
+        open={false}
+        saveClause={() => {}}
+        removeClause={() => {}}
+        openFilterMenu={() => {}}
+        closeFilterMenu={() => {}}
+        dragStart={() => {}}
       />,
     );
 

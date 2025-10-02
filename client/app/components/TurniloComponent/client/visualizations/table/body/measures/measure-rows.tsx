@@ -33,7 +33,7 @@ interface MeasureRowsProps {
   report: any;
 }
 
-export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
+export const MeasureRows: React.FunctionComponent<MeasureRowsProps> = props => {
   const {
     rowWidth,
     essence,

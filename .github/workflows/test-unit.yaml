@@ -281,27 +281,6 @@ jobs:
       - name: send snapshots
         if: failure()
         run: docker cp cypress:/usr/src/app/client/cypress/screenshots ./snapshots || true
-      - name: send snapshots results into percy
-        if: failure()
-        run: |
-          curl -X POST \
-            -H "Authorization: Token ${{ secrets.PERCY_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            --data '{
-              "version": 1,
-              "name": "Cypress Tests",
-              "env": {
-                "CYPRESS_RECORD_KEY": "${{ secrets.CYPRESS_RECORD_KEY }}",
-                "CYPRESS_PROJECT_ID": "${{ secrets.CYPRESS_PROJECT_ID }}"
-              },
-              "snapshots": [
-                {
-                  "name": "snapshot",
-                  "path": "./snapshots"
-                }
-              ]
-            }' \
-            https://percy.io/api/v1/projects/${{ secrets.PERCY_PROJECT_ID }}/snapshots
       - name: Copy Code Coverage Results
         run: docker cp cypress:/usr/src/app/coverage ./coverage || true
       - name: Store Coverage Results

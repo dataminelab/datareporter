@@ -65,6 +65,7 @@ export const SplitTiles: React.SFC<SplitTilesProps> = props => {
   const splitTiles = splits.map(split => {
     const dimension = essence.dataCube.getDimension(split.reference);
     return (
+      // @ts-ignore
       <SplitTile
         key={split.toKey()}
         split={split}

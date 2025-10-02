@@ -95,7 +95,9 @@ export class VisSelectorMenu extends React.Component<
         const TableSettingsComponent = settingsComponent(visualization.name);
         return (
           <TableSettingsComponent
+            // @ts-ignore
             onChange={this.changeSettings}
+            // @ts-ignore
             settings={visualizationSettings as ImmutableRecord<TableSettings>}
           />
         );
@@ -111,10 +113,10 @@ export class VisSelectorMenu extends React.Component<
         );
         return (
           <LineChartSettingsComponent
+            // @ts-ignore
             onChange={this.changeSettings}
-            settings={
-              visualizationSettings as ImmutableRecord<LineChartSettings>
-            }
+            // @ts-ignore
+            settings={visualizationSettings as ImmutableRecord<LineChartSettings>}
           />
         );
     }
@@ -129,6 +131,7 @@ export class VisSelectorMenu extends React.Component<
           {MANIFESTS.map(visualization => (
             <VisSelectorItem
               key={visualization.name}
+              // @ts-ignore
               visualization={visualization}
               selected={visualization.name === selected.name}
               onClick={this.changeVisualization}

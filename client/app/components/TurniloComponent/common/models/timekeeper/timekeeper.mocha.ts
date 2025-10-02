@@ -54,7 +54,7 @@ describe("Timekeeper", () => {
 
   it("works with now", () => {
     const timekeeper = Timekeeper.fromJS({
-      timeTags: [],
+      timeTags: {},
       nowOverride: new Date("2016-01-01T01:02:03Z"),
     });
 

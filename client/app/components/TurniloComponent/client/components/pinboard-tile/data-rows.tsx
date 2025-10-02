@@ -46,12 +46,14 @@ const EditableRows: React.SFC<EditableRowsProps> = props => {
   const { rowMode, ...commonProps } = props;
   switch (rowMode.state) {
     case EditState.READY:
+      // @ts-ignore
       return <TextRows {...commonProps} onClick={rowMode.createClause} />;
     case EditState.IN_EDIT:
       return (
         <SelectableRows
           {...commonProps}
           clause={rowMode.clause}
+          // @ts-ignore
           onSelect={rowMode.toggleValue}
         />
       );

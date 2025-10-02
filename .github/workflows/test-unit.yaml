@@ -196,6 +196,15 @@ jobs:
       - name: Run plywood-client Tests
         working-directory: plywood/client
         run: npm run test
+      - name: turnilo dependencies install
+        working-directory: client/app/components/TurniloComponent
+        run: npm install
+      - name: turnilo client tests
+        working-directory: client/app/components/TurniloComponent
+        run: npm run test:client
+      - name: turnilo common tests
+        working-directory: client/app/components/TurniloComponent
+        run: npm run test:common
   frontend-e2e-tests:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest

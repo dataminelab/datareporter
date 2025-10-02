@@ -103,7 +103,7 @@ export class BooleanFilterMenu extends React.Component<
           error: null,
         });
       },
-      error => {
+      (error: Error) => {
         this.setState({
           loading: false,
           values: [],

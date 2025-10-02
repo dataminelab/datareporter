@@ -29,7 +29,7 @@ export function setPriceButton(
   price: number,
   proceedData: number,
   set = false,
-) {
+): void {
   // args: price, proceedData, set
   // set:
   //    TRUE means set given data into local storage

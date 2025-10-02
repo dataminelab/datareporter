@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-export function replaceHash(newHash: string) {
-  // Acts like window.location.hash = newHash but doesn't clutter the history
-  // See http://stackoverflow.com/a/23924886/863119
-  window.history.replaceState(undefined, undefined, newHash);
+export function replaceHash(newHash: string): void {
+  // Fallback to directly setting window.location.hash for better jsdom compatibility
+  if (typeof window !== "undefined" && window.location && typeof window.location.hash === "string") {
+    window.location.hash = newHash.startsWith("#") ? newHash : `#${newHash}`;
+  }
 }

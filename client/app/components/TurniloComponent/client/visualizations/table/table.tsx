@@ -76,6 +76,7 @@ export interface TableState extends BaseVisualizationState {
 export class Table extends BaseVisualization<TableState> {
   protected className = TABLE_MANIFEST.name;
   protected innerTableRef = React.createRef<HTMLDivElement>();
+  private scrollerRef = React.createRef<Scroller>();
 
   getDefaultState(): TableState {
     return {
@@ -255,8 +256,7 @@ export class Table extends BaseVisualization<TableState> {
       essence: { visualizationSettings },
     } = this.props;
     // @ts-ignore
-    const { collapseRows } =
-      visualizationSettings as ImmutableRecord<TableSettings>;
+    const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
     return collapseRows;
   }
 
@@ -311,7 +311,7 @@ export class Table extends BaseVisualization<TableState> {
           value={segmentWidth}
         />
         <Scroller
-          ref="scroller"
+          ref={this.scrollerRef}
           layout={scrollerLayout}
           topGutter={
             <MeasuresHeader
@@ -323,7 +323,7 @@ export class Table extends BaseVisualization<TableState> {
           }
           leftGutter={
             <SplitRows
-              color={report ? report.colorText : null}
+              color={report.colorText}
               collapseRows={collapseRows}
               highlightedRowIndex={highlightedRowIndex}
               visibleRowsIndexRange={visibleRowsRange}
@@ -339,7 +339,7 @@ export class Table extends BaseVisualization<TableState> {
           body={
             flatData && (
               <MeasureRows
-                report={report || null}
+                report={report}
                 hoverRow={hoverRow}
                 visibleRowsIndexRange={visibleRowsRange}
                 essence={essence}

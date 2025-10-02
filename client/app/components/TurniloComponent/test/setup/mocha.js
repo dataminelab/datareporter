@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Allegro.pl
+ * Copyright 2017-2022 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-import { SortDirection } from "../../../../common/models/sort/sort";
-import { SvgIcon } from "../../../components/svg-icon/svg-icon";
-import { classNames } from "../../../utils/dom/dom";
-import "./sort-arrow.scss";
-import sortArrow from "../../../icons/sort-arrow.svg";
+require("@babel/register")({
+  cache: true,
+  configFile: false,
+  extensions: [".ts", ".tsx", ".js", ".jsx"],
+  presets: [
+    "@babel/preset-typescript",
+    [
+      "@babel/preset-env",
+      {
+        targets: {
+          node: "current",
+        },
+      },
+    ],
+    "@babel/preset-react",
+  ],
+});
+require("ignore-styles");
 
-interface SortIconProps {
-  direction: SortDirection;
-}
+const enzyme = require("enzyme");
+const Adapter = require("enzyme-adapter-react-16");
 
-export const SortIcon: React.SFC<SortIconProps> = ({ direction }) => (
-  <SvgIcon svg={sortArrow} className={classNames("sort-arrow", direction)} />
-);
+enzyme.configure({ adapter: new Adapter() });

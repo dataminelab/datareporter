@@ -217,7 +217,6 @@ export class NumberFilterMenu extends React.Component<
           <div className="group">
             <label className="input-top-label">Type</label>
             <FilterOptionsDropdown
-              id="filter-type"
               selectedOption={filterMode}
               onSelectOption={this.onSelectFilterOption}
               filterOptions={filterOptions}

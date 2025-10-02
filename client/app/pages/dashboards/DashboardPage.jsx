@@ -463,7 +463,7 @@ class DashboardComponent extends React.Component {
                 updateSelectedRange={this.updateSelectedRange}
                 clickerList={this.state.clickerList}
                 essenceList={this.state.essenceList}
-                timekeeper={new Timekeeper({ timeTags: [] })}
+                timekeeper={new Timekeeper({ timeTags: {} })}
                 menuStage={visualizationStage}
                 setEssence={this.setEssence}
                 widgetList={this.state.widgetList}

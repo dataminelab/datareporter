@@ -1,5 +1,5 @@
 <p align="center">
-  ![DataReporter logo](https://github.com/dataminelab/website/raw/master/src/assets/images/logo.png)
+  <img src="https://github.com/dataminelab/website/raw/master/src/assets/images/logo.png" alt="DataReporter logo" />
 </p>
 
 [![Documentation](https://img.shields.io/badge/docs-redash.io/help-brightgreen.svg)](https://redash.io/help/)

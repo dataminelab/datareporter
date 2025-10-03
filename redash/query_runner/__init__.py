@@ -14,7 +14,6 @@ from redash.utils.requests_session import (
     requests_or_advocate,
     requests_session,
 )
-from redash.utils import query_is_select_no_limit, add_limit_to_query
 
 logger = logging.getLogger(__name__)
 
@@ -289,7 +288,10 @@ class BaseSQLQueryRunner(BaseQueryRunner):
         return True
 
     def query_is_select_no_limit(self, query):
-        parsed_query = sqlparse.parse(query)[0]
+        parsed_query_list = sqlparse.parse(query)
+        if len(parsed_query_list) == 0:
+            return False
+        parsed_query = parsed_query_list[0]
         last_keyword_idx = find_last_keyword_idx(parsed_query)
         # Either invalid query or query that is not select
         if last_keyword_idx == -1 or parsed_query.tokens[0].value.upper() != "SELECT":
@@ -305,7 +307,7 @@ class BaseSQLQueryRunner(BaseQueryRunner):
         length = len(parsed_query.tokens)
         if not self.limit_after_select:
             if parsed_query.tokens[length - 1].ttype == sqlparse.tokens.Punctuation:
-                parsed_query.tokens[length - 1 : length - 1] = limit_tokens
+                parsed_query.tokens[length - 1 : length - 1] = limit_tokens  # noqa: E203
             else:
                 parsed_query.tokens += limit_tokens
         else:
@@ -319,16 +321,13 @@ class BaseSQLQueryRunner(BaseQueryRunner):
         return str(parsed_query)
 
     def apply_auto_limit(self, query_text, should_apply_auto_limit):
+        queries = split_sql_statements(query_text)
         if should_apply_auto_limit:
-            from redash.query_runner.databricks import split_sql_statements, combine_sql_statements
-            queries = split_sql_statements(query_text)
             # we only check for last one in the list because it is the one that we show result
             last_query = queries[-1]
-            if query_is_select_no_limit(last_query):
-                queries[-1] = add_limit_to_query(last_query)
-            return combine_sql_statements(queries)
-        else:
-            return query_text
+            if self.query_is_select_no_limit(last_query):
+                queries[-1] = self.add_limit_to_query(last_query)
+        return combine_sql_statements(queries)
 
 
 class BaseHTTPQueryRunner(BaseQueryRunner):
@@ -413,7 +412,6 @@ query_runners = {}
 
 
 def register(query_runner_class):
-    global query_runners
     if query_runner_class.enabled():
         logger.debug(
             "Registering %s (%s) query runner.",

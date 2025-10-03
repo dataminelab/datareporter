@@ -1,0 +1,23 @@
+---
+# Source: datareporter/templates/plywood-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: datareporter-plywood
+  labels:
+    app.kubernetes.io/name: datareporter
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2025.3.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    app.kubernetes.io/component: plywood
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: datareporter
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: plywood

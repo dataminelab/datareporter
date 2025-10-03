@@ -36,17 +36,19 @@ export interface StyleDefinition {
   isAboveAll?: boolean;
 }
 
-export default function normalizeStyles(source: StyleDefinition): React.CSSProperties {
+export default function normalizeStyles(
+  source: StyleDefinition,
+): React.CSSProperties {
   const { left, top, bottom, right, disablePointerEvents, isAboveAll } = source;
   const dimensions = {
     top: normalizeDimension(top),
     bottom: normalizeDimension(bottom),
     left: normalizeDimension(left),
-    right: normalizeDimension(right)
+    right: normalizeDimension(right),
   };
   return {
     ...omitFalsyValues(dimensions),
     zIndex: 200 + (isAboveAll ? 1 : 0),
-    pointerEvents: disablePointerEvents ? "none" : "auto"
+    pointerEvents: disablePointerEvents ? "none" : "auto",
   };
 }

@@ -14,36 +14,37 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
+import { ColorEntry } from "./color-entry";
 import "./color-swabs.scss";
-
-export interface ColorEntry {
-  color: string;
-  name: string;
-  value: string;
-  previous?: string;
-  delta?: JSX.Element;
-}
 
 interface ColorSwabsProps {
   colorEntries: ColorEntry[];
 }
 
-export const ColorSwabs: React.SFC<ColorSwabsProps> = ({ colorEntries }) => {
-  const colorSwabs = colorEntries.map(({ color, name, value, previous, delta }: ColorEntry) => {
-    const swabStyle = { background: color };
-    return <tr key={name}>
-      <td>
-        <div className="color-swab" style={swabStyle} />
-      </td>
-      <td className="color-name">{name}</td>
-      <td className="color-value">{value}</td>
-      {previous && <td className="color-previous">{previous}</td>}
-      {delta && <td className="color-delta">{delta}</td>}
-    </tr>;
-  });
+export const ColorSwabs: React.FunctionComponent<ColorSwabsProps> = ({
+  colorEntries,
+}) => {
+  const colorSwabs = colorEntries.map(
+    ({ color, name, value, previous, delta }: ColorEntry) => {
+      const swabStyle = { background: color };
+      return (
+        <tr key={name}>
+          <td>
+            <div className="color-swab" style={swabStyle} />
+          </td>
+          <td className="color-name">{name}</td>
+          <td className="color-value">{value}</td>
+          {previous && <td className="color-previous">{previous}</td>}
+          {delta && <td className="color-delta">{delta}</td>}
+        </tr>
+      );
+    },
+  );
 
-  return <table className="color-swabs">
-    <tbody>{colorSwabs}</tbody>
-  </table>;
+  return (
+    <table className="color-swabs">
+      <tbody>{colorSwabs}</tbody>
+    </table>
+  );
 };

@@ -42,11 +42,13 @@ interface VisSelectorMenuState {
   visualizationSettings: VisualizationSettings;
 }
 
-export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSelectorMenuState> {
-
+export class VisSelectorMenu extends React.Component<
+  VisSelectorMenuProps,
+  VisSelectorMenuState
+> {
   state: VisSelectorMenuState = {
     visualization: this.props.initialVisualization,
-    visualizationSettings: this.props.initialSettings
+    visualizationSettings: this.props.initialSettings,
   };
 
   save = () => {
@@ -58,16 +60,23 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
 
   close = () => this.props.onClose();
 
-  changeVisualization = (visualization: VisualizationManifest) => this.setState({ visualization, visualizationSettings: visualization.visualizationSettings.defaults });
-  changeSettings = (visualizationSettings: VisualizationSettings) => this.setState({ visualizationSettings });
+  changeVisualization = (visualization: VisualizationManifest) =>
+    this.setState({
+      visualization,
+      visualizationSettings: visualization.visualizationSettings.defaults,
+    });
+  changeSettings = (visualizationSettings: VisualizationSettings) =>
+    this.setState({ visualizationSettings });
 
   renderSettings() {
     const component = this.settingsComponent();
     if (!component) return null;
-    return <div className="vis-settings">
-      <div className="vis-settings-title">Settings</div>
-      {component}
-    </div>;
+    return (
+      <div className="vis-settings">
+        <div className="vis-settings-title">Settings</div>
+        {component}
+      </div>
+    );
   }
 
   settingsComponent(): JSX.Element | null {
@@ -84,7 +93,14 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
     switch (visualization.name) {
       case "table":
         const TableSettingsComponent = settingsComponent(visualization.name);
-        return <TableSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<TableSettings>} />;
+        return (
+          <TableSettingsComponent
+            // @ts-ignore
+            onChange={this.changeSettings}
+            // @ts-ignore
+            settings={visualizationSettings as ImmutableRecord<TableSettings>}
+          />
+        );
       case "heatmap":
         return null;
       case "totals":
@@ -92,27 +108,46 @@ export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSe
       case "bar-chart":
         return null;
       case "line-chart":
-        const LineChartSettingsComponent = settingsComponent(visualization.name);
-        return <LineChartSettingsComponent onChange={this.changeSettings} settings={visualizationSettings as ImmutableRecord<LineChartSettings>}/>;
+        const LineChartSettingsComponent = settingsComponent(
+          visualization.name,
+        );
+        return (
+          <LineChartSettingsComponent
+            // @ts-ignore
+            onChange={this.changeSettings}
+            // @ts-ignore
+            settings={visualizationSettings as ImmutableRecord<LineChartSettings>}
+          />
+        );
     }
   }
 
   render() {
     const { visualization: selected } = this.state;
 
-    return <div className="vis-selector-menu">
-      <div className="vis-items">
-        {MANIFESTS.map(visualization => <VisSelectorItem
-          key={visualization.name}
-          visualization={visualization}
-          selected={visualization.name === selected.name}
-          onClick={this.changeVisualization} />)}
+    return (
+      <div className="vis-selector-menu">
+        <div className="vis-items">
+          {MANIFESTS.map(visualization => (
+            <VisSelectorItem
+              key={visualization.name}
+              // @ts-ignore
+              visualization={visualization}
+              selected={visualization.name === selected.name}
+              onClick={this.changeVisualization}
+            />
+          ))}
+        </div>
+        {this.renderSettings()}
+        <div className="ok-cancel-bar">
+          <Button type="primary" title={STRINGS.ok} onClick={this.save} />
+          <Button
+            type="secondary"
+            title={STRINGS.cancel}
+            onClick={this.close}
+          />
+        </div>
       </div>
-      {this.renderSettings()}
-      <div className="ok-cancel-bar">
-        <Button type="primary" title={STRINGS.ok} onClick={this.save} />
-        <Button type="secondary" title={STRINGS.cancel} onClick={this.close} />
-      </div>
-    </div>;
+    );
   }
 }

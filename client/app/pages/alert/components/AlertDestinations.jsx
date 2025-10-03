@@ -2,8 +2,13 @@ import { without, find, includes, map, toLower } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 
+import Link from "@/components/Link";
+import Button from "antd/lib/button";
 import SelectItemsDialog from "@/components/SelectItemsDialog";
-import { Destination as DestinationType, UserProfile as UserType } from "@/components/proptypes";
+import {
+  Destination as DestinationType,
+  UserProfile as UserType,
+} from "@/components/proptypes";
 
 import DestinationService, { IMG_ROOT } from "@/services/destination";
 import AlertSubscription from "@/services/alert-subscription";
@@ -11,11 +16,11 @@ import { clientConfig, currentUser } from "@/services/auth";
 import notification from "@/services/notification";
 import ListItemAddon from "@/components/groups/ListItemAddon";
 import EmailSettingsWarning from "@/components/EmailSettingsWarning";
+import PlainButton from "@/components/PlainButton";
+import Tooltip from "@/components/Tooltip";
 
-import Icon from "antd/lib/icon";
-import Tooltip from "antd/lib/tooltip";
+import CloseOutlinedIcon from "@ant-design/icons/CloseOutlined";
 import Switch from "antd/lib/switch";
-import Button from "antd/lib/button";
 
 import "./AlertDestinations.less";
 
@@ -38,14 +43,25 @@ function ListItem({ destination: { name, type }, user, unsubscribe }) {
 
   return (
     <li className="destination-wrapper">
-      <img src={`${IMG_ROOT}/${type}.png`} className="destination-icon" alt={name} />
+      <img
+        src={`${IMG_ROOT}/${type}.png`}
+        className="destination-icon"
+        alt={name}
+      />
       <span className="flex-fill">{name}</span>
       {type === "email" && (
-        <EmailSettingsWarning className="destination-warning" featureName="alert emails" mode="icon" />
+        <EmailSettingsWarning
+          className="destination-warning"
+          featureName="alert emails"
+          mode="icon"
+        />
       )}
       {canUnsubscribe && (
         <Tooltip title="Remove" mouseEnterDelay={0.5}>
-          <Icon type="close" className="remove-button" onClick={unsubscribe} />
+          <PlainButton className="remove-button" onClick={unsubscribe}>
+            {/* TODO: lacks visual feedback */}
+            <CloseOutlinedIcon />
+          </PlainButton>
         </Tooltip>
       )}
     </li>
@@ -87,11 +103,12 @@ export default class AlertDestinations extends React.Component {
       showCount: true,
       extraFooterContent: (
         <>
-          <i className="fa fa-info-circle" /> Create new destinations in{" "}
+          <i className="fa fa-info-circle" aria-hidden="true" /> Create new
+          destinations in{" "}
           <Tooltip title="Opens page in a new tab.">
-            <a href="destinations/new" target="_blank">
+            <Link href="destinations/new" target="_blank">
               Alert Destinations
-            </a>
+            </Link>
           </Tooltip>
         </>
       ),
@@ -99,7 +116,9 @@ export default class AlertDestinations extends React.Component {
       inputPlaceholder: "Search destinations...",
       searchItems: searchTerm => {
         searchTerm = toLower(searchTerm);
-        return Promise.resolve(dests.filter(d => includes(toLower(d.name), searchTerm)));
+        return Promise.resolve(
+          dests.filter(d => includes(toLower(d.name), searchTerm)),
+        );
       },
       renderItem: (item, { isSelected }) => {
         const alreadyInGroup = !!find(subs, s => s.destination.id === item.id);
@@ -107,9 +126,17 @@ export default class AlertDestinations extends React.Component {
         return {
           content: (
             <div className="destination-wrapper">
-              <img src={`${IMG_ROOT}/${item.type}.png`} className="destination-icon" alt={item.name} />
+              <img
+                src={`${IMG_ROOT}/${item.type}.png`}
+                className="destination-icon"
+                alt={item.name}
+              />
               <span className="flex-fill">{item.name}</span>
-              <ListItemAddon isSelected={isSelected} alreadyInGroup={alreadyInGroup} deselectedIcon="fa-plus" />
+              <ListItemAddon
+                isSelected={isSelected}
+                alreadyInGroup={alreadyInGroup}
+                deselectedIcon="fa-plus"
+              />
             </div>
           ),
           isDisabled: alreadyInGroup,
@@ -182,21 +209,29 @@ export default class AlertDestinations extends React.Component {
 
     return (
       <div className="alert-destinations" data-test="AlertDestinations">
-        <Tooltip title='Click to add an existing "Alert Destination"' mouseEnterDelay={0.5}>
+        <Tooltip
+          title='Click to add an existing "Alert Destination"'
+          mouseEnterDelay={0.5}
+        >
           <Button
             data-test="ShowAddAlertSubDialog"
             type="primary"
             size="small"
             className="add-button"
-            onClick={this.showAddAlertSubDialog}>
-            <i className="fa fa-plus f-12 m-r-5" /> Add
+            onClick={this.showAddAlertSubDialog}
+          >
+            <i className="fa fa-plus f-12 m-r-5" aria-hidden="true" /> Add
           </Button>
         </Tooltip>
         <ul>
           <li className="destination-wrapper">
-            <i className="destination-icon fa fa-envelope" />
+            <i className="destination-icon fa fa-envelope" aria-hidden="true" />
             <span className="flex-fill">{currentUser.email}</span>
-            <EmailSettingsWarning className="destination-warning" featureName="alert emails" mode="icon" />
+            <EmailSettingsWarning
+              className="destination-warning"
+              featureName="alert emails"
+              mode="icon"
+            />
             {!mailSettingsMissing && (
               <Switch
                 size="small"
@@ -209,7 +244,11 @@ export default class AlertDestinations extends React.Component {
             )}
           </li>
           {filteredSubs.map(s => (
-            <ListItem key={s.id} unsubscribe={() => this.unsubscribe(s)} {...s} />
+            <ListItem
+              key={s.id}
+              unsubscribe={() => this.unsubscribe(s)}
+              {...s}
+            />
           ))}
         </ul>
       </div>

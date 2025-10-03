@@ -17,8 +17,14 @@
 
 import React from "react";
 import * as ReactDOM from "react-dom";
-import { SerializedAppSettings } from "../common/models/app-settings/app-settings";
-import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper";
+import {
+  AppSettings,
+  AppSettingsJS,
+} from "../common/models/app-settings/app-settings";
+import {
+  Timekeeper,
+  TimekeeperJS,
+} from "../common/models/timekeeper/timekeeper";
 import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
 import { Loader } from "./components/loader/loader";
 import { deserialize as deserializeAppSettings } from "./deserializers/app-settings";
@@ -30,10 +36,7 @@ const container = document.getElementsByClassName("app-container")[0];
 if (!container) throw new Error("container not found");
 
 // Add the loader
-ReactDOM.render(
-  React.createElement(Loader),
-  container
-);
+ReactDOM.render(React.createElement(Loader), container);
 
 interface Config {
   version: string;
@@ -50,17 +53,17 @@ const version = config.version;
 
 Ajax.version = version;
 
-const appSettings = deserializeAppSettings(config.appSettings);
+const appSettings = AppSettings.fromJS(config.appSettings, {
+  executorFactory: Ajax.queryUrlExecutorFactory.bind(config),
+});
 
-if (config.appSettings.customization.sentryDSN) {
-  errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
-}
-
-const app = <TurniloApplication
-  version={version}
-  appSettings={appSettings}
-  initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
-/>;
+const app = (
+  <TurniloApplication
+    version={version}
+    appSettings={appSettings}
+    initTimekeeper={Timekeeper.fromJS(config.timekeeper)}
+  />
+);
 
 ReactDOM.render(app, container);
 

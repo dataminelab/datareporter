@@ -3,17 +3,17 @@ import json
 from typing import List, Union
 
 import lzstring
-from flask_restful import abort
 from flask import url_for
+from flask_restful import abort
 
+from redash import redis_connection
 from redash.handlers.base import get_object_or_404
 from redash.handlers.query_results import run_query
-from redash.models import ParameterizedQuery, User, Organization, ApiKey, QueryResult
+from redash.models import ApiKey, Organization, ParameterizedQuery, QueryResult, User
 from redash.models.models import Model
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
-from redash import redis_connection
-from redash.plywood.objects.report_serializer import ReportSerializer, ReportMetaData
+from redash.plywood.objects.report_serializer import ReportSerializer
 from redash.plywood.parsers.filter_parser import PlywoodFilterParser
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers import serialize_job
@@ -256,9 +256,12 @@ class ReportHash:
             "isAdmin": is_admin(o.user),
         }
         # self.user = User.get_by_id(o.user.id)
-        self.isJustLanded = True
+        self.landed = True
         self.can_edit = None
         self.queries = []
+        self.last_modified_by_id = o.last_modified_by_id
+        self.last_modified_by = User.get_by_id(o.last_modified_by_id).to_dict()
+        self.results = None
 
     def set_data_cube(self, data_cube: DataCube):
         self.appSettings["dataCubes"].append(data_cube)
@@ -291,8 +294,8 @@ class ReportHash:
         return self
 
     def set_data_cube_from_dict(self, obj):
-        data_cube = DataCube()
-        data_cube.set_from_dict(obj)
+        self.set_from_dict(obj)
+        data_cube = DataCube(obj)
         self.set_data_cube(data_cube)
         return self
 
@@ -310,7 +313,7 @@ def hash_report(o: dict, can_edit: bool, get_results: bool = False):
 
 def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: bool = False):
     data_cube = get_data_cube(model)
-    expression = Expression(hash=hash_string, data_cube=data_cube)
+    expression = Expression(hash_string, data_cube)
     if bypass_cache:
         queries_result = clear_cache_and_get(
             hash_string,

@@ -22,7 +22,7 @@ import { QuantileSeries } from "./quantile-series";
 
 const quantileMeasure = Measure.fromJS({
   name: "my-quantile",
-  formula: "$main.quantile($histogram, 0.92, 'tuning')"
+  formula: "$main.quantile($histogram, 0.92, 'tuning')",
 });
 
 const quantileSeries = QuantileSeries.fromQuantileMeasure(quantileMeasure);
@@ -30,19 +30,27 @@ const quantileSeries = QuantileSeries.fromQuantileMeasure(quantileMeasure);
 describe("QuantileSeries", () => {
   describe("fromQuantileMeasure", () => {
     it("throws when measure expression is not a quantile", () => {
-      expect(() => QuantileSeries.fromQuantileMeasure(MeasureFixtures.wikiCount())).throws(/Expected QuantileExpression/);
+      expect(() =>
+        QuantileSeries.fromQuantileMeasure(MeasureFixtures.wikiCount()),
+      ).throws(/Expected QuantileExpression/);
     });
 
     it("creates QuantileSeries from Measure with quantile expression", () => {
-      expect(QuantileSeries.fromQuantileMeasure(quantileMeasure)).to.be.instanceOf(QuantileSeries);
+      expect(
+        QuantileSeries.fromQuantileMeasure(quantileMeasure),
+      ).to.be.instanceOf(QuantileSeries);
     });
 
     it("creates QuantileSeries with measure name as reference", () => {
-      expect(QuantileSeries.fromQuantileMeasure(quantileMeasure).reference).to.eq("my-quantile");
+      expect(
+        QuantileSeries.fromQuantileMeasure(quantileMeasure).reference,
+      ).to.eq("my-quantile");
     });
 
     it("creates QuantileSeries with percentile taken from expression multiplied by 100", () => {
-      expect(QuantileSeries.fromQuantileMeasure(quantileMeasure).percentile).to.eq(92);
+      expect(
+        QuantileSeries.fromQuantileMeasure(quantileMeasure).percentile,
+      ).to.eq(92);
     });
   });
 
@@ -54,15 +62,21 @@ describe("QuantileSeries", () => {
 
   describe("plywoodKey", () => {
     it("constructs plywood key from reference, period and percentile for current period", () => {
-      expect(quantileSeries.plywoodKey(SeriesDerivation.CURRENT)).to.eq("my-quantile__p92");
+      expect(quantileSeries.plywoodKey(SeriesDerivation.CURRENT)).to.eq(
+        "my-quantile__p92",
+      );
     });
 
     it("constructs plywood key from reference, period and percentile for previous period", () => {
-      expect(quantileSeries.plywoodKey(SeriesDerivation.PREVIOUS)).to.eq("_previous__my-quantile__p92");
+      expect(quantileSeries.plywoodKey(SeriesDerivation.PREVIOUS)).to.eq(
+        "_previous__my-quantile__p92",
+      );
     });
 
     it("constructs plywood key from reference, period and percentile for delta", () => {
-      expect(quantileSeries.plywoodKey(SeriesDerivation.DELTA)).to.eq("_delta__my-quantile__p92");
+      expect(quantileSeries.plywoodKey(SeriesDerivation.DELTA)).to.eq(
+        "_delta__my-quantile__p92",
+      );
     });
   });
 });

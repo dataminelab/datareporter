@@ -33,12 +33,31 @@ export interface VerticalAxisProps {
   hideZero?: boolean;
 }
 
-export const VerticalAxis: React.SFC<VerticalAxisProps> = ({ formatter, stage, tickSize, ticks: inputTicks, scale, topLineExtend = 0, hideZero }) => {
-  const ticks = hideZero ? inputTicks.filter((tick: number) => tick !== 0) : inputTicks;
+export const VerticalAxis: React.SFC<VerticalAxisProps> = ({
+  formatter,
+  stage,
+  tickSize,
+  ticks: inputTicks,
+  scale,
+  topLineExtend = 0,
+  hideZero,
+}) => {
+  const ticks = hideZero
+    ? inputTicks.filter((tick: number) => tick !== 0)
+    : inputTicks;
 
   const lines = ticks.map((tick: any) => {
     const y = roundToHalfPx(scale(tick));
-    return <line className="tick" key={String(tick)} x1={0} y1={y} x2={tickSize} y2={y} />;
+    return (
+      <line
+        className="tick"
+        key={String(tick)}
+        x1={0}
+        y1={y}
+        x2={tickSize}
+        y2={y}
+      />
+    );
   });
 
   const labelX = tickSize + TEXT_OFFSET;
@@ -46,12 +65,24 @@ export const VerticalAxis: React.SFC<VerticalAxisProps> = ({ formatter, stage, t
 
   const labels = ticks.map((tick: any) => {
     const y = scale(tick);
-    return <text className="tick" key={String(tick)} x={labelX} y={y} dy={dy}>{formatter(tick)}</text>;
+    return (
+      <text className="tick" key={String(tick)} x={labelX} y={y} dy={dy}>
+        {formatter(tick)}
+      </text>
+    );
   });
 
-  return <g className="vertical-axis" transform={stage.getTransform()}>
-    <line className="border" x1={0.5} y1={-topLineExtend} x2={0.5} y2={stage.height} />
-    {lines}
-    {labels}
-  </g>;
+  return (
+    <g className="vertical-axis" transform={stage.getTransform()}>
+      <line
+        className="border"
+        x1={0.5}
+        y1={-topLineExtend}
+        x2={0.5}
+        y2={stage.height}
+      />
+      {lines}
+      {labels}
+    </g>
+  );
 };

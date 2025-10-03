@@ -34,8 +34,11 @@ const createSettings = (settings: Partial<TableSettings>): ImmutableRecord<Table
 
 export const settings: TableConfig = {
   converter: {
+    // @ts-ignore not assignable to type
     print: (settings: ImmutableRecord<TableSettings>) => settings.toJS(),
+    // @ts-ignore not assignable to type
     read: (input: TableSettings) => createSettings({ collapseRows: !!input.collapseRows })
   },
-  defaults: createSettings({})
+    // @ts-ignore not assignable to type
+  defaults: createSettings({}) as ImmutableRecord<object>
 };

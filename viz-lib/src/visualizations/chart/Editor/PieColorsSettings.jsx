@@ -21,7 +21,6 @@ export default function PieColorsSettings({ options, data, onOptionsChange }) {
   const colors = useMemo(
     () => ({
       Automatic: null,
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       ...AllColorPalettes[options.color_scheme],
     }),
     [options.color_scheme]
@@ -31,7 +30,6 @@ export default function PieColorsSettings({ options, data, onOptionsChange }) {
     () =>
       map(getUniqueValues(getChartData(data.rows, options)), value => ({
         key: value,
-        // @ts-expect-error ts-migrate(2538) FIXME: Type 'unknown' cannot be used as an index type.
         color: (options.valuesOptions[value] || {}).color || null,
       })),
     [options, data]
@@ -75,7 +73,6 @@ export default function PieColorsSettings({ options, data, onOptionsChange }) {
 
   return (
     <React.Fragment>
-      {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
       <Section>
           <Select
             label="Color Scheme"
@@ -83,8 +80,7 @@ export default function PieColorsSettings({ options, data, onOptionsChange }) {
             data-test="ColorScheme"
             onChange={(val ) => onOptionsChange({ color_scheme: val })}>
             {Object.keys(AllColorPalettes).map(option => (
-             // @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message
-              <Select.Option data-test={`ColorOption${option}`} key={option} value={option}>{option}</Select.Option>
+             <Select.Option data-test={`ColorOption${option}`} key={option} value={option}>{option}</Select.Option>
             ))}
           </Select>
         </Section>

@@ -114,13 +114,13 @@ def refresh_queries():
     }
 
     redis_connection.hset("redash:status", mapping=status)
-    logger.info("Done refreshing queries: %s" % status)
+    logger.info("Done refreshing queries: %s", status)
 
 
 def cleanup_query_results():
     """
     Job to cleanup unused query results -- such that no query links to them anymore, and older than
-    settings.QUERY_RESULTS_CLEANUP_MAX_AGE (a week by default, so it's less likely to be open in someone's browser and be used).
+    settings.QUERY_RESULTS_CLEANUP_MAX_AGE (a week by default, so it's less likely to be open in someone's browser and be used)
 
     Each time the job deletes only settings.QUERY_RESULTS_CLEANUP_COUNT (100 by default) query results so it won't choke
     the database in case of many such results.
@@ -204,7 +204,7 @@ def refresh_schemas():
 
     logger.info("task=refresh_schemas state=start")
 
-    for ds in models.DataSource.query:
+    for ds in models.DataSource.query.all():
         if ds.paused:
             logger.info(
                 "task=refresh_schema state=skip ds_id=%s reason=paused(%s)",

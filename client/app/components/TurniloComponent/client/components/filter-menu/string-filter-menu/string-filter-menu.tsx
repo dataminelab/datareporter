@@ -26,7 +26,10 @@ import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
 import { BubbleMenu } from "../../bubble-menu/bubble-menu";
-import { FilterOption, FilterOptionsDropdown } from "../../filter-options-dropdown/filter-options-dropdown";
+import {
+  FilterOption,
+  FilterOptionsDropdown,
+} from "../../filter-options-dropdown/filter-options-dropdown";
 import { PreviewStringFilterMenu } from "../../preview-string-filter-menu/preview-string-filter-menu";
 import { SelectableStringFilterMenu } from "../../selectable-string-filter-menu/selectable-string-filter-menu";
 import "./string-filter-menu.scss";
@@ -47,17 +50,23 @@ export interface StringFilterMenuState {
   filterMode?: FilterMode;
 }
 
-export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
-
+export class StringFilterMenu extends React.Component<
+  StringFilterMenuProps,
+  StringFilterMenuState
+> {
   private initialFilterMode = (): FilterMode => {
-    const { essence: { filter }, dimension } = this.props;
+    const {
+      essence: { filter },
+      dimension,
+    } = this.props;
     const filterMode = filter.getModeForDimension(dimension);
     return filterMode || FilterMode.INCLUDE;
   };
 
   state: StringFilterMenuState = { filterMode: this.initialFilterMode() };
 
-  onSelectFilterOption = (filterMode: FilterMode) => this.setState({ filterMode });
+  onSelectFilterOption = (filterMode: FilterMode) =>
+    this.setState({ filterMode });
 
   updateFilter: (clause: FilterClause) => Filter = clause => {
     const { essence, dimension, changePosition } = this.props;
@@ -79,8 +88,17 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { dimension } = this.props;
     const dimensionKind = dimension.kind;
 
-    let filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
-    if (dimensionKind !== "boolean") filterOptions = filterOptions.concat(FilterOptionsDropdown.getFilterOptions(FilterMode.REGEX, FilterMode.CONTAINS));
+    let filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(
+      FilterMode.INCLUDE,
+      FilterMode.EXCLUDE,
+    );
+    if (dimensionKind !== "boolean")
+      filterOptions = filterOptions.concat(
+        FilterOptionsDropdown.getFilterOptions(
+          FilterMode.REGEX,
+          FilterMode.CONTAINS,
+        ),
+      );
 
     return filterOptions;
   }
@@ -89,7 +107,14 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { dimension, clicker, essence, timekeeper, onClose } = this.props;
     const { filterMode } = this.state;
     const onClauseChange = this.updateFilter;
-    const props = { dimension, clicker, essence, timekeeper, onClose, onClauseChange };
+    const props = {
+      dimension,
+      clicker,
+      essence,
+      timekeeper,
+      onClose,
+      onClauseChange,
+    };
     switch (filterMode) {
       case FilterMode.EXCLUDE:
       case FilterMode.INCLUDE:
@@ -107,23 +132,25 @@ export class StringFilterMenu extends React.Component<StringFilterMenuProps, Str
     const { filterMode } = this.state;
     if (!dimension) return null;
 
-    return <BubbleMenu
-      className="string-filter-menu"
-      direction="down"
-      containerStage={containerStage}
-      stage={Stage.fromSize(300, 410)}
-      openOn={openOn}
-      onClose={onClose}
-      inside={inside}
-    >
-      <div className="string-filter-content">
-        <FilterOptionsDropdown
-          selectedOption={filterMode}
-          onSelectOption={this.onSelectFilterOption}
-          filterOptions={this.getFilterOptions()}
-        />
-        {this.renderFilterControls()}
-      </div>
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        className="string-filter-menu"
+        direction="down"
+        containerStage={containerStage}
+        stage={Stage.fromSize(300, 410)}
+        openOn={openOn}
+        onClose={onClose}
+        inside={inside}
+      >
+        <div className="string-filter-content">
+          <FilterOptionsDropdown
+            selectedOption={filterMode}
+            onSelectOption={this.onSelectFilterOption}
+            filterOptions={this.getFilterOptions()}
+          />
+          {this.renderFilterControls()}
+        </div>
+      </BubbleMenu>
+    );
   }
 }

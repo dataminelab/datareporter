@@ -5,7 +5,10 @@ try:
 except ImportError:
     enabled = False
 import json
-from psycopg2.extensions import register_adapter, AsIs
+import logging
+
+from psycopg2.extensions import AsIs, register_adapter
+
 from redash.query_runner import (
     TYPE_BOOLEAN,
     TYPE_INTEGER,
@@ -13,7 +16,7 @@ from redash.query_runner import (
     BaseQueryRunner,
     register,
 )
-import logging
+
 logger = logging.getLogger(__name__)
 TYPES_MAP = {1: TYPE_STRING, 2: TYPE_INTEGER, 3: TYPE_BOOLEAN}
 
@@ -49,7 +52,7 @@ class Druid(BaseQueryRunner):
             scheme=(self.configuration.get("scheme") or "http"),
             user=(self.configuration.get("user") or None),
             password=(self.configuration.get("password") or None),
-            context={'enableWindowing': True},
+            context={"enableWindowing": True},
         )
 
         cursor = connection.cursor()
@@ -89,12 +92,10 @@ class Druid(BaseQueryRunner):
             if table_name not in schema:
                 schema[table_name] = {"name": table_name, "columns": []}
 
-            schema[table_name]["columns"].append({
-                'name': row["COLUMN_NAME"],
-                'type':row["DATA_TYPE"]
-            })
+            schema[table_name]["columns"].append({"name": row["COLUMN_NAME"], "type": row["DATA_TYPE"]})
 
         return list(schema.values())
+
 
 def adapt_dict(dict_var):
     return AsIs("'" + json.dumps(dict_var) + "'")

@@ -1,24 +1,45 @@
 import unittest
+
 from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
-from tests.plywood.fixtures.test_data_0_split_1_measure_1_filter.sample_1 import POSTGRES_0_SPLIT_JOBS, \
-    POSTGRES_0_SPLIT_SHAPE, POSTGRES_0_SPLIT_RESULT
-from tests.plywood.fixtures.test_data_0_split_1_measure_1_filter_timeshift.sample_1 import \
-    POSTGRES_0_SPLIT_JOBS_TIMESHIFT, POSTGRES_0_SPLIT_SHAPE_TIMESHIFT, POSTGRES_0_SPLIT_RESULT_TIMESHIFT
-from tests.plywood.fixtures.test_data_1_split_1_measure_1filter_timeshift.sample_1 import \
-    POSTGRES_1_SPLIT_JOBS_TIMESHIFT, POSTGRES_1_SPLIT_SHAPE_TIMESHIFT, POSTGRES_1_SPLIT_RESULT_TIMESHIFT
-from tests.plywood.fixtures.test_data_1_split_1_mesture_1_filter.sample_1 import POSTGRES_1_SLIT_JOBS, \
-    TEST_DATA_1_SPLIT_SHAPE, POSTGRES_1_SPLIT_RESULT
-from tests.plywood.fixtures.test_data_2_splits_1_measue_big_query import POSTGRES_2_SLIT_JOBS_BIG_QUERY, \
-    TEST_DATA_2_SPLIT_SHAPE_BIG_QUERY, POSTGRES_2_SPLIT_RESULT_BIG_QUERY, POSTGRES_LINE_CHART_RESULT, \
-    POSTGRES_LINE_CHART_SHAPE, BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE, POSTGRES_LINE_CHART_RESULT_TO_COMPARE
-from tests.plywood.fixtures.test_data_2_splits_1_measure_1_filter import POSTGRES_2_SLIT_JOBS, TEST_DATA_2_SPLIT_SHAPE, \
-    POSTGRES_2_SPLIT_RESULT
+from tests.plywood.fixtures.test_data_0_split_1_measure_1_filter.sample_1 import (
+    POSTGRES_0_SPLIT_JOBS,
+    POSTGRES_0_SPLIT_RESULT,
+    POSTGRES_0_SPLIT_SHAPE,
+)
+from tests.plywood.fixtures.test_data_0_split_1_measure_1_filter_timeshift.sample_1 import (
+    POSTGRES_0_SPLIT_JOBS_TIMESHIFT,
+    POSTGRES_0_SPLIT_RESULT_TIMESHIFT,
+    POSTGRES_0_SPLIT_SHAPE_TIMESHIFT,
+)
+from tests.plywood.fixtures.test_data_1_split_1_measure_1filter_timeshift.sample_1 import (
+    POSTGRES_1_SPLIT_JOBS_TIMESHIFT,
+    POSTGRES_1_SPLIT_RESULT_TIMESHIFT,
+    POSTGRES_1_SPLIT_SHAPE_TIMESHIFT,
+)
+from tests.plywood.fixtures.test_data_1_split_1_mesture_1_filter.sample_1 import (
+    POSTGRES_1_SLIT_JOBS,
+    POSTGRES_1_SPLIT_RESULT,
+    TEST_DATA_1_SPLIT_SHAPE,
+)
+from tests.plywood.fixtures.test_data_2_splits_1_measue_big_query import (
+    BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE,
+    POSTGRES_2_SLIT_JOBS_BIG_QUERY,
+    POSTGRES_2_SPLIT_RESULT_BIG_QUERY,
+    POSTGRES_LINE_CHART_RESULT,
+    POSTGRES_LINE_CHART_SHAPE,
+    TEST_DATA_2_SPLIT_SHAPE_BIG_QUERY,
+)
+from tests.plywood.fixtures.test_data_2_splits_1_measure_1_filter import (
+    POSTGRES_2_SLIT_JOBS,
+    POSTGRES_2_SPLIT_RESULT,
+    TEST_DATA_2_SPLIT_SHAPE,
+)
 
-CUSTOMER_DATA_CUBE = 'customer'
-CUSTOMER_DATA_CUBE_BIG_QUERY = 'public.wikiticker'
+CUSTOMER_DATA_CUBE = "customer"
+CUSTOMER_DATA_CUBE_BIG_QUERY = "public.wikiticker"
 
-ENGINE = 'postgres'
-ENGINE_BIG_QUERY = 'bigquery'
+ENGINE = "postgres"
+ENGINE_BIG_QUERY = "bigquery"
 
 
 class TestPostgresParseV2(unittest.TestCase):
@@ -95,7 +116,7 @@ class TestPostgresParseV2(unittest.TestCase):
             data_cube_name=CUSTOMER_DATA_CUBE_BIG_QUERY,
             query_result=POSTGRES_LINE_CHART_RESULT,
             shape=POSTGRES_LINE_CHART_SHAPE,
-            visualization='line-chart'
+            visualization="line-chart",
         )
         data = parser.parse_ply(ENGINE_BIG_QUERY)
         self.assertDictEqual(data.dict(), BIG_QUERY_LINE_CHART_RESULT_TO_COMPARE)

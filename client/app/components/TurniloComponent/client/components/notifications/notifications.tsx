@@ -47,7 +47,7 @@ export interface Choice {
 
 export interface Question {
   title: string;
-  message: (string | string[]);
+  message: string | string[];
   choices: Choice[];
   onClose?: () => void;
 }
@@ -58,7 +58,9 @@ export class Notifier {
 
   static question: Question = null;
 
-  static listeners: Array<(notifications: Notification[], question?: Question) => void> = [];
+  static listeners: Array<
+    (notifications: Notification[], question?: Question) => void
+  > = [];
 
   private static create(notification: Notification): number {
     notification.id = Notifier.counter++;
@@ -70,7 +72,9 @@ export class Notifier {
   }
 
   private static callListeners() {
-    Notifier.listeners.forEach(cb => cb(Notifier.notifications, Notifier.question));
+    Notifier.listeners.forEach(cb =>
+      cb(Notifier.notifications, Notifier.question),
+    );
   }
 
   public static info(title: string, message?: string) {
@@ -85,7 +89,9 @@ export class Notifier {
     Notifier.create({ title, priority: "success", action });
   }
 
-  public static subscribe(callback: (notifications: Notification[], question: Question) => void) {
+  public static subscribe(
+    callback: (notifications: Notification[], question: Question) => void,
+  ) {
     Notifier.listeners.push(callback);
   }
 
@@ -118,7 +124,8 @@ export class Notifier {
 
   // Questions
   public static ask(question: Question) {
-    if (Notifier.question) throw new Error("There is already a pending question");
+    if (Notifier.question)
+      throw new Error("There is already a pending question");
 
     Notifier.question = question;
 
@@ -134,7 +141,7 @@ export class Notifier {
   }
 
   public static clear() {
-    this.notifications.forEach(n => n.discarded = true);
+    this.notifications.forEach(n => (n.discarded = true));
     Notifier.callListeners();
   }
 
@@ -149,7 +156,9 @@ export class Notifier {
     Notifier.listeners.forEach(cb => cb(Notifier.notifications));
   }
 
-  public static unsubscribe(callback: (notifications: Notification[], question: Question) => void) {
+  public static unsubscribe(
+    callback: (notifications: Notification[], question: Question) => void,
+  ) {
     const index = Notifier.listeners.indexOf(callback);
 
     if (index === -1) {
@@ -164,9 +173,12 @@ export interface NotificationsState {
   notifications: Notification[];
 }
 
-export class Notifications extends React.Component<React.Props<any>, NotificationsState> {
+export class Notifications extends React.Component<
+  React.Props<any>,
+  NotificationsState
+> {
   state: NotificationsState = {
-    notifications: []
+    notifications: [],
   };
 
   componentDidMount() {
@@ -195,9 +207,11 @@ export class Notifications extends React.Component<React.Props<any>, Notificatio
   }
 
   render() {
-    return <BodyPortal left={"50%"} top={"10px"} isAboveAll={true}>
-      <div className="notifications">{this.renderCards()}</div>
-    </BodyPortal>;
+    return (
+      <BodyPortal left={"50%"} top={"10px"} isAboveAll={true}>
+        <div className="notifications">{this.renderCards()}</div>
+      </BodyPortal>
+    );
   }
 }
 
@@ -205,7 +219,10 @@ export interface QuestionsState {
   question?: Question;
 }
 
-export class Questions extends React.Component<React.Props<any>, QuestionsState> {
+export class Questions extends React.Component<
+  React.Props<any>,
+  QuestionsState
+> {
   state: QuestionsState = {};
 
   componentDidMount() {
@@ -225,22 +242,32 @@ export class Questions extends React.Component<React.Props<any>, QuestionsState>
 
     if (!question) return null;
 
-    return <Modal
-      className="remove-modal"
-      title={question.title}
-      onClose={question.onClose}
-    >
-      {Array.isArray(question.message)
-        ? question.message.map((line, i) => <p key={i}>{line}</p>)
-        : <p>{question.message}</p>
-      }
+    return (
+      <Modal
+        className="remove-modal"
+        title={question.title}
+        onClose={question.onClose}
+      >
+        {Array.isArray(question.message) ? (
+          question.message.map((line, i) => <p key={i}>{line}</p>)
+        ) : (
+          <p>{question.message}</p>
+        )}
 
-      <div className="button-bar">
-        {question.choices.map(({ label, callback, type, className }, i) => {
-          return <Button key={i} className={className} title={label} type={type} onClick={callback} />;
-        })}
-      </div>
-
-    </Modal>;
+        <div className="button-bar">
+          {question.choices.map(({ label, callback, type, className }, i) => {
+            return (
+              <Button
+                key={i}
+                className={className}
+                title={label}
+                type={type}
+                onClick={callback}
+              />
+            );
+          })}
+        </div>
+      </Modal>
+    );
   }
 }

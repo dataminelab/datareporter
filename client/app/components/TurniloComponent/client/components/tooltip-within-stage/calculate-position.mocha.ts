@@ -24,25 +24,25 @@ describe("calculatePosition", () => {
       const position = calculatePosition({
         top: 100,
         left: 200,
-        stage: null
+        stage: null,
       });
       const expected = {
         top: 110,
-        left: 210
+        left: 210,
       };
       expect(position).to.be.deep.equal(expected);
     });
 
-    it("should allow to override margins ", () => {
+    it("should allow to override margins", () => {
       const position = calculatePosition({
         top: 100,
         left: 200,
         margin: 300,
-        stage: null
+        stage: null,
       });
       const expected = {
         top: 400,
-        left: 500
+        left: 500,
       };
       expect(position).to.be.deep.equal(expected);
     });
@@ -55,78 +55,96 @@ describe("calculatePosition", () => {
       width: 200,
       height: 200,
       right: 310,
-      bottom: 410
+      bottom: 410,
     };
 
     const stage = Stage.fromJS({
       x: 100,
       y: 200,
       width: 800,
-      height: 600
+      height: 600,
     });
 
     describe("top position", () => {
       it("should just add margin if inside", () => {
-        const position = calculatePosition({
-          top: defaultRect.top,
-          left: defaultRect.left,
-          stage
-        }, defaultRect);
+        const position = calculatePosition(
+          {
+            top: defaultRect.top,
+            left: defaultRect.left,
+            stage,
+          },
+          defaultRect,
+        );
         expect(position).to.include({ top: 220 });
       });
 
       it("should move upward if overflows stage at bottom", () => {
         const top = 700;
         const rect = { ...defaultRect, top, bottom: defaultRect.height + top };
-        const position = calculatePosition({
-          top: rect.top,
-          left: rect.left,
-          stage
-        }, rect);
+        const position = calculatePosition(
+          {
+            top: rect.top,
+            left: rect.left,
+            stage,
+          },
+          rect,
+        );
         expect(position).to.include({ top: 490 });
       });
 
       it("should move downward if overflows stage at top", () => {
         const top = 100;
         const rect = { ...defaultRect, top, bottom: defaultRect.height + top };
-        const position = calculatePosition({
-          top: rect.top,
-          left: rect.left,
-          stage
-        }, rect);
+        const position = calculatePosition(
+          {
+            top: rect.top,
+            left: rect.left,
+            stage,
+          },
+          rect,
+        );
         expect(position).to.include({ top: 300 });
       });
     });
 
     describe("left position", () => {
       it("should just add margin if inside", () => {
-        const position = calculatePosition({
-          top: defaultRect.top,
-          left: defaultRect.left,
-          stage
-        }, defaultRect);
+        const position = calculatePosition(
+          {
+            top: defaultRect.top,
+            left: defaultRect.left,
+            stage,
+          },
+          defaultRect,
+        );
         expect(position).to.include({ left: 120 });
       });
 
       it("should move to left if overflows stage at right", () => {
         const left = 900;
         const rect = { ...defaultRect, left, right: defaultRect.width + left };
-        const position = calculatePosition({
-          top: rect.top,
-          left: rect.left,
-          stage
-        }, rect);
+        const position = calculatePosition(
+          {
+            top: rect.top,
+            left: rect.left,
+            stage,
+          },
+          rect,
+        );
         expect(position).to.include({ left: 690 });
       });
 
       it("should move to right if overflows stage at left", () => {
         const left = 50;
         const rect = { ...defaultRect, left, right: defaultRect.width + left };
-        const position = calculatePosition({
-          top: rect.top,
-          left: rect.left,
-          stage
-        }, rect);
+        const position = calculatePosition(
+          {
+            top: rect.top,
+            left: rect.left,
+            stage,
+          },
+          rect,
+        );
         expect(position).to.include({ left: 250 });
       });
     });

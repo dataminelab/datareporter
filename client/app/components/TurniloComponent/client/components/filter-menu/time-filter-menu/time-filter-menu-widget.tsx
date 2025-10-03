@@ -38,6 +38,15 @@ interface TabSelectorProps {
   onTabSelect: Unary<TimeFilterTab, void>;
 }
 
+enum TimeFilterTab {
+  RELATIVE = "relative",
+  FIXED = "fixed",
+}
+
+export interface TimeFilterMenuState {
+  tab: TimeFilterTab;
+}
+
 function tabTitle(tab: TimeFilterTab) {
   return tab === TimeFilterTab.RELATIVE ? STRINGS.relative : STRINGS.fixed;
 }
@@ -49,7 +58,7 @@ const TabSelector: React.FunctionComponent<TabSelectorProps> = props => {
       isSelected: selectedTab === tab,
       title: tabTitle(tab),
       key: tab,
-      onClick: () => onTabSelect(tab)
+      onClick: () => onTabSelect(tab),
     };
   });
   return <ButtonGroup groupMembers={tabs} />;
@@ -65,47 +74,71 @@ export interface TimeFilterMenuProps {
   containerStage?: Stage;
   openOn: Element;
   inside?: Element;
-  widgetList: Number[];
-}
-
-enum TimeFilterTab { RELATIVE = "relative", FIXED = "fixed"}
-
-export interface TimeFilterMenuState {
-  tab: TimeFilterTab;
+  widgetList: number[];
 }
 
 function initialTab(essence: Essence): TimeFilterTab {
-  const isRelativeTimeFilter = essence.timeFilter() instanceof RelativeTimeFilterClause;
+  const isRelativeTimeFilter =
+    essence.timeFilter() instanceof RelativeTimeFilterClause;
   return isRelativeTimeFilter ? TimeFilterTab.RELATIVE : TimeFilterTab.FIXED;
 }
 
-export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFilterMenuState> {
-
+export class TimeFilterMenu extends React.Component<
+  TimeFilterMenuProps,
+  TimeFilterMenuState
+> {
   state: TimeFilterMenuState = { tab: initialTab(this.props.essenceList[0]) };
 
   selectTab = (tab: TimeFilterTab) => this.setState({ tab });
 
   render() {
-    const { essenceList, timekeeper, clickerList, dimension, onClose, containerStage, openOn, inside, setEssence, widgetList } = this.props;
+    const {
+      essenceList,
+      timekeeper,
+      clickerList,
+      dimension,
+      onClose,
+      containerStage,
+      openOn,
+      inside,
+      setEssence,
+      widgetList,
+    } = this.props;
     if (!dimension) return null;
     const clicker = clickerList[0];
     const essence = essenceList[0];
     const { tab } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
     const isRelativeTab = tab === TimeFilterTab.RELATIVE;
-    const tabProps = { essence, essenceList, dimension, timekeeper, onClose, clicker, clickerList, setEssence, widgetList };
+    const tabProps = {
+      essence,
+      essenceList,
+      dimension,
+      timekeeper,
+      onClose,
+      clicker,
+      clickerList,
+      setEssence,
+      widgetList,
+    };
 
-    return <BubbleMenu
-      className="time-filter-menu"
-      direction="down"
-      containerStage={containerStage}
-      stage={menuSize}
-      openOn={openOn}
-      onClose={onClose}
-      inside={inside}
-    >
-      <TabSelector selectedTab={tab} onTabSelect={this.selectTab} />
-      {isRelativeTab ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        className="time-filter-menu"
+        direction="down"
+        containerStage={containerStage}
+        stage={menuSize}
+        openOn={openOn}
+        onClose={onClose}
+        inside={inside}
+      >
+        <TabSelector selectedTab={tab} onTabSelect={this.selectTab} />
+        {isRelativeTab ? (
+          <PresetTimeTab {...tabProps} />
+        ) : (
+          <FixedTimeTab {...tabProps} />
+        )}
+      </BubbleMenu>
+    );
   }
 }

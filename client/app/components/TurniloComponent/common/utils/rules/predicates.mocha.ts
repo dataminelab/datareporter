@@ -20,17 +20,17 @@ import { expect } from "chai";
 import { Predicates } from "./predicates";
 
 describe("dimension kind matcher", () => {
-  let strictCompare = Predicates.strictCompare;
+  const strictCompare = Predicates.strictCompare;
 
   it("should work in various cases", () => {
-    var cases: any[] = [
+    const cases: any[] = [
       [[], [], true],
       [["time"], ["time"], true],
       [["time", "*"], ["pouet", "time"], false],
       [["time", "*"], ["time", "tut"], true],
       [["!time"], ["pouet"], true],
       [["!time"], ["time"], false],
-      [["*"], ["time"], true]
+      [["*"], ["time"], true],
     ];
 
     cases.forEach((c, i) => {

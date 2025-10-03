@@ -1,10 +1,9 @@
-
 .dnd-poly-drag-image {
-    opacity: .5 !important;
+  opacity: 0.5 !important;
 }
 
 .dnd-poly-drag-image.dnd-poly-snapback {
-    transition-property: transform, -webkit-transform !important;
-    transition-duration: 250ms !important;
-    transition-timing-function: ease-out !important;
+  transition-property: transform, -webkit-transform !important;
+  transition-duration: 250ms !important;
+  transition-timing-function: ease-out !important;
 }

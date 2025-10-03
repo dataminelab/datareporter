@@ -25,21 +25,25 @@ import { DateRangePicker } from "./date-range-picker";
 
 describe("DateRangePicker", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <DateRangePicker
         startTime={new Date(Date.UTC(2003, 11, 2))}
         endTime={new Date(Date.UTC(2004, 11, 2))}
         maxTime={new Date(Date.UTC(2004, 11, 2))}
         timezone={Timezone.UTC}
-        onStartChange={() => {
-        }}
-        onEndChange={() => {
-        }}
-      />
+        onStartChange={() => {}}
+        onEndChange={() => {}}
+      />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("date-range-picker");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
+      "should contain class",
+    ).to.contain("date-range-picker");
   });
   /* TODO: remove comments after the bug will be resolved https://github.com/chaijs/chai/pull/1071 */
   /*
@@ -80,12 +84,10 @@ describe("DateRangePicker", () => {
           endTime={null}
           maxTime={new Date(Date.UTC(2004, 11, 2))}
           timezone={Timezone.UTC}
-          onStartChange={() => {
-          }}
-          onEndChange={() => {
-          }}
-        />);
+          onStartChange={() => {}}
+          onEndChange={() => {}}
+        />,
+      );
     }).to.not.throw();
   });
-
 });

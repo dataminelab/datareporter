@@ -25,10 +25,10 @@ import { findDOMNode, renderIntoDocument } from "../../utils/test-utils";
 import { ImmutableInput } from "./immutable-input";
 
 describe("ImmutableInput", () => {
-  var component: any;
-  var node: any;
-  var onChange: any;
-  var onInvalid: any;
+  let component: any;
+  let node: any;
+  let onChange: any;
+  let onInvalid: any;
 
   beforeEach(() => {
     onChange = sinon.spy();
@@ -41,15 +41,20 @@ describe("ImmutableInput", () => {
         validator={/^.+$/}
         onChange={onChange}
         onInvalid={onInvalid}
-      />
+      />,
     );
 
     node = findDOMNode(component) as any;
   });
 
   it("adds the correct class", () => {
-    expect(TestUtils.isCompositeComponent(component), "should be composite").to.equal(true);
-    expect(node.className, "should contain class").to.contain("immutable-input");
+    expect(
+      TestUtils.isCompositeComponent(component),
+      "should be composite",
+    ).to.equal(true);
+    expect(node.className, "should contain class").to.contain(
+      "immutable-input",
+    );
   });
 
   it("works for valid values", () => {
@@ -77,10 +82,12 @@ describe("ImmutableInput", () => {
     expect(onInvalid.args[0][0]).to.equal("");
 
     expect(onChange.callCount).to.equal(1);
-    var args = onChange.args[0];
+    let args = onChange.args[0];
 
     expect(args[0]).to.be.instanceOf(DataCube);
-    expect(args[0].clusterName).to.equal(DataCubeFixtures.twitter().clusterName);
+    expect(args[0].clusterName).to.equal(
+      DataCubeFixtures.twitter().clusterName,
+    );
 
     expect(args[1]).to.equal(false);
 
@@ -110,12 +117,13 @@ describe("ImmutableInput", () => {
 
   describe("with stringToValue/valueToString", () => {
     beforeEach(() => {
-      let stringToValue = (str: string) => {
-        if (str === "PLATYPUS") throw new Error("It's not even like a real animal amirite");
+      const stringToValue = (str: string) => {
+        if (str === "PLATYPUS")
+          throw new Error("It's not even like a real animal amirite");
         return str.toLowerCase();
       };
 
-      let valueToString = (str: string) => str.toUpperCase();
+      const valueToString = (str: string) => str.toUpperCase();
 
       component = renderIntoDocument(
         <ImmutableInput
@@ -126,7 +134,7 @@ describe("ImmutableInput", () => {
           onInvalid={onInvalid}
           stringToValue={stringToValue}
           valueToString={valueToString}
-        />
+        />,
       );
 
       node = findDOMNode(component) as any;
@@ -161,10 +169,12 @@ describe("ImmutableInput", () => {
       expect(onInvalid.args[0][0]).to.equal(undefined);
 
       expect(onChange.callCount).to.equal(1);
-      var args = onChange.args[0];
+      const args = onChange.args[0];
 
       expect(args[0]).to.be.instanceOf(DataCube);
-      expect(args[0].clusterName).to.equal(DataCubeFixtures.twitter().clusterName);
+      expect(args[0].clusterName).to.equal(
+        DataCubeFixtures.twitter().clusterName,
+      );
 
       expect(args[1]).to.equal(false);
 

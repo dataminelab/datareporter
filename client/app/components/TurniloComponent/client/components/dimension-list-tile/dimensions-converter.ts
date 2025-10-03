@@ -15,7 +15,10 @@
  */
 
 import { Dimension } from "../../../common/models/dimension/dimension";
-import { DimensionGroup, DimensionOrGroupVisitor } from "../../../common/models/dimension/dimension-group";
+import {
+  DimensionGroup,
+  DimensionOrGroupVisitor,
+} from "../../../common/models/dimension/dimension-group";
 
 export type DimensionOrGroupForView = DimensionForView | DimensionGroupForView;
 
@@ -42,19 +45,28 @@ export interface DimensionGroupForView {
 
 export enum DimensionForViewType {
   dimension = "dimension",
-  group = "group"
+  group = "group",
 }
 
-export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrGroupForView> {
+export class DimensionsConverter
+  implements DimensionOrGroupVisitor<DimensionOrGroupForView>
+{
   constructor(
     private readonly hasSearchTextPredicate: (dimension: Dimension) => boolean,
-    private readonly isFilteredOrSplitPredicate: (dimension: Dimension) => boolean,
-    private readonly isSelectedDimensionPredicate: (dimension: Dimension) => boolean
-  ) {
-  }
+    private readonly isFilteredOrSplitPredicate: (
+      dimension: Dimension,
+    ) => boolean,
+    private readonly isSelectedDimensionPredicate: (
+      dimension: Dimension,
+    ) => boolean,
+  ) {}
 
   visitDimension(dimension: Dimension): DimensionOrGroupForView {
-    const { hasSearchTextPredicate, isFilteredOrSplitPredicate, isSelectedDimensionPredicate } = this;
+    const {
+      hasSearchTextPredicate,
+      isFilteredOrSplitPredicate,
+      isSelectedDimensionPredicate,
+    } = this;
     const { name, title, description, className } = dimension;
 
     return {
@@ -65,7 +77,7 @@ export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrG
       isFilteredOrSplit: isFilteredOrSplitPredicate(dimension),
       hasSearchText: hasSearchTextPredicate(dimension),
       selected: isSelectedDimensionPredicate(dimension),
-      type: DimensionForViewType.dimension
+      type: DimensionForViewType.dimension,
     };
   }
 
@@ -80,7 +92,7 @@ export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrG
       hasSearchText: dimensionsForView.some(item => item.hasSearchText),
       isFilteredOrSplit: dimensionsForView.some(item => item.isFilteredOrSplit),
       children: dimensionsForView,
-      type: DimensionForViewType.group
+      type: DimensionForViewType.group,
     };
   }
 }

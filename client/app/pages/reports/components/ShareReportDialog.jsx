@@ -11,11 +11,11 @@ import { wrap as wrapDialog, DialogPropType } from "@/components/DialogWrapper";
 import InputWithCopy from "@/components/InputWithCopy";
 import HelpTrigger from "@/components/HelpTrigger";
 
-const API_SHARE_URL = "api/reports/{id}/share"; 
+const API_SHARE_URL = "api/reports/{id}/share";
 
-class ShareDashboardDialog extends React.Component {
+class ShareReportDialog extends React.Component {
   static propTypes = {
-    report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    report: PropTypes.object.isRequired,
     hasOnlySafeQueries: PropTypes.bool.isRequired,
     dialog: DialogPropType.isRequired,
   };
@@ -43,7 +43,8 @@ class ShareDashboardDialog extends React.Component {
       <React.Fragment>
         Share Report
         <div className="modal-header-desc">
-          Allow public access to this report with a secret address. <HelpTrigger type="SHARE_DASHBOARD" />
+          Allow public access to this report with a secret address.{" "}
+          <HelpTrigger type="SHARE_DASHBOARD" />
         </div>
       </React.Fragment>
     );
@@ -94,12 +95,13 @@ class ShareDashboardDialog extends React.Component {
   };
 
   render() {
-    const { dialog, report } = this.props;
+    const { dialog, report, hasOnlySafeQueries } = this.props;
+    const headerContent = this.constructor.headerContent;
 
     return (
-      <Modal {...dialog.props} title={this.constructor.headerContent} footer={null}>
+      <Modal {...dialog.props} title={headerContent} footer={null}>
         <Form layout="horizontal">
-          {!this.props.hasOnlySafeQueries && (
+          {!hasOnlySafeQueries && (
             <Form.Item>
               <Alert
                 message="For your security, sharing is currently not supported for dashboards containing queries with text parameters. Consider changing the text parameters in your query to a different type."
@@ -118,7 +120,10 @@ class ShareDashboardDialog extends React.Component {
           </Form.Item>
           {report.public_url && (
             <Form.Item label="Secret address" {...this.formItemProps}>
-              <InputWithCopy value={report.public_url} data-test="SecretAddress" />
+              <InputWithCopy
+                value={report.public_url}
+                data-test="SecretAddress"
+              />
             </Form.Item>
           )}
         </Form>
@@ -127,4 +132,4 @@ class ShareDashboardDialog extends React.Component {
   }
 }
 
-export default wrapDialog(ShareDashboardDialog);
+export default wrapDialog(ShareReportDialog);

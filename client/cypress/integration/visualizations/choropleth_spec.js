@@ -36,23 +36,21 @@ describe("Choropleth", () => {
       cy.visit(`queries/${id}/source`);
       cy.getByTestId("ExecuteButton").click();
     });
+    cy.getByTestId("NewVisualization").click();
+    cy.getByTestId("VisualizationType").selectAntdOption(
+      "VisualizationType.CHOROPLETH",
+    );
   });
 
   it("creates visualization", () => {
     cy.clickThrough(`
-      NewVisualization
-      VisualizationType
-      VisualizationType.CHOROPLETH
-    `);
-
-    cy.clickThrough(`
       VisualizationEditor.Tabs.General
       Choropleth.Editor.MapType
-      Choropleth.Editor.MapType.Countries
+      Choropleth.Editor.MapType.countries
       Choropleth.Editor.KeyColumn
       Choropleth.Editor.KeyColumn.name
-      Choropleth.Editor.KeyType
-      Choropleth.Editor.KeyType.name
+      Choropleth.Editor.TargetField
+      Choropleth.Editor.TargetField.name
       Choropleth.Editor.ValueColumn
       Choropleth.Editor.ValueColumn.value
     `);
@@ -84,6 +82,8 @@ describe("Choropleth", () => {
       .find(".map-visualization-container.leaflet-container")
       .should("exist");
 
-    cy.percySnapshot("Visualizations - Choropleth", { widths: [viewportWidth] });
+    cy.percySnapshot("Visualizations - Choropleth", {
+      widths: [viewportWidth],
+    });
   });
 });

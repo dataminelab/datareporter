@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
+import { AnyVisualizationManifest } from "../../visualization-manifests";
 import { VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { VisualizationSettings } from "../../models/visualization-settings/visualization-settings";
 
-export function fromViewDefinition(visualization: VisualizationManifest, settings?: object): VisualizationSettings {
-  const { converter: { read }, defaults } = visualization.visualizationSettings;
-  return settings ? read(settings) : defaults;
+export function fromViewDefinition(
+  visualization: AnyVisualizationManifest,
+  settings: unknown
+): VisualizationSettings {
+  const {
+    converter: { read },
+    defaults,
+  } = visualization.visualizationSettings;
+  return (settings ? read(settings) : defaults) as VisualizationSettings;
 }
 
-export function toViewDefinition(visualization: VisualizationManifest, settings: object): object {
-  const { converter: { print } } = visualization.visualizationSettings;
+export function toViewDefinition(
+  visualization: VisualizationManifest,
+  settings: object,
+): object {
+  const {
+    converter: { print },
+  } = visualization.visualizationSettings;
   return print(settings);
 }

@@ -38,11 +38,15 @@ export default function ReportExecutionMetadata({
       </span>
       {extraActions}
       {showEditVisualizationButton && (
-        <EditVisualizationButton openVisualizationEditor={onEditVisualization} selectedTab={selectedVisualization} />
+        <EditVisualizationButton
+          openVisualizationEditor={onEditVisualization}
+          selectedTab={selectedVisualization}
+        />
       )}
       <span className="m-l-5 m-r-10">
         <span>
-          <strong>{queryResultData.rows.length}</strong> {pluralize("row", queryResultData.rows.length)}
+          <strong>{queryResultData.rows.length}</strong>{" "}
+          {pluralize("row", queryResultData.rows.length)}
         </span>
         <span className="m-l-5">
           {!isReportExecuting && (
@@ -73,8 +77,8 @@ export default function ReportExecutionMetadata({
 }
 
 ReportExecutionMetadata.propTypes = {
-  report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  queryResult: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  report: PropTypes.object.isRequired,
+  queryResult: PropTypes.object.isRequired,
   isReportExecuting: PropTypes.bool,
   selectedVisualization: PropTypes.number,
   showEditVisualizationButton: PropTypes.bool,

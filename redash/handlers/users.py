@@ -1,4 +1,4 @@
-from disposable_email_domains import blacklist
+from disposable_email_domains import blocklist
 from flask import request
 from flask_login import current_user, login_user
 from flask_restful import abort
@@ -13,9 +13,13 @@ from redash.authentication.account import (
     send_password_reset_email,
     send_verify_email,
 )
-from redash.handlers.base import BaseResource, get_object_or_404
+from redash.handlers.base import (
+    BaseResource,
+    get_object_or_404,
+    paginate,
+    require_fields,
+)
 from redash.handlers.base import order_results as _order_results
-from redash.handlers.base import paginate, require_fields
 from redash.permissions import (
     is_admin_or_owner,
     require_admin,
@@ -56,7 +60,7 @@ def require_allowed_email(email):
     # `example.com` and `example.com.` are equal - last dot stands for DNS root but usually is omitted
     _, domain = email.lower().rstrip(".").split("@", 1)
 
-    if domain in blacklist or domain in settings.BLOCKED_DOMAINS:
+    if domain in blocklist or domain in settings.BLOCKED_DOMAINS:
         abort(400, message="Bad email address.")
 
 

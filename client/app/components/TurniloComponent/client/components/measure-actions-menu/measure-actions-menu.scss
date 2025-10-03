@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 $action-height: 50px;
 $action-width: 58px;
@@ -54,7 +54,7 @@ $action-width: 58px;
     &:not(.disabled):hover {
       &::before {
         @include css-variable(background-color, hover);
-        content: '';
+        content: "";
         position: absolute;
         top: 3px;
         bottom: 3px;

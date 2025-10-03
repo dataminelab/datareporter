@@ -8,6 +8,6 @@ export default function useEmbedDialog(query) {
       const visualization = find(query.visualizations, { id: visualizationId });
       EmbedQueryDialog.showModal({ query, visualization });
     },
-    [query]
+    [query],
   );
 }

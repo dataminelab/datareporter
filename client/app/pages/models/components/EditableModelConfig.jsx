@@ -1,21 +1,20 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Model } from "@/components/proptypes";
 import AceEditor from "react-ace";
 import Button from "antd/lib/button";
 
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-textmate";
-import {ButtonTooltip} from "@/components/queries/QueryEditor/QueryEditorControls";
+import { ButtonTooltip } from "@/components/queries/QueryEditor/QueryEditorControls";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
-import {fromPairs, map} from "lodash";
+import { fromPairs, map } from "lodash";
 import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 import ModelService from "@/services/model";
 import ModelConfigDocs from "./ModelConfigDocs";
 
-import axios from "axios";
-
-export default function EditableModelConfig({model, saveConfig}) {
-  const configYAML = "customization:\n" +
+export default function EditableModelConfig({ model, saveConfig }) {
+  const configYAML =
+    "customization:\n" +
     "  urlShortener: |\n" +
     "    return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))\n" +
     "dataCubes:\n" +
@@ -37,9 +36,9 @@ export default function EditableModelConfig({model, saveConfig}) {
     "\n" +
     "    defaultDuration: P1D\n" +
     "    defaultSortMeasure: added\n" +
-    "    defaultSelectedMeasures: [\"added\"]\n" +
+    '    defaultSelectedMeasures: ["added"]\n' +
     "\n" +
-    "    defaultPinnedDimensions: [\"channel\",\"namespace\",\"isRobot\"]\n" +
+    '    defaultPinnedDimensions: ["channel","namespace","isRobot"]\n' +
     "    introspection: no-autofill\n" +
     "    attributeOverrides:\n" +
     "      - name: sometimeLater\n" +
@@ -200,30 +199,37 @@ export default function EditableModelConfig({model, saveConfig}) {
     "\n" +
     "      - name: unique_users\n" +
     "        title: Unique Users\n" +
-    "        formula: $main.countDistinct($user)\n"
+    "        formula: $main.countDistinct($user)\n";
 
-  const [item, setItem] = useState('');
+  const [item, setItem] = useState("");
 
-  const getConfigModel = async () => {
+  const getConfigModel = useCallback(async () => {
     const modelConfig = await ModelService.getConfig(model.model_config_id);
     setItem(modelConfig.content);
-  }
+  }, [model.model_config_id]);
 
-  const save = () => saveConfig(model.id, item)
-  const handleSaveConfig = (callback) => {
-    const yamlContent =  item;
-    if (!yamlContent.includes("timeAttribute") || yamlContent.includes("timeAttribute: null")) {
+  const save = () => saveConfig(model.id, item);
+  const handleSaveConfig = callback => {
+    const yamlContent = item;
+    if (
+      !yamlContent.includes("timeAttribute") ||
+      yamlContent.includes("timeAttribute: null")
+    ) {
       alert("timeAttribute cannot be null");
       return;
     }
-    const timeAttribute = yamlContent.split("timeAttribute: ")[1].split("\n")[0];
-    const attributes = yamlContent.split("attributes:")[1].split("dimensions:")[0];
+    const timeAttribute = yamlContent
+      .split("timeAttribute: ")[1]
+      .split("\n")[0];
+    const attributes = yamlContent
+      .split("attributes:")[1]
+      .split("dimensions:")[0];
     // if timeAttribute is not in attributes, then alert
     if (!attributes.includes(timeAttribute)) {
       alert("timeAttribute is not in the attributes list");
       return;
     }
-    // if timeAttribute's type is not TIME then alert 
+    // if timeAttribute's type is not TIME then alert
     const attributesList = attributes.split("- name: ");
     attributesList.shift();
     for (let i = 0; i < attributesList.length; i++) {
@@ -237,54 +243,60 @@ export default function EditableModelConfig({model, saveConfig}) {
       }
     }
     callback();
-  }
+  };
 
-  useEffect( () => {
+  useEffect(() => {
     if (model.model_config_id) {
       getConfigModel();
     } else {
       setItem(configYAML);
     }
-  }, [model]);
+  }, [configYAML, getConfigModel, model]);
 
-  useEffect( () => {
-    let buttons = [{shortcut: 'mod+s', onClick: () => saveConfig(model.id, item)}];
+  useEffect(() => {
+    const buttons = [
+      { shortcut: "mod+s", onClick: () => saveConfig(model.id, item) },
+    ];
     const shortcuts = fromPairs(map(buttons, b => [b.shortcut, b.onClick]));
     KeyboardShortcuts.bind(shortcuts);
     return () => {
       KeyboardShortcuts.unbind(shortcuts);
     };
-  }, [item, saveConfig]);
+  }, [item, model.id, saveConfig]);
 
-  const onChange = (config) => {
+  const onChange = config => {
     setItem(config);
-  }
+  };
 
   const backToList = () => {
-    navigateTo('models')
-  }
-
+    navigateTo("models");
+  };
 
   return (
     <div className="col-md-12">
       <div className="editor-yaml-box">
         <div className="editor-yaml">
-          <h1>{model.name} | edit config
-            <ButtonTooltip title={'Cmd + S'} shortcut={'mod+s'}>
+          <h1>
+            {model.name} | edit config
+            <ButtonTooltip title={"Cmd + S"} shortcut={"mod+s"}>
               <Button
                 className="query-editor-controls-button m-l-5 right"
                 onClick={handleSaveConfig.bind(this, save)}
-                type={'primary'}
-                data-test="SaveButton">
-                <span className="fa fa-floppy-o" />&nbsp;Save
+                type={"primary"}
+                data-test="SaveButton"
+              >
+                <span className="fa fa-floppy-o" />
+                &nbsp;Save
               </Button>
             </ButtonTooltip>
             <Button
               className="query-editor-controls-button m-l-5 right"
               onClick={backToList}
-              data-test="SaveButton">
+              data-test="SaveButton"
+            >
               Cancel
-            </Button></h1>
+            </Button>
+          </h1>
           <AceEditor
             mode="yaml"
             width="800px"

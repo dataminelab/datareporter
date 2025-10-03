@@ -21,10 +21,22 @@ import * as React from "react";
 import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { FilterClause, StringFilterAction, StringFilterClause } from "../../../common/models/filter-clause/filter-clause";
+import {
+  FilterClause,
+  StringFilterAction,
+  StringFilterClause,
+} from "../../../common/models/filter-clause/filter-clause";
 import { Filter, FilterMode } from "../../../common/models/filter/filter";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading } from "../../../common/models/visualization-props/visualization-props";
+import {
+  DatasetLoad,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading,
+} from "../../../common/models/visualization-props/visualization-props";
 import { debounceWithPromise } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { stringFilterOptionsQuery } from "../../../common/utils/query/selectable-string-filter-query";
@@ -71,14 +83,17 @@ interface QueryProps {
   searchText: string;
 }
 
-export class SelectableStringFilterMenu extends React.Component<SelectableStringFilterMenuProps, SelectableStringFilterMenuState> {
+export class SelectableStringFilterMenu extends React.Component<
+  SelectableStringFilterMenuProps,
+  SelectableStringFilterMenuState
+> {
   private lastSearchText: string;
 
   state: SelectableStringFilterMenuState = {
     pasteModeEnabled: false,
     dataset: loading,
     selectedValues: this.initialSelection(),
-    searchText: ""
+    searchText: "",
   };
 
   private loadRows() {
@@ -106,27 +121,34 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const { essence, searchText } = props;
     const query = stringFilterOptionsQuery({ ...props, limit: TOP_N + 1 });
 
-    return essence.dataCube.executor(query, { timezone: essence.timezone })
+    return essence.dataCube
+      .executor(query, { timezone: essence.timezone })
+      // @ts-ignore
       .then((dataset: Dataset) => {
         if (this.lastSearchText !== searchText) return null;
         return loaded(dataset);
       })
-      .catch(err => {
-          if (this.lastSearchText !== searchText) return null;
-          reportError(err);
-          return error(err);
-        }
-      );
+      .catch((err: Error) => {
+        if (this.lastSearchText !== searchText) return null;
+        reportError(err);
+        return error(err);
+      });
   };
 
-  private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
+  private debouncedQueryFilter = debounceWithPromise(
+    this.queryFilter,
+    SEARCH_WAIT,
+  );
 
   componentWillMount() {
     this.loadRows();
   }
 
   private initialSelection(): Set<string> {
-    const { essence: { filter }, dimension } = this.props;
+    const {
+      essence: { filter },
+      dimension,
+    } = this.props;
     const clause = filter.getClauseForDimension(dimension);
     if (!clause) return Set();
     if (!(clause instanceof StringFilterClause)) {
@@ -139,7 +161,10 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     this.debouncedQueryFilter.cancel();
   }
 
-  componentDidUpdate(prevProps: SelectableStringFilterMenuProps, prevState: SelectableStringFilterMenuState) {
+  componentDidUpdate(
+    prevProps: SelectableStringFilterMenuProps,
+    prevState: SelectableStringFilterMenuState,
+  ) {
     if (this.state.searchText !== prevState.searchText) {
       this.loadRows();
     }
@@ -163,7 +188,7 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
       action: StringFilterAction.IN,
       reference: name,
       values: selectedValues,
-      not: filterMode === FilterMode.EXCLUDE
+      not: filterMode === FilterMode.EXCLUDE,
     });
     return onClauseChange(clause);
   }
@@ -171,8 +196,11 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
   onValueClick = (value: string, withModKey: boolean) => {
     const { selectedValues } = this.state;
     if (withModKey) {
-      const isValueSingleSelected = selectedValues.contains(value) && selectedValues.count() === 1;
-      return this.setState({ selectedValues: isValueSingleSelected ? Set.of() : Set.of(value) });
+      const isValueSingleSelected =
+        selectedValues.contains(value) && selectedValues.count() === 1;
+      return this.setState({
+        selectedValues: isValueSingleSelected ? Set.of() : Set.of(value),
+      });
     }
     return this.setState({ selectedValues: toggle(selectedValues, value) });
   };
@@ -188,7 +216,8 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
 
   disablePasteMode = () => this.setState({ pasteModeEnabled: false });
 
-  selectValues = (values: Set<string>) => this.setState({ selectedValues: values });
+  selectValues = (values: Set<string>) =>
+    this.setState({ selectedValues: values });
 
   isFilterValid(): boolean {
     const { selectedValues } = this.state;
@@ -201,56 +230,85 @@ export class SelectableStringFilterMenu extends React.Component<SelectableString
     const { dataset, selectedValues, searchText } = this.state;
     const hasMore = isLoaded(dataset) && dataset.dataset.data.length > TOP_N;
 
-    return <React.Fragment>
-      <div className="paste-icon" onClick={this.enablePasteMode} title="Paste multiple values">
-        <SvgIcon svg={require("../../icons/full-multi.svg")} />
-      </div>
-      <div className="search-box">
-        <ClearableInput
-          placeholder="Search"
-          focusOnMount={true}
-          value={searchText}
-          onChange={this.updateSearchText}
-        />
-      </div>
-      <div className={classNames("selectable-string-filter-menu", filterMode)}>
-        <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
-          <div className="rows">
-            {isLoaded(dataset) && <StringValuesList
-              onRowSelect={this.onValueClick}
-              dimension={dimension}
-              dataset={dataset.dataset}
-              searchText={searchText}
-              limit={TOP_N}
-              selectedValues={selectedValues}
-              promotedValues={this.initialSelection()}
-              filterMode={filterMode} />}
-            {isError(dataset) && <QueryError error={dataset.error} />}
-            {isLoading(dataset) && <Loader />}
+    return (
+      <React.Fragment>
+        <div
+          className="paste-icon"
+          onClick={this.enablePasteMode}
+          title="Paste multiple values"
+        >
+          <SvgIcon svg={require("../../icons/full-multi.svg")} />
+        </div>
+        <div className="search-box">
+          <ClearableInput
+            placeholder="Search"
+            focusOnMount={true}
+            value={searchText}
+            onChange={this.updateSearchText}
+          />
+        </div>
+        <div
+          className={classNames("selectable-string-filter-menu", filterMode)}
+        >
+          <div
+            className={classNames(
+              "menu-table",
+              hasMore ? "has-more" : "no-more",
+            )}
+          >
+            <div className="rows">
+              {isLoaded(dataset) && (
+                <StringValuesList
+                  // @ts-ignore
+                  onRowSelect={this.onValueClick}
+                  dimension={dimension}
+                  dataset={dataset.dataset}
+                  searchText={searchText}
+                  limit={TOP_N}
+                  selectedValues={selectedValues}
+                  promotedValues={this.initialSelection()}
+                  filterMode={filterMode}
+                />
+              )}
+              {isError(dataset) && <QueryError error={dataset.error} />}
+              {isLoading(dataset) && <Loader />}
+            </div>
+          </div>
+          <div className="ok-cancel-bar">
+            <Button
+              type="primary"
+              title={STRINGS.ok}
+              onClick={this.onOkClick}
+              disabled={!this.isFilterValid()}
+            />
+            <Button type="secondary" title={STRINGS.cancel} onClick={onClose} />
           </div>
         </div>
-        <div className="ok-cancel-bar">
-          <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.isFilterValid()} />
-          <Button type="secondary" title={STRINGS.cancel} onClick={onClose} />
-        </div>
-      </div>
-    </React.Fragment>;
+      </React.Fragment>
+    );
   }
 
   renderImportMode(): JSX.Element {
-    return <React.Fragment>
-      <div className="paste-prompt">Paste values separated by newlines</div>
-      <div className="paste-form">
-        <PasteForm onSelect={this.selectValues} onClose={this.disablePasteMode} />
-      </div>
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <div className="paste-prompt">Paste values separated by newlines</div>
+        <div className="paste-form">
+          <PasteForm
+            onSelect={this.selectValues}
+            onClose={this.disablePasteMode}
+          />
+        </div>
+      </React.Fragment>
+    );
   }
 
   render() {
     const { pasteModeEnabled } = this.state;
-    return <React.Fragment>
-      <GlobalEventListener keyDown={this.globalKeyDownListener} />
-      {pasteModeEnabled ? this.renderImportMode() : this.renderSelectMode()}
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <GlobalEventListener keyDown={this.globalKeyDownListener} />
+        {pasteModeEnabled ? this.renderImportMode() : this.renderSelectMode()}
+      </React.Fragment>
+    );
   }
 }

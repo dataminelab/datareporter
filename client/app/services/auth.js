@@ -2,25 +2,37 @@ import debug from "debug";
 import { includes, extend } from "lodash";
 import location from "@/services/location";
 import { axios } from "@/services/axios";
+import { notifySessionRestored } from "@/services/restoreSession";
 
 export const currentUser = {
+  _isAdmin: undefined,
+
   canEdit(object) {
     const userId = object.user_id || (object.user && object.user.id);
-    return this.hasPermission("admin") || (userId && userId === this.id);
+    return this.isAdmin || (userId && userId === this.id);
   },
 
   canCreate() {
     return (
-      this.hasPermission("create_query") || this.hasPermission("create_dashboard") || this.hasPermission("list_alerts")
+      this.hasPermission("create_query") ||
+      this.hasPermission("create_dashboard") ||
+      this.hasPermission("list_alerts")
     );
   },
 
   hasPermission(permission) {
+    if (permission === "admin" && this._isAdmin !== undefined) {
+      return this._isAdmin;
+    }
     return includes(this.permissions, permission);
   },
 
   get isAdmin() {
     return this.hasPermission("admin");
+  },
+
+  set isAdmin(isAdmin) {
+    this._isAdmin = isAdmin;
   },
 };
 
@@ -29,6 +41,14 @@ export const messages = [];
 
 const logger = debug("redash:auth");
 const session = { loaded: false };
+
+const AuthUrls = {
+  Login: "login",
+};
+
+export function updateClientConfig(newClientConfig) {
+  extend(clientConfig, newClientConfig);
+}
 
 function updateSession(sessionData) {
   logger("Updating session to be:", sessionData);
@@ -43,10 +63,16 @@ export const Auth = {
   isAuthenticated() {
     return session.loaded && session.user.id;
   },
+  getLoginUrl() {
+    return AuthUrls.Login;
+  },
+  setLoginUrl(loginUrl) {
+    AuthUrls.Login = loginUrl;
+  },
   login() {
     const next = encodeURI(location.url);
     logger("Calling login with next = %s", next);
-    window.location.href = `login?next=${next}`;
+    window.location.href = `${AuthUrls.Login}?next=${next}`;
   },
   logout() {
     logger("Logout.");
@@ -68,7 +94,11 @@ export const Auth = {
   loadConfig() {
     logger("Loading config");
     return axios.get("/api/config").then(data => {
-      updateSession({ client_config: data.client_config, user: { permissions: [] }, messages: [] });
+      updateSession({
+        client_config: data.client_config,
+        user: { permissions: [] },
+        messages: [],
+      });
       return data;
     });
   },
@@ -88,6 +118,7 @@ export const Auth = {
       .then(() => {
         if (Auth.isAuthenticated()) {
           logger("Loaded session");
+          notifySessionRestored();
           return session;
         }
         logger("Need to login, redirecting");

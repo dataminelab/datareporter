@@ -22,13 +22,16 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { DataCubeFixtures } from "../../../common/models/data-cube/data-cube.fixtures";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { ResizeHandle } from "../resize-handle/resize-handle";
-import { DimensionMeasurePanel, initialPosition, MIN_PANEL_SIZE } from "./dimension-measure-panel";
+import {
+  DimensionMeasurePanel,
+  initialPosition,
+  MIN_PANEL_SIZE,
+} from "./dimension-measure-panel";
 
 describe("DimensionMeasurePanel", () => {
   function renderPanel() {
     const clickyMcClickFace: Clicker = {
-      addSeries: () => {
-      }
+      addSeries: () => {},
     };
     return shallow(
       <DimensionMeasurePanel
@@ -37,14 +40,15 @@ describe("DimensionMeasurePanel", () => {
         essence={EssenceFixtures.wikiTotals()}
         menuStage={null}
         triggerFilterMenu={null}
-      />
+      />,
     );
   }
 
   describe("<DimensionMeasurePanel>", () => {
     it("adds the correct class", () => {
       const panel = renderPanel();
-      expect(panel.hasClass("dimension-measure-panel"), "should contain class").to.be.true;
+      expect(panel.hasClass("dimension-measure-panel"), "should contain class")
+        .to.be.true;
     });
 
     it("should hide resize panel at start", () => {
@@ -59,9 +63,15 @@ describe("DimensionMeasurePanel", () => {
         const position = initialPosition(height, DataCubeFixtures.wiki());
 
         expect(position, "lower than total height").to.be.lt(height);
-        expect(position, "should leave minimal space for dimensions").to.be.gte(MIN_PANEL_SIZE);
-        expect(position, "should leave minimal space for measures").to.be.lte(height - MIN_PANEL_SIZE);
-        expect(position, "should leave more space for dimensions").to.be.gt(height - position);
+        expect(position, "should leave minimal space for dimensions").to.be.gte(
+          MIN_PANEL_SIZE,
+        );
+        expect(position, "should leave minimal space for measures").to.be.lte(
+          height - MIN_PANEL_SIZE,
+        );
+        expect(position, "should leave more space for dimensions").to.be.gt(
+          height - position,
+        );
       });
     });
   });

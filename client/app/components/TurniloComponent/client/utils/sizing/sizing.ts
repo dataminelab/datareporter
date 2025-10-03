@@ -20,13 +20,17 @@ export interface Positioning {
   shownColumns: number;
 }
 
-export function getVisibleSegments(segmentWidths: number[], offset: number, visibleSize: number): Positioning {
-  var startIndex = 0;
-  var shownColumns = 0;
+export function getVisibleSegments(
+  segmentWidths: number[],
+  offset: number,
+  visibleSize: number,
+): Positioning {
+  let startIndex = 0;
+  let shownColumns = 0;
 
-  var curWidth = 0;
+  let curWidth = 0;
   for (const segmentWidth of segmentWidths) {
-    let afterWidth = curWidth + segmentWidth;
+    const afterWidth = curWidth + segmentWidth;
     if (afterWidth < offset) {
       startIndex++;
     } else if (curWidth < offset + visibleSize) {
@@ -37,6 +41,6 @@ export function getVisibleSegments(segmentWidths: number[], offset: number, visi
 
   return {
     startIndex,
-    shownColumns
+    shownColumns,
   };
 }

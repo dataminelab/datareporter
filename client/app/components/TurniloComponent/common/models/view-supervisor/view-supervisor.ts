@@ -26,5 +26,4 @@ export interface ViewSupervisor {
   title?: string;
 
   saveLabel?: string;
-
 }

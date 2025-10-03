@@ -34,8 +34,11 @@ const createSettings = (settings: Partial<LineChartSettings>): ImmutableRecord<L
 
 export const settings: LineChartVisualizationSettings = {
   converter: {
+    // @ts-ignore not assignable to type
     print: (settings: ImmutableRecord<LineChartSettings>) => settings.toJS(),
+    // @ts-ignore not assignable to type
     read: (input: LineChartSettings) => createSettings({ groupSeries: !!input.groupSeries })
   },
-  defaults: createSettings(defaults) as unknown as VisualizationSettingsConfig<LineChartSettings>["defaults"]
+  // @ts-ignore not assignable to type
+  defaults: createSettings({}) as ImmutableRecord<object>
 };

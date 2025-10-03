@@ -19,7 +19,13 @@ import { immutableArraysEqual } from "immutable-class";
 import { Expression } from "plywood";
 import { quoteNames } from "../../utils/general/general";
 import { Dimension } from "./dimension";
-import { DimensionGroup, DimensionOrGroup, dimensionOrGroupFromJS, DimensionOrGroupJS, DimensionOrGroupVisitor } from "./dimension-group";
+import {
+  DimensionGroup,
+  DimensionOrGroup,
+  dimensionOrGroupFromJS,
+  DimensionOrGroupJS,
+  DimensionOrGroupVisitor,
+} from "./dimension-group";
 
 type DimensionId = string;
 export interface DimensionsInterface {
@@ -27,11 +33,20 @@ export interface DimensionsInterface {
   byName: Record<DimensionId, Dimension>;
 }
 
-export function findDimensionByName(dimensions: DimensionsInterface, name: string): Dimension | null {
+export function isDimensionId(o: DimensionOrGroup): boolean {
+  return typeof o === "string";
+}
+
+export function findDimensionByName(
+  dimensions: DimensionsInterface,
+  name: string,
+): Dimension | null {
   return dimensions.byName[name] || null;
 }
 
-class FlattenDimensionsWithGroupsVisitor implements DimensionOrGroupVisitor<void> {
+class FlattenDimensionsWithGroupsVisitor
+  implements DimensionOrGroupVisitor<void>
+{
   private items = List<DimensionOrGroup>().asMutable();
 
   visitDimension(dimension: Dimension): void {
@@ -40,7 +55,9 @@ class FlattenDimensionsWithGroupsVisitor implements DimensionOrGroupVisitor<void
 
   visitDimensionGroup(dimensionGroup: DimensionGroup): void {
     this.items.push(dimensionGroup);
-    dimensionGroup.dimensions.forEach(dimensionOrGroup => dimensionOrGroup.accept(this));
+    dimensionGroup.dimensions.forEach(dimensionOrGroup =>
+      dimensionOrGroup.accept(this),
+    );
   }
 
   getDimensionsWithGroups(): List<DimensionOrGroup> {
@@ -79,20 +96,30 @@ export class Dimensions {
   private constructor(dimensions: DimensionOrGroup[]) {
     this.dimensions = [...dimensions];
 
-    const flattenDimensionsWithGroupsVisitor = new FlattenDimensionsWithGroupsVisitor();
-    this.dimensions.forEach(dimensionOrGroup => dimensionOrGroup.accept(flattenDimensionsWithGroupsVisitor));
-    const flattenedDimensionsWithGroups = flattenDimensionsWithGroupsVisitor.getDimensionsWithGroups();
+    const flattenDimensionsWithGroupsVisitor =
+      new FlattenDimensionsWithGroupsVisitor();
+    this.dimensions.forEach(dimensionOrGroup =>
+      dimensionOrGroup.accept(flattenDimensionsWithGroupsVisitor),
+    );
+    const flattenedDimensionsWithGroups =
+      flattenDimensionsWithGroupsVisitor.getDimensionsWithGroups();
     const duplicateNames = findDuplicateNames(flattenedDimensionsWithGroups);
 
     if (duplicateNames.size > 0) {
-      throw new Error(`found duplicate dimension or group with names: ${quoteNames(duplicateNames)}`);
+      throw new Error(
+        `found duplicate dimension or group with names: ${quoteNames(
+          duplicateNames,
+        )}`,
+      );
     }
 
     this.flattenedDimensions = filterDimensions(flattenedDimensionsWithGroups);
   }
 
   accept<R>(visitor: DimensionOrGroupVisitor<R>): R[] {
-    return this.dimensions.map(dimensionOrGroup => dimensionOrGroup.accept(visitor));
+    return this.dimensions.map(dimensionOrGroup =>
+      dimensionOrGroup.accept(visitor),
+    );
   }
 
   size(): number {
@@ -104,7 +131,9 @@ export class Dimensions {
   }
 
   equals(other: Dimensions): boolean {
-    return this === other || immutableArraysEqual(this.dimensions, other.dimensions);
+    return (
+      this === other || immutableArraysEqual(this.dimensions, other.dimensions)
+    );
   }
 
   mapDimensions<R>(mapper: (dimension: Dimension) => R): R[] {
@@ -124,7 +153,9 @@ export class Dimensions {
   }
 
   getDimensionByExpression(expression: Expression): Dimension {
-    return this.flattenedDimensions.find(dimension => expression.equals(dimension.expression));
+    return this.flattenedDimensions.find(dimension =>
+      expression.equals(dimension.expression),
+    );
   }
 
   getDimensionNames(): List<string> {

@@ -5,35 +5,34 @@ x-redash-service: &redash-service
     context: .
     cache_from:
       - "type=gha"
-    cache_to:
-      - "type=gha,mode=max"
     args:
       skip_frontend_build: "${skip_frontend_build-}"
       skip_dev_deps: "${skip_dev_deps-}"
       skip_ds_deps: "${skip_ds_deps-}"
   volumes:
     - .:/app
+  env_file:
+    - .env
 x-redash-environment: &redash-environment
   REDASH_LOG_LEVEL: "DEBUG"
   REDASH_REDIS_URL: "redis://redis:6379/0"
   REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
-  REDASH_RATELIMIT_ENABLED: false
+  REDASH_RATELIMIT_ENABLED: "false"
   REDASH_MAIL_DEFAULT_SENDER: noreply@datareporter.com
   REDASH_AUTH_TYPE: "api_key"
   REDASH_MAIL_SERVER: "email"
   REDASH_MAIL_PORT: 1025
-  REDASH_ENFORCE_CSRF: true
+  REDASH_ENFORCE_CSRF: "true"
   MAILCHIMP_SERVER: "us1"
-  MAILCHIMP_API_KEY: "e4c804be8fbd3c445a0fef9d05b6fc27"
-  MAILCHIMP_LIST_ID: "e48180787b"
   REDASH_DEBUG: "true"
   CLIENT_TIMEOUT_DELTA: 100000
   REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
+  OLLAMA_API_URL: "http://ollama:11434"
   REDASH_SCHEMAS_REFRESH_TIMEOUT: 500
-  # every 60 mins
-  REDASH_SCHEMAS_REFRESH_SCHEDULE: 60
+  REDASH_VERSION_CHECK: "false"
   WORKERS_COUNT: 10
   QUEUES: 100
+  # Set secret keys in the .env file (github secrets)
 services:
   server:
     <<: *redash-service
@@ -92,14 +91,20 @@ services:
       - "1025:1025"
     restart: unless-stopped
   plywood:
-    image: node:14.5.0-alpine
+    image: node:16.20.0-alpine
     working_dir: /app
     command: npm run watch-node
     ports:
       - "3000:3000"
       - "9231:9229"
     volumes:
-      - ./plywood/server:/app
+      - ./plywood:/app
     environment:
       - LOG_MODE=request_and_response
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ./ollama-models:/root/.ollama
+    ports:
+      - 11434:11434
 

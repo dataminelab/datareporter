@@ -16,7 +16,7 @@
  */
 import { Record } from "immutable";
 import { Equalable } from "immutable-class";
-import { isObject } from "../general/general";
+import { hasOwnProperty, isObject } from "../general/general";
 
 export class ImmutableUtils {
   public static setProperty(instance: any, path: string, newValue: any): any {
@@ -41,8 +41,8 @@ export class ImmutableUtils {
       if (currentObject.change instanceof Function) {
         lastObject = currentObject.change(bit, lastObject);
       } else {
-        const message = "Can't find \`change()\` method on " + currentObject.constructor.name;
-        console.error(message); // Leaving this console statement because the error might be caught and obfuscated
+        const message =
+          "Can't find `change()` method on " + currentObject.constructor.name;
         throw new Error(message);
       }
     }
@@ -54,7 +54,7 @@ export class ImmutableUtils {
     let value = instance;
     const bits = path.split(".");
     let bit: string;
-    while (bit = bits.shift()) value = value[bit];
+    while ((bit = bits.shift())) value = value[bit];
 
     return value as any;
   }
@@ -62,7 +62,7 @@ export class ImmutableUtils {
   public static change<T>(instance: T, propertyName: string, newValue: any): T {
     const v = instance.valueOf();
 
-    if (!v.hasOwnProperty(propertyName)) {
+    if (!hasOwnProperty(v, propertyName)) {
       throw new Error(`Unknown property : ${propertyName}`);
     }
 
@@ -70,7 +70,12 @@ export class ImmutableUtils {
     return new (instance as any).constructor(v);
   }
 
-  public static addInArray<T>(instance: T, propertyName: string, newItem: any, index = -1): T {
+  public static addInArray<T>(
+    instance: T,
+    propertyName: string,
+    newItem: any,
+    index = -1,
+  ): T {
     const newArray = (instance as any)[propertyName];
 
     if (index === -1) {

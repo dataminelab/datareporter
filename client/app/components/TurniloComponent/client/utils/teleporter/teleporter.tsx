@@ -45,7 +45,6 @@ export function createTeleporter(): Teleporter {
   const Target: React.SFC<{}> = () => <div ref={saveTarget} />;
 
   class Source extends React.Component<{}, SourceState> {
-
     state: SourceState = { node: null };
 
     componentDidMount() {

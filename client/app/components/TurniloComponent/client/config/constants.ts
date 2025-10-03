@@ -77,6 +77,7 @@ export const STRINGS: any = {
   create: "Create",
   cubes: "cubes",
   dataCubes: "Data Cubes",
+  noDataCube: "DataCube not found",
   noDataCubes: "No Data Cubes present",
   noDataCubesFound: "No Data Cubes found for query: ",
   delete: "Delete",
@@ -165,7 +166,7 @@ export const STRINGS: any = {
   displayDruidQuery: "Display Druid query",
   displayViewDefinition: "Display view definition",
   viewDefinition: "View definition",
-  yes: "Yes"
+  yes: "Yes",
 };
 
 // Data cubes introspection strategies
@@ -174,13 +175,26 @@ export const DATA_CUBES_STRATEGIES_LABELS = {
   "no-autofill": "No autofill",
   "autofill-dimensions-only": "Autofill dimensions only",
   "autofill-measures-only": "Autofill measures only",
-  "autofill-all": "Autofill all"
+  "autofill-all": "Autofill all",
 };
 
 const EN_US: Locale = {
   shortDays: ["S", "M", "T", "W", "T", "F", "S"],
-  shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
-  weekStart: 0
+  shortMonths: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+  weekStart: 0,
 };
 
 export function getLocale(): Locale {

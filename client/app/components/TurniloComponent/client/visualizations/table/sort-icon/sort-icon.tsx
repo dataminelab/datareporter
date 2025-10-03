@@ -20,11 +20,12 @@ import { classNames } from "../../../utils/dom/dom";
 import { SvgIcon } from "../../svg-icon/svg-icon";
 import "./sort-arrow.scss";
 
-const sortArrow = require("../../../icons/sort-arrow.svg");
-
 interface SortIconProps {
   direction: SortDirection;
 }
 
-export const SortIcon: React.FunctionComponent<SortIconProps> = ({ direction }) =>
-  <SvgIcon svg={sortArrow} className={classNames("sort-arrow", direction)} />;
+export const SortIcon: React.FunctionComponent<SortIconProps> = ({
+  direction,
+}) => (
+  <SvgIcon svg={require("../../../icons/sort-arrow.svg")} className={classNames("sort-arrow", direction)} />
+);

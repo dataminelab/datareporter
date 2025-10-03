@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .nav-list {
   border-top: 1px solid #ddd;
@@ -78,7 +78,7 @@
       }
 
       &:hover {
-        @include css-variable(background-color, brand-hover)
+        @include css-variable(background-color, brand-hover);
       }
     }
 

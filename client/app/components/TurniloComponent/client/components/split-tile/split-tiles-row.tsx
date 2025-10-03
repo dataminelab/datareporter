@@ -21,7 +21,11 @@ import { DragPosition } from "../../../common/models/drag-position/drag-position
 import { Essence, VisStrategy } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
-import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
+import {
+  CORE_ITEM_GAP,
+  CORE_ITEM_WIDTH,
+  STRINGS,
+} from "../../config/constants";
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
@@ -42,13 +46,21 @@ interface SplitTilesRowState {
   overflowOpen?: boolean;
 }
 
-export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTilesRowState> {
+export class SplitTilesRow extends React.Component<
+  SplitTilesRowProps,
+  SplitTilesRowState
+> {
   private items = React.createRef<HTMLDivElement>();
 
   state: SplitTilesRowState = {};
 
   private maxItems(): number {
-    const { menuStage, essence: { splits: { splits } } } = this.props;
+    const {
+      menuStage,
+      essence: {
+        splits: { splits },
+      },
+    } = this.props;
     return menuStage && getMaxItems(menuStage.width, splits.count());
   }
 
@@ -62,7 +74,10 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
 
   updateSplit = (oldSplit: Split, split: Split) => {
     const { essence, clicker } = this.props;
-    clicker.changeSplits(essence.splits.replace(oldSplit, split), VisStrategy.UnfairGame);
+    clicker.changeSplits(
+      essence.splits.replace(oldSplit, split),
+      VisStrategy.UnfairGame,
+    );
   };
 
   removeSplit = (split: Split) => {
@@ -72,17 +87,25 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   };
 
   canDrop(): boolean {
-    const { essence: { splits, dataCube } } = this.props;
+    const {
+      essence: { splits, dataCube },
+    } = this.props;
     const dimension = DragManager.draggingDimension();
     if (dimension) return !splits.hasSplitOn(dimension);
     if (DragManager.isDraggingFilter()) {
-      const dimension = dataCube.getDimension(DragManager.draggingFilter().reference);
+      const dimension = dataCube.getDimension(
+        DragManager.draggingFilter().reference,
+      );
       return dimension && !splits.hasSplitOn(dimension);
     }
     return DragManager.isDraggingSplit();
   }
 
-  dragStart = (label: string, split: Split, e: React.DragEvent<HTMLElement>) => {
+  dragStart = (
+    label: string,
+    split: Split,
+    e: React.DragEvent<HTMLElement>,
+  ) => {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     setDragData(dataTransfer, "text/plain", label);
@@ -99,7 +122,12 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     const rect = this.items.current.getBoundingClientRect();
     const x = getXFromEvent(e);
     const offset = x - rect.left;
-    const position = DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
+    const position = DragPosition.calculateFromOffset(
+      offset,
+      numItems,
+      CORE_ITEM_WIDTH,
+      CORE_ITEM_GAP,
+    );
     if (position.replace === this.maxItems()) {
       return new DragPosition({ insert: position.replace });
     }
@@ -110,7 +138,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({
-      dragPosition: this.calculateDragPosition(e)
+      dragPosition: this.calculateDragPosition(e),
     });
   };
 
@@ -125,15 +153,19 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   dragLeave = () => {
     if (!this.canDrop()) return;
     this.setState({
-      dragPosition: null
+      dragPosition: null,
     });
   };
 
   draggingSplit(): Split {
-    const { essence: { dataCube } } = this.props;
+    const {
+      essence: { dataCube },
+    } = this.props;
     if (DragManager.isDraggingSplit()) return DragManager.draggingSplit();
     if (DragManager.isDraggingFilter()) {
-      const dimension = dataCube.getDimension(DragManager.draggingFilter().reference);
+      const dimension = dataCube.getDimension(
+        DragManager.draggingFilter().reference,
+      );
       return Split.fromDimension(dimension);
     }
     return Split.fromDimension(DragManager.draggingDimension());
@@ -162,46 +194,80 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   };
 
   appendSplit = (dimension: Dimension) => {
-    this.props.clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+    this.props.clicker.addSplit(
+      Split.fromDimension(dimension),
+      VisStrategy.FairGame,
+    );
   };
 
   insertSplitFromDimension = (dimension: Dimension, index: number) => {
-    const { clicker, essence: { splits } } = this.props;
-    clicker.changeSplits(splits.insertByIndex(index, Split.fromDimension(dimension)), VisStrategy.FairGame);
+    const {
+      clicker,
+      essence: { splits },
+    } = this.props;
+    clicker.changeSplits(
+      splits.insertByIndex(index, Split.fromDimension(dimension)),
+      VisStrategy.FairGame,
+    );
   };
 
   insertSplit = (split: Split, index: number) => {
-    const { clicker, essence: { splits } } = this.props;
-    clicker.changeSplits(splits.insertByIndex(index, split), VisStrategy.FairGame);
+    const {
+      clicker,
+      essence: { splits },
+    } = this.props;
+    clicker.changeSplits(
+      splits.insertByIndex(index, split),
+      VisStrategy.FairGame,
+    );
   };
 
   replaceSplit = (split: Split, index: number) => {
-    const { clicker, essence: { splits } } = this.props;
-    clicker.changeSplits(splits.replaceByIndex(index, split), VisStrategy.FairGame);
+    const {
+      clicker,
+      essence: { splits },
+    } = this.props;
+    clicker.changeSplits(
+      splits.replaceByIndex(index, split),
+      VisStrategy.FairGame,
+    );
   };
 
   render() {
     const { essence, menuStage } = this.props;
     const { dragPosition, overflowOpen, openedSplit } = this.state;
-    return <div className="split-tile" onDragEnter={this.dragEnter}>
-      <div className="title">{STRINGS.split}</div>
-      <div className="items" ref={this.items}>
-        <SplitTiles
-          essence={essence}
-          openedSplit={openedSplit}
-          removeSplit={this.removeSplit}
-          updateSplit={this.updateSplit}
-          openMenu={this.openMenu}
-          closeMenu={this.closeMenu}
-          dragStart={this.dragStart}
+    return (
+      <div className="split-tile" onDragEnter={this.dragEnter}>
+        <div className="title">{STRINGS.split}</div>
+        <div className="items" ref={this.items}>
+          <SplitTiles
+            essence={essence}
+            openedSplit={openedSplit}
+            removeSplit={this.removeSplit}
+            updateSplit={this.updateSplit}
+            openMenu={this.openMenu}
+            closeMenu={this.closeMenu}
+            dragStart={this.dragStart}
+            menuStage={menuStage}
+            maxItems={this.maxItems()}
+            overflowOpen={overflowOpen}
+            closeOverflowMenu={this.closeOverflowMenu}
+            openOverflowMenu={this.openOverflowMenu}
+          />
+        </div>
+        <DragIndicator
+          dragOver={this.dragOver}
+          dragLeave={this.dragLeave}
+          drop={this.drop}
+          dragPosition={dragPosition}
+        />
+        <AddSplit
+          appendSplit={this.appendSplit}
+          insertSplit={this.insertSplitFromDimension}
           menuStage={menuStage}
-          maxItems={this.maxItems()}
-          overflowOpen={overflowOpen}
-          closeOverflowMenu={this.closeOverflowMenu}
-          openOverflowMenu={this.openOverflowMenu} />
+          essence={essence}
+        />
       </div>
-      <DragIndicator dragOver={this.dragOver} dragLeave={this.dragLeave} drop={this.drop} dragPosition={dragPosition} />
-      <AddSplit appendSplit={this.appendSplit} insertSplit={this.insertSplitFromDimension} menuStage={menuStage} essence={essence} />
-    </div>;
+    );
   }
 }

@@ -29,7 +29,9 @@ def _unlock(query_hash, data_source_id):
     redis_connection.delete(_job_lock_id(query_hash, data_source_id))
 
 
-def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata={}):
+def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata=None):  # noqa: C901
+    if metadata is None:
+        metadata = {}
     query_hash = gen_query_hash(query)
     logger.info("Inserting job for %s with metadata=%s", query_hash, metadata)
     try_count = 0
@@ -46,7 +48,7 @@ def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query
                 logger.info("[%s] Found existing job: %s", query_hash, job_id)
                 job_complete = None
                 job_cancelled = None
-
+                message = None
                 try:
                     job = Job.fetch(job_id)
                     job_exists = True
@@ -267,7 +269,7 @@ class QueryExecutor:
             models.db.session.commit()  # make sure that alert sees the latest query result
             self._log_progress("checking_alerts")
             for query_id in updated_query_ids:
-                check_alerts_for_query.delay(query_id, self.metadata)
+                check_alerts_for_query.delay(query_id, self.metadata)  # typing ignore: reportFunctionMemberAccess
             self._log_progress("finished")
 
             result = query_result.id

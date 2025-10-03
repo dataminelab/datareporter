@@ -22,32 +22,59 @@ import { LINE_CHART_MANIFEST } from "../../visualization-manifests/line-chart/li
 import { TABLE_MANIFEST } from "../../visualization-manifests/table/table";
 import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { DataCubeFixtures } from "../data-cube/data-cube.fixtures";
-import { NumberFilterClause, NumberRange, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
-import { boolean, numberRange, stringContains, stringIn, stringMatch, timePeriod, timeRange } from "../filter-clause/filter-clause.fixtures";
+import {
+  NumberFilterClause,
+  NumberRange,
+  RelativeTimeFilterClause,
+  TimeFilterPeriod,
+} from "../filter-clause/filter-clause";
+import {
+  boolean,
+  numberRange,
+  stringContains,
+  stringIn,
+  stringMatch,
+  timePeriod,
+  timeRange,
+} from "../filter-clause/filter-clause.fixtures";
 import { Filter } from "../filter/filter";
 import { EMPTY_SERIES, SeriesList } from "../series-list/series-list";
 import { SortDirection } from "../sort/sort";
-import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
+import {
+  numberSplitCombine,
+  stringSplitCombine,
+  timeSplitCombine,
+} from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 import { Essence, EssenceValue, VisStrategy } from "./essence";
 
 const defaultEssence: EssenceValue = {
-  dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
+  dataCube: DataCubeFixtures.customCube(
+    "essence-fixture-data-cube",
+    "essence-fixture-data-cube",
+  ),
   visualization: null,
   visualizationSettings: null,
   timezone: Timezone.UTC,
   pinnedDimensions: OrderedSet([]),
   filter: new Filter({
     clauses: List([
-      new NumberFilterClause({ reference: "commentLength", values: List.of(new NumberRange({ start: 1, end: 100 })) }),
-      new RelativeTimeFilterClause({ reference: "time", period: TimeFilterPeriod.LATEST, duration: Duration.fromJS("P1D") })
-    ])
+      new NumberFilterClause({
+        reference: "commentLength",
+        values: List.of(new NumberRange({ start: 1, end: 100 })),
+      }),
+      new RelativeTimeFilterClause({
+        reference: "time",
+        period: TimeFilterPeriod.LATEST,
+        duration: Duration.fromJS("P1D"),
+      }),
+    ]),
   }),
   pinnedSort: null,
   splits: EMPTY_SPLITS,
   timeShift: TimeShift.empty(),
-  series: EMPTY_SERIES
+  series: EMPTY_SERIES,
 };
 
 export class EssenceFixtures {
@@ -55,14 +82,14 @@ export class EssenceFixtures {
     return {
       ...defaultEssence,
       visualization: TOTALS_MANIFEST,
-      series: SeriesList.fromMeasureNames(["count"])
+      series: SeriesList.fromMeasureNames(["count"]),
     };
   }
 
   static totals(): EssenceValue {
     return {
       ...defaultEssence,
-      visualization: TOTALS_MANIFEST
+      visualization: TOTALS_MANIFEST,
     };
   }
 
@@ -75,24 +102,33 @@ export class EssenceFixtures {
 
   static getWikiContext() {
     return {
-      dataCube: DataCubeFixtures.wiki()
+      dataCube: DataCubeFixtures.wiki(),
     };
   }
 
   static getTwitterContext() {
     return {
-      dataCube: DataCubeFixtures.twitter()
+      dataCube: DataCubeFixtures.twitter(),
     };
   }
 
   static wikiHeatmap(): Essence {
-    console.log("wikiHeatmap");
     const filterClauses = [
-      timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z"))
+      timeRange(
+        "time",
+        new Date("2015-09-12T00:00:00Z"),
+        new Date("2015-09-13T00:00:00Z"),
+      ),
     ];
     const splitCombines = [
-      stringSplitCombine("channel", { sort: { reference: "added", direction: SortDirection.descending }, limit: 50 }),
-      stringSplitCombine("namespace", { sort: { reference: "added", direction: SortDirection.descending }, limit: 5 })
+      stringSplitCombine("channel", {
+        sort: { reference: "added", direction: SortDirection.descending },
+        limit: 50,
+      }),
+      stringSplitCombine("namespace", {
+        sort: { reference: "added", direction: SortDirection.descending },
+        limit: 5,
+      }),
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -104,24 +140,40 @@ export class EssenceFixtures {
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      pinnedSort: "delta"
+      pinnedSort: "delta",
     });
   }
 
   static wikiTable(): Essence {
     const filterClauses = [
-      timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z")),
+      timeRange(
+        "time",
+        new Date("2015-09-12T00:00:00Z"),
+        new Date("2015-09-13T00:00:00Z"),
+      ),
       stringIn("channel", ["en"]),
       boolean("isRobot", [true], true),
       stringContains("page", "Jeremy", false),
       stringMatch("userChars", "^A$", false),
-      numberRange("commentLength", 3, null, "[)", false)
+      numberRange("commentLength", 3, null, "[)", false),
     ];
     const splitCombines = [
-      stringSplitCombine("channel", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 50 }),
-      stringSplitCombine("isRobot", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 5 }),
-      numberSplitCombine("commentLength", 10, { sort: { reference: "delta", direction: SortDirection.descending }, limit: 5 }),
-      timeSplitCombine("time", "PT1H", { sort: { reference: "delta", direction: SortDirection.descending }, limit: null })
+      stringSplitCombine("channel", {
+        sort: { reference: "delta", direction: SortDirection.descending },
+        limit: 50,
+      }),
+      stringSplitCombine("isRobot", {
+        sort: { reference: "delta", direction: SortDirection.descending },
+        limit: 5,
+      }),
+      numberSplitCombine("commentLength", 10, {
+        sort: { reference: "delta", direction: SortDirection.descending },
+        limit: 5,
+      }),
+      timeSplitCombine("time", "PT1H", {
+        sort: { reference: "delta", direction: SortDirection.descending },
+        limit: null,
+      }),
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -133,18 +185,24 @@ export class EssenceFixtures {
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      pinnedSort: "delta"
+      pinnedSort: "delta",
     });
   }
 
   static wikiLineChart() {
     const filterClauses = [
       timePeriod("time", "P1D", TimeFilterPeriod.LATEST),
-      stringIn("channel", ["en", "no", "sv", "de", "fr", "cs"])
+      stringIn("channel", ["en", "no", "sv", "de", "fr", "cs"]),
     ];
     const splitCombines = [
-      stringSplitCombine("channel", { sort: { reference: "delta", direction: SortDirection.descending }, limit: 50 }),
-      timeSplitCombine("time", "PT1H", { sort: { reference: "delta", direction: SortDirection.descending }, limit: null })
+      stringSplitCombine("channel", {
+        sort: { reference: "delta", direction: SortDirection.descending },
+        limit: 50,
+      }),
+      timeSplitCombine("time", "PT1H", {
+        sort: { reference: "delta", direction: SortDirection.descending },
+        limit: null,
+      }),
     ];
     return new Essence({
       dataCube: DataCubeFixtures.wiki(),
@@ -156,12 +214,15 @@ export class EssenceFixtures {
       splits: new Splits({ splits: List(splitCombines) }),
       series: SeriesList.fromMeasureNames(["delta", "count", "added"]),
       pinnedDimensions: OrderedSet(["channel", "namespace", "isRobot"]),
-      pinnedSort: "delta"
+      pinnedSort: "delta",
     });
   }
 
   static wikiTotals() {
-    return new Essence({ ...EssenceFixtures.totals(), ...EssenceFixtures.getWikiContext() });
+    return new Essence({
+      ...EssenceFixtures.totals(),
+      ...EssenceFixtures.getWikiContext(),
+    });
   }
 
   static wikiLineChartNoNominalSplit() {
@@ -176,6 +237,9 @@ export class EssenceFixtures {
   }
 
   static twitterNoVisualisation() {
-    return new Essence({ ...EssenceFixtures.noViz(), ...EssenceFixtures.getTwitterContext() });
+    return new Essence({
+      ...EssenceFixtures.noViz(),
+      ...EssenceFixtures.getTwitterContext(),
+    });
   }
 }

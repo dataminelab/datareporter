@@ -1,5 +1,15 @@
 {
   "compilerOptions": {
+    // Target latest version of ECMAScript.
+    "lib": ["dom", "es6", "es5", "dom.iterable", "esnext"],
+    // Process & infer types from .js files.
+    "allowJs": true,
+    // Don't emit; allow Babel to transform files.
+    "noEmit": true,
+    // Enable strictest settings like strictNullChecks & noImplicitAny.
+    "strict": true,
+    // Import non-ES modules as default imports.
+    "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,
     "noImplicitAny": true,
@@ -15,16 +25,21 @@
     "outDir": "build",
     "moduleResolution": "node",
     "jsx": "react",
-    "lib": ["dom", "es6", "es5"],
     "types": ["node", "express", "mocha", "webpack-env"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./app/*"]
+    }
   },
-  "include": ["app/components/TurniloComponent/**/*"],
+  "include": ["app/**/*.ts", "app/**/*.tsx", "app/**/*.jsx", "app/components/TurniloComponent/client/utils/test-utils/jsdom-setup.js"],
   "exclude": [
     "node_modules",
-    // "**/*.mocha.ts",
-    // "**/*.mocha.tsx",
     "**/*.json",
-    "turnilo"
+    "**/*.js",
+    "app/components/TurniloComponent/*",
+    "**/*.js",
+    "app/components/TurniloComponent/*",
   ]
 }

@@ -39,11 +39,16 @@ const percentiles: Array<Preset<number>> = [
   { identity: 75, name: "75" },
   { identity: 90, name: "90" },
   { identity: 95, name: "95" },
-  { identity: 99, name: "99" }
+  { identity: 99, name: "99" },
 ];
 
-export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({ seriesList, initialSeries, measure, series, onChange }) => {
-
+export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({
+  seriesList,
+  initialSeries,
+  measure,
+  series,
+  onChange,
+}) => {
   const otherSeries = seriesList.removeSeries(initialSeries);
 
   function validateSeries(series: QuantileSeries): string | null {
@@ -74,20 +79,23 @@ export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({ seriesL
 
   const error = validateSeries(series);
 
-  return <React.Fragment>
-    <div className="percentile-picker">
-      <QuantilePicker
-        title="Percentile"
-        placeholder="Type percentile e.g. 55"
-        selected={series.percentile}
-        presets={percentiles}
-        errorMessage={error}
-        onChange={onPercentileChange} />
-    </div>
-    <FormatPicker
-      measure={measure}
-      format={series.format}
-      formatChange={onFormatChange}
-    />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <div className="percentile-picker">
+        <QuantilePicker
+          title="Percentile"
+          placeholder="Type percentile e.g. 55"
+          selected={series.percentile}
+          presets={percentiles}
+          errorMessage={error}
+          onChange={onPercentileChange}
+        />
+      </div>
+      <FormatPicker
+        measure={measure}
+        format={series.format}
+        formatChange={onFormatChange}
+      />
+    </React.Fragment>
+  );
 };

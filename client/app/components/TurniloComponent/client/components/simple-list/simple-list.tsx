@@ -16,7 +16,12 @@
  */
 
 import * as React from "react";
-import { classNames, getYFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
+import {
+  classNames,
+  getYFromEvent,
+  setDragData,
+  setDragGhost,
+} from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./simple-list.scss";
 
@@ -38,15 +43,20 @@ export interface SimpleListState {
   dropIndex?: number;
 }
 
-export class SimpleList extends React.Component<SimpleListProps, SimpleListState> {
+export class SimpleList extends React.Component<
+  SimpleListProps,
+  SimpleListState
+> {
+  private listRef: React.RefObject<HTMLDivElement>;
 
   constructor(props: SimpleListProps) {
     super(props);
 
     this.state = { dropIndex: -1 };
+    this.listRef = React.createRef<HTMLDivElement>();
   }
 
-  dragStart(item: SimpleRow, e: DragEvent) {
+  dragStart(item: SimpleRow, e: DragEvent): void {
     this.setState({ draggedItem: item });
 
     const dataTransfer = e.dataTransfer;
@@ -61,7 +71,7 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
     return getYFromEvent(e) - targetRect.top <= targetRect.height / 2;
   }
 
-  dragOver(item: SimpleRow, e: DragEvent) {
+  dragOver(item: SimpleRow, e: DragEvent): void {
     e.preventDefault();
 
     const { dropIndex } = this.state;
@@ -72,12 +82,12 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
 
     if (newDropIndex !== dropIndex) {
       this.setState({
-        dropIndex: newDropIndex
+        dropIndex: newDropIndex,
       });
     }
   }
 
-  dragEnd = (e: React.DragEvent<HTMLElement>) => {
+  dragEnd = (): void => {
     const { rows, onReorder } = this.props;
     const { draggedItem, dropIndex } = this.state;
 
@@ -85,7 +95,7 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
 
     this.setState({
       draggedItem: undefined,
-      dropIndex: -1
+      dropIndex: -1,
     });
   };
 
@@ -95,62 +105,72 @@ export class SimpleList extends React.Component<SimpleListProps, SimpleListState
     const { onEdit, onRemove, onReorder } = this.props;
     const { draggedItem, dropIndex } = this.state;
 
-    const svgize = (iconName: string) => iconName ? <SvgIcon svg={require(`../../icons/${iconName}.svg`)} /> : null;
+    const svgize = (iconName: string) =>
+      iconName ? (
+        <SvgIcon svg={require(`../../icons/${iconName}.svg`)} />
+      ) : null;
 
     return rows.map((row, i) => {
-      let { title, description, icon } = row;
+      const { title, description, icon } = row;
 
-      let dragHandle = <div className="drag-handle">
-        <SvgIcon svg={require("../../icons/dragger.svg")} />
-      </div>;
+      const dragHandle = (
+        <div className="drag-handle">
+          <SvgIcon svg={require("../../icons/dragger.svg")} />
+        </div>
+      );
 
-      let svg = svgize(icon);
-      let text = <div className="text">
-        <div className="title">{title}</div>
-        <div className="description">{description}</div>
-      </div>;
+      const svg = svgize(icon);
+      const text = (
+        <div className="text">
+          <div className="title">{title}</div>
+          <div className="description">{description}</div>
+        </div>
+      );
 
-      let actions = <div className="actions">
-        <button onClick={onEdit.bind(this, i)}>{svgize("full-edit")}</button>
-        <button onClick={onRemove.bind(this, i)}>{svgize("full-remove")}</button>
-      </div>;
+      const actions = (
+        <div className="actions">
+          <button onClick={onEdit.bind(this, i)}>{svgize("full-edit")}</button>
+          <button onClick={onRemove.bind(this, i)}>
+            {svgize("full-remove")}
+          </button>
+        </div>
+      );
 
       const isBeingDragged = draggedItem === row;
 
-      const classes = classNames(
-        "row",
-        {
-          "drop-before": dropIndex === i,
+      const classes = classNames("row", {
+        "drop-before": dropIndex === i,
 
-          // last item takes care of both before and after indications
-          "drop-after": i === rows.length - 1 && dropIndex === i + 1,
+        // last item takes care of both before and after indications
+        "drop-after": i === rows.length - 1 && dropIndex === i + 1,
 
-          "dragged": isBeingDragged
-        }
+        "dragged": isBeingDragged,
+      });
+
+      return (
+        <div
+          className={classes}
+          key={`row-${i}`}
+          // @ts-ignore [not assignable to type]
+          onDragOver={this.dragOver.bind(this, row)}
+          draggable={!!onReorder}
+          // @ts-ignore [not assignable to type]
+          onDragStart={this.dragStart.bind(this, row)}
+        >
+          {onReorder ? dragHandle : null}
+          {svg}
+          {text}
+          {actions}
+        </div>
       );
-
-      return <div
-        className={classes}
-        key={`row-${i}`}
-        onDragOver={this.dragOver.bind(this, row)}
-        draggable={!!onReorder}
-        onDragStart={this.dragStart.bind(this, row)}
-      >
-        {onReorder ? dragHandle : null}
-        {svg}
-        {text}
-        {actions}
-      </div>;
     });
   }
 
-  render() {
-    return <div
-      className="simple-list"
-      ref="list"
-      onDragEnd={this.dragEnd}
-    >
-      {this.renderRows(this.props.rows)}
-    </div>;
+  render(): JSX.Element {
+    return (
+      <div className="simple-list" ref={this.listRef} onDragEnd={this.dragEnd}>
+        {this.renderRows(this.props.rows)}
+      </div>
+    );
   }
 }

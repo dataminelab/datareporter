@@ -16,7 +16,10 @@
 
 import * as React from "react";
 
-function getBoundingClientOffset(element: HTMLElement | Window): { left: number, top: number } {
+function getBoundingClientOffset(element: HTMLElement | Window): {
+  left: number;
+  top: number;
+} {
   if (element === window) {
     return { top: 0, left: 0 };
   }
@@ -24,7 +27,9 @@ function getBoundingClientOffset(element: HTMLElement | Window): { left: number,
   return (element as HTMLElement).getBoundingClientRect();
 }
 
-export function mouseEventOffset(event: React.MouseEvent<HTMLElement> | MouseEvent): [number, number] {
+export function mouseEventOffset(
+  event: React.MouseEvent<HTMLElement> | MouseEvent,
+): [number, number] {
   const target = event.currentTarget as HTMLElement;
   const cx = event.clientX || 0;
   const cy = event.clientY || 0;

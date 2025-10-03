@@ -30,11 +30,13 @@ export interface BucketMarksProps {
   scale: d3.ScaleBand<PlywoodValue>;
 }
 
-export interface BucketMarksState {
-}
+// eslint-disable-next-line
+export interface BucketMarksState {}
 
-export class BucketMarks extends React.Component<BucketMarksProps, BucketMarksState> {
-
+export class BucketMarks extends React.Component<
+  BucketMarksProps,
+  BucketMarksState
+> {
   render() {
     const { stage, ticks, scale } = this.props;
     const stageWidth = stage.width;
@@ -51,12 +53,16 @@ export class BucketMarks extends React.Component<BucketMarksProps, BucketMarksSt
       addLine(x, "_" + tick);
     }
     if (ticks.length) {
-      const x = roundToHalfPx(scale(ticks[ticks.length - 1]) + scale.bandwidth());
+      const x = roundToHalfPx(
+        scale(ticks[ticks.length - 1]) + scale.bandwidth(),
+      );
       addLine(x, "last");
     }
 
-    return <g className="bucket-marks" transform={stage.getTransform()}>
-      {lines}
-    </g>;
+    return (
+      <g className="bucket-marks" transform={stage.getTransform()}>
+        {lines}
+      </g>
+    );
   }
 }

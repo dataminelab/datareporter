@@ -39,19 +39,25 @@ function titleRank(title: string, query: string): number {
   const lowerCaseQuery = query.toLowerCase();
   const lowerCaseTitle = title.toLowerCase();
   if (lowerCaseTitle.includes(lowerCaseQuery)) {
-    return (Number.MAX_SAFE_INTEGER / 4) - lowerCaseTitle.indexOf(lowerCaseQuery);
+    return Number.MAX_SAFE_INTEGER / 4 - lowerCaseTitle.indexOf(lowerCaseQuery);
   }
   return 0;
 }
 
-export default function filterDataCubes(dataCubes: DataCube[], query: string, searchInContent = true): DataCube[] {
+export default function filterDataCubes(
+  dataCubes: DataCube[],
+  query: string,
+  searchInContent = true,
+): DataCube[] {
   if (query.trim().length === 0) {
     return dataCubes;
   }
   return dataCubes
     .map((dataCube: DataCube) => {
       const { title, description } = dataCube;
-      const rank = titleRank(title, query) + (searchInContent ? contentRank(description, query) : 0);
+      const rank =
+        titleRank(title, query) +
+        (searchInContent ? contentRank(description, query) : 0);
       return rank > 0 ? { dataCube, rank } : null;
     })
     .filter(complement(isNil))

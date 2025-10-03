@@ -1,8 +1,8 @@
+import json
 import logging
 
 import jwt
 import requests
-import simplejson
 
 logger = logging.getLogger("jwt_auth")
 
@@ -10,7 +10,7 @@ FILE_SCHEME_PREFIX = "file://"
 
 
 def get_public_key_from_file(url):
-    file_path = url[len(FILE_SCHEME_PREFIX) :]
+    file_path = url[len(FILE_SCHEME_PREFIX) :]  # noqa: E203
     with open(file_path) as key_file:
         key_str = key_file.read()
 
@@ -25,7 +25,7 @@ def get_public_key_from_net(url):
     if "keys" in data:
         public_keys = []
         for key_dict in data["keys"]:
-            public_key = jwt.algorithms.RSAAlgorithm.from_jwk(simplejson.dumps(key_dict))
+            public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key_dict))
             public_keys.append(public_key)
 
         get_public_keys.key_cache[url] = public_keys

@@ -36,22 +36,27 @@ interface BodyPortalState {
   isAttached: boolean;
 }
 
-export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
+export class BodyPortal extends React.Component<
+  BodyPortalProps,
+  BodyPortalState
+> {
   public static defaultProps: Partial<BodyPortalProps> = {
     disablePointerEvents: false,
-    isAboveAll: false
+    isAboveAll: false,
   };
 
   private static aboveAll: any;
 
   state = {
-    isAttached: false
+    isAttached: false,
   };
 
   constructor(props: BodyPortalProps) {
     super(props);
     this.target = document.createElement("div");
-    this.target.className = classNames("body-portal", { "full-size": props.fullSize });
+    this.target.className = classNames("body-portal", {
+      "full-size": props.fullSize,
+    });
   }
 
   private readonly target: HTMLElement = null;
@@ -77,6 +82,9 @@ export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState
   render() {
     const { isAttached } = this.state;
     Object.assign(this.target.style, normalizeStyles(this.props));
-    return ReactDOM.createPortal(isAttached && this.props.children, this.target);
+    return ReactDOM.createPortal(
+      isAttached && this.props.children,
+      this.target,
+    );
   }
 }

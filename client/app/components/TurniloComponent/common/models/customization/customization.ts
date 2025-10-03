@@ -16,10 +16,15 @@
  */
 
 import { Timezone } from "chronoshift";
+import { VisualizationColors } from "../colors/colors";
 import { Class, immutableArraysEqual, Instance } from "immutable-class";
+import { Locale } from "../locale/locale";
 import { LOGGER } from "../../logger/logger";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
-import { ExternalView, ExternalViewValue } from "../external-view/external-view";
+import {
+  ExternalView,
+  ExternalViewValue,
+} from "../external-view/external-view";
 import { UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
 
 const availableCssVariables = [
@@ -77,8 +82,14 @@ const availableCssVariables = [
   "text-lightest",
   "text-link",
   "text-medium",
-  "text-standard"
+  "text-standard",
 ];
+
+type CssVariables = Record<string, string>;
+
+interface Messages {
+  dataCubeNotFound?: string;
+}
 
 export interface CustomizationValue {
   title?: string;
@@ -104,9 +115,35 @@ export interface CustomizationJS {
   cssVariables?: Record<string, string>;
 }
 
-var check: Class<CustomizationValue, CustomizationJS>;
+export interface SerializedCustomization {
+  headerBackground?: string;
+  customLogoSvg?: string;
+  timezones: string[];
+  externalViews: ExternalViewValue[];
+  hasUrlShortener: boolean;
+  sentryDSN?: string;
+  locale: Locale;
+  messages: Messages;
+  visualizationColors: VisualizationColors;
+}
 
-export class Customization implements Instance<CustomizationValue, CustomizationJS> {
+export interface ClientCustomization {
+  headerBackground?: string;
+  customLogoSvg?: string;
+  timezones: Timezone[];
+  externalViews: ExternalViewValue[];
+  hasUrlShortener: boolean;
+  sentryDSN?: string;
+  locale: Locale;
+  messages: Messages;
+  visualizationColors: VisualizationColors;
+}
+
+let check: Class<CustomizationValue, CustomizationJS>;
+
+export class Customization
+  implements Instance<CustomizationValue, CustomizationJS>
+{
   static DEFAULT_TITLE = "Turnilo (%v)";
 
   static DEFAULT_TIMEZONES: Timezone[] = [
@@ -125,7 +162,7 @@ export class Customization implements Instance<CustomizationValue, Customization
     new Timezone("Asia/Kathmandu"), // +5.8
     new Timezone("Asia/Hong_Kong"), // +8.0
     new Timezone("Asia/Seoul"), // +9.0
-    new Timezone("Pacific/Guam") // +10.0
+    new Timezone("Pacific/Guam"), // +10.0
   ];
 
   static DEFAULT_LOGOUT_HREF = "logout";
@@ -135,24 +172,24 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   static fromJS(parameters: CustomizationJS): Customization {
-    var value: CustomizationValue = {
+    const value: CustomizationValue = {
       title: parameters.title,
       headerBackground: parameters.headerBackground,
       customLogoSvg: parameters.customLogoSvg,
       logoutHref: parameters.logoutHref,
       sentryDSN: parameters.sentryDSN,
-      cssVariables: parameters.cssVariables
+      cssVariables: parameters.cssVariables,
     };
 
-    var paramViewsJS = parameters.externalViews;
-    var externalViews: ExternalView[] = null;
+    const paramViewsJS = parameters.externalViews;
+    let externalViews: ExternalView[] = null;
     if (Array.isArray(paramViewsJS)) {
       externalViews = paramViewsJS.map((view, i) => ExternalView.fromJS(view));
       value.externalViews = externalViews;
     }
 
-    var timezonesJS = parameters.timezones;
-    var timezones: Timezone[] = null;
+    const timezonesJS = parameters.timezones;
+    let timezones: Timezone[] = null;
     if (Array.isArray(timezonesJS)) {
       timezones = timezonesJS.map(Timezone.fromJS);
       value.timezones = timezones;
@@ -197,12 +234,12 @@ export class Customization implements Instance<CustomizationValue, Customization
       urlShortener: this.urlShortener,
       logoutHref: this.logoutHref,
       sentryDSN: this.sentryDSN,
-      cssVariables: this.cssVariables
+      cssVariables: this.cssVariables,
     };
   }
 
   public toJS(): CustomizationJS {
-    var js: CustomizationJS = {};
+    const js: CustomizationJS = {};
     if (this.title) js.title = this.title;
     if (this.sentryDSN) js.sentryDSN = this.sentryDSN;
     if (this.headerBackground) js.headerBackground = this.headerBackground;
@@ -227,12 +264,16 @@ export class Customization implements Instance<CustomizationValue, Customization
   }
 
   public toString(): string {
-    return `[custom: (${this.headerBackground}) logo: ${Boolean(this.customLogoSvg)}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(
-      this.timezones)}]`;
+    return `[custom: (${this.headerBackground}) logo: ${Boolean(
+      this.customLogoSvg,
+    )}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(
+      this.timezones,
+    )}]`;
   }
 
   public equals(other: Customization): boolean {
-    return Customization.isCustomization(other) &&
+    return (
+      Customization.isCustomization(other) &&
       this.title === other.title &&
       this.headerBackground === other.headerBackground &&
       this.customLogoSvg === other.customLogoSvg &&
@@ -241,11 +282,12 @@ export class Customization implements Instance<CustomizationValue, Customization
       immutableArraysEqual(this.timezones, other.timezones) &&
       this.sentryDSN === other.sentryDSN &&
       this.logoutHref === other.logoutHref &&
-      this.cssVariables === other.cssVariables;
+      this.cssVariables === other.cssVariables
+    );
   }
 
   public getTitle(version: string): string {
-    var title = this.title || Customization.DEFAULT_TITLE;
+    const title = this.title || Customization.DEFAULT_TITLE;
     return title.replace(/%v/g, version);
   }
 
@@ -280,5 +322,5 @@ export class Customization implements Instance<CustomizationValue, Customization
     return valid;
   }
 }
-
+// eslint-disable-next-line
 check = Customization;

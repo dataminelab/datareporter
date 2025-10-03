@@ -26,17 +26,28 @@ import { FilterTile } from "./filter-tile";
 
 describe("FilterTile", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
+      // @ts-ignore TS2739
       <FilterTile
         clicker={null}
         essence={EssenceFixtures.wikiTotals()}
         timekeeper={TimekeeperFixtures.fixed()}
-        menuStage={null}
-      />
+        open={false}
+        saveClause={() => {}}
+        removeClause={() => {}}
+        openFilterMenu={() => {}}
+        closeFilterMenu={() => {}}
+        dragStart={() => {}}
+      />,
     );
 
-    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("filter-tile");
+    expect(
+      TestUtils.isCompositeComponent(renderedComponent),
+      "should be composite",
+    ).to.equal(true);
+    expect(
+      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
+      "should contain class",
+    ).to.contain("filter-tile");
   });
-
 });

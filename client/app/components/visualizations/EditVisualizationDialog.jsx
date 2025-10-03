@@ -1,4 +1,13 @@
-import { isEqual, extend, map, sortBy, findIndex, filter, pick, omit } from "lodash";
+import {
+  isEqual,
+  extend,
+  map,
+  sortBy,
+  findIndex,
+  filter,
+  pick,
+  omit,
+} from "lodash";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import Modal from "antd/lib/modal";
@@ -10,13 +19,17 @@ import notification from "@/services/notification";
 import Visualization from "@/services/visualization";
 import recordEvent from "@/services/recordEvent";
 import useQueryResultData from "@/lib/useQueryResultData";
+import { useUniqueId } from "@/lib/hooks/useUniqueId";
 import {
   registeredVisualizations,
   getDefaultVisualization,
   newVisualization,
   VisualizationType,
 } from "@redash/viz/lib";
-import { Renderer, Editor } from "@/components/visualizations/visualizationComponents";
+import {
+  Renderer,
+  Editor,
+} from "@/components/visualizations/visualizationComponents";
 
 import "./EditVisualizationDialog.less";
 
@@ -33,7 +46,9 @@ function updateQueryVisualizations(query, visualization) {
 
 function saveVisualization(visualization) {
   if (visualization.id) {
-    recordEvent("update", "visualization", visualization.id, { type: visualization.type });
+    recordEvent("update", "visualization", visualization.id, {
+      type: visualization.type,
+    });
   } else {
     recordEvent("create", "visualization", null, { type: visualization.type });
   }
@@ -66,7 +81,12 @@ function confirmDialogClose(isDirty) {
   });
 }
 
-function EditVisualizationDialog({ dialog, visualization, query, queryResult }) {
+function EditVisualizationDialog({
+  dialog,
+  visualization,
+  query,
+  queryResult,
+}) {
   const errorHandlerRef = useRef();
 
   const isNew = !visualization;
@@ -79,11 +99,13 @@ function EditVisualizationDialog({ dialog, visualization, query, queryResult }) 
       columns: data.columns,
       rows: filterData(data.rows, filters),
     }),
-    [data, filters]
+    [data, filters],
   );
 
   const defaultState = useMemo(() => {
-    const config = visualization ? registeredVisualizations[visualization.type] : getDefaultVisualization();
+    const config = visualization
+      ? registeredVisualizations[visualization.type]
+      : getDefaultVisualization();
     const options = config.getOptions(isNew ? {} : visualization.options, data);
     return {
       type: config.type,
@@ -147,14 +169,22 @@ function EditVisualizationDialog({ dialog, visualization, query, queryResult }) 
 
   function dismiss() {
     const optionsChanged = !isEqual(options, defaultState.originalOptions);
-    confirmDialogClose(nameChanged || optionsChanged).then(dialog.dismiss);
+    confirmDialogClose(nameChanged || optionsChanged)
+      .then(dialog.dismiss)
+      .catch(() => {});
   }
 
   // When editing existing visualization chart type selector is disabled, so add only existing visualization's
   // descriptor there (to properly render the component). For new visualizations show all types except of deprecated
   const availableVisualizations = isNew
-    ? filter(sortBy(registeredVisualizations, ["name"]), vis => !vis.isDeprecated)
+    ? filter(
+        sortBy(registeredVisualizations, ["name"]),
+        vis => !vis.isDeprecated,
+      )
     : pick(registeredVisualizations, [type]);
+
+  const vizTypeId = useUniqueId("visualization-type");
+  const vizNameId = useUniqueId("visualization-name");
 
   return (
     <Modal
@@ -168,30 +198,35 @@ function EditVisualizationDialog({ dialog, visualization, query, queryResult }) 
       }}
       onOk={save}
       onCancel={dismiss}
-      wrapProps={{ "data-test": "EditVisualizationDialog" }}>
+      wrapProps={{ "data-test": "EditVisualizationDialog" }}
+    >
       <div className="edit-visualization-dialog">
         <div className="visualization-settings">
           <div className="m-b-15">
-            <label htmlFor="visualization-type">Visualization Type</label>
+            <label htmlFor={vizTypeId}>Visualization Type</label>
             <Select
               data-test="VisualizationType"
-              id="visualization-type"
+              id={vizTypeId}
               className="w-100"
               disabled={!isNew}
               value={type}
-              onChange={onTypeChanged}>
+              onChange={onTypeChanged}
+            >
               {map(availableVisualizations, vis => (
-                <Select.Option key={vis.type} data-test={"VisualizationType." + vis.type}>
+                <Select.Option
+                  key={vis.type}
+                  data-test={"VisualizationType." + vis.type}
+                >
                   {vis.name}
                 </Select.Option>
               ))}
             </Select>
           </div>
           <div className="m-b-15">
-            <label htmlFor="visualization-name">Visualization Name</label>
+            <label htmlFor={vizNameId}>Visualization Name</label>
             <Input
               data-test="VisualizationName"
-              id="visualization-name"
+              id={vizNameId}
               className="w-100"
               value={name}
               onChange={event => onNameChanged(event.target.value)}
@@ -208,7 +243,10 @@ function EditVisualizationDialog({ dialog, visualization, query, queryResult }) 
           </div>
         </div>
         <div className="visualization-preview">
-          <label htmlFor="visualization-preview" className="invisible hidden-xs">
+          <label
+            htmlFor="visualization-preview"
+            className="invisible hidden-xs"
+          >
             Preview
           </label>
           <Filters filters={filters} onChange={setFilters} />
@@ -229,9 +267,9 @@ function EditVisualizationDialog({ dialog, visualization, query, queryResult }) 
 
 EditVisualizationDialog.propTypes = {
   dialog: DialogPropType.isRequired,
-  query: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  query: PropTypes.object.isRequired,
   visualization: VisualizationType,
-  queryResult: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  queryResult: PropTypes.object.isRequired,
 };
 
 EditVisualizationDialog.defaultProps = {

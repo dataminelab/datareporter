@@ -22,7 +22,6 @@ export function extend(source: any, target: any): any {
   for (const key in source) {
     target[key] = source[key];
   }
-
   return target;
 }
 
@@ -32,15 +31,21 @@ export function omitFalsyValues<T>(obj: T): Partial<T> {
 
 type Key = string;
 
-export function mapValues<K extends Key, S, T>(obj: Record<K, S>, fn: Unary<S, T>): Record<K, T> {
-  return Object.keys(obj).reduce((result: Record<K, T>, key: K) => {
-    result[key] = fn(obj[key]);
+export function mapValues<K extends Key, S, T>(
+  obj: Record<K, S>,
+  fn: Unary<S, T>,
+): Record<K, T> {
+  return Object.keys(obj).reduce((result, key) => {
+    result[key as K] = fn(obj[key as K]);
     return result;
   }, {} as Record<K, T>);
 }
 
-export function pickValues<T, K extends keyof T>(obj: T, predicate: Predicate<T[K]>): Partial<T> {
-  return (Object.keys(obj) as K[]).reduce((result: Partial<T>, key: K) => {
+export function pickValues<T, K extends keyof T>(
+  obj: T,
+  predicate: Predicate<T[K]>,
+): Partial<T> {
+  return (Object.keys(obj) as K[]).reduce((result, key) => {
     const value = obj[key];
     if (predicate(value)) {
       result[key] = value;
@@ -49,7 +54,11 @@ export function pickValues<T, K extends keyof T>(obj: T, predicate: Predicate<T[
   }, {} as Partial<T>);
 }
 
-export function fromEntries<K extends Key, T>(entries: Array<[K, T]>): Record<K, T> {
-  return entries.reduce((result: Record<K, T>, [key, value]: [K, T]) =>
-    assoc(result, key, value), {} as Record<K, T>);
+export function fromEntries<K extends Key, T>(
+  entries: Array<[K, T]>,
+): Record<K, T> {
+  return entries.reduce(
+    (result, [key, value]) => assoc(result, key, value),
+    {} as Record<K, T>,
+  );
 }

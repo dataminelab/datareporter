@@ -19,13 +19,13 @@ import { basicExecutorFactory, Dataset } from "plywood";
 import { ClusterFixtures } from "../cluster/cluster.fixtures";
 import { DimensionsFixtures } from "../dimension/dimensions.fixtures";
 import { MeasuresFixtures } from "../measure/measures.fixtures";
-import { DataCube, DataCubeJS, DataCubeValue } from "./data-cube";
+import { DataCube, DataCubeJS } from "./data-cube";
 
-var executor = basicExecutorFactory({
+const executor = basicExecutorFactory({
   datasets: {
     wiki: Dataset.fromJS([]),
-    twitter: Dataset.fromJS([])
-  }
+    twitter: Dataset.fromJS([]),
+  },
 });
 
 export class DataCubeFixtures {
@@ -42,7 +42,12 @@ export class DataCubeFixtures {
         { name: "articleName", type: "STRING" },
         { name: "page", type: "STRING" },
         { name: "userChars", type: "SET/STRING" },
-        { name: "count", type: "NUMBER", unsplitable: true, maker: { op: "count" } }
+        {
+          name: "count",
+          type: "NUMBER",
+          unsplitable: true,
+          maker: { op: "count" },
+        },
       ],
       dimensions: DimensionsFixtures.wikiJS(),
       measures: MeasuresFixtures.wikiJS(),
@@ -55,8 +60,8 @@ export class DataCubeFixtures {
       maxSplits: 4,
       refreshRule: {
         time: new Date("2016-04-30T12:39:51.350Z"),
-        rule: "fixed"
-      }
+        rule: "fixed",
+      },
     };
   }
 
@@ -64,7 +69,8 @@ export class DataCubeFixtures {
     return {
       name: "twitter",
       title: "Twitter",
-      description: "Twitter full description should go here - tweets and followers",
+      description:
+        "Twitter full description should go here - tweets and followers",
       clusterName: "druid-twitter",
       source: "twitter",
       introspection: "none",
@@ -76,8 +82,8 @@ export class DataCubeFixtures {
       defaultSortMeasure: "count",
       defaultPinnedDimensions: ["tweet"],
       refreshRule: {
-        rule: "realtime"
-      }
+        rule: "realtime",
+      },
     };
   }
 
@@ -89,45 +95,55 @@ export class DataCubeFixtures {
     return DataCube.fromJS(DataCubeFixtures.TWITTER_JS, { executor });
   }
 
-  static customCube(title: string, description: string, extendedDescription = ""): DataCube {
-    return DataCube.fromJS({
-      name: "custom",
-      title,
-      description,
-      extendedDescription,
-      clusterName: "druid-custom",
-      source: "custom",
-      introspection: "none",
-      dimensions: [],
-      measures: [],
-      timeAttribute: "time",
-      defaultTimezone: "Etc/UTC",
-      defaultDuration: "P3D",
-      maxSplits: 4,
-      refreshRule: {
-        rule: "realtime"
-      }
-    }, { executor });
+  static customCube(
+    title: string,
+    description: string,
+    extendedDescription = "",
+  ): DataCube {
+    return DataCube.fromJS(
+      {
+        name: "custom",
+        title,
+        description,
+        extendedDescription,
+        clusterName: "druid-custom",
+        source: "custom",
+        introspection: "none",
+        dimensions: [],
+        measures: [],
+        timeAttribute: "time",
+        defaultTimezone: "Etc/UTC",
+        defaultDuration: "P3D",
+        maxSplits: 4,
+        refreshRule: {
+          rule: "realtime",
+        },
+      },
+      { executor },
+    );
   }
 
-    static customCubeWithGuard(): DataCube {
-    return DataCube.fromJS({
-      name: "some-name",
-      title: "customDataCubeWithGuard",
-      description: "",
-      extendedDescription: "",
-      clusterName: "druid-custom",
-      source: "custom",
-      introspection: "none",
-      dimensions: [],
-      measures: [],
-      timeAttribute: "time",
-      defaultTimezone: "Etc/UTC",
-      defaultDuration: "P3D",
-      maxSplits: 4,
-      refreshRule: {
-        rule: "realtime"
-      }
-    }, { executor, cluster: ClusterFixtures.druidTwitterClusterJSWithGuard() });
+  static customCubeWithGuard(): DataCube {
+    return DataCube.fromJS(
+      {
+        name: "some-name",
+        title: "customDataCubeWithGuard",
+        description: "",
+        extendedDescription: "",
+        clusterName: "druid-custom",
+        source: "custom",
+        introspection: "none",
+        dimensions: [],
+        measures: [],
+        timeAttribute: "time",
+        defaultTimezone: "Etc/UTC",
+        defaultDuration: "P3D",
+        maxSplits: 4,
+        refreshRule: {
+          rule: "realtime",
+        },
+      },
+      { executor, cluster: ClusterFixtures.druidTwitterClusterJSWithGuard() },
+    );
   }
 }

@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 $overflow-width: 40px;
 
 .filter-tile-widget {
   @extend %module;
   @extend %module-h-title;
-  position: static!important;
+  position: static !important;
   display: flex;
   align-items: baseline;
 
   .title {
-    position: static!important;
-    text-align: left!important;
-    width: auto!important;
+    position: static !important;
+    text-align: left !important;
+    width: auto !important;
   }
 
   .add-tile {
@@ -39,12 +39,12 @@ $overflow-width: 40px;
   .items {
     transition: height 0.1s ease-in-out;
     overflow: hidden;
-    position: static!important;
+    position: static !important;
 
     .filter {
       @extend %tiles-item;
       @extend %tiles-item-h;
-      position: static!important;
+      position: static !important;
       left: 0; // It gets horizontal position from the JS
 
       .dimension-title {
@@ -59,7 +59,7 @@ $overflow-width: 40px;
     }
 
     .dimension {
-      position: static!important;
+      position: static !important;
     }
   }
 
@@ -78,5 +78,5 @@ $overflow-width: 40px;
 }
 
 .overflow-menu {
-  @extend %overflow-menu
+  @extend %overflow-menu;
 }

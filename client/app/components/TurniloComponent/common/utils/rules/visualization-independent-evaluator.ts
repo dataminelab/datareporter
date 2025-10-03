@@ -19,7 +19,11 @@ import { SeriesList } from "../../models/series-list/series-list";
 import { Actions } from "./actions";
 import { Predicates } from "./predicates";
 import { RulesEvaluator } from "./rules-evaluator";
-import { Action, Predicate, RulesEvaluatorBuilder } from "./rules-evaluator-builder";
+import {
+  Action,
+  Predicate,
+  RulesEvaluatorBuilder,
+} from "./rules-evaluator-builder";
 
 export interface PredicateVariables {
   series: SeriesList;
@@ -32,10 +36,14 @@ export interface ActionVariables {
 export type VisualizationIndependentPredicate = Predicate<PredicateVariables>;
 export type VisualizationIndependentAction = Action<ActionVariables>;
 
-export type VisualizationIndependentEvaluator = RulesEvaluator<PredicateVariables, ActionVariables>;
+export type VisualizationIndependentEvaluator = RulesEvaluator<
+  PredicateVariables,
+  ActionVariables
+>;
 
 export const visualizationIndependentEvaluator: VisualizationIndependentEvaluator =
-  RulesEvaluatorBuilder.empty()
+  RulesEvaluatorBuilder
+    .empty<PredicateVariables, ActionVariables>()
     .when(Predicates.noSelectedMeasures())
     .then(Actions.manualMeasuresSelection())
     .otherwise(Actions.ready())

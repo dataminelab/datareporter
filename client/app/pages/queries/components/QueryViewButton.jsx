@@ -4,7 +4,14 @@ import Button from "antd/lib/button";
 import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 import { ButtonTooltip } from "@/components/queries/QueryEditor/QueryEditorControls";
 
-export default function QueryViewButton({ title, shortcut, disabled, children, onClick, ...props }) {
+export default function QueryViewButton({
+  title,
+  shortcut,
+  disabled,
+  children,
+  onClick,
+  ...props
+}) {
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const eventHandlers = useMemo(
@@ -12,7 +19,7 @@ export default function QueryViewButton({ title, shortcut, disabled, children, o
       onMouseEnter: () => setTooltipVisible(true),
       onMouseLeave: () => setTooltipVisible(false),
     }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -42,7 +49,8 @@ export default function QueryViewButton({ title, shortcut, disabled, children, o
           disabled={disabled}
           onClick={onClick}
           style={disabled ? { pointerEvents: "none" } : {}}
-          {...props}>
+          {...props}
+        >
           {children}
         </Button>
       </span>

@@ -17,7 +17,10 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
+import {
+  ConcreteSeries,
+  SeriesDerivation,
+} from "../../../common/models/series/concrete-series";
 import { Delta } from "../delta/delta";
 import "./vis-measure-label.scss";
 
@@ -31,23 +34,30 @@ function renderPrevious(datum: Datum, series: ConcreteSeries): JSX.Element {
   const current = series.selectValue(datum, SeriesDerivation.CURRENT);
   const previous = series.selectValue(datum, SeriesDerivation.PREVIOUS);
   const formatter = series.formatter();
-  return <React.Fragment>
-    <span className="measure-previous-value">
-      {formatter(previous)}
-      </span>
-    <Delta
-      formatter={formatter}
-      lowerIsBetter={series.measure.lowerIsBetter}
-      currentValue={current}
-      previousValue={previous} />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <span className="measure-previous-value">{formatter(previous)}</span>
+      <Delta
+        formatter={formatter}
+        lowerIsBetter={series.measure.lowerIsBetter}
+        currentValue={current}
+        previousValue={previous}
+      />
+    </React.Fragment>
+  );
 }
 
-export const VisMeasureLabel: React.FunctionComponent<VisMeasureLabelProps> = ({ series, datum, showPrevious }) => {
-  return <div className="vis-measure-label">
-    <span className="measure-title">{series.title()}</span>
-    <span className="colon">: </span>
-    <span className="measure-value">{series.formatValue(datum)}</span>
-    {showPrevious && renderPrevious(datum, series)}
-  </div>;
+export const VisMeasureLabel: React.FunctionComponent<VisMeasureLabelProps> = ({
+  series,
+  datum,
+  showPrevious,
+}) => {
+  return (
+    <div className="vis-measure-label">
+      <span className="measure-title">{series.title()}</span>
+      <span className="colon">: </span>
+      <span className="measure-value">{series.formatValue(datum)}</span>
+      {showPrevious && renderPrevious(datum, series)}
+    </div>
+  );
 };

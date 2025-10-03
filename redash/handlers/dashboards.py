@@ -1,3 +1,4 @@
+import requests
 from flask import request, url_for
 from flask_restful import abort
 from funcy import partial, project
@@ -8,17 +9,19 @@ from redash.handlers.base import (
     BaseResource,
     filter_by_tags,
     get_object_or_404,
+    paginate,
 )
 from redash.handlers.base import order_results as _order_results
-from redash.handlers.base import paginate
 from redash.permissions import (
     can_modify,
     require_admin_or_owner,
     require_object_modify_permission,
     require_permission,
+    require_permissions,
 )
 from redash.security import csp_allows_embeding
 from redash.serializers import DashboardSerializer, public_dashboard
+from redash.settings import OPENAI_API_KEY
 
 # Ordering map for relationships
 order_map = {
@@ -135,6 +138,43 @@ class MyDashboardsResource(BaseResource):
         return paginate(ordered_results, page, page_size, DashboardSerializer)
 
 
+class DashboardPromptResource(BaseResource):
+    @require_permissions(["edit_dashboard", "ai:ask"])
+    def post(self, dashboard_id):
+        """
+        Retrieve a prompt for a dashboard.
+
+        :param dashboard_id: The numeric ID of the dashboard to retrieve the prompt for.
+        :>json string prompt: The prompt text for the dashboard.
+        """
+        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
+        require_object_modify_permission(dashboard, self.current_user)
+
+        data = request.get_json(force=True)
+        messages = data.get("messages", [])
+
+        if not messages or not isinstance(messages, list):
+            abort(400, message="Missing or invalid 'messages' in request body.")
+
+        headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
+        payload = {
+            "model": "gpt-3.5-turbo",
+            "messages": messages,
+        }
+
+        openai_response = requests.post(
+            "https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=30
+        )
+
+        if openai_response.status_code != 200:
+            abort(502, message="Failed to get response from OpenAI.")
+
+        openai_data = openai_response.json()
+        prompt = openai_data["choices"][0]["message"]["content"]
+
+        return {"prompt": prompt}
+
+
 class DashboardResource(BaseResource):
     @require_permission("list_dashboards")
     def get(self, dashboard_id=None):
@@ -145,19 +185,20 @@ class DashboardResource(BaseResource):
 
         .. _dashboard-response-label:
 
-        :>json number id: Dashboard ID
-        :>json string name:
-        :>json string slug:
-        :>json number user_id: ID of the dashboard creator
-        :>json string created_at: ISO format timestamp for dashboard creation
-        :>json string updated_at: ISO format timestamp for last dashboard modification
-        :>json number version: Revision number of dashboard
-        :>json boolean dashboard_filters_enabled: Whether filters are enabled or not
-        :>json boolean is_archived: Whether this dashboard has been removed from the index or not
-        :>json boolean is_draft: Whether this dashboard is a draft or not.
-        :>json array layout: Array of arrays containing widget IDs, corresponding to the rows and columns the widgets are displayed in
-        :>json array widgets: Array of arrays containing :ref:`widget <widget-response-label>` data
-        :>json object options: Dashboard options
+        - json number id: Dashboard ID
+        - json string name:
+        - json string slug:
+        - json number user_id: ID of the dashboard creator
+        - json string created_at: ISO format timestamp for dashboard creation
+        - json string updated_at: ISO format timestamp for last dashboard modification
+        - json number version: Revision number of dashboard
+        - json boolean dashboard_filters_enabled: Whether filters are enabled or not
+        - json boolean is_archived: Whether this dashboard has been removed from the index or not
+        - json boolean is_draft: Whether this dashboard is a draft or not.
+        - json array layout: Array of arrays containing widget IDs,
+            corresponding to the rows and columns the widgets are displayed in
+        - json array widgets: Array of arrays containing :ref:`widget <widget-response-label>` data
+        - json object options: Dashboard options
 
         .. _widget-response-label:
 
@@ -278,7 +319,8 @@ class PublicDashboardResource(BaseResource):
         Retrieve a public dashboard.
 
         :param token: An API key for a public dashboard.
-        :>json array widgets: An array of arrays of :ref:`public widgets <public-widget-label>`, corresponding to the rows and columns the widgets are displayed in
+        - json array widgets: An array of arrays of :ref:`public widgets <public-widget-label>`,
+            corresponding to the rows and columns the widgets are displayed in
         """
         if self.current_org.get_setting("disable_public_urls"):
             abort(400, message="Public URLs are disabled.")
@@ -402,3 +444,16 @@ class DashboardFavoriteListResource(BaseResource):
         )
 
         return response
+
+
+class DashboardForkResource(BaseResource):
+    @require_permission("edit_dashboard")
+    def post(self, dashboard_id):
+        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
+
+        fork_dashboard = dashboard.fork(self.current_user)
+        models.db.session.commit()
+
+        self.record_event({"action": "fork", "object_id": dashboard_id, "object_type": "dashboard"})
+
+        return DashboardSerializer(fork_dashboard, with_widgets=True).serialize()

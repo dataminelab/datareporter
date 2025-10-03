@@ -3,6 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import routeWithApiKeySession from "@/components/ApplicationArea/routeWithApiKeySession";
+import Link from "@/components/Link";
 import BigMessage from "@/components/BigMessage";
 import PageHeader from "@/components/PageHeader";
 import Parameters from "@/components/Parameters";
@@ -15,21 +16,28 @@ import routes from "@/services/routes";
 import logoUrl from "@/assets/images/report_icon_small.png";
 
 import useDashboard from "./hooks/useDashboard";
-import { useEssence } from "./useEssence"
+
 import "./PublicDashboardPage.less";
 
 function PublicDashboard({ dashboard }) {
-  const { globalParameters, filters, setFilters, refreshDashboard, loadWidget, refreshWidget } = useDashboard(
-    dashboard
-  );
-  const { essenceList, widgetList, getEssence, setEssence } = useEssence();
+  const {
+    globalParameters,
+    filters,
+    setFilters,
+    refreshDashboard,
+    loadWidget,
+    refreshWidget,
+  } = useDashboard(dashboard);
 
   return (
     <div className="container p-t-10 p-b-20">
       <PageHeader title={dashboard.name} />
       {!isEmpty(globalParameters) && (
         <div className="m-b-10 p-15 bg-white tiled">
-          <Parameters parameters={globalParameters} onValuesChange={refreshDashboard} />
+          <Parameters
+            parameters={globalParameters}
+            onValuesChange={refreshDashboard}
+          />
         </div>
       )}
       {!isEmpty(filters) && (
@@ -45,7 +53,9 @@ function PublicDashboard({ dashboard }) {
           isEditing={false}
           isPublic
           onLoadWidget={loadWidget}
-          getEssence={getEssence}
+          // XXX TEST IT //
+          // getEssence={getEssence}
+          onRefreshWidget={refreshWidget}
         />
       </div>
     </div>
@@ -53,7 +63,7 @@ function PublicDashboard({ dashboard }) {
 }
 
 PublicDashboard.propTypes = {
-  dashboard: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  dashboard: PropTypes.object.isRequired,
 };
 
 class PublicDashboardPage extends React.Component {
@@ -83,18 +93,22 @@ class PublicDashboardPage extends React.Component {
       <div className="public-dashboard-page">
         {loading ? (
           <div className="container loading-message">
-            <BigMessage className="" icon="fa-spinner fa-2x fa-pulse" message="Loading..." />
+            <BigMessage
+              className=""
+              icon="fa-spinner fa-2x fa-pulse"
+              message="Loading..."
+            />
           </div>
         ) : (
           <PublicDashboard dashboard={dashboard} />
         )}
         <div id="footer">
           <div className="text-center">
-            <a href="https://datareporter.com">
+            <Link href="https://datareporter.com">
               <img alt="Data reporter Logo" src={logoUrl} width="38" />
-            </a>
+            </Link>
           </div>
-          Powered by <a href="https://datareporter.com">Dataminelab</a>
+          Powered by <Link href="https://datareporter.com">Dataminelab</Link>
         </div>
       </div>
     );
@@ -107,5 +121,5 @@ routes.register(
     path: "/public/dashboards/:token",
     render: pageProps => <PublicDashboardPage {...pageProps} />,
     getApiKey: currentRoute => currentRoute.routeParams.token,
-  })
+  }),
 );

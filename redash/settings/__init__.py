@@ -1,21 +1,25 @@
-import os
 import importlib
+import os
 import ssl
-from funcy import distinct, remove
+
 from flask_talisman import talisman
+from funcy import distinct, remove
 
 from .helpers import (
-    fix_assets_path,
+    add_decode_responses_to_redis_url,
     array_from_string,
     cast_int_or_default,
-    parse_boolean,
+    fix_assets_path,
     int_or_none,
+    parse_boolean,
     set_from_string,
-    add_decode_responses_to_redis_url,
 )
 from .organization import DATE_FORMAT, TIME_FORMAT  # noqa
 
 PLYWOOD_SERVER_URL = os.environ.get("PLYWOOD_SERVER_URL", "http://plywood-server:3000")
+OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://ollama:11434")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+SERVER_WORKER_URL = os.environ.get("SERVER_WORKER_URL", "")
 
 # _REDIS_URL is the unchanged REDIS_URL we get from env vars, to be used later with RQ
 _REDIS_URL = os.environ.get("REDASH_REDIS_URL", os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
@@ -45,7 +49,10 @@ RQ_REDIS_URL = os.environ.get("RQ_REDIS_URL", _REDIS_URL)
 QUERY_RESULTS_CLEANUP_ENABLED = parse_boolean(os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_ENABLED", "true"))
 QUERY_RESULTS_CLEANUP_COUNT = int(os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_COUNT", "100"))
 QUERY_RESULTS_CLEANUP_MAX_AGE = int(os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_MAX_AGE", "7"))
+
 QUERY_RESULTS_EXPIRED_TTL_ENABLED = parse_boolean(os.environ.get("REDASH_QUERY_RESULTS_EXPIRED_TTL_ENABLED", "false"))
+# default set query results expired ttl 86400 seconds
+QUERY_RESULTS_EXPIRED_TTL = int(os.environ.get("REDASH_QUERY_RESULTS_EXPIRED_TTL", "86400"))
 
 SCHEMAS_REFRESH_SCHEDULE = int(os.environ.get("REDASH_SCHEMAS_REFRESH_SCHEDULE", 30))
 SCHEMAS_REFRESH_TIMEOUT = int(os.environ.get("REDASH_SCHEMAS_REFRESH_TIMEOUT", 300))
@@ -53,8 +60,13 @@ SCHEMAS_REFRESH_TIMEOUT = int(os.environ.get("REDASH_SCHEMAS_REFRESH_TIMEOUT", 3
 AUTH_TYPE = os.environ.get("REDASH_AUTH_TYPE", "api_key")
 INVITATION_TOKEN_MAX_AGE = int(os.environ.get("REDASH_INVITATION_TOKEN_MAX_AGE", 60 * 60 * 24 * 7))
 
-# The secret key to use in the Flask app for various cryptographic features
-SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET", "c292a0a3aa32397cdb050e233733900f")
+SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET")
+if SECRET_KEY is None:
+    raise Exception(
+        "You must set the REDASH_COOKIE_SECRET environment variable. \
+        Visit http://redash.io/help/open-source/admin-guide/secrets for more information."
+    )
+
 # The secret key to use when encrypting data source options
 DATASOURCE_SECRET_KEY = os.environ.get("REDASH_SECRET_KEY", SECRET_KEY)
 
@@ -131,6 +143,13 @@ FEATURE_POLICY = os.environ.get("REDASH_REFERRER_POLICY", "")
 
 MULTI_ORG = parse_boolean(os.environ.get("REDASH_MULTI_ORG", "false"))
 
+# If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
+# even if your actual Redash URL scheme is HTTPS. This will cause Flask to build
+# the OAuth redirect URL incorrectly thus failing auth. This is especially common if
+# you're behind a SSL/TCP configured AWS ELB or similar.
+# This setting will force the URL scheme.
+GOOGLE_OAUTH_SCHEME_OVERRIDE = os.environ.get("REDASH_GOOGLE_OAUTH_SCHEME_OVERRIDE", "")
+
 GOOGLE_CLIENT_ID = os.environ.get("REDASH_GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("REDASH_GOOGLE_CLIENT_SECRET", "")
 GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
@@ -149,6 +168,7 @@ SAML_ENCRYPTION_ENABLED = SAML_ENCRYPTION_PEM_PATH != "" and SAML_ENCRYPTION_CER
 GOOGLE_PRODUCT_ID = os.environ.get("REDASH_GOOGLE_PROJECT_ID", "")
 GOOGLE_PUBSUB_WORKER_TOPIC_ID = os.environ.get("REDASH_GOOGLE_PUBSUB_WORKER_TOPIC_ID", "")
 WORKER_NOTIFY_URL = os.environ.get("REDASH_WORKER_NOTIFY_URL", "")
+OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "")
 
 # If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
 # even if your actual Redash URL scheme is HTTPS. This will cause Flask to build
@@ -258,6 +278,10 @@ ALERTS_DEFAULT_MAIL_SUBJECT_TEMPLATE = os.environ.get(
     "REDASH_ALERTS_DEFAULT_MAIL_SUBJECT_TEMPLATE", "({state}) {alert_name}"
 )
 
+REDASH_ALERTS_DEFAULT_MAIL_BODY_TEMPLATE_FILE = os.environ.get(
+    "REDASH_ALERTS_DEFAULT_MAIL_BODY_TEMPLATE_FILE", fix_assets_path("templates/emails/alert.html")
+)
+
 # How many requests are allowed per IP to the login page before
 # being throttled?
 # See https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
@@ -289,30 +313,33 @@ default_query_runners = [
     "redash.query_runner.pg",
     "redash.query_runner.url",
     "redash.query_runner.influx_db",
+    "redash.query_runner.influx_db_v2",
     "redash.query_runner.elasticsearch",
+    "redash.query_runner.elasticsearch2",
     "redash.query_runner.amazon_elasticsearch",
+    "redash.query_runner.trino",
     "redash.query_runner.presto",
+    "redash.query_runner.pinot",
     "redash.query_runner.databricks",
     "redash.query_runner.hive_ds",
     "redash.query_runner.impala_ds",
     "redash.query_runner.vertica",
     "redash.query_runner.clickhouse",
+    "redash.query_runner.tinybird",
     "redash.query_runner.yandex_metrica",
+    "redash.query_runner.yandex_disk",
     "redash.query_runner.rockset",
     "redash.query_runner.treasuredata",
     "redash.query_runner.sqlite",
-    "redash.query_runner.dynamodb_sql",
     "redash.query_runner.mssql",
     "redash.query_runner.mssql_odbc",
     "redash.query_runner.memsql_ds",
-    "redash.query_runner.mapd",
     "redash.query_runner.jql",
     "redash.query_runner.google_analytics",
     "redash.query_runner.axibase_tsd",
     "redash.query_runner.salesforce",
     "redash.query_runner.query_results",
     "redash.query_runner.prometheus",
-    "redash.query_runner.qubole",
     "redash.query_runner.db2",
     "redash.query_runner.druid",
     "redash.query_runner.kylin",
@@ -327,6 +354,19 @@ default_query_runners = [
     "redash.query_runner.exasol",
     "redash.query_runner.cloudwatch",
     "redash.query_runner.cloudwatch_insights",
+    "redash.query_runner.corporate_memory",
+    "redash.query_runner.sparql_endpoint",
+    "redash.query_runner.excel",
+    "redash.query_runner.csv",
+    "redash.query_runner.databend",
+    "redash.query_runner.nz",
+    "redash.query_runner.arango",
+    "redash.query_runner.google_analytics4",
+    "redash.query_runner.google_search_console",
+    "redash.query_runner.ignite",
+    "redash.query_runner.oracle",
+    "redash.query_runner.e6data",
+    "redash.query_runner.risingwave",
 ]
 
 enabled_query_runners = array_from_string(
@@ -349,11 +389,15 @@ default_destinations = [
     "redash.destinations.email",
     "redash.destinations.slack",
     "redash.destinations.webhook",
-    "redash.destinations.hipchat",
+    "redash.destinations.discord",
     "redash.destinations.mattermost",
     "redash.destinations.chatwork",
     "redash.destinations.pagerduty",
     "redash.destinations.hangoutschat",
+    "redash.destinations.microsoft_teams_webhook",
+    "redash.destinations.asana",
+    "redash.destinations.webex",
+    "redash.destinations.datadog",
 ]
 
 enabled_destinations = array_from_string(os.environ.get("REDASH_ENABLED_DESTINATIONS", ",".join(default_destinations)))
@@ -381,7 +425,7 @@ QUERY_REFRESH_INTERVALS = list(
         array_from_string(
             os.environ.get(
                 "REDASH_QUERY_REFRESH_INTERVALS",
-                "60, 300, 600, 900, 1800, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 86400, 604800, 1209600, 2592000",
+                "60, 300, 600, 900, 1800, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 86400, 604800, 1209600, 2592000",  # noqa: E501
             )
         ),
     )
@@ -432,7 +476,8 @@ SQLPARSE_FORMAT_OPTIONS = {
 REQUESTS_ALLOW_REDIRECTS = parse_boolean(os.environ.get("REDASH_REQUESTS_ALLOW_REDIRECTS", "false"))
 
 # Enforces CSRF token validation on API requests.
-# This is turned off by default to avoid breaking any existing deployments but it is highly recommended to turn this toggle on to prevent CSRF attacks.
+# This is turned off by default to avoid breaking any existing deployments,
+# but it is highly recommended to turn this toggle on to prevent CSRF attacks.
 ENFORCE_CSRF = parse_boolean(os.environ.get("REDASH_ENFORCE_CSRF", "false"))
 
 # Databricks

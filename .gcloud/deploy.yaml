@@ -1,7 +1,5 @@
 substitutions:
-
-  _GCR_HOSTNAME: eu.gcr.io
-  _IMAGE_TAG: "$COMMIT_SHA"
+  _IMAGE_TAG: "$TAG_NAME"
 
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
@@ -29,9 +27,7 @@ steps:
   - name: "alpine/k8s:1.26.10"
     env: [
       "KUBECONFIG=/config/kubeconfig.conf",
-      "COMMIT_SHA=$COMMIT_SHA",
       "PROJECT_ID=$PROJECT_ID",
-      "_GCR_HOSTNAME=$_GCR_HOSTNAME",
       "BRANCH_NAME=$BRANCH_NAME",
     ]
     entrypoint: "ash"
@@ -56,35 +52,3 @@ steps:
       - name: "config"
         path: "/config"
 
-
-  - name: "gcr.io/cloud-builders/gcloud"
-    entrypoint: "bash"
-    env: [
-      "COMMIT_SHA=$COMMIT_SHA",
-      "PROJECT_ID=$PROJECT_ID",
-      "_GCR_HOSTNAME=$_GCR_HOSTNAME",
-      "BRANCH_NAME=$BRANCH_NAME",
-    ]
-    args:
-      - "-c"
-      - |
-        <<EOT
-        echo Deployment of $BRANCH_NAME
-        dtr_services=$(gcloud run  services list --filter='metadata.labels.branch:$BRANCH_NAME AND metadata.labels.app:datareporter' --format='value(name)')
-        ply_services=$(gcloud run  services list --filter='metadata.labels.branch:$BRANCH_NAME AND metadata.labels.app:plywood' --format='value(name)')
-        echo Will upgrade $dtr_services $ply_services
-        for svc in $ply_services;
-        do
-        echo Upgrade plywood of $svc;
-        gcloud run deploy $svc\
-        --image $_GCR_HOSTNAME/$PROJECT_ID/plywood:$_IMAGE_TAG\
-        --region europe-west1
-        done
-        for svc in $dtr_services;
-        do
-        echo Upgrade datareporter of $svc;
-        gcloud run deploy $svc\
-        --image $_GCR_HOSTNAME/$PROJECT_ID/datareporter:$_IMAGE_TAG\
-        --region europe-west1
-        done
-        EOT

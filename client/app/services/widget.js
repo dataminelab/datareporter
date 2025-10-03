@@ -1,12 +1,30 @@
 import moment from "moment";
 import { axios } from "@/services/axios";
-import { each, pick, extend, isObject, truncate, keys, difference, filter, map, merge, values, isEmpty } from "lodash";
+import hasOwnProp from "has-own-prop";
+import {
+  each,
+  pick,
+  extend,
+  isObject,
+  truncate,
+  keys,
+  difference,
+  filter,
+  map,
+  merge,
+  sortBy,
+  indexOf,
+  size,
+  includes,
+  values,
+  isEmpty,
+} from "lodash";
 import location from "@/services/location";
 import { cloneParameter, Parameter } from "@/services/parameters";
 import dashboardGridOptions from "@/config/dashboard-grid-options";
 import { registeredVisualizations } from "@redash/viz/lib";
-import { Report } from "@/services/report";
-import { Query } from "@/services/query";
+import { Report } from "./report";
+import { Query } from "./query";
 
 export const WidgetTypeEnum = {
   TEXTBOX: "textbox",
@@ -28,9 +46,11 @@ function calculatePositionOptions(widget) {
     maxSizeY: dashboardGridOptions.maxSizeY,
   };
 
-  const config = widget.visualization ? registeredVisualizations[widget.visualization.type] : null;
+  const config = widget.visualization
+    ? registeredVisualizations[widget.visualization.type]
+    : null;
   if (isObject(config)) {
-    if (Object.prototype.hasOwnProperty.call(config, "autoHeight")) {
+    if (hasOwnProp(config, "autoHeight")) {
       visualizationOptions.autoHeight = config.autoHeight;
     }
 
@@ -41,14 +61,19 @@ function calculatePositionOptions(widget) {
     }
     const maxColumns = parseInt(config.maxColumns, 10);
     if (isFinite(maxColumns) && maxColumns >= 0) {
-      visualizationOptions.maxSizeX = Math.min(maxColumns, dashboardGridOptions.columns);
+      visualizationOptions.maxSizeX = Math.min(
+        maxColumns,
+        dashboardGridOptions.columns,
+      );
     }
 
     // Height constraints
     // `minRows` is preferred, but it should be kept for backward compatibility
     const height = parseInt(config.height, 10);
     if (isFinite(height)) {
-      visualizationOptions.minSizeY = Math.ceil(height / dashboardGridOptions.rowHeight);
+      visualizationOptions.minSizeY = Math.ceil(
+        height / dashboardGridOptions.rowHeight,
+      );
     }
     const minRows = parseInt(config.minRows, 10);
     if (isFinite(minRows)) {
@@ -92,7 +117,13 @@ class Widget {
     this.options.position = extend(
       {},
       visualizationOptions,
-      pick(this.options.position, ["col", "row", "sizeX", "sizeY", "autoHeight"])
+      pick(this.options.position, [
+        "col",
+        "row",
+        "sizeX",
+        "sizeY",
+        "autoHeight",
+      ]),
     );
 
     if (this.options.position.sizeY < 0) {
@@ -101,7 +132,7 @@ class Widget {
 
     if (this.report && !isEmpty(this.options.parameterMappings)) {
       this.report = new Report(this.report);
-      let turniloParameter = values(this.options.parameterMappings)[0];
+      const turniloParameter = values(this.options.parameterMappings)[0];
       this.options.parameterMappings = [new Parameter(turniloParameter)];
     }
   }
@@ -109,7 +140,7 @@ class Widget {
   get type() {
     if (this.visualization) {
       return WidgetTypeEnum.VISUALIZATION;
-    } else if (this.text.includes('[turnilo-widget]')) { //TODO add type turnilo widget
+    } else if (this.text && this.text.includes("[turnilo-widget]")) {
       return WidgetTypeEnum.TURNILO;
     } else if (this.restricted) {
       return WidgetTypeEnum.RESTRICTED;
@@ -179,7 +210,15 @@ class Widget {
   }
 
   save(key, value) {
-    const data = pick(this, "options", "text", "id", "width", "dashboard_id", "visualization_id");
+    const data = pick(
+      this,
+      "options",
+      "text",
+      "id",
+      "width",
+      "dashboard_id",
+      "visualization_id",
+    );
     if (key && value) {
       data[key] = merge({}, data[key], value); // done like this so `this.options` doesn't get updated by side-effect
     }
@@ -199,7 +238,15 @@ class Widget {
   }
 
   saveTurnilo(key, value) {
-    const data = pick(this, "options", "text", "id", "width", "dashboard_id", "visualization_id");
+    const data = pick(
+      this,
+      "options",
+      "text",
+      "id",
+      "width",
+      "dashboard_id",
+      "visualization_id",
+    );
     if (key && value) {
       data[key] = merge({}, data[key], value); // done like this so `this.options` doesn't get updated by side-effect
     }
@@ -229,16 +276,22 @@ class Widget {
   }
 
   getParametersDefs() {
+    if (this.type === "turnilo") return this.options.parameterMappings;
     const mappings = this.getParameterMappings();
     // textboxes does not have query
-    if (this.type === "turnilo") return this.options.parameterMappings;
     const params = this.getQuery() ? this.getQuery().getParametersDefs() : [];
 
     const queryParams = location.search;
 
-    const localTypes = [Widget.MappingType.WidgetLevel, Widget.MappingType.StaticValue];
-    return map(
-      filter(params, param => localTypes.indexOf(mappings[param.name].type) >= 0),
+    const localTypes = [
+      Widget.MappingType.WidgetLevel,
+      Widget.MappingType.StaticValue,
+    ];
+    const localParameters = map(
+      filter(
+        params,
+        param => localTypes.indexOf(mappings[param.name].type) >= 0,
+      ),
       param => {
         if (!param) return;
         const mapping = mappings[param.name];
@@ -252,7 +305,14 @@ class Widget {
           result.fromUrlParams(queryParams);
         }
         return result;
-      }
+      },
+    );
+
+    // order widget params using paramOrder
+    return sortBy(localParameters, param =>
+      includes(this.options.paramOrder, param.name)
+        ? indexOf(this.options.paramOrder, param.name)
+        : size(this.options.paramOrder),
     );
   }
 
@@ -263,8 +323,9 @@ class Widget {
 
     const existingParams = {};
     // textboxes does not have query
-    if (this.type === "turnilo") return this.options.parameterMappings;
-    const params = this.getQuery() ? this.getQuery().getParametersDefs(false) : [];
+    const params = this.getQuery()
+      ? this.getQuery().getParametersDefs(false)
+      : [];
     each(params, param => {
       if (!param) return;
       existingParams[param.name] = true;
@@ -273,7 +334,9 @@ class Widget {
         // should be mapped to a dashboard-level parameter with the same name
         this.options.parameterMappings[param.name] = {
           name: param.name,
-          type: param.global ? Widget.MappingType.DashboardLevel : Widget.MappingType.WidgetLevel,
+          type: param.global
+            ? Widget.MappingType.DashboardLevel
+            : Widget.MappingType.WidgetLevel,
           mapTo: param.name, // map to param with the same name
           value: null, // for StaticValue
           title: "", // Use parameter's title
@@ -282,7 +345,10 @@ class Widget {
     });
 
     // Remove mappings for parameters that do not exists anymore
-    const removedParams = difference(keys(this.options.parameterMappings), keys(existingParams));
+    const removedParams = difference(
+      keys(this.options.parameterMappings),
+      keys(existingParams),
+    );
     each(removedParams, name => {
       delete this.options.parameterMappings[name];
     });
@@ -291,7 +357,10 @@ class Widget {
   }
 
   getLocalParameters() {
-    return filter(this.getParametersDefs(), param => !this.isStaticParam(param));
+    return filter(
+      this.getParametersDefs(),
+      param => !this.isStaticParam(param),
+    );
   }
 }
 

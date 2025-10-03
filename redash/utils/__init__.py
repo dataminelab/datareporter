@@ -6,6 +6,7 @@ import decimal
 import hashlib
 import io
 import json
+import math
 import os
 import random
 import re
@@ -60,7 +61,7 @@ def gen_query_hash(sql):
     """
     sql = COMMENTS_REGEX.sub("", sql)
     sql = "".join(sql.split())
-    return hashlib.md5(sql.encode("utf-8")).hexdigest()
+    return hashlib.md5(sql.encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 def generate_token(length):
@@ -70,17 +71,16 @@ def generate_token(length):
     return "".join(rand.choice(chars) for x in range(length))
 
 
-json_encoders = [m.custom_json_encoder for m in sys.modules if hasattr(m, "custom_json_encoder")]
-
-
 class JSONEncoder(json.JSONEncoder):
     """Adapter for `json.dumps`."""
 
     def __init__(self, **kwargs):
-        self.encoders = json_encoders
+        from redash.query_runner import query_runners
+
+        self.encoders = [r.custom_json_encoder for r in query_runners.values() if hasattr(r, "custom_json_encoder")]
         super().__init__(**kwargs)
 
-    def default(self, o):
+    def default(self, o):  # noqa: C901
         for encoder in self.encoders:
             result = encoder(self, o)
             if result:
@@ -113,7 +113,7 @@ class JSONEncoder(json.JSONEncoder):
         elif "queries" in dir(o):
             # ReportSerializer
             result = o.queries
-        elif "isJustLanded" in dir(o):
+        elif "landed" in dir(o):
             # single report | api/report/<int>
             return o
         else:
@@ -127,6 +127,17 @@ def json_loads(data, *args, **kwargs):
     return json.loads(data, *args, **kwargs)
 
 
+# Convert NaN, Inf, and -Inf to None, as they are not valid JSON values.
+def _sanitize_data(data):
+    if isinstance(data, dict):
+        return {k: _sanitize_data(v) for k, v in data.items()}
+    if isinstance(data, list):
+        return [_sanitize_data(v) for v in data]
+    if isinstance(data, float) and (math.isnan(data) or math.isinf(data)):
+        return None
+    return data
+
+
 def json_dumps(data, *args, **kwargs):
     """A custom JSON dumping function which passes all parameters to the
     json.dumps function."""
@@ -135,7 +146,7 @@ def json_dumps(data, *args, **kwargs):
     # Float value nan or inf in Python should be render to None or null in json.
     # Using allow_nan = True will make Python render nan as NaN, leading to parse error in front-end
     kwargs.setdefault("allow_nan", False)
-    return json.dumps(data, *args, **kwargs)
+    return json.dumps(_sanitize_data(data), *args, **kwargs)
 
 
 def mustache_render(template, context=None, **kwargs):
@@ -244,8 +255,10 @@ def query_is_select_no_limit(query):
     if last_keyword_idx == -1 or parsed_query.tokens[0].value.upper() != "SELECT":
         return False
 
-    no_limit = parsed_query.tokens[last_keyword_idx].value.upper() != "LIMIT" \
-               and parsed_query.tokens[last_keyword_idx].value.upper() != "OFFSET"
+    no_limit = (
+        parsed_query.tokens[last_keyword_idx].value.upper() != "LIMIT"
+        and parsed_query.tokens[last_keyword_idx].value.upper() != "OFFSET"
+    )
     return no_limit
 
 
@@ -261,7 +274,7 @@ def add_limit_to_query(query):
     limit_tokens = sqlparse.parse(" LIMIT 1000")[0].tokens
     length = len(parsed_query.tokens)
     if parsed_query.tokens[length - 1].ttype == sqlparse.tokens.Punctuation:
-        parsed_query.tokens[length - 1:length - 1] = limit_tokens
+        parsed_query.tokens[length - 1 : length - 1] = limit_tokens  # noqa: E203
     else:
         parsed_query.tokens += limit_tokens
     return str(parsed_query)

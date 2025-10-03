@@ -7,6 +7,7 @@ from base64 import b64decode
 from redash import settings
 from redash.query_runner import (
     TYPE_BOOLEAN,
+    TYPE_DATE,
     TYPE_DATETIME,
     TYPE_FLOAT,
     TYPE_INTEGER,
@@ -37,6 +38,8 @@ types_map = {
     "BOOLEAN": TYPE_BOOLEAN,
     "STRING": TYPE_STRING,
     "TIMESTAMP": TYPE_DATETIME,
+    "DATETIME": TYPE_DATETIME,
+    "DATE": TYPE_DATE,
 }
 
 
@@ -83,7 +86,7 @@ def _get_query_results(jobs, project_id, location, job_id, start_index):
     ).execute()
     logging.debug("query_reply %s", query_reply)
     if not query_reply["jobComplete"]:
-        time.sleep(10)
+        time.sleep(1)
         return _get_query_results(jobs, project_id, location, job_id, start_index)
 
     return query_reply
@@ -272,7 +275,7 @@ class BigQuery(BaseQueryRunner):
         columns = []
         if column["type"] == "RECORD":
             for field in column["fields"]:
-                columns.append({"name": "{}.{}".format(column["name"], field["name"]), "type": field["type"]})
+                columns.append("{}.{}".format(column["name"], field["name"]))
         else:
             columns.append({"name": column["name"], "type": column["type"]})
 
@@ -294,27 +297,25 @@ class BigQuery(BaseQueryRunner):
         return result
 
     def get_schema(self, get_stats=False):
+        if not self.configuration.get("loadSchema", False):
+            return []
         service = self._get_bigquery_service()
         project_id = self._get_project_id()
-        datasets = service.datasets().list(projectId=project_id).execute()
+        datasets = self._get_project_datasets(project_id)
         schema = []
-        for dataset in datasets.get("datasets", []):
+        for dataset in datasets:
             dataset_id = dataset["datasetReference"]["datasetId"]
-            tables = (
-                service.tables()
-                    .list(projectId=project_id, datasetId=dataset_id)
-                    .execute()
-            )
+            tables = service.tables().list(projectId=project_id, datasetId=dataset_id).execute()
             while True:
                 for table in tables.get("tables", []):
                     table_data = (
                         service.tables()
-                            .get(
+                        .get(
                             projectId=project_id,
                             datasetId=dataset_id,
                             tableId=table["tableReference"]["tableId"],
                         )
-                            .execute()
+                        .execute()
                     )
                     table_schema = self._get_columns_schema(table_data)
                     schema.append(table_schema)
@@ -324,11 +325,7 @@ class BigQuery(BaseQueryRunner):
                     break
 
                 tables = (
-                    service.tables()
-                        .list(
-                        projectId=project_id, datasetId=dataset_id, pageToken=next_token
-                    )
-                        .execute()
+                    service.tables().list(projectId=project_id, datasetId=dataset_id, pageToken=next_token).execute()
                 )
 
         return schema
@@ -341,12 +338,12 @@ class BigQuery(BaseQueryRunner):
 
         try:
             if "totalMBytesProcessedLimit" in self.configuration:
-                limitMB = self.configuration["totalMBytesProcessedLimit"]
-                processedMB = self._get_total_bytes_processed(jobs, query) / 1000.0 / 1000.0
-                if limitMB < processedMB:
+                limit_mb = self.configuration["totalMBytesProcessedLimit"]
+                processed_mb = self._get_total_bytes_processed(jobs, query) / 1000.0 / 1000.0
+                if limit_mb < processed_mb:
                     return (
                         None,
-                        "Larger than %d MBytes will be processed (%f MBytes)" % (limitMB, processedMB),
+                        "Larger than %d MBytes will be processed (%f MBytes)" % (limit_mb, processed_mb),
                     )
 
             data = self._get_query_result(jobs, query)
@@ -370,8 +367,5 @@ class BigQuery(BaseQueryRunner):
 
         return data, error
 
-    @property
-    def supports_auto_limit(self):
-        return True
 
 register(BigQuery)

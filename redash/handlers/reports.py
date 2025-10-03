@@ -1,36 +1,43 @@
 import json
-from flask import request, make_response, url_for, jsonify
-from flask_restful import abort
-import csv
-import io
 from datetime import datetime
+
+from flask import make_response, request, url_for
+from flask_restful import abort
 from funcy import project
 from sqlalchemy.orm.exc import NoResultFound
-from redash.security import csp_allows_embeding
-from redash.serializers.report_serializer import ReportSerializer
-from redash import models
-from redash.handlers.base import BaseResource, require_fields, get_object_or_404, paginate
 
-from redash.handlers.queries import order_results
-from redash.models.models import Model
-from redash.models import Report, QueryResult
-from redash.permissions import (
-    require_permission,
-    require_admin_or_owner,
-    require_object_modify_permission,
-    require_object_delete_permission,
-    require_object_view_permission,
+from redash import models
+from redash.handlers.base import (
+    BaseResource,
+    get_object_or_404,
+    paginate,
+    require_fields,
 )
-from redash.plywood.hash_manager import hash_report, hash_to_result, filter_expression_to_result
+from redash.handlers.queries import order_results
+from redash.models import QueryResult, Report
+from redash.models.models import Model
+from redash.permissions import (
+    require_admin_or_owner,
+    require_object_delete_permission,
+    require_object_modify_permission,
+    require_object_view_permission,
+    require_permission,
+)
+from redash.plywood.hash_manager import (
+    filter_expression_to_result,
+    get_data_cube,
+    hash_report,
+    hash_to_result,
+)
 from redash.plywood.objects.expression import ExpressionNotSupported
+from redash.security import csp_allows_embeding
+from redash.serializers.report_result import (
+    serialize_query_result_to_xlsx_with_multiple_sheets,
+    serialize_report_result_to_dsv,
+)
 from redash.serializers.report_serializer import ReportSerializer
 from redash.services.expression import ExpressionBase64Parser
 from redash.settings import parse_boolean
-from redash.plywood.hash_manager import get_data_cube
-from redash.serializers.report_result import (
-    serialize_report_result_to_dsv,
-    serialize_query_result_to_xlsx_with_multiple_sheets,
-)
 from redash.utils import json_dumps
 
 HASH = "hash"
@@ -47,10 +54,10 @@ DATA_SOURCE_ID = "data_source_id"
 
 # Custom JSON encoder to handle datetime objects
 class CustomJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.isoformat()  # Convert datetime to ISO 8601 string
-        return super().default(obj)
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.isoformat()  # Convert datetime to ISO 8601 string
+        return super().default(o)
 
 
 class ReportFilter(BaseResource):
@@ -96,12 +103,10 @@ class ReportApiKeyAccess(BaseResource):
         report = get_object_or_404(Report.get_by_id, report_id)
         if api_key != report.api_key:
             abort(403, message="Invalid api key")
-        expression = report.get_expression()
         model = get_object_or_404(Model.get_by_id, report.model_id)
 
         execute_plywood = hash_to_result(hash_string=report.hash, model=model, organisation=self.current_org)
         serialized = execute_plywood.serialized()
-        report_name = report.name.replace(" ", "_")
         response_builders = {
             "json": self.make_json_response,
             "xlsx": self.make_excel_response,
@@ -110,7 +115,7 @@ class ReportApiKeyAccess(BaseResource):
         }
         query_results = []
         for query_result in serialized["queries"]:
-            if not "query_result" in query_result:
+            if "query_result" not in query_result:
                 continue
             query_result = QueryResult.get_by_id(query_result["query_result"]["id"])
             query_results.append(query_result)
@@ -216,15 +221,25 @@ class ReportsArchiveResource(BaseResource):
 
 # /api/reports
 class ReportsListResource(BaseResource):
+    """
+    List all reports or create a new report
+    """
+
     @require_permission("create_report")
     def post(self):
         req = request.get_json(True)
         require_fields(req, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, DATA_SOURCE_ID))
 
+        name, model_id, expression, color_1, color_2, data_source_id = (
+            req[NAME],
+            req[MODEL_ID],
+            req[EXPRESSION],
+            req[COLOR_1],
+            req[COLOR_2],
+            req[DATA_SOURCE_ID],
+        )
+        is_archived = req.get("is_archived", False)
         formatting = request.args.get("format", "base64")
-        name, model_id, expression = req[NAME], req[MODEL_ID], req[EXPRESSION]
-        color_1, color_2 = req.get(COLOR_1, "color"), req.get(COLOR_2, "color")
-        data_source_id = req.get(DATA_SOURCE_ID, "data_source_id")
         model = get_object_or_404(Model.get_by_id, model_id)
 
         expression_obj = ExpressionBase64Parser.parse_base64_to_dict(expression)
@@ -237,6 +252,8 @@ class ReportsListResource(BaseResource):
             color_1=color_1,
             color_2=color_2,
             data_source_id=data_source_id,
+            last_modified_by=self.current_user,
+            is_archived=is_archived,
         )
 
         models.db.session.add(report)
@@ -250,7 +267,7 @@ class ReportsListResource(BaseResource):
             }
         )
 
-        return ReportSerializer(report, formatting=formatting).serialize()
+        return ReportSerializer(report, formatting).serialize()
 
     @require_permission("view_report")
     def get(self):
@@ -270,9 +287,7 @@ class ReportsListResource(BaseResource):
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)
 
-        response = paginate(
-            ordered_results, page=page, page_size=page_size, serializer=ReportSerializer, formatting=formatting
-        )
+        response = paginate(ordered_results, page, page_size, ReportSerializer, formatting=formatting)
 
         self.record_event({"action": "list", "object_type": "report"})
         return response
@@ -327,6 +342,14 @@ class ReportResource(BaseResource):
 
     @require_permission("edit_report")
     def post(self, report_id: int):
+        """## Modify a report
+
+        ### Args:
+            - `report_id (int)`: _description_
+
+        ### Returns:
+            - `_type_`: _description_
+        """
         report_properties = request.get_json(force=True)
         updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
         report: Report = get_object_or_404(Report.get_by_id, report_id)
@@ -353,6 +376,7 @@ class ReportResource(BaseResource):
             # decodes base64 that turnillo uses to plain json
             updates[EXPRESSION] = ExpressionBase64Parser.parse_base64_to_dict(updates[EXPRESSION])
 
+        report.last_modified_by = self.current_user
         self.update_model(report, updates)
 
         models.db.session.commit()
@@ -360,7 +384,7 @@ class ReportResource(BaseResource):
         self.record_event({"action": "edit", "object_id": report.id, "object_type": "report"})
 
         formatting = request.args.get("format", "base64")
-        return ReportSerializer(report, formatting=formatting).serialize()
+        return ReportSerializer(report, formatting).serialize()
 
     @require_permission("edit_report")
     def delete(self, report_id):
@@ -485,7 +509,6 @@ class ReportShareResource(BaseResource):
         return {"public_url": public_url, "api_key": api_key.api_key}
 
     def delete(self, report_id):
-        # XXX TODO IT'S A COPY OF DASHBOARD SHARE
         """
         Disable anonymous access to a report.
 

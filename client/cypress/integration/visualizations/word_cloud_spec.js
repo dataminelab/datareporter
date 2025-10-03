@@ -1,5 +1,3 @@
-/* global cy, Cypress */
-
 const { map } = Cypress._;
 
 const SQL = `
@@ -50,9 +48,9 @@ function injectFont(document) {
            url("${basePath}${fileName}.ttf") format("truetype"),
            url("${basePath}${fileName}.svg") format("svg");
     }
-  `
-      ).join("\n\n")
-    )
+  `,
+      ).join("\n\n"),
+    ),
   );
   document.getElementsByTagName("head")[0].appendChild(style);
 }
@@ -67,14 +65,17 @@ describe("Word Cloud", () => {
       cy.getByTestId("ExecuteButton").click();
     });
     cy.document().then(injectFont);
+    cy.getByTestId("NewVisualization").click();
+    cy.getByTestId("VisualizationType").click(); // Open the dropdown
+    cy.get(".rc-virtual-list-holder")
+      .scrollTo("bottom", { ensureScrollable: false })
+      .should("be.visible")
+      .invoke("attr", "aria-expanded", "true"); // Ensure the dropdown stays expanded
+    cy.getByTestId("VisualizationType.WORD_CLOUD").click();
   });
 
   it("creates visualization with automatic word frequencies", () => {
     cy.clickThrough(`
-      NewVisualization
-      VisualizationType
-      VisualizationType.WORD_CLOUD
-
       WordCloud.WordsColumn
       WordCloud.WordsColumn.a
     `);
@@ -86,15 +87,14 @@ describe("Word Cloud", () => {
       .find("svg text")
       .should("have.length", 11);
 
-    cy.percySnapshot("Visualizations - Word Cloud (Automatic word frequencies)", { widths: [viewportWidth] });
+    cy.percySnapshot(
+      "Visualizations - Word Cloud (Automatic word frequencies)",
+      { widths: [viewportWidth] },
+    );
   });
 
   it("creates visualization with word frequencies from another column", () => {
     cy.clickThrough(`
-      NewVisualization
-      VisualizationType
-      VisualizationType.WORD_CLOUD
-
       WordCloud.WordsColumn
       WordCloud.WordsColumn.b
 
@@ -109,15 +109,14 @@ describe("Word Cloud", () => {
       .find("svg text")
       .should("have.length", 5);
 
-    cy.percySnapshot("Visualizations - Word Cloud (Frequencies from another column)", { widths: [viewportWidth] });
+    cy.percySnapshot(
+      "Visualizations - Word Cloud (Frequencies from another column)",
+      { widths: [viewportWidth] },
+    );
   });
 
   it("creates visualization with word length and frequencies limits", () => {
     cy.clickThrough(`
-      NewVisualization
-      VisualizationType
-      VisualizationType.WORD_CLOUD
-
       WordCloud.WordsColumn
       WordCloud.WordsColumn.b
 
@@ -139,6 +138,8 @@ describe("Word Cloud", () => {
       .find("svg text")
       .should("have.length", 2);
 
-    cy.percySnapshot("Visualizations - Word Cloud (With filters)", { widths: [viewportWidth] });
+    cy.percySnapshot("Visualizations - Word Cloud (With filters)", {
+      widths: [viewportWidth],
+    });
   });
 });

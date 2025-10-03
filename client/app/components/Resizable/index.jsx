@@ -1,12 +1,23 @@
 import * as d3 from "d3";
-import React, { useRef, useMemo, useCallback, useState, useEffect } from "react";
+import React, {
+  useRef,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+} from "react";
 import PropTypes from "prop-types";
 import { Resizable as ReactResizable } from "react-resizable";
 import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 
 import "./index.less";
 
-export default function Resizable({ toggleShortcut, direction, sizeAttribute, children }) {
+export default function Resizable({
+  toggleShortcut,
+  direction,
+  sizeAttribute,
+  children,
+}) {
   const [size, setSize] = useState(0);
   const elementRef = useRef();
   const wasUsingTouchEventsRef = useRef(false);
@@ -42,7 +53,6 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
       .style(sizeAttribute, savedSize.current || "0px")
       .transition()
       .duration(200)
-      .ease("swing")
       .style(sizeAttribute, targetSize);
 
     // update state to new element's size
@@ -51,9 +61,12 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
 
   const resizeHandle = useMemo(
     () => (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
       <span
         className={`react-resizable-handle react-resizable-handle-${direction}`}
+        role="separator"
         onClick={() => {
+          // TODO: add key controls
           // On desktops resize uses `mousedown`/`mousemove`/`mouseup` events, and there is a conflict
           // with this `click` handler: after user releases mouse - this handler will be executed.
           // So we use `wasResized` flag to check if there was actual resize or user just pressed and released
@@ -69,7 +82,7 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         }}
       />
     ),
-    [direction, toggle]
+    [direction, toggle],
   );
 
   useEffect(() => {
@@ -94,7 +107,10 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
       },
       onResize: (unused, data) => {
         // update element directly for better UI responsiveness
-        d3.select(elementRef.current).style(sizeAttribute, `${data.size[sizeProp]}px`);
+        d3.select(elementRef.current).style(
+          sizeAttribute,
+          `${data.size[sizeProp]}px`,
+        );
         setSize(data.size[sizeProp]);
         wasResizedRef.current = true;
       },
@@ -104,7 +120,7 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         }
       },
     }),
-    [sizeProp, getElementSize, sizeAttribute]
+    [sizeProp, getElementSize, sizeAttribute],
   );
 
   const draggableCoreOptions = useMemo(
@@ -123,14 +139,17 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         setSize(getElementSize());
       },
     }),
-    [getElementSize]
+    [getElementSize],
   );
 
   if (!children) {
     return null;
   }
 
-  children = React.createElement(children.type, { ...children.props, ref: elementRef });
+  children = React.createElement(children.type, {
+    ...children.props,
+    ref: elementRef,
+  });
 
   return (
     <ReactResizable
@@ -142,7 +161,8 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
       height={direction === "vertical" ? size : 0}
       minConstraints={[0, 0]}
       {...resizeEventHandlers}
-      draggableOpts={draggableCoreOptions}>
+      draggableOpts={draggableCoreOptions}
+    >
       {children}
     </ReactResizable>
   );

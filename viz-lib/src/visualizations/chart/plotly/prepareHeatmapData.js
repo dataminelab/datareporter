@@ -1,5 +1,8 @@
-import { map, max, uniq, sortBy, flatten, find } from "lodash";
+import { map, max, uniq, sortBy, flatten, find, findIndex } from "lodash";
 import { createNumberFormatter } from "@/lib/value-format";
+import Colorscale from "plotly.js/src/components/colorscale";
+import * as d3 from "d3";
+import chooseTextColorForBackground from "@/lib/chooseTextColorForBackground";
 
 const defaultColorScheme = [
   [0, "#356aff"],
@@ -11,6 +14,13 @@ const defaultColorScheme = [
   [0.86, "#ec4949"],
   [1, "#e92827"],
 ];
+
+function getColor(value, scheme) {
+  if (value == 1) { return scheme[scheme.length - 1][1]; }
+  const upperboundIndex = findIndex(scheme, (range) => value < range[0]);
+  const scale = d3.interpolate(scheme[upperboundIndex - 1][1], scheme[upperboundIndex][1]);
+  return scale(value);
+}
 
 function prepareSeries(series, options, additionalOptions) {
   const { colorScheme, formatNumber } = additionalOptions;
@@ -70,10 +80,10 @@ function prepareSeries(series, options, additionalOptions) {
         dataLabels.x.push(plotlySeries.x[j]);
         dataLabels.y.push(plotlySeries.y[i]);
         dataLabels.text.push(formatNumber(zValue));
-        if (options.colorScheme && options.colorScheme === "Custom...") {
-          dataLabels.textfont.color.push("white");
-        } else {
-          dataLabels.textfont.color.push(zValue / zMax < 0.25 ? "white" : "black");
+        if (options.colorScheme) {
+          const bgcolor = getColor(zValue / zMax, colorScheme);
+          const fgcolor = chooseTextColorForBackground(bgcolor);
+          dataLabels.textfont.color.push(fgcolor);
         }
       }
     }
@@ -97,7 +107,7 @@ export default function prepareHeatmapData(seriesList, options) {
       [1, options.heatMaxColor],
     ];
   } else {
-    colorScheme = options.colorScheme;
+    colorScheme = Colorscale.getScale(options.colorScheme);
   }
 
   const additionalOptions = {

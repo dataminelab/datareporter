@@ -67,7 +67,11 @@ L.MarkerClusterIcon = L.DivIcon.extend({
 });
 L.markerClusterIcon = (...args) => new L.MarkerClusterIcon(...args);
 
-function createIconMarker(lat, lon, { iconShape, iconFont, foregroundColor, backgroundColor, borderColor }) {
+function createIconMarker(
+  lat,
+  lon,
+  { iconShape, iconFont, foregroundColor, backgroundColor, borderColor }
+) {
   const icon = L.BeautifyIcon.icon({
     iconShape,
     icon: iconFont,

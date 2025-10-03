@@ -20,7 +20,13 @@ import { Dimension } from "../../../common/models/dimension/dimension";
 import { Omit, Unary } from "../../../common/utils/functional/functional";
 import { SelectableRows } from "./selectable-rows";
 import { TextRows } from "./text-rows";
-import { EditState, InEditMode, ReadyToEditMode, RowMode, RowModeId } from "./utils/row-mode";
+import {
+  EditState,
+  InEditMode,
+  ReadyToEditMode,
+  RowMode,
+  RowModeId,
+} from "./utils/row-mode";
 
 interface DataRowsProps {
   rowMode: RowMode;
@@ -30,29 +36,38 @@ interface DataRowsProps {
   formatter: Unary<Datum, string>;
 }
 
-type EditableRowsProps = { rowMode: ReadyToEditMode | InEditMode } & Omit<DataRowsProps, "mode">;
+type EditableRowsProps = { rowMode: ReadyToEditMode | InEditMode } & Omit<
+  DataRowsProps,
+  "mode"
+>;
 
 // This component is for guiding typescript through nested tagged union. Probably it could be inlined on ts 3.7
 const EditableRows: React.SFC<EditableRowsProps> = props => {
   const { rowMode, ...commonProps } = props;
   switch (rowMode.state) {
     case EditState.READY:
-      return <TextRows
-        {...commonProps}
-        onClick={rowMode.createClause} />;
+      // @ts-ignore
+      return <TextRows {...commonProps} onClick={rowMode.createClause} />;
     case EditState.IN_EDIT:
-      return <SelectableRows
-        {...commonProps}
-        clause={rowMode.clause}
-        onSelect={rowMode.toggleValue} />;
+      return (
+        <SelectableRows
+          {...commonProps}
+          clause={rowMode.clause}
+          // @ts-ignore
+          onSelect={rowMode.toggleValue}
+        />
+      );
   }
 };
 
-export const DataRows: React.SFC<DataRowsProps> = ({ rowMode, ...commonProps }) => {
+export const DataRows: React.SFC<DataRowsProps> = ({
+  rowMode,
+  ...commonProps
+}) => {
   switch (rowMode.mode) {
     case RowModeId.READONLY:
       return <TextRows {...commonProps} />;
     case RowModeId.EDITABLE:
-      return <EditableRows {...commonProps} rowMode={rowMode}/>;
+      return <EditableRows {...commonProps} rowMode={rowMode} />;
   }
 };

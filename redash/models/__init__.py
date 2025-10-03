@@ -3,20 +3,22 @@ import datetime
 import logging
 import numbers
 import time
+from typing import Union
 
 import pytz
-from sqlalchemy import UniqueConstraint, and_, cast, distinct, func, or_
+from sqlalchemy import Integer, UniqueConstraint, and_, cast, distinct, func, or_
 from sqlalchemy.dialects.postgresql import ARRAY, DOUBLE_PRECISION, JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import (
+    aliased,
     backref,
     contains_eager,
     joinedload,
     load_only,
     subqueryload,
 )
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound  # noqa: F401
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound  # noqa: F401
 from sqlalchemy_utils import generic_relationship
 from sqlalchemy_utils.models import generic_repr
 from sqlalchemy_utils.types import TSVectorType
@@ -36,17 +38,7 @@ from redash.models.base import (
     gfk_type,
     key_type,
     primary_key,
-    db,
-    gfk_type,
-    Column,
-    GFKBase,
-    SearchBaseQuery,
-    key_type,
-    primary_key,
 )
-from redash.models.changes import Change, ChangeTrackingMixin  # noqa
-from redash.models.mixins import BelongsToOrgMixin, TimestampMixin
-from redash.models.organizations import Organization
 from redash.models.parameterized_query import (
     InvalidParameterError,
     ParameterizedQuery,
@@ -76,6 +68,7 @@ from redash.query_runner import (
     get_query_runner,
     with_ssh_tunnel,
 )
+from redash.services.expression import ExpressionBase64Parser
 from redash.utils import (
     base_url,
     gen_query_hash,
@@ -87,17 +80,11 @@ from redash.utils import (
     sentry,
 )
 from redash.utils.configuration import ConfigurationContainer
-from redash.services.expression import ExpressionBase64Parser
-from redash.models.parameterized_query import (
-    InvalidParameterError,
-    ParameterizedQuery,
-    QueryDetachedFromDataSourceError,
-)
-from .changes import ChangeTrackingMixin, Change  # noqa
+
+from .changes import Change, ChangeTrackingMixin  # noqa
 from .mixins import BelongsToOrgMixin, TimestampMixin
 from .organizations import Organization
 from .users import AccessPermission, AnonymousUser, ApiUser, Group, User  # noqa
-from sqlalchemy import Integer
 
 logger = logging.getLogger(__name__)
 
@@ -416,10 +403,10 @@ class QueryResult(db.Model, BelongsToOrgMixin):
 
 
 def should_schedule_next(previous_iteration, now, interval, time=None, day_of_week=None, failures=0):
-    # if time exists then interval > 23 hours (82800s)
-    # if day_of_week exists then interval > 6 days (518400s)
+    # if previous_iteration is None, it means the query has never been run before
+    # so we should schedule it immediately
     if previous_iteration is None:
-        return False
+        return True
     if time is None:
         ttl = int(interval)
         next_iteration = previous_iteration + datetime.timedelta(seconds=ttl)
@@ -644,6 +631,9 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
                 if query.schedule.get("disabled"):
                     continue
 
+                if all(value is None for value in query.schedule.values()):
+                    continue
+
                 if query.schedule["until"]:
                     schedule_until = pytz.utc.localize(datetime.datetime.strptime(query.schedule["until"], "%Y-%m-%d"))
 
@@ -841,14 +831,14 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         return self.data_source.groups
 
     @hybrid_property
-    def lowercase_name(self):
+    def lowercase_name(self):  # type: ignore[reportRedeclaration]
         "Optional property useful for sorting purposes."
         return self.name.lower()
 
     @lowercase_name.expression
-    def lowercase_name(cls):
+    def lowercase_name(self):
         "The SQLAlchemy expression for the property above."
-        return func.lower(cls.name)
+        return func.lower(self.name)
 
     @property
     def parameters(self):
@@ -954,6 +944,7 @@ OPERATORS = {
 
 
 def next_state(op, value, threshold):
+    value_is_number = False
     if isinstance(value, bool):
         # If it's a boolean cast to string and lower case, because upper cased
         # boolean value is Python specific and most likely will be confusing to
@@ -1015,13 +1006,14 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
         )
 
     @classmethod
-    def get_by_id_and_org(cls, object_id, org):
+    def get_by_id_and_org(cls, object_id, org, org_cls=None):
         return super(Alert, cls).get_by_id_and_org(object_id, org, Query)
 
     def evaluate(self):
-        data = self.query_rel.latest_query_data.data
+        data = self.query_rel.latest_query_data.data if self.query_rel.latest_query_data else None
+        new_state = self.UNKNOWN_STATE
 
-        if data["rows"] and self.options["column"] in data["rows"][0]:
+        if data and data["rows"] and self.options["column"] in data["rows"][0]:
             op = OPERATORS.get(self.options["op"], lambda v, t: False)
 
             if "selector" not in self.options:
@@ -1048,9 +1040,8 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
 
             threshold = self.options["value"]
 
-            new_state = next_state(op, value, threshold)
-        else:
-            new_state = self.UNKNOWN_STATE
+            if value is not None:
+                new_state = next_state(op, value, threshold)
 
         return new_state
 
@@ -1213,15 +1204,30 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     def get_by_slug_and_org(self, slug, org):
         return self.query.filter(self.slug == slug, self.org == org).one()
 
+    def fork(self, user):
+        forked_list = ["org", "layout", "dashboard_filters_enabled", "tags"]
+
+        kwargs = {a: getattr(self, a) for a in forked_list}
+        forked_dashboard = Dashboard(name="Copy of (#{}) {}".format(self.id, self.name), user=user, **kwargs)
+
+        for w in self.widgets:
+            forked_w = w.copy(forked_dashboard.id)
+            fw = Widget(**forked_w)
+            db.session.add(fw)
+
+        forked_dashboard.slug = forked_dashboard.id
+        db.session.add(forked_dashboard)
+        return forked_dashboard
+
     @hybrid_property
-    def lowercase_name(self):
+    def lowercase_name(self):  # type: ignore[reportRedeclaration]
         "Optional property useful for sorting purposes."
         return self.name.lower()
 
     @lowercase_name.expression
-    def lowercase_name(cls):
+    def lowercase_name(self):
         "The SQLAlchemy expression for the property above."
-        return func.lower(cls.name)
+        return func.lower(self.name)
 
 
 @generic_repr("id", "name", "type", "query_id")
@@ -1241,7 +1247,7 @@ class Visualization(TimestampMixin, BelongsToOrgMixin, db.Model):
         return "%s %s" % (self.id, self.type)
 
     @classmethod
-    def get_by_id_and_org(cls, object_id, org):
+    def get_by_id_and_org(cls, object_id, org, org_cls=None):
         return super(Visualization, cls).get_by_id_and_org(object_id, org, Query)
 
     def copy(self):
@@ -1269,11 +1275,11 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
         return "%s" % self.id
 
     @classmethod
-    def get_by_id_and_org(self, object_id, org):
-        return super(Widget, self).get_by_id_and_org(object_id, org, Dashboard)
+    def get_by_id_and_org(cls, object_id, org, org_cls=None):
+        return super(Widget, cls).get_by_id_and_org(object_id, org, Dashboard)
 
     @classmethod
-    def get_id_from_text(self, text):
+    def get_id_from_text(cls, text):
         if not text:
             return None
         elif len(text.split("/")) < 2:
@@ -1281,10 +1287,10 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
         return text.replace("[turnilo-widget]", "").split("/")[0]
 
     @classmethod
-    def delete_by_report_id(self, _report_id: str):
+    def delete_by_report_id(cls, _report_id: str):
         if isinstance(_report_id, int):
             _report_id = str(_report_id)
-        for i in self.query.all():
+        for i in cls.query.all():
             report_id = i.get_id_from_text(i.text)
             if report_id == _report_id:
                 db.session.delete(i)
@@ -1306,7 +1312,7 @@ class Widget(TimestampMixin, BelongsToOrgMixin, db.Model):
         _id = self.get_report_id()
         try:
             return Report.query.filter(Report.id == _id).one()
-        except:
+        except NoResultFound:
             return None
 
 
@@ -1557,31 +1563,40 @@ def init_db():
         org=default_org,
         type=Group.BUILTIN_GROUP,
     )
+    ai_group = Group(
+        name="ai",
+        permissions=Group.AI_PERMISSIONS,
+        org=default_org,
+        type=Group.BUILTIN_GROUP,
+    )
 
-    db.session.add_all([default_org, admin_group, default_group])
+    db.session.add_all([default_org, admin_group, default_group, ai_group])
     # XXX remove after fixing User.group_ids
     db.session.commit()
-    return default_org, admin_group, default_group
+    return default_org, admin_group, default_group, ai_group
 
 
 @gfk_type
-@generic_repr("id", "name", "user_id", "version")
+@generic_repr("id", "name", "user_id", "version", "last_modified_by_id")
 class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     id = primary_key("Report")
     name = Column(db.String(length=255))
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))
-    user = db.relationship(User)
+    user = db.relationship(User, foreign_keys=[user_id])
     expression = db.Column(db.JSON())
     model_id = Column(db.Integer, db.ForeignKey("models.id"))
     model = db.relationship("Model", back_populates="reports")
 
-    data_source_id = Column(Integer, db.ForeignKey("data_sources.id"))
+    data_source_id = Column(db.Integer, db.ForeignKey("data_sources.id"), nullable=True)
     data_source = db.relationship("DataSource", back_populates="reports")
 
     color_1 = Column(db.String(length=32))
     color_2 = Column(db.String(length=32))
 
     version = Column(db.Integer)
+
+    last_modified_by_id = Column(key_type("User"), db.ForeignKey("users.id"), nullable=True)
+    last_modified_by = db.relationship(User, backref="modified_reports", foreign_keys=[last_modified_by_id])
     is_archived = Column(db.Boolean, default=False, index=True)
 
     tags = Column("tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True)
@@ -1713,19 +1728,25 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         db.session.commit()
 
     @classmethod
-    def get_by_group_ids(self, user):
-        return self.query.join(User).filter(
-            and_(Report.is_archived.is_(False), User.org_id == user.org.id, User.group_ids.overlap(user.group_ids))
+    def get_by_group_ids(cls, user):
+        # Use alias for User to avoid ambiguity if multiple joins are needed
+        user_alias = aliased(User)
+        return cls.query.join(user_alias, cls.last_modified_by_id == user_alias.id).filter(  # Explicit join condition
+            and_(
+                cls.is_archived.is_(False),  # Only non-archived reports
+                user_alias.org_id == user.org.id,  # Match the user's organization
+                user_alias.group_ids.overlap(user.group_ids),  # Overlapping group IDs
+            )
         )
 
     @classmethod
-    def get_by_id_and_org(self, _id, org) -> object:
-        return self.query.filter(and_(Report.id == _id, Report.user.has(org=org))).one()
+    def get_by_id_and_org(cls, _id, org, org_cls=None) -> object:
+        return cls.query.filter(and_(Report.id == _id, Report.user.has(org=org))).one()
 
     @classmethod
-    def get_by_id_and_org_safe(self, _id, org) -> object or None:
+    def get_by_id_and_org_safe(cls, _id, org) -> Union[object, None]:
         try:
-            return self.get_by_id_and_org(_id, org)
+            return cls.get_by_id_and_org(_id, org)
         except NoResultFound:
             return None
         except MultipleResultsFound:
@@ -1743,3 +1764,8 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
             return {}
 
         return self.data_source.groups
+
+
+@listens_for(Report.user_id, "set")
+def report_last_modified_by(target, val, oldval, initiator):
+    target.last_modified_by_id = val

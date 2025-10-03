@@ -19,9 +19,15 @@ import * as React from "react";
 import { Clicker } from "../../../../common/models/clicker/clicker";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  RelativeTimeFilterClause,
+  TimeFilterPeriod,
+} from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
-import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
+import {
+  isValidTimeShift,
+  TimeShift,
+} from "../../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
 import { isValidDuration } from "../../../../common/utils/plywood/duration";
@@ -30,16 +36,19 @@ import { STRINGS } from "../../../config/constants";
 import { ButtonGroup } from "../../button-group/button-group";
 import { Button } from "../../button/button";
 import { StringInputWithPresets } from "../../input-with-presets/string-input-with-presets";
-import { getTimeFilterPresets, LATEST_PRESETS, TimeFilterPreset } from "./presets";
+import {
+  getTimeFilterPresets,
+  LATEST_PRESETS,
+  TimeFilterPreset,
+} from "./presets";
 import { TimeShiftSelector } from "./time-shift-selector";
-// @ts-ignore
-import { updateUrl } from '../../../../../../components/Parameters'
+import { updateUrl } from "../../../../../../components/Parameters";
 
 export interface PresetTimeTabProps {
   timekeeper: Timekeeper;
   dimension: Dimension;
   onClose: Fn;
-  widgetList: Number[];
+  widgetList: number[];
   clickerList: Clicker[];
   essenceList: Essence[];
   setEssence: (widget_id: any, essence: any) => void;
@@ -51,7 +60,10 @@ export interface PresetTimeTabState {
   timeShift: string;
 }
 
-function initialState(essence: Essence, dimension: Dimension): PresetTimeTabState {
+function initialState(
+  essence: Essence,
+  dimension: Dimension,
+): PresetTimeTabState {
   const filterClause = essence.filter.getClauseForDimension(dimension);
   const timeShift = essence.timeShift.toJS();
 
@@ -62,53 +74,74 @@ function initialState(essence: Essence, dimension: Dimension): PresetTimeTabStat
   return {
     filterPeriod: null,
     filterDuration: null,
-    timeShift
+    timeShift,
   };
 }
 
-function constructFilter(period: TimeFilterPeriod, duration: string, reference: string): RelativeTimeFilterClause {
-  return new RelativeTimeFilterClause({ period, duration: Duration.fromJS(duration), reference });
+function constructFilter(
+  period: TimeFilterPeriod,
+  duration: string,
+  reference: string,
+): RelativeTimeFilterClause {
+  return new RelativeTimeFilterClause({
+    period,
+    duration: Duration.fromJS(duration),
+    reference,
+  });
 }
 
-export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTimeTabState> {
-
-  setFilter = (filterPeriod: TimeFilterPeriod, filterDuration: string) => this.setState({ filterDuration, filterPeriod });
+export class PresetTimeTab extends React.Component<
+  PresetTimeTabProps,
+  PresetTimeTabState
+> {
+  setFilter = (filterPeriod: TimeFilterPeriod, filterDuration: string) =>
+    this.setState({ filterDuration, filterPeriod });
 
   setTimeShift = (timeShift: string) => this.setState({ timeShift });
 
-  state: PresetTimeTabState = initialState(this.props.essenceList[0], this.props.dimension);
+  state: PresetTimeTabState = initialState(
+    this.props.essenceList[0],
+    this.props.dimension,
+  );
 
   saveTimeFilters = () => {
     if (!this.validate()) return;
-    const { clickerList, essenceList, onClose, setEssence, widgetList } = this.props;
+    const { clickerList, essenceList, onClose, setEssence, widgetList } =
+      this.props;
     const { filterPeriod, filterDuration } = this.state;
     for (let i = 0; i < essenceList.length; i++) {
       const essence = essenceList[i];
       const clicker = clickerList[i];
-      const widget = widgetList[i]
-      let dimensionName = essence.filter.getReferenceNameByIndex(0);
-      let relativeFilter = essence.filter.setClause(constructFilter(filterPeriod, filterDuration, dimensionName));
+      const widget = widgetList[i];
+      const dimensionName = essence.filter.getReferenceNameByIndex(0);
+      let relativeFilter = essence.filter.setClause(
+        constructFilter(filterPeriod, filterDuration, dimensionName),
+      );
       if (relativeFilter.length() > 1) {
         relativeFilter = relativeFilter.removeClauseByIndex(0);
       }
-      let newEssence = clicker.changeFilter(relativeFilter);
+      const newEssence = clicker.changeFilter(relativeFilter);
       const timeShift = TimeShift.fromJS(this.state.timeShift);
       clicker.changeComparisonShift(timeShift);
       setEssence(widget, newEssence);
     }
     updateUrl([constructFilter(filterPeriod, filterDuration, filterDuration)]);
     onClose();
-  }
+  };
 
   constructTimeShift(): TimeShift {
     return TimeShift.fromJS(this.state.timeShift);
   }
 
   constructRelativeFilter(): Filter {
-    const { dimension: { name: dimensionName } } = this.props;
+    const {
+      dimension: { name: dimensionName },
+    } = this.props;
     const essence = this.props.essenceList[0];
     const { filterPeriod, filterDuration } = this.state;
-    return essence.filter.setClause(constructFilter(filterPeriod, filterDuration, dimensionName));
+    return essence.filter.setClause(
+      constructFilter(filterPeriod, filterDuration, dimensionName),
+    );
   }
 
   doesTimeShiftOverlap(): boolean {
@@ -116,7 +149,10 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     if (timeShift.isEmpty()) return false;
     const timeShiftDuration = timeShift.valueOf();
     const filterDuration = Duration.fromJS(this.state.filterDuration);
-    return filterDuration.getCanonicalLength() > timeShiftDuration.getCanonicalLength();
+    return (
+      filterDuration.getCanonicalLength() >
+      timeShiftDuration.getCanonicalLength()
+    );
   }
 
   isTimeShiftValid(): boolean {
@@ -128,17 +164,25 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
   }
 
   validateOverlap(): string | null {
-    const periodOverlaps = this.isTimeShiftValid() && this.isDurationValid() && this.doesTimeShiftOverlap();
+    const periodOverlaps =
+      this.isTimeShiftValid() &&
+      this.isDurationValid() &&
+      this.doesTimeShiftOverlap();
     return periodOverlaps ? STRINGS.overlappingPeriods : null;
   }
 
   isFormValid(): boolean {
     const { filterPeriod } = this.state;
-    return filterPeriod && this.isDurationValid() && this.isTimeShiftValid() && !this.doesTimeShiftOverlap();
+    return (
+      filterPeriod &&
+      this.isDurationValid() &&
+      this.isTimeShiftValid() &&
+      !this.doesTimeShiftOverlap()
+    );
   }
 
   isFilterDifferent(): boolean {
-    const { filter, timeShift } = this.props.essenceList[0]
+    const { filter, timeShift } = this.props.essenceList[0];
     const newTimeShift = this.constructTimeShift();
     const newFilter = this.constructRelativeFilter();
     return !filter.equals(newFilter) || !timeShift.equals(newTimeShift);
@@ -150,22 +194,35 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
 
   private renderLatestPresets() {
     const { filterDuration, filterPeriod } = this.state;
-    const presets = LATEST_PRESETS.map(({ name, duration }: TimeFilterPreset) => {
-      return { name, identity: duration };
-    });
+    const presets = LATEST_PRESETS.map(
+      ({ name, duration }: TimeFilterPreset) => {
+        return { name, identity: duration };
+      },
+    );
 
     const latestPeriod = filterPeriod === TimeFilterPeriod.LATEST;
-    return <StringInputWithPresets
-      title={STRINGS.latest}
-      presets={presets}
-      errorMessage={latestPeriod && !isValidDuration(filterDuration) && STRINGS.invalidDurationFormat}
-      selected={latestPeriod ? filterDuration : undefined}
-      onChange={(duration: string) => this.setFilter(TimeFilterPeriod.LATEST, duration)}
-      placeholder={STRINGS.durationsExamples}
-    />;
+    return (
+      <StringInputWithPresets
+        title={STRINGS.latest}
+        presets={presets}
+        errorMessage={
+          latestPeriod &&
+          !isValidDuration(filterDuration) &&
+          STRINGS.invalidDurationFormat
+        }
+        selected={latestPeriod ? filterDuration : undefined}
+        onChange={(duration: string) =>
+          this.setFilter(TimeFilterPeriod.LATEST, duration)
+        }
+        placeholder={STRINGS.durationsExamples}
+      />
+    );
   }
 
-  private renderButtonGroup(title: string, period: TimeFilterPeriod) {
+  private renderButtonGroup(
+    title: string,
+    period: TimeFilterPeriod.CURRENT | TimeFilterPeriod.PREVIOUS,
+  ) {
     const { filterDuration, filterPeriod } = this.state;
     const activePeriod = period === filterPeriod;
     const presets = getTimeFilterPresets(period);
@@ -174,7 +231,7 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
         title: name,
         key: name,
         isSelected: activePeriod && filterDuration === duration,
-        onClick: () => this.setFilter(period, duration)
+        onClick: () => this.setFilter(period, duration),
       };
     });
     return <ButtonGroup title={title} groupMembers={groupMembers} />;
@@ -202,25 +259,41 @@ export class PresetTimeTab extends React.Component<PresetTimeTabProps, PresetTim
     const { timezone } = essence;
 
     const previewFilter = this.getFilterRange();
-    const previewText = previewFilter ? formatTimeRange(previewFilter, timezone) : STRINGS.noFilter;
+    const previewText = previewFilter
+      ? formatTimeRange(previewFilter, timezone)
+      : STRINGS.noFilter;
     const overlapError = this.validateOverlap();
 
-    return <div className="cont">
-      {essence.dataCube.isTimeAttribute(dimension.expression) && this.renderLatestPresets()}
-      {this.renderButtonGroup(STRINGS.current, TimeFilterPeriod.CURRENT)}
-      {this.renderButtonGroup(STRINGS.previous, TimeFilterPeriod.PREVIOUS)}
-      <div className="preview preview--with-spacing">{previewText}</div>
-      <TimeShiftSelector
-        shift={timeShift}
-        time={previewFilter}
-        timezone={essence.timezone}
-        onShiftChange={this.setTimeShift} 
-      />
-      {overlapError && <div className="overlap-error-message">{overlapError}</div>}
-      <div className="ok-cancel-bar">
-        <Button type="primary" onClick={this.saveTimeFilters} disabled={!this.validate()} title={STRINGS.ok} />
-        <Button type="secondary" onClick={this.props.onClose} title={STRINGS.cancel} />
+    return (
+      <div className="cont">
+        {essence.dataCube.isTimeAttribute(dimension.expression) &&
+          this.renderLatestPresets()}
+        {this.renderButtonGroup(STRINGS.current, TimeFilterPeriod.CURRENT)}
+        {this.renderButtonGroup(STRINGS.previous, TimeFilterPeriod.PREVIOUS)}
+        <div className="preview preview--with-spacing">{previewText}</div>
+        <TimeShiftSelector
+          shift={timeShift}
+          time={previewFilter}
+          timezone={essence.timezone}
+          onShiftChange={this.setTimeShift}
+        />
+        {overlapError && (
+          <div className="overlap-error-message">{overlapError}</div>
+        )}
+        <div className="ok-cancel-bar">
+          <Button
+            type="primary"
+            onClick={this.saveTimeFilters}
+            disabled={!this.validate()}
+            title={STRINGS.ok}
+          />
+          <Button
+            type="secondary"
+            onClick={this.props.onClose}
+            title={STRINGS.cancel}
+          />
+        </div>
       </div>
-    </div>;
+    );
   }
 }

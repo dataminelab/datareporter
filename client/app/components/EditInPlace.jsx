@@ -2,7 +2,7 @@ import { trim } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
-import Input from "antd/lib/input"; 
+import Input from "antd/lib/input";
 import { SvgIcon } from "@/components/TurniloComponent/client/components/svg-icon/svg-icon.tsx";
 
 export default class EditInPlace extends React.Component {
@@ -16,6 +16,7 @@ export default class EditInPlace extends React.Component {
     multiline: PropTypes.bool,
     editorProps: PropTypes.object,
     defaultEditing: PropTypes.bool,
+    className: PropTypes.string,
   };
 
   static defaultProps = {
@@ -27,6 +28,7 @@ export default class EditInPlace extends React.Component {
     multiline: false,
     editorProps: {},
     defaultEditing: false,
+    className: "",
   };
 
   constructor(props) {
@@ -72,9 +74,13 @@ export default class EditInPlace extends React.Component {
         role="presentation"
         onFocus={this.startEditing}
         onClick={this.startEditing}
-        className={this.props.isEditable ? "editable" : ""}>
-          {this.props.value}
-          <SvgIcon className="svg" svg={require("@/components/TurniloComponent/client/icons/full-edit.svg")} />
+        className={this.props.isEditable ? "editable" : ""}
+      >
+        {this.props.value}
+        <SvgIcon
+          className="svg"
+          svg={require("@/components/TurniloComponent/client/icons/full-edit.svg")}
+        />
       </span>
     ) : (
       <a className="clickable" onClick={this.startEditing}>
@@ -88,6 +94,7 @@ export default class EditInPlace extends React.Component {
     return (
       <InputComponent
         defaultValue={value}
+        aria-label="Editing"
         onBlur={e => this.stopEditing(e.target.value)}
         onKeyDown={this.handleKeyDown}
         autoFocus
@@ -98,7 +105,13 @@ export default class EditInPlace extends React.Component {
 
   render() {
     return (
-      <span className={cx("edit-in-place", { active: this.state.editing }, this.props.className)}>
+      <span
+        className={cx(
+          "edit-in-place",
+          { active: this.state.editing },
+          this.props.className,
+        )}
+      >
         {this.state.editing ? this.renderEdit() : this.renderNormal()}
       </span>
     );

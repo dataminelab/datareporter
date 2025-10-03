@@ -24,16 +24,16 @@ export interface ShpitzProps {
   style?: any;
 }
 
-export interface ShpitzState {
-}
+export interface ShpitzState {}
 
 export class Shpitz extends React.Component<ShpitzProps, ShpitzState> {
-
   render() {
     const { direction, style } = this.props;
 
-    return <div className={classNames("shpitz", direction)} style={style}>
-      <div className="rectangle"></div>
-    </div>;
+    return (
+      <div className={classNames("shpitz", direction)} style={style}>
+        <div className="rectangle"></div>
+      </div>
+    );
   }
 }

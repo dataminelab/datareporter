@@ -95,7 +95,7 @@ node {
         stage("Build plywood-server docker image",) {
             echo "Build docker image for: ${appPlywoodServerName}"
             def imageNamePlywoodServer = "${registryRegion}/${appPlywoodServerName}:${latestTagRelease}-${shortCommit}"
-            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} ${noCache} plywood/server")
+            dockerimagePlywoodServer = docker.build("${appPlywoodServerName}", "${imageLabel} ${buildArgs} ${noCache} plywood")
             imageNames.add("${registryRegion}/${appPlywoodServerName}=" + imageNamePlywoodServer)
         }
 

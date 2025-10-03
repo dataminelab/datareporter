@@ -1,29 +1,18 @@
-import ctypes
-import threading
-from datetime import timedelta
-from functools import partial
-from flask import request
+import base64
 import logging
-
-from flask import Blueprint
+from functools import partial
 from itertools import chain
 
-from rq import get_current_job, VERSION
+from flask import Blueprint, request
+from rq import VERSION, get_current_job
 from rq.decorators import job as rq_job
-
-import base64
-
 from rq.exceptions import DequeueTimeout
 from rq.logutils import setup_loghandlers
-from rq.timeouts import JobTimeoutException, BaseDeathPenalty
-from rq.worker import WorkerStatus, green, blue
+from rq.worker import WorkerStatus, blue, green
 
-logger = logging.getLogger(__name__)
-from redash import (
-    settings,
-    rq_redis_connection,
-)
-from redash.tasks.worker import Queue as RedashQueue, Worker
+from redash import rq_redis_connection, settings
+from redash.tasks.worker import Queue as RedashQueue
+from redash.tasks.worker import Worker
 
 default_operational_queues = ["periodic", "emails", "default"]
 default_query_queues = ["scheduled_queries", "queries", "schemas"]
@@ -65,7 +54,6 @@ def get_job_logger(name):
 
 
 class FirstJobExecutor(Worker):
-
     def __init__(self, queue):
         queues = chain(queue.split(","))
         super().__init__(queues=queues, default_worker_ttl=1)
@@ -96,11 +84,8 @@ class FirstJobExecutor(Worker):
             if not self.is_horse:
                 self.register_death()
 
-    """
-    Dequeue next task without waiting if there is nothing to do
-    """
-
     def dequeue(self, timeout: int):
+        """Dequeue next task without waiting if there is nothing to do."""
         result = None
         qnames = ",".join(self.queue_names())
 
@@ -115,7 +100,6 @@ class FirstJobExecutor(Worker):
                 self.queues, timeout, connection=self.connection, job_class=self.job_class
             )
             if result is not None:
-
                 next_job, queue = result
                 if self.log_job_description:
                     self.log.info("%s: %s (%s)", green(queue.name), blue(next_job.description), next_job.id)

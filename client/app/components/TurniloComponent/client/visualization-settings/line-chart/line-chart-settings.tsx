@@ -19,12 +19,18 @@ import { VisualizationSettingsComponent } from "../../../common/models/visualiza
 import { LineChartSettings } from "../../../common/visualization-manifests/line-chart/settings";
 import { Checkbox } from "../../components/checkbox/checkbox";
 
-export const LineChartSettingsComponent: VisualizationSettingsComponent<LineChartSettings> = ({ settings, onChange }) => {
-  const toggleGroupSeries = () => onChange(settings.update("groupSeries", groupSeries => !groupSeries));
-  return <div className="settings-row">
-    <Checkbox
-      selected={settings.groupSeries}
-      label="Group series"
-      onClick={toggleGroupSeries} />
-  </div>;
+export const LineChartSettingsComponent: VisualizationSettingsComponent<
+  LineChartSettings
+> = ({ settings, onChange }) => {
+  const toggleGroupSeries = () =>
+    onChange(settings.update("groupSeries", groupSeries => !groupSeries));
+  return (
+    <div className="settings-row">
+      <Checkbox
+        selected={settings.groupSeries}
+        label="Group series"
+        onClick={toggleGroupSeries}
+      />
+    </div>
+  );
 };

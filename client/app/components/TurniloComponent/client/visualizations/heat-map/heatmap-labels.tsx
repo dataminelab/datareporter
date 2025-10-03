@@ -43,27 +43,54 @@ export class HeatmapLabels extends React.Component<HeatmapLabelsProps> {
 
     const { onMaxLabelSize = noop } = this.props;
 
-    const maxWidth = Array.from(this.container.current.querySelectorAll(`.${heatmapLabelClassName}`))
-      .reduce((maxWidth, element: HTMLSpanElement) => Math.max(element.offsetWidth, maxWidth), 0);
+    const maxWidth = Array.from(
+      this.container.current.querySelectorAll(`.${heatmapLabelClassName}`),
+    ).reduce(
+      (maxWidth, element) =>
+        Math.max((element as HTMLSpanElement).offsetWidth, maxWidth),
+      0,
+    );
 
     onMaxLabelSize(maxWidth + 10 /* consider elements padding */);
   }
 
   render() {
-    const { labels, orientation, hoveredLabel, highlightedLabel, labelSize, colorLabel }  = this.props;
+    const {
+      labels,
+      orientation,
+      hoveredLabel,
+      highlightedLabel,
+      labelSize,
+      colorLabel,
+    } = this.props;
     const color = colorLabel ? colorLabel : "inherit";
     return (
-      <div ref={this.container} className={`${orientation}-labels`} style={{ color }}>
+      <div
+        ref={this.container}
+        className={`${orientation}-labels`}
+        style={{ color }}
+      >
         {labels.map((label, index) => {
           const highlight = highlightedLabel === index;
           const hover = !highlight && hoveredLabel === index;
-          return <span
-            key={label}
-            className={classNames("heatmap-label-wrapper", { "heatmap-label-hovered": hover, "heatmap-label-highlight": highlight })}>
-            <span className={heatmapLabelClassName} style={labelSize ? { width: labelSize } : undefined}>
-              <span className="heatmap-label-overflow-container">{label}</span>
+          return (
+            <span
+              key={label}
+              className={classNames("heatmap-label-wrapper", {
+                "heatmap-label-hovered": hover,
+                "heatmap-label-highlight": highlight,
+              })}
+            >
+              <span
+                className={heatmapLabelClassName}
+                style={labelSize ? { width: labelSize } : undefined}
+              >
+                <span className="heatmap-label-overflow-container">
+                  {label}
+                </span>
+              </span>
             </span>
-          </span>;
+          );
         })}
       </div>
     );

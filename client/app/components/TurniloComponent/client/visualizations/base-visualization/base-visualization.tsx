@@ -23,8 +23,20 @@ import { FilterClause } from "../../../common/models/filter-clause/filter-clause
 import { Series } from "../../../common/models/series/series";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Visualization } from "../../../common/models/visualization-manifest/visualization-manifest";
-import { DatasetLoad, error, isError, isLoaded, isLoading, loaded, loading, VisualizationProps } from "../../../common/models/visualization-props/visualization-props";
-import { debounceWithPromise, noop } from "../../../common/utils/functional/functional";
+import {
+  DatasetLoad,
+  error,
+  isError,
+  isLoaded,
+  isLoading,
+  loaded,
+  loading,
+  VisualizationProps,
+} from "../../../common/models/visualization-props/visualization-props";
+import {
+  debounceWithPromise,
+  noop,
+} from "../../../common/utils/functional/functional";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
@@ -42,7 +54,9 @@ export interface BaseVisualizationState {
   highlight: Highlight | null;
 }
 
-export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
+export class BaseVisualization<
+  S extends BaseVisualizationState,
+> extends React.Component<VisualizationProps, S> {
   protected className: Visualization = null;
 
   constructor(props: VisualizationProps) {
@@ -57,7 +71,7 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       scrollLeft: 0,
       scrollTop: 0,
       highlight: null,
-      dragOnSeries: null
+      dragOnSeries: null,
     };
   }
 
@@ -69,18 +83,21 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private lastQueryEssence: Essence = null;
 
-  componentDidMount() {
+  componentDidMount(): void {
     const { essence, timekeeper } = this.props;
     this.loadData(essence, timekeeper);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.lastQueryEssence = null;
     this.debouncedCallExecutor.cancel();
   }
 
-  componentWillReceiveProps(nextProps: VisualizationProps) {
-    if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
+  componentWillReceiveProps(nextProps: VisualizationProps): void {
+    if (
+      this.shouldFetchData(nextProps) &&
+      this.visualisationNotResized(nextProps)
+    ) {
       const { essence, timekeeper } = nextProps;
       const hadDataLoaded = isLoaded(this.state.datasetLoad);
       const essenceChanged = !essence.equals(this.props.essence);
@@ -88,13 +105,22 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     }
   }
 
-  private loadData(essence: Essence, timekeeper: Timekeeper, showSpinner = true) {
+  private loadData(
+    essence: Essence,
+    timekeeper: Timekeeper,
+    showSpinner = true,
+  ) {
     if (showSpinner) this.handleDatasetLoad(loading);
     this.fetchData(essence, timekeeper)
       .then(loadedDataset => {
-        // TODO: encode it better
-        // null is here when we get out of order request, so we just ignore it
         if (!loadedDataset) return;
+        if (typeof window !== "undefined") {
+            const popResult = window.location.pathname.split('/').pop();
+            const slug = popResult ? popResult.split('?')[0] : '';
+            (window as any).loadedDatasetsByUrl = (window as any).loadedDatasetsByUrl || {};
+            (window as any).loadedDatasetsByUrl[slug] = (window as any).loadedDatasetsByUrl[slug] || [];
+            (window as any).loadedDatasetsByUrl[slug].push(loadedDataset);
+        }
         if (isError(loadedDataset)) {
           this.handleDatasetLoad(loadedDataset);
         }
@@ -104,24 +130,37 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
       });
   }
 
-  private fetchData(essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> {
+  private fetchData(
+    essence: Essence,
+    timekeeper: Timekeeper,
+  ): Promise<DatasetLoad | null> {
     this.lastQueryEssence = essence;
     return this.debouncedCallExecutor(essence, timekeeper);
   }
 
-  private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> =>
-    essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
-      .then((dataset: Dataset) => {
+  private callExecutor = (
+    essence: Essence,
+    timekeeper: Timekeeper,
+  ): Promise<DatasetLoad | null> =>
+    essence.dataCube
+      .executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
+      .then(
+        (value: any) => {
           // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
-          return loaded(dataset);
+          if (value instanceof Dataset) {
+            return loaded(value);
+          }
+          // handle unexpected value type (e.g., string, number, etc.)
+          return error(new Error("Query did not return a Dataset."));
         },
         err => {
           // signal out of order requests with null
           if (!this.wasUsedForLastQuery(essence)) return null;
           reportError(err);
           return error(err);
-        });
+        },
+      );
 
   private wasUsedForLastQuery(essence: Essence) {
     return essence.equals(this.lastQueryEssence);
@@ -131,7 +170,12 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
 
   private handleDatasetLoad(dl: DatasetLoad, derivedState: Partial<S> = {}) {
     // as object will be fixed in typescript 3.2 https://github.com/Microsoft/TypeScript/issues/10727
-    this.setState({ ...(derivedState as object), datasetLoad: dl, scrollLeft: 0, scrollTop: 0 });
+    this.setState({
+      ...(derivedState as Record<string, unknown>),
+      datasetLoad: dl,
+      scrollLeft: 0,
+      scrollTop: 0,
+    });
     const { registerDownloadableDataset } = this.props;
     if (registerDownloadableDataset) {
       registerDownloadableDataset(isLoaded(dl) ? dl.dataset : null);
@@ -142,26 +186,37 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return this.differentVisualizationDefinition(nextProps);
   }
 
-  protected differentVisualizationDefinition(nextProps: VisualizationProps) {
+  protected differentVisualizationDefinition(nextProps: VisualizationProps): boolean {
     const { essence, timekeeper } = this.props;
     const nextEssence = nextProps.essence;
     const nextTimekeeper = nextProps.timekeeper;
-    return nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
+    return (
+      nextEssence.differentDataCube(essence) ||
+      nextEssence.differentEffectiveFilter(
+        essence,
+        timekeeper,
+        nextTimekeeper,
+      ) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.differentSeries(essence) ||
       nextEssence.differentSettings(essence) ||
       this.differentBucketingTimezone(nextEssence) ||
-      this.differentLastRefreshRequestTimestamp(nextProps);
+      this.differentLastRefreshRequestTimestamp(nextProps)
+    );
   }
 
   private differentBucketingTimezone(newEssence: Essence): boolean {
     const { essence } = this.props;
-    return !essence.timezone.equals(newEssence.timezone) && newEssence.splits.hasSplitOn(essence.getTimeDimension());
+    return (
+      !essence.timezone.equals(newEssence.timezone) &&
+      newEssence.splits.hasSplitOn(essence.getTimeDimension())
+    );
   }
 
-  private differentLastRefreshRequestTimestamp({ refreshRequestTimestamp }: VisualizationProps): boolean {
+  private differentLastRefreshRequestTimestamp({
+    refreshRequestTimestamp,
+  }: VisualizationProps): boolean {
     return refreshRequestTimestamp !== this.props.refreshRequestTimestamp;
   }
 
@@ -193,16 +248,21 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return highlight.clauses;
   }
 
-  protected dropHighlight = () => this.setState({ highlight: null });
+  protected dropHighlight = (): void => this.setState({ highlight: null });
 
-  protected acceptHighlight = () => {
+  protected acceptHighlight = (): void => {
     if (!this.hasHighlight()) return;
     const { essence, clicker } = this.props;
-    clicker.changeFilter(essence.filter.mergeClauses(this.getHighlightClauses()));
+    clicker.changeFilter(
+      essence.filter.mergeClauses(this.getHighlightClauses()),
+    );
     this.setState({ highlight: null });
   };
 
-  protected highlight = (clauses: List<FilterClause>, key: string | null = null) => {
+  protected highlight = (
+    clauses: List<FilterClause>,
+    key: string | null = null,
+  ): void => {
     const highlight = new Highlight(clauses, key);
     this.setState({ highlight });
   };
@@ -211,17 +271,20 @@ export class BaseVisualization<S extends BaseVisualizationState> extends React.C
     return {};
   }
 
-  render() {
+  render(): JSX.Element {
     const { datasetLoad } = this.state;
 
-    return <div className={classNames("base-visualization", this.className)}>
-      <GlobalEventListener
-        mouseMove={this.globalMouseMoveListener}
-        mouseUp={this.globalMouseUpListener}
-        keyDown={this.globalKeyDownListener} />
-      {isLoaded(datasetLoad) && this.renderInternals(datasetLoad.dataset)}
-      {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
-      {isLoading(datasetLoad) && <Loader />}
-    </div>;
+    return (
+      <div className={classNames("base-visualization", this.className)}>
+        <GlobalEventListener
+          mouseMove={this.globalMouseMoveListener}
+          mouseUp={this.globalMouseUpListener}
+          keyDown={this.globalKeyDownListener}
+        />
+        {isLoaded(datasetLoad) && this.renderInternals(datasetLoad.dataset)}
+        {isError(datasetLoad) && <QueryError error={datasetLoad.error} />}
+        {isLoading(datasetLoad) && <Loader />}
+      </div>
+    );
   }
 }

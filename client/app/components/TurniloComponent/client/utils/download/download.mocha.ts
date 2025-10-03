@@ -25,10 +25,16 @@ describe("Download", () => {
     it("encloses set/string in brackets appropriately", () => {
       const ds = Dataset.fromJS([
         { y: ["dear", "john"] },
-        { y: ["from", "peter"] }
+        { y: ["from", "peter"] },
       ]);
-      expect(datasetToFileString(ds, "csv").indexOf("\"dear, john\""), "csv").to.not.equal(-1);
-      expect(datasetToFileString(ds, "tsv").indexOf("dear, john"), "tsv").to.not.equal(-1);
+      expect(
+        datasetToFileString(ds, "csv").indexOf('"dear, john"'),
+        "csv",
+      ).to.not.equal(-1);
+      expect(
+        datasetToFileString(ds, "tsv").indexOf("dear, john"),
+        "tsv",
+      ).to.not.equal(-1);
     });
   });
 

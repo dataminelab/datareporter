@@ -32,8 +32,16 @@ const labelOffset = 40;
 // Around half of font-size with handpicked offset to accommodate rounding errors and rotation artifacts
 const rotationAxisOffset = 7;
 
-export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({ colorScale, width, height, essence }) => {
-  const { dataCube, splits: { splits } } = essence;
+export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({
+  colorScale,
+  width,
+  height,
+  essence,
+}) => {
+  const {
+    dataCube,
+    splits: { splits },
+  } = essence;
 
   const row = splits.get(0);
   const column = splits.get(1);
@@ -44,24 +52,33 @@ export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({ colorScale, width
   const legendHeight = height - labelOffset;
   const legendWidth = width - labelOffset;
 
-  return <div className="heatmap-corner">
-    <HeatmapLegend
-      scale={colorScale}
-      height={legendHeight}
-      width={legendWidth}
-      series={series} />
-    <div className="heatmap-corner-row-title">
-      <span className="heatmap-corner-overflow-label"
-            style={{ width: `${width - labelMargin}px` }}>
-        {rowTitle}
-      </span>
+  return (
+    <div className="heatmap-corner">
+      <HeatmapLegend
+        scale={colorScale}
+        height={legendHeight}
+        width={legendWidth}
+        series={series}
+      />
+      <div className="heatmap-corner-row-title">
+        <span
+          className="heatmap-corner-overflow-label"
+          style={{ width: `${width - labelMargin}px` }}
+        >
+          {rowTitle}
+        </span>
+      </div>
+      <div
+        className="heatmap-corner-column-title"
+        style={{ left: `${width - labelMargin + rotationAxisOffset}px` }}
+      >
+        <span
+          className="heatmap-corner-overflow-label"
+          style={{ width: `${height - labelMargin}px` }}
+        >
+          {columnTitle}
+        </span>
+      </div>
     </div>
-    <div className="heatmap-corner-column-title"
-         style={{ left: `${width - labelMargin + rotationAxisOffset}px` }}>
-      <span className="heatmap-corner-overflow-label"
-            style={{ width: `${height - labelMargin}px` }}>
-        {columnTitle}
-      </span>
-    </div>
-  </div>;
+  );
 };

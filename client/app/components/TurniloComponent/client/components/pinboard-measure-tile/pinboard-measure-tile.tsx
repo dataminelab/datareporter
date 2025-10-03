@@ -18,7 +18,10 @@
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
+import {
+  DimensionSortOn,
+  SortOn,
+} from "../../../common/models/sort-on/sort-on";
 import { concatTruthy } from "../../../common/utils/functional/functional";
 import { Dropdown } from "../dropdown/dropdown";
 import "./pinboard-measure-tile.scss";
@@ -31,26 +34,34 @@ export interface PinboardMeasureTileProps {
   onSelect: (sel: SortOn) => void;
 }
 
-const renderSelectedItem = (item: SortOn) => item ? SortOn.getTitle(item) : "---";
+const renderSelectedItem = (item: SortOn) =>
+  item ? SortOn.getTitle(item) : "---";
 
-export const PinboardMeasureTile: React.SFC<PinboardMeasureTileProps> = props => {
+export const PinboardMeasureTile: React.SFC<
+  PinboardMeasureTileProps
+> = props => {
   const { essence, title, dimension, sortOn, onSelect } = props;
 
   const sortOns = concatTruthy(
     dimension && new DimensionSortOn(dimension),
-    ...essence.seriesSortOns(false).toArray()
+    ...essence.seriesSortOns(false).toArray(),
   );
 
-  return <div className="pinboard-measure-tile">
-    <div className="title">{title}</div>
-    <Dropdown<SortOn>
-      items={sortOns}
-      selectedItem={sortOn}
-      equal={SortOn.equals}
-      renderItem={SortOn.getTitle}
-      renderSelectedItem={renderSelectedItem}
-      keyItem={SortOn.getKey}
-      onSelect={onSelect} />
-    {!sortOn && <div className="pinboard-sort-error">No measure selected.</div>}
-  </div>;
+  return (
+    <div className="pinboard-measure-tile">
+      <div className="title">{title}</div>
+      <Dropdown<SortOn>
+        items={sortOns}
+        selectedItem={sortOn}
+        equal={SortOn.equals}
+        renderItem={SortOn.getTitle}
+        renderSelectedItem={renderSelectedItem}
+        keyItem={SortOn.getKey}
+        onSelect={onSelect}
+      />
+      {!sortOn && (
+        <div className="pinboard-sort-error">No measure selected.</div>
+      )}
+    </div>
+  );
 };

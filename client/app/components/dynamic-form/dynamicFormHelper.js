@@ -1,5 +1,14 @@
 import React from "react";
-import { each, includes, isUndefined, isEmpty, isNil, map, get, some } from "lodash";
+import {
+  each,
+  includes,
+  isUndefined,
+  isEmpty,
+  isNil,
+  map,
+  get,
+  some,
+} from "lodash";
 
 function orderedInputs(properties, order, targetOptions) {
   const inputs = new Array(order.length);
@@ -9,7 +18,9 @@ function orderedInputs(properties, order, targetOptions) {
       name: key,
       title: properties[key].title,
       type: properties[key].type,
-      placeholder: isNil(properties[key].default) ? null : properties[key].default.toString(),
+      placeholder: isNil(properties[key].default)
+        ? null
+        : properties[key].default.toString(),
       required: properties[key].required,
       extra: properties[key].extra,
       initialValue: targetOptions[key],
@@ -75,7 +86,9 @@ function setDefaultValueToFields(configurationSchema, options = {}) {
     // set default or first value when value has predefined options
     if (property.type === "select") {
       const optionValues = map(property.options, option => option.value);
-      options[key] = includes(optionValues, property.default) ? property.default : optionValues[0];
+      options[key] = includes(optionValues, property.default)
+        ? property.default
+        : optionValues[0];
     }
   });
 }
@@ -100,7 +113,11 @@ function getFields(type = {}, target = { options: {} }) {
       placeholder: `My ${type.name}`,
       autoFocus: isNewTarget,
     },
-    ...orderedInputs(configurationSchema.properties, configurationSchema.order, target.options),
+    ...orderedInputs(
+      configurationSchema.properties,
+      configurationSchema.order,
+      target.options,
+    ),
   ];
 
   return inputs;
@@ -119,7 +136,8 @@ function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result.substr(reader.result.indexOf(",") + 1));
+    reader.onload = () =>
+      resolve(reader.result.substr(reader.result.indexOf(",") + 1));
     reader.onerror = error => reject(error);
   });
 }
@@ -127,9 +145,16 @@ function getBase64(file) {
 function hasFilledExtraField(type, target) {
   const extraOptions = get(type, "configuration_schema.extra_options", []);
   return some(extraOptions, optionName => {
-    const defaultOptionValue = get(type, ["configuration_schema", "properties", optionName, "default"]);
+    const defaultOptionValue = get(type, [
+      "configuration_schema",
+      "properties",
+      optionName,
+      "default",
+    ]);
     const targetOptionValue = get(target, ["options", optionName]);
-    return !isNil(targetOptionValue) && targetOptionValue !== defaultOptionValue;
+    return (
+      !isNil(targetOptionValue) && targetOptionValue !== defaultOptionValue
+    );
   });
 }
 

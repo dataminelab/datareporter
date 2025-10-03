@@ -1,7 +1,15 @@
-import sys
 import logging
 
-from redash.query_runner import *
+from redash.query_runner import (
+    TYPE_BOOLEAN,
+    TYPE_DATE,
+    TYPE_DATETIME,
+    TYPE_FLOAT,
+    TYPE_INTEGER,
+    TYPE_STRING,
+    BaseSQLQueryRunner,
+    register,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +66,7 @@ class Vertica(BaseSQLQueryRunner):
     @classmethod
     def enabled(cls):
         try:
-            import vertica_python
+            import vertica_python  # noqa: F401
         except ImportError:
             return False
 
@@ -74,7 +82,7 @@ class Vertica(BaseSQLQueryRunner):
         results, error = self.run_query(query, None)
 
         if error is not None:
-            raise Exception("Failed getting schema.")
+            self._handle_run_query_error(error)
 
         for row in results["rows"]:
             table_name = "{}.{}".format(row["table_schema"], row["table_name"])
@@ -106,9 +114,7 @@ class Vertica(BaseSQLQueryRunner):
             }
 
             if self.configuration.get("connection_timeout"):
-                conn_info["connection_timeout"] = self.configuration.get(
-                    "connection_timeout"
-                )
+                conn_info["connection_timeout"] = self.configuration.get("connection_timeout")
 
             connection = vertica_python.connect(**conn_info)
             cursor = connection.cursor()
@@ -116,15 +122,10 @@ class Vertica(BaseSQLQueryRunner):
             cursor.execute(query)
 
             if cursor.description is not None:
-                columns_data = [
-                    (i[0], types_map.get(i[1], None)) for i in cursor.description
-                ]
+                columns_data = [(i[0], types_map.get(i[1], None)) for i in cursor.description]
 
                 columns = self.fetch_columns(columns_data)
-                rows = [
-                    dict(zip(([c["name"] for c in columns]), r))
-                    for r in cursor.fetchall()
-                ]
+                rows = [dict(zip(([c["name"] for c in columns]), r)) for r in cursor.fetchall()]
 
                 data = {"columns": columns, "rows": rows}
                 error = None

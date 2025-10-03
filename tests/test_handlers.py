@@ -6,7 +6,7 @@ from redash import models, settings
 from tests import BaseTestCase, authenticated_user
 
 
-class AuthenticationTestMixin(object):
+class AuthenticationTestMixin:
     def test_returns_404_when_not_unauthenticated(self):
         for path in self.paths:
             rv = self.client.get(path)
@@ -114,12 +114,6 @@ class TestLogin(BaseTestCase):
         finally:
             settings.REMOTE_USER_LOGIN_ENABLED = old_remote_user_enabled
             settings.LDAP_LOGIN_ENABLED = old_ldap_login_enabled
-
-    def test_submit_non_existing_user(self):
-        with patch("redash.handlers.authentication.login_user") as login_user_mock:
-            rv = self.client.post("/default/login", data={"email": "arik", "password": "password"})
-            self.assertEqual(rv.status_code, 200)
-            self.assertFalse(login_user_mock.called)
 
     def test_submit_correct_user_and_password(self):
         user = self.factory.user

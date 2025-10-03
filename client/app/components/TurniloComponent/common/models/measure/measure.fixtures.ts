@@ -22,7 +22,7 @@ export class MeasureFixtures {
     return {
       name: "count",
       title: "Count",
-      formula: "$main.sum($count)"
+      formula: "$main.sum($count)",
     };
   }
 
@@ -30,7 +30,7 @@ export class MeasureFixtures {
     return {
       name: "_previous__count",
       title: "Count",
-      formula: "$main.sum($count)"
+      formula: "$main.sum($count)",
     };
   }
 
@@ -38,7 +38,7 @@ export class MeasureFixtures {
     return {
       name: "_delta__count",
       title: "Count",
-      formula: "$main.sum($count)"
+      formula: "$main.sum($count)",
     };
   }
 
@@ -46,7 +46,7 @@ export class MeasureFixtures {
     return new Measure({
       name: "count",
       title: "Count",
-      formula: "$main.sum($count)"
+      formula: "$main.sum($count)",
     });
   }
 
@@ -54,7 +54,7 @@ export class MeasureFixtures {
     return {
       name: "unique_users",
       title: "Unique Users",
-      formula: "$main.countDistinct($unique_users)"
+      formula: "$main.countDistinct($unique_users)",
     };
   }
 
@@ -62,21 +62,21 @@ export class MeasureFixtures {
     return new Measure({
       name: "unique_users",
       title: "Unique Users",
-      formula: "$main.countDistinct($unique_users)"
+      formula: "$main.countDistinct($unique_users)",
     });
   }
 
   static twitterCount(): Measure {
     return Measure.fromJS({
       name: "count",
-      formula: "$main.count()"
+      formula: "$main.count()",
     });
   }
 
   static noTransformationMeasure(): Measure {
     return Measure.fromJS({
       name: "items_measure",
-      formula: "$main.sum($item)"
+      formula: "$main.sum($item)",
     });
   }
 
@@ -84,7 +84,7 @@ export class MeasureFixtures {
     return Measure.fromJS({
       name: "items_measure",
       formula: "$main.sum($item)",
-      transformation: "percent-of-parent"
+      transformation: "percent-of-parent",
     });
   }
 
@@ -92,7 +92,7 @@ export class MeasureFixtures {
     return Measure.fromJS({
       name: "items_measure",
       formula: "$main.sum($item)",
-      transformation: "percent-of-total"
+      transformation: "percent-of-total",
     });
   }
 
@@ -101,16 +101,16 @@ export class MeasureFixtures {
       expression: {
         expression: {
           name: "item",
-          op: "ref"
+          op: "ref",
         },
         op: "sum",
         operand: {
           name: "main",
-          op: "ref"
-        }
+          op: "ref",
+        },
       },
       name: "items_measure",
-      op: "apply"
+      op: "apply",
     };
   }
 
@@ -119,16 +119,16 @@ export class MeasureFixtures {
       expression: {
         expression: {
           name: "item",
-          op: "ref"
+          op: "ref",
         },
         op: "sum",
         operand: {
           name: "main",
-          op: "ref"
-        }
+          op: "ref",
+        },
       },
       name: "__formula_items_measure",
-      op: "apply"
+      op: "apply",
     };
   }
 
@@ -137,21 +137,21 @@ export class MeasureFixtures {
       expression: {
         expression: {
           op: "literal",
-          value: 100
+          value: 100,
         },
         op: "multiply",
         operand: {
           expression: {
             name: "__formula_items_measure",
             nest: level,
-            op: "ref"
+            op: "ref",
           },
           op: "divide",
           operand: {
             name: "__formula_items_measure",
-            op: "ref"
-          }
-        }
+            op: "ref",
+          },
+        },
       },
       name: "items_measure",
       op: "apply",
@@ -159,17 +159,17 @@ export class MeasureFixtures {
         expression: {
           expression: {
             name: "item",
-            op: "ref"
+            op: "ref",
           },
           op: "sum",
           operand: {
             name: "main",
-            op: "ref"
-          }
+            op: "ref",
+          },
         },
         name: "__formula_items_measure",
-        op: "apply"
-      }
+        op: "apply",
+      },
     };
   }
 }

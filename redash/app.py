@@ -59,10 +59,11 @@ def create_worker():
     from . import (
         mail,
         tasks,
+        worker,
     )
     from .models import db
     from .utils import sentry
-    from . import worker
+
     sentry.init()
     app = Redash()
 

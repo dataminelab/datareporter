@@ -61,7 +61,7 @@ export default function withControlLabel(WrappedControl) {
       () =>
         `visualization-editor-control-${Math.random()
           .toString(36)
-          .substr(2, 10)}`,
+          .substring(2, 10)}`,
       []
     );
     labelProps = {

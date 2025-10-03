@@ -26,21 +26,19 @@ export interface SvgIconProps {
   style?: any;
 }
 
-export interface SvgIconState {
-}
+export interface SvgIconState {}
 
 export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
-
   render() {
-    var { className, style, svg } = this.props;
+    const { className, style, svg } = this.props;
 
-    var viewBox: string = null;
-    var svgInsides: string = null;
+    let viewBox: string = null;
+    let svgInsides: string = null;
     if (typeof svg === "string") {
       svgInsides = svg
         .slice(0, svg.length - 6) // remove trailing "</svg>"
         .replace(/^<svg [^>]+>\s*/i, (svgDec: string) => {
-          var vbMatch = svgDec.match(/viewBox="([\d ]+)"/);
+          const vbMatch = svgDec.match(/viewBox="([\d ]+)"/);
           if (vbMatch) viewBox = vbMatch[1];
           return "";
         });
@@ -55,7 +53,7 @@ export class SvgIcon extends React.Component<SvgIconProps, SvgIconState> {
       viewBox,
       preserveAspectRatio: "xMidYMid meet",
       style,
-      dangerouslySetInnerHTML: { __html: svgInsides }
+      dangerouslySetInnerHTML: { __html: svgInsides },
     });
   }
 }

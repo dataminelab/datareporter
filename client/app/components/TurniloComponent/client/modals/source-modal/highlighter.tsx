@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// @ts-ignore
 import jsonLanguage from "highlight.js/lib/languages/json";
 import React from "react";
 /* Imported from `/src/` to save on bundle size.
@@ -23,9 +24,14 @@ import githubGist from "react-syntax-highlighter/src/styles/hljs/github-gist";
 
 SyntaxHighlighter.registerLanguage("json", jsonLanguage);
 
-const Highlighter: React.FunctionComponent = ({ children: source }) =>
-    <SyntaxHighlighter className="source-modal__source" language="json" style={githubGist}>
-        {source}
-    </SyntaxHighlighter>;
+const Highlighter: React.FunctionComponent = ({ children: source }) => (
+  <SyntaxHighlighter
+    className="source-modal__source"
+    language="json"
+    style={githubGist}
+  >
+    {source}
+  </SyntaxHighlighter>
+);
 
 export default Highlighter;

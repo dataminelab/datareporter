@@ -4,7 +4,7 @@ import redash.tasks.alerts
 from redash.models import Alert
 from redash.tasks.alerts import check_alerts_for_query, notify_subscriptions
 from tests import BaseTestCase
-# https://github.com/getredash/redash/commit/e18cd8f248a72c95dfd903648a4f493afbf99e83
+
 
 class TestCheckAlertsForQuery(BaseTestCase):
     def test_notifies_subscribers_when_should(self):

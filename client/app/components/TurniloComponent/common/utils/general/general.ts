@@ -125,22 +125,10 @@ export function findFirstBiggerIndex<T>(
   return List(array).findIndex(g => valueOf(g) > valueOf(elementToFind));
 }
 
-export function findBiggerClosestToIdeal<T>(
-  array: T[],
-  elementToFind: T,
-  ideal: T,
-  valueOf: (input: T) => number,
-) {
-  const biggerOrEqualIndex = List(array).findIndex(
-    g => valueOf(g) >= valueOf(elementToFind),
-  );
+export function findBiggerClosestToIdeal<T>(array: T[], elementToFind: T, ideal: T, valueOf: (input: T) => number) {
+  const biggerOrEqualIndex = List(array).findIndex(g => valueOf(g) >= valueOf(elementToFind));
   const biggerArrayOrEqual = array.slice(biggerOrEqualIndex);
-  return biggerArrayOrEqual.reduce((pV, cV) =>
-    Math.abs(valueOf(pV) - valueOf(ideal)) <
-    Math.abs(valueOf(cV) - valueOf(ideal))
-      ? pV
-      : cV,
-  );
+  return biggerArrayOrEqual.reduce((pV, cV) => Math.abs(valueOf(pV) - valueOf(ideal)) < Math.abs(valueOf(cV) - valueOf(ideal)) ? pV : cV);
 }
 
 export function findExactIndex<T>(

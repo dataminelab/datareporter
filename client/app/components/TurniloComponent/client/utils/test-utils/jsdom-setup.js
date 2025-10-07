@@ -1,4 +1,5 @@
 /*
+ * Copyright 2015-2016 Imply Data, Inc.
  * Copyright 2017-2019 Allegro.pl
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +15,12 @@
  * limitations under the License.
  */
 
-.sort-arrow {
-  width: 8px;
-  right: -4px;
+const { JSDOM } = require("jsdom");
 
-  &.ascending {
-    transform: rotate(180deg);
-  }
-}
+const dom = new JSDOM("<!doctype html><html><body></body></html>");
+global.window = dom.window;
+global.document = dom.window.document;
+global.navigator = { userAgent: "testing" };
+
+if (typeof global.File === "undefined") global.File = dom.window.File;
+if (typeof global.Blob === "undefined") global.Blob = dom.window.Blob;

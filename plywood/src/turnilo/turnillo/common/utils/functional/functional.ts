@@ -80,6 +80,7 @@ export function flatMap<T, S>(coll: T[], mapper: Binary<T, number, S[]>): S[] {
 }
 
 export function cyclicShift<T>(coll: T[], count: number): T[] {
+  if (coll.length === 0) return [];
   const n = count % coll.length;
   return coll.slice(n, coll.length).concat(coll.slice(0, n));
 }
@@ -122,7 +123,7 @@ export function complement<T>(p: Predicate<T>): Predicate<T> {
 }
 
 export function or<T>(...ps: Array<Predicate<T>>): Predicate<T> {
-  return (value: T) => ps.reduce((acc, p) => p(value) || acc, false);
+  return (value: T) => ps.some(p => p(value));
 }
 
 export function range(from: number, to: number): number[] {

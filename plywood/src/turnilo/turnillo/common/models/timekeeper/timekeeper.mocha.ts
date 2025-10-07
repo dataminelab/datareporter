@@ -24,7 +24,7 @@ describe("Timekeeper", () => {
     /* TODO: check the correctness of the test */
     /*    testImmutableClass(Timekeeper, [
           {
-            timeTags: []
+            timeTags: {}
           },
           {
             timeTags: [
@@ -42,7 +42,7 @@ describe("Timekeeper", () => {
 
   it("works with now", () => {
     var timekeeper = Timekeeper.fromJS({
-      timeTags: [],
+      timeTags: {},
       nowOverride: new Date("2016-01-01T01:02:03Z"),
     });
 

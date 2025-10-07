@@ -64,27 +64,27 @@ export const orderByNumberRangeDimensionIncreasing: Order<NumberRange> = (
 const datumKey = (dataset: Datum, key: string, timezone: Timezone): string =>
   formatValue(dataset[key], timezone);
 
-const splitToFillOrder = (split: Split): Order<unknown> => {
+const splitToFillOrder = <D = unknown>(split: Split): Order<D> => {
   const sort = split.sort;
   switch (split.type) {
     case SplitType.string:
     default:
       if (sort.direction === SortDirection.ascending) {
-        return orderByValueIncreasing;
+        return orderByValueIncreasing as unknown as Order<D>;
       } else {
-        return orderByValueDecreasing;
+        return orderByValueDecreasing as unknown as Order<D>;
       }
     case SplitType.time:
       if (sort.direction === SortDirection.ascending) {
-        return orderByTimeDimensionIncreasing;
+        return orderByTimeDimensionIncreasing as unknown as Order<D>;
       } else {
-        return orderByTimeDimensionDecreasing;
+        return orderByTimeDimensionDecreasing as unknown as Order<D>;
       }
     case SplitType.number:
       if (sort.direction === SortDirection.ascending) {
-        return orderByNumberRangeDimensionIncreasing;
+        return orderByNumberRangeDimensionIncreasing as unknown as Order<D>;
       } else {
-        return orderByNumberRangeDimensionDecreasing;
+        return orderByNumberRangeDimensionDecreasing as unknown as Order<D>;
       }
   }
 };
@@ -97,7 +97,8 @@ export const fillDatasetWithMissingValues = (
 ): Dataset => {
   const totals: { [ident: string]: number } = {};
   const identToOriginalKey: { [ident: string]: any } = {};
-  const order = splitToFillOrder(secondSplit);
+  // Type assertion is safe here because the original key type is preserved in identToOriginalKey
+  const order = splitToFillOrder<any>(secondSplit);
   const secondSplitName = secondSplit.reference;
 
   for (const datum of dataset.data) {

@@ -33,11 +33,9 @@ function ReportPage({ report, reportChanged, setReportChanged }) {
           reportChanged={reportChanged}
           setReportChanged={setReportChanged}
           appSettings={appSettings}
-          initTimekeeper={
-            report.timekeeper
-              ? Timekeeper.fromJS(report.timekeeper)
-              : new Timekeeper({ timeTags: [] })
-          }
+          initTimekeeper={Timekeeper.fromJS(
+            report.timekeeper || { timeTags: {} },
+          )}
         />
       </turnilo-widget>
     );

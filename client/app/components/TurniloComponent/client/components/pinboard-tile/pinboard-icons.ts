@@ -15,8 +15,6 @@
  */
 import { Fn } from "../../../common/utils/general/general";
 import { TileHeaderIcon } from "../tile-header/tile-header";
-import searchIcon from "../../icons/full-search.svg";
-import removeIcon from "../../icons/full-remove.svg";
 
 interface PinboardIconsProps {
   onClose: Fn;
@@ -31,14 +29,14 @@ export function pinboardIcons(props: PinboardIconsProps): TileHeaderIcon[] {
       name: "search",
       ref: "search",
       onClick: onSearchClick,
-      svg: searchIcon,
+      svg: require("../../icons/full-search.svg"),
       active: showSearch,
     },
     {
       name: "close",
       ref: "close",
       onClick: onClose,
-      svg: removeIcon,
+      svg: require("../../icons/full-remove.svg"),
     },
   ];
 }

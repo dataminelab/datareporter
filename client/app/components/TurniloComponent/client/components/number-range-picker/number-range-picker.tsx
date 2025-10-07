@@ -113,6 +113,7 @@ export class NumberRangePicker extends React.Component<
     });
 
     dataCube.executor(query).then(
+      // @ts-ignore
       (dataset: Dataset) => {
         if (!this.mounted) return;
         const min = dataset.data[0]["Min"] as number;
@@ -130,7 +131,7 @@ export class NumberRangePicker extends React.Component<
           step: step !== 0 && isFinite(step) ? step : 1,
         });
       },
-      error => {
+      (error: Error) => {
         if (!this.mounted) return;
         this.setState({
           loading: false,
@@ -261,6 +262,7 @@ export class NumberRangePicker extends React.Component<
       content = (
         <div
           className="range-slider"
+          // @ts-ignore
           onMouseDown={this.onBarClick.bind(this, positionStart, positionEnd)}
         >
           <div className="range-bar full" />

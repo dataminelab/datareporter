@@ -113,7 +113,7 @@ export class FilterTile extends React.Component<
   private overflowMenuDeferred: Deferred<Element>;
   private items = React.createRef<HTMLDivElement>();
   private overflow = React.createRef<HTMLDivElement>();
-  private dimensionRef = React.createRef<HTMLDivElement>();
+  private dimensionRefs: { [key: string]: React.RefObject<HTMLDivElement> } = {};
 
   constructor(props: FilterTileProps) {
     super(props);
@@ -130,7 +130,7 @@ export class FilterTile extends React.Component<
     };
   }
 
-  componentWillReceiveProps(nextProps: FilterTileProps) {
+  componentWillReceiveProps(nextProps: FilterTileProps): void {
     const { stage } = nextProps;
 
     if (stage) {
@@ -149,7 +149,7 @@ export class FilterTile extends React.Component<
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(): void {
     const { possibleDimension, overflowMenuOpenOn } = this.state;
 
     if (possibleDimension) {
@@ -169,25 +169,25 @@ export class FilterTile extends React.Component<
     return document.getElementById(this.overflowMenuId);
   }
 
-  clickDimension(dimension: Dimension, e: React.MouseEvent<HTMLElement>) {
+  clickDimension(dimension: Dimension, e: React.MouseEvent<HTMLElement>): void {
     const target = findParentWithClass(e.target as Element, FILTER_CLASS_NAME);
     this.toggleMenu(dimension, target);
     e.stopPropagation();
   }
 
-  openMenuOnDimension(dimension: Dimension) {
-    const targetRef = this.refs[dimension.name];
-    if (targetRef) {
-      const target = ReactDOM.findDOMNode(targetRef) as Element;
+  openMenuOnDimension(dimension: Dimension): void {
+    let targetRef = this.dimensionRefs[dimension.name];
+    if (targetRef && targetRef.current) {
+      const target = targetRef.current as Element;
       if (!target) return;
       this.openMenu(dimension, target);
     } else {
       const overflowButtonTarget = this.overflowButtonTarget();
       if (overflowButtonTarget) {
         this.openOverflowMenu(overflowButtonTarget).then(() => {
-          const target = ReactDOM.findDOMNode(
-            this.refs[dimension.name],
-          ) as Element;
+          targetRef = this.dimensionRefs[dimension.name];
+          if (!targetRef || !targetRef.current) return;
+          const target = targetRef.current as Element;
           if (!target) return;
           this.openMenu(dimension, target);
         });
@@ -195,7 +195,7 @@ export class FilterTile extends React.Component<
     }
   }
 
-  toggleMenu(dimension: Dimension, target: Element) {
+  toggleMenu(dimension: Dimension, target: Element): void {
     const { menuOpenOn } = this.state;
     if (menuOpenOn === target) {
       this.closeMenu();
@@ -204,7 +204,7 @@ export class FilterTile extends React.Component<
     this.openMenu(dimension, target);
   }
 
-  openMenu(dimension: Dimension, target: Element) {
+  openMenu(dimension: Dimension, target: Element): void {
     const overflowMenu = this.getOverflowMenu();
     const menuInside =
       overflowMenu && isInside(target, overflowMenu) ? overflowMenu : null;
@@ -215,7 +215,7 @@ export class FilterTile extends React.Component<
     });
   }
 
-  closeMenu = () => {
+  closeMenu = (): void => {
     const { menuOpenOn, possibleDimension } = this.state;
     if (!menuOpenOn) return;
     const newState: FilterTileState = {
@@ -247,7 +247,7 @@ export class FilterTile extends React.Component<
     return this.overflowMenuDeferred.promise;
   }
 
-  closeOverflowMenu = () => {
+  closeOverflowMenu = (): void => {
     const { overflowMenuOpenOn } = this.state;
     if (!overflowMenuOpenOn) return;
     this.setState({
@@ -255,7 +255,7 @@ export class FilterTile extends React.Component<
     });
   };
 
-  removeFilter(itemBlank: ItemBlank, e: React.MouseEvent) {
+  removeFilter(itemBlank: ItemBlank, e: React.MouseEvent): void {
     const { essence, clicker } = this.props;
     if (itemBlank.clause) {
       clicker.changeFilter(
@@ -267,7 +267,7 @@ export class FilterTile extends React.Component<
     e.stopPropagation();
   }
 
-  dragStart(dimension: Dimension, clause: FilterClause, e: React.DragEvent) {
+  dragStart(dimension: Dimension, clause: FilterClause, e: React.DragEvent): void {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     setDragData(dataTransfer, "text/plain", dimension.title);
@@ -305,7 +305,7 @@ export class FilterTile extends React.Component<
     return DragManager.isDraggingFilter();
   }
 
-  dragEnter = (e: React.DragEvent<HTMLElement>) => {
+  dragEnter = (e: React.DragEvent<HTMLElement>): void => {
     if (!this.canDrop()) return;
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
@@ -313,7 +313,7 @@ export class FilterTile extends React.Component<
     this.setState({ dragPosition });
   };
 
-  dragOver = (e: React.DragEvent<HTMLElement>) => {
+  dragOver = (e: React.DragEvent<HTMLElement>): void => {
     if (!this.canDrop()) return;
     e.preventDefault();
     const dragPosition = this.calculateDragPosition(e);
@@ -321,7 +321,7 @@ export class FilterTile extends React.Component<
     this.setState({ dragPosition });
   };
 
-  dragLeave = () => {
+  dragLeave = (): void => {
     this.setState({ dragPosition: null });
   };
 
@@ -335,7 +335,7 @@ export class FilterTile extends React.Component<
     return DragManager.draggingDimension();
   }
 
-  drop = (e: React.DragEvent<HTMLElement>) => {
+  drop = (e: React.DragEvent<HTMLElement>): void => {
     if (!this.canDrop()) return;
     e.preventDefault();
 
@@ -379,14 +379,14 @@ export class FilterTile extends React.Component<
     !filter.equals(newFilter) && clicker.changeFilter(newFilter);
   }
 
-  appendFilter = (dimension: Dimension) => {
+  appendFilter = (dimension: Dimension): void => {
     this.addDummy(
       dimension,
       new DragPosition({ insert: this.props.essence.filter.length() }),
     );
   };
 
-  addDummy(dimension: Dimension, possiblePosition: DragPosition) {
+  addDummy(dimension: Dimension, possiblePosition: DragPosition): void {
     this.dummyDeferred = new Deferred<Element>();
     this.setState({
       possibleDimension: dimension,
@@ -397,8 +397,7 @@ export class FilterTile extends React.Component<
     });
   }
 
-  // This will be called externally
-  filterMenuRequest(dimension: Dimension) {
+  filterMenuRequest(dimension: Dimension): void {
     const { filter } = this.props.essence;
     if (filter.filteredOn(dimension.name)) {
       this.openMenuOnDimension(dimension);
@@ -407,7 +406,7 @@ export class FilterTile extends React.Component<
     }
   }
 
-  overflowButtonClick = () => {
+  overflowButtonClick = (): void => {
     this.openOverflowMenu(this.overflowButtonTarget());
   };
 
@@ -486,7 +485,7 @@ export class FilterTile extends React.Component<
     );
   }
 
-  renderRemoveButton(itemBlank: ItemBlank) {
+  renderRemoveButton(itemBlank: ItemBlank): JSX.Element {
     const { essence } = this.props;
     const dataCube = essence.dataCube;
     if (itemBlank.dimension.expression.equals(dataCube.timeAttribute))
@@ -524,7 +523,7 @@ export class FilterTile extends React.Component<
     );
   }
 
-  renderItemBlank(itemBlank: ItemBlank, style: any): JSX.Element {
+  renderItemBlank(itemBlank: ItemBlank, style: unknown): JSX.Element {
     const {
       essence: { timezone },
       clicker,
@@ -533,6 +532,12 @@ export class FilterTile extends React.Component<
 
     const { dimension, clause, source } = itemBlank;
     const dimensionName = dimension.name;
+
+    // Create ref for each dimension if it doesn't exist
+    if (!this.dimensionRefs[dimensionName]) {
+      this.dimensionRefs[dimensionName] = React.createRef<HTMLDivElement>();
+    }
+    const ref = this.dimensionRefs[dimensionName];
 
     const selected = dimension === menuDimension;
     const excluded = clause && !isTimeFilter(clause) && clause.not;
@@ -547,7 +552,7 @@ export class FilterTile extends React.Component<
         <div
           className={className}
           key={dimensionName}
-          ref={this.dimensionRef}
+          ref={ref}
           draggable={true}
           onClick={this.clickDimension.bind(this, dimension)}
           onDragStart={this.dragStart.bind(this, dimension, clause)}
@@ -562,7 +567,7 @@ export class FilterTile extends React.Component<
         <div
           className={className}
           key={dimensionName}
-          ref={dimensionName}
+          ref={ref}
           style={style}
         >
           <div className="reading">{formatLabelDummy(dimension)}</div>
@@ -612,7 +617,7 @@ export class FilterTile extends React.Component<
     return itemBlanks;
   }
 
-  renderAddButton() {
+  renderAddButton(): JSX.Element {
     const {
       essence: { dataCube, filter },
       stage,
@@ -637,7 +642,7 @@ export class FilterTile extends React.Component<
     );
   }
 
-  render() {
+  render(): JSX.Element {
     const { dragPosition, maxItems } = this.state;
     const itemBlanks = this.getItemBlanks();
 

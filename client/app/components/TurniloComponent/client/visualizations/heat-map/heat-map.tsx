@@ -14,11 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// For some reason tsc compiler does not see this file.
-// Remove when issue is identified.
-// Importing types from index.d.ts
-import "../../index.d.ts";
 import memoizeOne from "memoize-one";
 import { Dataset } from "plywood";
 import * as React from "react";
@@ -56,6 +51,7 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
       dataset.data,
       TILE_SIZE,
       this.series(),
+      report,
     );
 
     return (

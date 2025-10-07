@@ -67,7 +67,7 @@ export const hashToExpression = (hash: string, dataCubeInput: DataCubeJS) => {
 
   const timeKeeper = Timekeeper.fromJS({
     nowOverride: null,
-    timeTags: [],
+    timeTags: {},
   });
 
   const hasComparison = essence.hasComparison();

@@ -1,0 +1,1 @@
+cd client/app/components/TurniloComponent && npm run test:client

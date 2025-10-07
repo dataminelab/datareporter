@@ -47,13 +47,16 @@ export class SimpleList extends React.Component<
   SimpleListProps,
   SimpleListState
 > {
+  private listRef: React.RefObject<HTMLDivElement>;
+
   constructor(props: SimpleListProps) {
     super(props);
 
     this.state = { dropIndex: -1 };
+    this.listRef = React.createRef<HTMLDivElement>();
   }
 
-  dragStart(item: SimpleRow, e: DragEvent) {
+  dragStart(item: SimpleRow, e: DragEvent): void {
     this.setState({ draggedItem: item });
 
     const dataTransfer = e.dataTransfer;
@@ -68,7 +71,7 @@ export class SimpleList extends React.Component<
     return getYFromEvent(e) - targetRect.top <= targetRect.height / 2;
   }
 
-  dragOver(item: SimpleRow, e: DragEvent) {
+  dragOver(item: SimpleRow, e: DragEvent): void {
     e.preventDefault();
 
     const { dropIndex } = this.state;
@@ -84,7 +87,7 @@ export class SimpleList extends React.Component<
     }
   }
 
-  dragEnd = (e: React.DragEvent<HTMLElement>) => {
+  dragEnd = (): void => {
     const { rows, onReorder } = this.props;
     const { draggedItem, dropIndex } = this.state;
 
@@ -148,8 +151,10 @@ export class SimpleList extends React.Component<
         <div
           className={classes}
           key={`row-${i}`}
+          // @ts-ignore [not assignable to type]
           onDragOver={this.dragOver.bind(this, row)}
           draggable={!!onReorder}
+          // @ts-ignore [not assignable to type]
           onDragStart={this.dragStart.bind(this, row)}
         >
           {onReorder ? dragHandle : null}
@@ -161,9 +166,9 @@ export class SimpleList extends React.Component<
     });
   }
 
-  render() {
+  render(): JSX.Element {
     return (
-      <div className="simple-list" ref="list" onDragEnd={this.dragEnd}>
+      <div className="simple-list" ref={this.listRef} onDragEnd={this.dragEnd}>
         {this.renderRows(this.props.rows)}
       </div>
     );

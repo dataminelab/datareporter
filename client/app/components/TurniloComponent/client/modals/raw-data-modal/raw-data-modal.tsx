@@ -89,6 +89,7 @@ export class RawDataModal extends React.Component<
   RawDataModalState
 > {
   public mounted: boolean;
+  public tableRef: React.RefObject<any>;
 
   constructor(props: RawDataModalProps) {
     super(props);
@@ -100,15 +101,16 @@ export class RawDataModal extends React.Component<
       error: null,
       stage: null,
     };
+    this.tableRef = React.createRef();
   }
 
-  componentDidMount() {
+  componentDidMount():void {
     this.mounted = true;
     const { essence, timekeeper } = this.props;
     this.fetchData(essence, timekeeper);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount():void {
     this.mounted = false;
   }
 
@@ -120,6 +122,7 @@ export class RawDataModal extends React.Component<
       .limit(LIMIT);
     this.setState({ loading: true });
     dataCube.executor(query, { timezone: essence.timezone }).then(
+      // @ts-ignore
       (dataset: Dataset) => {
         if (!this.mounted) return;
         this.setState({
@@ -137,7 +140,7 @@ export class RawDataModal extends React.Component<
     );
   }
 
-  onScrollerViewportUpdate = (viewPortStage: Stage) => {
+  onScrollerViewportUpdate = (viewPortStage: Stage): void => {
     if (!viewPortStage.equals(this.state.stage)) {
       this.setState({
         stage: viewPortStage,
@@ -145,7 +148,7 @@ export class RawDataModal extends React.Component<
     }
   };
 
-  onScroll = (scrollTop: number, scrollLeft: number) => {
+  onScroll = (scrollTop: number, scrollLeft: number): void => {
     this.setState({ scrollLeft, scrollTop });
   };
 
@@ -339,7 +342,7 @@ export class RawDataModal extends React.Component<
     return <div className="button-bar">{buttons}</div>;
   }
 
-  download(fileFormat: FileFormat) {
+  download(fileFormat: FileFormat): void {
     const { dataset } = this.state;
     const { essence, timekeeper } = this.props;
     const { dataCube } = essence;
@@ -355,7 +358,7 @@ export class RawDataModal extends React.Component<
     );
   }
 
-  render() {
+  render(): JSX.Element {
     const { essence, onClose } = this.props;
     const { dataset, loading, error, stage } = this.state;
     const { dataCube } = essence;
@@ -379,7 +382,7 @@ export class RawDataModal extends React.Component<
         <div className="content">
           <ul className="filters">{this.renderFilters()}</ul>
           <Scroller
-            ref="table"
+            ref={this.tableRef}
             layout={scrollerLayout}
             topGutter={this.renderHeader()}
             body={stage && this.renderRows()}

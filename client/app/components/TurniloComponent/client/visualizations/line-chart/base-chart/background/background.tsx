@@ -45,6 +45,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
     <React.Fragment>
       <GridLines
         orientation="horizontal"
+        // @ts-ignore TS2322
         scale={yScale}
         ticks={pickTicks(yScale)}
         stage={gridStage}
@@ -52,6 +53,7 @@ export const Background: React.SFC<BackgroundProps> = props => {
       {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
       <GridLines
         orientation="vertical"
+        // @ts-ignore TS2322
         scale={xScale}
         ticks={xTicks}
         stage={gridStage}

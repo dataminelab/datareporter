@@ -24,7 +24,6 @@ x-redash-environment: &redash-environment
   REDASH_MAIL_PORT: 1025
   REDASH_ENFORCE_CSRF: "true"
   MAILCHIMP_SERVER: "us1"
-  REDASH_DEBUG: "true"
   CLIENT_TIMEOUT_DELTA: 100000
   REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
   OLLAMA_API_URL: "http://ollama:11434"

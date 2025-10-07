@@ -8,7 +8,7 @@ on:
 env:
   NODE_VERSION: 18
   NPM_VERSION: 9.5.1
-  REDASH_COOKIE_SECRET: "${secrets.REDASH_COOKIE_SECRET}"
+  REDASH_COOKIE_SECRET: "${env.REDASH_COOKIE_SECRET}"
 
 permissions:
   contents: read

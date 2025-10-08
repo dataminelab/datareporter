@@ -36,6 +36,9 @@ export default class Parameters extends React.Component {
     onPendingValuesChange: PropTypes.func,
     onParametersEdit: PropTypes.func,
     appendSortableToParent: PropTypes.bool,
+    query: PropTypes.shape({
+      isNew: PropTypes.bool,
+    }),
   };
 
   static defaultProps = {
@@ -202,9 +205,9 @@ export default class Parameters extends React.Component {
         useDragHandle
         lockToContainerEdges
         helperClass="parameter-dragged"
-        helperContainer={containerEl =>
-          appendSortableToParent ? containerEl : document.body
-        }
+        helperContainer={containerEl => {
+          return appendSortableToParent ? containerEl : document.getElementsByTagName("body")[0];
+        }}
         updateBeforeSortStart={this.onBeforeSortStart}
         onSortEnd={this.moveParameter}
         containerProps={{

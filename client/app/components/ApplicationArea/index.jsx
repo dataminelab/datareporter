@@ -34,11 +34,11 @@ export default function ApplicationArea() {
       setUnhandledError(event.error);
     }
 
-    document.body.addEventListener("click", handleNavigationIntent, false);
+    window.addEventListener("click", handleNavigationIntent, false);
     window.addEventListener("error", globalErrorHandler, false);
 
     return () => {
-      document.body.removeEventListener("click", handleNavigationIntent, false);
+      window.removeEventListener("click", handleNavigationIntent, false);
       window.removeEventListener("error", globalErrorHandler, false);
     };
   }, []);

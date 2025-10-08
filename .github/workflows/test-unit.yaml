@@ -65,8 +65,18 @@ jobs:
           docker compose build --build-arg install_groups="main,all_ds,dev" --build-arg skip_frontend_build=true
           docker compose up -d
           sleep 10
+      - name: Wait for Postgres to be healthy
+        run: |
+          for i in {1..30}; do
+            if docker compose ps | grep postgres | grep -q "healthy"; then
+              echo "Postgres is healthy."
+              break
+            fi
+            echo "Waiting for Postgres to be healthy..."
+            sleep 2
+          done
       - name: Create Test Database
-        run: docker compose -p server run --rm postgres psql -h postgres -U postgres -c "create database tests;"
+        run: docker compose -p server exec -T postgres psql -h localhost -U postgres -c "create database tests;"
       - name: List Enabled Query Runners
         run: docker compose -p server run --rm server manage ds list_types
       - name: Run Tests

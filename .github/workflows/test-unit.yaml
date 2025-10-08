@@ -9,6 +9,7 @@ env:
   NODE_VERSION: 18
   NPM_VERSION: 9.5.1
   REDASH_COOKIE_SECRET: "${env.REDASH_COOKIE_SECRET}"
+  CLIENT_TIMEOUT_DELTA: 120000
 
 permissions:
   contents: read

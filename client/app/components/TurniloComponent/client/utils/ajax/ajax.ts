@@ -64,7 +64,7 @@ function getSplitsDescription(ex: Expression): string {
 
 function getClientTimeoutDefault(): number {
   const ls = safeLocalStorage();
-  const docker_timeout = ls ? ls.getItem("CLIENT_TIMEOUT_DELTA") : undefined;
+  const docker_timeout = ls ? ls.getItem("CLIENT_TIMEOUT") : undefined;
   return docker_timeout && docker_timeout !== "undefined"
     ? Number(docker_timeout)
     : 100000;

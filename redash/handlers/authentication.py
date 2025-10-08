@@ -325,7 +325,7 @@ def session(org_slug=None):
             "messages": messages(),
             "org_slug": current_org.slug,
             "client_config": client_config(),
-            "timeout": settings.CLIENT_TIMEOUT_DELTA,
+            "timeout": settings.CLIENT_TIMEOUT,
         }
     )
 
@@ -333,4 +333,4 @@ def session(org_slug=None):
 @routes.route("/api/timeout", methods=["GET"])
 @login_required
 def timeout():
-    return json_response({"timeout": settings.CLIENT_TIMEOUT_DELTA})
+    return json_response({"timeout": settings.CLIENT_TIMEOUT})

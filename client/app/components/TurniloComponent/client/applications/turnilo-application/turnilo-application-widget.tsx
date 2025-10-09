@@ -80,7 +80,7 @@ export class TurniloApplication extends React.Component<
     config: null,
   };
 
-  componentDidCatch(error: Error) {
+  componentDidCatch(error: Error): void {
     const errorId = reportError(error);
     this.setState({
       viewType: ERROR,
@@ -88,7 +88,7 @@ export class TurniloApplication extends React.Component<
     });
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount(): void {
     const { initTimekeeper, hashWidget, config } = this.props;
     let hash;
     if (config.hash && config.source_name) {
@@ -112,7 +112,7 @@ export class TurniloApplication extends React.Component<
     return viewType === CUBE;
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     window.addEventListener("hashchange", this.globalHashChangeListener);
 
     Ajax.settingsVersionGetter = () => {
@@ -121,16 +121,16 @@ export class TurniloApplication extends React.Component<
     };
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     window.removeEventListener("hashchange", this.globalHashChangeListener);
   }
 
-  globalHashChangeListener = () => {
+  globalHashChangeListener = (): void => {
     if (this.hashUpdating) return;
     this.hashToState(this.props.hashWidget);
   };
 
-  hashToState(hash: string) {
+  hashToState(hash: string): void {
     const viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
     const newState: TurniloApplicationState = {
@@ -194,14 +194,14 @@ export class TurniloApplication extends React.Component<
     if (force) this.hashToState(hash);
   }
 
-  updateEssenceInHash = (essence: Essence, force = false) => {
+  updateEssenceInHash = (essence: Essence, force = false): void => {
     const newHash = `${
       this.state.selectedItem.name
     }/${this.convertEssenceToHash(essence)}`;
     this.changeHash(newHash, force);
   };
 
-  changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null) => {
+  changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null): void => {
     const essenceHashPart = essence && this.convertEssenceToHash(essence);
     const hash = `${dataCube.name}/${essenceHashPart || ""}`;
     this.changeHash(hash, true);
@@ -221,9 +221,9 @@ export class TurniloApplication extends React.Component<
     return `${origin}${pathname}#${dataCubeName}`;
   }
 
-  openAboutModal = () => this.setState({ showAboutModal: true });
+  openAboutModal = (): void => this.setState({ showAboutModal: true });
 
-  renderView() {
+  renderView(): React.ReactNode {
     const { maxFilters, setFilterParams } = this.props;
     const {
       viewType,
@@ -277,7 +277,7 @@ export class TurniloApplication extends React.Component<
     }
   }
 
-  render() {
+  render(): React.ReactNode {
     // React.StrictMode is giving us a lot of warnings about deprecated lifecycle methods
     // and the project is too old to change everything to hooks
     return (

@@ -31,7 +31,7 @@ export function UserSessionWrapper<P>({
   bodyClass,
   currentRoute,
   render,
-}: UserSessionWrapperProps<P>) {
+}: UserSessionWrapperProps<P>): React.ReactElement | null {
   const [isAuthenticated, setIsAuthenticated] = useState(
     !!Auth.isAuthenticated(),
   );

@@ -51,6 +51,11 @@ function ApiKeySessionWrapper({ apiKey, currentRoute, renderChildren }) {
 
 ApiKeySessionWrapper.propTypes = {
   apiKey: PropTypes.string.isRequired,
+  currentRoute: PropTypes.shape({
+    key: PropTypes.any.isRequired,
+    routeParams: PropTypes.object,
+    title: PropTypes.string,
+  }).isRequired,
   renderChildren: PropTypes.func,
 };
 

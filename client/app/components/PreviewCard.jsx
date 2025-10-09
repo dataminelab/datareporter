@@ -71,6 +71,7 @@ export function UserPreviewCard({ user, withLink, children, ...props }) {
 
 UserPreviewCard.propTypes = {
   user: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     profile_image_url: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
@@ -105,6 +106,7 @@ export function DataSourcePreviewCard({
 
 DataSourcePreviewCard.propTypes = {
   dataSource: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   }).isRequired,

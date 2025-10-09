@@ -129,7 +129,12 @@ function openDialog(DialogComponent, props) {
   };
 
   const container = document.createElement("div");
-  document.body.appendChild(container);
+  if (document.body) {
+    document.body.appendChild(container);
+  } else {
+    // fallback for environments where document.body is not available
+    document.documentElement.appendChild(container);
+  }
 
   function render() {
     ReactDOM.render(<DialogComponent {...props} dialog={dialog} />, container);
@@ -139,7 +144,11 @@ function openDialog(DialogComponent, props) {
     // Allow calling chain to roll up, and then destroy component
     setTimeout(() => {
       ReactDOM.unmountComponentAtNode(container);
-      document.body.removeChild(container);
+      if (document.body && document.body.contains(container)) {
+        document.body.removeChild(container);
+      } else if (document.documentElement && document.documentElement.contains(container)) {
+        document.documentElement.removeChild(container);
+      }
     }, 10);
   }
 
@@ -221,7 +230,9 @@ export function wrap(DialogComponent) {
   };
 }
 
-export default {
+const DialogWrapper = {
   DialogPropType,
   wrap,
 };
+
+export default DialogWrapper;

@@ -28,8 +28,7 @@ x-redash-environment: &redash-environment
   REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
   OLLAMA_API_URL: "http://ollama:11434"
   REDASH_SCHEMAS_REFRESH_TIMEOUT: 500
-  # every 60 mins
-  REDASH_SCHEMAS_REFRESH_SCHEDULE: 60
+  REDASH_VERSION_CHECK: "false"
   WORKERS_COUNT: 10
   QUEUES: 100
   # Set secret keys in the .env file (github secrets)

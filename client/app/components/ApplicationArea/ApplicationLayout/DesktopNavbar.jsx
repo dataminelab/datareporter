@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { first, includes } from "lodash";
+import PropTypes from "prop-types";
 import Menu from "antd/lib/menu";
 import Tooltip from "@/components/Tooltip";
 import Link from "@/components/Link";
@@ -21,6 +22,10 @@ function NavbarSection({ children, ...props }) {
     </Menu>
   );
 }
+
+NavbarSection.propTypes = {
+  children: PropTypes.node,
+};
 
 function useNavbarActiveState() {
   const currentRoute = useCurrentRoute();

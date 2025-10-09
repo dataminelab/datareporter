@@ -62,7 +62,7 @@ docker compose run server manage db migrate # Any change to back-end models requ
 docker compose run --rm server manage db upgrade # Upgrade database with recent migration
 ```
 
-## Installation in Linux using virtualenvwrapper
+## Installation for Linux using virtualenvwrapper
 
 ```sh
 sudo pacman -S yay
@@ -70,11 +70,9 @@ yay -S python38
 mkvirtualenv -p /usr/bin/python3.8 python38
 ```
 
-## Running tests locally
+### Testing
 
-Tests are necessary to run before pushing any changes to the repository. Below are the steps to run tests for each component:
-
-### Back-end aka Python side
+#### Backend
 
 ```sh
 # First ensure that the "tests" database is created
@@ -83,43 +81,40 @@ docker compose run --rm postgres psql -h postgres -U postgres -c "create databas
 docker compose run --rm server tests
 ```
 
-### viz-lib
+#### viz-lib
 
 ```sh
 cd viz-lib
 npm run test
 ```
 
-### client using Cypress
+#### e2e
 
-```sh
-bash bin/restart_cypress.sh
-```
-
-use below to seed client so that you wont need to setup an account
+use below to seed client
 
 ```sh
 cd client && npm run cypress db-seed # Seed the database with initial data for cypress tests
 ```
 
+```sh
+cd client
+npm run cypress run # Run cypress tests in headless mode
+```
+
 ### Components
 
-#### Data Reporter server
+#### Redash server and client
 
 * **directory**: `redash`
-* **debug**: Please follow the instruction from [redash](https://redash.io/help/open-source/dev-guide/debugging)
-* **changes:**
-  * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
+  * **debug**: Please follow the instruction from [redash](https://redash.io/help/open-source/dev-guide/debugging)
+  * **changes:**
+    * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
 
-#### Data Reporter frontend
+#### Data Reporter client
 
-* **submodules** - for debug and changes they follow root fronted app:
-  * Lib viz
-    * **directory:** `viz-lib`
-  * Plywood client
-    * **directory:** `plywood/client`
-  * main client
-    * **directory:** `client`
+* **directory:** `viz-lib`
+* **directory:** `plywood/client`
+* **directory:** `client`
   * **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
   * **changes:**
     * By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.

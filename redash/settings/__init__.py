@@ -143,6 +143,13 @@ FEATURE_POLICY = os.environ.get("REDASH_REFERRER_POLICY", "")
 
 MULTI_ORG = parse_boolean(os.environ.get("REDASH_MULTI_ORG", "false"))
 
+# If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
+# even if your actual Redash URL scheme is HTTPS. This will cause Flask to build
+# the OAuth redirect URL incorrectly thus failing auth. This is especially common if
+# you're behind a SSL/TCP configured AWS ELB or similar.
+# This setting will force the URL scheme.
+GOOGLE_OAUTH_SCHEME_OVERRIDE = os.environ.get("REDASH_GOOGLE_OAUTH_SCHEME_OVERRIDE", "")
+
 GOOGLE_CLIENT_ID = os.environ.get("REDASH_GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("REDASH_GOOGLE_CLIENT_SECRET", "")
 GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
@@ -306,15 +313,21 @@ default_query_runners = [
     "redash.query_runner.pg",
     "redash.query_runner.url",
     "redash.query_runner.influx_db",
+    "redash.query_runner.influx_db_v2",
     "redash.query_runner.elasticsearch",
+    "redash.query_runner.elasticsearch2",
     "redash.query_runner.amazon_elasticsearch",
+    "redash.query_runner.trino",
     "redash.query_runner.presto",
+    "redash.query_runner.pinot",
     "redash.query_runner.databricks",
     "redash.query_runner.hive_ds",
     "redash.query_runner.impala_ds",
     "redash.query_runner.vertica",
     "redash.query_runner.clickhouse",
+    "redash.query_runner.tinybird",
     "redash.query_runner.yandex_metrica",
+    "redash.query_runner.yandex_disk",
     "redash.query_runner.rockset",
     "redash.query_runner.treasuredata",
     "redash.query_runner.sqlite",
@@ -327,7 +340,6 @@ default_query_runners = [
     "redash.query_runner.salesforce",
     "redash.query_runner.query_results",
     "redash.query_runner.prometheus",
-    "redash.query_runner.qubole",
     "redash.query_runner.db2",
     "redash.query_runner.druid",
     "redash.query_runner.kylin",
@@ -342,6 +354,19 @@ default_query_runners = [
     "redash.query_runner.exasol",
     "redash.query_runner.cloudwatch",
     "redash.query_runner.cloudwatch_insights",
+    "redash.query_runner.corporate_memory",
+    "redash.query_runner.sparql_endpoint",
+    "redash.query_runner.excel",
+    "redash.query_runner.csv",
+    "redash.query_runner.databend",
+    "redash.query_runner.nz",
+    "redash.query_runner.arango",
+    "redash.query_runner.google_analytics4",
+    "redash.query_runner.google_search_console",
+    "redash.query_runner.ignite",
+    "redash.query_runner.oracle",
+    "redash.query_runner.e6data",
+    "redash.query_runner.risingwave",
 ]
 
 enabled_query_runners = array_from_string(

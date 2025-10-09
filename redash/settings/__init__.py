@@ -507,5 +507,3 @@ MAILCHIMP_API_KEY = os.environ.get("MAILCHIMP_API_KEY")
 MAILCHIMP_LIST_ID = os.environ.get("MAILCHIMP_LIST_ID")
 
 CLIENT_TIMEOUT = int(os.environ.get("CLIENT_TIMEOUT", 0))
-
-SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY", None)

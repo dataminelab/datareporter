@@ -145,7 +145,7 @@
     "jsdom": "^26.1.0",
     "memoize-one": "5.1.1",
     "mime": "2.6.0",
-    "mini-css-extract-plugin": "1.6.2",
+    "mini-css-extract-plugin": "2.9.4",
     "mocha": "9.2.2",
     "nock": "13.2.9",
     "node-sass": "8.0.0",

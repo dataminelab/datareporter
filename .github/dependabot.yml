@@ -39,6 +39,14 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'saturday'
+  - directory: "/client/app/components/TurniloComponent"
+    target-branch: "develop"
+    package-ecosystem: "npm"
+    commit-message:
+      prefix: "(turnilo): "
+    schedule:
+      interval: 'weekly'
+      day: 'saturday'
   - directory: "/viz-lib"
     target-branch: "develop"
     package-ecosystem: "npm"

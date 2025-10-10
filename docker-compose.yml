@@ -14,25 +14,22 @@ x-redash-service: &redash-service
   env_file:
     - .env
 x-redash-environment: &redash-environment
-  REDASH_LOG_LEVEL: "DEBUG"
+  REDASH_LOG_LEVEL: "INFO"
   REDASH_REDIS_URL: "redis://redis:6379/0"
   REDASH_DATABASE_URL: "postgresql://postgres@postgres/postgres"
   REDASH_RATELIMIT_ENABLED: "false"
   REDASH_MAIL_DEFAULT_SENDER: noreply@datareporter.com
   REDASH_AUTH_TYPE: "api_key"
-  REDASH_MAIL_SERVER: "email"
-  REDASH_MAIL_PORT: 1025
   REDASH_ENFORCE_CSRF: "true"
   MAILCHIMP_SERVER: "us1"
-  REDASH_DEBUG: "true"
-  CLIENT_TIMEOUT_DELTA: 100000
+  CLIENT_TIMEOUT: 100000
   REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
   OLLAMA_API_URL: "http://ollama:11434"
   REDASH_SCHEMAS_REFRESH_TIMEOUT: 500
   REDASH_VERSION_CHECK: "false"
   WORKERS_COUNT: 10
   QUEUES: 100
-  # Set secret keys in the .env file (github secrets)
+  # Set secret keys in the .env file
 services:
   server:
     <<: *redash-service

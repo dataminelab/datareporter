@@ -437,18 +437,33 @@ jobs:
           max_attempts=3
           
           while [ $attempt -le $max_attempts ]; do
-            echo "🚀 Attempt $attempt of $max_attempts"
+            echo "🔄 Attempt $attempt of $max_attempts"
             
+            # Clean up any existing containers before retry
+            if [ $attempt -gt 1 ]; then
+              echo "🧹 Cleaning up containers from previous attempt..."
+              docker compose -p cypress down || true
+              docker system prune -f || true
+              sleep 10
+              
+              # Restart services
+              echo "🚀 Restarting services..."
+              npm run cypress start -- --skip-db-seed
+              docker compose run cypress npm run cypress db-seed
+              sleep 10
+            fi
+            
+            # Run the actual test
             if docker compose run \
-              -e PERCY_TOKEN \
-              -e PERCY_PROJECT \
-              -e PERCY_COMMIT \
-              -e PERCY_PULL_REQUEST \
-              -e PERCY_PARALLEL_TOTAL \
-              -e PERCY_PARALLEL_NONCE \
-              -e PERCY_PARALLEL \
-              -e PERCY_LOGLEVEL \
-              cypress npx percy exec -- npm run cypress run-ci; then
+              -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
+              -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
+              -e PERCY_COMMIT="${{ github.sha }}" \
+              -e PERCY_PULL_REQUEST="${{ github.event.pull_request.number }}" \
+              -e PERCY_PARALLEL_TOTAL=1 \
+              -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
+              -e PERCY_PARALLEL=true \
+              -e PERCY_LOGLEVEL=debug \
+              cypress percy exec -- npm run cypress run; then
               echo "✅ Tests passed on attempt $attempt"
               break
             else
@@ -457,7 +472,7 @@ jobs:
                 echo "💥 All attempts failed"
                 exit 1
               fi
-              echo "🔄 Retrying in 30 seconds..."
+              echo "⏳ Waiting 30 seconds before retry..."
               sleep 30
               ((attempt++))
             fi
@@ -480,6 +495,28 @@ jobs:
           echo "PERCY_TOKEN exists: ${{ secrets.PERCY_TOKEN != '' }}"
           echo "PERCY_PROJECT exists: ${{ secrets.CYPRESS_PROJECT_ID != '' }}"
           echo "PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}"
+      - name: Test Docker container lifecycle in retry logic
+        run: |
+          python3 -c "
+          import yaml
+        
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+        
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          cypress_step = next((step for step in e2e_job['steps'] if 'Execute Cypress Tests' in step.get('name', '')), None)
+        
+          if cypress_step:
+              run_script = cypress_step['run']
+              
+              # Check for Docker cleanup in retry logic
+              if 'docker compose down' not in run_script:
+                  print('⚠️  WARNING: Retry logic missing container cleanup')
+                  print('   This may cause \"docker not found\" errors on retry attempts')
+                  print('   Recommendation: Add cleanup between retry attempts')
+              else:
+                  print('✅ Docker cleanup found in retry logic')
+          "
   analyze-test-results:
     runs-on: ubuntu-latest
     if: always() && github.event_name == 'pull_request'

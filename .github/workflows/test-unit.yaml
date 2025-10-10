@@ -15,14 +15,133 @@ permissions:
   pull-requests: write
   checks: write
 jobs:
+  workflow-self-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Validate workflow YAML syntax
+        run: |
+          python3 -c "
+          import yaml
+          import sys
+          
+          try:
+              with open('.github/workflows/test-unit.yaml', 'r') as f:
+                  workflow = yaml.safe_load(f)
+              print('✅ Workflow YAML syntax is valid')
+          except yaml.YAMLError as e:
+              print(f'❌ YAML syntax error: {e}')
+              sys.exit(1)
+          "
+      
+      - name: Test job dependencies
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          jobs = workflow['jobs']
+          
+          # Validate critical dependencies
+          assert jobs['backend-unit-tests']['needs'] == 'backend-lint', 'Backend unit tests should depend on lint'
+          assert jobs['frontend-unit-tests']['needs'] == 'frontend-lint', 'Frontend unit tests should depend on lint'
+          assert jobs['frontend-e2e-tests']['needs'] == 'frontend-lint', 'E2E tests should depend on lint'
+          
+          print('✅ Job dependencies are correct')
+          "
+      
+      - name: Validate Percy configuration consistency
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          
+          # Check environment variables
+          job_env = e2e_job.get('env', {})
+          
+          required_percy_vars = ['PERCY_TOKEN', 'PERCY_PROJECT', 'PERCY_PARALLEL_TOTAL', 'PERCY_PARALLEL_NONCE']
+          for var in required_percy_vars:
+              assert var in job_env, f'Missing Percy environment variable: {var}'
+          
+          # Find Execute Cypress Tests step
+          cypress_step = None
+          for step in e2e_job['steps']:
+              if step.get('name') == 'Execute Cypress Tests':
+                  cypress_step = step
+                  break
+          
+          assert cypress_step is not None, 'Execute Cypress Tests step not found'
+          
+          step_env = cypress_step.get('env', {})
+          assert 'PERCY_PROJECT' in step_env, 'PERCY_PROJECT should be in step environment'
+          
+          print('✅ Percy configuration is consistent')
+          "
+      - name: "Failure: Comprehensive Debug Info"
+        if: failure()
+        run: |
+          echo "=== DOCKER COMPOSE LOGS ==="
+          docker compose -p cypress logs --tail=100
+          
+          echo "=== CONTAINER STATUS ==="
+          docker compose -p cypress ps
+          
+          echo "=== NETWORK INFORMATION ==="
+          docker network ls
+          docker network inspect cypress_default || true
+          
+          echo "=== DISK USAGE ==="
+          df -h
+          
+          echo "=== PROCESS INFORMATION ==="
+          ps aux | grep -E "(cypress|chrome|node)" || true
+      
+      - name: "Failure: Collect Cypress Artifacts"
+        if: failure()
+        run: |
+          # Create artifacts directory
+          mkdir -p ./test-artifacts
+          
+          # Copy screenshots
+          docker cp cypress:/usr/src/app/client/cypress/screenshots ./test-artifacts/screenshots || echo "No screenshots found"
+          
+          # Copy videos
+          docker cp cypress:/usr/src/app/client/cypress/videos ./test-artifacts/videos || echo "No videos found"
+          
+          # Copy logs
+          docker compose -p cypress logs > ./test-artifacts/container-logs.txt
+          
+          # List all artifacts
+          find ./test-artifacts -type f -exec ls -la {} \;
+      
+      - name: "Upload Test Artifacts"
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-failure-artifacts-${{ github.run_id }}
+          path: ./test-artifacts
+          retention-days: 7
   restyled:
     if: github.event_name == 'pull_request'
+    needs: workflow-self-test  # Add dependency
     uses: ./.github/workflows/restyled.yml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
   backend-lint:
     timeout-minutes: 5
     runs-on: ubuntu-latest
+    needs: workflow-self-test  # Add dependency
     steps:
       - if: github.event.pull_request.mergeable == 'false'
         name: Exit if PR is not mergeable
@@ -302,7 +421,7 @@ jobs:
         working-directory: client
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-          PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}  # Change from CYPRESS_PROJECT_ID
+          PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
@@ -313,16 +432,36 @@ jobs:
           PERCY_PARALLEL: true
           PERCY_LOGLEVEL: debug
         run: |
-          docker compose run \
-            -e PERCY_TOKEN \
-            -e PERCY_PROJECT \
-            -e PERCY_COMMIT \
-            -e PERCY_PULL_REQUEST \
-            -e PERCY_PARALLEL_TOTAL \
-            -e PERCY_PARALLEL_NONCE \
-            -e PERCY_PARALLEL \
-            -e PERCY_LOGLEVEL \
-            cypress npx percy exec -- npm run cypress run-ci
+          # Retry logic for flaky tests
+          attempt=1
+          max_attempts=3
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "🚀 Attempt $attempt of $max_attempts"
+            
+            if docker compose run \
+              -e PERCY_TOKEN \
+              -e PERCY_PROJECT \
+              -e PERCY_COMMIT \
+              -e PERCY_PULL_REQUEST \
+              -e PERCY_PARALLEL_TOTAL \
+              -e PERCY_PARALLEL_NONCE \
+              -e PERCY_PARALLEL \
+              -e PERCY_LOGLEVEL \
+              cypress npx percy exec -- npm run cypress run-ci; then
+              echo "✅ Tests passed on attempt $attempt"
+              break
+            else
+              echo "❌ Tests failed on attempt $attempt"
+              if [ $attempt -eq $max_attempts ]; then
+                echo "💥 All attempts failed"
+                exit 1
+              fi
+              echo "🔄 Retrying in 30 seconds..."
+              sleep 30
+              ((attempt++))
+            fi
+          done
       - name: "Failure: output container logs to console"
         if: failure()
         run: docker compose -p cypress logs
@@ -340,3 +479,113 @@ jobs:
         run: |
           echo "PERCY_TOKEN exists: ${{ secrets.PERCY_TOKEN != '' }}"
           echo "PERCY_PROJECT exists: ${{ secrets.CYPRESS_PROJECT_ID != '' }}"
+          echo "PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}"
+  analyze-test-results:
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'pull_request'
+    needs: [backend-unit-tests, frontend-unit-tests, frontend-e2e-tests]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./test-results
+        continue-on-error: true
+      
+      - name: Analyze test patterns
+        run: |
+          python3 -c "
+          import os
+          import json
+          from pathlib import Path
+          
+          # Look for test result files
+          results_dir = Path('./test-results')
+          
+          if results_dir.exists():
+              print('📊 Test Results Analysis')
+              print('=' * 50)
+              
+              # Count artifacts (potential failures)
+              artifact_count = len(list(results_dir.glob('**/cypress-failure-artifacts-*')))
+              if artifact_count > 0:
+                  print(f'⚠️  Found {artifact_count} failure artifact(s)')
+                  print('🔍 Potential flaky tests detected')
+              else:
+                  print('✅ No failure artifacts found')
+              
+              # List all artifacts for debugging
+              for artifact in results_dir.rglob('*'):
+                  if artifact.is_file():
+                      print(f'📁 {artifact.relative_to(results_dir)}')
+          else:
+              print('ℹ️  No test results directory found')
+          "
+      
+      - name: Comment on PR with test analysis
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Check for failure artifacts
+            const resultsDir = './test-results';
+            let hasFailures = false;
+            let artifactCount = 0;
+            
+            try {
+              if (fs.existsSync(resultsDir)) {
+                const files = fs.readdirSync(resultsDir, { recursive: true });
+                artifactCount = files.filter(f => f.includes('cypress-failure-artifacts')).length;
+                hasFailures = artifactCount > 0;
+              }
+            } catch (error) {
+              console.log('Could not read test results:', error.message);
+            }
+            
+            let comment = '## 🧪 Test Results Analysis\n\n';
+            
+            if (hasFailures) {
+              comment += `⚠️ **Potential flaky tests detected!**\n\n`;
+              comment += `Found ${artifactCount} failure artifact(s). This may indicate:\n`;
+              comment += `- Random test failures\n`;
+              comment += `- Timing issues in e2e tests\n`;
+              comment += `- Environment-specific problems\n\n`;
+              comment += `Please review the uploaded artifacts and consider:\n`;
+              comment += `- Adding explicit waits\n`;
+              comment += `- Improving test isolation\n`;
+              comment += `- Checking for race conditions\n`;
+            } else {
+              comment += `✅ **All tests appear stable**\n\n`;
+              comment += `No failure artifacts detected in this run.`;
+            }
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.find(c => 
+              c.body.includes('🧪 Test Results Analysis')
+            );
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }

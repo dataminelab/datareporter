@@ -216,6 +216,7 @@ jobs:
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
       PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}  # Change from CYPRESS_PROJECT_ID
       CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       PERCY_PARALLEL_TOTAL: 1
@@ -272,11 +273,46 @@ jobs:
           set -x
           npm run cypress build
           npm run cypress start -- --skip-db-seed
-          docker compose run cypress npm run cypress db-seed
+          docker compose run \
+            -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
+            -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
+            -e PERCY_COMMIT="${{ github.sha }}" \
+            -e PERCY_PULL_REQUEST="${{ github.event.pull_request.number }}" \
+            -e PERCY_PARALLEL_TOTAL=1 \
+            -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
+            -e PERCY_PARALLEL=true \
+            -e PERCY_LOGLEVEL=debug \
+            -e COMMIT_INFO_BRANCH="${{ github.head_ref || github.ref_name }}" \
+            -e COMMIT_INFO_MESSAGE="${{ github.event.pull_request.title || github.event.head_commit.message }}" \
+            -e COMMIT_INFO_AUTHOR="${{ github.event.pull_request.user.login || github.actor }}" \
+            -e COMMIT_INFO_SHA="${{ github.sha }}" \
+            cypress npm run cypress db-seed
           sleep 10
       - name: Execute Cypress Tests
         working-directory: client
-        run: npx percy exec -- npm run cypress run-ci
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}  # Change from CYPRESS_PROJECT_ID
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
+          PERCY_COMMIT: ${{ github.sha }}
+          PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
+          PERCY_PARALLEL_TOTAL: 1
+          PERCY_PARALLEL_NONCE: ${{ github.run_id }}
+          PERCY_PARALLEL: true
+          PERCY_LOGLEVEL: debug
+        run: |
+          docker compose run \
+            -e PERCY_TOKEN \
+            -e PERCY_PROJECT \
+            -e PERCY_COMMIT \
+            -e PERCY_PULL_REQUEST \
+            -e PERCY_PARALLEL_TOTAL \
+            -e PERCY_PARALLEL_NONCE \
+            -e PERCY_PARALLEL \
+            -e PERCY_LOGLEVEL \
+            cypress npx percy exec -- npm run cypress run-ci
       - name: "Failure: output container logs to console"
         if: failure()
         run: docker compose -p cypress logs

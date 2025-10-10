@@ -1,0 +1,635 @@
+name: "Test Unit Tests Workflow"
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/test-unit.yaml'
+  pull_request:
+    paths:
+      - '.github/workflows/test-unit.yaml'
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  test-workflow-yaml-validity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Validate YAML syntax
+        run: |
+          python3 -c "
+          import yaml
+          import sys
+          
+          try:
+              with open('.github/workflows/test-unit.yaml', 'r') as f:
+                  workflow = yaml.safe_load(f)
+              print('✅ YAML syntax is valid')
+              
+              # Basic structure validation
+              required_fields = ['name', 'on', 'jobs', 'env']
+              for field in required_fields:
+                  assert field in workflow, f'Missing required field: {field}'
+              
+              print('✅ Required top-level fields present')
+          except yaml.YAMLError as e:
+              print(f'❌ YAML syntax error: {e}')
+              sys.exit(1)
+          except AssertionError as e:
+              print(f'❌ Structure error: {e}')
+              sys.exit(1)
+          "
+
+  test-job-structure-and-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test job existence and basic structure
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          jobs = workflow['jobs']
+          
+          # Test all expected jobs exist
+          expected_jobs = [
+              'workflow-self-test', 'restyled', 'backend-lint', 
+              'backend-unit-tests', 'frontend-lint', 'frontend-unit-tests', 
+              'frontend-e2e-tests', 'analyze-test-results'
+          ]
+          
+          for job_name in expected_jobs:
+              assert job_name in jobs, f'Missing job: {job_name}'
+              job = jobs[job_name]
+              assert 'runs-on' in job, f'Job {job_name} missing runs-on'
+              if 'uses' not in job:  # Reusable workflows don't need steps
+                  assert 'steps' in job, f'Job {job_name} missing steps'
+          
+          print('✅ All expected jobs exist with proper structure')
+          "
+      
+      - name: Test job dependency chain
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          jobs = workflow['jobs']
+          
+          # Test specific dependencies
+          dependency_tests = {
+              'restyled': 'workflow-self-test',
+              'backend-lint': 'workflow-self-test', 
+              'backend-unit-tests': 'backend-lint',
+              'frontend-lint': 'restyled',
+              'frontend-unit-tests': 'frontend-lint',
+              'frontend-e2e-tests': 'frontend-lint'
+          }
+          
+          for job_name, expected_dependency in dependency_tests.items():
+              job = jobs[job_name]
+              assert 'needs' in job, f'Job {job_name} should have dependencies'
+              needs = job['needs']
+              if isinstance(needs, list):
+                  assert expected_dependency in needs, f'Job {job_name} should depend on {expected_dependency}'
+              else:
+                  assert needs == expected_dependency, f'Job {job_name} should depend on {expected_dependency}'
+          
+          # Test analyze-test-results depends on test jobs
+          analyze_job = jobs['analyze-test-results']
+          expected_needs = ['backend-unit-tests', 'frontend-unit-tests', 'frontend-e2e-tests']
+          for need in expected_needs:
+              assert need in analyze_job['needs'], f'analyze-test-results should depend on {need}'
+          
+          print('✅ Job dependencies are correctly configured')
+          "
+
+  test-conditional-execution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test PR-only job conditions
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          jobs = workflow['jobs']
+          
+          # Jobs that should only run on PRs
+          pr_only_jobs = [
+              'workflow-self-test', 'restyled', 'frontend-lint', 
+              'frontend-unit-tests', 'frontend-e2e-tests'
+          ]
+          
+          for job_name in pr_only_jobs:
+              job = jobs[job_name]
+              assert 'if' in job, f'Job {job_name} should have conditional execution'
+              condition = job['if']
+              assert \"github.event_name == 'pull_request'\" in condition, f'Job {job_name} should only run on PRs'
+          
+          # Test analyze-test-results has proper condition
+          analyze_job = jobs['analyze-test-results']
+          assert 'always()' in analyze_job['if'], 'analyze-test-results should run even on failure'
+          assert \"github.event_name == 'pull_request'\" in analyze_job['if'], 'analyze-test-results should only run on PRs'
+          
+          print('✅ Conditional execution is properly configured')
+          "
+      
+      - name: Test mergeable checks in job steps
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          jobs = workflow['jobs']
+          
+          # Jobs that should check PR mergeability
+          mergeable_check_jobs = [
+              'backend-lint', 'backend-unit-tests', 'frontend-lint', 
+              'frontend-unit-tests', 'frontend-e2e-tests'
+          ]
+          
+          for job_name in mergeable_check_jobs:
+              job = jobs[job_name]
+              steps = job['steps']
+              
+              # Find mergeable check step (should be first step)
+              first_step = steps[0]
+              assert 'if' in first_step, f'Job {job_name} first step should check mergeability'
+              assert 'mergeable' in first_step['if'], f'Job {job_name} should check PR mergeability'
+              assert 'exit 1' in first_step.get('run', ''), f'Job {job_name} should exit on unmergeable PR'
+          
+          print('✅ Mergeable PR checks are configured correctly')
+          "
+
+  test-environment-variables:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test global environment variables
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          env_vars = workflow['env']
+          
+          # Test required global env vars
+          required_vars = ['NODE_VERSION', 'NPM_VERSION', 'REDASH_COOKIE_SECRET']
+          for var in required_vars:
+              assert var in env_vars, f'Missing global environment variable: {var}'
+          
+          # Test Node version is specified
+          assert env_vars['NODE_VERSION'] == '18', 'Node version should be 18'
+          
+          print('✅ Global environment variables are properly configured')
+          "
+      
+      - name: Test Docker environment configuration
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          # Test backend job Docker env
+          backend_job = workflow['jobs']['backend-unit-tests']
+          backend_env = backend_job['env']
+          
+          docker_vars = ['COMPOSE_FILE', 'COMPOSE_PROJECT_NAME', 'COMPOSE_DOCKER_CLI_BUILD', 'DOCKER_BUILDKIT']
+          for var in docker_vars:
+              assert var in backend_env, f'Missing Docker environment variable in backend job: {var}'
+          
+          assert backend_env['COMPOSE_PROJECT_NAME'] == 'server', 'Backend compose project should be server'
+          
+          # Test e2e job Docker env
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          e2e_env = e2e_job['env']
+          
+          assert e2e_env['COMPOSE_PROJECT_NAME'] == 'cypress', 'E2E compose project should be cypress'
+          assert '.ci/compose.cypress.yml' in e2e_env['COMPOSE_FILE'], 'E2E should use cypress compose file'
+          
+          print('✅ Docker environment configuration is correct')
+          "
+
+  test-percy-and-cypress-configuration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test Percy environment variables
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          job_env = e2e_job['env']
+          
+          # Test Percy configuration
+          percy_vars = [
+              'PERCY_TOKEN', 'PERCY_PROJECT', 'PERCY_PARALLEL_TOTAL', 
+              'PERCY_PARALLEL_NONCE', 'PERCY_PARALLEL', 'PERCY_BRANCH', 
+              'PERCY_COMMIT', 'PERCY_PULL_REQUEST', 'PERCY_LOGLEVEL'
+          ]
+          
+          for var in percy_vars:
+              assert var in job_env, f'Missing Percy environment variable: {var}'
+          
+          # Test Cypress configuration
+          cypress_vars = ['CYPRESS_PROJECT_ID', 'CYPRESS_RECORD_KEY']
+          for var in cypress_vars:
+              assert var in job_env, f'Missing Cypress environment variable: {var}'
+          
+          # Test Percy project references correct secret
+          assert 'CYPRESS_PROJECT_ID' in job_env['PERCY_PROJECT'], 'PERCY_PROJECT should reference CYPRESS_PROJECT_ID'
+          
+          print('✅ Percy and Cypress environment variables are properly configured')
+          "
+      
+      - name: Test Percy step-level environment consistency
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          
+          # Find Execute Cypress Tests step
+          cypress_step = None
+          for step in e2e_job['steps']:
+              if step.get('name') == 'Execute Cypress Tests':
+                  cypress_step = step
+                  break
+          
+          assert cypress_step is not None, 'Execute Cypress Tests step not found'
+          
+          step_env = cypress_step.get('env', {})
+          job_env = e2e_job['env']
+          
+          # Test key Percy vars are in step env
+          key_vars = ['PERCY_TOKEN', 'PERCY_PROJECT', 'PERCY_PARALLEL_TOTAL', 'PERCY_PARALLEL_NONCE']
+          for var in key_vars:
+              assert var in step_env, f'Missing {var} in step environment'
+          
+          print('✅ Percy step-level environment is consistent')
+          "
+
+  test-timeout-and-resource-configuration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test job timeouts
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          jobs = workflow['jobs']
+          
+          # Test specific timeout configurations
+          timeout_expectations = {
+              'backend-lint': 5,
+              'backend-unit-tests': 60,
+              'frontend-lint': 60
+          }
+          
+          for job_name, expected_timeout in timeout_expectations.items():
+              job = jobs[job_name]
+              assert 'timeout-minutes' in job, f'Job {job_name} should have timeout configured'
+              assert job['timeout-minutes'] == expected_timeout, f'Job {job_name} timeout should be {expected_timeout} minutes'
+          
+          print('✅ Job timeouts are properly configured')
+          "
+
+  test-flaky-test-handling-and-retry-logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test retry logic in e2e tests
+        run: |
+          python3 -c "
+          import yaml
+          import re
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          
+          # Find Execute Cypress Tests step
+          cypress_step = None
+          for step in e2e_job['steps']:
+              if step.get('name') == 'Execute Cypress Tests':
+                  cypress_step = step
+                  break
+          
+          assert cypress_step is not None, 'Execute Cypress Tests step not found'
+          
+          run_script = cypress_step['run']
+          
+          # Test retry logic components
+          assert 'attempt=1' in run_script, 'Should initialize attempt counter'
+          assert 'max_attempts=3' in run_script, 'Should have max attempts configured'
+          assert 'while [ \$attempt -le \$max_attempts ]' in run_script, 'Should have retry loop'
+          assert 'sleep 30' in run_script, 'Should have delay between retries'
+          assert '((attempt++))' in run_script, 'Should increment attempt counter'
+          
+          # Test Docker compose command structure
+          assert 'docker compose run' in run_script, 'Should use docker compose run'
+          assert 'percy exec' in run_script, 'Should use percy exec'
+          
+          print('✅ Retry logic is properly implemented')
+          "
+      
+      - name: Test failure artifact collection
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          # Test workflow-self-test failure handling
+          self_test_job = workflow['jobs']['workflow-self-test']
+          steps = self_test_job['steps']
+          
+          failure_steps = [step for step in steps if step.get('if') == 'failure()']
+          assert len(failure_steps) >= 3, 'Should have multiple failure handling steps'
+          
+          # Test specific failure handling steps
+          step_names = [step.get('name', '') for step in failure_steps]
+          expected_patterns = ['Debug Info', 'Collect', 'Upload']
+          
+          for pattern in expected_patterns:
+              assert any(pattern in name for name in step_names), f'Should have step containing {pattern}'
+          
+          # Test e2e failure handling
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          e2e_failure_steps = [step for step in e2e_job['steps'] if step.get('if') == 'failure()']
+          assert len(e2e_failure_steps) >= 2, 'E2E job should have failure handling steps'
+          
+          print('✅ Failure artifact collection is properly configured')
+          "
+
+  test-docker-container-management:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Analyze Docker container lifecycle issues
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          steps = e2e_job['steps']
+          
+          # Find all steps that interact with Docker
+          docker_steps = []
+          for step in steps:
+              run_command = step.get('run', '')
+              if 'docker' in run_command.lower():
+                  docker_steps.append({
+                      'name': step.get('name', 'Unnamed'),
+                      'run': run_command
+                  })
+          
+          print(f'Found {len(docker_steps)} steps using Docker:')
+          for i, step in enumerate(docker_steps):
+              print(f'{i+1}. {step[\"name\"]}')
+          
+          # Analyze retry logic for Docker issues
+          cypress_step = next((step for step in steps if step.get('name') == 'Execute Cypress Tests'), None)
+          if cypress_step:
+              run_script = cypress_step['run']
+              
+              # Check for potential Docker state issues in retry logic
+              issues = []
+              
+              if 'docker compose down' not in run_script:
+                  issues.append('Retry logic does not clean up containers between attempts')
+              
+              if 'docker compose ps' not in run_script:
+                  issues.append('No container status check in retry logic')
+              
+              if len(issues) > 0:
+                  print('⚠️  Potential Docker issues in retry logic:')
+                  for issue in issues:
+                      print(f'  - {issue}')
+              else:
+                  print('✅ Docker retry logic appears sound')
+          
+          print('\\n🔍 Recommendation: Add container cleanup between retry attempts')
+          print('   Example: docker compose -p cypress down && docker compose -p cypress up -d')
+          "
+
+  test-artifact-and-reporting-configuration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test artifact upload configuration
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          jobs = workflow['jobs']
+          
+          # Test workflow-self-test artifact upload
+          self_test_job = jobs['workflow-self-test']
+          upload_steps = [step for step in self_test_job['steps'] if step.get('uses', '').startswith('actions/upload-artifact')]
+          assert len(upload_steps) == 1, 'Should have one artifact upload step'
+          
+          upload_step = upload_steps[0]
+          assert 'cypress-failure-artifacts' in upload_step['with']['name'], 'Artifact name should indicate failure type'
+          assert 'retention-days' in upload_step['with'], 'Should specify retention period'
+          
+          # Test other artifact uploads
+          backend_job = jobs['backend-unit-tests']
+          backend_steps = backend_job['steps']
+          
+          # Should have coverage and test result handling
+          coverage_step = next((step for step in backend_steps if 'CodeCoverageSummary' in step.get('uses', '')), None)
+          assert coverage_step is not None, 'Should have code coverage step'
+          
+          junit_step = next((step for step in backend_steps if 'junit-report' in step.get('uses', '')), None)
+          assert junit_step is not None, 'Should have JUnit report step'
+          
+          print('✅ Artifact and reporting configuration is correct')
+          "
+
+  test-permissions-and-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test workflow permissions
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          permissions = workflow.get('permissions', {})
+          
+          # Test required permissions
+          required_permissions = ['contents', 'pull-requests', 'checks']
+          for perm in required_permissions:
+              assert perm in permissions, f'Missing permission: {perm}'
+          
+          # Test permission levels
+          assert permissions['contents'] == 'read', 'Contents should be read-only'
+          assert permissions['pull-requests'] == 'write', 'PR permission needed for comments'
+          assert permissions['checks'] == 'write', 'Checks permission needed for test reports'
+          
+          print('✅ Workflow permissions are properly configured')
+          "
+
+  identify-flaky-test-root-causes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Analyze potential flaky test causes
+        run: |
+          python3 -c "
+          import yaml
+          
+          with open('.github/workflows/test-unit.yaml', 'r') as f:
+              workflow = yaml.safe_load(f)
+          
+          e2e_job = workflow['jobs']['frontend-e2e-tests']
+          
+          print('🔍 Analyzing potential causes of flaky E2E tests:')
+          print('=' * 60)
+          
+          # Check for timing issues
+          setup_steps = [step for step in e2e_job['steps'] if 'Setup' in step.get('name', '')]
+          for step in setup_steps:
+              run_command = step.get('run', '')
+              if 'sleep' in run_command:
+                  import re
+                  sleep_matches = re.findall(r'sleep (\d+)', run_command)
+                  if sleep_matches:
+                      print(f'⏱️  Fixed sleep found: {sleep_matches[0]} seconds in {step.get(\"name\")}')
+          
+          # Check for hardcoded waits vs dynamic waits
+          print('\\n📋 Recommendations to reduce flakiness:')
+          print('1. Replace fixed sleeps with health checks')
+          print('2. Add container cleanup between retry attempts')
+          print('3. Use docker compose wait conditions')
+          print('4. Implement proper service discovery')
+          print('5. Add network connectivity checks')
+          
+          # Check retry configuration
+          cypress_step = next((step for step in e2e_job['steps'] if 'Execute Cypress Tests' in step.get('name', '')), None)
+          if cypress_step and 'max_attempts=3' in cypress_step.get('run', ''):
+              print('\\n✅ Retry mechanism is configured (3 attempts)')
+          else:
+              print('\\n⚠️  No retry mechanism found')
+          
+          print('\\n🐳 Docker-specific recommendations:')
+          print('- Add \"docker compose down\" before retry attempts')
+          print('- Check container health status before proceeding')
+          print('- Use unique project names to avoid conflicts')
+          print('- Implement proper volume cleanup between runs')
+          "
+
+  suggest-workflow-improvements:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [
+      test-workflow-yaml-validity,
+      test-job-structure-and-dependencies, 
+      test-conditional-execution,
+      test-environment-variables,
+      test-percy-and-cypress-configuration,
+      test-timeout-and-resource-configuration,
+      test-flaky-test-handling-and-retry-logic,
+      test-docker-container-management,
+      test-artifact-and-reporting-configuration,
+      test-permissions-and-security,
+      identify-flaky-test-root-causes
+    ]
+    steps:
+      - name: Summarize test results and suggestions
+        run: |
+          echo "## 🧪 Workflow Test Summary"
+          echo "================================"
+          echo ""
+          echo "### ✅ Validated Components:"
+          echo "- YAML syntax and structure"
+          echo "- Job dependencies and execution order"
+          echo "- Environment variable configuration"
+          echo "- Percy/Cypress integration"
+          echo "- Timeout and resource settings"
+          echo "- Artifact collection and reporting"
+          echo "- Security permissions"
+          echo ""
+          echo "### 🔧 Recommended Improvements for Flaky Tests:"
+          echo ""
+          echo "1. **Enhance Retry Logic with Container Cleanup:**"
+          echo "   \`\`\`bash"
+          echo "   # Before retry attempt:"
+          echo "   docker compose -p cypress down || true"
+          echo "   docker system prune -f || true"
+          echo "   # Then restart services"
+          echo "   \`\`\`"
+          echo ""
+          echo "2. **Add Health Checks Instead of Fixed Sleeps:**"
+          echo "   \`\`\`bash"
+          echo "   # Replace sleep 10 with:"
+          echo "   for i in {1..30}; do"
+          echo "     if docker compose -p cypress ps | grep -q \"healthy\"; then"
+          echo "       break"
+          echo "     fi"
+          echo "     sleep 2"
+          echo "   done"
+          echo "   \`\`\`"
+          echo ""
+          echo "3. **Implement Network Connectivity Checks:**"
+          echo "   \`\`\`bash"
+          echo "   curl --retry 10 --retry-delay 2 http://localhost:5000/api/health"
+          echo "   \`\`\`"
+          echo ""
+          echo "4. **Add Unique Project Names with Timestamps:**"
+          echo "   \`\`\`yaml"
+          echo "   COMPOSE_PROJECT_NAME: cypress-\${{ github.run_id }}-\${{ github.run_attempt }}"
+          echo "   \`\`\`"

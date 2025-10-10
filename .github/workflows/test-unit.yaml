@@ -247,7 +247,9 @@ jobs:
           echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
       - name: Install Dependencies
         working-directory: client
-        run: npm install
+        run: |
+          npm install
+          npm install --save-dev @percy/cypress @percy/cli
       - name: Check and Install Cypress Binary
         run: |
           if npx cypress verify; then
@@ -274,7 +276,7 @@ jobs:
           sleep 10
       - name: Execute Cypress Tests
         working-directory: client
-        run: npm run cypress run-ci
+        run: npx percy exec -- npm run cypress run-ci
       - name: "Failure: output container logs to console"
         if: failure()
         run: docker compose -p cypress logs
@@ -288,3 +290,7 @@ jobs:
         with:
           name: coverage
           path: coverage
+      - name: Debug Percy Environment
+        run: |
+          echo "PERCY_TOKEN exists: ${{ secrets.PERCY_TOKEN != '' }}"
+          echo "PERCY_PROJECT exists: ${{ secrets.CYPRESS_PROJECT_ID != '' }}"

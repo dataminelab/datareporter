@@ -22,7 +22,7 @@ describe("Jest Setup", () => {
 
     // Try jest-dom matcher if available
     try {
-      expect(div).toBeInTheDocument;
+      expect(div).toBeInTheDocument();
       console.log("✅ jest-dom matchers are available");
     } catch (e) {
       console.log(

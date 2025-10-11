@@ -314,17 +314,18 @@ jobs:
           PERCY_PARALLEL: true
           PERCY_LOGLEVEL: debug
         run: |
-          # Retry logic for flaky tests
+          # Retry logic for flaky tests with detailed output
           attempt=1
           max_attempts=3
           
           while [ $attempt -le $max_attempts ]; do
             echo "🔄 Attempt $attempt of $max_attempts"
+            echo "==========================================="
             
             # Clean up any existing containers before retry
             if [ $attempt -gt 1 ]; then
               echo "🧹 Cleaning up containers from previous attempt..."
-              docker compose -p cypress down || true
+              docker compose -p cypress down --remove-orphans || true
               docker system prune -f || true
               sleep 10
               
@@ -335,8 +336,11 @@ jobs:
               sleep 10
             fi
             
-            # Run the actual test
-            if docker compose run \
+            # Run the actual test with output capture
+            echo "🎯 Starting Cypress tests..."
+            set +e  # Don't exit on error
+            
+            docker compose run \
               -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
               -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
               -e PERCY_COMMIT="${{ github.sha }}" \
@@ -345,20 +349,110 @@ jobs:
               -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
               -e PERCY_PARALLEL=true \
               -e PERCY_LOGLEVEL=debug \
-              cypress percy exec -- npm run cypress run; then
+              cypress percy exec -- npm run cypress run
+            
+            test_exit_code=$?
+            set -e  # Re-enable exit on error
+            
+            if [ $test_exit_code -eq 0 ]; then
+              echo ""
               echo "✅ Tests passed on attempt $attempt"
+              echo "==========================================="
               break
             else
-              echo "❌ Tests failed on attempt $attempt"
+              echo ""
+              echo "❌ Tests failed on attempt $attempt (exit code: $test_exit_code)"
+              echo "==========================================="
+              
               if [ $attempt -eq $max_attempts ]; then
                 echo "💥 All attempts failed"
                 exit 1
               fi
+              
               echo "⏳ Waiting 30 seconds before retry..."
               sleep 30
               ((attempt++))
             fi
           done
+
+      - name: Show Cypress Test Results
+        if: always()
+        run: |
+          echo "📊 Cypress Test Results Summary"
+          echo "==============================="
+          
+          # Get test results from cypress container
+          if docker ps -a --filter "name=cypress" --format "table {{.Names}}" | grep -q cypress; then
+            echo "📋 Extracting test results from container..."
+            
+            # Get the actual container name
+            CONTAINER_NAME=$(docker ps -a --filter "name=cypress" --format "{{.Names}}" | head -1)
+            echo "Using container: $CONTAINER_NAME"
+            
+            # Get test results
+            echo ""
+            echo "🧪 Test Results:"
+            docker logs $CONTAINER_NAME 2>&1 | grep -E "(Running|✓|✗|passing|failing|Spec.*\.js)" | tail -30 || echo "No test results found"
+            
+            # Get any error messages
+            echo ""
+            echo "🚨 Error Messages:"
+            docker logs $CONTAINER_NAME 2>&1 | grep -i "error\|failed\|timeout" | tail -10 || echo "No errors found"
+            
+            # Get Percy snapshot info
+            echo ""
+            echo "📸 Percy Snapshot Info:"
+            docker logs $CONTAINER_NAME 2>&1 | grep -i percy | tail -10 || echo "No Percy info found"
+            
+            # Get test summary
+            echo ""
+            echo "📈 Test Summary:"
+            docker logs $CONTAINER_NAME 2>&1 | grep -E "([0-9]+ passing|[0-9]+ failing|All specs passed)" | tail -5 || echo "No summary found"
+            
+          else
+            echo "⚠️ No cypress container found"
+            echo "Available containers:"
+            docker ps -a --format "table {{.Names}}\t{{.Status}}"
+          fi
+
+      - name: Capture Test Artifacts  
+        if: always()
+        working-directory: client
+        run: |
+          echo "📦 Capturing test artifacts..."
+          
+          # Create artifacts directory
+          mkdir -p ../test-artifacts
+          
+          # Get container name
+          CONTAINER_NAME=$(docker ps -a --filter "name=cypress" --format "{{.Names}}" | head -1)
+          
+          if [ ! -z "$CONTAINER_NAME" ]; then
+            echo "Extracting artifacts from container: $CONTAINER_NAME"
+            
+            # Copy test artifacts
+            docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/screenshots ../test-artifacts/ 2>/dev/null || echo "No screenshots found"
+            docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/videos ../test-artifacts/ 2>/dev/null || echo "No videos found"  
+            docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/reports ../test-artifacts/ 2>/dev/null || echo "No reports found"
+            
+            # Try to get test results/logs
+            docker logs $CONTAINER_NAME > ../test-artifacts/cypress-logs.txt 2>&1 || echo "Could not capture logs"
+            
+            # Show what we captured
+            echo "📋 Captured artifacts:"
+            find ../test-artifacts -type f 2>/dev/null | head -20 || echo "No artifacts captured"
+          else
+            echo "No cypress container available for artifact extraction"
+          fi
+
+      - name: Upload Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-test-artifacts-${{ github.run_id }}
+          path: test-artifacts/
+          retention-days: 7
+
       - name: "Failure: output container logs to console"
         if: failure()
         run: docker compose -p cypress logs
@@ -416,169 +510,23 @@ jobs:
         run: |
           python3 -c "
           import os
-          import json
           from pathlib import Path
           
-          # Look for test result files
           results_dir = Path('./test-results')
           
           if results_dir.exists():
-              print('📊 Test Results Analysis')
+              print('📊 Downloaded Test Artifacts Analysis')
               print('=' * 50)
               
-              # Count artifacts (potential failures)
-              artifact_count = len(list(results_dir.glob('**/cypress-failure-artifacts-*')))
-              if artifact_count > 0:
-                  print(f'⚠️  Found {artifact_count} failure artifact(s)')
-                  print('🔍 Potential flaky tests detected')
-              else:
-                  print('✅ No failure artifacts found')
-              
-              # List all artifacts for debugging
+              # Show what we downloaded
               for artifact in results_dir.rglob('*'):
                   if artifact.is_file():
-                      print(f'📁 {artifact.relative_to(results_dir)}')
-          else:
-              print('ℹ️  No test results directory found')
-          "
-      
-      - name: Comment on PR with test analysis
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-            
-            // Check for failure artifacts
-            const resultsDir = './test-results';
-            let hasFailures = false;
-            let artifactCount = 0;
-            
-            try {
-              if (fs.existsSync(resultsDir)) {
-                const files = fs.readdirSync(resultsDir, { recursive: true });
-                artifactCount = files.filter(f => f.includes('cypress-failure-artifacts')).length;
-                hasFailures = artifactCount > 0;
-              }
-            } catch (error) {
-              console.log('Could not read test results:', error.message);
-            }
-            
-            let comment = '## 🧪 Test Results Analysis\n\n';
-            
-            if (hasFailures) {
-              comment += `⚠️ **Potential flaky tests detected!**\n\n`;
-              comment += `Found ${artifactCount} failure artifact(s). This may indicate:\n`;
-              comment += `- Random test failures\n`;
-              comment += `- Timing issues in e2e tests\n`;
-              comment += `- Environment-specific problems\n\n`;
-              comment += `Please review the uploaded artifacts and consider:\n`;
-              comment += `- Adding explicit waits\n`;
-              comment += `- Improving test isolation\n`;
-              comment += `- Checking for race conditions\n`;
-            } else {
-              comment += `✅ **All tests appear stable**\n\n`;
-              comment += `No failure artifacts detected in this run.`;
-            }
-            
-            // Find existing comment
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            
-            const existingComment = comments.find(c => 
-              c.body.includes('🧪 Test Results Analysis')
-            );
-            
-            if (existingComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existingComment.id,
-                body: comment
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: comment
-              });
-            }
-      - name: Show Cypress Test Results
-        if: always()
-        working-directory: client
-        run: |
-          echo "📊 Cypress Test Results Summary"
-          echo "==============================="
-          
-          # Try to get results from the cypress container
-          if docker ps -a | grep -q cypress; then
-            echo "📋 Extracting test results from container..."
-            
-            # Get test results if they exist
-            docker compose logs cypress 2>/dev/null | grep -E "(Running|✓|✗|Spec|Tests|Passing|Failing|percy)" | tail -50 || true
-            
-            # Get any error messages
-            echo ""
-            echo "🚨 Any Error Messages:"
-            docker compose logs cypress 2>/dev/null | grep -i error | tail -20 || true
-            
-            # Get Percy snapshot info
-            echo ""
-            echo "📸 Percy Snapshot Info:"
-            docker compose logs cypress 2>/dev/null | grep -i percy | tail -10 || true
-          else
-            echo "⚠️ No cypress container found to extract results from"
-          fi
-          
-          # Check for Cypress results in expected locations
-          echo ""
-          echo "📁 Looking for test artifacts..."
-          find . -name "*.xml" -o -name "*results*" -o -name "*report*" 2>/dev/null || true
-      - name: Capture Test Artifacts
-        if: always()
-        working-directory: client
-        run: |
-          echo "📦 Capturing test artifacts..."
-          
-          # Create artifacts directory
-          mkdir -p ../test-artifacts
-          
-          # Copy any test results, screenshots, videos
-          docker cp cypress:/usr/src/app/client/cypress/screenshots ../test-artifacts/ 2>/dev/null || echo "No screenshots found"
-          docker cp cypress:/usr/src/app/client/cypress/videos ../test-artifacts/ 2>/dev/null || echo "No videos found"
-          docker cp cypress:/usr/src/app/client/cypress/reports ../test-artifacts/ 2>/dev/null || echo "No reports found"
-          
-          # Show what we captured
-          echo "📋 Captured artifacts:"
-          find ../test-artifacts -type f 2>/dev/null | head -20 || echo "No artifacts captured"
-      - name: Upload Test Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-test-artifacts-${{ github.run_id }}
-          path: test-artifacts/
-          retention-days: 7
-      - name: Debug Docker Container State
-        if: failure()
-        run: |
-          echo "🔍 Docker Container Debug Info"
-          echo "============================="
-          echo "📊 Container Status:"
-          docker compose -p cypress ps
-          
-          echo ""
-          echo "📋 Container Logs (last 100 lines):"
-          docker compose -p cypress logs --tail=100
-          
-          echo ""
-          echo "💾 Disk Usage:"
-          df -h
-          
-          echo ""
-          echo "🏃 Running Processes:"
-          docker compose -p cypress exec cypress ps aux || true
+                      size_kb = artifact.stat().st_size // 1024
+                      print(f'📁 {artifact.relative_to(results_dir)} ({size_kb}KB)')
+              
+              # Look for failure indicators
+              cypress_logs = list(results_dir.glob('**/cypress-logs.txt'))
+              if cypress_logs:
+                  print(f'\\n🔍 Found Cypress logs: {len(cypress_logs)} file(s)')
+                  for log_file in cypress_logs:
+                   

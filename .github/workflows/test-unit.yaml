@@ -508,3 +508,77 @@ jobs:
                 body: comment
               });
             }
+      - name: Show Cypress Test Results
+        if: always()
+        working-directory: client
+        run: |
+          echo "📊 Cypress Test Results Summary"
+          echo "==============================="
+          
+          # Try to get results from the cypress container
+          if docker ps -a | grep -q cypress; then
+            echo "📋 Extracting test results from container..."
+            
+            # Get test results if they exist
+            docker compose logs cypress 2>/dev/null | grep -E "(Running|✓|✗|Spec|Tests|Passing|Failing|percy)" | tail -50 || true
+            
+            # Get any error messages
+            echo ""
+            echo "🚨 Any Error Messages:"
+            docker compose logs cypress 2>/dev/null | grep -i error | tail -20 || true
+            
+            # Get Percy snapshot info
+            echo ""
+            echo "📸 Percy Snapshot Info:"
+            docker compose logs cypress 2>/dev/null | grep -i percy | tail -10 || true
+          else
+            echo "⚠️ No cypress container found to extract results from"
+          fi
+          
+          # Check for Cypress results in expected locations
+          echo ""
+          echo "📁 Looking for test artifacts..."
+          find . -name "*.xml" -o -name "*results*" -o -name "*report*" 2>/dev/null || true
+      - name: Capture Test Artifacts
+        if: always()
+        working-directory: client
+        run: |
+          echo "📦 Capturing test artifacts..."
+          
+          # Create artifacts directory
+          mkdir -p ../test-artifacts
+          
+          # Copy any test results, screenshots, videos
+          docker cp cypress:/usr/src/app/client/cypress/screenshots ../test-artifacts/ 2>/dev/null || echo "No screenshots found"
+          docker cp cypress:/usr/src/app/client/cypress/videos ../test-artifacts/ 2>/dev/null || echo "No videos found"
+          docker cp cypress:/usr/src/app/client/cypress/reports ../test-artifacts/ 2>/dev/null || echo "No reports found"
+          
+          # Show what we captured
+          echo "📋 Captured artifacts:"
+          find ../test-artifacts -type f 2>/dev/null | head -20 || echo "No artifacts captured"
+      - name: Upload Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-test-artifacts-${{ github.run_id }}
+          path: test-artifacts/
+          retention-days: 7
+      - name: Debug Docker Container State
+        if: failure()
+        run: |
+          echo "🔍 Docker Container Debug Info"
+          echo "============================="
+          echo "📊 Container Status:"
+          docker compose -p cypress ps
+          
+          echo ""
+          echo "📋 Container Logs (last 100 lines):"
+          docker compose -p cypress logs --tail=100
+          
+          echo ""
+          echo "💾 Disk Usage:"
+          df -h
+          
+          echo ""
+          echo "🏃 Running Processes:"
+          docker compose -p cypress exec cypress ps aux || true

@@ -1,7 +1,7 @@
 import { createParameter } from "..";
 import { getDynamicDateFromString } from "../DateParameter";
 import moment from "moment";
-import DateParameter from '../DateParameter';
+import DateParameter from "../DateParameter";
 
 describe("DateParameter", () => {
   let param;
@@ -10,7 +10,7 @@ describe("DateParameter", () => {
     param = new DateParameter({
       name: "test_date",
       title: "Test Date",
-      type: "date"
+      type: "date",
     });
   });
 
@@ -65,11 +65,7 @@ describe("DateParameter", () => {
 
     test("handles unrecognized values", () => {
       // Test what actually happens with invalid values
-      const invalidValues = [
-        "not-a-date",
-        "invalid-format",
-        "xyz123"
-      ];
+      const invalidValues = ["not-a-date", "invalid-format", "xyz123"];
 
       invalidValues.forEach(invalidValue => {
         const result = param.normalizeValue(invalidValue);
@@ -81,11 +77,7 @@ describe("DateParameter", () => {
 
     test("handles empty and null values", () => {
       // Test edge cases that might return null or a default value
-      const edgeCases = [
-        null,
-        undefined,
-        ""
-      ];
+      const edgeCases = [null, undefined, ""];
 
       edgeCases.forEach(edgeCase => {
         const result = param.normalizeValue(edgeCase);
@@ -102,12 +94,12 @@ describe("DateParameter", () => {
       });
     });
 
-    test('should handle valid date values', () => {
+    test("should handle valid date values", () => {
       const validDates = [
-        '2023-01-01',
-        '2023-12-31T23:59:59Z',
-        moment().format('YYYY-MM-DD'),
-        new Date().toISOString()
+        "2023-01-01",
+        "2023-12-31T23:59:59Z",
+        moment().format("YYYY-MM-DD"),
+        new Date().toISOString(),
       ];
 
       validDates.forEach(date => {
@@ -118,13 +110,8 @@ describe("DateParameter", () => {
       });
     });
 
-    test('should handle invalid date values gracefully', () => {
-      const invalidDates = [
-        'invalid-date',
-        '',
-        null,
-        undefined
-      ];
+    test("should handle invalid date values gracefully", () => {
+      const invalidDates = ["invalid-date", "", null, undefined];
 
       invalidDates.forEach(date => {
         expect(() => {
@@ -134,30 +121,34 @@ describe("DateParameter", () => {
       });
     });
 
-    test('should normalize valid date strings correctly', () => {
-      const testDate = '2023-01-01';
+    test("should normalize valid date strings correctly", () => {
+      const testDate = "2023-01-01";
       const normalized = param.normalizeValue(testDate);
 
       expect(normalized).toBeTruthy();
-      expect(moment.isMoment(normalized) || normalized instanceof Date || typeof normalized === 'string').toBe(true);
+      expect(
+        moment.isMoment(normalized) ||
+          normalized instanceof Date ||
+          typeof normalized === "string",
+      ).toBe(true);
     });
 
-    test('should handle current date', () => {
-      const now = moment().format('YYYY-MM-DD');
+    test("should handle current date", () => {
+      const now = moment().format("YYYY-MM-DD");
       const normalized = param.normalizeValue(now);
 
       expect(normalized).toBeTruthy();
     });
 
-    describe('Dynamic values', () => {
-      test('recognizes dynamic values from string index', () => {
-        const dynamicValue = 'd0';
+    describe("Dynamic values", () => {
+      test("recognizes dynamic values from string index", () => {
+        const dynamicValue = "d0";
         const result = param.normalizeValue(dynamicValue);
         expect(result).toBeDefined();
       });
 
-      test('recognizes dynamic values from a dynamic date', () => {
-        const dynamicDate = 'd1';
+      test("recognizes dynamic values from a dynamic date", () => {
+        const dynamicDate = "d1";
         const result = param.normalizeValue(dynamicDate);
         expect(result).toBeDefined();
       });

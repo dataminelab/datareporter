@@ -1,5 +1,5 @@
-import { Percy } from 'percy';
+import { Percy } from "percy";
 
-test('hello world!', () => {
-    expect(Percy).toBeDefined();
+test("hello world!", () => {
+  expect(Percy).toBeDefined();
 });

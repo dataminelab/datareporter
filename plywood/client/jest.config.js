@@ -1,15 +1,12 @@
 module.exports = {
-  roots: ['<rootDir>/src', '<rootDir>/app'],
-  testMatch: [
-    '**/__tests__/**/*.test.js',
-    '**/?(*.)+(spec|test).js'
-  ],
-  moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
+  roots: ["<rootDir>/src", "<rootDir>/app"],
+  testMatch: ["**/__tests__/**/*.test.js", "**/?(*.)+(spec|test).js"],
+  moduleFileExtensions: ["js", "jsx", "json", "node"],
   transform: {
-    '^.+\\.jsx?$': 'babel-jest'
+    "^.+\\.jsx?$": "babel-jest",
   },
-  setupFilesAfterEnv: ['<rootDir>/setupTests.js'],
+  setupFilesAfterEnv: ["<rootDir>/setupTests.js"],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1'
-  }
+    "^@/(.*)$": "<rootDir>/src/$1",
+  },
 };

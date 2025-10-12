@@ -471,28 +471,6 @@ jobs:
           echo "PERCY_TOKEN exists: ${{ secrets.PERCY_TOKEN != '' }}"
           echo "PERCY_PROJECT exists: ${{ secrets.CYPRESS_PROJECT_ID != '' }}"
           echo "PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}"
-      - name: Test Docker container lifecycle in retry logic
-        run: |
-          python3 -c "
-          import yaml
-        
-          with open('.github/workflows/test-unit.yaml', 'r') as f:
-              workflow = yaml.safe_load(f)
-        
-          e2e_job = workflow['jobs']['frontend-e2e-tests']
-          cypress_step = next((step for step in e2e_job['steps'] if 'Execute Cypress Tests' in step.get('name', '')), None)
-        
-          if cypress_step:
-              run_script = cypress_step['run']
-              
-              # Check for Docker cleanup in retry logic
-              if 'docker compose down' not in run_script:
-                  print('⚠️  WARNING: Retry logic missing container cleanup')
-                  print('   This may cause \"docker not found\" errors on retry attempts')
-                  print('   Recommendation: Add cleanup between retry attempts')
-              else:
-                  print('✅ Docker cleanup found in retry logic')
-          "
   analyze-test-results:
     runs-on: ubuntu-latest
     if: always() && github.event_name == 'pull_request'
@@ -529,4 +507,112 @@ jobs:
               if cypress_logs:
                   print(f'\\n🔍 Found Cypress logs: {len(cypress_logs)} file(s)')
                   for log_file in cypress_logs:
-                   
+                    try:
+                        content = log_file.read_text()
+                        if 'failing' in content.lower():
+                            print('⚠️  Test failures detected in logs')
+                        if 'passing' in content.lower():
+                            print('✅ Test passes detected in logs')
+                        
+                        # Show summary lines
+                        lines = content.split('\\n')
+                        summary_lines = [line for line in lines if any(keyword in line.lower() for keyword in ['passing', 'failing', 'specs passed', 'error'])]
+                        if summary_lines:
+                            print('📋 Test Summary:')
+                            for line in summary_lines[-10:]:  # Last 10 relevant lines
+                                print(f'   {line.strip()}')
+                    except Exception as e:
+                        print(f'❌ Error reading {log_file}: {e}')
+              
+              # Look for screenshots (test failures)
+              screenshots = list(results_dir.glob('**/screenshots/**/*'))
+              if screenshots:
+                  print(f'\\n📸 Found {len(screenshots)} screenshot(s) - likely test failures')
+              
+              # Look for videos
+              videos = list(results_dir.glob('**/videos/**/*'))
+              if videos:
+                  print(f'📹 Found {len(videos)} video(s)')
+          else:
+              print('ℹ️  No test results downloaded')
+          "
+      
+      - name: Comment on PR with test analysis
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            let comment = '## 🧪 Test Results Analysis\\n\\n';
+            
+            try {
+              // Check if test artifacts exist
+              const resultsDir = './test-results';
+              if (fs.existsSync(resultsDir)) {
+                comment += '### 📊 Test Artifacts Found\\n';
+                
+                // Look for cypress logs
+                const cypressLogs = fs.readdirSync(resultsDir, { recursive: true })
+                  .filter(file => file.includes('cypress-logs.txt'));
+                
+                if (cypressLogs.length > 0) {
+                  comment += '- ✅ Cypress test logs captured\\n';
+                  
+                  // Try to read and analyze logs
+                  try {
+                    const logContent = fs.readFileSync(path.join(resultsDir, cypressLogs[0]), 'utf8');
+                    
+                    if (logContent.includes('All specs passed')) {
+                      comment += '- ✅ All Cypress tests passed\\n';
+                    } else if (logContent.includes('failing')) {
+                      comment += '- ❌ Some Cypress tests failed\\n';
+                    }
+                    
+                    // Extract test summary
+                    const lines = logContent.split('\\n');
+                    const summaryLines = lines.filter(line => 
+                      line.includes('passing') || line.includes('failing') || line.includes('specs passed')
+                    );
+                    
+                    if (summaryLines.length > 0) {
+                      comment += '\\n**Test Summary:**\\n```\\n';
+                      summaryLines.slice(-5).forEach(line => {
+                        comment += line.trim() + '\\n';
+                      });
+                      comment += '```\\n';
+                    }
+                  } catch (e) {
+                    comment += '- ⚠️ Could not parse test logs\\n';
+                  }
+                } else {
+                  comment += '- ⚠️ No Cypress logs found\\n';
+                }
+                
+                // Check for screenshots (failures)
+                const screenshots = fs.readdirSync(resultsDir, { recursive: true })
+                  .filter(file => file.includes('screenshots'));
+                
+                if (screenshots.length > 0) {
+                  comment += `- 📸 ${screenshots.length} screenshot(s) captured (likely from test failures)\\n`;
+                }
+                
+              } else {
+                comment += '### ⚠️ No Test Artifacts Found\\n';
+                comment += 'Test artifacts may not have been uploaded properly.\\n';
+              }
+              
+            } catch (error) {
+              comment += `### ❌ Error Analyzing Results\\n\`\`\`\\n${error.message}\\n\`\`\`\\n`;
+            }
+            
+            comment += '\\n---\\n*This analysis is generated automatically from test artifacts.*';
+            
+            // Post comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

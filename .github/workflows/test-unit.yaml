@@ -339,16 +339,17 @@ jobs:
               sleep 10
             fi
             
-            # Run the actual test with better output capture
+            # Run the test with proper logging
             echo "🎯 Starting Cypress tests..."
             set +e  # Don't exit on error
             
-            # Create a unique container name for this run
-            CONTAINER_NAME="cypress-test-run-${attempt}-$(date +%s)"
+            # Run the command and capture both stdout and stderr
+            echo "Executing: docker compose run cypress percy exec -- npm run cypress run"
             
-            # Run with explicit container name and capture output differently
-            echo "Creating container: $CONTAINER_NAME"
+            # Use a different approach - run command in background and capture logs
+            CONTAINER_NAME="cypress-test-${attempt}-$(date +%s)"
             
+            # Start the container with logging
             docker compose run \
               --name "$CONTAINER_NAME" \
               -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
@@ -359,31 +360,46 @@ jobs:
               -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
               -e PERCY_PARALLEL=true \
               -e PERCY_LOGLEVEL=debug \
-              cypress percy exec -- npm run cypress run > ../test-artifacts/cypress-logs-attempt-${attempt}.txt 2>&1
+              cypress \
+              bash -c "
+                echo '=== Starting Cypress Test Execution ===' 
+                echo 'Current directory:' \$(pwd)
+                echo 'Node version:' \$(node --version)
+                echo 'NPM version:' \$(npm --version)
+                echo 'Cypress binary:' \$(npx cypress version || echo 'Cypress not found')
+                echo 'Percy version:' \$(npx percy --version || echo 'Percy not found')
+                echo 'Available scripts:'
+                npm run | grep cypress || echo 'No cypress scripts found'
+                echo ''
+                echo '=== Environment Variables ==='
+                env | grep -E '(PERCY|CYPRESS)' | sort
+                echo ''
+                echo '=== Running Percy + Cypress ==='
+                percy exec -- npm run cypress run
+                echo 'Exit code:' \$?
+                echo '=== Test Execution Complete ==='
+              " 2>&1 | tee ../test-artifacts/cypress-logs-attempt-${attempt}.txt
             
-            test_exit_code=$?
-            
-            # Also capture the container logs separately
-            echo "Capturing container logs from: $CONTAINER_NAME"
-            docker logs "$CONTAINER_NAME" > ../test-artifacts/cypress-container-logs-attempt-${attempt}.txt 2>&1 || echo "Could not capture container logs"
-            
+            test_exit_code=${PIPESTATUS[0]}
             set -e  # Re-enable exit on error
             
-            # Show what we captured immediately
+            # Show immediate feedback
             echo ""
-            echo "📊 Immediate output preview (first 20 lines):"
-            head -20 ../test-artifacts/cypress-logs-attempt-${attempt}.txt || echo "No output captured"
-            
+            echo "📊 Test execution completed with exit code: $test_exit_code"
             echo ""
-            echo "📊 Immediate output preview (last 20 lines):"
-            tail -20 ../test-artifacts/cypress-logs-attempt-${attempt}.txt || echo "No output captured"
+            echo "📋 Captured output preview:"
+            echo "--- First 30 lines ---"
+            head -30 ../test-artifacts/cypress-logs-attempt-${attempt}.txt || echo "No output captured"
+            echo ""
+            echo "--- Last 30 lines ---"
+            tail -30 ../test-artifacts/cypress-logs-attempt-${attempt}.txt || echo "No output captured"
             
             if [ $test_exit_code -eq 0 ]; then
               echo ""
               echo "✅ Tests passed on attempt $attempt"
               echo "==========================================="
               
-              # Copy the successful log as the main log
+              # Copy the successful log
               cp ../test-artifacts/cypress-logs-attempt-${attempt}.txt ../test-artifacts/cypress-logs.txt
               break
             else
@@ -391,12 +407,16 @@ jobs:
               echo "❌ Tests failed on attempt $attempt (exit code: $test_exit_code)"
               echo "==========================================="
               
+              # Show error analysis
+              echo "🔍 Error analysis from attempt $attempt:"
+              grep -i -E "(error|failed|timeout|exception)" ../test-artifacts/cypress-logs-attempt-${attempt}.txt | head -10 || echo "No errors found in output"
+              
               if [ $attempt -eq $max_attempts ]; then
                 echo "💥 All attempts failed"
                 echo "==========================================="
                 
-                # Combine all attempt logs
-                echo "📋 Full test output from all attempts:" > ../test-artifacts/cypress-logs.txt
+                # Combine all logs
+                echo "=== COMBINED LOGS FROM ALL ATTEMPTS ===" > ../test-artifacts/cypress-logs.txt
                 for i in $(seq 1 $attempt); do
                   if [ -f ../test-artifacts/cypress-logs-attempt-${i}.txt ]; then
                     echo "" >> ../test-artifacts/cypress-logs.txt
@@ -404,6 +424,10 @@ jobs:
                     cat ../test-artifacts/cypress-logs-attempt-${i}.txt >> ../test-artifacts/cypress-logs.txt
                   fi
                 done
+                
+                echo ""
+                echo "📋 Final summary from all attempts:"
+                grep -E "(Starting Cypress|Test Execution Complete|Exit code|percy|cypress)" ../test-artifacts/cypress-logs.txt | tail -20 || echo "No summary available"
                 
                 exit 1
               fi
@@ -413,7 +437,7 @@ jobs:
               ((attempt++))
             fi
             
-            # Clean up the container
+            # Clean up container
             docker rm "$CONTAINER_NAME" 2>/dev/null || true
           done
 

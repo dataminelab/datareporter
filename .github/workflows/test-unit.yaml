@@ -534,7 +534,7 @@ jobs:
   analyze-test-results:
     runs-on: ubuntu-latest
     if: always() && github.event_name == 'pull_request'
-    needs: [backend-unit-tests, frontend-e2e-tests]
+    needs: frontend-e2e-tests
     steps:
       - uses: actions/checkout@v4
       

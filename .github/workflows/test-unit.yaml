@@ -435,6 +435,139 @@ jobs:
             size=$(du -h "$file" 2>/dev/null | cut -f1)
             echo "  $file ($size)"
           done || echo "No artifacts captured"
+
+      - name: Upload Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: test-artifacts/
+          retention-days: 7
+
+      - name: Analyze and Comment on Test Results
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            let comment = '## 🧪 E2E Test Results Analysis\n\n';
+            
+            try {
+              // Check if test artifacts exist
+              const resultsDir = './test-artifacts';
+              if (fs.existsSync(resultsDir)) {
+                comment += '### 📊 Test Artifacts Found\n';
+                
+                // Look for cypress logs
+                const logFile = path.join(resultsDir, 'cypress-logs.txt');
+                if (fs.existsSync(logFile)) {
+                  comment += '- ✅ Cypress test logs captured\n';
+                  
+                  try {
+                    const logContent = fs.readFileSync(logFile, 'utf8');
+                    const lines = logContent.split('\n');
+                    
+                    // Look for test summary patterns
+                    const summaryLines = lines.filter(line => 
+                      line.match(/\d+\s+(passing|failing)/) || 
+                      line.includes('All specs passed') ||
+                      line.includes('specs passed') ||
+                      line.match(/✓|✗|×/) ||
+                      line.includes('Test Execution Complete') ||
+                      line.match(/Running:\s+\d+/) ||
+                      line.match(/\d+\s+of\s+\d+/)
+                    );
+                    
+                    if (summaryLines.length > 0) {
+                      comment += '\n**Test Summary:**\n```\n';
+                      summaryLines.slice(-10).forEach(line => {
+                        comment += line.trim() + '\n';
+                      });
+                      comment += '```\n';
+                    }
+                    
+                    // Check for failures
+                    const failureLines = lines.filter(line => 
+                      line.toLowerCase().includes('failing') ||
+                      line.toLowerCase().includes('failed') ||
+                      line.includes('✗') ||
+                      line.includes('×')
+                    );
+                    
+                    if (failureLines.length > 0) {
+                      comment += '\n**❌ Failures Detected:**\n```\n';
+                      failureLines.slice(0, 5).forEach(line => {
+                        comment += line.trim() + '\n';
+                      });
+                      comment += '```\n';
+                    } else {
+                      comment += '\n**✅ No failures detected in logs**\n';
+                    }
+                    
+                  } catch (e) {
+                    comment += '- ⚠️ Could not parse test logs: ' + e.message + '\n';
+                  }
+                } else {
+                  comment += '- ⚠️ No Cypress logs found\n';
+                }
+                
+                // Count artifacts
+                const videoDir = path.join(resultsDir, 'videos');
+                const screenshotDir = path.join(resultsDir, 'screenshots');
+                
+                if (fs.existsSync(videoDir)) {
+                  const videoFiles = fs.readdirSync(videoDir, { recursive: true })
+                    .filter(file => file.endsWith('.mp4'));
+                  comment += `- 🎥 ${videoFiles.length} test video(s) captured\n`;
+                }
+                
+                if (fs.existsSync(screenshotDir)) {
+                  const screenshotFiles = fs.readdirSync(screenshotDir, { recursive: true })
+                    .filter(file => file.match(/\.(png|jpg|jpeg)$/));
+                  comment += `- 📸 ${screenshotFiles.length} screenshot(s) captured\n`;
+                }
+                
+                // Show artifact summary
+                comment += '\n**Artifacts Summary:**\n';
+                try {
+                  const allFiles = fs.readdirSync(resultsDir, { recursive: true });
+                  let totalSize = 0;
+                  let fileCount = 0;
+                  
+                  allFiles.forEach(file => {
+                    const filePath = path.join(resultsDir, file);
+                    if (fs.statSync(filePath).isFile()) {
+                      totalSize += fs.statSync(filePath).size;
+                      fileCount++;
+                    }
+                  });
+                  
+                  comment += `- 📁 ${fileCount} files captured\n`;
+                  comment += `- 💾 Total size: ${Math.round(totalSize / 1024 / 1024)}MB\n`;
+                } catch (e) {
+                  comment += `- ⚠️ Could not calculate artifact stats: ${e.message}\n`;
+                }
+                
+              } else {
+                comment += '### ⚠️ No Test Artifacts Found\n';
+                comment += 'This usually indicates that tests did not run or artifacts were not saved properly.\n';
+              }
+              
+            } catch (error) {
+              comment += `### ❌ Error Analyzing Results\n\`\`\`\n${error.message}\n\`\`\`\n`;
+            }
+            
+            comment += '\n---\n*This analysis is generated from E2E test artifacts.*';
+            
+            // Post comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
   analyze-test-results:
     if: always() && github.event_name == 'pull_request'
     uses: ./.github/workflows/analyze-test-results.yaml

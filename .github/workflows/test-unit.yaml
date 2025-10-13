@@ -531,11 +531,6 @@ jobs:
             size=$(du -h "$file" 2>/dev/null | cut -f1)
             echo "  $file ($size)"
           done || echo "No artifacts captured"
-  analyze-test-results:
-    if: always() && github.event_name == 'pull_request'
-    uses: ./.github/workflows/analyze-test-results.yaml
-    with:
-      ref: ${{ github.event.pull_request.head.sha }}
   frontend-e2e-debug:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -699,3 +694,9 @@ jobs:
             mv "$backup" "$original"
             echo "Restored $original"
           done
+  analyze-test-results:
+    if: always() && github.event_name == 'pull_request'
+    uses: ./.github/workflows/analyze-test-results.yaml
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
+    needs: frontend-e2e-tests

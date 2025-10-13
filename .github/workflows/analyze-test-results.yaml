@@ -87,49 +87,76 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             
-            let comment = '## 🧪 Test Results Analysis\\n\\n';
+            let comment = '## 🧪 Test Results Analysis\n\n';
             
             try {
               // Check if test artifacts exist
               const resultsDir = './test-results';
               if (fs.existsSync(resultsDir)) {
-                comment += '### 📊 Test Artifacts Found\\n';
+                comment += '### 📊 Test Artifacts Found\n';
                 
                 // Look for cypress logs
                 const cypressLogs = fs.readdirSync(resultsDir, { recursive: true })
                   .filter(file => file.includes('cypress-logs.txt'));
                 
                 if (cypressLogs.length > 0) {
-                  comment += '- ✅ Cypress test logs captured\\n';
+                  comment += '- ✅ Cypress test logs captured\n';
                   
                   // Try to read and analyze logs
                   try {
                     const logContent = fs.readFileSync(path.join(resultsDir, cypressLogs[0]), 'utf8');
                     
-                    if (logContent.includes('All Cypress tests passed')) {
-                      comment += '- ✅ All Cypress tests passed\\n';
+                    if (logContent.includes('All specs passed')) {
+                      comment += '- ✅ All Cypress tests passed\n';
                     } else if (logContent.includes('failing')) {
-                      comment += '- ❌ Some Cypress tests failed\\n';
+                      comment += '- ❌ Some Cypress tests failed\n';
                     }
                     
-                    // Extract test summary
-                    const lines = logContent.split('\\n');
+                    // Extract test summary - look for actual Cypress output patterns
+                    const lines = logContent.split('\n');
                     const summaryLines = lines.filter(line => 
-                      line.includes('passing') || line.includes('failing') || line.includes('specs passed')
+                      line.match(/\d+\s+(passing|failing)/) || 
+                      line.includes('All specs passed') ||
+                      line.includes('specs passed') ||
+                      line.match(/✓|✗|×/) ||
+                      line.includes('Test Execution Complete')
                     );
                     
                     if (summaryLines.length > 0) {
-                      comment += '\\n**Test Summary:**\\n```\\n';
-                      summaryLines.slice(-5).forEach(line => {
-                        comment += line.trim() + '\\n';
+                      comment += '\n**Test Summary:**\n```\n';
+                      summaryLines.slice(-10).forEach(line => {
+                        comment += line.trim() + '\n';
                       });
-                      comment += '```\\n';
+                      comment += '```\n';
+                    } else {
+                      // Show last 10 lines if no summary found
+                      comment += '\n**Last 10 lines of log:**\n```\n';
+                      lines.slice(-10).forEach(line => {
+                        if (line.trim()) comment += line.trim() + '\n';
+                      });
+                      comment += '```\n';
                     }
+                    
+                    // Check for specific error patterns
+                    const errorLines = lines.filter(line => 
+                      line.toLowerCase().includes('error') ||
+                      line.toLowerCase().includes('failed') ||
+                      line.toLowerCase().includes('timeout')
+                    );
+                    
+                    if (errorLines.length > 0) {
+                      comment += '\n**Errors Found:**\n```\n';
+                      errorLines.slice(-5).forEach(line => {
+                        comment += line.trim() + '\n';
+                      });
+                      comment += '```\n';
+                    }
+                    
                   } catch (e) {
-                    comment += '- ⚠️ Could not parse test logs\\n';
+                    comment += '- ⚠️ Could not parse test logs: ' + e.message + '\n';
                   }
                 } else {
-                  comment += '- ⚠️ No Cypress logs found\\n';
+                  comment += '- ⚠️ No Cypress logs found\n';
                 }
                 
                 // Check for screenshots (failures)
@@ -137,19 +164,34 @@ jobs:
                   .filter(file => file.includes('screenshots'));
                 
                 if (screenshots.length > 0) {
-                  comment += `- 📸 ${screenshots.length} screenshot(s) captured (likely from test failures)\\n`;
+                  comment += `- 📸 ${screenshots.length} screenshot(s) captured (likely from test failures)\n`;
                 }
                 
+                // Show what files we actually found
+                comment += '\n**Artifacts Found:**\n';
+                const allFiles = fs.readdirSync(resultsDir, { recursive: true });
+                allFiles.forEach(file => {
+                  const filePath = path.join(resultsDir, file);
+                  if (fs.statSync(filePath).isFile()) {
+                    const size = Math.round(fs.statSync(filePath).size / 1024);
+                    comment += `- ${file} (${size}KB)\n`;
+                  }
+                });
+                
               } else {
-                comment += '### ⚠️ No Test Artifacts Found\\n';
-                comment += 'Test artifacts may not have been uploaded properly.\\n';
+                comment += '### ⚠️ No Test Artifacts Found\n';
+                comment += 'Test artifacts may not have been uploaded properly.\n';
+                comment += '\nThis usually means:\n';
+                comment += '- Tests did not run\n';
+                comment += '- Artifacts were not uploaded\n';
+                comment += '- Upload step failed\n';
               }
               
             } catch (error) {
-              comment += `### ❌ Error Analyzing Results\\n\`\`\`\\n${error.message}\\n\`\`\`\\n`;
+              comment += `### ❌ Error Analyzing Results\n\`\`\`\n${error.message}\n\`\`\`\n`;
             }
             
-            comment += '\\n---\\n*This analysis is generated automatically from test artifacts.*';
+            comment += '\n---\n*This analysis is generated automatically from test artifacts.*';
             
             // Post comment
             github.rest.issues.createComment({

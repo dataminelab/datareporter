@@ -536,3 +536,166 @@ jobs:
     uses: ./.github/workflows/analyze-test-results.yaml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
+  frontend-e2e-debug:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    needs: [frontend-unit-tests, backend-unit-tests]
+    env:
+      COMPOSE_FILE: .ci/compose.cypress.yml
+      COMPOSE_PROJECT_NAME: cypress
+      # CYPRESS_INSTALL_BINARY: 0
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+      COMPOSE_BAKE: true
+      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}  # Change from CYPRESS_PROJECT_ID
+      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      PERCY_PARALLEL_TOTAL: 1
+      PERCY_PARALLEL_NONCE: ${{ github.run_id }}
+      PERCY_PARALLEL: true
+      PERCY_BRANCH: ${{ github.head_ref }}
+      PERCY_COMMIT: ${{ github.sha }}
+      PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
+      COMMIT_INFO_BRANCH: ${{ github.head_ref }}
+      COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+      COMMIT_INFO_AUTHOR: ${{ github.event.pull_request.user.login }}
+      COMMIT_INFO_SHA: ${{ github.sha }}
+      PERCY_LOGLEVEL: debug
+    steps:
+      - if: github.event.pull_request.mergeable == 'false'
+        name: Exit if PR is not mergeable
+        run: exit 1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Enable Code Coverage Report For Develop Branch
+        if: endsWith(github.ref, '/develop') || endsWith(github.ref, '/main')
+        run: |
+          echo "CODE_COVERAGE=true" >> "$GITHUB_ENV"
+      - name: Install Dependencies
+        working-directory: client
+        run: |
+          npm install
+          npm install --save-dev @percy/cypress @percy/cli
+      - name: Check and Install Cypress Binary
+        run: |
+          if npx cypress verify; then
+            echo "Cypress is already installed."
+          else
+            echo "Cypress not found, installing..."
+            npx cypress install --force
+          fi
+      - name: Ensure .ci/compose.cypress.yml exists in client
+        run: |
+          if [ ! -f client/.ci/compose.cypress.yml ] && [ -f .ci/compose.cypress.yml ]; then
+            mkdir -p client/.ci
+            cp .ci/compose.cypress.yml client/.ci/compose.cypress.yml
+          fi
+      - name: Setup Datareporter Server
+        run: docker build -f .ci/Dockerfile.cypress -t cypress .
+      - name: Setup Cypress Server
+        working-directory: client
+        run: |
+          set -x
+          npm run cypress build
+          npm run cypress start -- --skip-db-seed
+          docker compose run \
+            -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
+            -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
+            -e PERCY_COMMIT="${{ github.sha }}" \
+            -e PERCY_PULL_REQUEST="${{ github.event.pull_request.number }}" \
+            -e PERCY_PARALLEL_TOTAL=1 \
+            -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
+            -e PERCY_PARALLEL=true \
+            -e PERCY_LOGLEVEL=debug \
+            -e COMMIT_INFO_BRANCH="${{ github.head_ref || github.ref_name }}" \
+            -e COMMIT_INFO_MESSAGE="${{ github.event.pull_request.title || github.event.head_commit.message }}" \
+            -e COMMIT_INFO_AUTHOR="${{ github.event.pull_request.user.login || github.actor }}" \
+            -e COMMIT_INFO_SHA="${{ github.sha }}" \
+            cypress npm run cypress db-seed
+          sleep 10
+      - name: Execute Cypress Tests (Debug Failure Mode)
+        working-directory: client
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
+          PERCY_COMMIT: ${{ github.sha }}
+          PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
+          PERCY_PARALLEL_TOTAL: 1
+          PERCY_PARALLEL_NONCE: ${{ github.run_id }}
+          PERCY_PARALLEL: true
+          PERCY_LOGLEVEL: debug
+        run: |
+          echo "🎯 Running FAILING tests to test error reporting..."
+          
+          # Create directory for logs
+          mkdir -p ../test-artifacts
+          
+          # Run only the debug test (which will fail)
+          set +e  # Don't exit on error
+          
+          docker compose run \
+            -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
+            -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
+            -e PERCY_COMMIT="${{ github.sha }}" \
+            -e PERCY_PULL_REQUEST="${{ github.event.pull_request.number }}" \
+            -e PERCY_PARALLEL_TOTAL=1 \
+            -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
+            -e PERCY_PARALLEL=true \
+            -e PERCY_LOGLEVEL=debug \
+            cypress \
+            bash -c "
+              echo '=== Starting INTENTIONAL FAILURE Test ===' 
+              echo 'Current directory:' \$(pwd)
+              echo 'Node version:' \$(node --version)
+              echo 'Cypress version:' \$(npx cypress version)
+              echo ''
+              echo '=== Running FAILING test specifically ==='
+              npx cypress run --spec 'cypress/e2e/debug/debug_failure_test.cy.js' --reporter spec
+              echo 'Exit code:' \$?
+              echo '=== Test Execution Complete ==='
+            " 2>&1 | tee ../test-artifacts/cypress-failure-logs.txt
+          
+          test_exit_code=${PIPESTATUS[0]}
+          set -e  # Re-enable exit on error
+          
+          echo ""
+          echo "📊 FAILURE Test completed with exit code: $test_exit_code"
+          echo ""
+          echo "📋 Full captured output:"
+          cat ../test-artifacts/cypress-failure-logs.txt
+          
+          echo ""
+          echo "🔍 Looking for failure indicators:"
+          grep -i -E "(fail|error|timeout|✗|×)" ../test-artifacts/cypress-failure-logs.txt || echo "No failure indicators found"
+          
+          echo ""
+          echo "🔍 Looking for test results:"
+          grep -E "([0-9]+ failing|[0-9]+ passing)" ../test-artifacts/cypress-failure-logs.txt || echo "No test counts found"
+          
+          # Don't exit with failure - we want to see the output
+          echo "⚠️ Expected failure test completed - continuing to see results"
+      - name: Restore Original Test Files
+        if: always()
+        working-directory: client
+        run: |
+          echo "🧹 Restoring original test files..."
+          
+          # Remove debug test
+          rm -f cypress/e2e/debug/debug_failure_test.cy.js
+          rmdir cypress/e2e/debug 2>/dev/null || true
+          
+          # Restore any backed up files
+          find cypress/e2e -name "*.cy.js.backup" | while read backup; do
+            original="${backup%.backup}"
+            mv "$backup" "$original"
+            echo "Restored $original"
+          done

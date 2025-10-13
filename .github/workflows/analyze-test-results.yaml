@@ -289,19 +289,3 @@ jobs:
           
           # Don't exit with failure - we want to see the output
           echo "⚠️ Expected failure test completed - continuing to see results"
-      - name: Restore Original Test Files
-        if: always()
-        working-directory: client
-        run: |
-          echo "🧹 Restoring original test files..."
-          
-          # Remove debug test
-          rm -f cypress/e2e/debug/debug_failure_test.cy.js
-          rmdir cypress/e2e/debug 2>/dev/null || true
-          
-          # Restore any backed up files
-          find cypress/e2e -name "*.cy.js.backup" | while read backup; do
-            original="${backup%.backup}"
-            mv "$backup" "$original"
-            echo "Restored $original"
-          done

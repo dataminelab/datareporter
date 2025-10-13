@@ -1,0 +1,307 @@
+name: Restyled
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'The git reference to checkout'
+        required: false
+        type: string
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-test-results:
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./test-results
+        continue-on-error: true
+      
+      - name: Analyze test patterns
+        run: |
+          python3 -c "
+          import os
+          from pathlib import Path
+          
+          results_dir = Path('./test-results')
+          
+          if results_dir.exists():
+              print('📊 Downloaded Test Artifacts Analysis')
+              print('=' * 50)
+              
+              # Show what we downloaded
+              for artifact in results_dir.rglob('*'):
+                  if artifact.is_file():
+                      size_kb = artifact.stat().st_size // 1024
+                      print(f'📁 {artifact.relative_to(results_dir)} ({size_kb}KB)')
+              
+              # Look for failure indicators
+              cypress_logs = list(results_dir.glob('**/cypress-logs.txt'))
+              if cypress_logs:
+                  print(f'\\n🔍 Found Cypress logs: {len(cypress_logs)} file(s)')
+                  for log_file in cypress_logs:
+                    try:
+                        content = log_file.read_text()
+                        if 'failing' in content.lower():
+                            print('⚠️  Test failures detected in logs')
+                        if 'passing' in content.lower():
+                            print('✅ Test passes detected in logs')
+                        
+                        # Show summary lines
+                        lines = content.split('\\n')
+                        summary_lines = [line for line in lines if any(keyword in line.lower() for keyword in ['passing', 'failing', 'specs passed', 'error'])]
+                        if summary_lines:
+                            print('📋 Test Summary:')
+                            for line in summary_lines[-10:]:  # Last 10 relevant lines
+                                print(f'   {line.strip()}')
+                    except Exception as e:
+                        print(f'❌ Error reading {log_file}: {e}')
+              
+              # Look for screenshots (test failures)
+              screenshots = list(results_dir.glob('**/screenshots/**/*'))
+              if screenshots:
+                  print(f'\\n📸 Found {len(screenshots)} screenshot(s) - likely test failures')
+              
+              # Look for videos
+              videos = list(results_dir.glob('**/videos/**/*'))
+              if videos:
+                  print(f'📹 Found {len(videos)} video(s)')
+          else:
+              print('ℹ️  No test results downloaded')
+          "
+      
+      - name: Comment on PR with test analysis
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            let comment = '## 🧪 Test Results Analysis\\n\\n';
+            
+            try {
+              // Check if test artifacts exist
+              const resultsDir = './test-results';
+              if (fs.existsSync(resultsDir)) {
+                comment += '### 📊 Test Artifacts Found\\n';
+                
+                // Look for cypress logs
+                const cypressLogs = fs.readdirSync(resultsDir, { recursive: true })
+                  .filter(file => file.includes('cypress-logs.txt'));
+                
+                if (cypressLogs.length > 0) {
+                  comment += '- ✅ Cypress test logs captured\\n';
+                  
+                  // Try to read and analyze logs
+                  try {
+                    const logContent = fs.readFileSync(path.join(resultsDir, cypressLogs[0]), 'utf8');
+                    
+                    if (logContent.includes('All Cypress tests passed')) {
+                      comment += '- ✅ All Cypress tests passed\\n';
+                    } else if (logContent.includes('failing')) {
+                      comment += '- ❌ Some Cypress tests failed\\n';
+                    }
+                    
+                    // Extract test summary
+                    const lines = logContent.split('\\n');
+                    const summaryLines = lines.filter(line => 
+                      line.includes('passing') || line.includes('failing') || line.includes('specs passed')
+                    );
+                    
+                    if (summaryLines.length > 0) {
+                      comment += '\\n**Test Summary:**\\n```\\n';
+                      summaryLines.slice(-5).forEach(line => {
+                        comment += line.trim() + '\\n';
+                      });
+                      comment += '```\\n';
+                    }
+                  } catch (e) {
+                    comment += '- ⚠️ Could not parse test logs\\n';
+                  }
+                } else {
+                  comment += '- ⚠️ No Cypress logs found\\n';
+                }
+                
+                // Check for screenshots (failures)
+                const screenshots = fs.readdirSync(resultsDir, { recursive: true })
+                  .filter(file => file.includes('screenshots'));
+                
+                if (screenshots.length > 0) {
+                  comment += `- 📸 ${screenshots.length} screenshot(s) captured (likely from test failures)\\n`;
+                }
+                
+              } else {
+                comment += '### ⚠️ No Test Artifacts Found\\n';
+                comment += 'Test artifacts may not have been uploaded properly.\\n';
+              }
+              
+            } catch (error) {
+              comment += `### ❌ Error Analyzing Results\\n\`\`\`\\n${error.message}\\n\`\`\`\\n`;
+            }
+            
+            comment += '\\n---\\n*This analysis is generated automatically from test artifacts.*';
+            
+            // Post comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+      - name: Debug Test Output Immediately
+        if: always()
+        working-directory: client
+        run: |
+          echo "🔍 Immediate Debug - What did we actually capture?"
+          echo "=================================================="
+          
+          echo "📁 Files in test-artifacts:"
+          ls -la ../test-artifacts/ || echo "No test-artifacts directory"
+          
+          if [ -f ../test-artifacts/cypress-logs.txt ]; then
+            echo ""
+            echo "📄 Size of cypress-logs.txt:"
+            wc -l ../test-artifacts/cypress-logs.txt
+            
+            echo ""
+            echo "📄 First 30 lines of cypress-logs.txt:"
+            head -30 ../test-artifacts/cypress-logs.txt
+            
+            echo ""
+            echo "📄 Last 30 lines of cypress-logs.txt:"
+            tail -30 ../test-artifacts/cypress-logs.txt
+            
+            echo ""
+            echo "🔍 What does this file contain?"
+            echo "- Contains 'cypress':" $(grep -c -i cypress ../test-artifacts/cypress-logs.txt || echo "0")
+            echo "- Contains 'spec':" $(grep -c -i spec ../test-artifacts/cypress-logs.txt || echo "0")
+            echo "- Contains 'test':" $(grep -c -i test ../test-artifacts/cypress-logs.txt || echo "0")
+            echo "- Contains 'percy':" $(grep -c -i percy ../test-artifacts/cypress-logs.txt || echo "0")
+            echo "- Total lines:" $(wc -l < ../test-artifacts/cypress-logs.txt || echo "0")
+            
+          else
+            echo "❌ No cypress-logs.txt found!"
+          fi
+      - name: Create Intentional Test Failure (for debugging)
+        working-directory: client
+        run: |
+          echo "🔧 Creating intentional test failure to test error reporting..."
+          
+          # Create a simple failing test
+          mkdir -p cypress/e2e/debug
+          cat > cypress/e2e/debug/debug_failure_test.cy.js << 'EOF'
+          describe('Debug Test Failure', () => {
+            it('should intentionally fail to test error reporting', () => {
+              cy.visit('/login')
+              cy.get('[data-cy="email"]').type('test@example.com')
+              cy.get('[data-cy="password"]').type('wrongpassword')
+              cy.get('[data-cy="login-button"]').click()
+              
+              // This will intentionally fail
+              cy.contains('Welcome to Dashboard').should('be.visible')
+              
+              // This will also fail
+              expect(1).to.equal(2, 'Intentional failure for debugging')
+            })
+            
+            it('should also fail with a timeout', () => {
+              cy.visit('/login')
+              // This selector doesn't exist - will timeout
+              cy.get('[data-cy="non-existent-element"]', { timeout: 5000 }).should('be.visible')
+            })
+          })
+          EOF
+          
+          echo "✅ Created debug test file at cypress/e2e/debug/debug_failure_test.cy.js"
+          echo "📋 Test content:"
+          cat cypress/e2e/debug/debug_failure_test.cy.js
+      - name: Execute Cypress Tests (Debug Failure Mode)
+        working-directory: client
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
+          PERCY_COMMIT: ${{ github.sha }}
+          PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
+          PERCY_PARALLEL_TOTAL: 1
+          PERCY_PARALLEL_NONCE: ${{ github.run_id }}
+          PERCY_PARALLEL: true
+          PERCY_LOGLEVEL: debug
+        run: |
+          echo "🎯 Running FAILING tests to test error reporting..."
+          
+          # Create directory for logs
+          mkdir -p ../test-artifacts
+          
+          # Run only the debug test (which will fail)
+          set +e  # Don't exit on error
+          
+          docker compose run \
+            -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
+            -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
+            -e PERCY_COMMIT="${{ github.sha }}" \
+            -e PERCY_PULL_REQUEST="${{ github.event.pull_request.number }}" \
+            -e PERCY_PARALLEL_TOTAL=1 \
+            -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
+            -e PERCY_PARALLEL=true \
+            -e PERCY_LOGLEVEL=debug \
+            cypress \
+            bash -c "
+              echo '=== Starting INTENTIONAL FAILURE Test ===' 
+              echo 'Current directory:' \$(pwd)
+              echo 'Node version:' \$(node --version)
+              echo 'Cypress version:' \$(npx cypress version)
+              echo ''
+              echo '=== Running FAILING test specifically ==='
+              npx cypress run --spec 'cypress/e2e/debug/debug_failure_test.cy.js' --reporter spec
+              echo 'Exit code:' \$?
+              echo '=== Test Execution Complete ==='
+            " 2>&1 | tee ../test-artifacts/cypress-failure-logs.txt
+          
+          test_exit_code=${PIPESTATUS[0]}
+          set -e  # Re-enable exit on error
+          
+          echo ""
+          echo "📊 FAILURE Test completed with exit code: $test_exit_code"
+          echo ""
+          echo "📋 Full captured output:"
+          cat ../test-artifacts/cypress-failure-logs.txt
+          
+          echo ""
+          echo "🔍 Looking for failure indicators:"
+          grep -i -E "(fail|error|timeout|✗|×)" ../test-artifacts/cypress-failure-logs.txt || echo "No failure indicators found"
+          
+          echo ""
+          echo "🔍 Looking for test results:"
+          grep -E "([0-9]+ failing|[0-9]+ passing)" ../test-artifacts/cypress-failure-logs.txt || echo "No test counts found"
+          
+          # Don't exit with failure - we want to see the output
+          echo "⚠️ Expected failure test completed - continuing to see results"
+      - name: Restore Original Test Files
+        if: always()
+        working-directory: client
+        run: |
+          echo "🧹 Restoring original test files..."
+          
+          # Remove debug test
+          rm -f cypress/e2e/debug/debug_failure_test.cy.js
+          rmdir cypress/e2e/debug 2>/dev/null || true
+          
+          # Restore any backed up files
+          find cypress/e2e -name "*.cy.js.backup" | while read backup; do
+            original="${backup%.backup}"
+            mv "$backup" "$original"
+            echo "Restored $original"
+          done

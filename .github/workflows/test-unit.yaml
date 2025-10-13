@@ -699,4 +699,4 @@ jobs:
     uses: ./.github/workflows/analyze-test-results.yaml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
-    needs: frontend-e2e-tests
+    needs: [frontend-e2e-tests, frontend-e2e-debug]

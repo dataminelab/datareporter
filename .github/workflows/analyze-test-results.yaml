@@ -17,6 +17,9 @@ jobs:
   analyze-test-results:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download artifacts (for backup)
         uses: actions/download-artifact@v4
         with:
@@ -28,49 +31,28 @@ jobs:
           echo "📁 Downloaded artifacts for backup:"
           find test-results/ -type f | head -20
 
-      - name: Execute Cypress Tests with Percy
-        working-directory: client
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-          PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
-          PERCY_COMMIT: ${{ github.sha }}
-          PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
-        run: |
-          echo "🎯 Starting Cypress tests with Percy..."
-          
-          mkdir -p ../test-artifacts
-          
-          docker compose run \
-            -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
-            -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
-            -e PERCY_COMMIT="${{ github.sha }}" \
-            -e PERCY_PULL_REQUEST="${{ github.event.pull_request.number }}" \
-            -e CYPRESS_baseUrl="http://server:5000" \
-            cypress \
-            bash -c "
-              echo '=== Running Cypress Tests with Percy ==='
-              # Install percy if not available
-              npm install @percy/cli@1.28.8 || echo 'Percy already installed'
-              
-              # Run with Percy
-              npx @percy/cli exec -- npx cypress run --reporter spec --browser chrome
-              echo 'Exit code:' \$?
-            " 2>&1 | tee ../test-artifacts/cypress-percy-logs.txt
-
       - name: Upload Screenshots to Percy
         if: always()
-        working-directory: client
         run: |
           echo "📸 Uploading screenshots to Percy..."
           
-          # Extract screenshots from artifacts
-          if [ -d "../test-artifacts/screenshots" ]; then
-            # Install Percy CLI
+          # Check what we downloaded
+          if [ -d "test-results/screenshots" ]; then
+            echo "Found screenshots, uploading to Percy..."
+            
+            # Create temporary directory for Percy
+            mkdir -p temp-percy
+            cd temp-percy
+            
+            # Initialize npm and install Percy
+            npm init -y
             npm install @percy/cli@1.28.8
             
-            # Create Percy build
-            npx @percy/cli upload ../test-artifacts/screenshots \
-              --config percy.config.js
+            # Upload screenshots to Percy
+            PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
+            PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
+            PERCY_COMMIT="${{ github.sha }}" \
+            npx @percy/cli upload ../test-results/screenshots
           else
             echo "No screenshots found to upload"
           fi

@@ -30,5 +30,58 @@
             // client
             // npm run test:watch
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jest Debug",
+            "program": "${workspaceFolder}/client/node_modules/.bin/jest",
+            "args": [
+                "--runInBand",
+                "--testPathPattern=${fileBasenameNoExtension}"
+            ],
+            "cwd": "${workspaceFolder}/client",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "env": {
+                "TZ": "Africa/Khartoum"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jest Debug Current File",
+            "program": "${workspaceFolder}/client/node_modules/.bin/jest",
+            "args": [
+                "--runInBand",
+                "${relativeFile}"
+            ],
+            "cwd": "${workspaceFolder}/client",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "env": {
+                "TZ": "Africa/Khartoum"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Python: Remote",
+            "configurations": [
+                "Python Debugger: Remote Attach"
+            ]
+        },
+        {
+            "name": "Node: Attach",
+            "configurations": [
+                "Attach jest or mocha"
+            ]
+        }
+    ],
+    "keybindings": [
+        {
+            "command": "workbench.action.debug.reloadWindow",
+            "key": "ctrl+shift+f5",
+            "when": "inDebugRepl"
+        }
     ]
 }

@@ -76,6 +76,8 @@ services:
       COMMIT_INFO_REMOTE: ${CIRCLE_REPOSITORY_URL}
       CYPRESS_PROJECT_ID: ${CYPRESS_PROJECT_ID}
       CYPRESS_RECORD_KEY: ${CYPRESS_RECORD_KEY}
+    volumes:
+      - ./client/percy:/usr/src/app/client/percy
   redis:
     image: redis:7-alpine
     restart: unless-stopped

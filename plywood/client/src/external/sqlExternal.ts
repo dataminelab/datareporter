@@ -236,12 +236,6 @@ export abstract class SQLExternal extends External {
             .join(", "),
           from,
         );
-        // if (sort) {
-        //   query.push(sort.getSQL(dialect));
-        // }
-        // if (limit) {
-        //   query.push(limit.getSQL(dialect));
-        // }
         break;
 
       case "value":
@@ -288,12 +282,6 @@ export abstract class SQLExternal extends External {
         if (!this.havingFilter.equals(Expression.TRUE)) {
           query.push("HAVING " + this.havingFilter.getSQL(dialect));
         }
-        // if (sort) {
-        //   query.push(sort.getSQL(dialect));
-        // }
-        // if (limit) {
-        //   query.push(limit.getSQL(dialect));
-        // }
         inflaters = getSplitInflaters(split);
         break;
       }

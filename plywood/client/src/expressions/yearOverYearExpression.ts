@@ -103,12 +103,12 @@ export class YearOverYearExpression {
     delete this.query;
   }
 
-  public getQuery() {
+  public getQuery(): string {
     return this.query;
   }
 
-  public toString(indent?: int): string {
-    return indent.toString();
+  public toString(indent?: number): string {
+    return indent?.toString() ?? "";
   }
 
   protected sqlToQuery(sql: string): any {
@@ -120,7 +120,7 @@ export class YearOverYearExpression {
     return query.includes("_previous__") && query.includes("_delta__");
   }
 
-  public setEngine(engine: string) {
+  public setEngine(engine: string): void {
     this.engine = engine;
   }
 
@@ -139,7 +139,7 @@ export class YearOverYearExpression {
     this.timeRanges = timeRanges;
   }
 
-  public getTimeRanges() {
+  public getTimeRanges(): timeRangeType | undefined {
     return this.timeRanges;
   }
 

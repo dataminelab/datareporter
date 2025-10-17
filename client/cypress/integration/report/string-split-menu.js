@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { setupReportTests } from '../../support/reportHelpers';
+
 context("String Split Menu", () => {
   const splitTiles = () =>
     cy.get(".center-top-bar:not(.fallback) .filter-split-section");
@@ -45,12 +47,8 @@ context("String Split Menu", () => {
     limitSelection().should("contain", limit);
   }
 
-  beforeEach(() => {
-    cy.login();
-    cy.createReport();
-
+  setupReportTests(() => {
     cy.get("div.add-button").eq(1).click();
-
     cy.get("div.tile-row").eq(0).click();
     openChannelMenu();
   });

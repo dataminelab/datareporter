@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { setupReportTests } from '../../support/reportHelpers';
+
 context("Totals", () => {
   const topBar = () => cy.get(".center-top-bar:not(.fallback)");
   const filters = () => topBar().find(".filter-tile .items");
   const series = () => topBar().find(".series-tile .items");
   const visualization = () => cy.get(".visualization");
 
-  beforeEach(() => {
-    cy.login();
-    cy.createReport();
-  });
+  setupReportTests();
 
   it("should load Totals visualisation", () => {
     visualization().get(".totals").should("exist");

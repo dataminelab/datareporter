@@ -13,7 +13,7 @@ import { axios } from "@/services/axios";
 
 function ReportPage({ dashboardSlug, dashboardId, onError }) {
   const [config, setConfig] = useState({});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     async function getConfigTurnilo() {
       const result = await axios.get("/config-turnilo");
@@ -21,36 +21,40 @@ function ReportPage({ dashboardSlug, dashboardId, onError }) {
     }
     getConfigTurnilo();
   }, []);
-  if (config.appSettings) {
-    if (config.appSettings.customization.sentryDSN) {
-      errorReporterInit(
-        config.appSettings.customization.sentryDSN,
-        config.version,
-      );
-    }
 
-    const version = config.version;
-
-    Ajax.version = version;
-
-    const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory,
-    });
-
-    return (
-      <turnilo-widget>
-        <TurniloApplication
-          version={version}
-          appSettings={appSettings}
-          initTimekeeper={Timekeeper.fromJS(
-            config.timekeeper || { timeTags: {} },
-          )}
-        />
-      </turnilo-widget>
-    );
-  } else {
+  if (!config.appSettings) {
     return <div>Loading...</div>;
   }
+
+  if (config.appSettings.customization.sentryDSN) {
+    errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
+  }
+
+  Ajax.version = config.version;
+
+  const appSettings = AppSettings.fromJS(config.appSettings, {
+    executorFactory: Ajax.queryUrlExecutorFactory,
+  });
+
+  let initTimekeeper;
+  try {
+    const timekeeper = config.timekeeper && typeof config.timekeeper === 'object' && !Array.isArray(config.timekeeper)
+      ? config.timekeeper
+      : { timeTags: {} };
+    initTimekeeper = Timekeeper.fromJS(timekeeper);
+  } catch {
+    initTimekeeper = Timekeeper.fromJS({ timeTags: {} });
+  }
+
+  return (
+    <turnilo-widget>
+      <TurniloApplication
+        version={config.version}
+        appSettings={appSettings}
+        initTimekeeper={initTimekeeper}
+      />
+    </turnilo-widget>
+  );
 }
 
 ReportPage.propTypes = {
@@ -65,7 +69,6 @@ ReportPage.defaultProps = {
   onError: PropTypes.func,
 };
 
-// route kept for backward compatibility
 routes.register(
   "Turnilo.LegacyAddOrEdit",
   routeWithUserSession({

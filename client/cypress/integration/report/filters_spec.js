@@ -1,3 +1,5 @@
+import { setupReportTests } from '../../support/reportHelpers';
+
 context("Bar Chart", () => {
   const barChart = () => cy.get(".bar-chart");
   const xAxis = () => cy.get(".bar-chart-x-axis");
@@ -13,10 +15,7 @@ context("Bar Chart", () => {
     legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
 
   describe("Report Filters", () => {
-    beforeEach(() => {
-      cy.login();
-      cy.createReport();
-    });
+    setupReportTests();
 
     it("shows some data after datasource selection", () => {
       cy.get("div.total-container > .total > .measure-name").should("exist"); // Data Source

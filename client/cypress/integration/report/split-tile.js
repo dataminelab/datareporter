@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// not working
+import { setupReportTests } from '../../support/reportHelpers';
+
 context("Split Tile", () => {
   const splitsContainer = () =>
     cy.get(".center-top-bar:not(.fallback) .split-tile");
@@ -50,10 +51,7 @@ context("Split Tile", () => {
   };
 
   describe("No splits in View Definition", () => {
-    beforeEach(() => {
-      cy.login();
-      cy.createReport();
-    });
+    setupReportTests();
 
     it("should load with no splits", () => {
       splitItemsRow().should("be.empty");
@@ -107,9 +105,7 @@ context("Split Tile", () => {
   });
 
   describe("Api Key split already in View Definition", () => {
-    beforeEach(() => {
-      cy.login();
-      cy.createReport();
+    setupReportTests(() => {
       addSplitButton().click();
       addSplitMenu().find(".label:contains('Api Key')").click();
     });
@@ -197,9 +193,7 @@ context("Split Tile", () => {
   });
 
   describe("Remove action", () => {
-    beforeEach(() => {
-      cy.login();
-      cy.createReport();
+    setupReportTests(() => {
       addSplitButton().click();
       addSplitMenu().find(".label:contains('Api Key')").click();
       addSplitButton().click();
@@ -217,9 +211,7 @@ context("Split Tile", () => {
 
   describe("Drag and drop", () => {
     const dataTransfer = new DataTransfer();
-    beforeEach(() => {
-      cy.login();
-      cy.createReport();
+    setupReportTests(() => {
       addSplitButton().click();
       addSplitMenu().find(".label:contains('Api Key')").click();
     });
@@ -277,9 +269,7 @@ context("Split Tile", () => {
   });
 
   describe("Split menu", () => {
-    beforeEach(() => {
-      cy.login();
-      cy.createReport();
+    setupReportTests(() => {
       addSplitButton().click();
       addSplitMenu().find(".label:contains('Created At')").click();
     });

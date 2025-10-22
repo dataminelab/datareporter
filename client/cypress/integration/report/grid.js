@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { setupReportTests } from '../../support/reportHelpers';
+
 context("Grid", () => {
   const grid = () => cy.get(".internals.table-inner");
   const rows = () => grid().find(".split-value");
 
-  beforeEach(() => {
-    cy.login();
-    cy.createReport();
+  setupReportTests(() => {
     cy.get("div.add-button").eq(1).click();
     cy.get("div.tile-row").eq(1).click();
   });

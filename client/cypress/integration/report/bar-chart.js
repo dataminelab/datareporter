@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { setupReportTests } from '../../support/reportHelpers';
+
 context("Bar Chart", () => {
   const barChart = () => cy.get(".bar-chart");
   const xAxis = () => cy.get(".bar-chart-x-axis");
@@ -28,12 +30,8 @@ context("Bar Chart", () => {
     legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
 
   describe("Time split", () => {
-    beforeEach(() => {
-      cy.login();
-      cy.createReport();
-
+    setupReportTests(() => {
       cy.get("div.add-button").eq(1).click();
-
       cy.get("div.tile-row").eq(0).click();
       cy.get(".vis-item.selected").click();
       cy.get(".vis-item.not-selected").eq(2).click();
@@ -58,12 +56,8 @@ context("Bar Chart", () => {
     // });
 
     describe("with time-shift", () => {
-      beforeEach(() => {
-        cy.login();
-        cy.createReport();
-
+      setupReportTests(() => {
         cy.get("div.add-button").eq(1).click();
-
         cy.get("div.tile-row").eq(0).click();
         cy.get(".vis-item.selected").click();
         cy.get(".vis-item.not-selected").eq(2).click();
@@ -83,12 +77,8 @@ context("Bar Chart", () => {
   });
 
   describe("Time with nominal split", () => {
-    beforeEach(() => {
-      cy.login();
-      cy.createReport();
-
+    setupReportTests(() => {
       cy.get("div.add-button").eq(1).click();
-
       cy.get("div.tile-row").eq(0).click();
       cy.get(".vis-item.selected").click();
       cy.get(".vis-item.not-selected").eq(2).click();
@@ -122,12 +112,8 @@ context("Bar Chart", () => {
     // });
 
     describe("with time-shift", () => {
-      beforeEach(() => {
-        cy.login();
-        cy.createReport();
-
+      setupReportTests(() => {
         cy.get("div.add-button").eq(1).click();
-
         cy.get("div.tile-row").eq(0).click();
         cy.get(".vis-item.selected").click();
         cy.get(".vis-item.not-selected").eq(2).click();

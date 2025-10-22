@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { setupReportTests } from '../../support/reportHelpers';
 
 context("Boolean Filter Menu", () => {
   const booleanMenu = () => cy.get(".boolean-filter-menu");
@@ -45,9 +46,7 @@ context("Boolean Filter Menu", () => {
     });
   }
 
-  beforeEach(() => {
-    cy.login();
-    cy.createReport();
+  setupReportTests(() => {
     cy.get("div.add-button").eq(1).click();
     cy.get("div.tile-row").eq(1).click();
     cy.get("div.add-button").eq(0).click();

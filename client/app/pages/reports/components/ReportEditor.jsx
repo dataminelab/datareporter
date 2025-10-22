@@ -9,43 +9,47 @@ import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
 
 function ReportPage({ report, reportChanged, setReportChanged }) {
-  if (report.appSettings) {
-    if (report.appSettings.customization.sentryDSN) {
-      errorReporterInit(
-        report.appSettings.customization.sentryDSN,
-        report.version,
-      );
-    }
-
-    const version = report.version;
-
-    Ajax.version = version;
-
-    const appSettings = AppSettings.fromJS(report.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory.bind(report),
-    });
-
-    return (
-      <turnilo-widget>
-        <TurniloApplication
-          version={version}
-          report={report}
-          reportChanged={reportChanged}
-          setReportChanged={setReportChanged}
-          appSettings={appSettings}
-          initTimekeeper={Timekeeper.fromJS(
-            report.timekeeper || { timeTags: {} },
-          )}
-        />
-      </turnilo-widget>
-    );
-  } else {
+  if (!report.appSettings) {
     return (
       <div style={{ margin: "20px" }}>
         Please select data source and model...
       </div>
     );
   }
+
+  if (report.appSettings.customization.sentryDSN) {
+    errorReporterInit(report.appSettings.customization.sentryDSN, report.version);
+  }
+
+  Ajax.version = report.version;
+
+  const appSettings = AppSettings.fromJS(report.appSettings, {
+    executorFactory: Ajax.queryUrlExecutorFactory.bind(report),
+  });
+
+  // Safe timekeeper creation with fallback
+  let initTimekeeper;
+  try {
+    const timekeeper = report.timekeeper && typeof report.timekeeper === 'object' && !Array.isArray(report.timekeeper)
+      ? report.timekeeper
+      : { timeTags: {} };
+    initTimekeeper = Timekeeper.fromJS(timekeeper);
+  } catch {
+    initTimekeeper = Timekeeper.fromJS({ timeTags: {} });
+  }
+
+  return (
+    <turnilo-widget>
+      <TurniloApplication
+        version={report.version}
+        report={report}
+        reportChanged={reportChanged}
+        setReportChanged={setReportChanged}
+        appSettings={appSettings}
+        initTimekeeper={initTimekeeper}
+      />
+    </turnilo-widget>
+  );
 }
 
 ReportPage.propTypes = {

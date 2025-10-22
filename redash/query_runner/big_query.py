@@ -130,7 +130,7 @@ class BigQuery(BaseQueryRunner):
                     "default": True,
                 },
                 "location": {"type": "string", "title": "Processing Location"},
-                "loadSchema": {"type": "boolean", "title": "Load Schema"},
+                "loadSchema": {"type": "boolean", "title": "Load Schema", "default:": True},
                 "maximumBillingTier": {
                     "type": "number",
                     "title": "Maximum Billing Tier",
@@ -154,7 +154,7 @@ class BigQuery(BaseQueryRunner):
                 "useQueryAnnotation",
             ],
             "secret": ["jsonKeyFile"],
-        }
+        } # pyright: ignore[reportUnknownVariableType]
 
     def _get_bigquery_service(self):
         socket.setdefaulttimeout(settings.BIGQUERY_HTTP_TIMEOUT)

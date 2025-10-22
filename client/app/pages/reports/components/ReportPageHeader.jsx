@@ -51,10 +51,6 @@ function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
 }
 
-function buttonType(value) {
-  return value ? "primary" : "default";
-}
-
 function createMenu(menu) {
   const handlers = {};
 
@@ -153,21 +149,22 @@ export default function ReportPageHeader(props) {
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
 
-  const handleReportChanged = useCallback(state => {
+  const handleReportChanged = useCallback(
+    state => {
     if (!report.data_source_id) return;
     if (!report.model_id) return;
     setReportChanged(state);
-  });
+    },
+    [report.data_source_id, report.model_id, setReportChanged],
+  );
 
   const handleNewNameChange = event => {
     setNewName(event.target.value);
   };
-  // delete spesific color
-  const styles = useMemo(() =>
-    reactCSS(reportPageStyles(colorTextHex, colorBodyHex), [
-      colorTextHex,
-      colorBodyHex,
-    ]),
+
+  const styles = useMemo(
+    () => reactCSS(reportPageStyles(colorTextHex, colorBodyHex)),
+    [colorTextHex, colorBodyHex],
   );
 
   const handleColorChange = useCallback(
@@ -260,9 +257,12 @@ export default function ReportPageHeader(props) {
     [props, report, updateReport, handleReportChanged],
   );
 
-  const getModel = useCallback(modelId => {
+  const getModel = useCallback(
+    modelId => {
     return models.find(m => m.id === modelId);
-  });
+    },
+    [models],
+  );
 
   const getSettings = useCallback(
     async modelId => {
@@ -346,13 +346,6 @@ export default function ReportPageHeader(props) {
     ],
   );
 
-  const handleIdChange = useCallback(async id => {
-    recordEvent("update", "report", report.id, { id });
-    setReport(extend(report.clone(), { id }));
-    updateReport({ id }, { successMessage: null, errorMessage: null });
-    handleReportChanged(true);
-  });
-
   const handleUpdateName = useCallback(
     name => {
       setReportName(name);
@@ -381,7 +374,7 @@ export default function ReportPageHeader(props) {
     if (saveButtonClicked && !report.id) saveReport();
   }, [saveButtonClicked, report.id, saveReport]);
 
-  const handleSaveReport = () => {
+  const handleSaveReport = useCallback(() => {
     if (!reportChanged) return notification.warning("No changes to save");
     if (
       window.location.hash.substring(window.location.hash.indexOf("4/") + 2)
@@ -412,7 +405,16 @@ export default function ReportPageHeader(props) {
       recordEvent("create", "report", report.id);
     }
     setReportChanged(false);
-  };
+  }, [
+    reportChanged,
+    updateReport,
+    report,
+    colorBodyHex,
+    colorTextHex,
+    reportName,
+    setSaveButtonClicked,
+    setReportChanged,
+  ]);
 
   const moreActionsMenu = useMemo(
     () =>
@@ -434,7 +436,7 @@ export default function ReportPageHeader(props) {
         {
           save: {
             isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+              queryFlags.canEdit && !queryFlags.isArchived,
             title: "Save",
             onClick: handleSaveReport,
           },
@@ -513,7 +515,7 @@ export default function ReportPageHeader(props) {
         },
         {
           showAPIKey: {
-            isAvailable: !clientConfig.disablePublicUrls && !queryFlags.isNew,
+            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !clientConfig.disablePublicUrls,
             title: "Show API Key",
             onClick: openApiKeyDialog,
           },
@@ -549,6 +551,7 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     if (dataSourcesLoaded && !selectedDataSource && dataSources.length)
       handleDataSourceChange(dataSources[0].id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
@@ -572,6 +575,7 @@ export default function ReportPageHeader(props) {
       );
       handleReportChanged(false); // fix this, we cant set get here save button is not working disabling and stuff
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -619,6 +623,7 @@ export default function ReportPageHeader(props) {
     return () => {
       if (abortController) abortController.abort();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
@@ -635,7 +640,7 @@ export default function ReportPageHeader(props) {
     };
     if (modelsLoaded && !selectedModel && models.length)
       firstEncounterModelSetter(models);
-  }, [modelsLoaded]);
+  }, [modelsLoaded, getModel, getModelDataCube, handleModelChange, models, report.landed, selectedModel]);
 
   return (
     <div className="report-page-header">
@@ -730,7 +735,7 @@ export default function ReportPageHeader(props) {
             />
           </div>
         ) : null}
-        <div className="data-source-box m-r-10">
+        <div className="data-source-box m-r-5">
           <FolderOutlinedIcon />
           <Select
             data-test="SelectDataSource"
@@ -765,7 +770,7 @@ export default function ReportPageHeader(props) {
             ))}
           </Select>
         </div>
-        <div className="data-source-box m-r-10" id="model-data-source">
+        <div className="data-source-box m-r-5" id="model-data-source">
           <FileOutlinedIcon />
           <Select
             data-test="SelectModel"
@@ -850,7 +855,6 @@ export default function ReportPageHeader(props) {
             </ul>
           </>
         )}
-        {!queryFlags.isNew && (
           <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
             {/* ### TODO write tests for below code  disabled={(report.id || report.model_id) ? false : true} */}
             <Button
@@ -860,7 +864,6 @@ export default function ReportPageHeader(props) {
               <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
             </Button>
           </Dropdown>
-        )}
       </div>
     </div>
   );
@@ -877,6 +880,7 @@ ReportPageHeader.propTypes = {
   selectedVisualization: PropTypes.number,
   headerExtra: PropTypes.node,
   tagsExtra: PropTypes.node,
+  onChange: PropTypes.func.isRequired,
   onChangeColor: PropTypes.func,
   reportChanged: any,
   setReportChanged: PropTypes.func,

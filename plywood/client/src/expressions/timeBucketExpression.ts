@@ -52,7 +52,7 @@ export class TimeBucketExpression extends ChainableExpression {
     this.bounds = parameters.bounds;
     this._ensureOp("timeBucket");
     this._checkOperandTypes("TIME");
-    if (!(duration instanceof Duration)) {
+    if (!this.isDuration(duration)) {
       throw new Error("`duration` must be a Duration");
     }
     if (!duration.isFloorable()) {
@@ -90,7 +90,7 @@ export class TimeBucketExpression extends ChainableExpression {
     );
   }
 
-  protected _toStringParameters(_indent?: int): string[] {
+  protected _toStringParameters(_indent?: number): string[] {
     const ret = [this.duration.toString()];
     if (this.timezone)
       ret.push(Expression.safeString(this.timezone.toString()));

@@ -27,7 +27,7 @@ import {
 import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
 import { SeriesBubbleContent } from "../../../../components/series-bubble-content/series-bubble-content";
 import { selectSplitDataset } from "../../../../utils/dataset/selectors/selectors";
-import { useSettingsContext } from "../../../../views/cube-view/settings-context";
+import { SettingsContext } from "../../../../views/cube-view/settings-context";
 import {
   getContinuousDimension,
   getContinuousReference,
@@ -109,23 +109,48 @@ interface SeriesHoverContentProps {
 export const SeriesHoverContent: React.FunctionComponent<
   SeriesHoverContentProps
 > = props => {
-  const {
-    customization: { visualizationColors },
-  } = useSettingsContext();
-  const { essence, range, series, dataset } = props;
-  if (hasNominalSplit(essence)) {
-    const entries = colorEntries(
-      dataset,
-      range,
-      series,
-      essence,
-      visualizationColors,
-    );
-    return <ColorSwabs colorEntries={entries} />;
-  }
   return (
-    <React.Fragment>
-      {measureLabel(dataset, range, series, essence)}
-    </React.Fragment>
+    <SettingsContext.Consumer>
+      {settingsContext => {
+        // If no context is provided, use a default
+        const customization = settingsContext?.customization || {
+          visualizationColors: {
+            series: [
+              "#1f77b4",
+              "#ff7f0e",
+              "#2ca02c",
+              "#d62728",
+              "#9467bd",
+              "#8c564b",
+              "#e377c2",
+              "#7f7f7f",
+              "#bcbd22",
+              "#17becf",
+            ],
+          },
+        };
+        const { essence, range, series, dataset } = props;
+        if (hasNominalSplit(essence)) {
+          const viz = customization.visualizationColors;
+          const visualizationColors: VisualizationColors = (viz as VisualizationColors).main
+            ? (viz as VisualizationColors)
+            : { main: viz.series[0], series: viz.series };
+          const entries = colorEntries(
+            dataset,
+            range,
+            series,
+            essence,
+            //
+            visualizationColors,
+          );
+          return <ColorSwabs colorEntries={entries} />;
+        }
+        return (
+          <React.Fragment>
+            {measureLabel(dataset, range, series, essence)}
+          </React.Fragment>
+        );
+      }}
+    </SettingsContext.Consumer>
   );
 };

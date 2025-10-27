@@ -21,14 +21,22 @@ export interface SettingsContextValue {
   customization: ClientCustomization;
 }
 
-export const SettingsContext = React.createContext<SettingsContextValue>({
-  get customization(): ClientCustomization {
-    throw new Error(
-      "Attempted to consume SettingsContext when there was no Provider in place.",
-    );
-  },
-});
+export const SettingsContext = React.createContext<SettingsContextValue | null>(null);
 
 export function useSettingsContext(): SettingsContextValue {
+  const context = useContext(SettingsContext);
+  
+  if (context === null) {
+    throw new Error(
+      "useSettingsContext must be used within a SettingsContext.Provider. " +
+      "Make sure the component calling useSettingsContext is wrapped with a SettingsContext.Provider."
+    );
+  }
+  
+  return context;
+}
+
+// Optional: Create a hook that returns null instead of throwing
+export function useOptionalSettingsContext(): SettingsContextValue | null {
   return useContext(SettingsContext);
 }

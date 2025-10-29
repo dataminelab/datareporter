@@ -6,6 +6,7 @@ import { urlHashConverter } from "../turnillo/common/utils/url-hash-converter/ur
 import {
   $,
   Expression,
+  ExpressionJS,
   LimitExpression,
   ply,
   RefExpression,
@@ -36,7 +37,7 @@ import { MeasureJS } from "../turnillo/common/models/measure/measure";
 const SPLIT = "SPLIT";
 const CANONICAL_LENGTH_ID = "MillisecondsInInterval";
 
-export const hashToExpression = (hash: string, dataCubeInput: DataCubeJS) => {
+export const hashToExpression = (hash: string, dataCubeInput: DataCubeJS): ExpressionJS => {
   const segmentName: string | undefined = dataCubeInput.name;
 
   if (!segmentName) {
@@ -44,6 +45,7 @@ export const hashToExpression = (hash: string, dataCubeInput: DataCubeJS) => {
   }
 
   const preparedDataCube = produce(dataCubeInput, draftState => {
+    // @ts-ignore type mismatch
     draftState.measures = dataCubeInput.measures.map((m: MeasureJS) => {
       const formula = m.formula.replace("$main", `$${segmentName}`);
       return { ...m, formula };

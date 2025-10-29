@@ -135,7 +135,7 @@ export class YearOverYearExpression {
     return this.queries[2].includes("some_");
   }
 
-  public setTimeRanges(timeRanges: timeRangeType) {
+  public setTimeRanges(timeRanges: timeRangeType): void {
     this.timeRanges = timeRanges;
   }
 
@@ -144,6 +144,10 @@ export class YearOverYearExpression {
   }
 
   private splitFromAndWhereQueries(formattedSumQueries: string): string[] {
+    if (!this.timeRanges) {
+      throw new Error("Time ranges must be set before processing");
+    }
+    
     const { currElement, prevElement } = this.timeRanges;
     const [fromQuery, whereQuery] = this.queries[2].split("WHERE");
     const matches = whereQuery.match(this._whereRegex);

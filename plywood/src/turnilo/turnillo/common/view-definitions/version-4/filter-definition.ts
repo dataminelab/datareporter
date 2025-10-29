@@ -250,6 +250,7 @@ const timeFilterClauseConverter: FilterDefinitionConversion<
         ),
       });
     }
+    // @ts-ignore possibly 'undefined' but checked above
     const { duration, step, type } = timePeriods[0];
     return new RelativeTimeFilterClause({
       reference: name,

@@ -33,6 +33,9 @@ export class AttributeParserFactory {
     this.engineValidation(engine);
     const AttributeParserInstance =
       AttributeParserFactory.REGISTERED_PARSERS.get(engine);
+    if (!AttributeParserInstance) {
+      throw new ValidationError(`No parser registered for engine ${engine}`);
+    }
     return AttributeParserInstance;
   }
 

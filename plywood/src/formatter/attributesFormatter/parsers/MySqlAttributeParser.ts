@@ -25,7 +25,7 @@ export class MySqlAttributeParser extends AttributeParser {
         };
       },
     );
-
+    // @ts-ignore Type 'undefined' is not assignable to type 'OutputAttribute'
     return newAttributes.filter(Boolean);
   }
 }

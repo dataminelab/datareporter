@@ -32,6 +32,18 @@
         },
         {
             "type": "node",
+            "request": "attach",
+            "name": "Attach to Plywood Server",
+            "port": 9229,
+            "address": "localhost",
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "${workspaceFolder}",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
             "request": "launch",
             "name": "Jest Debug",
             "program": "${workspaceFolder}/client/node_modules/.bin/jest",

@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "sourceMap": true,
+    "inlineSourceMap": false,
+    "inlineSources": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "ignoreDiagnostics": [2345, 2339, 7053, 2322]
+  }
+}

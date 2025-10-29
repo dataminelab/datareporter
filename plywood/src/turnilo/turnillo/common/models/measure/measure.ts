@@ -50,7 +50,7 @@ export interface MeasureJS {
   name: string;
   title?: string;
   units?: string;
-  formula?: string;
+  formula: string;
   format?: string;
   transformation?: string;
   description?: string;

@@ -15,7 +15,7 @@
     "dev": "node --inspect=0.0.0.0:9229 --require ts-node/register src/server.ts",
     "dev:transpile": "node --inspect=0.0.0.0:9229 --require ts-node/register --transpile-only src/server.ts",
     "dev:watch": "nodemon --exec 'ts-node --transpile-only' src/server.ts",
-    "dev:debug": "ts-node-dev --inspect=0.0.0.0:9229 --project tsconfig-dev.json --respawn --transpile-only src/server.ts",
+    "dev:debug": "ts-node-dev --inspect=0.0.0.0:9229 --project tsconfig-dev.json --respawn --transpile-only src/server.debug.ts",
     "clear": "rm -rf dist node_modules",
     "prepare": "npm run build",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org data-reporter --project plywood ./dist && sentry-cli sourcemaps upload --org data-reporter --project plywood ./dist"

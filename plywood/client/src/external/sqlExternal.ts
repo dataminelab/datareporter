@@ -192,7 +192,6 @@ export abstract class SQLExternal extends External {
     if (!filter.equals(Expression.TRUE)) {
       from += "\nWHERE " + filter.getSQL(dialect);
     }
-    console.log("mode", mode, "maybe add year over year into the mod?");
 
     let selectedAttributes = this.getSelectedAttributes();
     switch (mode) {

@@ -808,9 +808,9 @@ export abstract class Expression
    */
   public toJS(): ExpressionJS {
     const js: ExpressionJS = { op: this.op };
-    if (this.options) js.options = this.options;
-    if (this.currElement) js.currElement = this.currElement;
-    if (this.prevElement) js.prevElement = this.prevElement;
+    js.options = this.options || {};
+    if (this.currElement) js.options.currElement = this.currElement;
+    if (this.prevElement) js.options.prevElement = this.prevElement;
     return js;
   }
 
@@ -2050,13 +2050,18 @@ export abstract class Expression
       queries < maxQueries
     ) {
       const simulatedQueryGroup: any[] = [];
+      const timeRanges = {
+          currElement: (options && options.others && options.others.options && options.others.options.currElement) || null,
+          prevElement: (options && options.others && options.others.options && options.others.options.prevElement) || null
+      } as any;
+      /* eslint-disable no-loop-func */
       fillExpressionExternalAlteration(readyExternals, (external, terminal) => {
         if (queries < maxQueries) {
           queries++;
-          return external.simulateValue(terminal, simulatedQueryGroup);
+          return external.simulateValue(terminal, simulatedQueryGroup, external, timeRanges);
         } else {
           queries++;
-          return null; // Query limit reached, don't do any more queries.
+          return null;
         }
       });
 

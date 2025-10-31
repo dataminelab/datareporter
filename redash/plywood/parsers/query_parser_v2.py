@@ -13,7 +13,7 @@ from redash.plywood.objects.plywood_value import PlywoodValue
 
 SYSTEM_FIELDS = ("MillisecondsInInterval", "SPLIT")
 TIME_SHIFT_ATTRS = "_delta__"
-supported_engines = ["postgres", "mysql", "bigquery", "athena", "druid", "pg"]
+supported_engines = ["postgres", "mysql", "bigquery", "athena", "druid", "pg", "json"]
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +125,7 @@ class PlywoodQueryParserV2:
             if column_name not in item:
                 continue
             tmp_value = copy.deepcopy(item[column_name])
-            real_date = None
+            real_date = 0
             if isinstance(tmp_value, str) or isinstance(tmp_value, datetime.datetime):
                 real_date = parser.parse(tmp_value)
             elif isinstance(tmp_value, dict):

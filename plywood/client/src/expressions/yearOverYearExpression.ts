@@ -1,6 +1,5 @@
 import { ComputeFn, Datum, PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
-
 import { Expression } from "./baseExpression";
 
 interface timeRangeElement {
@@ -12,8 +11,8 @@ interface timeRangeType {
   op: string;
   currElement: timeRangeElement;
   prevElement: timeRangeElement;
-  operand: [[Object]];
-  expression: [[Expression]];
+  operand: unknown[][];
+  expression: Expression[][];
   name: string;
 }
 export class YearOverYearExpression {
@@ -64,14 +63,14 @@ export class YearOverYearExpression {
     }
   }
 
-  public setQueries(queries: string[]) {
+  public setQueries(queries: string[]): void {
     if (!queries || queries.length < 3) {
       throw new Error("Invalid query");
     }
     this.queries = queries;
   }
 
-  public setMode(mode: string) {
+  public setMode(mode: string): void {
     this.mode = mode;
   }
 
@@ -177,11 +176,11 @@ export class YearOverYearExpression {
     return [formattedSumQueries, fromQuery, where1, where2];
   }
 
-  public setGroupBy(groupBy: string) {
+  public setGroupBy(groupBy: string): void {
     this.groupBy = groupBy;
   }
 
-  public process() {
+  public process(): void {
     let formattedSumQueries: string;
     let formattedColumnQueries: string;
     let sumMatch;

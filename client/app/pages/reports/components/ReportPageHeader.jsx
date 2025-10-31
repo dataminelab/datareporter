@@ -871,7 +871,7 @@ export default function ReportPageHeader(props) {
 
 ReportPageHeader.propTypes = {
   report: PropTypes.shape({
-    id: PropTypes.string | PropTypes.number,
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     name: PropTypes.string,
     tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
@@ -882,7 +882,7 @@ ReportPageHeader.propTypes = {
   tagsExtra: PropTypes.node,
   onChange: PropTypes.func.isRequired,
   onChangeColor: PropTypes.func,
-  reportChanged: any,
+  reportChanged: PropTypes.any,
   setReportChanged: PropTypes.func,
 };
 

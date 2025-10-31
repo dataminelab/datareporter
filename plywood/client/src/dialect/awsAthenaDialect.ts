@@ -174,7 +174,7 @@ export class AwsAthenaDialect extends SQLDialect {
   timeShiftExpression(
     operand: string,
     duration: Duration,
-    step: int,
+    step: number,
     timezone: Timezone,
   ): string {
     if (step === 0) return operand;

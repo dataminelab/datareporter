@@ -19,8 +19,11 @@ function AceEditorInput(props, ref) {
     </div>
   );
 }
-AceEditorInput.propTypes = {
+
+const ForwardedAceEditorInput = forwardRef(AceEditorInput);
+
+ForwardedAceEditorInput.propTypes = {
   "data-test": PropTypes.string,
 };
 
-export default forwardRef(AceEditorInput);
+export default ForwardedAceEditorInput;

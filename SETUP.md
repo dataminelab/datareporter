@@ -185,6 +185,15 @@ if you are having issue building docker images, try to remove `config.json` file
 rm  ~/.docker/config.json
 ```
 
+* Supported Report Engines
+  * postgres
+  * mysql  
+  * bigquery
+  * athena
+  * druid
+  * pg
+  * json
+
 ### Docker connectivity issues for testing connection between containers
 
 This is useful when testing fresh datasources so cross server connections are needed. For example, if you want to connect to a router container from the datareporter-server container.
@@ -222,4 +231,3 @@ poetry add <package-name>
 # Uninstall an old package
 poetry remove <package-name>
 ```
-

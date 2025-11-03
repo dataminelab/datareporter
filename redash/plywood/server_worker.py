@@ -1,13 +1,10 @@
 import logging
-
 import requests
+from typing import Any
 
 from redash.settings import SERVER_WORKER_URL
 
 logger = logging.getLogger(__name__)
-
-REDASH_PLYWOOD_DB = {"pg": "postgres", "bigquery": "bigquery", "mysql": "mysql"}
-
 
 class ServerWorkerApi:
     @classmethod
@@ -15,7 +12,7 @@ class ServerWorkerApi:
         return cls.execute(SERVER_WORKER_URL + "/health")
 
     @classmethod
-    def execute(cls, url: str, body: any = None):
+    def execute(cls, url: str, body: Any = None):
         try:
             logger.info("Sending request url: %s body: %s", url, body)
             response = requests.post(url=url, json=body)

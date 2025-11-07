@@ -47,6 +47,12 @@ export interface TurniloApplicationProps {
   initTimekeeper?: Timekeeper;
   setReportChanged?: (reportChanged: boolean) => void;
   reportChanged?: boolean;
+  onExecutionStatusChange?: (status: {
+    status: "processing" | "completed" | "failed";
+    isExecuting: boolean;
+    result?: any;
+    error?: any;
+  }) => void;
 }
 
 export interface TurniloApplicationState {
@@ -173,8 +179,9 @@ export class TurniloApplication extends React.Component<
       viewHash,
       drawerOpen: false,
     };
-    const appSettings = AppSettings.fromJS(this.props.report.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory.bind(this.props.report),
+    const report = this.props.report;
+    const appSettings = AppSettings.fromJS(report.appSettings, {
+      executorFactory: Ajax.queryUrlExecutorFactory.bind(report),
     });
 
     if (this.viewTypeNeedsAnItem(viewType)) {

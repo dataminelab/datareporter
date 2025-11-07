@@ -84,7 +84,7 @@ export class TurniloApplication extends React.Component<
     errorId: null,
   };
 
-  componentDidCatch(error: Error) {
+  componentDidCatch(error: Error): void {
     const errorId = reportError(error);
     this.setState({
       viewType: ERROR,
@@ -92,7 +92,7 @@ export class TurniloApplication extends React.Component<
     });
   }
 
-  componentWillMount() {
+  componentWillMount(): void {
     const { appSettings, initTimekeeper, report } = this.props;
     const { dataCubes } = appSettings;
 
@@ -146,7 +146,7 @@ export class TurniloApplication extends React.Component<
     return viewType === CUBE;
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     window.addEventListener("hashchange", this.globalHashChangeListener);
 
     Ajax.settingsVersionGetter = () => {
@@ -155,16 +155,16 @@ export class TurniloApplication extends React.Component<
     };
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     window.removeEventListener("hashchange", this.globalHashChangeListener);
   }
 
-  globalHashChangeListener = () => {
+  globalHashChangeListener = (): void => {
     if (this.hashUpdating) return;
     this.hashToState(window.location.hash);
   };
 
-  hashToState(hash: string) {
+  hashToState(hash: string): void {
     const { dataCubes } = this.state.appSettings;
     const viewType = this.getViewTypeFromHash(hash);
     const viewHash = this.getViewHashFromHash(hash);
@@ -224,7 +224,7 @@ export class TurniloApplication extends React.Component<
     return parts.join("/");
   }
 
-  setReportChanged = (reportChanged: boolean) => {
+  setReportChanged = (reportChanged: boolean): void => {
     const { setReportChanged } = this.props;
     if (setReportChanged) setReportChanged(reportChanged);
     this.setState({ reportChanged });
@@ -245,7 +245,7 @@ export class TurniloApplication extends React.Component<
     if (force) this.hashToState(hash);
   }
 
-  updateEssenceInHash = (essence: Essence, force = false) => {
+  updateEssenceInHash = (essence: Essence, force = false): void => {
     const newHash = `${
       this.state.selectedItem.name
     }/${this.convertEssenceToHash(essence)}`;
@@ -253,7 +253,7 @@ export class TurniloApplication extends React.Component<
     this.setReportChanged(true);
   };
 
-  changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null) => {
+  changeDataCubeWithEssence = (dataCube: DataCube, essence: Essence | null): void => {
     const essenceHashPart = essence && this.convertEssenceToHash(essence);
     const hash = `${dataCube.name}/${essenceHashPart || ""}`;
     this.changeHash(hash, true);
@@ -273,18 +273,18 @@ export class TurniloApplication extends React.Component<
     return `${origin}${pathname}#${dataCubeName}`;
   }
 
-  openAboutModal = () => this.setState({ showAboutModal: true });
+  openAboutModal = (): void => this.setState({ showAboutModal: true });
 
-  onAboutModalClose = () => this.setState({ showAboutModal: false });
+  onAboutModalClose = (): void => this.setState({ showAboutModal: false });
 
-  renderAboutModal() {
+  renderAboutModal(): JSX.Element | null {
     const { version } = this.props;
     const { showAboutModal } = this.state;
     if (!showAboutModal) return null;
     return <AboutModal version={version} onClose={this.onAboutModalClose} />;
   }
 
-  renderView() {
+  renderView(): JSX.Element | Error {
     const { maxFilters, report } = this.props;
     const {
       viewType,
@@ -342,7 +342,7 @@ export class TurniloApplication extends React.Component<
     }
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <>
         <main className="turnilo-application">

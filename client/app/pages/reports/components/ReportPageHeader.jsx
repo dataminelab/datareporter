@@ -265,33 +265,31 @@ export default function ReportPageHeader(props) {
   );
 
   const getSettings = useCallback(
-    async modelId => {
-      let settings;
+    async (modelId) => {
       if (report.landed) {
-        settings = { appSettings: report.appSettings, timekeeper: {} };
+        return { appSettings: report.appSettings, timekeeper: {} };
       } else {
-        settings = await Model.getReporterConfig(modelId);
+        return await Model.getReporterConfig(modelId);
       }
-      return settings;
     },
-    [report],
+    [report.landed, report.appSettings],
   );
 
   const getModelDataCube = useCallback(
-    async modelId => {
-      const settings = await getSettings(modelId);
+    async (modelId, settings) => {
       const model = getModel(modelId);
       if (!model || !settings) return {};
       const dataCubes = settings.appSettings.dataCubes;
       return dataCubes.find(m => m.name === model.table);
     },
-    [getSettings, getModel],
+    [getModel],
   );
 
   const handleModelChange = useCallback(
     async (modelId, signal) => {
+      const settings = await getSettings(modelId);
       try {
-        const modelDataCube = await getModelDataCube(modelId);
+        const modelDataCube = await getModelDataCube(modelId, settings);
         if (!modelDataCube.timeAttribute) {
           // Revert previous changes like make selected model name to previous one and so on
           return updateReport(
@@ -302,7 +300,6 @@ export default function ReportPageHeader(props) {
             },
           );
         }
-        const settings = await getSettings(modelId);
         const model = getModel(modelId);
         if (model && model.id !== report.model_id) {
           replaceHash(model, window.location.hash.split("/4/")[1]);
@@ -871,7 +868,7 @@ export default function ReportPageHeader(props) {
 
 ReportPageHeader.propTypes = {
   report: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    id: PropTypes.string | PropTypes.number,
     name: PropTypes.string,
     tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
@@ -882,7 +879,7 @@ ReportPageHeader.propTypes = {
   tagsExtra: PropTypes.node,
   onChange: PropTypes.func.isRequired,
   onChangeColor: PropTypes.func,
-  reportChanged: PropTypes.any,
+  reportChanged: any,
   setReportChanged: PropTypes.func,
 };
 

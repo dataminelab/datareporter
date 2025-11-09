@@ -425,7 +425,7 @@ export class Report extends Query {
   }
 
   queryUrlExecutorFactory() {
-    return (query) => {
+    return query => {
       // Notify status tracker of execution start
       if (this.statusTracker) {
         this.statusTracker.onExecutionStart();

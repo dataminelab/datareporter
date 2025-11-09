@@ -14,15 +14,15 @@ import {
   get,
 } from "lodash";
 import JSONbig from "json-bigint";
-import QueryResult from './query-result';
-import { Ajax } from '@/components/TurniloComponent/client/utils/ajax/ajax';
+import QueryResult from "./query-result";
+import { Ajax } from "@/components/TurniloComponent/client/utils/ajax/ajax";
 
 const { parse: jsonParse } = JSONbig({ storeAsString: true });
 const logger = debug("redash:services:QueryResult");
 const filterTypes = ["filter", "multi-filter", "multiFilter"];
 
 function defer() {
-  const result = { onStatusChange: status => { } };
+  const result = { onStatusChange: status => {} };
   result.promise = new Promise((resolve, reject) => {
     result.resolve = resolve;
     result.reject = reject;

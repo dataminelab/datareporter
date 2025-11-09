@@ -47,7 +47,12 @@ interface ExpressError {
 }
 
 interface ErrorMiddleware {
-  (err: unknown | ExpressError, req: express.Request, res: express.Response, next: express.NextFunction): void;
+  (
+    err: unknown | ExpressError,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ): void;
 }
 
 const errorHandlerMiddleware: ErrorMiddleware = (err, req, res, next) => {

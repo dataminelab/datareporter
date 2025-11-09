@@ -56,7 +56,7 @@ function createMenu(menu) {
     filter(
       map(group, (props, key) => {
         props = extend(
-          { isAvailable: true, isEnabled: true, onClick: () => { } },
+          { isAvailable: true, isEnabled: true, onClick: () => {} },
           props,
         );
         if (props.isAvailable) {
@@ -216,7 +216,10 @@ export default function ReportPageHeader(props) {
       .querySelector("#model-data-source")
       .querySelectorAll("span")[2];
     if (elem.innerText === text) return;
-    if (modelSelectElement.current && elem.innerText !== modelSelectElement.current.props.placeholder) {
+    if (
+      modelSelectElement.current &&
+      elem.innerText !== modelSelectElement.current.props.placeholder
+    ) {
       modelSelectElementText.current = elem.innerText;
     }
     elem.innerText = text;
@@ -293,7 +296,7 @@ export default function ReportPageHeader(props) {
   );
 
   const getSettings = useCallback(
-    async (modelId) => {
+    async modelId => {
       if (report.landed) {
         return { appSettings: report.appSettings, timekeeper: {} };
       } else {
@@ -460,8 +463,7 @@ export default function ReportPageHeader(props) {
         },
         {
           save: {
-            isAvailable:
-              queryFlags.canEdit && !queryFlags.isArchived,
+            isAvailable: queryFlags.canEdit && !queryFlags.isArchived,
             title: "Save",
             onClick: handleSaveReport,
           },
@@ -540,7 +542,10 @@ export default function ReportPageHeader(props) {
         },
         {
           showAPIKey: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !clientConfig.disablePublicUrls,
+            isAvailable:
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !clientConfig.disablePublicUrls,
             title: "Show API Key",
             onClick: openApiKeyDialog,
           },
@@ -665,7 +670,15 @@ export default function ReportPageHeader(props) {
     };
     if (modelsLoaded && !selectedModel && models.length)
       firstEncounterModelSetter(models);
-  }, [modelsLoaded, getModel, getModelDataCube, handleModelChange, models, report.landed, selectedModel]);
+  }, [
+    modelsLoaded,
+    getModel,
+    getModelDataCube,
+    handleModelChange,
+    models,
+    report.landed,
+    selectedModel,
+  ]);
 
   return (
     <div className="report-page-header">
@@ -874,7 +887,7 @@ ReportPageHeader.defaultProps = {
   selectedVisualization: null,
   headerExtra: null,
   tagsExtra: null,
-  onChangeColor: () => { },
+  onChangeColor: () => {},
   reportChanged: null,
-  setReportChanged: () => { },
+  setReportChanged: () => {},
 };

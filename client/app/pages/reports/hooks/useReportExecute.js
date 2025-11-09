@@ -36,7 +36,7 @@ export default function useReportExecute(report) {
     };
   }, []);
 
-  const triggerExecution = useImmutableCallback(async (data) => {
+  const triggerExecution = useImmutableCallback(async data => {
     report.setExecutionStatus(data.status);
     setExecutionState({
       ...data,
@@ -45,11 +45,16 @@ export default function useReportExecute(report) {
       executionStatus: data.status,
       cancelCallback: () => {
         recordEvent("cancel_execute", "report", report.id);
-        setExecutionState({ isCancelling: true, executionStatus: 'cancelling', isExecutionCancelling: false });
+        setExecutionState({
+          isCancelling: true,
+          executionStatus: "cancelling",
+          isExecutionCancelling: false,
+        });
       },
-      error: typeof data.error === "object" && data.error !== null
-        ? (data.error.message || data.error.toString())
-        : data.error,
+      error:
+        typeof data.error === "object" && data.error !== null
+          ? data.error.message || data.error.toString()
+          : data.error,
     });
   });
 
@@ -62,7 +67,11 @@ export default function useReportExecute(report) {
         loadedInitialResults: true,
         cancelCallback: () => {
           recordEvent("cancel_execute", "report", report.id);
-          setExecutionState({ isCancelling: true, executionStatus: 'cancelling', isExecutionCancelling: false });
+          setExecutionState({
+            isCancelling: true,
+            executionStatus: "cancelling",
+            isExecutionCancelling: false,
+          });
         },
       });
       report.setExecutionStatus("processing");

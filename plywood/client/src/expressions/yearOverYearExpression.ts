@@ -146,7 +146,7 @@ export class YearOverYearExpression {
     if (!this.timeRanges) {
       throw new Error("Time ranges must be set before processing");
     }
-    
+
     const { currElement, prevElement } = this.timeRanges;
     const [fromQuery, whereQuery] = this.queries[2].split("WHERE");
     const matches = whereQuery.match(this._whereRegex);

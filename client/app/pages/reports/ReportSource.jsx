@@ -23,9 +23,7 @@ import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
 import "./ReportSource.less";
 
 function ReportSource(props) {
-  const { report, setReport, isDirty } = useReport(
-    props.report,
-  );
+  const { report, setReport, isDirty } = useReport(props.report);
   const reportFlags = useReportFlags(report, []);
   const [selectedVisualization] = useVisualizationTabHandler(
     report.visualizations,

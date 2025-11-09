@@ -11,8 +11,11 @@ import "@/components/TurniloComponent/client/polyfills";
 function ReportPage({ report, reportChanged, setReportChanged }) {
   const reportRef = useRef(report);
   reportRef.current = report;
-  const getExecutionStatus = useCallback(() => reportRef.current.getExecutionStatus(), []);
-  
+  const getExecutionStatus = useCallback(
+    () => reportRef.current.getExecutionStatus(),
+    [],
+  );
+
   if (!report.appSettings) {
     return (
       <div style={{ margin: "20px" }}>
@@ -22,7 +25,10 @@ function ReportPage({ report, reportChanged, setReportChanged }) {
   }
 
   if (report.appSettings.customization.sentryDSN) {
-    errorReporterInit(report.appSettings.customization.sentryDSN, report.version);
+    errorReporterInit(
+      report.appSettings.customization.sentryDSN,
+      report.version,
+    );
   }
 
   Ajax.version = report.version;
@@ -67,7 +73,7 @@ ReportPage.propTypes = {
 ReportPage.defaultProps = {
   report: {},
   reportChanged: false,
-  setReportChanged: () => { },
+  setReportChanged: () => {},
   dashboardSlug: null,
   dashboardId: null,
   onError: null,

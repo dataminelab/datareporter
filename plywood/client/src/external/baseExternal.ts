@@ -1957,7 +1957,9 @@ export abstract class External {
     });
   }
 
-  public getQueryAndPostTransform(timeRanges: any = null): QueryAndPostTransform<any> {
+  public getQueryAndPostTransform(
+    timeRanges: any = null,
+  ): QueryAndPostTransform<any> {
     throw new Error("can not call getQueryAndPostTransform directly");
   }
 

@@ -1,6 +1,7 @@
 import logging
-import requests
 from typing import Any
+
+import requests
 
 from redash.settings import SERVER_WORKER_URL
 

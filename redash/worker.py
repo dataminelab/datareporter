@@ -4,11 +4,11 @@ from functools import partial
 from itertools import chain
 
 from flask import Blueprint, request
-from rq.version import VERSION
 from rq import get_current_job
 from rq.decorators import job as rq_job
 from rq.exceptions import DequeueTimeout
-from rq.logutils import setup_loghandlers, blue, green
+from rq.logutils import blue, green, setup_loghandlers
+from rq.version import VERSION
 from rq.worker import WorkerStatus
 
 from redash import rq_redis_connection, settings

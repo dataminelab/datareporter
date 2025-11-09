@@ -808,7 +808,7 @@ export abstract class Expression
    */
   public toJS(): ExpressionJS {
     const js: ExpressionJS = { op: this.op };
-    js.options = this.options || {};
+    if (this.options || this.currElement || this.prevElement) js.options = this.options;
     if (this.currElement) js.options.currElement = this.currElement;
     if (this.prevElement) js.options.prevElement = this.prevElement;
     return js;

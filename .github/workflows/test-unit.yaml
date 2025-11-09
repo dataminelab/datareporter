@@ -569,7 +569,7 @@ jobs:
               body: comment
             });
   analyze-test-results:
-    if: github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request'
     uses: ./.github/workflows/analyze-test-results.yaml
     with:
       ref: ${{ github.event.pull_request.head.sha }}

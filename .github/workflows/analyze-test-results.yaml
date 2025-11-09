@@ -62,15 +62,28 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-              const comment = `## ❌ Test Failure Detected
-              
-              📹 **Test Videos Available**: [Download Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-              
-              Test execution failed. Videos and screenshots are available in the GitHub Actions artifacts for debugging.`;
-              
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: comment
-              });
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const ref = context.sha;
+
+            // Check check-runs for this commit and skip if Restyled failed
+            const checks = await github.rest.checks.listForRef({ owner, repo, ref });
+            const restyled = checks.data.check_runs.find(c => c.name === 'Restyled' || c.name === 'restyled');
+            if (restyled && restyled.conclusion === 'failure') {
+              console.log('Restyled check failed — skipping artifact comment.');
+              return;
+            }
+
+            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const comment = `## ❌ Test Failure Detected
+
+            📹 **Test Videos Available**: [Download Artifacts](${runUrl})
+
+            Test execution failed. Videos and screenshots are available in the GitHub Actions artifacts for debugging.`;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner,
+              repo,
+              body: comment
+            });

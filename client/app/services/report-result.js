@@ -108,6 +108,10 @@ class ReportResult extends QueryResult {
     super(data);
     this.reportId = data.report_id;
   }
+
+  getByReportId() {
+    return new ReportResult({ report_id: this.reportId });
+  }
 }
 
 export default ReportResult;

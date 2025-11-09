@@ -49,11 +49,15 @@ export interface AppSettingsJS {
 export interface AppSettingsContext {
   executorFactory?: (
     dataCube: DataCube,
-    getEssence?: () => Essence
+    getEssence?: () => Essence,
+    statusCallback?: (status: any) => void,
+    getExecutionStatus?: () => string
   ) => Executor;
   report?: any;
   getEssence?: () => Essence;
   essence?: Essence;
+  statusCallback?: (status: any) => void;
+  getExecutionStatus?: () => string;
 }
 
 let check: Class<AppSettingsValue, AppSettingsJS>;
@@ -61,7 +65,7 @@ let check: Class<AppSettingsValue, AppSettingsJS>;
 export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   static BLANK = AppSettings.fromJS({}, {});
 
-  static isAppSettings(candidate: any): candidate is AppSettings {
+  static isAppSettings(candidate: unknown): candidate is AppSettings {
     return candidate instanceof AppSettings;
   }
 
@@ -108,7 +112,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
         const essence = context.getEssence
           ? context.getEssence()
           : context.essence;
-        const executor = executorFactory(dataCubeObject, () => essence);
+        const executor = executorFactory(dataCubeObject, () => essence, context.statusCallback, context.getExecutionStatus);
         if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
       return dataCubeObject;

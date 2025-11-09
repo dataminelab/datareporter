@@ -47,12 +47,6 @@ export interface TurniloApplicationProps {
   initTimekeeper?: Timekeeper;
   setReportChanged?: (reportChanged: boolean) => void;
   reportChanged?: boolean;
-  onExecutionStatusChange?: (status: {
-    status: "processing" | "completed" | "failed";
-    isExecuting: boolean;
-    result?: any;
-    error?: any;
-  }) => void;
 }
 
 export interface TurniloApplicationState {
@@ -98,7 +92,7 @@ export class TurniloApplication extends React.Component<
     });
   }
 
-  componentWillMount(): void {
+  UNSAFE_componentWillMount(): void {
     const { appSettings, initTimekeeper, report } = this.props;
     const { dataCubes } = appSettings;
 
@@ -179,14 +173,10 @@ export class TurniloApplication extends React.Component<
       viewHash,
       drawerOpen: false,
     };
-    const report = this.props.report;
-    const appSettings = AppSettings.fromJS(report.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory.bind(report),
-    });
 
     if (this.viewTypeNeedsAnItem(viewType)) {
       const item = this.getSelectedDataCubeFromHash(
-        appSettings.dataCubes,
+        dataCubes,
         hash,
       );
       newState.selectedItem = item ? item : dataCubes[0];

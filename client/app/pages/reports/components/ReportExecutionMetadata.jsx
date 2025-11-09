@@ -13,7 +13,7 @@ import "./ReportExecutionMetadata.less";
 export default function ReportExecutionMetadata({
   report,
   queryResult,
-  isReportExecuting,
+  isExecuting,
   selectedVisualization,
   showEditVisualizationButton,
   onEditVisualization,
@@ -28,7 +28,7 @@ export default function ReportExecutionMetadata({
         <ReportControlDropdown
           report={report}
           queryResult={queryResult}
-          queryExecuting={isReportExecuting}
+          queryExecuting={isExecuting}
           showEmbedDialog={openEmbedDialog}
           embed={false}
           apiKey={report.api_key}
@@ -49,13 +49,13 @@ export default function ReportExecutionMetadata({
           {pluralize("row", queryResultData.rows.length)}
         </span>
         <span className="m-l-5">
-          {!isReportExecuting && (
+          {!isExecuting && (
             <React.Fragment>
               <strong>{durationHumanize(queryResultData.runtime)}</strong>
               <span className="hidden-xs"> runtime</span>
             </React.Fragment>
           )}
-          {isReportExecuting && <span>Running&hellip;</span>}
+          {isExecuting && <span>Running&hellip;</span>}
         </span>
         {queryResultData.metadata.data_scanned && (
           <span className="m-l-5">
@@ -79,7 +79,7 @@ export default function ReportExecutionMetadata({
 ReportExecutionMetadata.propTypes = {
   report: PropTypes.object.isRequired,
   queryResult: PropTypes.object.isRequired,
-  isReportExecuting: PropTypes.bool,
+  isExecuting: PropTypes.bool,
   selectedVisualization: PropTypes.number,
   showEditVisualizationButton: PropTypes.bool,
   onEditVisualization: PropTypes.func,
@@ -87,7 +87,7 @@ ReportExecutionMetadata.propTypes = {
 };
 
 ReportExecutionMetadata.defaultProps = {
-  isReportExecuting: false,
+  isExecuting: false,
   selectedVisualization: null,
   showEditVisualizationButton: false,
   onEditVisualization: () => {},

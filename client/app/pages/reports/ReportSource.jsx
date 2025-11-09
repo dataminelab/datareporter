@@ -11,6 +11,7 @@ import ReportPageHeader from "./components/ReportPageHeader";
 import wrapReportPage from "./components/wrapReportPage";
 import ReportExecutionMetadata from "./components/ReportExecutionMetadata";
 import ReportEditor from "./components/ReportEditor";
+import QueryExecutionStatus from "../queries/components/QueryExecutionStatus";
 
 import useReport from "./hooks/useReport";
 import useVisualizationTabHandler from "./hooks/useVisualizationTabHandler";
@@ -22,7 +23,7 @@ import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
 import "./ReportSource.less";
 
 function ReportSource(props) {
-  const { report, setReport, isDirty, showShareReportDialog } = useReport(
+  const { report, setReport, isDirty } = useReport(
     props.report,
   );
   const reportFlags = useReportFlags(report, []);
@@ -33,9 +34,25 @@ function ReportSource(props) {
   const [reportChanged, setReportChanged] = useState(false);
 
   useUnsavedChangesAlert(isDirty);
+  const {
+    reportResult,
+    isExecuting,
+    error: executionError,
+    executionStatus,
+    updatedAt,
+    isCancelling: isExecutionCancelling,
+    cancelCallback: cancelExecution,
+    triggerExecution,
+  } = useReportExecute(report);
 
-  const { reportResult, isExecuting: isReportExecuting } =
-    useReportExecute(report);
+  useEffect(() => {
+    report.setTriggerExecution(triggerExecution);
+    report.setExecutionStatus(executionStatus);
+  }, []);
+
+  useEffect(() => {
+    report.setExecutionStatus(executionStatus);
+  }, [executionStatus]);
 
   useEffect(() => {
     // TODO: ignore new pages?
@@ -86,13 +103,24 @@ function ReportSource(props) {
               />
             </div>
           </div>
+          {(executionError || isExecuting) && (
+            <div className="query-alerts">
+              <QueryExecutionStatus
+                status={executionStatus}
+                updatedAt={updatedAt}
+                error={executionError}
+                isCancelling={isExecutionCancelling}
+                onCancel={cancelExecution}
+              />
+            </div>
+          )}
           {reportResult && !reportResult.getError() && (
             <div className="bottom-controller-container">
               <ReportExecutionMetadata
                 report={report}
                 reportResult={reportResult}
                 selectedVisualization={selectedVisualization}
-                isReportExecuting={isReportExecuting}
+                isExecuting={isExecuting}
                 showEditVisualizationButton={
                   !reportFlags.isNew && reportFlags.canEdit
                 }

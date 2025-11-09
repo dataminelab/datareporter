@@ -154,7 +154,7 @@ class BigQuery(BaseQueryRunner):
                 "useQueryAnnotation",
             ],
             "secret": ["jsonKeyFile"],
-        } # pyright: ignore[reportUnknownVariableType]
+        }  # pyright: ignore[reportUnknownVariableType]
 
     def _get_bigquery_service(self):
         socket.setdefaulttimeout(settings.BIGQUERY_HTTP_TIMEOUT)

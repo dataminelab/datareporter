@@ -7,6 +7,7 @@ from redash.settings import SERVER_WORKER_URL
 
 logger = logging.getLogger(__name__)
 
+
 class ServerWorkerApi:
     @classmethod
     def health(cls):

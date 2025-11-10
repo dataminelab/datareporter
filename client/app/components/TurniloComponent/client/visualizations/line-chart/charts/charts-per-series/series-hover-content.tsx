@@ -113,7 +113,8 @@ export const SeriesHoverContent: React.FunctionComponent<
     <SettingsContext.Consumer>
       {settingsContext => {
         // If no context is provided, use a default
-        const customization = settingsContext?.customization || {
+        const customization = (settingsContext &&
+          settingsContext.customization) || {
           visualizationColors: {
             series: [
               "#1f77b4",

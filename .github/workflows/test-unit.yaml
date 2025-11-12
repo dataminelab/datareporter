@@ -191,7 +191,7 @@ jobs:
         run: npm run build
       - name: Run App Tests
         working-directory: client
-        run: npm run test
+        run: npm run test:coverage
       - name: Run Visualizations Tests
         working-directory: viz-lib
         run: npm run test

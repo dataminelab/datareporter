@@ -69,7 +69,7 @@
     "highlight.js": "11.7.0",
     "immutable": "4.0.0-rc.9",
     "immutable-class": "0.9.8",
-    "js-yaml": "4.1.0",
+    "js-yaml": "4.1.1",
     "lz-string": "^1.4.4",
     "moment-timezone": "0.5.40",
     "node-spawn-server": "1.0.1",

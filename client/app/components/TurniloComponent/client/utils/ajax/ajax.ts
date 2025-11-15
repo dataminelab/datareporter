@@ -151,8 +151,6 @@ export class Ajax {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    
-    const ls = safeLocalStorage();
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
       const { data, method, timeout, url } = input;
       const ls = safeLocalStorage();
@@ -182,13 +180,14 @@ export class Ajax {
         });
       const urlHash = getHash();
       if (!url.endsWith("filter") && urlHash && data.hash !== urlHash) {
-        console.log("[INFO] subscribe is killed by hash mismatch, skipping");
+        statusCallback({ status: 'failed', isExecuting: false, error: new Error("Hash mismatch error") });
         return res;
       }
       if ([1, 2].indexOf(res.status) >= 0) {
         await timeoutQuery(2000);
         return await subscribe(input);
       } else {
+        statusCallback({ status: 'done', isExecuting: false });
         return res;
       }
     }

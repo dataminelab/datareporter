@@ -237,7 +237,7 @@ export default function EditableModelConfig({ model, saveConfig }) {
       if (attribute.includes(timeAttribute)) {
         const attributeType = attribute.split("type: ")[1].split("\n")[0];
         if (attributeType !== "TIME") {
-          alert("timeAttribute must be time or timestamp");
+          alert("timeAttribute must be of type TIME");
           return;
         }
       }

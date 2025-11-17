@@ -180,6 +180,7 @@ export class Ajax {
         });
       const urlHash = getHash();
       if (!url.endsWith("filter") && urlHash && data.hash !== urlHash) {
+        // Hash mismatch, stop polling and report error
         statusCallback({ status: 'failed', isExecuting: false, error: new Error("Hash mismatch error") });
         return res;
       }
@@ -219,6 +220,8 @@ export class Ajax {
     }
 
     function parseMeta(sub: APIResponse) {
+      // This function parses the meta information from the subscription response
+      // how much the query costs and how much data has been processed
       const meta = sub.meta;
       if (!meta) return;
       // TODO: proceed_data is a byte type, parse it better, use big int

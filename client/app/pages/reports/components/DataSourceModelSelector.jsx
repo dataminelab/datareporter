@@ -45,10 +45,11 @@ export default function DataSourceModelSelector({
     }
   }, [selectedModel, report.model_id, handleModelChange]);
 
-  const renderModelSelect = () => {
+  const RenderModelSelect = () => {
+    let button;
     const dataSource = getDataSource(report.data_source_id);
     if (!dataSource) {
-      return (
+      button = (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Select
             data-test="SelectModel"
@@ -78,10 +79,8 @@ export default function DataSourceModelSelector({
           />
         </div>
       );
-    }
-
-    if (dataSource.name === "json") {
-      return (
+    } else if (dataSource.name === "json") {
+      button = (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Input
             ref={modelInputRef}
@@ -101,10 +100,9 @@ export default function DataSourceModelSelector({
           />
         </div>
       );
-    }
-
-    return (
-      <div style={{ display: "flex", alignItems: "center" }}>
+    } else {
+      // this is what happens when it is selected
+      button = (
         <Select
           data-test="SelectModel"
           placeholder="Choose model data source..."
@@ -133,21 +131,20 @@ export default function DataSourceModelSelector({
             </Select.Option>
           ))}
         </Select>
-        <Button
-          type="primary"
-          icon={<RightOutlined />}
-          onClick={handleArrowClick}
-          disabled={!report.model_id}
-          style={{ marginLeft: 8 }}
-          data-test="LoadModelButton"
-        />
+      );
+    }
+
+    return (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <FileOutlinedIcon />
+        {button}
       </div>
     );
   };
-
+  // Render
   return (
     <>
-      <div className="data-source-box m-r-5">
+      <div className="data-source-box m-r-5" id="data-source-selector">
         <FolderOutlinedIcon />
         <Select
           data-test="SelectDataSource"
@@ -181,8 +178,7 @@ export default function DataSourceModelSelector({
         </Select>
       </div>
       <div className="data-source-box m-r-5" id="model-data-source">
-        <FileOutlinedIcon />
-        {renderModelSelect()}
+        <RenderModelSelect />
       </div>
     </>
   );

@@ -16,7 +16,7 @@ const reducer = (prevState, updatedProperty) => ({
 
 export default function useReportExecute(report) {
   const [executionState, setExecutionState] = useReducer(reducer, {
-    reportResult: null,
+    // reportResult: null, // this is actually being pull from ajax.ts file
     isExecuting: false,
     loadedInitialResults: false,
     executionStatus: null,
@@ -24,17 +24,6 @@ export default function useReportExecute(report) {
     cancelCallback: null,
     error: null,
   });
-
-  const isMountedRef = useRef(true);
-  const reportResultInExecution = useRef(null);
-
-  // Clear executing reportResult when component is unmounted to avoid errors
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-      reportResultInExecution.current = null;
-    };
-  }, []);
 
   const triggerExecution = useImmutableCallback(async data => {
     report.setExecutionStatus(data.status);
@@ -62,20 +51,18 @@ export default function useReportExecute(report) {
   reportRef.current = report;
 
   useEffect(() => {
-    if (isMountedRef.current) {
-      setExecutionState({
-        loadedInitialResults: true,
-        cancelCallback: () => {
-          recordEvent("cancel_execute", "report", report.id);
-          setExecutionState({
-            isCancelling: true,
-            executionStatus: "cancelling",
-            isExecutionCancelling: false,
-          });
-        },
-      });
-      report.setExecutionStatus("processing");
-    }
+    setExecutionState({
+      loadedInitialResults: true,
+      cancelCallback: () => {
+        recordEvent("cancel_execute", "report", report.id);
+        setExecutionState({
+          isCancelling: true,
+          executionStatus: "cancelling",
+          isExecutionCancelling: false,
+        });
+      },
+    });
+    report.setExecutionStatus("processing");
   }, []);
 
   return { ...executionState, triggerExecution };

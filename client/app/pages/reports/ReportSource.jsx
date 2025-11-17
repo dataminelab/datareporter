@@ -33,7 +33,6 @@ function ReportSource(props) {
 
   useUnsavedChangesAlert(isDirty);
   const {
-    reportResult,
     isExecuting,
     error: executionError,
     executionStatus,
@@ -61,14 +60,6 @@ function ReportSource(props) {
     document.title = report.name;
   }, [report.name]);
 
-  const editVisualization = useEditVisualizationDialog(
-    report,
-    reportResult,
-    newReport => {
-      setReport(newReport);
-      setReportChanged(true);
-    },
-  );
 
   return (
     <div
@@ -109,20 +100,6 @@ function ReportSource(props) {
                 error={executionError}
                 isCancelling={isExecutionCancelling}
                 onCancel={cancelExecution}
-              />
-            </div>
-          )}
-          {reportResult && !reportResult.getError() && (
-            <div className="bottom-controller-container">
-              <ReportExecutionMetadata
-                report={report}
-                reportResult={reportResult}
-                selectedVisualization={selectedVisualization}
-                isExecuting={isExecuting}
-                showEditVisualizationButton={
-                  !reportFlags.isNew && reportFlags.canEdit
-                }
-                onEditVisualization={editVisualization}
               />
             </div>
           )}

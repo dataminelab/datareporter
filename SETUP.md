@@ -185,6 +185,13 @@ if you are having issue building docker images, try to remove `config.json` file
 rm  ~/.docker/config.json
 ```
 
+below is for how to start the development environment using docker compose
+this will rewrite environment variables from `.env` and the compose file
+
+```sh
+docker-compose -f compose.dev.yml up -d
+```
+
 * Supported Report Engines
   * postgres
   * mysql  

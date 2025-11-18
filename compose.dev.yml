@@ -42,6 +42,7 @@ services:
       - "5678:5678"
     environment:
       <<: *redash-environment
+      # below is neccesary for debugging plywood
       PLYWOOD_SERVER_URL: "http://host.docker.internal:3000"
     volumes:
       - .:/app
@@ -108,4 +109,3 @@ services:
 networks:
   host-gateway:
     external: true
-

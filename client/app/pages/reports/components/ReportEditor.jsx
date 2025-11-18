@@ -7,7 +7,14 @@ import { Ajax } from "@/components/TurniloComponent/client/utils/ajax/ajax";
 import { AppSettings } from "@/components/TurniloComponent/common/models/app-settings/app-settings";
 import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
+import { Report } from "../../../services/report.js";
 
+/**
+ * @param {Object} props
+ * @param {Report} props.report
+ * @param {boolean} props.reportChanged
+ * @param {Function} props.setReportChanged
+ */
 function ReportPage({ report, reportChanged, setReportChanged }) {
   const reportRef = useRef(report);
   reportRef.current = report;
@@ -56,13 +63,7 @@ function ReportPage({ report, reportChanged, setReportChanged }) {
 }
 
 ReportPage.propTypes = {
-  report: PropTypes.shape({
-    version: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    appSettings: PropTypes.object,
-    timekeeper: PropTypes.object,
-    getExecutionStatus: PropTypes.func,
-    onExecutionStatusChange: PropTypes.func,
-  }),
+  report: PropTypes.instanceOf(Report),
   reportChanged: PropTypes.bool,
   setReportChanged: PropTypes.func,
   dashboardSlug: PropTypes.string,

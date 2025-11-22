@@ -19,21 +19,6 @@ python-dateutil = ">=2.1.0,<3"
 requests = ">=2.0.0,<3"
 
 [[package]]
-name = "vertica-python"
-version = "1.1.1"
-description = "Official native Python client for the Vertica database."
-optional = false
-python-versions = "*"
-files = [
-    {file = "vertica-python-1.1.1.tar.gz", hash = "sha256:dedf56d76b67673b4d57a13f7f96ebdc57b39ea650b93ebf0c05eb6d1d2c0c05"},
-    {file = "vertica_python-1.1.1-py2.py3-none-any.whl", hash = "sha256:63d300832d6fe471987880f06a9590eafc46a1f896860881270f6b6645f3bec6"},
-]
-
-[package.dependencies]
-python-dateutil = ">=1.5"
-six = ">=1.10.0"
-
-[[package]]
 name = "advocate"
 version = "1.0.0"
 description = "A wrapper around the requests library for safely making HTTP requests on behalf of a third party"
@@ -1934,7 +1919,7 @@ version = "6.8.0"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "all_ds"]
 files = [
     {file = "importlib_metadata-6.8.0-py3-none-any.whl", hash = "sha256:3ebb78df84a805d7698245025b975d9d67053cd94c79245ba4b3eb694abe68bb"},
     {file = "importlib_metadata-6.8.0.tar.gz", hash = "sha256:dbace7892d8c0c4ac1ad096662232f831d4e64f4c4545bd53016a3e9d4654743"},
@@ -3992,21 +3977,27 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 
 [[package]]
 name = "python-arango"
-version = "6.1.0"
+version = "8.2.2"
 description = "Python Driver for ArangoDB"
 optional = false
-python-versions = "*"
+python-versions = ">=3.9"
 groups = ["all_ds"]
 files = [
-    {file = "python-arango-6.1.0.tar.gz", hash = "sha256:04dbb017945105925c01d05ac98a62d718d29586cf39ef85ae3a44f032923b1c"},
-    {file = "python_arango-6.1.0-py2.py3-none-any.whl", hash = "sha256:ca31ceb555ff7c9671ada61c6a81abdcd24b308e76a27d91398a98320f9b27db"},
+    {file = "python_arango-8.2.2-py3-none-any.whl", hash = "sha256:987bb8b6faadaeb0f53b35298114773a86c3416da05863a389c44a526fd32c71"},
+    {file = "python_arango-8.2.2.tar.gz", hash = "sha256:395a975523fc748af7623c71e2d0d3cb544252698de01a284c6036159ea85397"},
 ]
 
 [package.dependencies]
+importlib_metadata = ">=4.7.1"
+packaging = ">=23.1"
 PyJWT = "*"
 requests = "*"
-requests-toolbelt = "*"
-six = "*"
+requests_toolbelt = "*"
+setuptools = ">=42"
+urllib3 = ">=1.26.0"
+
+[package.extras]
+dev = ["black (>=22.3.0)", "flake8 (>=4.0.1)", "isort (>=5.10.1)", "mock", "mypy (>=0.942)", "pre-commit (>=2.17.0)", "pytest (>=7.1.1)", "pytest-cov (>=3.0.0)", "sphinx", "sphinx_rtd_theme", "types-requests", "types-setuptools"]
 
 [[package]]
 name = "python-dateutil"
@@ -5561,7 +5552,7 @@ version = "3.19.1"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "all_ds"]
 files = [
     {file = "zipp-3.19.1-py3-none-any.whl", hash = "sha256:2828e64edb5386ea6a52e7ba7cdb17bb30a73a858f5eb6eb93d8d36f5ea26091"},
     {file = "zipp-3.19.1.tar.gz", hash = "sha256:35427f6d5594f4acf82d25541438348c26736fa9b3afa2754bcd63cdb99d8e8f"},
@@ -5641,4 +5632,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.11"
-content-hash = "ad763760d683e61fd5ab953f400890340c2e9b7bbec7cd0ba933fe27fcd5aafa"
+content-hash = "96f01abd38cd1b9fe071233265ae127f8c57705045c653685bcb663b932447a3"

@@ -8,7 +8,6 @@ from .mixins import TimestampMixin
 from .types import JSONText
 from .users import Group, User
 
-
 @generic_repr("id", "name", "slug")
 class Organization(TimestampMixin, db.Model):
     SETTING_GOOGLE_APPS_DOMAINS = "google_apps_domains"
@@ -20,6 +19,7 @@ class Organization(TimestampMixin, db.Model):
     settings = Column(JSONText, nullable=True)
     groups = db.relationship("Group", lazy="dynamic")
     events = db.relationship("Event", lazy="dynamic", order_by="desc(Event.created_at)")
+    query_snippets = db.relationship("QuerySnippet", back_populates="org")
 
     __tablename__ = "organizations"
 

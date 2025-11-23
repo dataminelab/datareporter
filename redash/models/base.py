@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import object_session
 from sqlalchemy.pool import NullPool
 from sqlalchemy_searchable import SearchQueryMixin, make_searchable, vectorizer
-
+from flask_sqlalchemy import SQLAlchemy
 from redash import settings
 from redash.utils import json_dumps, json_loads
 
@@ -28,7 +28,7 @@ class RedashSQLAlchemy(SQLAlchemy):
         return options
 
 
-db = RedashSQLAlchemy(
+db: SQLAlchemy = RedashSQLAlchemy(
     session_options={"expire_on_commit": False},
     engine_options={"json_serializer": json_dumps, "json_deserializer": json_loads},
 )

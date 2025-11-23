@@ -221,7 +221,7 @@ def log_user_logged_in(app, user):
         "ip": request.remote_addr,
     }
 
-    record_event.delay(event)
+    record_event.delay(event)  # type: ignore
 
 
 @login_manager.unauthorized_handler

@@ -218,6 +218,17 @@ export default function EditableModelConfig({ model, saveConfig }) {
       alert("timeAttribute cannot be null");
       return;
     }
+    if (
+      !yamlContent.includes("defaultSortMeasure") ||
+      yamlContent.includes("defaultSortMeasure: null")
+    ) {
+      alert("defaultSortMeasure cannot be null");
+      return;
+    }
+    if (yamlContent.includes("timeAttribute: ''")) {
+      alert("timeAttribute cannot be empty");
+      return;
+    }
     const timeAttribute = yamlContent
       .split("timeAttribute: ")[1]
       .split("\n")[0];

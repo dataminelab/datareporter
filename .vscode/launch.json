@@ -27,6 +27,7 @@
                 "host": "localhost",
                 "port": 5679
             },
+            // bash bin/rest-worker --debug-port 5679
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}",
@@ -50,6 +51,8 @@
             "request": "attach",
             "name": "Attach to Plywood Server",
             "port": 9229,
+            // cd plywood/server
+            // npm run dev:debug
             "address": "localhost",
             "localRoot": "${workspaceFolder}",
             "remoteRoot": "${workspaceFolder}",

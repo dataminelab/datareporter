@@ -8,6 +8,7 @@ from .mixins import TimestampMixin
 from .types import JSONText
 from .users import Group, User
 
+
 @generic_repr("id", "name", "slug")
 class Organization(TimestampMixin, db.Model):
     SETTING_GOOGLE_APPS_DOMAINS = "google_apps_domains"

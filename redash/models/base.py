@@ -5,6 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import object_session
 from sqlalchemy.pool import NullPool
 from sqlalchemy_searchable import SearchQueryMixin, make_searchable, vectorizer
+
 from redash import settings
 from redash.utils import json_dumps, json_loads
 

@@ -119,7 +119,7 @@ def queue_from(envelope) -> str:
     return base64.b64decode(message_data).decode("utf-8").strip()
 
 
-worker = Blueprint("redash", __name__)
+worker = Blueprint("worker_blueprint", __name__)
 
 
 @worker.route("/execute", methods=["POST"])

@@ -166,6 +166,7 @@ pytest-cov = "4.1.0"
 watchdog = "3.0.0"
 ruff = "0.0.289"
 pylint_flask = "0.6.0"
+debugpy = "^1.8.17"
 
 [build-system]
 requires = ["poetry-core"]

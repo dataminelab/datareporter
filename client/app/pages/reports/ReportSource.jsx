@@ -60,7 +60,6 @@ function ReportSource(props) {
     document.title = report.name;
   }, [report.name]);
 
-
   return (
     <div
       className={cx("report-page-wrapper", {

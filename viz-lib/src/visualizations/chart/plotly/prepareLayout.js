@@ -21,7 +21,7 @@ function prepareXAxis(axisOptions, additionalOptions) {
     title: getAxisTitle(axisOptions),
     type: getAxisScaleType(axisOptions),
     automargin: true,
-    tickformat: axisOptions.tickFormat ?? null,
+    tickformat: axisOptions.tickFormat,
   };
 
   if (additionalOptions.sortX && axis.type === "category") {
@@ -46,7 +46,7 @@ function prepareYAxis(axisOptions) {
     automargin: true,
     autorange: true,
     range: null,
-    tickformat: axisOptions.tickFormat ?? null,
+    tickformat: axisOptions.tickFormat,
   };
 }
 

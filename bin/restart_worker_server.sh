@@ -19,5 +19,5 @@ else
     export skip_frontend_build="do not build front-end"
 fi
 
-docker compose -f docker-compose.yml up -d
-docker compose -f docker-compose.yml stop worker-server && docker compose -f docker-compose.yml run --rm --service-ports worker-server debug && docker compose -f docker-compose.yml start worker-server
+docker compose -f compose.dev.yml up -d
+docker compose -f compose.dev.yml stop worker-server && docker compose -f compose.dev.yml run --rm --use-aliases -p 5001:5000 -p 5679:5678 worker-server dev_worker_server && docker compose -f compose.dev.yml start worker-server

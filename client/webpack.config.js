@@ -163,7 +163,28 @@ const config = {
         exclude: [
           /node_modules\/mutationobserver-shim/,
           /node_modules\/@plotly\/mapbox-gl/,
+          /node_modules\/@redash\/viz/,
         ],
+      },
+      {
+        test: /\.js$/,
+        include: [
+          path.resolve(__dirname, 'node_modules/@redash/viz')  // Add this
+        ],
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['@babel/preset-env', {
+                targets: { browsers: ['last 2 versions'] }
+              }]
+            ],
+            plugins: [
+              '@babel/plugin-proposal-optional-chaining',
+              '@babel/plugin-proposal-nullish-coalescing-operator'
+            ]
+          }
+        }
       },
       {
         test: /\.(t|j)sx?$/,
@@ -331,6 +352,7 @@ const config = {
           "/status.json",
           "/api",
           "/oauth",
+          "/forgot"
         ],
         target: redashBackend + "/",
         changeOrigin: false,
@@ -352,7 +374,7 @@ const config = {
         secure: false,
         pathRewrite: {
           '^/ollama/': '/',
-          '^/ollama-api': '/api' 
+          '^/ollama-api': '/api'
         }
       },
       {

@@ -17,6 +17,6 @@ else
     export skip_frontend_build="do not build front-end"
 fi
 
-docker compose -f docker-compose.yml up -d
-docker compose -f docker-compose.yml run --rm server create_db
-docker compose -f docker-compose.yml stop server && docker compose -f docker-compose.yml run --rm --service-ports server debug && docker compose -f docker-compose.yml start server
+docker compose -f compose.dev.yml up -d
+docker compose -f compose.dev.yml run --rm server create_db
+docker compose -f compose.dev.yml stop server && docker compose -f compose.dev.yml run --rm --service-ports server debug && docker compose -f compose.dev.yml start server

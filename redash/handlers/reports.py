@@ -77,7 +77,9 @@ class ReportGeneratePublicResource(BaseResource):
     decorators = [csp_allows_embeding]
 
     def post(self, model_id):
-        if not self.current_user or (not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser)):
+        if not self.current_user or (
+            not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser)
+        ):
             abort(405)
 
         req = request.get_json(True)
@@ -154,7 +156,9 @@ class ReportApiKeyAccess(BaseResource):
 # /api/reports/generate/<int:model_id>
 class ReportGenerateResource(BaseResource):
     def post(self, model_id):
-        if not self.current_user or (not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser)):
+        if not self.current_user or (
+            not self.current_user.is_authenticated and not isinstance(self.current_user, models.ApiUser)
+        ):
             abort(405)
 
         req = request.get_json(True)

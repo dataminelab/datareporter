@@ -20,7 +20,7 @@ export class AttributeParserFactory {
 
     if (!engines.includes(engine)) {
       throw new ValidationError(
-        `Engine(${engine}) is not supported, supported are [${engines.join(",")}]`,
+        `Engine is not supported`,
       );
     }
   };

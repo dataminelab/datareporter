@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Remote Attach",
+            "name": "Server Debugger: Remote Attach",
             "type": "debugpy",
             "request": "attach",
             "connect": {

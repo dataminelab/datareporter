@@ -58,7 +58,7 @@ jobs:
           fi
 
       - name: Add Artifact Links to PR (on failure)
-        if: failure() && github.event_name == 'pull_request'
+        if: failure() && github.event_name == 'pull_request' && needs.frontend-unit-tests.result == 'success'
         uses: actions/github-script@v7
         with:
           script: |

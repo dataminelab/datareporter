@@ -1483,7 +1483,7 @@ export abstract class External {
           Expression.and([newTimeFilter, extractAndRest.rest]),
         ),
       ).changeSpecialApplyTransform({
-        mainRangeLiteral, // Transform apply filters
+        mainRangeLiteral,
         curTimeRange,
         prevTimeRange,
       });

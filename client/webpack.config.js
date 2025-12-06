@@ -77,6 +77,7 @@ const babelLoader = {
     plugins: [
       ...(isHotReloadingEnabled ? ["react-refresh/babel"] : []),
       "@babel/plugin-proposal-optional-chaining",
+      "@babel/plugin-proposal-nullish-coalescing-operator",
     ],
   },
 };
@@ -102,7 +103,7 @@ const config = {
   },
   resolve: {
     symlinks: false,
-    extensions: [".js", ".jsx", ".ts", ".tsx"],
+    extensions: [".js", ".jsx", ".ts", ".tsx", ".mjs"],
     alias: {
       "@": appPath,
       "extensions": extensionPath,
@@ -164,12 +165,16 @@ const config = {
           /node_modules\/mutationobserver-shim/,
           /node_modules\/@plotly\/mapbox-gl/,
           /node_modules\/@redash\/viz/,
+          /node_modules\/druid-query-toolkit/,
+          /node_modules\/plywood/,
         ],
       },
+      // Rule for druid-query-toolkit (needs nullish coalescing support)
       {
-        test: /\.js$/,
+        test: /\.(js|mjs)$/,
         include: [
-          path.resolve(__dirname, 'node_modules/@redash/viz')  // Add this
+          /node_modules\/druid-query-toolkit/,
+          /node_modules\/plywood\/node_modules\/druid-query-toolkit/,
         ],
         use: {
           loader: 'babel-loader',
@@ -186,12 +191,34 @@ const config = {
           }
         }
       },
+      // Rule for @redash/viz
+      {
+        test: /\.js$/,
+        include: [
+          path.resolve(__dirname, 'node_modules/@redash/viz')
+        ],
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['@babel/preset-env', {
+                targets: { browsers: ['last 2 versions'] }
+              }]
+            ],
+            plugins: [
+              '@babel/plugin-proposal-optional-chaining',
+              '@babel/plugin-proposal-nullish-coalescing-operator'
+            ]
+          }
+        }
+      },
+      // Main rule for app code (JS/TS/JSX/TSX)
       {
         test: /\.(t|j)sx?$/,
         exclude: {
           and: [/node_modules/],
           not: [
-            /react-syntax-highlighter/, // Include react-syntax-highlighter for transpiling
+            /react-syntax-highlighter/,
           ],
         },
         use: [babelLoader],
@@ -239,11 +266,8 @@ const config = {
       {
         test: /\.s[ac]ss$/i,
         use: [
-          // Creates `style` nodes from JS strings
           "style-loader",
-          // Translates CSS into CommonJS
           "css-loader",
-          // Compiles Sass to CSS
           "sass-loader",
         ],
       },
@@ -379,7 +403,6 @@ const config = {
       },
       {
         context: path => {
-          // CSS/JS for server-rendered pages should be served from backend
           return /^\/static\/[a-z]+\.[0-9a-fA-F]+\.(css|js)$/.test(path);
         },
         target: redashBackend + "/",

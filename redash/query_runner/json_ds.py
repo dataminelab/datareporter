@@ -170,7 +170,7 @@ class JSON(BaseHTTPQueryRunner):
 
         return [{"name": "default", "columns": data.get("columns", []) if data else []}]
 
-    def run_query(self, query, user): # can I use thios for reports as well?
+    def run_query(self, query, user):
         query = parse_query(query)
 
         data, error = self._run_json_query(query)

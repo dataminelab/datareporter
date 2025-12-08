@@ -152,9 +152,25 @@ class JSON(BaseHTTPQueryRunner):
         self.syntax = "yaml"
 
     def test_connection(self):
-        pass
+        base_url = self.configuration.get("base_url")
+        if not base_url:
+            raise Exception("Base URL is required")
 
-    def run_query(self, query, user):
+        response, error = self.get_response(base_url, http_method="get")
+        if error is not None:
+            raise Exception(error)
+
+    def get_schema(self, refresh=False, get_stats=False):
+        url = self.configuration.get("base_url")
+        query = {"url": url, "method": "get"}
+
+        data, error = self._run_json_query(query)
+        if error is not None:
+            pass
+
+        return [{"name": "default", "columns": data.get("columns", []) if data else []}]
+
+    def run_query(self, query, user): # can I use thios for reports as well?
         query = parse_query(query)
 
         data, error = self._run_json_query(query)

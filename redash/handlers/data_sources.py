@@ -17,7 +17,7 @@ from redash.permissions import (
     require_permission,
     view_only,
 )
-from redash.plywood.parsers.query_parser_v2 import supported_engines
+from redash.plywood.parsers.query_parser_v2 import SUPPORTED_ENGINES
 from redash.query_runner import (
     get_configuration_schema_for_query_runner_type,
     query_runners,
@@ -132,7 +132,7 @@ class DataSourceListResource(BaseResource):
         results = []
         if source == "plywood":
             for result in sorted_results:
-                if result["type"] in supported_engines:
+                if result["type"] in SUPPORTED_ENGINES:
                     results.append(result)
         else:
             results = sorted_results

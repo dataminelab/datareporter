@@ -20,13 +20,13 @@ export class JsonAttributeParser extends AttributeParser {
   private _mapJsonType(jsonType: string): string {
     // Map JSON types to Plywood types
     const typeMap: Record<string, string> = {
-      'STRING': 'STRING',
-      'INTEGER': 'NUMBER',
-      'FLOAT': 'NUMBER',
-      'BOOLEAN': 'BOOLEAN',
-      'DATETIME': 'TIME',
+      STRING: "STRING",
+      INTEGER: "NUMBER",
+      FLOAT: "NUMBER",
+      BOOLEAN: "BOOLEAN",
+      DATETIME: "TIME",
     };
 
-    return typeMap[jsonType?.toUpperCase()] || 'STRING';
+    return typeMap[jsonType?.toUpperCase()] || "STRING";
   }
 }

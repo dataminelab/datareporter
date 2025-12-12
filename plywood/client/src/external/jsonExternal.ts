@@ -9,56 +9,16 @@ import {
   LiteralExpression,
   RefExpression,
 } from "../expressions";
-
 import {
   External,
   ExternalJS,
   ExternalValue,
   QueryAndPostTransform,
   TotalContainer,
+  getSampleValue,
 } from "./baseExternal";
+import { PlywoodValue } from "../datatypes/index";
 
-const dummyObject: any = {};
-
-// PlywoodValue can be various types - using any for flexibility
-type PlywoodValue = any;
-
-function getSampleValue(valueType: string, ex: Expression): PlywoodValue {
-  if (!valueType) {
-    return "unknown";
-  }
-
-  switch (valueType) {
-    case "NULL":
-      return null;
-    case "BOOLEAN":
-      return true;
-    case "NUMBER":
-      return 4;
-    case "TIME":
-      return new Date("2015-03-14T00:00:00Z");
-    case "STRING":
-      if (ex instanceof RefExpression) {
-        return "some_" + ex.name;
-      }
-      return "something";
-    case "NUMBER_RANGE":
-      return 0;
-    case "TIME_RANGE":
-      return new Date("2015-03-14T00:00:00Z");
-    case "SET/STRING":
-      return "something";
-    case "SET/NUMBER":
-      return 4;
-    case "DATASET":
-      return null;
-    default:
-      if (valueType.startsWith("SET/")) {
-        return "something";
-      }
-      return "unknown_" + valueType;
-  }
-}
 
 export interface JSONQuery {
   source: string;

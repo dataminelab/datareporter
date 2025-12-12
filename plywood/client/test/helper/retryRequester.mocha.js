@@ -88,7 +88,7 @@ describe("Retry Requester", () => {
     });
   });
 
-  it("two fails forwards meta", () => {
+  it("two fails forwards meta", async () => {
     const retryRequester = retryRequesterFactory({
       requester: makeRequester(2),
       delay: 20,
@@ -103,10 +103,9 @@ describe("Retry Requester", () => {
       expect(meta).to.deep.equal({ lol: 33 });
     });
 
-    return toArray(rs).then(res => {
-      expect(seenMeta).to.equal(true);
-      expect(res).to.deep.equal([1, 2, 3]);
-    });
+    const res = await toArray(rs);
+    expect(seenMeta).to.equal(true);
+    expect(res).to.deep.equal([1, 2, 3]);
   });
 
   it("three fails", () => {

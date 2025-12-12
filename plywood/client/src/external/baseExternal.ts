@@ -195,7 +195,7 @@ function mergeDerivedAttributes(
   return derivedAttributes;
 }
 
-function getSampleValue(valueType: string, ex: Expression): PlywoodValue {
+export function getSampleValue(valueType: string, ex: Expression): PlywoodValue {
   switch (valueType) {
     case "NULL":
       return null;

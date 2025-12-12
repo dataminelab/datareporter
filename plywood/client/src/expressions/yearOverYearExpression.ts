@@ -107,7 +107,7 @@ export class YearOverYearExpression {
   }
 
   public toString(indent?: number): string {
-    return indent?.toString() ?? "";
+    return indent.toString();
   }
 
   protected sqlToQuery(sql: string): any {
@@ -138,7 +138,7 @@ export class YearOverYearExpression {
     this.timeRanges = timeRanges;
   }
 
-  public getTimeRanges(): timeRangeType | undefined {
+  public getTimeRanges(): timeRangeType {
     return this.timeRanges;
   }
 

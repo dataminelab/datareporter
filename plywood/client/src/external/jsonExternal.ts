@@ -19,7 +19,6 @@ import {
 } from "./baseExternal";
 import { PlywoodValue } from "../datatypes/index";
 
-
 export interface JSONQuery {
   source: string;
   filter?: any;

@@ -66,8 +66,5 @@ module.exports = {
   },
   ignorePatterns: ["build/", "dist/", "node_modules/", "**/*.js", "*.js"],
   extends: "./tsconfig.json",
-  include: [
-    "typings/private.d.ts",
-    "src/**/*.ts"
-  ],
+  include: ["typings/private.d.ts", "src/**/*.ts"],
 };

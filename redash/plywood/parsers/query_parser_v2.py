@@ -202,13 +202,23 @@ class PlywoodQueryParserV2:
             return
 
         split_keys = split_data.get("keys", [])
-
-        # Only create nested SPLIT if we have more than 2 queries (meaning 2 splits)
         num_queries = len(self._query_result)
         has_second_split = num_queries > 2
-
         logger.info(f"_build_first_split: num_queries={num_queries}, has_second_split={has_second_split}")
 
+        nested_split_template = self._get_nested_split_template(split_data, has_second_split)
+        query_index = self._get_first_split_query_index()
+        sample = self._create_sample(query_index, nested_split_template)
+
+        split_data["data"] = self._build_split_data(data, sample, nested_split_template)
+        logger.info(f"_build_first_split: Built {len(split_data['data'])} rows in split_data")
+
+        self._update_split_attributes(split_data, data, query_index, nested_split_template)
+
+        if not split_data.get("keys") and split_keys:
+            split_data["keys"] = split_keys
+
+    def _get_nested_split_template(self, split_data, has_second_split):
         nested_split_template = None
         if has_second_split:
             # Try to extract from the shape first
@@ -224,8 +234,7 @@ class PlywoodQueryParserV2:
                                 "data": [],
                                 "type": "DATASET",
                             }
-                            logger.info(f"_build_first_split: Found nested_split_template from shape")
-
+                            logger.info("_build_first_split: Found nested_split_template from shape")
             # If we couldn't extract from shape, create from the second split query
             if not nested_split_template and len(self._query_result) > 2:
                 second_split_query = self._query_result[2]
@@ -238,19 +247,16 @@ class PlywoodQueryParserV2:
                             col_type = col.get("type", "string")
                             ply_type = TYPE_MAPPING.get(col_type, "STRING")
                             second_split_attrs.append({"name": col["name"], "type": ply_type})
-
                         nested_split_template = {
                             "keys": second_split_keys,
                             "attributes": second_split_attrs,
                             "data": [],
                             "type": "DATASET",
                         }
-                        logger.info(f"_build_first_split: Created nested_split_template from query")
+                        logger.info("_build_first_split: Created nested_split_template from query")
+        return nested_split_template
 
-        # Get query index for first split
-        query_index = self._get_first_split_query_index()
-
-        # Create sample based on the query result columns
+    def _create_sample(self, query_index, nested_split_template):
         sample = {}
         if len(self._query_result) > query_index:
             columns = self._query_result[query_index]["query_result"]["data"]["columns"]
@@ -263,14 +269,12 @@ class PlywoodQueryParserV2:
                     sample[col_name] = False
                 else:
                     sample[col_name] = ""
-
-        # Only add empty nested SPLIT structure for 2-split queries
         if nested_split_template:
             sample["SPLIT"] = copy.deepcopy(nested_split_template)
+        return sample
 
-        # Clear and rebuild data array
-        split_data["data"] = []
-
+    def _build_split_data(self, data, sample, nested_split_template):
+        split_data_list = []
         for value in data:
             sample_copy = copy.deepcopy(sample)
             sample_copy.update(value)
@@ -280,11 +284,10 @@ class PlywoodQueryParserV2:
                     sample_copy["SPLIT"] = copy.deepcopy(nested_split_template)
                 else:
                     del sample_copy["SPLIT"]
-            split_data["data"].append(sample_copy)
+            split_data_list.append(sample_copy)
+        return split_data_list
 
-        logger.info(f"_build_first_split: Built {len(split_data['data'])} rows in split_data")
-
-        # Update attributes
+    def _update_split_attributes(self, split_data, data, query_index, nested_split_template):
         if data and len(self._query_result) > query_index:
             columns = self._query_result[query_index]["query_result"]["data"]["columns"]
             split_data["attributes"] = []
@@ -293,13 +296,9 @@ class PlywoodQueryParserV2:
                 col_type = col.get("type", "string")
                 ply_type = TYPE_MAPPING.get(col_type, "STRING")
                 split_data["attributes"].append({"name": col_name, "type": ply_type})
-
             # Only add SPLIT attribute for 2-split queries
             if nested_split_template:
                 split_data["attributes"].append({"name": "SPLIT", "type": "DATASET"})
-
-        if not split_data.get("keys") and split_keys:
-            split_data["keys"] = split_keys
 
     def _prepare_line_chart(self, shape, top_index):
         split = shape["data"][0]["SPLIT"]
@@ -558,11 +557,11 @@ class PlywoodQueryParserV2:
 
         if has_first_split:
             self._build_first_split(shape=shape)
-            logger.info(f"_query_to_ply_data: After _build_first_split")
+            logger.info("_query_to_ply_data: After _build_first_split")
 
         if has_second_split:
             self._build_second_split(shape=shape)
-            logger.info(f"_query_to_ply_data: After _build_second_split")
+            logger.info("_query_to_ply_data: After _build_second_split")
 
         # Add type markers to all SPLIT structures
         self._add_dataset_type_markers(shape)

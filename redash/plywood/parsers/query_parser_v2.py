@@ -158,13 +158,23 @@ class PlywoodQueryParserV2:
             row = pydash.head(rows)
             if PlywoodQueryParserV2._contains_time_shift(columns):
                 row_value = row.get(key) or 0
-                res[key] = float(row_value) if _type == "NUMBER" else row_value
             else:
                 if columns[0]["name"] == "__VALUE__":
                     row_value = row.get("__VALUE__") or 0
                 else:
                     row_value = row.get(key) or 0
-                res[key] = float(row_value) if _type == "NUMBER" else row_value
+            # Ensure integer-like floats are returned as int
+            if _type == "NUMBER":
+                try:
+                    float_val = float(row_value)
+                    if float_val.is_integer():
+                        res[key] = int(float_val)
+                    else:
+                        res[key] = float_val
+                except Exception:
+                    res[key] = row_value
+            else:
+                res[key] = row_value
 
         return res
 

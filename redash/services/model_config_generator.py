@@ -4,7 +4,7 @@ import yaml
 from inflection import titleize
 
 from redash.models.models import Model
-from redash.plywood.plywood import PlywoodApi
+from redash.plywood.plywood import PlywoodApi, ENGINE_MAPPING
 
 INDENT_LEVELS = [3, 4]
 
@@ -159,13 +159,6 @@ class ModelConfigGenerator:
 
         dimensions = ModelConfigGenerator.find_dimensions(plywood_attributes)
         measures = ModelConfigGenerator.find_measures(plywood_attributes)
-
-        ENGINE_MAPPING = {
-            "json": "native",
-            "pg": "postgres",
-            "mysql": "mysql",
-            # add other mappings as needed
-        }
 
         # Map the data source type to Plywood engine
         db_type = model.data_source.type

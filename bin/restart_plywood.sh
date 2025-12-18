@@ -1,4 +1,5 @@
 # this script restarts plywood with latest changes
+# in order this script to work you need to use docker dev files
 # runs it on local on debug mode
 cd client
 npm run build:plywood

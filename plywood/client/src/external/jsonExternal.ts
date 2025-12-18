@@ -63,6 +63,23 @@ export class JSONExternal extends External {
 
   public source: string;
   public data?: any[];
+  /**
+   * Recursively search for the first array value in an object.
+   * Returns the array if found, otherwise null.
+   */
+  private static findFirstArray(obj: any): any[] | null {
+    if (!obj || typeof obj !== "object") return null;
+    if (Array.isArray(obj)) return obj;
+    for (const key of Object.keys(obj)) {
+      const val = obj[key];
+      if (Array.isArray(val)) return val;
+      if (typeof val === "object" && val !== null) {
+        const found = JSONExternal.findFirstArray(val);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
   private cachedData?: any[];
 
   constructor(parameters: JSONExternalValue) {
@@ -85,7 +102,13 @@ export class JSONExternal extends External {
     const value = super.valueOf() as JSONExternalValue;
     value.engine = "json";
     value.source = this.source;
-    if (this.data) value.data = this.data;
+    let data = this.data;
+    // If data is not an array, try to find the first array in the object
+    if (data && !Array.isArray(data)) {
+      const found = JSONExternal.findFirstArray(data);
+      if (found) data = found;
+    }
+    if (data) value.data = data;
     return value;
   }
 

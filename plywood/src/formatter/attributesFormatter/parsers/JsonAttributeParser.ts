@@ -1,7 +1,7 @@
 import { AttributeParser } from "./AttributeParser";
 import { InputAttribute, OutputAttribute } from "../types/types";
 
-export class JsonAttributeParser extends AttributeParser {
+export class JsonAttributeParse extends AttributeParser {
   static engine = "json";
   static type = "DATASET";
 

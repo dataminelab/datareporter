@@ -18,12 +18,14 @@ import {
 import { responseShape } from "./endpoint/response-shape";
 import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParser";
 import { DruidParse } from "./formatter/attributesFormatter/parsers/DruidParser";
+import { JsonAttributeParse } from "./formatter/attributesFormatter/parsers/JsonAttributeParser";
 
 AttributeParserFactory.register(PostgresAttributeParser);
 AttributeParserFactory.register(MySqlAttributeParser);
 AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
 AttributeParserFactory.register(DruidParse);
+AttributeParserFactory.register(JsonAttributeParse);
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));

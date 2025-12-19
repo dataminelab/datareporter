@@ -69,7 +69,7 @@ class BaseElasticSearch(BaseQueryRunner):
             "order": ["server", "basic_auth_user", "basic_auth_password"],
             "secret": ["basic_auth_password"],
             "required": ["server"],
-        }
+        } # pyright: ignore[reportUnknownVariableType]
 
     @classmethod
     def enabled(cls):

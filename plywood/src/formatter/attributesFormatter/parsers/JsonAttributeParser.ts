@@ -14,11 +14,11 @@ export class JsonAttributeParse extends AttributeParser {
       name: attr.name,
       type: this._mapJsonType(attr.type),
       nativeType: attr.type,
+      isTimeColumn: this._mapJsonType(attr.type) === "TIME",
     })) as OutputAttribute[];
   }
 
   private _mapJsonType(jsonType: string): string {
-    // Map JSON types to Plywood types
     const typeMap: Record<string, string> = {
       STRING: "STRING",
       INTEGER: "NUMBER",

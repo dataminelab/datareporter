@@ -1,12 +1,15 @@
 import json
 import logging
-
+import pydash
+import copy
 import requests
+from collections import defaultdict
 
 from redash.plywood.objects.report_serializer import ReportSerializer
-from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
+from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2, is_expression_object, TYPE_MAPPING
 
 logger = logging.getLogger(__name__)
+
 def clean_row_values(row):
     """
     Clean all string values in a row that might be JSON arrays.
@@ -41,6 +44,15 @@ def clean_json_array_string(value):
 
     return value
 
+def flatten_dict(d, parent_key="", sep="_"):
+    items = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.extend(flatten_dict(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
 
 def handle_json_data_source(hash_string, data_cube, expression, model, expression_queries=None) -> ReportSerializer:  # noqa: C901
     """
@@ -50,18 +62,12 @@ def handle_json_data_source(hash_string, data_cube, expression, model, expressio
     logger.info(f"Expression filter series: {expression.filter.get('series', [])}")
 
     # For JSON data sources, fetch data directly from the API
-    response = requests.get(model.data_source.options.get("base_url"), verify=False)
+    response = requests.get(model.data_source.options.get("base_url"), verify=False, timeout=30)
     json_data = response.json()
-
-    def flatten_dict(d, parent_key="", sep="_"):
-        items = []
-        for k, v in d.items():
-            new_key = f"{parent_key}{sep}{k}" if parent_key else k
-            if isinstance(v, dict):
-                items.extend(flatten_dict(v, new_key, sep=sep).items())
-            else:
-                items.append((new_key, v))
-        return dict(items)
+    
+    path = model.data_source.options.get("inner_data_path")
+    if path:
+        json_data = pydash.get(json_data, path, [])
 
     # Flatten all rows to handle nested JSON structures
     flattened_rows = [flatten_dict(row) for row in json_data] if isinstance(json_data, list) else []
@@ -128,8 +134,6 @@ def handle_json_data_source(hash_string, data_cube, expression, model, expressio
                     break
 
         logger.info(f"Single split: {split_column} -> {actual_column}, measure={measure}")
-
-        from collections import defaultdict
 
         groups = defaultdict(int)
         for row in flattened_rows:
@@ -206,8 +210,6 @@ def handle_json_data_source(hash_string, data_cube, expression, model, expressio
         logger.info(
             f"Two splits: {split_column_1}->{actual_column_1}, {split_column_2}->{actual_column_2}, measure={measure}"
         )
-
-        from collections import defaultdict
 
         # Query 0: Total aggregation (__VALUE__)
         total_value = len(flattened_rows)
@@ -322,7 +324,7 @@ def handle_json_data_source(hash_string, data_cube, expression, model, expressio
         queries = []
 
     # Parse and return immediately for JSON sources
-    query_parser = PlywoodQueryParserV2(
+    query_parser = JsonPlywoodQueryParser(
         query_result=queries,
         data_cube_name=data_cube.source_name,
         shape=expression.shape,
@@ -340,3 +342,215 @@ def handle_json_data_source(hash_string, data_cube, expression, model, expressio
         shape=expression.shape,
         expression_queries=expression_queries,
     )
+
+class JsonPlywoodQueryParser(PlywoodQueryParserV2):
+    def _build_first_split(self, shape: dict):
+        split_data = shape["data"][0]["SPLIT"]
+        data = self._get_first_split()
+
+        if not data:
+            logger.info("_build_first_split: No data from first split query")
+            return
+
+        split_keys = split_data.get("keys", [])
+        num_queries = len(self._query_result)
+        has_second_split = num_queries > 2
+        logger.info(f"_build_first_split: num_queries={num_queries}, has_second_split={has_second_split}")
+
+        nested_split_template = self._get_nested_split_template(split_data, has_second_split)
+        query_index = self._get_first_split_query_index()
+        sample = self._create_sample(query_index, nested_split_template)
+
+        split_data["data"] = self._build_split_data(data, sample, nested_split_template)
+        logger.info(f"_build_first_split: Built {len(split_data['data'])} rows in split_data")
+
+        self._update_split_attributes(split_data, data, query_index, nested_split_template)
+
+        if not split_data.get("keys") and split_keys:
+            split_data["keys"] = split_keys
+
+    def _get_nested_split_template(self, split_data, has_second_split):
+        nested_split_template = None
+        if has_second_split:
+            # Try to extract from the shape first
+            if split_data.get("data") and len(split_data["data"]) > 0:
+                first_item = split_data["data"][0]
+                if "SPLIT" in first_item:
+                    nested_split = first_item.get("SPLIT", {})
+                    if isinstance(nested_split, dict) and not is_expression_object(nested_split):
+                        if nested_split.get("keys") or nested_split.get("attributes"):
+                            nested_split_template = {
+                                "keys": nested_split.get("keys", []),
+                                "attributes": nested_split.get("attributes", []),
+                                "data": [],
+                                "type": "DATASET",
+                            }
+                            logger.info("_build_first_split: Found nested_split_template from shape")
+            # If we couldn't extract from shape, create from the second split query
+            if not nested_split_template and len(self._query_result) > 2:
+                second_split_query = self._query_result[2]
+                if second_split_query and "query_result" in second_split_query:
+                    columns = second_split_query["query_result"]["data"].get("columns", [])
+                    if columns:
+                        second_split_keys = [columns[0]["name"]]
+                        second_split_attrs = []
+                        for col in columns:
+                            col_type = col.get("type", "string")
+                            ply_type = TYPE_MAPPING.get(col_type, "STRING")
+                            second_split_attrs.append({"name": col["name"], "type": ply_type})
+                        nested_split_template = {
+                            "keys": second_split_keys,
+                            "attributes": second_split_attrs,
+                            "data": [],
+                            "type": "DATASET",
+                        }
+                        logger.info("_build_first_split: Created nested_split_template from query")
+        return nested_split_template
+
+    def _create_sample(self, query_index, nested_split_template):
+        sample = {}
+        if len(self._query_result) > query_index:
+            columns = self._query_result[query_index]["query_result"]["data"]["columns"]
+            for col in columns:
+                col_name = col["name"]
+                col_type = col.get("type", "string")
+                if col_type in ["integer", "float", "number"]:
+                    sample[col_name] = 0
+                elif col_type == "boolean":
+                    sample[col_name] = False
+                else:
+                    sample[col_name] = ""
+        if nested_split_template:
+            sample["SPLIT"] = copy.deepcopy(nested_split_template)
+        return sample
+
+    def _build_split_data(self, data, sample, nested_split_template):
+        split_data_list = []
+        for value in data:
+            sample_copy = copy.deepcopy(sample)
+            sample_copy.update(value)
+            # Only process SPLIT if we have a template (2-split case)
+            if "SPLIT" in sample_copy and is_expression_object(sample_copy["SPLIT"]):
+                if nested_split_template:
+                    sample_copy["SPLIT"] = copy.deepcopy(nested_split_template)
+                else:
+                    del sample_copy["SPLIT"]
+            split_data_list.append(sample_copy)
+        return split_data_list
+
+    def _update_split_attributes(self, split_data, data, query_index, nested_split_template):
+        if data and len(self._query_result) > query_index:
+            columns = self._query_result[query_index]["query_result"]["data"]["columns"]
+            split_data["attributes"] = []
+            for col in columns:
+                col_name = col["name"]
+                col_type = col.get("type", "string")
+                ply_type = TYPE_MAPPING.get(col_type, "STRING")
+                split_data["attributes"].append({"name": col_name, "type": ply_type})
+            # Only add SPLIT attribute for 2-split queries
+            if nested_split_template:
+                split_data["attributes"].append({"name": "SPLIT", "type": "DATASET"})
+
+
+    def _build_second_split(self, shape: dict):
+        split = shape["data"][0]["SPLIT"]
+
+        if not split.get("keys") or not split.get("data"):
+            logger.info("_build_second_split: No keys or data in first split")
+            return
+
+        column_name = pydash.head(split["keys"])
+        second_split_start = self._get_second_split_start_index()
+
+        logger.info(f"_build_second_split: column_name={column_name}, second_split_start={second_split_start}")
+        logger.info(f"_build_second_split: Total queries={len(self._query_result)}")
+
+        # Get second split queries (skip the first split query/queries)
+        second_split_queries = self._query_result[second_split_start:]
+
+        logger.info(f"_build_second_split: Second split queries count={len(second_split_queries)}")
+
+        if not second_split_queries:
+            logger.info("_build_second_split: No second split queries available")
+            return
+
+        # Get second split keys and attributes from the first second-split query
+        second_split_keys = []
+        second_split_attributes = []
+
+        if second_split_queries and second_split_queries[0]["query_result"]["data"]["columns"]:
+            query_columns = second_split_queries[0]["query_result"]["data"]["columns"]
+            second_split_keys = [query_columns[0]["name"]]
+            for col in query_columns:
+                col_name = col["name"]
+                col_type = col.get("type", "string")
+                ply_type = TYPE_MAPPING.get(col_type, "STRING")
+                second_split_attributes.append({"name": col_name, "type": ply_type})
+
+        logger.info(f"_build_second_split: second_split_keys={second_split_keys}")
+
+        # For JSON sources, the second split queries are in order matching the first split data
+        if self._is_json_source:
+            for index, value in enumerate(split["data"]):
+                if index < len(second_split_queries):
+                    query_data = second_split_queries[index]["query_result"]["data"]["rows"]
+                    logger.info(f"_build_second_split: Setting SPLIT for index {index} with {len(query_data)} rows")
+                    split["data"][index]["SPLIT"] = {
+                        "keys": second_split_keys,
+                        "data": query_data,
+                        "attributes": second_split_attributes,
+                        "type": "DATASET",
+                    }
+                else:
+                    logger.info(f"_build_second_split: No query for index {index}, setting empty SPLIT")
+                    split["data"][index]["SPLIT"] = {
+                        "keys": second_split_keys,
+                        "data": [],
+                        "attributes": second_split_attributes,
+                        "type": "DATASET",
+                    }
+
+                if self._visualization == "line-chart":
+                    self._prepare_line_chart(shape=shape, top_index=index)
+        else:
+            # For SQL sources, match by query WHERE clause
+            for value in split["data"]:
+                if column_name not in value:
+                    continue
+
+                search_value = value[column_name]
+                search_column_name = self.null if search_value is None else f"'{search_value}'"
+
+                # Try different query matching strategies
+                query = pydash.find(
+                    second_split_queries,
+                    lambda v: f'"{search_column_name[1:-1]}"' in v["query_result"].get("query", ""),
+                )
+                if query is None:
+                    query = pydash.find(
+                        second_split_queries, lambda v: search_column_name[1:-1] in v["query_result"].get("query", "")
+                    )
+
+                if query is None:
+                    value["SPLIT"] = {
+                        "keys": second_split_keys,
+                        "data": [],
+                        "attributes": second_split_attributes,
+                        "type": "DATASET",
+                    }
+                    continue
+
+                index = pydash.find_index(split["data"], lambda v: v.get(column_name) == search_value)
+                if index == -1:
+                    continue
+
+                query_data = query["query_result"]["data"]["rows"]
+                split["data"][index]["SPLIT"] = {
+                    "keys": second_split_keys,
+                    "data": query_data,
+                    "attributes": second_split_attributes,
+                    "type": "DATASET",
+                }
+
+                if self._visualization == "line-chart":
+                    self._prepare_line_chart(shape=shape, top_index=index)

@@ -79,6 +79,8 @@ mkvirtualenv -p /usr/bin/python3.8 python38
 docker compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
 # Run the tests
 docker compose run --rm server tests
+# Run tests for a specific module
+docker-compose run --rm server pytest -v tests/plywood/test_json.py
 ```
 
 #### viz-lib

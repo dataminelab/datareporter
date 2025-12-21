@@ -10,6 +10,7 @@ from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2, is_expr
 
 logger = logging.getLogger(__name__)
 
+
 def clean_row_values(row):
     """
     Clean all string values in a row that might be JSON arrays.
@@ -44,6 +45,7 @@ def clean_json_array_string(value):
 
     return value
 
+
 def flatten_dict(d, parent_key="", sep="_"):
     items = []
     for k, v in d.items():
@@ -54,7 +56,10 @@ def flatten_dict(d, parent_key="", sep="_"):
             items.append((new_key, v))
     return dict(items)
 
-def handle_json_data_source(hash_string, data_cube, expression, model, expression_queries=None) -> ReportSerializer:  # noqa: C901
+
+def handle_json_data_source(
+    hash_string, data_cube, expression, model, expression_queries=None
+) -> ReportSerializer:  # noqa: C901
     """
     Handle JSON data sources for parse_result.
     """
@@ -343,7 +348,9 @@ def handle_json_data_source(hash_string, data_cube, expression, model, expressio
         expression_queries=expression_queries,
     )
 
+
 class JsonPlywoodQueryParser(PlywoodQueryParserV2):
+
     def _build_first_split(self, shape: dict):
         split_data = shape["data"][0]["SPLIT"]
         data = self._get_first_split()
@@ -450,7 +457,6 @@ class JsonPlywoodQueryParser(PlywoodQueryParserV2):
             # Only add SPLIT attribute for 2-split queries
             if nested_split_template:
                 split_data["attributes"].append({"name": "SPLIT", "type": "DATASET"})
-
 
     def _build_second_split(self, shape: dict):
         split = shape["data"][0]["SPLIT"]

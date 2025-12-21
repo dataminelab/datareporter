@@ -23,7 +23,7 @@ class QueryParseError(Exception):
 def parse_query(query):
     # TODO: copy paste from Metrica query runner, we should extract this into a utility
     if isinstance(query, dict):
-        return query # pyright: ignore[reportUnknownVariableType]
+        return query  # pyright: ignore[reportUnknownVariableType]
     elif not isinstance(query, str):
         raise QueryParseError("Query should be a YAML object describing the URL to query.")
 
@@ -155,7 +155,7 @@ class JSON(BaseHTTPQueryRunner):
             },
             "secret": ["password"],
             "order": ["base_url", "username", "password"],
-        } # pyright: ignore[reportUnknownVariableType]
+        }  # pyright: ignore[reportUnknownVariableType]
 
     def __init__(self, configuration):
         super(JSON, self).__init__(configuration)

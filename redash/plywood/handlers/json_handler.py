@@ -62,7 +62,7 @@ def flatten_dict(d, parent_key="", sep="_"):
     return dict(items)
 
 
-def handle_json_data_source( # noqa: C901
+def handle_json_data_source(  # noqa: C901
     hash_string, data_cube, expression, model, expression_queries=None
 ) -> ReportSerializer:
     """
@@ -355,7 +355,6 @@ def handle_json_data_source( # noqa: C901
 
 
 class JsonPlywoodQueryParser(PlywoodQueryParserV2):
-
     def _build_first_split(self, shape: dict):
         split_data = shape["data"][0]["SPLIT"]
         data = self._get_first_split()

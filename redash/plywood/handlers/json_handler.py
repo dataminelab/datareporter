@@ -1,12 +1,17 @@
+import copy
 import json
 import logging
-import pydash
-import copy
-import requests
 from collections import defaultdict
 
+import pydash
+import requests
+
 from redash.plywood.objects.report_serializer import ReportSerializer
-from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2, is_expression_object, TYPE_MAPPING
+from redash.plywood.parsers.query_parser_v2 import (
+    TYPE_MAPPING,
+    PlywoodQueryParserV2,
+    is_expression_object,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -57,9 +62,9 @@ def flatten_dict(d, parent_key="", sep="_"):
     return dict(items)
 
 
-def handle_json_data_source(
+def handle_json_data_source( # noqa: C901
     hash_string, data_cube, expression, model, expression_queries=None
-) -> ReportSerializer:  # noqa: C901
+) -> ReportSerializer:
     """
     Handle JSON data sources for parse_result.
     """
@@ -69,7 +74,7 @@ def handle_json_data_source(
     # For JSON data sources, fetch data directly from the API
     response = requests.get(model.data_source.options.get("base_url"), verify=False, timeout=30)
     json_data = response.json()
-    
+
     path = model.data_source.options.get("inner_data_path")
     if path:
         json_data = pydash.get(json_data, path, [])

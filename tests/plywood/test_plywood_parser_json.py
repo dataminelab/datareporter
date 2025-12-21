@@ -1,4 +1,5 @@
 import unittest
+
 from redash.plywood.handlers.json_handler import JsonPlywoodQueryParser
 
 

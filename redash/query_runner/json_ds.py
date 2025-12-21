@@ -26,7 +26,7 @@ def parse_query(query):
         return query # pyright: ignore[reportUnknownVariableType]
     elif not isinstance(query, str):
         raise QueryParseError("Query should be a YAML object describing the URL to query.")
-    
+
     query = query.strip()
     if query == "":
         raise QueryParseError("Query is empty.")

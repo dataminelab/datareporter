@@ -4,7 +4,7 @@ import yaml
 from inflection import titleize
 
 from redash.models.models import Model
-from redash.plywood.plywood import PlywoodApi, ENGINE_MAPPING
+from redash.plywood.plywood import ENGINE_MAPPING, PlywoodApi
 
 INDENT_LEVELS = [3, 4]
 

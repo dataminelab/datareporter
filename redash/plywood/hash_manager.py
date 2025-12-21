@@ -9,7 +9,6 @@ from flask_restful import abort
 
 from redash import redis_connection
 from redash.handlers.base import get_object_or_404
-from redash.plywood.handlers.json_handler import handle_json_data_source
 from redash.handlers.query_results import run_query
 from redash.models import (
     ApiKey,
@@ -20,6 +19,7 @@ from redash.models import (
     User,
 )
 from redash.models.models import Model
+from redash.plywood.handlers.json_handler import handle_json_data_source
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
 from redash.plywood.objects.report_serializer import ReportSerializer

@@ -48,12 +48,24 @@ class ModelsConfigResource(BaseResource):
         models: list[Model] = Model.query.filter(Model.data_source_id == model.data_source_id).all()
         data_cubes: List[DataCube.data_cube] = []
         table_names: list[str] = []
+        cluster_names: set[str] = set()
+
         for model in models:
             cube = DataCube(model).data_cube
             if cube["name"] not in table_names:
                 table_names.append(cube["name"])
                 data_cubes.append(cube)
-        return {"appSettings": {"dataCubes": data_cubes, "clusters": [], "customization": {}}, "timekeeper": {}}
+                # Collect cluster names from data cubes
+                if "clusterName" in cube:
+                    cluster_names.add(cube["clusterName"])
+
+        # Build cluster objects from collected cluster names
+        clusters = []
+        for cluster_name in cluster_names:
+            if cluster_name != "native":  # native is a special case, doesn't need a cluster object
+                clusters.append({"name": cluster_name, "type": cluster_name})
+
+        return {"appSettings": {"dataCubes": data_cubes, "clusters": clusters, "customization": {}}, "timekeeper": {}}
 
 
 class ModelsConfigGetResource(BaseResource):

@@ -240,7 +240,7 @@ function measureToYAML(measure: Measure): string[] {
   lines.push(`formula: ${measure.formula}`);
 
   const format = measure.format;
-  if (!!format) {
+  if (format) {
     lines.push(`format: ${format}`);
   }
 
@@ -373,7 +373,7 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       "",
     );
   }
-  lines = lines.concat.apply(lines, attributeOverrides.map(attributeToYAML));
+  lines = lines.concat(...attributeOverrides.map(attributeToYAML));
 
   if (withComments) {
     lines.push(
@@ -406,9 +406,8 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       "",
     );
   }
-  lines = lines.concat.apply(
-    lines,
-    dataCube.dimensions.mapDimensions(dimensionToYAML),
+  lines = lines.concat(
+    ...dataCube.dimensions.mapDimensions(dimensionToYAML),
   );
   if (withComments) {
     lines.push(
@@ -450,9 +449,8 @@ function dataCubeToYAML(dataCube: DataCube, withComments: boolean): string[] {
       "",
     );
   }
-  lines = lines.concat.apply(
-    lines,
-    dataCube.measures.mapMeasures(measureToYAML),
+  lines = lines.concat(
+    ...dataCube.measures.mapMeasures(measureToYAML),
   );
   if (withComments) {
     lines.push(
@@ -522,9 +520,8 @@ export function appSettingsToYAML(
 
   if (clusters.length) {
     lines.push("clusters:");
-    lines = lines.concat.apply(
-      lines,
-      clusters.map(c => clusterToYAML(c, withComments)),
+    lines = lines.concat(
+      ...clusters.map(c => clusterToYAML(c, withComments)),
     );
   }
 
@@ -534,9 +531,8 @@ export function appSettingsToYAML(
   }
 
   lines.push("dataCubes:");
-  lines = lines.concat.apply(
-    lines,
-    dataCubes.map(d => dataCubeToYAML(d, withComments)),
+  lines = lines.concat(
+    ...dataCubes.map(d => dataCubeToYAML(d, withComments)),
   );
 
   return lines.join("\n");

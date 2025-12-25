@@ -41,6 +41,8 @@ class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
 
         for model in models:
             cube = DataCube(model).data_cube
+            if cube is None:
+                continue
             if cube["name"] not in table_names:
                 table_names.append(cube["name"])
                 data_cubes.append(cube)

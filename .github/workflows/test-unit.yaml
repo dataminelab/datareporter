@@ -461,113 +461,135 @@ jobs:
             const path = require('path');
             
             let comment = '## 🧪 E2E Test Results Analysis\n\n';
+            let testsPassed = true;
             
             try {
               // Check if test artifacts exist
               const resultsDir = './test-artifacts';
               if (fs.existsSync(resultsDir)) {
-                comment += '### 📊 Test Artifacts Found\n';
-                
                 // Look for cypress logs
                 const logFile = path.join(resultsDir, 'cypress-logs.txt');
                 if (fs.existsSync(logFile)) {
-                  comment += '- ✅ Cypress test logs captured\n';
-                  
                   try {
                     const logContent = fs.readFileSync(logFile, 'utf8');
                     const lines = logContent.split('\n');
                     
-                    // Look for test summary patterns
-                    const summaryLines = lines.filter(line => 
-                      line.match(/\d+\s+(passing|failing)/) || 
-                      line.includes('All specs passed') ||
-                      line.includes('specs passed') ||
-                      line.match(/✓|✗|×/) ||
-                      line.includes('Test Execution Complete') ||
-                      line.match(/Running:\s+\d+/) ||
-                      line.match(/\d+\s+of\s+\d+/)
-                    );
+                    // Extract the final test summary with passing/failing counts
+                    let passCount = 0;
+                    let failCount = 0;
+                    let finalSummary = '';
                     
-                    if (summaryLines.length > 0) {
-                      comment += '\n**Test Summary:**\n```\n';
-                      summaryLines.slice(-10).forEach(line => {
-                        comment += line.trim() + '\n';
-                      });
-                      comment += '```\n';
+                    // Look for the summary line with format: "X passing" / "X failing"
+                    for (let i = lines.length - 1; i >= 0; i--) {
+                      const line = lines[i];
+                      const passMatch = line.match(/(\d+)\s+passing/);
+                      const failMatch = line.match(/(\d+)\s+failing/);
+                      
+                      if (passMatch || failMatch) {
+                        if (passMatch) passCount += parseInt(passMatch[1]);
+                        if (failMatch) failCount += parseInt(failMatch[1]);
+                        if (!finalSummary) {
+                          finalSummary = line.trim();
+                        }
+                      }
                     }
                     
-                    // Check for failures
-                    const failureLines = lines.filter(line => 
-                      line.toLowerCase().includes('failing') ||
-                      line.toLowerCase().includes('failed') ||
-                      line.includes('✗') ||
-                      line.includes('×')
-                    );
+                    // Determine overall result
+                    if (failCount > 0) {
+                      testsPassed = false;
+                    }
                     
-                    if (failureLines.length > 0) {
-                      comment += '\n**❌ Failures Detected:**\n```\n';
-                      failureLines.slice(0, 5).forEach(line => {
-                        comment += line.trim() + '\n';
-                      });
-                      comment += '```\n';
+                    // Build the status section
+                    if (testsPassed && (passCount > 0 || failCount === 0)) {
+                      comment += '### ✅ Test Status: PASSED\n\n';
+                    } else if (failCount > 0) {
+                      comment += `### ❌ Test Status: FAILED\n\n`;
+                      comment += `**${failCount} test(s) failed**, ${passCount} test(s) passed\n\n`;
                     } else {
-                      comment += '\n**✅ No failures detected in logs**\n';
+                      comment += '### ⚠️ Test Status: INCONCLUSIVE\n\n';
+                    }
+                    
+                    // Show detailed summary
+                    if (finalSummary) {
+                      comment += '**Test Summary:**\n```\n';
+                      comment += finalSummary + '\n';
+                      comment += '```\n\n';
+                    }
+                    
+                    // Extract actual failed test names (not error messages)
+                    if (failCount > 0) {
+                      const failedTests = [];
+                      let captureFailure = false;
+                      
+                      for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i];
+                        
+                        // Start capturing when we see numbered failures in test output
+                        if (line.match(/^\s*\d+\)\s+/)) {
+                          captureFailure = true;
+                          const testMatch = line.match(/^\s*\d+\)\s+(.+?)(?:\s+in|$)/);
+                          if (testMatch) {
+                            failedTests.push(testMatch[1].trim());
+                          }
+                        }
+                      }
+                      
+                      if (failedTests.length > 0) {
+                        comment += '**Failed Tests:**\n';
+                        failedTests.slice(0, 10).forEach((test, idx) => {
+                          comment += `${idx + 1}. ${test}\n`;
+                        });
+                        if (failedTests.length > 10) {
+                          comment += `... and ${failedTests.length - 10} more\n`;
+                        }
+                        comment += '\n';
+                      }
                     }
                     
                   } catch (e) {
-                    comment += '- ⚠️ Could not parse test logs: ' + e.message + '\n';
+                    comment += `⚠️ Could not parse test logs: ${e.message}\n\n`;
                   }
                 } else {
-                  comment += '- ⚠️ No Cypress logs found\n';
+                  comment += '⚠️ No Cypress logs found\n\n';
+                  testsPassed = false;
                 }
                 
-                // Count artifacts
+                // Count and display artifacts
+                comment += '**Test Artifacts:**\n';
                 const videoDir = path.join(resultsDir, 'videos');
                 const screenshotDir = path.join(resultsDir, 'screenshots');
+                let videoCount = 0;
+                let screenshotCount = 0;
                 
                 if (fs.existsSync(videoDir)) {
-                  const videoFiles = fs.readdirSync(videoDir, { recursive: true })
-                    .filter(file => file.endsWith('.mp4'));
-                  comment += `- 🎥 ${videoFiles.length} test video(s) captured\n`;
+                  videoCount = fs.readdirSync(videoDir, { recursive: true })
+                    .filter(file => file.endsWith('.mp4')).length;
                 }
                 
                 if (fs.existsSync(screenshotDir)) {
-                  const screenshotFiles = fs.readdirSync(screenshotDir, { recursive: true })
-                    .filter(file => file.match(/\.(png|jpg|jpeg)$/));
-                  comment += `- 📸 ${screenshotFiles.length} screenshot(s) captured\n`;
+                  screenshotCount = fs.readdirSync(screenshotDir, { recursive: true })
+                    .filter(file => file.match(/\.(png|jpg|jpeg)$/)).length;
                 }
                 
-                // Show artifact summary
-                comment += '\n**Artifacts Summary:**\n';
-                try {
-                  const allFiles = fs.readdirSync(resultsDir, { recursive: true });
-                  let totalSize = 0;
-                  let fileCount = 0;
-                  
-                  allFiles.forEach(file => {
-                    const filePath = path.join(resultsDir, file);
-                    if (fs.statSync(filePath).isFile()) {
-                      totalSize += fs.statSync(filePath).size;
-                      fileCount++;
-                    }
-                  });
-                  
-                  comment += `- 📁 ${fileCount} files captured\n`;
-                  comment += `- 💾 Total size: ${Math.round(totalSize / 1024 / 1024)}MB\n`;
-                } catch (e) {
-                  comment += `- ⚠️ Could not calculate artifact stats: ${e.message}\n`;
+                if (videoCount > 0) {
+                  comment += `- 🎥 ${videoCount} test video(s)\n`;
+                }
+                if (screenshotCount > 0) {
+                  comment += `- 📸 ${screenshotCount} screenshot(s)\n`;
                 }
                 
               } else {
                 comment += '### ⚠️ No Test Artifacts Found\n';
-                comment += 'This usually indicates that tests did not run or artifacts were not saved properly.\n';
+                comment += 'Tests did not run or artifacts were not saved.\n';
+                testsPassed = false;
               }
               
             } catch (error) {
-              comment += `### ❌ Error Analyzing Results\n\`\`\`\n${error.message}\n\`\`\`\n`;
+              comment += `### ❌ Error Analyzing Results\n${error.message}\n`;
+              testsPassed = false;
             }
             
-            comment += '\n---\n*This analysis is generated from E2E test artifacts.*';
+            comment += '\n---\n*Generated from E2E test artifacts*';
             
             // Post comment
             github.rest.issues.createComment({

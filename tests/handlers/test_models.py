@@ -1,7 +1,7 @@
 from unittest import mock
 
 from redash.models import db
-from redash.models.models import ModelConfig
+from redash.models.model_config import ModelConfig
 from tests import BaseTestCase
 
 

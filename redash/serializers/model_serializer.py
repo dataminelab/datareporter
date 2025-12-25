@@ -1,4 +1,5 @@
-from redash.models.models import Model, ModelConfig
+from redash.models.models import Model
+from redash.models.model_config import ModelConfig
 from redash.serializers import Serializer
 
 

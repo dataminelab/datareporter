@@ -16,9 +16,10 @@ from redash.models import (
     ParameterizedQuery,
     QueryResult,
     Report,
-    User,
+    User
 )
 from redash.models.models import Model
+from redash.models.model_config import ModelConfig
 from redash.plywood.handlers.json_handler import handle_json_data_source
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
@@ -245,13 +246,19 @@ def is_admin(user) -> bool:
 class ReportHash:
     def __init__(self, o: Report):
         self.version = "1.26.0-beta.1"
-        self.appSettings = {
-            "dataCubes": [],
-            "customization": {
-                "urlShortener": "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
-            },
-            "clusters": [],
-        }
+        config = ModelConfig.get_model_config(o.model_id)
+        if config:
+            appSettings = config["appSettings"]
+            appSettings["customization"]["urlShortener"] = "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
+            self.appSettings = appSettings
+        else:
+            self.appSettings = {
+                "dataCubes": [],
+                "customization": {
+                    "urlShortener": "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
+                },
+                "clusters": [],
+            }
         self.is_favorite = o.is_favorite_v2(o.user, o)
         public_key = ApiKey.get_by_object(o)
         self.api_key = o.api_key

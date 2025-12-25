@@ -478,20 +478,28 @@ jobs:
                     let passCount = 0;
                     let failCount = 0;
                     let finalSummary = '';
+                    let summaryLines = [];
                     
-                    // Look for the summary line with format: "X passing" / "X failing"
-                    for (let i = lines.length - 1; i >= 0; i--) {
+                    // Collect all summary lines (there can be multiple - one per test file)
+                    for (let i = 0; i < lines.length; i++) {
                       const line = lines[i];
                       const passMatch = line.match(/(\d+)\s+passing/);
                       const failMatch = line.match(/(\d+)\s+failing/);
                       
                       if (passMatch || failMatch) {
-                        if (passMatch) passCount += parseInt(passMatch[1]);
-                        if (failMatch) failCount += parseInt(failMatch[1]);
-                        if (!finalSummary) {
-                          finalSummary = line.trim();
-                        }
+                        summaryLines.push({
+                          line: line.trim(),
+                          pass: passMatch ? parseInt(passMatch[1]) : 0,
+                          fail: failMatch ? parseInt(failMatch[1]) : 0
+                        });
                       }
+                    }
+                    
+                    // Use the last (final) summary for display
+                    if (summaryLines.length > 0) {
+                      finalSummary = summaryLines[summaryLines.length - 1].line;
+                      passCount = summaryLines[summaryLines.length - 1].pass;
+                      failCount = summaryLines[summaryLines.length - 1].fail;
                     }
                     
                     // Determine overall result

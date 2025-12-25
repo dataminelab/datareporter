@@ -97,7 +97,7 @@
     "@babel/preset-typescript": "7.16.7",
     "@babel/register": "^7.17.0",
     "@babel/runtime": "7.17.2",
-    "@size-limit/preset-small-lib": "7.0.8",
+    "@size-limit/preset-small-lib": "11.2.0",
     "@statoscope/webpack-plugin": "5.20.1",
     "@types/body-parser": "1.19.1",
     "@types/chai": "4.2.21",

@@ -1,15 +1,16 @@
 from flask import request
 
 from redash import models
-from redash.handlers.base import BaseResource, get_object_or_404, require_fields, abort
-from redash.models.models import Model
+from redash.handlers.base import BaseResource, abort, get_object_or_404, require_fields
 from redash.models.model_config import ModelConfig
+from redash.models.models import Model
 from redash.permissions import require_admin_or_owner, require_permission
 from redash.serializers.model_serializer import ModelConfigSerializer
 from redash.services.model_config_validator import ModelConfigValidator
 
 UPDATE_ACTION = "update"
 CREATE_ACTION = "create"
+
 
 class ModelsConfigResource(BaseResource):
     @require_permission("edit_model_config")
@@ -46,6 +47,7 @@ class ModelsConfigResource(BaseResource):
             abort(404)
         self.record_event({"action": "view", "object_id": model_id, "object_type": "model_config"})
         return config
+
 
 class ModelsConfigGetResource(BaseResource):
     @require_permission("view_model_config")

@@ -11,10 +11,10 @@ from rq.job import JobStatus
 from rq.timeouts import JobTimeoutException
 
 from redash import models
+from redash.models.model_config import ModelConfig
 from redash.models.parameterized_query import ParameterizedQuery
 from redash.permissions import has_access, view_only
 from redash.plywood.objects.data_cube import DataCube
-from redash.models.model_config import ModelConfig
 from redash.serializers.query_result import (
     serialize_query_result,
     serialize_query_result_to_dsv,
@@ -33,6 +33,7 @@ def is_admin(user):
 def get_data_cube(model):
     data_cube = DataCube(model=model)
     return data_cube
+
 
 # TODO use redash.plywood.hash_manager.ReportHash instead
 def hash_report(report, can_edit=False):

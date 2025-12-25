@@ -16,10 +16,10 @@ from redash.models import (
     ParameterizedQuery,
     QueryResult,
     Report,
-    User
+    User,
 )
-from redash.models.models import Model
 from redash.models.model_config import ModelConfig
+from redash.models.models import Model
 from redash.plywood.handlers.json_handler import handle_json_data_source
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
@@ -249,7 +249,9 @@ class ReportHash:
         config = ModelConfig.get_model_config(o.model_id)
         if config:
             appSettings = config["appSettings"]
-            appSettings["customization"]["urlShortener"] = "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
+            appSettings["customization"][
+                "urlShortener"
+            ] = "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
             self.appSettings = appSettings
         else:
             self.appSettings = {

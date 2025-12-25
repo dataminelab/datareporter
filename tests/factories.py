@@ -3,10 +3,10 @@ from passlib.apps import custom_app_context as pwd_context
 import redash.models
 import redash.models.models
 from redash.models import db
+from redash.models.model_config import ModelConfig
 from redash.permissions import ACCESS_TYPE_MODIFY
 from redash.utils import gen_query_hash, utcnow
 from redash.utils.configuration import ConfigurationContainer
-from redash.models.model_config import ModelConfig
 
 
 class ModelFactory:

@@ -1,7 +1,9 @@
 import io
+
 import yaml
 from cerberus import Validator
 from flask_restful import abort
+
 from redash.models.model_config import ModelConfig
 
 schema = {

@@ -1,10 +1,13 @@
 from typing import List
+
 from redash.plywood.objects.data_cube import DataCube
+
 from .base import Column, db, gfk_type, key_type, primary_key
 from .changes import ChangeTrackingMixin  # noqa
 from .mixins import TimestampMixin
-from .users import User
 from .models import Model
+from .users import User
+
 
 @gfk_type
 class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
@@ -25,7 +28,7 @@ class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
     @classmethod
     def get_by_id(cls, _id):
         return cls.query.filter(cls.id == _id).one()
-    
+
     @classmethod
     def get_model_config(cls, model_id):
         model: Model = Model.get_by_id(model_id)
@@ -52,4 +55,3 @@ class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
                 clusters.append({"name": cluster_name, "type": cluster_name})
 
         return {"appSettings": {"dataCubes": data_cubes, "clusters": clusters, "customization": {}}, "timekeeper": {}}
-

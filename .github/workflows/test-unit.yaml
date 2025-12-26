@@ -481,14 +481,14 @@ jobs:
                     // - "X of Y" patterns for overall results
                     // - Final stats summary
                     
-                    let allSummaries = [];
                     let overallFailedPattern = null;
-                    
-                    // First pass: find all summary patterns
-                    for (let i = lines.length - 1; i >= 0; i--) {
+                    let passCount = 0;
+                    let failCount = 0;
+                    let totalTests = 0;
+                    // First pass: find all summary patterns and sum them
+                    for (let i = 0; i < lines.length; i++) {
                       const line = lines[i];
-                      
-                      // Look for overall test result pattern: "X of Y failed" or "X passed"
+                      // Look for overall test result pattern: "X of Y failed"
                       const overallMatch = line.match(/(\d+)\s+of\s+(\d+)\s+failed/i);
                       if (overallMatch && !overallFailedPattern) {
                         overallFailedPattern = {
@@ -497,33 +497,18 @@ jobs:
                           line: line.trim()
                         };
                       }
-                      
-                      // Collect all "X passing/failing" lines
+                      // Sum all "X passing" and "X failing" lines
                       const passMatch = line.match(/(\d+)\s+passing/);
+                      if (passMatch) passCount += parseInt(passMatch[1]);
                       const failMatch = line.match(/(\d+)\s+failing/);
-                      
-                      if (passMatch || failMatch) {
-                        allSummaries.push({
-                          line: line.trim(),
-                          pass: passMatch ? parseInt(passMatch[1]) : 0,
-                          fail: failMatch ? parseInt(failMatch[1]) : 0,
-                          index: i
-                        });
-                      }
+                      if (failMatch) failCount += parseInt(failMatch[1]);
                     }
-                    
-                    // Determine the actual final result
+                    totalTests = passCount + failCount;
+                    // If we have an overall summary, prefer it for fail/total
                     if (overallFailedPattern) {
-                      // We have an overall failure pattern like "8 of 50 failed"
                       failCount = overallFailedPattern.failed;
                       totalTests = overallFailedPattern.total;
                       passCount = totalTests - failCount;
-                    } else if (allSummaries.length > 0) {
-                      // Use the LAST summary which should be the overall one
-                      const lastSummary = allSummaries[allSummaries.length - 1];
-                      passCount = lastSummary.pass;
-                      failCount = lastSummary.fail;
-                      totalTests = passCount + failCount;
                     }
                     
                     testsPassed = failCount === 0;

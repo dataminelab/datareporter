@@ -617,13 +617,15 @@ jobs:
             
             comment += '\n---\n*Generated from E2E test artifacts*';
             
-            // Post comment to PR
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+            // Only post comment if there are failures
+            if (!testsPassed) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
   analyze-test-results:
     if: always() && github.event_name == 'pull_request'
     uses: ./.github/workflows/analyze-test-results.yaml

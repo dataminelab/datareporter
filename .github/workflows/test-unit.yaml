@@ -318,7 +318,7 @@ jobs:
           # Create directory for logs
           mkdir -p ../test-artifacts
           
-          # Run Cypress and capture both output and exit code
+          # Run Cypress and save output to file first
           docker compose run \
             -e CYPRESS_PROJECT_ID="${{ secrets.CYPRESS_PROJECT_ID }}" \
             -e CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}" \
@@ -332,19 +332,12 @@ jobs:
               echo ''
               echo '=== Running Cypress Tests ==='
               npx cypress run --reporter spec --browser chrome
-              cypress_exit_code=\$?
-              echo 'Cypress exit code:' \$cypress_exit_code
-              echo '=== Test Execution Complete ==='
-              exit \$cypress_exit_code
-            " 2>&1 | tee ../test-artifacts/cypress-logs.txt
+              exit \$?
+            " > ../test-artifacts/cypress-logs.txt 2>&1
           
           test_exit_code=$?
-          
           echo ""
           echo "📊 Test execution completed with exit code: $test_exit_code"
-          echo ""
-          echo "📋 Test output:"
-          cat ../test-artifacts/cypress-logs.txt
           
           if [ $test_exit_code -eq 0 ]; then
             echo "✅ Tests passed"

@@ -267,5 +267,3 @@ JSON_2_SPLIT_PLYWOOD_RESPONSE = {
         '{"source":"default","filter":{"raw":"$month:TIME.overlap([2005-12-18T01:59:00Z,2025-12-18T01:59:00Z])"},"split":[{"name":"location_type","expression":{"op":"ref","field":"location_type"}}],"applies":[{"name":"id","expression":{"raw":"$default:DATASET.sum($id:NUMBER)"}}],"sort":{"expression":"$id:NUMBER","direction":"descending"},"limit":50}',
     ],
 }
-# below is supposed to be hidden
-JSON_URL_2 = "https://api.jotform.com/form/212477037660052/submissions?apiKey=543b7f8a6b13ee051edfb0f5eb8545e6"

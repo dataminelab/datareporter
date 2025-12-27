@@ -336,6 +336,11 @@ jobs:
             " > ../test-artifacts/cypress-logs.txt 2>&1
           
           test_exit_code=$?
+          
+          # Display the captured output
+          echo ""
+          echo "📋 Cypress test output:"
+          cat ../test-artifacts/cypress-logs.txt
           echo ""
           echo "📊 Test execution completed with exit code: $test_exit_code"
           
@@ -345,60 +350,6 @@ jobs:
             echo "❌ Tests failed with exit code: $test_exit_code"
             exit 1
           fi
-      - name: Show Cypress Test Results
-        if: always()
-        run: |
-          echo "📊 Cypress Test Results Summary"
-          echo "==============================="
-          
-          # Check if we have captured logs
-          if [ -f test-artifacts/cypress-logs.txt ]; then
-            echo "📋 Test results from captured logs:"
-            
-            # First, let's see what's actually in the log file
-            echo ""
-            echo "🔍 Raw log content (first 50 lines):"
-            head -50 test-artifacts/cypress-logs.txt
-            
-            echo ""
-            echo "🔍 Raw log content (last 50 lines):"
-            tail -50 test-artifacts/cypress-logs.txt
-            
-            # Look for different Cypress indicators
-            echo ""
-            echo "🧪 Looking for Cypress test patterns:"
-            
-            # Try different patterns that Cypress might output
-            echo "- Looking for 'cypress' keyword:"
-            grep -i cypress test-artifacts/cypress-logs.txt | head -10 || echo "  None found"
-            
-            echo "- Looking for test file execution:"
-            grep -E "\.(spec|test)\.js" test-artifacts/cypress-logs.txt | head -10 || echo "  None found"
-            
-            echo "- Looking for test results:"
-            grep -E "(√|✓|×|✗|pass|fail)" test-artifacts/cypress-logs.txt | head -10 || echo "  None found"
-            
-            echo "- Looking for spec execution:"
-            grep -i "spec" test-artifacts/cypress-logs.txt | head -10 || echo "  None found"
-            
-            echo "- Looking for test completion:"
-            grep -E "(All specs|tests completed|finished)" test-artifacts/cypress-logs.txt | head -10 || echo "  None found"
-            
-            echo "- Looking for any numbers (test counts):"
-            grep -E "[0-9]+" test-artifacts/cypress-logs.txt | head -10 || echo "  None found"
-            
-            # Check if this might be percy output instead
-            echo "- Looking for Percy output:"
-            grep -i percy test-artifacts/cypress-logs.txt | head -10 || echo "  None found"
-            
-            # Check for npm run output
-            echo "- Looking for npm run output:"
-            grep -E "(npm|run)" test-artifacts/cypress-logs.txt | head -10 || echo "  None found"
-            
-          else
-            echo "⚠️ No captured test logs found"
-          fi
-
       - name: Capture Test Artifacts  
         if: always()
         working-directory: client

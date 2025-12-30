@@ -168,8 +168,6 @@ def parse_result(
             model=model,
             expression_queries=expression_queries,
         )
-
-    # Below: Handle SQL-based data sources (existing logic)
     elif len(queries) == 0:
         abort(400, message="Error with query")
 
@@ -188,7 +186,6 @@ def parse_result(
         )
 
     split = len(expression.filter["splits"]) or 1
-
     if split == 2:
         queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
         queries = cache_or_get(hash_string, queries_2_splits, current_org, model, split)
@@ -199,6 +196,8 @@ def parse_result(
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
+    elif split > 2:
+        abort(400, message="Splits greater than 2 are not supported for SQL data sources.")
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,

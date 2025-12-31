@@ -5,6 +5,7 @@ from collections import defaultdict
 
 import pydash
 import requests
+from flask_restful import abort
 
 from redash.plywood.objects.report_serializer import ReportSerializer
 from redash.plywood.parsers.query_parser_v2 import (
@@ -197,7 +198,6 @@ def handle_json_data_source(  # noqa: C901
         }
 
         queries = [query_0, query_1]
-
     elif len(split_dimensions) == 2:
         # Case 3: Two splits - return 1 + 1 + N queries
         # Query 0: Total count (__VALUE__)
@@ -326,12 +326,8 @@ def handle_json_data_source(  # noqa: C901
         logger.info(
             f"Total queries for 2-split: {len(queries)} (1 total + 1 first split + {len(sorted_keys)} second splits)"
         )
-
     else:
-        # Case 4: More than 2 splits - not supported, fall back to first 2
-        logger.warning(f"More than 2 splits not supported, using first 2: {split_dimensions[:2]}")
-        # Could recursively call with first 2 splits or return error
-        queries = []
+        abort(400, message="Splits greater than 2 are not supported for JSON data sources.")
 
     # Parse and return immediately for JSON sources
     query_parser = JsonPlywoodQueryParser(

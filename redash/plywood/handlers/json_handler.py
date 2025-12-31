@@ -69,6 +69,7 @@ def handle_json_data_source(  # noqa: C901
     """
     Handle JSON data sources for parse_result.
     """
+    queries = []
     logger.info(f"Expression filter keys: {list(expression.filter.keys())}")
     logger.info(f"Expression filter series: {expression.filter.get('series', [])}")
 

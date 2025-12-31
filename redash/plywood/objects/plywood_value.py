@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 SPLIT = "SPLIT"
 KEYS = "keys"
@@ -29,7 +29,7 @@ class Attribute:
 
 
 class DataEntry:
-    def __init__(self, split: Optional["PlywoodValue"] = None, extra: dict = None):
+    def __init__(self, split: Optional["PlywoodValue"] = None, extra: Optional[Dict[str, Any]] = None):
         self.__split = split
         self.__extra = extra
 
@@ -38,10 +38,10 @@ class DataEntry:
         return self.__split
 
     @property
-    def extra(self) -> Optional[dict]:
+    def extra(self) -> Optional[Dict[str, Any]]:
         return self.__extra
 
-    def dict(self):
+    def dict(self) -> Dict[str, Any]:
         obj = dict()
 
         if self.split:
@@ -79,8 +79,8 @@ class PlywoodValue:
     def data(self) -> Optional[List[DataEntry]]:
         return self.__data
 
-    def dict(self):
-        res = dict()
+    def dict(self) -> Dict[str, Any]:
+        res: Dict[str, Any] = dict()
 
         if self.keys:
             res[KEYS] = [*self.keys]
@@ -94,7 +94,7 @@ class PlywoodValue:
         return res
 
     @staticmethod
-    def from_array(data_input: List[Dict]) -> List["PlywoodValue"]:
+    def from_array(data_input: Dict[str, Any]) -> List[DataEntry]:
         data_entry_list = []
 
         for item in data_input["data"]:
@@ -116,7 +116,7 @@ class PlywoodValue:
         return data_entry_list
 
     @staticmethod
-    def from_json(data_input: dict) -> "PlywoodValue":
+    def from_json(data_input: Dict[str, Any]) -> "PlywoodValue":
         attributes = Attribute.from_array(data_input["attributes"]) if "attributes" in data_input else None
 
         data_entry_list = PlywoodValue.from_array(data_input) if "data" in data_input else None

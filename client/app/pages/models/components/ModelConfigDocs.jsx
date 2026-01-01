@@ -151,7 +151,6 @@ function ModelConfigDocs() {
           freely without affecting any functions or existing reports.
         </span>
       </p>
-      <p>&nbsp;</p>
       <h2>
         <strong>Measures</strong>
       </h2>

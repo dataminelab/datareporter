@@ -22,8 +22,13 @@ export default function splitCanonicalLength(
   split: Split,
   dataCube: DataCube,
 ): number | null {
-  //@ts-ignore
   const { reference, bucket } = split;
+  if (!bucket) return null;
   if (reference !== dataCube.timeAttribute.name) return null;
-  return (bucket as Duration).getCanonicalLength();
+  const durationBucket = bucket instanceof Duration 
+    ? bucket
+    // @ts-ignore - Handle both ISO string (P1W) and Duration-like plain objects
+    : Duration.fromJS(bucket);
+  
+  return durationBucket.getCanonicalLength();
 }

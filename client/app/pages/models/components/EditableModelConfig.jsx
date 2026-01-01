@@ -218,16 +218,11 @@ export default function EditableModelConfig({ model, saveConfig }) {
       .split("timeAttribute: ")[1]
       .split("\n")[0];
 
-    if (
-      !timeAttribute || timeAttribute.includes("null")
-    ) {
+    if (!timeAttribute || timeAttribute.includes("null")) {
       alert("timeAttribute cannot be null");
       return;
     }
-    if (
-      !defaultSortMeasure ||
-      defaultSortMeasure.includes("null")
-    ) {
+    if (!defaultSortMeasure || defaultSortMeasure.includes("null")) {
       alert("defaultSortMeasure cannot be null");
       return;
     }
@@ -238,9 +233,7 @@ export default function EditableModelConfig({ model, saveConfig }) {
     const attributes = yamlContent
       .split("attributes:")[1]
       .split("dimensions:")[0];
-    const measures = yamlContent
-      .split("measures:")[1]
-      .split("  - name: ")[1];
+    const measures = yamlContent.split("measures:")[1].split("  - name: ")[1];
     // if timeAttribute is not in attributes, then alert
     if (!attributes.includes(timeAttribute)) {
       alert("timeAttribute is not in the attributes list");
@@ -264,14 +257,19 @@ export default function EditableModelConfig({ model, saveConfig }) {
       return;
     }
     // Check for names that exist in both dimensions and measures
-    const dimensionsSection = yamlContent.split("dimensions:")[1]?.split("measures:")[0] || "";
+    const dimensionsSection =
+      yamlContent.split("dimensions:")[1]?.split("measures:")[0] || "";
     const measuresSection = yamlContent.split("measures:")[1] || "";
 
     const dimensionNames = dimensionsSection.match(/^\s+- name: (\w+)/gm) || [];
     const measureNames = measuresSection.match(/^\s+- name: (\w+)/gm) || [];
 
-    const dimensionNameSet = new Set(dimensionNames.map(n => n.match(/name: (\w+)/)[1]));
-    const measureNameSet = new Set(measureNames.map(n => n.match(/name: (\w+)/)[1]));
+    const dimensionNameSet = new Set(
+      dimensionNames.map(n => n.match(/name: (\w+)/)[1]),
+    );
+    const measureNameSet = new Set(
+      measureNames.map(n => n.match(/name: (\w+)/)[1]),
+    );
 
     for (const dimName of dimensionNameSet) {
       if (measureNameSet.has(dimName)) {

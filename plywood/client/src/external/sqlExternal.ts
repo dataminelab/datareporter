@@ -157,12 +157,7 @@ export abstract class SQLExternal extends External {
       return `FROM __with__ AS t`;
     }
 
-    const m = String(source).match(/^(\w+)\.(.+)$/);
-    if (m) {
-      return `FROM ${m[1]}.${dialect.escapeName(m[2])} AS t`;
-    } else {
-      return `FROM ${dialect.escapeName(source as string)} AS t`;
-    }
+    return `FROM ${dialect.escapeName(source as string)} AS t`;
   }
 
   public getQueryAndPostTransform(
@@ -197,7 +192,6 @@ export abstract class SQLExternal extends External {
     if (!filter.equals(Expression.TRUE)) {
       from += "\nWHERE " + filter.getSQL(dialect);
     }
-    console.log("mode", mode, "maybe add year over year into the mod?");
 
     let selectedAttributes = this.getSelectedAttributes();
     switch (mode) {
@@ -241,12 +235,6 @@ export abstract class SQLExternal extends External {
             .join(", "),
           from,
         );
-        // if (sort) {
-        //   query.push(sort.getSQL(dialect));
-        // }
-        // if (limit) {
-        //   query.push(limit.getSQL(dialect));
-        // }
         break;
 
       case "value":
@@ -293,12 +281,6 @@ export abstract class SQLExternal extends External {
         if (!this.havingFilter.equals(Expression.TRUE)) {
           query.push("HAVING " + this.havingFilter.getSQL(dialect));
         }
-        // if (sort) {
-        //   query.push(sort.getSQL(dialect));
-        // }
-        // if (limit) {
-        //   query.push(limit.getSQL(dialect));
-        // }
         inflaters = getSplitInflaters(split);
         break;
       }

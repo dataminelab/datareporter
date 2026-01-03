@@ -28,7 +28,7 @@ class RedashSQLAlchemy(SQLAlchemy):
         return options
 
 
-db = RedashSQLAlchemy(
+db: SQLAlchemy = RedashSQLAlchemy(
     session_options={"expire_on_commit": False},
     engine_options={"json_serializer": json_dumps, "json_deserializer": json_loads},
 )

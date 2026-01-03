@@ -28,7 +28,7 @@ export interface TimekeeperValue {
 
 export interface TimekeeperJS {
   timeTags: Record<string, TimeTagJS>;
-  nowOverride?: Date | string;
+  nowOverride?: Date | string | null;
 }
 
 export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {

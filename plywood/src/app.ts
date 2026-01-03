@@ -18,12 +18,14 @@ import {
 import { responseShape } from "./endpoint/response-shape";
 import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParser";
 import { DruidParse } from "./formatter/attributesFormatter/parsers/DruidParser";
+import { JsonAttributeParse } from "./formatter/attributesFormatter/parsers/JsonAttributeParser";
 
 AttributeParserFactory.register(PostgresAttributeParser);
 AttributeParserFactory.register(MySqlAttributeParser);
 AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
 AttributeParserFactory.register(DruidParse);
+AttributeParserFactory.register(JsonAttributeParse);
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -40,8 +42,25 @@ app.use("/api/v1/plywood/hash-to-filter", hashToFilter);
 app.use("/api/v1/plywood/response-shape", responseShape);
 app.use("/api/v1/plywood", plywoodEndpoint);
 
-app.use((err, req, res, next) => {
+interface ExpressError {
+  message?: string;
+  status?: number;
+  [key: string]: any;
+}
+
+interface ErrorMiddleware {
+  (
+    err: unknown | ExpressError,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ): void;
+}
+
+const errorHandlerMiddleware: ErrorMiddleware = (err, req, res, next) => {
   handleError(err, req, res, next);
-});
+};
+
+app.use(errorHandlerMiddleware);
 
 export default app;

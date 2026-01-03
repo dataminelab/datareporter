@@ -229,7 +229,7 @@ function ReportView(props) {
                 report={report}
                 queryResult={queryResult}
                 selectedVisualization={selectedVisualization}
-                isReportExecuting={isExecuting}
+                isExecuting={isExecuting}
                 showEditVisualizationButton={queryFlags.canEdit}
                 onEditVisualization={editVisualization}
                 extraActions={

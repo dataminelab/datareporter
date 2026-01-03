@@ -19,9 +19,7 @@ export class AttributeParserFactory {
     const engines = AttributeParserFactory.getSupportedEngines();
 
     if (!engines.includes(engine)) {
-      throw new ValidationError(
-        `Engine is not supported, supported are [${engines.join(",")}]`,
-      );
+      throw new ValidationError(`Engine is not supported`);
     }
   };
 
@@ -33,6 +31,9 @@ export class AttributeParserFactory {
     this.engineValidation(engine);
     const AttributeParserInstance =
       AttributeParserFactory.REGISTERED_PARSERS.get(engine);
+    if (!AttributeParserInstance) {
+      throw new ValidationError(`No parser registered for engine ${engine}`);
+    }
     return AttributeParserInstance;
   }
 

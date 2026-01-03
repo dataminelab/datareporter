@@ -30,3 +30,12 @@ dist
 scripts/config.js
 bin/act
 ollama-models
+
+# Test artifacts
+coverage/
+client/coverage/
+test-results/
+.nyc_output/
+*.lcov
+junit.xml
+jest-junit.xml

@@ -4,7 +4,7 @@ import yaml
 from inflection import titleize
 
 from redash.models.models import Model
-from redash.plywood.plywood import PlywoodApi
+from redash.plywood.plywood import ENGINE_MAPPING, PlywoodApi
 
 INDENT_LEVELS = [3, 4]
 
@@ -65,7 +65,9 @@ class Dimension(Attribute):
         super().__init__(name, kind)
 
     def to_json(self):
-        json_data = {"name": self.name, "title": titleize(self.name), "formula": "${}".format(self.name)}
+        # Escape column names with dots or other special characters
+        formula = "${{{}}}".format(self.name) if "." in self.name else "${}".format(self.name)
+        json_data = {"name": self.name, "title": titleize(self.name), "formula": formula}
         if self.kind.upper() in DIMENSION_KINDS:
             json_data["kind"] = self.kind
         return json_data
@@ -80,11 +82,12 @@ class Measure(Attribute):
 
 
 class ModelConfigAttributes(BaseConfig):
-    def __init__(self, name, attributes: List[PlywoodAttribute], dimensions, measures):
+    def __init__(self, name, attributes: List[PlywoodAttribute], dimensions, measures, cluster_name="native"):
         self.name = name
         self.attributes = attributes
         self.dimensions = dimensions
         self.measures = measures
+        self.cluster_name = cluster_name
 
     def to_json(self):
         return self._build()
@@ -106,7 +109,7 @@ class ModelConfigAttributes(BaseConfig):
             "name": self.name,
             "title": titleize(self.name),
             "timeAttribute": self._find_time_attribute(),
-            "clusterName": "native",
+            "clusterName": self.cluster_name,
             "defaultSortMeasure": self._find_default_sort_measure(),
             "defaultSelectedMeasures": self._find_default_selected_measures(),
             "attributes": attributes,
@@ -157,8 +160,16 @@ class ModelConfigGenerator:
         dimensions = ModelConfigGenerator.find_dimensions(plywood_attributes)
         measures = ModelConfigGenerator.find_measures(plywood_attributes)
 
+        # Map the data source type to Plywood engine
+        db_type = model.data_source.type
+        cluster_name = ENGINE_MAPPING.get(db_type, "native")
+
         return ModelConfigAttributes(
-            name=model.table, attributes=plywood_attributes, dimensions=dimensions, measures=measures
+            name=model.table,
+            attributes=plywood_attributes,
+            dimensions=dimensions,
+            measures=measures,
+            cluster_name=cluster_name,
         )
 
     @staticmethod

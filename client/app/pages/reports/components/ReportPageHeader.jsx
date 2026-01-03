@@ -7,7 +7,7 @@ import React, {
   useRef,
 } from "react";
 import "abortcontroller-polyfill/dist/abortcontroller-polyfill-only";
-import PropTypes, { any } from "prop-types";
+import PropTypes from "prop-types";
 import notification from "@/services/notification";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
@@ -31,7 +31,6 @@ import useUpdateReportTags from "../hooks/useUpdateReportTags";
 import useApiKeyDialog from "../hooks/useApiKeyDialog";
 import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
 import "./ReportPageHeader.less";
-import Select from "antd/lib/select";
 import useReportDataSources from "@/pages/reports/hooks/useReportDataSources";
 import recordEvent from "@/services/recordEvent";
 import useReport from "@/pages/reports/hooks/useReport";
@@ -44,8 +43,7 @@ import {
 } from "../../../components/TurniloComponent/client/utils/ajax/ReportPageHeaderUtils";
 import getTags from "@/services/getTags";
 import { reportPageStyles } from "./reportPageStyles";
-import FolderOutlinedIcon from "@ant-design/icons/FolderOutlined";
-import FileOutlinedIcon from "@ant-design/icons/FileOutlined";
+import DataSourceModelSelector from "./DataSourceModelSelector.jsx";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
@@ -117,6 +115,7 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 }
 
 export default function ReportPageHeader(props) {
+  const isMountedRef = useRef(true);
   const isDesktop = useMedia({ minWidth: 768 });
   const { report, setReport, saveReport, saveAsReport, showShareReportDialog } =
     useReport(props.report);
@@ -151,9 +150,9 @@ export default function ReportPageHeader(props) {
 
   const handleReportChanged = useCallback(
     state => {
-    if (!report.data_source_id) return;
-    if (!report.model_id) return;
-    setReportChanged(state);
+      if (!report.data_source_id) return;
+      if (!report.model_id) return;
+      setReportChanged(state);
     },
     [report.data_source_id, report.model_id, setReportChanged],
   );
@@ -217,11 +216,16 @@ export default function ReportPageHeader(props) {
       .querySelector("#model-data-source")
       .querySelectorAll("span")[2];
     if (elem.innerText === text) return;
-    if (elem.innerText !== modelSelectElement.current.props.placeholder) {
+    if (
+      modelSelectElement.current &&
+      elem.innerText !== modelSelectElement.current.props.placeholder
+    ) {
       modelSelectElementText.current = elem.innerText;
     }
     elem.innerText = text;
-    modelSelectElement.current.focus();
+    if (modelSelectElement.current) {
+      modelSelectElement.current.focus();
+    }
   };
 
   const setNewModels = async data_source_id => {
@@ -236,36 +240,63 @@ export default function ReportPageHeader(props) {
     return updates;
   };
 
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const handleDataSourceChange = useCallback(
     async (data_source_id, signal) => {
-      changeModelDataText(modelSelectElement.current.props.placeholder);
+      if (!isMountedRef.current) return;
+
+      // Add null check before accessing the ref
+      if (modelSelectElement.current && modelSelectElement.current.props) {
+        changeModelDataText(modelSelectElement.current.props.placeholder);
+      }
+
       setLoadModelsLoaded(false);
       if (signal && signal.aborted) return;
+
       try {
         const updates = await setNewModels(data_source_id);
+        if (!isMountedRef.current) return;
+
         props.onChange(extend(report.clone(), { ...updates }));
         updateReport(updates, { successMessage: null, errorMessage: null });
         handleReportChanged(true);
         recordEvent("update", "report", report.id, { data_source_id });
       } catch (err) {
+        if (!isMountedRef.current) return;
+
         updateReport({}, { successMessage: err });
         recordEvent("error", "report", report.id, { data_source_id });
       }
-      setLoadModelsLoaded(true);
-      setSelectedDataSource(data_source_id);
+
+      if (isMountedRef.current) {
+        setLoadModelsLoaded(true);
+        setSelectedDataSource(data_source_id);
+      }
     },
     [props, report, updateReport, handleReportChanged],
   );
 
   const getModel = useCallback(
     modelId => {
-    return models.find(m => m.id === modelId);
+      return models.find(m => m.id === modelId);
     },
     [models],
   );
 
+  const getDataSource = useCallback(
+    dataSourceId => {
+      return dataSources.find(ds => ds.id === dataSourceId);
+    },
+    [dataSources],
+  );
+
   const getSettings = useCallback(
-    async (modelId) => {
+    async modelId => {
       if (report.landed) {
         return { appSettings: report.appSettings, timekeeper: {} };
       } else {
@@ -432,8 +463,7 @@ export default function ReportPageHeader(props) {
         },
         {
           save: {
-            isAvailable:
-              queryFlags.canEdit && !queryFlags.isArchived,
+            isAvailable: queryFlags.canEdit && !queryFlags.isArchived,
             title: "Save",
             onClick: handleSaveReport,
           },
@@ -512,7 +542,10 @@ export default function ReportPageHeader(props) {
         },
         {
           showAPIKey: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !clientConfig.disablePublicUrls,
+            isAvailable:
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !clientConfig.disablePublicUrls,
             title: "Show API Key",
             onClick: openApiKeyDialog,
           },
@@ -548,7 +581,7 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     if (dataSourcesLoaded && !selectedDataSource && dataSources.length)
       handleDataSourceChange(dataSources[0].id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
@@ -572,7 +605,7 @@ export default function ReportPageHeader(props) {
       );
       handleReportChanged(false); // fix this, we cant set get here save button is not working disabling and stuff
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -620,7 +653,7 @@ export default function ReportPageHeader(props) {
     return () => {
       if (abortController) abortController.abort();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
@@ -637,7 +670,15 @@ export default function ReportPageHeader(props) {
     };
     if (modelsLoaded && !selectedModel && models.length)
       firstEncounterModelSetter(models);
-  }, [modelsLoaded, getModel, getModelDataCube, handleModelChange, models, report.landed, selectedModel]);
+  }, [
+    modelsLoaded,
+    getModel,
+    getModelDataCube,
+    handleModelChange,
+    models,
+    report.landed,
+    selectedModel,
+  ]);
 
   return (
     <div className="report-page-header">
@@ -732,73 +773,30 @@ export default function ReportPageHeader(props) {
             />
           </div>
         ) : null}
-        <div className="data-source-box m-r-5">
-          <FolderOutlinedIcon />
-          <Select
-            data-test="SelectDataSource"
-            placeholder="Choose base data source..."
-            value={selectedDataSource}
-            disabled={
-              !reportFlags.canEdit ||
-              !dataSourcesLoaded ||
-              dataSources.length === 0
-                ? true
-                : false
-            }
-            loading={!dataSourcesLoaded}
-            optionFilterProp="data-name"
-            showSearch
-            onChange={handleDataSourceChange}
-          >
-            {map(dataSources, ds => (
-              <Select.Option
-                key={`ds-${ds.id}`}
-                value={ds.id}
-                data-name={ds.name}
-                data-test={`SelectDataSource${ds.id}`}
-              >
-                <img
-                  src={`/static/images/db-logos/${ds.type}.png`}
-                  width="20"
-                  alt={ds.name}
-                />
-                <span>{ds.name}</span>
-              </Select.Option>
-            ))}
-          </Select>
-        </div>
-        <div className="data-source-box m-r-5" id="model-data-source">
-          <FileOutlinedIcon />
-          <Select
-            data-test="SelectModel"
-            placeholder="Choose model data source..."
-            value={report ? report.model_id : undefined}
-            disabled={
-              report.id ||
-              !reportFlags.canEdit ||
-              !modelsLoaded ||
-              models.length === 0
-                ? true
-                : false
-            }
-            loading={!modelsLoaded}
-            optionFilterProp="data-name"
-            showSearch
-            ref={modelSelectElement}
-            onChange={handleModelChange}
-          >
-            {map(models, m => (
-              <Select.Option
-                key={`ds-${m.id}`}
-                value={m.id}
-                data-name={m.name}
-                data-test={`SelectModel${m.id}`}
-              >
-                <span>{m.name}</span>
-              </Select.Option>
-            ))}
-          </Select>
-        </div>
+        <DataSourceModelSelector
+          report={report}
+          dataSources={dataSources}
+          dataSourcesLoaded={dataSourcesLoaded}
+          reportFlags={reportFlags}
+          models={models}
+          setModels={setModels}
+          modelsLoaded={modelsLoaded}
+          setLoadModelsLoaded={setLoadModelsLoaded}
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+          selectedDataSource={selectedDataSource}
+          setSelectedDataSource={setSelectedDataSource}
+          onChange={props.onChange}
+          updateReport={updateReport}
+          handleReportChanged={handleReportChanged}
+          getModel={getModel}
+          getDataSource={getDataSource}
+          getSettings={getSettings}
+          getModelDataCube={getModelDataCube}
+          modelSelectElement={modelSelectElement}
+          handleDataSourceChange={handleDataSourceChange}
+          handleModelChange={handleModelChange}
+        />
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
             {!props.sourceMode && (
@@ -852,15 +850,15 @@ export default function ReportPageHeader(props) {
             </ul>
           </>
         )}
-          <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
-            {/* ### TODO write tests for below code  disabled={(report.id || report.model_id) ? false : true} */}
-            <Button
-              data-test="ReportPageHeaderMoreButton"
-              aria-label="More actions"
-            >
-              <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
-            </Button>
-          </Dropdown>
+        <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
+          {/* ### TODO write tests for below code  disabled={(report.id || report.model_id) ? false : true} */}
+          <Button
+            data-test="ReportPageHeaderMoreButton"
+            aria-label="More actions"
+          >
+            <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
+          </Button>
+        </Dropdown>
       </div>
     </div>
   );
@@ -868,7 +866,7 @@ export default function ReportPageHeader(props) {
 
 ReportPageHeader.propTypes = {
   report: PropTypes.shape({
-    id: PropTypes.string | PropTypes.number,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     name: PropTypes.string,
     tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
@@ -879,7 +877,7 @@ ReportPageHeader.propTypes = {
   tagsExtra: PropTypes.node,
   onChange: PropTypes.func.isRequired,
   onChangeColor: PropTypes.func,
-  reportChanged: any,
+  reportChanged: PropTypes.any,
   setReportChanged: PropTypes.func,
 };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useCallback } from "react";
 import PropTypes from "prop-types";
 import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 import { TurniloApplication } from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application";
@@ -16,6 +16,13 @@ import { Report } from "../../../services/report.js";
  * @param {Function} props.setReportChanged
  */
 function ReportPage({ report, reportChanged, setReportChanged }) {
+  const reportRef = useRef(report);
+  reportRef.current = report;
+  const getExecutionStatus = useCallback(
+    () => reportRef.current.getExecutionStatus(),
+    [],
+  );
+
   if (!report.appSettings) {
     return (
       <div style={{ margin: "20px" }}>
@@ -25,30 +32,26 @@ function ReportPage({ report, reportChanged, setReportChanged }) {
   }
 
   if (report.appSettings.customization.sentryDSN) {
-    errorReporterInit(report.appSettings.customization.sentryDSN, report.version);
+    errorReporterInit(
+      report.appSettings.customization.sentryDSN,
+      report.version,
+    );
   }
 
   Ajax.version = report.version;
 
   const appSettings = AppSettings.fromJS(report.appSettings, {
     executorFactory: Ajax.queryUrlExecutorFactory.bind(report),
+    statusCallback: report.onExecutionStatusChange.bind(report),
+    getExecutionStatus: getExecutionStatus,
   });
 
-  // Safe timekeeper creation with fallback
-  let initTimekeeper;
-  try {
-    const timekeeper = report.timekeeper && typeof report.timekeeper === 'object' && !Array.isArray(report.timekeeper)
-      ? report.timekeeper
-      : { timeTags: {} };
-    initTimekeeper = Timekeeper.fromJS(timekeeper);
-  } catch {
-    initTimekeeper = Timekeeper.fromJS({ timeTags: {} });
-  }
+  const initTimekeeper = Timekeeper.fromJS({ timeTags: {} });
 
   return (
     <turnilo-widget>
       <TurniloApplication
-        version={report.version}
+        version={report.version} // get rid of the version prop in TurniloApplication
         report={report}
         reportChanged={reportChanged}
         setReportChanged={setReportChanged}
@@ -69,9 +72,12 @@ ReportPage.propTypes = {
 };
 
 ReportPage.defaultProps = {
+  report: {},
+  reportChanged: false,
+  setReportChanged: () => {},
   dashboardSlug: null,
   dashboardId: null,
-  onError: PropTypes.func,
+  onError: null,
 };
 
 export default ReportPage;

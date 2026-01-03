@@ -22,6 +22,11 @@ class QueryParseError(Exception):
 
 def parse_query(query):
     # TODO: copy paste from Metrica query runner, we should extract this into a utility
+    if isinstance(query, dict):
+        return query  # pyright: ignore[reportUnknownVariableType]
+    elif not isinstance(query, str):
+        raise QueryParseError("Query should be a YAML object describing the URL to query.")
+
     query = query.strip()
     if query == "":
         raise QueryParseError("Query is empty.")
@@ -106,22 +111,26 @@ def parse_json(data, fields):
         parsed_row = {}
 
         for key in row:
-            if isinstance(row[key], dict):
-                for inner_key in row[key]:
-                    column_name = "{}.{}".format(key, inner_key)
+            value = row[key]
+            if isinstance(value, dict):
+                for inner_key in value:
+                    column_name = f"{key}.{inner_key}"
                     if fields and key not in fields and column_name not in fields:
                         continue
-
-                    value = row[key][inner_key]
-                    add_column(columns, column_name, _get_type(value))
-                    parsed_row[column_name] = value
+                    inner_value = value[inner_key]
+                    add_column(columns, column_name, _get_type(inner_value))
+                    parsed_row[column_name] = inner_value
+            elif isinstance(value, list):
+                # Flatten arrays: add each element as key[index]
+                for idx, item in enumerate(value):
+                    column_name = f"{key}[{idx}]"
+                    add_column(columns, column_name, _get_type(item))
+                    parsed_row[column_name] = item
             else:
                 if fields and key not in fields:
                     continue
-
-                value = row[key]
                 add_column(columns, key, _get_type(value))
-                parsed_row[key] = row[key]
+                parsed_row[key] = value
 
         rows.append(parsed_row)
 
@@ -142,20 +151,42 @@ class JSON(BaseHTTPQueryRunner):
                 "base_url": {"type": "string", "title": cls.base_url_title},
                 "username": {"type": "string", "title": cls.username_title},
                 "password": {"type": "string", "title": cls.password_title},
+                "inner_data_path": {"type": "string", "title": "Inner Data Path"},
             },
             "secret": ["password"],
             "order": ["base_url", "username", "password"],
-        }
+        }  # pyright: ignore[reportUnknownVariableType]
 
     def __init__(self, configuration):
         super(JSON, self).__init__(configuration)
         self.syntax = "yaml"
 
     def test_connection(self):
-        pass
+        base_url = self.configuration.get("base_url")
+        if not base_url:
+            raise Exception("Base URL is required")
+
+        response, error = self.get_response(base_url, http_method="get")
+        if error is not None:
+            raise Exception(error)
+
+    def get_schema(self, refresh=False, get_stats=False):
+        url = self.configuration.get("base_url")
+        inner_data_path = self.configuration.get("inner_data_path")
+        query = {"url": url, "method": "get", "path": inner_data_path}
+
+        data, error = self._run_json_query(query)
+        if error is not None:
+            pass
+
+        return [{"name": "default", "columns": data.get("columns", []) if data else []}]
 
     def run_query(self, query, user):
-        query = parse_query(query)
+        url = self.configuration.get("base_url")
+        inner_data_path = self.configuration.get("inner_data_path")
+        if isinstance(query, str):
+            query = parse_query(query)
+        query.update({"url": url, "method": "get", "path": inner_data_path})
 
         data, error = self._run_json_query(query)
         if error is not None:

@@ -1,6 +1,5 @@
 import { ComputeFn, Datum, PlywoodValue } from "../datatypes/index";
 import { SQLDialect } from "../dialect/baseDialect";
-
 import { Expression } from "./baseExpression";
 
 interface timeRangeElement {
@@ -12,8 +11,8 @@ interface timeRangeType {
   op: string;
   currElement: timeRangeElement;
   prevElement: timeRangeElement;
-  operand: [[Object]];
-  expression: [[Expression]];
+  operand: unknown[][];
+  expression: Expression[][];
   name: string;
 }
 export class YearOverYearExpression {
@@ -64,14 +63,14 @@ export class YearOverYearExpression {
     }
   }
 
-  public setQueries(queries: string[]) {
+  public setQueries(queries: string[]): void {
     if (!queries || queries.length < 3) {
       throw new Error("Invalid query");
     }
     this.queries = queries;
   }
 
-  public setMode(mode: string) {
+  public setMode(mode: string): void {
     this.mode = mode;
   }
 
@@ -103,11 +102,11 @@ export class YearOverYearExpression {
     delete this.query;
   }
 
-  public getQuery() {
+  public getQuery(): string {
     return this.query;
   }
 
-  public toString(indent?: int): string {
+  public toString(indent?: number): string {
     return indent.toString();
   }
 
@@ -120,7 +119,7 @@ export class YearOverYearExpression {
     return query.includes("_previous__") && query.includes("_delta__");
   }
 
-  public setEngine(engine: string) {
+  public setEngine(engine: string): void {
     this.engine = engine;
   }
 
@@ -135,15 +134,19 @@ export class YearOverYearExpression {
     return this.queries[2].includes("some_");
   }
 
-  public setTimeRanges(timeRanges: timeRangeType) {
+  public setTimeRanges(timeRanges: timeRangeType): void {
     this.timeRanges = timeRanges;
   }
 
-  public getTimeRanges() {
+  public getTimeRanges(): timeRangeType {
     return this.timeRanges;
   }
 
   private splitFromAndWhereQueries(formattedSumQueries: string): string[] {
+    if (!this.timeRanges) {
+      throw new Error("Time ranges must be set before processing");
+    }
+
     const { currElement, prevElement } = this.timeRanges;
     const [fromQuery, whereQuery] = this.queries[2].split("WHERE");
     const matches = whereQuery.match(this._whereRegex);
@@ -173,11 +176,11 @@ export class YearOverYearExpression {
     return [formattedSumQueries, fromQuery, where1, where2];
   }
 
-  public setGroupBy(groupBy: string) {
+  public setGroupBy(groupBy: string): void {
     this.groupBy = groupBy;
   }
 
-  public process() {
+  public process(): void {
     let formattedSumQueries: string;
     let formattedColumnQueries: string;
     let sumMatch;

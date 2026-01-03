@@ -9,14 +9,15 @@ export const plywoodEndpoint = (req: Request, res: Response) => {
   const expressionQuery = req.body.expression || {};
   const context = req.body.context || {};
 
-  let expression: Expression = null;
+  let expression: Expression;
 
   try {
     expression = Expression.fromJS(expressionQuery);
   } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
     res.status(httpStatus.BAD_REQUEST).json({
       error: "bad expression",
-      message: e.message,
+      message,
     });
     return;
   }

@@ -56,6 +56,7 @@ import {
   VisualizationManifest,
 } from "../visualization-manifest/visualization-manifest";
 import { VisualizationSettings } from "../visualization-settings/visualization-settings";
+import { MANIFESTS } from "../../../common/visualization-manifests";
 
 function constrainDimensions(
   dimensions: OrderedSet<string>,

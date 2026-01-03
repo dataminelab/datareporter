@@ -17,4 +17,5 @@
       "reportUnknownMemberType": "none",
       "reportUnknownVariableType": "information",
   },
+  "jest.rootPath": "client",
 }

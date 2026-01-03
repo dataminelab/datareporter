@@ -266,10 +266,8 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       }
       return { essence, clicker };
     },
-    (
-      [nextEssence, nextClicker]: [Essence, Clicker],
-      [prevEssence, prevClicker]: [Essence, Clicker],
-    ) => nextEssence.equals(prevEssence) && nextClicker === prevClicker,
+    (newArgs: any[], lastArgs: any[]) =>
+      newArgs[0].equals(lastArgs[0]) && newArgs[1] === lastArgs[1],
   );
 
   render() {

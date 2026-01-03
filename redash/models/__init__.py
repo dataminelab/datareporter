@@ -210,7 +210,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
 
         return res
 
-    def get_cached_schema(self):
+    def get_cached_schema(self) -> Union[None, list]:
         cache = redis_connection.get(self._schema_key)
         return json_loads(cache) if cache else None
 
@@ -241,7 +241,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
                 "name": i["name"],
                 "columns": sorted(i["columns"], key=lambda x: x["name"] if isinstance(x, dict) else x),
             }
-            for i in sorted(schema, key=lambda x: x["name"])
+            for i in sorted(schema, key=lambda x: x["name"])  # pyright: ignore[reportUnknownVariableType]
         ]
 
     @property
@@ -286,7 +286,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
         return self.options and "ssh_tunnel" in self.options
 
     @property
-    def query_runner(self):
+    def query_runner(self) -> BaseQueryRunner:
         query_runner = get_query_runner(self.type, self.options)
 
         if self.uses_ssh_tunnel:
@@ -1522,7 +1522,7 @@ class AlertSubscription(TimestampMixin, db.Model):
 class QuerySnippet(TimestampMixin, db.Model, BelongsToOrgMixin):
     id = primary_key("QuerySnippet")
     org_id = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
-    org = db.relationship(Organization, backref="query_snippets")
+    org = db.relationship(Organization, back_populates="query_snippets")
     trigger = Column(db.String(255), unique=True)
     description = Column(db.Text)
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))

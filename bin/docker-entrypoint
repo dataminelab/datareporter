@@ -120,7 +120,7 @@ dev_worker_server() {
   REDASH_WEB_WORKERS=1
   REDASH_WEB_WORKER_TIMOUT=180
   REDASH_WEB_WORKER_THREADS=1
-  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive --  /app/dev_worker_server.py runserver --debugger --no-reload -h 0.0.0.0 --without-threads
+  exec watchmedo auto-restart --directory=./redash/ --pattern=*.py --recursive -- python -m debugpy --listen 0.0.0.0:5678 /app/dev_worker_server.py runserver --debugger --no-reload -h 0.0.0.0 --without-threads
 }
 
 case "$1" in

@@ -269,7 +269,7 @@ class QueryExecutor:
             models.db.session.commit()  # make sure that alert sees the latest query result
             self._log_progress("checking_alerts")
             for query_id in updated_query_ids:
-                check_alerts_for_query.delay(query_id, self.metadata)  # typing ignore: reportFunctionMemberAccess
+                check_alerts_for_query.delay(query_id, self.metadata)  # type: ignore
             self._log_progress("finished")
 
             result = query_result.id

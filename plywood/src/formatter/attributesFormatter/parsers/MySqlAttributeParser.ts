@@ -16,7 +16,9 @@ export class MySqlAttributeParser extends AttributeParser {
 
     const newAttributes = MySQLExternal.postProcessIntrospect(columns).map(
       atr => {
-        if (!atr) return;
+        if (!atr) {
+          return null;
+        }
 
         return {
           nativeType: atr.nativeType.toUpperCase(),
@@ -25,7 +27,6 @@ export class MySqlAttributeParser extends AttributeParser {
         };
       },
     );
-
     return newAttributes.filter(Boolean);
   }
 }

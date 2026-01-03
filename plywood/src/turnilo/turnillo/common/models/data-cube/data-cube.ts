@@ -294,6 +294,7 @@ export class DataCube implements Instance<DataCubeValue, DataCubeJS> {
       clusterName: cluster.name,
       source: String(external.source),
       refreshRule: RefreshRule.query().toJS(),
+      measures: [],
     });
 
     return dataCube.updateCluster(cluster).updateWithExternal(external);

@@ -22,6 +22,7 @@ cat \
   build/dialect/druidDialect.js \
   build/dialect/bigQueryDialect.js \
   build/dialect/awsAthenaDialect.js \
+  build/dialect/jsonDialect.js \
   build/datatypes/common.js \
   build/datatypes/attributeInfo.js \
   build/datatypes/range.js \
@@ -116,6 +117,7 @@ cat \
   build/external/druidExternal.js \
   build/external/bigQueryExternal.js \
   build/external/awsAthenaExternal.js \
+  build/external/jsonExternal.js \
   build/executor/basicExecutor.js \
   extra/postfix.js \
   | grep -v '^import ' \

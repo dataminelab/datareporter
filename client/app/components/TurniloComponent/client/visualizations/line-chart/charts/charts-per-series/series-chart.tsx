@@ -58,9 +58,24 @@ export const SeriesChart: React.FunctionComponent<SeriesChartProps> = props => {
     <SettingsContext.Consumer>
       {(settingsContext) => {
         // If no context is provided, use a default
-        const visualizationColors = settingsContext?.customization?.visualizationColors || {
-          series: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        };
+        const visualizationColors =
+          (settingsContext &&
+            settingsContext.customization &&
+            settingsContext.customization.visualizationColors) ||
+          {
+            series: [
+              "#1f77b4",
+              "#ff7f0e",
+              "#2ca02c",
+              "#d62728",
+              "#9467bd",
+              "#8c564b",
+              "#e377c2",
+              "#7f7f7f",
+              "#bcbd22",
+              "#17becf"
+            ]
+          };
 
         const {
           chartId,
@@ -77,14 +92,16 @@ export const SeriesChart: React.FunctionComponent<SeriesChartProps> = props => {
         const continuousSplitDataset = selectFirstSplitDataset(dataset);
         const { interaction } = interactions;
 
-        const hoverContent = isHover(interaction) && (
-          <SeriesHoverContent
-            essence={essence}
-            dataset={continuousSplitDataset}
-            range={interaction.range}
-            series={series}
-          />
-        );
+        const hoverContent = isHover(interaction)
+          ? (
+            <SeriesHoverContent
+              essence={essence}
+              dataset={continuousSplitDataset}
+              range={interaction.range}
+              series={series}
+            />
+          )
+          : null;
 
         const label = (
           <VisMeasureLabel

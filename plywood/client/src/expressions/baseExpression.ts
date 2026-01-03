@@ -181,23 +181,23 @@ export type ExpressionExternalAlteration = Record<
 
 export type BooleanExpressionIterator = (
   ex: Expression,
-  index: int,
-  depth: int,
-  nestDiff: int,
+  index: number,
+  depth: number,
+  nestDiff: number,
 ) => boolean | null;
 
 export type VoidExpressionIterator = (
   ex: Expression,
-  index: int,
-  depth: int,
-  nestDiff: int,
+  index: number,
+  depth: number,
+  nestDiff: number,
 ) => void;
 
 export type SubstitutionFn = (
   ex: Expression,
-  index: int,
-  depth: int,
-  nestDiff: int,
+  index: number,
+  depth: number,
+  nestDiff: number,
   typeContext: DatasetFullType,
 ) => Expression | null;
 
@@ -209,7 +209,7 @@ export interface DatasetBreakdown {
 }
 
 export interface Indexer {
-  index: int;
+  index: number;
 }
 
 export interface ExpressionTypeContext {
@@ -246,7 +246,7 @@ export interface ExpressionValue {
   operand?: Expression;
   value?: any;
   name?: string;
-  nest?: int;
+  nest?: number;
   external?: External;
   expression?: Expression;
   actions?: any[]; // ToDo remove
@@ -261,8 +261,8 @@ export interface ExpressionValue {
   timezone?: Timezone;
   part?: string;
   step?: number;
-  position?: int;
-  len?: int;
+  position?: number;
+  len?: number;
   regexp?: string;
   custom?: string;
   compare?: string;
@@ -285,7 +285,7 @@ export interface ExpressionJS {
   value?: any;
   operand?: ExpressionJS;
   name?: string;
-  nest?: int;
+  nest?: number;
   external?: ExternalJS;
   expression?: ExpressionJS;
   action?: any;
@@ -301,8 +301,8 @@ export interface ExpressionJS {
   timezone?: string;
   part?: string;
   step?: number;
-  position?: int;
-  len?: int;
+  position?: number;
+  len?: number;
   regexp?: string;
   custom?: string;
   compare?: string;
@@ -808,10 +808,8 @@ export abstract class Expression
    */
   public toJS(): ExpressionJS {
     const js: ExpressionJS = { op: this.op };
-    if (this.options)
-      js.options = this.options;
-    else if (this.currElement || this.prevElement)
-      js.options = {};
+    if (this.options) js.options = this.options;
+    else if (this.currElement || this.prevElement) js.options = {};
     if (this.currElement) js.options.currElement = this.currElement;
     if (this.prevElement) js.options.prevElement = this.prevElement;
     return js;
@@ -824,7 +822,7 @@ export abstract class Expression
     return this.toJS();
   }
 
-  public abstract toString(indent?: int): string;
+  public abstract toString(indent?: number): string;
 
   /**
    * Validate that two expressions are equal in their meaning
@@ -857,7 +855,7 @@ export abstract class Expression
   /**
    * Counts the number of expressions contained within this expression
    */
-  public expressionCount(): int {
+  public expressionCount(): number {
     return 1;
   }
 
@@ -916,7 +914,7 @@ export abstract class Expression
     const indexToSkip: Record<string, boolean> = {};
     const externalsByIndex: ExpressionExternalAlteration = {};
 
-    this.every((ex: Expression, index: int) => {
+    this.every((ex: Expression, index: number) => {
       if (limit <= 0) return null;
 
       if (ex instanceof ExternalExpression) {
@@ -1005,11 +1003,13 @@ export abstract class Expression
    */
   public getFreeReferences(): string[] {
     const freeReferences: string[] = [];
-    this.forEach((ex: Expression, index: int, depth: int, nestDiff: int) => {
-      if (ex instanceof RefExpression && nestDiff <= ex.nest) {
-        freeReferences.push(repeat("^", ex.nest - nestDiff) + ex.name);
-      }
-    });
+    this.forEach(
+      (ex: Expression, index: number, depth: number, nestDiff: number) => {
+        if (ex instanceof RefExpression && nestDiff <= ex.nest) {
+          freeReferences.push(repeat("^", ex.nest - nestDiff) + ex.name);
+        }
+      },
+    );
     return deduplicateSort(freeReferences);
   }
 
@@ -1018,11 +1018,13 @@ export abstract class Expression
    */
   public getFreeReferenceIndexes(): number[] {
     const freeReferenceIndexes: number[] = [];
-    this.forEach((ex: Expression, index: int, depth: int, nestDiff: int) => {
-      if (ex instanceof RefExpression && nestDiff <= ex.nest) {
-        freeReferenceIndexes.push(index);
-      }
-    });
+    this.forEach(
+      (ex: Expression, index: number, depth: number, nestDiff: number) => {
+        if (ex instanceof RefExpression && nestDiff <= ex.nest) {
+          freeReferenceIndexes.push(index);
+        }
+      },
+    );
     return freeReferenceIndexes;
   }
 
@@ -1030,10 +1032,10 @@ export abstract class Expression
    * Increment the ^ nesting on all the free reference variables within this expression
    * @param by The number of generation to increment by (default: 1)
    */
-  public incrementNesting(by: int = 1): Expression {
+  public incrementNesting(by = 1): Expression {
     const freeReferenceIndexes = this.getFreeReferenceIndexes();
     if (freeReferenceIndexes.length === 0) return this;
-    return this.substitute((ex: Expression, index: int) => {
+    return this.substitute((ex: Expression, index: number) => {
       if (
         ex instanceof RefExpression &&
         freeReferenceIndexes.indexOf(index) !== -1
@@ -1065,8 +1067,8 @@ export abstract class Expression
     iter: BooleanExpressionIterator,
     thisArg: any,
     indexer: Indexer,
-    depth: int,
-    nestDiff: int,
+    depth: number,
+    nestDiff: number,
   ): boolean {
     const pass = iter.call(thisArg, this, indexer.index, depth, nestDiff);
     if (pass != null) {
@@ -1084,7 +1086,7 @@ export abstract class Expression
    */
   public some(iter: BooleanExpressionIterator, thisArg?: any): boolean {
     return !this.every(
-      (ex: Expression, index: int, depth: int, nestDiff: int) => {
+      (ex: Expression, index: number, depth: number, nestDiff: number) => {
         const v = iter.call(this, ex, index, depth, nestDiff);
         return v == null ? null : !v;
       },
@@ -1098,10 +1100,13 @@ export abstract class Expression
    * @param thisArg The this for the substitution function
    */
   public forEach(iter: VoidExpressionIterator, thisArg?: any): void {
-    this.every((ex: Expression, index: int, depth: int, nestDiff: int) => {
-      iter.call(this, ex, index, depth, nestDiff);
-      return null;
-    }, thisArg);
+    this.every(
+      (ex: Expression, index: number, depth: number, nestDiff: number) => {
+        iter.call(this, ex, index, depth, nestDiff);
+        return null;
+      },
+      thisArg,
+    );
   }
 
   /**
@@ -1125,8 +1130,8 @@ export abstract class Expression
   public _substituteHelper(
     substitutionFn: SubstitutionFn,
     indexer: Indexer,
-    depth: int,
-    nestDiff: int,
+    depth: number,
+    nestDiff: number,
     typeContext: DatasetFullType,
   ): ExpressionTypeContext {
     const sub = substitutionFn.call(
@@ -1515,7 +1520,7 @@ export abstract class Expression
     });
   }
 
-  // Number manipulation
+  // number manipulation
 
   public numberBucket(size: number, offset = 0) {
     return new NumberBucketExpression({
@@ -1814,9 +1819,9 @@ export abstract class Expression
     return this.substitute(
       (
         ex: Expression,
-        index: int,
-        depth: int,
-        nestDiff: int,
+        index: number,
+        depth: number,
+        nestDiff: number,
         typeContext: DatasetFullType,
       ) => {
         if (ex instanceof RefExpression) {
@@ -1870,7 +1875,7 @@ export abstract class Expression
     ifNotFound: IfNotFound = "throw",
   ): Expression {
     return this.substitute(
-      (ex: Expression, index: int, depth: int, nestDiff: int) => {
+      (ex: Expression, index: number, depth: number, nestDiff: number) => {
         if (ex instanceof RefExpression) {
           const { nest, ignoreCase, name } = ex;
           if (nestDiff === nest) {
@@ -1960,7 +1965,7 @@ export abstract class Expression
    * Turns $data.sum($x - 2 * $y) into $data.sum($x) - 2 * $data.sum($y)
    */
   public distribute(): Expression {
-    return this.substitute((ex: Expression, index: int) => {
+    return this.substitute((ex: Expression, index: number) => {
       if (index === 0) return null;
       const distributedEx = ex.distribute();
       if (distributedEx === ex) return null;
@@ -2053,13 +2058,33 @@ export abstract class Expression
       queries < maxQueries
     ) {
       const simulatedQueryGroup: any[] = [];
+      const timeRanges = {
+        currElement:
+          (options &&
+            options.others &&
+            options.others.options &&
+            options.others.options.currElement) ||
+          null,
+        prevElement:
+          (options &&
+            options.others &&
+            options.others.options &&
+            options.others.options.prevElement) ||
+          null,
+      } as any;
+      /* eslint-disable no-loop-func */
       fillExpressionExternalAlteration(readyExternals, (external, terminal) => {
         if (queries < maxQueries) {
           queries++;
-          return external.simulateValue(terminal, simulatedQueryGroup);
+          return external.simulateValue(
+            terminal,
+            simulatedQueryGroup,
+            external,
+            timeRanges,
+          );
         } else {
           queries++;
-          return null; // Query limit reached, don't do any more queries.
+          return null;
         }
       });
 
@@ -2261,11 +2286,11 @@ export abstract class ChainableExpression extends Expression {
     return js;
   }
 
-  protected _toStringParameters(_indent?: int): string[] {
+  protected _toStringParameters(_indent?: number): string[] {
     return [];
   }
 
-  public toString(indent?: int): string {
+  public toString(indent?: number): string {
     return `${this.operand.toString(indent)}.${this.op}(${this._toStringParameters(
       indent,
     ).join(",")})`;
@@ -2307,7 +2332,7 @@ export abstract class ChainableExpression extends Expression {
     return [];
   }
 
-  public expressionCount(): int {
+  public expressionCount(): number {
     let sum = super.expressionCount() + this.operand.expressionCount();
     this.getArgumentExpressions().forEach(ex => (sum += ex.expressionCount()));
     return sum;
@@ -2405,8 +2430,8 @@ export abstract class ChainableExpression extends Expression {
     iter: BooleanExpressionIterator,
     thisArg: any,
     indexer: Indexer,
-    depth: int,
-    nestDiff: int,
+    depth: number,
+    nestDiff: number,
   ): boolean {
     const pass = iter.call(thisArg, this, indexer.index, depth, nestDiff);
     if (pass != null) {
@@ -2429,8 +2454,8 @@ export abstract class ChainableExpression extends Expression {
   public _substituteHelper(
     substitutionFn: SubstitutionFn,
     indexer: Indexer,
-    depth: int,
-    nestDiff: int,
+    depth: number,
+    nestDiff: number,
     typeContext: DatasetFullType,
   ): ExpressionTypeContext {
     const sub = substitutionFn.call(
@@ -2539,11 +2564,11 @@ export abstract class ChainableUnaryExpression extends ChainableExpression {
     return js;
   }
 
-  protected _toStringParameters(indent?: int): string[] {
+  protected _toStringParameters(indent?: number): string[] {
     return [this.expression.toString(indent)];
   }
 
-  public toString(indent?: int): string {
+  public toString(indent?: number): string {
     // ToDo: handle indent
     return `${this.operand.toString(indent)}.${this.op}(${this._toStringParameters(
       indent,
@@ -2733,8 +2758,8 @@ export abstract class ChainableUnaryExpression extends ChainableExpression {
   public _substituteHelper(
     substitutionFn: SubstitutionFn,
     indexer: Indexer,
-    depth: int,
-    nestDiff: int,
+    depth: number,
+    nestDiff: number,
     typeContext: DatasetFullType,
   ): ExpressionTypeContext {
     const sub = substitutionFn.call(this, this, indexer.index, depth, nestDiff);

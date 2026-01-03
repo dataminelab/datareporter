@@ -22,7 +22,8 @@ const validation = (req: Request) => {
   } catch (e) {
     if (e instanceof ValidationError)
       throw new FieldError(e.message, { fieldName: "engine" });
-    throw new Error(e);
+    if (e instanceof Error) throw e;
+    throw new Error(String(e));
   }
 
   if (attributes === undefined) throw new MissingFieldError("attributes");

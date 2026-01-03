@@ -79,6 +79,8 @@ mkvirtualenv -p /usr/bin/python3.8 python38
 docker compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
 # Run the tests
 docker compose run --rm server tests
+# Run tests for a specific module
+docker-compose run --rm server pytest -v tests/plywood/test_json.py
 ```
 
 #### viz-lib
@@ -185,6 +187,22 @@ if you are having issue building docker images, try to remove `config.json` file
 rm  ~/.docker/config.json
 ```
 
+below is for how to start the development environment using docker compose
+this will rewrite environment variables from `.env` and the compose file
+
+```sh
+docker-compose -f compose.dev.yml up -d
+```
+
+* Supported Report Engines
+  * postgres
+  * mysql  
+  * bigquery
+  * athena
+  * druid
+  * pg
+  * json
+
 ### Docker connectivity issues for testing connection between containers
 
 This is useful when testing fresh datasources so cross server connections are needed. For example, if you want to connect to a router container from the datareporter-server container.
@@ -222,4 +240,3 @@ poetry add <package-name>
 # Uninstall an old package
 poetry remove <package-name>
 ```
-

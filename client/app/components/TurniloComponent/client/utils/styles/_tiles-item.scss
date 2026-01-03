@@ -24,7 +24,8 @@
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.1s ease-in-out;
-  width: $item-width;
+  min-width: $item-width;
+  width: auto;
 
   &.dimension {
     @include css-variable(background-color, item-dimension);

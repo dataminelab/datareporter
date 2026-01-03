@@ -17,7 +17,7 @@ from redash.permissions import (
     require_permission,
     view_only,
 )
-from redash.plywood.parsers.query_parser_v2 import supported_engines
+from redash.plywood.parsers.query_parser_v2 import SUPPORTED_ENGINES
 from redash.query_runner import (
     get_configuration_schema_for_query_runner_type,
     query_runners,
@@ -132,7 +132,7 @@ class DataSourceListResource(BaseResource):
         results = []
         if source == "plywood":
             for result in sorted_results:
-                if result["type"] in supported_engines:
+                if result["type"] in SUPPORTED_ENGINES:
                     results.append(result)
         else:
             results = sorted_results
@@ -185,7 +185,7 @@ class DataSourceSchemaResource(BaseResource):
             if cached_schema is not None:
                 return {"schema": cached_schema}
 
-        job = get_schema.delay(data_source.id, refresh)
+        job = get_schema.delay(data_source.id, refresh)  # type: ignore
 
         return serialize_job(job)
 
@@ -233,7 +233,7 @@ class DataSourceTestResource(BaseResource):
 
         response = {}
 
-        job = test_connection.delay(data_source.id)
+        job = test_connection.delay(data_source.id)  # type: ignore
         while not (job.is_finished or job.is_failed):
             time.sleep(1)
             job.refresh()

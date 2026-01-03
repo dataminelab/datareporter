@@ -4,11 +4,12 @@ from functools import partial
 from itertools import chain
 
 from flask import Blueprint, request
-from rq import VERSION, get_current_job
+from rq import get_current_job
 from rq.decorators import job as rq_job
 from rq.exceptions import DequeueTimeout
-from rq.logutils import setup_loghandlers
-from rq.worker import WorkerStatus, blue, green
+from rq.logutils import blue, green, setup_loghandlers
+from rq.version import VERSION
+from rq.worker import WorkerStatus
 
 from redash import rq_redis_connection, settings
 from redash.tasks.worker import Queue as RedashQueue
@@ -118,7 +119,7 @@ def queue_from(envelope) -> str:
     return base64.b64decode(message_data).decode("utf-8").strip()
 
 
-worker = Blueprint("redash", __name__)
+worker = Blueprint("worker_blueprint", __name__)
 
 
 @worker.route("/execute", methods=["POST"])

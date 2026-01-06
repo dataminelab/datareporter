@@ -3,7 +3,7 @@ import datetime
 import logging
 import numbers
 import time
-from typing import Union
+from typing import Dict, List, Union
 
 import pytz
 from sqlalchemy import Integer, UniqueConstraint, and_, cast, distinct, func, or_
@@ -197,7 +197,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
         return data_sources.distinct()
 
     @classmethod
-    def get_by_id(cls, _id):
+    def get_by_id(cls, _id) -> "DataSource":
         return cls.query.filter(cls.id == _id).one()
 
     def delete(self):
@@ -210,11 +210,11 @@ class DataSource(BelongsToOrgMixin, db.Model):
 
         return res
 
-    def get_cached_schema(self) -> Union[None, list]:
+    def get_cached_schema(self) -> Union[None, List[object]]:
         cache = redis_connection.get(self._schema_key)
         return json_loads(cache) if cache else None
 
-    def get_schema(self, refresh=False):
+    def get_schema(self, refresh=False) -> Union[Dict[str, object], List[object]]:
         out_schema = None
         if not refresh:
             out_schema = self.get_cached_schema()

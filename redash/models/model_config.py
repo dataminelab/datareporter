@@ -56,4 +56,9 @@ class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
             if cluster_name != "native":  # native is a special case, doesn't need a cluster object
                 clusters.append({"name": cluster_name, "type": cluster_name})
 
-        return {"appSettings": {"dataCubes": data_cubes, "clusters": clusters, "customization": {}}, "timekeeper": {}}
+        return {
+            "dataCubes": data_cubes,
+            "clusters": clusters,
+            "customization": {},
+            "timekeeper": {}
+        }

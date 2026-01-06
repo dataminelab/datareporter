@@ -247,11 +247,10 @@ class ReportHash:
         self.version = "1.26.0-beta.1"
         config = ModelConfig.get_model_config(o.model_id)
         if config:
-            appSettings = config["appSettings"]
-            appSettings["customization"][
+            config["customization"][
                 "urlShortener"
             ] = "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
-            self.appSettings = appSettings
+            self.appSettings = config
         else:
             self.appSettings = {
                 "dataCubes": [],

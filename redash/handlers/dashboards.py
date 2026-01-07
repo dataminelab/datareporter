@@ -1,4 +1,6 @@
 import requests
+from abc import ABC, abstractmethod
+from io import StringIO
 from flask import request, url_for
 from flask_restful import abort
 from funcy import partial, project
@@ -21,7 +23,12 @@ from redash.permissions import (
 )
 from redash.security import csp_allows_embeding
 from redash.serializers import DashboardSerializer, public_dashboard
-from redash.settings import OPENAI_API_KEY
+from redash.settings import OPENAI_API_KEY, GEMINI_API_KEY
+
+try:
+    from google import genai
+except ImportError:
+    genai = None
 
 # Ordering map for relationships
 order_map = {
@@ -138,23 +145,30 @@ class MyDashboardsResource(BaseResource):
         return paginate(ordered_results, page, page_size, DashboardSerializer)
 
 
-class DashboardPromptResource(BaseResource):
-    @require_permissions(["edit_dashboard", "ai:ask"])
-    def post(self, dashboard_id):
+# AI Provider Classes
+class AIProvider(ABC):
+    """Abstract base class for AI providers"""
+
+    @abstractmethod
+    def get_answer(self, messages):
         """
-        Retrieve a prompt for a dashboard.
+        Get an answer from the AI provider.
 
-        :param dashboard_id: The numeric ID of the dashboard to retrieve the prompt for.
-        :>json string prompt: The prompt text for the dashboard.
+        Args:
+            messages: List of message dicts with 'role' and 'content'
+
+        Returns:
+            str: The AI response text
         """
-        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
-        require_object_modify_permission(dashboard, self.current_user)
+        pass
 
-        data = request.get_json(force=True)
-        messages = data.get("messages", [])
 
-        if not messages or not isinstance(messages, list):
-            abort(400, message="Missing or invalid 'messages' in request body.")
+class OpenAIProvider(AIProvider):
+    """OpenAI ChatGPT provider"""
+
+    def get_answer(self, messages):
+        if not OPENAI_API_KEY:
+            abort(400, message="OpenAI API key not configured.")
 
         headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
         payload = {
@@ -162,17 +176,130 @@ class DashboardPromptResource(BaseResource):
             "messages": messages,
         }
 
-        openai_response = requests.post(
-            "https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=30
-        )
+        try:
+            response = requests.post(
+                "https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=30
+            )
 
-        if openai_response.status_code != 200:
-            abort(502, message="Failed to get response from OpenAI.")
+            if response.status_code != 200:
+                abort(502, message="Failed to get response from OpenAI.")
 
-        openai_data = openai_response.json()
-        prompt = openai_data["choices"][0]["message"]["content"]
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
+        except requests.exceptions.RequestException as e:
+            abort(502, message=f"Failed to connect to OpenAI: {str(e)}")
 
-        return {"prompt": prompt}
+
+class GeminiProvider(AIProvider):
+    """Google Gemini provider"""
+
+    def get_answer(self, messages):
+        if not GEMINI_API_KEY:
+            abort(400, message="Gemini API key not configured.")
+
+        if genai is None:
+            abort(400, message="Google Gemini library not installed.")
+
+        try:
+            client = genai.Client(api_key=GEMINI_API_KEY)
+
+            # Convert messages to Gemini format
+            # Gemini expects a list of dicts with 'role' (user/model) and 'parts' (text content)
+            gemini_messages = []
+            for msg in messages:
+                role = "model" if msg.get("role") == "assistant" else msg.get("role")
+                gemini_messages.append({"role": role, "parts": [{"text": msg.get("content", "")}]})
+
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=gemini_messages,
+            )
+
+            return response.text
+        except Exception as e:
+            abort(502, message=f"Failed to get response from Gemini: {str(e)}")
+
+
+class DeepSeekProvider(AIProvider):
+    """DeepSeek provider via Ollama"""
+
+    def get_answer(self, messages):
+        try:
+            # Build the prompt from messages
+            prompt = ""
+            for msg in messages:
+                role = msg.get("role", "user").upper()
+                content = msg.get("content", "")
+                prompt += f"{role}: {content}\n\n"
+            prompt += "ASSISTANT:"
+
+            response = requests.post(
+                "http://ollama:11434/api/generate",
+                json={
+                    "model": "deepseek-r1:7b",
+                    "prompt": prompt,
+                    "stream": False,
+                },
+                timeout=30,
+            )
+
+            if response.status_code != 200:
+                abort(502, message="Failed to get response from DeepSeek/Ollama.")
+
+            data = response.json()
+            generated_text = data.get("response", "")
+            # Remove thinking tags if present
+            generated_text = generated_text.replace("<think>", "")
+            generated_text = generated_text.replace("</think>", "")
+            return generated_text.strip()
+        except requests.exceptions.RequestException as e:
+            abort(502, message=f"Failed to connect to DeepSeek/Ollama: {str(e)}")
+        except Exception as e:
+            abort(502, message=f"Failed to process DeepSeek response: {str(e)}")
+
+
+class DashboardPromptResource(BaseResource):
+    """Handles AI prompt requests for dashboards with multi-provider support"""
+
+    @require_permissions(["edit_dashboard", "ai:ask"])
+    def post(self, dashboard_id):
+        """
+        Retrieve a prompt response for a dashboard using the specified AI provider.
+
+        :param dashboard_id: The numeric ID of the dashboard to retrieve the prompt for.
+        :>json string prompt: The prompt response text from the AI provider.
+        """
+        dashboard = models.Dashboard.get_by_id_and_org(dashboard_id, self.current_org)
+        require_object_modify_permission(dashboard, self.current_user)
+
+        data = request.get_json(force=True)
+        messages = data.get("messages", [])
+        provider = data.get("provider", "chatgpt")  # Default to OpenAI
+
+        if not messages or not isinstance(messages, list):
+            abort(400, message="Missing or invalid 'messages' in request body.")
+
+        # Get the appropriate AI provider
+        ai_provider = self._get_ai_provider(provider)
+
+        # Get the response from the provider
+        response_text = ai_provider.get_answer(messages)
+
+        return {"prompt": response_text}
+
+    def _get_ai_provider(self, provider_type):
+        """Factory method to get the appropriate AI provider"""
+        providers = {
+            "chatgpt": OpenAIProvider,
+            "gemini": GeminiProvider,
+            "deepseek": DeepSeekProvider,
+        }
+
+        provider_class = providers.get(provider_type)
+        if not provider_class:
+            abort(400, message=f"Unknown AI provider: {provider_type}")
+
+        return provider_class()
 
 
 class DashboardResource(BaseResource):

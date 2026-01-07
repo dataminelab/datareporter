@@ -90,6 +90,7 @@ function WidgetDropdownButton({
 }
 
 WidgetDropdownButton.propTypes = {
+  report: PropTypes.object,
   extraOptions: PropTypes.node,
   showDeleteOption: PropTypes.bool,
   onDelete: PropTypes.func,
@@ -133,6 +134,7 @@ class Widget extends React.Component {
     menuOptions: PropTypes.node,
     tileProps: PropTypes.object,
     onDelete: PropTypes.func,
+    config: PropTypes.object,
   };
 
   static defaultProps = {

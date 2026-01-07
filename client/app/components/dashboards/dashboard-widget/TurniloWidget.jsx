@@ -11,6 +11,7 @@ function TurniloWidget({
   config,
   setFilterParams,
   getEssence,
+  onDelete,
 }) {
   const turniloHash =
     config?.hash || widget.text?.replace("[turnilo-widget]", "") || "";
@@ -38,6 +39,7 @@ function TurniloWidget({
       widget={widget}
       canEdit={canEdit}
       config={config}
+      onDelete={onDelete}
     >
       <turnilo-widget>
         <TurniloApplication
@@ -63,10 +65,12 @@ TurniloWidget.propTypes = {
   config: PropTypes.object,
   setFilterParams: PropTypes.func,
   getEssence: PropTypes.func,
+  onDelete: PropTypes.func,
 };
 
 TurniloWidget.defaultProps = {
   canEdit: false,
+  onDelete: () => { },
 };
 
 export default TurniloWidget;

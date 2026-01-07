@@ -1,6 +1,6 @@
-import requests
 from abc import ABC, abstractmethod
-from io import StringIO
+
+import requests
 from flask import request, url_for
 from flask_restful import abort
 from funcy import partial, project
@@ -23,7 +23,7 @@ from redash.permissions import (
 )
 from redash.security import csp_allows_embeding
 from redash.serializers import DashboardSerializer, public_dashboard
-from redash.settings import OPENAI_API_KEY, GEMINI_API_KEY
+from redash.settings import GEMINI_API_KEY, OPENAI_API_KEY
 
 try:
     from google import genai

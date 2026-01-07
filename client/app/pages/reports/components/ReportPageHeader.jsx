@@ -310,7 +310,7 @@ export default function ReportPageHeader(props) {
     async (modelId, settings) => {
       const model = getModel(modelId);
       if (!model || !settings) return {};
-      const dataCubes = settings.appSettings.dataCubes;
+      const dataCubes = settings.dataCubes;
       return dataCubes.find(m => m.name === model.table);
     },
     [getModel],
@@ -338,7 +338,7 @@ export default function ReportPageHeader(props) {
         recordEvent("update", "report", report.id, { modelId });
         const updates = {
           model_id: modelId,
-          appSettings: settings.appSettings,
+          appSettings: settings,
           timekeeper: settings.timekeeper,
           landed: false,
         };

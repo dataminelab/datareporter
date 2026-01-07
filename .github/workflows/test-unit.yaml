@@ -223,11 +223,10 @@ jobs:
     env:
       COMPOSE_FILE: .ci/compose.cypress.yml
       COMPOSE_PROJECT_NAME: cypress
-      # CYPRESS_INSTALL_BINARY: 0
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
       PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}  # Change from CYPRESS_PROJECT_ID
+      PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}
       CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       PERCY_PARALLEL_TOTAL: 1

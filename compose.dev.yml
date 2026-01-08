@@ -24,7 +24,7 @@ x-redash-environment: &redash-environment
   MAILCHIMP_SERVER: "us1"
   CLIENT_TIMEOUT: 100000
   REDASH_WORKER_NOTIFY_URL: "http://worker-server:5000/execute"
-  OLLAMA_API_URL: "http://ollama:11434"
+  # OLLAMA_API_URL: "http://ollama:11434"
   REDASH_SCHEMAS_REFRESH_TIMEOUT: 500
   REDASH_VERSION_CHECK: "false"
   WORKERS_COUNT: 10
@@ -100,12 +100,12 @@ services:
       - ./plywood:/app
     environment:
       - LOG_MODE=request_and_response
-  ollama:
-    image: ollama/ollama
-    volumes:
-      - ./ollama-models:/root/.ollama
-    ports:
-      - 11434:11434
+  # ollama:
+  #   image: ollama/ollama
+  #   volumes:
+  #     - ./ollama-models:/root/.ollama
+  #   ports:
+  #     - 11434:11434
 networks:
   host-gateway:
     external: true

@@ -323,7 +323,7 @@ export class Table extends BaseVisualization<TableState> {
           }
           leftGutter={
             <SplitRows
-              color={report?.colorText}
+              color={report && report.colorText}
               collapseRows={collapseRows}
               highlightedRowIndex={highlightedRowIndex}
               visibleRowsIndexRange={visibleRowsRange}

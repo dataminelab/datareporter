@@ -244,4 +244,56 @@ export class BigQueryDialect extends SQLDialect {
   public walltimeToUTC(operand: string, timezone: Timezone): string {
     return operand;
   }
+
+  public logExpression(base: string, operand: string): string {
+    if (base === "e") {
+      return `LN(${operand})`;
+    } else if (base === "10") {
+      return `LOG10(${operand})`;
+    } else if (base === "2") {
+      return `LOG2(${operand})`;
+    } else {
+      return `LOG(${this.escapeLiteral(base)}, ${operand})`;
+    }
+  }
+
+  public lookupExpression(base: string, lookup: string): string {
+    return this.searchExpression(base, lookup);
+  }
+
+  public nullConstant(): string {
+    return "NULL";
+  }
+
+  public trueConstant(): string {
+    return "TRUE";
+  }
+
+  public falseConstant(): string {
+    return "FALSE";
+  }
+
+  public escapeLiteral(literal: string): string {
+    literal = literal.replace(/'/g, "''");
+    return "'" + literal + "'";
+  }
+
+  public nowExpression(): string {
+    return "CURRENT_TIMESTAMP()";
+  }
+
+  public currentTimeExpression(): string {
+    return "CURRENT_TIME()";
+  }
+
+  public currentDateExpression(): string {
+    return "CURRENT_DATE()";
+  }
+
+  public searchExpression(haystack: string, needle: string): string {
+    // Use BigQuery's SEARCH function for advanced text search with tokenization,
+    // logical operators (AND/OR), and phrase matching support
+    // See: https://cloud.google.com/bigquery/docs/reference/standard-sql/search_functions
+    return `SEARCH(${haystack}, ${this.escapeLiteral(needle)})`;
+  }
 }

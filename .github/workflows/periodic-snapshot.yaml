@@ -77,7 +77,7 @@ jobs:
           git add client/package.json redash/__init__.py pyproject.toml
           git commit -m "Snapshot: ${TAG_NAME}"
           git tag ${TAG_NAME}
-          git push --atomic origin master refs/tags/${TAG_NAME}
+          git push --atomic origin develop refs/tags/${TAG_NAME}
 
           # Run the 'preview-image' workflow if run this workflow manually
           # For more information, please see the: https://docs.github.com/en/actions/security-guides/automatic-token-authentication

@@ -18,12 +18,14 @@ import {
 import { responseShape } from "./endpoint/response-shape";
 import { AthenaParse } from "./formatter/attributesFormatter/parsers/AthenaParser";
 import { DruidParse } from "./formatter/attributesFormatter/parsers/DruidParser";
+import { JsonAttributeParse } from "./formatter/attributesFormatter/parsers/JsonAttributeParser";
 
 AttributeParserFactory.register(PostgresAttributeParser);
 AttributeParserFactory.register(MySqlAttributeParser);
 AttributeParserFactory.register(BigQueryParser);
 AttributeParserFactory.register(AthenaParse);
 AttributeParserFactory.register(DruidParse);
+AttributeParserFactory.register(JsonAttributeParse);
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -47,7 +49,12 @@ interface ExpressError {
 }
 
 interface ErrorMiddleware {
-  (err: unknown | ExpressError, req: express.Request, res: express.Response, next: express.NextFunction): void;
+  (
+    err: unknown | ExpressError,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ): void;
 }
 
 const errorHandlerMiddleware: ErrorMiddleware = (err, req, res, next) => {

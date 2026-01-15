@@ -113,6 +113,7 @@ export class DruidExpressionBuilder {
     return str.replace(/([%_~])/g, "~$1");
   }
 
+  // eslint-disable-next-line no-undef
   static expressionTypeToOutputType(type: PlyType): Druid.OutputType {
     switch (type) {
       case "TIME":

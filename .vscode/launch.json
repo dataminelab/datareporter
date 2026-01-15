@@ -3,15 +3,31 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [    
+    "configurations": [
         {
-            "name": "Python Debugger: Remote Attach",
+            "name": "Server Debugger: Remote Attach",
             "type": "debugpy",
             "request": "attach",
             "connect": {
                 "host": "localhost",
                 "port": 5678
             },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "Worker Debugger: Remote Attach",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5679
+            },
+            // bash bin/rest-worker --debug-port 5679
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}",
@@ -35,6 +51,8 @@
             "request": "attach",
             "name": "Attach to Plywood Server",
             "port": 9229,
+            // cd plywood/server
+            // npm run dev:debug
             "address": "localhost",
             "localRoot": "${workspaceFolder}",
             "remoteRoot": "${workspaceFolder}",

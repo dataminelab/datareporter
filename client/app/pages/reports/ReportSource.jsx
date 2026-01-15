@@ -11,6 +11,7 @@ import ReportPageHeader from "./components/ReportPageHeader";
 import wrapReportPage from "./components/wrapReportPage";
 import ReportExecutionMetadata from "./components/ReportExecutionMetadata";
 import ReportEditor from "./components/ReportEditor";
+import QueryExecutionStatus from "../queries/components/QueryExecutionStatus";
 
 import useReport from "./hooks/useReport";
 import useVisualizationTabHandler from "./hooks/useVisualizationTabHandler";
@@ -22,9 +23,7 @@ import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
 import "./ReportSource.less";
 
 function ReportSource(props) {
-  const { report, setReport, isDirty, showShareReportDialog } = useReport(
-    props.report,
-  );
+  const { report, setReport, isDirty } = useReport(props.report);
   const reportFlags = useReportFlags(report, []);
   const [selectedVisualization] = useVisualizationTabHandler(
     report.visualizations,
@@ -33,9 +32,24 @@ function ReportSource(props) {
   const [reportChanged, setReportChanged] = useState(false);
 
   useUnsavedChangesAlert(isDirty);
+  const {
+    isExecuting,
+    error: executionError,
+    executionStatus,
+    updatedAt,
+    isCancelling: isExecutionCancelling,
+    cancelCallback: cancelExecution,
+    triggerExecution,
+  } = useReportExecute(report);
 
-  const { reportResult, isExecuting: isReportExecuting } =
-    useReportExecute(report);
+  useEffect(() => {
+    report.setTriggerExecution(triggerExecution);
+    report.setExecutionStatus(executionStatus);
+  }, []);
+
+  useEffect(() => {
+    report.setExecutionStatus(executionStatus);
+  }, [executionStatus]);
 
   useEffect(() => {
     // TODO: ignore new pages?
@@ -45,15 +59,6 @@ function ReportSource(props) {
   useEffect(() => {
     document.title = report.name;
   }, [report.name]);
-
-  const editVisualization = useEditVisualizationDialog(
-    report,
-    reportResult,
-    newReport => {
-      setReport(newReport);
-      setReportChanged(true);
-    },
-  );
 
   return (
     <div
@@ -86,17 +91,14 @@ function ReportSource(props) {
               />
             </div>
           </div>
-          {reportResult && !reportResult.getError() && (
-            <div className="bottom-controller-container">
-              <ReportExecutionMetadata
-                report={report}
-                reportResult={reportResult}
-                selectedVisualization={selectedVisualization}
-                isReportExecuting={isReportExecuting}
-                showEditVisualizationButton={
-                  !reportFlags.isNew && reportFlags.canEdit
-                }
-                onEditVisualization={editVisualization}
+          {(executionError || isExecuting) && (
+            <div className="query-alerts">
+              <QueryExecutionStatus
+                status={executionStatus}
+                updatedAt={updatedAt}
+                error={executionError}
+                isCancelling={isExecutionCancelling}
+                onCancel={cancelExecution}
               />
             </div>
           )}

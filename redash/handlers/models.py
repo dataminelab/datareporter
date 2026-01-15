@@ -9,7 +9,8 @@ from redash.handlers.base import (
     require_fields,
 )
 from redash.handlers.queries import order_results
-from redash.models.models import Model, ModelConfig
+from redash.models.model_config import ModelConfig
+from redash.models.models import Model
 from redash.permissions import (
     require_admin_or_owner,
     require_object_modify_permission,

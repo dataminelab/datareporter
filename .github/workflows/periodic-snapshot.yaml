@@ -57,7 +57,7 @@ jobs:
             if [ -n "$SPECIFIC_VERSION" ]; then
               TAG_NAME="$SPECIFIC_VERSION-dev"
             elif [ "$BUMP_INPUT" = "true" ]; then
-              CURRENT_VERSION=$(grep '"version":' package.json | awk -F\" '{print $4}')
+              CURRENT_VERSION=$(grep '"version":' client/package.json | awk -F\" '{print $4}')
               TAG_NAME=$(bump_version "$CURRENT_VERSION")
             else
               echo "No version bump or specific version provided for manual dispatch."
@@ -70,14 +70,14 @@ jobs:
           echo "New version tag: $TAG_NAME"
 
           # Update version in files
-          gawk -i inplace -F: -v q=\" -v tag=${TAG_NAME} '/^  "version": / { print $1 FS, q tag q ","; next} { print }' package.json
+          gawk -i inplace -F: -v q=\" -v tag=${TAG_NAME} '/^  "version": / { print $1 FS, q tag q ","; next} { print }' client/package.json
           gawk -i inplace -F= -v q=\" -v tag=${TAG_NAME} '/^__version__ =/ { print $1 FS, q tag q; next} { print }' redash/__init__.py
           gawk -i inplace -F= -v q=\" -v tag=${TAG_NAME} '/^version =/ { print $1 FS, q tag q; next} { print }' pyproject.toml
 
-          git add package.json redash/__init__.py pyproject.toml
+          git add client/package.json redash/__init__.py pyproject.toml
           git commit -m "Snapshot: ${TAG_NAME}"
           git tag ${TAG_NAME}
-          git push --atomic origin master refs/tags/${TAG_NAME}
+          git push --atomic origin develop refs/tags/${TAG_NAME}
 
           # Run the 'preview-image' workflow if run this workflow manually
           # For more information, please see the: https://docs.github.com/en/actions/security-guides/automatic-token-authentication

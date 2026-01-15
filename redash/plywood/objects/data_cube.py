@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 import pydash
 import yaml
@@ -73,7 +73,7 @@ class DataCube:
         """Returns DataCube attributes"""
         config = yaml.load(self._model.config.content, Loader=yaml.FullLoader)
         data_cube = pydash.head(config["dataCubes"])
-        attributes = data_cube["attributes"] if data_cube else []
+        attributes = data_cube["attributes"] if isinstance(data_cube, dict) and "attributes" in data_cube else []
         return attributes
 
     def _get_table_name(self):
@@ -94,12 +94,12 @@ class DataCube:
             return None
         data_cube = pydash.head(self.config["dataCubes"])
 
-        if lower_case_kind:
+        if lower_case_kind and isinstance(data_cube, dict):
             lower_kind(data_cube)
 
         return data_cube
 
     @property
-    def context(self) -> dict:
+    def context(self) -> Dict:
         """Returns context of the DataCube in dict format"""
         return {"engine": self.ply_engine, "source": self._get_table_name(), "attributes": self.attributes}

@@ -228,6 +228,7 @@ class QueryResult {
   }
 
   cancelExecution() {
+    // implement this into reports too
     axios.delete(`api/jobs/${this.job.id}`);
   }
 

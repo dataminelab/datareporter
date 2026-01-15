@@ -708,7 +708,7 @@ export class Dataset implements Instance<DatasetValue, DatasetJS> {
   }
 
   // Aggregators
-  public count(): int {
+  public count(): number {
     return this.data.length;
   }
 

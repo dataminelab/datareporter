@@ -21,7 +21,7 @@ import {
   merge,
 } from "lodash";
 import location from "@/services/location";
-
+import { Query } from "./query";
 import { Parameter, createParameter } from "./parameters";
 import { currentUser } from "./auth";
 import ReportResult from "./report-result";
@@ -217,11 +217,14 @@ export class Parameters {
   }
 }
 
-export class Report {
-  queries = []; // report queries
+export class Report extends Query {
+  queries = [];
   isPublic = false;
   constructor(report) {
+    super(report);
     extend(this, report);
+    this.triggerExecution = null;
+    this.executionStatus = null;
 
     if (!has(this, "options")) {
       this.options = {};
@@ -232,6 +235,10 @@ export class Report {
     }
     this.setResults(report);
     this.last_modified_by = report.last_modified_by;
+  }
+
+  getEssence() {
+    return this;
   }
 
   setResults(report) {
@@ -413,8 +420,39 @@ export class Report {
     return this.$parameters;
   }
 
+  getUpdatedAt() {
+    return "TODO";
+  }
+
+  queryUrlExecutorFactory() {
+    return query => {
+      // Notify status tracker of execution start
+      if (this.statusTracker) {
+        this.statusTracker.onExecutionStart();
+      }
+
+      return this.executeQuery(query)
+        .then(result => {
+          if (this.statusTracker) {
+            this.statusTracker.onExecutionComplete(result);
+          }
+          return result;
+        })
+        .catch(error => {
+          if (this.statusTracker) {
+            this.statusTracker.onExecutionError(error);
+          }
+          throw error;
+        });
+    };
+  }
+
   getParametersDefs(update = true) {
     return this.getParameters().get(update);
+  }
+
+  executeQuery(query) {
+    // TODO: Use Ajax.queryUrlExecutorFactory
   }
 
   favorite() {
@@ -430,6 +468,22 @@ export class Report {
     newReport.$parameters = null;
     newReport.getParameters();
     return newReport;
+  }
+
+  onExecutionStatusChange(status) {
+    this.triggerExecution(status);
+  }
+
+  setTriggerExecution(triggerFn) {
+    this.triggerExecution = triggerFn;
+  }
+
+  setExecutionStatus(status) {
+    this.executionStatus = status;
+  }
+
+  getExecutionStatus() {
+    return this.executionStatus;
   }
 }
 

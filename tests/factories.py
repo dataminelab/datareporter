@@ -3,6 +3,7 @@ from passlib.apps import custom_app_context as pwd_context
 import redash.models
 import redash.models.models
 from redash.models import db
+from redash.models.model_config import ModelConfig
 from redash.permissions import ACCESS_TYPE_MODIFY
 from redash.utils import gen_query_hash, utcnow
 from redash.utils.configuration import ConfigurationContainer
@@ -173,7 +174,7 @@ query_snippet_factory = ModelFactory(
 )
 
 model_config_factory = ModelFactory(
-    redash.models.models.ModelConfig,
+    ModelConfig,
     user=user_factory.create,
     content=Sequence("key: {}"),
 )

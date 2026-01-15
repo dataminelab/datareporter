@@ -1,6 +1,6 @@
 {
   "name": "turnilo-hardfork",
-  "version": "1.40.2",
+  "version": "1.40.5",
   "description": "Most recent hardforked turnilo version (13/02/2025), components may vary from the original",
   "keywords": [
     "turnilo",
@@ -62,6 +62,7 @@
     "core-js": "^2.6.12",
     "d3": "4.13.0",
     "d3-dsv": "2.0.0",
+    "druid-query-toolkit": "0.19.1",
     "express": "4.18.2",
     "file-saver": "1.3.8",
     "fs-extra": "11.1.0",
@@ -84,14 +85,13 @@
     "react-syntax-highlighter": "15.5.0",
     "react-transition-group": "4.4.5",
     "request": "^2.88.0",
-    "request-promise-native": "1.0.9"
+    "request-promise-native": "1.0.9",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@babel/core": "7.17.5",
     "@babel/plugin-proposal-class-properties": "7.16.7",
     "@babel/plugin-transform-runtime": "7.17.0",
-    "@types/moment-timezone": "0.5.12",
-    "@types/helmet": "0.0.37",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-react": "7.16.7",
     "@babel/preset-typescript": "7.16.7",
@@ -105,16 +105,18 @@
     "@types/compression": "1.7.1",
     "@types/d3": "4.13.12",
     "@types/d3-dsv": "2.0.1",
-    "@types/nopt": "3.0.32",
     "@types/express": "4.17.13",
     "@types/file-saver": "1.3.1",
     "@types/fs-extra": "9.0.6",
+    "@types/helmet": "0.0.37",
     "@types/js-yaml": "4.0.2",
     "@types/jsdom": "2.0.34",
     "@types/lz-string": "1.3.34",
     "@types/mime": "2.0.3",
     "@types/mocha": "9.0.0",
+    "@types/moment-timezone": "0.5.12",
     "@types/node": "14.0.4",
+    "@types/nopt": "3.0.32",
     "@types/randomstring": "1.1.7",
     "@types/react": "16.14.24",
     "@types/react-copy-to-clipboard": "5.0.4",
@@ -197,9 +199,6 @@
       "gzip": false
     }
   ],
-  "resolutions": {
-    "cheerio": "0.22.0"
-  },
   "overrides": {
     "cheerio": "0.22.0"
   }

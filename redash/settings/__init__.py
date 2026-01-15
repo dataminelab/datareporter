@@ -19,6 +19,7 @@ from .organization import DATE_FORMAT, TIME_FORMAT  # noqa
 PLYWOOD_SERVER_URL = os.environ.get("PLYWOOD_SERVER_URL", "http://plywood-server:3000")
 OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://ollama:11434")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 SERVER_WORKER_URL = os.environ.get("SERVER_WORKER_URL", "")
 
 # _REDIS_URL is the unchanged REDIS_URL we get from env vars, to be used later with RQ
@@ -168,7 +169,6 @@ SAML_ENCRYPTION_ENABLED = SAML_ENCRYPTION_PEM_PATH != "" and SAML_ENCRYPTION_CER
 GOOGLE_PRODUCT_ID = os.environ.get("REDASH_GOOGLE_PROJECT_ID", "")
 GOOGLE_PUBSUB_WORKER_TOPIC_ID = os.environ.get("REDASH_GOOGLE_PUBSUB_WORKER_TOPIC_ID", "")
 WORKER_NOTIFY_URL = os.environ.get("REDASH_WORKER_NOTIFY_URL", "")
-OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "")
 
 # If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
 # even if your actual Redash URL scheme is HTTPS. This will cause Flask to build

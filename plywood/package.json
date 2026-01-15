@@ -31,6 +31,7 @@
     "d3": "^3.5.17",
     "d3-dsv": "2.0.0",
     "dotenv": "^16.0.3",
+    "druid-query-toolkit": "^0.19.1",
     "druid.d.ts": "^0.12.1",
     "express": "^4.19.2",
     "has-own-prop": "^2.0.0",

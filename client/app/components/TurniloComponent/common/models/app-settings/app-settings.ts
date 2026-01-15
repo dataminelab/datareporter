@@ -47,9 +47,17 @@ export interface AppSettingsJS {
 }
 
 export interface AppSettingsContext {
-  executorFactory?: (dataCube: DataCube, getEssence: () => Essence) => Executor;
+  executorFactory?: (
+    dataCube: DataCube,
+    getEssence?: () => Essence,
+    statusCallback?: (status: any) => void,
+    getExecutionStatus?: () => string
+  ) => Executor;
+  report?: any;
   getEssence?: () => Essence;
   essence?: Essence;
+  statusCallback?: (status: any) => void;
+  getExecutionStatus?: () => string;
 }
 
 let check: Class<AppSettingsValue, AppSettingsJS>;
@@ -57,7 +65,7 @@ let check: Class<AppSettingsValue, AppSettingsJS>;
 export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
   static BLANK = AppSettings.fromJS({}, {});
 
-  static isAppSettings(candidate: any): candidate is AppSettings {
+  static isAppSettings(candidate: unknown): candidate is AppSettings {
     return candidate instanceof AppSettings;
   }
 
@@ -104,7 +112,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
         const essence = context.getEssence
           ? context.getEssence()
           : context.essence;
-        const executor = executorFactory(dataCubeObject, () => essence);
+        const executor = executorFactory(dataCubeObject, () => essence, context.statusCallback, context.getExecutionStatus);
         if (executor) dataCubeObject = dataCubeObject.attachExecutor(executor);
       }
       return dataCubeObject;
@@ -115,7 +123,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
       clusters,
       customization: Customization.fromJS(parameters.customization || {}),
       dataCubes,
-      essence: context.getEssence ? context.getEssence() : context.essence, // ✅ Fallback to context.essence if no function
+      essence: context.getEssence ? context.getEssence() : context.essence,
     };
 
     return new AppSettings(value);
@@ -261,7 +269,7 @@ export class AppSettings implements Instance<AppSettingsValue, AppSettingsJS> {
     );
   }
 
-  change(propertyName: string, newValue: any): AppSettings {
+  change(propertyName: string, newValue: unknown): AppSettings {
     return ImmutableUtils.change(this, propertyName, newValue);
   }
 

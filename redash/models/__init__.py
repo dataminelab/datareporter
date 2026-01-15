@@ -3,7 +3,7 @@ import datetime
 import logging
 import numbers
 import time
-from typing import Union
+from typing import Dict, List, Union
 
 import pytz
 from sqlalchemy import Integer, UniqueConstraint, and_, cast, distinct, func, or_
@@ -197,7 +197,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
         return data_sources.distinct()
 
     @classmethod
-    def get_by_id(cls, _id):
+    def get_by_id(cls, _id) -> "DataSource":
         return cls.query.filter(cls.id == _id).one()
 
     def delete(self):
@@ -210,11 +210,11 @@ class DataSource(BelongsToOrgMixin, db.Model):
 
         return res
 
-    def get_cached_schema(self):
+    def get_cached_schema(self) -> Union[None, List[object]]:
         cache = redis_connection.get(self._schema_key)
         return json_loads(cache) if cache else None
 
-    def get_schema(self, refresh=False):
+    def get_schema(self, refresh=False) -> Union[Dict[str, object], List[object]]:
         out_schema = None
         if not refresh:
             out_schema = self.get_cached_schema()
@@ -241,7 +241,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
                 "name": i["name"],
                 "columns": sorted(i["columns"], key=lambda x: x["name"] if isinstance(x, dict) else x),
             }
-            for i in sorted(schema, key=lambda x: x["name"])
+            for i in sorted(schema, key=lambda x: x["name"])  # pyright: ignore[reportUnknownVariableType]
         ]
 
     @property
@@ -286,7 +286,7 @@ class DataSource(BelongsToOrgMixin, db.Model):
         return self.options and "ssh_tunnel" in self.options
 
     @property
-    def query_runner(self):
+    def query_runner(self) -> BaseQueryRunner:
         query_runner = get_query_runner(self.type, self.options)
 
         if self.uses_ssh_tunnel:
@@ -1522,7 +1522,7 @@ class AlertSubscription(TimestampMixin, db.Model):
 class QuerySnippet(TimestampMixin, db.Model, BelongsToOrgMixin):
     id = primary_key("QuerySnippet")
     org_id = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
-    org = db.relationship(Organization, backref="query_snippets")
+    org = db.relationship(Organization, back_populates="query_snippets")
     trigger = Column(db.String(255), unique=True)
     description = Column(db.Text)
     user_id = Column(key_type("User"), db.ForeignKey("users.id"))

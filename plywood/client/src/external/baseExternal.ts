@@ -195,7 +195,10 @@ function mergeDerivedAttributes(
   return derivedAttributes;
 }
 
-function getSampleValue(valueType: string, ex: Expression): PlywoodValue {
+export function getSampleValue(
+  valueType: string,
+  ex: Expression,
+): PlywoodValue {
   switch (valueType) {
     case "NULL":
       return null;
@@ -1483,7 +1486,7 @@ export abstract class External {
           Expression.and([newTimeFilter, extractAndRest.rest]),
         ),
       ).changeSpecialApplyTransform({
-        mainRangeLiteral, // Transform apply filters
+        mainRangeLiteral,
         curTimeRange,
         prevTimeRange,
       });
@@ -1957,7 +1960,9 @@ export abstract class External {
     });
   }
 
-  public getQueryAndPostTransform(timeRanges: any = null): QueryAndPostTransform<any> {
+  public getQueryAndPostTransform(
+    timeRanges: any = null,
+  ): QueryAndPostTransform<any> {
     throw new Error("can not call getQueryAndPostTransform directly");
   }
 

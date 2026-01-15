@@ -20,10 +20,5 @@
         "globals": ["Error"]
       }
     ]
-  ],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
+  ]
 }

@@ -142,6 +142,8 @@ export class TurniloApplication extends React.Component<
     const appSettings = AppSettings.fromJS(config.appSettings, {
       executorFactory: Ajax.queryUrlExecutorFactory.bind(config),
       getEssence: this.props.getEssence.bind(config, this.props.widget.id),
+      statusCallback: (status) => {},
+      getExecutionStatus: () => { return null; },
     });
 
     if (this.viewTypeNeedsAnItem(viewType)) {

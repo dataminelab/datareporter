@@ -1,3 +1,5 @@
+from typing import Dict, Optional
+
 import requests
 from flask_mail import Message
 from mailchimp_marketing import Client as MailchimpClient
@@ -58,12 +60,12 @@ def subscribe(form):
 
 @job("emails")
 def send_mail(to, subject, html, text):
+    message = None
     try:
         message = Message(recipients=to, subject=subject, html=html, body=text, sender=settings.MAIL_DEFAULT_SENDER)
-
         mail.send(message)
     except Exception:
-        logger.exception("Failed sending message: %s", message.subject)
+        logger.exception("Failed sending message: %s", message)
 
 
 @job("queries", timeout=30, ttl=90)
@@ -78,7 +80,7 @@ def test_connection(data_source_id):
 
 
 @job("schemas", queue_class=Queue, at_front=True, timeout=settings.SCHEMAS_REFRESH_TIMEOUT, ttl=90)
-def get_schema(data_source_id, refresh):
+def get_schema(data_source_id, refresh) -> Optional[Dict[str, object]]:
     try:
         data_source = models.DataSource.get_by_id(data_source_id)
         return data_source.get_schema(refresh)

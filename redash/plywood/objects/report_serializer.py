@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from redash.plywood.objects.plywood_value import PlywoodValue
 
@@ -12,7 +12,7 @@ class ReportMetaData:
     def has_data(self):
         return self.price != 0 or self.proceed_data != 0
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Union[str, float, int]]:
         return {
             "price": self.price,
             "proceed_data": self.proceed_data,
@@ -36,13 +36,13 @@ class Progress:
 class ReportSerializer:
     def __init__(
         self,
-        queries: List[dict],
+        queries: List[Dict[str, Any]],
         failed: Optional[List[str]] = None,
-        shape: Optional[dict] = None,
+        shape: Optional[Dict[str, Any]] = None,
         status: int = 200,
-        data: Optional[Union[PlywoodValue, dict]] = None,
+        data: Optional[Union[PlywoodValue, Dict[str, Any]]] = None,
         meta: Optional[ReportMetaData] = None,
-        expression_queries: Optional[List[dict]] = None,
+        expression_queries: Optional[List[Dict[str, Any]]] = None,
     ):
         self.queries = queries
         self.failed = failed
@@ -64,7 +64,7 @@ class ReportSerializer:
 
         return Progress(jobs=jobs, results=query_result)
 
-    def serialized(self) -> dict:
+    def serialized(self) -> Dict[str, Any]:
         data = None
 
         if self.data:

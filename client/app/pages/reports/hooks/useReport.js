@@ -22,7 +22,7 @@ export default function useReport(originalReport) {
     setOriginalReportSource(updatedReport.report);
   });
 
-  const saveReport = data => {
+  const saveReport = useCallback(data => {
     if (!data) return;
 
     return Report.saveAs(data)
@@ -37,25 +37,29 @@ export default function useReport(originalReport) {
         }
         return Promise.reject(new SaveReportError("Report could not be saved"));
       });
-  };
+  }, []);
 
-  const saveAsReport = name => {
-    delete report.id;
-    const data = {
-      name: name,
-      model_id: report.model_id,
-      expression:
-        window.location.hash.substring(
-          window.location.hash.indexOf("4/") + 2,
-        ) ||
-        report.hash ||
-        report.expression,
-      color_1: report.color_1,
-      color_2: report.color_2,
-      data_source_id: report.data_source_id,
-    };
-    saveReport(data);
-  };
+  const saveAsReport = useCallback(
+    name => {
+      const reportCopy = extend({}, report);
+      delete reportCopy.id;
+      const data = {
+        name: name,
+        model_id: reportCopy.model_id,
+        expression:
+          window.location.hash.substring(
+            window.location.hash.indexOf("4/") + 2,
+          ) ||
+          reportCopy.hash ||
+          reportCopy.expression,
+        color_1: reportCopy.color_1,
+        color_2: reportCopy.color_2,
+        data_source_id: reportCopy.data_source_id,
+      };
+      saveReport(data);
+    },
+    [report, saveReport],
+  );
 
   const showShareReportDialog = useCallback(() => {
     const handleDialogClose = () =>

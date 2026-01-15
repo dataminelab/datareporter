@@ -37,7 +37,10 @@ import { MeasureJS } from "../turnillo/common/models/measure/measure";
 const SPLIT = "SPLIT";
 const CANONICAL_LENGTH_ID = "MillisecondsInInterval";
 
-export const hashToExpression = (hash: string, dataCubeInput: DataCubeJS): ExpressionJS => {
+export const hashToExpression = (
+  hash: string,
+  dataCubeInput: DataCubeJS,
+): ExpressionJS => {
   const segmentName: string | undefined = dataCubeInput.name;
 
   if (!segmentName) {

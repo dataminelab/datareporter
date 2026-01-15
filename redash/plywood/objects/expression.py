@@ -232,3 +232,64 @@ class Expression:
             return self._get_boolean_queries(last_query)
         else:
             return self._get_string_queries(last_query, prev_result)
+
+    @property
+    def measure_name(self) -> str:
+        """Extract the measure name from the expression."""
+        # First try to get from series in filter (which contains the measure names)
+        series = self.filter.get("series", [])
+        if series and len(series) > 0:
+            first_series = series[0]
+            if isinstance(first_series, dict) and "reference" in first_series:
+                return first_series["reference"]
+            elif isinstance(first_series, str):
+                return first_series
+
+        # Try to get from applies in filter
+        applies = self.filter.get("applies", [])
+        if applies:
+            for apply in applies:
+                if isinstance(apply, dict) and "name" in apply:
+                    name = apply["name"]
+                    if name not in ("default", "MillisecondsInInterval", "SPLIT"):
+                        return name
+
+        # Try to extract from the raw expression (use self.expression property, not self._expression)
+        try:
+            raw_expr = self.expression  # This is the correct property
+            return self._extract_measure_from_expression(raw_expr)
+        except Exception:
+            pass
+
+        return "count"
+
+    def _extract_measure_from_expression(self, expr: dict) -> str:
+        """Recursively search for the measure name in the expression tree."""
+        if not isinstance(expr, dict):
+            return "count"
+
+        # Check if this is an apply with a measure aggregation
+        if expr.get("op") == "apply":
+            name = expr.get("name")
+            if name and name not in ("default", "MillisecondsInInterval", "SPLIT"):
+                inner_expr = expr.get("expression", {})
+                if isinstance(inner_expr, dict):
+                    inner_op = inner_expr.get("op", "")
+                    if inner_op in ("average", "sum", "count", "min", "max", "countDistinct"):
+                        return name
+
+        # Search in operand
+        operand = expr.get("operand")
+        if operand:
+            result = self._extract_measure_from_expression(operand)
+            if result != "count":
+                return result
+
+        # Search in expression
+        inner = expr.get("expression")
+        if inner:
+            result = self._extract_measure_from_expression(inner)
+            if result != "count":
+                return result
+
+        return "count"

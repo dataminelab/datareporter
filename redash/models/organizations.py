@@ -20,6 +20,7 @@ class Organization(TimestampMixin, db.Model):
     settings = Column(JSONText, nullable=True)
     groups = db.relationship("Group", lazy="dynamic")
     events = db.relationship("Event", lazy="dynamic", order_by="desc(Event.created_at)")
+    query_snippets = db.relationship("QuerySnippet", back_populates="org")
 
     __tablename__ = "organizations"
 

@@ -808,7 +808,8 @@ export abstract class Expression
    */
   public toJS(): ExpressionJS {
     const js: ExpressionJS = { op: this.op };
-    js.options = this.options || {};
+    if (this.options) js.options = this.options;
+    else if (this.currElement || this.prevElement) js.options = {};
     if (this.currElement) js.options.currElement = this.currElement;
     if (this.prevElement) js.options.prevElement = this.prevElement;
     return js;
@@ -1002,11 +1003,13 @@ export abstract class Expression
    */
   public getFreeReferences(): string[] {
     const freeReferences: string[] = [];
-    this.forEach((ex: Expression, index: number, depth: number, nestDiff: number) => {
-      if (ex instanceof RefExpression && nestDiff <= ex.nest) {
-        freeReferences.push(repeat("^", ex.nest - nestDiff) + ex.name);
-      }
-    });
+    this.forEach(
+      (ex: Expression, index: number, depth: number, nestDiff: number) => {
+        if (ex instanceof RefExpression && nestDiff <= ex.nest) {
+          freeReferences.push(repeat("^", ex.nest - nestDiff) + ex.name);
+        }
+      },
+    );
     return deduplicateSort(freeReferences);
   }
 
@@ -1015,11 +1018,13 @@ export abstract class Expression
    */
   public getFreeReferenceIndexes(): number[] {
     const freeReferenceIndexes: number[] = [];
-    this.forEach((ex: Expression, index: number, depth: number, nestDiff: number) => {
-      if (ex instanceof RefExpression && nestDiff <= ex.nest) {
-        freeReferenceIndexes.push(index);
-      }
-    });
+    this.forEach(
+      (ex: Expression, index: number, depth: number, nestDiff: number) => {
+        if (ex instanceof RefExpression && nestDiff <= ex.nest) {
+          freeReferenceIndexes.push(index);
+        }
+      },
+    );
     return freeReferenceIndexes;
   }
 
@@ -1095,10 +1100,13 @@ export abstract class Expression
    * @param thisArg The this for the substitution function
    */
   public forEach(iter: VoidExpressionIterator, thisArg?: any): void {
-    this.every((ex: Expression, index: number, depth: number, nestDiff: number) => {
-      iter.call(this, ex, index, depth, nestDiff);
-      return null;
-    }, thisArg);
+    this.every(
+      (ex: Expression, index: number, depth: number, nestDiff: number) => {
+        iter.call(this, ex, index, depth, nestDiff);
+        return null;
+      },
+      thisArg,
+    );
   }
 
   /**
@@ -2051,14 +2059,29 @@ export abstract class Expression
     ) {
       const simulatedQueryGroup: any[] = [];
       const timeRanges = {
-          currElement: (options && options.others && options.others.options && options.others.options.currElement) || null,
-          prevElement: (options && options.others && options.others.options && options.others.options.prevElement) || null
+        currElement:
+          (options &&
+            options.others &&
+            options.others.options &&
+            options.others.options.currElement) ||
+          null,
+        prevElement:
+          (options &&
+            options.others &&
+            options.others.options &&
+            options.others.options.prevElement) ||
+          null,
       } as any;
       /* eslint-disable no-loop-func */
       fillExpressionExternalAlteration(readyExternals, (external, terminal) => {
         if (queries < maxQueries) {
           queries++;
-          return external.simulateValue(terminal, simulatedQueryGroup, external, timeRanges);
+          return external.simulateValue(
+            terminal,
+            simulatedQueryGroup,
+            external,
+            timeRanges,
+          );
         } else {
           queries++;
           return null;

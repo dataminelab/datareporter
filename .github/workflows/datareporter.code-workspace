@@ -1,0 +1,34 @@
+{
+	"folders": [
+		{
+			"name": "client",
+			"path": "../../client"
+		},
+		{
+			"name": "TurniloComponent",
+			"path": "../../client/app/components/TurniloComponent"
+		},
+		{
+			"name": "viz-lib",
+			"path": "../../viz-lib"
+		},
+		{
+			"name": "plywood's client",
+			"path": "../../plywood/client"
+		},
+		{
+			"name": "plywood",
+			"path": "../../plywood"
+		},
+		{
+			"name": "redash",
+			"path": "../../redash"
+		}
+	],
+	"settings": {
+		"jest.disabledWorkspaceFolders": [
+			"TurniloComponent",
+			"plywood"
+		]
+	}
+}

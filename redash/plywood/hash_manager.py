@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 from typing import List, Union
 
 import lzstring
@@ -9,8 +10,17 @@ from flask_restful import abort
 from redash import redis_connection
 from redash.handlers.base import get_object_or_404
 from redash.handlers.query_results import run_query
-from redash.models import ApiKey, Organization, ParameterizedQuery, QueryResult, User
+from redash.models import (
+    ApiKey,
+    Organization,
+    ParameterizedQuery,
+    QueryResult,
+    Report,
+    User,
+)
+from redash.models.model_config import ModelConfig
 from redash.models.models import Model
+from redash.plywood.handlers.json_handler import handle_json_data_source
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.objects.expression import Expression
 from redash.plywood.objects.report_serializer import ReportSerializer
@@ -19,6 +29,8 @@ from redash.plywood.parsers.query_parser_v2 import PlywoodQueryParserV2
 from redash.serializers import serialize_job
 from redash.services.expression import ExpressionBase64Parser
 from redash.tasks import Job
+
+logger = logging.getLogger(__name__)
 
 PLYWOOD_PREFIX = "PLYWOOD_QUERIES"
 MAX_AGE = 800
@@ -33,7 +45,7 @@ FAILED_QUERY_CODE = 4
 def replace_item(obj, value, replace_value):
     for k, v in obj.items():
         if isinstance(v, dict):
-            obj[k] = replace_item(v, value, replace_value)
+            replace_item(v, value, replace_value)
 
     for k, v in obj.items():
         if isinstance(v, str):
@@ -121,6 +133,19 @@ def jobs_status(data: List[dict]) -> Union[None, int]:
     return None
 
 
+def extract_measure_name_from_expression(expression_filter: dict) -> str:
+    """
+    Extract the measure name from the expression filter.
+    """
+    applies = expression_filter.get("applies", [])
+    if applies and len(applies) > 0:
+        first_apply = applies[0]
+        if isinstance(first_apply, dict) and "name" in first_apply:
+            return first_apply["name"]
+
+    return "count"
+
+
 def parse_result(
     hash_string: str,
     queries: List[dict],
@@ -134,7 +159,16 @@ def parse_result(
     Redash caches result and returns query in the same endpoint
     So we poll this url and if jobs are ready we transform it
     """
-    if len(queries) == 0:
+
+    if data_cube.ply_engine in ["json"]:
+        return handle_json_data_source(
+            hash_string=hash_string,
+            data_cube=data_cube,
+            expression=expression,
+            model=model,
+            expression_queries=expression_queries,
+        )
+    elif len(queries) == 0:
         abort(400, message="Error with query")
 
     is_fetching = jobs_status(queries)
@@ -145,7 +179,6 @@ def parse_result(
         )
     errored = clean_errored(queries)
     if errored:
-        # clean the error from the cache
         clear_cache(hash_string)
         return ReportSerializer(
             status=is_fetching,
@@ -153,20 +186,18 @@ def parse_result(
         )
 
     split = len(expression.filter["splits"]) or 1
-
-    if split == 2:  # initiating 2 split jobs
+    if split == 2:
         queries_2_splits = expression.get_2_splits_queries(prev_result=queries)
         queries = cache_or_get(hash_string, queries_2_splits, current_org, model, split)
         errored = clean_errored(queries)
         if errored:
-            clear_cache(hash_string)
-            return ReportSerializer(
-                status=is_fetching,
-                queries=[],
-            )
+            clear_cache(hash_string, split)
+            return ReportSerializer(status=is_fetching, queries=[])
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)
+    elif split > 2:
+        abort(400, message="Splits greater than 2 are not supported for SQL data sources.")
 
     query_parser = PlywoodQueryParserV2(
         query_result=queries,
@@ -194,15 +225,14 @@ def clean_errored(queries: list) -> list:
     errored = []
 
     for index, query in enumerate(queries):
-        if "job" in query and query["job"]["status"] == FAILED_QUERY_CODE:  # and query['job']['error']:
-            errored.append(query)
-            del queries[index]
+        if "job" in query and query["job"]["status"] == FAILED_QUERY_CODE:
+            errored.append(index)
 
     return errored
 
 
 def get_data_cube(model: Model) -> DataCube:
-    data_cube = DataCube(model=model)
+    data_cube = DataCube(model)
     return data_cube
 
 
@@ -213,29 +243,29 @@ def is_admin(user) -> bool:
 
 
 class ReportHash:
-    def __init__(self, o: dict):
+    def __init__(self, o: Report):
         self.version = "1.26.0-beta.1"
-        self.appSettings = {
-            "dataCubes": [],
-            "customization": {
-                "urlShortener": "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
-            },
-            "clusters": [],
-        }
+        config = ModelConfig.get_model_config(o.model_id)
+        if config:
+            config["customization"][
+                "urlShortener"
+            ] = "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
+            self.appSettings = config
+        else:
+            self.appSettings = {
+                "dataCubes": [],
+                "customization": {
+                    "urlShortener": "return request.get('http://tinyurl.com/api-create.php?url=' + encodeURIComponent(url))"
+                },
+                "clusters": [],
+            }
         self.is_favorite = o.is_favorite_v2(o.user, o)
         public_key = ApiKey.get_by_object(o)
         self.api_key = o.api_key
         if public_key:
-            self.public_key = public_key.api_key
-            self.public_url = url_for(
-                "redash.public_report",
-                token=self.public_key,
-                _external=True,
-            )
+            self.public_url = url_for("public.public", token=public_key.api_key, _external=True)
         else:
-            self.public_key = None
             self.public_url = None
-        # basicaly pull everything from the object
         self.id = o.id
         self.is_archived = o.is_archived
         self.color_1 = o.color_1
@@ -255,7 +285,6 @@ class ReportHash:
             "permissions": o.user.permissions,
             "isAdmin": is_admin(o.user),
         }
-        # self.user = User.get_by_id(o.user.id)
         self.landed = True
         self.can_edit = None
         self.queries = []
@@ -348,10 +377,7 @@ def filter_expression_to_result(expression: dict, model: Model, organisation: Or
     is_fetching = jobs_status(queries_result)
 
     if is_fetching:
-        return ReportSerializer(
-            status=is_fetching,
-            queries=queries_result,
-        )
+        return ReportSerializer(status=is_fetching, queries=queries_result)
 
     shape = Expression.get_shape_from_prepared_expression(data_cube, expression)
 

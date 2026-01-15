@@ -60,24 +60,3 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
     @classmethod
     def get_one_by_group_ids(self, user):
         return self.get_by_group_ids(user).one()
-
-
-@gfk_type
-class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
-    MAX_CONTENT_LENGTH = 20_000
-
-    id = primary_key("ModelConfig")
-    user_id = Column(key_type("User"), db.ForeignKey("users.id"))
-    user = db.relationship(User)
-    content = Column(db.String(length=MAX_CONTENT_LENGTH))
-    model = db.relationship("Model", back_populates="config")
-    model_id = Column(db.Integer, db.ForeignKey("models.id"))
-
-    version = Column(db.Integer)
-
-    __tablename__ = "model_configs"
-    __mapper_args__ = {"version_id_col": version}
-
-    @classmethod
-    def get_by_id(cls, _id):
-        return cls.query.filter(cls.id == _id).one()

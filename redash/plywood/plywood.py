@@ -13,6 +13,12 @@ REDASH_PLYWOOD_DB = {
     "bigquery": "bigquery",
     "mysql": "mysql",
     "druid": "druid",
+    "json": "json",
+}
+ENGINE_MAPPING = {
+    "json": "native",
+    "pg": "postgres",
+    "mysql": "mysql",
 }
 
 

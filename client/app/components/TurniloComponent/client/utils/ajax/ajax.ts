@@ -28,7 +28,6 @@ import {
   RefExpression,
   ApplyExpression,
 } from "plywood";
-import { Cluster } from "../../../common/models/cluster/cluster";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { setPriceButton } from "../ajax/ReportPageHeaderUtils";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
@@ -70,8 +69,8 @@ function getClientTimeoutDefault(): number {
     : 100000;
 }
 
-function clientTimeout(cluster: Cluster): number {
-  const clusterTimeout = Number(cluster ? cluster.getTimeout() : 0);
+function clientTimeout(dataCube: DataCube): number {
+  const clusterTimeout = Number(dataCube && dataCube.cluster && dataCube.cluster.getTimeout() || 0);
   return getClientTimeoutDefault() + clusterTimeout;
 }
 
@@ -113,7 +112,7 @@ export class Ajax {
           Ajax.onUpdate();
         else if (
           (res.data.progress.results !== res.data.progress.all ||
-            res.data.progress.progress != 100) &&
+            res.data.progress.progress !== 100) &&
           Ajax.onUpdate
         )
           Ajax.onUpdate();
@@ -139,8 +138,10 @@ export class Ajax {
   static queryUrlExecutorFactory(
     dataCube: DataCube,
     getEssence: () => Essence,
+    statusCallback?: (status: any) => void,
+    getExecutionStatus?: () => string,
   ): Executor {
-    const timeout = clientTimeout(dataCube.cluster);
+    const timeout = clientTimeout(dataCube);
 
     function getEssenceIfExists() {
       return getEssence ? getEssence() : null;
@@ -150,8 +151,6 @@ export class Ajax {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    
-    const ls = safeLocalStorage();
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
       const { data, method, timeout, url } = input;
       const ls = safeLocalStorage();
@@ -159,16 +158,37 @@ export class Ajax {
         data.bypass_cache = ls.getItem("bypass_cache") === "true";
         ls.removeItem("bypass_cache");
       }
-      const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
+      const res = await Ajax.query<APIResponse>({ method, url, timeout, data })
+        .then(result => {
+          if (getExecutionStatus() === "cancelling") {
+            statusCallback({
+              reportResult: null,
+              loadedInitialResults: true,
+              error: null,
+              status: 'done',
+              isExecuting: false,
+              isCancelling: false,
+              executionStatus: null,
+            });
+            throw new Error("Query cancelled by user");
+          }
+          return result;
+        })
+        .catch(error => {
+          statusCallback({ status: 'failed', isExecuting: false, error });
+          throw error;
+        });
       const urlHash = getHash();
       if (!url.endsWith("filter") && urlHash && data.hash !== urlHash) {
-        console.log("[INFO] subscribe is killed by hash mismatch, skipping");
+        // Hash mismatch, stop polling and report error
+        statusCallback({ status: 'failed', isExecuting: false, error: new Error("Hash mismatch error") });
         return res;
       }
       if ([1, 2].indexOf(res.status) >= 0) {
         await timeoutQuery(2000);
         return await subscribe(input);
       } else {
+        statusCallback({ status: 'done', isExecuting: false });
         return res;
       }
     }
@@ -177,6 +197,7 @@ export class Ajax {
       const method = "POST";
       const url = `api/reports/generate/${modelId}/filter`;
       const data = { expression: ex.toJS() };
+      statusCallback({ status: 'processing', isExecuting: true });
       return subscribe({ method, url, timeout, data });
     }
 
@@ -184,6 +205,7 @@ export class Ajax {
       const method = "POST";
       let url;
       const href = window.location.href;
+      statusCallback({ status: 'processing', isExecuting: true });
       if (href.includes("public/dashboards")) {
         const apiKey = href
           .split("public/dashboards/")[1]
@@ -198,6 +220,8 @@ export class Ajax {
     }
 
     function parseMeta(sub: APIResponse) {
+      // This function parses the meta information from the subscription response
+      // how much the query costs and how much data has been processed
       const meta = sub.meta;
       if (!meta) return;
       // TODO: proceed_data is a byte type, parse it better, use big int

@@ -13,6 +13,7 @@ x-redash-environment: &redash-environment
   REDASH_RATELIMIT_ENABLED: "false"
   REDASH_ENFORCE_CSRF: "true"
   REDASH_COOKIE_SECRET: "2H9gNG9obnAQ9qnR9BDTQUph6CbXKCzF"
+  DATAREPORTER_ENSURE_SCHEMA: "true"
 services:
   server:
     <<: *redash-service
@@ -20,6 +21,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - plywood
     ports:
       - "5000:5000"
     environment:
@@ -50,8 +52,6 @@ services:
       - "9231:9229"
     environment:
       - LOG_MODE=request_and_response
-    command: ["npm", "run", "watch-node"]
-    entrypoint: []
   cypress:
     ipc: host
     build:

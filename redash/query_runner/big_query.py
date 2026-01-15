@@ -1,3 +1,4 @@
+# pyright: reportMissingImports=false
 import datetime
 import logging
 import socket

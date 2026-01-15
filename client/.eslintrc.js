@@ -191,6 +191,12 @@ module.exports = {
         "no-redeclare": "warn",
       },
     },
+    {
+      files: ["**/__tests__/**/*.{js,jsx,ts,tsx}"],
+      rules: {
+        "no-console": "off",
+      },
+    },
   ],
   ignorePatterns: [
     "**/*.min.js",

@@ -179,7 +179,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  onClick = (x: number, y: number, part: ScrollerPart) => {
+  onClick = (x: number, y: number, part: ScrollerPart): void => {
     const position = this.calculateMousePosition(x, y, part);
 
     switch (position.element) {
@@ -195,7 +195,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   };
 
-  setHoverRow = (x: number, y: number, part: ScrollerPart) => {
+  setHoverRow = (x: number, y: number, part: ScrollerPart): void => {
     const { hoverRow } = this.state;
     const position = this.calculateMousePosition(x, y, part);
     if (position.element === HoverElement.ROW && position.datum !== hoverRow) {
@@ -203,17 +203,17 @@ export class Table extends BaseVisualization<TableState> {
     }
   };
 
-  resetHover = () => {
+  resetHover = (): void => {
     const { hoverRow } = this.state;
     if (hoverRow) {
       this.setState({ hoverRow: null });
     }
   };
 
-  setScroll = (scrollTop: number, scrollLeft: number) =>
+  setScroll = (scrollTop: number, scrollLeft: number): void =>
     this.setState({ scrollLeft, scrollTop });
 
-  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
+  setSegmentWidth = (segmentWidth: number): void => this.setState({ segmentWidth });
 
   private flattenOptions(): FlattenOptions {
     if (this.shouldCollapseRows()) {
@@ -255,7 +255,7 @@ export class Table extends BaseVisualization<TableState> {
     const {
       essence: { visualizationSettings },
     } = this.props;
-    // @ts-ignore
+    // @ts-ignore conversation error
     const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
     return collapseRows;
   }
@@ -272,7 +272,7 @@ export class Table extends BaseVisualization<TableState> {
     return null;
   }
 
-  protected renderInternals() {
+  protected renderInternals(): React.ReactElement {
     const { essence, stage, report } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const collapseRows = this.shouldCollapseRows();
@@ -323,7 +323,7 @@ export class Table extends BaseVisualization<TableState> {
           }
           leftGutter={
             <SplitRows
-              color={report?.colorText}
+              color={report ? report.colorText : undefined}
               collapseRows={collapseRows}
               highlightedRowIndex={highlightedRowIndex}
               visibleRowsIndexRange={visibleRowsRange}
@@ -339,7 +339,7 @@ export class Table extends BaseVisualization<TableState> {
           body={
             flatData && (
               <MeasureRows
-                report={report}
+                report={report ? report : undefined}
                 hoverRow={hoverRow}
                 visibleRowsIndexRange={visibleRowsRange}
                 essence={essence}

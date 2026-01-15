@@ -40,7 +40,7 @@ enum ProcessMode {
  */
 export class YearOverYearExpression {
   static op = "YearOverYear";
-  
+
   private queries: string[] = [];
   private engine: Engine | undefined;
   private mode: ProcessMode | undefined;
@@ -49,14 +49,18 @@ export class YearOverYearExpression {
   private sumColumns: string[] = [];
   private groupBy: string | undefined;
   private timeRanges: TimeRangeType | undefined;
-  
+
   private readonly timestampRegex = /TIMESTAMP\('([\d-T:.Z]+)'\)/g;
   private readonly globalDateRangeRegex = /\([\"\'\`](\d+.{1,24})[\"\'\`]\)/g;
   private readonly sumPattern = /SUM\([`",']([^`",']*)[`",']\)/g;
   private readonly columnPattern = /[`",']([^`",']*)[`",']\sAS/g;
   private whereRegex: RegExp | undefined;
 
-  constructor(engine?: Engine | string, queries?: string[], mode?: ProcessMode | string) {
+  constructor(
+    engine?: Engine | string,
+    queries?: string[],
+    mode?: ProcessMode | string,
+  ) {
     if (engine) {
       this.setEngine(engine);
     }
@@ -98,7 +102,7 @@ export class YearOverYearExpression {
   public setQueries(queries: string[]): void {
     if (!queries || queries.length < 3) {
       throw new Error(
-        `Invalid number of queries provided. Expected at least 3, got ${queries?.length || 0}`
+        `Invalid number of queries provided. Expected at least 3, got ${queries?.length || 0}`,
       );
     }
     this.queries = queries;
@@ -106,10 +110,15 @@ export class YearOverYearExpression {
 
   public setMode(mode: ProcessMode | string): void {
     // Allow string input for backward compatibility
-    if (typeof mode === "string" && Object.values(ProcessMode).includes(mode as ProcessMode)) {
+    if (
+      typeof mode === "string" &&
+      Object.values(ProcessMode).includes(mode as ProcessMode)
+    ) {
       this.mode = mode as ProcessMode;
     } else if (typeof mode === "string") {
-      throw new Error(`Invalid mode: ${mode}. Must be one of: ${Object.values(ProcessMode).join(", ")}`);
+      throw new Error(
+        `Invalid mode: ${mode}. Must be one of: ${Object.values(ProcessMode).join(", ")}`,
+      );
     } else {
       this.mode = mode;
     }
@@ -174,10 +183,15 @@ export class YearOverYearExpression {
    * @throws {Error} if engine is not supported
    */
   public setEngine(engine: Engine | string): void {
-    if (typeof engine === "string" && !Object.values(Engine).includes(engine as Engine)) {
+    if (
+      typeof engine === "string" &&
+      !Object.values(Engine).includes(engine as Engine)
+    ) {
       // Allow any string for backward compatibility, but validate known engines
       if (engine !== "bigquery" && engine !== "athena") {
-        console.warn(`Unknown engine: ${engine}. Supported engines: ${Object.values(Engine).join(", ")}`);
+        console.warn(
+          `Unknown engine: ${engine}. Supported engines: ${Object.values(Engine).join(", ")}`,
+        );
       }
     }
     this.engine = engine as Engine | undefined;
@@ -185,7 +199,7 @@ export class YearOverYearExpression {
 
   private fixEscapeNames(): void {
     if (!this.query) return;
-    
+
     if (this.engine === Engine.ATHENA) {
       this.query = this.query.replace(/\\/g, "");
       this.query = this.query.replace(/`/g, '"');
@@ -215,17 +229,17 @@ export class YearOverYearExpression {
 
     const { currElement, prevElement } = this.timeRanges;
     const whereRegex = this.whereRegex;
-    
+
     if (!whereRegex) {
       throw new Error("Where regex is not configured");
     }
 
     const [fromQuery, whereQuery] = this.queries[2].split("WHERE");
     const matches = whereQuery.match(whereRegex);
-    
+
     let where1 = whereQuery;
     let where2 = whereQuery;
-    
+
     if (matches) {
       for (let i = 0; i < matches.length; i++) {
         const match = matches[i];
@@ -240,17 +254,17 @@ export class YearOverYearExpression {
       }
     } else {
       throw new Error(
-        `No date range matches found in WHERE clause. Expected pattern: ${whereRegex}`
+        `No date range matches found in WHERE clause. Expected pattern: ${whereRegex}`,
       );
     }
-    
+
     if (this.engine === Engine.ATHENA) {
       formattedSumQueries = formattedSumQueries.slice(0, -1);
     } else if (this.engine === Engine.BIGQUERY && this.secondSplitExists()) {
       where1 = where1.replace(")) AND (", "))) AND (").slice(0, -1);
       where2 = where2.replace(")) AND (", "))) AND (").slice(0, -1);
     }
-    
+
     return [formattedSumQueries, fromQuery, where1, where2];
   }
 
@@ -276,12 +290,12 @@ export class YearOverYearExpression {
     let where2;
     let onQuery;
     let match;
-    
+
     switch (this.mode) {
       case ProcessMode.RAW:
         // Raw mode doesn't need processing
         break;
-        
+
       case ProcessMode.SPLIT:
         if (!this.keys.length) {
           while (
@@ -295,11 +309,11 @@ export class YearOverYearExpression {
           .filter((value, index, self) => self.indexOf(value) === index)
           .map(i => `COALESCE(curr.${i}, prev.${i}) AS \`${i}\`,`)
           .join(" ");
-          
+
         while ((sumMatch = this.sumPattern.exec(this.queries[1])) !== null) {
           this.sumColumns.push(sumMatch[1] || sumMatch[2]);
         }
-        
+
         [formattedSumQueries, fromQuery, where1, where2] =
           this.splitFromAndWhereQueries(
             this.sumColumns
@@ -310,11 +324,11 @@ export class YearOverYearExpression {
               )
               .join(" "),
           );
-          
+
         onQuery = this.keys.length
           ? `curr.${this.keys[0]} = prev.${this.keys[0]}`
           : "1=1";
-          
+
         this.query = `
                     SELECT ${formattedColumnQueries} ${formattedSumQueries}
                     FROM ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where1} GROUP BY ${this.groupBy}) AS curr
@@ -322,13 +336,13 @@ export class YearOverYearExpression {
                     ON ${onQuery}
                 `;
         break;
-        
+
       case ProcessMode.TOTAL:
         while ((match = this.sumPattern.exec(this.queries[1])) !== null) {
           const columnName = match[1] || match[2];
           this.sumColumns.push(columnName);
         }
-        
+
         formattedSumQueries = this.sumColumns
           .filter((value, index, self) => {
             return self.indexOf(value) === index;
@@ -341,7 +355,7 @@ export class YearOverYearExpression {
 
         [formattedSumQueries, fromQuery, where1, where2] =
           this.splitFromAndWhereQueries(formattedSumQueries);
-          
+
         this.query = `
                     SELECT ${formattedSumQueries}
                     FROM ( SELECT ${this.queries[1]} ${fromQuery} WHERE ${where1}) AS curr
@@ -349,13 +363,13 @@ export class YearOverYearExpression {
                     ON 1=1
                 `;
         break;
-        
+
       default:
         throw new Error(
-          `Invalid mode: ${this.mode}. Must be one of: ${Object.values(ProcessMode).join(", ")}`
+          `Invalid mode: ${this.mode}. Must be one of: ${Object.values(ProcessMode).join(", ")}`,
         );
     }
-    
+
     this.fixEscapeNames();
   }
 }

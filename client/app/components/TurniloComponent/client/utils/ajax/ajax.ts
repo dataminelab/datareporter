@@ -34,7 +34,6 @@ import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-h
 import { Essence } from "../../../common/models/essence/essence";
 
 interface Meta {
-  // Inner response object that returns two parameters:
   price: number;
   proceed_data: number;
 }
@@ -180,11 +179,9 @@ export class Ajax {
         });
       const urlHash = getHash();
       if (!url.endsWith("filter") && urlHash && data.hash !== urlHash) {
-        // Hash mismatch, stop polling and report error
-        statusCallback({ status: 'failed', isExecuting: false, error: new Error("Hash mismatch error") });
+        console.warn(`Hash mismatch: expected ${data.hash}, got ${urlHash}`);
         return res;
-      }
-      if ([1, 2].indexOf(res.status) >= 0) {
+      } else if ([1, 2].indexOf(res.status) >= 0) {
         await timeoutQuery(2000);
         return await subscribe(input);
       } else {
@@ -193,7 +190,7 @@ export class Ajax {
       }
     }
 
-    async function subscribeToFilter(ex: LimitExpression, modelId: number) {
+    async function subscribeToFilter(ex: LimitExpression | Expression, modelId: number) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}/filter`;
       const data = { expression: ex.toJS() };
@@ -229,44 +226,36 @@ export class Ajax {
       setPriceButton(Number(meta.price), Number(meta.proceed_data), false);
     }
 
+    function getHashForExpression(): string {
+      const essence = getEssenceIfExists();
+      return essence
+        ? urlHashConverter.toHash(essence).substring(2)
+        // @ts-ignore
+        : getHash() || this.hash;
+    }
+
+    function isFilterOrLimitExpression(ex: Expression): boolean {
+      return (
+        ex instanceof LimitExpression ||
+        // @ts-ignore
+        (ex.operand instanceof FilterExpression)
+      );
+    }
+
     return async (ex: Expression) => {
       if (this.results)
         return Dataset.fromJS(this.results.data || EmptyDataset);
+
       const modelId = this.model_id;
-      let sub;
-      // @ts-ignore
-      if (
-        ex instanceof LimitExpression ||
-        // @ts-ignore
-        ex.operand instanceof FilterExpression
-      ) {
-        // @ts-ignore
+      let sub: APIResponse;
+
+      if (isFilterOrLimitExpression(ex)) {
         sub = await subscribeToFilter(ex, modelId);
-      } else if (ex instanceof FilterExpression) {
-        const essence = getEssenceIfExists();
-        const hash = essence
-          ? urlHashConverter.toHash(essence).substring(2)
-          : getHash() || this.hash;
-        sub = await subscribeToSplit(hash, modelId);
-      } else if (ex instanceof RefExpression) {
-        const essence = getEssenceIfExists();
-        const hash = essence
-          ? urlHashConverter.toHash(essence).substring(2)
-          : getHash() || this.hash;
-        sub = await subscribeToSplit(hash, modelId);
-      } else if (ex instanceof ApplyExpression) {
-        const essence = getEssenceIfExists();
-        const hash = essence
-          ? urlHashConverter.toHash(essence).substring(2)
-          : getHash() || this.hash;
-        sub = await subscribeToSplit(hash, modelId);
       } else {
-        const essence = getEssenceIfExists();
-        const hash = essence
-          ? urlHashConverter.toHash(essence).substring(2)
-          : getHash() || this.hash;
+        const hash = getHashForExpression();
         sub = await subscribeToSplit(hash, modelId);
       }
+
       parseMeta(sub);
       return Dataset.fromJS(sub.data || EmptyDataset);
     };

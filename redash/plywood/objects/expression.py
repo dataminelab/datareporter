@@ -108,7 +108,9 @@ class Expression:
     def expression(self):
         cube = self._data_cube.data_cube
         old_name = cube["name"]
-        cube["name"] = REPLACE_DATA_CUBE_NAME
+        cube[
+            "name"
+        ] = REPLACE_DATA_CUBE_NAME  # data cube: 'public.wikiticker', Expression parse error: Expected ( but "." found. on '$public.wikiticker.sum($added)'
 
         res = self._get_from_cache_or_set(
             name="expression", func=lambda: PlywoodApi.convert_hash_to_expression(hash=self.hash, data_cube=cube)

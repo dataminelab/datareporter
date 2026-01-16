@@ -312,6 +312,8 @@ jobs:
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |
+          set +e  # Don't exit on error, we want to capture logs first
+          
           echo "🎯 Starting Cypress tests..."
           
           # Create directory for logs
@@ -336,10 +338,14 @@ jobs:
           
           test_exit_code=$?
           
-          # Display the captured output
+          # Always display the captured output regardless of exit code
           echo ""
           echo "📋 Cypress test output:"
-          cat ../test-artifacts/cypress-logs.txt
+          if [ -f ../test-artifacts/cypress-logs.txt ]; then
+            cat ../test-artifacts/cypress-logs.txt
+          else
+            echo "⚠️ No test output file found"
+          fi
           echo ""
           echo "📊 Test execution completed with exit code: $test_exit_code"
           

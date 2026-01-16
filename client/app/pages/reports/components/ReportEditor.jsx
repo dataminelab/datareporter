@@ -47,6 +47,7 @@ function ReportPage({ report, reportChanged, setReportChanged }) {
       getExecutionStatus,
     ) => {
       Ajax.model_id = report.model_id;
+      Ajax.hash = report.hash;
       return Ajax.queryUrlExecutorFactory(
         dataCube,
         getEssence,

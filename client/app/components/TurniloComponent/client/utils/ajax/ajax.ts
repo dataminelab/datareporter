@@ -17,16 +17,12 @@
 
 import axios from "axios";
 import {
-  ChainableExpression,
   Dataset,
   DatasetJS,
   Executor,
   Expression,
   LimitExpression,
-  SplitExpression,
   FilterExpression,
-  RefExpression,
-  ApplyExpression,
 } from "plywood";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { setPriceButton } from "../ajax/ReportPageHeaderUtils";
@@ -45,20 +41,6 @@ interface APIResponse {
 }
 
 const EmptyDataset = Dataset.fromJS([]);
-
-function getSplitsDescription(ex: Expression): string {
-  const splits: string[] = [];
-  ex.forEach(ex => {
-    if (ex instanceof ChainableExpression) {
-      ex.getArgumentExpressions().forEach(action => {
-        if (action instanceof SplitExpression) {
-          splits.push(action.firstSplitExpression().toString());
-        }
-      });
-    }
-  });
-  return splits.join(";");
-}
 
 function getClientTimeoutDefault(): number {
   const ls = safeLocalStorage();
@@ -102,7 +84,7 @@ export class Ajax {
   static onUpdate: () => void;
   private static model_id: number;
   private static results: any;
-  static hash: string;
+  private static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
     return axios({ method, url, data, timeout, validateStatus })
@@ -230,14 +212,13 @@ export class Ajax {
       const essence = getEssenceIfExists();
       return essence
         ? urlHashConverter.toHash(essence).substring(2)
-        // @ts-ignore
-        : getHash() || this.hash;
+        : getHash() || Ajax.hash;
     }
 
     function isFilterOrLimitExpression(ex: Expression): boolean {
       return (
         ex instanceof LimitExpression ||
-        // @ts-ignore
+        // @ts-ignore compiler thinks that operand does not exist in the FilterExpression
         (ex.operand instanceof FilterExpression)
       );
     }
@@ -246,7 +227,7 @@ export class Ajax {
       if (this.results)
         return Dataset.fromJS(this.results.data || EmptyDataset);
 
-      const modelId = this.model_id;
+      const modelId = Ajax.model_id;
       let sub: APIResponse;
 
       if (isFilterOrLimitExpression(ex)) {

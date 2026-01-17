@@ -46,6 +46,7 @@ describe("Dashboard Parameters", () => {
   };
 
   const saveMappingOptions = (closeMappingMenu = false) => {
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
     return cy
       .getByTestId("EditParamMappingPopover")
       .filter(":visible")

@@ -1,8 +1,9 @@
 import json
 import re
-from typing import Callable
+from typing import Any, Callable, Dict, List
 
 import lzstring
+from regex import D
 
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.plywood import PlywoodApi
@@ -39,18 +40,16 @@ def replace_value_in_dict(obj: dict, value: str, replace: str):
 class Expression:
     """
     Class responsible for all hash manipulation such as
-    *Hash to expression conversion
-    *Supported filter checker
+        * Hash to expression conversion
+        * Supported filter checker
     """
-
-    _mem_cache: dict = None
 
     def __init__(self, _hash: str, data_cube: DataCube):
         self._data_cube = data_cube
         self.hash = _hash
-        self._mem_cache = dict()
+        self._mem_cache: Dict[str, Any] = dict()
 
-    def _get_from_cache_or_set(self, name: str, func: Callable, refresh=False):
+    def _get_from_cache_or_set(self, name: str, func: Callable, refresh=False) -> Any:
         if name in self._mem_cache and refresh is False:
             value = self._mem_cache[name]
             if value is not None:
@@ -59,17 +58,17 @@ class Expression:
         self._mem_cache[name] = func()
         return self._mem_cache[name]
 
-    def _get_plywood_request(self):
+    def _get_plywood_request(self) -> Dict[str, Any]:
         return {DATA_CUBE: self._data_cube.source_name, CONTEXT: self._data_cube.context, EXPRESSION: self.expression}
 
     @property
-    def filter(self) -> dict:
+    def filter(self) -> Dict[str, Any]:
         return self._get_from_cache_or_set(
-            name="filter", func=lambda: json.loads(parser.decompressFromBase64(self.hash))
+            name="filter", func=lambda: json.loads(parser.decompressFromBase64(self.hash))  # type: ignore
         )
 
     @property
-    def visualization(self):
+    def visualization(self) -> Any:
         return self.filter["visualization"]
 
     def _visualization_validation(self):
@@ -105,8 +104,10 @@ class Expression:
         self._series_validation()
 
     @property
-    def expression(self):
+    def expression(self) -> Dict[str, Any]:
         cube = self._data_cube.data_cube
+        if not cube:
+            raise Exception("Data cube not found")
         old_name = cube["name"]
         cube[
             "name"
@@ -119,25 +120,25 @@ class Expression:
         return res
 
     @property
-    def shape(self):
+    def shape(self) -> Any:
         return self._get_from_cache_or_set(
-            name="shape", func=lambda: PlywoodApi.get_shape(self._get_plywood_request())["shape"]
+            name="shape", func=lambda: PlywoodApi.get_shape(self._get_plywood_request())["shape"]  # type: ignore
         )
 
     @staticmethod
-    def get_shape_from_prepared_expression(data_cube: DataCube, expression: dict):
+    def get_shape_from_prepared_expression(data_cube: DataCube, expression: Dict[str, Any]) -> Any:
         return PlywoodApi.get_shape(
             {DATA_CUBE: data_cube.source_name, CONTEXT: data_cube.context, EXPRESSION: expression}
-        )["shape"]
+        )["shape"]  # type: ignore
 
     @property
-    def queries(self) -> list:
+    def queries(self) -> List[str]:
         return self._get_from_cache_or_set(
             name="queries", func=lambda: PlywoodApi.convert_to_sql(body=self._get_plywood_request())
         )
 
     @staticmethod
-    def get_queries_from_prepared_expression(data_cube: DataCube, expression: dict) -> list:
+    def get_queries_from_prepared_expression(data_cube: DataCube, expression: Dict[str, Any]) -> List[str]:
         return PlywoodApi.convert_to_sql(
             {DATA_CUBE: data_cube.source_name, CONTEXT: data_cube.context, EXPRESSION: expression}
         )
@@ -146,24 +147,24 @@ class Expression:
         return len(self.filter["splits"]) >= 2
 
     @staticmethod
-    def _is_last_query_boolean(query: str):
+    def _is_last_query_boolean(query: str) -> bool:
         return "where true" in query.lower()
 
     @staticmethod
-    def _is_last_query_boolean_false(query: str):
+    def _is_last_query_boolean_false(query: str) -> bool:
         return "where false" in query.lower()
 
-    def get_where_statement(self, query: str):
+    def get_where_statement(self, query: str) -> str:
         where = query.split("WHERE")[-1]
         return re.sub(r"\s{1}\w{1,2}\s{1}\w{1,4}.*", "", where)
 
-    def _get_boolean_queries(self, last_query):
+    def _get_boolean_queries(self, last_query: str) -> List[str]:
         res = [last_query]
         false_query = last_query.replace("TRUE", "FALSE")
         r = [*self.queries[0 : len(self.queries) - 1], *res, false_query]
         return r
 
-    def _get_boolean_queries_true(self, last_query):
+    def _get_boolean_queries_true(self, last_query: str) -> List[str]:
         true_query = last_query.replace("FALSE", "TRUE")
         r = [*self.queries[0 : len(self.queries) - 1], true_query]
         return r
@@ -182,7 +183,7 @@ class Expression:
             raise Exception("No string filter found")
         return ref
 
-    def _get_string_queries(self, last_query: str, prev_result: object) -> list:
+    def _get_string_queries(self, last_query: str, prev_result: object) -> List[str]:
         second_result = prev_result[1]
         for i in self.filter["splits"]:
             column_name = i["dimension"]

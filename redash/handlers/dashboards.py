@@ -258,6 +258,9 @@ class DeepSeekProvider(AIProvider):
             abort(502, message=f"Failed to process DeepSeek response: {str(e)}")
 
 
+AI_PROMPT_PREFIX = "You are a data analyst, reviewing a dashboard containing several datasets (widgets). Given a user question, analyze the datasets and provide a clear, concise, and human-readable answer based on the available data.\n\n"
+
+
 class DashboardPromptResource(BaseResource):
     """Handles AI prompt requests for dashboards with multi-provider support"""
 
@@ -283,7 +286,7 @@ class DashboardPromptResource(BaseResource):
         ai_provider = self._get_ai_provider(provider)
 
         # Get the response from the provider
-        response_text = ai_provider.get_answer(messages)
+        response_text = ai_provider.get_answer([AI_PROMPT_PREFIX] + messages)
 
         return {"prompt": response_text}
 

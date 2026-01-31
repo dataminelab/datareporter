@@ -3,7 +3,6 @@ import re
 from typing import Any, Callable, Dict, List
 
 import lzstring
-from regex import D
 
 from redash.plywood.objects.data_cube import DataCube
 from redash.plywood.plywood import PlywoodApi
@@ -129,7 +128,9 @@ class Expression:
     def get_shape_from_prepared_expression(data_cube: DataCube, expression: Dict[str, Any]) -> Any:
         return PlywoodApi.get_shape(
             {DATA_CUBE: data_cube.source_name, CONTEXT: data_cube.context, EXPRESSION: expression}
-        )["shape"]  # type: ignore
+        )[
+            "shape"
+        ]  # type: ignore
 
     @property
     def queries(self) -> List[str]:

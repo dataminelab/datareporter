@@ -142,7 +142,7 @@ export class TurniloApplication extends React.Component<
     const appSettings = AppSettings.fromJS(config.appSettings, {
       executorFactory: Ajax.queryUrlExecutorFactory.bind(config),
       getEssence: this.props.getEssence.bind(config, this.props.widget.id),
-      statusCallback: (status) => {},
+      statusCallback: (status) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
       getExecutionStatus: () => { return null; },
     });
 

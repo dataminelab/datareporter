@@ -82,9 +82,9 @@ export class Ajax {
   static version: string;
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
-  private static model_id: number;
+  public static model_id: number;
   private static results: any;
-  private static hash: string;
+  public static hash: string;
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
     return axios({ method, url, data, timeout, validateStatus })

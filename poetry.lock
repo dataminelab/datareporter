@@ -2044,23 +2044,24 @@ testing = ["pytest (>=6)", "pytest-black (>=0.3.7) ; platform_python_implementat
 
 [[package]]
 name = "impyla"
-version = "0.16.0"
+version = "0.18.0"
 description = "Python client for the Impala distributed query engine"
 optional = false
 python-versions = "*"
 groups = ["all_ds"]
 files = [
-    {file = "impyla-0.16.0.tar.gz", hash = "sha256:df46d6aae12cb3657293c739e2b61efead4ebf8186e813e7ea0d20e3527a3099"},
+    {file = "impyla-0.18.0-py2.py3-none-any.whl", hash = "sha256:3c80dc32d0fd0b7311995d5903844ff32745647b9345e54c92e80d47df163e13"},
+    {file = "impyla-0.18.0.tar.gz", hash = "sha256:d5e301de056d9e53caa75ba0a6e5108b6078d87d10052824d2eb7a37bdcc52a4"},
 ]
 
 [package.dependencies]
 bitarray = "*"
 six = "*"
-thrift = ">=0.9.3"
-thriftpy2 = {version = ">=0.4.0,<0.5.0", markers = "python_version >= \"3.0\""}
+thrift = "0.16.0"
+thrift-sasl = "0.4.3"
 
 [package.extras]
-kerberos = ["thrift_sasl (==0.2.1)"]
+kerberos = ["kerberos (>=1.3.0)"]
 
 [[package]]
 name = "inflection"
@@ -3075,18 +3076,6 @@ files = [
 [package.extras]
 dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
-
-[[package]]
-name = "ply"
-version = "3.11"
-description = "Python Lex & Yacc"
-optional = false
-python-versions = "*"
-groups = ["all_ds"]
-files = [
-    {file = "ply-3.11-py2.py3-none-any.whl", hash = "sha256:096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce"},
-    {file = "ply-3.11.tar.gz", hash = "sha256:00c7c1aaa88358b9c765b6d3000c6eec0ba42abca5351b095321aef446081da3"},
-]
 
 [[package]]
 name = "pre-commit"
@@ -5286,25 +5275,6 @@ six = ">=1.13.0"
 thrift = {version = ">=0.10.0", markers = "python_version >= \"3.0\""}
 
 [[package]]
-name = "thriftpy2"
-version = "0.4.16"
-description = "Pure python implementation of Apache Thrift."
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-groups = ["all_ds"]
-files = [
-    {file = "thriftpy2-0.4.16.tar.gz", hash = "sha256:2aa67ecda99a948e4146341d388260b48ee7da5dfb9a951c4151988e2ed2fb4c"},
-]
-
-[package.dependencies]
-ply = ">=3.4,<4.0"
-six = ">=1.15,<2.0"
-
-[package.extras]
-dev = ["cython (>=0.28.4)", "flake8 (>=2.5)", "pytest (>=2.8)", "pytest (>=6.1.1)", "sphinx (>=1.3)", "sphinx-rtd-theme (>=0.1.9)", "tornado (>=4.0,<6.0)"]
-tornado = ["tornado (>=4.0,<6.0)"]
-
-[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -5940,4 +5910,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "d18b68d0ecb9f6a0d642fd894c6b71dd045985a7049863576e43d1c0756c5f8a"
+content-hash = "e2e4c26541f42bee745979da41166c4dae0c5742ddd1ed0b221e8c4db6022193"

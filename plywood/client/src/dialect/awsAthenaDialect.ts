@@ -153,11 +153,11 @@ export class AwsAthenaDialect extends SQLDialect {
 
   public regexpExpression(expression: string, regexp: string): string {
     // https://prestodb.io/docs/current/functions/regexp.html
-    return `regexp_like(${expression}, ${this.escapeLiteral(regexp)})`;
+    return `REGEXP_LIKE(CAST(${expression} AS VARCHAR), ${this.escapeLiteral(regexp)})`;
   }
 
   public containsExpression(a: string, b: string): string {
-    return `STRPOS(${a},${b})>0`;
+    return `STRPOS(CAST(${a} AS VARCHAR),${b})>0`;
   }
 
   public concatExpression(a: string, b: string): string {

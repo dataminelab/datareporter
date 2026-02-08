@@ -12,7 +12,7 @@ USER datareporter
 WORKDIR /frontend
 COPY --chown=datareporter client /frontend/client
 COPY --chown=datareporter viz-lib /frontend/viz-lib
-COPY --chown=datareporter plywood /frontend/plywood/
+COPY --chown=datareporter plywood /frontend/plywood
 
 # Controls whether to instrument code for coverage information
 ARG code_coverage

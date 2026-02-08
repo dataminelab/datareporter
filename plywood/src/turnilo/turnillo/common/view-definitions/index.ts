@@ -51,7 +51,7 @@ export const definitionUrlEncoders: {
 } = {
   2: new ViewDefinitionHashEncoder2(),
   3: new ViewDefinitionHashEncoder3(),
-  4: new ViewDefinitionHashEncoder3(),
+  4: new ViewDefinitionHashEncoder3(), // Version 4 uses the same encoder as version 3
 };
 
 export const defaultDefinitionConverter =

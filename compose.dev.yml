@@ -29,7 +29,6 @@ x-redash-environment: &redash-environment
   REDASH_VERSION_CHECK: "false"
   WORKERS_COUNT: 10
   QUEUES: 100
-  # Set secret keys in the .env file
 services:
   server:
     <<: *redash-service
@@ -90,7 +89,9 @@ services:
       - "1025:1025"
     restart: unless-stopped
   plywood:
-    image: node:16.20.0-alpine
+    build:
+      context: ./plywood
+      dockerfile: Dockerfile
     working_dir: /app
     command: npm run watch-node
     ports:
@@ -98,6 +99,9 @@ services:
       - "9231:9229"
     volumes:
       - ./plywood:/app
+      - /app/node_modules
+      - /app/client/build
+      - /app/dist
     environment:
       - LOG_MODE=request_and_response
   # ollama:

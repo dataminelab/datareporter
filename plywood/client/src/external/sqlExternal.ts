@@ -156,8 +156,12 @@ export abstract class SQLExternal extends External {
     if (withQuery) {
       return `FROM __with__ AS t`;
     }
-
-    return `FROM ${dialect.escapeName(source as string)} AS t`;
+    const m = String(source).match(/^(\w+)\.(.+)$/);
+    if (m && this.engine !== "druidsql") {
+      return `FROM ${m[1]}.${dialect.escapeName(m[2])} AS t`;
+    } else {
+      return `FROM ${dialect.escapeName(source as string)} AS t`;
+    }
   }
 
   public getQueryAndPostTransform(

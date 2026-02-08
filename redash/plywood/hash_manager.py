@@ -181,8 +181,9 @@ def parse_result(
     if errored:
         clear_cache(hash_string)
         return ReportSerializer(
-            status=is_fetching,
+            status=4,
             queries=[],
+            failed=True,
         )
 
     split = len(expression.filter["splits"]) or 1
@@ -192,7 +193,7 @@ def parse_result(
         errored = clean_errored(queries)
         if errored:
             clear_cache(hash_string, split)
-            return ReportSerializer(status=is_fetching, queries=[])
+            return ReportSerializer(status=4, queries=[], failed=True)
         is_fetching = jobs_status(queries)
         if is_fetching:
             return ReportSerializer(status=is_fetching, queries=queries)

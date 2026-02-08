@@ -236,9 +236,7 @@ function writePrePrompt(slug) {
   const datasetHeaders = Array.from(
     document.querySelectorAll(".widget-header"),
   ).filter(header => header.innerText && header.innerText.trim() !== "");
-  let prompt =
-    "You are a data analyst reviewing a dashboard containing several datasets (widgets). Given a user question, analyze the datasets and provide a clear, concise, and human-readable answer based on the available data.\n\n";
-  prompt += "Datasets:\n";
+  let prompt = "Datasets:\n";
   datasets.forEach((d, i) => {
     prompt += `Dataset[${i + 1}]${datasetHeaders[i] ? ` (${datasetHeaders[i].innerText.trim()})` : ""}: ${JSON.stringify(d)}\n`;
   });

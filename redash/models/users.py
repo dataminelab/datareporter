@@ -426,6 +426,7 @@ class AnonymousUser(AnonymousUserMixin, PermissionsCheckMixin):
     org = PseudoOrg()
     id = None
     name = "anonymous"
+    group_ids = []
 
     @property
     def permissions(self):

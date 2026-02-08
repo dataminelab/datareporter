@@ -110,7 +110,7 @@ const booleanFilterClauseConverter: FilterDefinitionConversion<
     });
   },
 
-  //@ts-ignore
+  // @ts-ignore
   fromFilterClause({
     values,
     not,
@@ -119,7 +119,7 @@ const booleanFilterClauseConverter: FilterDefinitionConversion<
     return {
       type: FilterType.boolean,
       ref: reference,
-      //@ts-ignore
+      // @ts-ignore
       values: values.toArray(),
       not,
     };
@@ -159,7 +159,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<
       values: Set(values),
     });
   },
-  //@ts-ignore
+  // @ts-ignore
 
   fromFilterClause({
     action,
@@ -171,7 +171,7 @@ const stringFilterClauseConverter: FilterDefinitionConversion<
       type: FilterType.string,
       ref: reference,
       action,
-      //@ts-ignore
+      // @ts-ignore
       values: values.toArray(),
       not,
     };
@@ -192,7 +192,7 @@ const numberFilterClauseConverter: FilterDefinitionConversion<
       reference: name,
     });
   },
-  //@ts-ignore
+  // @ts-ignore
 
   fromFilterClause({
     not,
@@ -203,7 +203,7 @@ const numberFilterClauseConverter: FilterDefinitionConversion<
       type: FilterType.number,
       ref: reference,
       not,
-      //@ts-ignore
+      // @ts-ignore
       ranges: values.toJS(),
     };
   },

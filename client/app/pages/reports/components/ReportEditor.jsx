@@ -39,9 +39,22 @@ function ReportPage({ report, reportChanged, setReportChanged }) {
   }
 
   Ajax.version = report.version;
-
   const appSettings = AppSettings.fromJS(report.appSettings, {
-    executorFactory: Ajax.queryUrlExecutorFactory.bind(report),
+    executorFactory: (
+      dataCube,
+      getEssence,
+      statusCallback,
+      getExecutionStatus,
+    ) => {
+      Ajax.model_id = report.model_id;
+      Ajax.hash = report.hash;
+      return Ajax.queryUrlExecutorFactory(
+        dataCube,
+        getEssence,
+        statusCallback,
+        getExecutionStatus,
+      );
+    },
     statusCallback: report.onExecutionStatusChange.bind(report),
     getExecutionStatus: getExecutionStatus,
   });

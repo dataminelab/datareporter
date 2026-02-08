@@ -139,10 +139,26 @@ export class TurniloApplication extends React.Component<
       drawerOpen: false,
     };
     const { config } = this.props;
+    Ajax.version = config.version;
+
     const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory.bind(config),
+      executorFactory: (
+        dataCube,
+        getEssence,
+        statusCallback,
+        getExecutionStatus,
+      ) => {
+        Ajax.model_id = config.model_id;
+        Ajax.hash = config.hash;
+        return Ajax.queryUrlExecutorFactory(
+          dataCube,
+          getEssence,
+          statusCallback,
+          getExecutionStatus,
+        );
+      },
       getEssence: this.props.getEssence.bind(config, this.props.widget.id),
-      statusCallback: (status) => {},
+      statusCallback: (status) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
       getExecutionStatus: () => { return null; },
     });
 

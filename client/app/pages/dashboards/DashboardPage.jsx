@@ -120,6 +120,7 @@ class DashboardComponent extends React.Component {
   static propTypes = {
     dashboardOptions: PropTypes.object.isRequired,
     onParametersEdit: PropTypes.func,
+    refreshDashboard: PropTypes.func,
   };
 
   constructor(props) {
@@ -501,10 +502,14 @@ class DashboardComponent extends React.Component {
 }
 
 function withDashboardOptions(WrappedComponent) {
-  return function DashboardOptionsWrapper(props) {
+  function DashboardOptionsWrapper(props) {
     const dashboardOptions = useDashboard(props.dashboard);
     return <WrappedComponent {...props} dashboardOptions={dashboardOptions} />;
+  }
+  DashboardOptionsWrapper.propTypes = {
+    dashboard: PropTypes.object.isRequired,
   };
+  return DashboardOptionsWrapper;
 }
 
 const DashboardComponentWithOptions = withDashboardOptions(DashboardComponent);

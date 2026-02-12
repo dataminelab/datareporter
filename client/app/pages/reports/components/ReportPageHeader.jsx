@@ -873,7 +873,6 @@ ReportPageHeader.propTypes = {
   headerExtra: PropTypes.node,
   tagsExtra: PropTypes.node,
   onChange: PropTypes.func.isRequired,
-  onChangeColor: PropTypes.func,
   reportChanged: PropTypes.any,
   setReportChanged: PropTypes.func,
 };
@@ -884,7 +883,6 @@ ReportPageHeader.defaultProps = {
   selectedVisualization: null,
   headerExtra: null,
   tagsExtra: null,
-  onChangeColor: () => {},
   reportChanged: null,
   setReportChanged: () => {},
 };

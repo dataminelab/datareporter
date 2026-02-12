@@ -404,34 +404,31 @@ export default function ReportPageHeader(props) {
 
   const handleSaveReport = useCallback(() => {
     if (!reportChanged) return notification.warning("No changes to save");
-    if (
-      window.location.hash.substring(window.location.hash.indexOf("4/") + 2)
-    ) {
-      updateReport(
-        {
-          expression: window.location.hash.substring(
-            window.location.hash.indexOf("4/") + 2,
-          ),
-          color_1: colorBodyHex || report.color_1,
-          color_2: colorTextHex || report.color_2,
-          name: reportName,
-        },
-        { successMessage: "Report updated", errorMessage: null },
-      );
-      recordEvent("update", "report", report.id);
+
+    const hashExpression = window.location.hash.substring(
+      window.location.hash.indexOf("4/") + 2,
+    );
+
+    const payload = {
+      color_1: colorBodyHex || report.color_1,
+      color_2: colorTextHex || report.color_2,
+      name: reportName,
+      ...(hashExpression
+        ? { expression: hashExpression }
+        : { is_draft: false }),
+    };
+
+    updateReport(payload, {
+      successMessage: "Report updated",
+      errorMessage: null,
+    });
+
+    recordEvent(hashExpression ? "update" : "create", "report", report.id);
+
+    if (hashExpression) {
       setSaveButtonClicked(true);
-    } else {
-      updateReport(
-        {
-          color_1: colorBodyHex || report.color_1,
-          color_2: colorTextHex || report.color_2,
-          is_draft: false,
-          name: reportName,
-        },
-        { successMessage: "Report updated", errorMessage: null },
-      );
-      recordEvent("create", "report", report.id);
     }
+
     setReportChanged(false);
   }, [
     reportChanged,

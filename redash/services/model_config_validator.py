@@ -132,7 +132,61 @@ class ModelConfigValidator:
                     message="Config has the following issues: {}".format(validator.errors),
                 )
 
+
+    def _validate_values(self):
+        # Extract important values from each dataCube and check attributes
+        with io.StringIO(self.content) as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            data_cubes = config.get("dataCubes", [])
+            timeAttributes = []
+            clusterNames = []
+            defaultSortMeasures = []
+            defaultSelectedMeasures = []
+            for idx, cube in enumerate(data_cubes):
+                time_attr = cube.get("timeAttribute")
+                cluster_name = cube.get("clusterName")
+                default_sort_measure = cube.get("defaultSortMeasure")
+                default_selected_measures = cube.get("defaultSelectedMeasures", [])
+
+                # Throw if any required variable is missing or empty
+                missing_vars = []
+                if not time_attr:
+                    missing_vars.append("timeAttribute")
+                if not cluster_name:
+                    missing_vars.append("clusterName")
+                if not default_sort_measure:
+                    missing_vars.append("defaultSortMeasure")
+                if not default_selected_measures or not isinstance(default_selected_measures, list) or not all(default_selected_measures):
+                    missing_vars.append("defaultSelectedMeasures")
+                if missing_vars:
+                    abort(
+                        http_status_code=400,
+                        message=f"Config error: dataCube at index {idx} missing required value(s): {', '.join(missing_vars)}",
+                    )
+
+                timeAttributes.append(time_attr)
+                clusterNames.append(cluster_name)
+                defaultSortMeasures.append(default_sort_measure)
+                defaultSelectedMeasures.append(default_selected_measures)
+
+                # Check attributes for these values
+                attribute_names = [attr.get("name") for attr in cube.get("attributes", [])]
+                missing = []
+                if time_attr and time_attr not in attribute_names:
+                    missing.append(f"timeAttribute '{time_attr}' not found in attributes")
+                if default_sort_measure and default_sort_measure not in attribute_names:
+                    missing.append(f"defaultSortMeasure '{default_sort_measure}' not found in attributes")
+                for measure in default_selected_measures:
+                    if measure and measure not in attribute_names:
+                        missing.append(f"defaultSelectedMeasure '{measure}' not found in attributes")
+                if missing:
+                    abort(
+                        http_status_code=400,
+                        message="Config attribute check failed: " + ", ".join(missing),
+                    )
+
     def validate(self):
         self._validate_length()
         self._validate_yml()
         self._validate_schema()
+        self._validate_values()

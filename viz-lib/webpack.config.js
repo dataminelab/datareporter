@@ -22,7 +22,9 @@ module.exports = {
     fallback: {
       fs: false,
       buffer: require.resolve('buffer/'),
-      path: false
+      path: false,
+      stream: require.resolve('stream-browserify'),
+      assert: require.resolve('assert')
     }
   },
   module: {

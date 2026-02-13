@@ -59,7 +59,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          version: v0.12.1
+          version: v0.13.1
       - name: Build docker Images
         run: |
           set -x

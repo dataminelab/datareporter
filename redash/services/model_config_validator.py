@@ -132,7 +132,6 @@ class ModelConfigValidator:
                     message="Config has the following issues: {}".format(validator.errors),
                 )
 
-
     def _validate_values(self):
         # Extract important values from each dataCube and check attributes
         with io.StringIO(self.content) as f:
@@ -156,7 +155,11 @@ class ModelConfigValidator:
                     missing_vars.append("clusterName")
                 if not default_sort_measure:
                     missing_vars.append("defaultSortMeasure")
-                if not default_selected_measures or not isinstance(default_selected_measures, list) or not all(default_selected_measures):
+                if (
+                    not default_selected_measures
+                    or not isinstance(default_selected_measures, list)
+                    or not all(default_selected_measures)
+                ):
                     missing_vars.append("defaultSelectedMeasures")
                 if missing_vars:
                     abort(

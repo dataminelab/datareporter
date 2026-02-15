@@ -1,7 +1,7 @@
 import logging
 import time
 
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, MissingSchema
 from rq.timeouts import JobTimeoutException
 
 from redash import models, redis_connection, settings, statsd_client
@@ -185,6 +185,14 @@ def refresh_schema(data_source_id):
             time.time() - start_time,
         )
         statsd_client.incr("refresh_schema.connection_error")
+    except MissingSchema:
+        logger.warning(
+            "task=refresh_schema state=missing_url ds_id=%s ds_name=%s runtime=%.2f",
+            ds.id,
+            ds.name,
+            time.time() - start_time,
+        )
+        statsd_client.incr("refresh_schema.missing_url")
     except Exception:
         logger.warning("Failed refreshing schema for the data source: %s", ds.name, exc_info=1)
         statsd_client.incr("refresh_schema.error")

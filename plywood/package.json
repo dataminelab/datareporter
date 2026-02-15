@@ -51,6 +51,8 @@
     "stream-to-array": "^2.3.0",
     "stream-to-string": "^1.2.0",
     "tslib": "^1.10.0",
+    "d3": "4.13.0",
+    "d3-dsv": "2.0.0",
     "tslog": "^4.9.3"
   },
   "devDependencies": {

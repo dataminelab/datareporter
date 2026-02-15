@@ -218,6 +218,12 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
       p_turnilo_daterange: this.duration.toJS(),
     };
   }
+
+  toUrlParams(): object {
+    return {
+      p_turnilo_daterange: this.duration.toJS()
+    };
+  }
 }
 
 export type TimeFilterClause = FixedTimeFilterClause | RelativeTimeFilterClause;

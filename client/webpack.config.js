@@ -138,6 +138,10 @@ const config = {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
     }),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
     new CopyWebpackPlugin([
       { from: "app/assets/robots.txt" },
       { from: "app/assets/manifest.json" },

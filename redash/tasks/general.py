@@ -5,7 +5,8 @@ from flask_mail import Message
 from mailchimp_marketing import Client as MailchimpClient
 from mailchimp_marketing.api_client import ApiClientError
 
-from redash import mail, models, settings
+from redash import models, settings
+from redash.mail_sender import send_message
 from redash.models import users
 from redash.query_runner import NotSupported
 from redash.tasks.worker import Queue
@@ -63,7 +64,7 @@ def send_mail(to, subject, html, text):
     message = None
     try:
         message = Message(recipients=to, subject=subject, html=html, body=text, sender=settings.MAIL_DEFAULT_SENDER)
-        mail.send(message)
+        send_message(message)
     except Exception:
         logger.exception("Failed sending message: %s", message)
 

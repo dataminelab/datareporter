@@ -2,8 +2,9 @@ import logging
 
 from flask_mail import Message
 
-from redash import mail, settings
+from redash import settings
 from redash.destinations import BaseDestination, register
+from redash.mail_sender import send_message
 
 
 class Email(BaseDestination):
@@ -49,7 +50,7 @@ class Email(BaseDestination):
                 subject = subject_template.format(alert_name=alert.name, state=state)
 
             message = Message(recipients=recipients, subject=subject, html=html)
-            mail.send(message)
+            send_message(message)
         except Exception:
             logging.exception("Mail send error.")
 

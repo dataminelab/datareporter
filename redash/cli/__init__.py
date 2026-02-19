@@ -72,12 +72,12 @@ def send_test_mail(email=None):
     """
     from flask_mail import Message
 
-    from redash import mail
+    from redash.mail_sender import send_message
 
     if email is None:
         email = settings.MAIL_DEFAULT_SENDER
 
-    mail.send(Message(subject="Test Message from Redash", recipients=[email], body="Test message."))
+    send_message(Message(subject="Test Message from Redash", recipients=[email], body="Test message."))
 
 
 @manager.command("shell")

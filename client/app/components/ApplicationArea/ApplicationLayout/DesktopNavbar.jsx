@@ -261,7 +261,7 @@ export default function DesktopNavbar() {
 
       <NavbarSection className="settings-menu">
         <Menu.Item key="refresh">
-          <a data-test="Refresh" href="#" onClick={handleDeepRefresh}>
+          <a data-test="Refresh" onClick={handleDeepRefresh}>
             <i className="icon-ui icon-refresh"></i>
           </a>
         </Menu.Item>

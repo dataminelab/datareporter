@@ -39,7 +39,36 @@ modifications by dataminelab for DataReporter integration.
 =========================================================================
 
 =========================================================================
-Open Sans Font
-Licensed under the Apache License, Version 2.0
+Roboto Font
 Copyright (c) Google
+Licensed under the Apache License, Version 2.0
+https://fonts.google.com/specimen/Roboto
+=========================================================================
+
+=========================================================================
+Open Sans Font
+Copyright (c) Google
+Licensed under the Apache License, Version 2.0
+https://fonts.google.com/specimen/Open+Sans
+(Used in TurniloComponent)
+=========================================================================
+
+=========================================================================
+Plywood (original)
+Copyright (c) 2015 Metamarkets Group Inc.
+Licensed under the Apache License, Version 2.0
+(Portions of plywood/client derive from the original facetjs library)
+=========================================================================
+
+=========================================================================
+drag-drop-polyfill
+Copyright (c) 2016 Tim Ruffles
+Licensed under the BSD 2-Clause License
+(Used in TurniloComponent)
+=========================================================================
+
+=========================================================================
+query_order.py
+Copyright (c) 2012, Konsta Vesterinen
+Licensed under the BSD 3-Clause License
 =========================================================================

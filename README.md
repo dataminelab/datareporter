@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/dataminelab/datareporter/blob/develop/LICENSE"><img src="https://img.shields.io/badge/license-BSD--2--Clause-blue.svg" alt="License"></a>
+  <a href="https://github.com/dataminelab/datareporter/blob/develop/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a>
   <a href="https://github.com/dataminelab/datareporter/stargazers"><img src="https://img.shields.io/github/stars/dataminelab/datareporter?style=social" alt="GitHub Stars"></a>
   <a href="https://github.com/dataminelab/datareporter"><img src="https://img.shields.io/github/last-commit/dataminelab/datareporter?style=flat&color=22C55E" alt="Last Commit"></a>
 </p>
@@ -135,4 +135,6 @@ Email [security@datareporter.com](mailto:security@datareporter.com) to report vu
 
 ## License
 
-[BSD 2-Clause "Simplified" License](LICENSE)
+[Apache License 2.0](LICENSE)
+
+DataReporter includes code from [Redash](https://github.com/getredash/redash) (BSD-2-Clause) and [Turnilo](https://github.com/allegro/turnilo) (Apache-2.0). See [NOTICE](NOTICE) for full attribution.

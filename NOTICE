@@ -1,0 +1,45 @@
+DataReporter
+Copyright (c) 2024-2026 Radoslaw Maciaszek / dataminelab
+https://datareporter.com
+
+This product is licensed under the Apache License, Version 2.0.
+
+This product includes software developed by third parties:
+
+=========================================================================
+Redash
+Copyright (c) 2013-2020, Arik Fraimovich
+Licensed under the BSD 2-Clause "Simplified" License
+https://github.com/getredash/redash
+=========================================================================
+
+=========================================================================
+Turnilo
+Copyright (c) 2017-2019 Allegro.pl
+Licensed under the Apache License, Version 2.0
+https://github.com/allegro/turnilo
+
+Turnilo includes software originally developed by:
+  Imply Data, Inc. (2015-2016) - originally released as "Pivot"
+  Licensed under the Apache License, Version 2.0
+
+The Turnilo component included in this product is a hard fork of
+Turnilo v1.40.5 (forked February 2025) with modifications by
+dataminelab for integration into DataReporter.
+=========================================================================
+
+=========================================================================
+Plywood
+Copyright (c) Imply Data, Inc.
+Licensed under the Apache License, Version 2.0
+https://github.com/implydata/plywood
+
+The reporter-plywood client is a fork of the Plywood library with
+modifications by dataminelab for DataReporter integration.
+=========================================================================
+
+=========================================================================
+Open Sans Font
+Licensed under the Apache License, Version 2.0
+Copyright (c) Google
+=========================================================================

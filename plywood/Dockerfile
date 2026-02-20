@@ -8,10 +8,10 @@ COPY package*.json /app/
 COPY . /app/
 COPY client /app/client
 WORKDIR /app/client
-RUN npm install
+RUN npm ci
 RUN npm run build
 WORKDIR /app
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 FROM node:14.17.0-alpine

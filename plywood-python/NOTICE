@@ -1,0 +1,8 @@
+plywood-python
+Copyright 2026 DataReporter
+
+This product is a Python port of the Plywood library,
+originally developed by Imply Data, Inc.
+https://github.com/implydata/plywood
+
+The original Plywood library is licensed under the Apache License, Version 2.0.

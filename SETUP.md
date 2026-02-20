@@ -6,12 +6,7 @@ DataReporter builds correctly with Node version 18.20, consider using [nodenv](h
 * [ensure shims are added to PATH](https://github.com/nodenv/nodenv#how-it-works)
 * [for windows-wsl2-nvm](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl)
 
-```sh
-nodenv install 18.20
-nodenv local 18.20
-```
-
-Alternatively you can use nvm
+Feel free to use nvm
 
 ```sh
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash

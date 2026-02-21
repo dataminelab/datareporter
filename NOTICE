@@ -1,0 +1,74 @@
+DataReporter
+Copyright (c) 2024-2026 Radoslaw Maciaszek / dataminelab
+https://datareporter.com
+
+This product is licensed under the Apache License, Version 2.0.
+
+This product includes software developed by third parties:
+
+=========================================================================
+Redash
+Copyright (c) 2013-2020, Arik Fraimovich
+Licensed under the BSD 2-Clause "Simplified" License
+https://github.com/getredash/redash
+=========================================================================
+
+=========================================================================
+Turnilo
+Copyright (c) 2017-2019 Allegro.pl
+Licensed under the Apache License, Version 2.0
+https://github.com/allegro/turnilo
+
+Turnilo includes software originally developed by:
+  Imply Data, Inc. (2015-2016) - originally released as "Pivot"
+  Licensed under the Apache License, Version 2.0
+
+The Turnilo component included in this product is a hard fork of
+Turnilo v1.40.5 (forked February 2025) with modifications by
+dataminelab for integration into DataReporter.
+=========================================================================
+
+=========================================================================
+Plywood
+Copyright (c) Imply Data, Inc.
+Licensed under the Apache License, Version 2.0
+https://github.com/implydata/plywood
+
+The reporter-plywood client is a fork of the Plywood library with
+modifications by dataminelab for DataReporter integration.
+=========================================================================
+
+=========================================================================
+Roboto Font
+Copyright (c) Google
+Licensed under the Apache License, Version 2.0
+https://fonts.google.com/specimen/Roboto
+=========================================================================
+
+=========================================================================
+Open Sans Font
+Copyright (c) Google
+Licensed under the Apache License, Version 2.0
+https://fonts.google.com/specimen/Open+Sans
+(Used in TurniloComponent)
+=========================================================================
+
+=========================================================================
+Plywood (original)
+Copyright (c) 2015 Metamarkets Group Inc.
+Licensed under the Apache License, Version 2.0
+(Portions of plywood/client derive from the original facetjs library)
+=========================================================================
+
+=========================================================================
+drag-drop-polyfill
+Copyright (c) 2016 Tim Ruffles
+Licensed under the BSD 2-Clause License
+(Used in TurniloComponent)
+=========================================================================
+
+=========================================================================
+query_order.py
+Copyright (c) 2012, Konsta Vesterinen
+Licensed under the BSD 3-Clause License
+=========================================================================

@@ -59,7 +59,7 @@
     "npm": ">8.0.0"
   },
   "author": "Dataminelab Contributors",
-  "license": "BSD-2-Clause",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/dataminelab/datareporter/issues"
   },

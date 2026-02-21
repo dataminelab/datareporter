@@ -14,8 +14,8 @@ import DynamicComponent, {
 
 import "./HelpTrigger.less";
 
-const DOMAIN = "https://redash.io";
-const HELP_PATH = "/help";
+const DOMAIN = "https://datareporter.com";
+const HELP_PATH = "/docs";
 const IFRAME_TIMEOUT = 20000;
 const IFRAME_URL_UPDATE_MESSAGE = "iframe_url";
 
@@ -39,24 +39,18 @@ export const TYPES = mapValues(
       "Help: Anonymous Usage Data Sharing",
     ],
     DS_ATHENA: [
-      "/data-sources/amazon-athena-setup",
+      "/data-sources/amazon-athena",
       "Guide: Help Setting up Amazon Athena",
     ],
-    DS_BIGQUERY: [
-      "/data-sources/bigquery-setup",
-      "Guide: Help Setting up BigQuery",
-    ],
-    DS_URL: ["/data-sources/querying-urls", "Guide: Help Setting up URL"],
-    DS_MONGODB: [
-      "/data-sources/mongodb-setup",
-      "Guide: Help Setting up MongoDB",
-    ],
+    DS_BIGQUERY: ["/data-sources/bigquery", "Guide: Help Setting up BigQuery"],
+    DS_URL: ["/data-sources/json-api", "Guide: Help Setting up URL"],
+    DS_MONGODB: ["/data-sources/mongodb", "Guide: Help Setting up MongoDB"],
     DS_GOOGLE_SPREADSHEETS: [
-      "/data-sources/querying-a-google-spreadsheet",
+      "/data-sources/google-sheets",
       "Guide: Help Setting up Google Spreadsheets",
     ],
     DS_GOOGLE_ANALYTICS: [
-      "/data-sources/google-analytics-setup",
+      "/data-sources/google-analytics",
       "Guide: Help Setting up Google Analytics",
     ],
     DS_AXIBASETSD: [

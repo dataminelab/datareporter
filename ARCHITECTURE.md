@@ -32,8 +32,8 @@ The integration allows users to switch between SQL-based queries (traditional Re
 ### High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          Frontend (React)                           │
+┌────────────────────────────────────────────────────────────────────┐
+│                          Frontend (React)                          │
 │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────────────┐   │
 │  │ Query Editor │  │  Dashboards  │  │   TurniloComponent      │   │
 │  │   (SQL)      │  │   (Widgets)  │  │   (OLAP UI v1.40.5)     │   │
@@ -41,8 +41,8 @@ The integration allows users to switch between SQL-based queries (traditional Re
 └─────────┼─────────────────┼──────────────────────┼─────────────────┘
           │                 │                      │
           ▼                 ▼                      ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Backend API (Flask)                              │
+┌────────────────────────────────────────────────────────────────────┐
+│                    Backend API (Flask)                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────────────┐   │
 │  │ /api/queries │  │/api/dashboards│ │    /api/reports         │   │
 │  └──────┬───────┘  └──────┬───────┘  └───────────┬─────────────┘   │
@@ -51,10 +51,10 @@ The integration allows users to switch between SQL-based queries (traditional Re
           ▼                 ▼                      ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      Query Execution Layer                          │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │                    Query Runners (40+)                        │  │
-│  │  PostgreSQL │ MySQL │ BigQuery │ Athena │ Druid │ ...        │  │
-│  └──────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │                    Query Runners (40+)                       │   │
+│  │  PostgreSQL │ MySQL │ BigQuery │ Athena │ Druid │ ...        │   │
+│  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
           │                                        │
           │                                        ▼
@@ -67,7 +67,7 @@ The integration allows users to switch between SQL-based queries (traditional Re
           ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        Data Sources                                 │
-│   PostgreSQL │ MySQL │ BigQuery │ Snowflake │ Druid │ ...          │
+│  PostgreSQL │ MySQL │ BigQuery │ Snowflake │ Druid │ Athena │ JSON  │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -238,10 +238,12 @@ datareporter/
 #### Query Runners (`redash/query_runner/`)
 
 Base classes:
+
 - `BaseQueryRunner` - Abstract base for all connectors
 - `BaseSQLQueryRunner` - SQL-specific base class
 
 Key implementations:
+
 - `postgres.py` - PostgreSQL
 - `mysql.py` - MySQL
 - `big_query.py` - Google BigQuery
@@ -312,6 +314,7 @@ Key implementations:
 #### Attribute Parsers (`plywood/src/formatter/attributesFormatter/parsers/`)
 
 Database-specific parsers that extract column metadata:
+
 - `PostgresAttributeParser.ts`
 - `MySqlAttributeParser.ts`
 - `BigQueryParser.ts`
@@ -528,7 +531,7 @@ npm run watch
 | `debug` | Flask with debugger (PTVSD) |
 | `worker` | RQ worker (supervisord) |
 | `dev_worker` | Dev RQ worker (watch) |
-| `scheduler` | RQ scheduler |
+| `dev_scheduler` | RQ scheduler |
 | `worker_server` | Worker HTTP server |
 | `create_db` | Initialize tables |
 | `shell` | Python shell |

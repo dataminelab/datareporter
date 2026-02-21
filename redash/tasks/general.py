@@ -16,6 +16,9 @@ logger = get_job_logger(__name__)
 
 
 def add_member_mailchimp(email, name, org_name):
+    if not settings.MAILCHIMP_API_KEY or not settings.MAILCHIMP_LIST_ID:
+        logger.info("Mailchimp not configured, skipping subscription for %s", email)
+        return
     try:
         client = MailchimpClient()
         client.set_config({"api_key": settings.MAILCHIMP_API_KEY, "server": settings.MAILCHIMP_SERVER})

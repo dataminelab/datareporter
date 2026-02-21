@@ -32,7 +32,7 @@ function NumberFormatSpecs() {
     <HelpTriggerComponent
       type="NUMBER_FORMAT_SPECS"
       title="Formatting Numbers"
-      href="https://redash.io/help/user-guide/visualizations/formatting-numbers"
+      href="https://datareporter.com/docs/user-guide/visualizations/formatting-numbers"
       className="visualization-editor-context-help">
       {ContextHelp.defaultIcon}
     </HelpTriggerComponent>
@@ -56,7 +56,7 @@ function TickFormatSpecs() {
   return (
     <HelpTriggerComponent
       title="Tick Formatting"
-      href="https://redash.io/help/user-guide/visualizations/formatting-axis"
+      href="https://datareporter.com/docs/user-guide/visualizations/formatting-axis"
       className="visualization-editor-context-help">
       {ContextHelp.defaultIcon}
     </HelpTriggerComponent>

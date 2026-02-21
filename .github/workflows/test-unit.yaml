@@ -91,13 +91,6 @@ jobs:
           docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
           ls -l
-      - name: "Extract test results"
-        shell: bash
-        if: always()
-        run: |
-          docker cp tests:/app/coverage.xml ./coverage.xml
-          docker cp tests:/app/junit.xml ./results.xml
-          ls -l
       - name: "Publish unit test report"
         uses: mikepenz/action-junit-report@v4
         if: always()
@@ -313,12 +306,12 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |
           set +e  # Don't exit on error, we want to capture logs first
-          
-          echo "🎯 Starting Cypress tests..."
-          
+
+          echo "Starting Cypress tests..."
+
           # Create directory for logs
           mkdir -p ../test-artifacts
-          
+
           # Run Cypress and save output to file first
           docker compose run \
             -e CYPRESS_PROJECT_ID="${{ secrets.CYPRESS_PROJECT_ID }}" \
@@ -326,7 +319,7 @@ jobs:
             -e CYPRESS_baseUrl="http://server:5000" \
             cypress \
             bash -c "
-              echo '=== Starting Cypress Test Execution ===' 
+              echo '=== Starting Cypress Test Execution ==='
               echo 'Current directory:' \$(pwd)
               echo 'Available test files:'
               find cypress/e2e -name '*.cy.js' | head -10
@@ -335,47 +328,47 @@ jobs:
               npx cypress run --reporter spec --browser chrome
               exit \$?
             " > ../test-artifacts/cypress-logs.txt 2>&1
-          
+
           test_exit_code=$?
-          
+
           # Always display the captured output regardless of exit code
           echo ""
-          echo "📋 Cypress test output:"
+          echo "Cypress test output:"
           if [ -f ../test-artifacts/cypress-logs.txt ]; then
             cat ../test-artifacts/cypress-logs.txt
           else
-            echo "⚠️ No test output file found"
+            echo "No test output file found"
           fi
           echo ""
-          echo "📊 Test execution completed with exit code: $test_exit_code"
-          
+          echo "Test execution completed with exit code: $test_exit_code"
+
           if [ $test_exit_code -eq 0 ]; then
-            echo "✅ Tests passed"
+            echo "Tests passed"
           else
-            echo "❌ Tests failed with exit code: $test_exit_code"
+            echo "Tests failed with exit code: $test_exit_code"
             exit 1
           fi
-      - name: Capture Test Artifacts  
+      - name: Capture Test Artifacts
         if: always()
         working-directory: client
         run: |
-          echo "📦 Capturing test artifacts..."
-          
+          echo "Capturing test artifacts..."
+
           # Ensure artifacts directory exists
           mkdir -p ../test-artifacts
-          
+
           # Try to get artifacts from any cypress containers
           CONTAINER_NAMES=$(docker ps -a --filter "name=cypress" --format "{{.Names}}")
-          
+
           if [ ! -z "$CONTAINER_NAMES" ]; then
             for CONTAINER_NAME in $CONTAINER_NAMES; do
               echo "Attempting to extract artifacts from: $CONTAINER_NAME"
-              
+
               # Copy test artifacts (ignore errors if paths don't exist)
               docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/screenshots ../test-artifacts/ 2>/dev/null && echo "Screenshots copied" || echo "No screenshots found"
               docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/videos ../test-artifacts/ 2>/dev/null && echo "Videos copied" || echo "No videos found"
               docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/reports ../test-artifacts/ 2>/dev/null && echo "Reports copied" || echo "No reports found"
-              
+
               # Only copy container logs if we don't already have captured logs
               if [ ! -f ../test-artifacts/cypress-logs.txt ]; then
                 docker logs $CONTAINER_NAME > ../test-artifacts/cypress-container-logs.txt 2>&1 && echo "Container logs copied" || echo "No container logs"
@@ -384,9 +377,9 @@ jobs:
           else
             echo "No cypress containers available for artifact extraction"
           fi
-          
+
           # Show what we captured
-          echo "📋 Final captured artifacts:"
+          echo "Final captured artifacts:"
           find ../test-artifacts -type f 2>/dev/null | while read file; do
             size=$(du -h "$file" 2>/dev/null | cut -f1)
             echo "  $file ($size)"
@@ -407,13 +400,13 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
-            let comment = '## 🧪 E2E Test Results Analysis\n\n';
+
+            let comment = '## E2E Test Results Analysis\n\n';
             let testsPassed = true;
             let totalTests = 0;
             let passCount = 0;
             let failCount = 0;
-            
+
             try {
               const resultsDir = './test-artifacts';
               if (fs.existsSync(resultsDir)) {
@@ -422,21 +415,13 @@ jobs:
                   try {
                     const logContent = fs.readFileSync(logFile, 'utf8');
                     const lines = logContent.split('\n');
-                    
-                    // Strategy: Look for the overall test summary patterns
-                    // Cypress outputs patterns like:
-                    // - "X passing" / "X failing" for individual specs
-                    // - "X of Y" patterns for overall results
-                    // - Final stats summary
-                    
+
                     let overallFailedPattern = null;
                     let passCount = 0;
                     let failCount = 0;
                     let totalTests = 0;
-                    // First pass: find all summary patterns and sum them
                     for (let i = 0; i < lines.length; i++) {
                       const line = lines[i];
-                      // Look for overall test result pattern: "X of Y failed"
                       const overallMatch = line.match(/(\d+)\s+of\s+(\d+)\s+failed/i);
                       if (overallMatch && !overallFailedPattern) {
                         overallFailedPattern = {
@@ -445,60 +430,52 @@ jobs:
                           line: line.trim()
                         };
                       }
-                      // Sum all "X passing" and "X failing" lines
                       const passMatch = line.match(/(\d+)\s+passing/);
                       if (passMatch) passCount += parseInt(passMatch[1]);
                       const failMatch = line.match(/(\d+)\s+failing/);
                       if (failMatch) failCount += parseInt(failMatch[1]);
                     }
                     totalTests = passCount + failCount;
-                    // If we have an overall summary, prefer it for fail/total
                     if (overallFailedPattern) {
                       failCount = overallFailedPattern.failed;
                       totalTests = overallFailedPattern.total;
                       passCount = totalTests - failCount;
                     }
-                    
+
                     testsPassed = failCount === 0;
-                    
-                    // Build status section
+
                     comment += '### ';
                     if (testsPassed) {
-                      comment += '✅ Test Status: PASSED\n\n';
+                      comment += 'Test Status: PASSED\n\n';
                       if (totalTests > 0) {
                         comment += `**All ${totalTests} tests passed!**\n\n`;
                       }
                     } else {
-                      comment += '❌ Test Status: FAILED\n\n';
+                      comment += 'Test Status: FAILED\n\n';
                       if (totalTests > 0) {
                         comment += `**${failCount} of ${totalTests} tests failed** (${passCount} passed)\n\n`;
                       } else if (passCount > 0 || failCount > 0) {
                         comment += `**${failCount} test(s) failed**, ${passCount} test(s) passed\n\n`;
                       }
                     }
-                    
-                    // Show test statistics
+
                     comment += '**Test Statistics:**\n';
-                    comment += `- 🎯 Total Tests: ${totalTests || 'Unknown'}\n`;
-                    comment += `- ✅ Passed: ${passCount}\n`;
-                    comment += `- ❌ Failed: ${failCount}\n`;
+                    comment += `- Total Tests: ${totalTests || 'Unknown'}\n`;
+                    comment += `- Passed: ${passCount}\n`;
+                    comment += `- Failed: ${failCount}\n`;
                     if (totalTests > 0) {
                       const passPercentage = Math.round((passCount / totalTests) * 100);
-                      comment += `- 📊 Pass Rate: ${passPercentage}%\n`;
+                      comment += `- Pass Rate: ${passPercentage}%\n`;
                     }
                     comment += '\n';
-                    
-                    // Extract and show failed spec files if any
+
                     if (failCount > 0) {
                       const failedSpecs = new Set();
-                      
+
                       for (let i = 0; i < lines.length; i++) {
                         const line = lines[i];
-                        // Look for lines that show failed specs: "Running: path/to/file.cy.js"
-                        // followed by failures
                         const runningMatch = line.match(/Running:\s+(.+\.cy\.js)/);
                         if (runningMatch) {
-                          // Check next lines for failures
                           for (let j = i + 1; j < Math.min(i + 50, lines.length); j++) {
                             if (lines[j].match(/\d+\s+failing/) || lines[j].includes('✖')) {
                               failedSpecs.add(runningMatch[1]);
@@ -507,11 +484,11 @@ jobs:
                           }
                         }
                       }
-                      
+
                       if (failedSpecs.size > 0) {
                         comment += '**Failed Spec Files:**\n';
                         Array.from(failedSpecs).slice(0, 15).forEach((spec) => {
-                          comment += `- 📄 ${spec}\n`;
+                          comment += `- ${spec}\n`;
                         });
                         if (failedSpecs.size > 15) {
                           comment += `- ... and ${failedSpecs.size - 15} more\n`;
@@ -519,53 +496,51 @@ jobs:
                         comment += '\n';
                       }
                     }
-                    
+
                   } catch (e) {
-                    comment += `⚠️ Error parsing logs: ${e.message}\n\n`;
+                    comment += `Error parsing logs: ${e.message}\n\n`;
                   }
                 } else {
-                  comment += '⚠️ No Cypress logs found\n\n';
+                  comment += 'No Cypress logs found\n\n';
                 }
-                
-                // Artifacts section
+
                 comment += '**Test Artifacts:**\n';
                 const videoDir = path.join(resultsDir, 'videos');
                 const screenshotDir = path.join(resultsDir, 'screenshots');
                 let videoCount = 0;
                 let screenshotCount = 0;
-                
+
                 if (fs.existsSync(videoDir)) {
                   videoCount = fs.readdirSync(videoDir, { recursive: true })
                     .filter(file => file.endsWith('.mp4')).length;
                   if (videoCount > 0) {
-                    comment += `- 🎥 ${videoCount} test video(s) recorded\n`;
+                    comment += `- ${videoCount} test video(s) recorded\n`;
                   }
                 }
-                
+
                 if (fs.existsSync(screenshotDir)) {
                   screenshotCount = fs.readdirSync(screenshotDir, { recursive: true })
                     .filter(file => file.match(/\.(png|jpg|jpeg)$/)).length;
                   if (screenshotCount > 0) {
-                    comment += `- 📸 ${screenshotCount} screenshot(s) captured\n`;
+                    comment += `- ${screenshotCount} screenshot(s) captured\n`;
                   }
                 }
-                
+
                 if (videoCount === 0 && screenshotCount === 0) {
-                  comment += '- 📦 No additional artifacts captured\n';
+                  comment += '- No additional artifacts captured\n';
                 }
-                
+
               } else {
-                comment += '### ⚠️ No Test Artifacts Found\n';
+                comment += '### No Test Artifacts Found\n';
                 comment += 'Tests did not run or artifacts were not saved.\n';
               }
-              
+
             } catch (error) {
-              comment += `### ❌ Error Analyzing Results\n${error.message}\n`;
+              comment += `### Error Analyzing Results\n${error.message}\n`;
             }
-            
+
             comment += '\n---\n*Generated from E2E test artifacts*';
-            
-            // Only post comment if there are failures
+
             if (!testsPassed) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,

@@ -66,10 +66,30 @@ export const Query = PropTypes.shape({
   user: UserProfile,
   query: PropTypes.string,
   queryHash: PropTypes.string,
-  is_safe: PropTypes.bool.isRequired,
-  is_draft: PropTypes.bool.isRequired,
+  is_safe: PropTypes.bool,
+  is_draft: PropTypes.bool,
   is_archived: PropTypes.bool.isRequired,
-  api_key: PropTypes.string.isRequired,
+  api_key: PropTypes.string,
+});
+
+export const Report = PropTypes.shape({
+  id: PropTypes.any.isRequired,
+  name: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  created_at: PropTypes.string.isRequired,
+  updated_at: PropTypes.string,
+  user: UserProfile,
+  query: Query,
+  data_source_id: PropTypes.any.isRequired,
+  options: PropTypes.shape({
+    parameter_mappings: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        query_parameter_name: PropTypes.string.isRequired,
+      }),
+    ),
+    refresh_schedule: RefreshScheduleType,
+  }).isRequired,
 });
 
 export const AlertOptions = PropTypes.shape({

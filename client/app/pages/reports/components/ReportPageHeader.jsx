@@ -44,6 +44,7 @@ import {
 import getTags from "@/services/getTags";
 import { reportPageStyles } from "./reportPageStyles";
 import DataSourceModelSelector from "./DataSourceModelSelector.jsx";
+import { Report as ReportType } from "@/components/proptypes";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
@@ -862,11 +863,7 @@ export default function ReportPageHeader(props) {
 }
 
 ReportPageHeader.propTypes = {
-  report: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    name: PropTypes.string,
-    tags: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
+  report: ReportType.isRequired,
   dataSource: PropTypes.array,
   sourceMode: PropTypes.bool,
   selectedVisualization: PropTypes.number,

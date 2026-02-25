@@ -19,7 +19,16 @@ function search(term) {
 
   // get recent
   if (!term) {
-    return Promise.resolve([]);
+    const recentQueries = Query.recent().then(results =>
+      results.filter(item => !item.is_draft).map(query => ({ ...query, type: "query" })),
+    );
+    const recentReports = Report.recent().then(results =>
+      results.map(report => ({ ...report, type: "report" })),
+    );
+    return Promise.all([recentReports, recentQueries]).then(([reports, queries]) => [
+      ...reports,
+      ...queries,
+    ]);
   }
 
   // search by query and report

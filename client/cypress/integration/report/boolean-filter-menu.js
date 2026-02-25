@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { setupReportTests } from '../../support/reportHelpers';
+import { setupReportTests } from "../../support/reportHelpers";
 
 context("Boolean Filter Menu", () => {
   const booleanMenu = () => cy.get(".boolean-filter-menu");
@@ -35,14 +35,8 @@ context("Boolean Filter Menu", () => {
     }
 
     booleanMenuTable().within(() => {
-      cy.get(".row:contains('true') .checkbox").should(
-        selectionToPredicate(isTrueOptionSelected),
-        "selected",
-      );
-      cy.get(".row:contains('false') .checkbox").should(
-        selectionToPredicate(isFalseOptionSelected),
-        "selected",
-      );
+      cy.get(".row:contains('true') .checkbox").should(selectionToPredicate(isTrueOptionSelected), "selected");
+      cy.get(".row:contains('false') .checkbox").should(selectionToPredicate(isFalseOptionSelected), "selected");
     });
   }
 

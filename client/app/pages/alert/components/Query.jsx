@@ -14,12 +14,7 @@ import LoadingOutlinedIcon from "@ant-design/icons/LoadingOutlined";
 
 import "./Query.less";
 
-export default function QueryFormItem({
-  query,
-  queryResult,
-  onChange,
-  editMode,
-}) {
+export default function QueryFormItem({ query, queryResult, onChange, editMode }) {
   const queryHint =
     query && query.schedule ? (
       <small>
@@ -30,8 +25,7 @@ export default function QueryFormItem({
       </small>
     ) : (
       <small>
-        <WarningFilledIcon className="warning-icon-danger" /> This query has no{" "}
-        <i>refresh schedule</i>.{" "}
+        <WarningFilledIcon className="warning-icon-danger" /> This query has no <i>refresh schedule</i>.{" "}
         <Tooltip title="A query schedule is not necessary but is highly recommended for alerts. An Alert without a query schedule will only send notifications if a user in your organization manually executes this query.">
           <a role="presentation">
             Why it&apos;s recommended <QuestionCircleTwoToneIcon />
@@ -43,22 +37,15 @@ export default function QueryFormItem({
   return (
     <>
       {editMode ? (
-        <QuerySelector
-          onChange={onChange}
-          selectedQuery={query}
-          className="alert-query-selector"
-          type="select"
-        />
+        <QuerySelector onChange={onChange} selectedQuery={query} className="alert-query-selector" type="select" />
       ) : (
         <Tooltip title="Open query in a new tab.">
           <Link
             href={query.type === "query" ? `queries/${query.id}` : `reports/${query.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="alert-query-link"
-          >
-            {query.name}{" "}
-            <i className="fa fa-external-link" aria-hidden="true" />
+            className="alert-query-link">
+            {query.name} <i className="fa fa-external-link" aria-hidden="true" />
             <span className="sr-only">(opens in a new tab)</span>
           </Link>
         </Tooltip>

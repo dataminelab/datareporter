@@ -38,9 +38,10 @@ function ReportPage({ dashboardSlug, dashboardId, onError }) {
 
   let initTimekeeper;
   try {
-    const timekeeper = config.timekeeper && typeof config.timekeeper === 'object' && !Array.isArray(config.timekeeper)
-      ? config.timekeeper
-      : { timeTags: {} };
+    const timekeeper =
+      config.timekeeper && typeof config.timekeeper === "object" && !Array.isArray(config.timekeeper)
+        ? config.timekeeper
+        : { timeTags: {} };
     initTimekeeper = Timekeeper.fromJS(timekeeper);
   } catch {
     initTimekeeper = Timekeeper.fromJS({ timeTags: {} });
@@ -48,11 +49,7 @@ function ReportPage({ dashboardSlug, dashboardId, onError }) {
 
   return (
     <turnilo-widget>
-      <TurniloApplication
-        version={config.version}
-        appSettings={appSettings}
-        initTimekeeper={initTimekeeper}
-      />
+      <TurniloApplication version={config.version} appSettings={appSettings} initTimekeeper={initTimekeeper} />
     </turnilo-widget>
   );
 }
@@ -74,6 +71,6 @@ routes.register(
   routeWithUserSession({
     path: "/report",
     bodyClass: "report-widget",
-    render: pageProps => <ReportPage {...pageProps} />,
-  }),
+    render: (pageProps) => <ReportPage {...pageProps} />,
+  })
 );

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { setupReportTests } from '../../support/reportHelpers';
+import { setupReportTests } from "../../support/reportHelpers";
 
 context("Bar Chart", () => {
   const barChart = () => cy.get(".bar-chart");
@@ -23,11 +23,9 @@ context("Bar Chart", () => {
   const bars = () => firstSeries().find(".bar-chart-bar");
   const previousBars = () => firstSeries().find(".bar-chart-bar-previous");
   const segments = () => firstSeries().find(".bar-chart-bar-segment");
-  const previousSegments = () =>
-    firstSeries().find(".bar-chart-bar-previous-segment");
+  const previousSegments = () => firstSeries().find(".bar-chart-bar-previous-segment");
   const legend = () => cy.get(".bar-chart-legend");
-  const legendValue = idx =>
-    legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
+  const legendValue = (idx) => legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
 
   describe("Time split", () => {
     setupReportTests(() => {

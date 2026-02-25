@@ -9,7 +9,10 @@ function getDatabases(dataSource, refresh = false) {
   }
 
   return DatabricksDataSource.getDatabases(dataSource, refresh).catch(() => {
-    notification.error("Failed to load Database list", "Please try again later.");
+    notification.error(
+      "Failed to load Database list",
+      "Please try again later.",
+    );
     return Promise.reject();
   });
 }
@@ -19,13 +22,21 @@ function getSchema(dataSource, databaseName, refresh = false) {
     return Promise.resolve([]);
   }
 
-  return DatabricksDataSource.getDatabaseTables(dataSource, databaseName, refresh).catch(() => {
+  return DatabricksDataSource.getDatabaseTables(
+    dataSource,
+    databaseName,
+    refresh,
+  ).catch(() => {
     notification.error("Failed to load Schema", "Please try again later.");
     return Promise.reject();
   });
 }
 
-export default function useDatabricksSchema(dataSource, options = null, onOptionsUpdate = null) {
+export default function useDatabricksSchema(
+  dataSource,
+  options = null,
+  onOptionsUpdate = null,
+) {
   const [databases, setDatabases] = useState([]);
   const [loadingDatabases, setLoadingDatabases] = useState(true);
   const [currentDatabaseName, setCurrentDatabaseName] = useState();
@@ -34,28 +45,28 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
   const [refreshing, setRefreshing] = useState(false);
 
   const setCurrentSchema = useCallback(
-    (schema) =>
-      setSchemas((currentSchemas) => ({
+    schema =>
+      setSchemas(currentSchemas => ({
         ...currentSchemas,
         [currentDatabaseName]: schema,
       })),
-    [currentDatabaseName]
+    [currentDatabaseName],
   );
 
   const currentDatabaseNameRef = useRef();
   currentDatabaseNameRef.current = currentDatabaseName;
   const loadTableColumns = useCallback(
-    (tableName) => {
+    tableName => {
       // remove [databaseName.] from the tableName
       DatabricksDataSource.getTableColumns(
         dataSource,
         currentDatabaseName,
-        tableName.substring(currentDatabaseName.length + 1)
-      ).then((columns) => {
+        tableName.substring(currentDatabaseName.length + 1),
+      ).then(columns => {
         if (currentDatabaseNameRef.current === currentDatabaseName) {
-          setSchemas((currentSchemas) => {
+          setSchemas(currentSchemas => {
             const schema = get(currentSchemas, currentDatabaseName, []);
-            const updatedSchema = map(schema, (table) => {
+            const updatedSchema = map(schema, table => {
               if (table.name === tableName) {
                 return { ...table, columns, loading: false };
               }
@@ -69,22 +80,30 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
         }
       });
     },
-    [dataSource, currentDatabaseName]
+    [dataSource, currentDatabaseName],
   );
 
-  const schema = useMemo(() => get(schemas, currentDatabaseName, []), [schemas, currentDatabaseName]);
+  const schema = useMemo(
+    () => get(schemas, currentDatabaseName, []),
+    [schemas, currentDatabaseName],
+  );
 
   const refreshAll = useCallback(() => {
     if (!refreshing) {
       setRefreshing(true);
-      const getDatabasesPromise = getDatabases(dataSource, true).then(setDatabases);
-      const getSchemasPromise = getSchema(dataSource, currentDatabaseName, true).then(({ schema }) =>
-        setCurrentSchema(schema)
+      const getDatabasesPromise = getDatabases(dataSource, true).then(
+        setDatabases,
       );
+      const getSchemasPromise = getSchema(
+        dataSource,
+        currentDatabaseName,
+        true,
+      ).then(({ schema }) => setCurrentSchema(schema));
 
-      Promise.all([getSchemasPromise.catch(() => {}), getDatabasesPromise.catch(() => {})]).then(() =>
-        setRefreshing(false)
-      );
+      Promise.all([
+        getSchemasPromise.catch(() => {}),
+        getDatabasesPromise.catch(() => {}),
+      ]).then(() => setRefreshing(false));
     }
   }, [dataSource, currentDatabaseName, setCurrentSchema, refreshing]);
 
@@ -99,12 +118,14 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
         .then(({ schema, has_columns }) => {
           if (!isCancelled) {
             if (!has_columns && !isEmpty(schema)) {
-              schema = map(schema, (table) => ({ ...table, loading: true }));
-              getSchema(dataSource, currentDatabaseName, true).then(({ schema }) => {
-                if (!isCancelled) {
-                  setCurrentSchema(schema);
-                }
-              });
+              schema = map(schema, table => ({ ...table, loading: true }));
+              getSchema(dataSource, currentDatabaseName, true).then(
+                ({ schema }) => {
+                  if (!isCancelled) {
+                    setCurrentSchema(schema);
+                  }
+                },
+              );
             }
             setCurrentSchema(schema);
           }
@@ -129,14 +150,16 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
     setSchemas({});
     getDatabases(dataSource)
       .catch(() => Promise.resolve([]))
-      .then((data) => {
+      .then(data => {
         if (!isCancelled) {
           setDatabases(data);
           setCurrentDatabaseName(
             defaultDatabaseNameRef.current ||
-              localStorage.getItem(`lastSelectedDatabricksDatabase_${dataSource.id}`) ||
+              localStorage.getItem(
+                `lastSelectedDatabricksDatabase_${dataSource.id}`,
+              ) ||
               first(data) ||
-              null
+              null,
           );
         }
       })
@@ -151,23 +174,29 @@ export default function useDatabricksSchema(dataSource, options = null, onOption
   }, [dataSource]);
 
   const setCurrentDatabase = useCallback(
-    (databaseName) => {
+    databaseName => {
       if (databaseName) {
         try {
-          localStorage.setItem(`lastSelectedDatabricksDatabase_${dataSource.id}`, databaseName);
+          localStorage.setItem(
+            `lastSelectedDatabricksDatabase_${dataSource.id}`,
+            databaseName,
+          );
         } catch (e) {
           // `localStorage.setItem` may throw exception if there are no enough space - in this case it could be ignored
         }
       }
       setCurrentDatabaseName(databaseName);
-      if (isFunction(onOptionsUpdate) && databaseName !== defaultDatabaseNameRef.current) {
+      if (
+        isFunction(onOptionsUpdate) &&
+        databaseName !== defaultDatabaseNameRef.current
+      ) {
         onOptionsUpdate({
           ...options,
           selectedDatabase: databaseName,
         });
       }
     },
-    [dataSource.id, options, onOptionsUpdate]
+    [dataSource.id, options, onOptionsUpdate],
   );
 
   return {

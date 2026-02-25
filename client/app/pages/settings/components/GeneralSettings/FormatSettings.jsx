@@ -1,5 +1,8 @@
 import React from "react";
-import { SettingsEditorPropTypes, SettingsEditorDefaultProps } from "../prop-types";
+import {
+  SettingsEditorPropTypes,
+  SettingsEditorDefaultProps,
+} from "../prop-types";
 import Form from "antd/lib/form";
 import Select from "antd/lib/select";
 import Skeleton from "antd/lib/skeleton";
@@ -17,10 +20,14 @@ export default function FormatSettings(props) {
         ) : (
           <Select
             value={values.date_format}
-            onChange={(value) => onChange({ date_format: value })}
-            data-test="DateFormatSelect">
-            {clientConfig.dateFormatList.map((dateFormat) => (
-              <Select.Option key={dateFormat} data-test={`DateFormatSelect:${dateFormat}`}>
+            onChange={value => onChange({ date_format: value })}
+            data-test="DateFormatSelect"
+          >
+            {clientConfig.dateFormatList.map(dateFormat => (
+              <Select.Option
+                key={dateFormat}
+                data-test={`DateFormatSelect:${dateFormat}`}
+              >
                 {dateFormat}
               </Select.Option>
             ))}
@@ -33,9 +40,10 @@ export default function FormatSettings(props) {
         ) : (
           <Select
             value={values.time_format}
-            onChange={(value) => onChange({ time_format: value })}
-            data-test="TimeFormatSelect">
-            {clientConfig.timeFormatList.map((timeFormat) => (
+            onChange={value => onChange({ time_format: value })}
+            data-test="TimeFormatSelect"
+          >
+            {clientConfig.timeFormatList.map(timeFormat => (
               <Select.Option key={timeFormat}>{timeFormat}</Select.Option>
             ))}
           </Select>

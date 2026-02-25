@@ -13,7 +13,7 @@ function TextboxWidget(props) {
   const editTextBox = () => {
     TextboxDialog.showModal({
       text: widget.text,
-    }).onClose((newText) => {
+    }).onClose(newText => {
       widget.text = newText;
       setText(newText);
       return widget.save();
@@ -31,8 +31,14 @@ function TextboxWidget(props) {
   }
 
   return (
-    <Widget {...props} menuOptions={canEdit ? TextboxMenuOptions : null} className="widget-text">
-      <HtmlContent className="body-row-auto scrollbox t-body p-15 markdown">{markdown.toHTML(text || "")}</HtmlContent>
+    <Widget
+      {...props}
+      menuOptions={canEdit ? TextboxMenuOptions : null}
+      className="widget-text"
+    >
+      <HtmlContent className="body-row-auto scrollbox t-body p-15 markdown">
+        {markdown.toHTML(text || "")}
+      </HtmlContent>
     </Widget>
   );
 }

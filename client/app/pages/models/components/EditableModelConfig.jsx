@@ -209,10 +209,14 @@ export default function EditableModelConfig({ model, saveConfig }) {
   }, [model.model_config_id]);
 
   const save = () => saveConfig(model.id, item);
-  const handleSaveConfig = (callback) => {
+  const handleSaveConfig = callback => {
     const yamlContent = item;
-    const defaultSortMeasure = yamlContent.split("defaultSortMeasure: ")[1].split("\n")[0];
-    const timeAttribute = yamlContent.split("timeAttribute: ")[1].split("\n")[0];
+    const defaultSortMeasure = yamlContent
+      .split("defaultSortMeasure: ")[1]
+      .split("\n")[0];
+    const timeAttribute = yamlContent
+      .split("timeAttribute: ")[1]
+      .split("\n")[0];
 
     if (!timeAttribute || timeAttribute.includes("null")) {
       alert("timeAttribute cannot be null");
@@ -226,7 +230,9 @@ export default function EditableModelConfig({ model, saveConfig }) {
       alert("timeAttribute cannot be empty");
       return;
     }
-    const attributes = yamlContent.split("attributes:")[1].split("dimensions:")[0];
+    const attributes = yamlContent
+      .split("attributes:")[1]
+      .split("dimensions:")[0];
     const measures = yamlContent.split("measures:")[1].split("  - name: ")[1];
     // if timeAttribute is not in attributes, then alert
     if (!attributes.includes(timeAttribute)) {
@@ -251,14 +257,19 @@ export default function EditableModelConfig({ model, saveConfig }) {
       return;
     }
     // Check for names that exist in both dimensions and measures
-    const dimensionsSection = yamlContent.split("dimensions:")[1]?.split("measures:")[0] || "";
+    const dimensionsSection =
+      yamlContent.split("dimensions:")[1]?.split("measures:")[0] || "";
     const measuresSection = yamlContent.split("measures:")[1] || "";
 
     const dimensionNames = dimensionsSection.match(/^\s+- name: (\w+)/gm) || [];
     const measureNames = measuresSection.match(/^\s+- name: (\w+)/gm) || [];
 
-    const dimensionNameSet = new Set(dimensionNames.map((n) => n.match(/name: (\w+)/)[1]));
-    const measureNameSet = new Set(measureNames.map((n) => n.match(/name: (\w+)/)[1]));
+    const dimensionNameSet = new Set(
+      dimensionNames.map(n => n.match(/name: (\w+)/)[1]),
+    );
+    const measureNameSet = new Set(
+      measureNames.map(n => n.match(/name: (\w+)/)[1]),
+    );
 
     for (const dimName of dimensionNameSet) {
       if (measureNameSet.has(dimName)) {
@@ -278,15 +289,17 @@ export default function EditableModelConfig({ model, saveConfig }) {
   }, [configYAML, getConfigModel, model]);
 
   useEffect(() => {
-    const buttons = [{ shortcut: "mod+s", onClick: () => saveConfig(model.id, item) }];
-    const shortcuts = fromPairs(map(buttons, (b) => [b.shortcut, b.onClick]));
+    const buttons = [
+      { shortcut: "mod+s", onClick: () => saveConfig(model.id, item) },
+    ];
+    const shortcuts = fromPairs(map(buttons, b => [b.shortcut, b.onClick]));
     KeyboardShortcuts.bind(shortcuts);
     return () => {
       KeyboardShortcuts.unbind(shortcuts);
     };
   }, [item, model.id, saveConfig]);
 
-  const onChange = (config) => {
+  const onChange = config => {
     setItem(config);
   };
 
@@ -305,12 +318,17 @@ export default function EditableModelConfig({ model, saveConfig }) {
                 className="query-editor-controls-button m-l-5 right"
                 onClick={handleSaveConfig.bind(this, save)}
                 type={"primary"}
-                data-test="SaveButton">
+                data-test="SaveButton"
+              >
                 <span className="fa fa-floppy-o" />
                 &nbsp;Save
               </Button>
             </ButtonTooltip>
-            <Button className="query-editor-controls-button m-l-5 right" onClick={backToList} data-test="SaveButton">
+            <Button
+              className="query-editor-controls-button m-l-5 right"
+              onClick={backToList}
+              data-test="SaveButton"
+            >
               Cancel
             </Button>
           </h1>

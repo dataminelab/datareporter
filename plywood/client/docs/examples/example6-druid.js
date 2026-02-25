@@ -1,5 +1,6 @@
-let druidRequesterFactory = require('plywood-druid-requester').druidRequesterFactory;
-let plywood = require('../../build/plywood');
+let druidRequesterFactory =
+  require("plywood-druid-requester").druidRequesterFactory;
+let plywood = require("../../build/plywood");
 let ply = plywood.ply;
 let $ = plywood.$;
 let External = plywood.External;
@@ -7,17 +8,17 @@ let verboseRequesterFactory = plywood.verboseRequesterFactory;
 
 // Let's add a request re-writer / decorator
 let fancyRequestDecorator = ({ method, url, query }) => {
-  if (method === 'POST' && query) {
-    query.superDuperToken = '555';
+  if (method === "POST" && query) {
+    query.superDuperToken = "555";
   }
   return {
-    url: url + '?principalId/3246325435',
+    url: url + "?principalId/3246325435",
     query,
   };
 };
 
 let druidRequester = druidRequesterFactory({
-  host: 'your-druid-host:8082', // Where ever your Druid may be
+  host: "your-druid-host:8082", // Where ever your Druid may be
   requestDecorator: fancyRequestDecorator,
 });
 
@@ -30,11 +31,11 @@ druidRequester = verboseRequesterFactory({
 let context = {
   wiki: External.fromJS(
     {
-      engine: 'druid',
-      source: 'wikipedia', // The datasource name in Druid
-      filter: $('__time').overlap({
-        start: new Date('2015-09-12T00:00:00Z'),
-        end: new Date('2015-09-13T00:00:00Z'),
+      engine: "druid",
+      source: "wikipedia", // The datasource name in Druid
+      filter: $("__time").overlap({
+        start: new Date("2015-09-12T00:00:00Z"),
+        end: new Date("2015-09-13T00:00:00Z"),
       }),
       exactResultsOnly: true, // force groupBys
     },
@@ -42,11 +43,11 @@ let context = {
   ),
 };
 
-let ex = $('wiki')
+let ex = $("wiki")
   .filter('$countryName == "United States"')
-  .split('$channel', 'Language')
-  .apply('Edits', '$wiki.count()')
-  .sort('$Edits', 'descending')
+  .split("$channel", "Language")
+  .apply("Edits", "$wiki.count()")
+  .sort("$Edits", "descending")
   .limit(5);
 
 ex.compute(context)
@@ -55,7 +56,7 @@ ex.compute(context)
     console.log(JSON.stringify(data.toJS(), null, 2));
   })
   .catch(function (e) {
-    console.log('Error', e);
+    console.log("Error", e);
   });
 
 // ----------------------------------

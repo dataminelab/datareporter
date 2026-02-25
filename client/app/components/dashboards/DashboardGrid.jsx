@@ -77,7 +77,14 @@ const DashboardWidget = React.memo(
         );
 
       case WidgetTypeEnum.TEXTBOX:
-        return <TextboxWidget widget={widget} canEdit={canEdit} isPublic={isPublic} onDelete={onDelete} />;
+        return (
+          <TextboxWidget
+            widget={widget}
+            canEdit={canEdit}
+            isPublic={isPublic}
+            onDelete={onDelete}
+          />
+        );
 
       case WidgetTypeEnum.TURNILO:
         return (
@@ -102,7 +109,7 @@ const DashboardWidget = React.memo(
     prevProps.isPublic === nextProps.isPublic &&
     prevProps.isLoading === nextProps.isLoading &&
     prevProps.filters === nextProps.filters &&
-    prevProps.isEditing === nextProps.isEditing
+    prevProps.isEditing === nextProps.isEditing,
 );
 
 class DashboardGrid extends React.Component {
@@ -172,7 +179,9 @@ class DashboardGrid extends React.Component {
   }
 
   componentDidMount() {
-    this.onBreakpointChange(document.body.offsetWidth <= cfg.mobileBreakPoint ? SINGLE : MULTI);
+    this.onBreakpointChange(
+      document.body.offsetWidth <= cfg.mobileBreakPoint ? SINGLE : MULTI,
+    );
     // Work-around to disable initial animation on widgets; `measureBeforeMount` doesn't work properly:
     // it disables animation, but it cannot detect scrollbars.
     setTimeout(() => {
@@ -199,7 +208,8 @@ class DashboardGrid extends React.Component {
 
     // workaround for https://github.com/STRML/react-grid-layout/issues/889
     // remove next line when fix lands
-    this.mode = document.body.offsetWidth <= cfg.mobileBreakPoint ? SINGLE : MULTI;
+    this.mode =
+      document.body.offsetWidth <= cfg.mobileBreakPoint ? SINGLE : MULTI;
     // end workaround
 
     // don't save single column mode layout
@@ -207,12 +217,15 @@ class DashboardGrid extends React.Component {
       return;
     }
 
-    const normalized = chain(layouts[MULTI]).keyBy("i").mapValues(this.normalizeTo).value();
+    const normalized = chain(layouts[MULTI])
+      .keyBy("i")
+      .mapValues(this.normalizeTo)
+      .value();
 
     this.props.onLayoutChange(normalized);
   };
 
-  onBreakpointChange = (mode) => {
+  onBreakpointChange = mode => {
     this.mode = mode;
     this.props.onBreakpointChange(mode === SINGLE);
   };
@@ -241,7 +254,7 @@ class DashboardGrid extends React.Component {
     this.autoHeightCtrl.resume();
   };
 
-  normalizeTo = (layout) => ({
+  normalizeTo = layout => ({
     col: layout.x,
     row: layout.y,
     sizeX: layout.w,
@@ -263,7 +276,10 @@ class DashboardGrid extends React.Component {
       setFilterParams,
       getEssence,
     } = this.props;
-    const className = cx("dashboard-wrapper", isEditing ? "editing-mode" : "preview-mode");
+    const className = cx(
+      "dashboard-wrapper",
+      isEditing ? "editing-mode" : "preview-mode",
+    );
 
     return (
       <div className={className}>
@@ -282,16 +298,20 @@ class DashboardGrid extends React.Component {
           layouts={this.state.layouts}
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
-          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}>
-          {widgets.map((widget) => (
+          breakpoints={{ [MULTI]: cfg.mobileBreakPoint, [SINGLE]: 0 }}
+        >
+          {widgets.map(widget => (
             <div
               key={widget.id}
               data-grid={DashboardGrid.normalizeFrom(widget)}
               data-widgetid={widget.id}
               data-test={`WidgetId${widget.id}`}
               className={cx("dashboard-widget-wrapper", {
-                "widget-auto-height-enabled": this.autoHeightCtrl.exists(widget.id),
-              })}>
+                "widget-auto-height-enabled": this.autoHeightCtrl.exists(
+                  widget.id,
+                ),
+              })}
+            >
               <DashboardWidget
                 dashboard={dashboard}
                 configTurnilo={this.state.configTurnilo}

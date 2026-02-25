@@ -15,7 +15,7 @@ export default function useDuplicateQuery(query) {
 
     setIsDuplicating(true);
     Query.fork({ id: query.id })
-      .then((newQuery) => {
+      .then(newQuery => {
         tab.location = newQuery.getUrl(true);
       })
       .finally(() => {

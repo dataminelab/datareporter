@@ -3,7 +3,15 @@ import PropTypes from "prop-types";
 import cx from "classnames";
 import Form from "antd/lib/form";
 import Button from "antd/lib/button";
-import { includes, isFunction, filter, find, difference, isEmpty, mapValues } from "lodash";
+import {
+  includes,
+  isFunction,
+  filter,
+  find,
+  difference,
+  isEmpty,
+  mapValues,
+} from "lodash";
 import notification from "@/services/notification";
 import Collapse from "@/components/Collapse";
 import DynamicFormField, { FieldType } from "./DynamicFormField";
@@ -26,7 +34,8 @@ const AntdFormType = PropTypes.shape({
 
 const fieldRules = ({ type, required, minLength }) => {
   const requiredRule = required;
-  const minLengthRule = minLength && includes(["text", "email", "password"], type);
+  const minLengthRule =
+    minLength && includes(["text", "email", "password"], type);
   const emailTypeRule = type === "email";
 
   return [
@@ -36,13 +45,18 @@ const fieldRules = ({ type, required, minLength }) => {
       type: "email",
       message: "This field must be a valid email.",
     },
-  ].filter((rule) => rule);
+  ].filter(rule => rule);
 };
 
 function normalizeEmptyValuesToNull(fields, values) {
   return mapValues(values, (value, key) => {
     const { initialValue } = find(fields, { name: key }) || {};
-    if ((initialValue === null || initialValue === undefined || initialValue === "") && value === "") {
+    if (
+      (initialValue === null ||
+        initialValue === undefined ||
+        initialValue === "") &&
+      value === ""
+    ) {
       return null;
     }
     return value;
@@ -50,7 +64,7 @@ function normalizeEmptyValuesToNull(fields, values) {
 }
 
 function DynamicFormFields({ fields, feedbackIcons, form }) {
-  return fields.map((field) => {
+  return fields.map(field => {
     const { name, type, initialValue, contentAfter } = field;
     const fieldLabel = getFieldLabel(field);
 
@@ -66,9 +80,9 @@ function DynamicFormFields({ fields, feedbackIcons, form }) {
 
     if (type === "file") {
       formItemProps.valuePropName = "data-value";
-      formItemProps.getValueFromEvent = (e) => {
+      formItemProps.getValueFromEvent = e => {
         if (e && e.fileList[0]) {
-          helper.getBase64(e.file).then((value) => {
+          helper.getBase64(e.file).then(value => {
             form.setFieldsValue({ [name]: value });
           });
         }
@@ -81,7 +95,9 @@ function DynamicFormFields({ fields, feedbackIcons, form }) {
         <Form.Item {...formItemProps}>
           <DynamicFormField field={field} form={form} />
         </Form.Item>
-        {isFunction(contentAfter) ? contentAfter(form.getFieldValue(name)) : contentAfter}
+        {isFunction(contentAfter)
+          ? contentAfter(form.getFieldValue(name))
+          : contentAfter}
       </React.Fragment>
     );
   });
@@ -108,9 +124,12 @@ const reducerForActionSet = (state, action) => {
 };
 
 function DynamicFormActions({ actions, isFormDirty }) {
-  const [inProgressActions, setActionInProgress] = useReducer(reducerForActionSet, new Set());
+  const [inProgressActions, setActionInProgress] = useReducer(
+    reducerForActionSet,
+    new Set(),
+  );
 
-  const handleAction = useCallback((action) => {
+  const handleAction = useCallback(action => {
     const actionName = action.name;
     if (isFunction(action.callback)) {
       setActionInProgress({ actionName, inProgress: true });
@@ -120,7 +139,7 @@ function DynamicFormActions({ actions, isFormDirty }) {
     }
   }, []);
 
-  return actions.map((action) => (
+  return actions.map(action => (
     <Button
       key={action.name}
       htmlType="button"
@@ -128,7 +147,8 @@ function DynamicFormActions({ actions, isFormDirty }) {
       type={action.type}
       disabled={isFormDirty && action.disableWhenDirty}
       loading={inProgressActions.has(action.name)}
-      onClick={() => handleAction(action)}>
+      onClick={() => handleAction(action)}
+    >
       {action.name}
     </Button>
   ));
@@ -156,7 +176,9 @@ export default function DynamicForm({
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
-  const [showExtraFields, setShowExtraFields] = useState(defaultShowExtraFields);
+  const [showExtraFields, setShowExtraFields] = useState(
+    defaultShowExtraFields,
+  );
   const [form] = Form.useForm();
   const extraFields = filter(fields, { extra: true });
   const regularFields = difference(fields, extraFields);
@@ -165,8 +187,11 @@ export default function DynamicForm({
   const controlledValues = {};
   const controlledOnChange = {};
 
-  fields.forEach((field) => {
-    if (typeof field.value !== "undefined" && typeof field.onChange === "function") {
+  fields.forEach(field => {
+    if (
+      typeof field.value !== "undefined" &&
+      typeof field.onChange === "function"
+    ) {
       controlledValues[field.name] = field.value;
       controlledOnChange[field.name] = field.onChange;
     }
@@ -174,7 +199,7 @@ export default function DynamicForm({
 
   // Patch form values if controlled
   React.useEffect(() => {
-    Object.keys(controlledValues).forEach((name) => {
+    Object.keys(controlledValues).forEach(name => {
       if (form.getFieldValue(name) !== controlledValues[name]) {
         form.setFieldsValue({ [name]: controlledValues[name] });
       }
@@ -183,20 +208,26 @@ export default function DynamicForm({
   }, [JSON.stringify(controlledValues)]);
 
   // Patch onChange for controlled fields
-  const handleFieldChange = (name, originalOnChange) => (value) => {
+  const handleFieldChange = (name, originalOnChange) => value => {
     if (controlledOnChange[name]) controlledOnChange[name](value);
     if (originalOnChange) originalOnChange(value);
   };
 
   // Patch fields to inject value/onChange if controlled
-  const patchedFields = fields.map((field) => {
-    if (typeof field.value !== "undefined" && typeof field.onChange === "function") {
+  const patchedFields = fields.map(field => {
+    if (
+      typeof field.value !== "undefined" &&
+      typeof field.onChange === "function"
+    ) {
       return {
         ...field,
         props: {
           ...field.props,
           value: field.value,
-          onChange: handleFieldChange(field.name, field.props && field.props.onChange),
+          onChange: handleFieldChange(
+            field.name,
+            field.props && field.props.onChange,
+          ),
         },
       };
     }
@@ -207,30 +238,30 @@ export default function DynamicForm({
   const patchedRegularFields = difference(patchedFields, patchedExtraFields);
 
   const handleFinish = useCallback(
-    (values) => {
+    values => {
       setIsSubmitting(true);
       values = normalizeEmptyValuesToNull(fields, values);
       onSubmit(
         values,
-        (msg) => {
+        msg => {
           setIsSubmitting(false);
           setIsTouched(false); // reset form touched state
           notification.success(msg);
         },
-        (msg) => {
+        msg => {
           setIsSubmitting(false);
           notification.error(msg);
-        }
+        },
       );
     },
-    [fields, onSubmit]
+    [fields, onSubmit],
   );
 
   const handleFinishFailed = useCallback(
     ({ errorFields }) => {
       form.scrollToField(errorFields[0].name);
     },
-    [form]
+    [form],
   );
   return (
     <Form
@@ -242,15 +273,25 @@ export default function DynamicForm({
       className="dynamic-form"
       layout="vertical"
       onFinish={handleFinish}
-      onFinishFailed={handleFinishFailed}>
-      <DynamicFormFields fields={patchedRegularFields} feedbackIcons={feedbackIcons} form={form} />
+      onFinishFailed={handleFinishFailed}
+    >
+      <DynamicFormFields
+        fields={patchedRegularFields}
+        feedbackIcons={feedbackIcons}
+        form={form}
+      />
       {!isEmpty(patchedExtraFields) && (
         <div className="extra-options">
           <Button
             type="dashed"
             block
             className="extra-options-button"
-            onClick={() => setShowExtraFields((currentShowExtraFields) => !currentShowExtraFields)}>
+            onClick={() =>
+              setShowExtraFields(
+                currentShowExtraFields => !currentShowExtraFields,
+              )
+            }
+          >
             Additional Settings
             <i
               className={cx("fa m-l-5", {
@@ -260,13 +301,25 @@ export default function DynamicForm({
               aria-hidden="true"
             />
           </Button>
-          <Collapse collapsed={!showExtraFields} className="extra-options-content">
-            <DynamicFormFields fields={patchedExtraFields} feedbackIcons={feedbackIcons} form={form} />
+          <Collapse
+            collapsed={!showExtraFields}
+            className="extra-options-content"
+          >
+            <DynamicFormFields
+              fields={patchedExtraFields}
+              feedbackIcons={feedbackIcons}
+              form={form}
+            />
           </Collapse>
         </div>
       )}
       {!hideSubmitButton && (
-        <Button className="w-100 m-t-20" type="primary" htmlType="submit" disabled={isSubmitting}>
+        <Button
+          className="w-100 m-t-20"
+          type="primary"
+          htmlType="submit"
+          disabled={isSubmitting}
+        >
           {saveText}
         </Button>
       )}

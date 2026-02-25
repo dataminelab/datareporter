@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import type { Timezone } from 'chronoshift';
+import type { Timezone } from "chronoshift";
 
-import { PlyType } from '../types';
+import { PlyType } from "../types";
 
 const BOUNDS_REG_EXP = /^[\[(][\])]$/;
 
@@ -30,9 +30,12 @@ export interface PlywoodRangeJS {
 }
 
 export abstract class Range<T> {
-  static DEFAULT_BOUNDS = '[)';
+  static DEFAULT_BOUNDS = "[)";
 
-  static areEquivalentBounds(bounds1: string | undefined, bounds2: string | undefined): boolean {
+  static areEquivalentBounds(
+    bounds1: string | undefined,
+    bounds2: string | undefined,
+  ): boolean {
     return (
       bounds1 === bounds2 ||
       (!bounds1 && bounds2 === Range.DEFAULT_BOUNDS) ||
@@ -45,29 +48,37 @@ export abstract class Range<T> {
   }
 
   static isRangeType(type: PlyType): boolean {
-    return type && type.indexOf('_RANGE') > 0;
+    return type && type.indexOf("_RANGE") > 0;
   }
 
   static unwrapRangeType(type: PlyType): PlyType | null {
     if (!type) return null;
-    return Range.isRangeType(type) ? <PlyType>type.substr(0, type.length - 6) : type;
+    return Range.isRangeType(type)
+      ? <PlyType>type.substr(0, type.length - 6)
+      : type;
   }
 
   static classMap: Record<string, typeof Range> = {};
 
   static register(ctr: any): void {
-    const rangeType = ctr.type.replace('_RANGE', '').toLowerCase();
+    const rangeType = ctr.type.replace("_RANGE", "").toLowerCase();
     Range.classMap[rangeType] = ctr;
   }
 
   static fromJS(parameters: PlywoodRangeJS): PlywoodRange {
     let ctr: string;
-    if (typeof parameters.start === 'number' || typeof parameters.end === 'number') {
-      ctr = 'number';
-    } else if (typeof parameters.start === 'string' || typeof parameters.end === 'string') {
-      ctr = 'string';
+    if (
+      typeof parameters.start === "number" ||
+      typeof parameters.end === "number"
+    ) {
+      ctr = "number";
+    } else if (
+      typeof parameters.start === "string" ||
+      typeof parameters.end === "string"
+    ) {
+      ctr = "string";
     } else {
-      ctr = 'time';
+      ctr = "time";
     }
     return (Range.classMap[ctr] as any).fromJS(parameters);
   }
@@ -87,19 +98,19 @@ export abstract class Range<T> {
     }
 
     if (start !== null && end !== null && this._endpointEqual(start, end)) {
-      if (bounds !== '[]') {
+      if (bounds !== "[]") {
         start = end = this._zeroEndpoint(); // empty set => make canonically [0, 0)
       }
-      if (bounds === '(]' || bounds === '()') this.bounds = '[)';
+      if (bounds === "(]" || bounds === "()") this.bounds = "[)";
     } else {
       if (start !== null && end !== null && end < start) {
-        throw new Error('must have start <= end');
+        throw new Error("must have start <= end");
       }
-      if (start === null && bounds[0] === '[') {
-        bounds = '(' + bounds[1];
+      if (start === null && bounds[0] === "[") {
+        bounds = "(" + bounds[1];
       }
-      if (end === null && bounds[1] === ']') {
-        bounds = bounds[0] + ')';
+      if (end === null && bounds[1] === "]") {
+        bounds = bounds[0] + ")";
       }
     }
 
@@ -140,13 +151,13 @@ export abstract class Range<T> {
   public toString(tz?: Timezone): string {
     const bounds = this.bounds;
     return (
-      '[' +
-      (bounds[0] === '(' ? '~' : '') +
+      "[" +
+      (bounds[0] === "(" ? "~" : "") +
       this._endpointToString(this.start, tz) +
-      ',' +
+      "," +
       this._endpointToString(this.end, tz) +
-      (bounds[1] === ')' ? '' : '!') +
-      ']'
+      (bounds[1] === ")" ? "" : "!") +
+      "]"
     );
   }
 
@@ -157,19 +168,19 @@ export abstract class Range<T> {
   }
 
   public openStart(): boolean {
-    return this.bounds[0] === '(';
+    return this.bounds[0] === "(";
   }
 
   public openEnd(): boolean {
-    return this.bounds[1] === ')';
+    return this.bounds[1] === ")";
   }
 
   public empty(): boolean {
-    return this._endpointEqual(this.start, this.end) && this.bounds === '[)';
+    return this._endpointEqual(this.start, this.end) && this.bounds === "[)";
   }
 
   public degenerate(): boolean {
-    return this._endpointEqual(this.start, this.end) && this.bounds === '[]';
+    return this._endpointEqual(this.start, this.end) && this.bounds === "[]";
   }
 
   public contains(val: T | Range<T>): boolean {
@@ -177,16 +188,23 @@ export abstract class Range<T> {
       const valStart = val.start;
       const valEnd = val.end;
       const valBound = val.bounds;
-      if (valBound[0] === '[') {
+      if (valBound[0] === "[") {
         if (!this.containsValue(valStart)) return false;
       } else {
-        if (!this.containsValue(valStart) && valStart.valueOf() !== this.start.valueOf())
+        if (
+          !this.containsValue(valStart) &&
+          valStart.valueOf() !== this.start.valueOf()
+        )
           return false;
       }
-      if (valBound[1] === ']') {
+      if (valBound[1] === "]") {
         if (!this.containsValue(valEnd)) return false;
       } else {
-        if (!this.containsValue(valEnd) && valEnd.valueOf() !== this.end.valueOf()) return false;
+        if (
+          !this.containsValue(valEnd) &&
+          valEnd.valueOf() !== this.end.valueOf()
+        )
+          return false;
       }
       return true;
     } else {
@@ -195,7 +213,7 @@ export abstract class Range<T> {
   }
 
   protected validMemberType(val: any): boolean {
-    return typeof val === 'number';
+    return typeof val === "number";
   }
 
   public containsValue(val: T): boolean {
@@ -207,12 +225,12 @@ export abstract class Range<T> {
     const end = this.end;
     const bounds = this.bounds;
 
-    if (bounds[0] === '[') {
+    if (bounds[0] === "[") {
       if (val < start) return false;
     } else {
       if (start !== null && val <= start) return false;
     }
-    if (bounds[1] === ']') {
+    if (bounds[1] === "]") {
       if (end < val) return false;
     } else {
       if (end !== null && end <= val) return false;
@@ -237,8 +255,10 @@ export abstract class Range<T> {
    */
   public adjacent(other: Range<T>): boolean {
     return (
-      (this._endpointEqual(this.end, other.start) && this.openEnd() !== other.openStart()) ||
-      (this._endpointEqual(this.start, other.end) && this.openStart() !== other.openEnd())
+      (this._endpointEqual(this.end, other.start) &&
+        this.openEnd() !== other.openStart()) ||
+      (this._endpointEqual(this.start, other.end) &&
+        this.openStart() !== other.openEnd())
     );
   }
 
@@ -283,7 +303,7 @@ export abstract class Range<T> {
     let startBound: string;
     if (thisStart === null || otherStart === null) {
       start = null;
-      startBound = '(';
+      startBound = "(";
     } else if (thisStart < otherStart) {
       start = thisStart;
       startBound = this.bounds[0];
@@ -296,7 +316,7 @@ export abstract class Range<T> {
     let endBound: string;
     if (thisEnd === null || otherEnd === null) {
       end = null;
-      endBound = ')';
+      endBound = ")";
     } else if (thisEnd < otherEnd) {
       end = otherEnd;
       endBound = other.bounds[1];

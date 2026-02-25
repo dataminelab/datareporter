@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const {
   Expression,
@@ -32,24 +32,24 @@ const {
 } = plywood;
 
 const diamonds = External.fromJS({
-  engine: 'druid',
-  source: 'diamonds',
-  timeAttribute: 'time',
+  engine: "druid",
+  source: "diamonds",
+  timeAttribute: "time",
   attributes: [
-    { name: 'time', type: 'TIME' },
-    { name: 'color', type: 'STRING' },
-    { name: 'cut', type: 'STRING' },
-    { name: 'isNice', type: 'BOOLEAN' },
-    { name: 'tags', type: 'SET/STRING' },
-    { name: 'pugs', type: 'SET/STRING' },
-    { name: 'carat', type: 'NUMBER', nativeType: 'STRING' },
-    { name: 'height_bucket', type: 'NUMBER' },
-    { name: 'price', type: 'NUMBER', unsplitable: true },
-    { name: 'tax', type: 'NUMBER', unsplitable: true },
+    { name: "time", type: "TIME" },
+    { name: "color", type: "STRING" },
+    { name: "cut", type: "STRING" },
+    { name: "isNice", type: "BOOLEAN" },
+    { name: "tags", type: "SET/STRING" },
+    { name: "pugs", type: "SET/STRING" },
+    { name: "carat", type: "NUMBER", nativeType: "STRING" },
+    { name: "height_bucket", type: "NUMBER" },
+    { name: "price", type: "NUMBER", unsplitable: true },
+    { name: "tax", type: "NUMBER", unsplitable: true },
     {
-      name: 'vendor_id',
-      type: 'NULL',
-      nativeType: 'hyperUnique',
+      name: "vendor_id",
+      type: "NULL",
+      nativeType: "hyperUnique",
       unsplitable: true,
     },
   ],
@@ -57,18 +57,21 @@ const diamonds = External.fromJS({
   allowSelectQueries: true,
 });
 
-describe('simulate', () => {
-  it('works in basic case', () => {
+describe("simulate", () => {
+  it("works in basic case", () => {
     const ex = ply()
-      .apply('Total', '$diamonds.count()')
-      .apply('TotalX2', '$Total * 2')
-      .apply('SomeSplit', $('diamonds').split('$cut:STRING', 'Cut').limit(10))
+      .apply("Total", "$diamonds.count()")
+      .apply("TotalX2", "$Total * 2")
+      .apply("SomeSplit", $("diamonds").split("$cut:STRING", "Cut").limit(10))
       .apply(
-        'SomeNestedSplit',
-        $('diamonds')
-          .split('$color:STRING', 'Color')
+        "SomeNestedSplit",
+        $("diamonds")
+          .split("$color:STRING", "Color")
           .limit(10)
-          .apply('SubSplit', $('diamonds').split('$cut:STRING', 'SubCut').limit(5)),
+          .apply(
+            "SubSplit",
+            $("diamonds").split("$cut:STRING", "SubCut").limit(5),
+          ),
       );
 
     expect(ex.simulate({ diamonds: diamonds }).toJS().data).to.deep.equal([
@@ -76,52 +79,52 @@ describe('simulate', () => {
         SomeNestedSplit: {
           attributes: [
             {
-              name: 'Color',
-              type: 'STRING',
+              name: "Color",
+              type: "STRING",
             },
             {
-              name: 'diamonds',
-              type: 'DATASET',
+              name: "diamonds",
+              type: "DATASET",
             },
             {
-              name: 'SubSplit',
-              type: 'DATASET',
+              name: "SubSplit",
+              type: "DATASET",
             },
           ],
           data: [
             {
-              Color: 'some_color',
+              Color: "some_color",
               SubSplit: {
                 attributes: [
                   {
-                    name: 'SubCut',
-                    type: 'STRING',
+                    name: "SubCut",
+                    type: "STRING",
                   },
                 ],
                 data: [
                   {
-                    SubCut: 'some_cut',
+                    SubCut: "some_cut",
                   },
                 ],
-                keys: ['SubCut'],
+                keys: ["SubCut"],
               },
             },
           ],
-          keys: ['Color'],
+          keys: ["Color"],
         },
         SomeSplit: {
           attributes: [
             {
-              name: 'Cut',
-              type: 'STRING',
+              name: "Cut",
+              type: "STRING",
             },
           ],
           data: [
             {
-              Cut: 'some_cut',
+              Cut: "some_cut",
             },
           ],
-          keys: ['Cut'],
+          keys: ["Cut"],
         },
         Total: 4,
         TotalX2: 4,

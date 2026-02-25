@@ -14,7 +14,8 @@ export default function AutoLimitCheckbox({ available, checked, onChange }) {
 
   let tooltipMessage = null;
   if (!available) {
-    tooltipMessage = "Auto limiting is not available for this Data Source type.";
+    tooltipMessage =
+      "Auto limiting is not available for this Data Source type.";
   } else {
     tooltipMessage = "Auto limit results to first 1000 rows.";
   }
@@ -25,7 +26,8 @@ export default function AutoLimitCheckbox({ available, checked, onChange }) {
         className="query-editor-controls-checkbox"
         disabled={!available}
         onClick={handleClick}
-        checked={available && checked}>
+        checked={available && checked}
+      >
         LIMIT 1000
       </Checkbox>
     </Tooltip>

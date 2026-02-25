@@ -17,18 +17,24 @@ import QueryResultsLink from "./QueryResultsLink";
 export default function QueryControlDropdown(props) {
   const menu = (
     <Menu>
-      {!props.query.isNew() && (!props.query.is_draft || !props.query.is_archived) && (
-        <Menu.Item>
-          <PlainButton onClick={() => props.openAddToDashboardForm(props.selectedTab)}>
-            <PlusCircleFilledIcon /> Add to Dashboard
-          </PlainButton>
-        </Menu.Item>
-      )}
+      {!props.query.isNew() &&
+        (!props.query.is_draft || !props.query.is_archived) && (
+          <Menu.Item>
+            <PlainButton
+              onClick={() => props.openAddToDashboardForm(props.selectedTab)}
+            >
+              <PlusCircleFilledIcon /> Add to Dashboard
+            </PlainButton>
+          </Menu.Item>
+        )}
       {!clientConfig.disablePublicUrls && !props.query.isNew() && (
         <Menu.Item>
           <PlainButton
-            onClick={() => props.showEmbedDialog(props.query, props.selectedTab)}
-            data-test="ShowEmbedDialogButton">
+            onClick={() =>
+              props.showEmbedDialog(props.query, props.selectedTab)
+            }
+            data-test="ShowEmbedDialogButton"
+          >
             <ShareAltOutlinedIcon /> Embed Elsewhere
           </PlainButton>
         </Menu.Item>
@@ -36,33 +42,48 @@ export default function QueryControlDropdown(props) {
       <Menu.Item>
         <QueryResultsLink
           fileType="csv"
-          disabled={props.queryExecuting || !props.queryResult.getData || !props.queryResult.getData()}
+          disabled={
+            props.queryExecuting ||
+            !props.queryResult.getData ||
+            !props.queryResult.getData()
+          }
           query={props.query}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}>
+          apiKey={props.apiKey}
+        >
           <FileOutlinedIcon /> Download as CSV File
         </QueryResultsLink>
       </Menu.Item>
       <Menu.Item>
         <QueryResultsLink
           fileType="tsv"
-          disabled={props.queryExecuting || !props.queryResult.getData || !props.queryResult.getData()}
+          disabled={
+            props.queryExecuting ||
+            !props.queryResult.getData ||
+            !props.queryResult.getData()
+          }
           query={props.query}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}>
+          apiKey={props.apiKey}
+        >
           <FileOutlinedIcon /> Download as TSV File
         </QueryResultsLink>
       </Menu.Item>
       <Menu.Item>
         <QueryResultsLink
           fileType="xlsx"
-          disabled={props.queryExecuting || !props.queryResult.getData || !props.queryResult.getData()}
+          disabled={
+            props.queryExecuting ||
+            !props.queryResult.getData ||
+            !props.queryResult.getData()
+          }
           query={props.query}
           queryResult={props.queryResult}
           embed={props.embed}
-          apiKey={props.apiKey}>
+          apiKey={props.apiKey}
+        >
           <FileExcelOutlinedIcon /> Download as Excel File
         </QueryResultsLink>
       </Menu.Item>
@@ -70,7 +91,11 @@ export default function QueryControlDropdown(props) {
   );
 
   return (
-    <Dropdown trigger={["click"]} overlay={menu} overlayClassName="query-control-dropdown-overlay">
+    <Dropdown
+      trigger={["click"]}
+      overlay={menu}
+      overlayClassName="query-control-dropdown-overlay"
+    >
       <Button data-test="QueryControlDropdownButton">
         <EllipsisOutlinedIcon rotate={90} />
       </Button>

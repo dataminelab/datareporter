@@ -10,6 +10,6 @@ export default function useEmbedDialog(report) {
       });
       EmbedReportDialog.showModal({ report, visualization });
     },
-    [report]
+    [report],
   );
 }

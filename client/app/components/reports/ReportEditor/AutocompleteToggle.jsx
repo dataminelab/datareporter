@@ -14,7 +14,8 @@ export default function AutocompleteToggle({ available, enabled, onToggle }) {
   }
 
   if (!available) {
-    tooltipMessage = "Live Autocomplete Not Available (Use Ctrl+Space to Trigger)";
+    tooltipMessage =
+      "Live Autocomplete Not Available (Use Ctrl+Space to Trigger)";
     icon = "icon-flash-off";
   }
 
@@ -27,7 +28,11 @@ export default function AutocompleteToggle({ available, enabled, onToggle }) {
 
   return (
     <Tooltip placement="top" title={tooltipMessage}>
-      <Button className="report-editor-controls-button m-r-5" disabled={!available} onClick={handleClick}>
+      <Button
+        className="report-editor-controls-button m-r-5"
+        disabled={!available}
+        onClick={handleClick}
+      >
         <i className={"icon " + icon} />
       </Button>
     </Tooltip>

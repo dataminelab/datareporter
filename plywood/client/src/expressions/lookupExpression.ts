@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class LookupExpression extends ChainableExpression {
-  static op = 'Lookup';
+  static op = "Lookup";
   static fromJS(parameters: ExpressionJS): LookupExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.lookupFn = parameters.lookupFn || (parameters as any).lookup;
@@ -31,8 +36,8 @@ export class LookupExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('lookup');
-    this._checkOperandTypes('STRING');
+    this._ensureOp("lookup");
+    this._checkOperandTypes("STRING");
     this.lookupFn = parameters.lookupFn;
     this.type = this.operand.type;
   }
@@ -62,14 +67,17 @@ export class LookupExpression extends ChainableExpression {
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
-    throw new Error('can not express as JS');
+    throw new Error("can not express as JS");
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    throw new Error('can not express as JS');
+    throw new Error("can not express as JS");
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.lookupExpression(operandSQL, this.lookupFn);
   }
 }

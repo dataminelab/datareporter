@@ -19,11 +19,15 @@ function getErrorMessageByStatus(status, defaultMessage) {
 }
 
 function getErrorMessage(error) {
-  const message = "It seems like we encountered an error. Try refreshing this page or contact your administrator.";
+  const message =
+    "It seems like we encountered an error. Try refreshing this page or contact your administrator.";
   if (isObject(error)) {
     // HTTP errors
     if (error.isAxiosError && isObject(error.response)) {
-      return getErrorMessageByStatus(error.response.status, get(error, "response.data.message", message));
+      return getErrorMessageByStatus(
+        error.response.status,
+        get(error, "response.data.message", message),
+      );
     }
     // Router errors
     if (error.status) {
@@ -46,7 +50,11 @@ export default function ErrorMessage({ error, message }) {
   };
 
   return (
-    <div className="error-message-container" data-test="ErrorMessage" role="alert">
+    <div
+      className="error-message-container"
+      data-test="ErrorMessage"
+      role="alert"
+    >
       <div className="error-state bg-white tiled">
         <div className="error-state__icon">
           <i className="zmdi zmdi-alert-circle-o" aria-hidden="true" />

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
@@ -23,7 +23,7 @@ import {
   ExpressionJS,
   ExpressionValue,
   r,
-} from './baseExpression';
+} from "./baseExpression";
 
 const IS_OR_OVERLAP: Record<string, boolean> = {
   is: true,
@@ -31,7 +31,7 @@ const IS_OR_OVERLAP: Record<string, boolean> = {
 };
 
 export class OrExpression extends ChainableUnaryExpression {
-  static op = 'Or';
+  static op = "Or";
   static fromJS(parameters: ExpressionJS): OrExpression {
     return new OrExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
@@ -43,9 +43,13 @@ export class OrExpression extends ChainableUnaryExpression {
     const { operand: lhs1, expression: rhs1 } = ex1 as ChainableUnaryExpression;
     const { operand: lhs2, expression: rhs2 } = ex2 as ChainableUnaryExpression;
 
-    if (!lhs1.equals(lhs2) || !rhs1.isOp('literal') || !rhs2.isOp('literal')) return null;
+    if (!lhs1.equals(lhs2) || !rhs1.isOp("literal") || !rhs2.isOp("literal"))
+      return null;
 
-    const union = Set.unionCover(rhs1.getLiteralValue(), rhs2.getLiteralValue());
+    const union = Set.unionCover(
+      rhs1.getLiteralValue(),
+      rhs2.getLiteralValue(),
+    );
     if (union === null) return null;
 
     return lhs1.overlap(r(union)).simplify();
@@ -53,17 +57,23 @@ export class OrExpression extends ChainableUnaryExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('or');
-    this._checkOperandTypes('BOOLEAN');
-    this._checkExpressionTypes('BOOLEAN');
-    this.type = 'BOOLEAN';
+    this._ensureOp("or");
+    this._checkOperandTypes("BOOLEAN");
+    this._checkExpressionTypes("BOOLEAN");
+    this.type = "BOOLEAN";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue || expressionValue;
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `(${operandJS}||${expressionJS})`;
   }
 

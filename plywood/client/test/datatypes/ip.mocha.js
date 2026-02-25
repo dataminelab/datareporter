@@ -15,99 +15,115 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const { testImmutableClass } = require('immutable-class-tester');
+const { testImmutableClass } = require("immutable-class-tester");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { $, ply, r, Ip } = plywood;
 
-describe('Ip', () => {
-  it('is immutable class', () => {
+describe("Ip", () => {
+  it("is immutable class", () => {
     testImmutableClass(Ip, [
       {
-        ip: '192.0.1.2/32',
-        type: 'IP',
+        ip: "192.0.1.2/32",
+        type: "IP",
       },
       {
-        ip: '192.0.1.2',
-        type: 'IP',
+        ip: "192.0.1.2",
+        type: "IP",
       },
     ]);
   });
 
-  it('should convert from string', () => {
-    const ip = Ip.fromString('192.0.1.2/32');
+  it("should convert from string", () => {
+    const ip = Ip.fromString("192.0.1.2/32");
     expect(ip instanceof Ip).equals(true);
     expect(ip.toJS()).to.deep.equals({
-      ip: '192.0.1.2/32',
-      type: 'IP',
+      ip: "192.0.1.2/32",
+      type: "IP",
     });
   });
 
-  it('should convert to string', () => {
+  it("should convert to string", () => {
     const ip = Ip.fromJS({
-      ip: '192.0.1.2/32',
-      type: 'IP',
+      ip: "192.0.1.2/32",
+      type: "IP",
     });
 
-    expect(ip.toString()).equal('192.0.1.2/32');
+    expect(ip.toString()).equal("192.0.1.2/32");
   });
 
-  describe('isIp', () => {
-    it('should work for ipv4', function () {
-      expect(Ip.isIp('192.0.1.2')).equals(true);
+  describe("isIp", () => {
+    it("should work for ipv4", function () {
+      expect(Ip.isIp("192.0.1.2")).equals(true);
     });
 
-    it('should work for ipv6', function () {
-      expect(Ip.isIp('2001:4d98:bffb:ff01::')).equals(true);
+    it("should work for ipv6", function () {
+      expect(Ip.isIp("2001:4d98:bffb:ff01::")).equals(true);
     });
 
-    it('should work for ipv6 range', function () {
-      expect(Ip.isIp('2001:4d98:bffb:ff01::/64')).equals(true);
+    it("should work for ipv6 range", function () {
+      expect(Ip.isIp("2001:4d98:bffb:ff01::/64")).equals(true);
     });
 
-    it('should work for ipv4 range', function () {
-      expect(Ip.isIp('192.0.1.2/32')).equals(true);
+    it("should work for ipv4 range", function () {
+      expect(Ip.isIp("192.0.1.2/32")).equals(true);
     });
 
-    it('should not work for any ol string', function () {
-      expect(Ip.isIp('hello')).equals(false);
+    it("should not work for any ol string", function () {
+      expect(Ip.isIp("hello")).equals(false);
     });
 
-    it('should not work for any ol number', function () {
+    it("should not work for any ol number", function () {
       expect(Ip.isIp(45)).equals(false);
     });
   });
 
-  describe('equals', () => {
-    it('should work for ipv4', function () {
-      expect(Ip.fromString('192.0.1.2').equals(Ip.fromString('192.0.1.2'))).equals(true);
-      expect(Ip.fromString('192.0.1.2').equals(Ip.fromString('192.0.1.3'))).equals(false);
-    });
-
-    it('should work for ipv6', function () {
+  describe("equals", () => {
+    it("should work for ipv4", function () {
       expect(
-        Ip.fromString('2001:4d98:bffb:ff01::').equals(Ip.fromString('2001:4d98:bffb:ff01::')),
+        Ip.fromString("192.0.1.2").equals(Ip.fromString("192.0.1.2")),
       ).equals(true);
       expect(
-        Ip.fromString('2001:4d98:bffb:ff01::').equals(Ip.fromString('2002:4d98:bffb:ff01::')),
+        Ip.fromString("192.0.1.2").equals(Ip.fromString("192.0.1.3")),
       ).equals(false);
     });
 
-    it('should work for ipv6 range', function () {
+    it("should work for ipv6", function () {
       expect(
-        Ip.fromString('2001:4d98:bffb:ff01::/64').equals(Ip.fromString('2001:4d98:bffb:ff01::/64')),
+        Ip.fromString("2001:4d98:bffb:ff01::").equals(
+          Ip.fromString("2001:4d98:bffb:ff01::"),
+        ),
       ).equals(true);
       expect(
-        Ip.fromString('2001:4d98:bffb:ff01::/64').equals(Ip.fromString('2002:4d98:bffb:ff01::/64')),
+        Ip.fromString("2001:4d98:bffb:ff01::").equals(
+          Ip.fromString("2002:4d98:bffb:ff01::"),
+        ),
       ).equals(false);
     });
 
-    it('should work for ipv4 range', function () {
-      expect(Ip.fromString('192.0.1.2/32').equals(Ip.fromString('192.0.1.2/32'))).equals(true);
-      expect(Ip.fromString('192.0.1.2/32').equals(Ip.fromString('192.0.1.3/32'))).equals(false);
+    it("should work for ipv6 range", function () {
+      expect(
+        Ip.fromString("2001:4d98:bffb:ff01::/64").equals(
+          Ip.fromString("2001:4d98:bffb:ff01::/64"),
+        ),
+      ).equals(true);
+      expect(
+        Ip.fromString("2001:4d98:bffb:ff01::/64").equals(
+          Ip.fromString("2002:4d98:bffb:ff01::/64"),
+        ),
+      ).equals(false);
+    });
+
+    it("should work for ipv4 range", function () {
+      expect(
+        Ip.fromString("192.0.1.2/32").equals(Ip.fromString("192.0.1.2/32")),
+      ).equals(true);
+      expect(
+        Ip.fromString("192.0.1.2/32").equals(Ip.fromString("192.0.1.3/32")),
+      ).equals(false);
     });
   });
 });

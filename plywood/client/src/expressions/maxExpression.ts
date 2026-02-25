@@ -14,32 +14,38 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { Dataset, PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { Aggregate } from './mixins/aggregate';
+} from "./baseExpression";
+import { Aggregate } from "./mixins/aggregate";
 
-export class MaxExpression extends ChainableUnaryExpression implements Aggregate {
-  static op = 'Max';
+export class MaxExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
+  static op = "Max";
   static fromJS(parameters: ExpressionJS): MaxExpression {
     return new MaxExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('max');
-    this._checkOperandTypes('DATASET');
-    this._checkExpressionTypes('NUMBER', 'TIME');
+    this._ensureOp("max");
+    this._checkOperandTypes("DATASET");
+    this._checkExpressionTypes("NUMBER", "TIME");
     this.type = Set.unwrapSetType(this.expression.type);
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue ? (operandValue as Dataset).max(this.expression) : null;
   }
 

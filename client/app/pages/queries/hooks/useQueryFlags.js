@@ -21,10 +21,12 @@ export default function useQueryFlags(query, dataSource = null) {
       canExecute:
         !isEmpty(query.query) &&
         policy.canRun(query) &&
-        (query.is_safe || (currentUser.hasPermission("execute_query") && !dataSource.view_only)),
+        (query.is_safe ||
+          (currentUser.hasPermission("execute_query") &&
+            !dataSource.view_only)),
       canFork: currentUser.hasPermission("edit_query") && !dataSource.view_only,
       canSchedule: currentUser.hasPermission("schedule_query"),
     }),
-    [query, dataSource.view_only]
+    [query, dataSource.view_only],
   );
 }

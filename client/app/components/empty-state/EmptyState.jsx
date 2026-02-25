@@ -21,7 +21,12 @@ export function Step({ show, completed, text, url, urlText, onClick }) {
 
   return (
     <li className={classNames({ done: completed })}>
-      {url ? <Link href={url} {...commonProps} /> : <PlainButton type="link" {...commonProps} />} {text}
+      {url ? (
+        <Link href={url} {...commonProps} />
+      ) : (
+        <PlainButton type="link" {...commonProps} />
+      )}{" "}
+      {text}
     </li>
   );
 }
@@ -101,7 +106,9 @@ function EmptyState({
   }, []);
 
   // Show if `onboardingMode=false` or any requested step not completed
-  const shouldShow = !onboardingMode || some(keys(isAvailable), (step) => isAvailable[step] && !isCompleted[step]);
+  const shouldShow =
+    !onboardingMode ||
+    some(keys(isAvailable), step => isAvailable[step] && !isCompleted[step]);
 
   if (!shouldShow) {
     return null;
@@ -214,7 +221,9 @@ function EmptyState({
     },
   ];
 
-  const stepsItems = getStepsItems ? getStepsItems(defaultStepsItems) : defaultStepsItems;
+  const stepsItems = getStepsItems
+    ? getStepsItems(defaultStepsItems)
+    : defaultStepsItems;
   const imageSource = illustrationPath
     ? illustrationPath
     : "static/images/illustrations/" + illustration + illustrationType;
@@ -228,16 +237,24 @@ function EmptyState({
             <i className={icon} aria-hidden="true" />
           </h2>
           <p>{description}</p>
-          <img src={imageSource} alt={illustration + " Illustration"} width="75%" />
+          <img
+            src={imageSource}
+            alt={illustration + " Illustration"}
+            width="75%"
+          />
         </div>
         <div className="empty-state__steps">
           <h4>Let&apos;s get started</h4>
-          <ol>{stepsItems.map((item) => item.node)}</ol>
+          <ol>{stepsItems.map(item => item.node)}</ol>
           {helpMessage}
         </div>
       </div>
       {closable && (
-        <PlainButton className="close-button" aria-label="Close" onClick={onClose}>
+        <PlainButton
+          className="close-button"
+          aria-label="Close"
+          onClick={onClose}
+        >
           <CloseOutlinedIcon />
         </PlainButton>
       )}

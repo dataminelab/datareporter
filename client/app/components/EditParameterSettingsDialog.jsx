@@ -27,7 +27,9 @@ function isTypeDateRange(type) {
 
 function joinExampleList(multiValuesOptions) {
   const { prefix, suffix } = multiValuesOptions;
-  return ["value1", "value2", "value3"].map((value) => `${prefix}${value}${suffix}`).join(",");
+  return ["value1", "value2", "value3"]
+    .map(value => `${prefix}${value}${suffix}`)
+    .join(",");
 }
 
 function NameInput({ name, type, onChange, existingNames, setValidation }) {
@@ -46,7 +48,9 @@ function NameInput({ name, type, onChange, existingNames, setValidation }) {
       helpText = (
         <React.Fragment>
           Appears in query as{" "}
-          <code style={{ display: "inline-block", color: "inherit" }}>{`{{${name}.start}} {{${name}.end}}`}</code>
+          <code
+            style={{ display: "inline-block", color: "inherit" }}
+          >{`{{${name}.start}} {{${name}.end}}`}</code>
         </React.Fragment>
       );
     }
@@ -54,8 +58,14 @@ function NameInput({ name, type, onChange, existingNames, setValidation }) {
   }
 
   return (
-    <Form.Item required label="Keyword" help={helpText} validateStatus={validateStatus} {...formItemProps}>
-      <Input onChange={(e) => onChange(e.target.value)} autoFocus />
+    <Form.Item
+      required
+      label="Keyword"
+      help={helpText}
+      validateStatus={validateStatus}
+      {...formItemProps}
+    >
+      <Input onChange={e => onChange(e.target.value)} autoFocus />
     </Form.Item>
   );
 }
@@ -117,7 +127,7 @@ function EditParameterSettingsDialog(props) {
 
   const paramFormId = useUniqueId("paramForm");
 
-  const handleRegexChange = (e) => {
+  const handleRegexChange = e => {
     setUserInput(e.target.value);
     try {
       new RegExp(e.target.value);
@@ -143,15 +153,17 @@ function EditParameterSettingsDialog(props) {
           disabled={!isFulfilled()}
           type="primary"
           form={paramFormId}
-          data-test="SaveParameterSettings">
+          data-test="SaveParameterSettings"
+        >
           {isNew ? "Add Parameter" : "OK"}
         </Button>,
-      ]}>
+      ]}
+    >
       <Form layout="horizontal" onFinish={onConfirm} id={paramFormId}>
         {isNew && (
           <NameInput
             name={param.name}
-            onChange={(name) => setParam({ ...param, name })}
+            onChange={name => setParam({ ...param, name })}
             setValidation={setIsNameValid}
             existingNames={props.existingParams}
             type={param.type}
@@ -159,13 +171,19 @@ function EditParameterSettingsDialog(props) {
         )}
         <Form.Item required label="Title" {...formItemProps}>
           <Input
-            value={isNull(param.title) ? getDefaultTitle(param.name) : param.title}
-            onChange={(e) => setParam({ ...param, title: e.target.value })}
+            value={
+              isNull(param.title) ? getDefaultTitle(param.name) : param.title
+            }
+            onChange={e => setParam({ ...param, title: e.target.value })}
             data-test="ParameterTitleInput"
           />
         </Form.Item>
         <Form.Item label="Type" {...formItemProps}>
-          <Select value={param.type} onChange={(type) => setParam({ ...param, type })} data-test="ParameterTypeSelect">
+          <Select
+            value={param.type}
+            onChange={type => setParam({ ...param, type })}
+            data-test="ParameterTypeSelect"
+          >
             <Option value="text" data-test="TextParameterTypeOption">
               Text
             </Option>
@@ -181,10 +199,15 @@ function EditParameterSettingsDialog(props) {
             <Option value="date" data-test="DateParameterTypeOption">
               Date
             </Option>
-            <Option value="datetime-local" data-test="DateTimeParameterTypeOption">
+            <Option
+              value="datetime-local"
+              data-test="DateTimeParameterTypeOption"
+            >
               Date and Time
             </Option>
-            <Option value="datetime-with-seconds">Date and Time (with seconds)</Option>
+            <Option value="datetime-with-seconds">
+              Date and Time (with seconds)
+            </Option>
             <Option disabled key="dv2">
               <Divider className="select-option-divider" />
             </Option>
@@ -192,14 +215,19 @@ function EditParameterSettingsDialog(props) {
               Date Range
             </Option>
             <Option value="datetime-range">Date and Time Range</Option>
-            <Option value="datetime-range-with-seconds">Date and Time Range (with seconds)</Option>
+            <Option value="datetime-range-with-seconds">
+              Date and Time Range (with seconds)
+            </Option>
           </Select>
         </Form.Item>
         {param.type === "text-pattern" && (
           <Form.Item
             label="Regex"
-            help={!isValidRegex ? "Invalid Regex Pattern" : "Valid Regex Pattern"}
-            {...formItemProps}>
+            help={
+              !isValidRegex ? "Invalid Regex Pattern" : "Valid Regex Pattern"
+            }
+            {...formItemProps}
+          >
             <Input
               value={userInput}
               onChange={handleRegexChange}
@@ -209,28 +237,43 @@ function EditParameterSettingsDialog(props) {
           </Form.Item>
         )}
         {param.type === "enum" && (
-          <Form.Item label="Values" help="Dropdown list values (newline delimited)" {...formItemProps}>
+          <Form.Item
+            label="Values"
+            help="Dropdown list values (newline delimited)"
+            {...formItemProps}
+          >
             <Input.TextArea
               rows={3}
               value={param.enumOptions}
-              onChange={(e) => setParam({ ...param, enumOptions: e.target.value })}
+              onChange={e =>
+                setParam({ ...param, enumOptions: e.target.value })
+              }
             />
           </Form.Item>
         )}
         {param.type === "query" && (
-          <Form.Item label="Query" help="Select query to load dropdown values from" {...formItemProps}>
+          <Form.Item
+            label="Query"
+            help="Select query to load dropdown values from"
+            {...formItemProps}
+          >
             <QuerySelector
               selectedQuery={initialQuery}
-              onChange={(q) => setParam({ ...param, queryId: q && q.id })}
+              onChange={q => setParam({ ...param, queryId: q && q.id })}
               type="select"
             />
           </Form.Item>
         )}
         {(param.type === "enum" || param.type === "query") && (
-          <Form.Item className="m-b-0" label=" " colon={false} {...formItemProps}>
+          <Form.Item
+            className="m-b-0"
+            label=" "
+            colon={false}
+            {...formItemProps}
+          >
             <Checkbox
               defaultChecked={!!param.multiValuesOptions}
-              onChange={(e) =>
+              onChange={e =>
                 setParam({
                   ...param,
                   multiValuesOptions: e.target.checked
@@ -242,41 +285,46 @@ function EditParameterSettingsDialog(props) {
                     : null,
                 })
               }
-              data-test="AllowMultipleValuesCheckbox">
+              data-test="AllowMultipleValuesCheckbox"
+            >
               Allow multiple values
             </Checkbox>
           </Form.Item>
         )}
-        {(param.type === "enum" || param.type === "query") && param.multiValuesOptions && (
-          <Form.Item
-            label="Quotation"
-            help={
-              <React.Fragment>
-                Placed in query as: <code>{joinExampleList(param.multiValuesOptions)}</code>
-              </React.Fragment>
-            }
-            {...formItemProps}>
-            <Select
-              value={param.multiValuesOptions.prefix}
-              onChange={(quoteOption) =>
-                setParam({
-                  ...param,
-                  multiValuesOptions: {
-                    ...param.multiValuesOptions,
-                    prefix: quoteOption,
-                    suffix: quoteOption,
-                  },
-                })
+        {(param.type === "enum" || param.type === "query") &&
+          param.multiValuesOptions && (
+            <Form.Item
+              label="Quotation"
+              help={
+                <React.Fragment>
+                  Placed in query as:{" "}
+                  <code>{joinExampleList(param.multiValuesOptions)}</code>
+                </React.Fragment>
               }
-              data-test="QuotationSelect">
-              <Option value="">None (default)</Option>
-              <Option value="'">Single Quotation Mark</Option>
-              <Option value={'"'} data-test="DoubleQuotationMarkOption">
-                Double Quotation Mark
-              </Option>
-            </Select>
-          </Form.Item>
-        )}
+              {...formItemProps}
+            >
+              <Select
+                value={param.multiValuesOptions.prefix}
+                onChange={quoteOption =>
+                  setParam({
+                    ...param,
+                    multiValuesOptions: {
+                      ...param.multiValuesOptions,
+                      prefix: quoteOption,
+                      suffix: quoteOption,
+                    },
+                  })
+                }
+                data-test="QuotationSelect"
+              >
+                <Option value="">None (default)</Option>
+                <Option value="'">Single Quotation Mark</Option>
+                <Option value={'"'} data-test="DoubleQuotationMarkOption">
+                  Double Quotation Mark
+                </Option>
+              </Select>
+            </Form.Item>
+          )}
       </Form>
     </Modal>
   );

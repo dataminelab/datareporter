@@ -22,18 +22,32 @@ import VisualizationRenderer from "@/components/visualizations/VisualizationRend
 
 import Widget from "./Widget";
 
-function visualizationWidgetMenuOptions({ widget, canEditDashboard, onParametersEdit }) {
+function visualizationWidgetMenuOptions({
+  widget,
+  canEditDashboard,
+  onParametersEdit,
+}) {
   const canViewQuery = currentUser.hasPermission("view_query");
-  const canEditParameters = canEditDashboard && !isEmpty(invoke(widget, "query.getParametersDefs"));
+  const canEditParameters =
+    canEditDashboard && !isEmpty(invoke(widget, "query.getParametersDefs"));
   const widgetQueryResult = widget.getQueryResult();
-  const isQueryResultEmpty = !widgetQueryResult || !widgetQueryResult.isEmpty || widgetQueryResult.isEmpty();
+  const isQueryResultEmpty =
+    !widgetQueryResult ||
+    !widgetQueryResult.isEmpty ||
+    widgetQueryResult.isEmpty();
 
-  const downloadLink = (fileType) => widgetQueryResult.getLink(widget.getQuery().id, fileType);
-  const downloadName = (fileType) => widgetQueryResult.getName(widget.getQuery().name, fileType);
+  const downloadLink = fileType =>
+    widgetQueryResult.getLink(widget.getQuery().id, fileType);
+  const downloadName = fileType =>
+    widgetQueryResult.getName(widget.getQuery().name, fileType);
   return compact([
     <Menu.Item key="download_csv" disabled={isQueryResultEmpty}>
       {!isQueryResultEmpty ? (
-        <Link href={downloadLink("csv")} download={downloadName("csv")} target="_self">
+        <Link
+          href={downloadLink("csv")}
+          download={downloadName("csv")}
+          target="_self"
+        >
           Download as CSV File
         </Link>
       ) : (
@@ -42,7 +56,11 @@ function visualizationWidgetMenuOptions({ widget, canEditDashboard, onParameters
     </Menu.Item>,
     <Menu.Item key="download_tsv" disabled={isQueryResultEmpty}>
       {!isQueryResultEmpty ? (
-        <Link href={downloadLink("tsv")} download={downloadName("tsv")} target="_self">
+        <Link
+          href={downloadLink("tsv")}
+          download={downloadName("tsv")}
+          target="_self"
+        >
           Download as TSV File
         </Link>
       ) : (
@@ -51,7 +69,11 @@ function visualizationWidgetMenuOptions({ widget, canEditDashboard, onParameters
     </Menu.Item>,
     <Menu.Item key="download_excel" disabled={isQueryResultEmpty}>
       {!isQueryResultEmpty ? (
-        <Link href={downloadLink("xlsx")} download={downloadName("xlsx")} target="_self">
+        <Link
+          href={downloadLink("xlsx")}
+          download={downloadName("xlsx")}
+          target="_self"
+        >
           Download as Excel File
         </Link>
       ) : (
@@ -61,7 +83,9 @@ function visualizationWidgetMenuOptions({ widget, canEditDashboard, onParameters
     (canViewQuery || canEditParameters) && <Menu.Divider key="divider" />,
     canViewQuery && (
       <Menu.Item key="view_query">
-        <Link href={widget.getQuery().getUrl(true, widget.visualization.id)}>View Query</Link>
+        <Link href={widget.getQuery().getUrl(true, widget.visualization.id)}>
+          View Query
+        </Link>
       </Menu.Item>
     ),
     canEditParameters && (
@@ -103,7 +127,11 @@ function VisualizationWidgetHeader({
       <div className="t-header widget clearfix">
         <div className="th-title">
           <p>
-            <QueryLink query={widget.getQuery()} visualization={widget.visualization} readOnly={!canViewQuery} />
+            <QueryLink
+              query={widget.getQuery()}
+              visualization={widget.visualization}
+              readOnly={!canViewQuery}
+            />
           </p>
           {!isEmpty(widget.getQuery().description) && (
             <HtmlContent className="text-muted markdown query--description">
@@ -149,7 +177,7 @@ function VisualizationWidgetFooter({ widget, isPublic, onRefresh, onExpand }) {
   const updatedAt = invoke(widgetQueryResult, "getUpdatedAt");
   const [refreshClickButtonId, setRefreshClickButtonId] = useState();
 
-  const refreshWidget = (buttonId) => {
+  const refreshWidget = buttonId => {
     if (!refreshClickButtonId) {
       setRefreshClickButtonId(buttonId);
       onRefresh().finally(() => setRefreshClickButtonId(null));
@@ -163,7 +191,8 @@ function VisualizationWidgetFooter({ widget, isPublic, onRefresh, onExpand }) {
           <PlainButton
             className="refresh-button hidden-print btn btn-sm btn-default btn-transparent"
             onClick={() => refreshWidget(1)}
-            data-test="RefreshButton">
+            data-test="RefreshButton"
+          >
             <i
               className={cx("zmdi zmdi-refresh", {
                 "zmdi-hc-spin": refreshClickButtonId === 1,
@@ -171,17 +200,21 @@ function VisualizationWidgetFooter({ widget, isPublic, onRefresh, onExpand }) {
               aria-hidden="true"
             />
             <span className="sr-only">
-              {refreshClickButtonId === 1 ? "Refreshing, please wait. " : "Press to refresh. "}
+              {refreshClickButtonId === 1
+                ? "Refreshing, please wait. "
+                : "Press to refresh. "}
             </span>{" "}
             <TimeAgo date={updatedAt} />
           </PlainButton>
         )}
         <span className="visible-print">
-          <i className="zmdi zmdi-time-restore" aria-hidden="true" /> {formatDateTime(updatedAt)}
+          <i className="zmdi zmdi-time-restore" aria-hidden="true" />{" "}
+          {formatDateTime(updatedAt)}
         </span>
         {isPublic && (
           <span className="small hidden-print">
-            <i className="zmdi zmdi-time-restore" aria-hidden="true" /> <TimeAgo date={updatedAt} />
+            <i className="zmdi zmdi-time-restore" aria-hidden="true" />{" "}
+            <TimeAgo date={updatedAt} />
           </span>
         )}
       </span>
@@ -189,7 +222,8 @@ function VisualizationWidgetFooter({ widget, isPublic, onRefresh, onExpand }) {
         {!isPublic && (
           <PlainButton
             className="btn btn-sm btn-default hidden-print btn-transparent btn__refresh"
-            onClick={() => refreshWidget(2)}>
+            onClick={() => refreshWidget(2)}
+          >
             <i
               className={cx("zmdi zmdi-refresh", {
                 "zmdi-hc-spin": refreshClickButtonId === 2,
@@ -197,11 +231,16 @@ function VisualizationWidgetFooter({ widget, isPublic, onRefresh, onExpand }) {
               aria-hidden="true"
             />
             <span className="sr-only">
-              {refreshClickButtonId === 2 ? "Refreshing, please wait." : "Press to refresh."}
+              {refreshClickButtonId === 2
+                ? "Refreshing, please wait."
+                : "Press to refresh."}
             </span>
           </PlainButton>
         )}
-        <PlainButton className="btn btn-sm btn-default hidden-print btn-transparent btn__refresh" onClick={onExpand}>
+        <PlainButton
+          className="btn btn-sm btn-default hidden-print btn-transparent btn__refresh"
+          onClick={onExpand}
+        >
           <i className="zmdi zmdi-fullscreen" aria-hidden="true" />
         </PlainButton>
       </span>
@@ -264,7 +303,7 @@ class VisualizationWidget extends React.Component {
     onLoad();
   }
 
-  onLocalFiltersChange = (localFilters) => {
+  onLocalFiltersChange = localFilters => {
     this.setState({ localFilters });
   };
 
@@ -276,11 +315,12 @@ class VisualizationWidget extends React.Component {
   };
 
   editParameterMappings = () => {
-    const { widget, dashboard, onRefresh, onParameterMappingsChange } = this.props;
+    const { widget, dashboard, onRefresh, onParameterMappingsChange } =
+      this.props;
     EditParameterMappingsDialog.showModal({
       dashboard,
       widget,
-    }).onClose((valuesChanged) => {
+    }).onClose(valuesChanged => {
       // refresh widget if any parameter value has been updated
       if (valuesChanged) {
         onRefresh();
@@ -300,7 +340,8 @@ class VisualizationWidget extends React.Component {
           <div className="body-row-auto scrollbox">
             {widgetQueryResult.getError() && (
               <div className="alert alert-danger m-5">
-                Error running query: <strong>{widgetQueryResult.getError()}</strong>
+                Error running query:{" "}
+                <strong>{widgetQueryResult.getError()}</strong>
               </div>
             )}
           </div>
@@ -323,9 +364,13 @@ class VisualizationWidget extends React.Component {
             className="body-row-auto spinner-container"
             role="status"
             aria-live="polite"
-            aria-relevant="additions removals">
+            aria-relevant="additions removals"
+          >
             <div className="spinner">
-              <i className="zmdi zmdi-refresh zmdi-hc-spin zmdi-hc-5x" aria-hidden="true" />
+              <i
+                className="zmdi zmdi-refresh zmdi-hc-spin zmdi-hc-5x"
+                aria-hidden="true"
+              />
               <span className="sr-only">Loading...</span>
             </div>
           </div>
@@ -334,11 +379,13 @@ class VisualizationWidget extends React.Component {
   }
 
   render() {
-    const { widget, isLoading, isPublic, canEdit, isEditing, onRefresh } = this.props;
+    const { widget, isLoading, isPublic, canEdit, isEditing, onRefresh } =
+      this.props;
     const { localParameters } = this.state;
     const widgetQueryResult = widget.getQueryResult();
-    const isRefreshing = isLoading && !!(widgetQueryResult && widgetQueryResult.getStatus());
-    const onParametersEdit = (parameters) => {
+    const isRefreshing =
+      isLoading && !!(widgetQueryResult && widgetQueryResult.getStatus());
+    const onParametersEdit = parameters => {
       const paramOrder = map(parameters, "name");
       widget.options.paramOrder = paramOrder;
       widget.save("options", { paramOrder });
@@ -371,7 +418,8 @@ class VisualizationWidget extends React.Component {
             onExpand={this.expandWidget}
           />
         }
-        tileProps={{ "data-refreshing": isRefreshing }}>
+        tileProps={{ "data-refreshing": isRefreshing }}
+      >
         {this.renderVisualization()}
       </Widget>
     );

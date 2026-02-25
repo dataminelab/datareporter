@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-var fs = require('fs');
+var fs = require("fs");
 
-var packageFilename = './package.json';
+var packageFilename = "./package.json";
 try {
-  var packageData = JSON.parse(fs.readFileSync(packageFilename, 'utf8'));
+  var packageData = JSON.parse(fs.readFileSync(packageFilename, "utf8"));
 } catch (e) {
   process.exit(1);
 }

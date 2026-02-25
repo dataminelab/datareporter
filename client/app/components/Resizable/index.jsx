@@ -1,12 +1,23 @@
 import * as d3 from "d3";
-import React, { useRef, useMemo, useCallback, useState, useEffect } from "react";
+import React, {
+  useRef,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+} from "react";
 import PropTypes from "prop-types";
 import { Resizable as ReactResizable } from "react-resizable";
 import KeyboardShortcuts from "@/services/KeyboardShortcuts";
 
 import "./index.less";
 
-export default function Resizable({ toggleShortcut, direction, sizeAttribute, children }) {
+export default function Resizable({
+  toggleShortcut,
+  direction,
+  sizeAttribute,
+  children,
+}) {
   const [size, setSize] = useState(0);
   const elementRef = useRef();
   const wasUsingTouchEventsRef = useRef(false);
@@ -71,7 +82,7 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         }}
       />
     ),
-    [direction, toggle]
+    [direction, toggle],
   );
 
   useEffect(() => {
@@ -96,7 +107,10 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
       },
       onResize: (unused, data) => {
         // update element directly for better UI responsiveness
-        d3.select(elementRef.current).style(sizeAttribute, `${data.size[sizeProp]}px`);
+        d3.select(elementRef.current).style(
+          sizeAttribute,
+          `${data.size[sizeProp]}px`,
+        );
         setSize(data.size[sizeProp]);
         wasResizedRef.current = true;
       },
@@ -106,12 +120,12 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         }
       },
     }),
-    [sizeProp, getElementSize, sizeAttribute]
+    [sizeProp, getElementSize, sizeAttribute],
   );
 
   const draggableCoreOptions = useMemo(
     () => ({
-      onMouseDown: (e) => {
+      onMouseDown: e => {
         // In some cases this handler is executed twice during the same resize operation - first time
         // with `touchstart` event and second time with `mousedown` (probably emulated by browser).
         // Therefore we set the flag only when we receive `touchstart` because in ths case it's definitely
@@ -125,7 +139,7 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
         setSize(getElementSize());
       },
     }),
-    [getElementSize]
+    [getElementSize],
   );
 
   if (!children) {
@@ -147,7 +161,8 @@ export default function Resizable({ toggleShortcut, direction, sizeAttribute, ch
       height={direction === "vertical" ? size : 0}
       minConstraints={[0, 0]}
       {...resizeEventHandlers}
-      draggableOpts={draggableCoreOptions}>
+      draggableOpts={draggableCoreOptions}
+    >
       {children}
     </ReactResizable>
   );

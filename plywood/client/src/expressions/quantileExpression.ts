@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from '../datatypes';
-import { SQLDialect } from '../dialect';
+import { Dataset, PlywoodValue } from "../datatypes";
+import { SQLDialect } from "../dialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { Aggregate } from './mixins/aggregate';
-import { RefExpression } from './refExpression';
+} from "./baseExpression";
+import { Aggregate } from "./mixins/aggregate";
+import { RefExpression } from "./refExpression";
 
-export class QuantileExpression extends ChainableUnaryExpression implements Aggregate {
-  static op = 'Quantile';
+export class QuantileExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
+  static op = "Quantile";
   static fromJS(parameters: ExpressionJS): QuantileExpression {
     const value = ChainableUnaryExpression.jsToValue(parameters);
     value.value = parameters.value || (parameters as any).quantile;
@@ -40,12 +43,12 @@ export class QuantileExpression extends ChainableUnaryExpression implements Aggr
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('quantile');
-    this._checkOperandTypes('DATASET');
-    this._checkExpressionTypes('NUMBER');
+    this._ensureOp("quantile");
+    this._checkOperandTypes("DATASET");
+    this._checkExpressionTypes("NUMBER");
     this.value = parameters.value;
     this.tuning = parameters.tuning;
-    this.type = 'NUMBER';
+    this.type = "NUMBER";
   }
 
   public valueOf(): ExpressionValue {
@@ -63,7 +66,11 @@ export class QuantileExpression extends ChainableUnaryExpression implements Aggr
   }
 
   public equals(other: QuantileExpression | undefined): boolean {
-    return super.equals(other) && this.value === other.value && this.tuning === other.tuning;
+    return (
+      super.equals(other) &&
+      this.value === other.value &&
+      this.tuning === other.tuning
+    );
   }
 
   protected _toStringParameters(indent?: int): string[] {
@@ -72,8 +79,13 @@ export class QuantileExpression extends ChainableUnaryExpression implements Aggr
     return params;
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
-    return operandValue ? (operandValue as Dataset).quantile(this.expression, this.value) : null;
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
+    return operandValue
+      ? (operandValue as Dataset).quantile(this.expression, this.value)
+      : null;
   }
 
   protected _getSQLChainableUnaryHelper(

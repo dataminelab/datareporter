@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-import { Dataset, Datum, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { Dataset, Datum, PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
-import { Aggregate } from './mixins/aggregate';
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
+import { Aggregate } from "./mixins/aggregate";
 
 export class CountExpression extends ChainableExpression implements Aggregate {
-  static op = 'Count';
+  static op = "Count";
   static fromJS(parameters: ExpressionJS): CountExpression {
     return new CountExpression(ChainableExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('count');
-    this._checkOperandTypes('DATASET');
-    this.type = 'NUMBER';
+    this._ensureOp("count");
+    this._checkOperandTypes("DATASET");
+    this.type = "NUMBER";
   }
 
   public calc(datum: Datum): PlywoodValue {
@@ -38,10 +43,13 @@ export class CountExpression extends ChainableExpression implements Aggregate {
     return inV ? (inV as Dataset).count() : 0;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return operandSQL.indexOf(' WHERE ') === -1
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return operandSQL.indexOf(" WHERE ") === -1
       ? `COUNT(*)`
-      : `SUM(${dialect.aggregateFilterIfNeeded(operandSQL, '1', '0')})`;
+      : `SUM(${dialect.aggregateFilterIfNeeded(operandSQL, "1", "0")})`;
   }
 }
 

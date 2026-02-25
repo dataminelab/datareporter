@@ -18,12 +18,13 @@ export default function ReportSourceAlerts({ report, dataSourcesAvailable }) {
     message = (
       <React.Fragment>
         <Typography.Title level={4}>
-          You don't have permission to create new reports on any of the data sources available to you.
+          You don't have permission to create new reports on any of the data
+          sources available to you.
         </Typography.Title>
         <p>
           <Typography.Text type="secondary">
-            You can either <Link href="reports">browse existing reports</Link>, or ask for additional permissions from
-            your Data Reporter admin.
+            You can either <Link href="reports">browse existing reports</Link>,
+            or ask for additional permissions from your Data Reporter admin.
           </Typography.Text>
         </p>
       </React.Fragment>
@@ -33,10 +34,13 @@ export default function ReportSourceAlerts({ report, dataSourcesAvailable }) {
       message = (
         <React.Fragment>
           <Typography.Title level={4}>
-            Looks like no data sources were created yet or none of them available to the group(s) you're member of.
+            Looks like no data sources were created yet or none of them
+            available to the group(s) you're member of.
           </Typography.Title>
           <p>
-            <Typography.Text type="secondary">Please create one first, and then start querying.</Typography.Text>
+            <Typography.Text type="secondary">
+              Please create one first, and then start querying.
+            </Typography.Text>
           </p>
 
           <div className="report-source-alerts-actions">
@@ -53,10 +57,13 @@ export default function ReportSourceAlerts({ report, dataSourcesAvailable }) {
       message = (
         <React.Fragment>
           <Typography.Title level={4}>
-            Looks like no data sources were created yet or none of them available to the group(s) you're member of.
+            Looks like no data sources were created yet or none of them
+            available to the group(s) you're member of.
           </Typography.Title>
           <p>
-            <Typography.Text type="secondary">Please ask your Data reporter admin to create one first.</Typography.Text>
+            <Typography.Text type="secondary">
+              Please ask your Data reporter admin to create one first.
+            </Typography.Text>
           </p>
         </React.Fragment>
       );
@@ -70,7 +77,11 @@ export default function ReportSourceAlerts({ report, dataSourcesAvailable }) {
   return (
     <div className="report-source-alerts">
       <Card>
-        <DynamicComponent name="ReportSource.Alerts" report={report} dataSourcesAvailable={dataSourcesAvailable}>
+        <DynamicComponent
+          name="ReportSource.Alerts"
+          report={report}
+          dataSourcesAvailable={dataSourcesAvailable}
+        >
           <div className="report-source-alerts-icon">
             <WarningFilledIcon />
           </div>

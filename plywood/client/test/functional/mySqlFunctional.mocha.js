@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const { mySqlRequesterFactory } = require('plywood-mysql-requester');
+const { mySqlRequesterFactory } = require("plywood-mysql-requester");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const {
   External,
@@ -31,7 +31,7 @@ const {
   verboseRequesterFactory,
 } = plywood;
 
-const info = require('../info');
+const info = require("../info");
 
 const mySqlRequester = mySqlRequesterFactory({
   host: info.mySqlHost,
@@ -44,149 +44,149 @@ const mySqlRequester = mySqlRequesterFactory({
 //  requester: mySqlRequester
 // });
 
-describe('MySQL Functional', function () {
+describe("MySQL Functional", function () {
   this.timeout(10000);
 
   const wikiAttributes = [
     {
-      name: '__time',
-      nativeType: 'datetime',
-      type: 'TIME',
+      name: "__time",
+      nativeType: "datetime",
+      type: "TIME",
     },
     {
-      name: 'sometimeLater',
-      nativeType: 'timestamp',
-      type: 'TIME',
+      name: "sometimeLater",
+      nativeType: "timestamp",
+      type: "TIME",
     },
     {
-      name: 'channel',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "channel",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'cityName',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "cityName",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'comment',
-      nativeType: 'varchar(300)',
-      type: 'STRING',
+      name: "comment",
+      nativeType: "varchar(300)",
+      type: "STRING",
     },
     {
-      name: 'commentLength',
-      nativeType: 'int(11)',
-      type: 'NUMBER',
+      name: "commentLength",
+      nativeType: "int(11)",
+      type: "NUMBER",
     },
     {
-      name: 'commentLengthStr',
-      nativeType: 'varchar(10)',
-      type: 'STRING',
+      name: "commentLengthStr",
+      nativeType: "varchar(10)",
+      type: "STRING",
     },
     {
-      name: 'countryIsoCode',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "countryIsoCode",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'countryName',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "countryName",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'deltaBucket100',
-      nativeType: 'int(11)',
-      type: 'NUMBER',
+      name: "deltaBucket100",
+      nativeType: "int(11)",
+      type: "NUMBER",
     },
     {
-      name: 'isAnonymous',
-      nativeType: 'tinyint(1)',
-      type: 'BOOLEAN',
+      name: "isAnonymous",
+      nativeType: "tinyint(1)",
+      type: "BOOLEAN",
     },
     {
-      name: 'isMinor',
-      nativeType: 'tinyint(1)',
-      type: 'BOOLEAN',
+      name: "isMinor",
+      nativeType: "tinyint(1)",
+      type: "BOOLEAN",
     },
     {
-      name: 'isNew',
-      nativeType: 'tinyint(1)',
-      type: 'BOOLEAN',
+      name: "isNew",
+      nativeType: "tinyint(1)",
+      type: "BOOLEAN",
     },
     {
-      name: 'isRobot',
-      nativeType: 'tinyint(1)',
-      type: 'BOOLEAN',
+      name: "isRobot",
+      nativeType: "tinyint(1)",
+      type: "BOOLEAN",
     },
     {
-      name: 'isUnpatrolled',
-      nativeType: 'tinyint(1)',
-      type: 'BOOLEAN',
+      name: "isUnpatrolled",
+      nativeType: "tinyint(1)",
+      type: "BOOLEAN",
     },
     {
-      name: 'metroCode',
-      nativeType: 'int(11)',
-      type: 'NUMBER',
+      name: "metroCode",
+      nativeType: "int(11)",
+      type: "NUMBER",
     },
     {
-      name: 'namespace',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "namespace",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'page',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "page",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'regionIsoCode',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "regionIsoCode",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'regionName',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "regionName",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'user',
-      nativeType: 'varchar(255)',
-      type: 'STRING',
+      name: "user",
+      nativeType: "varchar(255)",
+      type: "STRING",
     },
     {
-      name: 'count',
-      nativeType: 'bigint(21)',
-      type: 'NUMBER',
+      name: "count",
+      nativeType: "bigint(21)",
+      type: "NUMBER",
     },
     {
-      name: 'added',
-      nativeType: 'decimal(32,0)',
-      type: 'NUMBER',
+      name: "added",
+      nativeType: "decimal(32,0)",
+      type: "NUMBER",
     },
     {
-      name: 'deleted',
-      nativeType: 'decimal(32,0)',
-      type: 'NUMBER',
+      name: "deleted",
+      nativeType: "decimal(32,0)",
+      type: "NUMBER",
     },
     {
-      name: 'delta',
-      nativeType: 'decimal(32,0)',
-      type: 'NUMBER',
+      name: "delta",
+      nativeType: "decimal(32,0)",
+      type: "NUMBER",
     },
     {
-      name: 'min_delta',
-      nativeType: 'int(11)',
-      type: 'NUMBER',
+      name: "min_delta",
+      nativeType: "int(11)",
+      type: "NUMBER",
     },
     {
-      name: 'max_delta',
-      nativeType: 'int(11)',
-      type: 'NUMBER',
+      name: "max_delta",
+      nativeType: "int(11)",
+      type: "NUMBER",
     },
     {
-      name: 'deltaByTen',
-      nativeType: 'double',
-      type: 'NUMBER',
+      name: "deltaByTen",
+      nativeType: "double",
+      type: "NUMBER",
     },
   ];
 
@@ -194,22 +194,22 @@ describe('MySQL Functional', function () {
     pageInBrackets: "'[' ++ $page ++ ']'",
   };
 
-  describe('source list', () => {
-    it('does a source list', () => {
-      return MySQLExternal.getSourceList(mySqlRequester).then((sources) => {
-        expect(sources).to.contain('wikipedia');
-        expect(sources).to.contain('wikipedia_raw');
+  describe("source list", () => {
+    it("does a source list", () => {
+      return MySQLExternal.getSourceList(mySqlRequester).then(sources => {
+        expect(sources).to.contain("wikipedia");
+        expect(sources).to.contain("wikipedia_raw");
       });
     });
   });
 
-  describe('defined attributes in datasource', () => {
+  describe("defined attributes in datasource", () => {
     const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'mysql',
-            source: 'wikipedia',
+            engine: "mysql",
+            source: "wikipedia",
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
           },
@@ -218,166 +218,166 @@ describe('MySQL Functional', function () {
       },
     });
 
-    it('works in advanced case', () => {
+    it("works in advanced case", () => {
       const ex = ply()
-        .apply('wiki', $('wiki').filter($('channel').is('en')))
-        .apply('Count', '$wiki.sum($count)')
-        .apply('TotalAdded', '$wiki.sum($added)')
+        .apply("wiki", $("wiki").filter($("channel").is("en")))
+        .apply("Count", "$wiki.sum($count)")
+        .apply("TotalAdded", "$wiki.sum($added)")
         .apply(
-          'Namespaces',
-          $('wiki')
-            .split('$namespace', 'Namespace')
-            .apply('Added', '$wiki.sum($added)')
-            .sort('$Added', 'descending')
+          "Namespaces",
+          $("wiki")
+            .split("$namespace", "Namespace")
+            .apply("Added", "$wiki.sum($added)")
+            .sort("$Added", "descending")
             .limit(2)
             .apply(
-              'Time',
-              $('wiki')
-                .split($('__time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
-                .apply('TotalAdded', '$wiki.sum($added)')
-                .sort('$TotalAdded', 'descending')
+              "Time",
+              $("wiki")
+                .split($("__time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
+                .apply("TotalAdded", "$wiki.sum($added)")
+                .sort("$TotalAdded", "descending")
                 .limit(3),
             ),
         )
         .apply(
-          'PagesHaving',
-          $('wiki')
-            .split('$page', 'Page')
-            .apply('Count', '$wiki.sum($count)')
-            .sort('$Count', 'descending')
-            .filter($('Count').lessThan(30))
+          "PagesHaving",
+          $("wiki")
+            .split("$page", "Page")
+            .apply("Count", "$wiki.sum($count)")
+            .sort("$Count", "descending")
+            .filter($("Count").lessThan(30))
             .limit(3),
         );
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 114711,
             Namespaces: {
               attributes: [
                 {
-                  name: 'Namespace',
-                  type: 'STRING',
+                  name: "Namespace",
+                  type: "STRING",
                 },
                 {
-                  name: 'Added',
-                  type: 'NUMBER',
+                  name: "Added",
+                  type: "NUMBER",
                 },
                 {
-                  name: 'Time',
-                  type: 'DATASET',
+                  name: "Time",
+                  type: "DATASET",
                 },
               ],
               data: [
                 {
                   Added: 11594002,
-                  Namespace: 'Main',
+                  Namespace: "Main",
                   Time: {
                     attributes: [
                       {
-                        name: 'Timestamp',
-                        type: 'TIME_RANGE',
+                        name: "Timestamp",
+                        type: "TIME_RANGE",
                       },
                       {
-                        name: 'TotalAdded',
-                        type: 'NUMBER',
+                        name: "TotalAdded",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T15:00:00.000Z'),
-                          start: new Date('2015-09-12T14:00:00.000Z'),
+                          end: new Date("2015-09-12T15:00:00.000Z"),
+                          start: new Date("2015-09-12T14:00:00.000Z"),
                         },
                         TotalAdded: 740968,
                       },
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T19:00:00.000Z'),
-                          start: new Date('2015-09-12T18:00:00.000Z'),
+                          end: new Date("2015-09-12T19:00:00.000Z"),
+                          start: new Date("2015-09-12T18:00:00.000Z"),
                         },
                         TotalAdded: 739956,
                       },
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T23:00:00.000Z'),
-                          start: new Date('2015-09-12T22:00:00.000Z'),
+                          end: new Date("2015-09-12T23:00:00.000Z"),
+                          start: new Date("2015-09-12T22:00:00.000Z"),
                         },
                         TotalAdded: 708543,
                       },
                     ],
-                    keys: ['Timestamp'],
+                    keys: ["Timestamp"],
                   },
                 },
                 {
                   Added: 9210976,
-                  Namespace: 'User talk',
+                  Namespace: "User talk",
                   Time: {
                     attributes: [
                       {
-                        name: 'Timestamp',
-                        type: 'TIME_RANGE',
+                        name: "Timestamp",
+                        type: "TIME_RANGE",
                       },
                       {
-                        name: 'TotalAdded',
-                        type: 'NUMBER',
+                        name: "TotalAdded",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T13:00:00.000Z'),
-                          start: new Date('2015-09-12T12:00:00.000Z'),
+                          end: new Date("2015-09-12T13:00:00.000Z"),
+                          start: new Date("2015-09-12T12:00:00.000Z"),
                         },
                         TotalAdded: 693571,
                       },
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T18:00:00.000Z'),
-                          start: new Date('2015-09-12T17:00:00.000Z'),
+                          end: new Date("2015-09-12T18:00:00.000Z"),
+                          start: new Date("2015-09-12T17:00:00.000Z"),
                         },
                         TotalAdded: 634804,
                       },
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T03:00:00.000Z'),
-                          start: new Date('2015-09-12T02:00:00.000Z'),
+                          end: new Date("2015-09-12T03:00:00.000Z"),
+                          start: new Date("2015-09-12T02:00:00.000Z"),
                         },
                         TotalAdded: 573768,
                       },
                     ],
-                    keys: ['Timestamp'],
+                    keys: ["Timestamp"],
                   },
                 },
               ],
-              keys: ['Namespace'],
+              keys: ["Namespace"],
             },
             PagesHaving: {
               attributes: [
                 {
-                  name: 'Page',
-                  type: 'STRING',
+                  name: "Page",
+                  type: "STRING",
                 },
                 {
-                  name: 'Count',
-                  type: 'NUMBER',
+                  name: "Count",
+                  type: "NUMBER",
                 },
               ],
               data: [
                 {
                   Count: 29,
-                  Page: 'User:King Lui',
+                  Page: "User:King Lui",
                 },
                 {
                   Count: 29,
-                  Page: 'The Visit (2015 film)',
+                  Page: "The Visit (2015 film)",
                 },
                 {
                   Count: 29,
-                  Page: 'Stargate production discography',
+                  Page: "Stargate production discography",
                 },
               ],
-              keys: ['Page'],
+              keys: ["Page"],
             },
             TotalAdded: 32553107,
           },
@@ -385,22 +385,22 @@ describe('MySQL Functional', function () {
       });
     });
 
-    it('works with boolean GROUP BYs', () => {
-      const ex = $('wiki')
-        .split($('channel').is('en'), 'ChannelIsEn')
-        .apply('Count', $('wiki').sum('$count'))
-        .sort('$Count', 'descending');
+    it("works with boolean GROUP BYs", () => {
+      const ex = $("wiki")
+        .split($("channel").is("en"), "ChannelIsEn")
+        .apply("Count", $("wiki").sum("$count"))
+        .sort("$Count", "descending");
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS()).to.deep.equal({
           attributes: [
             {
-              name: 'ChannelIsEn',
-              type: 'BOOLEAN',
+              name: "ChannelIsEn",
+              type: "BOOLEAN",
             },
             {
-              name: 'Count',
-              type: 'NUMBER',
+              name: "Count",
+              type: "NUMBER",
             },
           ],
           data: [
@@ -413,81 +413,81 @@ describe('MySQL Functional', function () {
               Count: 114711,
             },
           ],
-          keys: ['ChannelIsEn'],
+          keys: ["ChannelIsEn"],
         });
       });
     });
 
-    it('works with multi-dimensional GROUP BYs', () => {
-      const ex = $('wiki')
-        .filter($('channel').isnt('en'))
+    it("works with multi-dimensional GROUP BYs", () => {
+      const ex = $("wiki")
+        .filter($("channel").isnt("en"))
         .split({
-          Channel: '$channel',
-          TimeByHour: '$__time.timeBucket(PT1H)',
+          Channel: "$channel",
+          TimeByHour: "$__time.timeBucket(PT1H)",
         })
-        .apply('Count', $('wiki').sum('$count'))
-        .sort('$Count', 'descending')
+        .apply("Count", $("wiki").sum("$count"))
+        .sort("$Count", "descending")
         .limit(4);
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS()).to.deep.equal({
           attributes: [
             {
-              name: 'Channel',
-              type: 'STRING',
+              name: "Channel",
+              type: "STRING",
             },
             {
-              name: 'TimeByHour',
-              type: 'TIME_RANGE',
+              name: "TimeByHour",
+              type: "TIME_RANGE",
             },
             {
-              name: 'Count',
-              type: 'NUMBER',
+              name: "Count",
+              type: "NUMBER",
             },
           ],
           data: [
             {
-              Channel: 'vi',
+              Channel: "vi",
               Count: 12443,
               TimeByHour: {
-                end: new Date('2015-09-12T07:00:00.000Z'),
-                start: new Date('2015-09-12T06:00:00.000Z'),
+                end: new Date("2015-09-12T07:00:00.000Z"),
+                start: new Date("2015-09-12T06:00:00.000Z"),
               },
             },
             {
-              Channel: 'vi',
+              Channel: "vi",
               Count: 11833,
               TimeByHour: {
-                end: new Date('2015-09-12T08:00:00.000Z'),
-                start: new Date('2015-09-12T07:00:00.000Z'),
+                end: new Date("2015-09-12T08:00:00.000Z"),
+                start: new Date("2015-09-12T07:00:00.000Z"),
               },
             },
             {
-              Channel: 'vi',
+              Channel: "vi",
               Count: 6411,
               TimeByHour: {
-                end: new Date('2015-09-12T18:00:00.000Z'),
-                start: new Date('2015-09-12T17:00:00.000Z'),
+                end: new Date("2015-09-12T18:00:00.000Z"),
+                start: new Date("2015-09-12T17:00:00.000Z"),
               },
             },
             {
-              Channel: 'vi',
+              Channel: "vi",
               Count: 4943,
               TimeByHour: {
-                end: new Date('2015-09-12T16:00:00.000Z'),
-                start: new Date('2015-09-12T15:00:00.000Z'),
+                end: new Date("2015-09-12T16:00:00.000Z"),
+                start: new Date("2015-09-12T15:00:00.000Z"),
               },
             },
           ],
-          keys: ['Channel', 'TimeByHour'],
+          keys: ["Channel", "TimeByHour"],
         });
       });
     });
 
     it("fallback doesn't happen if not null", () => {
-      const ex = ply().apply('added', $('wiki').sum($('added')).fallback(2));
+      const ex = ply().apply("added", $("wiki").sum($("added")).fallback(2));
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             added: 97393743,
@@ -496,86 +496,88 @@ describe('MySQL Functional', function () {
       });
     });
 
-    it('works with simple raw mode', () => {
-      const ex = $('wiki').filter('$cityName == "El Paso"').select('regionName', 'added', 'page');
-
-      return basicExecutor(ex).then((result) => {
-        expect(result.toJS()).to.deep.equal({
-          attributes: [
-            {
-              name: 'regionName',
-              type: 'STRING',
-            },
-            {
-              name: 'added',
-              type: 'NUMBER',
-            },
-            {
-              name: 'page',
-              type: 'STRING',
-            },
-          ],
-          data: [
-            {
-              added: 0,
-              page: 'Clint High School',
-              regionName: 'Texas',
-            },
-            {
-              added: 0,
-              page: 'Reggie Williams (linebacker)',
-              regionName: 'Texas',
-            },
-          ],
-        });
-      });
-    });
-
-    it('works with complex raw mode', () => {
-      const ex = $('wiki')
+    it("works with simple raw mode", () => {
+      const ex = $("wiki")
         .filter('$cityName == "El Paso"')
-        .apply('regionNameLOL', '$regionName.concat(LOL)')
-        .apply('addedPlusOne', '$added + 1')
-        .select('regionNameLOL', 'addedPlusOne', 'pageInBrackets');
+        .select("regionName", "added", "page");
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS()).to.deep.equal({
           attributes: [
             {
-              name: 'regionNameLOL',
-              type: 'STRING',
+              name: "regionName",
+              type: "STRING",
             },
             {
-              name: 'addedPlusOne',
-              type: 'NUMBER',
+              name: "added",
+              type: "NUMBER",
             },
             {
-              name: 'pageInBrackets',
-              type: 'STRING',
+              name: "page",
+              type: "STRING",
             },
           ],
           data: [
             {
-              addedPlusOne: 1,
-              pageInBrackets: '[Clint High School]',
-              regionNameLOL: 'TexasLOL',
+              added: 0,
+              page: "Clint High School",
+              regionName: "Texas",
             },
             {
-              addedPlusOne: 1,
-              pageInBrackets: '[Reggie Williams (linebacker)]',
-              regionNameLOL: 'TexasLOL',
+              added: 0,
+              page: "Reggie Williams (linebacker)",
+              regionName: "Texas",
             },
           ],
         });
       });
     });
 
-    it('fallback happens if null', () => {
-      const ex = ply()
-        .apply('wiki', $('wiki').filter($('page').is('Rallicula')))
-        .apply('MetroCode', $('wiki').sum($('metroCode')).fallback(0));
+    it("works with complex raw mode", () => {
+      const ex = $("wiki")
+        .filter('$cityName == "El Paso"')
+        .apply("regionNameLOL", "$regionName.concat(LOL)")
+        .apply("addedPlusOne", "$added + 1")
+        .select("regionNameLOL", "addedPlusOne", "pageInBrackets");
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
+        expect(result.toJS()).to.deep.equal({
+          attributes: [
+            {
+              name: "regionNameLOL",
+              type: "STRING",
+            },
+            {
+              name: "addedPlusOne",
+              type: "NUMBER",
+            },
+            {
+              name: "pageInBrackets",
+              type: "STRING",
+            },
+          ],
+          data: [
+            {
+              addedPlusOne: 1,
+              pageInBrackets: "[Clint High School]",
+              regionNameLOL: "TexasLOL",
+            },
+            {
+              addedPlusOne: 1,
+              pageInBrackets: "[Reggie Williams (linebacker)]",
+              regionNameLOL: "TexasLOL",
+            },
+          ],
+        });
+      });
+    });
+
+    it("fallback happens if null", () => {
+      const ex = ply()
+        .apply("wiki", $("wiki").filter($("page").is("Rallicula")))
+        .apply("MetroCode", $("wiki").sum($("metroCode")).fallback(0));
+
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             MetroCode: 0,
@@ -584,14 +586,14 @@ describe('MySQL Functional', function () {
       });
     });
 
-    it('power of and abs', () => {
+    it("power of and abs", () => {
       const ex = ply()
-        .apply('wiki', $('wiki').filter($('page').is('Kosowo')))
-        .apply('Delta', $('wiki').min($('delta')))
-        .apply('AbsDelta', $('wiki').min($('delta')).absolute())
-        .apply('SquareDelta', $('wiki').sum($('delta')).power(2));
+        .apply("wiki", $("wiki").filter($("page").is("Kosowo")))
+        .apply("Delta", $("wiki").min($("delta")))
+        .apply("AbsDelta", $("wiki").min($("delta")).absolute())
+        .apply("SquareDelta", $("wiki").sum($("delta")).power(2));
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             AbsDelta: 2,
@@ -602,105 +604,107 @@ describe('MySQL Functional', function () {
       });
     });
 
-    it('works string range (two bounds)', () => {
-      const ex = $('wiki')
-        .filter($('cityName').greaterThan('Kab').and($('cityName').lessThan('Kar')))
-        .split('$cityName', 'City')
+    it("works string range (two bounds)", () => {
+      const ex = $("wiki")
+        .filter(
+          $("cityName").greaterThan("Kab").and($("cityName").lessThan("Kar")),
+        )
+        .split("$cityName", "City")
         .limit(5);
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
-            City: 'Kadelburg',
+            City: "Kadelburg",
           },
           {
-            City: 'Kaduwela',
+            City: "Kaduwela",
           },
           {
-            City: 'Kagoshima',
+            City: "Kagoshima",
           },
           {
-            City: 'Kailua',
+            City: "Kailua",
           },
           {
-            City: 'Kainan',
+            City: "Kainan",
           },
         ]);
       });
     });
 
-    it('works string range (1 bound)', () => {
-      const ex = $('wiki')
-        .filter($('cityName').lessThan('P'))
+    it("works string range (1 bound)", () => {
+      const ex = $("wiki")
+        .filter($("cityName").lessThan("P"))
         .filter('$comment < "zebra"')
-        .split('$cityName', 'City')
+        .split("$cityName", "City")
         .limit(5);
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             City: "'Ewa Beach",
           },
           {
-            City: 'A Coruña',
+            City: "A Coruña",
           },
           {
-            City: 'Aachen',
+            City: "Aachen",
           },
           {
-            City: 'Aalborg',
+            City: "Aalborg",
           },
           {
-            City: 'Aarhus',
+            City: "Aarhus",
           },
         ]);
       });
     });
   });
 
-  describe('incorrect page', () => {
+  describe("incorrect page", () => {
     const wikiUserCharAsNumber = External.fromJS(
       {
-        engine: 'mysql',
-        source: 'wikipedia',
-        timeAttribute: 'time',
+        engine: "mysql",
+        source: "wikipedia",
+        timeAttribute: "time",
         allowEternity: true,
         attributes: [
-          { name: 'time', type: 'TIME' },
-          { name: 'comment', type: 'STRING' },
-          { name: 'page', type: 'NUMBER' }, // This is incorrect
-          { name: 'count', type: 'NUMBER', unsplitable: true },
+          { name: "time", type: "TIME" },
+          { name: "comment", type: "STRING" },
+          { name: "page", type: "NUMBER" }, // This is incorrect
+          { name: "count", type: "NUMBER", unsplitable: true },
         ],
       },
       mySqlRequester,
     );
 
     // Todo: invalid number casts return 0 in mysql. Also, something is happening when page is defined as a number that results in numbers being passed into the cast to date
-    it('works with bad casts', () => {
-      const ex = $('wiki')
+    it("works with bad casts", () => {
+      const ex = $("wiki")
         .split({
           numberCast: '$comment.cast("NUMBER")',
           dateCast: '$page.cast("TIME")',
         })
-        .apply('Count', '$wiki.sum($count)')
-        .sort('$Count', 'descending')
+        .apply("Count", "$wiki.sum($count)")
+        .sort("$Count", "descending")
         .limit(3);
 
-      return ex.compute({ wiki: wikiUserCharAsNumber }).then((result) => {
+      return ex.compute({ wiki: wikiUserCharAsNumber }).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 382569,
-            dateCast: new Date('1970-01-01T00:00:00.000Z'),
+            dateCast: new Date("1970-01-01T00:00:00.000Z"),
             numberCast: 0,
           },
           {
             Count: 3347,
-            dateCast: new Date('1970-01-01T00:00:02.015Z'),
+            dateCast: new Date("1970-01-01T00:00:02.015Z"),
             numberCast: 0,
           },
           {
             Count: 640,
-            dateCast: new Date('1970-01-01T00:00:00.000Z'),
+            dateCast: new Date("1970-01-01T00:00:00.000Z"),
             numberCast: 1,
           },
         ]);
@@ -708,71 +712,71 @@ describe('MySQL Functional', function () {
     });
   });
 
-  describe('introspection', () => {
+  describe("introspection", () => {
     const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'mysql',
-            source: 'wikipedia',
+            engine: "mysql",
+            source: "wikipedia",
           },
           mySqlRequester,
         ),
       },
     });
 
-    it('introspects', () => {
+    it("introspects", () => {
       return External.fromJS(
         {
-          engine: 'mysql',
-          source: 'wikipedia',
+          engine: "mysql",
+          source: "wikipedia",
         },
         mySqlRequester,
       )
         .introspect()
-        .then((external) => {
+        .then(external => {
           expect(external.version).to.equal(info.mySqlVersion);
           expect(external.toJS().attributes).to.deep.equal(wikiAttributes);
         });
     });
 
-    it('works with introspection', () => {
+    it("works with introspection", () => {
       const ex = ply()
-        .apply('wiki', $('wiki').filter($('channel').is('en')))
-        .apply('TotalAdded', '$wiki.sum($added)')
+        .apply("wiki", $("wiki").filter($("channel").is("en")))
+        .apply("TotalAdded", "$wiki.sum($added)")
         .apply(
-          'Time',
-          $('wiki')
-            .split($('__time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
-            .apply('TotalAdded', '$wiki.sum($added)')
-            .sort('$Timestamp', 'ascending')
+          "Time",
+          $("wiki")
+            .split($("__time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
+            .apply("TotalAdded", "$wiki.sum($added)")
+            .sort("$Timestamp", "ascending")
             .limit(3)
             .apply(
-              'Pages',
-              $('wiki')
-                .split('$regionName', 'RegionName')
-                .apply('Deleted', '$wiki.sum($deleted)')
-                .sort('$Deleted', 'descending')
+              "Pages",
+              $("wiki")
+                .split("$regionName", "RegionName")
+                .apply("Deleted", "$wiki.sum($deleted)")
+                .sort("$Deleted", "descending")
                 .limit(2),
             ),
         );
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             Time: {
               attributes: [
                 {
-                  name: 'Timestamp',
-                  type: 'TIME_RANGE',
+                  name: "Timestamp",
+                  type: "TIME_RANGE",
                 },
                 {
-                  name: 'TotalAdded',
-                  type: 'NUMBER',
+                  name: "TotalAdded",
+                  type: "NUMBER",
                 },
                 {
-                  name: 'Pages',
-                  type: 'DATASET',
+                  name: "Pages",
+                  type: "DATASET",
                 },
               ],
               data: [
@@ -780,12 +784,12 @@ describe('MySQL Functional', function () {
                   Pages: {
                     attributes: [
                       {
-                        name: 'RegionName',
-                        type: 'STRING',
+                        name: "RegionName",
+                        type: "STRING",
                       },
                       {
-                        name: 'Deleted',
-                        type: 'NUMBER',
+                        name: "Deleted",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
@@ -795,14 +799,14 @@ describe('MySQL Functional', function () {
                       },
                       {
                         Deleted: 848,
-                        RegionName: 'Ontario',
+                        RegionName: "Ontario",
                       },
                     ],
-                    keys: ['RegionName'],
+                    keys: ["RegionName"],
                   },
                   Timestamp: {
-                    end: new Date('2015-09-12T01:00:00.000Z'),
-                    start: new Date('2015-09-12T00:00:00.000Z'),
+                    end: new Date("2015-09-12T01:00:00.000Z"),
+                    start: new Date("2015-09-12T00:00:00.000Z"),
                   },
                   TotalAdded: 331925,
                 },
@@ -810,12 +814,12 @@ describe('MySQL Functional', function () {
                   Pages: {
                     attributes: [
                       {
-                        name: 'RegionName',
-                        type: 'STRING',
+                        name: "RegionName",
+                        type: "STRING",
                       },
                       {
-                        name: 'Deleted',
-                        type: 'NUMBER',
+                        name: "Deleted",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
@@ -825,14 +829,14 @@ describe('MySQL Functional', function () {
                       },
                       {
                         Deleted: 474,
-                        RegionName: 'Indiana',
+                        RegionName: "Indiana",
                       },
                     ],
-                    keys: ['RegionName'],
+                    keys: ["RegionName"],
                   },
                   Timestamp: {
-                    end: new Date('2015-09-12T02:00:00.000Z'),
-                    start: new Date('2015-09-12T01:00:00.000Z'),
+                    end: new Date("2015-09-12T02:00:00.000Z"),
+                    start: new Date("2015-09-12T01:00:00.000Z"),
                   },
                   TotalAdded: 1418072,
                 },
@@ -840,12 +844,12 @@ describe('MySQL Functional', function () {
                   Pages: {
                     attributes: [
                       {
-                        name: 'RegionName',
-                        type: 'STRING',
+                        name: "RegionName",
+                        type: "STRING",
                       },
                       {
-                        name: 'Deleted',
-                        type: 'NUMBER',
+                        name: "Deleted",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
@@ -855,19 +859,19 @@ describe('MySQL Functional', function () {
                       },
                       {
                         Deleted: 449,
-                        RegionName: 'Georgia',
+                        RegionName: "Georgia",
                       },
                     ],
-                    keys: ['RegionName'],
+                    keys: ["RegionName"],
                   },
                   Timestamp: {
-                    end: new Date('2015-09-12T03:00:00.000Z'),
-                    start: new Date('2015-09-12T02:00:00.000Z'),
+                    end: new Date("2015-09-12T03:00:00.000Z"),
+                    start: new Date("2015-09-12T02:00:00.000Z"),
                   },
                   TotalAdded: 3045966,
                 },
               ],
-              keys: ['Timestamp'],
+              keys: ["Timestamp"],
             },
             TotalAdded: 32553107,
           },

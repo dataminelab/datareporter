@@ -12,15 +12,21 @@ try {
   cypressConfigBaseUrl = cypressConfig.baseUrl;
 } catch (e) {}
 
-const baseUrl = process.env.CYPRESS_baseUrl || cypressConfigBaseUrl || "http://localhost:5000";
+const baseUrl =
+  process.env.CYPRESS_baseUrl ||
+  cypressConfigBaseUrl ||
+  "http://localhost:5000";
 
 function seedDatabase(seedValues) {
   get(baseUrl + "/login", (_, { headers }) => {
     const request = seedValues.shift();
-    const data = request.type === "form" ? { formData: request.data } : { json: request.data };
+    const data =
+      request.type === "form"
+        ? { formData: request.data }
+        : { json: request.data };
 
     if (headers["set-cookie"]) {
-      const cookies = headers["set-cookie"].map((cookie) => new Cookie(cookie));
+      const cookies = headers["set-cookie"].map(cookie => new Cookie(cookie));
       const csrfCookie = find(cookies, { key: "csrf_token" });
       if (csrfCookie) {
         if (request.type === "form") {
@@ -56,9 +62,12 @@ function startServer() {
   execSync("docker compose -f ../.ci/compose.cypress.yml -p cypress up -d", {
     stdio: "inherit",
   });
-  execSync("docker compose -f ../.ci/compose.cypress.yml -p cypress run server create_db", {
-    stdio: "inherit",
-  });
+  execSync(
+    "docker compose -f ../.ci/compose.cypress.yml -p cypress run server create_db",
+    {
+      stdio: "inherit",
+    },
+  );
 }
 
 function stopServer() {
@@ -77,9 +86,12 @@ function runCypressCI() {
 
   execSync(
     "COMMIT_INFO_MESSAGE=$(git show -s --format=%s) docker compose run --name cypress cypress ./node_modules/.bin/percy exec -t 300 -- ./node_modules/.bin/cypress run $CYPRESS_OPTIONS",
-    { stdio: "inherit" }
+    { stdio: "inherit" },
   );
-  execSync("docker compose run --rm cypress ./node_modules/.bin/percy finalize --all", { stdio: "inherit" });
+  execSync(
+    "docker compose run --rm cypress ./node_modules/.bin/percy finalize --all",
+    { stdio: "inherit" },
+  );
 }
 
 const command = process.argv[2] || "all";

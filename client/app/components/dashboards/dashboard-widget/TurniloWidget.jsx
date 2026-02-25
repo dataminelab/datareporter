@@ -5,8 +5,16 @@ import Widget from "./Widget";
 import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
 import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
 
-function TurniloWidget({ widget, canEdit = false, config, setFilterParams, getEssence, onDelete }) {
-  const turniloHash = config?.hash || widget.text?.replace("[turnilo-widget]", "") || "";
+function TurniloWidget({
+  widget,
+  canEdit = false,
+  config,
+  setFilterParams,
+  getEssence,
+  onDelete,
+}) {
+  const turniloHash =
+    config?.hash || widget.text?.replace("[turnilo-widget]", "") || "";
 
   if (!widget?.width || !config?.appSettings) {
     return canEdit ? (
@@ -18,7 +26,10 @@ function TurniloWidget({ widget, canEdit = false, config, setFilterParams, getEs
 
   // Initialize error reporter if configured
   if (config.appSettings.customization?.sentryDSN) {
-    errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
+    errorReporterInit(
+      config.appSettings.customization.sentryDSN,
+      config.version,
+    );
   }
 
   return (
@@ -28,7 +39,8 @@ function TurniloWidget({ widget, canEdit = false, config, setFilterParams, getEs
       widget={widget}
       canEdit={canEdit}
       config={config}
-      onDelete={onDelete}>
+      onDelete={onDelete}
+    >
       <turnilo-widget>
         <TurniloApplication
           widget={widget}
@@ -36,7 +48,9 @@ function TurniloWidget({ widget, canEdit = false, config, setFilterParams, getEs
           version={config.version}
           hashWidget={turniloHash}
           appSettings={config.appSettings}
-          initTimekeeper={Timekeeper.fromJS(config.timekeeper || { timeTags: {} })}
+          initTimekeeper={Timekeeper.fromJS(
+            config.timekeeper || { timeTags: {} },
+          )}
           setFilterParams={setFilterParams}
           getEssence={getEssence}
         />

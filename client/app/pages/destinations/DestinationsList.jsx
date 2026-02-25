@@ -34,7 +34,7 @@ class DestinationsList extends React.Component {
 
   componentDidMount() {
     Promise.all([Destination.query(), Destination.types()])
-      .then((values) =>
+      .then(values =>
         this.setState(
           {
             destinations: values[0],
@@ -50,19 +50,21 @@ class DestinationsList extends React.Component {
                 navigateTo("destinations", true);
               }
             }
-          }
-        )
+          },
+        ),
       )
-      .catch((error) => this.props.onError(error));
+      .catch(error => this.props.onError(error));
   }
 
   createDestination = (selectedType, values) => {
     const target = { options: {}, type: selectedType.type };
     helper.updateTargetWithValues(target, values);
 
-    return Destination.create(target).then((destination) => {
+    return Destination.create(target).then(destination => {
       this.setState({ loading: true });
-      Destination.query().then((destinations) => this.setState({ destinations, loading: false }));
+      Destination.query().then(destinations =>
+        this.setState({ destinations, loading: false }),
+      );
       return destination;
     });
   };
@@ -86,7 +88,7 @@ class DestinationsList extends React.Component {
 
   renderDestinations() {
     const { destinations } = this.state;
-    const items = destinations.map((destination) => ({
+    const items = destinations.map(destination => ({
       title: destination.name,
       imgSrc: `${IMG_ROOT}/${destination.type}.png`,
       href: `destinations/${destination.id}`,
@@ -112,7 +114,9 @@ class DestinationsList extends React.Component {
   render() {
     const newDestinationProps = {
       type: "primary",
-      onClick: policy.isCreateDestinationEnabled() ? this.showCreateSourceDialog : null,
+      onClick: policy.isCreateDestinationEnabled()
+        ? this.showCreateSourceDialog
+        : null,
       disabled: !policy.isCreateDestinationEnabled(),
     };
 
@@ -124,7 +128,11 @@ class DestinationsList extends React.Component {
             New Alert Destination
           </Button>
         </div>
-        {this.state.loading ? <LoadingState className="" /> : this.renderDestinations()}
+        {this.state.loading ? (
+          <LoadingState className="" />
+        ) : (
+          this.renderDestinations()
+        )}
       </div>
     );
   }
@@ -138,7 +146,7 @@ const DestinationsListPage = wrapSettingsTab(
     path: "destinations",
     order: 5,
   },
-  DestinationsList
+  DestinationsList,
 );
 
 routes.register(
@@ -146,14 +154,16 @@ routes.register(
   routeWithUserSession({
     path: "/destinations",
     title: "Alert Destinations",
-    render: (pageProps) => <DestinationsListPage {...pageProps} />,
-  })
+    render: pageProps => <DestinationsListPage {...pageProps} />,
+  }),
 );
 routes.register(
   "AlertDestinations.New",
   routeWithUserSession({
     path: "/destinations/new",
     title: "Alert Destinations",
-    render: (pageProps) => <DestinationsListPage {...pageProps} isNewDestinationPage />,
-  })
+    render: pageProps => (
+      <DestinationsListPage {...pageProps} isNewDestinationPage />
+    ),
+  }),
 );

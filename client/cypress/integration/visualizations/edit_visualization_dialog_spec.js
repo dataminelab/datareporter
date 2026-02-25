@@ -13,27 +13,41 @@ describe("Edit visualization dialog", () => {
     cy.getByTestId("NewVisualization").should("exist").click();
     cy.getByTestId("EditVisualizationDialog").should("exist");
     // Default visualization should be selected
-    cy.getByTestId("VisualizationType").should("exist").should("contain", "Chart");
-    cy.getByTestId("VisualizationName").should("exist").should("have.value", "Chart");
+    cy.getByTestId("VisualizationType")
+      .should("exist")
+      .should("contain", "Chart");
+    cy.getByTestId("VisualizationName")
+      .should("exist")
+      .should("have.value", "Chart");
   });
 
   it("opens Edit Visualization dialog", () => {
     cy.getByTestId("EditVisualization").click();
     cy.getByTestId("EditVisualizationDialog").should("exist");
     // Default `Table` visualization should be selected
-    cy.getByTestId("VisualizationType").should("exist").should("contain", "Table");
-    cy.getByTestId("VisualizationName").should("exist").should("have.value", "Table");
+    cy.getByTestId("VisualizationType")
+      .should("exist")
+      .should("contain", "Table");
+    cy.getByTestId("VisualizationName")
+      .should("exist")
+      .should("have.value", "Table");
   });
 
   it("creates visualization with custom name", () => {
     const visualizationName = "Custom name";
 
     cy.getByTestId("NewVisualization").click();
-    cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.DETAILS");
+    cy.getByTestId("VisualizationType").selectAntdOption(
+      "VisualizationType.DETAILS",
+    );
 
     cy.getByTestId("VisualizationName").clear().type(visualizationName);
 
-    cy.getByTestId("EditVisualizationDialog").contains("button", "Save").click();
-    cy.getByTestId("QueryPageVisualizationTabs").contains("span", visualizationName).should("exist");
+    cy.getByTestId("EditVisualizationDialog")
+      .contains("button", "Save")
+      .click();
+    cy.getByTestId("QueryPageVisualizationTabs")
+      .contains("span", visualizationName)
+      .should("exist");
   });
 });

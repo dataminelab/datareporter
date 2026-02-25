@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-import { PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class LengthExpression extends ChainableExpression {
-  static op = 'Length';
+  static op = "Length";
   static fromJS(parameters: ExpressionJS): LengthExpression {
     return new LengthExpression(ChainableExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('length');
-    this._checkOperandTypes('STRING');
-    this.type = 'NUMBER';
+    this._ensureOp("length");
+    this._checkOperandTypes("STRING");
+    this.type = "NUMBER";
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
@@ -37,10 +42,16 @@ export class LengthExpression extends ChainableExpression {
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    return Expression.jsNullSafetyUnary(operandJS, (input: string) => `${input}.length`);
+    return Expression.jsNullSafetyUnary(
+      operandJS,
+      (input: string) => `${input}.length`,
+    );
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.lengthExpression(operandSQL);
   }
 }

@@ -24,7 +24,9 @@ const MODES = {
   EDIT: 2,
 };
 
-const defaultNameBuilder = template("<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>");
+const defaultNameBuilder = template(
+  "<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>",
+);
 
 export function getDefaultName(alert) {
   if (!alert.query) {
@@ -77,7 +79,7 @@ class Alert extends React.Component {
     } else {
       const { alertId } = this.props;
       AlertService.get({ id: alertId })
-        .then((alert) => {
+        .then(alert => {
           if (this._isMounted) {
             const canEdit = currentUser.canEdit(alert);
 
@@ -87,7 +89,7 @@ class Alert extends React.Component {
               notification.warn(
                 "You cannot edit this alert",
                 "You do not have sufficient permissions to edit this alert, and have been redirected to the view-only page.",
-                { duration: 0 }
+                { duration: 0 },
               );
             }
 
@@ -96,7 +98,7 @@ class Alert extends React.Component {
             this.onQuerySelected(query);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           if (this._isMounted) {
             this.props.onError(error);
           }
@@ -116,7 +118,7 @@ class Alert extends React.Component {
     alert.type = alert.query.type; // "query" or "report"
 
     return AlertService.save(alert)
-      .then((alert) => {
+      .then(alert => {
         notification.success("Saved.");
         navigateTo(`alerts/${alert.id}`, true);
         this.setState({ alert, mode: MODES.VIEW });
@@ -126,7 +128,7 @@ class Alert extends React.Component {
       });
   };
 
-  onQuerySelected = (query) => {
+  onQuerySelected = query => {
     this.setState(({ alert }) => ({
       alert: Object.assign(alert, { query }),
       queryResult: null,
@@ -134,7 +136,7 @@ class Alert extends React.Component {
 
     if (query) {
       // get cached result for column names and values
-      new QueryService(query).getQueryResultPromise().then((queryResult) => {
+      new QueryService(query).getQueryResultPromise().then(queryResult => {
         if (this._isMounted) {
           this.setState({ queryResult });
           let { column } = this.state.alert.options;
@@ -150,18 +152,18 @@ class Alert extends React.Component {
     }
   };
 
-  onNameChange = (name) => {
+  onNameChange = name => {
     const { alert } = this.state;
     this.setState({
       alert: Object.assign(alert, { name }),
     });
   };
 
-  onRearmChange = (pendingRearm) => {
+  onRearmChange = pendingRearm => {
     this.setState({ pendingRearm });
   };
 
-  setAlertOptions = (obj) => {
+  setAlertOptions = obj => {
     const { alert } = this.state;
     const options = { ...alert.options, ...obj };
     this.setState({
@@ -185,7 +187,9 @@ class Alert extends React.Component {
     const { alert } = this.state;
     return AlertService.evaluate(alert)
       .then(() => {
-        notification.success("Alert evaluated. Refresh page for updated status.");
+        notification.success(
+          "Alert evaluated. Refresh page for updated status.",
+        );
       })
       .catch(() => {
         notifications.error("Failed to evaluate alert.");
@@ -266,9 +270,17 @@ class Alert extends React.Component {
         <div className="container">
           {mode === MODES.NEW && <AlertNew {...commonProps} />}
           {mode === MODES.VIEW && (
-            <AlertView canEdit={canEdit} onEdit={this.edit} muted={muted} unmute={this.unmute} {...commonProps} />
+            <AlertView
+              canEdit={canEdit}
+              onEdit={this.edit}
+              muted={muted}
+              unmute={this.unmute}
+              {...commonProps}
+            />
           )}
-          {mode === MODES.EDIT && <AlertEdit cancel={this.cancel} {...commonProps} />}
+          {mode === MODES.EDIT && (
+            <AlertEdit cancel={this.cancel} {...commonProps} />
+          )}
         </div>
       </div>
     );
@@ -280,22 +292,22 @@ routes.register(
   routeWithUserSession({
     path: "/alerts/new",
     title: "New Alert",
-    render: (pageProps) => <Alert {...pageProps} mode={MODES.NEW} />,
-  })
+    render: pageProps => <Alert {...pageProps} mode={MODES.NEW} />,
+  }),
 );
 routes.register(
   "Alerts.View",
   routeWithUserSession({
     path: "/alerts/:alertId",
     title: "Alert",
-    render: (pageProps) => <Alert {...pageProps} mode={MODES.VIEW} />,
-  })
+    render: pageProps => <Alert {...pageProps} mode={MODES.VIEW} />,
+  }),
 );
 routes.register(
   "Alerts.Edit",
   routeWithUserSession({
     path: "/alerts/:alertId/edit",
     title: "Alert",
-    render: (pageProps) => <Alert {...pageProps} mode={MODES.EDIT} />,
-  })
+    render: pageProps => <Alert {...pageProps} mode={MODES.EDIT} />,
+  }),
 );

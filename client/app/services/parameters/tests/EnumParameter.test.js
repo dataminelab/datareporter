@@ -35,7 +35,11 @@ describe("EnumParameter", () => {
 
     describe("normalizeValue", () => {
       test("returns only valid values", () => {
-        const normalizedValue = param.normalizeValue(["value3", "anything", null]);
+        const normalizedValue = param.normalizeValue([
+          "value3",
+          "anything",
+          null,
+        ]);
         expect(normalizedValue).toEqual(["value3"]);
       });
 

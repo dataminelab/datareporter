@@ -1,6 +1,10 @@
 /* global cy */
 
-import { getWidgetTestId, editDashboard, resizeBy } from "../../support/dashboard";
+import {
+  getWidgetTestId,
+  editDashboard,
+  resizeBy,
+} from "../../support/dashboard";
 
 describe("Grid compliant widgets", () => {
   beforeEach(function () {
@@ -11,7 +15,7 @@ describe("Grid compliant widgets", () => {
         this.dashboardUrl = `/dashboards/${id}`;
         return cy.addTextbox(id, "Hello World!").then(getWidgetTestId);
       })
-      .then((elTestId) => {
+      .then(elTestId => {
         cy.visit(this.dashboardUrl);
         cy.getByTestId(elTestId).as("textboxEl");
       });
@@ -24,15 +28,24 @@ describe("Grid compliant widgets", () => {
       });
 
       it("stays put when dragged under snap threshold", () => {
-        cy.get("@textboxEl").dragBy(90).invoke("offset").should("have.property", "left", 15); // no change, 15 -> 15
+        cy.get("@textboxEl")
+          .dragBy(90)
+          .invoke("offset")
+          .should("have.property", "left", 15); // no change, 15 -> 15
       });
 
       it("moves one column when dragged over snap threshold", () => {
-        cy.get("@textboxEl").dragBy(110).invoke("offset").should("have.property", "left", 215); //  moved by 200, 15 -> 215
+        cy.get("@textboxEl")
+          .dragBy(110)
+          .invoke("offset")
+          .should("have.property", "left", 215); //  moved by 200, 15 -> 215
       });
 
       it("moves two columns when dragged over snap threshold", () => {
-        cy.get("@textboxEl").dragBy(330).invoke("offset").should("have.property", "left", 415); //  moved by 400, 15 -> 415
+        cy.get("@textboxEl")
+          .dragBy(330)
+          .invoke("offset")
+          .should("have.property", "left", 415); //  moved by 400, 15 -> 415
       });
     });
 
@@ -95,9 +108,11 @@ describe("Grid compliant widgets", () => {
 
       it("shrinks to minimum", () => {
         cy.get("@textboxEl")
-          .then(($el) => resizeBy(cy.get("@textboxEl"), -$el.width(), -$el.height())) // resize to 0,0
+          .then($el =>
+            resizeBy(cy.get("@textboxEl"), -$el.width(), -$el.height()),
+          ) // resize to 0,0
           .then(() => cy.get("@textboxEl"))
-          .should(($el) => {
+          .should($el => {
             expect($el.width()).to.eq(185); // min textbox width
             expect($el.height()).to.eq(35); // min textbox height
           });

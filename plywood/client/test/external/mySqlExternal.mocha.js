@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
-const { PassThrough } = require('readable-stream');
-const { sane } = require('../utils');
+const { expect } = require("chai");
+const { PassThrough } = require("readable-stream");
+const { sane } = require("../utils");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { External, TimeRange, $, ply, r, AttributeInfo } = plywood;
 
-describe('MySQLExternal', () => {
-  describe('should work when getting back no data', () => {
+describe("MySQLExternal", () => {
+  describe("should work when getting back no data", () => {
     const emptyExternal = External.fromJS(
       {
-        engine: 'mysql',
-        source: 'wikipedia',
+        engine: "mysql",
+        source: "wikipedia",
         attributes: [
-          { name: 'time', type: 'TIME' },
-          { name: 'language', type: 'STRING' },
-          { name: 'page', type: 'STRING' },
-          { name: 'added', type: 'NUMBER' },
+          { name: "time", type: "TIME" },
+          { name: "language", type: "STRING" },
+          { name: "page", type: "STRING" },
+          { name: "added", type: "NUMBER" },
         ],
       },
       () => {
@@ -44,51 +44,51 @@ describe('MySQLExternal', () => {
       },
     );
 
-    it('should return null correctly on a totals query', () => {
-      const ex = ply().apply('Count', '$wiki.count()');
+    it("should return null correctly on a totals query", () => {
+      const ex = ply().apply("Count", "$wiki.count()");
 
-      return ex.compute({ wiki: emptyExternal }).then((result) => {
+      return ex.compute({ wiki: emptyExternal }).then(result => {
         expect(result.toJS().data).to.deep.equal([{ Count: 0 }]);
       });
     });
 
-    it('should return null correctly on a timeseries query', () => {
-      const ex = $('wiki')
-        .split("$time.timeBucket(P1D, 'Etc/UTC')", 'Time')
-        .apply('Count', '$wiki.count()')
-        .sort('$Time', 'ascending');
+    it("should return null correctly on a timeseries query", () => {
+      const ex = $("wiki")
+        .split("$time.timeBucket(P1D, 'Etc/UTC')", "Time")
+        .apply("Count", "$wiki.count()")
+        .sort("$Time", "ascending");
 
-      return ex.compute({ wiki: emptyExternal }).then((result) => {
+      return ex.compute({ wiki: emptyExternal }).then(result => {
         expect(result.toJS().data).to.deep.equal([]);
       });
     });
 
-    it('should return null correctly on a topN query', () => {
-      const ex = $('wiki')
-        .split('$page', 'Page')
-        .apply('Count', '$wiki.count()')
-        .apply('Added', '$wiki.sum($added)')
-        .sort('$Count', 'descending')
+    it("should return null correctly on a topN query", () => {
+      const ex = $("wiki")
+        .split("$page", "Page")
+        .apply("Count", "$wiki.count()")
+        .apply("Added", "$wiki.sum($added)")
+        .sort("$Count", "descending")
         .limit(5);
 
-      return ex.compute({ wiki: emptyExternal }).then((result) => {
+      return ex.compute({ wiki: emptyExternal }).then(result => {
         expect(result.toJS().data).to.deep.equal([]);
       });
     });
 
-    it('should return null correctly on a select query', () => {
-      const ex = $('wiki');
+    it("should return null correctly on a select query", () => {
+      const ex = $("wiki");
 
-      return ex.compute({ wiki: emptyExternal }).then((result) => {
+      return ex.compute({ wiki: emptyExternal }).then(result => {
         expect(AttributeInfo.toJSs(result.attributes)).to.deep.equal([
-          { name: 'time', type: 'TIME' },
-          { name: 'language', type: 'STRING' },
-          { name: 'page', type: 'STRING' },
-          { name: 'added', type: 'NUMBER' },
+          { name: "time", type: "TIME" },
+          { name: "language", type: "STRING" },
+          { name: "page", type: "STRING" },
+          { name: "added", type: "NUMBER" },
         ]);
 
         expect(result.toJS().data).to.deep.equal([]);
-        expect(result.toCSV()).to.equal('time,language,page,added');
+        expect(result.toCSV()).to.equal("time,language,page,added");
       });
     });
   });

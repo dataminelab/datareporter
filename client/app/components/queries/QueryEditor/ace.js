@@ -16,10 +16,14 @@ const snippetsModule = ace.acequire("ace/snippets");
 // By default Ace will try to load snippet files for the different modes and fail.
 // We don't need them, so we use these placeholders until we define our own.
 function defineDummySnippets(mode) {
-  ace.define(`ace/snippets/${mode}`, ["require", "exports", "module"], (require, exports) => {
-    exports.snippetText = "";
-    exports.scope = mode;
-  });
+  ace.define(
+    `ace/snippets/${mode}`,
+    ["require", "exports", "module"],
+    (require, exports) => {
+      exports.snippetText = "";
+      exports.scope = mode;
+    },
+  );
 }
 
 defineDummySnippets("python");
@@ -29,7 +33,7 @@ defineDummySnippets("yaml");
 
 function buildTableColumnKeywords(table) {
   const keywords = [];
-  table.columns.forEach((column) => {
+  table.columns.forEach(column => {
     const columnName = get(column, "name");
     keywords.push({
       name: `${table.name}.${columnName}`,
@@ -46,7 +50,7 @@ function buildKeywordsFromSchema(schema) {
   const columnKeywords = {};
   const tableColumnKeywords = {};
 
-  schema.forEach((table) => {
+  schema.forEach(table => {
     tableKeywords.push({
       name: table.name,
       value: table.name,
@@ -54,7 +58,7 @@ function buildKeywordsFromSchema(schema) {
       meta: "Table",
     });
     tableColumnKeywords[table.name] = buildTableColumnKeywords(table);
-    table.columns.forEach((c) => {
+    table.columns.forEach(c => {
       const columnName = get(c, "name", c);
       columnKeywords[columnName] = capitalize(get(c, "type", "Column"));
     });
@@ -75,7 +79,9 @@ function buildKeywordsFromSchema(schema) {
 const schemaCompleterKeywords = {};
 
 export function updateSchemaCompleter(editorKey, schema = null) {
-  schemaCompleterKeywords[editorKey] = isNil(schema) ? null : buildKeywordsFromSchema(schema);
+  schemaCompleterKeywords[editorKey] = isNil(schema)
+    ? null
+    : buildKeywordsFromSchema(schema);
 }
 
 langTools.setCompleters([
@@ -85,7 +91,9 @@ langTools.setCompleters([
   {
     identifierRegexps: [/[a-zA-Z_0-9.\-\u00A2-\uFFFF]/],
     getCompletions: (editor, session, pos, prefix, callback) => {
-      const { table, column, tableColumn } = schemaCompleterKeywords[editor.id] || {
+      const { table, column, tableColumn } = schemaCompleterKeywords[
+        editor.id
+      ] || {
         table: [],
         column: [],
         tableColumn: [],

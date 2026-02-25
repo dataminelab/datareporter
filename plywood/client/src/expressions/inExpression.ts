@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Range, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Range, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { OverlapExpression } from './overlapExpression';
+} from "./baseExpression";
+import { OverlapExpression } from "./overlapExpression";
 
 export class InExpression extends ChainableUnaryExpression {
-  static op = 'In';
+  static op = "In";
   static fromJS(parameters: ExpressionJS): InExpression {
     const value = ChainableUnaryExpression.jsToValue(parameters);
 
     // Back compat.
     if (Range.isRangeType(value.expression.type)) {
       console.warn(
-        'InExpression should no longer be used for ranges use OverlapExpression instead',
+        "InExpression should no longer be used for ranges use OverlapExpression instead",
       );
-      value.op = 'overlap';
+      value.op = "overlap";
       return new OverlapExpression(value) as any;
     }
 
@@ -44,45 +44,53 @@ export class InExpression extends ChainableUnaryExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('in');
+    this._ensureOp("in");
 
     const operandType = this.operand.type;
     const expression = this.expression;
     if (operandType) {
       if (
         !(
-          operandType === 'NULL' ||
-          expression.type === 'NULL' ||
-          (!Set.isSetType(operandType) && expression.canHaveType('SET'))
+          operandType === "NULL" ||
+          expression.type === "NULL" ||
+          (!Set.isSetType(operandType) && expression.canHaveType("SET"))
         )
       ) {
         throw new TypeError(
           `in expression ${this} has a bad type combination ${operandType} IN ${
-            expression.type || '*'
+            expression.type || "*"
           }`,
         );
       }
     } else {
       if (
         !(
-          expression.canHaveType('NUMBER_RANGE') ||
-          expression.canHaveType('STRING_RANGE') ||
-          expression.canHaveType('TIME_RANGE') ||
-          expression.canHaveType('SET')
+          expression.canHaveType("NUMBER_RANGE") ||
+          expression.canHaveType("STRING_RANGE") ||
+          expression.canHaveType("TIME_RANGE") ||
+          expression.canHaveType("SET")
         )
       ) {
-        throw new TypeError(`in expression has invalid expression type ${expression.type}`);
+        throw new TypeError(
+          `in expression has invalid expression type ${expression.type}`,
+        );
       }
     }
-    this.type = 'BOOLEAN';
+    this.type = "BOOLEAN";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (!expressionValue) return null;
     return expressionValue.contains(operandValue);
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     throw new Error(`can not convert ${this} to JS function`);
   }
 
@@ -98,7 +106,8 @@ export class InExpression extends ChainableUnaryExpression {
     const { operand, expression } = this;
 
     // NotSet.in(Y) => NotSet.is(Y)
-    if (operand.type && !Set.isSetType(operand.type)) return operand.is(expression);
+    if (operand.type && !Set.isSetType(operand.type))
+      return operand.is(expression);
 
     return this;
   }

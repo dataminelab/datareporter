@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState, useCallback, useImperativeHandle } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useImperativeHandle,
+} from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { AceEditor, snippetsModule, updateSchemaCompleter } from "./ace";
@@ -13,8 +19,17 @@ import "./index.less";
 const editorProps = { $blockScrolling: Infinity };
 
 const QueryEditor = React.forwardRef(function (
-  { className, syntax, value, autocompleteEnabled, schema, onChange, onSelectionChange, ...props },
-  ref
+  {
+    className,
+    syntax,
+    value,
+    autocompleteEnabled,
+    schema,
+    onChange,
+    onSelectionChange,
+    ...props
+  },
+  ref,
 ) {
   const [container, setContainer] = useState(null);
   const [editorRef, setEditorRef] = useState(null);
@@ -27,11 +42,11 @@ const QueryEditor = React.forwardRef(function (
   }, [value]);
 
   const handleChange = useCallback(
-    (str) => {
+    str => {
       setCurrentValue(str);
       onChange(str);
     },
-    [onChange]
+    [onChange],
   );
 
   const editorOptions = useMemo(
@@ -42,7 +57,7 @@ const QueryEditor = React.forwardRef(function (
       enableLiveAutocompletion: autocompleteEnabled,
       autoScrollEditorIntoView: true,
     }),
-    [autocompleteEnabled]
+    [autocompleteEnabled],
   );
 
   useEffect(() => {
@@ -70,15 +85,18 @@ const QueryEditor = React.forwardRef(function (
   }, [container, editorRef]);
 
   const handleSelectionChange = useCallback(
-    (selection) => {
-      const rawSelectedQueryText = editorRef.editor.session.doc.getTextRange(selection.getRange());
-      const selectedQueryText = rawSelectedQueryText.length > 1 ? rawSelectedQueryText : null;
+    selection => {
+      const rawSelectedQueryText = editorRef.editor.session.doc.getTextRange(
+        selection.getRange(),
+      );
+      const selectedQueryText =
+        rawSelectedQueryText.length > 1 ? rawSelectedQueryText : null;
       onSelectionChange(selectedQueryText);
     },
-    [editorRef, onSelectionChange]
+    [editorRef, onSelectionChange],
   );
 
-  const initEditor = useCallback((editor) => {
+  const initEditor = useCallback(editor => {
     // Release Cmd/Ctrl+L to the browser
     editor.commands.bindKey({ win: "Ctrl+L", mac: "Cmd+L" }, null);
 
@@ -110,19 +128,23 @@ const QueryEditor = React.forwardRef(function (
     });
 
     // Reset Completer in case dot is pressed
-    editor.commands.on("afterExec", (e) => {
-      if (e.command.name === "insertstring" && e.args === "." && editor.completer) {
+    editor.commands.on("afterExec", e => {
+      if (
+        e.command.name === "insertstring" &&
+        e.args === "." &&
+        editor.completer
+      ) {
         editor.completer.showPopup(editor);
       }
     });
 
-    QuerySnippet.query().then((snippets) => {
+    QuerySnippet.query().then(snippets => {
       const snippetManager = snippetsModule.snippetManager;
       const m = {
         snippetText: "",
       };
       m.snippets = snippetManager.parseSnippetFile(m.snippetText);
-      snippets.forEach((snippet) => {
+      snippets.forEach(snippet => {
         m.snippets.push(snippet.getSnippet());
       });
       snippetManager.register(m.snippets || [], m.scope);
@@ -134,7 +156,7 @@ const QueryEditor = React.forwardRef(function (
   useImperativeHandle(
     ref,
     () => ({
-      paste: (text) => {
+      paste: text => {
         if (editorRef) {
           const { editor } = editorRef;
           editor.session.doc.replace(editor.selection.getRange(), text);
@@ -149,11 +171,15 @@ const QueryEditor = React.forwardRef(function (
         }
       },
     }),
-    [editorRef, onChange]
+    [editorRef, onChange],
   );
 
   return (
-    <div className={cx("query-editor-container", className)} {...props} ref={setContainer}>
+    <div
+      className={cx("query-editor-container", className)}
+      {...props}
+      ref={setContainer}
+    >
       <AceEditor
         ref={setEditorRef}
         theme="textmate"

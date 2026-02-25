@@ -14,31 +14,36 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
+} from "./baseExpression";
 
 export class LogExpression extends ChainableUnaryExpression {
-  static op = 'Log';
+  static op = "Log";
   static fromJS(parameters: ExpressionJS): LogExpression {
     return new LogExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('log');
-    this._checkOperandTypes('NUMBER');
-    this._checkExpressionTypes('NUMBER');
-    this.type = Set.isSetType(this.operand.type) ? this.operand.type : this.expression.type;
+    this._ensureOp("log");
+    this._checkOperandTypes("NUMBER");
+    this._checkExpressionTypes("NUMBER");
+    this.type = Set.isSetType(this.operand.type)
+      ? this.operand.type
+      : this.expression.type;
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (operandValue == null || expressionValue == null) return null;
     return Set.crossBinary(operandValue, expressionValue, (a, b) => {
       const log = Math.log(a) / Math.log(b);
@@ -46,7 +51,10 @@ export class LogExpression extends ChainableUnaryExpression {
     });
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `(Math.log(${operandJS})/Math.log(${expressionJS}))`;
   }
 

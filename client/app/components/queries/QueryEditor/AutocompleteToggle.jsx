@@ -14,7 +14,8 @@ export default function AutocompleteToggle({ available, enabled, onToggle }) {
   }
 
   if (!available) {
-    tooltipMessage = "Live Autocomplete Not Available (Use Ctrl+Space to Trigger)";
+    tooltipMessage =
+      "Live Autocomplete Not Available (Use Ctrl+Space to Trigger)";
     icon = "icon-flash-off";
   }
 
@@ -31,7 +32,10 @@ export default function AutocompleteToggle({ available, enabled, onToggle }) {
         className="query-editor-controls-button m-r-5"
         disabled={!available}
         onClick={handleClick}
-        aria-label={enabled ? "Disable live autocomplete" : "Enable live autocomplete"}>
+        aria-label={
+          enabled ? "Disable live autocomplete" : "Enable live autocomplete"
+        }
+      >
         <i className={"icon " + icon} aria-hidden="true" />
       </Button>
     </Tooltip>

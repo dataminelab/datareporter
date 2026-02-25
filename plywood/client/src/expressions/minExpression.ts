@@ -14,32 +14,38 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { Dataset, PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { Aggregate } from './mixins/aggregate';
+} from "./baseExpression";
+import { Aggregate } from "./mixins/aggregate";
 
-export class MinExpression extends ChainableUnaryExpression implements Aggregate {
-  static op = 'Min';
+export class MinExpression
+  extends ChainableUnaryExpression
+  implements Aggregate
+{
+  static op = "Min";
   static fromJS(parameters: ExpressionJS): MinExpression {
     return new MinExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('min');
-    this._checkOperandTypes('DATASET');
-    this._checkExpressionTypes('NUMBER', 'TIME');
+    this._ensureOp("min");
+    this._checkOperandTypes("DATASET");
+    this._checkExpressionTypes("NUMBER", "TIME");
     this.type = Set.unwrapSetType(this.expression.type);
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     return operandValue ? (operandValue as Dataset).min(this.expression) : null;
   }
 

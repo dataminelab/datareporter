@@ -14,7 +14,7 @@ export default function PasswordResetForm(props) {
   const sendPasswordReset = useCallback(() => {
     setLoading(true);
     User.sendPasswordReset(user)
-      .then((passwordLink) => {
+      .then(passwordLink => {
         setPasswordLink(passwordLink);
       })
       .finally(() => {
@@ -24,10 +24,18 @@ export default function PasswordResetForm(props) {
 
   return (
     <DynamicComponent name="UserProfile.PasswordResetForm" {...props}>
-      <Button className="w-100 m-t-10" onClick={sendPasswordReset} loading={loading}>
+      <Button
+        className="w-100 m-t-10"
+        onClick={sendPasswordReset}
+        loading={loading}
+      >
         Send Password Reset Email
       </Button>
-      <PasswordLinkAlert user={user} passwordLink={passwordLink} afterClose={() => setPasswordLink(null)} />
+      <PasswordLinkAlert
+        user={user}
+        passwordLink={passwordLink}
+        afterClose={() => setPasswordLink(null)}
+      />
     </DynamicComponent>
   );
 }

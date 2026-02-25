@@ -1,18 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function useSearchResults(fetch, { initialResults = null, debounceTimeout = 200 } = {}) {
+export default function useSearchResults(
+  fetch,
+  { initialResults = null, debounceTimeout = 200 } = {},
+) {
   const [result, setResult] = useState(initialResults);
   const [isLoading, setIsLoading] = useState(false);
   const currentSearchTerm = useRef(null);
   const isDestroyed = useRef(false);
 
-  const [doSearch] = useDebouncedCallback((searchTerm) => {
+  const [doSearch] = useDebouncedCallback(searchTerm => {
     setIsLoading(true);
     currentSearchTerm.current = searchTerm;
     fetch(searchTerm)
       .catch(() => initialResults)
-      .then((data) => {
+      .then(data => {
         if (searchTerm === currentSearchTerm.current && !isDestroyed.current) {
           setResult(data);
           setIsLoading(false);
@@ -26,7 +29,7 @@ export default function useSearchResults(fetch, { initialResults = null, debounc
       () => {
         isDestroyed.current = true;
       },
-    []
+    [],
   );
 
   return [doSearch, result, isLoading];

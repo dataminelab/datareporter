@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from './baseExpression';
-import { TransformCaseExpression } from './transformCaseExpression';
+} from "./baseExpression";
+import { TransformCaseExpression } from "./transformCaseExpression";
 
 export class ContainsExpression extends ChainableUnaryExpression {
-  static NORMAL = 'normal';
-  static IGNORE_CASE = 'ignoreCase';
+  static NORMAL = "normal";
+  static IGNORE_CASE = "ignoreCase";
 
   static caseIndependent(str: string): boolean {
     return str.toUpperCase() === str.toLowerCase();
   }
 
-  static op = 'Contains';
+  static op = "Contains";
   static fromJS(parameters: ExpressionJS): ContainsExpression {
     const value = ChainableUnaryExpression.jsToValue(parameters);
     value.compare = parameters.compare;
@@ -44,8 +44,8 @@ export class ContainsExpression extends ChainableUnaryExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._checkOperandTypes('STRING');
-    this._checkExpressionTypes('STRING');
+    this._checkOperandTypes("STRING");
+    this._checkExpressionTypes("STRING");
 
     let { compare } = parameters;
     if (!compare) {
@@ -59,9 +59,9 @@ export class ContainsExpression extends ChainableUnaryExpression {
       );
     }
     this.compare = compare;
-    this._ensureOp('contains');
+    this._ensureOp("contains");
 
-    this.type = 'BOOLEAN';
+    this.type = "BOOLEAN";
   }
 
   public valueOf(): ExpressionValue {
@@ -84,7 +84,10 @@ export class ContainsExpression extends ChainableUnaryExpression {
     return [this.expression.toString(indent), this.compare];
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     let fn: (a: any, b: any) => boolean;
     if (this.compare === ContainsExpression.NORMAL) {
       fn = (a: any, b: any) => String(a).indexOf(b) > -1;
@@ -98,12 +101,16 @@ export class ContainsExpression extends ChainableUnaryExpression {
     return Set.crossBinaryBoolean(operandValue, expressionValue, fn);
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     let combine: (lhs: string, rhs: string) => string;
     if (this.compare === ContainsExpression.NORMAL) {
       combine = (lhs, rhs) => `(''+${lhs}).indexOf(${rhs})>-1`;
     } else {
-      combine = (lhs, rhs) => `(''+${lhs}).toLowerCase().indexOf((''+${rhs}).toLowerCase())>-1`;
+      combine = (lhs, rhs) =>
+        `(''+${lhs}).toLowerCase().indexOf((''+${rhs}).toLowerCase())>-1`;
     }
     return Expression.jsNullSafetyBinary(
       operandJS,
@@ -147,17 +154,19 @@ export class ContainsExpression extends ChainableUnaryExpression {
       }
     }
 
-    if (compare === 'ignoreCase') {
+    if (compare === "ignoreCase") {
       // X.contains(CaseIndependentLiteral, ignoreCase)
       const expressionLiteral = expression.getLiteralValue();
       if (
         expressionLiteral != null &&
-        ((typeof expressionLiteral === 'string' &&
+        ((typeof expressionLiteral === "string" &&
           ContainsExpression.caseIndependent(expressionLiteral)) ||
           (expressionLiteral instanceof Set &&
-            expressionLiteral.elements.every(ContainsExpression.caseIndependent)))
+            expressionLiteral.elements.every(
+              ContainsExpression.caseIndependent,
+            )))
       ) {
-        return this.changeCompare('normal');
+        return this.changeCompare("normal");
       }
     }
 

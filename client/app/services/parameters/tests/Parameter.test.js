@@ -26,13 +26,16 @@ describe("Parameter", () => {
       [null, TextParameter],
     ];
 
-    test.each(parameterTypes)("when type is '%s' creates a %p", (type, expectedClass) => {
-      const parameter = createParameter({
-        name: "param",
-        title: "Param",
-        type,
-      });
-      expect(parameter).toBeInstanceOf(expectedClass);
-    });
+    test.each(parameterTypes)(
+      "when type is '%s' creates a %p",
+      (type, expectedClass) => {
+        const parameter = createParameter({
+          name: "param",
+          title: "Param",
+          type,
+        });
+        expect(parameter).toBeInstanceOf(expectedClass);
+      },
+    );
   });
 });

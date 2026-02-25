@@ -27,19 +27,31 @@ export default function DetailsPageSidebar({
     <React.Fragment>
       <Sidebar.Menu items={items} selected={controller.params.currentPage} />
       {canAddMembers && (
-        <Button className="w-100 m-t-5" type="primary" onClick={onAddMembersClick}>
+        <Button
+          className="w-100 m-t-5"
+          type="primary"
+          onClick={onAddMembersClick}
+        >
           <i className="fa fa-plus m-r-5" />
           Add Members
         </Button>
       )}
       {canAddDataSources && (
-        <Button className="w-100 m-t-5" type="primary" onClick={onAddDataSourcesClick}>
+        <Button
+          className="w-100 m-t-5"
+          type="primary"
+          onClick={onAddDataSourcesClick}
+        >
           <i className="fa fa-plus m-r-5" />
           Add Data Sources
         </Button>
       )}
       {canAddPermissions && (
-        <Button className="w-100 m-t-5" type="primary" onClick={onAddPermissionsClick}>
+        <Button
+          className="w-100 m-t-5"
+          type="primary"
+          onClick={onAddPermissionsClick}
+        >
           <i className="fa fa-plus m-r-5" />
           Add Permissions
         </Button>
@@ -47,7 +59,11 @@ export default function DetailsPageSidebar({
       {canRemove && (
         <React.Fragment>
           <Divider dashed className="m-t-10 m-b-10" />
-          <DeleteGroupButton className="w-100" group={group} onClick={onGroupDeleted}>
+          <DeleteGroupButton
+            className="w-100"
+            group={group}
+            onClick={onGroupDeleted}
+          >
             Delete Group
           </DeleteGroupButton>
         </React.Fragment>

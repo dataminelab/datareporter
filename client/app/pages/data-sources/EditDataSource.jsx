@@ -8,7 +8,9 @@ import navigateTo from "@/components/ApplicationArea/navigateTo";
 import LoadingState from "@/components/items-list/components/LoadingState";
 import DynamicForm from "@/components/dynamic-form/DynamicForm";
 import helper from "@/components/dynamic-form/dynamicFormHelper";
-import HelpTrigger, { TYPES as HELP_TRIGGER_TYPES } from "@/components/HelpTrigger";
+import HelpTrigger, {
+  TYPES as HELP_TRIGGER_TYPES,
+} from "@/components/HelpTrigger";
 import wrapSettingsTab from "@/components/SettingsWrapper";
 
 import DataSource, { IMG_ROOT } from "@/services/data-source";
@@ -33,12 +35,14 @@ class EditDataSource extends React.Component {
 
   componentDidMount() {
     DataSource.get({ id: this.props.dataSourceId })
-      .then((dataSource) => {
+      .then(dataSource => {
         const { type } = dataSource;
         this.setState({ dataSource });
-        DataSource.types().then((types) => this.setState({ type: find(types, { type }), loading: false }));
+        DataSource.types().then(types =>
+          this.setState({ type: find(types, { type }), loading: false }),
+        );
       })
-      .catch((error) => this.props.onError(error));
+      .catch(error => this.props.onError(error));
   }
 
   saveDataSource = (values, successCallback, errorCallback) => {
@@ -46,13 +50,13 @@ class EditDataSource extends React.Component {
     helper.updateTargetWithValues(dataSource, values);
     DataSource.save(dataSource)
       .then(() => successCallback("Saved."))
-      .catch((error) => {
+      .catch(error => {
         const message = get(error, "response.data.message", "Failed saving.");
         errorCallback(message);
       });
   };
 
-  deleteDataSource = (callback) => {
+  deleteDataSource = callback => {
     const { dataSource } = this.state;
 
     const doDelete = () => {
@@ -61,7 +65,7 @@ class EditDataSource extends React.Component {
           notification.success("Data source deleted successfully.");
           navigateTo("data_sources");
         })
-        .catch((e) => {
+        .catch(e => {
           notification.error(e);
           callback();
         });
@@ -79,10 +83,10 @@ class EditDataSource extends React.Component {
     });
   };
 
-  testConnection = (callback) => {
+  testConnection = callback => {
     const { dataSource } = this.state;
     DataSource.test({ id: dataSource.id })
-      .then((httpResponse) => {
+      .then(httpResponse => {
         if (httpResponse.ok) {
           notification.success("Success");
         } else {
@@ -96,7 +100,7 @@ class EditDataSource extends React.Component {
         notification.error(
           "Connection Test Failed:",
           "Unknown error occurred while performing connection test. Please try again later.",
-          { duration: 10 }
+          { duration: 10 },
         );
         callback();
       });
@@ -129,19 +133,29 @@ class EditDataSource extends React.Component {
           <div className="text-left m-l-10">
             {HELP_TRIGGER_TYPES[helpTriggerType] && (
               <HelpTrigger className="f-13" type={helpTriggerType}>
-                Setup Instructions <i className="fa fa-question-circle" aria-hidden="true" />
+                Setup Instructions{" "}
+                <i className="fa fa-question-circle" aria-hidden="true" />
                 <span className="sr-only">(help)</span>
               </HelpTrigger>
             )}
           </div>
           <div className="text-right m-r-10">
-            <a onClick={() => navigateTo("data_sources")} href="#" className="help-trigger f-13">
+            <a
+              onClick={() => navigateTo("data_sources")}
+              href="#"
+              className="help-trigger f-13"
+            >
               Close <i className="fa fa-close" aria-hidden="true" />
             </a>
           </div>
         </div>
         <div className="text-center m-b-10">
-          <img className="p-5" src={`${IMG_ROOT}/${type.type}.png`} alt={type.name} width="64" />
+          <img
+            className="p-5"
+            src={`${IMG_ROOT}/${type.type}.png`}
+            alt={type.name}
+            width="64"
+          />
           <h3 className="m-0">{type.name}</h3>
         </div>
         <div className="col-md-4 col-md-offset-4 m-b-10">
@@ -152,17 +166,25 @@ class EditDataSource extends React.Component {
   }
 
   render() {
-    return this.state.loading ? <LoadingState className="" /> : this.renderForm();
+    return this.state.loading ? (
+      <LoadingState className="" />
+    ) : (
+      this.renderForm()
+    );
   }
 }
 
-const EditDataSourcePage = wrapSettingsTab("DataSources.Edit", null, EditDataSource);
+const EditDataSourcePage = wrapSettingsTab(
+  "DataSources.Edit",
+  null,
+  EditDataSource,
+);
 
 routes.register(
   "DataSources.Edit",
   routeWithUserSession({
     path: "/data_sources/:dataSourceId",
     title: "Data Sources",
-    render: (pageProps) => <EditDataSourcePage {...pageProps} />,
-  })
+    render: pageProps => <EditDataSourcePage {...pageProps} />,
+  }),
 );

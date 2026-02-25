@@ -8,9 +8,11 @@ context("Bar Chart", () => {
   const bars = () => firstSeries().find(".bar-chart-bar");
   const previousBars = () => firstSeries().find(".bar-chart-bar-previous");
   const segments = () => firstSeries().find(".bar-chart-bar-segment");
-  const previousSegments = () => firstSeries().find(".bar-chart-bar-previous-segment");
+  const previousSegments = () =>
+    firstSeries().find(".bar-chart-bar-previous-segment");
   const legend = () => cy.get(".bar-chart-legend");
-  const legendValue = (idx) => legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
+  const legendValue = idx =>
+    legend().find(`.legend-value:nth-child(${idx}) .legend-value-name`);
 
   describe("Report Filters", () => {
     setupReportTests();
@@ -24,8 +26,12 @@ context("Bar Chart", () => {
       cy.get("div.add-button").eq(1).click();
       cy.get("div.tile-row").eq(1).click();
 
-      cy.get("div.scroller > .top-gutter").invoke("text").should("equal", "Data Source");
-      cy.get("div.scroller > .top-left-corner").invoke("text").should("equal", "Color 1");
+      cy.get("div.scroller > .top-gutter")
+        .invoke("text")
+        .should("equal", "Data Source");
+      cy.get("div.scroller > .top-left-corner")
+        .invoke("text")
+        .should("equal", "Color 1");
     });
 
     it("should add a couple of filters", () => {
@@ -36,8 +42,12 @@ context("Bar Chart", () => {
       cy.get("div.add-button").eq(1).click();
       cy.get("div.tile-row").eq(1).click();
 
-      cy.get("div.scroller > .top-left-corner").invoke("text").should("equal", "Color 2, Color 1");
-      cy.get("div.scroller > .top-gutter").invoke("text").should("equal", "Data Source");
+      cy.get("div.scroller > .top-left-corner")
+        .invoke("text")
+        .should("equal", "Color 2, Color 1");
+      cy.get("div.scroller > .top-gutter")
+        .invoke("text")
+        .should("equal", "Data Source");
     });
 
     it("should load bar-chart", () => {
@@ -48,8 +58,12 @@ context("Bar Chart", () => {
       cy.get("div.add-button").eq(1).click();
       cy.get("div.tile-row").eq(1).click();
 
-      cy.get("div.scroller > .top-left-corner").invoke("text").should("equal", "Color 2, Color 1");
-      cy.get("div.scroller > .top-gutter").invoke("text").should("equal", "Data Source");
+      cy.get("div.scroller > .top-left-corner")
+        .invoke("text")
+        .should("equal", "Color 2, Color 1");
+      cy.get("div.scroller > .top-gutter")
+        .invoke("text")
+        .should("equal", "Data Source");
 
       cy.get(".vis-item.selected").click();
       cy.get(".vis-item.not-selected").eq(2).click();

@@ -20,14 +20,22 @@ export default function useEditScheduleDialog(query, onChange) {
 
     const intervals = clientConfig.queryRefreshIntervals;
     const allowedIntervals = policy.getQueryRefreshIntervals();
-    const refreshOptions = isArray(allowedIntervals) ? intersection(intervals, allowedIntervals) : intervals;
+    const refreshOptions = isArray(allowedIntervals)
+      ? intersection(intervals, allowedIntervals)
+      : intervals;
 
     ScheduleDialog.showModal({
       schedule: query.schedule,
       refreshOptions,
-    }).onClose((schedule) => {
+    }).onClose(schedule => {
       recordEvent("edit_schedule", "query", query.id);
       updateQuery({ schedule });
     });
-  }, [query.id, query.schedule, queryFlags.canEdit, queryFlags.canSchedule, updateQuery]);
+  }, [
+    query.id,
+    query.schedule,
+    queryFlags.canEdit,
+    queryFlags.canSchedule,
+    updateQuery,
+  ]);
 }

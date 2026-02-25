@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class SubstrExpression extends ChainableExpression {
-  static op = 'Substr';
+  static op = "Substr";
   static fromJS(parameters: ExpressionJS): SubstrExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.position = parameters.position;
@@ -35,8 +40,8 @@ export class SubstrExpression extends ChainableExpression {
     super(parameters, dummyObject);
     this.position = parameters.position;
     this.len = parameters.len;
-    this._ensureOp('substr');
-    this._checkOperandTypes('STRING');
+    this._ensureOp("substr");
+    this._checkOperandTypes("STRING");
     this.type = this.operand.type;
   }
 
@@ -55,7 +60,11 @@ export class SubstrExpression extends ChainableExpression {
   }
 
   public equals(other: SubstrExpression | undefined): boolean {
-    return super.equals(other) && this.position === other.position && this.len === other.len;
+    return (
+      super.equals(other) &&
+      this.position === other.position &&
+      this.len === other.len
+    );
   }
 
   protected _toStringParameters(indent?: int): string[] {
@@ -65,7 +74,7 @@ export class SubstrExpression extends ChainableExpression {
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
     if (operandValue === null) return null;
     const { position, len } = this;
-    return Set.crossUnary(operandValue, (a) => a.substr(position, len));
+    return Set.crossUnary(operandValue, a => a.substr(position, len));
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
@@ -73,7 +82,10 @@ export class SubstrExpression extends ChainableExpression {
     return `((_=${operandJS}),_==null?null:(''+_).substr(${position},${len}))`;
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
     return dialect.substrExpression(operandSQL, this.position, this.len);
   }
 

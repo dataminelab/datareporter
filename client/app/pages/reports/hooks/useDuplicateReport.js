@@ -15,7 +15,7 @@ export default function useDuplicateReport(report) {
 
     setIsDuplicating(true);
     Report.fork({ id: report.id })
-      .then((newReport) => {
+      .then(newReport => {
         tab.location = newReport.getUrl(true);
       })
       .finally(() => {

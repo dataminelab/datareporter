@@ -11,14 +11,19 @@ import DynamicComponent from "@/components/DynamicComponent";
 import { UserPreviewCard } from "@/components/PreviewCard";
 import InputWithCopy from "@/components/InputWithCopy";
 
-import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
+import {
+  wrap as itemsList,
+  ControllerType,
+} from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
 import { UrlStateStorage } from "@/components/items-list/classes/StateStorage";
 
 import LoadingState from "@/components/items-list/components/LoadingState";
 import EmptyState from "@/components/items-list/components/EmptyState";
 import * as Sidebar from "@/components/items-list/components/Sidebar";
-import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
+import ItemsTable, {
+  Columns,
+} from "@/components/items-list/components/ItemsTable";
 
 import Layout from "@/components/layouts/ContentWithSidebar";
 import wrapSettingsTab from "@/components/SettingsWrapper";
@@ -39,17 +44,25 @@ function UsersListActions({ user, enableUser, disableUser, deleteUser }) {
   }
   if (user.is_invitation_pending) {
     return (
-      <Button type="danger" className="w-100" onClick={(event) => deleteUser(event, user)}>
+      <Button
+        type="danger"
+        className="w-100"
+        onClick={event => deleteUser(event, user)}
+      >
         Delete
       </Button>
     );
   }
   return user.is_disabled ? (
-    <Button type="primary" className="w-100" onClick={(event) => enableUser(event, user)}>
+    <Button
+      type="primary"
+      className="w-100"
+      onClick={event => enableUser(event, user)}
+    >
       Enable
     </Button>
   ) : (
-    <Button className="w-100" onClick={(event) => disableUser(event, user)}>
+    <Button className="w-100" onClick={event => disableUser(event, user)}>
       Disable
     </Button>
   );
@@ -91,22 +104,29 @@ class UsersList extends React.Component {
   ];
 
   listColumns = [
-    Columns.custom.sortable((text, user) => <UserPreviewCard user={user} withLink />, {
-      title: "Name",
-      field: "name",
-      width: null,
-    }),
+    Columns.custom.sortable(
+      (text, user) => <UserPreviewCard user={user} withLink />,
+      {
+        title: "Name",
+        field: "name",
+        width: null,
+      },
+    ),
     Columns.custom.sortable(
       (text, user) =>
-        map(user.groups, (group) => (
-          <Link key={"group" + group.id} className="label label-tag" href={"groups/" + group.id}>
+        map(user.groups, group => (
+          <Link
+            key={"group" + group.id}
+            className="label label-tag"
+            href={"groups/" + group.id}
+          >
             {group.name}
           </Link>
         )),
       {
         title: "Groups",
         field: "groups",
-      }
+      },
     ),
     Columns.timeAgo.sortable({
       title: "Joined",
@@ -132,7 +152,7 @@ class UsersList extends React.Component {
       {
         width: "1%",
         isAvailable: () => policy.canCreateUser(),
-      }
+      },
     ),
   ];
 
@@ -142,9 +162,9 @@ class UsersList extends React.Component {
     }
   }
 
-  createUser = (values) =>
+  createUser = values =>
     User.create(values)
-      .then((user) => {
+      .then(user => {
         notification.success("Saved.");
         if (user.invite_link) {
           Modal.warning({
@@ -152,16 +172,28 @@ class UsersList extends React.Component {
             content: (
               <React.Fragment>
                 <p>
-                  The mail server is not configured, please send the following link to <b>{user.name}</b>:
+                  The mail server is not configured, please send the following
+                  link to <b>{user.name}</b>:
                 </p>
-                <InputWithCopy value={absoluteUrl(user.invite_link)} aria-label="Invite link" readOnly />
+                <InputWithCopy
+                  value={absoluteUrl(user.invite_link)}
+                  aria-label="Invite link"
+                  readOnly
+                />
               </React.Fragment>
             ),
           });
         }
       })
-      .catch((error) => {
-        const message = find([get(error, "response.data.message"), get(error, "message"), "Failed saving."], isString);
+      .catch(error => {
+        const message = find(
+          [
+            get(error, "response.data.message"),
+            get(error, "message"),
+            "Failed saving.",
+          ],
+          isString,
+        );
         return Promise.reject(new Error(message));
       });
 
@@ -173,21 +205,24 @@ class UsersList extends React.Component {
         }
       };
       CreateUserDialog.showModal()
-        .onClose((values) =>
+        .onClose(values =>
           this.createUser(values).then(() => {
             this.props.controller.update();
             goToUsersList();
-          })
+          }),
         )
         .onDismiss(goToUsersList);
     }
   };
 
-  enableUser = (event, user) => User.enableUser(user).then(() => this.props.controller.update());
+  enableUser = (event, user) =>
+    User.enableUser(user).then(() => this.props.controller.update());
 
-  disableUser = (event, user) => User.disableUser(user).then(() => this.props.controller.update());
+  disableUser = (event, user) =>
+    User.disableUser(user).then(() => this.props.controller.update());
 
-  deleteUser = (event, user) => User.deleteUser(user).then(() => this.props.controller.update());
+  deleteUser = (event, user) =>
+    User.deleteUser(user).then(() => this.props.controller.update());
 
   // eslint-disable-next-line class-methods-use-this
   renderPageHeader() {
@@ -196,7 +231,11 @@ class UsersList extends React.Component {
     }
     return (
       <div className="m-b-15">
-        <Button type="primary" disabled={!policy.isCreateUserEnabled()} onClick={this.showCreateUserDialog}>
+        <Button
+          type="primary"
+          disabled={!policy.isCreateUserEnabled()}
+          onClick={this.showCreateUserDialog}
+        >
           <i className="fa fa-plus m-r-5" aria-hidden="true" />
           New User
         </Button>
@@ -217,11 +256,16 @@ class UsersList extends React.Component {
               onChange={controller.updateSearch}
               label="Search users"
             />
-            <Sidebar.Menu items={this.sidebarMenu} selected={controller.params.currentPage} />
+            <Sidebar.Menu
+              items={this.sidebarMenu}
+              selected={controller.params.currentPage}
+            />
           </Layout.Sidebar>
           <Layout.Content>
             {!controller.isLoaded && <LoadingState className="" />}
-            {controller.isLoaded && controller.isEmpty && <EmptyState className="" />}
+            {controller.isLoaded && controller.isEmpty && (
+              <EmptyState className="" />
+            )}
             {controller.isLoaded && !controller.isEmpty && (
               <div className="table-responsive" data-test="UserList">
                 <ItemsTable
@@ -236,9 +280,11 @@ class UsersList extends React.Component {
                   showPageSizeSelect
                   totalCount={controller.totalItemsCount}
                   pageSize={controller.itemsPerPage}
-                  onPageSizeChange={(itemsPerPage) => controller.updatePagination({ itemsPerPage })}
+                  onPageSizeChange={itemsPerPage =>
+                    controller.updatePagination({ itemsPerPage })
+                  }
                   page={controller.page}
-                  onChange={(page) => controller.updatePagination({ page })}
+                  onChange={page => controller.updatePagination({ page })}
                 />
               </div>
             )}
@@ -255,7 +301,7 @@ const UsersListPage = wrapSettingsTab(
     permission: "list_users",
     title: "Users",
     path: "users",
-    isActive: (path) => path.startsWith("/users") && path !== "/users/me",
+    isActive: path => path.startsWith("/users") && path !== "/users/me",
     order: 2,
   },
   itemsList(
@@ -281,8 +327,9 @@ const UsersListPage = wrapSettingsTab(
           return User.query.bind(User);
         },
       }),
-    () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true })
-  )
+    () =>
+      new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
+  ),
 );
 
 routes.register(
@@ -290,30 +337,34 @@ routes.register(
   routeWithUserSession({
     path: "/users/new",
     title: "Users",
-    render: (pageProps) => <UsersListPage {...pageProps} currentPage="active" isNewUserPage />,
-  })
+    render: pageProps => (
+      <UsersListPage {...pageProps} currentPage="active" isNewUserPage />
+    ),
+  }),
 );
 routes.register(
   "Users.List",
   routeWithUserSession({
     path: "/users",
     title: "Users",
-    render: (pageProps) => <UsersListPage {...pageProps} currentPage="active" />,
-  })
+    render: pageProps => <UsersListPage {...pageProps} currentPage="active" />,
+  }),
 );
 routes.register(
   "Users.Pending",
   routeWithUserSession({
     path: "/users/pending",
     title: "Pending Invitations",
-    render: (pageProps) => <UsersListPage {...pageProps} currentPage="pending" />,
-  })
+    render: pageProps => <UsersListPage {...pageProps} currentPage="pending" />,
+  }),
 );
 routes.register(
   "Users.Disabled",
   routeWithUserSession({
     path: "/users/disabled",
     title: "Disabled Users",
-    render: (pageProps) => <UsersListPage {...pageProps} currentPage="disabled" />,
-  })
+    render: pageProps => (
+      <UsersListPage {...pageProps} currentPage="disabled" />
+    ),
+  }),
 );

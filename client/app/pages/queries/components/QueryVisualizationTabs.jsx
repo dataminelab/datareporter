@@ -18,7 +18,10 @@ function EmptyState({ title, message, refreshButton }) {
     <div className="query-results-empty-state">
       <div className="empty-state-content">
         <div>
-          <img src="static/images/illustrations/no-query-results.svg" alt="No Query Results Illustration" />
+          <img
+            src="static/images/illustrations/no-query-results.svg"
+            alt="No Query Results Illustration"
+          />
         </div>
         <h3>{title}</h3>
         <div className="m-b-20">{message}</div>
@@ -38,9 +41,14 @@ EmptyState.defaultProps = {
   refreshButton: null,
 };
 
-function TabWithDeleteButton({ visualizationName, canDelete, onDelete, ...props }) {
+function TabWithDeleteButton({
+  visualizationName,
+  canDelete,
+  onDelete,
+  ...props
+}) {
   const handleDelete = useCallback(
-    (e) => {
+    e => {
       e.stopPropagation();
       Modal.confirm({
         title: "Delete Visualization",
@@ -52,14 +60,19 @@ function TabWithDeleteButton({ visualizationName, canDelete, onDelete, ...props 
         autoFocusButton: null,
       });
     },
-    [onDelete]
+    [onDelete],
   );
 
   return (
     <span {...props}>
       {visualizationName}
       {canDelete && (
-        <PlainButton className="delete-visualization-button" onClick={handleDelete} aria-label="Close" title="Close">
+        <PlainButton
+          className="delete-visualization-button"
+          onClick={handleDelete}
+          aria-label="Close"
+          title="Close"
+        >
           <i className="zmdi zmdi-close" aria-hidden="true" />
         </PlainButton>
       )}
@@ -96,8 +109,11 @@ export default function QueryVisualizationTabs({
   ...props
 }) {
   const visualizations = useMemo(
-    () => (props.visualizations.length > 0 ? props.visualizations : defaultVisualizations),
-    [props.visualizations]
+    () =>
+      props.visualizations.length > 0
+        ? props.visualizations
+        : defaultVisualizations,
+    [props.visualizations],
   );
 
   const tabsProps = {};
@@ -111,15 +127,22 @@ export default function QueryVisualizationTabs({
         className="add-visualization-button"
         data-test="NewVisualization"
         type="link"
-        onClick={() => onAddVisualization()}>
+        onClick={() => onAddVisualization()}
+      >
         <i className="fa fa-plus" aria-hidden="true" />
         <span className="m-l-5 hidden-xs">Add Visualization</span>
       </Button>
     );
   }
 
-  const orderedVisualizations = useMemo(() => orderBy(visualizations, ["id"]), [visualizations]);
-  const isFirstVisualization = useCallback((visId) => visId === orderedVisualizations[0].id, [orderedVisualizations]);
+  const orderedVisualizations = useMemo(
+    () => orderBy(visualizations, ["id"]),
+    [visualizations],
+  );
+  const isFirstVisualization = useCallback(
+    visId => visId === orderedVisualizations[0].id,
+    [orderedVisualizations],
+  );
   const isMobile = useMedia({ maxWidth: 768 });
 
   const [filters, setFilters] = useState([]);
@@ -132,19 +155,25 @@ export default function QueryVisualizationTabs({
       data-test="QueryPageVisualizationTabs"
       animated={false}
       tabBarGutter={0}
-      onChange={(activeKey) => onChangeTab(+activeKey)}
-      destroyInactiveTabPane>
-      {orderedVisualizations.map((visualization) => (
+      onChange={activeKey => onChangeTab(+activeKey)}
+      destroyInactiveTabPane
+    >
+      {orderedVisualizations.map(visualization => (
         <TabPane
           key={`${visualization.id}`}
           tab={
             <TabWithDeleteButton
               data-test={`QueryPageVisualizationTab${visualization.id}`}
-              canDelete={!isMobile && canDeleteVisualizations && !isFirstVisualization(visualization.id)}
+              canDelete={
+                !isMobile &&
+                canDeleteVisualizations &&
+                !isFirstVisualization(visualization.id)
+              }
               visualizationName={visualization.name}
               onDelete={() => onDeleteVisualization(visualization.id)}
             />
-          }>
+          }
+        >
           {queryResult ? (
             <VisualizationRenderer
               visualization={visualization}

@@ -24,19 +24,25 @@ describe("Dashboard Parameters", () => {
         const widgetOptions = {
           position: { col: 0, row: 0, sizeX: 3, sizeY: 10, autoHeight: false },
         };
-        createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then((widgetTestId) => {
+        createQueryAndAddWidget(
+          this.dashboardId,
+          queryData,
+          widgetOptions,
+        ).then(widgetTestId => {
           cy.visit(this.dashboardUrl);
           this.widgetTestId = widgetTestId;
         });
       });
   });
 
-  const openMappingOptions = (widgetTestId) => {
+  const openMappingOptions = widgetTestId => {
     cy.getByTestId(widgetTestId).within(() => {
       cy.getByTestId("WidgetDropdownButton").click();
     });
 
-    cy.getByTestId("WidgetDropdownButtonMenu").contains("Edit Parameters").click();
+    cy.getByTestId("WidgetDropdownButtonMenu")
+      .contains("Edit Parameters")
+      .click();
   };
 
   const saveMappingOptions = (closeMappingMenu = false) => {
@@ -62,7 +68,9 @@ describe("Dashboard Parameters", () => {
     cy.getByTestId(this.widgetTestId).within(() => {
       cy.getByTestId("TableVisualization").should("contain", "example1");
 
-      cy.getByTestId("ParameterName-param1").find("input").type("{selectall}Redash");
+      cy.getByTestId("ParameterName-param1")
+        .find("input")
+        .type("{selectall}Redash");
 
       cy.getByTestId("ParameterApplyButton").click();
 
@@ -79,7 +87,9 @@ describe("Dashboard Parameters", () => {
     cy.getByTestId("StaticValueOption").click();
 
     cy.getByTestId("EditParamMappingPopover").within(() => {
-      cy.getByTestId("ParameterValueInput").find("input").type("{selectall}StaticValue");
+      cy.getByTestId("ParameterValueInput")
+        .find("input")
+        .type("{selectall}StaticValue");
     });
 
     saveMappingOptions(true);

@@ -38,7 +38,11 @@ export function formatDateTime(value) {
 }
 
 export function formatDateTimePrecise(value, withMilliseconds = false) {
-  return formatDateTimeValue(value, clientConfig.dateFormat + (withMilliseconds ? " HH:mm:ss.SSS" : " HH:mm:ss"));
+  return formatDateTimeValue(
+    value,
+    clientConfig.dateFormat +
+      (withMilliseconds ? " HH:mm:ss.SSS" : " HH:mm:ss"),
+  );
 }
 
 export function formatDate(value) {
@@ -95,7 +99,7 @@ export function durationHumanize(durationInSeconds, options = {}) {
 }
 
 export function toHuman(text) {
-  return text.replace(/_/g, " ").replace(/(?:^|\s)\S/g, (a) => a.toUpperCase());
+  return text.replace(/_/g, " ").replace(/(?:^|\s)\S/g, a => a.toUpperCase());
 }
 
 export function remove(items, item) {
@@ -106,9 +110,9 @@ export function remove(items, item) {
   let notEquals;
 
   if (item instanceof Array) {
-    notEquals = (other) => item.indexOf(other) === -1;
+    notEquals = other => item.indexOf(other) === -1;
   } else {
-    notEquals = (other) => item !== other;
+    notEquals = other => item !== other;
   }
 
   const filtered = [];
@@ -129,7 +133,9 @@ export function remove(items, item) {
  * @return {string}
  */
 export function formatNumber(value, fractionDigits = 3) {
-  return Math.round(value) !== value ? value.toFixed(fractionDigits) : value.toString();
+  return Math.round(value) !== value
+    ? value.toFixed(fractionDigits)
+    : value.toString();
 }
 
 /**
@@ -140,7 +146,12 @@ export function formatNumber(value, fractionDigits = 3) {
  * @param [fractionDigits] {number}
  * @return {{unit: string, value: string, divisor: number}}
  */
-export function prettyNumberWithUnit(value, divisor, units = [], fractionDigits) {
+export function prettyNumberWithUnit(
+  value,
+  divisor,
+  units = [],
+  fractionDigits,
+) {
   if (isNaN(parseFloat(value)) || !isFinite(value)) {
     return {
       value: "",
@@ -166,7 +177,12 @@ export function prettyNumberWithUnit(value, divisor, units = [], fractionDigits)
 }
 
 export function prettySizeWithUnit(bytes, fractionDigits) {
-  return prettyNumberWithUnit(bytes, 1024, ["bytes", "KB", "MB", "GB", "TB", "PB"], fractionDigits);
+  return prettyNumberWithUnit(
+    bytes,
+    1024,
+    ["bytes", "KB", "MB", "GB", "TB", "PB"],
+    fractionDigits,
+  );
 }
 
 export function prettySize(bytes) {

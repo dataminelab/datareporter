@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
-const { PassThrough } = require('readable-stream');
+const { expect } = require("chai");
+const { PassThrough } = require("readable-stream");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { Expression, External, TimeRange, $, ply, r } = plywood;
 
 function promiseFnToStream(promiseRq) {
-  return (rq) => {
+  return rq => {
     const stream = new PassThrough({ objectMode: true });
 
     promiseRq(rq).then(
-      (res) => {
+      res => {
         if (res) stream.write(res);
         stream.end();
       },
-      (e) => {
-        stream.emit('error', e);
+      e => {
+        stream.emit("error", e);
         stream.end();
       },
     );
@@ -40,38 +40,39 @@ function promiseFnToStream(promiseRq) {
   };
 }
 
-describe('DruidExternal Introspection Large', () => {
+describe("DruidExternal Introspection Large", () => {
   const requesterDruid_0_21_0 = promiseFnToStream(({ query }) => {
-    if (query.queryType === 'status') return Promise.resolve({ version: '0.21.0' });
-    expect(query.dataSource).to.equal('wikipedia');
+    if (query.queryType === "status")
+      return Promise.resolve({ version: "0.21.0" });
+    expect(query.dataSource).to.equal("wikipedia");
 
-    if (query.queryType === 'segmentMetadata') {
+    if (query.queryType === "segmentMetadata") {
       expect(query.merge).to.equal(true);
-      expect(query.analysisTypes).to.be.an('array');
+      expect(query.analysisTypes).to.be.an("array");
       expect(query.lenientAggregatorMerge).to.equal(true);
 
       const merged = {
-        id: 'merged',
+        id: "merged",
         intervals: null,
         size: 0,
         numRows: 654321,
         columns: {
           __time: {
-            type: 'LONG',
+            type: "LONG",
             hasMultipleValues: false,
             size: 0,
             cardinality: null,
             errorMessage: null,
           },
           added: {
-            type: 'FLOAT',
+            type: "FLOAT",
             hasMultipleValues: false,
             size: 0,
             cardinality: null,
             errorMessage: null,
           },
           anonymous: {
-            type: 'STRING',
+            type: "STRING",
             hasMultipleValues: false,
             size: 0,
             cardinality: 0,
@@ -81,8 +82,8 @@ describe('DruidExternal Introspection Large', () => {
       };
 
       for (let i = 0; i < 40000; i++) {
-        merged.columns['dim_' + i] = {
-          type: 'STRING',
+        merged.columns["dim_" + i] = {
+          type: "STRING",
           hasMultipleValues: false,
           size: 0,
           cardinality: 0,
@@ -91,34 +92,34 @@ describe('DruidExternal Introspection Large', () => {
       }
 
       return Promise.resolve(merged);
-    } else if (query.queryType === 'timeBoundary') {
+    } else if (query.queryType === "timeBoundary") {
       return Promise.resolve({
-        minTime: 'sdsd',
-        maxTime: 'sdsd',
+        minTime: "sdsd",
+        maxTime: "sdsd",
       });
     } else {
       throw new Error(`unsupported query ${query.queryType}`);
     }
   });
 
-  it('does an introspect with segmentMetadata', () => {
+  it("does an introspect with segmentMetadata", () => {
     const wikiExternal = External.fromJS(
       {
-        engine: 'druid',
-        source: 'wikipedia',
-        timeAttribute: 'time',
+        engine: "druid",
+        source: "wikipedia",
+        timeAttribute: "time",
         attributes: [
-          { name: 'color', type: 'STRING' },
-          { name: 'cut', type: 'STRING' },
-          { name: 'carat', type: 'STRING' },
-          { name: 'price', type: 'NUMBER', unsplitable: true },
+          { name: "color", type: "STRING" },
+          { name: "cut", type: "STRING" },
+          { name: "carat", type: "STRING" },
+          { name: "price", type: "NUMBER", unsplitable: true },
         ],
       },
       requesterDruid_0_21_0,
     );
 
-    return wikiExternal.introspect().then((introspectedExternal) => {
-      expect(introspectedExternal.version).to.equal('0.21.0');
+    return wikiExternal.introspect().then(introspectedExternal => {
+      expect(introspectedExternal.version).to.equal("0.21.0");
       expect(introspectedExternal.toJS().attributes.length).to.equal(40007);
     });
   });

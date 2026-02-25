@@ -31,7 +31,9 @@ describe("Funnel", () => {
     cy.clickThrough(`
       NewVisualization
     `);
-    cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.FUNNEL");
+    cy.getByTestId("VisualizationType").selectAntdOption(
+      "VisualizationType.FUNNEL",
+    );
     cy.clickThrough(`
       VisualizationEditor.Tabs.General
 
@@ -52,7 +54,7 @@ describe("Funnel", () => {
         "Funnel.StepColumnTitle": "Column A",
         "Funnel.ValueColumnTitle": "Column B",
       },
-      { wait: 200 }
+      { wait: 200 },
     ); // inputs are debounced
 
     // Wait for proper initialization of visualization
@@ -74,7 +76,7 @@ describe("Funnel", () => {
         "Funnel.PercentRangeMin": "10",
         "Funnel.PercentRangeMax": "90",
       },
-      { wait: 200 }
+      { wait: 200 },
     ); // inputs are debounced
 
     // Wait for proper initialization of visualization

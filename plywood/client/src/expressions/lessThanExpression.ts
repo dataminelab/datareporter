@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from '../datatypes/index';
-import { Range } from '../datatypes/range';
-import { SQLDialect } from '../dialect/baseDialect';
+import { PlywoodValue, Set } from "../datatypes/index";
+import { Range } from "../datatypes/range";
+import { SQLDialect } from "../dialect/baseDialect";
 
 import {
   ChainableUnaryExpression,
@@ -24,31 +24,43 @@ import {
   ExpressionJS,
   ExpressionValue,
   r,
-} from './baseExpression';
-import { LiteralExpression } from './literalExpression';
+} from "./baseExpression";
+import { LiteralExpression } from "./literalExpression";
 
 export class LessThanExpression extends ChainableUnaryExpression {
-  static op = 'LessThan';
+  static op = "LessThan";
   static fromJS(parameters: ExpressionJS): LessThanExpression {
-    return new LessThanExpression(ChainableUnaryExpression.jsToValue(parameters));
+    return new LessThanExpression(
+      ChainableUnaryExpression.jsToValue(parameters),
+    );
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('lessThan');
-    this._checkOperandTypes('NUMBER', 'TIME', 'STRING');
-    this._checkExpressionTypes('NUMBER', 'TIME', 'STRING');
+    this._ensureOp("lessThan");
+    this._checkOperandTypes("NUMBER", "TIME", "STRING");
+    this._checkExpressionTypes("NUMBER", "TIME", "STRING");
     this._bumpOperandExpressionToTime();
     this._checkOperandExpressionTypesAlign();
-    this.type = 'BOOLEAN';
+    this.type = "BOOLEAN";
   }
 
-  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+  protected _calcChainableUnaryHelper(
+    operandValue: any,
+    expressionValue: any,
+  ): PlywoodValue {
     if (operandValue === null || expressionValue === null) return null;
-    return Set.crossBinaryBoolean(operandValue, expressionValue, (a, b) => a < b);
+    return Set.crossBinaryBoolean(
+      operandValue,
+      expressionValue,
+      (a, b) => a < b,
+    );
   }
 
-  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
+  protected _getJSChainableUnaryHelper(
+    operandJS: string,
+    expressionJS: string,
+  ): string {
     return `(${operandJS}<${expressionJS})`;
   }
 
@@ -65,12 +77,16 @@ export class LessThanExpression extends ChainableUnaryExpression {
 
     if (expression instanceof LiteralExpression) {
       // x < 7
-      return operand.overlap(r(Range.fromJS({ start: null, end: expression.value, bounds: '()' })));
+      return operand.overlap(
+        r(Range.fromJS({ start: null, end: expression.value, bounds: "()" })),
+      );
     }
 
     if (operand instanceof LiteralExpression) {
       // 7 < x
-      return expression.overlap(r(Range.fromJS({ start: operand.value, end: null, bounds: '()' })));
+      return expression.overlap(
+        r(Range.fromJS({ start: operand.value, end: null, bounds: "()" })),
+      );
     }
 
     return this;

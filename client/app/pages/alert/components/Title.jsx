@@ -18,7 +18,7 @@ export default function Title({ alert, editMode, name, onChange, children }) {
               className="f-inherit"
               placeholder={defaultName}
               value={name}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={e => onChange(e.target.value)}
             />
           ) : (
             name || defaultName

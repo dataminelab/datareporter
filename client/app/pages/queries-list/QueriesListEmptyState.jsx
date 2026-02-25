@@ -3,23 +3,44 @@ import PropTypes from "prop-types";
 import Link from "@/components/Link";
 import BigMessage from "@/components/BigMessage";
 import NoTaggedObjectsFound from "@/components/NoTaggedObjectsFound";
-import EmptyState, { EmptyStateHelpMessage } from "@/components/empty-state/EmptyState";
+import EmptyState, {
+  EmptyStateHelpMessage,
+} from "@/components/empty-state/EmptyState";
 import DynamicComponent from "@/components/DynamicComponent";
 import { currentUser } from "@/services/auth";
 import HelpTrigger from "@/components/HelpTrigger";
 
-export default function QueriesListEmptyState({ page, searchTerm, selectedTags }) {
+export default function QueriesListEmptyState({
+  page,
+  searchTerm,
+  selectedTags,
+}) {
   if (searchTerm !== "") {
-    return <BigMessage message="Sorry, we couldn't find anything." icon="fa-search" />;
+    return (
+      <BigMessage
+        message="Sorry, we couldn't find anything."
+        icon="fa-search"
+      />
+    );
   }
   if (selectedTags.length > 0) {
     return <NoTaggedObjectsFound objectType="queries" tags={selectedTags} />;
   }
   switch (page) {
     case "favorites":
-      return <BigMessage message="Mark queries as Favorite to list them here." icon="fa-star" />;
+      return (
+        <BigMessage
+          message="Mark queries as Favorite to list them here."
+          icon="fa-star"
+        />
+      );
     case "archive":
-      return <BigMessage message="Archived queries will be listed here." icon="fa-archive" />;
+      return (
+        <BigMessage
+          message="Archived queries will be listed here."
+          icon="fa-archive"
+        />
+      );
     case "my":
       const my_msg = currentUser.hasPermission("create_query") ? (
         <span>

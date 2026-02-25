@@ -20,7 +20,8 @@ const PREDEFINED_GROUPS = [
   },
   {
     created_at: "2024-05-10T14:27:17.589Z",
-    description: "See the selected daterange for selected reports in the dashboard",
+    description:
+      "See the selected daterange for selected reports in the dashboard",
     id: -1,
     name: "Turnilo",
     options: {},
@@ -35,11 +36,13 @@ function VisualizationSelect({ report, visualization, onChange }) {
   }, [report]);
 
   const handleChange = useCallback(
-    (visualizationId) => {
-      const selectedVisualization = report ? find(PREDEFINED_GROUPS, { id: visualizationId }) : null;
+    visualizationId => {
+      const selectedVisualization = report
+        ? find(PREDEFINED_GROUPS, { id: visualizationId })
+        : null;
       onChange(selectedVisualization || null);
     },
-    [report, onChange]
+    [report, onChange],
   );
 
   if (!report) {
@@ -54,11 +57,15 @@ function VisualizationSelect({ report, visualization, onChange }) {
           id="choose-visualization"
           className="w-100"
           value={visualization ? visualization.id : undefined}
-          onChange={handleChange}>
+          onChange={handleChange}
+        >
           {map(visualizationGroups, (visualizations, groupKey) => (
             <Select.OptGroup key={groupKey} label={groupKey}>
-              {map(visualizations, (visualization) => (
-                <Select.Option key={`${visualization.id}`} value={visualization.id}>
+              {map(visualizations, visualization => (
+                <Select.Option
+                  key={`${visualization.id}`}
+                  value={visualization.id}
+                >
                   {visualization.name}
                 </Select.Option>
               ))}
@@ -87,14 +94,14 @@ function AddReportDialog({ dialog }) {
   const [selectedVisualization, setSelectedVisualization] = useState(null);
   const [parameterMappings, setParameterMappings] = useState([]);
 
-  const selectReport = useCallback((reportId) => {
+  const selectReport = useCallback(reportId => {
     // Clear previously selected report (if any)
     setSelectedReport(null);
     setSelectedVisualization(null);
     setParameterMappings([]);
 
     if (reportId) {
-      Report.get({ id: reportId }).then((report) => {
+      Report.get({ id: reportId }).then(report => {
         if (report) {
           setSelectedReport(report);
           setParameterMappings({
@@ -113,7 +120,9 @@ function AddReportDialog({ dialog }) {
 
   const saveWidget = useCallback(() => {
     if (!selectedVisualization || !selectedReport) {
-      notification.error("Please select a report and visualization before saving.");
+      notification.error(
+        "Please select a report and visualization before saving.",
+      );
       return;
     }
     const options = {
@@ -145,9 +154,12 @@ function AddReportDialog({ dialog }) {
         disabled: !selectedReport || dialog.props.okButtonProps.disabled,
       }}
       okText="Add to Dashboard"
-      width={700}>
+      width={700}
+    >
       <div data-test="AddReportDialog">
-        <ReportSelector onChange={(report) => selectReport(report ? report.id : null)} />
+        <ReportSelector
+          onChange={report => selectReport(report ? report.id : null)}
+        />
 
         {selectedReport && (
           <VisualizationSelect

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
-const { sane } = require('../utils');
+const { expect } = require("chai");
+const { sane } = require("../utils");
 
-const { druidRequesterFactory } = require('plywood-druid-requester');
+const { druidRequesterFactory } = require("plywood-druid-requester");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const {
   External,
@@ -34,7 +34,7 @@ const {
   Expression,
 } = plywood;
 
-const info = require('../info');
+const info = require("../info");
 
 const druidRequester = druidRequesterFactory({
   host: info.druidHost,
@@ -44,186 +44,186 @@ const druidRequester = druidRequesterFactory({
 //   requester: druidRequester,
 // });
 
-describe('DruidSQL Functional', function () {
+describe("DruidSQL Functional", function () {
   this.timeout(10000);
 
   const wikiAttributes = [
     {
-      name: '__time',
-      nativeType: 'TIMESTAMP',
-      type: 'TIME',
+      name: "__time",
+      nativeType: "TIMESTAMP",
+      type: "TIME",
     },
     {
-      name: 'added',
-      nativeType: 'BIGINT',
-      type: 'NUMBER',
+      name: "added",
+      nativeType: "BIGINT",
+      type: "NUMBER",
     },
     {
-      name: 'channel',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "channel",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'cityName',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "cityName",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'comment',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "comment",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'commentLength',
-      nativeType: 'BIGINT',
-      type: 'NUMBER',
+      name: "commentLength",
+      nativeType: "BIGINT",
+      type: "NUMBER",
     },
     {
-      name: 'commentLengthStr',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "commentLengthStr",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     info.druidHasFullText
       ? {
-          name: 'commentTerms',
-          nativeType: 'VARCHAR',
-          type: 'STRING',
+          name: "commentTerms",
+          nativeType: "VARCHAR",
+          type: "STRING",
         }
       : null,
     {
-      name: 'count',
-      nativeType: 'BIGINT',
-      type: 'NUMBER',
+      name: "count",
+      nativeType: "BIGINT",
+      type: "NUMBER",
     },
     {
-      name: 'countryIsoCode',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "countryIsoCode",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'countryName',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "countryName",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'deleted',
-      nativeType: 'BIGINT',
-      type: 'NUMBER',
+      name: "deleted",
+      nativeType: "BIGINT",
+      type: "NUMBER",
     },
     {
-      name: 'delta',
-      nativeType: 'BIGINT',
-      type: 'NUMBER',
+      name: "delta",
+      nativeType: "BIGINT",
+      type: "NUMBER",
     },
     {
-      name: 'deltaBucket100',
-      nativeType: 'FLOAT',
-      type: 'NUMBER',
+      name: "deltaBucket100",
+      nativeType: "FLOAT",
+      type: "NUMBER",
     },
     {
-      name: 'deltaByTen',
-      nativeType: 'DOUBLE',
-      type: 'NUMBER',
+      name: "deltaByTen",
+      nativeType: "DOUBLE",
+      type: "NUMBER",
     },
     {
-      name: 'delta_hist',
-      nativeType: 'OTHER',
-      type: 'NULL',
+      name: "delta_hist",
+      nativeType: "OTHER",
+      type: "NULL",
     },
     {
-      name: 'isAnonymous',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "isAnonymous",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'isMinor',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "isMinor",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'isNew',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "isNew",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'isRobot',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "isRobot",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'isUnpatrolled',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "isUnpatrolled",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'max_delta',
-      nativeType: 'BIGINT',
-      type: 'NUMBER',
+      name: "max_delta",
+      nativeType: "BIGINT",
+      type: "NUMBER",
     },
     {
-      name: 'metroCode',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "metroCode",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'min_delta',
-      nativeType: 'BIGINT',
-      type: 'NUMBER',
+      name: "min_delta",
+      nativeType: "BIGINT",
+      type: "NUMBER",
     },
     {
-      name: 'namespace',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "namespace",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'page',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "page",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'page_unique',
-      nativeType: 'OTHER',
-      type: 'NULL',
+      name: "page_unique",
+      nativeType: "OTHER",
+      type: "NULL",
     },
     {
-      name: 'regionIsoCode',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "regionIsoCode",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'regionName',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "regionName",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'sometimeLater',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "sometimeLater",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'sometimeLaterMs',
-      nativeType: 'BIGINT',
-      type: 'NUMBER',
+      name: "sometimeLaterMs",
+      nativeType: "BIGINT",
+      type: "NUMBER",
     },
     {
-      name: 'user',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "user",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'userChars',
-      nativeType: 'VARCHAR',
-      type: 'STRING',
+      name: "userChars",
+      nativeType: "VARCHAR",
+      type: "STRING",
     },
     {
-      name: 'user_theta',
-      nativeType: 'OTHER',
-      type: 'NULL',
+      name: "user_theta",
+      nativeType: "OTHER",
+      type: "NULL",
     },
     {
-      name: 'user_unique',
-      nativeType: 'OTHER',
-      type: 'NULL',
+      name: "user_unique",
+      nativeType: "OTHER",
+      type: "NULL",
     },
   ].filter(Boolean);
 
@@ -231,22 +231,21 @@ describe('DruidSQL Functional', function () {
     pageInBrackets: "'[' ++ $page ++ ']'",
   };
 
-  describe('source list', () => {
-    it('does a source list', async () => {
-      expect(await DruidSQLExternal.getSourceList(druidRequester)).to.deep.equal([
-        'wikipedia',
-        'wikipedia-compact',
-      ]);
+  describe("source list", () => {
+    it("does a source list", async () => {
+      expect(
+        await DruidSQLExternal.getSourceList(druidRequester),
+      ).to.deep.equal(["wikipedia", "wikipedia-compact"]);
     });
   });
 
-  describe('custom SQL', () => {
+  describe("custom SQL", () => {
     const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druid',
-            source: 'wikipedia',
+            engine: "druid",
+            source: "wikipedia",
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
           },
@@ -255,28 +254,31 @@ describe('DruidSQL Functional', function () {
       },
     });
 
-    it('works in simple aggregate case', () => {
-      const ex = $('wiki')
-        .split(s$(`CONCAT(channel, '~')`), 'Channel')
-        .apply('Count', $('wiki').sqlAggregate(r(`SUM(t."count")`)))
-        .apply('Fancy', $('wiki').sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)))
-        .sort('$Count', 'descending')
+    it("works in simple aggregate case", () => {
+      const ex = $("wiki")
+        .split(s$(`CONCAT(channel, '~')`), "Channel")
+        .apply("Count", $("wiki").sqlAggregate(r(`SUM(t."count")`)))
+        .apply(
+          "Fancy",
+          $("wiki").sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)),
+        )
+        .sort("$Count", "descending")
         .limit(3);
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
-            Channel: 'en~',
+            Channel: "en~",
             Count: 114711,
             Fancy: 717274.3671253002,
           },
           {
-            Channel: 'vi~',
+            Channel: "vi~",
             Count: 99010,
             Fancy: 70972.1877005352,
           },
           {
-            Channel: 'de~',
+            Channel: "de~",
             Count: 25103,
             Fancy: 284404.77477356105,
           },
@@ -284,52 +286,56 @@ describe('DruidSQL Functional', function () {
       });
     });
 
-    it('can do compare column', () => {
+    it("can do compare column", () => {
       const prevRange = TimeRange.fromJS({
-        start: new Date('2015-09-12T00:00:00Z'),
-        end: new Date('2015-09-12T12:00:00Z'),
+        start: new Date("2015-09-12T00:00:00Z"),
+        end: new Date("2015-09-12T12:00:00Z"),
       });
       const mainRange = TimeRange.fromJS({
-        start: new Date('2015-09-12T12:00:00Z'),
-        end: new Date('2015-09-13T00:00:00Z'),
+        start: new Date("2015-09-12T12:00:00Z"),
+        end: new Date("2015-09-13T00:00:00Z"),
       });
-      const ex = $('wiki')
-        .split($('channel'), 'Channel')
+      const ex = $("wiki")
+        .split($("channel"), "Channel")
         .apply(
-          'CountPrev',
-          $('wiki').filter($('__time').overlap(prevRange)).sqlAggregate(r(`SUM(t."count")`)),
+          "CountPrev",
+          $("wiki")
+            .filter($("__time").overlap(prevRange))
+            .sqlAggregate(r(`SUM(t."count")`)),
         )
         .apply(
-          'CountMain',
-          $('wiki').filter($('__time').overlap(mainRange)).sqlAggregate(r(`SUM(t."count")`)),
+          "CountMain",
+          $("wiki")
+            .filter($("__time").overlap(mainRange))
+            .sqlAggregate(r(`SUM(t."count")`)),
         )
-        .sort($('CountMain'), 'descending')
+        .sort($("CountMain"), "descending")
         .limit(5);
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
-            Channel: 'en',
+            Channel: "en",
             CountMain: 68606,
             CountPrev: 46105,
           },
           {
-            Channel: 'vi',
+            Channel: "vi",
             CountMain: 48521,
             CountPrev: 50489,
           },
           {
-            Channel: 'de',
+            Channel: "de",
             CountMain: 15857,
             CountPrev: 9246,
           },
           {
-            Channel: 'fr',
+            Channel: "fr",
             CountMain: 14779,
             CountPrev: 6506,
           },
           {
-            Channel: 'uz',
+            Channel: "uz",
             CountMain: 10064,
             CountPrev: 8,
           },
@@ -338,13 +344,13 @@ describe('DruidSQL Functional', function () {
     });
   });
 
-  describe('custom SQL with WITH', () => {
+  describe("custom SQL with WITH", () => {
     const basicExecutor = basicExecutorFactory({
       datasets: {
         wikiWith: External.fromJS(
           {
-            engine: 'druid',
-            source: 'wikipedia_zzz',
+            engine: "druid",
+            source: "wikipedia_zzz",
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
             withQuery: `SELECT * FROM wikipedia WHERE channel = 'en'`,
@@ -354,18 +360,21 @@ describe('DruidSQL Functional', function () {
       },
     });
 
-    it('works in simple aggregate case', () => {
-      const ex = $('wikiWith')
-        .split(s$(`CONCAT(channel, '~')`), 'Channel')
-        .apply('Count', $('wikiWith').sqlAggregate(r(`SUM(t."count")`)))
-        .apply('Fancy', $('wikiWith').sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)))
-        .sort('$Count', 'descending')
+    it("works in simple aggregate case", () => {
+      const ex = $("wikiWith")
+        .split(s$(`CONCAT(channel, '~')`), "Channel")
+        .apply("Count", $("wikiWith").sqlAggregate(r(`SUM(t."count")`)))
+        .apply(
+          "Fancy",
+          $("wikiWith").sqlAggregate(r(`SQRT(SUM(t."added" * t."added"))`)),
+        )
+        .sort("$Count", "descending")
         .limit(3);
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
-            Channel: 'en~',
+            Channel: "en~",
             Count: 114711,
             Fancy: 717274.3671253002,
           },
@@ -374,13 +383,13 @@ describe('DruidSQL Functional', function () {
     });
   });
 
-  describe('defined attributes in datasource', () => {
+  describe("defined attributes in datasource", () => {
     const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druid',
-            source: 'wikipedia',
+            engine: "druid",
+            source: "wikipedia",
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
           },
@@ -389,49 +398,49 @@ describe('DruidSQL Functional', function () {
       },
     });
 
-    it('works in simple case', () => {
-      const ex = $('wiki')
-        .split('$channel', 'Channel')
-        .apply('Count', $('wiki').sum('$count'))
-        .sort('$Count', 'descending')
+    it("works in simple case", () => {
+      const ex = $("wiki")
+        .split("$channel", "Channel")
+        .apply("Count", $("wiki").sum("$count"))
+        .sort("$Count", "descending")
         .limit(3);
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
-            Channel: 'en',
+            Channel: "en",
             Count: 114711,
           },
           {
-            Channel: 'vi',
+            Channel: "vi",
             Count: 99010,
           },
           {
-            Channel: 'de',
+            Channel: "de",
             Count: 25103,
           },
         ]);
       });
     });
 
-    it('works in advanced case', () => {
+    it("works in advanced case", () => {
       const ex = ply()
-        .apply('wiki', $('wiki').filter($('channel').is('en')))
-        .apply('Count', '$wiki.sum($count)')
-        .apply('TotalAdded', '$wiki.sum($added)')
+        .apply("wiki", $("wiki").filter($("channel").is("en")))
+        .apply("Count", "$wiki.sum($count)")
+        .apply("TotalAdded", "$wiki.sum($added)")
         .apply(
-          'Namespaces',
-          $('wiki')
-            .split('$namespace', 'Namespace')
-            .apply('Added', '$wiki.sum($added)')
-            .sort('$Added', 'descending')
+          "Namespaces",
+          $("wiki")
+            .split("$namespace", "Namespace")
+            .apply("Added", "$wiki.sum($added)")
+            .sort("$Added", "descending")
             .limit(2)
             .apply(
-              'Time',
-              $('wiki')
-                .split($('__time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
-                .apply('TotalAdded', '$wiki.sum($added)')
-                .sort('$TotalAdded', 'descending')
+              "Time",
+              $("wiki")
+                .split($("__time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
+                .apply("TotalAdded", "$wiki.sum($added)")
+                .sort("$TotalAdded", "descending")
                 .limit(3),
             ),
         );
@@ -445,31 +454,31 @@ describe('DruidSQL Functional', function () {
       // );
 
       const rawQueries = [];
-      return basicExecutor(ex, { rawQueries }).then((result) => {
+      return basicExecutor(ex, { rawQueries }).then(result => {
         expect(rawQueries).to.deep.equal([
           {
-            engine: 'druid',
+            engine: "druid",
             query: {
               query:
                 'SELECT\nSUM("count") AS "Count",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE ("channel"=\'en\')\nGROUP BY \'\'',
             },
           },
           {
-            engine: 'druid',
+            engine: "druid",
             query: {
               query:
                 'SELECT\n"namespace" AS "Namespace",\nSUM("added") AS "Added"\nFROM "wikipedia" AS t\nWHERE ("channel"=\'en\')\nGROUP BY "namespace"\nORDER BY "Added" DESC\nLIMIT 2',
             },
           },
           {
-            engine: 'druid',
+            engine: "druid",
             query: {
               query:
                 'SELECT\nTIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\') AS "Timestamp",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE (("channel"=\'en\') AND ("namespace"=\'Main\'))\nGROUP BY TIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\')\nORDER BY "TotalAdded" DESC\nLIMIT 3',
             },
           },
           {
-            engine: 'druid',
+            engine: "druid",
             query: {
               query:
                 'SELECT\nTIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\') AS "Timestamp",\nSUM("added") AS "TotalAdded"\nFROM "wikipedia" AS t\nWHERE (("channel"=\'en\') AND ("namespace"=\'User talk\'))\nGROUP BY TIME_FLOOR("__time", \'PT1H\', NULL, \'Etc/UTC\')\nORDER BY "TotalAdded" DESC\nLIMIT 3',
@@ -483,101 +492,101 @@ describe('DruidSQL Functional', function () {
             Namespaces: {
               attributes: [
                 {
-                  name: 'Namespace',
-                  type: 'STRING',
+                  name: "Namespace",
+                  type: "STRING",
                 },
                 {
-                  name: 'Added',
-                  type: 'NUMBER',
+                  name: "Added",
+                  type: "NUMBER",
                 },
                 {
-                  name: 'Time',
-                  type: 'DATASET',
+                  name: "Time",
+                  type: "DATASET",
                 },
               ],
               data: [
                 {
                   Added: 11594002,
-                  Namespace: 'Main',
+                  Namespace: "Main",
                   Time: {
                     attributes: [
                       {
-                        name: 'Timestamp',
-                        type: 'TIME_RANGE',
+                        name: "Timestamp",
+                        type: "TIME_RANGE",
                       },
                       {
-                        name: 'TotalAdded',
-                        type: 'NUMBER',
+                        name: "TotalAdded",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T15:00:00.000Z'),
-                          start: new Date('2015-09-12T14:00:00.000Z'),
+                          end: new Date("2015-09-12T15:00:00.000Z"),
+                          start: new Date("2015-09-12T14:00:00.000Z"),
                         },
                         TotalAdded: 740968,
                       },
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T19:00:00.000Z'),
-                          start: new Date('2015-09-12T18:00:00.000Z'),
+                          end: new Date("2015-09-12T19:00:00.000Z"),
+                          start: new Date("2015-09-12T18:00:00.000Z"),
                         },
                         TotalAdded: 739956,
                       },
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T23:00:00.000Z'),
-                          start: new Date('2015-09-12T22:00:00.000Z'),
+                          end: new Date("2015-09-12T23:00:00.000Z"),
+                          start: new Date("2015-09-12T22:00:00.000Z"),
                         },
                         TotalAdded: 708543,
                       },
                     ],
-                    keys: ['Timestamp'],
+                    keys: ["Timestamp"],
                   },
                 },
                 {
                   Added: 9210976,
-                  Namespace: 'User talk',
+                  Namespace: "User talk",
                   Time: {
                     attributes: [
                       {
-                        name: 'Timestamp',
-                        type: 'TIME_RANGE',
+                        name: "Timestamp",
+                        type: "TIME_RANGE",
                       },
                       {
-                        name: 'TotalAdded',
-                        type: 'NUMBER',
+                        name: "TotalAdded",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T13:00:00.000Z'),
-                          start: new Date('2015-09-12T12:00:00.000Z'),
+                          end: new Date("2015-09-12T13:00:00.000Z"),
+                          start: new Date("2015-09-12T12:00:00.000Z"),
                         },
                         TotalAdded: 693571,
                       },
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T18:00:00.000Z'),
-                          start: new Date('2015-09-12T17:00:00.000Z'),
+                          end: new Date("2015-09-12T18:00:00.000Z"),
+                          start: new Date("2015-09-12T17:00:00.000Z"),
                         },
                         TotalAdded: 634804,
                       },
                       {
                         Timestamp: {
-                          end: new Date('2015-09-12T03:00:00.000Z'),
-                          start: new Date('2015-09-12T02:00:00.000Z'),
+                          end: new Date("2015-09-12T03:00:00.000Z"),
+                          start: new Date("2015-09-12T02:00:00.000Z"),
                         },
                         TotalAdded: 573768,
                       },
                     ],
-                    keys: ['Timestamp'],
+                    keys: ["Timestamp"],
                   },
                 },
               ],
-              keys: ['Namespace'],
+              keys: ["Namespace"],
             },
             TotalAdded: 32553107,
           },
@@ -585,13 +594,13 @@ describe('DruidSQL Functional', function () {
       });
     });
 
-    it.skip('works with boolean GROUP BYs', () => {
-      const ex = $('wiki')
-        .split($('channel').is('en'), 'ChannelIsEn')
-        .apply('Count', $('wiki').sum('$count'))
-        .sort('$Count', 'descending');
+    it.skip("works with boolean GROUP BYs", () => {
+      const ex = $("wiki")
+        .split($("channel").is("en"), "ChannelIsEn")
+        .apply("Count", $("wiki").sum("$count"))
+        .sort("$Count", "descending");
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             ChannelIsEn: false,
@@ -605,64 +614,64 @@ describe('DruidSQL Functional', function () {
       });
     });
 
-    it('works string range', () => {
-      const ex = $('wiki')
-        .filter($('cityName').greaterThan('Eagleton'))
-        .split('$cityName', 'CityName')
-        .sort('$CityName', 'descending')
+    it("works string range", () => {
+      const ex = $("wiki")
+        .filter($("cityName").greaterThan("Eagleton"))
+        .split("$cityName", "CityName")
+        .sort("$CityName", "descending")
         .limit(10);
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
-            CityName: 'Ōita',
+            CityName: "Ōita",
           },
           {
-            CityName: 'Łódź',
+            CityName: "Łódź",
           },
           {
-            CityName: 'İzmit',
+            CityName: "İzmit",
           },
           {
-            CityName: 'České Budějovice',
+            CityName: "České Budějovice",
           },
           {
-            CityName: 'Ürümqi',
+            CityName: "Ürümqi",
           },
           {
-            CityName: 'Ústí nad Labem',
+            CityName: "Ústí nad Labem",
           },
           {
-            CityName: 'Évry',
+            CityName: "Évry",
           },
           {
-            CityName: 'Épinay-sur-Seine',
+            CityName: "Épinay-sur-Seine",
           },
           {
-            CityName: 'Épernay',
+            CityName: "Épernay",
           },
           {
-            CityName: 'Élancourt',
+            CityName: "Élancourt",
           },
         ]);
       });
     });
 
-    it('works with fancy lookup filter', () => {
+    it("works with fancy lookup filter", () => {
       const ex = ply()
         .apply(
-          'wiki',
-          $('wiki').filter(
-            $('channel')
-              .lookup('channel-lookup')
+          "wiki",
+          $("wiki").filter(
+            $("channel")
+              .lookup("channel-lookup")
               .fallback('"???"')
-              .concat(r(' ('), '$channel', r(')'))
-              .in(['English (en)', 'German (de)']),
+              .concat(r(" ("), "$channel", r(")"))
+              .in(["English (en)", "German (de)"]),
           ),
         )
-        .apply('Count', '$wiki.sum($count)');
+        .apply("Count", "$wiki.sum($count)");
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 114711,
@@ -672,90 +681,90 @@ describe('DruidSQL Functional', function () {
     });
   });
 
-  describe('incorrect commentLength and comment', () => {
+  describe("incorrect commentLength and comment", () => {
     const wikiUserCharAsNumber = External.fromJS(
       {
-        engine: 'druid',
-        source: 'wikipedia',
-        timeAttribute: 'time',
+        engine: "druid",
+        source: "wikipedia",
+        timeAttribute: "time",
         allowEternity: true,
         attributes: [
-          { name: 'time', type: 'TIME' },
-          { name: 'comment', type: 'STRING' },
-          { name: 'page', type: 'NUMBER' }, // This is incorrect
-          { name: 'count', type: 'NUMBER', unsplitable: true },
+          { name: "time", type: "TIME" },
+          { name: "comment", type: "STRING" },
+          { name: "page", type: "NUMBER" }, // This is incorrect
+          { name: "count", type: "NUMBER", unsplitable: true },
         ],
       },
       druidRequester,
     );
   });
 
-  describe('introspection', () => {
+  describe("introspection", () => {
     const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: 'druid',
-            source: 'wikipedia',
+            engine: "druid",
+            source: "wikipedia",
           },
           druidRequester,
         ),
       },
     });
 
-    it('introspects', () => {
+    it("introspects", () => {
       return External.fromJS(
         {
-          engine: 'druid',
-          source: 'wikipedia',
+          engine: "druid",
+          source: "wikipedia",
         },
         druidRequester,
       )
         .introspect()
-        .then((external) => {
+        .then(external => {
           expect(external.version).to.equal(info.druidVersion);
           expect(external.toJS().attributes).to.deep.equal(wikiAttributes);
         });
     });
 
-    it.skip('works with introspection', () => {
+    it.skip("works with introspection", () => {
       // ToDo: needs null check correction
       const ex = ply()
-        .apply('wiki', $('wiki').filter($('channel').is('en')))
-        .apply('TotalAdded', '$wiki.sum($added)')
+        .apply("wiki", $("wiki").filter($("channel").is("en")))
+        .apply("TotalAdded", "$wiki.sum($added)")
         .apply(
-          'Time',
-          $('wiki')
-            .split($('__time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
-            .apply('TotalAdded', '$wiki.sum($added)')
-            .sort('$Timestamp', 'ascending')
+          "Time",
+          $("wiki")
+            .split($("__time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
+            .apply("TotalAdded", "$wiki.sum($added)")
+            .sort("$Timestamp", "ascending")
             .limit(3)
             .apply(
-              'Pages',
-              $('wiki')
-                .split('$regionName', 'RegionName')
-                .apply('Deleted', '$wiki.sum($deleted)')
-                .sort('$Deleted', 'descending')
+              "Pages",
+              $("wiki")
+                .split("$regionName", "RegionName")
+                .apply("Deleted", "$wiki.sum($deleted)")
+                .sort("$Deleted", "descending")
                 .limit(2),
             ),
         );
 
-      return basicExecutor(ex).then((result) => {
+      return basicExecutor(ex).then(result => {
         expect(result.toJS().data).to.deep.equal([
           {
             Time: {
               attributes: [
                 {
-                  name: 'Timestamp',
-                  type: 'TIME_RANGE',
+                  name: "Timestamp",
+                  type: "TIME_RANGE",
                 },
                 {
-                  name: 'TotalAdded',
-                  type: 'NUMBER',
+                  name: "TotalAdded",
+                  type: "NUMBER",
                 },
                 {
-                  name: 'Pages',
-                  type: 'DATASET',
+                  name: "Pages",
+                  type: "DATASET",
                 },
               ],
               data: [
@@ -763,12 +772,12 @@ describe('DruidSQL Functional', function () {
                   Pages: {
                     attributes: [
                       {
-                        name: 'RegionName',
-                        type: 'STRING',
+                        name: "RegionName",
+                        type: "STRING",
                       },
                       {
-                        name: 'Deleted',
-                        type: 'NUMBER',
+                        name: "Deleted",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
@@ -778,14 +787,14 @@ describe('DruidSQL Functional', function () {
                       },
                       {
                         Deleted: 848,
-                        RegionName: 'Ontario',
+                        RegionName: "Ontario",
                       },
                     ],
-                    keys: ['RegionName'],
+                    keys: ["RegionName"],
                   },
                   Timestamp: {
-                    end: new Date('2015-09-12T01:00:00.000Z'),
-                    start: new Date('2015-09-12T00:00:00.000Z'),
+                    end: new Date("2015-09-12T01:00:00.000Z"),
+                    start: new Date("2015-09-12T00:00:00.000Z"),
                   },
                   TotalAdded: 331925,
                 },
@@ -793,12 +802,12 @@ describe('DruidSQL Functional', function () {
                   Pages: {
                     attributes: [
                       {
-                        name: 'RegionName',
-                        type: 'STRING',
+                        name: "RegionName",
+                        type: "STRING",
                       },
                       {
-                        name: 'Deleted',
-                        type: 'NUMBER',
+                        name: "Deleted",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
@@ -808,14 +817,14 @@ describe('DruidSQL Functional', function () {
                       },
                       {
                         Deleted: 474,
-                        RegionName: 'Indiana',
+                        RegionName: "Indiana",
                       },
                     ],
-                    keys: ['RegionName'],
+                    keys: ["RegionName"],
                   },
                   Timestamp: {
-                    end: new Date('2015-09-12T02:00:00.000Z'),
-                    start: new Date('2015-09-12T01:00:00.000Z'),
+                    end: new Date("2015-09-12T02:00:00.000Z"),
+                    start: new Date("2015-09-12T01:00:00.000Z"),
                   },
                   TotalAdded: 1418072,
                 },
@@ -823,12 +832,12 @@ describe('DruidSQL Functional', function () {
                   Pages: {
                     attributes: [
                       {
-                        name: 'RegionName',
-                        type: 'STRING',
+                        name: "RegionName",
+                        type: "STRING",
                       },
                       {
-                        name: 'Deleted',
-                        type: 'NUMBER',
+                        name: "Deleted",
+                        type: "NUMBER",
                       },
                     ],
                     data: [
@@ -838,19 +847,19 @@ describe('DruidSQL Functional', function () {
                       },
                       {
                         Deleted: 449,
-                        RegionName: 'Georgia',
+                        RegionName: "Georgia",
                       },
                     ],
-                    keys: ['RegionName'],
+                    keys: ["RegionName"],
                   },
                   Timestamp: {
-                    end: new Date('2015-09-12T03:00:00.000Z'),
-                    start: new Date('2015-09-12T02:00:00.000Z'),
+                    end: new Date("2015-09-12T03:00:00.000Z"),
+                    start: new Date("2015-09-12T02:00:00.000Z"),
                   },
                   TotalAdded: 3045966,
                 },
               ],
-              keys: ['Timestamp'],
+              keys: ["Timestamp"],
             },
             TotalAdded: 32553107,
           },

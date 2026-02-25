@@ -8,7 +8,7 @@ describe("Create Model", () => {
     cy.server();
     cy.route("**/api/models", []); // force an empty response
 
-    ["CreateModelButton"].forEach((createElementTestId) => {
+    ["CreateModelButton"].forEach(createElementTestId => {
       cy.getByTestId(createElementTestId).click();
       cy.get(".ant-modal-content").should("exist");
       cy.getByTestId("CreateModelCancelButton").click();

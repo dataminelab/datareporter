@@ -25,7 +25,7 @@ export default function useReportExecute(report) {
     error: null,
   });
 
-  const triggerExecution = useImmutableCallback(async (data) => {
+  const triggerExecution = useImmutableCallback(async data => {
     report.setExecutionStatus(data.status);
     setExecutionState({
       ...data,

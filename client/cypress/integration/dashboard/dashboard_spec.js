@@ -19,7 +19,7 @@ describe("Dashboard", () => {
       cy.getByTestId("DashboardSaveButton").click();
     });
 
-    cy.wait("@NewDashboard").then((xhr) => {
+    cy.wait("@NewDashboard").then(xhr => {
       const id = Cypress._.get(xhr, "response.body.id");
       assert.isDefined(id, "Dashboard api call returns id");
 
@@ -52,16 +52,22 @@ describe("Dashboard", () => {
     cy.server();
     cy.route("GET", "**/api/dashboards/*").as("LoadDashboard");
     let randomSlug = Cypress._.random(0, 10000).toString(36);
-    cy.createDashboard("Dashboard multiple urls - " + randomSlug).then(({ id, slug }) => {
-      [`/dashboards/${id}`, `/dashboards/${id}-anything-here`, `/dashboard/${slug}`].forEach((url) => {
-        cy.visit(url);
-        cy.wait("@LoadDashboard");
-        cy.getByTestId(`DashboardId${id}Container`).should("exist");
+    cy.createDashboard("Dashboard multiple urls - " + randomSlug).then(
+      ({ id, slug }) => {
+        [
+          `/dashboards/${id}`,
+          `/dashboards/${id}-anything-here`,
+          `/dashboard/${slug}`,
+        ].forEach(url => {
+          cy.visit(url);
+          cy.wait("@LoadDashboard");
+          cy.getByTestId(`DashboardId${id}Container`).should("exist");
 
-        // assert it always use the "/dashboards/{id}" path
-        cy.location("pathname").should("contain", `/dashboards/${id}`);
-      });
-    });
+          // assert it always use the "/dashboards/{id}" path
+          cy.location("pathname").should("contain", `/dashboards/${id}`);
+        });
+      },
+    );
   });
 
   context("viewport width is at 800px", () => {
@@ -73,7 +79,7 @@ describe("Dashboard", () => {
           this.dashboardEditUrl = `/dashboards/${id}?edit`;
           return cy.addTextbox(id, "Hello World!").then(getWidgetTestId);
         })
-        .then((elTestId) => {
+        .then(elTestId => {
           cy.visit(this.dashboardUrl);
           cy.getByTestId(elTestId).as("textboxEl");
         });
@@ -86,12 +92,12 @@ describe("Dashboard", () => {
     });
 
     it("shows widgets with full width", () => {
-      cy.get("@textboxEl").should(($el) => {
+      cy.get("@textboxEl").should($el => {
         expect($el.width()).to.eq(770);
       });
 
       cy.viewport(801, 800);
-      cy.get("@textboxEl").should(($el) => {
+      cy.get("@textboxEl").should($el => {
         expect($el.width()).to.eq(378);
       });
     });
@@ -99,7 +105,10 @@ describe("Dashboard", () => {
     it("hides edit option", () => {
       cy.getByTestId("DashboardMoreButton").click().should("be.visible");
 
-      cy.getByTestId("DashboardMoreButtonMenu").contains("Edit").as("editButton").should("not.be.visible");
+      cy.getByTestId("DashboardMoreButtonMenu")
+        .contains("Edit")
+        .as("editButton")
+        .should("not.be.visible");
 
       cy.viewport(801, 800);
       cy.get("@editButton").should("be.visible");

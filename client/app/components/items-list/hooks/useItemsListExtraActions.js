@@ -3,7 +3,11 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Checkbox from "antd/lib/checkbox";
 import { Columns } from "../components/ItemsTable";
 
-export default function useItemsListExtraActions(controller, listColumns, ExtraActionsComponent) {
+export default function useItemsListExtraActions(
+  controller,
+  listColumns,
+  ExtraActionsComponent,
+) {
   const [actionsState, setActionsState] = useState({ isAvailable: false });
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -29,27 +33,34 @@ export default function useItemsListExtraActions(controller, listColumns, ExtraA
   }, [areAllItemsSelected, controller.pageItems]);
 
   const toggleItem = useCallback(
-    (item) => {
+    item => {
       if (includes(selectedItems, item)) {
-        setSelectedItems(filter(selectedItems, (s) => s !== item));
+        setSelectedItems(filter(selectedItems, s => s !== item));
       } else {
         setSelectedItems([...selectedItems, item]);
       }
     },
-    [selectedItems]
+    [selectedItems],
   );
 
   const checkboxColumn = useMemo(
     () =>
       Columns.custom(
-        (text, item) => <Checkbox checked={includes(selectedItems, item)} onChange={() => toggleItem(item)} />,
+        (text, item) => (
+          <Checkbox
+            checked={includes(selectedItems, item)}
+            onChange={() => toggleItem(item)}
+          />
+        ),
         {
-          title: () => <Checkbox checked={areAllItemsSelected} onChange={toggleAllItems} />,
+          title: () => (
+            <Checkbox checked={areAllItemsSelected} onChange={toggleAllItems} />
+          ),
           field: "id",
           width: "1%",
-        }
+        },
       ),
-    [selectedItems, areAllItemsSelected, toggleAllItems, toggleItem]
+    [selectedItems, areAllItemsSelected, toggleAllItems, toggleItem],
   );
 
   const Component = useCallback(
@@ -59,19 +70,23 @@ export default function useItemsListExtraActions(controller, listColumns, ExtraA
         return null;
       }
 
-      return <ExtraActionsComponent onStateChange={setActionsState} {...props} />;
+      return (
+        <ExtraActionsComponent onStateChange={setActionsState} {...props} />
+      );
     },
-    [ExtraActionsComponent]
+    [ExtraActionsComponent],
   );
 
   return useMemo(
     () => ({
       areExtraActionsAvailable: actionsState.isAvailable,
-      listColumns: actionsState.isAvailable ? [checkboxColumn, ...listColumns] : listColumns,
+      listColumns: actionsState.isAvailable
+        ? [checkboxColumn, ...listColumns]
+        : listColumns,
       Component,
       selectedItems,
       setSelectedItems,
     }),
-    [actionsState, listColumns, checkboxColumn, selectedItems, Component]
+    [actionsState, listColumns, checkboxColumn, selectedItems, Component],
   );
 }

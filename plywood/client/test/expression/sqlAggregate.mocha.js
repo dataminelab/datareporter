@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-const { SqlExpression } = require('druid-query-toolkit');
-const { expect } = require('chai');
+const { SqlExpression } = require("druid-query-toolkit");
+const { expect } = require("chai");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { $, ply, r, Expression, SqlAggregateExpression } = plywood;
 
-describe('SqlAggregateExpression', () => {
-  describe('errors', () => {
-    it('errors on non-parsable SQL', () => {
+describe("SqlAggregateExpression", () => {
+  describe("errors", () => {
+    it("errors on non-parsable SQL", () => {
       expect(() => {
         Expression.fromJS({
-          op: 'sqlAggregate',
-          sql: 'SUM(A',
+          op: "sqlAggregate",
+          sql: "SUM(A",
         });
-      }).to.throw('Expected');
+      }).to.throw("Expected");
     });
   });
 
-  describe('.substituteFilter', () => {
-    it('works with simple function', () => {
+  describe(".substituteFilter", () => {
+    it("works with simple function", () => {
       expect(
         String(
           SqlAggregateExpression.substituteFilter(
@@ -45,7 +45,7 @@ describe('SqlAggregateExpression', () => {
       ).to.equal(`SUM(t."lol") FILTER (WHERE t."browser" = 'Chrome')`);
     });
 
-    it('works with COUNT(*) function', () => {
+    it("works with COUNT(*) function", () => {
       expect(
         String(
           SqlAggregateExpression.substituteFilter(
@@ -56,7 +56,7 @@ describe('SqlAggregateExpression', () => {
       ).to.equal(`COUNT(*) FILTER (WHERE t."browser" = 'Chrome')`);
     });
 
-    it('works with filtered COUNT(*) function', () => {
+    it("works with filtered COUNT(*) function", () => {
       expect(
         String(
           SqlAggregateExpression.substituteFilter(
@@ -64,10 +64,12 @@ describe('SqlAggregateExpression', () => {
             SqlExpression.parse(`t."browser" = 'Chrome'`),
           ),
         ),
-      ).to.equal(`COUNT(*) FILTER (WHERE t."os" = 'Windows' AND t."browser" = 'Chrome')`);
+      ).to.equal(
+        `COUNT(*) FILTER (WHERE t."os" = 'Windows' AND t."browser" = 'Chrome')`,
+      );
     });
 
-    it('works in more complex case', () => {
+    it("works in more complex case", () => {
       expect(
         String(
           SqlAggregateExpression.substituteFilter(
@@ -80,7 +82,7 @@ describe('SqlAggregateExpression', () => {
       );
     });
 
-    it('works on unknown aggregates', () => {
+    it("works on unknown aggregates", () => {
       expect(
         String(
           SqlAggregateExpression.substituteFilter(
@@ -93,7 +95,7 @@ describe('SqlAggregateExpression', () => {
       );
     });
 
-    it('throws on un-aggregated column', () => {
+    it("throws on un-aggregated column", () => {
       expect(() => {
         SqlAggregateExpression.substituteFilter(
           SqlExpression.parse(`FOO(t.revenue) + t.lol`),

@@ -4,7 +4,10 @@ import PropTypes from "prop-types";
 import Select from "antd/lib/select";
 import Modal from "antd/lib/modal";
 import { wrap as wrapDialog, DialogPropType } from "@/components/DialogWrapper";
-import { MappingType, ParameterMappingListInput } from "@/components/ParameterMappingInput";
+import {
+  MappingType,
+  ParameterMappingListInput,
+} from "@/components/ParameterMappingInput";
 import QuerySelector from "@/components/QuerySelector";
 import notification from "@/services/notification";
 import { Query } from "@/services/query";
@@ -15,11 +18,13 @@ function VisualizationSelect({ query, visualization, onChange }) {
   }, [query]);
 
   const handleChange = useCallback(
-    (visualizationId) => {
-      const selectedVisualization = query ? find(query.visualizations, { id: visualizationId }) : null;
+    visualizationId => {
+      const selectedVisualization = query
+        ? find(query.visualizations, { id: visualizationId })
+        : null;
       onChange(selectedVisualization || null);
     },
-    [query, onChange]
+    [query, onChange],
   );
 
   if (!query) {
@@ -34,11 +39,15 @@ function VisualizationSelect({ query, visualization, onChange }) {
           id="choose-visualization"
           className="w-100"
           value={visualization ? visualization.id : undefined}
-          onChange={handleChange}>
+          onChange={handleChange}
+        >
           {map(visualizationGroups, (visualizations, groupKey) => (
             <Select.OptGroup key={groupKey} label={groupKey}>
-              {map(visualizations, (visualization) => (
-                <Select.Option key={`${visualization.id}`} value={visualization.id}>
+              {map(visualizations, visualization => (
+                <Select.Option
+                  key={`${visualization.id}`}
+                  value={visualization.id}
+                >
                   {visualization.name}
                 </Select.Option>
               ))}
@@ -68,19 +77,22 @@ function AddWidgetDialog({ dialog, dashboard }) {
   const [parameterMappings, setParameterMappings] = useState([]);
 
   const selectQuery = useCallback(
-    (queryId) => {
+    queryId => {
       // Clear previously selected query (if any)
       setSelectedQuery(null);
       setSelectedVisualization(null);
       setParameterMappings([]);
 
       if (queryId) {
-        Query.get({ id: queryId }).then((query) => {
+        Query.get({ id: queryId }).then(query => {
           if (query) {
-            const existingParamNames = map(dashboard.getParametersDefs(), (param) => param.name);
+            const existingParamNames = map(
+              dashboard.getParametersDefs(),
+              param => param.name,
+            );
             setSelectedQuery(query);
             setParameterMappings(
-              map(query.getParametersDefs(), (param) => ({
+              map(query.getParametersDefs(), param => ({
                 name: param.name,
                 type: includes(existingParamNames, param.name)
                   ? MappingType.DashboardMapToExisting
@@ -89,7 +101,7 @@ function AddWidgetDialog({ dialog, dashboard }) {
                 value: param.normalizedValue,
                 title: "",
                 param,
-              }))
+              })),
             );
             if (query.visualizations.length > 0) {
               setSelectedVisualization(first(query.visualizations));
@@ -98,13 +110,15 @@ function AddWidgetDialog({ dialog, dashboard }) {
         });
       }
     },
-    [dashboard]
+    [dashboard],
   );
 
   const saveWidget = useCallback(() => {
-    dialog.close({ visualization: selectedVisualization, parameterMappings }).catch(() => {
-      notification.error("Query Widget could not be added");
-    });
+    dialog
+      .close({ visualization: selectedVisualization, parameterMappings })
+      .catch(() => {
+        notification.error("Query Widget could not be added");
+      });
   }, [dialog, selectedVisualization, parameterMappings]);
 
   const existingParams = dashboard.getParametersDefs();
@@ -119,9 +133,12 @@ function AddWidgetDialog({ dialog, dashboard }) {
         disabled: !selectedQuery || dialog.props.okButtonProps.disabled,
       }}
       okText="Add to Dashboard"
-      width={700}>
+      width={700}
+    >
       <div data-test="AddWidgetDialog">
-        <QuerySelector onChange={(query) => selectQuery(query ? query.id : null)} />
+        <QuerySelector
+          onChange={query => selectQuery(query ? query.id : null)}
+        />
 
         {selectedQuery && (
           <VisualizationSelect

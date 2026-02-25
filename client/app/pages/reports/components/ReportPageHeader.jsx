@@ -1,5 +1,11 @@
 import { extend, map, filter, reduce } from "lodash";
-import React, { useCallback, useMemo, useState, useEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import "abortcontroller-polyfill/dist/abortcontroller-polyfill-only";
 import PropTypes from "prop-types";
 import notification from "@/services/notification";
@@ -41,16 +47,19 @@ import DataSourceModelSelector from "./DataSourceModelSelector.jsx";
 import { Report as ReportType } from "@/components/proptypes";
 
 function getQueryTags() {
-  return getTags("api/reports/tags").then((tags) => map(tags, (t) => t.name));
+  return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
 }
 
 function createMenu(menu) {
   const handlers = {};
 
-  const groups = map(menu, (group) =>
+  const groups = map(menu, group =>
     filter(
       map(group, (props, key) => {
-        props = extend({ isAvailable: true, isEnabled: true, onClick: () => {} }, props);
+        props = extend(
+          { isAvailable: true, isEnabled: true, onClick: () => {} },
+          props,
+        );
         if (props.isAvailable) {
           handlers[key] = props.onClick;
           return (
@@ -60,19 +69,20 @@ function createMenu(menu) {
           );
         }
         return null;
-      })
-    )
+      }),
+    ),
   );
 
   return (
     <Menu onClick={({ key }) => handlers[key]()}>
       {reduce(
-        filter(groups, (group) => group.length > 0),
+        filter(groups, group => group.length > 0),
         (result, items, key) => {
-          const divider = result.length > 0 ? <Menu.Divider key={`divider${key}`} /> : null;
+          const divider =
+            result.length > 0 ? <Menu.Divider key={`divider${key}`} /> : null;
           return [...result, divider, ...items];
         },
-        []
+        [],
       )}
     </Menu>
   );
@@ -80,17 +90,26 @@ function createMenu(menu) {
 
 export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
   if (chartTextColor) {
-    document.documentElement.style.setProperty("--text-default-color", chartTextColor);
+    document.documentElement.style.setProperty(
+      "--text-default-color",
+      chartTextColor,
+    );
   } else if (chartTextColor === undefined) {
     document.documentElement.style.removeProperty("--text-default-color");
   }
   if (chartColor) {
-    document.documentElement.style.setProperty("--background-brand-light", chartColor);
+    document.documentElement.style.setProperty(
+      "--background-brand-light",
+      chartColor,
+    );
   } else if (chartColor === undefined) {
     document.documentElement.style.removeProperty("--background-brand-light");
   }
   if (chartBorderColor) {
-    document.documentElement.style.setProperty("--highlight-border", chartBorderColor);
+    document.documentElement.style.setProperty(
+      "--highlight-border",
+      chartBorderColor,
+    );
   } else if (chartBorderColor === undefined) {
     document.documentElement.style.removeProperty("--highlight-border");
   }
@@ -99,7 +118,8 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 export default function ReportPageHeader(props) {
   const isMountedRef = useRef(true);
   const isDesktop = useMedia({ minWidth: 768 });
-  const { report, setReport, saveReport, saveAsReport, showShareReportDialog } = useReport(props.report);
+  const { report, setReport, saveReport, saveAsReport, showShareReportDialog } =
+    useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
   const updateTags = useUpdateReportTags(report, setReport);
   const archiveReport = useArchiveReport(report, setReport);
@@ -109,7 +129,8 @@ export default function ReportPageHeader(props) {
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
   const openApiKeyDialog = useApiKeyDialog(report, setReport);
   const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
-  const { dataSourcesLoaded, dataSources, dataSource } = useReportDataSources(report);
+  const { dataSourcesLoaded, dataSources, dataSource } =
+    useReportDataSources(report);
   const [models, setModels] = useState([]);
   const [modelsLoaded, setLoadModelsLoaded] = useState(false);
   const reportFlags = useReportFlags(report, dataSource);
@@ -129,19 +150,22 @@ export default function ReportPageHeader(props) {
   const modelSelectElementText = useRef("");
 
   const handleReportChanged = useCallback(
-    (state) => {
+    state => {
       if (!report.data_source_id) return;
       if (!report.model_id) return;
       setReportChanged(state);
     },
-    [report.data_source_id, report.model_id, setReportChanged]
+    [report.data_source_id, report.model_id, setReportChanged],
   );
 
-  const handleNewNameChange = (event) => {
+  const handleNewNameChange = event => {
     setNewName(event.target.value);
   };
 
-  const styles = useMemo(() => reactCSS(reportPageStyles(colorTextHex, colorBodyHex)), [colorTextHex, colorBodyHex]);
+  const styles = useMemo(
+    () => reactCSS(reportPageStyles(colorTextHex, colorBodyHex)),
+    [colorTextHex, colorBodyHex],
+  );
 
   const handleColorChange = useCallback(
     (color, type) => {
@@ -160,12 +184,21 @@ export default function ReportPageHeader(props) {
         props.onChange(extend(report.clone(), updates));
         // ligten color
         const amount = 20;
-        const lightenedRed = Math.min(255, Math.round(color.rgb.r + (amount / 100) * (255 - color.rgb.r)));
-        const lightenedGreen = Math.min(255, Math.round(color.rgb.g + (amount / 100) * (255 - color.rgb.g)));
-        const lightenedBlue = Math.min(255, Math.round(color.rgb.b + (amount / 100) * (255 - color.rgb.b)));
+        const lightenedRed = Math.min(
+          255,
+          Math.round(color.rgb.r + (amount / 100) * (255 - color.rgb.r)),
+        );
+        const lightenedGreen = Math.min(
+          255,
+          Math.round(color.rgb.g + (amount / 100) * (255 - color.rgb.g)),
+        );
+        const lightenedBlue = Math.min(
+          255,
+          Math.round(color.rgb.b + (amount / 100) * (255 - color.rgb.b)),
+        );
         // Convert RGB components back to hex color string
         const lightenedHexColor = `#${lightenedRed.toString(
-          16
+          16,
         )}${lightenedGreen.toString(16)}${lightenedBlue.toString(16)}`;
         setColorElements(false, color.hex, lightenedHexColor);
       } else {
@@ -176,13 +209,18 @@ export default function ReportPageHeader(props) {
       }
       handleReportChanged(true);
     },
-    [handleReportChanged, props, report]
+    [handleReportChanged, props, report],
   );
 
-  const changeModelDataText = (text) => {
-    const elem = document.querySelector("#model-data-source").querySelectorAll("span")[2];
+  const changeModelDataText = text => {
+    const elem = document
+      .querySelector("#model-data-source")
+      .querySelectorAll("span")[2];
     if (elem.innerText === text) return;
-    if (modelSelectElement.current && elem.innerText !== modelSelectElement.current.props.placeholder) {
+    if (
+      modelSelectElement.current &&
+      elem.innerText !== modelSelectElement.current.props.placeholder
+    ) {
       modelSelectElementText.current = elem.innerText;
     }
     elem.innerText = text;
@@ -191,7 +229,7 @@ export default function ReportPageHeader(props) {
     }
   };
 
-  const setNewModels = async (data_source_id) => {
+  const setNewModels = async data_source_id => {
     let newModels = [];
     const res = await Model.query({ data_source: data_source_id });
     newModels = res.results;
@@ -241,32 +279,32 @@ export default function ReportPageHeader(props) {
         setSelectedDataSource(data_source_id);
       }
     },
-    [props, report, updateReport, handleReportChanged]
+    [props, report, updateReport, handleReportChanged],
   );
 
   const getModel = useCallback(
-    (modelId) => {
-      return models.find((m) => m.id === modelId);
+    modelId => {
+      return models.find(m => m.id === modelId);
     },
-    [models]
+    [models],
   );
 
   const getDataSource = useCallback(
-    (dataSourceId) => {
-      return dataSources.find((ds) => ds.id === dataSourceId);
+    dataSourceId => {
+      return dataSources.find(ds => ds.id === dataSourceId);
     },
-    [dataSources]
+    [dataSources],
   );
 
   const getSettings = useCallback(
-    async (modelId) => {
+    async modelId => {
       if (report.landed) {
         return { appSettings: report.appSettings, timekeeper: {} };
       } else {
         return await Model.getReporterConfig(modelId);
       }
     },
-    [report.landed, report.appSettings]
+    [report.landed, report.appSettings],
   );
 
   const getModelDataCube = useCallback(
@@ -274,9 +312,9 @@ export default function ReportPageHeader(props) {
       const model = getModel(modelId);
       if (!model || !settings) return {};
       const dataCubes = settings.dataCubes;
-      return dataCubes.find((m) => m.name === model.table);
+      return dataCubes.find(m => m.name === model.table);
     },
-    [getModel]
+    [getModel],
   );
 
   const handleModelChange = useCallback(
@@ -291,7 +329,7 @@ export default function ReportPageHeader(props) {
             {
               successMessage: null,
               errorMessage: "DataCube must have a timeAttribute",
-            }
+            },
           );
         }
         const model = getModel(modelId);
@@ -311,27 +349,42 @@ export default function ReportPageHeader(props) {
           updates.data_source_id = selectedDataSource;
         }
         if (signal && signal.aborted) return;
-        updateReport({ ...report.clone(), ...updates }, { successMessage: null, errorMessage: null });
+        updateReport(
+          { ...report.clone(), ...updates },
+          { successMessage: null, errorMessage: null },
+        );
         props.onChange(extend(report.clone(), { ...updates }));
         handleReportChanged(true);
         setSelectedModel(modelId);
       } catch (err) {
-        updateReport({}, { successMessage: null, errorMessage: "failed to load the model" });
+        updateReport(
+          {},
+          { successMessage: null, errorMessage: "failed to load the model" },
+        );
       }
     },
-    [getModelDataCube, getSettings, getModel, report, selectedDataSource, updateReport, props, handleReportChanged]
+    [
+      getModelDataCube,
+      getSettings,
+      getModel,
+      report,
+      selectedDataSource,
+      updateReport,
+      props,
+      handleReportChanged,
+    ],
   );
 
   const handleUpdateName = useCallback(
-    (name) => {
+    name => {
       setReportName(name);
       setNewName("Copy of " + name);
       handleReportChanged(true);
     },
-    [handleReportChanged]
+    [handleReportChanged],
   );
 
-  const handleGivenModal = (id) => {
+  const handleGivenModal = id => {
     try {
       if (document.getElementById(id).style.opacity === "1") {
         document.getElementById(id).style.opacity = "0";
@@ -353,13 +406,17 @@ export default function ReportPageHeader(props) {
   const handleSaveReport = useCallback(() => {
     if (!reportChanged) return notification.warning("No changes to save");
 
-    const hashExpression = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
+    const hashExpression = window.location.hash.substring(
+      window.location.hash.indexOf("4/") + 2,
+    );
 
     const payload = {
       color_1: colorBodyHex || report.color_1,
       color_2: colorTextHex || report.color_2,
       name: reportName,
-      ...(hashExpression ? { expression: hashExpression } : { is_draft: false }),
+      ...(hashExpression
+        ? { expression: hashExpression }
+        : { is_draft: false }),
     };
 
     updateReport(payload, {
@@ -390,10 +447,12 @@ export default function ReportPageHeader(props) {
       createMenu([
         {
           fork: {
-            isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+            isEnabled:
+              !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
             title: (
               <React.Fragment>
-                Fork <i className="fa fa-external-link m-l-5" aria-hidden="true" />
+                Fork{" "}
+                <i className="fa fa-external-link m-l-5" aria-hidden="true" />
                 <span className="sr-only">(opens in a new tab)</span>
               </React.Fragment>
             ),
@@ -407,31 +466,44 @@ export default function ReportPageHeader(props) {
             onClick: handleSaveReport,
           },
           saveAs: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
             title: "Save As",
             onClick: () => handleGivenModal("save-as-ul"),
           },
         },
         {
           archive: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
             title: "Archive",
             onClick: archiveReport,
           },
           managePermissions: {
             isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isArchived &&
+              clientConfig.showPermissionsControl,
             title: "Manage Permissions",
             onClick: openPermissionsEditorDialog,
           },
           publish: {
             isAvailable:
-              !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
+              !isDesktop &&
+              queryFlags.isDraft &&
+              !queryFlags.isArchived &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit,
             title: "Publish",
             onClick: publishReport,
           },
           unpublish: {
-            isAvailable: !clientConfig.disablePublish && !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
+            isAvailable:
+              !clientConfig.disablePublish &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isDraft,
             title: "Unpublish",
             onClick: unpublishReport,
           },
@@ -442,7 +514,10 @@ export default function ReportPageHeader(props) {
           },
           share: {
             isAvailable:
-              report.publicAccessEnabled && !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+              report.publicAccessEnabled &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isArchived,
             title: "Share",
             onClick: showShareReportDialog,
           },
@@ -465,12 +540,16 @@ export default function ReportPageHeader(props) {
         },
         {
           showAPIKey: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !clientConfig.disablePublicUrls,
+            isAvailable:
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !clientConfig.disablePublicUrls,
             title: "Show API Key",
             onClick: openApiKeyDialog,
           },
           sessionCost: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
             title: "Show Session Cost",
             onClick: () => handleGivenModal("meta-modal"),
           },
@@ -494,11 +573,12 @@ export default function ReportPageHeader(props) {
       handleSaveReport,
       report.publicAccessEnabled,
       showShareReportDialog,
-    ]
+    ],
   );
 
   useEffect(() => {
-    if (dataSourcesLoaded && !selectedDataSource && dataSources.length) handleDataSourceChange(dataSources[0].id);
+    if (dataSourcesLoaded && !selectedDataSource && dataSources.length)
+      handleDataSourceChange(dataSources[0].id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSourcesLoaded]);
 
@@ -516,8 +596,10 @@ export default function ReportPageHeader(props) {
       }
       setPriceButton(
         Number(localStorage.getItem(`${window.location.pathname}-price`)),
-        Number(localStorage.getItem(`${window.location.pathname}-proceed_data`)),
-        false
+        Number(
+          localStorage.getItem(`${window.location.pathname}-proceed_data`),
+        ),
+        false,
       );
       handleReportChanged(false); // fix this, we cant set get here save button is not working disabling and stuff
     }
@@ -525,7 +607,8 @@ export default function ReportPageHeader(props) {
   }, []);
 
   useEffect(() => {
-    if (window.location.href.indexOf("4/") > -1) setCurrentHash(window.location.hash);
+    if (window.location.href.indexOf("4/") > -1)
+      setCurrentHash(window.location.hash);
   }, []);
 
   useEffect(() => {
@@ -574,7 +657,7 @@ export default function ReportPageHeader(props) {
   useEffect(() => {
     // this function is working on report/new page for setting first model to report
     if (report.landed) return;
-    const firstEncounterModelSetter = async (models) => {
+    const firstEncounterModelSetter = async models => {
       const modelId = models[0].id;
       const modelDataCube = await getModelDataCube(modelId);
       if (!modelDataCube) return;
@@ -583,8 +666,17 @@ export default function ReportPageHeader(props) {
       const model = getModel(modelId);
       replaceHash(model, window.location.hash.split("/4/")[1]);
     };
-    if (modelsLoaded && !selectedModel && models.length) firstEncounterModelSetter(models);
-  }, [modelsLoaded, getModel, getModelDataCube, handleModelChange, models, report.landed, selectedModel]);
+    if (modelsLoaded && !selectedModel && models.length)
+      firstEncounterModelSetter(models);
+  }, [
+    modelsLoaded,
+    getModel,
+    getModelDataCube,
+    handleModelChange,
+    models,
+    report.landed,
+    selectedModel,
+  ]);
 
   return (
     <div className="report-page-header">
@@ -593,7 +685,12 @@ export default function ReportPageHeader(props) {
           <div className="d-flex align-items-center">
             {!queryFlags.isNew && <FavoritesControl item={report} />}
             <h3>
-              <EditInPlace isEditable={queryFlags.canEdit} onDone={handleUpdateName} ignoreBlanks value={reportName} />
+              <EditInPlace
+                isEditable={queryFlags.canEdit}
+                onDone={handleUpdateName}
+                ignoreBlanks
+                value={reportName}
+              />
             </h3>
           </div>
         </div>
@@ -616,8 +713,12 @@ export default function ReportPageHeader(props) {
             id="meta-modal"
             className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
             role="menu"
-            onClick={(e) => e.stopPropagation()}>
-            <div style={styles.cover} onClick={() => handleGivenModal("meta-modal")} />
+            onClick={e => e.stopPropagation()}
+          >
+            <div
+              style={styles.cover}
+              onClick={() => handleGivenModal("meta-modal")}
+            />
             <li className="ant-menu-item modal-left" role="menuitem">
               <p id="_price" alt="0">
                 Price: 0
@@ -630,24 +731,44 @@ export default function ReportPageHeader(props) {
             </li>
           </ul>
         </div>
-        <Button style={styles.swatch} className="m-r-5" onClick={() => setDisplayColorPicker(1)}>
+        <Button
+          style={styles.swatch}
+          className="m-r-5"
+          onClick={() => setDisplayColorPicker(1)}
+        >
           <span style={styles.colorSpanElement}>Text</span>
           <div style={styles.color} />
         </Button>
-        <Button style={styles.swatch} className="m-r-5" onClick={() => setDisplayColorPicker(2)}>
+        <Button
+          style={styles.swatch}
+          className="m-r-5"
+          onClick={() => setDisplayColorPicker(2)}
+        >
           <span style={styles.colorSpanElement}>Chart</span>
           <div style={styles.colorBody} />
         </Button>
         {displayColorPicker === 1 ? (
           <div style={styles.popover}>
-            <div style={styles.cover} onClick={() => setDisplayColorPicker(0)} />
-            <SketchPicker color={colorTextHex} onChangeComplete={(color) => handleColorChange(color, 1)} />
+            <div
+              style={styles.cover}
+              onClick={() => setDisplayColorPicker(0)}
+            />
+            <SketchPicker
+              color={colorTextHex}
+              onChangeComplete={color => handleColorChange(color, 1)}
+            />
           </div>
         ) : null}
         {displayColorPicker === 2 ? (
           <div style={styles.popoverSecond}>
-            <div style={styles.cover} onClick={() => setDisplayColorPicker(0)} />
-            <SketchPicker color={colorBodyHex} onChangeComplete={(color) => handleColorChange(color, 2)} />
+            <div
+              style={styles.cover}
+              onClick={() => setDisplayColorPicker(0)}
+            />
+            <SketchPicker
+              color={colorBodyHex}
+              onChangeComplete={color => handleColorChange(color, 2)}
+            />
           </div>
         ) : null}
         <DataSourceModelSelector
@@ -677,7 +798,10 @@ export default function ReportPageHeader(props) {
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
             {!props.sourceMode && (
-              <Link.Button className="m-r-5" href={report.getUrl(true, props.selectedVisualization)}>
+              <Link.Button
+                className="m-r-5"
+                href={report.getUrl(true, props.selectedVisualization)}
+              >
                 <i className="fa fa-pencil-square-o" aria-hidden="true" />
                 <span className="m-l-5">Edit Source</span>
               </Link.Button>
@@ -687,7 +811,8 @@ export default function ReportPageHeader(props) {
                 disabled
                 className="m-r-5"
                 href={report.getUrl(false, props.selectedVisualization)}
-                data-test="ReportPageShowResultOnly">
+                data-test="ReportPageShowResultOnly"
+              >
                 <i className="fa fa-table" aria-hidden="true" />
                 <span className="m-l-5">Show Results Only</span>
               </Link.Button>
@@ -700,8 +825,12 @@ export default function ReportPageHeader(props) {
               id="save-as-ul"
               className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
               role="menu"
-              onClick={(e) => e.stopPropagation()}>
-              <div style={styles.cover} onClick={() => handleGivenModal("save-as-ul")} />
+              onClick={e => e.stopPropagation()}
+            >
+              <div
+                style={styles.cover}
+                onClick={() => handleGivenModal("save-as-ul")}
+              />
               <p className="new-name-label">name</p>
               <input
                 id="new-name-input"
@@ -710,7 +839,10 @@ export default function ReportPageHeader(props) {
                 value={newName}
                 onChange={handleNewNameChange}
               />
-              <Button className="ant-menu-item-group-title" onClick={() => saveAsReport(newName)}>
+              <Button
+                className="ant-menu-item-group-title"
+                onClick={() => saveAsReport(newName)}
+              >
                 Save now
               </Button>
             </ul>
@@ -718,7 +850,10 @@ export default function ReportPageHeader(props) {
         )}
         <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
           {/* ### TODO write tests for below code  disabled={(report.id || report.model_id) ? false : true} */}
-          <Button data-test="ReportPageHeaderMoreButton" aria-label="More actions">
+          <Button
+            data-test="ReportPageHeaderMoreButton"
+            aria-label="More actions"
+          >
             <EllipsisOutlinedIcon rotate={90} aria-hidden="true" />
           </Button>
         </Dropdown>

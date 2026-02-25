@@ -12,7 +12,10 @@ import recordEvent from "@/services/recordEvent";
 import OrgSettings from "@/services/organizationSettings";
 import routes from "@/services/routes";
 import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
-import { getHorizontalFormProps, getHorizontalFormItemWithoutLabelProps } from "@/styles/formStyle";
+import {
+  getHorizontalFormProps,
+  getHorizontalFormItemWithoutLabelProps,
+} from "@/styles/formStyle";
 
 import GeneralSettings from "./components/GeneralSettings";
 import AuthSettings from "./components/AuthSettings";
@@ -31,7 +34,7 @@ function OrganizationSettings({ onError }) {
     let isCancelled = false;
 
     OrgSettings.get()
-      .then((response) => {
+      .then(response => {
         if (!isCancelled) {
           const settings = get(response, "settings");
           setSettings(settings);
@@ -39,7 +42,7 @@ function OrganizationSettings({ onError }) {
           setIsLoading(false);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         if (!isCancelled) {
           handleError(error);
         }
@@ -50,17 +53,17 @@ function OrganizationSettings({ onError }) {
     };
   }, [handleError]);
 
-  const handleChange = useCallback((changes) => {
-    setCurrentValues((currentValues) => ({ ...currentValues, ...changes }));
+  const handleChange = useCallback(changes => {
+    setCurrentValues(currentValues => ({ ...currentValues, ...changes }));
   }, []);
 
   const handleSubmit = useCallback(
-    (event) => {
+    event => {
       event.preventDefault();
       if (!isSaving) {
         setIsSaving(true);
         OrgSettings.save(currentValues)
-          .then((response) => {
+          .then(response => {
             const settings = get(response, "settings");
             setSettings(settings);
             setCurrentValues({ ...settings });
@@ -69,7 +72,7 @@ function OrganizationSettings({ onError }) {
           .finally(() => setIsSaving(false));
       }
     },
-    [isSaving, currentValues, handleError]
+    [isSaving, currentValues, handleError],
   );
 
   return (
@@ -79,8 +82,16 @@ function OrganizationSettings({ onError }) {
           <LoadingState className="" />
         ) : (
           <Form {...getHorizontalFormProps()} onSubmit={handleSubmit}>
-            <GeneralSettings settings={settings} values={currentValues} onChange={handleChange} />
-            <AuthSettings settings={settings} values={currentValues} onChange={handleChange} />
+            <GeneralSettings
+              settings={settings}
+              values={currentValues}
+              onChange={handleChange}
+            />
+            <AuthSettings
+              settings={settings}
+              values={currentValues}
+              onChange={handleChange}
+            />
             <Form.Item {...getHorizontalFormItemWithoutLabelProps()}>
               <Button type="primary" htmlType="submit" loading={isSaving}>
                 Save
@@ -109,7 +120,7 @@ const OrganizationSettingsPage = wrapSettingsTab(
     path: "settings/general",
     order: 7,
   },
-  OrganizationSettings
+  OrganizationSettings,
 );
 
 routes.register(
@@ -117,6 +128,6 @@ routes.register(
   routeWithUserSession({
     path: "/settings/general",
     title: "General Settings",
-    render: (pageProps) => <OrganizationSettingsPage {...pageProps} />,
-  })
+    render: pageProps => <OrganizationSettingsPage {...pageProps} />,
+  }),
 );

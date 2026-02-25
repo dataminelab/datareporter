@@ -4,7 +4,11 @@ function fillProfileDataAndSave(name, email) {
   cy.contains("Saved.");
 }
 
-function fillChangePasswordAndSave(currentPassword, newPassword, repeatPassword) {
+function fillChangePasswordAndSave(
+  currentPassword,
+  newPassword,
+  repeatPassword,
+) {
   cy.getByTestId("CurrentPassword").type(currentPassword);
   cy.getByTestId("NewPassword").type(newPassword);
   cy.getByTestId("RepeatPassword").type(`${repeatPassword}{enter}`);
@@ -26,7 +30,7 @@ describe("Edit Profile", () => {
   });
 
   it("regenerates API Key", () => {
-    cy.getByTestId("ApiKey").then(($apiKey) => {
+    cy.getByTestId("ApiKey").then($apiKey => {
       const previousApiKey = $apiKey.val();
 
       cy.getByTestId("RegenerateApiKey").click();

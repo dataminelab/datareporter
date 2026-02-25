@@ -44,7 +44,7 @@ export function wrap(WrappedComponent, createItemsSource, createStateStorage) {
     };
 
     static defaultProps = {
-      onError: (error) => {
+      onError: error => {
         // Allow calling chain to roll up, and then throw the error in global context
         setTimeout(() => {
           throw error;
@@ -74,14 +74,21 @@ export function wrap(WrappedComponent, createItemsSource, createStateStorage) {
         this.setState(this.getState({ ...state, isLoaded: true }));
       };
 
-      itemsSource.onError = (error) => this.props.onError(error);
+      itemsSource.onError = error => this.props.onError(error);
 
       const initialState = this.getState({
         ...itemsSource.getState(),
         isLoaded: false,
       });
-      const { updatePagination, toggleSorting, setSorting, updateSearch, updateSelectedTags, update, handleError } =
-        itemsSource;
+      const {
+        updatePagination,
+        toggleSorting,
+        setSorting,
+        updateSearch,
+        updateSelectedTags,
+        update,
+        handleError,
+      } = itemsSource;
       this.state = {
         ...initialState,
         toggleSorting, // eslint-disable-line react/no-unused-state

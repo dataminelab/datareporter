@@ -21,7 +21,7 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
         .then(() => successCallback("Saved."))
         .catch(() => errorCallback("Failed saving snippet."));
     },
-    [dialog, querySnippet]
+    [dialog, querySnippet],
   );
 
   const isEditing = !!get(querySnippet, "id");
@@ -36,7 +36,7 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
     },
     { name: "description", title: "Description", type: "text" },
     { name: "snippet", title: "Snippet", type: "ace", required: true },
-  ].map((field) => ({
+  ].map(field => ({
     ...field,
     readOnly,
     initialValue: get(querySnippet, field.name, ""),
@@ -49,7 +49,11 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
       {...dialog.props}
       title={isEditing ? querySnippet.trigger : "Create Report Snippet"}
       footer={[
-        <Button key="cancel" {...dialog.props.cancelButtonProps} onClick={dialog.dismiss}>
+        <Button
+          key="cancel"
+          {...dialog.props.cancelButtonProps}
+          onClick={dialog.dismiss}
+        >
           {readOnly ? "Close" : "Cancel"}
         </Button>,
         !readOnly && (
@@ -60,14 +64,16 @@ function ReportSnippetDialog({ querySnippet, dialog, readOnly }) {
             htmlType="submit"
             type="primary"
             form={reportSnippetsFormId}
-            data-test="SaveReportSnippetButton">
+            data-test="SaveReportSnippetButton"
+          >
             {isEditing ? "Save" : "Create"}
           </Button>
         ),
       ]}
       wrapProps={{
         "data-test": "QuerySnippetDialog",
-      }}>
+      }}
+    >
       <DynamicForm
         id={reportSnippetsFormId}
         fields={formFields}

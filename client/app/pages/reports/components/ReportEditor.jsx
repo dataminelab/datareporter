@@ -18,22 +18,42 @@ import { Report } from "../../../services/report.js";
 function ReportPage({ report, reportChanged, setReportChanged }) {
   const reportRef = useRef(report);
   reportRef.current = report;
-  const getExecutionStatus = useCallback(() => reportRef.current.getExecutionStatus(), []);
+  const getExecutionStatus = useCallback(
+    () => reportRef.current.getExecutionStatus(),
+    [],
+  );
 
   if (!report.appSettings) {
-    return <div style={{ margin: "20px" }}>Please select data source and model...</div>;
+    return (
+      <div style={{ margin: "20px" }}>
+        Please select data source and model...
+      </div>
+    );
   }
 
   if (report.appSettings.customization.sentryDSN) {
-    errorReporterInit(report.appSettings.customization.sentryDSN, report.version);
+    errorReporterInit(
+      report.appSettings.customization.sentryDSN,
+      report.version,
+    );
   }
 
   Ajax.version = report.version;
   const appSettings = AppSettings.fromJS(report.appSettings, {
-    executorFactory: (dataCube, getEssence, statusCallback, getExecutionStatus) => {
+    executorFactory: (
+      dataCube,
+      getEssence,
+      statusCallback,
+      getExecutionStatus,
+    ) => {
       Ajax.model_id = report.model_id;
       Ajax.hash = report.hash;
-      return Ajax.queryUrlExecutorFactory(dataCube, getEssence, statusCallback, getExecutionStatus);
+      return Ajax.queryUrlExecutorFactory(
+        dataCube,
+        getEssence,
+        statusCallback,
+        getExecutionStatus,
+      );
     },
     statusCallback: report.onExecutionStatusChange.bind(report),
     getExecutionStatus: getExecutionStatus,

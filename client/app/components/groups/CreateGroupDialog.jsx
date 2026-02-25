@@ -21,11 +21,16 @@ class CreateGroupDialog extends React.Component {
   render() {
     const { dialog } = this.props;
     return (
-      <Modal {...dialog.props} title="Create a New Group" okText="Create" onOk={() => this.save()}>
+      <Modal
+        {...dialog.props}
+        title="Create a New Group"
+        okText="Create"
+        onOk={() => this.save()}
+      >
         <Input
           className="form-control"
           defaultValue={this.state.name}
-          onChange={(event) => this.setState({ name: event.target.value })}
+          onChange={event => this.setState({ name: event.target.value })}
           onPressEnter={() => this.save()}
           placeholder="Group Name"
           autoFocus

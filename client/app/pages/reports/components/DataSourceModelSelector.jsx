@@ -28,14 +28,14 @@ export default function DataSourceModelSelector({
   const modelInputRef = useRef();
 
   const handleJsonModelChange = useCallback(
-    (e) => {
+    e => {
       const value = e.target.value;
       const updates = { model_id: value };
       onChange(extend(report.clone(), updates));
       setSelectedModel(value);
       handleReportChanged(true);
     },
-    [onChange, report, handleReportChanged, setSelectedModel]
+    [onChange, report, handleReportChanged, setSelectedModel],
   );
 
   const handleArrowClick = useCallback(() => {
@@ -58,12 +58,14 @@ export default function DataSourceModelSelector({
             optionFilterProp="data-name"
             showSearch
             ref={modelSelectElement}
-            style={{ flex: 1 }}>
+            style={{ flex: 1 }}
+          >
             <Select.Option
               key={`no-ds`}
               value={undefined}
               data-name={`No Data Source`}
-              data-test={`SelectModelNoDataSource`}>
+              data-test={`SelectModelNoDataSource`}
+            >
               <span>No Data Source</span>
             </Select.Option>
           </Select>
@@ -105,15 +107,26 @@ export default function DataSourceModelSelector({
           data-test="SelectModel"
           placeholder="Choose model data source..."
           value={report ? report.model_id : undefined}
-          disabled={report.id || !reportFlags.canEdit || !modelsLoaded || models.length === 0}
+          disabled={
+            report.id ||
+            !reportFlags.canEdit ||
+            !modelsLoaded ||
+            models.length === 0
+          }
           loading={!modelsLoaded}
           optionFilterProp="data-name"
           showSearch
           ref={modelSelectElement}
           onChange={handleModelChange}
-          style={{ flex: 1 }}>
-          {map(models, (m) => (
-            <Select.Option key={`ds-${m.id}`} value={m.id} data-name={m.name} data-test={`SelectModel${m.id}`}>
+          style={{ flex: 1 }}
+        >
+          {map(models, m => (
+            <Select.Option
+              key={`ds-${m.id}`}
+              value={m.id}
+              data-name={m.name}
+              data-test={`SelectModel${m.id}`}
+            >
               <span>{m.name}</span>
             </Select.Option>
           ))}
@@ -137,14 +150,28 @@ export default function DataSourceModelSelector({
           data-test="SelectDataSource"
           placeholder="Choose base data source..."
           value={selectedDataSource}
-          disabled={!reportFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
+          disabled={
+            !reportFlags.canEdit ||
+            !dataSourcesLoaded ||
+            dataSources.length === 0
+          }
           loading={!dataSourcesLoaded}
           optionFilterProp="data-name"
           showSearch
-          onChange={handleDataSourceChange}>
-          {map(dataSources, (ds) => (
-            <Select.Option key={`ds-${ds.id}`} value={ds.id} data-name={ds.name} data-test={`SelectDataSource${ds.id}`}>
-              <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
+          onChange={handleDataSourceChange}
+        >
+          {map(dataSources, ds => (
+            <Select.Option
+              key={`ds-${ds.id}`}
+              value={ds.id}
+              data-name={ds.name}
+              data-test={`SelectDataSource${ds.id}`}
+            >
+              <img
+                src={`/static/images/db-logos/${ds.type}.png`}
+                width="20"
+                alt={ds.name}
+              />
               <span>{ds.name}</span>
             </Select.Option>
           ))}

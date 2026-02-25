@@ -26,16 +26,21 @@ class ChangePasswordDialog extends React.Component {
 
   fieldError = (name, value) => {
     if (value.length === 0) return "This field is required.";
-    if (name !== "currentPassword" && value.length < 6) return "This field is too short.";
-    if (name === "repeatPassword" && value !== this.state.newPassword.value) return "Passwords don't match";
+    if (name !== "currentPassword" && value.length < 6)
+      return "This field is too short.";
+    if (name === "repeatPassword" && value !== this.state.newPassword.value)
+      return "Passwords don't match";
     return null;
   };
 
-  validateFields = (callback) => {
+  validateFields = callback => {
     const { currentPassword, newPassword, repeatPassword } = this.state;
 
     const errors = {
-      currentPassword: this.fieldError("currentPassword", currentPassword.value),
+      currentPassword: this.fieldError(
+        "currentPassword",
+        currentPassword.value,
+      ),
       newPassword: this.fieldError("newPassword", newPassword.value),
       repeatPassword: this.fieldError("repeatPassword", repeatPassword.value),
     };
@@ -47,7 +52,11 @@ class ChangePasswordDialog extends React.Component {
     });
 
     if (isFunction(callback)) {
-      if (errors.currentPassword || errors.newPassword || errors.repeatPassword) {
+      if (
+        errors.currentPassword ||
+        errors.newPassword ||
+        errors.repeatPassword
+      ) {
         callback(errors);
       } else callback(null);
     }
@@ -57,7 +66,7 @@ class ChangePasswordDialog extends React.Component {
     const { currentPassword, newPassword, updatingPassword } = this.state;
 
     if (!updatingPassword) {
-      this.validateFields((err) => {
+      this.validateFields(err => {
         if (!err) {
           const userData = {
             id: this.props.user.id,
@@ -72,12 +81,14 @@ class ChangePasswordDialog extends React.Component {
               notification.success("Saved.");
               this.props.dialog.close({ success: true });
             })
-            .catch((error) => {
-              notification.error(get(error, "response.data.message", "Failed saving."));
+            .catch(error => {
+              notification.error(
+                get(error, "response.data.message", "Failed saving."),
+              );
               this.setState({ updatingPassword: false });
             });
         } else {
-          this.setState((prevState) => ({
+          this.setState(prevState => ({
             currentPassword: { ...prevState.currentPassword, touched: true },
             newPassword: { ...prevState.newPassword, touched: true },
             repeatPassword: { ...prevState.repeatPassword, touched: true },
@@ -87,7 +98,7 @@ class ChangePasswordDialog extends React.Component {
     }
   };
 
-  handleChange = (e) => {
+  handleChange = e => {
     const { name, value } = e.target;
     const { error } = this.state[name];
 
@@ -98,7 +109,8 @@ class ChangePasswordDialog extends React.Component {
 
   render() {
     const { dialog } = this.props;
-    const { currentPassword, newPassword, repeatPassword, updatingPassword } = this.state;
+    const { currentPassword, newPassword, repeatPassword, updatingPassword } =
+      this.state;
 
     const formItemProps = { className: "m-b-10", required: true };
 
@@ -112,28 +124,51 @@ class ChangePasswordDialog extends React.Component {
         {...dialog.props}
         okButtonProps={{ loading: updatingPassword }}
         onOk={this.updatePassword}
-        title="Change Password">
+        title="Change Password"
+      >
         <Form layout="vertical">
           <Form.Item
             {...formItemProps}
-            validateStatus={currentPassword.touched && currentPassword.error ? "error" : null}
+            validateStatus={
+              currentPassword.touched && currentPassword.error ? "error" : null
+            }
             help={currentPassword.touched ? currentPassword.error : null}
-            label="Current Password">
-            <Input.Password {...inputProps} name="currentPassword" data-test="CurrentPassword" autoFocus />
+            label="Current Password"
+          >
+            <Input.Password
+              {...inputProps}
+              name="currentPassword"
+              data-test="CurrentPassword"
+              autoFocus
+            />
           </Form.Item>
           <Form.Item
             {...formItemProps}
-            validateStatus={newPassword.touched && newPassword.error ? "error" : null}
+            validateStatus={
+              newPassword.touched && newPassword.error ? "error" : null
+            }
             help={newPassword.touched ? newPassword.error : null}
-            label="New Password">
-            <Input.Password {...inputProps} name="newPassword" data-test="NewPassword" />
+            label="New Password"
+          >
+            <Input.Password
+              {...inputProps}
+              name="newPassword"
+              data-test="NewPassword"
+            />
           </Form.Item>
           <Form.Item
             {...formItemProps}
-            validateStatus={repeatPassword.touched && repeatPassword.error ? "error" : null}
+            validateStatus={
+              repeatPassword.touched && repeatPassword.error ? "error" : null
+            }
             help={repeatPassword.touched ? repeatPassword.error : null}
-            label="Repeat New Password">
-            <Input.Password {...inputProps} name="repeatPassword" data-test="RepeatPassword" />
+            label="Repeat New Password"
+          >
+            <Input.Password
+              {...inputProps}
+              name="repeatPassword"
+              data-test="RepeatPassword"
+            />
           </Form.Item>
         </Form>
       </Modal>

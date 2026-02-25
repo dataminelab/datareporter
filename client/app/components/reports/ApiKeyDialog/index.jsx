@@ -22,11 +22,11 @@ function ApiKeyDialog({ dialog, ...props }) {
     setUpdatingApiKey(true);
     axios
       .post(`api/reports/${report.id}/regenerate_api_key`)
-      .then((data) => {
+      .then(data => {
         setUpdatingApiKey(false);
         setReport(extend(report.clone(), { api_key: data.api_key }));
       })
-      .catch((e) => {
+      .catch(e => {
         console.error(e);
         setUpdatingApiKey(false);
         notification.error("Failed to update API key");
@@ -38,21 +38,33 @@ function ApiKeyDialog({ dialog, ...props }) {
       csvUrl: `${clientConfig.basePath}api/reports/${report.id}/results.csv?api_key=${report.api_key}`,
       jsonUrl: `${clientConfig.basePath}api/reports/${report.id}/results.json?api_key=${report.api_key}`,
     }),
-    [report.id, report.api_key]
+    [report.id, report.api_key],
   );
 
   const csvResultsLabelId = useUniqueId("csv-results-label");
   const jsonResultsLabelId = useUniqueId("json-results-label");
 
   return (
-    <Modal {...dialog.props} width={600} footer={<Button onClick={() => dialog.close(report)}>Close</Button>}>
+    <Modal
+      {...dialog.props}
+      width={600}
+      footer={<Button onClick={() => dialog.close(report)}>Close</Button>}
+    >
       <div className="report-api-key-dialog-wrapper">
         <h5>API Key</h5>
         <div className="m-b-20">
           <Input.Group compact>
-            <Input readOnly value={report.api_key} aria-label="Report API Key" />
+            <Input
+              readOnly
+              value={report.api_key}
+              aria-label="Report API Key"
+            />
             {policy.canEdit(report) && (
-              <Button disabled={updatingApiKey} loading={updatingApiKey} onClick={regenerateReportApiKey}>
+              <Button
+                disabled={updatingApiKey}
+                loading={updatingApiKey}
+                onClick={regenerateReportApiKey}
+              >
                 Regenerate
               </Button>
             )}

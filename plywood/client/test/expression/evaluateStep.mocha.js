@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const {
   Expression,
@@ -38,24 +38,24 @@ function stringExternals(key, value) {
 }
 
 const diamonds = External.fromJS({
-  engine: 'druid',
-  source: 'diamonds',
-  timeAttribute: 'time',
+  engine: "druid",
+  source: "diamonds",
+  timeAttribute: "time",
   attributes: [
-    { name: 'time', type: 'TIME' },
-    { name: 'color', type: 'STRING' },
-    { name: 'cut', type: 'STRING' },
-    { name: 'isNice', type: 'BOOLEAN' },
-    { name: 'tags', type: 'SET/STRING' },
-    { name: 'pugs', type: 'SET/STRING' },
-    { name: 'carat', type: 'NUMBER', nativeType: 'STRING' },
-    { name: 'height_bucket', type: 'NUMBER' },
-    { name: 'price', type: 'NUMBER', unsplitable: true },
-    { name: 'tax', type: 'NUMBER', unsplitable: true },
+    { name: "time", type: "TIME" },
+    { name: "color", type: "STRING" },
+    { name: "cut", type: "STRING" },
+    { name: "isNice", type: "BOOLEAN" },
+    { name: "tags", type: "SET/STRING" },
+    { name: "pugs", type: "SET/STRING" },
+    { name: "carat", type: "NUMBER", nativeType: "STRING" },
+    { name: "height_bucket", type: "NUMBER" },
+    { name: "price", type: "NUMBER", unsplitable: true },
+    { name: "tax", type: "NUMBER", unsplitable: true },
     {
-      name: 'vendor_id',
-      type: 'NULL',
-      nativeType: 'hyperUnique',
+      name: "vendor_id",
+      type: "NULL",
+      nativeType: "hyperUnique",
       unsplitable: true,
     },
   ],
@@ -63,89 +63,103 @@ const diamonds = External.fromJS({
   allowSelectQueries: true,
 });
 
-describe('evaluate step', () => {
-  it('works in basic case', () => {
+describe("evaluate step", () => {
+  it("works in basic case", () => {
     const diamondEx = new ExternalExpression({ external: diamonds });
 
     const ex1 = ply()
-      .apply('diamonds', diamondEx)
-      .apply('Total', '$diamonds.count()')
-      .apply('TotalX2', '$Total * 2')
-      .apply('SomeSplit', $('diamonds').split('$cut:STRING', 'Cut').limit(10))
+      .apply("diamonds", diamondEx)
+      .apply("Total", "$diamonds.count()")
+      .apply("TotalX2", "$Total * 2")
+      .apply("SomeSplit", $("diamonds").split("$cut:STRING", "Cut").limit(10))
       .apply(
-        'SomeNestedSplit',
-        $('diamonds')
-          .split('$color:STRING', 'Color')
+        "SomeNestedSplit",
+        $("diamonds")
+          .split("$color:STRING", "Color")
           .limit(10)
-          .apply('SubSplit', $('diamonds').split('$cut:STRING', 'SubCut').limit(5)),
+          .apply(
+            "SubSplit",
+            $("diamonds").split("$cut:STRING", "SubCut").limit(5),
+          ),
       );
 
     const ex2 = ex1.simplify();
 
     let readyExternals = ex2.getReadyExternals();
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals))).to.deep.equal({
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+    ).to.deep.equal({
       0: [
         {
-          external: 'External',
+          external: "External",
           index: 0,
-          key: '',
+          key: "",
         },
         {
-          external: 'External',
+          external: "External",
           terminal: true,
           index: 0,
-          key: 'SomeSplit',
+          key: "SomeSplit",
         },
         {
           expressionAlterations: {
             1: {
-              external: 'External',
+              external: "External",
             },
           },
           index: 0,
-          key: 'SomeNestedSplit',
+          key: "SomeNestedSplit",
         },
       ],
     });
 
-    fillExpressionExternalAlteration(readyExternals, (external) => `Ex(${external.mode})`);
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E1').to.deep.equal({
+    fillExpressionExternalAlteration(
+      readyExternals,
+      external => `Ex(${external.mode})`,
+    );
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E1",
+    ).to.deep.equal({
       0: [
         {
-          external: 'External',
+          external: "External",
           index: 0,
-          key: '',
-          result: 'Ex(total)',
+          key: "",
+          result: "Ex(total)",
         },
         {
-          external: 'External',
+          external: "External",
           terminal: true,
           index: 0,
-          key: 'SomeSplit',
-          result: 'Ex(split)',
+          key: "SomeSplit",
+          result: "Ex(split)",
         },
         {
           expressionAlterations: {
             1: {
-              external: 'External',
-              result: 'Ex(split)',
+              external: "External",
+              result: "Ex(split)",
             },
           },
           index: 0,
-          key: 'SomeNestedSplit',
+          key: "SomeNestedSplit",
         },
       ],
     });
 
-    fillExpressionExternalAlteration(readyExternals, (external) =>
+    fillExpressionExternalAlteration(readyExternals, external =>
       external.simulateValue(false, []),
     );
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E2').to.deep.equal({
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E2",
+    ).to.deep.equal({
       0: [
         {
-          external: 'External',
+          external: "External",
           index: 0,
-          key: '',
+          key: "",
           result: {
             datum: {
               Total: 4,
@@ -154,84 +168,87 @@ describe('evaluate step', () => {
           },
         },
         {
-          external: 'External',
+          external: "External",
           index: 0,
-          key: 'SomeSplit',
+          key: "SomeSplit",
           result: {
             attributes: [
               {
-                name: 'Cut',
-                type: 'STRING',
+                name: "Cut",
+                type: "STRING",
               },
               {
-                name: 'diamonds',
-                type: 'DATASET',
+                name: "diamonds",
+                type: "DATASET",
               },
             ],
             data: [
               {
-                Cut: 'some_cut',
+                Cut: "some_cut",
               },
             ],
-            keys: ['Cut'],
+            keys: ["Cut"],
           },
           terminal: true,
         },
         {
           expressionAlterations: {
             1: {
-              external: 'External',
+              external: "External",
               result: {
                 attributes: [
                   {
-                    name: 'Color',
-                    type: 'STRING',
+                    name: "Color",
+                    type: "STRING",
                   },
                   {
-                    name: 'diamonds',
-                    type: 'DATASET',
+                    name: "diamonds",
+                    type: "DATASET",
                   },
                 ],
                 data: [
                   {
-                    Color: 'some_color',
+                    Color: "some_color",
                   },
                 ],
-                keys: ['Color'],
+                keys: ["Color"],
               },
             },
           },
           index: 0,
-          key: 'SomeNestedSplit',
+          key: "SomeNestedSplit",
         },
       ],
     });
 
     const ex3 = ex2.applyReadyExternals(readyExternals);
-    expect(JSON.parse(JSON.stringify(ex3, stringExternals)), 'E3').to.deep.equal({
-      op: 'literal',
-      type: 'DATASET',
+    expect(
+      JSON.parse(JSON.stringify(ex3, stringExternals)),
+      "E3",
+    ).to.deep.equal({
+      op: "literal",
+      type: "DATASET",
       value: {
         attributes: [
           {
-            name: 'diamonds',
-            type: 'DATASET',
+            name: "diamonds",
+            type: "DATASET",
           },
           {
-            name: 'Total',
-            type: 'NUMBER',
+            name: "Total",
+            type: "NUMBER",
           },
           {
-            name: 'TotalX2',
-            type: 'NUMBER',
+            name: "TotalX2",
+            type: "NUMBER",
           },
           {
-            name: 'SomeSplit',
-            type: 'DATASET',
+            name: "SomeSplit",
+            type: "DATASET",
           },
           {
-            name: 'SomeNestedSplit',
-            type: 'DATASET',
+            name: "SomeNestedSplit",
+            type: "DATASET",
           },
         ],
         data: [
@@ -239,43 +256,43 @@ describe('evaluate step', () => {
             SomeNestedSplit: {
               attributes: [
                 {
-                  name: 'Color',
-                  type: 'STRING',
+                  name: "Color",
+                  type: "STRING",
                 },
                 {
-                  name: 'diamonds',
-                  type: 'DATASET',
+                  name: "diamonds",
+                  type: "DATASET",
                 },
                 {
-                  name: 'SubSplit',
-                  type: 'DATASET',
+                  name: "SubSplit",
+                  type: "DATASET",
                 },
               ],
               data: [
                 {
-                  Color: 'some_color',
-                  SubSplit: 'External',
+                  Color: "some_color",
+                  SubSplit: "External",
                 },
               ],
-              keys: ['Color'],
+              keys: ["Color"],
             },
             SomeSplit: {
               attributes: [
                 {
-                  name: 'Cut',
-                  type: 'STRING',
+                  name: "Cut",
+                  type: "STRING",
                 },
                 {
-                  name: 'diamonds',
-                  type: 'DATASET',
+                  name: "diamonds",
+                  type: "DATASET",
                 },
               ],
               data: [
                 {
-                  Cut: 'some_cut',
+                  Cut: "some_cut",
                 },
               ],
-              keys: ['Cut'],
+              keys: ["Cut"],
             },
             Total: 4,
             TotalX2: 4,
@@ -287,86 +304,95 @@ describe('evaluate step', () => {
     // ---------------------
 
     readyExternals = ex3.getReadyExternals();
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E4').to.deep.equal({
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E4",
+    ).to.deep.equal({
       0: [
         {
           datasetAlterations: [
             {
-              external: 'External',
+              external: "External",
               terminal: true,
               index: 0,
-              key: 'SubSplit',
+              key: "SubSplit",
             },
           ],
           index: 0,
-          key: 'SomeNestedSplit',
+          key: "SomeNestedSplit",
         },
       ],
     });
 
-    fillExpressionExternalAlteration(readyExternals, (external) =>
+    fillExpressionExternalAlteration(readyExternals, external =>
       external.simulateValue(false, []),
     );
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E5').to.deep.equal({
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E5",
+    ).to.deep.equal({
       0: [
         {
           datasetAlterations: [
             {
-              external: 'External',
+              external: "External",
               index: 0,
-              key: 'SubSplit',
+              key: "SubSplit",
               result: {
                 attributes: [
                   {
-                    name: 'SubCut',
-                    type: 'STRING',
+                    name: "SubCut",
+                    type: "STRING",
                   },
                   {
-                    name: 'diamonds',
-                    type: 'DATASET',
+                    name: "diamonds",
+                    type: "DATASET",
                   },
                 ],
                 data: [
                   {
-                    SubCut: 'some_cut',
+                    SubCut: "some_cut",
                   },
                 ],
-                keys: ['SubCut'],
+                keys: ["SubCut"],
               },
               terminal: true,
             },
           ],
           index: 0,
-          key: 'SomeNestedSplit',
+          key: "SomeNestedSplit",
         },
       ],
     });
 
     const ex4 = ex3.applyReadyExternals(readyExternals);
-    expect(JSON.parse(JSON.stringify(ex4, stringExternals)), 'E6').to.deep.equal({
-      op: 'literal',
-      type: 'DATASET',
+    expect(
+      JSON.parse(JSON.stringify(ex4, stringExternals)),
+      "E6",
+    ).to.deep.equal({
+      op: "literal",
+      type: "DATASET",
       value: {
         attributes: [
           {
-            name: 'diamonds',
-            type: 'DATASET',
+            name: "diamonds",
+            type: "DATASET",
           },
           {
-            name: 'Total',
-            type: 'NUMBER',
+            name: "Total",
+            type: "NUMBER",
           },
           {
-            name: 'TotalX2',
-            type: 'NUMBER',
+            name: "TotalX2",
+            type: "NUMBER",
           },
           {
-            name: 'SomeSplit',
-            type: 'DATASET',
+            name: "SomeSplit",
+            type: "DATASET",
           },
           {
-            name: 'SomeNestedSplit',
-            type: 'DATASET',
+            name: "SomeNestedSplit",
+            type: "DATASET",
           },
         ],
         data: [
@@ -374,60 +400,60 @@ describe('evaluate step', () => {
             SomeNestedSplit: {
               attributes: [
                 {
-                  name: 'Color',
-                  type: 'STRING',
+                  name: "Color",
+                  type: "STRING",
                 },
                 {
-                  name: 'diamonds',
-                  type: 'DATASET',
+                  name: "diamonds",
+                  type: "DATASET",
                 },
                 {
-                  name: 'SubSplit',
-                  type: 'DATASET',
+                  name: "SubSplit",
+                  type: "DATASET",
                 },
               ],
               data: [
                 {
-                  Color: 'some_color',
+                  Color: "some_color",
                   SubSplit: {
                     attributes: [
                       {
-                        name: 'SubCut',
-                        type: 'STRING',
+                        name: "SubCut",
+                        type: "STRING",
                       },
                       {
-                        name: 'diamonds',
-                        type: 'DATASET',
+                        name: "diamonds",
+                        type: "DATASET",
                       },
                     ],
                     data: [
                       {
-                        SubCut: 'some_cut',
+                        SubCut: "some_cut",
                       },
                     ],
-                    keys: ['SubCut'],
+                    keys: ["SubCut"],
                   },
                 },
               ],
-              keys: ['Color'],
+              keys: ["Color"],
             },
             SomeSplit: {
               attributes: [
                 {
-                  name: 'Cut',
-                  type: 'STRING',
+                  name: "Cut",
+                  type: "STRING",
                 },
                 {
-                  name: 'diamonds',
-                  type: 'DATASET',
+                  name: "diamonds",
+                  type: "DATASET",
                 },
               ],
               data: [
                 {
-                  Cut: 'some_cut',
+                  Cut: "some_cut",
                 },
               ],
-              keys: ['Cut'],
+              keys: ["Cut"],
             },
             Total: 4,
             TotalX2: 4,
@@ -439,6 +465,9 @@ describe('evaluate step', () => {
     // ---------------------
 
     readyExternals = ex4.getReadyExternals();
-    expect(JSON.parse(JSON.stringify(readyExternals, stringExternals)), 'E7').to.deep.equal({}); // all done
+    expect(
+      JSON.parse(JSON.stringify(readyExternals, stringExternals)),
+      "E7",
+    ).to.deep.equal({}); // all done
   });
 });

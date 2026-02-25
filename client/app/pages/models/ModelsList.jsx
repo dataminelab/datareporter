@@ -9,13 +9,18 @@ import DeleteOutlinedIcon from "@ant-design/icons/DeleteOutlined";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import Paginator from "@/components/Paginator";
 
-import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
+import {
+  wrap as itemsList,
+  ControllerType,
+} from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
 import { UrlStateStorage } from "@/components/items-list/classes/StateStorage";
 
 import LoadingState from "@/components/items-list/components/LoadingState";
 import EmptyState from "@/components/items-list/components/EmptyState";
-import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
+import ItemsTable, {
+  Columns,
+} from "@/components/items-list/components/ItemsTable";
 
 import wrapSettingsTab from "@/components/SettingsWrapper";
 
@@ -31,13 +36,13 @@ import DataSource from "@/services/data-source";
 import Modal from "antd/lib/modal";
 
 function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
-  const doDelete = (callback) => {
+  const doDelete = callback => {
     deleteModel(model)
       .then(() => {
         notification.success("Data source deleted successfully.");
         callback();
       })
-      .catch((e) => {
+      .catch(e => {
         notification.error(e);
         callback();
       });
@@ -57,13 +62,28 @@ function ModelsListActions({ model, editModel, editConfigModel, deleteModel }) {
   };
   return (
     <>
-      <Button type="ghost" icon={<SettingOutlinedIcon />} className="m-2 inline" onClick={() => editConfigModel(model)}>
+      <Button
+        type="ghost"
+        icon={<SettingOutlinedIcon />}
+        className="m-2 inline"
+        onClick={() => editConfigModel(model)}
+      >
         Edit config
       </Button>
-      <Button type="dashed" icon={<EditOutlinedIcon />} className="m-2 inline" onClick={() => editModel(model)}>
+      <Button
+        type="dashed"
+        icon={<EditOutlinedIcon />}
+        className="m-2 inline"
+        onClick={() => editModel(model)}
+      >
         Edit
       </Button>
-      <Button type="danger" icon={<DeleteOutlinedIcon />} className="m-2 inline" onClick={() => handleDeleteModel()}>
+      <Button
+        type="danger"
+        icon={<DeleteOutlinedIcon />}
+        className="m-2 inline"
+        onClick={() => handleDeleteModel()}
+      >
         Delete
       </Button>
     </>
@@ -90,7 +110,9 @@ class ModelsList extends React.Component {
   };
 
   getDataSourceName(model) {
-    const connection = this.state.dataSources.find((x) => x.id === parseInt(model.connection, 10));
+    const connection = this.state.dataSources.find(
+      x => x.id === parseInt(model.connection, 10),
+    );
     if (connection) {
       return connection.name;
     } else {
@@ -120,43 +142,57 @@ class ModelsList extends React.Component {
       {
         width: "30%",
         isAvailable: () => policy.canCreateDataSource(),
-      }
+      },
     ),
   ];
 
   componentDidMount() {
     Promise.all([DataSource.query()])
-      .then((values) =>
+      .then(values =>
         this.setState({
           dataSources: values[0],
           loading: false,
-        })
+        }),
       )
-      .catch((error) => this.props.onError(error));
+      .catch(error => this.props.onError(error));
   }
 
-  createModel = (values) =>
+  createModel = values =>
     Model.create(values)
-      .then((model) => {
+      .then(model => {
         navigateTo(`models/${model.id}`);
         notification.success("Saved.");
       })
-      .catch((error) => {
-        const message = find([get(error, "response.data.message"), get(error, "message"), "Failed saving."], isString);
+      .catch(error => {
+        const message = find(
+          [
+            get(error, "response.data.message"),
+            get(error, "message"),
+            "Failed saving.",
+          ],
+          isString,
+        );
         return Promise.reject(new Error(message));
       });
 
   saveModel = (values, id) =>
     Model.save(values, id)
-      .then((model) => {
+      .then(model => {
         notification.success("Saved.");
       })
-      .catch((error) => {
-        const message = find([get(error, "response.data.message"), get(error, "message"), "Failed saving."], isString);
+      .catch(error => {
+        const message = find(
+          [
+            get(error, "response.data.message"),
+            get(error, "message"),
+            "Failed saving.",
+          ],
+          isString,
+        );
         return Promise.reject(new Error(message));
       });
 
-  showCreateModelDialog = (e) => {
+  showCreateModelDialog = e => {
     e.preventDefault();
     const { dataSources } = this.state;
     if (policy.canCreateDataSource()) {
@@ -165,23 +201,23 @@ class ModelsList extends React.Component {
       };
 
       CreateModelDialog.showModal({ dataSources })
-        .onClose((values) =>
+        .onClose(values =>
           this.createModel(values).then(() => {
             this.props.controller.update();
-          })
+          }),
         )
         .onDismiss(goToModelsList);
     }
   };
 
-  editModel = (model) => {
+  editModel = model => {
     const { dataSources } = this.state;
     if (policy.canCreateDataSource()) {
       const goToModelsList = () => {
         navigateTo("models");
       };
       CreateModelDialog.showModal({ dataSources, model })
-        .onClose((values) => {
+        .onClose(values => {
           this.saveModel(values).then(() => {
             this.props.controller.update();
           });
@@ -190,8 +226,9 @@ class ModelsList extends React.Component {
     }
   };
 
-  deleteModel = (model) => Model.deleteModel(model).then(() => this.props.controller.update());
-  editConfigModel = (model) => navigateTo(`models/${model.id}`);
+  deleteModel = model =>
+    Model.deleteModel(model).then(() => this.props.controller.update());
+  editConfigModel = model => navigateTo(`models/${model.id}`);
 
   // eslint-disable-next-line class-methods-use-this
   renderPageHeader() {
@@ -221,7 +258,9 @@ class ModelsList extends React.Component {
         {this.renderPageHeader()}
         <div>
           {!controller.isLoaded && <LoadingState className="" />}
-          {controller.isLoaded && controller.isEmpty && <EmptyState message={emptyMessage} className="" />}
+          {controller.isLoaded && controller.isEmpty && (
+            <EmptyState message={emptyMessage} className="" />
+          )}
           {controller.isLoaded && !controller.isEmpty && (
             <div className="table-responsive" data-test="ModelList">
               <ItemsTable
@@ -237,9 +276,11 @@ class ModelsList extends React.Component {
                 showPageSizeSelect
                 totalCount={controller.totalItemsCount}
                 pageSize={controller.itemsPerPage}
-                onPageSizeChange={(itemsPerPage) => controller.updatePagination({ itemsPerPage })}
+                onPageSizeChange={itemsPerPage =>
+                  controller.updatePagination({ itemsPerPage })
+                }
                 page={controller.page}
-                onChange={(page) => controller.updatePagination({ page })}
+                onChange={page => controller.updatePagination({ page })}
               />
             </div>
           )}
@@ -255,7 +296,7 @@ const ModelsListPage = wrapSettingsTab(
     permission: "admin",
     title: "Models",
     path: "models",
-    isActive: (path) => path.startsWith("/models") && path !== "/models/me",
+    isActive: path => path.startsWith("/models") && path !== "/models/me",
     order: 2,
   },
   itemsList(
@@ -266,8 +307,9 @@ const ModelsListPage = wrapSettingsTab(
           return Model.query.bind(Model);
         },
       }),
-    () => new UrlStateStorage({ orderByField: "created_at", orderByReverse: true })
-  )
+    () =>
+      new UrlStateStorage({ orderByField: "created_at", orderByReverse: true }),
+  ),
 );
 
 routes.register(
@@ -275,14 +317,16 @@ routes.register(
   routeWithUserSession({
     path: "/models/new",
     title: "Models",
-    render: (pageProps) => <ModelsListPage {...pageProps} currentPage="active" isNewModelPage />,
-  })
+    render: pageProps => (
+      <ModelsListPage {...pageProps} currentPage="active" isNewModelPage />
+    ),
+  }),
 );
 routes.register(
   "Models.List",
   routeWithUserSession({
     path: "/models",
     title: "Models",
-    render: (pageProps) => <ModelsListPage {...pageProps} currentPage="active" />,
-  })
+    render: pageProps => <ModelsListPage {...pageProps} currentPage="active" />,
+  }),
 );

@@ -6,7 +6,12 @@ import Alert from "antd/lib/alert";
 import HelpTrigger from "@/components/HelpTrigger";
 import { useUniqueId } from "@/lib/hooks/useUniqueId";
 
-export default function EmailSettingsWarning({ featureName, className, mode, adminOnly }) {
+export default function EmailSettingsWarning({
+  featureName,
+  className,
+  mode,
+  adminOnly,
+}) {
   const messageDescriptionId = useUniqueId("sr-mail-description");
 
   if (!clientConfig.mailSettingsMissing) {
@@ -19,7 +24,8 @@ export default function EmailSettingsWarning({ featureName, className, mode, adm
 
   const message = (
     <span id={messageDescriptionId}>
-      Your mail server isn&apos;t configured correctly, and is needed for {featureName} to work.{" "}
+      Your mail server isn&apos;t configured correctly, and is needed for{" "}
+      {featureName} to work.{" "}
       <HelpTrigger type="MAIL_CONFIG" className="f-inherit" />
     </span>
   );
@@ -28,7 +34,11 @@ export default function EmailSettingsWarning({ featureName, className, mode, adm
     return (
       <Tooltip title={message} placement="topRight" arrowPointAtCenter>
         {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
-        <span className={className} aria-label="Mail alert" aria-describedby={messageDescriptionId}>
+        <span
+          className={className}
+          aria-label="Mail alert"
+          aria-describedby={messageDescriptionId}
+        >
           <i className={"fa fa-exclamation-triangle"} aria-hidden="true" />
         </span>
       </Tooltip>

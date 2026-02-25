@@ -39,7 +39,7 @@ const queryJobsColumns = [
   { title: "Org ID", dataIndex: "meta.org_id" },
   { title: "Data Source ID", dataIndex: "meta.data_source_id" },
   { title: "User ID", dataIndex: "meta.user_id" },
-  Columns.custom((scheduled) => scheduled.toString(), {
+  Columns.custom(scheduled => scheduled.toString(), {
     title: "Scheduled",
     dataIndex: "meta.scheduled",
   }),
@@ -56,7 +56,7 @@ const otherJobsColumns = [
 
 const workersColumns = [
   Columns.custom(
-    (value) => (
+    value => (
       <span>
         <Badge
           status={
@@ -71,14 +71,25 @@ const workersColumns = [
         {value}
       </span>
     ),
-    { title: "State", dataIndex: "state" }
+    { title: "State", dataIndex: "state" },
   ),
 ]
   .concat(
-    map(["Hostname", "PID", "Name", "Queues", "Current Job", "Successful Jobs", "Failed Jobs"], (c) => ({
-      title: c,
-      dataIndex: c.toLowerCase().replace(/\s/g, "_"),
-    }))
+    map(
+      [
+        "Hostname",
+        "PID",
+        "Name",
+        "Queues",
+        "Current Job",
+        "Successful Jobs",
+        "Failed Jobs",
+      ],
+      c => ({
+        title: c,
+        dataIndex: c.toLowerCase().replace(/\s/g, "_"),
+      }),
+    ),
   )
   .concat([
     Columns.dateTime({ title: "Birth Date", dataIndex: "birth_date" }),
@@ -88,7 +99,7 @@ const workersColumns = [
     }),
   ]);
 
-const queuesColumns = map(["Name", "Started", "Queued"], (c) => ({
+const queuesColumns = map(["Name", "Started", "Queued"], c => ({
   title: c,
   dataIndex: c.toLowerCase(),
 }));

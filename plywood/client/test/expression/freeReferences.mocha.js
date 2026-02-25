@@ -15,58 +15,66 @@
  * limitations under the License.
  */
 
-const { expect } = require('chai');
+const { expect } = require("chai");
 
-const plywood = require('../plywood');
+const plywood = require("../plywood");
 
 const { Expression, Action, Dataset, $, ply, r } = plywood;
 
-describe('free references', () => {
+describe("free references", () => {
   const context = {
-    diamonds: Dataset.fromJS([{ color: 'A', cut: 'great', carat: 1.1, price: 300 }]),
+    diamonds: Dataset.fromJS([
+      { color: "A", cut: "great", carat: 1.1, price: 300 },
+    ]),
   };
 
-  describe('works as expected', () => {
-    it('works with basics', () => {
-      const ex = $('x').add('$^y');
-      expect(ex.getFreeReferences()).to.deep.equal(['^y', 'x']);
+  describe("works as expected", () => {
+    it("works with basics", () => {
+      const ex = $("x").add("$^y");
+      expect(ex.getFreeReferences()).to.deep.equal(["^y", "x"]);
     });
 
-    it('works when there are no free references', () => {
+    it("works when there are no free references", () => {
       let ex = ply()
-        .apply('num', 5)
-        .apply('subData', ply().apply('x', '$num + 1').apply('y', '$x * 2'));
+        .apply("num", 5)
+        .apply("subData", ply().apply("x", "$num + 1").apply("y", "$x * 2"));
 
       ex = ex.referenceCheck({});
       expect(ex.getFreeReferences()).to.deep.equal([]);
     });
 
-    it('works in a basic case', () => {
-      const ex = Expression.parse('$x + $y * $z + $data.sum($revenue)');
+    it("works in a basic case", () => {
+      const ex = Expression.parse("$x + $y * $z + $data.sum($revenue)");
 
-      expect(ex.getFreeReferences()).to.deep.equal(['data', 'x', 'y', 'z']);
+      expect(ex.getFreeReferences()).to.deep.equal(["data", "x", "y", "z"]);
     });
 
-    it('works in an actions case', () => {
+    it("works in an actions case", () => {
       let ex = ply()
-        .apply('num', 5)
+        .apply("num", 5)
         .apply(
-          'subData',
-          ply().apply('x', '$num + 1').apply('y', '$x * 2').apply('z', '$diamonds.sum($price)'),
+          "subData",
+          ply()
+            .apply("x", "$num + 1")
+            .apply("y", "$x * 2")
+            .apply("z", "$diamonds.sum($price)"),
         );
 
       ex = ex.referenceCheck(context);
-      expect(ex.getFreeReferences()).to.deep.equal(['diamonds']);
+      expect(ex.getFreeReferences()).to.deep.equal(["diamonds"]);
 
-      expect(ex.expression.getFreeReferences()).to.deep.equal(['^diamonds', 'num']);
+      expect(ex.expression.getFreeReferences()).to.deep.equal([
+        "^diamonds",
+        "num",
+      ]);
     });
 
-    it('works in a consecutive actions case', () => {
+    it("works in a consecutive actions case", () => {
       let ex = ply()
-        .apply('one', 1)
-        .apply('two', '$one + 1')
-        .apply('three', '$two + 1')
-        .apply('four', '$three + 1');
+        .apply("one", 1)
+        .apply("two", "$one + 1")
+        .apply("three", "$two + 1")
+        .apply("four", "$three + 1");
 
       ex = ex.referenceCheck({});
       expect(ex.getFreeReferences()).to.deep.equal([]);

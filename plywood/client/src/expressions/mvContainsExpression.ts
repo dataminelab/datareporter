@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-import { generalArraysEqual } from 'immutable-class';
+import { generalArraysEqual } from "immutable-class";
 
-import { PlywoodValue } from '../datatypes';
-import { SQLDialect } from '../dialect/baseDialect';
-import { handleNullCheckIfNeeded } from '../helper';
+import { PlywoodValue } from "../datatypes";
+import { SQLDialect } from "../dialect/baseDialect";
+import { handleNullCheckIfNeeded } from "../helper";
 
-import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import {
+  ChainableExpression,
+  Expression,
+  ExpressionJS,
+  ExpressionValue,
+} from "./baseExpression";
 
 export class MvContainsExpression extends ChainableExpression {
-  static op = 'MvContains';
+  static op = "MvContains";
   static fromJS(parameters: ExpressionJS): MvContainsExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.mvArray = parameters.mvArray;
@@ -34,10 +39,10 @@ export class MvContainsExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp('mvContains');
-    this._checkOperandTypes('STRING');
+    this._ensureOp("mvContains");
+    this._checkOperandTypes("STRING");
     this.mvArray = parameters.mvArray;
-    this.type = 'BOOLEAN';
+    this.type = "BOOLEAN";
   }
 
   public valueOf(): ExpressionValue {
@@ -53,7 +58,9 @@ export class MvContainsExpression extends ChainableExpression {
   }
 
   public equals(other: MvContainsExpression | undefined): boolean {
-    return super.equals(other) && generalArraysEqual(this.mvArray, other.mvArray);
+    return (
+      super.equals(other) && generalArraysEqual(this.mvArray, other.mvArray)
+    );
   }
 
   protected _toStringParameters(_indent?: int): string[] {
@@ -62,17 +69,23 @@ export class MvContainsExpression extends ChainableExpression {
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
     const operandArray =
-      typeof operandValue === 'string'
+      typeof operandValue === "string"
         ? [operandValue]
         : Array.isArray(operandValue)
           ? operandValue
           : [];
-    return operandArray.every((element) => this.mvArray.includes(element));
+    return operandArray.every(element => this.mvArray.includes(element));
   }
 
-  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
-    return handleNullCheckIfNeeded(this.mvArray, `${operandSQL} IS NULL`, 'AND', (withoutNull) =>
-      dialect.mvContainsExpression(operandSQL, withoutNull),
+  protected _getSQLChainableHelper(
+    dialect: SQLDialect,
+    operandSQL: string,
+  ): string {
+    return handleNullCheckIfNeeded(
+      this.mvArray,
+      `${operandSQL} IS NULL`,
+      "AND",
+      withoutNull => dialect.mvContainsExpression(operandSQL, withoutNull),
     );
   }
 }

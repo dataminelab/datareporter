@@ -1,6 +1,6 @@
-import { ComputeFn, Datum, PlywoodValue } from '../datatypes/index';
-import { SQLDialect } from '../dialect/baseDialect';
-import { Expression } from './baseExpression';
+import { ComputeFn, Datum, PlywoodValue } from "../datatypes/index";
+import { SQLDialect } from "../dialect/baseDialect";
+import { Expression } from "./baseExpression";
 
 /**
  * Represents a time range element with start and end timestamps
@@ -24,22 +24,22 @@ interface TimeRangeType {
 
 /** Supported database engines */
 enum Engine {
-  BIGQUERY = 'bigquery',
-  ATHENA = 'athena',
+  BIGQUERY = "bigquery",
+  ATHENA = "athena",
 }
 
 /** Processing modes for year-over-year expressions */
 enum ProcessMode {
-  RAW = 'raw',
-  SPLIT = 'split',
-  TOTAL = 'total',
+  RAW = "raw",
+  SPLIT = "split",
+  TOTAL = "total",
 }
 /**
  * Handles year-over-year expression generation for SQL queries
  * Supports multiple database engines and processing modes
  */
 export class YearOverYearExpression {
-  static op = 'YearOverYear';
+  static op = "YearOverYear";
 
   private queries: string[] = [];
   private engine: Engine | undefined;
@@ -56,7 +56,11 @@ export class YearOverYearExpression {
   private readonly columnPattern = /[`",']([^`",']*)[`",']\sAS/g;
   private whereRegex: RegExp | undefined;
 
-  constructor(engine?: Engine | string, queries?: string[], mode?: ProcessMode | string) {
+  constructor(
+    engine?: Engine | string,
+    queries?: string[],
+    mode?: ProcessMode | string,
+  ) {
     if (engine) {
       this.setEngine(engine);
     }
@@ -73,7 +77,7 @@ export class YearOverYearExpression {
    * Checks if a query is a false query (contains WHERE FALSE)
    */
   public static isFalseQuery(query: string): boolean {
-    return query.includes('WHERE FALSE');
+    return query.includes("WHERE FALSE");
   }
 
   /**
@@ -106,11 +110,14 @@ export class YearOverYearExpression {
 
   public setMode(mode: ProcessMode | string): void {
     // Allow string input for backward compatibility
-    if (typeof mode === 'string' && Object.values(ProcessMode).includes(mode as ProcessMode)) {
+    if (
+      typeof mode === "string" &&
+      Object.values(ProcessMode).includes(mode as ProcessMode)
+    ) {
       this.mode = mode as ProcessMode;
-    } else if (typeof mode === 'string') {
+    } else if (typeof mode === "string") {
       throw new Error(
-        `Invalid mode: ${mode}. Must be one of: ${Object.values(ProcessMode).join(', ')}`,
+        `Invalid mode: ${mode}. Must be one of: ${Object.values(ProcessMode).join(", ")}`,
       );
     } else {
       this.mode = mode;
@@ -126,7 +133,7 @@ export class YearOverYearExpression {
    * @note Not yet implemented
    */
   public calc(datum: Datum): PlywoodValue {
-    throw new Error('calc() method is not yet implemented');
+    throw new Error("calc() method is not yet implemented");
   }
 
   /**
@@ -134,7 +141,7 @@ export class YearOverYearExpression {
    * @note Not yet implemented
    */
   public getJS(datumVar: string): string {
-    throw new Error('getJS() method is not yet implemented');
+    throw new Error("getJS() method is not yet implemented");
   }
 
   /**
@@ -142,7 +149,7 @@ export class YearOverYearExpression {
    * @note Not yet implemented
    */
   public getSQL(dialect: SQLDialect): string {
-    throw new Error('getSQL() method is not yet implemented');
+    throw new Error("getSQL() method is not yet implemented");
   }
 
   /**
@@ -150,7 +157,7 @@ export class YearOverYearExpression {
    * @note Not yet implemented
    */
   public getFn(): ComputeFn {
-    throw new Error('getFn() method is not yet implemented');
+    throw new Error("getFn() method is not yet implemented");
   }
 
   public getQuery(): string | undefined {
@@ -168,7 +175,7 @@ export class YearOverYearExpression {
    */
   public static isYoyQuery(query: string): boolean {
     if (this.isFalseQuery(query)) return false;
-    return query.includes('_previous__') && query.includes('_delta__');
+    return query.includes("_previous__") && query.includes("_delta__");
   }
 
   /**
@@ -176,11 +183,14 @@ export class YearOverYearExpression {
    * @throws {Error} if engine is not supported
    */
   public setEngine(engine: Engine | string): void {
-    if (typeof engine === 'string' && !Object.values(Engine).includes(engine as Engine)) {
+    if (
+      typeof engine === "string" &&
+      !Object.values(Engine).includes(engine as Engine)
+    ) {
       // Allow any string for backward compatibility, but validate known engines
-      if (engine !== 'bigquery' && engine !== 'athena') {
+      if (engine !== "bigquery" && engine !== "athena") {
         console.warn(
-          `Unknown engine: ${engine}. Supported engines: ${Object.values(Engine).join(', ')}`,
+          `Unknown engine: ${engine}. Supported engines: ${Object.values(Engine).join(", ")}`,
         );
       }
     }
@@ -191,13 +201,13 @@ export class YearOverYearExpression {
     if (!this.query) return;
 
     if (this.engine === Engine.ATHENA) {
-      this.query = this.query.replace(/\\/g, '');
+      this.query = this.query.replace(/\\/g, "");
       this.query = this.query.replace(/`/g, '"');
     }
   }
 
   private secondSplitExists(): boolean {
-    return this.queries[2]?.includes('some_') ?? false;
+    return this.queries[2]?.includes("some_") ?? false;
   }
 
   public setTimeRanges(timeRanges: TimeRangeType): void {
@@ -214,17 +224,17 @@ export class YearOverYearExpression {
    */
   private splitFromAndWhereQueries(formattedSumQueries: string): string[] {
     if (!this.timeRanges) {
-      throw new Error('Time ranges must be set before processing');
+      throw new Error("Time ranges must be set before processing");
     }
 
     const { currElement, prevElement } = this.timeRanges;
     const whereRegex = this.whereRegex;
 
     if (!whereRegex) {
-      throw new Error('Where regex is not configured');
+      throw new Error("Where regex is not configured");
     }
 
-    const [fromQuery, whereQuery] = this.queries[2].split('WHERE');
+    const [fromQuery, whereQuery] = this.queries[2].split("WHERE");
     const matches = whereQuery.match(whereRegex);
 
     let where1 = whereQuery;
@@ -251,8 +261,8 @@ export class YearOverYearExpression {
     if (this.engine === Engine.ATHENA) {
       formattedSumQueries = formattedSumQueries.slice(0, -1);
     } else if (this.engine === Engine.BIGQUERY && this.secondSplitExists()) {
-      where1 = where1.replace(')) AND (', '))) AND (').slice(0, -1);
-      where2 = where2.replace(')) AND (', '))) AND (').slice(0, -1);
+      where1 = where1.replace(")) AND (", "))) AND (").slice(0, -1);
+      where2 = where2.replace(")) AND (", "))) AND (").slice(0, -1);
     }
 
     return [formattedSumQueries, fromQuery, where1, where2];
@@ -268,7 +278,7 @@ export class YearOverYearExpression {
    */
   public process(): void {
     if (!this.mode) {
-      throw new Error('Mode must be set before processing');
+      throw new Error("Mode must be set before processing");
     }
 
     let formattedSumQueries: string;
@@ -288,31 +298,36 @@ export class YearOverYearExpression {
 
       case ProcessMode.SPLIT:
         if (!this.keys.length) {
-          while ((columnMatch = this.columnPattern.exec(this.queries[1])) !== null) {
+          while (
+            (columnMatch = this.columnPattern.exec(this.queries[1])) !== null
+          ) {
             this.keys.push(columnMatch[1] || columnMatch[2]);
           }
         }
 
         formattedColumnQueries = this.keys
           .filter((value, index, self) => self.indexOf(value) === index)
-          .map((i) => `COALESCE(curr.${i}, prev.${i}) AS \`${i}\`,`)
-          .join(' ');
+          .map(i => `COALESCE(curr.${i}, prev.${i}) AS \`${i}\`,`)
+          .join(" ");
 
         while ((sumMatch = this.sumPattern.exec(this.queries[1])) !== null) {
           this.sumColumns.push(sumMatch[1] || sumMatch[2]);
         }
 
-        [formattedSumQueries, fromQuery, where1, where2] = this.splitFromAndWhereQueries(
-          this.sumColumns
-            .filter((value, index, self) => self.indexOf(value) === index)
-            .map(
-              (i) =>
-                `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`,
-            )
-            .join(' '),
-        );
+        [formattedSumQueries, fromQuery, where1, where2] =
+          this.splitFromAndWhereQueries(
+            this.sumColumns
+              .filter((value, index, self) => self.indexOf(value) === index)
+              .map(
+                i =>
+                  `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`,
+              )
+              .join(" "),
+          );
 
-        onQuery = this.keys.length ? `curr.${this.keys[0]} = prev.${this.keys[0]}` : '1=1';
+        onQuery = this.keys.length
+          ? `curr.${this.keys[0]} = prev.${this.keys[0]}`
+          : "1=1";
 
         this.query = `
                     SELECT ${formattedColumnQueries} ${formattedSumQueries}
@@ -333,10 +348,10 @@ export class YearOverYearExpression {
             return self.indexOf(value) === index;
           })
           .map(
-            (i) =>
+            i =>
               `COALESCE(curr.${i}, 0) AS \`${i}\`, COALESCE(prev.${i}, 0) AS \`_previous__${i}\`, (COALESCE(curr.${i}, 0) - COALESCE(prev.${i}, 0)) AS \`_delta__${i}\`,`,
           )
-          .join(' ');
+          .join(" ");
 
         [formattedSumQueries, fromQuery, where1, where2] =
           this.splitFromAndWhereQueries(formattedSumQueries);
@@ -351,7 +366,7 @@ export class YearOverYearExpression {
 
       default:
         throw new Error(
-          `Invalid mode: ${this.mode}. Must be one of: ${Object.values(ProcessMode).join(', ')}`,
+          `Invalid mode: ${this.mode}. Must be one of: ${Object.values(ProcessMode).join(", ")}`,
         );
     }
 

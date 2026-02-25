@@ -21,9 +21,12 @@ export default function ApplicationArea() {
         // if we see a javascript error on unexpected token where the unexpected token is '<', this usually means that a fallback html file (like index.html)
         // was served as content of script rather than the expected script, give a friendlier message in the console on what could be going on
         console.error(
-          `[Uncaught SyntaxError: Unexpected token '<'] usually means that a fallback html file was returned from server rather than the expected script. Check that the server is properly serving the file ${event.filename}.`
+          `[Uncaught SyntaxError: Unexpected token '<'] usually means that a fallback html file was returned from server rather than the expected script. Check that the server is properly serving the file ${event.filename}.`,
         );
-      } else if (event.message === "ResizeObserver loop completed with undelivered notifications.") {
+      } else if (
+        event.message ===
+        "ResizeObserver loop completed with undelivered notifications."
+      ) {
         // This error is thrown by Chrome when the ResizeObserver loop is completed with undelivered notifications.
         // It is a known issue in Chrome and can be safely ignored.
         return;

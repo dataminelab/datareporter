@@ -22,7 +22,9 @@ describe("Percy Module Configuration", () => {
     } catch (error) {
       // Expected in local development - percy is typically only available in Docker
       expect(error.code).toBe("MODULE_NOT_FOUND");
-      console.log("ℹ️  Percy module not found locally (expected in development)");
+      console.log(
+        "ℹ️  Percy module not found locally (expected in development)",
+      );
 
       // Verify we can mock percy for testing
       jest.doMock(percyPath, () => ({
@@ -54,14 +56,18 @@ describe("Percy Module Configuration", () => {
 
     // In CI environment, these should be set
     if (process.env.CI) {
-      requiredPercyVars.forEach((varName) => {
+      requiredPercyVars.forEach(varName => {
         expect(process.env[varName]).toBeDefined();
       });
     } else {
       // In local development, log which vars are missing
-      const missingVars = requiredPercyVars.filter((varName) => !process.env[varName]);
+      const missingVars = requiredPercyVars.filter(
+        varName => !process.env[varName],
+      );
       if (missingVars.length > 0) {
-        console.log(`ℹ️  Missing Percy environment variables (expected locally): ${missingVars.join(", ")}`);
+        console.log(
+          `ℹ️  Missing Percy environment variables (expected locally): ${missingVars.join(", ")}`,
+        );
       }
     }
   });

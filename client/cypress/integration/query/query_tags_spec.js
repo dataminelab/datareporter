@@ -1,4 +1,7 @@
-import { expectTagsToContain, typeInTagsSelectAndSave } from "../../support/tags";
+import {
+  expectTagsToContain,
+  typeInTagsSelectAndSave,
+} from "../../support/tags";
 
 describe("Query Tags", () => {
   beforeEach(() => {
@@ -9,7 +12,9 @@ describe("Query Tags", () => {
       query: "SELECT 1 as value",
     };
 
-    cy.createQuery(queryData, false).then(({ id }) => cy.visit(`/queries/${id}`));
+    cy.createQuery(queryData, false).then(({ id }) =>
+      cy.visit(`/queries/${id}`),
+    );
   });
 
   it("is possible to add and edit tags", () => {

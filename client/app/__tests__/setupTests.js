@@ -13,7 +13,9 @@ beforeAll(() => {
       typeof args[0] === "string" &&
       (args[0].includes("Warning: ReactDOM.render is deprecated") ||
         args[0].includes("Warning: componentWillMount has been renamed") ||
-        args[0].includes("Deprecation warning: value provided is not in a recognized RFC2822 or ISO format"))
+        args[0].includes(
+          "Deprecation warning: value provided is not in a recognized RFC2822 or ISO format",
+        ))
     ) {
       return;
     }
@@ -24,7 +26,9 @@ beforeAll(() => {
   console.error = (...args) => {
     if (
       typeof args[0] === "string" &&
-      (args[0].includes("The above error occurred in the <ThrowError> component") ||
+      (args[0].includes(
+        "The above error occurred in the <ThrowError> component",
+      ) ||
         args[0].includes("React will try to recreate this component tree"))
     ) {
       return;
@@ -34,7 +38,10 @@ beforeAll(() => {
 
   // Suppress error boundary console.log messages in tests
   console.log = (...args) => {
-    if (typeof args[0] === "string" && args[0].includes("Error caught by boundary:")) {
+    if (
+      typeof args[0] === "string" &&
+      args[0].includes("Error caught by boundary:")
+    ) {
       return;
     }
     originalLog.call(console, ...args);
@@ -59,7 +66,7 @@ try {
 // Mock window.matchMedia
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
@@ -124,7 +131,7 @@ global.URL.createObjectURL = jest.fn();
 jest.mock("moment", () => {
   const actualMoment = jest.requireActual("moment");
 
-  return (date) => {
+  return date => {
     // Handle invalid dates gracefully in tests
     if (date === "value" || date === undefined || date === null) {
       return actualMoment("2023-01-01"); // Return a valid default date

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
 import Alert from "antd/lib/alert";
@@ -17,14 +23,17 @@ function CreateModelDialog({ dialog, dataSources, model }) {
   const [loadTables, setLoadTables] = useState(false);
   const tablesLoadingRef = useRef();
 
-  const handleSubmit = useCallback((values) => dialog.close(values).catch(setError), [dialog]);
+  const handleSubmit = useCallback(
+    values => dialog.close(values).catch(setError),
+    [dialog],
+  );
   const formId = useUniqueId("modelForm");
 
   useEffect(() => {
     recordEvent("view", "page", "model/new");
   }, []);
 
-  const onChangeConnection = useCallback(async (id) => {
+  const onChangeConnection = useCallback(async id => {
     setError(null);
     setLoadTables(true);
     setTables([]);
@@ -52,19 +61,19 @@ function CreateModelDialog({ dialog, dataSources, model }) {
     const common = { required: true };
     const dataSourceProps = {
       required: true,
-      props: { onSelect: (id) => onChangeConnection(id) },
+      props: { onSelect: id => onChangeConnection(id) },
     };
     const tableProps = {
       required: true,
       props: { disabled: tables.length === 0, loading: loadTables },
     };
-    const optionsConnection = dataSources.map((item) => {
+    const optionsConnection = dataSources.map(item => {
       return {
         name: item.name,
         value: item.id,
       };
     });
-    const optionsTable = tables.map((item) => {
+    const optionsTable = tables.map(item => {
       return {
         name: item.name,
         value: item.name,
@@ -134,7 +143,8 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           key="cancel"
           {...dialog.props.cancelButtonProps}
           onClick={dialog.dismiss}
-          data-test="CreateModelCancelButton">
+          data-test="CreateModelCancelButton"
+        >
           Cancel
         </Button>,
         <Button
@@ -143,18 +153,33 @@ function CreateModelDialog({ dialog, dataSources, model }) {
           htmlType="submit"
           type="primary"
           form={formId}
-          data-test="SaveUserButton">
+          data-test="SaveUserButton"
+        >
           {!model ? "Create" : "Save"}
         </Button>,
       ]}
       wrapProps={{
         "data-test": "CreateModelDialog",
-      }}>
-      <DynamicForm id={formId} fields={formFields} onSubmit={handleSubmit} hideSubmitButton feedbackIcons />
+      }}
+    >
+      <DynamicForm
+        id={formId}
+        fields={formFields}
+        onSubmit={handleSubmit}
+        hideSubmitButton
+        feedbackIcons
+      />
       <div ref={tablesLoadingRef} style={{ opacity: 0 }}>
         <Loader />
       </div>
-      {error && <Alert message={error.message} type="error" showIcon data-test="CreateModelErrorAlert" />}
+      {error && (
+        <Alert
+          message={error.message}
+          type="error"
+          showIcon
+          data-test="CreateModelErrorAlert"
+        />
+      )}
     </Modal>
   );
 }

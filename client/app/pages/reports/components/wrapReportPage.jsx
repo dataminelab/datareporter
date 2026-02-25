@@ -20,7 +20,9 @@ export default function wrapReportPage(WrappedComponent) {
 
       const fetchReport = async () => {
         try {
-          const result = reportId ? await Report.get({ id: reportId, signal }) : Report.newReport();
+          const result = reportId
+            ? await Report.get({ id: reportId, signal })
+            : Report.newReport();
           setReport(result);
         } catch (error) {
           if (!signal.aborted) {

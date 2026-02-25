@@ -35,7 +35,7 @@ services:
     ports:
       - "6379"
   postgres:
-    image: pgautoupgrade/pgautoupgrade:16
+    image: pgautoupgrade/pgautoupgrade:latest
     command: "postgres -c fsync=off -c full_page_writes=off -c synchronous_commit=OFF"
     ports:
       - "15432:5432"

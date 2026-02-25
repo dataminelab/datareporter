@@ -272,6 +272,11 @@
   "optionalDependencies": {
     "fsevents": "^1.2.9"
   },
+  "overrides": {
+    "enzyme": {
+      "cheerio": "1.0.0-rc.3"
+    }
+  },
   "//": "browserslist set to 'Async functions' compatibility",
   "browserslist": [
     "Edge >= 15",

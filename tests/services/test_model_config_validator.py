@@ -54,6 +54,9 @@ class TestModelConfigValidator(unittest.TestCase):
                       - deltaByTen
                     attributes:
 
+                      - name: time
+                        type: TIME
+
                       - name: deltaByTen
                         type: number
 
@@ -122,6 +125,9 @@ class TestModelConfigValidator(unittest.TestCase):
                     clusterName: wiki
                     timeAttribute: time
                     attributes:
+
+                      - name: time
+                        type: TIME
 
                       - name: deltaByTen
                         type: number

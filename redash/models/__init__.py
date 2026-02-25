@@ -993,6 +993,7 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
     subscriptions = db.relationship("AlertSubscription", cascade="all, delete-orphan")
     last_triggered_at = Column(db.DateTime(True), nullable=True)
     rearm = Column(db.Integer, nullable=True)
+    type = Column(db.String(255), nullable=True)  # either "query" or "report"
 
     __tablename__ = "alerts"
 
@@ -1010,7 +1011,19 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
         return super(Alert, cls).get_by_id_and_org(object_id, org, Query)
 
     def evaluate(self):
-        data = self.query_rel.latest_query_data.data if self.query_rel.latest_query_data else None
+        if self.type == "report":
+            from redash.plywood.hash_manager import hash_to_result
+
+            report = Report.get_by_id(self.query_id)
+            result = hash_to_result(report.hash, report.model, self.user.org)
+            # XXX probably need to check other queries in the report as well, but for now we will assume that all queries in the report return the same data
+            first_query = result.queries[0]
+            if 'query_result' not in first_query:
+                data = None
+            else:
+                data = first_query['query_result']['data']
+        else:
+            data = self.query_rel.latest_query_data.data if self.query_rel.latest_query_data else None
         new_state = self.UNKNOWN_STATE
 
         if data and data["rows"] and self.options["column"] in data["rows"][0]:
@@ -1052,6 +1065,10 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
         if template is None:
             return ""
 
+        # Check if query has results before accessing data
+        if not self.query_rel.latest_query_data:
+            return ""
+
         data = self.query_rel.latest_query_data.data
         host = base_url(self.query_rel.org)
 
@@ -1064,6 +1081,10 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
         result_table = []  # A two-dimensional array which can rendered as a table in Mustache
         for row in data["rows"]:
             result_table.append([row[col["name"]] for col in data["columns"]])
+        if self.type == "report":
+            query_url = "{host}/reports/{report_id}".format(host=host, report_id=self.query_id)
+        else:
+            query_url = "{host}/queries/{query_id}".format(host=host, query_id=self.query_rel.id)
         context = {
             "ALERT_NAME": self.name,
             "ALERT_URL": "{host}/alerts/{alert_id}".format(host=host, alert_id=self.id),
@@ -1072,7 +1093,7 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
             "ALERT_CONDITION": self.options.get("op"),
             "ALERT_THRESHOLD": self.options.get("value"),
             "QUERY_NAME": self.query_rel.name,
-            "QUERY_URL": "{host}/queries/{query_id}".format(host=host, query_id=self.query_rel.id),
+            "QUERY_URL": query_url,
             "QUERY_RESULT_VALUE": result_value,
             "QUERY_RESULT_ROWS": data["rows"],
             "QUERY_RESULT_COLS": data["columns"],

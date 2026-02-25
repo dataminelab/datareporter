@@ -46,6 +46,8 @@ order_map = {
     "-executed_at": "-query_results-retrieved_at",
     "created_by": "users-name",
     "-created_by": "-users-name",
+    "data_source_id": "data_source_id",
+    "-data_source_id": "-data_source_id",
 }
 
 order_results = partial(_order_results, default_order="-created_at", allowed_orders=order_map)

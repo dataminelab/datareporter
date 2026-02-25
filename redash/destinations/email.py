@@ -33,14 +33,19 @@ class Email(BaseDestination):
 
         if not recipients:
             logging.warning("No emails given. Skipping send.")
+            return
 
         if alert.custom_body:
             html = alert.custom_body
         else:
             with open(settings.REDASH_ALERTS_DEFAULT_MAIL_BODY_TEMPLATE_FILE, "r") as f:
                 html = alert.render_template(f.read())
-        logging.debug("Notifying: %s", recipients)
 
+        if not html:
+            logging.warning("No body given. Skipping send.")
+            return
+
+        logging.debug("Notifying: %s", recipients)
         try:
             state = new_state.upper()
             if alert.custom_subject:

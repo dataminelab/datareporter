@@ -341,7 +341,7 @@ def hash_report(o: dict, can_edit: bool, get_results: bool = False):
     return report.to_dict()
 
 
-def hash_to_result(hash_string: str, model: Model, organisation, bypass_cache: bool = False):
+def hash_to_result(hash_string: str, model: Model, organisation: Organization, bypass_cache: bool = False):
     data_cube = get_data_cube(model)
     expression = Expression(hash_string, data_cube)
     if bypass_cache:

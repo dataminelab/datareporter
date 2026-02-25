@@ -73,6 +73,18 @@ class ReportFilter(BaseResource):
         return filtered_result.serialized()
 
 
+class ReportRecentResource(BaseResource):
+    @require_permission("view_report")
+    def get(self):
+        """
+        Retrieve up to 10 reports recently modified by the user.
+
+        Responds with a list of report objects.
+        """
+        recent_reports = Report.get_by_user(self.current_user).order_by(Report.updated_at.desc()).limit(10)
+        return ReportSerializer(recent_reports).serialize()
+
+
 class ReportGeneratePublicResource(BaseResource):
     decorators = [csp_allows_embeding]
 

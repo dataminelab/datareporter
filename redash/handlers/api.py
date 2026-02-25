@@ -93,6 +93,7 @@ from redash.handlers.reports import (
     ReportApiKeyAccess,
     ReportFavoriteListResource,
     ReportFilter,
+    ReportRecentResource,
     ReportGeneratePublicResource,
     ReportGenerateResource,
     ReportResource,
@@ -328,6 +329,7 @@ api.add_org_resource(
 api.add_org_resource(ReportResource, "/api/reports/<int:report_id>", endpoint="report")
 
 api.add_org_resource(ReportsListResource, "/api/reports", endpoint="reports")
+api.add_org_resource(ReportRecentResource, "/api/reports/recent", endpoint="recent_reports")
 api.add_org_resource(ReportsArchiveResource, "/api/reports/archive", endpoint="reports_archive")
 
 api.add_org_resource(ReportFavoriteResource, "/api/reports/<report_id>/favorite", endpoint="report_favorite")

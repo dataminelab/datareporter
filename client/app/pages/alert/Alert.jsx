@@ -16,6 +16,7 @@ import MenuButton from "./components/MenuButton";
 import AlertView from "./AlertView";
 import AlertEdit from "./AlertEdit";
 import AlertNew from "./AlertNew";
+import notifications from "@/services/notifications";
 
 const MODES = {
   NEW: 0,
@@ -66,6 +67,7 @@ class Alert extends React.Component {
       this.setState({
         alert: {
           options: {
+            selector: "first",
             op: ">",
             value: 1,
             muted: false,
@@ -92,7 +94,8 @@ class Alert extends React.Component {
             }
 
             this.setState({ alert, canEdit, pendingRearm: alert.rearm });
-            this.onQuerySelected(alert.query);
+            const query = { type: alert.type, ...alert.query };
+            this.onQuerySelected(query);
           }
         })
         .catch(error => {
@@ -112,6 +115,7 @@ class Alert extends React.Component {
 
     alert.name = trim(alert.name) || getDefaultName(alert);
     alert.rearm = pendingRearm || null;
+    alert.type = alert.query.type; // "query" or "report"
 
     return AlertService.save(alert)
       .then(alert => {
@@ -179,6 +183,17 @@ class Alert extends React.Component {
       });
   };
 
+  evaluate = () => {
+    const { alert } = this.state;
+    return AlertService.evaluate(alert)
+      .then(() => {
+        notification.success("Alert evaluated. Refresh page for updated status.");
+      })
+      .catch(() => {
+        notifications.error("Failed to evaluate alert.");
+      });
+  };
+
   mute = () => {
     const { alert } = this.state;
     return AlertService.mute(alert)
@@ -231,6 +246,7 @@ class Alert extends React.Component {
         mute={this.mute}
         unmute={this.unmute}
         canEdit={canEdit}
+        evaluate={this.evaluate}
       />
     );
 

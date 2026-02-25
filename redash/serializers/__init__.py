@@ -259,6 +259,7 @@ def serialize_alert(alert, full=True):
         "updated_at": alert.updated_at,
         "created_at": alert.created_at,
         "rearm": alert.rearm,
+        "type": alert.type,
     }
 
     if full:

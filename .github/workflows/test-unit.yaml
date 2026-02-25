@@ -140,7 +140,7 @@ jobs:
           # cache: 'npm'
       - name: Install Dependencies
         working-directory: client
-        run: npm install
+        run: npm ci
       - name: Run Lint
         working-directory: client
         run: npm run lint
@@ -175,7 +175,7 @@ jobs:
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: Install App dependencies
         working-directory: client
-        run: npm install
+        run: npm ci
       - name: List the state of node modules
         working-directory: client
         run: npm list
@@ -190,19 +190,19 @@ jobs:
         run: npm run test
       - name: Install plywood-server dependencies
         working-directory: plywood
-        run: npm install
+        run: npm ci
       - name: Run plywood-server Tests
         working-directory: plywood
         run: npm run test
       - name: Install plywood-client dependencies
         working-directory: plywood/client
-        run: npm install
+        run: npm ci
       - name: Run plywood-client Tests
         working-directory: plywood/client
         run: npm run test
       - name: turnilo dependencies install
         working-directory: client/app/components/TurniloComponent
-        run: npm install
+        run: npm ci
       - name: turnilo client tests
         working-directory: client/app/components/TurniloComponent
         run: npm run test:client
@@ -218,10 +218,8 @@ jobs:
       COMPOSE_PROJECT_NAME: cypress
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
-      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}
-      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      # SECURITY: Secrets moved to step-level env to limit exposure during npm install.
+      # Only steps that actually need secrets should reference them.
       PERCY_PARALLEL_TOTAL: 1
       PERCY_PARALLEL_NONCE: ${{ github.run_id }}
       PERCY_PARALLEL: true
@@ -260,7 +258,7 @@ jobs:
       - name: Install Dependencies
         working-directory: client
         run: |
-          npm install
+          npm ci
           npm install --save-dev @percy/cypress @percy/cli
       - name: Check and Install Cypress Binary
         run: |
@@ -280,23 +278,33 @@ jobs:
         run: docker build -f .ci/Dockerfile.cypress -t cypress .
       - name: Setup Cypress via npm scripts
         working-directory: client
+        env:
+          # Secrets set at step-level only, not job-level, to prevent exposure during npm install
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          # Use intermediate env vars to prevent script injection from PR metadata
+          SAFE_COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title || github.event.head_commit.message }}
+          SAFE_COMMIT_INFO_AUTHOR: ${{ github.event.pull_request.user.login || github.actor }}
+          SAFE_PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
+          SAFE_PERCY_COMMIT: ${{ github.sha }}
+          SAFE_PERCY_PR: ${{ github.event.pull_request.number }}
+          SAFE_PERCY_NONCE: ${{ github.run_id }}
         run: |
           set -x
           npm run cypress build
           npm run cypress start -- --skip-db-seed
           docker compose run \
-            -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
-            -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
-            -e PERCY_COMMIT="${{ github.sha }}" \
-            -e PERCY_PULL_REQUEST="${{ github.event.pull_request.number }}" \
+            -e PERCY_TOKEN="$PERCY_TOKEN" \
+            -e PERCY_BRANCH="$SAFE_PERCY_BRANCH" \
+            -e PERCY_COMMIT="$SAFE_PERCY_COMMIT" \
+            -e PERCY_PULL_REQUEST="$SAFE_PERCY_PR" \
             -e PERCY_PARALLEL_TOTAL=1 \
-            -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
+            -e PERCY_PARALLEL_NONCE="$SAFE_PERCY_NONCE" \
             -e PERCY_PARALLEL=true \
             -e PERCY_LOGLEVEL=debug \
-            -e COMMIT_INFO_BRANCH="${{ github.head_ref || github.ref_name }}" \
-            -e COMMIT_INFO_MESSAGE="${{ github.event.pull_request.title || github.event.head_commit.message }}" \
-            -e COMMIT_INFO_AUTHOR="${{ github.event.pull_request.user.login || github.actor }}" \
-            -e COMMIT_INFO_SHA="${{ github.sha }}" \
+            -e COMMIT_INFO_BRANCH="$SAFE_PERCY_BRANCH" \
+            -e COMMIT_INFO_MESSAGE="$SAFE_COMMIT_INFO_MESSAGE" \
+            -e COMMIT_INFO_AUTHOR="$SAFE_COMMIT_INFO_AUTHOR" \
+            -e COMMIT_INFO_SHA="$SAFE_PERCY_COMMIT" \
             cypress npm run cypress db-seed
           sleep 10
       - name: Execute Cypress Tests
@@ -313,9 +321,10 @@ jobs:
           mkdir -p ../test-artifacts
 
           # Run Cypress and save output to file first
+          # Use env vars instead of direct expression interpolation to prevent injection
           docker compose run \
-            -e CYPRESS_PROJECT_ID="${{ secrets.CYPRESS_PROJECT_ID }}" \
-            -e CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}" \
+            -e CYPRESS_PROJECT_ID="$CYPRESS_PROJECT_ID" \
+            -e CYPRESS_RECORD_KEY="$CYPRESS_RECORD_KEY" \
             -e CYPRESS_baseUrl="http://server:5000" \
             cypress \
             bash -c "

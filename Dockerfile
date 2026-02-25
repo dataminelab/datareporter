@@ -20,7 +20,7 @@ ENV BABEL_ENV=${code_coverage:+test}
 
 RUN <<EOF
   if [ "x$skip_frontend_build" = "x" ]; then
-    cd client && npm i && npm run build
+    cd client && npm ci && npm run build
   else
     mkdir -p /frontend/client/dist
     touch /frontend/client/dist/multi_org.html
@@ -94,10 +94,10 @@ WORKDIR /app
 ENV POETRY_VERSION=2.1.1
 ENV POETRY_HOME=/etc/poetry
 ENV POETRY_VIRTUALENVS_CREATE=false
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN pip install --no-cache-dir "poetry==${POETRY_VERSION}"
 
 # Avoid crashes, including corrupted cache artifacts, when building multi-platform images with GitHub Actions.
-RUN /etc/poetry/bin/poetry cache clear pypi --all
+RUN poetry cache clear pypi --all
 
 COPY pyproject.toml poetry.lock ./
 
@@ -105,7 +105,7 @@ ARG POETRY_OPTIONS="--no-root --no-interaction --no-ansi"
 # for LDAP authentication, install with `ldap3` group
 # disabled by default due to GPL license conflict
 ARG install_groups="main,all_ds,dev"
-RUN /etc/poetry/bin/poetry install --only $install_groups $POETRY_OPTIONS
+RUN poetry install --only $install_groups $POETRY_OPTIONS
 
 COPY --chown=datareporter . /app
 COPY --chown=datareporter --from=frontend-builder /frontend/client/dist /app/client/dist

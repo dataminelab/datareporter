@@ -109,10 +109,9 @@ export interface CustomizationJS {
 
 var check: Class<CustomizationValue, CustomizationJS>;
 
-export class Customization implements Instance<
-  CustomizationValue,
-  CustomizationJS
-> {
+export class Customization
+  implements Instance<CustomizationValue, CustomizationJS>
+{
   static DEFAULT_TITLE = "Turnilo (%v)";
 
   static DEFAULT_TIMEZONES: Timezone[] = [

@@ -37,10 +37,9 @@ export interface ExternalViewValue {
 
 var check: Class<ExternalViewValue, ExternalViewValue>;
 
-export class ExternalView implements Instance<
-  ExternalViewValue,
-  ExternalViewValue
-> {
+export class ExternalView
+  implements Instance<ExternalViewValue, ExternalViewValue>
+{
   static isExternalView(candidate: any): candidate is ExternalView {
     return candidate instanceof ExternalView;
   }

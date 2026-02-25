@@ -57,10 +57,9 @@ function isDimensionGroupJS(
   return (dimensionOrGroup as DimensionGroupJS).dimensions !== undefined;
 }
 
-export class DimensionGroup implements Instance<
-  DimensionGroupValue,
-  DimensionGroupJS
-> {
+export class DimensionGroup
+  implements Instance<DimensionGroupValue, DimensionGroupJS>
+{
   static fromJS(dimensionGroup: DimensionGroupJS) {
     const { name, title, dimensions, description } = dimensionGroup;
 

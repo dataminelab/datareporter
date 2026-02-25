@@ -32,10 +32,9 @@ import {
   toViewDefinition,
 } from "./visualization-settings-converter";
 
-export class ViewDefinitionConverter4 implements ViewDefinitionConverter<
-  ViewDefinition4,
-  Essence
-> {
+export class ViewDefinitionConverter4
+  implements ViewDefinitionConverter<ViewDefinition4, Essence>
+{
   version = 4;
 
   fromViewDefinition(definition: ViewDefinition4, dataCube: DataCube): Essence {

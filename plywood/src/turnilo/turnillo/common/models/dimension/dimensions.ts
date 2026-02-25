@@ -36,7 +36,9 @@ export function findDimensionByName(
   return dimensions.byName[name] || null;
 }
 
-class FlattenDimensionsWithGroupsVisitor implements DimensionOrGroupVisitor<void> {
+class FlattenDimensionsWithGroupsVisitor
+  implements DimensionOrGroupVisitor<void>
+{
   private items = List<DimensionOrGroup>().asMutable();
 
   visitDimension(dimension: Dimension): void {

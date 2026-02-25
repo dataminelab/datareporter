@@ -44,20 +44,23 @@ export interface BaseFilterClauseDefinition {
   ref: string;
 }
 
-export interface NumberFilterClauseDefinition extends BaseFilterClauseDefinition {
+export interface NumberFilterClauseDefinition
+  extends BaseFilterClauseDefinition {
   type: FilterType.number;
   not: boolean;
   ranges: Array<{ start: number; end: number; bounds?: string }>;
 }
 
-export interface StringFilterClauseDefinition extends BaseFilterClauseDefinition {
+export interface StringFilterClauseDefinition
+  extends BaseFilterClauseDefinition {
   type: FilterType.string;
   action: StringFilterAction;
   not: boolean;
   values: string[];
 }
 
-export interface BooleanFilterClauseDefinition extends BaseFilterClauseDefinition {
+export interface BooleanFilterClauseDefinition
+  extends BaseFilterClauseDefinition {
   type: FilterType.boolean;
   not: boolean;
   values: Array<boolean | string>;

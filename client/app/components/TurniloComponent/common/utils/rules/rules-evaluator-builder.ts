@@ -25,10 +25,8 @@ export interface RulesEvaluatorBuilderEmpty<PredicateVars, ActionVars> {
   when(predicate: Predicate<PredicateVars>): RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars>;
 }
 
-export interface RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars> extends RulesEvaluatorBuilderEmpty<
-  PredicateVars,
-  ActionVars
-> {
+export interface RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>
+  extends RulesEvaluatorBuilderEmpty<PredicateVars, ActionVars> {
   otherwise(action: Action<ActionVars>): RulesEvaluatorBuilderComplete<PredicateVars, ActionVars>;
 }
 

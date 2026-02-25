@@ -28,10 +28,9 @@ import { ViewDefinitionConverter } from "../view-definition-converter";
 import { seriesDefinitionConverter } from "./measures-definition";
 import { ViewDefinition3 } from "./view-definition-3";
 
-export class ViewDefinitionConverter3 implements ViewDefinitionConverter<
-  ViewDefinition3,
-  Essence
-> {
+export class ViewDefinitionConverter3
+  implements ViewDefinitionConverter<ViewDefinition3, Essence>
+{
   version = 3;
 
   fromViewDefinition(definition: ViewDefinition3, dataCube: DataCube): Essence {

@@ -1,12 +1,11 @@
-let druidRequesterFactory =
-  require("plywood-druid-requester").druidRequesterFactory;
-let plywood = require("../../build/plywood");
+let druidRequesterFactory = require('plywood-druid-requester').druidRequesterFactory;
+let plywood = require('../../build/plywood');
 let ply = plywood.ply;
 let $ = plywood.$;
 let External = plywood.External;
 
 let druidRequester = druidRequesterFactory({
-  host: "localhost:8082", // Where ever your Druid may be
+  host: 'localhost:8082', // Where ever your Druid may be
 });
 
 // ----------------------------------
@@ -14,8 +13,8 @@ let druidRequester = druidRequesterFactory({
 let context = {
   wiki: External.fromJS(
     {
-      engine: "druid",
-      source: "wikipedia",
+      engine: 'druid',
+      source: 'wikipedia',
     },
     druidRequester,
   ),
@@ -23,18 +22,18 @@ let context = {
 
 let ex = ply()
   .apply(
-    "wiki",
-    $("wiki").filter(
-      $("__time")
+    'wiki',
+    $('wiki').filter(
+      $('__time')
         .overlap({
-          start: new Date("2015-08-26T00:00:00Z"),
-          end: new Date("2015-08-27T00:00:00Z"),
+          start: new Date('2015-08-26T00:00:00Z'),
+          end: new Date('2015-08-27T00:00:00Z'),
         })
-        .and($("language").is("en")),
+        .and($('language').is('en')),
     ),
   )
-  .apply("Count", $("wiki").count())
-  .apply("TotalAdded", "$wiki.sum($added)");
+  .apply('Count', $('wiki').count())
+  .apply('TotalAdded', '$wiki.sum($added)');
 
 ex.compute(context).then(function (data) {
   // Log the data while converting it to a readable standard

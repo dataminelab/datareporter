@@ -15,43 +15,43 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
+const { expect } = require('chai');
 
-const plywood = require("../plywood");
+const plywood = require('../plywood');
 
 const { $, ply, r } = plywood;
 
-describe("substitute", () => {
-  it("should substitute on IS", () => {
-    const ex1 = r(5).is("$hello");
+describe('substitute', () => {
+  it('should substitute on IS', () => {
+    const ex1 = r(5).is('$hello');
 
-    const subs = ex => {
-      if (ex.op === "literal" && ex.type === "NUMBER") {
+    const subs = (ex) => {
+      if (ex.op === 'literal' && ex.type === 'NUMBER') {
         return r(ex.value + 10);
       } else {
         return null;
       }
     };
 
-    const ex2 = r(15).is("$hello");
+    const ex2 = r(15).is('$hello');
 
     expect(ex1.substitute(subs).toJS()).to.deep.equal(ex2.toJS());
   });
 
-  it("should substitute on complex expression", () => {
+  it('should substitute on complex expression', () => {
     const ex1 = ply()
-      .apply("num", 5)
+      .apply('num', 5)
       .apply(
-        "subData",
+        'subData',
         ply()
-          .apply("x", "$num + 1")
-          .apply("y", "$foo * 2")
-          .apply("z", ply().sum("$a + 3"))
-          .apply("w", ply().sum("$a + 4 + $b")),
+          .apply('x', '$num + 1')
+          .apply('y', '$foo * 2')
+          .apply('z', ply().sum('$a + 3'))
+          .apply('w', ply().sum('$a + 4 + $b')),
       );
 
-    const subs = ex => {
-      if (ex.op === "literal" && ex.type === "NUMBER") {
+    const subs = (ex) => {
+      if (ex.op === 'literal' && ex.type === 'NUMBER') {
         return r(ex.value + 10);
       } else {
         return null;
@@ -59,29 +59,29 @@ describe("substitute", () => {
     };
 
     const ex2 = ply()
-      .apply("num", 15)
+      .apply('num', 15)
       .apply(
-        "subData",
+        'subData',
         ply()
-          .apply("x", "$num + 11")
-          .apply("y", "$foo * 12")
-          .apply("z", ply().sum("$a + 13"))
-          .apply("w", ply().sum("$a + 14 + $b")),
+          .apply('x', '$num + 11')
+          .apply('y', '$foo * 12')
+          .apply('z', ply().sum('$a + 13'))
+          .apply('w', ply().sum('$a + 14 + $b')),
       );
 
     expect(ex1.substitute(subs).toJS()).to.deep.equal(ex2.toJS());
   });
 
-  it("has sequential indexes", () => {
+  it('has sequential indexes', () => {
     const ex = ply()
-      .apply("num", 5)
+      .apply('num', 5)
       .apply(
-        "subData",
+        'subData',
         ply()
-          .apply("x", "$num + 1")
-          .apply("y", "$foo * 2")
-          .apply("z", ply().sum("$a + 3"))
-          .apply("w", ply().sum("$a + 4 + $b")),
+          .apply('x', '$num + 1')
+          .apply('y', '$foo * 2')
+          .apply('z', ply().sum('$a + 3'))
+          .apply('w', ply().sum('$a + 4 + $b')),
       );
 
     const indexes = [];

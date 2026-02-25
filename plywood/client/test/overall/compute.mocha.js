@@ -15,48 +15,48 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
-const { Dataset, $, i$, ply, r, AttributeInfo, Set } = require("../plywood");
+const { expect } = require('chai');
+const { Dataset, $, i$, ply, r, AttributeInfo, Set } = require('../plywood');
 
-describe("compute native", () => {
+describe('compute native', () => {
   const data = [
     {
-      cut: "Good",
+      cut: 'Good',
       price: 400,
-      time: new Date("2015-10-01T09:20:30Z"),
-      tags: ["super", "cool"],
+      time: new Date('2015-10-01T09:20:30Z'),
+      tags: ['super', 'cool'],
     },
     {
-      cut: "Good",
+      cut: 'Good',
       price: 300,
-      time: new Date("2015-10-02T08:20:30Z"),
-      tags: ["super"],
+      time: new Date('2015-10-02T08:20:30Z'),
+      tags: ['super'],
     },
-    { cut: "Great", price: 124, time: null, tags: ["cool"] },
+    { cut: 'Great', price: 124, time: null, tags: ['cool'] },
     {
-      cut: "Wow",
+      cut: 'Wow',
       price: 160,
-      time: new Date("2015-10-04T06:20:30Z"),
-      tags: ["sweet"],
+      time: new Date('2015-10-04T06:20:30Z'),
+      tags: ['sweet'],
     },
     {
-      cut: "Wow",
+      cut: 'Wow',
       price: 100,
-      time: new Date("2015-10-05T05:20:30Z"),
+      time: new Date('2015-10-05T05:20:30Z'),
       tags: null,
     },
     {
       cut: null,
       price: null,
-      time: new Date("2015-10-06T04:20:30Z"),
-      tags: ["super", "sweet", "cool"],
+      time: new Date('2015-10-06T04:20:30Z'),
+      tags: ['super', 'sweet', 'cool'],
     },
   ];
 
-  it("works in uber-basic case", () => {
-    const ex = ply().apply("five", 5).apply("nine", 9);
+  it('works in uber-basic case', () => {
+    const ex = ply().apply('five', 5).apply('nine', 9);
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           five: 5,
@@ -66,49 +66,49 @@ describe("compute native", () => {
     });
   });
 
-  it("works in nested case", () => {
+  it('works in nested case', () => {
     const ex = ply()
-      .apply("TotalPrice", "$data.sum($price)")
+      .apply('TotalPrice', '$data.sum($price)')
       .apply(
-        "ByCut",
-        $("data")
-          .split("$cut", "Cut")
-          .apply("SumPrice", "$data.sum($price)")
-          .apply("PriceOfTotal", "$SumPrice / $TotalPrice")
-          .sort("$SumPrice", "descending")
+        'ByCut',
+        $('data')
+          .split('$cut', 'Cut')
+          .apply('SumPrice', '$data.sum($price)')
+          .apply('PriceOfTotal', '$SumPrice / $TotalPrice')
+          .sort('$SumPrice', 'descending')
           .apply(
-            "ByTags",
-            $("data")
-              .split("$tags", "Tag")
-              .apply("SumPrice", "$data.sum($price)")
-              .sort("$Tag", "ascending"),
+            'ByTags',
+            $('data')
+              .split('$tags', 'Tag')
+              .apply('SumPrice', '$data.sum($price)')
+              .sort('$Tag', 'ascending'),
           ),
       );
 
-    return ex.compute({ data: Dataset.fromJS(data) }).then(v => {
+    return ex.compute({ data: Dataset.fromJS(data) }).then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           ByCut: {
             attributes: [
               {
-                name: "Cut",
-                type: "STRING",
+                name: 'Cut',
+                type: 'STRING',
               },
               {
-                name: "data",
-                type: "DATASET",
+                name: 'data',
+                type: 'DATASET',
               },
               {
-                name: "SumPrice",
-                type: "NUMBER",
+                name: 'SumPrice',
+                type: 'NUMBER',
               },
               {
-                name: "PriceOfTotal",
-                type: "NUMBER",
+                name: 'PriceOfTotal',
+                type: 'NUMBER',
               },
               {
-                name: "ByTags",
-                type: "DATASET",
+                name: 'ByTags',
+                type: 'DATASET',
               },
             ],
             data: [
@@ -116,31 +116,31 @@ describe("compute native", () => {
                 ByTags: {
                   attributes: [
                     {
-                      name: "Tag",
-                      type: "STRING",
+                      name: 'Tag',
+                      type: 'STRING',
                     },
                     {
-                      name: "data",
-                      type: "DATASET",
+                      name: 'data',
+                      type: 'DATASET',
                     },
                     {
-                      name: "SumPrice",
-                      type: "NUMBER",
+                      name: 'SumPrice',
+                      type: 'NUMBER',
                     },
                   ],
                   data: [
                     {
                       SumPrice: 400,
-                      Tag: "cool",
+                      Tag: 'cool',
                     },
                     {
                       SumPrice: 700,
-                      Tag: "super",
+                      Tag: 'super',
                     },
                   ],
-                  keys: ["Tag"],
+                  keys: ['Tag'],
                 },
-                Cut: "Good",
+                Cut: 'Good',
                 PriceOfTotal: 0.6457564575645757,
                 SumPrice: 700,
               },
@@ -148,16 +148,16 @@ describe("compute native", () => {
                 ByTags: {
                   attributes: [
                     {
-                      name: "Tag",
-                      type: "STRING",
+                      name: 'Tag',
+                      type: 'STRING',
                     },
                     {
-                      name: "data",
-                      type: "DATASET",
+                      name: 'data',
+                      type: 'DATASET',
                     },
                     {
-                      name: "SumPrice",
-                      type: "NUMBER",
+                      name: 'SumPrice',
+                      type: 'NUMBER',
                     },
                   ],
                   data: [
@@ -167,12 +167,12 @@ describe("compute native", () => {
                     },
                     {
                       SumPrice: 160,
-                      Tag: "sweet",
+                      Tag: 'sweet',
                     },
                   ],
-                  keys: ["Tag"],
+                  keys: ['Tag'],
                 },
-                Cut: "Wow",
+                Cut: 'Wow',
                 PriceOfTotal: 0.23985239852398524,
                 SumPrice: 260,
               },
@@ -180,27 +180,27 @@ describe("compute native", () => {
                 ByTags: {
                   attributes: [
                     {
-                      name: "Tag",
-                      type: "STRING",
+                      name: 'Tag',
+                      type: 'STRING',
                     },
                     {
-                      name: "data",
-                      type: "DATASET",
+                      name: 'data',
+                      type: 'DATASET',
                     },
                     {
-                      name: "SumPrice",
-                      type: "NUMBER",
+                      name: 'SumPrice',
+                      type: 'NUMBER',
                     },
                   ],
                   data: [
                     {
                       SumPrice: 124,
-                      Tag: "cool",
+                      Tag: 'cool',
                     },
                   ],
-                  keys: ["Tag"],
+                  keys: ['Tag'],
                 },
-                Cut: "Great",
+                Cut: 'Great',
                 PriceOfTotal: 0.11439114391143912,
                 SumPrice: 124,
               },
@@ -208,40 +208,40 @@ describe("compute native", () => {
                 ByTags: {
                   attributes: [
                     {
-                      name: "Tag",
-                      type: "STRING",
+                      name: 'Tag',
+                      type: 'STRING',
                     },
                     {
-                      name: "data",
-                      type: "DATASET",
+                      name: 'data',
+                      type: 'DATASET',
                     },
                     {
-                      name: "SumPrice",
-                      type: "NUMBER",
+                      name: 'SumPrice',
+                      type: 'NUMBER',
                     },
                   ],
                   data: [
                     {
                       SumPrice: 0,
-                      Tag: "cool",
+                      Tag: 'cool',
                     },
                     {
                       SumPrice: 0,
-                      Tag: "super",
+                      Tag: 'super',
                     },
                     {
                       SumPrice: 0,
-                      Tag: "sweet",
+                      Tag: 'sweet',
                     },
                   ],
-                  keys: ["Tag"],
+                  keys: ['Tag'],
                 },
                 Cut: null,
                 PriceOfTotal: 0,
                 SumPrice: 0,
               },
             ],
-            keys: ["Cut"],
+            keys: ['Cut'],
           },
           TotalPrice: 1084,
         },
@@ -249,10 +249,10 @@ describe("compute native", () => {
     });
   });
 
-  it("gets length of string", () => {
-    const ex = ply().apply("length", r("hey").length());
+  it('gets length of string', () => {
+    const ex = ply().apply('length', r('hey').length());
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           length: 3,
@@ -261,10 +261,10 @@ describe("compute native", () => {
     });
   });
 
-  it("gets location of substring", () => {
-    const ex = ply().apply("location", r("hey").indexOf("e"));
+  it('gets location of substring', () => {
+    const ex = ply().apply('location', r('hey').indexOf('e'));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           location: 1,
@@ -273,33 +273,33 @@ describe("compute native", () => {
     });
   });
 
-  it("transforms case of a string", () => {
+  it('transforms case of a string', () => {
     const ex = ply()
-      .apply("upper", r("hey").transformCase("upperCase"))
-      .apply("lower", r("HEY").transformCase("lowerCase"));
+      .apply('upper', r('hey').transformCase('upperCase'))
+      .apply('lower', r('HEY').transformCase('lowerCase'));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
-          upper: "HEY",
-          lower: "hey",
+          upper: 'HEY',
+          lower: 'hey',
         },
       ]);
     });
   });
 
-  it("works with power and absolute", () => {
+  it('works with power and absolute', () => {
     const ex = ply()
-      .apply("number", 256)
-      .apply("four", $("number").power(0.5).power(0.5))
-      .apply("one", $("four").power(0))
-      .apply("reciprocal", $("four").power(-1))
-      .apply("negative", -4)
-      .apply("positive", 4)
-      .apply("absNeg", $("negative").absolute())
-      .apply("absPos", $("positive").absolute());
+      .apply('number', 256)
+      .apply('four', $('number').power(0.5).power(0.5))
+      .apply('one', $('four').power(0))
+      .apply('reciprocal', $('four').power(-1))
+      .apply('negative', -4)
+      .apply('positive', 4)
+      .apply('absNeg', $('negative').absolute())
+      .apply('absPos', $('positive').absolute());
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           number: 256,
@@ -315,101 +315,97 @@ describe("compute native", () => {
     });
   });
 
-  it("performs power on set", () => {
+  it('performs power on set', () => {
     const ex = r(Set.fromJS([2, -2, 7])).power(Set.fromJS([2, 3]));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS()).to.deep.equal({
         elements: [4, 8, -8, 49, 343],
-        setType: "NUMBER",
+        setType: 'NUMBER',
       });
     });
   });
 
-  it("performs absolute on set", () => {
+  it('performs absolute on set', () => {
     const ex = r(Set.fromJS([2, -2, 7])).absolute();
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS()).to.deep.equal({
         elements: [2, 7],
-        setType: "NUMBER",
+        setType: 'NUMBER',
       });
     });
   });
 
-  it("performs lessThan on set 1", () => {
+  it('performs lessThan on set 1', () => {
     const ex = r(Set.fromJS([2, -2, 7])).lessThan(10);
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v).to.deep.equal(true);
     });
   });
 
-  it("performs lessThan on set 2", () => {
+  it('performs lessThan on set 2', () => {
     const ex = r(Set.fromJS([2, -2, 7])).lessThan(Set.fromJS([-10, -20]));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v).to.deep.equal(false);
     });
   });
 
-  it("works with single IS", () => {
-    const ex = r("LOL").is(r("MOON"));
+  it('works with single IS', () => {
+    const ex = r('LOL').is(r('MOON'));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v).to.deep.equal(false);
     });
   });
 
-  it("works with many ISes", () => {
-    const ex = r("LOL")
-      .is(r("MOON"))
+  it('works with many ISes', () => {
+    const ex = r('LOL')
+      .is(r('MOON'))
       .is(Set.fromJS([false]));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v).to.deep.equal(true);
     });
   });
 
-  it("casts from number to time", () => {
+  it('casts from number to time', () => {
     // 1442016000000 -> 09/12/2015 00:00:00
     // 1442059199000 -> 09/12/2015 11:59:59
 
     const ex = ply()
-      .apply("time", new Date("2015-09-12T09:20:30Z"))
+      .apply('time', new Date('2015-09-12T09:20:30Z'))
       .apply(
-        "between",
-        $("time")
-          .greaterThan(r(1442016000000).cast("TIME"))
-          .and($("time").lessThan(r(1442059199000).cast("TIME"))),
+        'between',
+        $('time')
+          .greaterThan(r(1442016000000).cast('TIME'))
+          .and($('time').lessThan(r(1442059199000).cast('TIME'))),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           between: true,
-          time: new Date("2015-09-12T09:20:30.000Z"),
+          time: new Date('2015-09-12T09:20:30.000Z'),
         },
       ]);
     });
   });
 
-  it("casts from time to number", () => {
+  it('casts from time to number', () => {
     // 1442049630000 -> 09/12/2015 02:20:30
     const ex = ply()
-      .apply("unixTimestamp", r(1442049630000))
+      .apply('unixTimestamp', r(1442049630000))
       .apply(
-        "between",
-        $("unixTimestamp")
-          .greaterThan(r(new Date("2015-09-12T00:00:00.000Z")).cast("NUMBER"))
-          .and(
-            $("unixTimestamp").lessThan(
-              r(new Date("2015-09-12T11:59:30.000Z")).cast("NUMBER"),
-            ),
-          ),
+        'between',
+        $('unixTimestamp')
+          .greaterThan(r(new Date('2015-09-12T00:00:00.000Z')).cast('NUMBER'))
+          .and($('unixTimestamp').lessThan(r(new Date('2015-09-12T11:59:30.000Z')).cast('NUMBER'))),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           between: true,
@@ -419,22 +415,22 @@ describe("compute native", () => {
     });
   });
 
-  it("casts from number to string", () => {
-    const ex = ply().apply("stringifiedNumber", r(22345243).cast("STRING"));
+  it('casts from number to string', () => {
+    const ex = ply().apply('stringifiedNumber', r(22345243).cast('STRING'));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
-          stringifiedNumber: "22345243",
+          stringifiedNumber: '22345243',
         },
       ]);
     });
   });
 
-  it("casts from string to number", () => {
-    const ex = ply().apply("numberfiedString", r("22345243").cast("NUMBER"));
+  it('casts from string to number', () => {
+    const ex = ply().apply('numberfiedString', r('22345243').cast('NUMBER'));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           numberfiedString: 22345243,
@@ -443,10 +439,10 @@ describe("compute native", () => {
     });
   });
 
-  it("casts from boolean to boolean", () => {
-    const ex = ply().apply("stillBoolean", r(true).cast("BOOLEAN"));
+  it('casts from boolean to boolean', () => {
+    const ex = ply().apply('stillBoolean', r(true).cast('BOOLEAN'));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           stillBoolean: true,
@@ -456,23 +452,23 @@ describe("compute native", () => {
   });
 
   it("doesn't fallback if not null", () => {
-    const ex = $("x").fallback(5);
-    return ex.compute({ x: 2 }).then(v => {
+    const ex = $('x').fallback(5);
+    return ex.compute({ x: 2 }).then((v) => {
       expect(v).to.deep.equal(2);
     });
   });
 
-  it("fallback works with datasets", () => {
+  it('fallback works with datasets', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Two", 2)
-      .apply("EmptyData", ply(ds).filter("false"))
-      .apply("SumPrice", "$EmptyData.sum($price)")
-      .apply("AvgPrice1", $("EmptyData").average($("price")).fallback(2))
-      .apply("AvgPrice2", "$EmptyData.sum($price) / $EmptyData.count()");
+      .apply('Two', 2)
+      .apply('EmptyData', ply(ds).filter('false'))
+      .apply('SumPrice', '$EmptyData.sum($price)')
+      .apply('AvgPrice1', $('EmptyData').average($('price')).fallback(2))
+      .apply('AvgPrice2', '$EmptyData.sum($price) / $EmptyData.count()');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           AvgPrice1: 2,
@@ -484,144 +480,142 @@ describe("compute native", () => {
     });
   });
 
-  it("does cartesian concat", () => {
+  it('does cartesian concat', () => {
     const ds = Dataset.fromJS(data).hide();
 
-    const ex = ply(ds)
-      .apply("concat", "$tags ++ $cut")
-      .select("tags", "cut", "concat");
+    const ex = ply(ds).apply('concat', '$tags ++ $cut').select('tags', 'cut', 'concat');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           concat: {
-            elements: ["superGood", "coolGood"],
-            setType: "STRING",
+            elements: ['superGood', 'coolGood'],
+            setType: 'STRING',
           },
-          cut: "Good",
+          cut: 'Good',
           tags: {
-            elements: ["super", "cool"],
-            setType: "STRING",
+            elements: ['super', 'cool'],
+            setType: 'STRING',
           },
         },
         {
           concat: {
-            elements: ["superGood"],
-            setType: "STRING",
+            elements: ['superGood'],
+            setType: 'STRING',
           },
-          cut: "Good",
+          cut: 'Good',
           tags: {
-            elements: ["super"],
-            setType: "STRING",
+            elements: ['super'],
+            setType: 'STRING',
           },
         },
         {
           concat: {
-            elements: ["coolGreat"],
-            setType: "STRING",
+            elements: ['coolGreat'],
+            setType: 'STRING',
           },
-          cut: "Great",
+          cut: 'Great',
           tags: {
-            elements: ["cool"],
-            setType: "STRING",
+            elements: ['cool'],
+            setType: 'STRING',
           },
         },
         {
           concat: {
-            elements: ["sweetWow"],
-            setType: "STRING",
+            elements: ['sweetWow'],
+            setType: 'STRING',
           },
-          cut: "Wow",
+          cut: 'Wow',
           tags: {
-            elements: ["sweet"],
-            setType: "STRING",
+            elements: ['sweet'],
+            setType: 'STRING',
           },
         },
         {
           concat: null,
-          cut: "Wow",
+          cut: 'Wow',
           tags: null,
         },
         {
           concat: null,
           cut: null,
           tags: {
-            elements: ["super", "sweet", "cool"],
-            setType: "STRING",
+            elements: ['super', 'sweet', 'cool'],
+            setType: 'STRING',
           },
         },
       ]);
     });
   });
 
-  it("gets cardinality of set", () => {
+  it('gets cardinality of set', () => {
     const data = [
       {
         id: 1,
         prices: [400, 200, 3],
-        times: { type: "SET", elements: [new Date("2015-10-01T09:20:30Z")] },
-        tags: ["super", "cool"],
+        times: { type: 'SET', elements: [new Date('2015-10-01T09:20:30Z')] },
+        tags: ['super', 'cool'],
       },
       {
         id: 2,
         prices: [300, 2, 3],
-        times: { type: "SET", elements: [new Date("2015-10-01T09:20:30Z")] },
-        tags: ["super"],
+        times: { type: 'SET', elements: [new Date('2015-10-01T09:20:30Z')] },
+        tags: ['super'],
       },
-      { id: 3, prices: [124], times: null, tags: ["cool"] },
+      { id: 3, prices: [124], times: null, tags: ['cool'] },
       {
         id: 4,
         prices: [22, 28],
-        times: { type: "SET", elements: [new Date("2015-10-01T09:20:30Z")] },
-        tags: ["sweet"],
+        times: { type: 'SET', elements: [new Date('2015-10-01T09:20:30Z')] },
+        tags: ['sweet'],
       },
       {
         id: 5,
         prices: [100, 105],
-        times: { type: "SET", elements: [new Date("2015-10-01T09:20:30Z")] },
+        times: { type: 'SET', elements: [new Date('2015-10-01T09:20:30Z')] },
         tags: null,
       },
       {
         id: null,
         prices: null,
-        times: { type: "SET", elements: [new Date("2015-10-01T09:20:30Z")] },
-        tags: ["super", "sweet", "cool"],
+        times: { type: 'SET', elements: [new Date('2015-10-01T09:20:30Z')] },
+        tags: ['super', 'sweet', 'cool'],
       },
     ];
 
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Data", ply(ds))
+      .apply('Data', ply(ds))
       .apply(
-        "SetSize",
-        $("Data").split({
-          Prices: "$prices.cardinality()",
-          Tags: "$tags.cardinality()",
-          Times: "$times.cardinality()",
+        'SetSize',
+        $('Data').split({
+          Prices: '$prices.cardinality()',
+          Tags: '$tags.cardinality()',
+          Times: '$times.cardinality()',
         }),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           SetSize: {
             attributes: [
               {
-                name: "Prices",
-                type: "NUMBER",
+                name: 'Prices',
+                type: 'NUMBER',
               },
               {
-                name: "Tags",
-                type: "NUMBER",
+                name: 'Tags',
+                type: 'NUMBER',
               },
               {
-                name: "Times",
-                type: "NUMBER",
+                name: 'Times',
+                type: 'NUMBER',
               },
               {
-                name: "Data",
-                type: "DATASET",
+                name: 'Data',
+                type: 'DATASET',
               },
             ],
             data: [
@@ -656,257 +650,232 @@ describe("compute native", () => {
                 Times: 1,
               },
             ],
-            keys: ["Prices", "Tags", "Times"],
+            keys: ['Prices', 'Tags', 'Times'],
           },
         },
       ]);
     });
   });
 
-  it("works in existing dataset case", () => {
+  it('works in existing dataset case', () => {
     const ds = Dataset.fromJS([
-      { cut: "Good", price: 400 },
-      { cut: "Great", price: 124 },
-      { cut: "Wow", price: 160 },
+      { cut: 'Good', price: 400 },
+      { cut: 'Great', price: 124 },
+      { cut: 'Wow', price: 160 },
     ]);
 
-    const ex = ply(ds).apply("priceX2", $("price").multiply(2));
+    const ex = ply(ds).apply('priceX2', $('price').multiply(2));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
-        { cut: "Good", price: 400, priceX2: 800 },
-        { cut: "Great", price: 124, priceX2: 248 },
-        { cut: "Wow", price: 160, priceX2: 320 },
+        { cut: 'Good', price: 400, priceX2: 800 },
+        { cut: 'Great', price: 124, priceX2: 248 },
+        { cut: 'Wow', price: 160, priceX2: 320 },
       ]);
     });
   });
 
-  it("will upgrade time for time data", () => {
+  it('will upgrade time for time data', () => {
     const ds = Dataset.fromJS([
-      { cut: "Good", time: new Date("2015-01-03T00:00:00Z") },
-      { cut: "Great", time: new Date("2014-01-04T00:00:00Z") },
-      { cut: "Wow", time: new Date("2015-01-05T00:00:00Z") },
+      { cut: 'Good', time: new Date('2015-01-03T00:00:00Z') },
+      { cut: 'Great', time: new Date('2014-01-04T00:00:00Z') },
+      { cut: 'Wow', time: new Date('2015-01-05T00:00:00Z') },
     ]);
 
     const ex = ply(ds)
-      .apply(
-        "laterThanJan01",
-        $("time").greaterThan(`'2015-01-01T00:00:00.000'`),
-      )
-      .apply(
-        "laterThanOrEqualJan01",
-        $("time").greaterThanOrEqual(`'2015-01-01T00:00:00.000'`),
-      )
-      .apply(
-        "earlierThanJan04",
-        $("time").lessThan(`'2015-01-04T00:00:00.000'`),
-      )
-      .apply(
-        "earlierThanOrEqualJan04",
-        $("time").lessThan(`'2015-01-04T00:00:00.000'`),
-      );
+      .apply('laterThanJan01', $('time').greaterThan(`'2015-01-01T00:00:00.000'`))
+      .apply('laterThanOrEqualJan01', $('time').greaterThanOrEqual(`'2015-01-01T00:00:00.000'`))
+      .apply('earlierThanJan04', $('time').lessThan(`'2015-01-04T00:00:00.000'`))
+      .apply('earlierThanOrEqualJan04', $('time').lessThan(`'2015-01-04T00:00:00.000'`));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
-          cut: "Good",
+          cut: 'Good',
           earlierThanJan04: true,
           earlierThanOrEqualJan04: true,
           laterThanJan01: true,
           laterThanOrEqualJan01: true,
-          time: new Date("2015-01-03T00:00:00.000Z"),
+          time: new Date('2015-01-03T00:00:00.000Z'),
         },
         {
-          cut: "Great",
+          cut: 'Great',
           earlierThanJan04: true,
           earlierThanOrEqualJan04: true,
           laterThanJan01: false,
           laterThanOrEqualJan01: false,
-          time: new Date("2014-01-04T00:00:00.000Z"),
+          time: new Date('2014-01-04T00:00:00.000Z'),
         },
         {
-          cut: "Wow",
+          cut: 'Wow',
           earlierThanJan04: false,
           earlierThanOrEqualJan04: false,
           laterThanJan01: true,
           laterThanOrEqualJan01: true,
-          time: new Date("2015-01-05T00:00:00.000Z"),
+          time: new Date('2015-01-05T00:00:00.000Z'),
         },
       ]);
     });
   });
 
-  it("will not upgrade string for string data that can be parsed into time", () => {
+  it('will not upgrade string for string data that can be parsed into time', () => {
     const ds = Dataset.fromJS([
-      { cut: "Good", time: "2015-01-03T00:00:00Z" },
-      { cut: "Great", time: "2014-01-04T00:00:00Z" },
-      { cut: "Wow", time: "2015-01-05T00:00:00Z" },
+      { cut: 'Good', time: '2015-01-03T00:00:00Z' },
+      { cut: 'Great', time: '2014-01-04T00:00:00Z' },
+      { cut: 'Wow', time: '2015-01-05T00:00:00Z' },
     ]);
 
     const ex = ply(ds)
-      .apply("laterThanJan01", $("time").greaterThan(`'2015-01-03T00:00:00Z'`))
-      .apply(
-        "laterThanOrEqualJan01",
-        $("time").greaterThanOrEqual(`'2015-01-03T00:00:00Z'`),
-      )
-      .apply("earlierThanJan04", $("time").lessThan(`'2015-01-03T00:00:00Z'`))
-      .apply(
-        "earlierThanOrEqualJan04",
-        $("time").lessThan(`'2015-01-03T00:00:00Z'`),
-      );
+      .apply('laterThanJan01', $('time').greaterThan(`'2015-01-03T00:00:00Z'`))
+      .apply('laterThanOrEqualJan01', $('time').greaterThanOrEqual(`'2015-01-03T00:00:00Z'`))
+      .apply('earlierThanJan04', $('time').lessThan(`'2015-01-03T00:00:00Z'`))
+      .apply('earlierThanOrEqualJan04', $('time').lessThan(`'2015-01-03T00:00:00Z'`));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
-          cut: "Good",
+          cut: 'Good',
           earlierThanJan04: false,
           earlierThanOrEqualJan04: false,
           laterThanJan01: false,
           laterThanOrEqualJan01: true,
-          time: "2015-01-03T00:00:00Z",
+          time: '2015-01-03T00:00:00Z',
         },
         {
-          cut: "Great",
+          cut: 'Great',
           earlierThanJan04: true,
           earlierThanOrEqualJan04: true,
           laterThanJan01: false,
           laterThanOrEqualJan01: false,
-          time: "2014-01-04T00:00:00Z",
+          time: '2014-01-04T00:00:00Z',
         },
         {
-          cut: "Wow",
+          cut: 'Wow',
           earlierThanJan04: false,
           earlierThanOrEqualJan04: false,
           laterThanJan01: true,
           laterThanOrEqualJan01: true,
-          time: "2015-01-05T00:00:00Z",
+          time: '2015-01-05T00:00:00Z',
         },
       ]);
     });
   });
 
-  it("left side", () => {
+  it('left side', () => {
     const ds = Dataset.fromJS([
-      { cut: "Good", time: new Date("2015-01-03T00:00:00Z") },
-      { cut: "Great", time: new Date("2014-01-04T00:00:00Z") },
-      { cut: "Wow", time: new Date("2015-01-05T00:00:00Z") },
+      { cut: 'Good', time: new Date('2015-01-03T00:00:00Z') },
+      { cut: 'Great', time: new Date('2014-01-04T00:00:00Z') },
+      { cut: 'Wow', time: new Date('2015-01-05T00:00:00Z') },
     ]);
 
-    const ex = ply(ds).apply(
-      "Added_NullCities",
-      `'2015-01-01T00:00:00.000' <= $time`,
-    );
+    const ex = ply(ds).apply('Added_NullCities', `'2015-01-01T00:00:00.000' <= $time`);
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Added_NullCities: true,
-          cut: "Good",
-          time: new Date("2015-01-03T00:00:00.000Z"),
+          cut: 'Good',
+          time: new Date('2015-01-03T00:00:00.000Z'),
         },
         {
           Added_NullCities: false,
-          cut: "Great",
-          time: new Date("2014-01-04T00:00:00.000Z"),
+          cut: 'Great',
+          time: new Date('2014-01-04T00:00:00.000Z'),
         },
         {
           Added_NullCities: true,
-          cut: "Wow",
-          time: new Date("2015-01-05T00:00:00.000Z"),
+          cut: 'Wow',
+          time: new Date('2015-01-05T00:00:00.000Z'),
         },
       ]);
     });
   });
 
-  it("case insensitivity is respected", () => {
+  it('case insensitivity is respected', () => {
     const ds = Dataset.fromJS([
-      { cut: "Good", time: new Date("2015-01-03T00:00:00Z") },
-      { cut: "Great", time: new Date("2014-01-04T00:00:00Z") },
-      { cut: "Wow", time: new Date("2015-01-05T00:00:00Z") },
+      { cut: 'Good', time: new Date('2015-01-03T00:00:00Z') },
+      { cut: 'Great', time: new Date('2014-01-04T00:00:00Z') },
+      { cut: 'Wow', time: new Date('2015-01-05T00:00:00Z') },
     ]);
 
-    const ex = ply(ds).apply("LessThanM", `'M' <= i$cUt`);
+    const ex = ply(ds).apply('LessThanM', `'M' <= i$cUt`);
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           LessThanM: false,
-          cut: "Good",
-          time: new Date("2015-01-03T00:00:00.000Z"),
+          cut: 'Good',
+          time: new Date('2015-01-03T00:00:00.000Z'),
         },
         {
           LessThanM: false,
-          cut: "Great",
-          time: new Date("2014-01-04T00:00:00.000Z"),
+          cut: 'Great',
+          time: new Date('2014-01-04T00:00:00.000Z'),
         },
         {
           LessThanM: true,
-          cut: "Wow",
-          time: new Date("2015-01-05T00:00:00.000Z"),
+          cut: 'Wow',
+          time: new Date('2015-01-05T00:00:00.000Z'),
         },
       ]);
     });
   });
 
-  it("computes quarters", () => {
+  it('computes quarters', () => {
     const ds = Dataset.fromJS([
-      { cut: "Good", time: new Date("2015-03-31T19:00:00Z") },
-      { cut: "Great", time: new Date("2015-06-30T19:00:00Z") },
-      { cut: "Wow", time: new Date("2015-09-05T00:00:00Z") },
-      { cut: "Wow", time: new Date("2015-12-05T00:00:00Z") },
+      { cut: 'Good', time: new Date('2015-03-31T19:00:00Z') },
+      { cut: 'Great', time: new Date('2015-06-30T19:00:00Z') },
+      { cut: 'Wow', time: new Date('2015-09-05T00:00:00Z') },
+      { cut: 'Wow', time: new Date('2015-12-05T00:00:00Z') },
     ]);
 
     const ex = ply(ds)
-      .apply("Quarter", '$time.timePart("QUARTER")')
-      .apply("QuarterAsia", '$time.timePart("QUARTER", "Asia/Kathmandu")');
+      .apply('Quarter', '$time.timePart("QUARTER")')
+      .apply('QuarterAsia', '$time.timePart("QUARTER", "Asia/Kathmandu")');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Quarter: 1,
           QuarterAsia: 2,
-          cut: "Good",
-          time: new Date("2015-03-31T19:00:00.000Z"),
+          cut: 'Good',
+          time: new Date('2015-03-31T19:00:00.000Z'),
         },
         {
           Quarter: 2,
           QuarterAsia: 3,
-          cut: "Great",
-          time: new Date("2015-06-30T19:00:00.000Z"),
+          cut: 'Great',
+          time: new Date('2015-06-30T19:00:00.000Z'),
         },
         {
           Quarter: 3,
           QuarterAsia: 3,
-          cut: "Wow",
-          time: new Date("2015-09-05T00:00:00.000Z"),
+          cut: 'Wow',
+          time: new Date('2015-09-05T00:00:00.000Z'),
         },
         {
           Quarter: 4,
           QuarterAsia: 4,
-          cut: "Wow",
-          time: new Date("2015-12-05T00:00:00.000Z"),
+          cut: 'Wow',
+          time: new Date('2015-12-05T00:00:00.000Z'),
         },
       ]);
     });
   });
 
-  it("computes fancy quarters", () => {
+  it('computes fancy quarters', () => {
     const ds = Dataset.fromJS([
-      { cut: "Good", time: new Date("2015-03-31T19:00:00Z") },
-      { cut: "Great", time: new Date("2015-06-30T19:00:00Z") },
-      { cut: "Wow", time: new Date("2015-09-05T00:00:00Z") },
-      { cut: "Wow", time: new Date("2015-12-05T00:00:00Z") },
+      { cut: 'Good', time: new Date('2015-03-31T19:00:00Z') },
+      { cut: 'Great', time: new Date('2015-06-30T19:00:00Z') },
+      { cut: 'Wow', time: new Date('2015-09-05T00:00:00Z') },
+      { cut: 'Wow', time: new Date('2015-12-05T00:00:00Z') },
     ]);
 
     const ex = ply(ds)
-      .split(
-        i$("time").timeFloor("P3M").timePart("SECOND_OF_YEAR"),
-        "soy",
-        "data",
-      )
-      .select("soy");
+      .split(i$('time').timeFloor('P3M').timePart('SECOND_OF_YEAR'), 'soy', 'data')
+      .select('soy');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           soy: 0,
@@ -924,196 +893,193 @@ describe("compute native", () => {
     });
   });
 
-  it("works with filter, select", () => {
+  it('works with filter, select', () => {
     const ds = Dataset.fromJS(data);
 
-    const ex = $("ds").filter("$price > 200").select("cut");
+    const ex = $('ds').filter('$price > 200').select('cut');
 
-    return ex.compute({ ds }).then(v => {
+    return ex.compute({ ds }).then((v) => {
       expect(v.toJS()).to.deep.equal({
         attributes: [
           {
-            name: "cut",
-            type: "STRING",
+            name: 'cut',
+            type: 'STRING',
           },
         ],
         data: [
           {
-            cut: "Good",
+            cut: 'Good',
           },
           {
-            cut: "Good",
+            cut: 'Good',
           },
         ],
       });
     });
   });
 
-  it("works with select, limit", () => {
+  it('works with select, limit', () => {
     const ds = Dataset.fromJS(data);
 
-    const ex = $("ds").select("cut").limit(3);
+    const ex = $('ds').select('cut').limit(3);
 
-    return ex.compute({ ds }).then(v => {
+    return ex.compute({ ds }).then((v) => {
       expect(v.toJS()).to.deep.equal({
         attributes: [
           {
-            name: "cut",
-            type: "STRING",
+            name: 'cut',
+            type: 'STRING',
           },
         ],
         data: [
           {
-            cut: "Good",
+            cut: 'Good',
           },
           {
-            cut: "Good",
+            cut: 'Good',
           },
           {
-            cut: "Great",
+            cut: 'Great',
           },
         ],
       });
     });
   });
 
-  it("works with pure filter", () => {
+  it('works with pure filter', () => {
     const ds = Dataset.fromJS(data);
 
-    const ex = ply(ds).filter("$cut == Great");
+    const ex = ply(ds).filter('$cut == Great');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(AttributeInfo.toJSs(v.attributes)).to.deep.equal([
-        { name: "time", type: "TIME" },
-        { name: "cut", type: "STRING" },
-        { name: "tags", type: "SET/STRING" },
-        { name: "price", type: "NUMBER" },
+        { name: 'time', type: 'TIME' },
+        { name: 'cut', type: 'STRING' },
+        { name: 'tags', type: 'SET/STRING' },
+        { name: 'price', type: 'NUMBER' },
       ]);
 
       expect(v.toJS().data).to.deep.equal([
         {
-          cut: "Great",
+          cut: 'Great',
           price: 124,
-          tags: { setType: "STRING", elements: ["cool"] },
+          tags: { setType: 'STRING', elements: ['cool'] },
           time: null,
         },
       ]);
     });
   });
 
-  it("works with pure empty filter", () => {
+  it('works with pure empty filter', () => {
     const ds = Dataset.fromJS(data);
 
-    const ex = ply(ds).filter("$cut == Best");
+    const ex = ply(ds).filter('$cut == Best');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(AttributeInfo.toJSs(v.attributes)).to.deep.equal([
-        { name: "time", type: "TIME" },
-        { name: "cut", type: "STRING" },
-        { name: "tags", type: "SET/STRING" },
-        { name: "price", type: "NUMBER" },
+        { name: 'time', type: 'TIME' },
+        { name: 'cut', type: 'STRING' },
+        { name: 'tags', type: 'SET/STRING' },
+        { name: 'price', type: 'NUMBER' },
       ]);
 
       expect(v.toJS().data).to.deep.equal([]);
     });
   });
 
-  it("works with various applies", () => {
+  it('works with various applies', () => {
     const ds = Dataset.fromJS(data);
 
     const ex = ply(ds)
-      .apply("cutConcat", '"[" ++ $cut ++ "]"')
-      .apply("cutMatch", $("cut").match("^G.+"))
-      .apply("cutInGoodGreat", $("cut").in(["Good", "Great"]))
-      .apply("cutIsGoodGreat", $("cut").is(["Good", "Great"]))
-      .apply("cutIsNull", $("cut").is([null]))
+      .apply('cutConcat', '"[" ++ $cut ++ "]"')
+      .apply('cutMatch', $('cut').match('^G.+'))
+      .apply('cutInGoodGreat', $('cut').in(['Good', 'Great']))
+      .apply('cutIsGoodGreat', $('cut').is(['Good', 'Great']))
+      .apply('cutIsNull', $('cut').is([null]))
+      .apply('cutThenFallback', $('cut').is('Good').then('Noice').fallback('Boo'))
       .apply(
-        "cutThenFallback",
-        $("cut").is("Good").then("Noice").fallback("Boo"),
+        'cutThenFallbackX2',
+        $('cut')
+          .is('Good')
+          .then('Nice')
+          .fallback($('cut').is('Great').then('Amaze'))
+          .fallback('Neither'),
       )
-      .apply(
-        "cutThenFallbackX2",
-        $("cut")
-          .is("Good")
-          .then("Nice")
-          .fallback($("cut").is("Great").then("Amaze"))
-          .fallback("Neither"),
-      )
-      .apply("cutIsGoodIsFalse", $("cut").is("Good").is([false]))
-      .apply("timeFloorDay", $("time").timeFloor("P1D"))
-      .apply("timeShiftDay2", $("time").timeShift("P1D", 2))
-      .apply("timeRangeHours", $("time").timeRange("PT2H", -1))
-      .apply("isSuperCool", $("tags").is(["super", "cool"]))
-      .apply("logPrice", $("price").log());
+      .apply('cutIsGoodIsFalse', $('cut').is('Good').is([false]))
+      .apply('timeFloorDay', $('time').timeFloor('P1D'))
+      .apply('timeShiftDay2', $('time').timeShift('P1D', 2))
+      .apply('timeRangeHours', $('time').timeRange('PT2H', -1))
+      .apply('isSuperCool', $('tags').is(['super', 'cool']))
+      .apply('logPrice', $('price').log());
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
-          cut: "Good",
-          cutConcat: "[Good]",
+          cut: 'Good',
+          cutConcat: '[Good]',
           cutInGoodGreat: true,
           cutIsGoodGreat: true,
           cutIsGoodIsFalse: false,
           cutIsNull: false,
           cutMatch: true,
-          cutThenFallback: "Noice",
-          cutThenFallbackX2: "Nice",
+          cutThenFallback: 'Noice',
+          cutThenFallbackX2: 'Nice',
           isSuperCool: true,
           logPrice: 5.991464547107982,
           price: 400,
           tags: {
-            elements: ["super", "cool"],
-            setType: "STRING",
+            elements: ['super', 'cool'],
+            setType: 'STRING',
           },
-          time: new Date("2015-10-01T09:20:30.000Z"),
-          timeFloorDay: new Date("2015-10-01T00:00:00.000Z"),
+          time: new Date('2015-10-01T09:20:30.000Z'),
+          timeFloorDay: new Date('2015-10-01T00:00:00.000Z'),
           timeRangeHours: {
-            end: new Date("2015-10-01T09:20:30.000Z"),
-            start: new Date("2015-10-01T07:20:30.000Z"),
+            end: new Date('2015-10-01T09:20:30.000Z'),
+            start: new Date('2015-10-01T07:20:30.000Z'),
           },
-          timeShiftDay2: new Date("2015-10-03T09:20:30.000Z"),
+          timeShiftDay2: new Date('2015-10-03T09:20:30.000Z'),
         },
         {
-          cut: "Good",
-          cutConcat: "[Good]",
+          cut: 'Good',
+          cutConcat: '[Good]',
           cutInGoodGreat: true,
           cutIsGoodGreat: true,
           cutIsGoodIsFalse: false,
           cutIsNull: false,
           cutMatch: true,
-          cutThenFallback: "Noice",
-          cutThenFallbackX2: "Nice",
+          cutThenFallback: 'Noice',
+          cutThenFallbackX2: 'Nice',
           isSuperCool: true,
           logPrice: 5.703782474656201,
           price: 300,
           tags: {
-            elements: ["super"],
-            setType: "STRING",
+            elements: ['super'],
+            setType: 'STRING',
           },
-          time: new Date("2015-10-02T08:20:30.000Z"),
-          timeFloorDay: new Date("2015-10-02T00:00:00.000Z"),
+          time: new Date('2015-10-02T08:20:30.000Z'),
+          timeFloorDay: new Date('2015-10-02T00:00:00.000Z'),
           timeRangeHours: {
-            end: new Date("2015-10-02T08:20:30.000Z"),
-            start: new Date("2015-10-02T06:20:30.000Z"),
+            end: new Date('2015-10-02T08:20:30.000Z'),
+            start: new Date('2015-10-02T06:20:30.000Z'),
           },
-          timeShiftDay2: new Date("2015-10-04T08:20:30.000Z"),
+          timeShiftDay2: new Date('2015-10-04T08:20:30.000Z'),
         },
         {
-          cut: "Great",
-          cutConcat: "[Great]",
+          cut: 'Great',
+          cutConcat: '[Great]',
           cutInGoodGreat: true,
           cutIsGoodGreat: true,
           cutIsGoodIsFalse: true,
           cutIsNull: false,
           cutMatch: true,
-          cutThenFallback: "Boo",
-          cutThenFallbackX2: "Amaze",
+          cutThenFallback: 'Boo',
+          cutThenFallbackX2: 'Amaze',
           isSuperCool: true,
           logPrice: 4.820281565605037,
           price: 124,
           tags: {
-            elements: ["cool"],
-            setType: "STRING",
+            elements: ['cool'],
+            setType: 'STRING',
           },
           time: null,
           timeFloorDay: null,
@@ -1121,51 +1087,51 @@ describe("compute native", () => {
           timeShiftDay2: null,
         },
         {
-          cut: "Wow",
-          cutConcat: "[Wow]",
+          cut: 'Wow',
+          cutConcat: '[Wow]',
           cutInGoodGreat: false,
           cutIsGoodGreat: false,
           cutIsGoodIsFalse: true,
           cutIsNull: false,
           cutMatch: false,
-          cutThenFallback: "Boo",
-          cutThenFallbackX2: "Neither",
+          cutThenFallback: 'Boo',
+          cutThenFallbackX2: 'Neither',
           isSuperCool: false,
           logPrice: 5.075173815233827,
           price: 160,
           tags: {
-            elements: ["sweet"],
-            setType: "STRING",
+            elements: ['sweet'],
+            setType: 'STRING',
           },
-          time: new Date("2015-10-04T06:20:30.000Z"),
-          timeFloorDay: new Date("2015-10-04T00:00:00.000Z"),
+          time: new Date('2015-10-04T06:20:30.000Z'),
+          timeFloorDay: new Date('2015-10-04T00:00:00.000Z'),
           timeRangeHours: {
-            end: new Date("2015-10-04T06:20:30.000Z"),
-            start: new Date("2015-10-04T04:20:30.000Z"),
+            end: new Date('2015-10-04T06:20:30.000Z'),
+            start: new Date('2015-10-04T04:20:30.000Z'),
           },
-          timeShiftDay2: new Date("2015-10-06T06:20:30.000Z"),
+          timeShiftDay2: new Date('2015-10-06T06:20:30.000Z'),
         },
         {
-          cut: "Wow",
-          cutConcat: "[Wow]",
+          cut: 'Wow',
+          cutConcat: '[Wow]',
           cutInGoodGreat: false,
           cutIsGoodGreat: false,
           cutIsGoodIsFalse: true,
           cutIsNull: false,
           cutMatch: false,
-          cutThenFallback: "Boo",
-          cutThenFallbackX2: "Neither",
+          cutThenFallback: 'Boo',
+          cutThenFallbackX2: 'Neither',
           isSuperCool: false,
           logPrice: 4.605170185988092,
           price: 100,
           tags: null,
-          time: new Date("2015-10-05T05:20:30.000Z"),
-          timeFloorDay: new Date("2015-10-05T00:00:00.000Z"),
+          time: new Date('2015-10-05T05:20:30.000Z'),
+          timeFloorDay: new Date('2015-10-05T00:00:00.000Z'),
           timeRangeHours: {
-            end: new Date("2015-10-05T05:20:30.000Z"),
-            start: new Date("2015-10-05T03:20:30.000Z"),
+            end: new Date('2015-10-05T05:20:30.000Z'),
+            start: new Date('2015-10-05T03:20:30.000Z'),
           },
-          timeShiftDay2: new Date("2015-10-07T05:20:30.000Z"),
+          timeShiftDay2: new Date('2015-10-07T05:20:30.000Z'),
         },
         {
           cut: null,
@@ -1175,56 +1141,56 @@ describe("compute native", () => {
           cutIsGoodIsFalse: true,
           cutIsNull: true,
           cutMatch: null,
-          cutThenFallback: "Boo",
-          cutThenFallbackX2: "Neither",
+          cutThenFallback: 'Boo',
+          cutThenFallbackX2: 'Neither',
           isSuperCool: true,
           logPrice: null,
           price: null,
           tags: {
-            elements: ["super", "sweet", "cool"],
-            setType: "STRING",
+            elements: ['super', 'sweet', 'cool'],
+            setType: 'STRING',
           },
-          time: new Date("2015-10-06T04:20:30.000Z"),
-          timeFloorDay: new Date("2015-10-06T00:00:00.000Z"),
+          time: new Date('2015-10-06T04:20:30.000Z'),
+          timeFloorDay: new Date('2015-10-06T00:00:00.000Z'),
           timeRangeHours: {
-            end: new Date("2015-10-06T04:20:30.000Z"),
-            start: new Date("2015-10-06T02:20:30.000Z"),
+            end: new Date('2015-10-06T04:20:30.000Z'),
+            start: new Date('2015-10-06T02:20:30.000Z'),
           },
-          timeShiftDay2: new Date("2015-10-08T04:20:30.000Z"),
+          timeShiftDay2: new Date('2015-10-08T04:20:30.000Z'),
         },
       ]);
     });
   });
 
-  it("works with collect applies", () => {
+  it('works with collect applies', () => {
     const ds = Dataset.fromJS([
-      { cut: "Good", color: "A", num: 1 },
-      { cut: "Good", color: "A", num: 2 },
-      { cut: "Good", color: "B", num: 1 },
-      { cut: "Great", color: "B", num: 5 },
-      { cut: "Great", color: "C", num: 7 },
-      { cut: "Great", color: "D", num: 8 },
-      { cut: "Amaze", color: "D", num: 9 },
-      { cut: "Amaze", color: null, num: null },
+      { cut: 'Good', color: 'A', num: 1 },
+      { cut: 'Good', color: 'A', num: 2 },
+      { cut: 'Good', color: 'B', num: 1 },
+      { cut: 'Great', color: 'B', num: 5 },
+      { cut: 'Great', color: 'C', num: 7 },
+      { cut: 'Great', color: 'D', num: 8 },
+      { cut: 'Amaze', color: 'D', num: 9 },
+      { cut: 'Amaze', color: null, num: null },
     ]);
 
     const ex = ply(ds)
-      .split("$cut", "Cut", "data")
-      .apply("colors", "$data.collect($color)")
-      .apply("nums", "$data.collect($num)")
-      .apply("ranges", "$data.collect($num.numberBucket(1))");
+      .split('$cut', 'Cut', 'data')
+      .apply('colors', '$data.collect($color)')
+      .apply('nums', '$data.collect($num)')
+      .apply('ranges', '$data.collect($num.numberBucket(1))');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
-          Cut: "Good",
+          Cut: 'Good',
           colors: {
-            elements: ["A", "B"],
-            setType: "STRING",
+            elements: ['A', 'B'],
+            setType: 'STRING',
           },
           nums: {
             elements: [1, 2],
-            setType: "NUMBER",
+            setType: 'NUMBER',
           },
           ranges: {
             elements: [
@@ -1237,18 +1203,18 @@ describe("compute native", () => {
                 start: 2,
               },
             ],
-            setType: "NUMBER_RANGE",
+            setType: 'NUMBER_RANGE',
           },
         },
         {
-          Cut: "Great",
+          Cut: 'Great',
           colors: {
-            elements: ["B", "C", "D"],
-            setType: "STRING",
+            elements: ['B', 'C', 'D'],
+            setType: 'STRING',
           },
           nums: {
             elements: [5, 7, 8],
-            setType: "NUMBER",
+            setType: 'NUMBER',
           },
           ranges: {
             elements: [
@@ -1265,18 +1231,18 @@ describe("compute native", () => {
                 start: 8,
               },
             ],
-            setType: "NUMBER_RANGE",
+            setType: 'NUMBER_RANGE',
           },
         },
         {
-          Cut: "Amaze",
+          Cut: 'Amaze',
           colors: {
-            elements: ["D", null],
-            setType: "STRING",
+            elements: ['D', null],
+            setType: 'STRING',
           },
           nums: {
             elements: [9, null],
-            setType: "NUMBER",
+            setType: 'NUMBER',
           },
           ranges: {
             elements: [
@@ -1286,14 +1252,14 @@ describe("compute native", () => {
               },
               null,
             ],
-            setType: "NUMBER_RANGE",
+            setType: 'NUMBER_RANGE',
           },
         },
       ]);
     });
   });
 
-  it("works with quantiles", () => {
+  it('works with quantiles', () => {
     // Test data comes from: https://en.wikipedia.org/wiki/Quantile (order changed to not be sorted)
     const quantileData = [
       { vOdd: 20, vEven: 20 },
@@ -1310,156 +1276,154 @@ describe("compute native", () => {
     ];
 
     const ex = ply()
-      .apply("d", Dataset.fromJS(quantileData).hide())
-      .apply("quantileEven0.00", "$d.quantile($vEven, 0.00)")
-      .apply("quantileEven0.25", "$d.quantile($vEven, 0.25)")
-      .apply("quantileEven0.50", "$d.quantile($vEven, 0.50)")
-      .apply("quantileEven0.75", "$d.quantile($vEven, 0.75)")
-      .apply("quantileEven1.00", "$d.quantile($vEven, 1.00)")
-      .apply("quantileOdd0.00", "$d.quantile($vOdd, 0.00)")
-      .apply("quantileOdd0.25", "$d.quantile($vOdd, 0.25)")
-      .apply("quantileOdd0.50", "$d.quantile($vOdd, 0.50)")
-      .apply("quantileOdd0.75", "$d.quantile($vOdd, 0.75)")
-      .apply("quantileOdd1.00", "$d.quantile($vOdd, 1.00)");
+      .apply('d', Dataset.fromJS(quantileData).hide())
+      .apply('quantileEven0.00', '$d.quantile($vEven, 0.00)')
+      .apply('quantileEven0.25', '$d.quantile($vEven, 0.25)')
+      .apply('quantileEven0.50', '$d.quantile($vEven, 0.50)')
+      .apply('quantileEven0.75', '$d.quantile($vEven, 0.75)')
+      .apply('quantileEven1.00', '$d.quantile($vEven, 1.00)')
+      .apply('quantileOdd0.00', '$d.quantile($vOdd, 0.00)')
+      .apply('quantileOdd0.25', '$d.quantile($vOdd, 0.25)')
+      .apply('quantileOdd0.50', '$d.quantile($vOdd, 0.50)')
+      .apply('quantileOdd0.75', '$d.quantile($vOdd, 0.75)')
+      .apply('quantileOdd1.00', '$d.quantile($vOdd, 1.00)');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
-          "quantileEven0.00": 3,
-          "quantileEven0.25": 7,
-          "quantileEven0.50": 9,
-          "quantileEven0.75": 15,
-          "quantileEven1.00": 20,
-          "quantileOdd0.00": 3,
-          "quantileOdd0.25": 7,
-          "quantileOdd0.50": 9,
-          "quantileOdd0.75": 15,
-          "quantileOdd1.00": 20,
+          'quantileEven0.00': 3,
+          'quantileEven0.25': 7,
+          'quantileEven0.50': 9,
+          'quantileEven0.75': 15,
+          'quantileEven1.00': 20,
+          'quantileOdd0.00': 3,
+          'quantileOdd0.25': 7,
+          'quantileOdd0.50': 9,
+          'quantileOdd0.75': 15,
+          'quantileOdd1.00': 20,
         },
       ]);
     });
   });
 
-  it("works with a basic select", () => {
+  it('works with a basic select', () => {
     const ds = Dataset.fromJS(data);
 
-    const ex = ply(ds).select("price", "cut");
+    const ex = ply(ds).select('price', 'cut');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
-        { cut: "Good", price: 400 },
-        { cut: "Good", price: 300 },
-        { cut: "Great", price: 124 },
-        { cut: "Wow", price: 160 },
-        { cut: "Wow", price: 100 },
+        { cut: 'Good', price: 400 },
+        { cut: 'Good', price: 300 },
+        { cut: 'Great', price: 124 },
+        { cut: 'Wow', price: 160 },
+        { cut: 'Wow', price: 100 },
         { cut: null, price: null },
       ]);
     });
   });
 
-  it("works with a transformed select", () => {
+  it('works with a transformed select', () => {
     const ds = Dataset.fromJS(data);
 
     const ex = ply(ds)
-      .apply("[cut]", '"[" ++ $cut ++ "]"')
-      .apply("price+1", "$price + 1")
-      .select("[cut]", "price+1");
+      .apply('[cut]', '"[" ++ $cut ++ "]"')
+      .apply('price+1', '$price + 1')
+      .select('[cut]', 'price+1');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
-          "[cut]": "[Good]",
-          "price+1": 401,
+          '[cut]': '[Good]',
+          'price+1': 401,
         },
         {
-          "[cut]": "[Good]",
-          "price+1": 301,
+          '[cut]': '[Good]',
+          'price+1': 301,
         },
         {
-          "[cut]": "[Great]",
-          "price+1": 125,
+          '[cut]': '[Great]',
+          'price+1': 125,
         },
         {
-          "[cut]": "[Wow]",
-          "price+1": 161,
+          '[cut]': '[Wow]',
+          'price+1': 161,
         },
         {
-          "[cut]": "[Wow]",
-          "price+1": 101,
+          '[cut]': '[Wow]',
+          'price+1': 101,
         },
         {
-          "[cut]": null,
-          "price+1": null,
+          '[cut]': null,
+          'price+1': null,
         },
       ]);
     });
   });
 
-  it("works with simple split", () => {
+  it('works with simple split', () => {
     const ds = Dataset.fromJS(data).hide();
 
-    const ex = ply()
-      .apply("Data", ply(ds))
-      .apply("Cuts", $("Data").split("$cut", "Cut"));
+    const ex = ply().apply('Data', ply(ds)).apply('Cuts', $('Data').split('$cut', 'Cut'));
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Cuts: {
             attributes: [
               {
-                name: "Cut",
-                type: "STRING",
+                name: 'Cut',
+                type: 'STRING',
               },
               {
-                name: "Data",
-                type: "DATASET",
+                name: 'Data',
+                type: 'DATASET',
               },
             ],
             data: [
               {
-                Cut: "Good",
+                Cut: 'Good',
               },
               {
-                Cut: "Great",
+                Cut: 'Great',
               },
               {
-                Cut: "Wow",
+                Cut: 'Wow',
               },
               {
                 Cut: null,
               },
             ],
-            keys: ["Cut"],
+            keys: ['Cut'],
           },
         },
       ]);
     });
   });
 
-  it("works with set split", () => {
+  it('works with set split', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Data", ply(ds))
+      .apply('Data', ply(ds))
       .apply(
-        "Tags",
-        $("Data")
-          .split("$tags", "Tag")
-          .apply("Count", "$Data.count()")
-          .sort("$Count", "descending"),
+        'Tags',
+        $('Data')
+          .split('$tags', 'Tag')
+          .apply('Count', '$Data.count()')
+          .sort('$Count', 'descending'),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS()).to.deep.equal({
         attributes: [
           {
-            name: "Data",
-            type: "DATASET",
+            name: 'Data',
+            type: 'DATASET',
           },
           {
-            name: "Tags",
-            type: "DATASET",
+            name: 'Tags',
+            type: 'DATASET',
           },
         ],
         data: [
@@ -1467,37 +1431,37 @@ describe("compute native", () => {
             Tags: {
               attributes: [
                 {
-                  name: "Tag",
-                  type: "STRING",
+                  name: 'Tag',
+                  type: 'STRING',
                 },
                 {
-                  name: "Data",
-                  type: "DATASET",
+                  name: 'Data',
+                  type: 'DATASET',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 3,
-                  Tag: "super",
+                  Tag: 'super',
                 },
                 {
                   Count: 3,
-                  Tag: "cool",
+                  Tag: 'cool',
                 },
                 {
                   Count: 2,
-                  Tag: "sweet",
+                  Tag: 'sweet',
                 },
                 {
                   Count: 1,
                   Tag: null,
                 },
               ],
-              keys: ["Tag"],
+              keys: ['Tag'],
             },
           },
         ],
@@ -1505,64 +1469,64 @@ describe("compute native", () => {
     });
   });
 
-  it("works with double set split", () => {
+  it('works with double set split', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply(ds)
-      .split({ Tag: "$tags", TagCut: "$tags ++ $cut" }, "Data")
-      .apply("Count", "$Data.count()")
-      .sort("$Count", "descending");
+      .split({ Tag: '$tags', TagCut: '$tags ++ $cut' }, 'Data')
+      .apply('Count', '$Data.count()')
+      .sort('$Count', 'descending');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS()).to.deep.equal({
         attributes: [
           {
-            name: "Tag",
-            type: "STRING",
+            name: 'Tag',
+            type: 'STRING',
           },
           {
-            name: "TagCut",
-            type: "STRING",
+            name: 'TagCut',
+            type: 'STRING',
           },
           {
-            name: "Data",
-            type: "DATASET",
+            name: 'Data',
+            type: 'DATASET',
           },
           {
-            name: "Count",
-            type: "NUMBER",
+            name: 'Count',
+            type: 'NUMBER',
           },
         ],
         data: [
           {
             Count: 2,
-            Tag: "super",
-            TagCut: "superGood",
+            Tag: 'super',
+            TagCut: 'superGood',
           },
           {
             Count: 1,
-            Tag: "super",
-            TagCut: "coolGood",
+            Tag: 'super',
+            TagCut: 'coolGood',
           },
           {
             Count: 1,
-            Tag: "cool",
-            TagCut: "superGood",
+            Tag: 'cool',
+            TagCut: 'superGood',
           },
           {
             Count: 1,
-            Tag: "cool",
-            TagCut: "coolGood",
+            Tag: 'cool',
+            TagCut: 'coolGood',
           },
           {
             Count: 1,
-            Tag: "cool",
-            TagCut: "coolGreat",
+            Tag: 'cool',
+            TagCut: 'coolGreat',
           },
           {
             Count: 1,
-            Tag: "sweet",
-            TagCut: "sweetWow",
+            Tag: 'sweet',
+            TagCut: 'sweetWow',
           },
           {
             Count: 1,
@@ -1571,36 +1535,36 @@ describe("compute native", () => {
           },
           {
             Count: 1,
-            Tag: "super",
+            Tag: 'super',
             TagCut: null,
           },
           {
             Count: 1,
-            Tag: "sweet",
+            Tag: 'sweet',
             TagCut: null,
           },
           {
             Count: 1,
-            Tag: "cool",
+            Tag: 'cool',
             TagCut: null,
           },
         ],
-        keys: ["Tag", "TagCut"],
+        keys: ['Tag', 'TagCut'],
       });
     });
   });
 
-  it("works with singleton dataset", () => {
+  it('works with singleton dataset', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Two", 2)
-      .apply("EmptyData", ply(ds).filter("false"))
-      .apply("SumPrice", "$EmptyData.sum($price)")
-      .apply("AvgPrice1", "$EmptyData.average($price)")
-      .apply("AvgPrice2", "$EmptyData.sum($price) / $EmptyData.count()");
+      .apply('Two', 2)
+      .apply('EmptyData', ply(ds).filter('false'))
+      .apply('SumPrice', '$EmptyData.sum($price)')
+      .apply('AvgPrice1', '$EmptyData.average($price)')
+      .apply('AvgPrice2', '$EmptyData.sum($price) / $EmptyData.count()');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           AvgPrice1: null,
@@ -1612,69 +1576,69 @@ describe("compute native", () => {
     });
   });
 
-  it("works with simple split followed by some simple applies", () => {
+  it('works with simple split followed by some simple applies', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Two", 2)
-      .apply("Data", ply(ds))
+      .apply('Two', 2)
+      .apply('Data', ply(ds))
       .apply(
-        "Cuts",
-        $("Data")
-          .split("$cut", "Cut")
-          .apply("Six", 6)
-          .apply("Seven", $("Six").add(1))
-          .apply("EightByZero", r(8).divide(0))
-          .apply("ZeroByZero", r(0).divide(0)),
+        'Cuts',
+        $('Data')
+          .split('$cut', 'Cut')
+          .apply('Six', 6)
+          .apply('Seven', $('Six').add(1))
+          .apply('EightByZero', r(8).divide(0))
+          .apply('ZeroByZero', r(0).divide(0)),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Cuts: {
             attributes: [
               {
-                name: "Cut",
-                type: "STRING",
+                name: 'Cut',
+                type: 'STRING',
               },
               {
-                name: "Data",
-                type: "DATASET",
+                name: 'Data',
+                type: 'DATASET',
               },
               {
-                name: "Six",
-                type: "NUMBER",
+                name: 'Six',
+                type: 'NUMBER',
               },
               {
-                name: "Seven",
-                type: "NUMBER",
+                name: 'Seven',
+                type: 'NUMBER',
               },
               {
-                name: "EightByZero",
-                type: "NULL",
+                name: 'EightByZero',
+                type: 'NULL',
               },
               {
-                name: "ZeroByZero",
-                type: "NULL",
+                name: 'ZeroByZero',
+                type: 'NULL',
               },
             ],
             data: [
               {
-                Cut: "Good",
+                Cut: 'Good',
                 EightByZero: null,
                 Seven: 7,
                 Six: 6,
                 ZeroByZero: null,
               },
               {
-                Cut: "Great",
+                Cut: 'Great',
                 EightByZero: null,
                 Seven: 7,
                 Six: 6,
                 ZeroByZero: null,
               },
               {
-                Cut: "Wow",
+                Cut: 'Wow',
                 EightByZero: null,
                 Seven: 7,
                 Six: 6,
@@ -1688,7 +1652,7 @@ describe("compute native", () => {
                 ZeroByZero: null,
               },
             ],
-            keys: ["Cut"],
+            keys: ['Cut'],
           },
           Two: 2,
         },
@@ -1696,36 +1660,36 @@ describe("compute native", () => {
     });
   });
 
-  it("works with timePart split (non-UTC timezone)", () => {
+  it('works with timePart split (non-UTC timezone)', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Data", ply(ds))
-      .apply("Count", "$Data.count()")
+      .apply('Data', ply(ds))
+      .apply('Count', '$Data.count()')
       .apply(
-        "TimeParts",
-        $("Data")
-          .split("$time.timePart('HOUR_OF_DAY', 'Etc/UTC')", "Part")
-          .apply("Count", "$Data.count()"),
+        'TimeParts',
+        $('Data')
+          .split("$time.timePart('HOUR_OF_DAY', 'Etc/UTC')", 'Part')
+          .apply('Count', '$Data.count()'),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Count: 6,
           TimeParts: {
             attributes: [
               {
-                name: "Part",
-                type: "NUMBER",
+                name: 'Part',
+                type: 'NUMBER',
               },
               {
-                name: "Data",
-                type: "DATASET",
+                name: 'Data',
+                type: 'DATASET',
               },
               {
-                name: "Count",
-                type: "NUMBER",
+                name: 'Count',
+                type: 'NUMBER',
               },
             ],
             data: [
@@ -1754,43 +1718,43 @@ describe("compute native", () => {
                 Part: 4,
               },
             ],
-            keys: ["Part"],
+            keys: ['Part'],
           },
         },
       ]);
     });
   });
 
-  it("works with timePart split (other timezone)", () => {
+  it('works with timePart split (other timezone)', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Data", ply(ds))
-      .apply("Count", "$Data.count()")
+      .apply('Data', ply(ds))
+      .apply('Count', '$Data.count()')
       .apply(
-        "TimeParts",
-        $("Data")
-          .split("$time.timePart('HOUR_OF_DAY', 'America/New_York')", "Part")
-          .apply("Count", "$Data.count()"),
+        'TimeParts',
+        $('Data')
+          .split("$time.timePart('HOUR_OF_DAY', 'America/New_York')", 'Part')
+          .apply('Count', '$Data.count()'),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Count: 6,
           TimeParts: {
             attributes: [
               {
-                name: "Part",
-                type: "NUMBER",
+                name: 'Part',
+                type: 'NUMBER',
               },
               {
-                name: "Data",
-                type: "DATASET",
+                name: 'Data',
+                type: 'DATASET',
               },
               {
-                name: "Count",
-                type: "NUMBER",
+                name: 'Count',
+                type: 'NUMBER',
               },
             ],
             data: [
@@ -1819,21 +1783,19 @@ describe("compute native", () => {
                 Part: 0,
               },
             ],
-            keys: ["Part"],
+            keys: ['Part'],
           },
         },
       ]);
     });
   });
 
-  it("works with context", () => {
+  it('works with context', () => {
     const ds = Dataset.fromJS(data).hide();
 
-    const ex = ply()
-      .apply("Data", ply(ds))
-      .apply("CountPlusX", "$Data.count() + $x");
+    const ex = ply().apply('Data', ply(ds)).apply('CountPlusX', '$Data.count() + $x');
 
-    return ex.compute({ x: 13 }).then(v => {
+    return ex.compute({ x: 13 }).then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           CountPlusX: 19,
@@ -1842,74 +1804,74 @@ describe("compute native", () => {
     });
   });
 
-  it("works with context and split", () => {
+  it('works with context and split', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Data", ply(ds))
+      .apply('Data', ply(ds))
       .apply(
-        "Cuts",
-        $("Data")
-          .split("$cut", "Cut")
-          .apply("CountPlusX", "$Data.count() + $x")
-          .apply("SumPrice", "$Data.sum($price)")
-          .apply("MinPrice", "$Data.min($price)")
-          .apply("MaxPrice", "$Data.max($price)")
-          .apply("MinTime", "$Data.min($time)")
-          .apply("MaxTime", "$Data.max($time)"),
+        'Cuts',
+        $('Data')
+          .split('$cut', 'Cut')
+          .apply('CountPlusX', '$Data.count() + $x')
+          .apply('SumPrice', '$Data.sum($price)')
+          .apply('MinPrice', '$Data.min($price)')
+          .apply('MaxPrice', '$Data.max($price)')
+          .apply('MinTime', '$Data.min($time)')
+          .apply('MaxTime', '$Data.max($time)'),
       );
 
-    return ex.compute({ x: 13 }).then(v => {
+    return ex.compute({ x: 13 }).then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Cuts: {
             attributes: [
               {
-                name: "Cut",
-                type: "STRING",
+                name: 'Cut',
+                type: 'STRING',
               },
               {
-                name: "Data",
-                type: "DATASET",
+                name: 'Data',
+                type: 'DATASET',
               },
               {
-                name: "SumPrice",
-                type: "NUMBER",
+                name: 'SumPrice',
+                type: 'NUMBER',
               },
               {
-                name: "MinPrice",
-                type: "NUMBER",
+                name: 'MinPrice',
+                type: 'NUMBER',
               },
               {
-                name: "MaxPrice",
-                type: "NUMBER",
+                name: 'MaxPrice',
+                type: 'NUMBER',
               },
               {
-                name: "MinTime",
-                type: "TIME",
+                name: 'MinTime',
+                type: 'TIME',
               },
               {
-                name: "MaxTime",
-                type: "TIME",
+                name: 'MaxTime',
+                type: 'TIME',
               },
               {
-                name: "CountPlusX",
-                type: "NUMBER",
+                name: 'CountPlusX',
+                type: 'NUMBER',
               },
             ],
             data: [
               {
                 CountPlusX: 15,
-                Cut: "Good",
+                Cut: 'Good',
                 MaxPrice: 400,
-                MaxTime: new Date("2015-10-02T08:20:30.000Z"),
+                MaxTime: new Date('2015-10-02T08:20:30.000Z'),
                 MinPrice: 300,
-                MinTime: new Date("2015-10-01T09:20:30.000Z"),
+                MinTime: new Date('2015-10-01T09:20:30.000Z'),
                 SumPrice: 700,
               },
               {
                 CountPlusX: 14,
-                Cut: "Great",
+                Cut: 'Great',
                 MaxPrice: 124,
                 MaxTime: null,
                 MinPrice: 124,
@@ -1918,80 +1880,80 @@ describe("compute native", () => {
               },
               {
                 CountPlusX: 15,
-                Cut: "Wow",
+                Cut: 'Wow',
                 MaxPrice: 160,
-                MaxTime: new Date("2015-10-05T05:20:30.000Z"),
+                MaxTime: new Date('2015-10-05T05:20:30.000Z'),
                 MinPrice: 100,
-                MinTime: new Date("2015-10-04T06:20:30.000Z"),
+                MinTime: new Date('2015-10-04T06:20:30.000Z'),
                 SumPrice: 260,
               },
               {
                 CountPlusX: 14,
                 Cut: null,
                 MaxPrice: null,
-                MaxTime: new Date("2015-10-06T04:20:30.000Z"),
+                MaxTime: new Date('2015-10-06T04:20:30.000Z'),
                 MinPrice: null,
-                MinTime: new Date("2015-10-06T04:20:30.000Z"),
+                MinTime: new Date('2015-10-06T04:20:30.000Z'),
                 SumPrice: 0,
               },
             ],
-            keys: ["Cut"],
+            keys: ['Cut'],
           },
         },
       ]);
     });
   });
 
-  it("works with simple split and sub apply", () => {
+  it('works with simple split and sub apply', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Data", ply(ds))
+      .apply('Data', ply(ds))
       .apply(
-        "Cuts",
-        $("Data")
-          .split("$cut", "Cut")
-          .apply("Count", $("Data").count())
-          .apply("AvgPrice", $("Data").average("$price")),
+        'Cuts',
+        $('Data')
+          .split('$cut', 'Cut')
+          .apply('Count', $('Data').count())
+          .apply('AvgPrice', $('Data').average('$price')),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Cuts: {
             attributes: [
               {
-                name: "Cut",
-                type: "STRING",
+                name: 'Cut',
+                type: 'STRING',
               },
               {
-                name: "Data",
-                type: "DATASET",
+                name: 'Data',
+                type: 'DATASET',
               },
               {
-                name: "Count",
-                type: "NUMBER",
+                name: 'Count',
+                type: 'NUMBER',
               },
               {
-                name: "AvgPrice",
-                type: "NUMBER",
+                name: 'AvgPrice',
+                type: 'NUMBER',
               },
             ],
             data: [
               {
                 AvgPrice: 350,
                 Count: 2,
-                Cut: "Good",
+                Cut: 'Good',
               },
               {
                 AvgPrice: 124,
                 Count: 1,
-                Cut: "Great",
+                Cut: 'Great',
               },
               {
                 AvgPrice: 130,
                 Count: 2,
-                Cut: "Wow",
+                Cut: 'Wow',
               },
               {
                 AvgPrice: 0,
@@ -1999,70 +1961,70 @@ describe("compute native", () => {
                 Cut: null,
               },
             ],
-            keys: ["Cut"],
+            keys: ['Cut'],
           },
         },
       ]);
     });
   });
 
-  it("works with simple split and sub apply + sort + limit", () => {
+  it('works with simple split and sub apply + sort + limit', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Data", ply(ds))
+      .apply('Data', ply(ds))
       .apply(
-        "Cuts",
-        $("Data")
-          .split("$cut", "Cut")
-          .apply("Count", $("Data").count())
-          .sort("$Cut", "descending")
+        'Cuts',
+        $('Data')
+          .split('$cut', 'Cut')
+          .apply('Count', $('Data').count())
+          .sort('$Cut', 'descending')
           .limit(2),
       );
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Cuts: {
             attributes: [
               {
-                name: "Cut",
-                type: "STRING",
+                name: 'Cut',
+                type: 'STRING',
               },
               {
-                name: "Data",
-                type: "DATASET",
+                name: 'Data',
+                type: 'DATASET',
               },
               {
-                name: "Count",
-                type: "NUMBER",
+                name: 'Count',
+                type: 'NUMBER',
               },
             ],
             data: [
               {
                 Count: 2,
-                Cut: "Wow",
+                Cut: 'Wow',
               },
               {
                 Count: 1,
-                Cut: "Great",
+                Cut: 'Great',
               },
             ],
-            keys: ["Cut"],
+            keys: ['Cut'],
           },
         },
       ]);
     });
   });
 
-  it("works with simple filter", () => {
+  it('works with simple filter', () => {
     const ds = Dataset.fromJS(data).hide();
 
     const ex = ply()
-      .apply("Data", ply(ds).filter($("price").overlap(105, 305)))
-      .apply("Count", "$Data.count()");
+      .apply('Data', ply(ds).filter($('price').overlap(105, 305)))
+      .apply('Count', '$Data.count()');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v.toJS().data).to.deep.equal([
         {
           Count: 3,
@@ -2071,33 +2033,25 @@ describe("compute native", () => {
     });
   });
 
-  describe("sort test", () => {
+  describe('sort test', () => {
     const data = [{ n: 1 }, { n: 2 }, { n: 10 }, { n: 20 }];
 
-    it("sorts on numbers", () => {
+    it('sorts on numbers', () => {
       const ds = Dataset.fromJS(data);
 
-      const ex = ply(ds).sort("$n");
+      const ex = ply(ds).sort('$n');
 
-      return ex.compute().then(v => {
-        expect(v.toJS().data).to.deep.equal([
-          { n: 1 },
-          { n: 2 },
-          { n: 10 },
-          { n: 20 },
-        ]);
+      return ex.compute().then((v) => {
+        expect(v.toJS().data).to.deep.equal([{ n: 1 }, { n: 2 }, { n: 10 }, { n: 20 }]);
       });
     });
 
-    it("sorts on number ranges", () => {
+    it('sorts on number ranges', () => {
       const ds = Dataset.fromJS(data);
 
-      const ex = ply(ds)
-        .apply("nr", "$n.numberBucket(1)")
-        .select("nr")
-        .sort("$nr");
+      const ex = ply(ds).apply('nr', '$n.numberBucket(1)').select('nr').sort('$nr');
 
-      return ex.compute().then(v => {
+      return ex.compute().then((v) => {
         expect(v.toJS().data).to.deep.equal([
           {
             nr: {
@@ -2128,24 +2082,24 @@ describe("compute native", () => {
     });
   });
 
-  describe("it works with re-selects", () => {
+  describe('it works with re-selects', () => {
     const ds = Dataset.fromJS(data).hide();
     let midData = null;
 
-    it("works with simple group/label and subData filter with applies", () => {
+    it('works with simple group/label and subData filter with applies', () => {
       const ex = ply()
-        .apply("Data", ply(ds))
-        .apply("Count", "$Data.count()")
-        .apply("Price", "$Data.sum($price)")
+        .apply('Data', ply(ds))
+        .apply('Count', '$Data.count()')
+        .apply('Price', '$Data.sum($price)')
         .apply(
-          "Cuts",
-          $("Data")
-            .split("$cut", "Cut")
-            .apply("Count", "$Data.count()")
-            .apply("Price", "$Data.sum($price)"),
+          'Cuts',
+          $('Data')
+            .split('$cut', 'Cut')
+            .apply('Count', '$Data.count()')
+            .apply('Price', '$Data.sum($price)'),
         );
 
-      return ex.compute().then(v => {
+      return ex.compute().then((v) => {
         midData = v;
         expect(midData.toJS().data).to.deep.equal([
           {
@@ -2153,36 +2107,36 @@ describe("compute native", () => {
             Cuts: {
               attributes: [
                 {
-                  name: "Cut",
-                  type: "STRING",
+                  name: 'Cut',
+                  type: 'STRING',
                 },
                 {
-                  name: "Data",
-                  type: "DATASET",
+                  name: 'Data',
+                  type: 'DATASET',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Price",
-                  type: "NUMBER",
+                  name: 'Price',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 2,
-                  Cut: "Good",
+                  Cut: 'Good',
                   Price: 700,
                 },
                 {
                   Count: 1,
-                  Cut: "Great",
+                  Cut: 'Great',
                   Price: 124,
                 },
                 {
                   Count: 2,
-                  Cut: "Wow",
+                  Cut: 'Wow',
                   Price: 260,
                 },
                 {
@@ -2191,7 +2145,7 @@ describe("compute native", () => {
                   Price: 0,
                 },
               ],
-              keys: ["Cut"],
+              keys: ['Cut'],
             },
             Price: 1084,
           },
@@ -2199,15 +2153,12 @@ describe("compute native", () => {
       });
     });
 
-    it("re-selects", () => {
+    it('re-selects', () => {
       const ex = ply(midData)
-        .apply("CountOver2", "$Count / 2")
-        .apply(
-          "Cuts",
-          $("Cuts").apply("AvgPrice", "$Data.sum($price) / $Data.count()"),
-        );
+        .apply('CountOver2', '$Count / 2')
+        .apply('Cuts', $('Cuts').apply('AvgPrice', '$Data.sum($price) / $Data.count()'));
 
-      return ex.compute().then(v => {
+      return ex.compute().then((v) => {
         expect(v.toJS().data).to.deep.equal([
           {
             Count: 6,
@@ -2215,43 +2166,43 @@ describe("compute native", () => {
             Cuts: {
               attributes: [
                 {
-                  name: "Cut",
-                  type: "STRING",
+                  name: 'Cut',
+                  type: 'STRING',
                 },
                 {
-                  name: "Data",
-                  type: "DATASET",
+                  name: 'Data',
+                  type: 'DATASET',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Price",
-                  type: "NUMBER",
+                  name: 'Price',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "AvgPrice",
-                  type: "NUMBER",
+                  name: 'AvgPrice',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   AvgPrice: 350,
                   Count: 2,
-                  Cut: "Good",
+                  Cut: 'Good',
                   Price: 700,
                 },
                 {
                   AvgPrice: 124,
                   Count: 1,
-                  Cut: "Great",
+                  Cut: 'Great',
                   Price: 124,
                 },
                 {
                   AvgPrice: 130,
                   Count: 2,
-                  Cut: "Wow",
+                  Cut: 'Wow',
                   Price: 260,
                 },
                 {
@@ -2261,7 +2212,7 @@ describe("compute native", () => {
                   Price: 0,
                 },
               ],
-              keys: ["Cut"],
+              keys: ['Cut'],
             },
             Price: 1084,
           },
@@ -2270,24 +2221,24 @@ describe("compute native", () => {
     });
   });
 
-  describe("joins", () => {
-    it("does a join on split", () => {
+  describe('joins', () => {
+    it('does a join on split', () => {
       const ds = Dataset.fromJS(data).hide();
 
       const ex = ply()
-        .apply("Data1", ply(ds).filter($("price").overlap(105, 305)))
-        .apply("Data2", ply(ds).filter($("price").overlap(105, 305).not()))
-        .apply("Count1", "$Data1.count()")
-        .apply("Count2", "$Data2.count()")
+        .apply('Data1', ply(ds).filter($('price').overlap(105, 305)))
+        .apply('Data2', ply(ds).filter($('price').overlap(105, 305).not()))
+        .apply('Count1', '$Data1.count()')
+        .apply('Count2', '$Data2.count()')
         .apply(
-          "Cuts",
-          $("Data1")
-            .split("$cut", "Cut")
-            .join($("Data2").split("$cut", "Cut", "K2"))
-            .apply("Counts", "100 * $Data1.count() + $K2.count()"),
+          'Cuts',
+          $('Data1')
+            .split('$cut', 'Cut')
+            .join($('Data2').split('$cut', 'Cut', 'K2'))
+            .apply('Counts', '100 * $Data1.count() + $K2.count()'),
         );
 
-      return ex.compute().then(v => {
+      return ex.compute().then((v) => {
         expect(v.toJS().data).to.deep.equal([
           {
             Count1: 3,
@@ -2295,37 +2246,37 @@ describe("compute native", () => {
             Cuts: {
               attributes: [
                 {
-                  name: "Cut",
-                  type: "STRING",
+                  name: 'Cut',
+                  type: 'STRING',
                 },
                 {
-                  name: "Data1",
-                  type: "DATASET",
+                  name: 'Data1',
+                  type: 'DATASET',
                 },
                 {
-                  name: "K2",
-                  type: "DATASET",
+                  name: 'K2',
+                  type: 'DATASET',
                 },
                 {
-                  name: "Counts",
-                  type: "NUMBER",
+                  name: 'Counts',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Counts: 101,
-                  Cut: "Good",
+                  Cut: 'Good',
                 },
                 {
                   Counts: 100,
-                  Cut: "Great",
+                  Cut: 'Great',
                 },
                 {
                   Counts: 101,
-                  Cut: "Wow",
+                  Cut: 'Wow',
                 },
               ],
-              keys: ["Cut"],
+              keys: ['Cut'],
             },
           },
         ]);

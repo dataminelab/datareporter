@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
-import { DatasetFullType } from "../types";
+import { Dataset, PlywoodValue } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
+import { DatasetFullType } from '../types';
 
-import { ApplyExpression } from "./applyExpression";
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
+import { ApplyExpression } from './applyExpression';
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export class SelectExpression extends ChainableExpression {
-  static op = "Select";
+  static op = 'Select';
   static fromJS(parameters: ExpressionJS): SelectExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.attributes = parameters.attributes;
@@ -38,10 +33,10 @@ export class SelectExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp("select");
-    this._checkOperandTypes("DATASET");
+    this._ensureOp('select');
+    this._checkOperandTypes('DATASET');
     this.attributes = parameters.attributes;
-    this.type = "DATASET";
+    this.type = 'DATASET';
   }
 
   public valueOf(): ExpressionValue {
@@ -57,10 +52,7 @@ export class SelectExpression extends ChainableExpression {
   }
 
   public equals(other: SelectExpression | undefined): boolean {
-    return (
-      super.equals(other) &&
-      String(this.attributes) === String(other.attributes)
-    );
+    return super.equals(other) && String(this.attributes) === String(other.attributes);
   }
 
   protected _toStringParameters(indent?: int): string[] {
@@ -77,23 +69,18 @@ export class SelectExpression extends ChainableExpression {
       newDatasetType[attr] = attrType;
     }
     return {
-      type: "DATASET",
+      type: 'DATASET',
       datasetType: newDatasetType,
       parent,
     };
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
-    return operandValue
-      ? (operandValue as Dataset).select(this.attributes)
-      : null;
+    return operandValue ? (operandValue as Dataset).select(this.attributes) : null;
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
-    throw new Error("can not be expressed as SQL directly");
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+    throw new Error('can not be expressed as SQL directly');
   }
 
   public specialSimplify(): Expression {
@@ -102,7 +89,7 @@ export class SelectExpression extends ChainableExpression {
     // X.select(attr).select()
     if (operand instanceof SelectExpression) {
       const { operand: x, attributes: attr } = operand;
-      return x.select(attr.filter(a => attributes.indexOf(a) !== -1));
+      return x.select(attr.filter((a) => attributes.indexOf(a) !== -1));
 
       // X.apply('foo', _).select(<not foo>)
     } else if (operand instanceof ApplyExpression) {

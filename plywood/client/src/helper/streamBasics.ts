@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { Readable } from "readable-stream";
+import { Readable } from 'readable-stream';
 
 export class ReadableError extends Readable {
   constructor(message: string | Error, options: any = {}) {
     super(options);
 
-    const err = typeof message === "string" ? new Error(message) : message;
+    const err = typeof message === 'string' ? new Error(message) : message;
 
     setTimeout(() => {
-      this.emit("error", err);
+      this.emit('error', err);
     }, 1);
   }
 

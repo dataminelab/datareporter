@@ -14,70 +14,57 @@
  * limitations under the License.
  */
 
-import { Timezone } from "chronoshift";
-import { immutableEqual } from "immutable-class";
-import * as moment from "moment-timezone";
+import { Timezone } from 'chronoshift';
+import { immutableEqual } from 'immutable-class';
+import * as moment from 'moment-timezone';
 
-import { PlywoodValue } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
+import { PlywoodValue } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
 
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
-import { HasTimezone } from "./mixins/hasTimezone";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { HasTimezone } from './mixins/hasTimezone';
 
-export class TimePartExpression
-  extends ChainableExpression
-  implements HasTimezone
-{
-  static op = "TimePart";
+export class TimePartExpression extends ChainableExpression implements HasTimezone {
+  static op = 'TimePart';
   static fromJS(parameters: ExpressionJS): TimePartExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.part = parameters.part;
-    if (parameters.timezone)
-      value.timezone = Timezone.fromJS(parameters.timezone);
+    if (parameters.timezone) value.timezone = Timezone.fromJS(parameters.timezone);
     return new TimePartExpression(value);
   }
 
   static PART_TO_FUNCTION: Record<string, (d: any) => number> = {
     // Moment
-    SECOND_OF_MINUTE: d => d.seconds(),
-    SECOND_OF_HOUR: d => d.minutes() * 60 + d.seconds(),
-    SECOND_OF_DAY: d => (d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
-    SECOND_OF_WEEK: d =>
-      (d.day() * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
-    SECOND_OF_MONTH: d =>
-      ((d.date() - 1) * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
-    SECOND_OF_YEAR: d =>
-      ((d.dayOfYear() - 1) * 24 + d.hours() * 60 + d.minutes()) * 60 +
-      d.seconds(),
+    SECOND_OF_MINUTE: (d) => d.seconds(),
+    SECOND_OF_HOUR: (d) => d.minutes() * 60 + d.seconds(),
+    SECOND_OF_DAY: (d) => (d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
+    SECOND_OF_WEEK: (d) => (d.day() * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
+    SECOND_OF_MONTH: (d) => ((d.date() - 1) * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
+    SECOND_OF_YEAR: (d) =>
+      ((d.dayOfYear() - 1) * 24 + d.hours() * 60 + d.minutes()) * 60 + d.seconds(),
 
-    MINUTE_OF_HOUR: d => d.minutes(),
-    MINUTE_OF_DAY: d => d.hours() * 60 + d.minutes(),
-    MINUTE_OF_WEEK: d => d.day() * 24 + d.hours() * 60 + d.minutes(),
-    MINUTE_OF_MONTH: d => (d.date() - 1) * 24 + d.hours() * 60 + d.minutes(),
-    MINUTE_OF_YEAR: d =>
-      (d.dayOfYear() - 1) * 24 + d.hours() * 60 + d.minutes(),
+    MINUTE_OF_HOUR: (d) => d.minutes(),
+    MINUTE_OF_DAY: (d) => d.hours() * 60 + d.minutes(),
+    MINUTE_OF_WEEK: (d) => d.day() * 24 + d.hours() * 60 + d.minutes(),
+    MINUTE_OF_MONTH: (d) => (d.date() - 1) * 24 + d.hours() * 60 + d.minutes(),
+    MINUTE_OF_YEAR: (d) => (d.dayOfYear() - 1) * 24 + d.hours() * 60 + d.minutes(),
 
-    HOUR_OF_DAY: d => d.hours(),
-    HOUR_OF_WEEK: d => d.day() * 24 + d.hours(),
-    HOUR_OF_MONTH: d => (d.date() - 1) * 24 + d.hours(),
-    HOUR_OF_YEAR: d => (d.dayOfYear() - 1) * 24 + d.hours(),
+    HOUR_OF_DAY: (d) => d.hours(),
+    HOUR_OF_WEEK: (d) => d.day() * 24 + d.hours(),
+    HOUR_OF_MONTH: (d) => (d.date() - 1) * 24 + d.hours(),
+    HOUR_OF_YEAR: (d) => (d.dayOfYear() - 1) * 24 + d.hours(),
 
-    DAY_OF_WEEK: d => d.day() || 7, // fix Sunday [0 -> 7]
-    DAY_OF_MONTH: d => d.date(),
-    DAY_OF_YEAR: d => d.dayOfYear(),
+    DAY_OF_WEEK: (d) => d.day() || 7, // fix Sunday [0 -> 7]
+    DAY_OF_MONTH: (d) => d.date(),
+    DAY_OF_YEAR: (d) => d.dayOfYear(),
 
     // WEEK_OF_MONTH: null,
     // WEEK_OF_YEAR: null,
 
-    MONTH_OF_YEAR: d => d.month(),
-    YEAR: d => d.year(),
+    MONTH_OF_YEAR: (d) => d.month(),
+    YEAR: (d) => d.year(),
 
-    QUARTER: d => d.quarter(),
+    QUARTER: (d) => d.quarter(),
   };
 
   static PART_TO_MAX_VALUES: Record<string, number> = {
@@ -119,12 +106,12 @@ export class TimePartExpression
     super(parameters, dummyObject);
     this.part = parameters.part;
     this.timezone = parameters.timezone;
-    this._ensureOp("timePart");
-    this._checkOperandTypes("TIME");
-    if (typeof this.part !== "string") {
-      throw new Error("`part` must be a string");
+    this._ensureOp('timePart');
+    this._checkOperandTypes('TIME');
+    if (typeof this.part !== 'string') {
+      throw new Error('`part` must be a string');
     }
-    this.type = "NUMBER";
+    this.type = 'NUMBER';
   }
 
   public valueOf(): ExpressionValue {
@@ -151,8 +138,7 @@ export class TimePartExpression
 
   protected _toStringParameters(indent?: int): string[] {
     const ret = [this.part];
-    if (this.timezone)
-      ret.push(Expression.safeString(this.timezone.toString()));
+    if (this.timezone) ret.push(Expression.safeString(this.timezone.toString()));
     return ret;
   }
 
@@ -166,18 +152,11 @@ export class TimePartExpression
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    throw new Error("implement me");
+    throw new Error('implement me');
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
-    return dialect.timePartExpression(
-      operandSQL,
-      this.part,
-      this.getTimezone(),
-    );
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+    return dialect.timePartExpression(operandSQL, this.part, this.getTimezone());
   }
 
   public maxPossibleSplitValues(): number {

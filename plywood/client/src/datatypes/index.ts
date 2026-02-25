@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-export * from "./attributeInfo";
-export * from "./common";
-export * from "./dataset";
-export * from "./ip";
-export * from "./numberRange";
-export * from "./range";
-export * from "./set";
-export * from "./stringRange";
-export * from "./timeRange";
-export * from "./valueStream";
+export * from './attributeInfo';
+export * from './common';
+export * from './dataset';
+export * from './ip';
+export * from './numberRange';
+export * from './range';
+export * from './set';
+export * from './stringRange';
+export * from './timeRange';
+export * from './valueStream';

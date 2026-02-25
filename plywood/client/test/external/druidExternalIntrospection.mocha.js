@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
-const { PassThrough } = require("readable-stream");
+const { expect } = require('chai');
+const { PassThrough } = require('readable-stream');
 
-const plywood = require("../plywood");
+const plywood = require('../plywood');
 
 const { Expression, External, TimeRange, $, ply, r } = plywood;
 
 function promiseFnToStream(promiseRq) {
-  return rq => {
+  return (rq) => {
     const stream = new PassThrough({ objectMode: true });
 
     promiseRq(rq).then(
-      res => {
+      (res) => {
         if (res) stream.write(res);
         stream.end();
       },
-      e => {
-        stream.emit("error", e);
+      (e) => {
+        stream.emit('error', e);
         stream.end();
       },
     );
@@ -40,113 +40,112 @@ function promiseFnToStream(promiseRq) {
   };
 }
 
-describe("DruidExternal Introspection", () => {
+describe('DruidExternal Introspection', () => {
   const requesterFail = promiseFnToStream(({ query }) => {
-    return Promise.reject(new Error("Bad status code"));
+    return Promise.reject(new Error('Bad status code'));
   });
 
   const requesterDruid_0_21_0 = promiseFnToStream(({ query }) => {
-    if (query.queryType === "status")
-      return Promise.resolve({ version: "0.21.0" });
-    expect(query.dataSource).to.equal("wikipedia");
+    if (query.queryType === 'status') return Promise.resolve({ version: '0.21.0' });
+    expect(query.dataSource).to.equal('wikipedia');
 
-    if (query.queryType === "segmentMetadata") {
+    if (query.queryType === 'segmentMetadata') {
       expect(query.merge).to.equal(true);
-      expect(query.analysisTypes).to.be.an("array");
+      expect(query.analysisTypes).to.be.an('array');
       expect(query.lenientAggregatorMerge).to.equal(true);
 
       const merged = {
-        id: "merged",
+        id: 'merged',
         intervals: null,
         size: 0,
         numRows: 654321,
         columns: {
           __time: {
-            type: "LONG",
+            type: 'LONG',
             hasMultipleValues: false,
             size: 0,
             cardinality: null,
             errorMessage: null,
           },
           added: {
-            type: "FLOAT",
+            type: 'FLOAT',
             hasMultipleValues: false,
             size: 0,
             cardinality: null,
             errorMessage: null,
           },
           anonymous: {
-            type: "STRING",
+            type: 'STRING',
             hasMultipleValues: false,
             size: 0,
             cardinality: 0,
             errorMessage: null,
           },
           count: {
-            type: "LONG",
+            type: 'LONG',
             hasMultipleValues: false,
             size: 0,
             cardinality: null,
             errorMessage: null,
           },
           delta: {
-            type: "FLOAT",
+            type: 'FLOAT',
             hasMultipleValues: false,
             size: 0,
             cardinality: null,
             errorMessage: null,
           },
           delta_hist: {
-            type: "approximateHistogram",
+            type: 'approximateHistogram',
             hasMultipleValues: false,
             size: 0,
             cardinality: null,
             errorMessage: null,
           },
           language: {
-            type: "STRING",
+            type: 'STRING',
             hasMultipleValues: false,
             size: 0,
             cardinality: 0,
             errorMessage: null,
           },
           namespace: {
-            type: "STRING",
+            type: 'STRING',
             hasMultipleValues: true,
             size: 0,
             cardinality: 0,
             errorMessage: null,
           },
           newPage: {
-            type: "STRING",
+            type: 'STRING',
             hasMultipleValues: false,
             size: 0,
             cardinality: 0,
-            errorMessage: "lol wtf",
+            errorMessage: 'lol wtf',
           },
           newUser: {
-            type: "STRING",
+            type: 'STRING',
             hasMultipleValues: false,
             size: -1,
             cardinality: 0,
             errorMessage: null,
           },
           page: {
-            type: "STRING",
+            type: 'STRING',
             hasMultipleValues: false,
             size: 0,
             cardinality: 0,
             errorMessage: null,
           },
           time: {
-            type: "STRING",
+            type: 'STRING',
             hasMultipleValues: false,
             size: 0,
             cardinality: 0,
             errorMessage: null,
           },
           user_unique: {
-            type: "hyperUnique",
+            type: 'hyperUnique',
             hasMultipleValues: false,
             size: 0,
             cardinality: null,
@@ -155,58 +154,56 @@ describe("DruidExternal Introspection", () => {
         },
       };
 
-      if (query.analysisTypes.indexOf("aggregators") !== -1) {
+      if (query.analysisTypes.indexOf('aggregators') !== -1) {
         merged.aggregators = {
           // Normal aggs
-          added: { type: "doubleSum", name: "added", fieldName: "added" },
-          count: { type: "longSum", name: "count", fieldName: "count" },
+          added: { type: 'doubleSum', name: 'added', fieldName: 'added' },
+          count: { type: 'longSum', name: 'count', fieldName: 'count' },
 
           // This can happen if the JS agg was used at ingestion time
           delta: {
-            type: "javascript",
-            name: "delta",
-            fieldNames: ["delta"],
-            fnAggregate:
-              "function(partialA,partialB) {return partialA + partialB; }",
-            fnReset: "function() {return 0; }",
-            fnCombine:
-              "function(partialA,partialB) {return partialA + partialB; }",
+            type: 'javascript',
+            name: 'delta',
+            fieldNames: ['delta'],
+            fnAggregate: 'function(partialA,partialB) {return partialA + partialB; }',
+            fnReset: 'function() {return 0; }',
+            fnCombine: 'function(partialA,partialB) {return partialA + partialB; }',
           },
 
           // A histogram
           delta_hist: {
-            type: "approxHistogramFold",
-            name: "delta_hist",
-            fieldName: "delta_hist",
+            type: 'approxHistogramFold',
+            name: 'delta_hist',
+            fieldName: 'delta_hist',
             resolution: 50,
             numBuckets: 7,
-            lowerLimit: "-Infinity",
-            upperLimit: "Infinity",
+            lowerLimit: '-Infinity',
+            upperLimit: 'Infinity',
           },
           user_unique: {
-            type: "hyperUnique",
-            name: "user_unique",
-            fieldName: "user_unique",
+            type: 'hyperUnique',
+            name: 'user_unique',
+            fieldName: 'user_unique',
           },
         };
       }
 
       return Promise.resolve(merged);
-    } else if (query.queryType === "timeBoundary") {
+    } else if (query.queryType === 'timeBoundary') {
       return Promise.resolve({
-        minTime: "2013-05-09T18:24:00.000Z",
-        maxTime: "2013-05-09T18:37:00.000Z",
+        minTime: '2013-05-09T18:24:00.000Z',
+        maxTime: '2013-05-09T18:37:00.000Z',
       });
     } else {
       throw new Error(`unsupported query ${query.queryType}`);
     }
   });
 
-  it("does an introspect with general failure", () => {
+  it('does an introspect with general failure', () => {
     const wikiExternal = External.fromJS(
       {
-        engine: "druid",
-        source: "wikipedia",
+        engine: 'druid',
+        source: 'wikipedia',
       },
       requesterFail,
     );
@@ -214,101 +211,101 @@ describe("DruidExternal Introspection", () => {
     return wikiExternal
       .introspect()
       .then(() => {
-        throw new Error("DID_NOT_ERROR");
+        throw new Error('DID_NOT_ERROR');
       })
-      .catch(err => {
-        expect(err.message).to.equal("Bad status code");
+      .catch((err) => {
+        expect(err.message).to.equal('Bad status code');
       });
   });
 
-  it("does an introspect with segmentMetadata (with aggregators)", () => {
+  it('does an introspect with segmentMetadata (with aggregators)', () => {
     const wikiExternal = External.fromJS(
       {
-        engine: "druid",
-        source: "wikipedia",
-        timeAttribute: "time",
+        engine: 'druid',
+        source: 'wikipedia',
+        timeAttribute: 'time',
       },
       requesterDruid_0_21_0,
     );
 
-    return wikiExternal.introspect().then(introspectedExternal => {
-      expect(introspectedExternal.version).to.equal("0.21.0");
+    return wikiExternal.introspect().then((introspectedExternal) => {
+      expect(introspectedExternal.version).to.equal('0.21.0');
       expect(introspectedExternal.toJS().attributes).to.deep.equal([
         {
-          name: "time",
-          nativeType: "__time",
-          type: "TIME",
+          name: 'time',
+          nativeType: '__time',
+          type: 'TIME',
           range: {
-            bounds: "[]",
-            end: new Date("2013-05-09T18:37:00.000Z"),
-            start: new Date("2013-05-09T18:24:00.000Z"),
+            bounds: '[]',
+            end: new Date('2013-05-09T18:37:00.000Z'),
+            start: new Date('2013-05-09T18:24:00.000Z'),
           },
         },
         {
           maker: {
             expression: {
-              name: "added",
-              op: "ref",
+              name: 'added',
+              op: 'ref',
             },
-            op: "sum",
+            op: 'sum',
           },
-          name: "added",
-          nativeType: "FLOAT",
-          type: "NUMBER",
+          name: 'added',
+          nativeType: 'FLOAT',
+          type: 'NUMBER',
           unsplitable: true,
         },
         {
-          name: "anonymous",
-          nativeType: "STRING",
-          type: "STRING",
+          name: 'anonymous',
+          nativeType: 'STRING',
+          type: 'STRING',
         },
         {
           maker: {
-            op: "count",
+            op: 'count',
           },
-          name: "count",
-          nativeType: "LONG",
-          type: "NUMBER",
+          name: 'count',
+          nativeType: 'LONG',
+          type: 'NUMBER',
           unsplitable: true,
         },
         {
           maker: {
             expression: {
-              name: "delta",
-              op: "ref",
+              name: 'delta',
+              op: 'ref',
             },
-            op: "sum",
+            op: 'sum',
           },
-          name: "delta",
-          nativeType: "FLOAT",
-          type: "NUMBER",
+          name: 'delta',
+          nativeType: 'FLOAT',
+          type: 'NUMBER',
           unsplitable: true,
         },
         {
-          name: "delta_hist",
-          nativeType: "approximateHistogram",
-          type: "NULL",
+          name: 'delta_hist',
+          nativeType: 'approximateHistogram',
+          type: 'NULL',
           unsplitable: true,
         },
         {
-          name: "language",
-          nativeType: "STRING",
-          type: "STRING",
+          name: 'language',
+          nativeType: 'STRING',
+          type: 'STRING',
         },
         {
-          name: "namespace",
-          nativeType: "STRING",
-          type: "SET/STRING",
+          name: 'namespace',
+          nativeType: 'STRING',
+          type: 'SET/STRING',
         },
         {
-          name: "page",
-          nativeType: "STRING",
-          type: "STRING",
+          name: 'page',
+          nativeType: 'STRING',
+          type: 'STRING',
         },
         {
-          name: "user_unique",
-          nativeType: "hyperUnique",
-          type: "NULL",
+          name: 'user_unique',
+          nativeType: 'hyperUnique',
+          type: 'NULL',
           unsplitable: true,
         },
       ]);

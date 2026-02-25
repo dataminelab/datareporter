@@ -14,54 +14,54 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
+const { expect } = require('chai');
 
-const plywood = require("../plywood");
+const plywood = require('../plywood');
 
 const { s$, $, ply, r, Expression, DruidDialect } = plywood;
 
 const dialect = new DruidDialect();
 
-describe("SplitExpression", () => {
-  describe("#maxBucketNumber", () => {
-    it("works with boolean ref case", () => {
+describe('SplitExpression', () => {
+  describe('#maxBucketNumber', () => {
+    it('works with boolean ref case', () => {
       const splitExpression = Expression._.split({
-        bool: $("bool", "BOOLEAN"),
+        bool: $('bool', 'BOOLEAN'),
       });
 
       expect(splitExpression.maxBucketNumber()).to.equal(3);
     });
 
-    it("works with boolean expression case", () => {
+    it('works with boolean expression case', () => {
       const splitExpression = Expression._.split({
-        isBlah: $("x").is("blah"),
+        isBlah: $('x').is('blah'),
       });
 
       expect(splitExpression.maxBucketNumber()).to.equal(3);
     });
 
-    it("works in multi-split case", () => {
+    it('works in multi-split case', () => {
       const splitExpression = Expression._.split({
-        timePart: $("time").timePart("HOUR_OF_DAY"),
-        isBlah: $("x").is("blah"),
+        timePart: $('time').timePart('HOUR_OF_DAY'),
+        isBlah: $('x').is('blah'),
       });
 
       expect(splitExpression.maxBucketNumber()).to.equal(81);
     });
 
-    it("works in unknown", () => {
+    it('works in unknown', () => {
       const splitExpression = Expression._.split({
-        isBlah: $("x"),
+        isBlah: $('x'),
       });
 
       expect(splitExpression.maxBucketNumber()).to.equal(Infinity);
     });
   });
 
-  describe("getSelectSql", () => {
-    it("should not add IP_STRINGIFY to IP_MATCH expression", () => {
+  describe('getSelectSql', () => {
+    it('should not add IP_STRINGIFY to IP_MATCH expression', () => {
       const splitExpression = Expression._.split({
-        ip: s$(`IP_MATCH('192', "t"."net_dst")`, "IP"),
+        ip: s$(`IP_MATCH('192', "t"."net_dst")`, 'IP'),
       });
 
       expect(splitExpression.getSelectSQL(dialect)[0]).to.equal(
@@ -69,9 +69,9 @@ describe("SplitExpression", () => {
       );
     });
 
-    it("should not add IP_STRINGIFY to IP_SEARCH expression", () => {
+    it('should not add IP_STRINGIFY to IP_SEARCH expression', () => {
       const splitExpression = Expression._.split({
-        ip: s$(`IP_SEARCH('192', "t"."net_dst")`, "IP"),
+        ip: s$(`IP_SEARCH('192', "t"."net_dst")`, 'IP'),
       });
 
       expect(splitExpression.getSelectSQL(dialect)[0]).to.equal(
@@ -79,9 +79,9 @@ describe("SplitExpression", () => {
       );
     });
 
-    it("should add IP_STRINGIFY to ip expression without functions", () => {
+    it('should add IP_STRINGIFY to ip expression without functions', () => {
       const splitExpression = Expression._.split({
-        ip: s$(`"t"."net_dst"`, "IP"),
+        ip: s$(`"t"."net_dst"`, 'IP'),
       });
 
       expect(splitExpression.getSelectSQL(dialect)[0]).to.equal(
@@ -89,9 +89,9 @@ describe("SplitExpression", () => {
       );
     });
 
-    it("should add IP_STRINGIFY to ip expression if the column name is ip_match", () => {
+    it('should add IP_STRINGIFY to ip expression if the column name is ip_match', () => {
       const splitExpression = Expression._.split({
-        ip: s$(`"t"."ip_match"`, "IP"),
+        ip: s$(`"t"."ip_match"`, 'IP'),
       });
 
       expect(splitExpression.getSelectSQL(dialect)[0]).to.equal(
@@ -99,9 +99,9 @@ describe("SplitExpression", () => {
       );
     });
 
-    it("should add IP_STRINGIFY to ip expression if the column name is ip_search", () => {
+    it('should add IP_STRINGIFY to ip expression if the column name is ip_search', () => {
       const splitExpression = Expression._.split({
-        ip: s$(`"t"."ip_search"`, "IP"),
+        ip: s$(`"t"."ip_search"`, 'IP'),
       });
 
       expect(splitExpression.getSelectSQL(dialect)[0]).to.equal(

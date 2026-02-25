@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { PlywoodRequester } from "plywood-base-api";
-import toArray from "stream-to-array";
+import { PlywoodRequester } from 'plywood-base-api';
+import toArray from 'stream-to-array';
 
-import { AttributeInfo, Attributes } from "../datatypes/attributeInfo";
-import { PseudoDatum } from "../datatypes/dataset";
-import { PostgresDialect } from "../dialect/postgresDialect";
-import { PlyType } from "../types";
+import { AttributeInfo, Attributes } from '../datatypes/attributeInfo';
+import { PseudoDatum } from '../datatypes/dataset';
+import { PostgresDialect } from '../dialect/postgresDialect';
+import { PlyType } from '../types';
 
-import { External, ExternalJS, ExternalValue } from "./baseExternal";
-import { SQLExternal } from "./sqlExternal";
+import { External, ExternalJS, ExternalValue } from './baseExternal';
+import { SQLExternal } from './sqlExternal';
 
 export interface PostgresSQLDescribeRow {
   name: string;
@@ -32,13 +32,10 @@ export interface PostgresSQLDescribeRow {
 }
 
 export class PostgresExternal extends SQLExternal {
-  static engine = "postgres";
-  static type = "DATASET";
+  static engine = 'postgres';
+  static type = 'DATASET';
 
-  static fromJS(
-    parameters: ExternalJS,
-    requester: PlywoodRequester<any>,
-  ): PostgresExternal {
+  static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): PostgresExternal {
     const value: ExternalValue = External.jsToValue(parameters, requester);
     return new PostgresExternal(value);
   }
@@ -49,38 +46,32 @@ export class PostgresExternal extends SQLExternal {
         const name = column.name;
         let type: PlyType;
         let nativeType = column.sqlType.toLowerCase();
-        if (nativeType.indexOf("timestamp") !== -1) {
-          type = "TIME";
-        } else if (
-          nativeType === "character varying" ||
-          nativeType === "text"
-        ) {
-          type = "STRING";
-        } else if (nativeType === "integer" || nativeType === "bigint") {
+        if (nativeType.indexOf('timestamp') !== -1) {
+          type = 'TIME';
+        } else if (nativeType === 'character varying' || nativeType === 'text') {
+          type = 'STRING';
+        } else if (nativeType === 'integer' || nativeType === 'bigint') {
           // ToDo: make something special for integers
-          type = "NUMBER";
-        } else if (
-          nativeType === "double precision" ||
-          nativeType === "float"
-        ) {
-          type = "NUMBER";
-        } else if (nativeType === "boolean") {
-          type = "BOOLEAN";
-        } else if (nativeType === "array") {
+          type = 'NUMBER';
+        } else if (nativeType === 'double precision' || nativeType === 'float') {
+          type = 'NUMBER';
+        } else if (nativeType === 'boolean') {
+          type = 'BOOLEAN';
+        } else if (nativeType === 'array') {
           nativeType = column.arrayType.toLowerCase();
-          if (nativeType === "character") {
-            type = "SET/STRING";
-          } else if (nativeType === "timestamp") {
-            type = "SET/TIME";
+          if (nativeType === 'character') {
+            type = 'SET/STRING';
+          } else if (nativeType === 'timestamp') {
+            type = 'SET/TIME';
           } else if (
-            nativeType === "integer" ||
-            nativeType === "bigint" ||
-            nativeType === "double precision" ||
-            nativeType === "float"
+            nativeType === 'integer' ||
+            nativeType === 'bigint' ||
+            nativeType === 'double precision' ||
+            nativeType === 'float'
           ) {
-            type = "SET/NUMBER";
-          } else if (nativeType === "boolean") {
-            type = "SET/BOOLEAN";
+            type = 'SET/NUMBER';
+          } else if (nativeType === 'boolean') {
+            type = 'SET/BOOLEAN';
           } else {
             return null;
           }
@@ -103,30 +94,28 @@ export class PostgresExternal extends SQLExternal {
       requester({
         query: `SELECT table_name AS "tab" FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_schema = 'public'`,
       }),
-    ).then(sources => {
+    ).then((sources) => {
       if (!sources.length) return sources;
-      return sources.map((s: PseudoDatum) => s["tab"]).sort();
+      return sources.map((s: PseudoDatum) => s['tab']).sort();
     });
   }
 
   static getVersion(requester: PlywoodRequester<any>): Promise<string> {
     // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
-    return toArray(requester({ query: "SELECT version()" })).then(res => {
-      if (!Array.isArray(res) || res.length !== 1)
-        throw new Error("invalid version response");
+    return toArray(requester({ query: 'SELECT version()' })).then((res) => {
+      if (!Array.isArray(res) || res.length !== 1) throw new Error('invalid version response');
       const key = Object.keys(res[0])[0];
-      if (!key) throw new Error("invalid version response (no key)");
+      if (!key) throw new Error('invalid version response (no key)');
       let versionString = res[0][key];
       let match: string[];
-      if ((match = versionString.match(/^PostgreSQL (\S+) on/)))
-        versionString = match[1];
+      if ((match = versionString.match(/^PostgreSQL (\S+) on/))) versionString = match[1];
       return versionString;
     });
   }
 
   constructor(parameters: ExternalValue) {
     super(parameters, new PostgresDialect());
-    this._ensureEngine("postgres");
+    this._ensureEngine('postgres');
   }
 
   protected getIntrospectAttributes(): Promise<Attributes> {

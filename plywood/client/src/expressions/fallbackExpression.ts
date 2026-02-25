@@ -14,42 +14,34 @@
  * limitations under the License.
  */
 
-import { PlywoodValue } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
+import { PlywoodValue } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from "./baseExpression";
+} from './baseExpression';
 
 export class FallbackExpression extends ChainableUnaryExpression {
-  static op = "Fallback";
+  static op = 'Fallback';
   static fromJS(parameters: ExpressionJS): FallbackExpression {
-    return new FallbackExpression(
-      ChainableUnaryExpression.jsToValue(parameters),
-    );
+    return new FallbackExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp("fallback");
+    this._ensureOp('fallback');
     this._checkOperandExpressionTypesAlign();
     this.type = this.operand.type || this.expression.type;
   }
 
-  protected _calcChainableUnaryHelper(
-    operandValue: any,
-    expressionValue: any,
-  ): PlywoodValue {
+  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
     return operandValue !== null ? operandValue : expressionValue;
   }
 
-  protected _getJSChainableUnaryHelper(
-    operandJS: string,
-    expressionJS: string,
-  ): string {
+  protected _getJSChainableUnaryHelper(operandJS: string, expressionJS: string): string {
     return `((_=${operandJS}),(_!==null?_:${expressionJS}))`;
   }
 

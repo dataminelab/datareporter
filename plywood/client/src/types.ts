@@ -14,40 +14,35 @@
  * limitations under the License.
  */
 
-import type { Timezone } from "chronoshift";
+import type { Timezone } from 'chronoshift';
 
-export type PlyTypeSingleValue =
-  | "NULL"
-  | "BOOLEAN"
-  | "NUMBER"
-  | "TIME"
-  | "STRING";
+export type PlyTypeSingleValue = 'NULL' | 'BOOLEAN' | 'NUMBER' | 'TIME' | 'STRING';
 export type PlyTypeSimple =
   | PlyTypeSingleValue
-  | "NUMBER_RANGE"
-  | "IP"
-  | "TIME_RANGE"
-  | "STRING_RANGE"
-  | "SET"
-  | "SET/NULL"
-  | "SET/BOOLEAN"
-  | "SET/NUMBER"
-  | "SET/TIME"
-  | "SET/STRING"
-  | "SET/NUMBER_RANGE"
-  | "SET/TIME_RANGE"
-  | "SET/IP"
-  | "SET/STRING_RANGE"
-  | "TIME_SERIES";
+  | 'NUMBER_RANGE'
+  | 'IP'
+  | 'TIME_RANGE'
+  | 'STRING_RANGE'
+  | 'SET'
+  | 'SET/NULL'
+  | 'SET/BOOLEAN'
+  | 'SET/NUMBER'
+  | 'SET/TIME'
+  | 'SET/STRING'
+  | 'SET/NUMBER_RANGE'
+  | 'SET/TIME_RANGE'
+  | 'SET/IP'
+  | 'SET/STRING_RANGE'
+  | 'TIME_SERIES';
 
-export type PlyType = PlyTypeSimple | "DATASET";
+export type PlyType = PlyTypeSimple | 'DATASET';
 
 export interface SimpleFullType {
   type: PlyTypeSimple;
 }
 
 export interface DatasetFullType {
-  type: "DATASET";
+  type: 'DATASET';
   datasetType: Record<string, FullType>;
   parent?: DatasetFullType;
 }

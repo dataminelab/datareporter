@@ -15,57 +15,49 @@
  * limitations under the License.
  */
 
-import { isDate } from "chronoshift";
-import hasOwnProp from "has-own-prop";
+import { isDate } from 'chronoshift';
+import hasOwnProp from 'has-own-prop';
 
-import { Expression } from "../expressions/baseExpression";
-import { External } from "../external/baseExternal";
-import { DatasetFullType, FullType, PlyType } from "../types";
+import { Expression } from '../expressions/baseExpression';
+import { External } from '../external/baseExternal';
+import { DatasetFullType, FullType, PlyType } from '../types';
 
-import { Dataset, Datum } from "./dataset";
-import { Ip } from "./ip";
-import { NumberRange } from "./numberRange";
-import { Set } from "./set";
-import { StringRange } from "./stringRange";
-import { TimeRange } from "./timeRange";
+import { Dataset, Datum } from './dataset';
+import { Ip } from './ip';
+import { NumberRange } from './numberRange';
+import { Set } from './set';
+import { StringRange } from './stringRange';
+import { TimeRange } from './timeRange';
 
 export function getValueType(value: any): PlyType {
   const typeofValue = typeof value;
-  if (typeofValue === "object") {
+  if (typeofValue === 'object') {
     if (value === null) {
-      return "NULL";
+      return 'NULL';
     } else if (isDate(value)) {
-      return "TIME";
-    } else if (hasOwnProp(value, "ip") && Ip.isIp(value.ip)) {
-      return "IP";
-    } else if (hasOwnProp(value, "start") && hasOwnProp(value, "end")) {
-      if (isDate(value.start) || isDate(value.end)) return "TIME_RANGE";
-      if (typeof value.start === "number" || typeof value.end === "number")
-        return "NUMBER_RANGE";
-      if (typeof value.start === "string" || typeof value.end === "string")
-        return "STRING_RANGE";
-      throw new Error("unrecognizable range");
+      return 'TIME';
+    } else if (hasOwnProp(value, 'ip') && Ip.isIp(value.ip)) {
+      return 'IP';
+    } else if (hasOwnProp(value, 'start') && hasOwnProp(value, 'end')) {
+      if (isDate(value.start) || isDate(value.end)) return 'TIME_RANGE';
+      if (typeof value.start === 'number' || typeof value.end === 'number') return 'NUMBER_RANGE';
+      if (typeof value.start === 'string' || typeof value.end === 'string') return 'STRING_RANGE';
+      throw new Error('unrecognizable range');
     } else {
       let ctrType = value.constructor.type;
       if (!ctrType) {
         if (value instanceof Expression) {
           throw new Error(`expression used as datum value ${value}`);
         } else {
-          throw new Error(
-            `can not have an object without a type: ${JSON.stringify(value)}`,
-          );
+          throw new Error(`can not have an object without a type: ${JSON.stringify(value)}`);
         }
       }
-      if (ctrType === "SET") ctrType += "/" + value.setType;
+      if (ctrType === 'SET') ctrType += '/' + value.setType;
       return <PlyType>ctrType;
     }
   } else {
-    if (
-      typeofValue !== "boolean" &&
-      typeofValue !== "number" &&
-      typeofValue !== "string"
-    ) {
-      throw new TypeError("unsupported JS type " + typeofValue);
+    if (typeofValue !== 'boolean' && typeofValue !== 'number' && typeofValue !== 'string') {
+      throw new TypeError('unsupported JS type ' + typeofValue);
     }
     return <PlyType>typeofValue.toUpperCase();
   }
@@ -73,9 +65,7 @@ export function getValueType(value: any): PlyType {
 
 export function getFullType(value: any): FullType {
   const myType = getValueType(value);
-  return myType === "DATASET"
-    ? (<Dataset>value).getFullType()
-    : { type: myType };
+  return myType === 'DATASET' ? (<Dataset>value).getFullType() : { type: myType };
 }
 
 export function getFullTypeFromDatum(datum: Datum): DatasetFullType {
@@ -86,18 +76,18 @@ export function getFullTypeFromDatum(datum: Datum): DatasetFullType {
   }
 
   return {
-    type: "DATASET",
+    type: 'DATASET',
     datasetType: datasetType,
   };
 }
 
 function timeFromJS(v: any): Date | null {
   switch (typeof v) {
-    case "string":
-    case "number":
+    case 'string':
+    case 'number':
       return new Date(v);
 
-    case "object":
+    case 'object':
       if (v.toISOString) return v;
       if (v === null) return null;
       if (v.value) return new Date(v.value);
@@ -112,65 +102,60 @@ export function valueFromJS(v: any, typeOverride: string | null = null): any {
   if (v == null) {
     return null;
   } else if (Array.isArray(v)) {
-    if (v.length && typeof v[0] !== "object") {
+    if (v.length && typeof v[0] !== 'object') {
       return Set.fromJS(v);
     } else {
       return Dataset.fromJS(v);
     }
   } else {
     const typeofV = typeof v;
-    if (typeofV === "object") {
+    if (typeofV === 'object') {
       switch (typeOverride || v.type) {
-        case "NUMBER": {
+        case 'NUMBER': {
           const n = Number(v.value);
           if (isNaN(n)) throw new Error(`bad number value '${v.value}'`);
           return n;
         }
 
-        case "NUMBER_RANGE":
+        case 'NUMBER_RANGE':
           return NumberRange.fromJS(v);
 
-        case "STRING_RANGE":
+        case 'STRING_RANGE':
           return StringRange.fromJS(v);
 
-        case "IP":
+        case 'IP':
           return Ip.fromJS(v);
 
-        case "TIME":
+        case 'TIME':
           return timeFromJS(v);
 
-        case "TIME_RANGE":
+        case 'TIME_RANGE':
           return TimeRange.fromJS(v);
 
-        case "SET":
+        case 'SET':
           return Set.fromJS(v);
 
-        case "DATASET":
+        case 'DATASET':
           return Dataset.fromJS(v);
 
         default:
-          if (
-            String(typeOverride).indexOf("SET") === 0 ||
-            Array.isArray(v.elements)
-          ) {
+          if (String(typeOverride).indexOf('SET') === 0 || Array.isArray(v.elements)) {
             return Set.fromJS(v);
           }
           if (v.toISOString) {
             return v; // Allow native date
           }
           if (typeOverride) {
-            throw new Error(
-              `unknown type ${typeOverride} on ${JSON.stringify(v)}`,
-            );
+            throw new Error(`unknown type ${typeOverride} on ${JSON.stringify(v)}`);
           } else {
             throw new Error(
               `can not have an object without a 'type' as a datum value: ${JSON.stringify(v)}`,
             );
           }
       }
-    } else if (typeofV === "string" && typeOverride === "TIME") {
+    } else if (typeofV === 'string' && typeOverride === 'TIME') {
       return new Date(v);
-    } else if (typeofV === "number" && isNaN(v)) {
+    } else if (typeofV === 'number' && isNaN(v)) {
       return null;
     }
   }
@@ -182,7 +167,7 @@ export function valueToJS(v: any): any {
     return null;
   } else {
     const typeofV = typeof v;
-    if (typeofV === "object") {
+    if (typeofV === 'object') {
       if (v.toISOString) {
         return v;
       } else if (v.toJS) {
@@ -190,7 +175,7 @@ export function valueToJS(v: any): any {
       } else {
         throw new Error(`can not convert ${JSON.stringify(v)} to JS`);
       }
-    } else if (typeofV === "number" && !isFinite(v)) {
+    } else if (typeofV === 'number' && !isFinite(v)) {
       return String(v);
     }
   }
@@ -211,7 +196,7 @@ export function datumHasExternal(datum: Datum): boolean {
 export function introspectDatum(datum: Datum): Promise<Datum> {
   const promises: Promise<void>[] = [];
   const newDatum: Datum = Object.create(null);
-  Object.keys(datum).forEach(name => {
+  Object.keys(datum).forEach((name) => {
     const v = datum[name];
     if (v instanceof External && v.needsIntrospect()) {
       promises.push(
@@ -228,10 +213,10 @@ export function introspectDatum(datum: Datum): Promise<Datum> {
 }
 
 export function failIfIntrospectNeededInDatum(datum: Datum): void {
-  Object.keys(datum).forEach(name => {
+  Object.keys(datum).forEach((name) => {
     const v = datum[name];
     if (v instanceof External && v.needsIntrospect()) {
-      throw new Error("Can not have un-introspected external");
+      throw new Error('Can not have un-introspected external');
     }
   });
 }

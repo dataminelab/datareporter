@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from "immutable-class";
+import { Class, Instance } from 'immutable-class';
 
-import { Range } from "./range";
+import { Range } from './range';
 
 export interface StringRangeValue {
   start: string;
@@ -34,19 +34,19 @@ export class StringRange
   extends Range<string>
   implements Instance<StringRangeValue, StringRangeJS>
 {
-  static type = "STRING_RANGE";
+  static type = 'STRING_RANGE';
 
   static isStringRange(candidate: any): candidate is StringRange {
     return candidate instanceof StringRange;
   }
 
   static fromString(s: string): StringRange {
-    return new StringRange({ start: s, end: s, bounds: "[]" });
+    return new StringRange({ start: s, end: s, bounds: '[]' });
   }
 
   static fromJS(parameters: StringRangeJS): StringRange {
-    if (typeof parameters !== "object") {
-      throw new Error("unrecognizable StringRange");
+    if (typeof parameters !== 'object') {
+      throw new Error('unrecognizable StringRange');
     }
     const start = parameters.start;
     const end = parameters.end;
@@ -61,10 +61,9 @@ export class StringRange
 
   constructor(parameters: StringRangeValue) {
     const { start, end } = parameters;
-    if (typeof start !== "string" && start !== null)
-      throw new TypeError("`start` must be a string");
-    if (typeof end !== "string" && end !== null)
-      throw new TypeError("`end` must be a string");
+    if (typeof start !== 'string' && start !== null)
+      throw new TypeError('`start` must be a string');
+    if (typeof end !== 'string' && end !== null) throw new TypeError('`end` must be a string');
     super(start, end, parameters.bounds);
   }
 
@@ -90,15 +89,15 @@ export class StringRange
   }
 
   public midpoint(): string {
-    throw new Error("midpoint not supported in string range");
+    throw new Error('midpoint not supported in string range');
   }
 
   protected _zeroEndpoint() {
-    return "";
+    return '';
   }
 
   protected validMemberType(val: any): boolean {
-    return typeof val === "string";
+    return typeof val === 'string';
   }
 }
 

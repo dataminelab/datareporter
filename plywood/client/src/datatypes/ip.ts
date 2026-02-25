@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import { Class, Instance } from "immutable-class";
+import { Class, Instance } from 'immutable-class';
 
-import { PlyType } from "../types";
+import { PlyType } from '../types';
 
 export interface IpValue {
   ip: string;
@@ -29,21 +29,19 @@ export interface IpJS {
 }
 
 export class Ip implements Instance<IpValue, IpJS> {
-  static type = "IP";
+  static type = 'IP';
   readonly ip: string;
 
   static isIp(candidate: any): candidate is Ip {
-    if (String(candidate).includes("/")) {
-      candidate = candidate.split("/")[0];
+    if (String(candidate).includes('/')) {
+      candidate = candidate.split('/')[0];
     }
 
     return (
       // IPv4
       /^(\d+)\.(\d+?)\.(\d+?)\.(\d+?)$/.test(candidate) ||
       // IPv6
-      /^([\da-zA-Z]+):([\da-zA-Z]+):([\da-zA-Z]+):([\da-zA-Z]+):*$/.test(
-        candidate,
-      )
+      /^([\da-zA-Z]+):([\da-zA-Z]+):([\da-zA-Z]+):([\da-zA-Z]+):*$/.test(candidate)
     );
   }
 
@@ -54,8 +52,8 @@ export class Ip implements Instance<IpValue, IpJS> {
   }
 
   static fromJS(parameters: IpJS): Ip {
-    if (typeof parameters !== "object") {
-      throw new Error("unrecognizable Ip");
+    if (typeof parameters !== 'object') {
+      throw new Error('unrecognizable Ip');
     }
     return new Ip({
       ip: parameters.ip,

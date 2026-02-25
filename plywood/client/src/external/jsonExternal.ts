@@ -1,14 +1,9 @@
 /* eslint-disable no-async-promise-executor */
 
-import { AttributeInfo } from "../datatypes/attributeInfo";
-import { Dataset, Datum } from "../datatypes/dataset";
-import { TimeRange } from "../datatypes/timeRange";
-import {
-  ChainableExpression,
-  Expression,
-  LiteralExpression,
-  RefExpression,
-} from "../expressions";
+import { AttributeInfo } from '../datatypes/attributeInfo';
+import { Dataset, Datum } from '../datatypes/dataset';
+import { TimeRange } from '../datatypes/timeRange';
+import { ChainableExpression, Expression, LiteralExpression, RefExpression } from '../expressions';
 import {
   External,
   ExternalJS,
@@ -16,8 +11,8 @@ import {
   QueryAndPostTransform,
   TotalContainer,
   getSampleValue,
-} from "./baseExternal";
-import { PlywoodValue } from "../datatypes/index";
+} from './baseExternal';
+import { PlywoodValue } from '../datatypes/index';
 
 export interface JSONQuery {
   source: string;
@@ -30,30 +25,24 @@ export interface JSONQuery {
 }
 
 export interface JSONExternalJS extends ExternalJS {
-  engine: "json";
+  engine: 'json';
   source: string;
   data?: any[];
 }
 
 export interface JSONExternalValue extends ExternalValue {
-  engine: "json";
+  engine: 'json';
   source: string;
   data?: any[];
 }
 
 export class JSONExternal extends External {
-  static engine = "json";
-  static type = "DATASET";
+  static engine = 'json';
+  static type = 'DATASET';
 
-  static fromJS(
-    parameters: JSONExternalJS,
-    requester: any = null,
-  ): JSONExternal {
-    const value = External.jsToValue(
-      parameters,
-      requester,
-    ) as JSONExternalValue;
-    value.engine = "json";
+  static fromJS(parameters: JSONExternalJS, requester: any = null): JSONExternal {
+    const value = External.jsToValue(parameters, requester) as JSONExternalValue;
+    value.engine = 'json';
 
     if (parameters.source) value.source = parameters.source;
     if (parameters.data) value.data = parameters.data;
@@ -68,12 +57,12 @@ export class JSONExternal extends External {
    * Returns the array if found, otherwise null.
    */
   private static findFirstArray(obj: any): any[] | null {
-    if (!obj || typeof obj !== "object") return null;
+    if (!obj || typeof obj !== 'object') return null;
     if (Array.isArray(obj)) return obj;
     for (const key of Object.keys(obj)) {
       const val = obj[key];
       if (Array.isArray(val)) return val;
-      if (typeof val === "object" && val !== null) {
+      if (typeof val === 'object' && val !== null) {
         const found = JSONExternal.findFirstArray(val);
         if (found) return found;
       }
@@ -84,7 +73,7 @@ export class JSONExternal extends External {
 
   constructor(parameters: JSONExternalValue) {
     super(parameters, dummyObject);
-    this._ensureEngine("json");
+    this._ensureEngine('json');
     this.source = parameters.source;
     this.data = parameters.data;
     this.cachedData = parameters.data;
@@ -100,7 +89,7 @@ export class JSONExternal extends External {
 
   public valueOf(): JSONExternalValue {
     const value = super.valueOf() as JSONExternalValue;
-    value.engine = "json";
+    value.engine = 'json';
     value.source = this.source;
     let data = this.data;
     // If data is not an array, try to find the first array in the object
@@ -114,14 +103,14 @@ export class JSONExternal extends External {
 
   public toJS(): JSONExternalJS {
     const js = super.toJS() as JSONExternalJS;
-    js.engine = "json";
+    js.engine = 'json';
     js.source = this.source;
     if (this.data) js.data = this.data;
     return js;
   }
 
   protected getIntrospectAttributes(): Promise<AttributeInfo[]> {
-    return new Promise(async resolve => {
+    return new Promise(async (resolve) => {
       try {
         if (this.cachedData && this.cachedData.length > 0) {
           const sample = this.cachedData[0];
@@ -139,7 +128,7 @@ export class JSONExternal extends External {
               return;
             }
           } catch (e) {
-            console.warn("Failed to fetch JSON data for introspection:", e);
+            console.warn('Failed to fetch JSON data for introspection:', e);
           }
         }
 
@@ -150,7 +139,7 @@ export class JSONExternal extends External {
 
         resolve([]);
       } catch (error) {
-        console.error("Error in getIntrospectAttributes:", error);
+        console.error('Error in getIntrospectAttributes:', error);
         resolve([]);
       }
     });
@@ -161,20 +150,17 @@ export class JSONExternal extends External {
 
     for (const key of Object.keys(sample)) {
       const value = sample[key];
-      let type = "STRING";
+      let type = 'STRING';
 
-      if (typeof value === "number") {
-        type = "NUMBER";
-      } else if (typeof value === "boolean") {
-        type = "BOOLEAN";
+      if (typeof value === 'number') {
+        type = 'NUMBER';
+      } else if (typeof value === 'boolean') {
+        type = 'BOOLEAN';
       } else if (value instanceof Date) {
-        type = "TIME";
-      } else if (typeof value === "string") {
-        if (
-          /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/.test(value) &&
-          !isNaN(Date.parse(value))
-        ) {
-          type = "TIME";
+        type = 'TIME';
+      } else if (typeof value === 'string') {
+        if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/.test(value) && !isNaN(Date.parse(value))) {
+          type = 'TIME';
         }
       }
 
@@ -198,7 +184,7 @@ export class JSONExternal extends External {
       return result;
     }
 
-    if (typeof result === "string") {
+    if (typeof result === 'string') {
       try {
         const parsed = JSON.parse(result);
         return JSONExternal.unwrapResult(parsed);
@@ -207,23 +193,15 @@ export class JSONExternal extends External {
       }
     }
 
-    if (
-      typeof result === "object" &&
-      result.data &&
-      Array.isArray(result.data)
-    ) {
+    if (typeof result === 'object' && result.data && Array.isArray(result.data)) {
       return result.data;
     }
 
-    if (
-      typeof result === "object" &&
-      result.rows &&
-      Array.isArray(result.rows)
-    ) {
+    if (typeof result === 'object' && result.rows && Array.isArray(result.rows)) {
       return result.rows;
     }
 
-    if (typeof result === "object") {
+    if (typeof result === 'object') {
       return [result];
     }
 
@@ -235,19 +213,16 @@ export class JSONExternal extends External {
       source: this.source,
     };
 
-    if (
-      this.filter &&
-      !(this.filter instanceof LiteralExpression && this.filter.value === true)
-    ) {
+    if (this.filter && !(this.filter instanceof LiteralExpression && this.filter.value === true)) {
       query.filter = this.expressionToFilter(this.filter);
     }
 
-    if (this.mode === "split" && this.split) {
+    if (this.mode === 'split' && this.split) {
       query.split = this.splitToQuery();
     }
 
     if (this.applies && this.applies.length > 0) {
-      query.applies = this.applies.map(apply => ({
+      query.applies = this.applies.map((apply) => ({
         name: apply.name,
         expression: this.expressionToApply(apply.expression),
       }));
@@ -262,16 +237,15 @@ export class JSONExternal extends External {
 
     if (this.limit) {
       query.limit =
-        (this.limit as any).value ||
-        (typeof this.limit === "number" ? this.limit : undefined);
+        (this.limit as any).value || (typeof this.limit === 'number' ? this.limit : undefined);
     }
 
-    if (this.mode === "raw" && this.select) {
+    if (this.mode === 'raw' && this.select) {
       query.select = this.select;
     }
 
     const splitKeys: string[] = [];
-    if (this.mode === "split" && this.split) {
+    if (this.mode === 'split' && this.split) {
       for (const key of this.split.keys) {
         splitKeys.push(key);
       }
@@ -298,7 +272,7 @@ export class JSONExternal extends External {
     const exprType = expression.op;
 
     switch (exprType) {
-      case "chain": {
+      case 'chain': {
         const chainExpr = expression as ChainableExpression;
         const actions = chainExpr.getArgumentExpressions();
         const operand = (chainExpr as any).operand;
@@ -312,30 +286,26 @@ export class JSONExternal extends External {
         return null;
       }
 
-      case "and": {
+      case 'and': {
         const andExprs = (expression as any).getArgumentExpressions();
         return {
-          op: "and",
-          filters: andExprs
-            .map((e: Expression) => this.expressionToFilter(e))
-            .filter(Boolean),
+          op: 'and',
+          filters: andExprs.map((e: Expression) => this.expressionToFilter(e)).filter(Boolean),
         };
       }
 
-      case "or": {
+      case 'or': {
         const orExprs = (expression as any).getArgumentExpressions();
         return {
-          op: "or",
-          filters: orExprs
-            .map((e: Expression) => this.expressionToFilter(e))
-            .filter(Boolean),
+          op: 'or',
+          filters: orExprs.map((e: Expression) => this.expressionToFilter(e)).filter(Boolean),
         };
       }
 
-      case "not": {
+      case 'not': {
         const notExpr = (expression as any).operand;
         return {
-          op: "not",
+          op: 'not',
           filter: this.expressionToFilter(notExpr),
         };
       }
@@ -346,42 +316,40 @@ export class JSONExternal extends External {
   }
 
   private actionToFilter(operand: Expression, action: any): any {
-    const fieldName =
-      operand instanceof RefExpression ? operand.name : operand.toString();
+    const fieldName = operand instanceof RefExpression ? operand.name : operand.toString();
     const actionType = action.action;
 
     switch (actionType) {
-      case "in": {
+      case 'in': {
         const value = action.expression;
         if (value instanceof LiteralExpression) {
           if (value.value && value.value.elements) {
             return {
-              op: "in",
+              op: 'in',
               field: fieldName,
               values: value.value.elements,
             };
           }
         }
         return {
-          op: "in",
+          op: 'in',
           field: fieldName,
           expression: value.toString(),
         };
       }
 
-      case "is": {
+      case 'is': {
         const value = action.expression;
         return {
-          op: "is",
+          op: 'is',
           field: fieldName,
-          value:
-            value instanceof LiteralExpression ? value.value : value.toString(),
+          value: value instanceof LiteralExpression ? value.value : value.toString(),
         };
       }
 
-      case "lessThan":
+      case 'lessThan':
         return {
-          op: "lessThan",
+          op: 'lessThan',
           field: fieldName,
           value:
             action.expression instanceof LiteralExpression
@@ -389,9 +357,9 @@ export class JSONExternal extends External {
               : action.expression.toString(),
         };
 
-      case "greaterThan":
+      case 'greaterThan':
         return {
-          op: "greaterThan",
+          op: 'greaterThan',
           field: fieldName,
           value:
             action.expression instanceof LiteralExpression
@@ -399,9 +367,9 @@ export class JSONExternal extends External {
               : action.expression.toString(),
         };
 
-      case "contains":
+      case 'contains':
         return {
-          op: "contains",
+          op: 'contains',
           field: fieldName,
           value:
             action.expression instanceof LiteralExpression
@@ -438,14 +406,14 @@ export class JSONExternal extends External {
   private expressionToSplit(expression: Expression): any {
     if (expression instanceof RefExpression) {
       return {
-        op: "ref",
+        op: 'ref',
         field: expression.name,
       };
     }
 
     const exprType = expression.op;
 
-    if (exprType === "chain") {
+    if (exprType === 'chain') {
       const chainExpr = expression as ChainableExpression;
       const operand = (chainExpr as any).operand;
       const actions = (chainExpr as any).actions || [];
@@ -468,7 +436,7 @@ export class JSONExternal extends External {
   private expressionToApply(expression: Expression): any {
     const exprType = expression.op;
 
-    if (exprType === "chain") {
+    if (exprType === 'chain') {
       const chainExpr = expression as ChainableExpression;
       const actions = (chainExpr as any).actions || [];
 
@@ -482,11 +450,11 @@ export class JSONExternal extends External {
     }
 
     if (expression instanceof LiteralExpression) {
-      return { op: "literal", value: expression.value };
+      return { op: 'literal', value: expression.value };
     }
 
     if (expression instanceof RefExpression) {
-      return { op: "ref", field: expression.name };
+      return { op: 'ref', field: expression.name };
     }
 
     return { raw: expression.toString() };
@@ -501,11 +469,11 @@ export class JSONExternal extends External {
     const { query } = this.getQueryAndPostTransform();
 
     simulatedQueries.push({
-      engine: "json",
+      engine: 'json',
       query: query,
     });
 
-    if (this.mode === "value") {
+    if (this.mode === 'value') {
       const valueExpression = this.valueExpression;
       return getSampleValue(valueExpression.type, valueExpression);
     }
@@ -513,13 +481,13 @@ export class JSONExternal extends External {
     let keys: string[] = null;
     const datum: Datum = {};
 
-    if (this.mode === "raw") {
+    if (this.mode === 'raw') {
       const attributes = this.attributes || [];
       for (const attribute of attributes) {
         datum[attribute.name] = getSampleValue(attribute.type, null);
       }
     } else {
-      if (this.mode === "split") {
+      if (this.mode === 'split') {
         keys = this.split.keys;
         for (const key of keys) {
           const splitExpr = this.split.splits[key];
@@ -529,14 +497,11 @@ export class JSONExternal extends External {
 
       const applies = this.applies || [];
       for (const apply of applies) {
-        datum[apply.name] = getSampleValue(
-          apply.expression.type,
-          apply.expression,
-        );
+        datum[apply.name] = getSampleValue(apply.expression.type, apply.expression);
       }
     }
 
-    if (this.mode === "total") {
+    if (this.mode === 'total') {
       return new TotalContainer(datum) as any;
     }
 

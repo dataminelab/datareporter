@@ -14,49 +14,44 @@
  * limitations under the License.
  */
 
-import { SqlExpression } from "druid-query-toolkit";
+import { SqlExpression } from 'druid-query-toolkit';
 
-import { PlywoodValue } from "../datatypes";
-import { SQLDialect } from "../dialect/baseDialect";
+import { PlywoodValue } from '../datatypes';
+import { SQLDialect } from '../dialect/baseDialect';
 
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
-import { Aggregate } from "./mixins/aggregate";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { Aggregate } from './mixins/aggregate';
 
 export class SqlAggregateExpression extends ChainableExpression {
-  static op = "SqlAggregate";
+  static op = 'SqlAggregate';
 
   static KNOWN_AGGREGATIONS = [
-    "COUNT",
-    "SUM",
-    "MIN",
-    "MAX",
-    "AVG",
-    "APPROX_COUNT_DISTINCT",
-    "APPROX_COUNT_DISTINCT_DS_HLL",
-    "APPROX_COUNT_DISTINCT_DS_THETA",
-    "DS_HLL",
-    "DS_THETA",
-    "APPROX_QUANTILE",
-    "APPROX_QUANTILE_DS",
-    "APPROX_QUANTILE_FIXED_BUCKETS",
-    "DS_QUANTILES_SKETCH",
-    "BLOOM_FILTER",
-    "TDIGEST_QUANTILE",
-    "TDIGEST_GENERATE_SKETCH",
-    "VAR_POP",
-    "VAR_SAMP",
-    "VARIANCE",
-    "STDDEV_POP",
-    "STDDEV_SAMP",
-    "STDDEV",
-    "EARLIEST",
-    "LATEST",
-    "ANY_VALUE",
+    'COUNT',
+    'SUM',
+    'MIN',
+    'MAX',
+    'AVG',
+    'APPROX_COUNT_DISTINCT',
+    'APPROX_COUNT_DISTINCT_DS_HLL',
+    'APPROX_COUNT_DISTINCT_DS_THETA',
+    'DS_HLL',
+    'DS_THETA',
+    'APPROX_QUANTILE',
+    'APPROX_QUANTILE_DS',
+    'APPROX_QUANTILE_FIXED_BUCKETS',
+    'DS_QUANTILES_SKETCH',
+    'BLOOM_FILTER',
+    'TDIGEST_QUANTILE',
+    'TDIGEST_GENERATE_SKETCH',
+    'VAR_POP',
+    'VAR_SAMP',
+    'VARIANCE',
+    'STDDEV_POP',
+    'STDDEV_SAMP',
+    'STDDEV',
+    'EARLIEST',
+    'LATEST',
+    'ANY_VALUE',
   ];
 
   static registerKnownAggregation(aggregation: string): void {
@@ -64,10 +59,7 @@ export class SqlAggregateExpression extends ChainableExpression {
     SqlAggregateExpression.KNOWN_AGGREGATIONS.push(aggregation);
   }
 
-  static substituteFilter(
-    sqlExpression: SqlExpression,
-    condition: SqlExpression,
-  ): SqlExpression {
+  static substituteFilter(sqlExpression: SqlExpression, condition: SqlExpression): SqlExpression {
     return sqlExpression.addFilterToAggregations(
       condition,
       SqlAggregateExpression.KNOWN_AGGREGATIONS,
@@ -86,9 +78,9 @@ export class SqlAggregateExpression extends ChainableExpression {
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     this.sql = parameters.sql;
-    this._ensureOp("sqlAggregate");
-    this._checkOperandTypes("DATASET");
-    this.type = "NUMBER";
+    this._ensureOp('sqlAggregate');
+    this._checkOperandTypes('DATASET');
+    this.type = 'NUMBER';
 
     this.parsedSql = SqlExpression.parse(this.sql);
   }
@@ -114,19 +106,14 @@ export class SqlAggregateExpression extends ChainableExpression {
   }
 
   protected _calcChainableHelper(_operandValue: any): PlywoodValue {
-    throw new Error("can not compute on SQL aggregate");
+    throw new Error('can not compute on SQL aggregate');
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
     let sql = this.sql;
-    if (operandSQL.includes(" WHERE ")) {
-      const filterParse = SqlExpression.parse(operandSQL.split(" WHERE ")[1]);
-      sql = String(
-        SqlAggregateExpression.substituteFilter(this.parsedSql, filterParse),
-      );
+    if (operandSQL.includes(' WHERE ')) {
+      const filterParse = SqlExpression.parse(operandSQL.split(' WHERE ')[1]);
+      sql = String(SqlAggregateExpression.substituteFilter(this.parsedSql, filterParse));
     }
     return `(${sql})`;
   }

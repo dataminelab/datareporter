@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
+const { expect } = require('chai');
 
-const { postgresRequesterFactory } = require("plywood-postgres-requester");
+const { postgresRequesterFactory } = require('plywood-postgres-requester');
 
-const plywood = require("../plywood");
+const plywood = require('../plywood');
 
 const {
   External,
@@ -30,7 +30,7 @@ const {
   verboseRequesterFactory,
 } = plywood;
 
-const info = require("../info");
+const info = require('../info');
 
 const postgresRequester = postgresRequesterFactory({
   host: info.postgresHost,
@@ -43,159 +43,159 @@ const postgresRequester = postgresRequesterFactory({
 //  requester: postgresRequester
 // });
 
-describe("Postgres Functional", function () {
+describe('Postgres Functional', function () {
   this.timeout(10000);
 
   const wikiAttributes = [
     {
-      name: "__time",
-      nativeType: "timestamp without time zone",
-      type: "TIME",
+      name: '__time',
+      nativeType: 'timestamp without time zone',
+      type: 'TIME',
     },
     {
-      name: "sometimeLater",
-      nativeType: "timestamp without time zone",
-      type: "TIME",
+      name: 'sometimeLater',
+      nativeType: 'timestamp without time zone',
+      type: 'TIME',
     },
     {
-      name: "channel",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'channel',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "cityName",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'cityName',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "comment",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'comment',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "commentLength",
-      nativeType: "integer",
-      type: "NUMBER",
+      name: 'commentLength',
+      nativeType: 'integer',
+      type: 'NUMBER',
     },
     {
-      name: "commentLengthStr",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'commentLengthStr',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "countryIsoCode",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'countryIsoCode',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "countryName",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'countryName',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "deltaBucket100",
-      nativeType: "integer",
-      type: "NUMBER",
+      name: 'deltaBucket100',
+      nativeType: 'integer',
+      type: 'NUMBER',
     },
     {
-      name: "isAnonymous",
-      nativeType: "boolean",
-      type: "BOOLEAN",
+      name: 'isAnonymous',
+      nativeType: 'boolean',
+      type: 'BOOLEAN',
     },
     {
-      name: "isMinor",
-      nativeType: "boolean",
-      type: "BOOLEAN",
+      name: 'isMinor',
+      nativeType: 'boolean',
+      type: 'BOOLEAN',
     },
     {
-      name: "isNew",
-      nativeType: "boolean",
-      type: "BOOLEAN",
+      name: 'isNew',
+      nativeType: 'boolean',
+      type: 'BOOLEAN',
     },
     {
-      name: "isRobot",
-      nativeType: "boolean",
-      type: "BOOLEAN",
+      name: 'isRobot',
+      nativeType: 'boolean',
+      type: 'BOOLEAN',
     },
     {
-      name: "isUnpatrolled",
-      nativeType: "boolean",
-      type: "BOOLEAN",
+      name: 'isUnpatrolled',
+      nativeType: 'boolean',
+      type: 'BOOLEAN',
     },
     {
-      name: "metroCode",
-      nativeType: "integer",
-      type: "NUMBER",
+      name: 'metroCode',
+      nativeType: 'integer',
+      type: 'NUMBER',
     },
     {
-      name: "namespace",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'namespace',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "page",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'page',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "regionIsoCode",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'regionIsoCode',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "regionName",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'regionName',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "geohash",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'geohash',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "user",
-      nativeType: "character varying",
-      type: "STRING",
+      name: 'user',
+      nativeType: 'character varying',
+      type: 'STRING',
     },
     {
-      name: "userChars",
-      nativeType: "character",
-      type: "SET/STRING",
+      name: 'userChars',
+      nativeType: 'character',
+      type: 'SET/STRING',
     },
     {
-      name: "count",
-      nativeType: "bigint",
-      type: "NUMBER",
+      name: 'count',
+      nativeType: 'bigint',
+      type: 'NUMBER',
     },
     {
-      name: "added",
-      nativeType: "bigint",
-      type: "NUMBER",
+      name: 'added',
+      nativeType: 'bigint',
+      type: 'NUMBER',
     },
     {
-      name: "deleted",
-      nativeType: "bigint",
-      type: "NUMBER",
+      name: 'deleted',
+      nativeType: 'bigint',
+      type: 'NUMBER',
     },
     {
-      name: "delta",
-      nativeType: "bigint",
-      type: "NUMBER",
+      name: 'delta',
+      nativeType: 'bigint',
+      type: 'NUMBER',
     },
     {
-      name: "min_delta",
-      nativeType: "integer",
-      type: "NUMBER",
+      name: 'min_delta',
+      nativeType: 'integer',
+      type: 'NUMBER',
     },
     {
-      name: "max_delta",
-      nativeType: "integer",
-      type: "NUMBER",
+      name: 'max_delta',
+      nativeType: 'integer',
+      type: 'NUMBER',
     },
     {
-      name: "deltaByTen",
-      nativeType: "double precision",
-      type: "NUMBER",
+      name: 'deltaByTen',
+      nativeType: 'double precision',
+      type: 'NUMBER',
     },
   ];
 
@@ -203,21 +203,21 @@ describe("Postgres Functional", function () {
     pageInBrackets: "'[' ++ $page ++ ']'",
   };
 
-  describe("source list", () => {
-    it("does a source list", () => {
-      return PostgresExternal.getSourceList(postgresRequester).then(sources => {
-        expect(sources).to.deep.equal(["wikipedia", "wikipedia_raw"]);
+  describe('source list', () => {
+    it('does a source list', () => {
+      return PostgresExternal.getSourceList(postgresRequester).then((sources) => {
+        expect(sources).to.deep.equal(['wikipedia', 'wikipedia_raw']);
       });
     });
   });
 
-  describe("defined attributes in datasource", () => {
+  describe('defined attributes in datasource', () => {
     const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: "postgres",
-            source: "wikipedia",
+            engine: 'postgres',
+            source: 'wikipedia',
             attributes: wikiAttributes,
             derivedAttributes: wikiDerivedAttributes,
           },
@@ -226,24 +226,24 @@ describe("Postgres Functional", function () {
       },
     });
 
-    it("works in advanced case", () => {
+    it('works in advanced case', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
-        .apply("Count", "$wiki.sum($count)")
-        .apply("TotalAdded", "$wiki.sum($added)")
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
+        .apply('Count', '$wiki.sum($count)')
+        .apply('TotalAdded', '$wiki.sum($added)')
         .apply(
-          "Namespaces",
-          $("wiki")
-            .split("$namespace", "Namespace")
-            .apply("Added", "$wiki.sum($added)")
-            .sort("$Added", "descending")
+          'Namespaces',
+          $('wiki')
+            .split('$namespace', 'Namespace')
+            .apply('Added', '$wiki.sum($added)')
+            .sort('$Added', 'descending')
             .limit(2)
             .apply(
-              "Time",
-              $("wiki")
-                .split($("__time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
-                .apply("TotalAdded", "$wiki.sum($added)")
-                .sort("$TotalAdded", "descending")
+              'Time',
+              $('wiki')
+                .split($('__time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
+                .apply('TotalAdded', '$wiki.sum($added)')
+                .sort('$TotalAdded', 'descending')
                 .limit(3),
             ),
         );
@@ -256,108 +256,108 @@ describe("Postgres Functional", function () {
       //     .limit(3)
       // );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 114711,
             Namespaces: {
               attributes: [
                 {
-                  name: "Namespace",
-                  type: "STRING",
+                  name: 'Namespace',
+                  type: 'STRING',
                 },
                 {
-                  name: "Added",
-                  type: "NUMBER",
+                  name: 'Added',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Time",
-                  type: "DATASET",
+                  name: 'Time',
+                  type: 'DATASET',
                 },
               ],
               data: [
                 {
                   Added: 11594002,
-                  Namespace: "Main",
+                  Namespace: 'Main',
                   Time: {
                     attributes: [
                       {
-                        name: "Timestamp",
-                        type: "TIME_RANGE",
+                        name: 'Timestamp',
+                        type: 'TIME_RANGE',
                       },
                       {
-                        name: "TotalAdded",
-                        type: "NUMBER",
+                        name: 'TotalAdded',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T15:00:00.000Z"),
-                          start: new Date("2015-09-12T14:00:00.000Z"),
+                          end: new Date('2015-09-12T15:00:00.000Z'),
+                          start: new Date('2015-09-12T14:00:00.000Z'),
                         },
                         TotalAdded: 740968,
                       },
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T19:00:00.000Z"),
-                          start: new Date("2015-09-12T18:00:00.000Z"),
+                          end: new Date('2015-09-12T19:00:00.000Z'),
+                          start: new Date('2015-09-12T18:00:00.000Z'),
                         },
                         TotalAdded: 739956,
                       },
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T23:00:00.000Z"),
-                          start: new Date("2015-09-12T22:00:00.000Z"),
+                          end: new Date('2015-09-12T23:00:00.000Z'),
+                          start: new Date('2015-09-12T22:00:00.000Z'),
                         },
                         TotalAdded: 708543,
                       },
                     ],
-                    keys: ["Timestamp"],
+                    keys: ['Timestamp'],
                   },
                 },
                 {
                   Added: 9210976,
-                  Namespace: "User talk",
+                  Namespace: 'User talk',
                   Time: {
                     attributes: [
                       {
-                        name: "Timestamp",
-                        type: "TIME_RANGE",
+                        name: 'Timestamp',
+                        type: 'TIME_RANGE',
                       },
                       {
-                        name: "TotalAdded",
-                        type: "NUMBER",
+                        name: 'TotalAdded',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T13:00:00.000Z"),
-                          start: new Date("2015-09-12T12:00:00.000Z"),
+                          end: new Date('2015-09-12T13:00:00.000Z'),
+                          start: new Date('2015-09-12T12:00:00.000Z'),
                         },
                         TotalAdded: 693571,
                       },
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T18:00:00.000Z"),
-                          start: new Date("2015-09-12T17:00:00.000Z"),
+                          end: new Date('2015-09-12T18:00:00.000Z'),
+                          start: new Date('2015-09-12T17:00:00.000Z'),
                         },
                         TotalAdded: 634804,
                       },
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T03:00:00.000Z"),
-                          start: new Date("2015-09-12T02:00:00.000Z"),
+                          end: new Date('2015-09-12T03:00:00.000Z'),
+                          start: new Date('2015-09-12T02:00:00.000Z'),
                         },
                         TotalAdded: 573768,
                       },
                     ],
-                    keys: ["Timestamp"],
+                    keys: ['Timestamp'],
                   },
                 },
               ],
-              keys: ["Namespace"],
+              keys: ['Namespace'],
             },
             TotalAdded: 32553107,
           },
@@ -365,13 +365,13 @@ describe("Postgres Functional", function () {
       });
     });
 
-    it("works with boolean GROUP BYs", () => {
-      const ex = $("wiki")
-        .split($("channel").is("en"), "ChannelIsEn")
-        .apply("Count", $("wiki").sum("$count"))
-        .sort("$Count", "descending");
+    it('works with boolean GROUP BYs', () => {
+      const ex = $('wiki')
+        .split($('channel').is('en'), 'ChannelIsEn')
+        .apply('Count', $('wiki').sum('$count'))
+        .sort('$Count', 'descending');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             ChannelIsEn: false,
@@ -385,168 +385,168 @@ describe("Postgres Functional", function () {
       });
     });
 
-    it("filters on set/string select", () => {
-      const ex = $("wiki")
-        .filter("$userChars.cardinality() > 5")
-        .filter($("channel").is("war"))
-        .select("userChars", "commentLength")
-        .sort("$commentLength", "descending")
+    it('filters on set/string select', () => {
+      const ex = $('wiki')
+        .filter('$userChars.cardinality() > 5')
+        .filter($('channel').is('war'))
+        .select('userChars', 'commentLength')
+        .sort('$commentLength', 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             commentLength: 179,
             userChars: {
-              elements: [".", "1", "2", "4", "7", "8", "9"],
-              setType: "STRING",
+              elements: ['.', '1', '2', '4', '7', '8', '9'],
+              setType: 'STRING',
             },
           },
           {
             commentLength: 37,
             userChars: {
-              elements: [".", "0", "1", "2", "4", "6", "7", "9"],
-              setType: "STRING",
+              elements: ['.', '0', '1', '2', '4', '6', '7', '9'],
+              setType: 'STRING',
             },
           },
           {
             commentLength: 11,
             userChars: {
-              elements: ["A", "B", "I", "K", "N", "O", "R"],
-              setType: "STRING",
+              elements: ['A', 'B', 'I', 'K', 'N', 'O', 'R'],
+              setType: 'STRING',
             },
           },
         ]);
       });
     });
 
-    it("works string range", () => {
-      const ex = $("wiki")
-        .filter($("cityName").greaterThan("Eagleton"))
-        .split("$cityName", "CityName")
-        .sort("$CityName", "descending")
+    it('works string range', () => {
+      const ex = $('wiki')
+        .filter($('cityName').greaterThan('Eagleton'))
+        .split('$cityName', 'CityName')
+        .sort('$CityName', 'descending')
         .limit(10);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            CityName: "Ōita",
+            CityName: 'Ōita',
           },
           {
-            CityName: "Łódź",
+            CityName: 'Łódź',
           },
           {
-            CityName: "İzmit",
+            CityName: 'İzmit',
           },
           {
-            CityName: "České Budějovice",
+            CityName: 'České Budějovice',
           },
           {
-            CityName: "Ürümqi",
+            CityName: 'Ürümqi',
           },
           {
-            CityName: "Ústí nad Labem",
+            CityName: 'Ústí nad Labem',
           },
           {
-            CityName: "Évry",
+            CityName: 'Évry',
           },
           {
-            CityName: "Épinay-sur-Seine",
+            CityName: 'Épinay-sur-Seine',
           },
           {
-            CityName: "Épernay",
+            CityName: 'Épernay',
           },
           {
-            CityName: "Élancourt",
+            CityName: 'Élancourt',
           },
         ]);
       });
     });
   });
 
-  describe("incorrect commentLength and comment", () => {
+  describe('incorrect commentLength and comment', () => {
     const wikiUserCharAsNumber = External.fromJS(
       {
-        engine: "postgres",
-        source: "wikipedia",
-        timeAttribute: "time",
+        engine: 'postgres',
+        source: 'wikipedia',
+        timeAttribute: 'time',
         allowEternity: true,
         attributes: [
-          { name: "time", type: "TIME" },
-          { name: "comment", type: "STRING" },
-          { name: "page", type: "NUMBER" }, // This is incorrect
-          { name: "count", type: "NUMBER", unsplitable: true },
+          { name: 'time', type: 'TIME' },
+          { name: 'comment', type: 'STRING' },
+          { name: 'page', type: 'NUMBER' }, // This is incorrect
+          { name: 'count', type: 'NUMBER', unsplitable: true },
         ],
       },
       postgresRequester,
     );
   });
 
-  describe("introspection", () => {
+  describe('introspection', () => {
     const basicExecutor = basicExecutorFactory({
       datasets: {
         wiki: External.fromJS(
           {
-            engine: "postgres",
-            source: "wikipedia",
+            engine: 'postgres',
+            source: 'wikipedia',
           },
           postgresRequester,
         ),
       },
     });
 
-    it("introspects", () => {
+    it('introspects', () => {
       return External.fromJS(
         {
-          engine: "postgres",
-          source: "wikipedia",
+          engine: 'postgres',
+          source: 'wikipedia',
         },
         postgresRequester,
       )
         .introspect()
-        .then(external => {
+        .then((external) => {
           expect(external.version).to.equal(info.postgresVersion);
           expect(external.toJS().attributes).to.deep.equal(wikiAttributes);
         });
     });
 
-    it("works with introspection", () => {
+    it('works with introspection', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
-        .apply("TotalAdded", "$wiki.sum($added)")
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
+        .apply('TotalAdded', '$wiki.sum($added)')
         .apply(
-          "Time",
-          $("wiki")
-            .split($("__time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
-            .apply("TotalAdded", "$wiki.sum($added)")
-            .sort("$Timestamp", "ascending")
+          'Time',
+          $('wiki')
+            .split($('__time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
+            .apply('TotalAdded', '$wiki.sum($added)')
+            .sort('$Timestamp', 'ascending')
             .limit(3)
             .apply(
-              "Pages",
-              $("wiki")
-                .split("$regionName", "RegionName")
-                .apply("Deleted", "$wiki.sum($deleted)")
-                .sort("$Deleted", "descending")
+              'Pages',
+              $('wiki')
+                .split('$regionName', 'RegionName')
+                .apply('Deleted', '$wiki.sum($deleted)')
+                .sort('$Deleted', 'descending')
                 .limit(2),
             ),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Time: {
               attributes: [
                 {
-                  name: "Timestamp",
-                  type: "TIME_RANGE",
+                  name: 'Timestamp',
+                  type: 'TIME_RANGE',
                 },
                 {
-                  name: "TotalAdded",
-                  type: "NUMBER",
+                  name: 'TotalAdded',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Pages",
-                  type: "DATASET",
+                  name: 'Pages',
+                  type: 'DATASET',
                 },
               ],
               data: [
@@ -554,12 +554,12 @@ describe("Postgres Functional", function () {
                   Pages: {
                     attributes: [
                       {
-                        name: "RegionName",
-                        type: "STRING",
+                        name: 'RegionName',
+                        type: 'STRING',
                       },
                       {
-                        name: "Deleted",
-                        type: "NUMBER",
+                        name: 'Deleted',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
@@ -569,14 +569,14 @@ describe("Postgres Functional", function () {
                       },
                       {
                         Deleted: 848,
-                        RegionName: "Ontario",
+                        RegionName: 'Ontario',
                       },
                     ],
-                    keys: ["RegionName"],
+                    keys: ['RegionName'],
                   },
                   Timestamp: {
-                    end: new Date("2015-09-12T01:00:00.000Z"),
-                    start: new Date("2015-09-12T00:00:00.000Z"),
+                    end: new Date('2015-09-12T01:00:00.000Z'),
+                    start: new Date('2015-09-12T00:00:00.000Z'),
                   },
                   TotalAdded: 331925,
                 },
@@ -584,12 +584,12 @@ describe("Postgres Functional", function () {
                   Pages: {
                     attributes: [
                       {
-                        name: "RegionName",
-                        type: "STRING",
+                        name: 'RegionName',
+                        type: 'STRING',
                       },
                       {
-                        name: "Deleted",
-                        type: "NUMBER",
+                        name: 'Deleted',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
@@ -599,14 +599,14 @@ describe("Postgres Functional", function () {
                       },
                       {
                         Deleted: 474,
-                        RegionName: "Indiana",
+                        RegionName: 'Indiana',
                       },
                     ],
-                    keys: ["RegionName"],
+                    keys: ['RegionName'],
                   },
                   Timestamp: {
-                    end: new Date("2015-09-12T02:00:00.000Z"),
-                    start: new Date("2015-09-12T01:00:00.000Z"),
+                    end: new Date('2015-09-12T02:00:00.000Z'),
+                    start: new Date('2015-09-12T01:00:00.000Z'),
                   },
                   TotalAdded: 1418072,
                 },
@@ -614,12 +614,12 @@ describe("Postgres Functional", function () {
                   Pages: {
                     attributes: [
                       {
-                        name: "RegionName",
-                        type: "STRING",
+                        name: 'RegionName',
+                        type: 'STRING',
                       },
                       {
-                        name: "Deleted",
-                        type: "NUMBER",
+                        name: 'Deleted',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
@@ -629,19 +629,19 @@ describe("Postgres Functional", function () {
                       },
                       {
                         Deleted: 449,
-                        RegionName: "Georgia",
+                        RegionName: 'Georgia',
                       },
                     ],
-                    keys: ["RegionName"],
+                    keys: ['RegionName'],
                   },
                   Timestamp: {
-                    end: new Date("2015-09-12T03:00:00.000Z"),
-                    start: new Date("2015-09-12T02:00:00.000Z"),
+                    end: new Date('2015-09-12T03:00:00.000Z'),
+                    start: new Date('2015-09-12T02:00:00.000Z'),
                   },
                   TotalAdded: 3045966,
                 },
               ],
-              keys: ["Timestamp"],
+              keys: ['Timestamp'],
             },
             TotalAdded: 32553107,
           },

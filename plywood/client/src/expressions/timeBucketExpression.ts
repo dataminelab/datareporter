@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from "chronoshift";
-import { immutableEqual } from "immutable-class";
+import { Duration, Timezone } from 'chronoshift';
+import { immutableEqual } from 'immutable-class';
 
-import { PlywoodValue, Range } from "../datatypes";
-import { TimeRange } from "../datatypes/timeRange";
-import { SQLDialect } from "../dialect/baseDialect";
+import { PlywoodValue, Range } from '../datatypes';
+import { TimeRange } from '../datatypes/timeRange';
+import { SQLDialect } from '../dialect/baseDialect';
 
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
-import { HasTimezone } from "./mixins/hasTimezone";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { HasTimezone } from './mixins/hasTimezone';
 
 export class TimeBucketExpression extends ChainableExpression {
-  static op = "TimeBucket";
+  static op = 'TimeBucket';
   static fromJS(parameters: ExpressionJS): TimeBucketExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.duration = Duration.fromJS(parameters.duration);
-    if (parameters.timezone)
-      value.timezone = Timezone.fromJS(parameters.timezone);
+    if (parameters.timezone) value.timezone = Timezone.fromJS(parameters.timezone);
     if (parameters.bounds) value.bounds = parameters.bounds;
     return new TimeBucketExpression(value);
   }
@@ -50,19 +44,19 @@ export class TimeBucketExpression extends ChainableExpression {
     this.duration = duration;
     this.timezone = parameters.timezone;
     this.bounds = parameters.bounds;
-    this._ensureOp("timeBucket");
-    this._checkOperandTypes("TIME");
+    this._ensureOp('timeBucket');
+    this._checkOperandTypes('TIME');
     if (!this.isDuration(duration)) {
-      throw new Error("`duration` must be a Duration");
+      throw new Error('`duration` must be a Duration');
     }
     if (!duration.isFloorable()) {
       throw new Error(`duration '${duration.toString()}' is not floorable`);
     }
-    this.type = "TIME_RANGE";
+    this.type = 'TIME_RANGE';
   }
 
   private isDuration(o: any): o is Duration {
-    return o.constructor.name === "Duration";
+    return o.constructor.name === 'Duration';
   }
 
   public valueOf(): ExpressionValue {
@@ -92,36 +86,23 @@ export class TimeBucketExpression extends ChainableExpression {
 
   protected _toStringParameters(_indent?: number): string[] {
     const ret = [this.duration.toString()];
-    if (this.timezone)
-      ret.push(Expression.safeString(this.timezone.toString()));
+    if (this.timezone) ret.push(Expression.safeString(this.timezone.toString()));
     if (this.bounds) ret.push(this.bounds);
     return ret;
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
     return operandValue
-      ? TimeRange.timeBucket(
-          operandValue,
-          this.duration,
-          this.getTimezone(),
-          this.bounds,
-        )
+      ? TimeRange.timeBucket(operandValue, this.duration, this.getTimezone(), this.bounds)
       : null;
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    throw new Error("implement me");
+    throw new Error('implement me');
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
-    return dialect.timeBucketExpression(
-      operandSQL,
-      this.duration,
-      this.getTimezone(),
-    );
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+    return dialect.timeBucketExpression(operandSQL, this.duration, this.getTimezone());
   }
 
   public changeBounds(bounds: string): Expression {

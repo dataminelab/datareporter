@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { SqlExpression, SqlFunction } from "druid-query-toolkit";
+import { SqlExpression, SqlFunction } from 'druid-query-toolkit';
 
-import { ComputeFn, Datum, PlywoodValue } from "../datatypes";
-import { SQLDialect } from "../dialect";
-import { PlyTypeSimple } from "../types";
+import { ComputeFn, Datum, PlywoodValue } from '../datatypes';
+import { SQLDialect } from '../dialect';
+import { PlyTypeSimple } from '../types';
 
-import { Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import { Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export class SqlRefExpression extends Expression {
-  static op = "SqlRef";
+  static op = 'SqlRef';
   static fromJS(parameters: ExpressionJS): SqlRefExpression {
     const value: ExpressionValue = Expression.jsToValue(parameters);
     value.sql = parameters.sql;
@@ -35,11 +35,11 @@ export class SqlRefExpression extends Expression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp("sqlRef");
+    this._ensureOp('sqlRef');
 
     const sql = parameters.sql;
-    if (typeof sql !== "string" || sql.length === 0) {
-      throw new TypeError("must have a nonempty `sql`");
+    if (typeof sql !== 'string' || sql.length === 0) {
+      throw new TypeError('must have a nonempty `sql`');
     }
     this.sql = sql;
     this.type = parameters.type;
@@ -74,25 +74,21 @@ export class SqlRefExpression extends Expression {
   }
 
   public getFn(): ComputeFn {
-    throw new Error("can not getFn on SQL");
+    throw new Error('can not getFn on SQL');
   }
 
   public calc(_datum: Datum): PlywoodValue {
-    throw new Error("can not calc on SQL");
+    throw new Error('can not calc on SQL');
   }
 
   public getJS(datumVar: string): string {
-    throw new Error("can not call getJS on SQL");
+    throw new Error('can not call getJS on SQL');
   }
 
   public getSQL(dialect: SQLDialect, _minimal = false): string {
     if (this.type) {
       try {
-        return dialect.castExpression(
-          undefined,
-          this.sql,
-          this.type as PlyTypeSimple,
-        );
+        return dialect.castExpression(undefined, this.sql, this.type as PlyTypeSimple);
       } catch {
         // Ignore error and fall though to just return the sql
       }
@@ -105,9 +101,7 @@ export class SqlRefExpression extends Expression {
   }
 
   public isSqlFunction(...functionNames: string[]): boolean {
-    const upperCaseFunctionNames = functionNames.map(functionName =>
-      functionName.toUpperCase(),
-    );
+    const upperCaseFunctionNames = functionNames.map((functionName) => functionName.toUpperCase());
     const { parsedSql } = this;
 
     return (

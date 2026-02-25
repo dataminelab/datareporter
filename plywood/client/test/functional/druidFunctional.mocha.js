@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
-const { Duration } = require("chronoshift");
-const { sane } = require("../utils");
+const { expect } = require('chai');
+const { Duration } = require('chronoshift');
+const { sane } = require('../utils');
 
-const { druidRequesterFactory } = require("plywood-druid-requester");
+const { druidRequesterFactory } = require('plywood-druid-requester');
 
-const plywood = require("../plywood");
+const plywood = require('../plywood');
 
 const {
   External,
@@ -36,7 +36,7 @@ const {
   Expression,
 } = plywood;
 
-const info = require("../info");
+const info = require('../info');
 
 const druidRequester = druidRequesterFactory({
   host: info.druidHost,
@@ -46,299 +46,299 @@ const druidRequester = druidRequesterFactory({
 //   requester: druidRequester
 // });
 
-describe("Druid Functional", function () {
+describe('Druid Functional', function () {
   this.timeout(10000);
 
   const wikiAttributes = [
     {
-      name: "time",
-      nativeType: "__time",
+      name: 'time',
+      nativeType: '__time',
       range: {
-        bounds: "[]",
-        end: new Date("2015-09-12T23:59:00.000Z"),
-        start: new Date("2015-09-12T00:46:00.000Z"),
+        bounds: '[]',
+        end: new Date('2015-09-12T23:59:00.000Z'),
+        start: new Date('2015-09-12T00:46:00.000Z'),
       },
-      type: "TIME",
+      type: 'TIME',
     },
     {
       maker: {
         expression: {
-          name: "added",
-          op: "ref",
+          name: 'added',
+          op: 'ref',
         },
-        op: "sum",
+        op: 'sum',
       },
-      name: "added",
-      nativeType: "LONG",
-      type: "NUMBER",
+      name: 'added',
+      nativeType: 'LONG',
+      type: 'NUMBER',
       unsplitable: true,
     },
     {
       cardinality: 52,
-      name: "channel",
-      nativeType: "STRING",
+      name: 'channel',
+      nativeType: 'STRING',
       range: {
-        bounds: "[]",
-        end: "zh",
-        start: "ar",
+        bounds: '[]',
+        end: 'zh',
+        start: 'ar',
       },
-      type: "STRING",
+      type: 'STRING',
     },
     {
       cardinality: 3719,
-      name: "cityName",
-      nativeType: "STRING",
-      type: "STRING",
+      name: 'cityName',
+      nativeType: 'STRING',
+      type: 'STRING',
     },
     {
       cardinality: 138731,
-      name: "comment",
-      nativeType: "STRING",
+      name: 'comment',
+      nativeType: 'STRING',
       range: {
-        bounds: "[]",
+        bounds: '[]',
         end: "��творена сторінка: {{Пишу}} '''Jaguar Mark VIII''' [[люкс-автомобіль]] [[Велика Британія|британської]] компанії [[Jaguar]] 195...",
-        start: "!",
+        start: '!',
       },
-      type: "STRING",
+      type: 'STRING',
     },
     {
-      name: "commentLength",
-      nativeType: "LONG",
-      type: "NUMBER",
+      name: 'commentLength',
+      nativeType: 'LONG',
+      type: 'NUMBER',
     },
     {
       cardinality: 255,
-      name: "commentLengthStr",
-      nativeType: "STRING",
+      name: 'commentLengthStr',
+      nativeType: 'STRING',
       range: {
-        bounds: "[]",
-        end: "99",
-        start: "1",
+        bounds: '[]',
+        end: '99',
+        start: '1',
       },
-      type: "STRING",
+      type: 'STRING',
     },
     {
       maker: {
-        op: "count",
+        op: 'count',
       },
-      name: "count",
-      nativeType: "LONG",
-      type: "NUMBER",
+      name: 'count',
+      nativeType: 'LONG',
+      type: 'NUMBER',
       unsplitable: true,
     },
     {
       cardinality: 157,
-      name: "countryIsoCode",
-      nativeType: "STRING",
-      type: "STRING",
+      name: 'countryIsoCode',
+      nativeType: 'STRING',
+      type: 'STRING',
     },
     {
       cardinality: 157,
-      name: "countryName",
-      nativeType: "STRING",
-      type: "STRING",
+      name: 'countryName',
+      nativeType: 'STRING',
+      type: 'STRING',
     },
     {
       maker: {
         expression: {
-          name: "deleted",
-          op: "ref",
+          name: 'deleted',
+          op: 'ref',
         },
-        op: "sum",
+        op: 'sum',
       },
-      name: "deleted",
-      nativeType: "LONG",
-      type: "NUMBER",
+      name: 'deleted',
+      nativeType: 'LONG',
+      type: 'NUMBER',
       unsplitable: true,
     },
     {
       maker: {
         expression: {
-          name: "delta",
-          op: "ref",
+          name: 'delta',
+          op: 'ref',
         },
-        op: "sum",
+        op: 'sum',
       },
-      name: "delta",
-      nativeType: "LONG",
-      type: "NUMBER",
+      name: 'delta',
+      nativeType: 'LONG',
+      type: 'NUMBER',
       unsplitable: true,
     },
     {
-      name: "deltaBucket100",
-      nativeType: "FLOAT",
-      type: "NUMBER",
+      name: 'deltaBucket100',
+      nativeType: 'FLOAT',
+      type: 'NUMBER',
     },
     {
       maker: {
         expression: {
-          name: "deltaByTen",
-          op: "ref",
+          name: 'deltaByTen',
+          op: 'ref',
         },
-        op: "sum",
+        op: 'sum',
       },
-      name: "deltaByTen",
-      nativeType: "DOUBLE",
-      type: "NUMBER",
+      name: 'deltaByTen',
+      nativeType: 'DOUBLE',
+      type: 'NUMBER',
       unsplitable: true,
     },
     {
-      name: "delta_hist",
-      nativeType: "approximateHistogram",
-      type: "NULL",
+      name: 'delta_hist',
+      nativeType: 'approximateHistogram',
+      type: 'NULL',
       unsplitable: true,
     },
     {
-      name: "delta_quantilesDoublesSketch",
-      nativeType: "quantilesDoublesSketch",
-      type: "NULL",
+      name: 'delta_quantilesDoublesSketch',
+      nativeType: 'quantilesDoublesSketch',
+      type: 'NULL',
       unsplitable: true,
     },
     {
       cardinality: 8086,
-      name: "geohash",
-      nativeType: "STRING",
-      type: "STRING",
+      name: 'geohash',
+      nativeType: 'STRING',
+      type: 'STRING',
     },
     {
-      name: "isAnonymous",
-      type: "BOOLEAN",
+      name: 'isAnonymous',
+      type: 'BOOLEAN',
     },
     {
-      name: "isMinor",
-      type: "BOOLEAN",
+      name: 'isMinor',
+      type: 'BOOLEAN',
     },
     {
-      name: "isNew",
-      type: "BOOLEAN",
+      name: 'isNew',
+      type: 'BOOLEAN',
     },
     {
-      name: "isRobot",
-      type: "BOOLEAN",
+      name: 'isRobot',
+      type: 'BOOLEAN',
     },
     {
-      name: "isUnpatrolled",
-      type: "BOOLEAN",
+      name: 'isUnpatrolled',
+      type: 'BOOLEAN',
     },
     {
       maker: {
         expression: {
-          name: "max_delta",
-          op: "ref",
+          name: 'max_delta',
+          op: 'ref',
         },
-        op: "max",
+        op: 'max',
       },
-      name: "max_delta",
-      nativeType: "LONG",
-      type: "NUMBER",
+      name: 'max_delta',
+      nativeType: 'LONG',
+      type: 'NUMBER',
       unsplitable: true,
     },
     {
       cardinality: 167,
-      name: "metroCode",
-      nativeType: "STRING",
-      type: "STRING",
+      name: 'metroCode',
+      nativeType: 'STRING',
+      type: 'STRING',
     },
     {
       maker: {
         expression: {
-          name: "min_delta",
-          op: "ref",
+          name: 'min_delta',
+          op: 'ref',
         },
-        op: "min",
+        op: 'min',
       },
-      name: "min_delta",
-      nativeType: "LONG",
-      type: "NUMBER",
+      name: 'min_delta',
+      nativeType: 'LONG',
+      type: 'NUMBER',
       unsplitable: true,
     },
     {
       cardinality: 425,
-      name: "namespace",
-      nativeType: "STRING",
+      name: 'namespace',
+      nativeType: 'STRING',
       range: {
-        bounds: "[]",
-        end: "��нкубатор",
-        start: "2",
+        bounds: '[]',
+        end: '��нкубатор',
+        start: '2',
       },
-      type: "STRING",
+      type: 'STRING',
     },
     {
       cardinality: 279915,
-      name: "page",
-      nativeType: "STRING",
+      name: 'page',
+      nativeType: 'STRING',
       range: {
-        bounds: "[]",
-        end: "���周列国志",
-        start: "!T.O.O.H.!",
+        bounds: '[]',
+        end: '���周列国志',
+        start: '!T.O.O.H.!',
       },
-      type: "STRING",
+      type: 'STRING',
     },
     {
-      name: "page_unique",
-      nativeType: "hyperUnique",
-      type: "NULL",
+      name: 'page_unique',
+      nativeType: 'hyperUnique',
+      type: 'NULL',
       unsplitable: true,
     },
     {
       cardinality: 671,
-      name: "regionIsoCode",
-      nativeType: "STRING",
-      type: "STRING",
+      name: 'regionIsoCode',
+      nativeType: 'STRING',
+      type: 'STRING',
     },
     {
       cardinality: 1069,
-      name: "regionName",
-      nativeType: "STRING",
-      type: "STRING",
+      name: 'regionName',
+      nativeType: 'STRING',
+      type: 'STRING',
     },
     {
-      name: "sometimeLater",
-      type: "TIME",
+      name: 'sometimeLater',
+      type: 'TIME',
     },
     {
-      name: "sometimeLaterMs",
-      nativeType: "LONG",
-      type: "NUMBER",
+      name: 'sometimeLaterMs',
+      nativeType: 'LONG',
+      type: 'NUMBER',
     },
     {
       cardinality: 38240,
-      name: "user",
-      nativeType: "STRING",
+      name: 'user',
+      nativeType: 'STRING',
       range: {
-        bounds: "[]",
-        end: "���バコはマーダー",
-        start: "! Bikkit !",
+        bounds: '[]',
+        end: '���バコはマーダー',
+        start: '! Bikkit !',
       },
-      type: "STRING",
+      type: 'STRING',
     },
     {
       cardinality: 1403,
-      name: "userChars",
-      nativeType: "STRING",
+      name: 'userChars',
+      nativeType: 'STRING',
       range: {
-        bounds: "[]",
-        end: "���",
-        start: " ",
+        bounds: '[]',
+        end: '���',
+        start: ' ',
       },
-      type: "SET/STRING",
+      type: 'SET/STRING',
     },
     {
-      name: "user_hll",
-      nativeType: "HLLSketch",
-      type: "NULL",
+      name: 'user_hll',
+      nativeType: 'HLLSketch',
+      type: 'NULL',
       unsplitable: true,
     },
     {
-      name: "user_theta",
-      nativeType: "thetaSketch",
-      type: "NULL",
+      name: 'user_theta',
+      nativeType: 'thetaSketch',
+      type: 'NULL',
       unsplitable: true,
     },
     {
-      name: "user_unique",
-      nativeType: "hyperUnique",
-      type: "NULL",
+      name: 'user_unique',
+      nativeType: 'hyperUnique',
+      type: 'NULL',
       unsplitable: true,
     },
   ];
@@ -346,50 +346,50 @@ describe("Druid Functional", function () {
   const customTransforms = {
     sliceLastChar: {
       extractionFn: {
-        type: "javascript",
-        function: "function(x) { return x.slice(-1) }",
+        type: 'javascript',
+        function: 'function(x) { return x.slice(-1) }',
       },
     },
     getLastChar: {
       extractionFn: {
-        type: "javascript",
-        function: "function(x) { return x.charAt(x.length - 1) }",
+        type: 'javascript',
+        function: 'function(x) { return x.charAt(x.length - 1) }',
       },
     },
     timesTwo: {
       extractionFn: {
-        type: "javascript",
-        function: "function(x) { return x * 2 }",
+        type: 'javascript',
+        function: 'function(x) { return x * 2 }',
       },
     },
     concatWithConcat: {
       extractionFn: {
-        type: "javascript",
+        type: 'javascript',
         function: "function(x) { return String(x).concat('concat') }",
       },
     },
   };
 
-  describe("source list", () => {
-    it("does a source list", () => {
-      return DruidExternal.getSourceList(druidRequester).then(sources => {
-        expect(sources).to.deep.equal(["wikipedia", "wikipedia-compact"]);
+  describe('source list', () => {
+    it('does a source list', () => {
+      return DruidExternal.getSourceList(druidRequester).then((sources) => {
+        expect(sources).to.deep.equal(['wikipedia', 'wikipedia-compact']);
       });
     });
   });
 
-  describe("defined attributes in datasource", () => {
+  describe('defined attributes in datasource', () => {
     const wiki = External.fromJS(
       {
-        engine: "druid",
-        source: "wikipedia",
-        timeAttribute: "time",
+        engine: 'druid',
+        source: 'wikipedia',
+        timeAttribute: 'time',
         context: info.druidContext,
         attributes: wikiAttributes,
         customTransforms,
-        filter: $("time").overlap(
-          new Date("2015-09-12T00:00:00Z"),
-          new Date("2015-09-13T00:00:00Z"),
+        filter: $('time').overlap(
+          new Date('2015-09-12T00:00:00Z'),
+          new Date('2015-09-13T00:00:00Z'),
         ),
         version: info.druidVersion,
         allowSelectQueries: true,
@@ -399,42 +399,42 @@ describe("Druid Functional", function () {
 
     const wikiCompact = External.fromJS(
       {
-        engine: "druid",
-        source: "wikipedia-compact",
-        timeAttribute: "time",
+        engine: 'druid',
+        source: 'wikipedia-compact',
+        timeAttribute: 'time',
         context: info.druidContext,
         attributes: [
           {
-            name: "time",
-            type: "TIME",
+            name: 'time',
+            type: 'TIME',
             maker: {
-              action: "timeFloor",
-              duration: "PT1H",
-              timezone: "Etc/UTC",
+              action: 'timeFloor',
+              duration: 'PT1H',
+              timezone: 'Etc/UTC',
             },
           },
-          { name: "channel", type: "STRING" },
-          { name: "isNew", type: "BOOLEAN" },
-          { name: "isAnonymous", type: "BOOLEAN" },
-          { name: "commentLength", type: "NUMBER" },
-          { name: "metroCode", type: "STRING" },
-          { name: "cityName", type: "STRING" },
+          { name: 'channel', type: 'STRING' },
+          { name: 'isNew', type: 'BOOLEAN' },
+          { name: 'isAnonymous', type: 'BOOLEAN' },
+          { name: 'commentLength', type: 'NUMBER' },
+          { name: 'metroCode', type: 'STRING' },
+          { name: 'cityName', type: 'STRING' },
 
-          { name: "count", type: "NUMBER", unsplitable: true },
-          { name: "delta", type: "NUMBER", unsplitable: true },
-          { name: "added", type: "NUMBER", unsplitable: true },
-          { name: "deleted", type: "NUMBER", unsplitable: true },
+          { name: 'count', type: 'NUMBER', unsplitable: true },
+          { name: 'delta', type: 'NUMBER', unsplitable: true },
+          { name: 'added', type: 'NUMBER', unsplitable: true },
+          { name: 'deleted', type: 'NUMBER', unsplitable: true },
           {
-            name: "page_unique",
-            type: "NULL",
-            nativeType: "hyperUnique",
+            name: 'page_unique',
+            type: 'NULL',
+            nativeType: 'hyperUnique',
             unsplitable: true,
           },
         ],
-        filter: $("time").overlap(
+        filter: $('time').overlap(
           TimeRange.fromJS({
-            start: new Date("2015-09-12T00:00:00Z"),
-            end: new Date("2015-09-13T00:00:00Z"),
+            start: new Date('2015-09-12T00:00:00Z'),
+            end: new Date('2015-09-13T00:00:00Z'),
           }),
         ),
         customTransforms,
@@ -451,20 +451,20 @@ describe("Druid Functional", function () {
       },
     });
 
-    it("works basic case to CSV", () => {
+    it('works basic case to CSV', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
         .apply(
-          "Cities",
-          $("wiki")
-            .split("$cityName", "City")
-            .apply("TotalAdded", "$wiki.sum($added)")
-            .sort("$TotalAdded", "descending")
+          'Cities',
+          $('wiki')
+            .split('$cityName', 'City')
+            .apply('TotalAdded', '$wiki.sum($added)')
+            .sort('$TotalAdded', 'descending')
             .limit(2),
         );
 
-      return basicExecutor(ex).then(result => {
-        expect(result.toCSV({ lineBreak: "\n" })).to.deep.equal(sane`
+      return basicExecutor(ex).then((result) => {
+        expect(result.toCSV({ lineBreak: '\n' })).to.deep.equal(sane`
             City,TotalAdded
             null,31529720
             Mineola,50836
@@ -472,33 +472,33 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with basic error (non-existent lookup)", () => {
-      const ex = $("wiki").split("$cityName.lookup(blah)", "B");
+    it('works with basic error (non-existent lookup)', () => {
+      const ex = $('wiki').split('$cityName.lookup(blah)', 'B');
 
       return basicExecutor(ex)
         .then(() => {
-          throw new Error("DID_NOT_ERROR");
+          throw new Error('DID_NOT_ERROR');
         })
-        .catch(e => {
-          expect(e.message).to.contain("Lookup [blah] not found");
+        .catch((e) => {
+          expect(e.message).to.contain('Lookup [blah] not found');
         });
     });
 
-    it("works basic total", () => {
+    it('works basic total', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
-        .apply("Count", "$wiki.count()");
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
+        .apply('Count', '$wiki.count()');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS()).to.deep.equal({
           attributes: [
             {
-              name: "wiki",
-              type: "DATASET",
+              name: 'wiki',
+              type: 'DATASET',
             },
             {
-              name: "Count",
-              type: "NUMBER",
+              name: 'Count',
+              type: 'NUMBER',
             },
           ],
           data: [
@@ -511,8 +511,8 @@ describe("Druid Functional", function () {
         expect(result.flatten().toJS()).to.deep.equal({
           attributes: [
             {
-              name: "Count",
-              type: "NUMBER",
+              name: 'Count',
+              type: 'NUMBER',
             },
           ],
           data: [
@@ -524,112 +524,112 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with max time 1", () => {
-      const ex = ply().apply("max(time)", "$wiki.max($time)");
+    it('works with max time 1', () => {
+      const ex = ply().apply('max(time)', '$wiki.max($time)');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS()).to.deep.equal({
           attributes: [
             {
-              name: "max(time)",
-              type: "TIME",
+              name: 'max(time)',
+              type: 'TIME',
             },
           ],
           data: [
             {
-              "max(time)": new Date("2015-09-12T23:00:00.000Z"),
+              'max(time)': new Date('2015-09-12T23:00:00.000Z'),
             },
           ],
         });
       });
     });
 
-    it("works with max time 2", () => {
-      const ex = $("wiki").max("$time");
+    it('works with max time 2', () => {
+      const ex = $('wiki').max('$time');
 
-      return basicExecutor(ex).then(result => {
-        expect(result).to.deep.equal(new Date("2015-09-12T23:00:00.000Z"));
+      return basicExecutor(ex).then((result) => {
+        expect(result).to.deep.equal(new Date('2015-09-12T23:00:00.000Z'));
       });
     });
 
-    it("aggregate and splits plus select work with ordering last split first", () => {
-      const ex = $("wiki")
-        .split({ isNew: "$isNew", isRobot: "$isRobot" })
-        .apply("Count", $("wiki").sum("$count"))
-        .apply("Page", $("wiki").split("$page", "Page").limit(3))
-        .select("Page", "Count", "isRobot", "isNew")
+    it('aggregate and splits plus select work with ordering last split first', () => {
+      const ex = $('wiki')
+        .split({ isNew: '$isNew', isRobot: '$isRobot' })
+        .apply('Count', $('wiki').sum('$count'))
+        .apply('Page', $('wiki').split('$page', 'Page').limit(3))
+        .select('Page', 'Count', 'isRobot', 'isNew')
         .limit(1);
 
-      return basicExecutor(ex).then(result => {
-        expect(result.attributes.map(c => c.name)).to.deep.equal([
-          "Page",
-          "Count",
-          "isRobot",
-          "isNew",
+      return basicExecutor(ex).then((result) => {
+        expect(result.attributes.map((c) => c.name)).to.deep.equal([
+          'Page',
+          'Count',
+          'isRobot',
+          'isNew',
         ]);
       });
     });
 
-    it("aggregate and splits plus select work with ordering 2", () => {
-      const ex = $("wiki")
-        .split({ isNew: "$isNew", isRobot: "$isRobot" })
-        .apply("Count", $("wiki").sum("$count"))
-        .apply("Page", $("wiki").split("$page", "Page").limit(3))
-        .select("isRobot", "Page", "isNew", "Count")
+    it('aggregate and splits plus select work with ordering 2', () => {
+      const ex = $('wiki')
+        .split({ isNew: '$isNew', isRobot: '$isRobot' })
+        .apply('Count', $('wiki').sum('$count'))
+        .apply('Page', $('wiki').split('$page', 'Page').limit(3))
+        .select('isRobot', 'Page', 'isNew', 'Count')
         .limit(1);
 
-      return basicExecutor(ex).then(result => {
-        expect(result.attributes.map(c => c.name)).to.deep.equal([
-          "isRobot",
-          "Page",
-          "isNew",
-          "Count",
+      return basicExecutor(ex).then((result) => {
+        expect(result.attributes.map((c) => c.name)).to.deep.equal([
+          'isRobot',
+          'Page',
+          'isNew',
+          'Count',
         ]);
       });
     });
 
-    it("aggregate and splits plus select work with ordering, aggregate first", () => {
-      const ex = $("wiki")
-        .split({ isNew: "$isNew", isRobot: "$isRobot" })
-        .apply("Count", $("wiki").sum("$count"))
-        .apply("Page", $("wiki").split("$page", "Page").limit(3))
-        .select("Count", "isRobot", "Page", "isNew")
+    it('aggregate and splits plus select work with ordering, aggregate first', () => {
+      const ex = $('wiki')
+        .split({ isNew: '$isNew', isRobot: '$isRobot' })
+        .apply('Count', $('wiki').sum('$count'))
+        .apply('Page', $('wiki').split('$page', 'Page').limit(3))
+        .select('Count', 'isRobot', 'Page', 'isNew')
         .limit(1);
 
-      return basicExecutor(ex).then(result => {
-        expect(result.attributes.map(c => c.name)).to.deep.equal([
-          "Count",
-          "isRobot",
-          "Page",
-          "isNew",
+      return basicExecutor(ex).then((result) => {
+        expect(result.attributes.map((c) => c.name)).to.deep.equal([
+          'Count',
+          'isRobot',
+          'Page',
+          'isNew',
         ]);
       });
     });
 
-    it("works timePart case", () => {
+    it('works timePart case', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
         .apply(
-          "HoursOfDay",
-          $("wiki")
-            .split("$time.timePart(HOUR_OF_DAY, 'Etc/UTC')", "HourOfDay")
-            .apply("TotalAdded", "$wiki.sum($added)")
-            .sort("$TotalAdded", "descending")
+          'HoursOfDay',
+          $('wiki')
+            .split("$time.timePart(HOUR_OF_DAY, 'Etc/UTC')", 'HourOfDay')
+            .apply('TotalAdded', '$wiki.sum($added)')
+            .sort('$TotalAdded', 'descending')
             .limit(3),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             HoursOfDay: {
               attributes: [
                 {
-                  name: "HourOfDay",
-                  type: "NUMBER",
+                  name: 'HourOfDay',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "TotalAdded",
-                  type: "NUMBER",
+                  name: 'TotalAdded',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -646,19 +646,19 @@ describe("Druid Functional", function () {
                   TotalAdded: 1825954,
                 },
               ],
-              keys: ["HourOfDay"],
+              keys: ['HourOfDay'],
             },
           },
         ]);
       });
     });
 
-    it("works with quarter call case", () => {
-      const ex = $("wiki")
-        .filter($("channel").is("en"))
-        .split("$time.timePart(QUARTER, 'Etc/UTC')", "Quarter");
+    it('works with quarter call case', () => {
+      const ex = $('wiki')
+        .filter($('channel').is('en'))
+        .split("$time.timePart(QUARTER, 'Etc/UTC')", 'Quarter');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Quarter: 3,
@@ -667,207 +667,207 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with time floor + timezone", () => {
-      const ex = $("wiki")
+    it('works with time floor + timezone', () => {
+      const ex = $('wiki')
         .split({
-          t: $("time").timeFloor("P1D", "Europe/Paris"),
-          robot: "$isRobot",
+          t: $('time').timeFloor('P1D', 'Europe/Paris'),
+          robot: '$isRobot',
         })
-        .apply("cnt", "$wiki.sum($count)")
-        .sort("$cnt", "descending")
+        .apply('cnt', '$wiki.sum($count)')
+        .sort('$cnt', 'descending')
         .limit(10);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             cnt: 218234,
             robot: false,
-            t: new Date("2015-09-11T22:00:00.000Z"),
+            t: new Date('2015-09-11T22:00:00.000Z'),
           },
           {
             cnt: 143489,
             robot: true,
-            t: new Date("2015-09-11T22:00:00.000Z"),
+            t: new Date('2015-09-11T22:00:00.000Z'),
           },
           {
             cnt: 19328,
             robot: false,
-            t: new Date("2015-09-12T22:00:00.000Z"),
+            t: new Date('2015-09-12T22:00:00.000Z'),
           },
           {
             cnt: 11392,
             robot: true,
-            t: new Date("2015-09-12T22:00:00.000Z"),
+            t: new Date('2015-09-12T22:00:00.000Z'),
           },
         ]);
       });
     });
 
-    it("works with yearly call case long", () => {
-      const ex = $("wiki").split(i$("time").timeFloor("P3M"), "tqr___time_ok");
+    it('works with yearly call case long', () => {
+      const ex = $('wiki').split(i$('time').timeFloor('P3M'), 'tqr___time_ok');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            tqr___time_ok: new Date("2015-07-01T00:00:00.000Z"),
+            tqr___time_ok: new Date('2015-07-01T00:00:00.000Z'),
           },
         ]);
       });
     });
 
-    it("works in advanced case", () => {
+    it('works in advanced case', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
-        .apply("Count", "$wiki.sum($count)")
-        .apply("TotalAdded", "$wiki.sum($added)")
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
+        .apply('Count', '$wiki.sum($count)')
+        .apply('TotalAdded', '$wiki.sum($added)')
         .apply(
-          "Pages",
-          $("wiki")
-            .split("$page", "Page")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+          'Pages',
+          $('wiki')
+            .split('$page', 'Page')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(2)
             .apply(
-              "Time",
-              $("wiki")
-                .split($("time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
-                .apply("TotalAdded", "$wiki.sum($added)")
-                .sort("$TotalAdded", "descending")
+              'Time',
+              $('wiki')
+                .split($('time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
+                .apply('TotalAdded', '$wiki.sum($added)')
+                .sort('$TotalAdded', 'descending')
                 .limit(3),
             ),
         )
         .apply(
-          "PagesHaving",
-          $("wiki")
-            .split("$page", "Page")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
-            .filter($("Count").lessThan(300))
+          'PagesHaving',
+          $('wiki')
+            .split('$page', 'Page')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
+            .filter($('Count').lessThan(300))
             .limit(4),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 114711,
             Pages: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Time",
-                  type: "DATASET",
+                  name: 'Time',
+                  type: 'DATASET',
                 },
               ],
               data: [
                 {
                   Count: 255,
-                  Page: "User:Cyde/List of candidates for speedy deletion/Subpage",
+                  Page: 'User:Cyde/List of candidates for speedy deletion/Subpage',
                   Time: {
                     attributes: [
                       {
-                        name: "Timestamp",
-                        type: "TIME_RANGE",
+                        name: 'Timestamp',
+                        type: 'TIME_RANGE',
                       },
                       {
-                        name: "TotalAdded",
-                        type: "NUMBER",
+                        name: 'TotalAdded',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T13:00:00.000Z"),
-                          start: new Date("2015-09-12T12:00:00.000Z"),
+                          end: new Date('2015-09-12T13:00:00.000Z'),
+                          start: new Date('2015-09-12T12:00:00.000Z'),
                         },
                         TotalAdded: 9231,
                       },
                       {
                         Timestamp: {
-                          end: new Date("2015-09-13T00:00:00.000Z"),
-                          start: new Date("2015-09-12T23:00:00.000Z"),
+                          end: new Date('2015-09-13T00:00:00.000Z'),
+                          start: new Date('2015-09-12T23:00:00.000Z'),
                         },
                         TotalAdded: 3956,
                       },
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T02:00:00.000Z"),
-                          start: new Date("2015-09-12T01:00:00.000Z"),
+                          end: new Date('2015-09-12T02:00:00.000Z'),
+                          start: new Date('2015-09-12T01:00:00.000Z'),
                         },
                         TotalAdded: 3363,
                       },
                     ],
-                    keys: ["Timestamp"],
+                    keys: ['Timestamp'],
                   },
                 },
                 {
                   Count: 241,
-                  Page: "Jeremy Corbyn",
+                  Page: 'Jeremy Corbyn',
                   Time: {
                     attributes: [
                       {
-                        name: "Timestamp",
-                        type: "TIME_RANGE",
+                        name: 'Timestamp',
+                        type: 'TIME_RANGE',
                       },
                       {
-                        name: "TotalAdded",
-                        type: "NUMBER",
+                        name: 'TotalAdded',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T16:00:00.000Z"),
-                          start: new Date("2015-09-12T15:00:00.000Z"),
+                          end: new Date('2015-09-12T16:00:00.000Z'),
+                          start: new Date('2015-09-12T15:00:00.000Z'),
                         },
                         TotalAdded: 28193,
                       },
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T19:00:00.000Z"),
-                          start: new Date("2015-09-12T18:00:00.000Z"),
+                          end: new Date('2015-09-12T19:00:00.000Z'),
+                          start: new Date('2015-09-12T18:00:00.000Z'),
                         },
                         TotalAdded: 2419,
                       },
                       {
                         Timestamp: {
-                          end: new Date("2015-09-12T11:00:00.000Z"),
-                          start: new Date("2015-09-12T10:00:00.000Z"),
+                          end: new Date('2015-09-12T11:00:00.000Z'),
+                          start: new Date('2015-09-12T10:00:00.000Z'),
                         },
                         TotalAdded: 2041,
                       },
                     ],
-                    keys: ["Timestamp"],
+                    keys: ['Timestamp'],
                   },
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
             PagesHaving: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 255,
-                  Page: "User:Cyde/List of candidates for speedy deletion/Subpage",
+                  Page: 'User:Cyde/List of candidates for speedy deletion/Subpage',
                 },
                 {
                   Count: 241,
-                  Page: "Jeremy Corbyn",
+                  Page: 'Jeremy Corbyn',
                 },
                 {
                   Count: 228,
@@ -875,10 +875,10 @@ describe("Druid Functional", function () {
                 },
                 {
                   Count: 146,
-                  Page: "Wikipedia:Administrator intervention against vandalism",
+                  Page: 'Wikipedia:Administrator intervention against vandalism',
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
             TotalAdded: 32553107,
           },
@@ -886,96 +886,96 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works in advanced case (with trim)", () => {
+    it('works in advanced case (with trim)', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
-        .apply("Count", "$wiki.sum($count)")
-        .apply("TotalAdded", "$wiki.sum($added)")
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
+        .apply('Count', '$wiki.sum($count)')
+        .apply('TotalAdded', '$wiki.sum($added)')
         .apply(
-          "Pages",
-          $("wiki")
-            .split("$page", "Page")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+          'Pages',
+          $('wiki')
+            .split('$page', 'Page')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(100)
             .apply(
-              "Time",
-              $("wiki")
-                .split("$user", "User")
-                .apply("TotalAdded", "$wiki.sum($added)")
-                .sort("$TotalAdded", "descending")
+              'Time',
+              $('wiki')
+                .split('$user', 'User')
+                .apply('TotalAdded', '$wiki.sum($added)')
+                .sort('$TotalAdded', 'descending')
                 .limit(24),
             ),
         );
 
-      return basicExecutor(ex, { maxRows: 5 }).then(result => {
+      return basicExecutor(ex, { maxRows: 5 }).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 114711,
             Pages: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Time",
-                  type: "DATASET",
+                  name: 'Time',
+                  type: 'DATASET',
                 },
               ],
               data: [
                 {
                   Count: 255,
-                  Page: "User:Cyde/List of candidates for speedy deletion/Subpage",
+                  Page: 'User:Cyde/List of candidates for speedy deletion/Subpage',
                   Time: {
                     attributes: [
                       {
-                        name: "User",
-                        type: "STRING",
+                        name: 'User',
+                        type: 'STRING',
                       },
                       {
-                        name: "TotalAdded",
-                        type: "NUMBER",
+                        name: 'TotalAdded',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         TotalAdded: 35445,
-                        User: "Cydebot",
+                        User: 'Cydebot',
                       },
                     ],
-                    keys: ["User"],
+                    keys: ['User'],
                   },
                 },
                 {
                   Count: 241,
-                  Page: "Jeremy Corbyn",
+                  Page: 'Jeremy Corbyn',
                   Time: {
                     attributes: [
                       {
-                        name: "User",
-                        type: "STRING",
+                        name: 'User',
+                        type: 'STRING',
                       },
                       {
-                        name: "TotalAdded",
-                        type: "NUMBER",
+                        name: 'TotalAdded',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         TotalAdded: 30035,
-                        User: "Hazhk",
+                        User: 'Hazhk',
                       },
                     ],
-                    keys: ["User"],
+                    keys: ['User'],
                   },
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
             TotalAdded: 32553107,
           },
@@ -983,21 +983,18 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with case transform in filter split and apply", () => {
-      const ex = $("wiki")
-        .filter($("channel").transformCase("upperCase").is("EN"))
-        .split($("page").transformCase("lowerCase"), "page")
-        .apply(
-          "SumIndexA",
-          $("wiki").sum($("channel").transformCase("upperCase").indexOf("A")),
-        )
+    it('works with case transform in filter split and apply', () => {
+      const ex = $('wiki')
+        .filter($('channel').transformCase('upperCase').is('EN'))
+        .split($('page').transformCase('lowerCase'), 'page')
+        .apply('SumIndexA', $('wiki').sum($('channel').transformCase('upperCase').indexOf('A')))
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             SumIndexA: -1,
-            page: "!t.o.o.h.!",
+            page: '!t.o.o.h.!',
           },
           {
             SumIndexA: -1,
@@ -1019,63 +1016,56 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with custom transform in filter and split", () => {
-      const ex = $("wiki")
-        .filter($("page").customTransform("sliceLastChar").is("z"))
-        .split($("page").customTransform("getLastChar"), "lastChar")
-        .apply("Temp", "$wiki.count()") // ToDo: Temp fix
+    it('works with custom transform in filter and split', () => {
+      const ex = $('wiki')
+        .filter($('page').customTransform('sliceLastChar').is('z'))
+        .split($('page').customTransform('getLastChar'), 'lastChar')
+        .apply('Temp', '$wiki.count()') // ToDo: Temp fix
         .limit(8);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Temp: 1984,
-            lastChar: "z",
+            lastChar: 'z',
           },
         ]);
       });
     });
 
-    it("works with custom transform in filter and split for numeric dimension", () => {
-      const ex = $("wiki")
-        .filter(
-          $("commentLength")
-            .customTransform("concatWithConcat", "STRING")
-            .is("'100concat'"),
-        )
-        .split(
-          $("commentLength").customTransform("timesTwo", "STRING"),
-          "Times Two",
-        )
-        .apply("Temp", "$wiki.count()") // ToDo: Temp fix
+    it('works with custom transform in filter and split for numeric dimension', () => {
+      const ex = $('wiki')
+        .filter($('commentLength').customTransform('concatWithConcat', 'STRING').is("'100concat'"))
+        .split($('commentLength').customTransform('timesTwo', 'STRING'), 'Times Two')
+        .apply('Temp', '$wiki.count()') // ToDo: Temp fix
         .limit(8);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            "Temp": 275,
-            "Times Two": "200",
+            Temp: 275,
+            'Times Two': '200',
           },
         ]);
       });
     });
 
-    it("works with uniques", () => {
+    it('works with uniques', () => {
       const ex = ply()
-        .apply("UniqueIsRobot", $("wiki").countDistinct("$isRobot"))
-        .apply("UniqueUserChars", $("wiki").countDistinct("$userChars"))
-        .apply("UniquePages1", $("wiki").countDistinct("$page"))
-        .apply("UniquePages2", $("wiki").countDistinct("$page_unique"))
-        .apply("UniqueUsers1", $("wiki").countDistinct("$user"))
-        .apply("UniqueUsers2", $("wiki").countDistinct("$user_unique"))
-        .apply("UniqueUsers3", $("wiki").countDistinct("$user_theta"))
-        .apply("UniqueUsers4", $("wiki").countDistinct("$user_hll"))
-        .apply("Diff_Users_1_2", "$UniqueUsers1 - $UniqueUsers2")
-        .apply("Diff_Users_2_3", "$UniqueUsers2 - $UniqueUsers3")
-        .apply("Diff_Users_1_3", "$UniqueUsers1 - $UniqueUsers3")
-        .apply("Diff_Users_3_4", "$UniqueUsers3 - $UniqueUsers4");
+        .apply('UniqueIsRobot', $('wiki').countDistinct('$isRobot'))
+        .apply('UniqueUserChars', $('wiki').countDistinct('$userChars'))
+        .apply('UniquePages1', $('wiki').countDistinct('$page'))
+        .apply('UniquePages2', $('wiki').countDistinct('$page_unique'))
+        .apply('UniqueUsers1', $('wiki').countDistinct('$user'))
+        .apply('UniqueUsers2', $('wiki').countDistinct('$user_unique'))
+        .apply('UniqueUsers3', $('wiki').countDistinct('$user_theta'))
+        .apply('UniqueUsers4', $('wiki').countDistinct('$user_hll'))
+        .apply('Diff_Users_1_2', '$UniqueUsers1 - $UniqueUsers2')
+        .apply('Diff_Users_2_3', '$UniqueUsers2 - $UniqueUsers3')
+        .apply('Diff_Users_1_3', '$UniqueUsers1 - $UniqueUsers3')
+        .apply('Diff_Users_3_4', '$UniqueUsers3 - $UniqueUsers4');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Diff_Users_1_2: 1555,
@@ -1095,15 +1085,12 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with filtered unique (in expression)", () => {
+    it('works with filtered unique (in expression)', () => {
       const ex = ply()
-        .apply(
-          "UniquePagesEn",
-          $("wiki").filter("$channel == en").countDistinct("$page"),
-        )
-        .apply("UniquePagesEnOver2", "$UniquePagesEn / 2");
+        .apply('UniquePagesEn', $('wiki').filter('$channel == en').countDistinct('$page'))
+        .apply('UniquePagesEnOver2', '$UniquePagesEn / 2');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             UniquePagesEn: 63850,
@@ -1113,19 +1100,13 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with filtered uniques", () => {
+    it('works with filtered uniques', () => {
       const ex = ply()
-        .apply(
-          "UniquePagesEn",
-          $("wiki").filter("$channel == en").countDistinct("$page"),
-        )
-        .apply(
-          "UniquePagesEs",
-          $("wiki").filter("$channel == es").countDistinct("$page_unique"),
-        )
-        .apply("UniquePagesChannelDiff", "$UniquePagesEn - $UniquePagesEs");
+        .apply('UniquePagesEn', $('wiki').filter('$channel == en').countDistinct('$page'))
+        .apply('UniquePagesEs', $('wiki').filter('$channel == es').countDistinct('$page_unique'))
+        .apply('UniquePagesChannelDiff', '$UniquePagesEn - $UniquePagesEs');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             UniquePagesEn: 63850,
@@ -1136,113 +1117,113 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with multiple columns", () => {
-      const ex = $("wiki").countDistinct("$channel ++ 'lol' ++ $user");
+    it('works with multiple columns', () => {
+      const ex = $('wiki').countDistinct("$channel ++ 'lol' ++ $user");
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result).to.deep.equal(40082);
       });
     });
 
-    it("works with no applies in dimensions split dataset", () => {
+    it('works with no applies in dimensions split dataset', () => {
       const ex = ply().apply(
-        "Channels",
-        $("wiki")
-          .split("$channel", "Channel")
-          .sort("$Channel", "descending")
+        'Channels',
+        $('wiki')
+          .split('$channel', 'Channel')
+          .sort('$Channel', 'descending')
           .limit(2)
           .apply(
-            "Users",
-            $("wiki")
-              .split("$user", "User")
-              .apply("Count", $("wiki").sum("$count"))
-              .sort("$Count", "descending")
+            'Users',
+            $('wiki')
+              .split('$user', 'User')
+              .apply('Count', $('wiki').sum('$count'))
+              .sort('$Count', 'descending')
               .limit(2),
           ),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Channels: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "Users",
-                  type: "DATASET",
+                  name: 'Users',
+                  type: 'DATASET',
                 },
               ],
               data: [
                 {
-                  Channel: "zh",
+                  Channel: 'zh',
                   Users: {
                     attributes: [
                       {
-                        name: "User",
-                        type: "STRING",
+                        name: 'User',
+                        type: 'STRING',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Count: 3698,
-                        User: "Antigng-bot",
+                        User: 'Antigng-bot',
                       },
                       {
                         Count: 503,
-                        User: "和平-bot",
+                        User: '和平-bot',
                       },
                     ],
-                    keys: ["User"],
+                    keys: ['User'],
                   },
                 },
                 {
-                  Channel: "war",
+                  Channel: 'war',
                   Users: {
                     attributes: [
                       {
-                        name: "User",
-                        type: "STRING",
+                        name: 'User',
+                        type: 'STRING',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Count: 4,
-                        User: "JinJian",
+                        User: 'JinJian',
                       },
                       {
                         Count: 3,
-                        User: "Xqbot",
+                        User: 'Xqbot',
                       },
                     ],
-                    keys: ["User"],
+                    keys: ['User'],
                   },
                 },
               ],
-              keys: ["Channel"],
+              keys: ['Channel'],
             },
           },
         ]);
       });
     });
 
-    it("works with absolute", () => {
+    it('works with absolute', () => {
       const ex = ply()
-        .apply("Count", $("wiki").filter($("channel").is("en")).sum("$count"))
-        .apply("Negate", $("Count").negate())
-        .apply("Abs", $("Count").negate().absolute().negate().absolute());
+        .apply('Count', $('wiki').filter($('channel').is('en')).sum('$count'))
+        .apply('Negate', $('Count').negate())
+        .apply('Abs', $('Count').negate().absolute().negate().absolute());
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Abs: 114711,
@@ -1253,21 +1234,21 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with fancy lookup filter", () => {
+    it('works with fancy lookup filter', () => {
       const ex = ply()
         .apply(
-          "wiki",
-          $("wiki").filter(
-            $("channel")
-              .lookup("channel-lookup")
+          'wiki',
+          $('wiki').filter(
+            $('channel')
+              .lookup('channel-lookup')
               .fallback('"???"')
-              .concat(r(" ("), "$channel", r(")"))
-              .in(["English (en)", "German (de)"]),
+              .concat(r(' ('), '$channel', r(')'))
+              .in(['English (en)', 'German (de)']),
           ),
         )
-        .apply("Count", "$wiki.sum($count)");
+        .apply('Count', '$wiki.sum($count)');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 114711,
@@ -1276,90 +1257,90 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with split on a SET/STRING dimension", () => {
+    it('works with split on a SET/STRING dimension', () => {
       const ex = ply().apply(
-        "UserChars",
-        $("wiki")
-          .split("$userChars", "UserChar")
-          .apply("Count", $("wiki").sum("$count"))
-          .sort("$Count", "descending")
+        'UserChars',
+        $('wiki')
+          .split('$userChars', 'UserChar')
+          .apply('Count', $('wiki').sum('$count'))
+          .sort('$Count', 'descending')
           .limit(4),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             UserChars: {
               attributes: [
                 {
-                  name: "UserChar",
-                  type: "STRING",
+                  name: 'UserChar',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 223134,
-                  UserChar: "O",
+                  UserChar: 'O',
                 },
                 {
                   Count: 222676,
-                  UserChar: "A",
+                  UserChar: 'A',
                 },
                 {
                   Count: 216186,
-                  UserChar: "T",
+                  UserChar: 'T',
                 },
                 {
                   Count: 176986,
-                  UserChar: "B",
+                  UserChar: 'B',
                 },
               ],
-              keys: ["UserChar"],
+              keys: ['UserChar'],
             },
           },
         ]);
       });
     });
 
-    it("works with split on a SET/STRING dimension + time + filter", () => {
+    it('works with split on a SET/STRING dimension + time + filter', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter('$userChars.is("O")'))
+        .apply('wiki', $('wiki').filter('$userChars.is("O")'))
         .apply(
-          "UserChars",
-          $("wiki")
-            .split("$userChars", "UserChar")
-            .apply("Count", $("wiki").sum("$count"))
-            .sort("$Count", "descending")
+          'UserChars',
+          $('wiki')
+            .split('$userChars', 'UserChar')
+            .apply('Count', $('wiki').sum('$count'))
+            .sort('$Count', 'descending')
             .limit(2)
             .apply(
-              "Split",
-              $("wiki")
-                .split("$time.timeBucket(PT12H)", "T")
-                .apply("Count", $("wiki").sum("$count"))
-                .sort("$T", "ascending"),
+              'Split',
+              $('wiki')
+                .split('$time.timeBucket(PT12H)', 'T')
+                .apply('Count', $('wiki').sum('$count'))
+                .sort('$T', 'ascending'),
             ),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             UserChars: {
               attributes: [
                 {
-                  name: "UserChar",
-                  type: "STRING",
+                  name: 'UserChar',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Split",
-                  type: "DATASET",
+                  name: 'Split',
+                  type: 'DATASET',
                 },
               ],
               data: [
@@ -1368,114 +1349,96 @@ describe("Druid Functional", function () {
                   Split: {
                     attributes: [
                       {
-                        name: "T",
-                        type: "TIME_RANGE",
+                        name: 'T',
+                        type: 'TIME_RANGE',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Count: 93346,
                         T: {
-                          end: new Date("2015-09-12T12:00:00.000Z"),
-                          start: new Date("2015-09-12T00:00:00.000Z"),
+                          end: new Date('2015-09-12T12:00:00.000Z'),
+                          start: new Date('2015-09-12T00:00:00.000Z'),
                         },
                       },
                       {
                         Count: 129788,
                         T: {
-                          end: new Date("2015-09-13T00:00:00.000Z"),
-                          start: new Date("2015-09-12T12:00:00.000Z"),
+                          end: new Date('2015-09-13T00:00:00.000Z'),
+                          start: new Date('2015-09-12T12:00:00.000Z'),
                         },
                       },
                     ],
-                    keys: ["T"],
+                    keys: ['T'],
                   },
-                  UserChar: "O",
+                  UserChar: 'O',
                 },
                 {
                   Count: 173377,
                   Split: {
                     attributes: [
                       {
-                        name: "T",
-                        type: "TIME_RANGE",
+                        name: 'T',
+                        type: 'TIME_RANGE',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Count: 74042,
                         T: {
-                          end: new Date("2015-09-12T12:00:00.000Z"),
-                          start: new Date("2015-09-12T00:00:00.000Z"),
+                          end: new Date('2015-09-12T12:00:00.000Z'),
+                          start: new Date('2015-09-12T00:00:00.000Z'),
                         },
                       },
                       {
                         Count: 99335,
                         T: {
-                          end: new Date("2015-09-13T00:00:00.000Z"),
-                          start: new Date("2015-09-12T12:00:00.000Z"),
+                          end: new Date('2015-09-13T00:00:00.000Z'),
+                          start: new Date('2015-09-12T12:00:00.000Z'),
                         },
                       },
                     ],
-                    keys: ["T"],
+                    keys: ['T'],
                   },
-                  UserChar: "T",
+                  UserChar: 'T',
                 },
               ],
-              keys: ["UserChar"],
+              keys: ['UserChar'],
             },
           },
         ]);
       });
     });
 
-    it("works with all kinds of cool aggregates on totals level", () => {
+    it('works with all kinds of cool aggregates on totals level', () => {
       const ex = ply()
-        .apply("NumPages", $("wiki").countDistinct("$page"))
+        .apply('NumPages', $('wiki').countDistinct('$page'))
+        .apply('NumEnPages', $('wiki').filter($('channel').is('en')).countDistinct('$page'))
+        .apply('ChannelAdded', $('wiki').sum('$added'))
+        .apply('ChannelENAdded', $('wiki').filter($('channel').is('en')).sum('$added'))
+        .apply('ChannelENishAdded', $('wiki').filter($('channel').contains('en')).sum('$added'))
+        .apply('Count', $('wiki').sum('$count'))
+        .apply('CountSquareRoot', $('wiki').sum('$count').power(0.5))
+        .apply('CountSquared', $('wiki').sum('$count').power(2))
+        .apply('One', $('wiki').sum('$count').power(0))
+        .apply('AddedByDeleted', $('wiki').sum('$added').divide($('wiki').sum('$deleted')))
+        .apply('Delta95th', $('wiki').quantile('$delta_hist', 0.95))
+        .apply('Delta99thX2', $('wiki').quantile('$delta_hist', 0.99).multiply(2))
+        .apply('Delta98thEn', $('wiki').filter($('channel').is('en')).quantile('$delta_hist', 0.98))
         .apply(
-          "NumEnPages",
-          $("wiki").filter($("channel").is("en")).countDistinct("$page"),
-        )
-        .apply("ChannelAdded", $("wiki").sum("$added"))
-        .apply(
-          "ChannelENAdded",
-          $("wiki").filter($("channel").is("en")).sum("$added"),
-        )
-        .apply(
-          "ChannelENishAdded",
-          $("wiki").filter($("channel").contains("en")).sum("$added"),
-        )
-        .apply("Count", $("wiki").sum("$count"))
-        .apply("CountSquareRoot", $("wiki").sum("$count").power(0.5))
-        .apply("CountSquared", $("wiki").sum("$count").power(2))
-        .apply("One", $("wiki").sum("$count").power(0))
-        .apply(
-          "AddedByDeleted",
-          $("wiki").sum("$added").divide($("wiki").sum("$deleted")),
-        )
-        .apply("Delta95th", $("wiki").quantile("$delta_hist", 0.95))
-        .apply(
-          "Delta99thX2",
-          $("wiki").quantile("$delta_hist", 0.99).multiply(2),
-        )
-        .apply(
-          "Delta98thEn",
-          $("wiki").filter($("channel").is("en")).quantile("$delta_hist", 0.98),
-        )
-        .apply(
-          "Delta98thDe",
-          $("wiki").filter($("channel").is("de")).quantile("$delta_hist", 0.98),
+          'Delta98thDe',
+          $('wiki').filter($('channel').is('de')).quantile('$delta_hist', 0.98),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             AddedByDeleted: 24.909643797343193,
@@ -1497,30 +1460,21 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with all kinds of cool aggregates on split level", () => {
-      const ex = $("wiki")
-        .split("$isNew", "isNew")
-        .apply("NumPages", $("wiki").countDistinct("$page"))
-        .apply(
-          "NumEnPages",
-          $("wiki").filter($("channel").is("en")).countDistinct("$page"),
-        )
-        .apply("ChannelAdded", $("wiki").sum("$added"))
-        .apply(
-          "ChannelENAdded",
-          $("wiki").filter($("channel").is("en")).sum("$added"),
-        )
-        .apply(
-          "ChannelENishAdded",
-          $("wiki").filter($("channel").contains("en")).sum("$added"),
-        )
-        .apply("Count", $("wiki").sum("$count"))
-        .apply("CountSquareRoot", $("wiki").sum("$count").power(0.5))
-        .apply("CountSquared", $("wiki").sum("$count").power(2))
-        .apply("One", $("wiki").sum("$count").power(0))
+    it('works with all kinds of cool aggregates on split level', () => {
+      const ex = $('wiki')
+        .split('$isNew', 'isNew')
+        .apply('NumPages', $('wiki').countDistinct('$page'))
+        .apply('NumEnPages', $('wiki').filter($('channel').is('en')).countDistinct('$page'))
+        .apply('ChannelAdded', $('wiki').sum('$added'))
+        .apply('ChannelENAdded', $('wiki').filter($('channel').is('en')).sum('$added'))
+        .apply('ChannelENishAdded', $('wiki').filter($('channel').contains('en')).sum('$added'))
+        .apply('Count', $('wiki').sum('$count'))
+        .apply('CountSquareRoot', $('wiki').sum('$count').power(0.5))
+        .apply('CountSquared', $('wiki').sum('$count').power(2))
+        .apply('One', $('wiki').sum('$count').power(0))
         .limit(3);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             ChannelAdded: 53750772,
@@ -1550,52 +1504,52 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with no applies in time split dataset (+rawQueries monitoring)", () => {
+    it('works with no applies in time split dataset (+rawQueries monitoring)', () => {
       const ex = ply().apply(
-        "ByHour",
-        $("wiki")
-          .split($("time").timeBucket("PT12H", "Etc/UTC"), "TimeByHour")
-          .sort("$TimeByHour", "ascending")
+        'ByHour',
+        $('wiki')
+          .split($('time').timeBucket('PT12H', 'Etc/UTC'), 'TimeByHour')
+          .sort('$TimeByHour', 'ascending')
           .apply(
-            "Users",
-            $("wiki")
-              .split("$page", "Page")
-              .apply("Count", $("wiki").sum("$count"))
-              .sort("$Count", "descending")
+            'Users',
+            $('wiki')
+              .split('$page', 'Page')
+              .apply('Count', $('wiki').sum('$count'))
+              .sort('$Count', 'descending')
               .limit(2),
           ),
       );
 
       const rawQueries = [];
-      return basicExecutor(ex, { rawQueries }).then(result => {
+      return basicExecutor(ex, { rawQueries }).then((result) => {
         expect(rawQueries).to.deep.equal([
           {
-            engine: "druid",
+            engine: 'druid',
             query: {
               context: {
                 populateCache: false,
-                skipEmptyBuckets: "true",
+                skipEmptyBuckets: 'true',
                 timeout: 10000,
                 useCache: false,
               },
-              dataSource: "wikipedia-compact",
+              dataSource: 'wikipedia-compact',
               granularity: {
-                period: "PT12H",
-                timeZone: "Etc/UTC",
-                type: "period",
+                period: 'PT12H',
+                timeZone: 'Etc/UTC',
+                type: 'period',
               },
-              intervals: "2015-09-12T00Z/2015-09-13T00Z",
-              queryType: "timeseries",
+              intervals: '2015-09-12T00Z/2015-09-13T00Z',
+              queryType: 'timeseries',
             },
           },
           {
-            engine: "druid",
+            engine: 'druid',
             query: {
               aggregations: [
                 {
-                  fieldName: "count",
-                  name: "Count",
-                  type: "longSum",
+                  fieldName: 'count',
+                  name: 'Count',
+                  type: 'longSum',
                 },
               ],
               context: {
@@ -1603,27 +1557,27 @@ describe("Druid Functional", function () {
                 timeout: 10000,
                 useCache: false,
               },
-              dataSource: "wikipedia",
+              dataSource: 'wikipedia',
               dimension: {
-                dimension: "page",
-                outputName: "Page",
-                type: "default",
+                dimension: 'page',
+                outputName: 'Page',
+                type: 'default',
               },
-              granularity: "all",
-              intervals: "2015-09-12T00Z/2015-09-12T12Z",
-              metric: "Count",
-              queryType: "topN",
+              granularity: 'all',
+              intervals: '2015-09-12T00Z/2015-09-12T12Z',
+              metric: 'Count',
+              queryType: 'topN',
               threshold: 2,
             },
           },
           {
-            engine: "druid",
+            engine: 'druid',
             query: {
               aggregations: [
                 {
-                  fieldName: "count",
-                  name: "Count",
-                  type: "longSum",
+                  fieldName: 'count',
+                  name: 'Count',
+                  type: 'longSum',
                 },
               ],
               context: {
@@ -1631,16 +1585,16 @@ describe("Druid Functional", function () {
                 timeout: 10000,
                 useCache: false,
               },
-              dataSource: "wikipedia",
+              dataSource: 'wikipedia',
               dimension: {
-                dimension: "page",
-                outputName: "Page",
-                type: "default",
+                dimension: 'page',
+                outputName: 'Page',
+                type: 'default',
               },
-              granularity: "all",
-              intervals: "2015-09-12T12Z/2015-09-13T00Z",
-              metric: "Count",
-              queryType: "topN",
+              granularity: 'all',
+              intervals: '2015-09-12T12Z/2015-09-13T00Z',
+              metric: 'Count',
+              queryType: 'topN',
               threshold: 2,
             },
           },
@@ -1651,117 +1605,117 @@ describe("Druid Functional", function () {
             ByHour: {
               attributes: [
                 {
-                  name: "TimeByHour",
-                  type: "TIME_RANGE",
+                  name: 'TimeByHour',
+                  type: 'TIME_RANGE',
                 },
                 {
-                  name: "Users",
-                  type: "DATASET",
+                  name: 'Users',
+                  type: 'DATASET',
                 },
               ],
               data: [
                 {
                   TimeByHour: {
-                    end: new Date("2015-09-12T12:00:00.000Z"),
-                    start: new Date("2015-09-12T00:00:00.000Z"),
+                    end: new Date('2015-09-12T12:00:00.000Z'),
+                    start: new Date('2015-09-12T00:00:00.000Z'),
                   },
                   Users: {
                     attributes: [
                       {
-                        name: "Page",
-                        type: "STRING",
+                        name: 'Page',
+                        type: 'STRING',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Count: 120,
-                        Page: "User:Cyde/List of candidates for speedy deletion/Subpage",
+                        Page: 'User:Cyde/List of candidates for speedy deletion/Subpage',
                       },
                       {
                         Count: 106,
                         Page: "Wikipedia:Administrators' noticeboard/Incidents",
                       },
                     ],
-                    keys: ["Page"],
+                    keys: ['Page'],
                   },
                 },
                 {
                   TimeByHour: {
-                    end: new Date("2015-09-13T00:00:00.000Z"),
-                    start: new Date("2015-09-12T12:00:00.000Z"),
+                    end: new Date('2015-09-13T00:00:00.000Z'),
+                    start: new Date('2015-09-12T12:00:00.000Z'),
                   },
                   Users: {
                     attributes: [
                       {
-                        name: "Page",
-                        type: "STRING",
+                        name: 'Page',
+                        type: 'STRING',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Count: 227,
-                        Page: "Jeremy Corbyn",
+                        Page: 'Jeremy Corbyn',
                       },
                       {
                         Count: 138,
-                        Page: "Flavia Pennetta",
+                        Page: 'Flavia Pennetta',
                       },
                     ],
-                    keys: ["Page"],
+                    keys: ['Page'],
                   },
                 },
               ],
-              keys: ["TimeByHour"],
+              keys: ['TimeByHour'],
             },
           },
         ]);
       });
     });
 
-    it("does not zero fill", () => {
-      const ex = $("wiki")
+    it('does not zero fill', () => {
+      const ex = $('wiki')
         .filter('$cityName == "El Paso"')
-        .split($("time").timeBucket("PT1H", "Etc/UTC"), "TimeByHour")
-        .apply("Count", "$wiki.sum($count)")
-        .sort("$TimeByHour", "ascending");
+        .split($('time').timeBucket('PT1H', 'Etc/UTC'), 'TimeByHour')
+        .apply('Count', '$wiki.sum($count)')
+        .sort('$TimeByHour', 'ascending');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.have.length(2);
       });
     });
 
-    it("works with time split with quantile", () => {
-      const ex = $("wiki")
+    it('works with time split with quantile', () => {
+      const ex = $('wiki')
         .filter('$cityName == "El Paso"')
-        .split($("time").timeBucket("PT1H", "Etc/UTC"), "TimeByHour")
-        .apply("count", "$wiki.sum($count)")
-        .apply("Delta95th", $("wiki").quantile("$delta_hist", 0.95))
-        .sort("$TimeByHour", "ascending")
+        .split($('time').timeBucket('PT1H', 'Etc/UTC'), 'TimeByHour')
+        .apply('count', '$wiki.sum($count)')
+        .apply('Delta95th', $('wiki').quantile('$delta_hist', 0.95))
+        .sort('$TimeByHour', 'ascending')
         .limit(3);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Delta95th: -39,
             TimeByHour: {
-              end: new Date("2015-09-12T07:00:00.000Z"),
-              start: new Date("2015-09-12T06:00:00.000Z"),
+              end: new Date('2015-09-12T07:00:00.000Z'),
+              start: new Date('2015-09-12T06:00:00.000Z'),
             },
             count: 1,
           },
           {
             Delta95th: 0,
             TimeByHour: {
-              end: new Date("2015-09-12T17:00:00.000Z"),
-              start: new Date("2015-09-12T16:00:00.000Z"),
+              end: new Date('2015-09-12T17:00:00.000Z'),
+              start: new Date('2015-09-12T16:00:00.000Z'),
             },
             count: 1,
           },
@@ -1769,128 +1723,122 @@ describe("Druid Functional", function () {
       });
     });
 
-    it.skip("works with single apply on string column (total)", () => {
-      const ex = $("wiki").apply(
-        "count",
-        '$wiki.sum($commentLengthStr.cast("NUMBER"))',
-      );
+    it.skip('works with single apply on string column (total)', () => {
+      const ex = $('wiki').apply('count', '$wiki.sum($commentLengthStr.cast("NUMBER"))');
 
-      return basicExecutor(ex).then(result => {
-        console.log("result", result);
+      return basicExecutor(ex).then((result) => {
+        console.log('result', result);
         expect(result.toJS().data).to.deep.equal([]);
       });
     });
 
-    it("works with applies on string columns", () => {
-      const ex = $("wiki")
-        .split($("channel"), "Channel")
-        .apply("sum_cl", "$wiki.sum($commentLength)")
-        .apply("sum_cls", '$wiki.sum($commentLengthStr.cast("NUMBER"))')
-        .apply("min_cls", '$wiki.min($commentLengthStr.cast("NUMBER"))')
-        .apply("max_cls", '$wiki.max($commentLengthStr.cast("NUMBER"))')
+    it('works with applies on string columns', () => {
+      const ex = $('wiki')
+        .split($('channel'), 'Channel')
+        .apply('sum_cl', '$wiki.sum($commentLength)')
+        .apply('sum_cls', '$wiki.sum($commentLengthStr.cast("NUMBER"))')
+        .apply('min_cls', '$wiki.min($commentLengthStr.cast("NUMBER"))')
+        .apply('max_cls', '$wiki.max($commentLengthStr.cast("NUMBER"))')
         .limit(3);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             max_cls: 253,
             min_cls: 1,
             sum_cl: 267579,
             sum_cls: 267579,
-            Channel: "ar",
+            Channel: 'ar',
           },
           {
             max_cls: 253,
             min_cls: 4,
             sum_cl: 12192,
             sum_cls: 12192,
-            Channel: "be",
+            Channel: 'be',
           },
           {
             max_cls: 253,
             min_cls: 1,
             sum_cl: 46398,
             sum_cls: 46398,
-            Channel: "bg",
+            Channel: 'bg',
           },
         ]);
       });
     });
 
-    it("works with contains (case sensitive) filter", () => {
+    it('works with contains (case sensitive) filter', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("page").contains("wiki")))
+        .apply('wiki', $('wiki').filter($('page').contains('wiki')))
         .apply(
-          "Pages",
-          $("wiki")
-            .split($("page"), "Page")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+          'Pages',
+          $('wiki')
+            .split($('page'), 'Page')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(3),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Pages: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 25,
-                  Page: "Wikipedia:Checklijst langdurig structureel vandalisme/1wikideb1",
+                  Page: 'Wikipedia:Checklijst langdurig structureel vandalisme/1wikideb1',
                 },
                 {
                   Count: 12,
-                  Page: "Diskuse s wikipedistou:Zdenekk2",
+                  Page: 'Diskuse s wikipedistou:Zdenekk2',
                 },
                 {
                   Count: 11,
-                  Page: "Overleg gebruiker:Wwikix",
+                  Page: 'Overleg gebruiker:Wwikix',
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
           },
         ]);
       });
     });
 
-    it("works with contains(ignoreCase) filter", () => {
+    it('works with contains(ignoreCase) filter', () => {
       const ex = ply()
+        .apply('wiki', $('wiki').filter($('page').contains('wiki', 'ignoreCase')))
         .apply(
-          "wiki",
-          $("wiki").filter($("page").contains("wiki", "ignoreCase")),
-        )
-        .apply(
-          "Pages",
-          $("wiki")
-            .split($("page"), "Page")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+          'Pages',
+          $('wiki')
+            .split($('page'), 'Page')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(3),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Pages: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -1900,268 +1848,262 @@ describe("Druid Functional", function () {
                 },
                 {
                   Count: 186,
-                  Page: "Wikipedia:Vandalismusmeldung",
+                  Page: 'Wikipedia:Vandalismusmeldung',
                 },
                 {
                   Count: 146,
-                  Page: "Wikipedia:Administrator intervention against vandalism",
+                  Page: 'Wikipedia:Administrator intervention against vandalism',
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
           },
         ]);
       });
     });
 
-    it("works with match() filter", () => {
+    it('works with match() filter', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("page").match("^.*Bot.*$")))
+        .apply('wiki', $('wiki').filter($('page').match('^.*Bot.*$')))
         .apply(
-          "Pages",
-          $("wiki")
-            .split($("page"), "Page")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+          'Pages',
+          $('wiki')
+            .split($('page'), 'Page')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(3),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Pages: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 54,
-                  Page: "Wikipedia:Usernames for administrator attention/Bot",
+                  Page: 'Wikipedia:Usernames for administrator attention/Bot',
                 },
                 {
                   Count: 23,
-                  Page: "Usuari:TronaBot/log:Activitat reversors per hores",
+                  Page: 'Usuari:TronaBot/log:Activitat reversors per hores',
                 },
                 {
                   Count: 23,
-                  Page: "Usuari:TronaBot/log:Reversions i patrullatge",
+                  Page: 'Usuari:TronaBot/log:Reversions i patrullatge',
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
           },
         ]);
       });
     });
 
-    it("works with rank boosting", () => {
-      const ex = $("wiki")
+    it('works with rank boosting', () => {
+      const ex = $('wiki')
         .filter('$cityName.contains("An", "ignoreCase")')
-        .split("$cityName", "City")
+        .split('$cityName', 'City')
         .apply(
-          "Rank",
+          'Rank',
           '$wiki.sum($count) * $City.transformCase("lowerCase").match("\\ban").then(10).fallback(1)',
         )
-        .sort("$Rank", "descending")
+        .sort('$Rank', 'descending')
         .limit(7);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
-          { City: "Los Angeles", Rank: 520 },
-          { City: "Milan", Rank: 267 },
-          { City: "Hanoi", Rank: 183 },
-          { City: "Bangalore", Rank: 181 },
-          { City: "Santo Antonio de Jesus", Rank: 140 },
-          { City: "Santiago", Rank: 135 },
-          { City: "Ankara", Rank: 110 },
+          { City: 'Los Angeles', Rank: 520 },
+          { City: 'Milan', Rank: 267 },
+          { City: 'Hanoi', Rank: 183 },
+          { City: 'Bangalore', Rank: 181 },
+          { City: 'Santo Antonio de Jesus', Rank: 140 },
+          { City: 'Santiago', Rank: 135 },
+          { City: 'Ankara', Rank: 110 },
         ]);
       });
     });
 
-    it("works name reassignment", () => {
-      const ex = $("wiki")
-        .split(
-          '$cityName.fallback("NA") ++ "-" ++ $countryIsoCode.fallback("NA")',
-          "cityName",
-        )
-        .apply("Count", "$wiki.sum($count)")
-        .sort("$Count", "descending")
+    it('works name reassignment', () => {
+      const ex = $('wiki')
+        .split('$cityName.fallback("NA") ++ "-" ++ $countryIsoCode.fallback("NA")', 'cityName')
+        .apply('Count', '$wiki.sum($count)')
+        .sort('$Count', 'descending')
         .limit(3);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 354931,
-            cityName: "NA-NA",
+            cityName: 'NA-NA',
           },
           {
             Count: 1033,
-            cityName: "NA-IT",
+            cityName: 'NA-IT',
           },
           {
             Count: 942,
-            cityName: "NA-JP",
+            cityName: 'NA-JP',
           },
         ]);
       });
     });
 
-    it("works with split sort on string", () => {
+    it('works with split sort on string', () => {
       const ex = ply().apply(
-        "Channels",
-        $("wiki")
-          .split("$channel", "Channel")
-          .sort("$Channel", "ascending")
-          .limit(3),
+        'Channels',
+        $('wiki').split('$channel', 'Channel').sort('$Channel', 'ascending').limit(3),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Channels: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
               ],
               data: [
                 {
-                  Channel: "ar",
+                  Channel: 'ar',
                 },
                 {
-                  Channel: "be",
+                  Channel: 'be',
                 },
                 {
-                  Channel: "bg",
+                  Channel: 'bg',
                 },
               ],
-              keys: ["Channel"],
+              keys: ['Channel'],
             },
           },
         ]);
       });
     });
 
-    it("works with concat split", () => {
+    it('works with concat split', () => {
       const ex = ply().apply(
-        "Pages",
-        $("wiki")
-          .split("'!!!<' ++ $page ++ '>!!!'", "Page")
-          .apply("Count", "$wiki.sum($count)")
-          .sort("$Count", "descending")
+        'Pages',
+        $('wiki')
+          .split("'!!!<' ++ $page ++ '>!!!'", 'Page')
+          .apply('Count', '$wiki.sum($count)')
+          .sort('$Count', 'descending')
           .limit(3),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Pages: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 318,
-                  Page: "!!!<Jeremy Corbyn>!!!",
+                  Page: '!!!<Jeremy Corbyn>!!!',
                 },
                 {
                   Count: 255,
-                  Page: "!!!<User:Cyde/List of candidates for speedy deletion/Subpage>!!!",
+                  Page: '!!!<User:Cyde/List of candidates for speedy deletion/Subpage>!!!',
                 },
                 {
                   Count: 228,
                   Page: "!!!<Wikipedia:Administrators' noticeboard/Incidents>!!!",
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
           },
         ]);
       });
     });
 
-    it("works with substr split", () => {
+    it('works with substr split', () => {
       const ex = ply().apply(
-        "Pages",
-        $("wiki")
-          .split("$page.substr(0,2)", "Page")
-          .apply("Count", "$wiki.sum($count)")
-          .sort("$Count", "descending")
+        'Pages',
+        $('wiki')
+          .split('$page.substr(0,2)', 'Page')
+          .apply('Count', '$wiki.sum($count)')
+          .sort('$Count', 'descending')
           .limit(3),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Pages: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 22503,
-                  Page: "Ca",
+                  Page: 'Ca',
                 },
                 {
                   Count: 20338,
-                  Page: "Us",
+                  Page: 'Us',
                 },
                 {
                   Count: 15332,
-                  Page: "Wi",
+                  Page: 'Wi',
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
           },
         ]);
       });
     });
 
-    it("works with extract split", () => {
+    it('works with extract split', () => {
       const ex = ply().apply(
-        "Pages",
-        $("wiki")
-          .split($("page").extract("([0-9]+\\.[0-9]+\\.[0-9]+)"), "Page")
-          .apply("Count", "$wiki.sum($count)")
-          .sort("$Count", "descending")
+        'Pages',
+        $('wiki')
+          .split($('page').extract('([0-9]+\\.[0-9]+\\.[0-9]+)'), 'Page')
+          .apply('Count', '$wiki.sum($count)')
+          .sort('$Count', 'descending')
           .limit(3),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Pages: {
               attributes: [
                 {
-                  name: "Page",
-                  type: "STRING",
+                  name: 'Page',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -2171,187 +2113,181 @@ describe("Druid Functional", function () {
                 },
                 {
                   Count: 22,
-                  Page: "75.108.94",
+                  Page: '75.108.94',
                 },
                 {
                   Count: 14,
-                  Page: "120.29.65",
+                  Page: '120.29.65',
                 },
               ],
-              keys: ["Page"],
+              keys: ['Page'],
             },
           },
         ]);
       });
     });
 
-    it("works with constant lookup split", () => {
-      const ex = $("wiki")
-        .split(r("en").lookup("channel-lookup"), "Channel")
-        .apply("Count", "$wiki.sum($count)");
+    it('works with constant lookup split', () => {
+      const ex = $('wiki')
+        .split(r('en').lookup('channel-lookup'), 'Channel')
+        .apply('Count', '$wiki.sum($count)');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            Channel: "English",
+            Channel: 'English',
             Count: 392443,
           },
         ]);
       });
     });
 
-    it("works with lookup split", () => {
+    it('works with lookup split', () => {
       const ex = ply()
         .apply(
-          "Channels",
-          $("wiki")
-            .split($("channel").lookup("channel-lookup"), "Channel")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+          'Channels',
+          $('wiki')
+            .split($('channel').lookup('channel-lookup'), 'Channel')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(4),
         )
         .apply(
-          "ChannelFallbackLOL",
-          $("wiki")
-            .split(
-              $("channel").lookup("channel-lookup").fallback("LOL"),
-              "Channel",
-            )
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+          'ChannelFallbackLOL',
+          $('wiki')
+            .split($('channel').lookup('channel-lookup').fallback('LOL'), 'Channel')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(4),
         )
         .apply(
-          "ChannelFallbackSelf",
-          $("wiki")
-            .split(
-              $("channel").lookup("channel-lookup").fallback("$channel"),
-              "Channel",
-            )
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+          'ChannelFallbackSelf',
+          $('wiki')
+            .split($('channel').lookup('channel-lookup').fallback('$channel'), 'Channel')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(4),
         )
         .apply(
-          "ChannelFancy",
-          $("wiki")
+          'ChannelFancy',
+          $('wiki')
             .split(
-              $("channel")
-                .lookup("channel-lookup")
+              $('channel')
+                .lookup('channel-lookup')
                 .fallback('"???"')
-                .concat(r(" ("), "$channel", r(")")),
-              "Channel",
+                .concat(r(' ('), '$channel', r(')')),
+              'Channel',
             )
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Count", "descending")
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Count', 'descending')
             .limit(4),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             ChannelFallbackLOL: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
-                  Channel: "LOL",
+                  Channel: 'LOL',
                   Count: 227040,
                 },
                 {
-                  Channel: "English",
+                  Channel: 'English',
                   Count: 114711,
                 },
                 {
-                  Channel: "French",
+                  Channel: 'French',
                   Count: 21285,
                 },
                 {
-                  Channel: "Russian",
+                  Channel: 'Russian',
                   Count: 14031,
                 },
               ],
-              keys: ["Channel"],
+              keys: ['Channel'],
             },
             ChannelFallbackSelf: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
-                  Channel: "English",
+                  Channel: 'English',
                   Count: 114711,
                 },
                 {
-                  Channel: "vi",
+                  Channel: 'vi',
                   Count: 99010,
                 },
                 {
-                  Channel: "de",
+                  Channel: 'de',
                   Count: 25103,
                 },
                 {
-                  Channel: "French",
+                  Channel: 'French',
                   Count: 21285,
                 },
               ],
-              keys: ["Channel"],
+              keys: ['Channel'],
             },
             ChannelFancy: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
-                  Channel: "English (en)",
+                  Channel: 'English (en)',
                   Count: 114711,
                 },
                 {
-                  Channel: "??? (vi)",
+                  Channel: '??? (vi)',
                   Count: 99010,
                 },
                 {
-                  Channel: "??? (de)",
+                  Channel: '??? (de)',
                   Count: 25103,
                 },
                 {
-                  Channel: "French (fr)",
+                  Channel: 'French (fr)',
                   Count: 21285,
                 },
               ],
-              keys: ["Channel"],
+              keys: ['Channel'],
             },
             Channels: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -2360,40 +2296,40 @@ describe("Druid Functional", function () {
                   Count: 227040,
                 },
                 {
-                  Channel: "English",
+                  Channel: 'English',
                   Count: 114711,
                 },
                 {
-                  Channel: "French",
+                  Channel: 'French',
                   Count: 21285,
                 },
                 {
-                  Channel: "Russian",
+                  Channel: 'Russian',
                   Count: 14031,
                 },
               ],
-              keys: ["Channel"],
+              keys: ['Channel'],
             },
           },
         ]);
       });
     });
 
-    it("works with count distinct on lookup", () => {
+    it('works with count distinct on lookup', () => {
       const ex = ply()
-        .apply("CntDistChannelNormal", $("wiki").countDistinct($("channel")))
+        .apply('CntDistChannelNormal', $('wiki').countDistinct($('channel')))
         .apply(
-          "CntDistChannelLookup",
-          $("wiki").countDistinct($("channel").lookup("channel-lookup")),
+          'CntDistChannelLookup',
+          $('wiki').countDistinct($('channel').lookup('channel-lookup')),
         )
         .apply(
-          "CntDistChannelLookupXPage",
-          $("wiki").countDistinct(
-            $("channel").lookup("channel-lookup").concat("$page.substr(0, 1)"),
+          'CntDistChannelLookupXPage',
+          $('wiki').countDistinct(
+            $('channel').lookup('channel-lookup').concat('$page.substr(0, 1)'),
           ),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             CntDistChannelLookup: 5,
@@ -2404,22 +2340,16 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with quantiles (histogram)", () => {
+    it('works with quantiles (histogram)', () => {
       const ex = ply()
-        .apply("deltaHist95", $("wiki").quantile($("delta_hist"), 0.95))
-        .apply("deltaHistMedian", $("wiki").quantile($("delta_hist"), 0.5))
-        .apply("deltaBucket95", $("wiki").quantile($("deltaBucket100"), 0.95))
-        .apply(
-          "deltaBucketMedian",
-          $("wiki").quantile($("deltaBucket100"), 0.5),
-        )
-        .apply("commentLength95", $("wiki").quantile($("commentLength"), 0.95))
-        .apply(
-          "commentLengthMedian",
-          $("wiki").quantile($("commentLength"), 0.5),
-        );
+        .apply('deltaHist95', $('wiki').quantile($('delta_hist'), 0.95))
+        .apply('deltaHistMedian', $('wiki').quantile($('delta_hist'), 0.5))
+        .apply('deltaBucket95', $('wiki').quantile($('deltaBucket100'), 0.95))
+        .apply('deltaBucketMedian', $('wiki').quantile($('deltaBucket100'), 0.5))
+        .apply('commentLength95', $('wiki').quantile($('commentLength'), 0.95))
+        .apply('commentLengthMedian', $('wiki').quantile($('commentLength'), 0.5));
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             commentLength95: 145.46353,
@@ -2433,144 +2363,118 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with quantiles (quantile doubles)", () => {
+    it('works with quantiles (quantile doubles)', () => {
       const ex = ply()
+        .apply('deltaQuantiles95', $('wiki').quantile($('delta_quantilesDoublesSketch'), 0.95))
         .apply(
-          "deltaQuantiles95",
-          $("wiki").quantile($("delta_quantilesDoublesSketch"), 0.95),
+          'deltaQuantilesMedian',
+          $('wiki').quantile($('delta_quantilesDoublesSketch'), 0.5, 'k=256'),
+        )
+        .apply('commentLength95', $('wiki').quantile($('commentLength'), 0.95, 'v=2'))
+        .apply('commentLengthMedian', $('wiki').quantile($('commentLength'), 0.5, 'v=2,k=256'))
+        .apply(
+          'DeltaDq98thEn',
+          $('wiki').filter($('channel').is('en')).quantile('$delta_quantilesDoublesSketch', 0.98),
         )
         .apply(
-          "deltaQuantilesMedian",
-          $("wiki").quantile($("delta_quantilesDoublesSketch"), 0.5, "k=256"),
-        )
-        .apply(
-          "commentLength95",
-          $("wiki").quantile($("commentLength"), 0.95, "v=2"),
-        )
-        .apply(
-          "commentLengthMedian",
-          $("wiki").quantile($("commentLength"), 0.5, "v=2,k=256"),
-        )
-        .apply(
-          "DeltaDq98thEn",
-          $("wiki")
-            .filter($("channel").is("en"))
-            .quantile("$delta_quantilesDoublesSketch", 0.98),
-        )
-        .apply(
-          "DeltaDq98thDe",
-          $("wiki")
-            .filter($("channel").is("de"))
-            .quantile("$delta_quantilesDoublesSketch", 0.98),
+          'DeltaDq98thDe',
+          $('wiki').filter($('channel').is('de')).quantile('$delta_quantilesDoublesSketch', 0.98),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         const datum = result.toJS().data[0];
         expect(datum).to.have.keys(
-          "deltaQuantiles95",
-          "commentLength95",
-          "deltaQuantilesMedian",
-          "commentLengthMedian",
-          "DeltaDq98thEn",
-          "DeltaDq98thDe",
+          'deltaQuantiles95',
+          'commentLength95',
+          'deltaQuantilesMedian',
+          'commentLengthMedian',
+          'DeltaDq98thEn',
+          'DeltaDq98thDe',
         );
 
         // These quantile doubles are non-deterministic - so just check against some bounds
-        const between = (k, min, max) =>
-          expect(min < datum[k] && datum[k] < max).to.equal(true);
-        between("deltaQuantiles95", 500, 2000);
-        between("commentLength95", 100, 200);
-        between("deltaQuantilesMedian", 8, 40);
-        between("commentLengthMedian", 15, 60);
+        const between = (k, min, max) => expect(min < datum[k] && datum[k] < max).to.equal(true);
+        between('deltaQuantiles95', 500, 2000);
+        between('commentLength95', 100, 200);
+        between('deltaQuantilesMedian', 8, 40);
+        between('commentLengthMedian', 15, 60);
       });
     });
 
-    it("works with lookup IS filter", () => {
-      const ex = $("wiki")
-        .filter($("channel").lookup("channel-lookup").is("English"))
-        .sum("$count");
+    it('works with lookup IS filter', () => {
+      const ex = $('wiki')
+        .filter($('channel').lookup('channel-lookup').is('English'))
+        .sum('$count');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result).to.deep.equal(114711);
       });
     });
 
-    it("works with lookup IS filter with fallback", () => {
-      const ex = $("wiki")
+    it('works with lookup IS filter with fallback', () => {
+      const ex = $('wiki')
         .filter(
-          $("channel")
-            .lookup("channel-lookup")
-            .fallback(r("LOL"))
-            .overlap(["English", "LOL"]),
+          $('channel').lookup('channel-lookup').fallback(r('LOL')).overlap(['English', 'LOL']),
         )
-        .split($("channel").lookup("channel-lookup").fallback(r("LOL")), "C")
-        .apply("Count", "$wiki.sum($count)")
-        .sort("$Count", "descending")
+        .split($('channel').lookup('channel-lookup').fallback(r('LOL')), 'C')
+        .apply('Count', '$wiki.sum($count)')
+        .sort('$Count', 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 227040,
-            C: "LOL",
+            C: 'LOL',
           },
           {
             Count: 114711,
-            C: "English",
+            C: 'English',
           },
         ]);
       });
     });
 
-    it("works with lookup CONTAINS filter", () => {
-      const ex = $("wiki")
-        .filter(
-          $("channel").lookup("channel-lookup").contains("Eng", "ignoreCase"),
-        )
-        .sum("$count");
+    it('works with lookup CONTAINS filter', () => {
+      const ex = $('wiki')
+        .filter($('channel').lookup('channel-lookup').contains('Eng', 'ignoreCase'))
+        .sum('$count');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result).to.deep.equal(114711);
       });
     });
 
-    it("works with string manipulation after cast action", () => {
-      const ex = $("wiki")
-        .filter(
-          $("deltaBucket100")
-            .absolute()
-            .cast("STRING")
-            .substr(0, 5)
-            .cast("NUMBER")
-            .is(1000),
-        )
-        .sum("$count");
+    it('works with string manipulation after cast action', () => {
+      const ex = $('wiki')
+        .filter($('deltaBucket100').absolute().cast('STRING').substr(0, 5).cast('NUMBER').is(1000))
+        .sum('$count');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result).to.deep.equal(1621);
       });
     });
 
-    it("works with numeric fallback", () => {
-      const ex = $("wiki").sum("($added / ($added - $added)).fallback(10)");
+    it('works with numeric fallback', () => {
+      const ex = $('wiki').sum('($added / ($added - $added)).fallback(10)');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result).to.deep.equal(109204 * 10);
       });
     });
 
-    it("works with resplit agg on total", () => {
+    it('works with resplit agg on total', () => {
       const ex = ply()
-        .apply("Count", $("wiki").sum("$count"))
+        .apply('Count', $('wiki').sum('$count'))
         .apply(
-          "Quantile",
-          $("wiki")
-            .split("$time.timeBucket(PT1H)")
-            .apply("C", "$wiki.sum($count)")
-            .quantile("$C", 0.95),
+          'Quantile',
+          $('wiki')
+            .split('$time.timeBucket(PT1H)')
+            .apply('C', '$wiki.sum($count)')
+            .quantile('$C', 0.95),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 392443,
@@ -2580,25 +2484,25 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with resplit agg on total with average 1", () => {
+    it('works with resplit agg on total with average 1', () => {
       const range = TimeRange.fromJS({
-        start: new Date("2015-09-12T12:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T12:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const filterEx = $("time").overlap(range);
+      const filterEx = $('time').overlap(range);
 
       const ex = ply()
-        .apply("Count", $("wiki").sum("$count"))
+        .apply('Count', $('wiki').sum('$count'))
         .apply(
-          "HourlyCd",
-          $("wiki")
+          'HourlyCd',
+          $('wiki')
             .filter(filterEx)
-            .split("$time.timeBucket(PT6H)")
-            .apply("C", "$wiki.countDistinct($user)")
-            .average("$C"),
+            .split('$time.timeBucket(PT6H)')
+            .apply('C', '$wiki.countDistinct($user)')
+            .average('$C'),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 392443,
@@ -2608,25 +2512,25 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with resplit agg on total with average 2", () => {
+    it('works with resplit agg on total with average 2', () => {
       const range = TimeRange.fromJS({
-        start: new Date("2015-09-12T12:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T12:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const filterEx = $("time").overlap(range);
+      const filterEx = $('time').overlap(range);
 
       const ex = ply()
-        .apply("Count", $("wiki").sum("$count"))
+        .apply('Count', $('wiki').sum('$count'))
         .apply(
-          "AddedByHourlyCd",
-          $("wiki")
+          'AddedByHourlyCd',
+          $('wiki')
             .filter(filterEx)
-            .split("$time.timeBucket(PT1H)")
-            .apply("C", "$wiki.sum($added) / $wiki.countDistinct($user)")
-            .average("$C"),
+            .split('$time.timeBucket(PT1H)')
+            .apply('C', '$wiki.sum($added) / $wiki.countDistinct($user)')
+            .average('$C'),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             AddedByHourlyCd: 1260.6697346331532,
@@ -2636,44 +2540,44 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with resplit agg on different dimension split", () => {
-      const ex = $("wiki")
-        .split("$channel", "Channel")
-        .apply("Count", $("wiki").sum("$count"))
+    it('works with resplit agg on different dimension split', () => {
+      const ex = $('wiki')
+        .split('$channel', 'Channel')
+        .apply('Count', $('wiki').sum('$count'))
         .apply(
-          "Quantile",
-          $("wiki")
-            .split("$time.timeBucket(PT1H)")
-            .apply("C", "$wiki.sum($count)")
-            .quantile("$C", 0.95),
+          'Quantile',
+          $('wiki')
+            .split('$time.timeBucket(PT1H)')
+            .apply('C', '$wiki.sum($count)')
+            .quantile('$C', 0.95),
         )
-        .sort("$Count", "descending")
+        .sort('$Count', 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            Channel: "en",
+            Channel: 'en',
             Count: 114711,
             Quantile: 6313.8,
           },
           {
-            Channel: "vi",
+            Channel: 'vi',
             Count: 99010,
             Quantile: 10748.596,
           },
           {
-            Channel: "de",
+            Channel: 'de',
             Count: 25103,
             Quantile: 1737.9999,
           },
           {
-            Channel: "fr",
+            Channel: 'fr',
             Count: 21285,
             Quantile: 1379.4,
           },
           {
-            Channel: "ru",
+            Channel: 'ru',
             Count: 14031,
             Quantile: 898.5999,
           },
@@ -2681,49 +2585,45 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with resplit agg on different dimension split with sum", () => {
-      const ex = $("wiki")
-        .split("$channel", "Channel")
-        .apply("Count", $("wiki").sum("$count"))
+    it('works with resplit agg on different dimension split with sum', () => {
+      const ex = $('wiki')
+        .split('$channel', 'Channel')
+        .apply('Count', $('wiki').sum('$count'))
         .apply(
-          "SumCountDistinct",
-          $("wiki")
-            .filter(
-              $("countryIsoCode")
-                .in(["US", "IT"])
-                .and($("cityName").isnt(null)),
-            )
-            .split("$time.timeBucket(PT1H)")
-            .apply("C", "$wiki.countDistinct($user)")
-            .sum("$C"),
+          'SumCountDistinct',
+          $('wiki')
+            .filter($('countryIsoCode').in(['US', 'IT']).and($('cityName').isnt(null)))
+            .split('$time.timeBucket(PT1H)')
+            .apply('C', '$wiki.countDistinct($user)')
+            .sum('$C'),
         )
-        .sort("$Count", "descending")
+        .sort('$Count', 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            Channel: "en",
+            Channel: 'en',
             Count: 114711,
             SumCountDistinct: 2342,
           },
           {
-            Channel: "vi",
+            Channel: 'vi',
             Count: 99010,
             SumCountDistinct: 2,
           },
           {
-            Channel: "de",
+            Channel: 'de',
             Count: 25103,
             SumCountDistinct: 3,
           },
           {
-            Channel: "fr",
+            Channel: 'fr',
             Count: 21285,
             SumCountDistinct: 23,
           },
           {
-            Channel: "ru",
+            Channel: 'ru',
             Count: 14031,
             SumCountDistinct: 10,
           },
@@ -2731,59 +2631,59 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with resplit agg on same dimension split", () => {
-      const ex = $("wiki")
-        .split("$time.timeBucket(PT1H)", "Hour")
-        .apply("Count", $("wiki").sum("$count"))
+    it('works with resplit agg on same dimension split', () => {
+      const ex = $('wiki')
+        .split('$time.timeBucket(PT1H)', 'Hour')
+        .apply('Count', $('wiki').sum('$count'))
         .apply(
-          "Quantile",
-          $("wiki")
-            .split("$time.timeBucket(PT1H)")
-            .apply("C", "$wiki.sum($count)")
-            .quantile("$C", 0.95),
+          'Quantile',
+          $('wiki')
+            .split('$time.timeBucket(PT1H)')
+            .apply('C', '$wiki.sum($count)')
+            .quantile('$C', 0.95),
         )
-        .sort("$Count", "descending")
+        .sort('$Count', 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 23001,
             Hour: {
-              end: new Date("2015-09-12T18:00:00.000Z"),
-              start: new Date("2015-09-12T17:00:00.000Z"),
+              end: new Date('2015-09-12T18:00:00.000Z'),
+              start: new Date('2015-09-12T17:00:00.000Z'),
             },
             Quantile: 23001,
           },
           {
             Count: 22373,
             Hour: {
-              end: new Date("2015-09-12T08:00:00.000Z"),
-              start: new Date("2015-09-12T07:00:00.000Z"),
+              end: new Date('2015-09-12T08:00:00.000Z'),
+              start: new Date('2015-09-12T07:00:00.000Z'),
             },
             Quantile: 22373,
           },
           {
             Count: 21699,
             Hour: {
-              end: new Date("2015-09-12T19:00:00.000Z"),
-              start: new Date("2015-09-12T18:00:00.000Z"),
+              end: new Date('2015-09-12T19:00:00.000Z'),
+              start: new Date('2015-09-12T18:00:00.000Z'),
             },
             Quantile: 21699,
           },
           {
             Count: 21194,
             Hour: {
-              end: new Date("2015-09-12T07:00:00.000Z"),
-              start: new Date("2015-09-12T06:00:00.000Z"),
+              end: new Date('2015-09-12T07:00:00.000Z'),
+              start: new Date('2015-09-12T06:00:00.000Z'),
             },
             Quantile: 21194,
           },
           {
             Count: 20725,
             Hour: {
-              end: new Date("2015-09-12T14:00:00.000Z"),
-              start: new Date("2015-09-12T13:00:00.000Z"),
+              end: new Date('2015-09-12T14:00:00.000Z'),
+              start: new Date('2015-09-12T13:00:00.000Z'),
             },
             Quantile: 20725,
           },
@@ -2791,51 +2691,51 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with resplit agg on more granular dimension split", () => {
-      const ex = $("wiki")
-        .split("$time.timeBucket(PT6H)", "Hour")
-        .apply("Count", $("wiki").sum("$count"))
+    it('works with resplit agg on more granular dimension split', () => {
+      const ex = $('wiki')
+        .split('$time.timeBucket(PT6H)', 'Hour')
+        .apply('Count', $('wiki').sum('$count'))
         .apply(
-          "Quantile",
-          $("wiki")
-            .split("$time.timeBucket(PT1H)")
-            .apply("C", "$wiki.sum($count)")
-            .quantile("$C", 0.95),
+          'Quantile',
+          $('wiki')
+            .split('$time.timeBucket(PT1H)')
+            .apply('C', '$wiki.sum($count)')
+            .quantile('$C', 0.95),
         )
-        .sort("$Count", "descending")
+        .sort('$Count', 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 118793,
             Hour: {
-              end: new Date("2015-09-12T18:00:00.000Z"),
-              start: new Date("2015-09-12T12:00:00.000Z"),
+              end: new Date('2015-09-12T18:00:00.000Z'),
+              start: new Date('2015-09-12T12:00:00.000Z'),
             },
             Quantile: 22318.2,
           },
           {
             Count: 110986,
             Hour: {
-              end: new Date("2015-09-12T12:00:00.000Z"),
-              start: new Date("2015-09-12T06:00:00.000Z"),
+              end: new Date('2015-09-12T12:00:00.000Z'),
+              start: new Date('2015-09-12T06:00:00.000Z'),
             },
             Quantile: 22019.299,
           },
           {
             Count: 108525,
             Hour: {
-              end: new Date("2015-09-13T00:00:00.000Z"),
-              start: new Date("2015-09-12T18:00:00.000Z"),
+              end: new Date('2015-09-13T00:00:00.000Z'),
+              start: new Date('2015-09-12T18:00:00.000Z'),
             },
             Quantile: 21228,
           },
           {
             Count: 54139,
             Hour: {
-              end: new Date("2015-09-12T06:00:00.000Z"),
-              start: new Date("2015-09-12T00:00:00.000Z"),
+              end: new Date('2015-09-12T06:00:00.000Z'),
+              start: new Date('2015-09-12T00:00:00.000Z'),
             },
             Quantile: 12258.2,
           },
@@ -2843,14 +2743,14 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with fractional bucketing", () => {
-      const ex = $("wiki")
-        .split($("commentLength").divide(13).numberBucket(0.1), "Point1")
-        .apply("Count", $("wiki").sum("$count"))
-        .sort("$Point1", "ascending")
+    it('works with fractional bucketing', () => {
+      const ex = $('wiki')
+        .split($('commentLength').divide(13).numberBucket(0.1), 'Point1')
+        .apply('Count', $('wiki').sum('$count'))
+        .sort('$Point1', 'ascending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 734,
@@ -2891,36 +2791,36 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with resplit agg on more granular dimension split (+filters)", () => {
-      const ex = $("wiki")
-        .split("$time.timeBucket(PT6H)", "Hour")
-        .apply("Count", $("wiki").sum("$count"))
+    it('works with resplit agg on more granular dimension split (+filters)', () => {
+      const ex = $('wiki')
+        .split('$time.timeBucket(PT6H)', 'Hour')
+        .apply('Count', $('wiki').sum('$count'))
         .apply(
-          "QuantileEn",
-          $("wiki")
+          'QuantileEn',
+          $('wiki')
             .filter('$channel == "en"')
-            .split("$time.timeBucket(PT1H)")
-            .apply("C", "$wiki.sum($count)")
-            .quantile("$C", 0.95),
+            .split('$time.timeBucket(PT1H)')
+            .apply('C', '$wiki.sum($count)')
+            .quantile('$C', 0.95),
         )
         .apply(
-          "QuantileHe",
-          $("wiki")
+          'QuantileHe',
+          $('wiki')
             .filter('$channel == "he"')
-            .split("$time.timeBucket(PT1H)")
-            .apply("C", "$wiki.sum($count)")
-            .quantile("$C", 0.95),
+            .split('$time.timeBucket(PT1H)')
+            .apply('C', '$wiki.sum($count)')
+            .quantile('$C', 0.95),
         )
-        .sort("$Count", "descending")
+        .sort('$Count', 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 118793,
             Hour: {
-              end: new Date("2015-09-12T18:00:00.000Z"),
-              start: new Date("2015-09-12T12:00:00.000Z"),
+              end: new Date('2015-09-12T18:00:00.000Z'),
+              start: new Date('2015-09-12T12:00:00.000Z'),
             },
             QuantileEn: 6117.6,
             QuantileHe: 186.09999,
@@ -2928,8 +2828,8 @@ describe("Druid Functional", function () {
           {
             Count: 110986,
             Hour: {
-              end: new Date("2015-09-12T12:00:00.000Z"),
-              start: new Date("2015-09-12T06:00:00.000Z"),
+              end: new Date('2015-09-12T12:00:00.000Z'),
+              start: new Date('2015-09-12T06:00:00.000Z'),
             },
             QuantileEn: 4333.8,
             QuantileHe: 175.3,
@@ -2937,8 +2837,8 @@ describe("Druid Functional", function () {
           {
             Count: 108525,
             Hour: {
-              end: new Date("2015-09-13T00:00:00.000Z"),
-              start: new Date("2015-09-12T18:00:00.000Z"),
+              end: new Date('2015-09-13T00:00:00.000Z'),
+              start: new Date('2015-09-12T18:00:00.000Z'),
             },
             QuantileEn: 6544.1,
             QuantileHe: 172.8,
@@ -2946,8 +2846,8 @@ describe("Druid Functional", function () {
           {
             Count: 54139,
             Hour: {
-              end: new Date("2015-09-12T06:00:00.000Z"),
-              start: new Date("2015-09-12T00:00:00.000Z"),
+              end: new Date('2015-09-12T06:00:00.000Z'),
+              start: new Date('2015-09-12T00:00:00.000Z'),
             },
             QuantileEn: 4995.7,
             QuantileHe: 51.1,
@@ -2956,88 +2856,88 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with resplit Hourly-Active-Users agg", () => {
-      const ex = $("wiki")
-        .split("$channel", "Channel")
-        .apply("Count", $("wiki").sum("$count"))
-        .apply("Unique Users", $("wiki").countDistinct($("user")))
+    it('works with resplit Hourly-Active-Users agg', () => {
+      const ex = $('wiki')
+        .split('$channel', 'Channel')
+        .apply('Count', $('wiki').sum('$count'))
+        .apply('Unique Users', $('wiki').countDistinct($('user')))
         .apply(
-          "HAU",
-          $("wiki")
-            .split($("time").timeBucket("P1D"))
-            .apply("U", "$wiki.countDistinct($user)")
-            .average("$U"),
+          'HAU',
+          $('wiki')
+            .split($('time').timeBucket('P1D'))
+            .apply('U', '$wiki.countDistinct($user)')
+            .average('$U'),
         )
-        .sort("$Count", "descending")
+        .sort('$Count', 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            "Channel": "en",
-            "Count": 114711,
-            "HAU": 16609,
-            "Unique Users": 16609,
+            Channel: 'en',
+            Count: 114711,
+            HAU: 16609,
+            'Unique Users': 16609,
           },
           {
-            "Channel": "vi",
-            "Count": 99010,
-            "HAU": 201,
-            "Unique Users": 201,
+            Channel: 'vi',
+            Count: 99010,
+            HAU: 201,
+            'Unique Users': 201,
           },
           {
-            "Channel": "de",
-            "Count": 25103,
-            "HAU": 2950,
-            "Unique Users": 2950,
+            Channel: 'de',
+            Count: 25103,
+            HAU: 2950,
+            'Unique Users': 2950,
           },
           {
-            "Channel": "fr",
-            "Count": 21285,
-            "HAU": 2757,
-            "Unique Users": 2757,
+            Channel: 'fr',
+            Count: 21285,
+            HAU: 2757,
+            'Unique Users': 2757,
           },
           {
-            "Channel": "ru",
-            "Count": 14031,
-            "HAU": 2184,
-            "Unique Users": 2184,
+            Channel: 'ru',
+            Count: 14031,
+            HAU: 2184,
+            'Unique Users': 2184,
           },
         ]);
       });
     });
 
-    it("works with absolute number split", () => {
+    it('works with absolute number split', () => {
       const ex = ply()
         .apply(
-          "AbsSplitAsc",
-          $("wiki")
-            .split($("commentLength").absolute(), "AbsCommentLength")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$AbsCommentLength", "ascending")
+          'AbsSplitAsc',
+          $('wiki')
+            .split($('commentLength').absolute(), 'AbsCommentLength')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$AbsCommentLength', 'ascending')
             .limit(3),
         )
         .apply(
-          "AbsSplitDesc",
-          $("wiki")
-            .split($("commentLength").absolute(), "AbsCommentLength")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$AbsCommentLength", "descending")
+          'AbsSplitDesc',
+          $('wiki')
+            .split($('commentLength').absolute(), 'AbsCommentLength')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$AbsCommentLength', 'descending')
             .limit(3),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             AbsSplitAsc: {
               attributes: [
                 {
-                  name: "AbsCommentLength",
-                  type: "NUMBER",
+                  name: 'AbsCommentLength',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -3054,17 +2954,17 @@ describe("Druid Functional", function () {
                   Count: 1976,
                 },
               ],
-              keys: ["AbsCommentLength"],
+              keys: ['AbsCommentLength'],
             },
             AbsSplitDesc: {
               attributes: [
                 {
-                  name: "AbsCommentLength",
-                  type: "NUMBER",
+                  name: 'AbsCommentLength',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -3081,44 +2981,44 @@ describe("Druid Functional", function () {
                   Count: 243,
                 },
               ],
-              keys: ["AbsCommentLength"],
+              keys: ['AbsCommentLength'],
             },
           },
         ]);
       });
     });
 
-    it("works with bucketed number split", () => {
+    it('works with bucketed number split', () => {
       const ex = ply()
         .apply(
-          "BucketSplitAsc",
-          $("wiki")
-            .split($("commentLength").numberBucket(5), "Bucket")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Bucket", "ascending")
+          'BucketSplitAsc',
+          $('wiki')
+            .split($('commentLength').numberBucket(5), 'Bucket')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Bucket', 'ascending')
             .limit(3),
         )
         .apply(
-          "BucketSplitDesc",
-          $("wiki")
-            .split($("commentLength").numberBucket(5), "Bucket")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Bucket", "descending")
+          'BucketSplitDesc',
+          $('wiki')
+            .split($('commentLength').numberBucket(5), 'Bucket')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Bucket', 'descending')
             .limit(3),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             BucketSplitAsc: {
               attributes: [
                 {
-                  name: "Bucket",
-                  type: "NUMBER_RANGE",
+                  name: 'Bucket',
+                  type: 'NUMBER_RANGE',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -3144,17 +3044,17 @@ describe("Druid Functional", function () {
                   Count: 70628,
                 },
               ],
-              keys: ["Bucket"],
+              keys: ['Bucket'],
             },
             BucketSplitDesc: {
               attributes: [
                 {
-                  name: "Bucket",
-                  type: "NUMBER_RANGE",
+                  name: 'Bucket',
+                  type: 'NUMBER_RANGE',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -3180,44 +3080,44 @@ describe("Druid Functional", function () {
                   Count: 1687,
                 },
               ],
-              keys: ["Bucket"],
+              keys: ['Bucket'],
             },
           },
         ]);
       });
     });
 
-    it("works with bucketed split on derived column", () => {
+    it('works with bucketed split on derived column', () => {
       const ex = ply()
         .apply(
-          "BucketSplitAsc",
-          $("wiki")
-            .split($("comment").length().numberBucket(5), "Bucket")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Bucket", "ascending")
+          'BucketSplitAsc',
+          $('wiki')
+            .split($('comment').length().numberBucket(5), 'Bucket')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Bucket', 'ascending')
             .limit(3),
         )
         .apply(
-          "BucketSplitDesc",
-          $("wiki")
-            .split($("comment").length().numberBucket(5), "Bucket")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$Bucket", "descending")
+          'BucketSplitDesc',
+          $('wiki')
+            .split($('comment').length().numberBucket(5), 'Bucket')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$Bucket', 'descending')
             .limit(3),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             BucketSplitAsc: {
               attributes: [
                 {
-                  name: "Bucket",
-                  type: "NUMBER_RANGE",
+                  name: 'Bucket',
+                  type: 'NUMBER_RANGE',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -3243,17 +3143,17 @@ describe("Druid Functional", function () {
                   Count: 70626,
                 },
               ],
-              keys: ["Bucket"],
+              keys: ['Bucket'],
             },
             BucketSplitDesc: {
               attributes: [
                 {
-                  name: "Bucket",
-                  type: "NUMBER_RANGE",
+                  name: 'Bucket',
+                  type: 'NUMBER_RANGE',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
@@ -3279,280 +3179,263 @@ describe("Druid Functional", function () {
                   Count: 1687,
                 },
               ],
-              keys: ["Bucket"],
+              keys: ['Bucket'],
             },
           },
         ]);
       });
     });
 
-    it("can timeBucket a primary time column", () => {
+    it('can timeBucket a primary time column', () => {
       const ex = ply().apply(
-        "Time",
-        $("wiki")
-          .split($("time").timeBucket("PT1H", "Etc/UTC"), "TimeCol")
-          .sort("$TimeCol", "descending")
+        'Time',
+        $('wiki')
+          .split($('time').timeBucket('PT1H', 'Etc/UTC'), 'TimeCol')
+          .sort('$TimeCol', 'descending')
           .limit(2),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Time: {
               attributes: [
                 {
-                  name: "TimeCol",
-                  type: "TIME_RANGE",
+                  name: 'TimeCol',
+                  type: 'TIME_RANGE',
                 },
               ],
               data: [
                 {
                   TimeCol: {
-                    end: new Date("2015-09-13T00:00:00.000Z"),
-                    start: new Date("2015-09-12T23:00:00.000Z"),
+                    end: new Date('2015-09-13T00:00:00.000Z'),
+                    start: new Date('2015-09-12T23:00:00.000Z'),
                   },
                 },
                 {
                   TimeCol: {
-                    end: new Date("2015-09-12T23:00:00.000Z"),
-                    start: new Date("2015-09-12T22:00:00.000Z"),
+                    end: new Date('2015-09-12T23:00:00.000Z'),
+                    start: new Date('2015-09-12T22:00:00.000Z'),
                   },
                 },
               ],
-              keys: ["TimeCol"],
+              keys: ['TimeCol'],
             },
           },
         ]);
       });
     });
 
-    it("can timeBucket a secondary time column", () => {
+    it('can timeBucket a secondary time column', () => {
       const ex = ply().apply(
-        "TimeLater",
-        $("wiki")
-          .split(
-            $("sometimeLater").timeBucket("PT1H", "Etc/UTC"),
-            "SometimeLater",
-          )
-          .limit(5),
+        'TimeLater',
+        $('wiki').split($('sometimeLater').timeBucket('PT1H', 'Etc/UTC'), 'SometimeLater').limit(5),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             TimeLater: {
               attributes: [
                 {
-                  name: "SometimeLater",
-                  type: "TIME_RANGE",
+                  name: 'SometimeLater',
+                  type: 'TIME_RANGE',
                 },
               ],
               data: [
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T01:00:00.000Z"),
-                    start: new Date("2016-09-12T00:00:00.000Z"),
+                    end: new Date('2016-09-12T01:00:00.000Z'),
+                    start: new Date('2016-09-12T00:00:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T02:00:00.000Z"),
-                    start: new Date("2016-09-12T01:00:00.000Z"),
+                    end: new Date('2016-09-12T02:00:00.000Z'),
+                    start: new Date('2016-09-12T01:00:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T03:00:00.000Z"),
-                    start: new Date("2016-09-12T02:00:00.000Z"),
+                    end: new Date('2016-09-12T03:00:00.000Z'),
+                    start: new Date('2016-09-12T02:00:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T04:00:00.000Z"),
-                    start: new Date("2016-09-12T03:00:00.000Z"),
+                    end: new Date('2016-09-12T04:00:00.000Z'),
+                    start: new Date('2016-09-12T03:00:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T05:00:00.000Z"),
-                    start: new Date("2016-09-12T04:00:00.000Z"),
+                    end: new Date('2016-09-12T05:00:00.000Z'),
+                    start: new Date('2016-09-12T04:00:00.000Z'),
                   },
                 },
               ],
-              keys: ["SometimeLater"],
+              keys: ['SometimeLater'],
             },
           },
         ]);
       });
     });
 
-    it("can timeBucket a secondary time column (complex duration, tz - Asia/Kolkata)", () => {
+    it('can timeBucket a secondary time column (complex duration, tz - Asia/Kolkata)', () => {
       const ex = ply().apply(
-        "TimeLater",
-        $("wiki")
-          .split(
-            $("sometimeLater").timeBucket("PT3H", "Asia/Kolkata"),
-            "SometimeLater",
-          )
+        'TimeLater',
+        $('wiki')
+          .split($('sometimeLater').timeBucket('PT3H', 'Asia/Kolkata'), 'SometimeLater')
           .limit(5),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             TimeLater: {
               attributes: [
                 {
-                  name: "SometimeLater",
-                  type: "TIME_RANGE",
+                  name: 'SometimeLater',
+                  type: 'TIME_RANGE',
                 },
               ],
               data: [
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T03:30:00.000Z"),
-                    start: new Date("2016-09-12T00:30:00.000Z"),
+                    end: new Date('2016-09-12T03:30:00.000Z'),
+                    start: new Date('2016-09-12T00:30:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T06:30:00.000Z"),
-                    start: new Date("2016-09-12T03:30:00.000Z"),
+                    end: new Date('2016-09-12T06:30:00.000Z'),
+                    start: new Date('2016-09-12T03:30:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T09:30:00.000Z"),
-                    start: new Date("2016-09-12T06:30:00.000Z"),
+                    end: new Date('2016-09-12T09:30:00.000Z'),
+                    start: new Date('2016-09-12T06:30:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T12:30:00.000Z"),
-                    start: new Date("2016-09-12T09:30:00.000Z"),
+                    end: new Date('2016-09-12T12:30:00.000Z'),
+                    start: new Date('2016-09-12T09:30:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T15:30:00.000Z"),
-                    start: new Date("2016-09-12T12:30:00.000Z"),
+                    end: new Date('2016-09-12T15:30:00.000Z'),
+                    start: new Date('2016-09-12T12:30:00.000Z'),
                   },
                 },
               ],
-              keys: ["SometimeLater"],
+              keys: ['SometimeLater'],
             },
           },
         ]);
       });
     });
 
-    it.skip("can timeBucket a secondary time column (complex duration, tz - Kathmandu)", () => {
+    it.skip('can timeBucket a secondary time column (complex duration, tz - Kathmandu)', () => {
       // ToDo: wait for https://github.com/druid-io/druid/issues/4073
       const ex = ply().apply(
-        "TimeLater",
-        $("wiki")
-          .split(
-            $("sometimeLater").timeBucket("PT3H", "Asia/Kathmandu"),
-            "SometimeLater",
-          )
+        'TimeLater',
+        $('wiki')
+          .split($('sometimeLater').timeBucket('PT3H', 'Asia/Kathmandu'), 'SometimeLater')
           .limit(5),
       );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             TimeLater: {
               attributes: [
                 {
-                  name: "SometimeLater",
-                  type: "TIME_RANGE",
+                  name: 'SometimeLater',
+                  type: 'TIME_RANGE',
                 },
               ],
               data: [
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T03:15:00.000Z"),
-                    start: new Date("2016-09-12T00:15:00.000Z"),
+                    end: new Date('2016-09-12T03:15:00.000Z'),
+                    start: new Date('2016-09-12T00:15:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T06:15:00.000Z"),
-                    start: new Date("2016-09-12T03:15:00.000Z"),
+                    end: new Date('2016-09-12T06:15:00.000Z'),
+                    start: new Date('2016-09-12T03:15:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T09:15:00.000Z"),
-                    start: new Date("2016-09-12T06:15:00.000Z"),
+                    end: new Date('2016-09-12T09:15:00.000Z'),
+                    start: new Date('2016-09-12T06:15:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T12:15:00.000Z"),
-                    start: new Date("2016-09-12T09:15:00.000Z"),
+                    end: new Date('2016-09-12T12:15:00.000Z'),
+                    start: new Date('2016-09-12T09:15:00.000Z'),
                   },
                 },
                 {
                   SometimeLater: {
-                    end: new Date("2016-09-12T15:15:00.000Z"),
-                    start: new Date("2016-09-12T12:15:00.000Z"),
+                    end: new Date('2016-09-12T15:15:00.000Z'),
+                    start: new Date('2016-09-12T12:15:00.000Z'),
                   },
                 },
               ],
-              keys: ["SometimeLater"],
+              keys: ['SometimeLater'],
             },
           },
         ]);
       });
     });
 
-    it("can do compare column", () => {
+    it('can do compare column', () => {
       const prevRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T00:00:00Z"),
-        end: new Date("2015-09-12T12:00:00Z"),
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-12T12:00:00Z'),
       });
       const mainRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T12:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T12:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const ex = $("wiki")
-        .split($("channel"), "Channel")
-        .apply(
-          "CountPrev",
-          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
-        )
-        .apply(
-          "CountMain",
-          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
-        )
-        .sort($("CountMain"), "descending")
+      const ex = $('wiki')
+        .split($('channel'), 'Channel')
+        .apply('CountPrev', $('wiki').filter($('time').overlap(prevRange)).sum('$count'))
+        .apply('CountMain', $('wiki').filter($('time').overlap(mainRange)).sum('$count'))
+        .sort($('CountMain'), 'descending')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            Channel: "en",
+            Channel: 'en',
             CountMain: 68606,
             CountPrev: 46105,
           },
           {
-            Channel: "vi",
+            Channel: 'vi',
             CountMain: 48521,
             CountPrev: 50489,
           },
           {
-            Channel: "de",
+            Channel: 'de',
             CountMain: 15857,
             CountPrev: 9246,
           },
           {
-            Channel: "fr",
+            Channel: 'fr',
             CountMain: 14779,
             CountPrev: 6506,
           },
           {
-            Channel: "uz",
+            Channel: 'uz',
             CountMain: 10064,
             CountPrev: 8,
           },
@@ -3560,47 +3443,41 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("can timeBucket on joined column", () => {
+    it('can timeBucket on joined column', () => {
       const prevRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T00:00:00Z"),
-        end: new Date("2015-09-12T12:00:00Z"),
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-12T12:00:00Z'),
       });
       const mainRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T12:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T12:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const ex = $("wiki")
+      const ex = $('wiki')
         .split(
-          $("time")
+          $('time')
             .overlap(mainRange)
-            .then($("time"))
-            .fallback($("time").timeShift(Duration.fromJS("PT12H")))
-            .timeBucket("PT2H"),
-          "TimeJoin",
+            .then($('time'))
+            .fallback($('time').timeShift(Duration.fromJS('PT12H')))
+            .timeBucket('PT2H'),
+          'TimeJoin',
         )
-        .apply(
-          "CountPrev",
-          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
-        )
-        .apply(
-          "CountMain",
-          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
-        );
+        .apply('CountPrev', $('wiki').filter($('time').overlap(prevRange)).sum('$count'))
+        .apply('CountMain', $('wiki').filter($('time').overlap(mainRange)).sum('$count'));
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS()).to.deep.equal({
           attributes: [
             {
-              name: "TimeJoin",
-              type: "TIME_RANGE",
+              name: 'TimeJoin',
+              type: 'TIME_RANGE',
             },
             {
-              name: "CountPrev",
-              type: "NUMBER",
+              name: 'CountPrev',
+              type: 'NUMBER',
             },
             {
-              name: "CountMain",
-              type: "NUMBER",
+              name: 'CountMain',
+              type: 'NUMBER',
             },
           ],
           data: [
@@ -3608,94 +3485,88 @@ describe("Druid Functional", function () {
               CountMain: 37816,
               CountPrev: 14123,
               TimeJoin: {
-                end: new Date("2015-09-12T14:00:00.000Z"),
-                start: new Date("2015-09-12T12:00:00.000Z"),
+                end: new Date('2015-09-12T14:00:00.000Z'),
+                start: new Date('2015-09-12T12:00:00.000Z'),
               },
             },
             {
               CountMain: 38388,
               CountPrev: 19168,
               TimeJoin: {
-                end: new Date("2015-09-12T16:00:00.000Z"),
-                start: new Date("2015-09-12T14:00:00.000Z"),
+                end: new Date('2015-09-12T16:00:00.000Z'),
+                start: new Date('2015-09-12T14:00:00.000Z'),
               },
             },
             {
               CountMain: 42589,
               CountPrev: 20848,
               TimeJoin: {
-                end: new Date("2015-09-12T18:00:00.000Z"),
-                start: new Date("2015-09-12T16:00:00.000Z"),
+                end: new Date('2015-09-12T18:00:00.000Z'),
+                start: new Date('2015-09-12T16:00:00.000Z'),
               },
             },
             {
               CountMain: 41828,
               CountPrev: 43567,
               TimeJoin: {
-                end: new Date("2015-09-12T20:00:00.000Z"),
-                start: new Date("2015-09-12T18:00:00.000Z"),
+                end: new Date('2015-09-12T20:00:00.000Z'),
+                start: new Date('2015-09-12T18:00:00.000Z'),
               },
             },
             {
               CountMain: 35977,
               CountPrev: 33259,
               TimeJoin: {
-                end: new Date("2015-09-12T22:00:00.000Z"),
-                start: new Date("2015-09-12T20:00:00.000Z"),
+                end: new Date('2015-09-12T22:00:00.000Z'),
+                start: new Date('2015-09-12T20:00:00.000Z'),
               },
             },
             {
               CountMain: 30720,
               CountPrev: 34160,
               TimeJoin: {
-                end: new Date("2015-09-13T00:00:00.000Z"),
-                start: new Date("2015-09-12T22:00:00.000Z"),
+                end: new Date('2015-09-13T00:00:00.000Z'),
+                start: new Date('2015-09-12T22:00:00.000Z'),
               },
             },
           ],
-          keys: ["TimeJoin"],
+          keys: ['TimeJoin'],
         });
       });
     });
 
-    it("can timeBucket on joined column with limit", () => {
+    it('can timeBucket on joined column with limit', () => {
       const prevRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T00:00:00Z"),
-        end: new Date("2015-09-12T12:00:00Z"),
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-12T12:00:00Z'),
       });
       const mainRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T12:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T12:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const ex = $("wiki")
+      const ex = $('wiki')
         .split(
-          $("time")
+          $('time')
             .overlap(mainRange)
-            .then($("time"))
-            .fallback($("time").timeShift(Duration.fromJS("PT12H")))
-            .timeBucket("PT2H"),
-          "TimeJoin",
+            .then($('time'))
+            .fallback($('time').timeShift(Duration.fromJS('PT12H')))
+            .timeBucket('PT2H'),
+          'TimeJoin',
         )
-        .apply("CountAll", $("wiki").sum("$count"))
-        .apply(
-          "CountPrev",
-          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
-        )
-        .apply(
-          "CountMain",
-          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
-        )
+        .apply('CountAll', $('wiki').sum('$count'))
+        .apply('CountPrev', $('wiki').filter($('time').overlap(prevRange)).sum('$count'))
+        .apply('CountMain', $('wiki').filter($('time').overlap(mainRange)).sum('$count'))
         .limit(3);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             CountAll: 51939,
             CountMain: 37816,
             CountPrev: 14123,
             TimeJoin: {
-              end: new Date("2015-09-12T14:00:00.000Z"),
-              start: new Date("2015-09-12T12:00:00.000Z"),
+              end: new Date('2015-09-12T14:00:00.000Z'),
+              start: new Date('2015-09-12T12:00:00.000Z'),
             },
           },
           {
@@ -3703,8 +3574,8 @@ describe("Druid Functional", function () {
             CountMain: 38388,
             CountPrev: 19168,
             TimeJoin: {
-              end: new Date("2015-09-12T16:00:00.000Z"),
-              start: new Date("2015-09-12T14:00:00.000Z"),
+              end: new Date('2015-09-12T16:00:00.000Z'),
+              start: new Date('2015-09-12T14:00:00.000Z'),
             },
           },
           {
@@ -3712,343 +3583,313 @@ describe("Druid Functional", function () {
             CountMain: 42589,
             CountPrev: 20848,
             TimeJoin: {
-              end: new Date("2015-09-12T18:00:00.000Z"),
-              start: new Date("2015-09-12T16:00:00.000Z"),
+              end: new Date('2015-09-12T18:00:00.000Z'),
+              start: new Date('2015-09-12T16:00:00.000Z'),
             },
           },
         ]);
       });
     });
 
-    it("can timeBucket on joined and overlapping column with limit", () => {
+    it('can timeBucket on joined and overlapping column with limit', () => {
       const prevRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T00:00:00Z"),
-        end: new Date("2015-09-12T22:00:00Z"),
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-12T22:00:00Z'),
       });
       const mainRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T02:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T02:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const ex = $("wiki")
+      const ex = $('wiki')
         .split(
-          $("time")
+          $('time')
             .overlap(mainRange)
-            .then($("time"))
-            .fallback($("time").timeShift(Duration.fromJS("PT2H")))
-            .timeBucket("PT1H"),
-          "TimeJoin",
+            .then($('time'))
+            .fallback($('time').timeShift(Duration.fromJS('PT2H')))
+            .timeBucket('PT1H'),
+          'TimeJoin',
         )
-        .apply(
-          "CountPrev",
-          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
-        )
-        .apply(
-          "CountMain",
-          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
-        )
+        .apply('CountPrev', $('wiki').filter($('time').overlap(prevRange)).sum('$count'))
+        .apply('CountMain', $('wiki').filter($('time').overlap(mainRange)).sum('$count'))
         .limit(6);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             CountMain: 11020,
             CountPrev: 2681,
             TimeJoin: {
-              end: new Date("2015-09-12T03:00:00.000Z"),
-              start: new Date("2015-09-12T02:00:00.000Z"),
+              end: new Date('2015-09-12T03:00:00.000Z'),
+              start: new Date('2015-09-12T02:00:00.000Z'),
             },
           },
           {
             CountMain: 8148,
             CountPrev: 11442,
             TimeJoin: {
-              end: new Date("2015-09-12T04:00:00.000Z"),
-              start: new Date("2015-09-12T03:00:00.000Z"),
+              end: new Date('2015-09-12T04:00:00.000Z'),
+              start: new Date('2015-09-12T03:00:00.000Z'),
             },
           },
           {
             CountMain: 8240,
             CountPrev: 11020,
             TimeJoin: {
-              end: new Date("2015-09-12T05:00:00.000Z"),
-              start: new Date("2015-09-12T04:00:00.000Z"),
+              end: new Date('2015-09-12T05:00:00.000Z'),
+              start: new Date('2015-09-12T04:00:00.000Z'),
             },
           },
           {
             CountMain: 12608,
             CountPrev: 8148,
             TimeJoin: {
-              end: new Date("2015-09-12T06:00:00.000Z"),
-              start: new Date("2015-09-12T05:00:00.000Z"),
+              end: new Date('2015-09-12T06:00:00.000Z'),
+              start: new Date('2015-09-12T05:00:00.000Z'),
             },
           },
           {
             CountMain: 21194,
             CountPrev: 8240,
             TimeJoin: {
-              end: new Date("2015-09-12T07:00:00.000Z"),
-              start: new Date("2015-09-12T06:00:00.000Z"),
+              end: new Date('2015-09-12T07:00:00.000Z'),
+              start: new Date('2015-09-12T06:00:00.000Z'),
             },
           },
           {
             CountMain: 22373,
             CountPrev: 12608,
             TimeJoin: {
-              end: new Date("2015-09-12T08:00:00.000Z"),
-              start: new Date("2015-09-12T07:00:00.000Z"),
+              end: new Date('2015-09-12T08:00:00.000Z'),
+              start: new Date('2015-09-12T07:00:00.000Z'),
             },
           },
         ]);
       });
     });
 
-    it("can timeBucket on joined and overlapping column with limit and sort", () => {
+    it('can timeBucket on joined and overlapping column with limit and sort', () => {
       const prevRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T00:00:00Z"),
-        end: new Date("2015-09-12T22:00:00Z"),
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-12T22:00:00Z'),
       });
       const mainRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T02:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T02:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const ex = $("wiki")
+      const ex = $('wiki')
         .split(
-          $("time")
+          $('time')
             .overlap(mainRange)
-            .then($("time"))
-            .fallback($("time").timeShift(Duration.fromJS("PT2H")))
-            .timeBucket("PT1H"),
-          "TimeJoin",
+            .then($('time'))
+            .fallback($('time').timeShift(Duration.fromJS('PT2H')))
+            .timeBucket('PT1H'),
+          'TimeJoin',
         )
-        .apply(
-          "CountPrev",
-          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
-        )
-        .apply(
-          "CountMain",
-          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
-        )
-        .sort("$CountMain", "descending")
+        .apply('CountPrev', $('wiki').filter($('time').overlap(prevRange)).sum('$count'))
+        .apply('CountMain', $('wiki').filter($('time').overlap(mainRange)).sum('$count'))
+        .sort('$CountMain', 'descending')
         .limit(6);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             CountMain: 23001,
             CountPrev: 19655,
             TimeJoin: {
-              end: new Date("2015-09-12T18:00:00.000Z"),
-              start: new Date("2015-09-12T17:00:00.000Z"),
+              end: new Date('2015-09-12T18:00:00.000Z'),
+              start: new Date('2015-09-12T17:00:00.000Z'),
             },
           },
           {
             CountMain: 22373,
             CountPrev: 12608,
             TimeJoin: {
-              end: new Date("2015-09-12T08:00:00.000Z"),
-              start: new Date("2015-09-12T07:00:00.000Z"),
+              end: new Date('2015-09-12T08:00:00.000Z'),
+              start: new Date('2015-09-12T07:00:00.000Z'),
             },
           },
           {
             CountMain: 21699,
             CountPrev: 19588,
             TimeJoin: {
-              end: new Date("2015-09-12T19:00:00.000Z"),
-              start: new Date("2015-09-12T18:00:00.000Z"),
+              end: new Date('2015-09-12T19:00:00.000Z'),
+              start: new Date('2015-09-12T18:00:00.000Z'),
             },
           },
           {
             CountMain: 21194,
             CountPrev: 8240,
             TimeJoin: {
-              end: new Date("2015-09-12T07:00:00.000Z"),
-              start: new Date("2015-09-12T06:00:00.000Z"),
+              end: new Date('2015-09-12T07:00:00.000Z'),
+              start: new Date('2015-09-12T06:00:00.000Z'),
             },
           },
           {
             CountMain: 20725,
             CountPrev: 16240,
             TimeJoin: {
-              end: new Date("2015-09-12T14:00:00.000Z"),
-              start: new Date("2015-09-12T13:00:00.000Z"),
+              end: new Date('2015-09-12T14:00:00.000Z'),
+              start: new Date('2015-09-12T13:00:00.000Z'),
             },
           },
           {
             CountMain: 20129,
             CountPrev: 23001,
             TimeJoin: {
-              end: new Date("2015-09-12T20:00:00.000Z"),
-              start: new Date("2015-09-12T19:00:00.000Z"),
+              end: new Date('2015-09-12T20:00:00.000Z'),
+              start: new Date('2015-09-12T19:00:00.000Z'),
             },
           },
         ]);
       });
     });
 
-    it("can timeBucket on joined column with sub-split", () => {
+    it('can timeBucket on joined column with sub-split', () => {
       const prevRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T00:00:00Z"),
-        end: new Date("2015-09-12T12:00:00Z"),
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-12T12:00:00Z'),
       });
       const mainRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T12:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T12:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const ex = $("wiki")
+      const ex = $('wiki')
         .split(
-          $("time")
+          $('time')
             .overlap(mainRange)
-            .then($("time"))
-            .fallback($("time").timeShift(Duration.fromJS("PT12H")))
-            .timeBucket("PT2H"),
-          "TimeJoin",
+            .then($('time'))
+            .fallback($('time').timeShift(Duration.fromJS('PT12H')))
+            .timeBucket('PT2H'),
+          'TimeJoin',
         )
-        .apply("CountAll", $("wiki").sum("$count"))
-        .apply(
-          "CountPrev",
-          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
-        )
-        .apply(
-          "CountMain",
-          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
-        )
+        .apply('CountAll', $('wiki').sum('$count'))
+        .apply('CountPrev', $('wiki').filter($('time').overlap(prevRange)).sum('$count'))
+        .apply('CountMain', $('wiki').filter($('time').overlap(mainRange)).sum('$count'))
         .limit(2)
         .apply(
-          "Channels",
-          $("wiki")
-            .split("$channel", "Channel")
-            .apply(
-              "CountPrev",
-              $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
-            )
-            .apply(
-              "CountMain",
-              $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
-            )
-            .sort("$CountMain", "descending")
+          'Channels',
+          $('wiki')
+            .split('$channel', 'Channel')
+            .apply('CountPrev', $('wiki').filter($('time').overlap(prevRange)).sum('$count'))
+            .apply('CountMain', $('wiki').filter($('time').overlap(mainRange)).sum('$count'))
+            .sort('$CountMain', 'descending')
             .limit(2),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Channels: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "CountPrev",
-                  type: "NUMBER",
+                  name: 'CountPrev',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "CountMain",
-                  type: "NUMBER",
+                  name: 'CountMain',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
-                  Channel: "en",
+                  Channel: 'en',
                   CountMain: 10698,
                   CountPrev: 5906,
                 },
                 {
-                  Channel: "vi",
+                  Channel: 'vi',
                   CountMain: 7650,
                   CountPrev: 3771,
                 },
               ],
-              keys: ["Channel"],
+              keys: ['Channel'],
             },
             CountAll: 51939,
             CountMain: 37816,
             CountPrev: 14123,
             TimeJoin: {
-              end: new Date("2015-09-12T14:00:00.000Z"),
-              start: new Date("2015-09-12T12:00:00.000Z"),
+              end: new Date('2015-09-12T14:00:00.000Z'),
+              start: new Date('2015-09-12T12:00:00.000Z'),
             },
           },
           {
             Channels: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "CountPrev",
-                  type: "NUMBER",
+                  name: 'CountPrev',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "CountMain",
-                  type: "NUMBER",
+                  name: 'CountMain',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
-                  Channel: "en",
+                  Channel: 'en',
                   CountMain: 10844,
                   CountPrev: 9439,
                 },
                 {
-                  Channel: "vi",
+                  Channel: 'vi',
                   CountMain: 9258,
                   CountPrev: 2969,
                 },
               ],
-              keys: ["Channel"],
+              keys: ['Channel'],
             },
             CountAll: 57556,
             CountMain: 38388,
             CountPrev: 19168,
             TimeJoin: {
-              end: new Date("2015-09-12T16:00:00.000Z"),
-              start: new Date("2015-09-12T14:00:00.000Z"),
+              end: new Date('2015-09-12T16:00:00.000Z'),
+              start: new Date('2015-09-12T14:00:00.000Z'),
             },
           },
         ]);
       });
     });
 
-    it("can timeBucket on joined column (sort by delta)", () => {
+    it('can timeBucket on joined column (sort by delta)', () => {
       const prevRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T00:00:00Z"),
-        end: new Date("2015-09-12T12:00:00Z"),
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-12T12:00:00Z'),
       });
       const mainRange = TimeRange.fromJS({
-        start: new Date("2015-09-12T12:00:00Z"),
-        end: new Date("2015-09-13T00:00:00Z"),
+        start: new Date('2015-09-12T12:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
       });
-      const ex = $("wiki")
+      const ex = $('wiki')
         .split(
-          $("time")
+          $('time')
             .overlap(mainRange)
-            .then($("time"))
-            .fallback($("time").timeShift(Duration.fromJS("PT12H")))
-            .timeBucket("PT2H"),
-          "TimeJoin",
+            .then($('time'))
+            .fallback($('time').timeShift(Duration.fromJS('PT12H')))
+            .timeBucket('PT2H'),
+          'TimeJoin',
         )
-        .apply(
-          "CountPrev",
-          $("wiki").filter($("time").overlap(prevRange)).sum("$count"),
-        )
-        .apply(
-          "CountMain",
-          $("wiki").filter($("time").overlap(mainRange)).sum("$count"),
-        )
-        .apply("Delta", "$CountMain - $CountPrev")
-        .sort("$Delta", "descending");
+        .apply('CountPrev', $('wiki').filter($('time').overlap(prevRange)).sum('$count'))
+        .apply('CountMain', $('wiki').filter($('time').overlap(mainRange)).sum('$count'))
+        .apply('Delta', '$CountMain - $CountPrev')
+        .sort('$Delta', 'descending');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             CountMain: 37816,
             CountPrev: 14123,
             Delta: 23693,
             TimeJoin: {
-              end: new Date("2015-09-12T14:00:00.000Z"),
-              start: new Date("2015-09-12T12:00:00.000Z"),
+              end: new Date('2015-09-12T14:00:00.000Z'),
+              start: new Date('2015-09-12T12:00:00.000Z'),
             },
           },
           {
@@ -4056,8 +3897,8 @@ describe("Druid Functional", function () {
             CountPrev: 20848,
             Delta: 21741,
             TimeJoin: {
-              end: new Date("2015-09-12T18:00:00.000Z"),
-              start: new Date("2015-09-12T16:00:00.000Z"),
+              end: new Date('2015-09-12T18:00:00.000Z'),
+              start: new Date('2015-09-12T16:00:00.000Z'),
             },
           },
           {
@@ -4065,8 +3906,8 @@ describe("Druid Functional", function () {
             CountPrev: 19168,
             Delta: 19220,
             TimeJoin: {
-              end: new Date("2015-09-12T16:00:00.000Z"),
-              start: new Date("2015-09-12T14:00:00.000Z"),
+              end: new Date('2015-09-12T16:00:00.000Z'),
+              start: new Date('2015-09-12T14:00:00.000Z'),
             },
           },
           {
@@ -4074,8 +3915,8 @@ describe("Druid Functional", function () {
             CountPrev: 33259,
             Delta: 2718,
             TimeJoin: {
-              end: new Date("2015-09-12T22:00:00.000Z"),
-              start: new Date("2015-09-12T20:00:00.000Z"),
+              end: new Date('2015-09-12T22:00:00.000Z'),
+              start: new Date('2015-09-12T20:00:00.000Z'),
             },
           },
           {
@@ -4083,8 +3924,8 @@ describe("Druid Functional", function () {
             CountPrev: 43567,
             Delta: -1739,
             TimeJoin: {
-              end: new Date("2015-09-12T20:00:00.000Z"),
-              start: new Date("2015-09-12T18:00:00.000Z"),
+              end: new Date('2015-09-12T20:00:00.000Z'),
+              start: new Date('2015-09-12T18:00:00.000Z'),
             },
           },
           {
@@ -4092,29 +3933,29 @@ describe("Druid Functional", function () {
             CountPrev: 34160,
             Delta: -3440,
             TimeJoin: {
-              end: new Date("2015-09-13T00:00:00.000Z"),
-              start: new Date("2015-09-12T22:00:00.000Z"),
+              end: new Date('2015-09-13T00:00:00.000Z'),
+              start: new Date('2015-09-12T22:00:00.000Z'),
             },
           },
         ]);
       });
     });
 
-    it.skip("can do a sub-query", () => {
+    it.skip('can do a sub-query', () => {
       // ToDo: solve this mystery
       const ex = ply()
         .apply(
-          "data1",
-          $("wiki")
-            .split($("time").timeFloor("PT1H", "Etc/UTC"), "TimeCol")
-            .apply("Count", "$wiki.sum($count)")
-            .sort("$TimeCol", "descending")
+          'data1',
+          $('wiki')
+            .split($('time').timeFloor('PT1H', 'Etc/UTC'), 'TimeCol')
+            .apply('Count', '$wiki.sum($count)')
+            .sort('$TimeCol', 'descending')
             .limit(2),
         )
-        .apply("MinCount", "$data1.min($Count)")
-        .apply("MaxCount", "$data1.max($Count)");
+        .apply('MinCount', '$data1.min($Count)')
+        .apply('MaxCount', '$data1.max($Count)');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             MaxCount: 15906,
@@ -4122,313 +3963,310 @@ describe("Druid Functional", function () {
             data1: {
               attributes: [
                 {
-                  name: "TimeCol",
-                  type: "TIME",
+                  name: 'TimeCol',
+                  type: 'TIME',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 14814,
-                  TimeCol: new Date("2015-09-12T23:00:00.000Z"),
+                  TimeCol: new Date('2015-09-12T23:00:00.000Z'),
                 },
                 {
                   Count: 15906,
-                  TimeCol: new Date("2015-09-12T22:00:00.000Z"),
+                  TimeCol: new Date('2015-09-12T22:00:00.000Z'),
                 },
               ],
-              keys: ["TimeCol"],
+              keys: ['TimeCol'],
             },
           },
         ]);
       });
     });
 
-    it.skip("can do a sub-split in aggregator", () => {
-      const ex = $("wiki")
-        .split("$channel", "Channel")
-        .apply("Count", "$wiki.sum($count)")
-        .apply(
-          "MinByRobot",
-          "$wiki.split($isRobot, Blah).apply(Cnt, $wiki.sum($count)).min($Cnt)",
-        )
-        .sort("$Count", "descending")
+    it.skip('can do a sub-split in aggregator', () => {
+      const ex = $('wiki')
+        .split('$channel', 'Channel')
+        .apply('Count', '$wiki.sum($count)')
+        .apply('MinByRobot', '$wiki.split($isRobot, Blah).apply(Cnt, $wiki.sum($count)).min($Cnt)')
+        .sort('$Count', 'descending')
         .limit(3);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([]);
       });
     });
 
-    it("works multi-dimensional GROUP BYs", () => {
+    it('works multi-dimensional GROUP BYs', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").isnt("en")))
+        .apply('wiki', $('wiki').filter($('channel').isnt('en')))
         .apply(
-          "Groups",
-          $("wiki")
+          'Groups',
+          $('wiki')
             .split({
-              Channel: "$channel",
-              TimeByHour: "$time.timeBucket(PT2H)",
-              IsNew: "$isNew",
+              Channel: '$channel',
+              TimeByHour: '$time.timeBucket(PT2H)',
+              IsNew: '$isNew',
               ChannelIsDE: "$channel == 'de'",
             })
-            .apply("Count", $("wiki").sum("$count"))
-            .sort("$Count", "descending")
+            .apply('Count', $('wiki').sum('$count'))
+            .sort('$Count', 'descending')
             .limit(4),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Groups: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "ChannelIsDE",
-                  type: "BOOLEAN",
+                  name: 'ChannelIsDE',
+                  type: 'BOOLEAN',
                 },
                 {
-                  name: "IsNew",
-                  type: "BOOLEAN",
+                  name: 'IsNew',
+                  type: 'BOOLEAN',
                 },
                 {
-                  name: "TimeByHour",
-                  type: "TIME_RANGE",
+                  name: 'TimeByHour',
+                  type: 'TIME_RANGE',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
-                  Channel: "vi",
+                  Channel: 'vi',
                   ChannelIsDE: false,
                   Count: 24258,
                   IsNew: false,
                   TimeByHour: {
-                    end: new Date("2015-09-12T08:00:00.000Z"),
-                    start: new Date("2015-09-12T06:00:00.000Z"),
+                    end: new Date('2015-09-12T08:00:00.000Z'),
+                    start: new Date('2015-09-12T06:00:00.000Z'),
                   },
                 },
                 {
-                  Channel: "vi",
+                  Channel: 'vi',
                   ChannelIsDE: false,
                   Count: 11215,
                   IsNew: false,
                   TimeByHour: {
-                    end: new Date("2015-09-12T18:00:00.000Z"),
-                    start: new Date("2015-09-12T16:00:00.000Z"),
+                    end: new Date('2015-09-12T18:00:00.000Z'),
+                    start: new Date('2015-09-12T16:00:00.000Z'),
                   },
                 },
                 {
-                  Channel: "vi",
+                  Channel: 'vi',
                   ChannelIsDE: false,
                   Count: 9246,
                   IsNew: false,
                   TimeByHour: {
-                    end: new Date("2015-09-12T16:00:00.000Z"),
-                    start: new Date("2015-09-12T14:00:00.000Z"),
+                    end: new Date('2015-09-12T16:00:00.000Z'),
+                    start: new Date('2015-09-12T14:00:00.000Z'),
                   },
                 },
                 {
-                  Channel: "vi",
+                  Channel: 'vi',
                   ChannelIsDE: false,
                   Count: 8917,
                   IsNew: false,
                   TimeByHour: {
-                    end: new Date("2015-09-12T10:00:00.000Z"),
-                    start: new Date("2015-09-12T08:00:00.000Z"),
+                    end: new Date('2015-09-12T10:00:00.000Z'),
+                    start: new Date('2015-09-12T08:00:00.000Z'),
                   },
                 },
               ],
-              keys: ["Channel", "ChannelIsDE", "IsNew", "TimeByHour"],
+              keys: ['Channel', 'ChannelIsDE', 'IsNew', 'TimeByHour'],
             },
           },
         ]);
       });
     });
 
-    it("works multi-dimensional GROUP BYs (no sort)", () => {
+    it('works multi-dimensional GROUP BYs (no sort)', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").isnt("en")))
+        .apply('wiki', $('wiki').filter($('channel').isnt('en')))
         .apply(
-          "Groups",
-          $("wiki")
+          'Groups',
+          $('wiki')
             .split({
-              Channel: "$channel",
-              TimeByHour: "$time.timeBucket(PT2H)",
-              IsNew: "$isNew",
+              Channel: '$channel',
+              TimeByHour: '$time.timeBucket(PT2H)',
+              IsNew: '$isNew',
               ChannelIsDE: "$channel == 'de'",
             })
-            .apply("Count", $("wiki").sum("$count"))
+            .apply('Count', $('wiki').sum('$count'))
             .limit(4),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Groups: {
               attributes: [
                 {
-                  name: "Channel",
-                  type: "STRING",
+                  name: 'Channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "ChannelIsDE",
-                  type: "BOOLEAN",
+                  name: 'ChannelIsDE',
+                  type: 'BOOLEAN',
                 },
                 {
-                  name: "IsNew",
-                  type: "BOOLEAN",
+                  name: 'IsNew',
+                  type: 'BOOLEAN',
                 },
                 {
-                  name: "TimeByHour",
-                  type: "TIME_RANGE",
+                  name: 'TimeByHour',
+                  type: 'TIME_RANGE',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
-                  Channel: "ar",
+                  Channel: 'ar',
                   ChannelIsDE: false,
                   Count: 168,
                   IsNew: false,
                   TimeByHour: {
-                    end: new Date("2015-09-12T02:00:00.000Z"),
-                    start: new Date("2015-09-12T00:00:00.000Z"),
+                    end: new Date('2015-09-12T02:00:00.000Z'),
+                    start: new Date('2015-09-12T00:00:00.000Z'),
                   },
                 },
                 {
-                  Channel: "ar",
+                  Channel: 'ar',
                   ChannelIsDE: false,
                   Count: 252,
                   IsNew: false,
                   TimeByHour: {
-                    end: new Date("2015-09-12T04:00:00.000Z"),
-                    start: new Date("2015-09-12T02:00:00.000Z"),
+                    end: new Date('2015-09-12T04:00:00.000Z'),
+                    start: new Date('2015-09-12T02:00:00.000Z'),
                   },
                 },
                 {
-                  Channel: "ar",
+                  Channel: 'ar',
                   ChannelIsDE: false,
                   Count: 277,
                   IsNew: false,
                   TimeByHour: {
-                    end: new Date("2015-09-12T06:00:00.000Z"),
-                    start: new Date("2015-09-12T04:00:00.000Z"),
+                    end: new Date('2015-09-12T06:00:00.000Z'),
+                    start: new Date('2015-09-12T04:00:00.000Z'),
                   },
                 },
                 {
-                  Channel: "ar",
+                  Channel: 'ar',
                   ChannelIsDE: false,
                   Count: 344,
                   IsNew: false,
                   TimeByHour: {
-                    end: new Date("2015-09-12T08:00:00.000Z"),
-                    start: new Date("2015-09-12T06:00:00.000Z"),
+                    end: new Date('2015-09-12T08:00:00.000Z'),
+                    start: new Date('2015-09-12T06:00:00.000Z'),
                   },
                 },
               ],
-              keys: ["Channel", "ChannelIsDE", "IsNew", "TimeByHour"],
+              keys: ['Channel', 'ChannelIsDE', 'IsNew', 'TimeByHour'],
             },
           },
         ]);
       });
     });
 
-    it("works multi-dimensional GROUP BYs with time", () => {
+    it('works multi-dimensional GROUP BYs with time', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").isnt("en")))
+        .apply('wiki', $('wiki').filter($('channel').isnt('en')))
         .apply(
-          "Groups",
-          $("wiki")
+          'Groups',
+          $('wiki')
             .split({
-              channel: "$channel",
-              __time: "$time.timeBucket(PT2H)",
+              channel: '$channel',
+              __time: '$time.timeBucket(PT2H)',
             })
-            .apply("Count", $("wiki").sum("$count"))
-            .sort("$Count", "descending")
+            .apply('Count', $('wiki').sum('$count'))
+            .sort('$Count', 'descending')
             .limit(4),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Groups: {
               attributes: [
                 {
-                  name: "__time",
-                  type: "TIME_RANGE",
+                  name: '__time',
+                  type: 'TIME_RANGE',
                 },
                 {
-                  name: "channel",
-                  type: "STRING",
+                  name: 'channel',
+                  type: 'STRING',
                 },
                 {
-                  name: "Count",
-                  type: "NUMBER",
+                  name: 'Count',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Count: 24276,
                   __time: {
-                    end: new Date("2015-09-12T08:00:00.000Z"),
-                    start: new Date("2015-09-12T06:00:00.000Z"),
+                    end: new Date('2015-09-12T08:00:00.000Z'),
+                    start: new Date('2015-09-12T06:00:00.000Z'),
                   },
-                  channel: "vi",
+                  channel: 'vi',
                 },
                 {
                   Count: 11223,
                   __time: {
-                    end: new Date("2015-09-12T18:00:00.000Z"),
-                    start: new Date("2015-09-12T16:00:00.000Z"),
+                    end: new Date('2015-09-12T18:00:00.000Z'),
+                    start: new Date('2015-09-12T16:00:00.000Z'),
                   },
-                  channel: "vi",
+                  channel: 'vi',
                 },
                 {
                   Count: 9258,
                   __time: {
-                    end: new Date("2015-09-12T16:00:00.000Z"),
-                    start: new Date("2015-09-12T14:00:00.000Z"),
+                    end: new Date('2015-09-12T16:00:00.000Z'),
+                    start: new Date('2015-09-12T14:00:00.000Z'),
                   },
-                  channel: "vi",
+                  channel: 'vi',
                 },
                 {
                   Count: 8928,
                   __time: {
-                    end: new Date("2015-09-12T10:00:00.000Z"),
-                    start: new Date("2015-09-12T08:00:00.000Z"),
+                    end: new Date('2015-09-12T10:00:00.000Z'),
+                    start: new Date('2015-09-12T08:00:00.000Z'),
                   },
-                  channel: "vi",
+                  channel: 'vi',
                 },
               ],
-              keys: ["__time", "channel"],
+              keys: ['__time', 'channel'],
             },
           },
         ]);
       });
     });
 
-    it("works nested GROUP BYs", () => {
-      const ex = $("wiki")
-        .split({ isNew: "$isNew", isRobot: "$isRobot" })
-        .apply("TotalEdits", "$wiki.sum($count)")
-        .apply("TotalAdded", "$wiki.sum($added)")
-        .split("$isNew", "isNew", "data")
-        .apply("SumTotalEdits", "$data.sum($TotalEdits)");
+    it('works nested GROUP BYs', () => {
+      const ex = $('wiki')
+        .split({ isNew: '$isNew', isRobot: '$isRobot' })
+        .apply('TotalEdits', '$wiki.sum($count)')
+        .apply('TotalAdded', '$wiki.sum($added)')
+        .split('$isNew', 'isNew', 'data')
+        .apply('SumTotalEdits', '$data.sum($TotalEdits)');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             SumTotalEdits: 368841,
@@ -4442,185 +4280,185 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works string range", () => {
-      const ex = $("wiki")
+    it('works string range', () => {
+      const ex = $('wiki')
         .filter('$cityName > "nice"')
         .filter('$comment < "zebra"')
         .filter('$page >= "car"')
         .filter('$countryName <= "mauritius"')
         .split({
-          cityName: "$cityName",
-          page: "$page",
-          comment: "$comment",
-          country: "$countryName",
+          cityName: '$cityName',
+          page: '$page',
+          comment: '$comment',
+          country: '$countryName',
         });
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
-            cityName: "Ōita",
-            comment: "/* 1982年（昭和57年） */",
-            country: "Japan",
-            page: "日本のテレビアニメ作品一覧 (1980年代)",
+            cityName: 'Ōita',
+            comment: '/* 1982年（昭和57年） */',
+            country: 'Japan',
+            page: '日本のテレビアニメ作品一覧 (1980年代)',
           },
           {
-            cityName: "Ōita",
-            comment: "/* 劇場版 */",
-            country: "Japan",
-            page: "ドクタースランプ",
+            cityName: 'Ōita',
+            comment: '/* 劇場版 */',
+            country: 'Japan',
+            page: 'ドクタースランプ',
           },
         ]);
       });
     });
 
-    it("works with division by 0", () => {
-      const ex = $("wiki")
-        .split("$countryName", "CountryName")
-        .apply("AddedNyDeleted", "$wiki.sum($added) / $wiki.sum($deleted)")
-        .sort("$AddedNyDeleted", "descending")
+    it('works with division by 0', () => {
+      const ex = $('wiki')
+        .split('$countryName', 'CountryName')
+        .apply('AddedNyDeleted', '$wiki.sum($added) / $wiki.sum($deleted)')
+        .sort('$AddedNyDeleted', 'descending')
         .limit(7);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             AddedNyDeleted: 804,
-            CountryName: "Zimbabwe",
+            CountryName: 'Zimbabwe',
           },
           {
             AddedNyDeleted: 353.45454545454544,
-            CountryName: "Iraq",
+            CountryName: 'Iraq',
           },
           {
             AddedNyDeleted: 328,
-            CountryName: "Malta",
+            CountryName: 'Malta',
           },
           {
             AddedNyDeleted: 278,
-            CountryName: "Myanmar [Burma]",
+            CountryName: 'Myanmar [Burma]',
           },
           {
             AddedNyDeleted: 130.8679245283019,
-            CountryName: "Costa Rica",
+            CountryName: 'Costa Rica',
           },
           {
             AddedNyDeleted: 116,
-            CountryName: "Jersey",
+            CountryName: 'Jersey',
           },
           {
             AddedNyDeleted: 113.30950378469302,
-            CountryName: "Romania",
+            CountryName: 'Romania',
           },
         ]);
       });
     });
 
-    it("works with raw (SELECT) + filter", () => {
-      const ex = $("wiki").filter('$cityName == "El Paso"');
+    it('works with raw (SELECT) + filter', () => {
+      const ex = $('wiki').filter('$cityName == "El Paso"');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             added: 0,
-            channel: "en",
-            cityName: "El Paso",
-            comment: "/* Clubs and organizations */",
+            channel: 'en',
+            cityName: 'El Paso',
+            comment: '/* Clubs and organizations */',
             commentLength: 29,
-            commentLengthStr: "29",
+            commentLengthStr: '29',
             commentTerms: null,
             count: 1,
-            countryIsoCode: "US",
-            countryName: "United States",
+            countryIsoCode: 'US',
+            countryName: 'United States',
             deleted: 39,
             delta: -39,
             deltaBucket100: -100,
             deltaByTen: -3.9,
-            delta_hist: "/84BwhwAAA==",
+            delta_hist: '/84BwhwAAA==',
             delta_quantilesDoublesSketch:
-              "AgMIGoAAAAABAAAAAAAAAAAAAAAAgEPAAAAAAACAQ8AAAAAAAIBDwA==",
+              'AgMIGoAAAAABAAAAAAAAAAAAAAAAgEPAAAAAAACAQ8AAAAAAAIBDwA==',
             isAnonymous: true,
             isMinor: false,
             isNew: false,
             isRobot: false,
             isUnpatrolled: false,
             max_delta: -39,
-            metroCode: "765",
+            metroCode: '765',
             min_delta: -39,
-            namespace: "Main",
-            page: "Clint High School",
-            page_unique: "AQAAAQAAAADYAQ==",
-            regionIsoCode: "TX",
-            regionName: "Texas",
-            sometimeLater: new Date("2016-09-12T06:05:00.000Z"),
+            namespace: 'Main',
+            page: 'Clint High School',
+            page_unique: 'AQAAAQAAAADYAQ==',
+            regionIsoCode: 'TX',
+            regionName: 'Texas',
+            sometimeLater: new Date('2016-09-12T06:05:00.000Z'),
             sometimeLaterMs: 1473660300000,
-            time: new Date("2015-09-12T06:05:00.000Z"),
-            user: "104.58.160.128",
+            time: new Date('2015-09-12T06:05:00.000Z'),
+            user: '104.58.160.128',
             userChars: {
-              elements: [".", "0", "1", "2", "4", "5", "6", "8"],
-              setType: "STRING",
+              elements: ['.', '0', '1', '2', '4', '5', '6', '8'],
+              setType: 'STRING',
             },
-            user_hll: "AgEHDAMIAQDnuDoG",
-            user_theta: "AQMDAAA6zJOC2CoG9CWFMQ==",
-            user_unique: "AQAAAQAAAAFzBQ==",
+            user_hll: 'AgEHDAMIAQDnuDoG',
+            user_theta: 'AQMDAAA6zJOC2CoG9CWFMQ==',
+            user_unique: 'AQAAAQAAAAFzBQ==',
           },
           {
             added: 0,
-            channel: "en",
-            cityName: "El Paso",
-            comment: "/* Early life */ spelling",
+            channel: 'en',
+            cityName: 'El Paso',
+            comment: '/* Early life */ spelling',
             commentLength: 25,
-            commentLengthStr: "25",
+            commentLengthStr: '25',
             commentTerms: null,
             count: 1,
-            countryIsoCode: "US",
-            countryName: "United States",
+            countryIsoCode: 'US',
+            countryName: 'United States',
             deleted: 0,
             delta: 0,
             deltaBucket100: 0,
             deltaByTen: 0,
-            delta_hist: "/84BAAAAAA==",
+            delta_hist: '/84BAAAAAA==',
             delta_quantilesDoublesSketch:
-              "AgMIGoAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              'AgMIGoAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==',
             isAnonymous: true,
             isMinor: false,
             isNew: false,
             isRobot: false,
             isUnpatrolled: false,
             max_delta: 0,
-            metroCode: "765",
+            metroCode: '765',
             min_delta: 0,
-            namespace: "Main",
-            page: "Reggie Williams (linebacker)",
-            page_unique: "AQAAAQAAAAOhEA==",
-            regionIsoCode: "TX",
-            regionName: "Texas",
-            sometimeLater: new Date("2016-09-12T16:14:00.000Z"),
+            namespace: 'Main',
+            page: 'Reggie Williams (linebacker)',
+            page_unique: 'AQAAAQAAAAOhEA==',
+            regionIsoCode: 'TX',
+            regionName: 'Texas',
+            sometimeLater: new Date('2016-09-12T16:14:00.000Z'),
             sometimeLaterMs: 1473696840000,
-            time: new Date("2015-09-12T16:14:00.000Z"),
-            user: "67.10.203.15",
+            time: new Date('2015-09-12T16:14:00.000Z'),
+            user: '67.10.203.15',
             userChars: {
-              elements: [".", "0", "1", "2", "3", "5", "6", "7"],
-              setType: "STRING",
+              elements: ['.', '0', '1', '2', '3', '5', '6', '7'],
+              setType: 'STRING',
             },
-            user_hll: "AgEHDAMIAQC8oGoY",
-            user_theta: "AQMDAAA6zJMpBk2uirJRPw==",
-            user_unique: "AQAAAQAAAAOIQA==",
+            user_hll: 'AgEHDAMIAQC8oGoY',
+            user_theta: 'AQMDAAA6zJMpBk2uirJRPw==',
+            user_unique: 'AQAAAQAAAAOIQA==',
           },
         ]);
       });
     });
 
-    it("works with raw (SELECT) + limit", () => {
-      const ex = $("wiki").limit(1);
+    it('works with raw (SELECT) + limit', () => {
+      const ex = $('wiki').limit(1);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             added: 0,
-            channel: "ca",
+            channel: 'ca',
             cityName: null,
-            comment: "/* Enllaços externs */",
+            comment: '/* Enllaços externs */',
             commentLength: 22,
-            commentLengthStr: "22",
+            commentLengthStr: '22',
             commentTerms: null,
             count: 1,
             countryIsoCode: null,
@@ -4629,9 +4467,9 @@ describe("Druid Functional", function () {
             delta: -1,
             deltaBucket100: -100,
             deltaByTen: -0.1,
-            delta_hist: "/84Bv4AAAA==",
+            delta_hist: '/84Bv4AAAA==',
             delta_quantilesDoublesSketch:
-              "AgMIGoAAAAABAAAAAAAAAAAAAAAAAPC/AAAAAAAA8L8AAAAAAADwvw==",
+              'AgMIGoAAAAABAAAAAAAAAAAAAAAAAPC/AAAAAAAA8L8AAAAAAADwvw==',
             isAnonymous: false,
             isMinor: false,
             isNew: false,
@@ -4640,195 +4478,176 @@ describe("Druid Functional", function () {
             max_delta: -1,
             metroCode: null,
             min_delta: -1,
-            namespace: "Main",
-            page: "Israel Ballet",
-            page_unique: "AQAAAQAAAAHHIA==",
+            namespace: 'Main',
+            page: 'Israel Ballet',
+            page_unique: 'AQAAAQAAAAHHIA==',
             regionIsoCode: null,
             regionName: null,
-            sometimeLater: new Date("2016-09-12T00:46:00.000Z"),
+            sometimeLater: new Date('2016-09-12T00:46:00.000Z'),
             sometimeLaterMs: 1473641160000,
-            time: new Date("2015-09-12T00:46:00.000Z"),
-            user: "ChandraHelsinky",
+            time: new Date('2015-09-12T00:46:00.000Z'),
+            user: 'ChandraHelsinky',
             userChars: {
-              elements: [
-                "A",
-                "C",
-                "D",
-                "E",
-                "H",
-                "I",
-                "K",
-                "L",
-                "N",
-                "R",
-                "S",
-                "Y",
-              ],
-              setType: "STRING",
+              elements: ['A', 'C', 'D', 'E', 'H', 'I', 'K', 'L', 'N', 'R', 'S', 'Y'],
+              setType: 'STRING',
             },
-            user_hll: "AgEHDAMIAQAsNv0H",
-            user_theta: "AQMDAAA6zJOcUskA1pEMGA==",
-            user_unique: "AQAAAQAAAALGBA==",
+            user_hll: 'AgEHDAMIAQAsNv0H',
+            user_theta: 'AQMDAAA6zJOcUskA1pEMGA==',
+            user_unique: 'AQAAAQAAAALGBA==',
           },
         ]);
       });
     });
 
-    it("gets the right number of results in a big raw (SELECT ascending)", () => {
+    it('gets the right number of results in a big raw (SELECT ascending)', () => {
       const limit = 15001;
-      const ex = $("wiki")
-        .filter("$cityName == null")
-        .select("time", "cityName")
-        .sort("$time", "ascending")
+      const ex = $('wiki')
+        .filter('$cityName == null')
+        .select('time', 'cityName')
+        .sort('$time', 'ascending')
         .limit(limit);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data.length).to.deep.equal(limit);
       });
     });
 
-    it("gets the right number of results in a big raw (SELECT descending)", () => {
+    it('gets the right number of results in a big raw (SELECT descending)', () => {
       const limit = 15001;
-      const ex = $("wiki")
-        .filter("$cityName == null")
-        .select("time", "cityName")
-        .sort("$time", "descending")
+      const ex = $('wiki')
+        .filter('$cityName == null')
+        .select('time', 'cityName')
+        .sort('$time', 'descending')
         .limit(limit);
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data.length).to.deep.equal(limit);
       });
     });
 
-    it("works with multi-value dimension regexp having filter", () => {
-      const ex = $("wiki")
+    it('works with multi-value dimension regexp having filter', () => {
+      const ex = $('wiki')
         .filter('$userChars.match("[ABN]")')
-        .split("$userChars", "userChar")
+        .split('$userChars', 'userChar')
         .filter('$userChar.match("B|N")')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
-        expect(result.toJS().data).to.deep.equal([
-          { userChar: "B" },
-          { userChar: "N" },
-        ]);
+      return basicExecutor(ex).then((result) => {
+        expect(result.toJS().data).to.deep.equal([{ userChar: 'B' }, { userChar: 'N' }]);
       });
     });
 
-    it("works with multi-value dimension list (in) having filter", () => {
-      const ex = $("wiki")
+    it('works with multi-value dimension list (in) having filter', () => {
+      const ex = $('wiki')
         .filter('$userChars.match("[ABN]")')
-        .split("$userChars", "userChar")
+        .split('$userChars', 'userChar')
         .filter('$userChar == "B" or $userChar == "N"')
         .limit(5);
 
-      return basicExecutor(ex).then(result => {
-        expect(result.toJS().data).to.deep.equal([
-          { userChar: "B" },
-          { userChar: "N" },
-        ]);
+      return basicExecutor(ex).then((result) => {
+        expect(result.toJS().data).to.deep.equal([{ userChar: 'B' }, { userChar: 'N' }]);
       });
     });
 
-    it("works with basic collect", () => {
-      const ex = $("wiki").split("$channel", "channel").collect("$channel");
+    it('works with basic collect', () => {
+      const ex = $('wiki').split('$channel', 'channel').collect('$channel');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS()).to.deep.equal({
           elements: [
-            "ar",
-            "be",
-            "bg",
-            "ca",
-            "ce",
-            "ceb",
-            "cs",
-            "da",
-            "de",
-            "el",
-            "en",
-            "eo",
-            "es",
-            "et",
-            "eu",
-            "fa",
-            "fi",
-            "fr",
-            "gl",
-            "he",
-            "hi",
-            "hr",
-            "hu",
-            "hy",
-            "id",
-            "it",
-            "ja",
-            "kk",
-            "ko",
-            "la",
-            "lt",
-            "min",
-            "ms",
-            "nl",
-            "nn",
-            "no",
-            "pl",
-            "pt",
-            "ro",
-            "ru",
-            "sh",
-            "simple",
-            "sk",
-            "sl",
-            "sr",
-            "sv",
-            "tr",
-            "uk",
-            "uz",
-            "vi",
-            "war",
-            "zh",
+            'ar',
+            'be',
+            'bg',
+            'ca',
+            'ce',
+            'ceb',
+            'cs',
+            'da',
+            'de',
+            'el',
+            'en',
+            'eo',
+            'es',
+            'et',
+            'eu',
+            'fa',
+            'fi',
+            'fr',
+            'gl',
+            'he',
+            'hi',
+            'hr',
+            'hu',
+            'hy',
+            'id',
+            'it',
+            'ja',
+            'kk',
+            'ko',
+            'la',
+            'lt',
+            'min',
+            'ms',
+            'nl',
+            'nn',
+            'no',
+            'pl',
+            'pt',
+            'ro',
+            'ru',
+            'sh',
+            'simple',
+            'sk',
+            'sl',
+            'sr',
+            'sv',
+            'tr',
+            'uk',
+            'uz',
+            'vi',
+            'war',
+            'zh',
           ],
-          setType: "STRING",
+          setType: 'STRING',
         });
       });
     });
 
-    it("works with advanced collect", () => {
-      const ex = $("wiki")
-        .split("$channel", "channel")
-        .apply("Edits", "$wiki.sum($count)")
-        .sort("$Edits", "descending")
+    it('works with advanced collect', () => {
+      const ex = $('wiki')
+        .split('$channel', 'channel')
+        .apply('Edits', '$wiki.sum($count)')
+        .sort('$Edits', 'descending')
         .limit(5)
-        .collect("$channel");
+        .collect('$channel');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS()).to.deep.equal({
-          elements: ["en", "vi", "de", "fr", "ru"],
-          setType: "STRING",
+          elements: ['en', 'vi', 'de', 'fr', 'ru'],
+          setType: 'STRING',
         });
       });
     });
 
-    it("works with collect as a sub-filter", () => {
+    it('works with collect as a sub-filter', () => {
       const ex = ply()
         .apply(
-          "wiki",
-          $("wiki").filter(
-            $("channel").in(
-              $("wiki")
-                .split("$channel", "channel")
-                .apply("Edits", "$wiki.sum($count)")
-                .sort("$Edits", "descending")
+          'wiki',
+          $('wiki').filter(
+            $('channel').in(
+              $('wiki')
+                .split('$channel', 'channel')
+                .apply('Edits', '$wiki.sum($count)')
+                .sort('$Edits', 'descending')
                 .limit(5)
-                .collect("$channel"),
+                .collect('$channel'),
             ),
           ),
         )
-        .apply("Count", "$wiki.sum($count)")
-        .apply("Added", "$wiki.sum($added)");
+        .apply('Count', '$wiki.sum($count)')
+        .apply('Added', '$wiki.sum($added)');
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Added: 54157728,
@@ -4838,52 +4657,49 @@ describe("Druid Functional", function () {
       });
     });
 
-    it("works with filtered double split", () => {
+    it('works with filtered double split', () => {
       const ex = ply()
         .apply(
-          "wiki",
-          $("wiki").filter(
-            $("time").overlap(
-              new Date("2015-09-11T23:59:00Z"),
-              new Date("2015-09-12T23:59:00Z"),
-            ),
+          'wiki',
+          $('wiki').filter(
+            $('time').overlap(new Date('2015-09-11T23:59:00Z'), new Date('2015-09-12T23:59:00Z')),
           ),
         )
-        .apply("count", "$wiki.sum($count)")
+        .apply('count', '$wiki.sum($count)')
         .apply(
-          "SPLIT",
-          $("wiki")
-            .split("$page", "page")
-            .filter($("page").overlap(["Jeremy Corbyn", "KalyeSerye"]))
-            .apply("count", "$wiki.sum($count)")
-            .sort("$count", "descending")
+          'SPLIT',
+          $('wiki')
+            .split('$page', 'page')
+            .filter($('page').overlap(['Jeremy Corbyn', 'KalyeSerye']))
+            .apply('count', '$wiki.sum($count)')
+            .sort('$count', 'descending')
             .limit(2)
             .apply(
-              "SPLIT",
-              $("wiki")
-                .split("$time.timeBucket(PT1H)", "time")
-                .apply("count", "$wiki.sum($count)")
-                .sort("$time", "ascending")
+              'SPLIT',
+              $('wiki')
+                .split('$time.timeBucket(PT1H)', 'time')
+                .apply('count', '$wiki.sum($count)')
+                .sort('$time', 'ascending')
                 .limit(2),
             ),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             SPLIT: {
               attributes: [
                 {
-                  name: "page",
-                  type: "STRING",
+                  name: 'page',
+                  type: 'STRING',
                 },
                 {
-                  name: "count",
-                  type: "NUMBER",
+                  name: 'count',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "SPLIT",
-                  type: "DATASET",
+                  name: 'SPLIT',
+                  type: 'DATASET',
                 },
               ],
               data: [
@@ -4891,70 +4707,70 @@ describe("Druid Functional", function () {
                   SPLIT: {
                     attributes: [
                       {
-                        name: "time",
-                        type: "TIME_RANGE",
+                        name: 'time',
+                        type: 'TIME_RANGE',
                       },
                       {
-                        name: "count",
-                        type: "NUMBER",
+                        name: 'count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         count: 1,
                         time: {
-                          end: new Date("2015-09-12T02:00:00.000Z"),
-                          start: new Date("2015-09-12T01:00:00.000Z"),
+                          end: new Date('2015-09-12T02:00:00.000Z'),
+                          start: new Date('2015-09-12T01:00:00.000Z'),
                         },
                       },
                       {
                         count: 1,
                         time: {
-                          end: new Date("2015-09-12T08:00:00.000Z"),
-                          start: new Date("2015-09-12T07:00:00.000Z"),
+                          end: new Date('2015-09-12T08:00:00.000Z'),
+                          start: new Date('2015-09-12T07:00:00.000Z'),
                         },
                       },
                     ],
-                    keys: ["time"],
+                    keys: ['time'],
                   },
                   count: 318,
-                  page: "Jeremy Corbyn",
+                  page: 'Jeremy Corbyn',
                 },
                 {
                   SPLIT: {
                     attributes: [
                       {
-                        name: "time",
-                        type: "TIME_RANGE",
+                        name: 'time',
+                        type: 'TIME_RANGE',
                       },
                       {
-                        name: "count",
-                        type: "NUMBER",
+                        name: 'count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         count: 1,
                         time: {
-                          end: new Date("2015-09-12T02:00:00.000Z"),
-                          start: new Date("2015-09-12T01:00:00.000Z"),
+                          end: new Date('2015-09-12T02:00:00.000Z'),
+                          start: new Date('2015-09-12T01:00:00.000Z'),
                         },
                       },
                       {
                         count: 1,
                         time: {
-                          end: new Date("2015-09-12T03:00:00.000Z"),
-                          start: new Date("2015-09-12T02:00:00.000Z"),
+                          end: new Date('2015-09-12T03:00:00.000Z'),
+                          start: new Date('2015-09-12T02:00:00.000Z'),
                         },
                       },
                     ],
-                    keys: ["time"],
+                    keys: ['time'],
                   },
                   count: 69,
-                  page: "KalyeSerye",
+                  page: 'KalyeSerye',
                 },
               ],
-              keys: ["page"],
+              keys: ['page'],
             },
             count: 392239,
           },
@@ -4962,32 +4778,26 @@ describe("Druid Functional", function () {
       });
     });
 
-    describe("more tests", () => {
-      it("works with two datasets totals only", () => {
+    describe('more tests', () => {
+      it('works with two datasets totals only', () => {
         const ex = ply()
           .apply(
-            "wikiA",
-            $("wiki").filter(
-              $("time").overlap(
-                new Date("2015-09-12T12:00:00Z"),
-                new Date("2015-09-13T00:00:00Z"),
-              ),
+            'wikiA',
+            $('wiki').filter(
+              $('time').overlap(new Date('2015-09-12T12:00:00Z'), new Date('2015-09-13T00:00:00Z')),
             ),
           )
           .apply(
-            "wikiB",
-            $("wiki").filter(
-              $("time").overlap(
-                new Date("2015-09-12T00:00:00Z"),
-                new Date("2015-09-12T12:00:00Z"),
-              ),
+            'wikiB',
+            $('wiki').filter(
+              $('time').overlap(new Date('2015-09-12T00:00:00Z'), new Date('2015-09-12T12:00:00Z')),
             ),
           )
-          .apply("CountA", "$wikiA.sum($count)")
-          .apply("TotalAddedA", "$wikiA.sum($added)")
-          .apply("CountB", "$wikiB.sum($count)");
+          .apply('CountA', '$wikiA.sum($count)')
+          .apply('TotalAddedA', '$wikiA.sum($added)')
+          .apply('CountB', '$wikiB.sum($count)');
 
-        return basicExecutor(ex).then(result => {
+        return basicExecutor(ex).then((result) => {
           expect(result.toJS().data).to.deep.equal([
             {
               CountA: 227318,
@@ -4998,70 +4808,64 @@ describe("Druid Functional", function () {
         });
       });
 
-      it.skip("works with two datasets with split", () => {
+      it.skip('works with two datasets with split', () => {
         const ex = ply()
           .apply(
-            "wikiA",
-            $("wiki").filter(
-              $("time").overlap(
-                new Date("2015-09-12T12:00:00Z"),
-                new Date("2015-09-13T00:00:00Z"),
-              ),
+            'wikiA',
+            $('wiki').filter(
+              $('time').overlap(new Date('2015-09-12T12:00:00Z'), new Date('2015-09-13T00:00:00Z')),
             ),
           )
           .apply(
-            "wikiB",
-            $("wiki").filter(
-              $("time").overlap(
-                new Date("2015-09-12T00:00:00Z"),
-                new Date("2015-09-12T12:00:00Z"),
-              ),
+            'wikiB',
+            $('wiki').filter(
+              $('time').overlap(new Date('2015-09-12T00:00:00Z'), new Date('2015-09-12T12:00:00Z')),
             ),
           )
-          .apply("CountA", "$wikiA.sum($count)")
-          .apply("TotalAddedA", "$wikiA.sum($added)")
-          .apply("CountB", "$wikiB.sum($count)")
+          .apply('CountA', '$wikiA.sum($count)')
+          .apply('TotalAddedA', '$wikiA.sum($added)')
+          .apply('CountB', '$wikiB.sum($count)')
           .apply(
-            "Sub",
-            $("wikiA")
-              .split("$user", "User")
-              .join($("wikiB").split("$user", "User"))
-              .apply("CountA", "$wikiA.sum($count)")
-              .apply("CountB", "$wikiB.sum($count)"),
+            'Sub',
+            $('wikiA')
+              .split('$user', 'User')
+              .join($('wikiB').split('$user', 'User'))
+              .apply('CountA', '$wikiA.sum($count)')
+              .apply('CountB', '$wikiB.sum($count)'),
           );
 
-        return basicExecutor(ex).then(result => {
+        return basicExecutor(ex).then((result) => {
           expect(result.toJS().data).to.deep.equal({});
         });
       });
     });
   });
 
-  describe("incorrect user chars", () => {
+  describe('incorrect user chars', () => {
     const wikiUserCharAsNumber = External.fromJS(
       {
-        engine: "druid",
-        source: "wikipedia",
-        timeAttribute: "time",
+        engine: 'druid',
+        source: 'wikipedia',
+        timeAttribute: 'time',
         allowEternity: true,
         attributes: [
-          { name: "time", type: "TIME" },
-          { name: "channel", type: "STRING" },
-          { name: "userChars", type: "NUMBER" }, // This is incorrect
-          { name: "count", type: "NUMBER", unsplitable: true },
+          { name: 'time', type: 'TIME' },
+          { name: 'channel', type: 'STRING' },
+          { name: 'userChars', type: 'NUMBER' }, // This is incorrect
+          { name: 'count', type: 'NUMBER', unsplitable: true },
         ],
       },
       druidRequester,
     );
 
-    it("works with number addition", () => {
-      const ex = $("wiki")
-        .split("$userChars + 10", "U")
-        .apply("Count", "$wiki.sum($count)")
-        .sort("$Count", "descending")
+    it('works with number addition', () => {
+      const ex = $('wiki')
+        .split('$userChars + 10', 'U')
+        .apply('Count', '$wiki.sum($count)')
+        .sort('$Count', 'descending')
         .limit(3);
 
-      return ex.compute({ wiki: wikiUserCharAsNumber }).then(result => {
+      return ex.compute({ wiki: wikiUserCharAsNumber }).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 392442,
@@ -5092,14 +4896,14 @@ describe("Druid Functional", function () {
       // ]
     });
 
-    it("works with number bucketing", () => {
-      const ex = $("wiki")
-        .split("$userChars.numberBucket(5, 2.5)", "U")
-        .apply("Count", "$wiki.sum($count)")
-        .sort("$Count", "descending")
+    it('works with number bucketing', () => {
+      const ex = $('wiki')
+        .split('$userChars.numberBucket(5, 2.5)', 'U')
+        .apply('Count', '$wiki.sum($count)')
+        .sort('$Count', 'descending')
         .limit(3);
 
-      return ex.compute({ wiki: wikiUserCharAsNumber }).then(result => {
+      return ex.compute({ wiki: wikiUserCharAsNumber }).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 2658542,
@@ -5124,25 +4928,25 @@ describe("Druid Functional", function () {
     });
   });
 
-  describe("introspection", () => {
+  describe('introspection', () => {
     const wikiExternal = External.fromJS(
       {
-        engine: "druid",
-        source: "wikipedia",
-        timeAttribute: "time",
-        filter: $("time").overlap(
+        engine: 'druid',
+        source: 'wikipedia',
+        timeAttribute: 'time',
+        filter: $('time').overlap(
           TimeRange.fromJS({
-            start: new Date("2015-09-12T00:00:00Z"),
-            end: new Date("2015-09-13T00:00:00Z"),
+            start: new Date('2015-09-12T00:00:00Z'),
+            end: new Date('2015-09-13T00:00:00Z'),
           }),
         ),
         attributeOverrides: [
-          { name: "sometimeLater", type: "TIME" },
-          { name: "isAnonymous", type: "BOOLEAN" },
-          { name: "isMinor", type: "BOOLEAN" },
-          { name: "isNew", type: "BOOLEAN" },
-          { name: "isRobot", type: "BOOLEAN" },
-          { name: "isUnpatrolled", type: "BOOLEAN" },
+          { name: 'sometimeLater', type: 'TIME' },
+          { name: 'isAnonymous', type: 'BOOLEAN' },
+          { name: 'isMinor', type: 'BOOLEAN' },
+          { name: 'isNew', type: 'BOOLEAN' },
+          { name: 'isRobot', type: 'BOOLEAN' },
+          { name: 'isUnpatrolled', type: 'BOOLEAN' },
         ],
       },
       druidRequester,
@@ -5154,127 +4958,117 @@ describe("Druid Functional", function () {
       },
     });
 
-    it("introspects version and attributes", () => {
-      return wikiExternal.introspect().then(introspectedExternal => {
+    it('introspects version and attributes', () => {
+      return wikiExternal.introspect().then((introspectedExternal) => {
         expect(introspectedExternal.version).to.deep.equal(info.druidVersion);
-        expect(
-          introspectedExternal.toJS().attributes.slice(0, 3),
-        ).to.deep.equal([
+        expect(introspectedExternal.toJS().attributes.slice(0, 3)).to.deep.equal([
           {
-            name: "time",
-            nativeType: "__time",
+            name: 'time',
+            nativeType: '__time',
             range: {
-              bounds: "[]",
-              end: new Date("2015-09-12T23:59:00.000Z"),
-              start: new Date("2015-09-12T00:46:00.000Z"),
+              bounds: '[]',
+              end: new Date('2015-09-12T23:59:00.000Z'),
+              start: new Date('2015-09-12T00:46:00.000Z'),
             },
-            type: "TIME",
+            type: 'TIME',
           },
           {
             maker: {
               expression: {
-                name: "added",
-                op: "ref",
+                name: 'added',
+                op: 'ref',
               },
-              op: "sum",
+              op: 'sum',
             },
-            name: "added",
-            nativeType: "LONG",
-            type: "NUMBER",
+            name: 'added',
+            nativeType: 'LONG',
+            type: 'NUMBER',
             unsplitable: true,
           },
           {
-            name: "channel",
-            nativeType: "STRING",
-            type: "STRING",
+            name: 'channel',
+            nativeType: 'STRING',
+            type: 'STRING',
           },
         ]);
       });
     });
 
-    it("introspects attributes (shallow)", () => {
-      return wikiExternal
-        .introspect({ depth: "shallow" })
-        .then(introspectedExternal => {
-          expect(
-            introspectedExternal.toJS().attributes.slice(0, 3),
-          ).to.deep.equal([
-            {
-              name: "time",
-              nativeType: "__time",
-              type: "TIME",
-            },
-            {
-              maker: {
-                expression: {
-                  name: "added",
-                  op: "ref",
-                },
-                op: "sum",
+    it('introspects attributes (shallow)', () => {
+      return wikiExternal.introspect({ depth: 'shallow' }).then((introspectedExternal) => {
+        expect(introspectedExternal.toJS().attributes.slice(0, 3)).to.deep.equal([
+          {
+            name: 'time',
+            nativeType: '__time',
+            type: 'TIME',
+          },
+          {
+            maker: {
+              expression: {
+                name: 'added',
+                op: 'ref',
               },
-              name: "added",
-              nativeType: "LONG",
-              type: "NUMBER",
-              unsplitable: true,
+              op: 'sum',
             },
-            {
-              name: "channel",
-              nativeType: "STRING",
-              type: "STRING",
-            },
-          ]);
-        });
+            name: 'added',
+            nativeType: 'LONG',
+            type: 'NUMBER',
+            unsplitable: true,
+          },
+          {
+            name: 'channel',
+            nativeType: 'STRING',
+            type: 'STRING',
+          },
+        ]);
+      });
     });
 
-    it("introspects attributes (deep)", () => {
-      return wikiExternal
-        .introspect({ depth: "deep" })
-        .then(introspectedExternal => {
-          expect(introspectedExternal.toJS().attributes).to.deep.equal(
-            wikiAttributes,
-          );
-        });
+    it('introspects attributes (deep)', () => {
+      return wikiExternal.introspect({ depth: 'deep' }).then((introspectedExternal) => {
+        expect(introspectedExternal.toJS().attributes).to.deep.equal(wikiAttributes);
+      });
     });
 
-    it("works with introspection", () => {
+    it('works with introspection', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
-        .apply("Count", "$wiki.sum($count)")
-        .apply("TotalAdded", "$wiki.sum($added)")
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
+        .apply('Count', '$wiki.sum($count)')
+        .apply('TotalAdded', '$wiki.sum($added)')
         .apply(
-          "Time",
-          $("wiki")
-            .split($("time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
-            .apply("TotalAdded", "$wiki.sum($added)")
-            .sort("$Timestamp", "ascending")
+          'Time',
+          $('wiki')
+            .split($('time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
+            .apply('TotalAdded', '$wiki.sum($added)')
+            .sort('$Timestamp', 'ascending')
             .limit(3)
             .apply(
-              "Pages",
-              $("wiki")
-                .split("$page", "Page")
-                .apply("Count", "$wiki.sum($count)")
-                .sort("$Count", "descending")
+              'Pages',
+              $('wiki')
+                .split('$page', 'Page')
+                .apply('Count', '$wiki.sum($count)')
+                .sort('$Count', 'descending')
                 .limit(2),
             ),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 114711,
             Time: {
               attributes: [
                 {
-                  name: "Timestamp",
-                  type: "TIME_RANGE",
+                  name: 'Timestamp',
+                  type: 'TIME_RANGE',
                 },
                 {
-                  name: "TotalAdded",
-                  type: "NUMBER",
+                  name: 'TotalAdded',
+                  type: 'NUMBER',
                 },
                 {
-                  name: "Pages",
-                  type: "DATASET",
+                  name: 'Pages',
+                  type: 'DATASET',
                 },
               ],
               data: [
@@ -5282,29 +5076,29 @@ describe("Druid Functional", function () {
                   Pages: {
                     attributes: [
                       {
-                        name: "Page",
-                        type: "STRING",
+                        name: 'Page',
+                        type: 'STRING',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Count: 12,
-                        Page: "User talk:Dudeperson176123",
+                        Page: 'User talk:Dudeperson176123',
                       },
                       {
                         Count: 8,
-                        Page: "User:Attar-Aram syria/sandbox",
+                        Page: 'User:Attar-Aram syria/sandbox',
                       },
                     ],
-                    keys: ["Page"],
+                    keys: ['Page'],
                   },
                   Timestamp: {
-                    end: new Date("2015-09-12T01:00:00.000Z"),
-                    start: new Date("2015-09-12T00:00:00.000Z"),
+                    end: new Date('2015-09-12T01:00:00.000Z'),
+                    start: new Date('2015-09-12T00:00:00.000Z'),
                   },
                   TotalAdded: 331925,
                 },
@@ -5312,29 +5106,29 @@ describe("Druid Functional", function () {
                   Pages: {
                     attributes: [
                       {
-                        name: "Page",
-                        type: "STRING",
+                        name: 'Page',
+                        type: 'STRING',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
                       {
                         Count: 17,
-                        Page: "John Adams",
+                        Page: 'John Adams',
                       },
                       {
                         Count: 17,
-                        Page: "User:King Lui",
+                        Page: 'User:King Lui',
                       },
                     ],
-                    keys: ["Page"],
+                    keys: ['Page'],
                   },
                   Timestamp: {
-                    end: new Date("2015-09-12T02:00:00.000Z"),
-                    start: new Date("2015-09-12T01:00:00.000Z"),
+                    end: new Date('2015-09-12T02:00:00.000Z'),
+                    start: new Date('2015-09-12T01:00:00.000Z'),
                   },
                   TotalAdded: 1418072,
                 },
@@ -5342,12 +5136,12 @@ describe("Druid Functional", function () {
                   Pages: {
                     attributes: [
                       {
-                        name: "Page",
-                        type: "STRING",
+                        name: 'Page',
+                        type: 'STRING',
                       },
                       {
-                        name: "Count",
-                        type: "NUMBER",
+                        name: 'Count',
+                        type: 'NUMBER',
                       },
                     ],
                     data: [
@@ -5357,19 +5151,19 @@ describe("Druid Functional", function () {
                       },
                       {
                         Count: 18,
-                        Page: "2015 World Wrestling Championships",
+                        Page: '2015 World Wrestling Championships',
                       },
                     ],
-                    keys: ["Page"],
+                    keys: ['Page'],
                   },
                   Timestamp: {
-                    end: new Date("2015-09-12T03:00:00.000Z"),
-                    start: new Date("2015-09-12T02:00:00.000Z"),
+                    end: new Date('2015-09-12T03:00:00.000Z'),
+                    start: new Date('2015-09-12T02:00:00.000Z'),
                   },
                   TotalAdded: 3045966,
                 },
               ],
-              keys: ["Timestamp"],
+              keys: ['Timestamp'],
             },
             TotalAdded: 32553107,
           },
@@ -5378,16 +5172,16 @@ describe("Druid Functional", function () {
     });
   });
 
-  describe("introspection (union dataSource)", () => {
+  describe('introspection (union dataSource)', () => {
     const doubleWikiExternal = External.fromJS(
       {
-        engine: "druid",
-        source: ["wikipedia", "wikipedia-compact"],
-        timeAttribute: "time",
-        filter: $("time").overlap(
+        engine: 'druid',
+        source: ['wikipedia', 'wikipedia-compact'],
+        timeAttribute: 'time',
+        filter: $('time').overlap(
           TimeRange.fromJS({
-            start: new Date("2015-09-12T00:00:00Z"),
-            end: new Date("2015-09-13T00:00:00Z"),
+            start: new Date('2015-09-12T00:00:00Z'),
+            end: new Date('2015-09-13T00:00:00Z'),
           }),
         ),
       },
@@ -5400,59 +5194,59 @@ describe("Druid Functional", function () {
       },
     });
 
-    it("works with introspection", () => {
+    it('works with introspection', () => {
       const ex = ply()
-        .apply("wiki", $("wiki").filter($("channel").is("en")))
-        .apply("Count", "$wiki.sum($count)")
-        .apply("TotalAdded", "$wiki.sum($added)")
+        .apply('wiki', $('wiki').filter($('channel').is('en')))
+        .apply('Count', '$wiki.sum($count)')
+        .apply('TotalAdded', '$wiki.sum($added)')
         .apply(
-          "Time",
-          $("wiki")
-            .split($("time").timeBucket("PT1H", "Etc/UTC"), "Timestamp")
-            .apply("TotalAdded", "$wiki.sum($added)")
-            .sort("$Timestamp", "ascending")
+          'Time',
+          $('wiki')
+            .split($('time').timeBucket('PT1H', 'Etc/UTC'), 'Timestamp')
+            .apply('TotalAdded', '$wiki.sum($added)')
+            .sort('$Timestamp', 'ascending')
             .limit(3),
         );
 
-      return basicExecutor(ex).then(result => {
+      return basicExecutor(ex).then((result) => {
         expect(result.toJS().data).to.deep.equal([
           {
             Count: 229422,
             Time: {
               attributes: [
                 {
-                  name: "Timestamp",
-                  type: "TIME_RANGE",
+                  name: 'Timestamp',
+                  type: 'TIME_RANGE',
                 },
                 {
-                  name: "TotalAdded",
-                  type: "NUMBER",
+                  name: 'TotalAdded',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
                   Timestamp: {
-                    end: new Date("2015-09-12T01:00:00.000Z"),
-                    start: new Date("2015-09-12T00:00:00.000Z"),
+                    end: new Date('2015-09-12T01:00:00.000Z'),
+                    start: new Date('2015-09-12T00:00:00.000Z'),
                   },
                   TotalAdded: 663850,
                 },
                 {
                   Timestamp: {
-                    end: new Date("2015-09-12T02:00:00.000Z"),
-                    start: new Date("2015-09-12T01:00:00.000Z"),
+                    end: new Date('2015-09-12T02:00:00.000Z'),
+                    start: new Date('2015-09-12T01:00:00.000Z'),
                   },
                   TotalAdded: 2836144,
                 },
                 {
                   Timestamp: {
-                    end: new Date("2015-09-12T03:00:00.000Z"),
-                    start: new Date("2015-09-12T02:00:00.000Z"),
+                    end: new Date('2015-09-12T03:00:00.000Z'),
+                    start: new Date('2015-09-12T02:00:00.000Z'),
                   },
                   TotalAdded: 6091932,
                 },
               ],
-              keys: ["Timestamp"],
+              keys: ['Timestamp'],
             },
             TotalAdded: 65106214,
           },
@@ -5461,30 +5255,30 @@ describe("Druid Functional", function () {
     });
   });
 
-  describe("introspection on non existent dataSource", () => {
+  describe('introspection on non existent dataSource', () => {
     const wikiExternal = External.fromJS(
       {
-        engine: "druid",
-        source: "wikipedia_borat",
-        timeAttribute: "time",
-        filter: $("time").overlap(
+        engine: 'druid',
+        source: 'wikipedia_borat',
+        timeAttribute: 'time',
+        filter: $('time').overlap(
           TimeRange.fromJS({
-            start: new Date("2015-09-12T00:00:00Z"),
-            end: new Date("2015-09-13T00:00:00Z"),
+            start: new Date('2015-09-12T00:00:00Z'),
+            end: new Date('2015-09-13T00:00:00Z'),
           }),
         ),
       },
       druidRequester,
     );
 
-    it("fail correctly", () => {
+    it('fail correctly', () => {
       return wikiExternal
         .introspect()
         .then(() => {
-          throw new Error("DID_NOT_ERROR");
+          throw new Error('DID_NOT_ERROR');
         })
-        .catch(e => {
-          expect(e.message).to.contain("No such datasource");
+        .catch((e) => {
+          expect(e.message).to.contain('No such datasource');
         });
     });
   });

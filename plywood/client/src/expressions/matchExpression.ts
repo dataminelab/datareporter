@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
+import { PlywoodValue, Set } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
 
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
-const REGEXP_SPECIAL = "\\^$.|?*+()[{";
+const REGEXP_SPECIAL = '\\^$.|?*+()[{';
 
 export class MatchExpression extends ChainableExpression {
-  static likeToRegExp(like: string, escapeChar = "\\"): string {
-    const regExp: string[] = ["^"];
+  static likeToRegExp(like: string, escapeChar = '\\'): string {
+    const regExp: string[] = ['^'];
     for (let i = 0; i < like.length; i++) {
       let char = like[i];
       if (char === escapeChar) {
@@ -36,24 +31,24 @@ export class MatchExpression extends ChainableExpression {
         if (!nextChar) throw new Error(`invalid LIKE string '${like}'`);
         char = nextChar;
         i++;
-      } else if (char === "%") {
-        regExp.push(".*");
+      } else if (char === '%') {
+        regExp.push('.*');
         continue;
-      } else if (char === "_") {
-        regExp.push(".");
+      } else if (char === '_') {
+        regExp.push('.');
         continue;
       }
 
       if (REGEXP_SPECIAL.indexOf(char) !== -1) {
-        regExp.push("\\");
+        regExp.push('\\');
       }
       regExp.push(char);
     }
-    regExp.push("$");
-    return regExp.join("");
+    regExp.push('$');
+    return regExp.join('');
   }
 
-  static op = "Match";
+  static op = 'Match';
   static fromJS(parameters: ExpressionJS): MatchExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.regexp = parameters.regexp;
@@ -64,10 +59,10 @@ export class MatchExpression extends ChainableExpression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp("match");
-    this._checkOperandTypes("STRING");
+    this._ensureOp('match');
+    this._checkOperandTypes('STRING');
     this.regexp = parameters.regexp;
-    this.type = "BOOLEAN";
+    this.type = 'BOOLEAN';
   }
 
   public valueOf(): ExpressionValue {
@@ -93,17 +88,14 @@ export class MatchExpression extends ChainableExpression {
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
     const re = new RegExp(this.regexp);
     if (operandValue == null) return null;
-    return Set.crossUnaryBoolean(operandValue, a => re.test(a));
+    return Set.crossUnaryBoolean(operandValue, (a) => re.test(a));
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
     return `/${this.regexp}/.test(${operandJS})`;
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
     return dialect.regexpExpression(operandSQL, this.regexp);
   }
 }

@@ -14,43 +14,33 @@
  * limitations under the License.
  */
 
-import { Dataset, PlywoodValue } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
+import { Dataset, PlywoodValue } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from "./baseExpression";
-import { Aggregate } from "./mixins/aggregate";
+} from './baseExpression';
+import { Aggregate } from './mixins/aggregate';
 
-export class AverageExpression
-  extends ChainableUnaryExpression
-  implements Aggregate
-{
-  static op = "Average";
+export class AverageExpression extends ChainableUnaryExpression implements Aggregate {
+  static op = 'Average';
   static fromJS(parameters: ExpressionJS): AverageExpression {
-    return new AverageExpression(
-      ChainableUnaryExpression.jsToValue(parameters),
-    );
+    return new AverageExpression(ChainableUnaryExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp("average");
-    this._checkOperandTypes("DATASET");
-    this._checkExpressionTypes("NUMBER");
-    this.type = "NUMBER";
+    this._ensureOp('average');
+    this._checkOperandTypes('DATASET');
+    this._checkExpressionTypes('NUMBER');
+    this.type = 'NUMBER';
   }
 
-  protected _calcChainableUnaryHelper(
-    operandValue: any,
-    expressionValue: any,
-  ): PlywoodValue {
-    return operandValue
-      ? (operandValue as Dataset).average(this.expression)
-      : null;
+  protected _calcChainableUnaryHelper(operandValue: any, expressionValue: any): PlywoodValue {
+    return operandValue ? (operandValue as Dataset).average(this.expression) : null;
   }
 
   protected _getSQLChainableUnaryHelper(
@@ -63,9 +53,7 @@ export class AverageExpression
 
   public decomposeAverage(countEx?: Expression): Expression {
     const { operand, expression } = this;
-    return operand
-      .sum(expression)
-      .divide(countEx ? operand.sum(countEx) : operand.count());
+    return operand.sum(expression).divide(countEx ? operand.sum(countEx) : operand.count());
   }
 }
 

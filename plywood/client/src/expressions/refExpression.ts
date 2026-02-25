@@ -15,36 +15,36 @@
  * limitations under the License.
  */
 
-import hasOwnProp from "has-own-prop";
-import { SimpleArray } from "immutable-class";
+import hasOwnProp from 'has-own-prop';
+import { SimpleArray } from 'immutable-class';
 
-import { ComputeFn, Datum, PlywoodValue } from "../datatypes";
-import { SQLDialect } from "../dialect";
-import { repeat } from "../helper";
-import { DatasetFullType, PlyType } from "../types";
+import { ComputeFn, Datum, PlywoodValue } from '../datatypes';
+import { SQLDialect } from '../dialect';
+import { repeat } from '../helper';
+import { DatasetFullType, PlyType } from '../types';
 
-import { Expression, ExpressionJS, ExpressionValue } from "./baseExpression";
+import { Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export const POSSIBLE_TYPES: Record<string, number> = {
-  "NULL": 1,
-  "BOOLEAN": 1,
-  "NUMBER": 1,
-  "TIME": 1,
-  "STRING": 1,
-  "IP": 1,
-  "NUMBER_RANGE": 1,
-  "TIME_RANGE": 1,
-  "SET": 1,
-  "SET/NULL": 1,
-  "SET/BOOLEAN": 1,
-  "SET/NUMBER": 1,
-  "SET/TIME": 1,
-  "SET/STRING": 1,
-  "SET/NUMBER_RANGE": 1,
-  "SET/TIME_RANGE": 1,
-  "SET/IP": 1,
-  "DATASET": 1,
-  "TIME_SERIES": 1,
+  NULL: 1,
+  BOOLEAN: 1,
+  NUMBER: 1,
+  TIME: 1,
+  STRING: 1,
+  IP: 1,
+  NUMBER_RANGE: 1,
+  TIME_RANGE: 1,
+  SET: 1,
+  'SET/NULL': 1,
+  'SET/BOOLEAN': 1,
+  'SET/NUMBER': 1,
+  'SET/TIME': 1,
+  'SET/STRING': 1,
+  'SET/NUMBER_RANGE': 1,
+  'SET/TIME_RANGE': 1,
+  'SET/IP': 1,
+  DATASET: 1,
+  TIME_SERIES: 1,
 };
 
 const GENERATIONS_REGEXP = /^\^+/;
@@ -53,7 +53,7 @@ const TYPE_REGEXP = /:([A-Z\/_]+)$/;
 export class RefExpression extends Expression {
   static SIMPLE_NAME_REGEXP = /^([a-z_]\w*)$/i;
 
-  static op = "Ref";
+  static op = 'Ref';
   static fromJS(parameters: ExpressionJS): RefExpression {
     const value: ExpressionValue = Expression.jsToValue(parameters);
     value.nest = parameters.nest || 0;
@@ -63,7 +63,7 @@ export class RefExpression extends Expression {
   }
 
   static parse(str: string): RefExpression {
-    const refValue: ExpressionValue = { op: "ref" };
+    const refValue: ExpressionValue = { op: 'ref' };
     let match: RegExpMatchArray;
 
     match = str.match(GENERATIONS_REGEXP);
@@ -81,7 +81,7 @@ export class RefExpression extends Expression {
       str = str.substr(0, str.length - match[0].length);
     }
 
-    if (str[0] === "{" && str[str.length - 1] === "}") {
+    if (str[0] === '{' && str[str.length - 1] === '}') {
       str = str.substr(1, str.length - 2);
     }
 
@@ -95,9 +95,9 @@ export class RefExpression extends Expression {
 
   static toJavaScriptSafeName(variableName: string): string {
     if (!RefExpression.SIMPLE_NAME_REGEXP.test(variableName)) {
-      variableName = variableName.replace(/\W/g, c => `$${c.charCodeAt(0)}`);
+      variableName = variableName.replace(/\W/g, (c) => `$${c.charCodeAt(0)}`);
     }
-    return "_" + variableName;
+    return '_' + variableName;
   }
 
   static findProperty(obj: any, key: string): any {
@@ -107,10 +107,7 @@ export class RefExpression extends Expression {
   static findPropertyCI(obj: any, key: string): any {
     const lowerKey = key.toLowerCase();
     if (obj == null) return null;
-    return SimpleArray.find(
-      Object.keys(obj),
-      v => v.toLowerCase() === lowerKey,
-    );
+    return SimpleArray.find(Object.keys(obj), (v) => v.toLowerCase() === lowerKey);
   }
 
   public nest: int;
@@ -119,20 +116,20 @@ export class RefExpression extends Expression {
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp("ref");
+    this._ensureOp('ref');
 
     const name = parameters.name;
-    if (typeof name !== "string" || name.length === 0) {
-      throw new TypeError("must have a nonempty `name`");
+    if (typeof name !== 'string' || name.length === 0) {
+      throw new TypeError('must have a nonempty `name`');
     }
     this.name = name;
 
     const nest = parameters.nest;
-    if (typeof nest !== "number") {
-      throw new TypeError("must have nest");
+    if (typeof nest !== 'number') {
+      throw new TypeError('must have nest');
     }
     if (nest < 0) {
-      throw new Error("nest must be non-negative");
+      throw new Error('nest must be non-negative');
     }
     this.nest = nest;
 
@@ -171,15 +168,15 @@ export class RefExpression extends Expression {
     let str = name;
 
     if (!RefExpression.SIMPLE_NAME_REGEXP.test(name)) {
-      str = "{" + str + "}";
+      str = '{' + str + '}';
     }
     if (nest) {
-      str = repeat("^", nest) + str;
+      str = repeat('^', nest) + str;
     }
     if (type) {
-      str += ":" + type;
+      str += ':' + type;
     }
-    return (ignoreCase ? "i$" : "$") + str;
+    return (ignoreCase ? 'i$' : '$') + str;
   }
 
   public changeName(name: string): RefExpression {
@@ -190,41 +187,36 @@ export class RefExpression extends Expression {
 
   public getFn(): ComputeFn {
     const { name, nest, ignoreCase } = this;
-    if (nest) throw new Error("can not getFn on a nested function");
+    if (nest) throw new Error('can not getFn on a nested function');
 
     return (d: Datum) => {
-      const property = ignoreCase
-        ? RefExpression.findPropertyCI(d, name)
-        : name;
+      const property = ignoreCase ? RefExpression.findPropertyCI(d, name) : name;
       return property != null ? d[property] : null;
     };
   }
 
   public calc(datum: Datum): PlywoodValue {
     const { name, nest, ignoreCase } = this;
-    if (nest) throw new Error("can not calc on a nested expression");
+    if (nest) throw new Error('can not calc on a nested expression');
 
-    const property = ignoreCase
-      ? RefExpression.findPropertyCI(datum, name)
-      : name;
+    const property = ignoreCase ? RefExpression.findPropertyCI(datum, name) : name;
     return property != null ? (datum[property] as any) : null;
   }
 
   public getJS(datumVar: string): string {
     const { name, nest, ignoreCase } = this;
-    if (nest) throw new Error("can not call getJS on unresolved expression");
-    if (ignoreCase)
-      throw new Error("can not express ignore case as js expression");
+    if (nest) throw new Error('can not call getJS on unresolved expression');
+    if (ignoreCase) throw new Error('can not express ignore case as js expression');
 
     let expr: string;
     if (datumVar) {
-      expr = datumVar.replace("[]", "[" + JSON.stringify(name) + "]");
+      expr = datumVar.replace('[]', '[' + JSON.stringify(name) + ']');
     } else {
       expr = RefExpression.toJavaScriptSafeName(name);
     }
 
     switch (this.type) {
-      case "NUMBER":
+      case 'NUMBER':
         return `parseFloat(${expr})`;
 
       default:
@@ -233,8 +225,7 @@ export class RefExpression extends Expression {
   }
 
   public getSQL(dialect: SQLDialect, _minimal = false): string {
-    if (this.nest)
-      throw new Error(`can not call getSQL on unresolved expression: ${this}`);
+    if (this.nest) throw new Error(`can not call getSQL on unresolved expression: ${this}`);
     return dialect.maybeNamespacedName(this.name);
   }
 
@@ -274,9 +265,7 @@ export class RefExpression extends Expression {
     const myType = myFullType.type;
 
     if (this.type && this.type !== myType) {
-      throw new TypeError(
-        `type mismatch in ${this} (has: ${this.type} needs: ${myType})`,
-      );
+      throw new TypeError(`type mismatch in ${this} (has: ${this.type} needs: ${myType})`);
     }
 
     // Check if it needs to be replaced
@@ -292,21 +281,20 @@ export class RefExpression extends Expression {
   }
 
   public updateTypeContext(typeContext: DatasetFullType): DatasetFullType {
-    if (this.type !== "DATASET") return typeContext;
+    if (this.type !== 'DATASET') return typeContext;
 
     const { nest, name } = this;
     let myTypeContext = typeContext;
     for (let i = nest; i > 0; i--) {
       myTypeContext = myTypeContext.parent;
-      if (!myTypeContext)
-        throw new Error("went too deep on " + this.toString());
+      if (!myTypeContext) throw new Error('went too deep on ' + this.toString());
     }
 
     const myFullType = myTypeContext.datasetType[name];
 
     return {
       parent: typeContext,
-      type: "DATASET",
+      type: 'DATASET',
       datasetType: (myFullType as DatasetFullType).datasetType,
     };
   }
@@ -319,7 +307,7 @@ export class RefExpression extends Expression {
 
   public upgradeToType(targetType: PlyType): Expression {
     const { type } = this;
-    if (targetType === "TIME" && (!type || type === "STRING")) {
+    if (targetType === 'TIME' && (!type || type === 'STRING')) {
       return this.changeType(targetType);
     }
     return this;
@@ -338,6 +326,6 @@ export class RefExpression extends Expression {
   }
 }
 
-Expression._ = new RefExpression({ name: "_", nest: 0 });
+Expression._ = new RefExpression({ name: '_', nest: 0 });
 
 Expression.register(RefExpression);

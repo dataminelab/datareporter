@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import { PlywoodValue } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
-import { PlyTypeSimple } from "../types";
+import { PlywoodValue } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
+import { PlyTypeSimple } from '../types';
 
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 interface Caster {
   TIME: {
@@ -41,34 +36,31 @@ interface Caster {
 
 const CAST_TYPE_TO_FN: Caster = {
   TIME: {
-    NUMBER: n => new Date(n),
+    NUMBER: (n) => new Date(n),
   },
   NUMBER: {
     TIME: (n: Date) => Date.parse(n.toString()),
     _: (s: any) => Number(s),
   },
   STRING: {
-    _: (v: any) => "" + v,
+    _: (v: any) => '' + v,
   },
 };
 
-const CAST_TYPE_TO_JS: Record<
-  string,
-  Record<string, (operandJS: string) => string>
-> = {
+const CAST_TYPE_TO_JS: Record<string, Record<string, (operandJS: string) => string>> = {
   TIME: {
-    NUMBER: operandJS => `new Date(${operandJS})`,
+    NUMBER: (operandJS) => `new Date(${operandJS})`,
   },
   NUMBER: {
-    _: s => `(+(${s}))`, // The outer () are important because the + can merge with another + to form an inlaid operator
+    _: (s) => `(+(${s}))`, // The outer () are important because the + can merge with another + to form an inlaid operator
   },
   STRING: {
-    _: operandJS => `(''+${operandJS})`,
+    _: (operandJS) => `(''+${operandJS})`,
   },
 };
 
 export class CastExpression extends ChainableExpression {
-  static op = "Cast";
+  static op = 'Cast';
   static fromJS(parameters: ExpressionJS): CastExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.outputType = parameters.outputType || (parameters as any).castType; // Back compat
@@ -80,9 +72,9 @@ export class CastExpression extends ChainableExpression {
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     this.outputType = parameters.outputType;
-    this._ensureOp("cast");
-    if (typeof this.outputType !== "string") {
-      throw new Error("`outputType` must be a string");
+    this._ensureOp('cast');
+    if (typeof this.outputType !== 'string') {
+      throw new Error('`outputType` must be a string');
     }
     this.type = this.outputType;
   }
@@ -113,12 +105,10 @@ export class CastExpression extends ChainableExpression {
     if (outputType === inputType) return operandValue;
 
     const caster = (CAST_TYPE_TO_FN as any)[outputType];
-    if (!caster)
-      throw new Error(`unsupported cast type in calc '${outputType}'`);
+    if (!caster) throw new Error(`unsupported cast type in calc '${outputType}'`);
 
-    const castFn = caster[inputType] || caster["_"];
-    if (!castFn)
-      throw new Error(`unsupported cast from ${inputType} to '${outputType}'`);
+    const castFn = caster[inputType] || caster['_'];
+    if (!castFn) throw new Error(`unsupported cast from ${inputType} to '${outputType}'`);
     return operandValue ? castFn(operandValue) : null;
   }
 
@@ -128,26 +118,16 @@ export class CastExpression extends ChainableExpression {
     if (outputType === inputType) return operandJS;
 
     const castJS = CAST_TYPE_TO_JS[outputType];
-    if (!castJS)
-      throw new Error(`unsupported cast type in getJS '${outputType}'`);
+    if (!castJS) throw new Error(`unsupported cast type in getJS '${outputType}'`);
 
-    const js = castJS[inputType] || castJS["_"];
+    const js = castJS[inputType] || castJS['_'];
     if (!js)
-      throw new Error(
-        `unsupported combo in getJS of cast action: ${inputType} to ${outputType}`,
-      );
+      throw new Error(`unsupported combo in getJS of cast action: ${inputType} to ${outputType}`);
     return js(operandJS);
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
-    return dialect.castExpression(
-      this.operand.type,
-      operandSQL,
-      this.outputType,
-    );
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+    return dialect.castExpression(this.operand.type, operandSQL, this.outputType);
   }
 
   protected specialSimplify(): Expression {

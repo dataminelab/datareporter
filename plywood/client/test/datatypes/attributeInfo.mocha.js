@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
+const { expect } = require('chai');
 
-const { testImmutableClass } = require("immutable-class-tester");
+const { testImmutableClass } = require('immutable-class-tester');
 
-const plywood = require("../plywood");
+const plywood = require('../plywood');
 
 const { AttributeInfo, $, ply, r } = plywood;
 
-describe("AttributeInfo", () => {
-  it("is immutable class", () => {
+describe('AttributeInfo', () => {
+  it('is immutable class', () => {
     testImmutableClass(AttributeInfo, [
-      { name: "time", type: "TIME" },
-      { name: "color", type: "STRING" },
-      { name: "cut", type: "STRING" },
-      { name: "cut", type: "STRING", cardinality: 100 },
-      { name: "cut", type: "STRING", range: { start: "A", end: "F" } },
-      { name: "tags", type: "SET/STRING" },
-      { name: "carat", type: "NUMBER", nativeType: "STRING" },
+      { name: 'time', type: 'TIME' },
+      { name: 'color', type: 'STRING' },
+      { name: 'cut', type: 'STRING' },
+      { name: 'cut', type: 'STRING', cardinality: 100 },
+      { name: 'cut', type: 'STRING', range: { start: 'A', end: 'F' } },
+      { name: 'tags', type: 'SET/STRING' },
+      { name: 'carat', type: 'NUMBER', nativeType: 'STRING' },
       {
-        name: "count",
-        type: "NUMBER",
+        name: 'count',
+        type: 'NUMBER',
         unsplitable: true,
-        maker: { op: "count" },
+        maker: { op: 'count' },
       },
       {
-        name: "price",
-        type: "NUMBER",
+        name: 'price',
+        type: 'NUMBER',
         unsplitable: true,
-        maker: { op: "sum", expression: { op: "ref", name: "price" } },
+        maker: { op: 'sum', expression: { op: 'ref', name: 'price' } },
       },
-      { name: "tax", type: "NUMBER", unsplitable: true },
-      { name: "vendor_id", nativeType: "hyperUnique", type: "NULL" },
+      { name: 'tax', type: 'NUMBER', unsplitable: true },
+      { name: 'vendor_id', nativeType: 'hyperUnique', type: 'NULL' },
     ]);
   });
 });

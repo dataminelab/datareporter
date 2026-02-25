@@ -15,66 +15,64 @@
  * limitations under the License.
  */
 
-import type { Duration, Timezone } from "chronoshift";
+import type { Duration, Timezone } from 'chronoshift';
 
-import { PlyType } from "../types";
+import { PlyType } from '../types';
 
-import { SQLDialect } from "./baseDialect";
+import { SQLDialect } from './baseDialect';
 
 export class MySQLDialect extends SQLDialect {
   static TIME_BUCKETING: Record<string, string> = {
-    PT1S: "%Y-%m-%d %H:%i:%SZ",
-    PT1M: "%Y-%m-%d %H:%i:00Z",
-    PT1H: "%Y-%m-%d %H:00:00Z",
-    P1D: "%Y-%m-%d 00:00:00Z",
-    P1M: "%Y-%m-01 00:00:00Z",
-    P1Y: "%Y-01-01 00:00:00Z",
+    PT1S: '%Y-%m-%d %H:%i:%SZ',
+    PT1M: '%Y-%m-%d %H:%i:00Z',
+    PT1H: '%Y-%m-%d %H:00:00Z',
+    P1D: '%Y-%m-%d 00:00:00Z',
+    P1M: '%Y-%m-01 00:00:00Z',
+    P1Y: '%Y-01-01 00:00:00Z',
   };
 
   static TIME_PART_TO_FUNCTION: Record<string, string> = {
-    SECOND_OF_MINUTE: "SECOND($$)",
-    SECOND_OF_HOUR: "(MINUTE($$)*60+SECOND($$))",
-    SECOND_OF_DAY: "((HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
-    SECOND_OF_WEEK: "(((WEEKDAY($$)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
-    SECOND_OF_MONTH:
-      "((((DAYOFMONTH($$)-1)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
-    SECOND_OF_YEAR:
-      "((((DAYOFYEAR($$)-1)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))",
+    SECOND_OF_MINUTE: 'SECOND($$)',
+    SECOND_OF_HOUR: '(MINUTE($$)*60+SECOND($$))',
+    SECOND_OF_DAY: '((HOUR($$)*60+MINUTE($$))*60+SECOND($$))',
+    SECOND_OF_WEEK: '(((WEEKDAY($$)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))',
+    SECOND_OF_MONTH: '((((DAYOFMONTH($$)-1)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))',
+    SECOND_OF_YEAR: '((((DAYOFYEAR($$)-1)*24)+HOUR($$)*60+MINUTE($$))*60+SECOND($$))',
 
-    MINUTE_OF_HOUR: "MINUTE($$)",
-    MINUTE_OF_DAY: "HOUR($$)*60+MINUTE($$)",
-    MINUTE_OF_WEEK: "(WEEKDAY($$)*24)+HOUR($$)*60+MINUTE($$)",
-    MINUTE_OF_MONTH: "((DAYOFMONTH($$)-1)*24)+HOUR($$)*60+MINUTE($$)",
-    MINUTE_OF_YEAR: "((DAYOFYEAR($$)-1)*24)+HOUR($$)*60+MINUTE($$)",
+    MINUTE_OF_HOUR: 'MINUTE($$)',
+    MINUTE_OF_DAY: 'HOUR($$)*60+MINUTE($$)',
+    MINUTE_OF_WEEK: '(WEEKDAY($$)*24)+HOUR($$)*60+MINUTE($$)',
+    MINUTE_OF_MONTH: '((DAYOFMONTH($$)-1)*24)+HOUR($$)*60+MINUTE($$)',
+    MINUTE_OF_YEAR: '((DAYOFYEAR($$)-1)*24)+HOUR($$)*60+MINUTE($$)',
 
-    HOUR_OF_DAY: "HOUR($$)",
-    HOUR_OF_WEEK: "(WEEKDAY($$)*24+HOUR($$))",
-    HOUR_OF_MONTH: "((DAYOFMONTH($$)-1)*24+HOUR($$))",
-    HOUR_OF_YEAR: "((DAYOFYEAR($$)-1)*24+HOUR($$))",
+    HOUR_OF_DAY: 'HOUR($$)',
+    HOUR_OF_WEEK: '(WEEKDAY($$)*24+HOUR($$))',
+    HOUR_OF_MONTH: '((DAYOFMONTH($$)-1)*24+HOUR($$))',
+    HOUR_OF_YEAR: '((DAYOFYEAR($$)-1)*24+HOUR($$))',
 
-    DAY_OF_WEEK: "(WEEKDAY($$)+1)",
-    DAY_OF_MONTH: "DAYOFMONTH($$)",
-    DAY_OF_YEAR: "DAYOFYEAR($$)",
+    DAY_OF_WEEK: '(WEEKDAY($$)+1)',
+    DAY_OF_MONTH: 'DAYOFMONTH($$)',
+    DAY_OF_YEAR: 'DAYOFYEAR($$)',
 
     // WEEK_OF_MONTH: ???
-    WEEK_OF_YEAR: "WEEK($$)", // ToDo: look into mode (https://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html#function_week)
+    WEEK_OF_YEAR: 'WEEK($$)', // ToDo: look into mode (https://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html#function_week)
 
-    MONTH_OF_YEAR: "MONTH($$)",
-    YEAR: "YEAR($$)",
+    MONTH_OF_YEAR: 'MONTH($$)',
+    YEAR: 'YEAR($$)',
   };
 
   static CAST_TO_FUNCTION: {
     [outputType: string]: { [inputType: string]: string };
   } = {
     TIME: {
-      NUMBER: "FROM_UNIXTIME($$ / 1000)",
+      NUMBER: 'FROM_UNIXTIME($$ / 1000)',
     },
     NUMBER: {
-      TIME: "UNIX_TIMESTAMP($$) * 1000",
-      STRING: "CAST($$ AS SIGNED)",
+      TIME: 'UNIX_TIMESTAMP($$) * 1000',
+      STRING: 'CAST($$ AS SIGNED)',
     },
     STRING: {
-      NUMBER: "CAST($$ AS CHAR)",
+      NUMBER: 'CAST($$ AS CHAR)',
     },
   };
 
@@ -83,8 +81,8 @@ export class MySQLDialect extends SQLDialect {
   }
 
   public escapeName(name: string): string {
-    name = name.replace(/`/g, "``");
-    return "`" + name + "`";
+    name = name.replace(/`/g, '``');
+    return '`' + name + '`';
   }
 
   public escapeLiteral(name: string): string {
@@ -98,18 +96,14 @@ export class MySQLDialect extends SQLDialect {
   }
 
   public stringArrayToSQL(_value: string[]): string {
-    throw new Error("must implement");
+    throw new Error('must implement');
   }
 
   public concatExpression(a: string, b: string): string {
     return `CONCAT(${a},${b})`;
   }
 
-  public containsExpression(
-    a: string,
-    b: string,
-    insensitive: boolean,
-  ): string {
+  public containsExpression(a: string, b: string, insensitive: boolean): string {
     if (insensitive) {
       a = `LOWER(${a})`;
       b = `LOWER(${b})`;
@@ -121,16 +115,10 @@ export class MySQLDialect extends SQLDialect {
     return `(${a}<=>${b})`;
   }
 
-  public castExpression(
-    inputType: PlyType,
-    operand: string,
-    targetType: string,
-  ): string {
+  public castExpression(inputType: PlyType, operand: string, targetType: string): string {
     const castFunction = MySQLDialect.CAST_TO_FUNCTION[targetType][inputType];
     if (!castFunction) {
-      throw new Error(
-        `unsupported cast from ${inputType} to ${targetType} in MySQL dialect`,
-      );
+      throw new Error(`unsupported cast from ${inputType} to ${targetType} in MySQL dialect`);
     }
     return castFunction.replace(/\$\$/g, operand);
   }
@@ -145,11 +133,7 @@ export class MySQLDialect extends SQLDialect {
     return `CONVERT_TZ(${operand},'${timezone}','+0:00')`;
   }
 
-  public timeFloorExpression(
-    operand: string,
-    duration: Duration,
-    timezone: Timezone,
-  ): string {
+  public timeFloorExpression(operand: string, duration: Duration, timezone: Timezone): string {
     const bucketFormat = MySQLDialect.TIME_BUCKETING[duration.toString()];
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
     return this.walltimeToUTC(
@@ -158,26 +142,14 @@ export class MySQLDialect extends SQLDialect {
     );
   }
 
-  public timeBucketExpression(
-    operand: string,
-    duration: Duration,
-    timezone: Timezone,
-  ): string {
+  public timeBucketExpression(operand: string, duration: Duration, timezone: Timezone): string {
     return this.timeFloorExpression(operand, duration, timezone);
   }
 
-  public timePartExpression(
-    operand: string,
-    part: string,
-    timezone: Timezone,
-  ): string {
+  public timePartExpression(operand: string, part: string, timezone: Timezone): string {
     const timePartFunction = MySQLDialect.TIME_PART_TO_FUNCTION[part];
-    if (!timePartFunction)
-      throw new Error(`unsupported part ${part} in MySQL dialect`);
-    return timePartFunction.replace(
-      /\$\$/g,
-      this.utcToWalltime(operand, timezone),
-    );
+    if (!timePartFunction) throw new Error(`unsupported part ${part} in MySQL dialect`);
+    return timePartFunction.replace(/\$\$/g, this.utcToWalltime(operand, timezone));
   }
 
   public timeShiftExpression(
@@ -189,20 +161,20 @@ export class MySQLDialect extends SQLDialect {
     if (step === 0) return operand;
 
     // https://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html#function_date-add
-    const sqlFn = step > 0 ? "DATE_ADD(" : "DATE_SUB(";
+    const sqlFn = step > 0 ? 'DATE_ADD(' : 'DATE_SUB(';
     const spans = duration.multiply(Math.abs(step)).valueOf();
     if (spans.week) {
-      return sqlFn + operand + ", INTERVAL " + String(spans.week) + " WEEK)";
+      return sqlFn + operand + ', INTERVAL ' + String(spans.week) + ' WEEK)';
     }
     if (spans.year || spans.month) {
-      const expr = String(spans.year || 0) + "-" + String(spans.month || 0);
+      const expr = String(spans.year || 0) + '-' + String(spans.month || 0);
       operand = sqlFn + operand + ", INTERVAL '" + expr + "' YEAR_MONTH)";
     }
     if (spans.day || spans.hour || spans.minute || spans.second) {
       const expr =
         String(spans.day || 0) +
-        " " +
-        [spans.hour || 0, spans.minute || 0, spans.second || 0].join(":");
+        ' ' +
+        [spans.hour || 0, spans.minute || 0, spans.second || 0].join(':');
       operand = sqlFn + operand + ", INTERVAL '" + expr + "' DAY_SECOND)";
     }
     return operand;
@@ -210,7 +182,7 @@ export class MySQLDialect extends SQLDialect {
 
   public extractExpression(_operand: string, _regexp: string): string {
     throw new Error(
-      "MySQL must implement extractExpression (https://github.com/mysqludf/lib_mysqludf_preg)",
+      'MySQL must implement extractExpression (https://github.com/mysqludf/lib_mysqludf_preg)',
     );
   }
 

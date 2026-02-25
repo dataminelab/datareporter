@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
-const { Timezone } = require("chronoshift");
+const { expect } = require('chai');
+const { Timezone } = require('chronoshift');
 
-const { sane } = require("../utils");
-const plywood = require("../plywood");
+const { sane } = require('../utils');
+const plywood = require('../plywood');
 
-const {
-  Dataset,
-  AttributeInfo,
-  $,
-  Set,
-  r,
-  iteratorFactory,
-  PlywoodValueBuilder,
-} = plywood;
+const { Dataset, AttributeInfo, $, Set, r, iteratorFactory, PlywoodValueBuilder } = plywood;
 
 function toJSON(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-describe("ValueStream", () => {
-  describe("iteratorFactory", () => {
-    it("works for simple value", () => {
+describe('ValueStream', () => {
+  describe('iteratorFactory', () => {
+    it('works for simple value', () => {
       const dsi = iteratorFactory(5);
 
       const bits = [];
@@ -47,32 +39,32 @@ describe("ValueStream", () => {
 
       expect(toJSON(bits)).to.deep.equal([
         {
-          type: "value",
+          type: 'value',
           value: 5,
         },
       ]);
     });
 
-    it("works for Dataset", () => {
+    it('works for Dataset', () => {
       const ds = Dataset.fromJS([
         {
-          time: new Date("2015-09-12T00:46:58.771Z"),
-          channel: "#en.wikipedia",
+          time: new Date('2015-09-12T00:46:58.771Z'),
+          channel: '#en.wikipedia',
           isAnonymous: false,
           deleted: 0,
           users: [
-            { name: "Vadim", x: 2 },
-            { name: "Eva", x: 3 },
+            { name: 'Vadim', x: 2 },
+            { name: 'Eva', x: 3 },
           ],
         },
         {
-          time: new Date("2015-09-12T00:48:20.157Z"),
-          channel: "#en.wikipedia",
+          time: new Date('2015-09-12T00:48:20.157Z'),
+          channel: '#en.wikipedia',
           isAnonymous: true,
           deleted: 26,
           users: [
-            { name: "James", x: 8 },
-            { name: "Charlie", x: 30 },
+            { name: 'James', x: 8 },
+            { name: 'Charlie', x: 30 },
           ],
         },
       ]);
@@ -89,137 +81,137 @@ describe("ValueStream", () => {
         {
           attributes: [
             {
-              name: "time",
-              type: "TIME",
+              name: 'time',
+              type: 'TIME',
             },
             {
-              name: "channel",
-              type: "STRING",
+              name: 'channel',
+              type: 'STRING',
             },
             {
-              name: "isAnonymous",
-              type: "BOOLEAN",
+              name: 'isAnonymous',
+              type: 'BOOLEAN',
             },
             {
-              name: "deleted",
-              type: "NUMBER",
+              name: 'deleted',
+              type: 'NUMBER',
             },
             {
-              name: "users",
-              type: "DATASET",
+              name: 'users',
+              type: 'DATASET',
             },
           ],
-          type: "init",
+          type: 'init',
         },
         {
           datum: {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 0,
             isAnonymous: false,
-            time: "2015-09-12T00:46:58.771Z",
+            time: '2015-09-12T00:46:58.771Z',
           },
-          type: "datum",
+          type: 'datum',
         },
         {
-          attribute: "users",
-          type: "within",
+          attribute: 'users',
+          type: 'within',
           within: {
             attributes: [
               {
-                name: "name",
-                type: "STRING",
+                name: 'name',
+                type: 'STRING',
               },
               {
-                name: "x",
-                type: "NUMBER",
+                name: 'x',
+                type: 'NUMBER',
               },
             ],
-            type: "init",
+            type: 'init',
           },
         },
         {
-          attribute: "users",
-          type: "within",
+          attribute: 'users',
+          type: 'within',
           within: {
             datum: {
-              name: "Vadim",
+              name: 'Vadim',
               x: 2,
             },
-            type: "datum",
+            type: 'datum',
           },
         },
         {
-          attribute: "users",
-          type: "within",
+          attribute: 'users',
+          type: 'within',
           within: {
             datum: {
-              name: "Eva",
+              name: 'Eva',
               x: 3,
             },
-            type: "datum",
+            type: 'datum',
           },
         },
         {
           datum: {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 26,
             isAnonymous: true,
-            time: "2015-09-12T00:48:20.157Z",
+            time: '2015-09-12T00:48:20.157Z',
           },
-          type: "datum",
+          type: 'datum',
         },
         {
-          attribute: "users",
-          type: "within",
+          attribute: 'users',
+          type: 'within',
           within: {
             attributes: [
               {
-                name: "name",
-                type: "STRING",
+                name: 'name',
+                type: 'STRING',
               },
               {
-                name: "x",
-                type: "NUMBER",
+                name: 'x',
+                type: 'NUMBER',
               },
             ],
-            type: "init",
+            type: 'init',
           },
         },
         {
-          attribute: "users",
-          type: "within",
+          attribute: 'users',
+          type: 'within',
           within: {
             datum: {
-              name: "James",
+              name: 'James',
               x: 8,
             },
-            type: "datum",
+            type: 'datum',
           },
         },
         {
-          attribute: "users",
-          type: "within",
+          attribute: 'users',
+          type: 'within',
           within: {
             datum: {
-              name: "Charlie",
+              name: 'Charlie',
               x: 30,
             },
-            type: "datum",
+            type: 'datum',
           },
         },
       ]);
     });
 
-    it("works for Dataset with keys", () => {
+    it('works for Dataset with keys', () => {
       const ds = Dataset.fromJS({
-        keys: ["channel"],
+        keys: ['channel'],
         data: [
           {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 0,
           },
           {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 26,
           },
         ],
@@ -235,30 +227,30 @@ describe("ValueStream", () => {
 
       expect(toJSON(bits)).to.deep.equal([
         {
-          type: "init",
+          type: 'init',
           attributes: [
             {
-              name: "channel",
-              type: "STRING",
+              name: 'channel',
+              type: 'STRING',
             },
             {
-              name: "deleted",
-              type: "NUMBER",
+              name: 'deleted',
+              type: 'NUMBER',
             },
           ],
-          keys: ["channel"],
+          keys: ['channel'],
         },
         {
-          type: "datum",
+          type: 'datum',
           datum: {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 0,
           },
         },
         {
-          type: "datum",
+          type: 'datum',
           datum: {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 26,
           },
         },
@@ -266,65 +258,65 @@ describe("ValueStream", () => {
     });
   });
 
-  describe("PlywoodValueBuilder", () => {
-    it("works in base case", () => {
+  describe('PlywoodValueBuilder', () => {
+    it('works in base case', () => {
       const pvb = new PlywoodValueBuilder();
       expect(pvb.getValue()).to.deep.equal(null);
     });
 
-    it("works in null case", () => {
+    it('works in null case', () => {
       const pvb = new PlywoodValueBuilder();
-      pvb.processBit({ type: "value", value: null });
+      pvb.processBit({ type: 'value', value: null });
       expect(pvb.getValue()).to.equal(null);
     });
 
-    it("works in false case", () => {
+    it('works in false case', () => {
       const pvb = new PlywoodValueBuilder();
-      pvb.processBit({ type: "value", value: false });
+      pvb.processBit({ type: 'value', value: false });
       expect(pvb.getValue()).to.equal(false);
     });
 
-    it("works in zero case", () => {
+    it('works in zero case', () => {
       const pvb = new PlywoodValueBuilder();
-      pvb.processBit({ type: "value", value: 0 });
+      pvb.processBit({ type: 'value', value: 0 });
       expect(pvb.getValue()).to.equal(0);
     });
 
-    it("works in value case", () => {
+    it('works in value case', () => {
       const pvb = new PlywoodValueBuilder();
-      pvb.processBit({ type: "value", value: 5 });
+      pvb.processBit({ type: 'value', value: 5 });
       expect(pvb.getValue()).to.equal(5);
     });
 
-    it("works in dataset case (no init)", () => {
+    it('works in dataset case (no init)', () => {
       const bits = [
         {
-          type: "datum",
+          type: 'datum',
           datum: {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 0,
             isAnonymous: false,
-            time: new Date("2015-09-12T00:46:58.771Z"),
+            time: new Date('2015-09-12T00:46:58.771Z'),
           },
         },
         {
-          type: "within",
-          attribute: "users",
+          type: 'within',
+          attribute: 'users',
           within: {
-            type: "datum",
+            type: 'datum',
             datum: {
-              name: "Vadim",
+              name: 'Vadim',
               x: 2,
             },
           },
         },
         {
-          type: "within",
-          attribute: "users",
+          type: 'within',
+          attribute: 'users',
           within: {
-            type: "datum",
+            type: 'datum',
             datum: {
-              name: "Eva",
+              name: 'Eva',
               x: 3,
             },
           },
@@ -336,28 +328,28 @@ describe("ValueStream", () => {
 
       expect(pvb.getValue().toJS().data).to.deep.equal([
         {
-          channel: "#en.wikipedia",
+          channel: '#en.wikipedia',
           deleted: 0,
           isAnonymous: false,
-          time: new Date("2015-09-12T00:46:58.771Z"),
+          time: new Date('2015-09-12T00:46:58.771Z'),
           users: {
             attributes: [
               {
-                name: "name",
-                type: "STRING",
+                name: 'name',
+                type: 'STRING',
               },
               {
-                name: "x",
-                type: "NUMBER",
+                name: 'x',
+                type: 'NUMBER',
               },
             ],
             data: [
               {
-                name: "Vadim",
+                name: 'Vadim',
                 x: 2,
               },
               {
-                name: "Eva",
+                name: 'Eva',
                 x: 3,
               },
             ],
@@ -366,79 +358,79 @@ describe("ValueStream", () => {
       ]);
     });
 
-    it("works in dataset case (with init)", () => {
+    it('works in dataset case (with init)', () => {
       const bits = [
         {
-          type: "init",
+          type: 'init',
           keys: [],
           attributes: AttributeInfo.fromJSs([
             {
-              name: "time",
-              type: "TIME",
+              name: 'time',
+              type: 'TIME',
             },
             {
-              name: "channel",
-              type: "STRING",
+              name: 'channel',
+              type: 'STRING',
             },
             {
-              name: "isAnonymous",
-              type: "BOOLEAN",
+              name: 'isAnonymous',
+              type: 'BOOLEAN',
             },
             {
-              name: "deleted",
-              type: "NUMBER",
+              name: 'deleted',
+              type: 'NUMBER',
             },
             {
-              name: "users",
-              type: "DATASET",
+              name: 'users',
+              type: 'DATASET',
             },
           ]),
         },
         {
-          type: "datum",
+          type: 'datum',
           datum: {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 0,
             isAnonymous: false,
-            time: new Date("2015-09-12T00:46:58.771Z"),
+            time: new Date('2015-09-12T00:46:58.771Z'),
           },
         },
         {
-          type: "within",
-          attribute: "users",
+          type: 'within',
+          attribute: 'users',
           within: {
-            type: "init",
-            keys: ["name"],
+            type: 'init',
+            keys: ['name'],
             attributes: AttributeInfo.fromJSs([
               {
-                name: "name",
-                type: "STRING",
+                name: 'name',
+                type: 'STRING',
               },
               {
-                name: "x",
-                type: "NUMBER",
+                name: 'x',
+                type: 'NUMBER',
               },
             ]),
           },
         },
         {
-          type: "within",
-          attribute: "users",
+          type: 'within',
+          attribute: 'users',
           within: {
-            type: "datum",
+            type: 'datum',
             datum: {
-              name: "Vadim",
+              name: 'Vadim',
               x: 2,
             },
           },
         },
         {
-          type: "within",
-          attribute: "users",
+          type: 'within',
+          attribute: 'users',
           within: {
-            type: "datum",
+            type: 'datum',
             datum: {
-              name: "Eva",
+              name: 'Eva',
               x: 3,
             },
           },
@@ -451,54 +443,54 @@ describe("ValueStream", () => {
       expect(pvb.getValue().toJS()).to.deep.equal({
         attributes: [
           {
-            name: "time",
-            type: "TIME",
+            name: 'time',
+            type: 'TIME',
           },
           {
-            name: "channel",
-            type: "STRING",
+            name: 'channel',
+            type: 'STRING',
           },
           {
-            name: "isAnonymous",
-            type: "BOOLEAN",
+            name: 'isAnonymous',
+            type: 'BOOLEAN',
           },
           {
-            name: "deleted",
-            type: "NUMBER",
+            name: 'deleted',
+            type: 'NUMBER',
           },
           {
-            name: "users",
-            type: "DATASET",
+            name: 'users',
+            type: 'DATASET',
           },
         ],
         data: [
           {
-            channel: "#en.wikipedia",
+            channel: '#en.wikipedia',
             deleted: 0,
             isAnonymous: false,
-            time: new Date("2015-09-12T00:46:58.771Z"),
+            time: new Date('2015-09-12T00:46:58.771Z'),
             users: {
               attributes: [
                 {
-                  name: "name",
-                  type: "STRING",
+                  name: 'name',
+                  type: 'STRING',
                 },
                 {
-                  name: "x",
-                  type: "NUMBER",
+                  name: 'x',
+                  type: 'NUMBER',
                 },
               ],
               data: [
                 {
-                  name: "Vadim",
+                  name: 'Vadim',
                   x: 2,
                 },
                 {
-                  name: "Eva",
+                  name: 'Eva',
                   x: 3,
                 },
               ],
-              keys: ["name"],
+              keys: ['name'],
             },
           },
         ],
@@ -506,8 +498,8 @@ describe("ValueStream", () => {
     });
   });
 
-  describe("iteratorFactory => PlywoodValueBuilder", () => {
-    it("in empty Dataset case", () => {
+  describe('iteratorFactory => PlywoodValueBuilder', () => {
+    it('in empty Dataset case', () => {
       const ds = Dataset.fromJS([]);
 
       const dsi = iteratorFactory(ds);
@@ -521,29 +513,29 @@ describe("ValueStream", () => {
       expect(pvb.getValue().toJS()).to.deep.equal(ds.toJS());
     });
 
-    it("in flat Dataset case", () => {
+    it('in flat Dataset case', () => {
       const ds = Dataset.fromJS({
-        keys: ["cityName"],
+        keys: ['cityName'],
         data: [
           {
-            time: new Date("2015-09-12T00:46:58.771Z"),
-            channel: "#en.wikipedia",
-            cityName: "SF",
-            comment: "added project",
-            countryIsoCode: "US",
-            countryName: "United States",
+            time: new Date('2015-09-12T00:46:58.771Z'),
+            channel: '#en.wikipedia',
+            cityName: 'SF',
+            comment: 'added project',
+            countryIsoCode: 'US',
+            countryName: 'United States',
             isAnonymous: false,
             delta: 36,
             added: 36,
             deleted: 0,
           },
           {
-            time: new Date("2015-09-12T00:48:20.157Z"),
-            channel: "#en.wikipedia",
-            cityName: "Campbell",
+            time: new Date('2015-09-12T00:48:20.157Z'),
+            channel: '#en.wikipedia',
+            cityName: 'Campbell',
             comment: "Rectifying someone's mischief",
-            countryIsoCode: "US",
-            countryName: "United States",
+            countryIsoCode: 'US',
+            countryName: 'United States',
             isAnonymous: true,
             delta: -26,
             added: 0,
@@ -563,26 +555,26 @@ describe("ValueStream", () => {
       expect(pvb.getValue().toJS()).to.deep.equal(ds.toJS());
     });
 
-    it("in nested Dataset case", () => {
+    it('in nested Dataset case', () => {
       const ds = Dataset.fromJS([
         {
-          time: new Date("2015-09-12T00:46:58.771Z"),
-          channel: "#en.wikipedia",
+          time: new Date('2015-09-12T00:46:58.771Z'),
+          channel: '#en.wikipedia',
           isAnonymous: false,
           deleted: 0,
           users: [
-            { name: "Vadim", x: 2, nicknames: [{ nick: "Vadimon" }] },
-            { name: "Eva", x: 3, nicknames: null },
+            { name: 'Vadim', x: 2, nicknames: [{ nick: 'Vadimon' }] },
+            { name: 'Eva', x: 3, nicknames: null },
           ],
         },
         {
-          time: new Date("2015-09-12T00:48:20.157Z"),
-          channel: "#en.wikipedia",
+          time: new Date('2015-09-12T00:48:20.157Z'),
+          channel: '#en.wikipedia',
           isAnonymous: true,
           deleted: 26,
           users: [
-            { name: "James", x: 8, nicknames: null },
-            { name: "Charlie", x: 30, nicknames: null },
+            { name: 'James', x: 8, nicknames: null },
+            { name: 'Charlie', x: 30, nicknames: null },
           ],
         },
       ]);

@@ -14,33 +14,24 @@
  * limitations under the License.
  */
 
-import { Duration, Timezone } from "chronoshift";
-import { immutableEqual } from "immutable-class";
+import { Duration, Timezone } from 'chronoshift';
+import { immutableEqual } from 'immutable-class';
 
-import { PlywoodValue } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
+import { PlywoodValue } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
 
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
-import { HasTimezone } from "./mixins/hasTimezone";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { HasTimezone } from './mixins/hasTimezone';
 
-export class TimeShiftExpression
-  extends ChainableExpression
-  implements HasTimezone
-{
+export class TimeShiftExpression extends ChainableExpression implements HasTimezone {
   static DEFAULT_STEP = 1;
 
-  static op = "TimeShift";
+  static op = 'TimeShift';
   static fromJS(parameters: ExpressionJS): TimeShiftExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.duration = Duration.fromJS(parameters.duration);
     value.step = parameters.step;
-    if (parameters.timezone)
-      value.timezone = Timezone.fromJS(parameters.timezone);
+    if (parameters.timezone) value.timezone = Timezone.fromJS(parameters.timezone);
     return new TimeShiftExpression(value);
   }
 
@@ -51,17 +42,14 @@ export class TimeShiftExpression
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     this.duration = parameters.duration;
-    this.step =
-      parameters.step != null
-        ? parameters.step
-        : TimeShiftExpression.DEFAULT_STEP;
+    this.step = parameters.step != null ? parameters.step : TimeShiftExpression.DEFAULT_STEP;
     this.timezone = parameters.timezone;
-    this._ensureOp("timeShift");
-    this._checkOperandTypes("TIME");
+    this._ensureOp('timeShift');
+    this._checkOperandTypes('TIME');
     if (!(this.duration instanceof Duration)) {
-      throw new Error("`duration` must be a Duration");
+      throw new Error('`duration` must be a Duration');
     }
-    this.type = "TIME";
+    this.type = 'TIME';
   }
 
   public valueOf(): ExpressionValue {
@@ -91,31 +79,20 @@ export class TimeShiftExpression
 
   protected _toStringParameters(indent?: int): string[] {
     const ret = [this.duration.toString(), this.step.toString()];
-    if (this.timezone)
-      ret.push(Expression.safeString(this.timezone.toString()));
+    if (this.timezone) ret.push(Expression.safeString(this.timezone.toString()));
     return ret;
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
-    return operandValue
-      ? this.duration.shift(operandValue, this.getTimezone(), this.step)
-      : null;
+    return operandValue ? this.duration.shift(operandValue, this.getTimezone(), this.step) : null;
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    throw new Error("implement me");
+    throw new Error('implement me');
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
-    return dialect.timeShiftExpression(
-      operandSQL,
-      this.duration,
-      this.step,
-      this.getTimezone(),
-    );
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+    return dialect.timeShiftExpression(operandSQL, this.duration, this.step, this.getTimezone());
   }
 
   protected changeStep(step: int): Expression {

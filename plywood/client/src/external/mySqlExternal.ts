@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-import { PlywoodRequester } from "plywood-base-api";
-import toArray from "stream-to-array";
+import { PlywoodRequester } from 'plywood-base-api';
+import toArray from 'stream-to-array';
 
-import { AttributeInfo, Attributes, PseudoDatum } from "../datatypes";
-import { MySQLDialect } from "../dialect/mySqlDialect";
-import { PlyType } from "../types";
+import { AttributeInfo, Attributes, PseudoDatum } from '../datatypes';
+import { MySQLDialect } from '../dialect/mySqlDialect';
+import { PlyType } from '../types';
 
-import { External, ExternalJS, ExternalValue } from "./baseExternal";
-import { SQLExternal } from "./sqlExternal";
+import { External, ExternalJS, ExternalValue } from './baseExternal';
+import { SQLExternal } from './sqlExternal';
 
 export interface MySQLDescribeRow {
   Field: string;
@@ -31,13 +31,10 @@ export interface MySQLDescribeRow {
 }
 
 export class MySQLExternal extends SQLExternal {
-  static engine = "mysql";
-  static type = "DATASET";
+  static engine = 'mysql';
+  static type = 'DATASET';
 
-  static fromJS(
-    parameters: ExternalJS,
-    requester: PlywoodRequester<any>,
-  ): MySQLExternal {
+  static fromJS(parameters: ExternalJS, requester: PlywoodRequester<any>): MySQLExternal {
     const value: ExternalValue = External.jsToValue(parameters, requester);
     return new MySQLExternal(value);
   }
@@ -48,23 +45,20 @@ export class MySQLExternal extends SQLExternal {
         const name = column.Field;
         let type: PlyType;
         const nativeType = column.Type.toLowerCase();
-        if (nativeType === "datetime" || nativeType === "timestamp") {
-          type = "TIME";
+        if (nativeType === 'datetime' || nativeType === 'timestamp') {
+          type = 'TIME';
+        } else if (nativeType.indexOf('varchar(') === 0 || nativeType.indexOf('blob') === 0) {
+          type = 'STRING';
         } else if (
-          nativeType.indexOf("varchar(") === 0 ||
-          nativeType.indexOf("blob") === 0
+          nativeType.indexOf('int(') === 0 ||
+          nativeType.indexOf('bigint(') === 0 ||
+          nativeType.indexOf('decimal(') === 0 ||
+          nativeType.indexOf('float') === 0 ||
+          nativeType.indexOf('double') === 0
         ) {
-          type = "STRING";
-        } else if (
-          nativeType.indexOf("int(") === 0 ||
-          nativeType.indexOf("bigint(") === 0 ||
-          nativeType.indexOf("decimal(") === 0 ||
-          nativeType.indexOf("float") === 0 ||
-          nativeType.indexOf("double") === 0
-        ) {
-          type = "NUMBER";
-        } else if (nativeType.indexOf("tinyint(1)") === 0) {
-          type = "BOOLEAN";
+          type = 'NUMBER';
+        } else if (nativeType.indexOf('tinyint(1)') === 0) {
+          type = 'BOOLEAN';
         } else {
           return null;
         }
@@ -79,29 +73,28 @@ export class MySQLExternal extends SQLExternal {
 
   static getSourceList(requester: PlywoodRequester<any>): Promise<string[]> {
     // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
-    return toArray(requester({ query: "SHOW TABLES" })).then(sources => {
-      if (!Array.isArray(sources)) throw new Error("invalid sources response");
+    return toArray(requester({ query: 'SHOW TABLES' })).then((sources) => {
+      if (!Array.isArray(sources)) throw new Error('invalid sources response');
       if (!sources.length) return sources;
       const key = Object.keys(sources[0])[0];
-      if (!key) throw new Error("invalid sources response (no key)");
+      if (!key) throw new Error('invalid sources response (no key)');
       return sources.map((s: PseudoDatum) => s[key]).sort();
     });
   }
 
   static getVersion(requester: PlywoodRequester<any>): Promise<string> {
     // @ts-ignore variable missmatch, requires either ReadableStream or NodeJS.ReadableStream
-    return toArray(requester({ query: "SELECT @@version" })).then(res => {
-      if (!Array.isArray(res) || res.length !== 1)
-        throw new Error("invalid version response");
+    return toArray(requester({ query: 'SELECT @@version' })).then((res) => {
+      if (!Array.isArray(res) || res.length !== 1) throw new Error('invalid version response');
       const key = Object.keys(res[0])[0];
-      if (!key) throw new Error("invalid version response (no key)");
+      if (!key) throw new Error('invalid version response (no key)');
       return res[0][key];
     });
   }
 
   constructor(parameters: ExternalValue) {
     super(parameters, new MySQLDialect());
-    this._ensureEngine("mysql");
+    this._ensureEngine('mysql');
   }
 
   protected getIntrospectAttributes(): Promise<Attributes> {

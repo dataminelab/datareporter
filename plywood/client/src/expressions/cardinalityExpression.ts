@@ -14,35 +14,30 @@
  * limitations under the License.
  */
 
-import { PlywoodValue, Set } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
+import { PlywoodValue, Set } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
 
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
 
 export class CardinalityExpression extends ChainableExpression {
-  static op = "Cardinality";
+  static op = 'Cardinality';
   static fromJS(parameters: ExpressionJS): CardinalityExpression {
     return new CardinalityExpression(ChainableExpression.jsToValue(parameters));
   }
 
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
-    this._ensureOp("cardinality");
+    this._ensureOp('cardinality');
     this._checkOperandTypes(
-      "BOOLEAN",
-      "STRING",
-      "STRING_RANGE",
-      "NUMBER",
-      "NUMBER_RANGE",
-      "TIME",
-      "TIME_RANGE",
+      'BOOLEAN',
+      'STRING',
+      'STRING_RANGE',
+      'NUMBER',
+      'NUMBER_RANGE',
+      'TIME',
+      'TIME_RANGE',
     );
-    this.type = "NUMBER";
+    this.type = 'NUMBER';
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
@@ -51,16 +46,10 @@ export class CardinalityExpression extends ChainableExpression {
   }
 
   protected _getJSChainableHelper(operandJS: string): string {
-    return Expression.jsNullSafetyUnary(
-      operandJS,
-      (input: string) => `${input}.length`,
-    );
+    return Expression.jsNullSafetyUnary(operandJS, (input: string) => `${input}.length`);
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
     return `cardinality(${operandSQL})`;
   }
 }

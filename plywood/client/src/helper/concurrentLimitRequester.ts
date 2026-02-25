@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import { DatabaseRequest, PlywoodRequester } from "plywood-base-api";
-import { PassThrough } from "readable-stream";
+import { DatabaseRequest, PlywoodRequester } from 'plywood-base-api';
+import { PassThrough } from 'readable-stream';
 
-import { pipeWithError } from "./utils";
+import { pipeWithError } from './utils';
 
 export interface ConcurrentLimitRequesterParameters<T> {
   requester: PlywoodRequester<T>;
@@ -36,8 +36,8 @@ export function concurrentLimitRequesterFactory<T>(
   const requester = parameters.requester;
   const concurrentLimit = parameters.concurrentLimit || 5;
 
-  if (typeof concurrentLimit !== "number")
-    throw new TypeError("concurrentLimit should be a number");
+  if (typeof concurrentLimit !== 'number')
+    throw new TypeError('concurrentLimit should be a number');
 
   const requestQueue: QueueItem<T>[] = [];
   let outstandingRequests: int = 0;
@@ -49,8 +49,8 @@ export function concurrentLimitRequesterFactory<T>(
     outstandingRequests++;
 
     const stream = requester(queueItem.request);
-    stream.on("error", requestFinished);
-    stream.on("end", requestFinished);
+    stream.on('error', requestFinished);
+    stream.on('end', requestFinished);
     pipeWithError(stream, queueItem.stream);
   }
 
@@ -58,8 +58,8 @@ export function concurrentLimitRequesterFactory<T>(
     if (outstandingRequests < concurrentLimit) {
       outstandingRequests++;
       const stream = requester(request);
-      stream.on("error", requestFinished);
-      stream.on("end", requestFinished);
+      stream.on('error', requestFinished);
+      stream.on('end', requestFinished);
       return stream;
     } else {
       const stream = new PassThrough({ objectMode: true });

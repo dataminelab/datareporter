@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
-const { Expression, toJS } = require("../build/plywood");
-const hasOwnProperty = require("has-own-prop");
+const { expect } = require('chai');
+const { Expression, toJS } = require('../build/plywood');
+const hasOwnProperty = require('has-own-prop');
 
-const uniformizeDoubles = v => {
+const uniformizeDoubles = (v) => {
   const t = typeof v;
-  if (t === "number") {
+  if (t === 'number') {
     if (v !== Math.floor(v)) {
       return Number(v.toPrecision(4));
     } else {
       return v;
     }
-  } else if (t === "object") {
+  } else if (t === 'object') {
     if (!v) {
       // null
       return v;
@@ -53,18 +53,16 @@ const uniformizeDoubles = v => {
 };
 
 exports.wrapVerbose = (requester, name) => {
-  return request => {
+  return (request) => {
     console.log(`Requesting ${name}:`);
-    console.log("", JSON.stringify(request.query, null, 2));
+    console.log('', JSON.stringify(request.query, null, 2));
     const startTime = Date.now();
     return requester(request).then(
-      result => {
-        console.log(
-          `GOT RESULT FROM ${name} (took ${Date.now() - startTime}ms)`,
-        );
+      (result) => {
+        console.log(`GOT RESULT FROM ${name} (took ${Date.now() - startTime}ms)`);
         return result;
       },
-      err => {
+      (err) => {
         console.log(`GOT ${name} ERROR`, err);
         throw err;
       },
@@ -72,38 +70,38 @@ exports.wrapVerbose = (requester, name) => {
   };
 };
 
-exports.makeEqualityTest = executorMap => {
+exports.makeEqualityTest = (executorMap) => {
   return ({ executorNames, expression, verbose, before, after }) => {
     if (executorNames.length < 2) {
-      throw new Error("must have at least two executorNames");
+      throw new Error('must have at least two executorNames');
     }
 
-    if (typeof expression === "string") {
+    if (typeof expression === 'string') {
       expression = Expression.parse(expression);
     }
 
-    const executors = executorNames.map(executorName => {
+    const executors = executorNames.map((executorName) => {
       const executor = executorMap[executorName];
       if (!executor) throw new Error(`no such executor ${executorName}`);
       return executor;
     });
 
     return () => {
-      if (typeof before === "function") before();
+      if (typeof before === 'function') before();
 
-      return Promise.all(executors.map(executor => executor(expression))).then(
-        results => {
-          if (typeof after === "function") after(null, results[0], results);
+      return Promise.all(executors.map((executor) => executor(expression))).then(
+        (results) => {
+          if (typeof after === 'function') after(null, results[0], results);
 
-          results = results.map(result => {
+          results = results.map((result) => {
             return uniformizeDoubles(toJS(result));
           });
 
           if (verbose) {
-            console.log("vvvvvvvvvvvvvvvvvvvvvvv");
+            console.log('vvvvvvvvvvvvvvvvvvvvvvv');
             console.log(`From ${executorNames[0]} I got:`);
             console.log(JSON.stringify(results[0], null, 2));
-            console.log("^^^^^^^^^^^^^^^^^^^^^^^");
+            console.log('^^^^^^^^^^^^^^^^^^^^^^^');
           }
 
           for (let i = 1; i < executorNames.length; i++) {
@@ -115,11 +113,11 @@ exports.makeEqualityTest = executorMap => {
 
           return results[0];
         },
-        err => {
-          if (typeof after === "function") {
+        (err) => {
+          if (typeof after === 'function') {
             after(err);
           }
-          console.log("got error from executor");
+          console.log('got error from executor');
           console.log(err);
           throw err;
         },
@@ -133,26 +131,26 @@ exports.sane = function () {
   const str = String.raw.apply(String, arguments);
 
   const match = str.match(/^\n( *)/m);
-  if (!match) throw new Error("sane string must start with a \\n is:" + str);
+  if (!match) throw new Error('sane string must start with a \\n is:' + str);
   const spaces = match[1].length;
 
-  let lines = str.split("\n");
+  let lines = str.split('\n');
   lines.shift(); // Remove the first empty lines
-  lines = lines.map(line => line.substr(spaces)); // Remove indentation
-  if (lines[lines.length - 1] === "") lines.pop(); // Remove last line if empty
+  lines = lines.map((line) => line.substr(spaces)); // Remove indentation
+  if (lines[lines.length - 1] === '') lines.pop(); // Remove last line if empty
 
   return lines
-    .join("\n")
-    .replace(/\\`/g, "`") // Fix \` that should be `
-    .replace(/\\\{/g, "{") // Fix \{ that should be {
-    .replace(/\\\\/g, "\\"); // Fix \\ that should be \
+    .join('\n')
+    .replace(/\\`/g, '`') // Fix \` that should be `
+    .replace(/\\\{/g, '{') // Fix \{ that should be {
+    .replace(/\\\\/g, '\\'); // Fix \\ that should be \
 };
 
 exports.grabConsoleWarn = function (fn) {
   const originalConsoleWarn = console.warn;
   let text = null;
   console.warn = function (str) {
-    text = (text || "") + str + "\n";
+    text = (text || '') + str + '\n';
   };
   fn();
   console.warn = originalConsoleWarn;

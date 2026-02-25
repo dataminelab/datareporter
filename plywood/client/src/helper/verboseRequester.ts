@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { DatabaseRequest, PlywoodRequester } from "plywood-base-api";
+import { DatabaseRequest, PlywoodRequester } from 'plywood-base-api';
 
 export interface CallbackParameters {
   name?: string;
@@ -40,55 +40,49 @@ export function verboseRequesterFactory<T>(
   parameters: VerboseRequesterParameters<T>,
 ): PlywoodRequester<any> {
   const requester = parameters.requester;
-  const myName = parameters.name || "rq" + String(Math.random()).substr(2, 5);
+  const myName = parameters.name || 'rq' + String(Math.random()).substr(2, 5);
 
   // Back compat.
   if ((parameters as any).preQuery) {
-    console.warn(
-      "verboseRequesterFactory option preQuery has been renamed to onQuery",
-    );
+    console.warn('verboseRequesterFactory option preQuery has been renamed to onQuery');
     parameters.onQuery = (parameters as any).preQuery;
   }
 
   const printLine =
     parameters.printLine ||
     ((line: string): void => {
-      console["log"](line);
+      console['log'](line);
     });
 
   const onQuery =
     parameters.onQuery ||
     ((param: CallbackParameters): void => {
-      printLine("vvvvvvvvvvvvvvvvvvvvvvvvvv");
-      const ctx = param.context
-        ? ` [context: ${JSON.stringify(param.context)}]`
-        : "";
-      printLine(
-        `Requester ${param.name} sending query ${param.queryNumber}:${ctx}`,
-      );
+      printLine('vvvvvvvvvvvvvvvvvvvvvvvvvv');
+      const ctx = param.context ? ` [context: ${JSON.stringify(param.context)}]` : '';
+      printLine(`Requester ${param.name} sending query ${param.queryNumber}:${ctx}`);
       printLine(JSON.stringify(param.query, null, 2));
-      printLine("^^^^^^^^^^^^^^^^^^^^^^^^^^");
+      printLine('^^^^^^^^^^^^^^^^^^^^^^^^^^');
     });
 
   const onSuccess =
     parameters.onSuccess ||
     ((param: CallbackParameters): void => {
-      printLine("vvvvvvvvvvvvvvvvvvvvvvvvvv");
+      printLine('vvvvvvvvvvvvvvvvvvvvvvvvvv');
       printLine(
         `Requester ${param.name} got result from query ${param.queryNumber}: (in ${param.time}ms)`,
       );
       printLine(JSON.stringify(param.data, null, 2));
-      printLine("^^^^^^^^^^^^^^^^^^^^^^^^^^");
+      printLine('^^^^^^^^^^^^^^^^^^^^^^^^^^');
     });
 
   const onError =
     parameters.onError ||
     ((param: CallbackParameters): void => {
-      printLine("vvvvvvvvvvvvvvvvvvvvvvvvvv");
+      printLine('vvvvvvvvvvvvvvvvvvvvvvvvvv');
       printLine(
         `Requester ${param.name} got error in query ${param.queryNumber}: ${param.error.message} (in ${param.time}ms)`,
       );
-      printLine("^^^^^^^^^^^^^^^^^^^^^^^^^^");
+      printLine('^^^^^^^^^^^^^^^^^^^^^^^^^^');
     });
 
   let curQueryNumber: int = 0;
@@ -106,7 +100,7 @@ export function verboseRequesterFactory<T>(
     const stream = requester(request);
 
     let errorSeen = false;
-    stream.on("error", (error: Error) => {
+    stream.on('error', (error: Error) => {
       errorSeen = true;
       onError({
         name: myName,
@@ -119,10 +113,10 @@ export function verboseRequesterFactory<T>(
     });
 
     const data: any[] = [];
-    stream.on("data", (datum: any) => {
+    stream.on('data', (datum: any) => {
       data.push(JSON.parse(JSON.stringify(datum)));
     });
-    stream.on("end", () => {
+    stream.on('end', () => {
       if (errorSeen) return;
       onSuccess({
         name: myName,

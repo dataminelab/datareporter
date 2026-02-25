@@ -14,96 +14,94 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
+const { expect } = require('chai');
 
-const plywood = require("../plywood");
+const plywood = require('../plywood');
 
 const { Expression, External, TimeRange, $, ply, r } = plywood;
 
-describe("DruidExternal Rollup", () => {
+describe('DruidExternal Rollup', () => {
   const context = {
     wiki: External.fromJS({
-      engine: "druid",
-      version: "0.20.0",
-      source: "diamonds",
+      engine: 'druid',
+      version: '0.20.0',
+      source: 'diamonds',
       rollup: true,
-      timeAttribute: "time",
+      timeAttribute: 'time',
       attributes: [
         {
-          name: "time",
-          type: "TIME",
+          name: 'time',
+          type: 'TIME',
         },
         {
           maker: {
-            action: "sum",
+            action: 'sum',
             expression: {
-              name: "added",
-              op: "ref",
+              name: 'added',
+              op: 'ref',
             },
           },
-          name: "added",
-          type: "NUMBER",
+          name: 'added',
+          type: 'NUMBER',
           unsplitable: true,
         },
         {
           maker: {
-            action: "sum",
+            action: 'sum',
             expression: {
-              name: "deleted",
-              op: "ref",
+              name: 'deleted',
+              op: 'ref',
             },
           },
-          name: "deleted",
-          type: "NUMBER",
+          name: 'deleted',
+          type: 'NUMBER',
           unsplitable: true,
         },
         {
-          name: "anonymous",
-          type: "STRING",
+          name: 'anonymous',
+          type: 'STRING',
         },
         {
           maker: {
-            action: "count",
+            action: 'count',
           },
-          name: "count",
-          type: "NUMBER",
+          name: 'count',
+          type: 'NUMBER',
           unsplitable: true,
         },
         {
-          name: "delta_hist",
-          nativeType: "approximateHistogram",
-          type: "NUMBER",
+          name: 'delta_hist',
+          nativeType: 'approximateHistogram',
+          type: 'NUMBER',
         },
         {
-          name: "channel",
-          type: "STRING",
+          name: 'channel',
+          type: 'STRING',
         },
         {
-          name: "namespace",
-          type: "SET/STRING",
+          name: 'namespace',
+          type: 'SET/STRING',
         },
         {
-          name: "page",
-          type: "STRING",
+          name: 'page',
+          type: 'STRING',
         },
         {
-          name: "user_unique",
-          nativeType: "hyperUnique",
-          type: "STRING",
+          name: 'user_unique',
+          nativeType: 'hyperUnique',
+          type: 'STRING',
         },
       ],
       allowSelectQueries: true,
-      filter: $("time").overlap({
-        start: new Date("2015-03-12T00:00:00Z"),
-        end: new Date("2015-03-19T00:00:00Z"),
+      filter: $('time').overlap({
+        start: new Date('2015-03-12T00:00:00Z'),
+        end: new Date('2015-03-19T00:00:00Z'),
       }),
     }),
   };
 
-  it("works in basic case", () => {
-    const ex = ply()
-      .apply("Count", "$wiki.count()")
-      .apply("AvgAdded", "$wiki.average($added)");
+  it('works in basic case', () => {
+    const ex = ply().apply('Count', '$wiki.count()').apply('AvgAdded', '$wiki.average($added)');
 
     const queryPlan = ex.simulateQueryPlan(context);
     expect(queryPlan.length).to.equal(1);
@@ -111,38 +109,35 @@ describe("DruidExternal Rollup", () => {
       {
         aggregations: [
           {
-            fieldName: "count",
-            name: "Count",
-            type: "doubleSum",
+            fieldName: 'count',
+            name: 'Count',
+            type: 'doubleSum',
           },
           {
-            fieldName: "added",
-            name: "!T_0",
-            type: "doubleSum",
+            fieldName: 'added',
+            name: '!T_0',
+            type: 'doubleSum',
           },
         ],
-        dataSource: "diamonds",
-        granularity: "all",
-        intervals: "2015-03-12T00Z/2015-03-19T00Z",
+        dataSource: 'diamonds',
+        granularity: 'all',
+        intervals: '2015-03-12T00Z/2015-03-19T00Z',
         postAggregations: [
           {
             expression: 'if("Count"!=0,(cast("!T_0",\'DOUBLE\')/"Count"),null)',
-            name: "AvgAdded",
-            type: "expression",
+            name: 'AvgAdded',
+            type: 'expression',
           },
         ],
-        queryType: "timeseries",
+        queryType: 'timeseries',
       },
     ]);
   });
 
-  it("works in filtered average case", () => {
+  it('works in filtered average case', () => {
     const ex = ply()
-      .apply("AvgEnAdded", '$wiki.filter($channel == "en").average($added)')
-      .apply(
-        "AvgHeDeleted",
-        '$wiki.filter($channel == "he").average($deleted)',
-      );
+      .apply('AvgEnAdded', '$wiki.filter($channel == "en").average($added)')
+      .apply('AvgHeDeleted', '$wiki.filter($channel == "he").average($deleted)');
 
     const queryPlan = ex.simulateQueryPlan(context);
     expect(queryPlan.length).to.equal(1);
@@ -151,77 +146,77 @@ describe("DruidExternal Rollup", () => {
         aggregations: [
           {
             aggregator: {
-              fieldName: "added",
-              name: "!T_0",
-              type: "doubleSum",
+              fieldName: 'added',
+              name: '!T_0',
+              type: 'doubleSum',
             },
             filter: {
-              dimension: "channel",
-              type: "selector",
-              value: "en",
+              dimension: 'channel',
+              type: 'selector',
+              value: 'en',
             },
-            name: "!T_0",
-            type: "filtered",
+            name: '!T_0',
+            type: 'filtered',
           },
           {
             aggregator: {
-              fieldName: "count",
-              name: "!T_1",
-              type: "doubleSum",
+              fieldName: 'count',
+              name: '!T_1',
+              type: 'doubleSum',
             },
             filter: {
-              dimension: "channel",
-              type: "selector",
-              value: "en",
+              dimension: 'channel',
+              type: 'selector',
+              value: 'en',
             },
-            name: "!T_1",
-            type: "filtered",
+            name: '!T_1',
+            type: 'filtered',
           },
           {
             aggregator: {
-              fieldName: "deleted",
-              name: "!T_2",
-              type: "doubleSum",
+              fieldName: 'deleted',
+              name: '!T_2',
+              type: 'doubleSum',
             },
             filter: {
-              dimension: "channel",
-              type: "selector",
-              value: "he",
+              dimension: 'channel',
+              type: 'selector',
+              value: 'he',
             },
-            name: "!T_2",
-            type: "filtered",
+            name: '!T_2',
+            type: 'filtered',
           },
           {
             aggregator: {
-              fieldName: "count",
-              name: "!T_3",
-              type: "doubleSum",
+              fieldName: 'count',
+              name: '!T_3',
+              type: 'doubleSum',
             },
             filter: {
-              dimension: "channel",
-              type: "selector",
-              value: "he",
+              dimension: 'channel',
+              type: 'selector',
+              value: 'he',
             },
-            name: "!T_3",
-            type: "filtered",
+            name: '!T_3',
+            type: 'filtered',
           },
         ],
-        dataSource: "diamonds",
-        granularity: "all",
-        intervals: "2015-03-12T00Z/2015-03-19T00Z",
+        dataSource: 'diamonds',
+        granularity: 'all',
+        intervals: '2015-03-12T00Z/2015-03-19T00Z',
         postAggregations: [
           {
             expression: 'if("!T_1"!=0,(cast("!T_0",\'DOUBLE\')/"!T_1"),null)',
-            name: "AvgEnAdded",
-            type: "expression",
+            name: 'AvgEnAdded',
+            type: 'expression',
           },
           {
             expression: 'if("!T_3"!=0,(cast("!T_2",\'DOUBLE\')/"!T_3"),null)',
-            name: "AvgHeDeleted",
-            type: "expression",
+            name: 'AvgHeDeleted',
+            type: 'expression',
           },
         ],
-        queryType: "timeseries",
+        queryType: 'timeseries',
       },
     ]);
   });

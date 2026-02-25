@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { ComputeFn, Datum, PlywoodValue } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
-import { External } from "../external/baseExternal";
-import { DatasetFullType } from "../types";
+import { ComputeFn, Datum, PlywoodValue } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
+import { External } from '../external/baseExternal';
+import { DatasetFullType } from '../types';
 
 import {
   ChainableUnaryExpression,
   Expression,
   ExpressionJS,
   ExpressionValue,
-} from "./baseExpression";
+} from './baseExpression';
 
 export class ExternalExpression extends Expression {
-  static op = "external";
+  static op = 'external';
   static fromJS(parameters: ExpressionJS): ExternalExpression {
     const value: ExpressionValue = {
       op: parameters.op,
@@ -41,10 +41,10 @@ export class ExternalExpression extends Expression {
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     const external = parameters.external;
-    if (!external) throw new Error("must have an external");
+    if (!external) throw new Error('must have an external');
     this.external = external;
-    this._ensureOp("external");
-    this.type = external.mode === "value" ? external.getValueType() : "DATASET"; // ToDo: not always number
+    this._ensureOp('external');
+    this.type = external.mode === 'value' ? external.getValueType() : 'DATASET'; // ToDo: not always number
     this.simple = true;
   }
 
@@ -65,19 +65,19 @@ export class ExternalExpression extends Expression {
   }
 
   public getFn(): ComputeFn {
-    throw new Error("should not call getFn on External");
+    throw new Error('should not call getFn on External');
   }
 
   public calc(datum: Datum): PlywoodValue {
-    throw new Error("should not call calc on External");
+    throw new Error('should not call calc on External');
   }
 
   public getJS(datumVar: string): string {
-    throw new Error("should not call getJS on External");
+    throw new Error('should not call getJS on External');
   }
 
   public getSQL(dialect: SQLDialect): string {
-    throw new Error("should not call getSQL on External");
+    throw new Error('should not call getSQL on External');
   }
 
   public equals(other: ExternalExpression | undefined): boolean {
@@ -86,7 +86,7 @@ export class ExternalExpression extends Expression {
 
   public updateTypeContext(typeContext: DatasetFullType): DatasetFullType {
     const { external } = this;
-    if (external.mode !== "value") {
+    if (external.mode !== 'value') {
       const newTypeContext = this.external.getFullType();
       newTypeContext.parent = typeContext;
       return newTypeContext;

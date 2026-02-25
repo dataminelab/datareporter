@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import { PlywoodValue } from "../datatypes/index";
-import { SQLDialect } from "../dialect/baseDialect";
+import { PlywoodValue } from '../datatypes/index';
+import { SQLDialect } from '../dialect/baseDialect';
 
-import {
-  ChainableExpression,
-  Expression,
-  ExpressionJS,
-  ExpressionValue,
-} from "./baseExpression";
-import { Aggregate } from "./mixins/aggregate";
+import { ChainableExpression, Expression, ExpressionJS, ExpressionValue } from './baseExpression';
+import { Aggregate } from './mixins/aggregate';
 
 export class CustomAggregateExpression extends ChainableExpression {
-  static op = "CustomAggregate";
+  static op = 'CustomAggregate';
   static fromJS(parameters: ExpressionJS): CustomAggregateExpression {
     const value = ChainableExpression.jsToValue(parameters);
     value.custom = parameters.custom;
@@ -38,9 +33,9 @@ export class CustomAggregateExpression extends ChainableExpression {
   constructor(parameters: ExpressionValue) {
     super(parameters, dummyObject);
     this.custom = parameters.custom;
-    this._ensureOp("customAggregate");
-    this._checkOperandTypes("DATASET");
-    this.type = "NUMBER";
+    this._ensureOp('customAggregate');
+    this._checkOperandTypes('DATASET');
+    this.type = 'NUMBER';
   }
 
   public valueOf(): ExpressionValue {
@@ -64,14 +59,11 @@ export class CustomAggregateExpression extends ChainableExpression {
   }
 
   protected _calcChainableHelper(operandValue: any): PlywoodValue {
-    throw new Error("can not compute on custom action");
+    throw new Error('can not compute on custom action');
   }
 
-  protected _getSQLChainableHelper(
-    dialect: SQLDialect,
-    operandSQL: string,
-  ): string {
-    throw new Error("custom action not implemented");
+  protected _getSQLChainableHelper(dialect: SQLDialect, operandSQL: string): string {
+    throw new Error('custom action not implemented');
   }
 }
 

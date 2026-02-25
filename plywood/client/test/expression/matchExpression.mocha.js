@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-const { expect } = require("chai");
+const { expect } = require('chai');
 
-const plywood = require("../plywood");
+const plywood = require('../plywood');
 
 const { $, ply, r, MatchExpression, Set } = plywood;
 
-describe("MatchExpression", () => {
-  it(".likeToRegExp", () => {
-    expect(MatchExpression.likeToRegExp("%David\\_R_ss%")).to.equal(
-      "^.*David_R.ss.*$",
-    );
+describe('MatchExpression', () => {
+  it('.likeToRegExp', () => {
+    expect(MatchExpression.likeToRegExp('%David\\_R_ss%')).to.equal('^.*David_R.ss.*$');
 
-    expect(MatchExpression.likeToRegExp("%David|_R_ss||%", "|")).to.equal(
-      "^.*David_R.ss\\|.*$",
-    );
+    expect(MatchExpression.likeToRegExp('%David|_R_ss||%', '|')).to.equal('^.*David_R.ss\\|.*$');
   });
 
-  it("matches on set (no comma)", () => {
-    const ex = r(Set.fromJS(["a", "b"])).match(",");
+  it('matches on set (no comma)', () => {
+    const ex = r(Set.fromJS(['a', 'b'])).match(',');
 
-    return ex.compute().then(v => {
+    return ex.compute().then((v) => {
       expect(v).to.deep.equal(false);
     });
   });

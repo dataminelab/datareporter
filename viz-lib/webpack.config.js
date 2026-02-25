@@ -1,6 +1,6 @@
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
 const path = require("path");
-const webpack = require('webpack');
+const webpack = require("webpack");
 const isProduction = process.env.NODE_ENV === "production";
 
 module.exports = {
@@ -10,22 +10,22 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     filename: "redash-visualizations.js",
     libraryTarget: "umd",
-    assetModuleFilename: 'images/[name][ext]'
+    assetModuleFilename: "images/[name][ext]",
   },
   resolve: {
     symlinks: false,
     extensions: [".js", ".jsx", ".ts", ".tsx"],
     fullySpecified: false, // Allow imports without extensions
     alias: {
-      './nonIterableSpread': './nonIterableSpread.js',
+      "./nonIterableSpread": "./nonIterableSpread.js",
     },
     fallback: {
       fs: false,
-      buffer: require.resolve('buffer/'),
+      buffer: require.resolve("buffer/"),
       path: false,
-      stream: require.resolve('stream-browserify'),
-      assert: require.resolve('assert')
-    }
+      stream: require.resolve("stream-browserify"),
+      assert: require.resolve("assert"),
+    },
   },
   module: {
     rules: [
@@ -40,7 +40,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-        type: 'asset/resource',
+        type: "asset/resource",
       },
       {
         test: /\.less$/,
@@ -53,7 +53,7 @@ module.exports = {
               lessOptions: {
                 plugins: [new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })],
                 javascriptEnabled: true,
-	            },
+              },
             },
           },
         ],
@@ -76,7 +76,7 @@ module.exports = {
   ],
   plugins: [
     new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
+      Buffer: ["buffer", "Buffer"],
     }),
-  ]
+  ],
 };

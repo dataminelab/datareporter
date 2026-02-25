@@ -3,9 +3,7 @@ import chroma from "chroma-js";
 import { createNumberFormatter as createFormatter } from "@/lib/value-format";
 
 export function darkenColor(color) {
-  return chroma(color)
-    .darken()
-    .hex();
+  return chroma(color).darken().hex();
 }
 
 export function createNumberFormatter(format, placeholder) {
@@ -24,7 +22,7 @@ export function prepareData(data, keyColumn, valueColumn) {
   }
 
   const result = {};
-  each(data, item => {
+  each(data, (item) => {
     if (item[keyColumn]) {
       const value = parseFloat(item[valueColumn]);
       result[item[keyColumn]] = {
@@ -70,7 +68,7 @@ export function createScale(features, data, options) {
   // Calculate limits
   const values = uniq(
     filter(
-      map(features, feature => getValueForFeature(feature, data, options.targetField)),
+      map(features, (feature) => getValueForFeature(feature, data, options.targetField)),
       isFinite
     )
   );

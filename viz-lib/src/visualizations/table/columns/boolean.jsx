@@ -24,7 +24,7 @@ function Editor({ column, onChange }) {
           }
           data-test="Table.ColumnEditor.Boolean.False"
           defaultValue={column.booleanValues[0]}
-          onChange={event => handleChangeDebounced(0, event.target.value)}
+          onChange={(event) => handleChangeDebounced(0, event.target.value)}
         />
       </Section>
 
@@ -37,7 +37,7 @@ function Editor({ column, onChange }) {
           }
           data-test="Table.ColumnEditor.Boolean.True"
           defaultValue={column.booleanValues[1]}
-          onChange={event => handleChangeDebounced(1, event.target.value)}
+          onChange={(event) => handleChangeDebounced(1, event.target.value)}
         />
       </Section>
     </React.Fragment>

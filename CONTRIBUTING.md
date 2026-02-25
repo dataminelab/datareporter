@@ -11,10 +11,10 @@ The following is a set of guidelines for contributing to DataReporter. These are
 - [GitHub Issues](https://github.com/dataminelab/datareporter/issues)
 
 ---
+
 :star: If you already here and love the project, please make sure to press the Star button. :star:
 
 ---
-
 
 # Table of Contents
 
@@ -46,7 +46,7 @@ When creating a new bug report, please make sure to:
 If you would like to suggest an enhancement or ask for a new feature:
 
 - Please check [GitHub Discussions](https://github.com/dataminelab/datareporter/discussions) for existing threads about what you want to suggest/ask. If there is, feel free to upvote it to signal interest or add your comments.
-- If there is no open thread, you're welcome to start one to have a discussion about what you want to suggest. Try to provide as much details and context as possible and include information about *the problem you want to solve* rather only *your proposed solution*.
+- If there is no open thread, you're welcome to start one to have a discussion about what you want to suggest. Try to provide as much details and context as possible and include information about _the problem you want to solve_ rather only _your proposed solution_.
 
 # Pull Requests
 

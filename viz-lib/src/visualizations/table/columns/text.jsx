@@ -11,7 +11,8 @@ function Editor({ column, onChange }) {
         <Checkbox
           data-test="Table.ColumnEditor.Text.AllowHTML"
           checked={column.allowHTML}
-          onChange={event => onChange({ allowHTML: event.target.checked })}>
+          onChange={(event) => onChange({ allowHTML: event.target.checked })}
+        >
           Allow HTML content
         </Checkbox>
       </Section>
@@ -21,7 +22,8 @@ function Editor({ column, onChange }) {
           <Checkbox
             data-test="Table.ColumnEditor.Text.HighlightLinks"
             checked={column.highlightLinks}
-            onChange={event => onChange({ highlightLinks: event.target.checked })}>
+            onChange={(event) => onChange({ highlightLinks: event.target.checked })}
+          >
             Highlight links
           </Checkbox>
         </Section>

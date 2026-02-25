@@ -8,13 +8,14 @@ import { visualizationsSettings } from "@/visualizations/visualizationsSettings"
 numeral.options.scalePercentBy100 = false;
 
 // eslint-disable-next-line
-const urlPattern = /(^|[\s\n]|<br\/?>)((?:https?|ftp):\/\/[\-A-Z0-9+\u0026\u2019@#\/%?=()~_|!:,.;]*[\-A-Z0-9+\u0026@#\/%=~()_|])/gi;
+const urlPattern =
+  /(^|[\s\n]|<br\/?>)((?:https?|ftp):\/\/[\-A-Z0-9+\u0026\u2019@#\/%?=()~_|!:,.;]*[\-A-Z0-9+\u0026@#\/%=~()_|])/gi;
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 export function createTextFormatter(highlightLinks) {
   if (highlightLinks) {
-    return value => {
+    return (value) => {
       if (isString(value)) {
         const Link = visualizationsSettings.LinkComponent;
         value = value.replace(urlPattern, (unused, prefix, href) => {
@@ -29,7 +30,7 @@ export function createTextFormatter(highlightLinks) {
       return toString(value);
     };
   }
-  return value => toString(value);
+  return (value) => toString(value);
 }
 
 function toMoment(value) {
@@ -45,19 +46,19 @@ function toMoment(value) {
 
 export function createDateTimeFormatter(format) {
   if (isString(format) && format !== "") {
-    return value => {
+    return (value) => {
       const wrapped = toMoment(value);
       return wrapped.isValid() ? wrapped.format(format) : toString(value);
     };
   }
-  return value => toString(value);
+  return (value) => toString(value);
 }
 
 export function createBooleanFormatter(values) {
   if (isArray(values)) {
     if (values.length >= 2) {
       // Both `true` and `false` specified
-      return value => {
+      return (value) => {
         if (isNil(value)) {
           return "";
         }
@@ -65,10 +66,10 @@ export function createBooleanFormatter(values) {
       };
     } else if (values.length === 1) {
       // Only `true`
-      return value => (value ? values[0] : "");
+      return (value) => (value ? values[0] : "");
     }
   }
-  return value => {
+  return (value) => {
     if (isNil(value)) {
       return "";
     }
@@ -79,9 +80,9 @@ export function createBooleanFormatter(values) {
 export function createNumberFormatter(format) {
   if (isString(format) && format !== "") {
     const n = numeral(0); // cache `numeral` instance
-    return value => (value === null || value === "" ? "" : n.set(value).format(format));
+    return (value) => (value === null || value === "" ? "" : n.set(value).format(format));
   }
-  return value => toString(value);
+  return (value) => toString(value);
 }
 
 export function formatSimpleTemplate(str, data) {

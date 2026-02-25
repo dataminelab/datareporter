@@ -18,9 +18,7 @@ import { hashToObject, objectToHash } from "../hash-conversions";
 import { ViewDefinitionHashEncoder } from "../view-definition-hash-encoder";
 import { ViewDefinition3 } from "./view-definition-3";
 
-export class ViewDefinitionHashEncoder3
-  implements ViewDefinitionHashEncoder<ViewDefinition3>
-{
+export class ViewDefinitionHashEncoder3 implements ViewDefinitionHashEncoder<ViewDefinition3> {
   decodeUrlHash(urlHash: string, visualization: string): ViewDefinition3 {
     return hashToObject(urlHash);
   }

@@ -23,7 +23,9 @@
   @include pin-left($side-drawer-width);
   background: $white;
   font-size: 13px;
-  box-shadow: 1px 0 2px 0 hsla(0, 0, 0, 0.13), 2px 0 12px 0 hsla(0, 0, 0, 0.26);
+  box-shadow:
+    1px 0 2px 0 hsla(0, 0, 0, 0.13),
+    2px 0 12px 0 hsla(0, 0, 0, 0.26);
   overflow: auto;
   z-index: 80;
 

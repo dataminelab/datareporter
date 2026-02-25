@@ -15,8 +15,8 @@ POST /api/v1/plywood/attributes
 
 ```json
 {
-    "name" : "name_of_field",
-    "type":  "type_of_database"
+  "name": "name_of_field",
+  "type": "type_of_database"
 }
 ```
 

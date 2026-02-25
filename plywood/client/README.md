@@ -11,7 +11,7 @@ of data visualizations. Plywood comes with its own [expression
 language](docs/expressions.md) where a single Plywood expression can
 translate to multiple database queries, and where results are returned in a
 nested data structure so they can be easily consumed by visualization libraries
-such as [D3.js](http://d3js.org/). 
+such as [D3.js](http://d3js.org/).
 
 You can use Plywood in the browser and/or in node.js to easily create your own
 visualizations and applications.

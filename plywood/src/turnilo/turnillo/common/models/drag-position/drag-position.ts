@@ -30,9 +30,10 @@ export interface DragPositionJS {
 
 let check: Class<DragPositionValue, DragPositionJS>;
 
-export class DragPosition
-  implements Instance<DragPositionValue, DragPositionJS>
-{
+export class DragPosition implements Instance<
+  DragPositionValue,
+  DragPositionJS
+> {
   static isDragPosition(candidate: any): candidate is DragPosition {
     return candidate instanceof DragPosition;
   }

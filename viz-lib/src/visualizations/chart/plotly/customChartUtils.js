@@ -7,7 +7,7 @@ export function prepareCustomChartData(series) {
 
   each(series, ({ name, data }) => {
     ys[name] = [];
-    each(data, point => {
+    each(data, (point) => {
       x.push(normalizeValue(point.x));
       ys[name].push(normalizeValue(point.y));
     });

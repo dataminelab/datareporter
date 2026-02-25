@@ -179,62 +179,58 @@ Example:
 }
 ```
 
-
 Responses other than 200 should be considered as fail.
 
 Response `200`:
-
 
 `shape` contains PlywoodValue of correct shape but with dummy values.
 
 ```json
 {
-    "shape": {
-        "attributes": [
+  "shape": {
+    "attributes": [
+      {
+        "name": "customer",
+        "type": "DATASET"
+      },
+      {
+        "name": "MillisecondsInInterval",
+        "type": "NUMBER"
+      },
+      {
+        "name": "active",
+        "type": "NUMBER"
+      },
+      {
+        "name": "SPLIT",
+        "type": "DATASET"
+      }
+    ],
+    "data": [
+      {
+        "MillisecondsInInterval": 86400000,
+        "active": 4,
+        "SPLIT": {
+          "keys": ["first_name"],
+          "attributes": [
             {
-                "name": "customer",
-                "type": "DATASET"
+              "name": "first_name",
+              "type": "STRING"
             },
             {
-                "name": "MillisecondsInInterval",
-                "type": "NUMBER"
-            },
-            {
-                "name": "active",
-                "type": "NUMBER"
-            },
-            {
-                "name": "SPLIT",
-                "type": "DATASET"
+              "name": "active",
+              "type": "NUMBER"
             }
-        ],
-        "data": [
+          ],
+          "data": [
             {
-                "MillisecondsInInterval": 86400000,
-                "active": 4,
-                "SPLIT": {
-                    "keys": [
-                        "first_name"
-                    ],
-                    "attributes": [
-                        {
-                            "name": "first_name",
-                            "type": "STRING"
-                        },
-                        {
-                            "name": "active",
-                            "type": "NUMBER"
-                        }
-                    ],
-                    "data": [
-                        {
-                            "first_name": "some_first_name",
-                            "active": 4
-                        }
-                    ]
-                }
+              "first_name": "some_first_name",
+              "active": 4
             }
-        ]
-    }
+          ]
+        }
+      }
+    ]
+  }
 }
 ```

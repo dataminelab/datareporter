@@ -4,7 +4,7 @@ import { Section, Switch } from "@/components/visualizations/editor";
 import { EditorPropTypes } from "@/visualizations/prop-types";
 
 export default function Editor({ options, onOptionsChange }) {
-  const updateOptions = updates => {
+  const updateOptions = (updates) => {
     onOptionsChange(merge({}, options, updates));
   };
 
@@ -15,7 +15,8 @@ export default function Editor({ options, onOptionsChange }) {
           data-test="PivotEditor.HideControls"
           id="pivot-show-controls"
           defaultChecked={!options.controls.enabled}
-          onChange={enabled => updateOptions({ controls: { enabled: !enabled } })}>
+          onChange={(enabled) => updateOptions({ controls: { enabled: !enabled } })}
+        >
           Show Pivot Controls
         </Switch>
       </Section>
@@ -23,7 +24,8 @@ export default function Editor({ options, onOptionsChange }) {
         <Switch
           id="pivot-show-row-totals"
           defaultChecked={options.rendererOptions.table.rowTotals}
-          onChange={rowTotals => updateOptions({ rendererOptions: { table: { rowTotals } } })}>
+          onChange={(rowTotals) => updateOptions({ rendererOptions: { table: { rowTotals } } })}
+        >
           Show Row Totals
         </Switch>
       </Section>
@@ -31,7 +33,8 @@ export default function Editor({ options, onOptionsChange }) {
         <Switch
           id="pivot-show-column-totals"
           defaultChecked={options.rendererOptions.table.colTotals}
-          onChange={colTotals => updateOptions({ rendererOptions: { table: { colTotals } } })}>
+          onChange={(colTotals) => updateOptions({ rendererOptions: { table: { colTotals } } })}
+        >
           Show Column Totals
         </Switch>
       </Section>

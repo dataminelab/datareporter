@@ -51,12 +51,7 @@ $control-panel-height: 3 * $control-tile-height + 2px;
       @include pin-top($control-panel-height);
 
       .filter-split-section {
-        @include unpin-full(
-          0,
-          $vis-selector-width + 1px + $toggle-width - 15px,
-          0,
-          $toggle-width
-        );
+        @include unpin-full(0, $vis-selector-width + 1px + $toggle-width - 15px, 0, $toggle-width);
 
         .filter-tile,
         .series-tile,

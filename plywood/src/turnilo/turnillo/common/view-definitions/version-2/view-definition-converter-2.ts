@@ -60,9 +60,10 @@ import { ViewDefinition2 } from "./view-definition-2";
 
 export type FilterSelection = Expression | string;
 
-export class ViewDefinitionConverter2
-  implements ViewDefinitionConverter<ViewDefinition2, Essence>
-{
+export class ViewDefinitionConverter2 implements ViewDefinitionConverter<
+  ViewDefinition2,
+  Essence
+> {
   version = 2;
 
   fromViewDefinition(definition: ViewDefinition2, dataCube: DataCube): Essence {

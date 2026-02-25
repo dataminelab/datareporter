@@ -4,10 +4,10 @@ on:
   workflow_call:
     inputs:
       ref:
-        description: 'The git reference to checkout'
+        description: "The git reference to checkout"
         required: false
         type: string
-        default: ''
+        default: ""
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,7 +22,7 @@ jobs:
           ref: ${{ inputs.ref || github.event.pull_request.head.sha }}
 
       - uses: restyled-io/actions/setup@v4
-      
+
       - id: restyler
         uses: restyled-io/actions/run@v4
         with:

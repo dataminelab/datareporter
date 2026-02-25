@@ -3,33 +3,36 @@ substitutions:
 
 steps:
   - name: "gcr.io/cloud-builders/gcloud"
-    args: [
-      "-c",
-      "gcloud secrets versions access latest --secret=kubeconfig-digitalocean-k8s > /config/kubeconfig.conf"
-    ]
+    args:
+      [
+        "-c",
+        "gcloud secrets versions access latest --secret=kubeconfig-digitalocean-k8s > /config/kubeconfig.conf",
+      ]
     entrypoint: "bash"
     volumes:
       - name: "config"
         path: "/config"
   - name: "alpine/k8s:1.26.10"
-    env: [ "KUBECONFIG=/config/kubeconfig.conf" ]
+    env: ["KUBECONFIG=/config/kubeconfig.conf"]
     entrypoint: "helm"
-    args: [
-      "repo",
-      "add",
-      "datareporter",
-      "https://dataminelab.github.io/contrib-helm-chart/"
-    ]
+    args:
+      [
+        "repo",
+        "add",
+        "datareporter",
+        "https://dataminelab.github.io/contrib-helm-chart/",
+      ]
     volumes:
       - name: "config"
         path: "/config"
 
   - name: "alpine/k8s:1.26.10"
-    env: [
-      "KUBECONFIG=/config/kubeconfig.conf",
-      "PROJECT_ID=$PROJECT_ID",
-      "BRANCH_NAME=$BRANCH_NAME",
-    ]
+    env:
+      [
+        "KUBECONFIG=/config/kubeconfig.conf",
+        "PROJECT_ID=$PROJECT_ID",
+        "BRANCH_NAME=$BRANCH_NAME",
+      ]
     entrypoint: "ash"
     args:
       - "-c"
@@ -51,4 +54,3 @@ steps:
     volumes:
       - name: "config"
         path: "/config"
-

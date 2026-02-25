@@ -27,8 +27,10 @@ export interface RulesEvaluatorBuilderEmpty<PredicateVars, ActionVars> {
   ): RulesEvaluatorBuilderWithPartialRule<PredicateVars, ActionVars>;
 }
 
-export interface RulesEvaluatorBuilderWithRule<PredicateVars, ActionVars>
-  extends RulesEvaluatorBuilderEmpty<PredicateVars, ActionVars> {
+export interface RulesEvaluatorBuilderWithRule<
+  PredicateVars,
+  ActionVars,
+> extends RulesEvaluatorBuilderEmpty<PredicateVars, ActionVars> {
   otherwise(
     action: Action<ActionVars>,
   ): RulesEvaluatorBuilderComplete<PredicateVars, ActionVars>;

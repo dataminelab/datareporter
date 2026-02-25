@@ -108,4 +108,3 @@ services:
   #     - ./ollama-models:/root/.ollama
   #   ports:
   #     - 11434:11434
-

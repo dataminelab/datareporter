@@ -43,9 +43,10 @@ export function fromConfig(
 export type UrlShortenerFn = Binary<string, any, Promise<string>>;
 export type UrlShortenerDef = string;
 
-export class UrlShortener
-  implements Instance<UrlShortenerDef, UrlShortenerDef>
-{
+export class UrlShortener implements Instance<
+  UrlShortenerDef,
+  UrlShortenerDef
+> {
   static fromJS(definition: UrlShortenerDef): UrlShortener {
     return new UrlShortener(definition);
   }

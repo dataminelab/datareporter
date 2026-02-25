@@ -14,7 +14,7 @@ Currently the following parameters are supported:
 
 ```javascript
 module.exports = {
-  staticPath: "my/redash/static/path"
+  staticPath: "my/redash/static/path",
 };
 ```
 
@@ -35,8 +35,8 @@ function applyOverrides(webpackConfig) {
     stats: {
       children: true,
       modules: true,
-      chunkModules: true
-    }
+      chunkModules: true,
+    },
   };
 }
 

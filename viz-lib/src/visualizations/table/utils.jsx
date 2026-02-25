@@ -16,7 +16,7 @@ function nextOrderByDirection(direction) {
 }
 
 function toggleOrderBy(columnName, orderBy = [], multiColumnSort = false) {
-  const index = findIndex(orderBy, i => i.name === columnName);
+  const index = findIndex(orderBy, (i) => i.name === columnName);
   const item = { name: columnName, direction: "ascend" };
   if (index >= 0) {
     item.direction = nextOrderByDirection(orderBy[index].direction);
@@ -24,7 +24,7 @@ function toggleOrderBy(columnName, orderBy = [], multiColumnSort = false) {
 
   if (multiColumnSort) {
     if (!item.direction) {
-      return filter(orderBy, i => i.name !== columnName);
+      return filter(orderBy, (i) => i.name !== columnName);
     }
     if (index >= 0) {
       orderBy[index] = item;
@@ -51,7 +51,7 @@ export function prepareColumns(columns, searchInput, orderBy, onOrderByChange) {
   const isMultiColumnSort = orderBy.length > 1;
   const orderByInfo = getOrderByInfo(orderBy);
 
-  let tableColumns = map(columns, column => {
+  let tableColumns = map(columns, (column) => {
     const isAscend = orderByInfo[column.name] && orderByInfo[column.name].direction === "ascend";
     const isDescend = orderByInfo[column.name] && orderByInfo[column.name].direction === "descend";
 
@@ -130,20 +130,16 @@ export function initRows(rows) {
 export function filterRows(rows, searchTerm, searchColumns) {
   if (searchTerm !== "" && searchColumns.length > 0) {
     searchTerm = searchTerm.toUpperCase();
-    const matchFields = map(searchColumns, column => {
+    const matchFields = map(searchColumns, (column) => {
       const initColumn = ColumnTypes[column.displayAs];
       const { prepareData } = initColumn(column);
       return (row) => {
         const { text } = prepareData(row);
-        return (
-          toString(text)
-            .toUpperCase()
-            .indexOf(searchTerm) >= 0
-        );
+        return toString(text).toUpperCase().indexOf(searchTerm) >= 0;
       };
     });
 
-    return filter(rows, row => some(matchFields, match => match(row.record)));
+    return filter(rows, (row) => some(matchFields, (match) => match(row.record)));
   }
   return rows;
 }

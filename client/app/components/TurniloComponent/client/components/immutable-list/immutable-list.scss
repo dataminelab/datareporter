@@ -27,12 +27,7 @@
   right: 0;
 
   .list-title {
-    @include border-css-variable(
-      "border-bottom",
-      1px,
-      solid,
-      "border-super-light"
-    );
+    @include border-css-variable("border-bottom", 1px, solid, "border-super-light");
     display: flex;
     height: $list-title-height;
     padding-top: 12px;

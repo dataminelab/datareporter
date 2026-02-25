@@ -16,7 +16,9 @@ const defaultColorScheme = [
 ];
 
 function getColor(value, scheme) {
-  if (value == 1) { return scheme[scheme.length - 1][1]; }
+  if (value == 1) {
+    return scheme[scheme.length - 1][1];
+  }
   const upperboundIndex = findIndex(scheme, (range) => value < range[0]);
   const scale = d3.interpolate(scheme[upperboundIndex - 1][1], scheme[upperboundIndex][1]);
   return scale(value);
@@ -34,8 +36,8 @@ function prepareSeries(series, options, additionalOptions) {
     colorscale: colorScheme,
   };
 
-  plotlySeries.x = uniq(map(series.data, v => v.x));
-  plotlySeries.y = uniq(map(series.data, v => v.y));
+  plotlySeries.x = uniq(map(series.data, (v) => v.x));
+  plotlySeries.y = uniq(map(series.data, (v) => v.y));
 
   if (options.sortX) {
     plotlySeries.x = sortBy(plotlySeries.x);
@@ -53,7 +55,7 @@ function prepareSeries(series, options, additionalOptions) {
     plotlySeries.y.reverse();
   }
 
-  const zMax = max(map(series.data, d => d.zVal));
+  const zMax = max(map(series.data, (d) => d.zVal));
 
   // Use text trace instead of default annotation for better performance
   const dataLabels = {
@@ -115,5 +117,5 @@ export default function prepareHeatmapData(seriesList, options) {
     formatNumber: createNumberFormatter(options.numberFormat),
   };
 
-  return flatten(map(seriesList, series => prepareSeries(series, options, additionalOptions)));
+  return flatten(map(seriesList, (series) => prepareSeries(series, options, additionalOptions)));
 }

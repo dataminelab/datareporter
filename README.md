@@ -61,18 +61,21 @@ Open [http://localhost:5000](http://localhost:5000) and start asking questions.
 ## Features
 
 **AI Engine**
+
 - Natural language to SQL — ask questions, get charts
 - Multi-provider: GPT, Gemini, DeepSeek, Ollama (local/private)
 - Conversational follow-ups that refine your analysis
 - AI generates SQL you can inspect, edit, and save
 
 **Visualization**
+
 - 14+ chart types: line, bar, scatter, area, heatmap, map, funnel, gauge, pivot table, sankey, word cloud, and more
 - Drag-and-drop dashboard builder
 - Scheduled refreshes and alerts
 - Shareable URLs for every dashboard and report
 
 **Enterprise Ready**
+
 - Authentication: OAuth 2.0, SAML 2.0, LDAP, API keys
 - Role-based access control with groups and organizations
 - SSH tunneling to databases behind firewalls
@@ -83,13 +86,13 @@ Open [http://localhost:5000](http://localhost:5000) and start asking questions.
 
 **60+ connectors** out of the box. Full drag & drop OLAP support for:
 
-| Data Source | SQL | AI Queries | Drag & Drop |
-|-------------|:---:|:----------:|:-----------:|
-| Google BigQuery | Yes | Yes | Yes |
-| Amazon Athena | Yes | Yes | Yes |
-| Apache Druid | Yes | Yes | Yes |
-| PostgreSQL | Yes | Yes | Yes |
-| MySQL | Yes | Yes | Yes |
+| Data Source     | SQL | AI Queries | Drag & Drop |
+| --------------- | :-: | :--------: | :---------: |
+| Google BigQuery | Yes |    Yes     |     Yes     |
+| Amazon Athena   | Yes |    Yes     |     Yes     |
+| Apache Druid    | Yes |    Yes     |     Yes     |
+| PostgreSQL      | Yes |    Yes     |     Yes     |
+| MySQL           | Yes |    Yes     |     Yes     |
 
 Plus Snowflake, ClickHouse, Databricks, Trino, Presto, MS SQL, Oracle, Redshift, MongoDB, Elasticsearch, Cassandra, SQLite, and [40+ more](ARCHITECTURE.md#data-source-drivers).
 

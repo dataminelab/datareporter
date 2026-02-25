@@ -10,7 +10,7 @@ const momentInterval = {
 function groupData(sortedData) {
   const result = {};
 
-  _.each(sortedData, item => {
+  _.each(sortedData, (item) => {
     const date = moment(item.date);
     const groupKey = date.valueOf();
     result[groupKey] = result[groupKey] || {
@@ -27,14 +27,14 @@ function groupData(sortedData) {
 function prepareDiagonalData(sortedData, options) {
   const timeInterval = options.timeInterval;
   const grouped = groupData(sortedData);
-  const firstStage = _.min(_.map(sortedData, i => i.stage));
+  const firstStage = _.min(_.map(sortedData, (i) => i.stage));
   const stageCount = moment(_.last(grouped).date).diff(_.first(grouped).date, momentInterval[timeInterval]);
   let lastStage = firstStage + stageCount;
 
   let previousDate = null;
 
   const data = [];
-  _.each(grouped, group => {
+  _.each(grouped, (group) => {
     if (previousDate !== null) {
       let diff = Math.abs(previousDate.diff(group.date, momentInterval[timeInterval]));
       while (diff > 1) {
@@ -67,14 +67,14 @@ function prepareDiagonalData(sortedData, options) {
 function prepareSimpleData(sortedData, options) {
   const timeInterval = options.timeInterval;
   const grouped = groupData(sortedData);
-  const stages = _.map(sortedData, i => i.stage);
+  const stages = _.map(sortedData, (i) => i.stage);
   const firstStage = _.min(stages);
   const lastStage = _.max(stages);
 
   let previousDate = null;
 
   const data = [];
-  _.each(grouped, group => {
+  _.each(grouped, (group) => {
     if (previousDate !== null) {
       let diff = Math.abs(previousDate.diff(group.date, momentInterval[timeInterval]));
       while (diff > 1) {
@@ -97,7 +97,7 @@ function prepareSimpleData(sortedData, options) {
 }
 
 function isDataValid(rawData, options) {
-  const columnNames = _.map(rawData.columns, c => c.name);
+  const columnNames = _.map(rawData.columns, (c) => c.name);
   return (
     rawData.rows.length > 0 &&
     _.includes(columnNames, options.dateColumn) &&
@@ -112,13 +112,13 @@ export default function prepareData(rawData, options) {
     return { data: [], initialDate: null };
   }
 
-  rawData = _.map(rawData.rows, item => ({
+  rawData = _.map(rawData.rows, (item) => ({
     date: item[options.dateColumn],
     stage: parseInt(item[options.stageColumn], 10),
     total: parseFloat(item[options.totalColumn]),
     value: parseFloat(item[options.valueColumn]),
   }));
-  const sortedData = _.sortBy(rawData, r => r.date + r.stage);
+  const sortedData = _.sortBy(rawData, (r) => r.date + r.stage);
   const initialDate = moment(sortedData[0].date).toDate();
 
   let data;

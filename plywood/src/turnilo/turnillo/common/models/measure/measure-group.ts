@@ -57,9 +57,10 @@ export function isMeasureGroupJS(
   return (measureOrGroupJS as MeasureGroupJS).measures !== undefined;
 }
 
-export class MeasureGroup
-  implements Instance<MeasureGroupValue, MeasureGroupJS>
-{
+export class MeasureGroup implements Instance<
+  MeasureGroupValue,
+  MeasureGroupJS
+> {
   static fromJS(parameters: MeasureGroupJS): MeasureGroup {
     const { name, title, description, measures } = parameters;
 

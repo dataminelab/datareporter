@@ -21,7 +21,7 @@ export default function ColumnsSettings({ options, onOptionsChange }) {
     if (event) {
       event.stopPropagation();
     }
-    const columns = map(options.columns, c => (c.name === newColumn.name ? newColumn : c));
+    const columns = map(options.columns, (c) => (c.name === newColumn.name ? newColumn : c));
     onOptionsChange({ columns });
   }
 
@@ -37,11 +37,12 @@ export default function ColumnsSettings({ options, onOptionsChange }) {
       lockAxis="y"
       useDragHandle
       helperClass="table-editor-columns-dragged-item"
-      helperContainer={container => container.firstChild}
+      helperContainer={(container) => container.firstChild}
       onSortEnd={handleColumnsReorder}
       containerProps={{
         className: "table-visualization-editor-columns",
-      }}>
+      }}
+    >
       <Collapse bordered={false} defaultActiveKey={[]} expandIconPosition="right">
         {map(options.columns, (column, index) => (
           <SortableItem
@@ -65,16 +66,17 @@ export default function ColumnsSettings({ options, onOptionsChange }) {
                 {column.visible ? (
                   <EyeOutlinedIcon
                     data-test={`Table.Column.${column.name}.Visibility`}
-                    onClick={event => handleColumnChange({ ...column, visible: !column.visible }, event)}
+                    onClick={(event) => handleColumnChange({ ...column, visible: !column.visible }, event)}
                   />
                 ) : (
                   <EyeInvisibleOutlinedIcon
                     data-test={`Table.Column.${column.name}.Visibility`}
-                    onClick={event => handleColumnChange({ ...column, visible: !column.visible }, event)}
+                    onClick={(event) => handleColumnChange({ ...column, visible: !column.visible }, event)}
                   />
                 )}
               </Tooltip>
-            }>
+            }
+          >
             <ColumnEditor column={column} onChange={handleColumnChange} />
           </SortableItem>
         ))}

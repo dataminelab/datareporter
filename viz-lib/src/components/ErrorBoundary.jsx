@@ -7,7 +7,7 @@ import Alert from "antd/lib/alert";
 const logger = debug("redash:errors");
 
 export const ErrorBoundaryContext = React.createContext({
-  handleError: error => {
+  handleError: (error) => {
     // Allow calling chain to roll up, and then throw the error in global context
     setTimeout(() => {
       throw error;
@@ -41,7 +41,7 @@ export default class ErrorBoundary extends React.Component {
 
   state = { error: null };
 
-  handleError = error => {
+  handleError = (error) => {
     this.setState(this.constructor.getDerivedStateFromError(error));
     this.componentDidCatch(error, null);
     if (isFunction(window.handleException)) {

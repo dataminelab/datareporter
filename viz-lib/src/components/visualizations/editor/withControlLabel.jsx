@@ -25,7 +25,8 @@ export function ControlLabel({ layout, label, labelProps, disabled, children }) 
         className="visualization-editor-control-label visualization-editor-control-label-horizontal"
         type="flex"
         align="middle"
-        gutter={15}>
+        gutter={15}
+      >
         <Grid.Col span={12}>
           <label {...labelProps}>
             <Typography.Text disabled={disabled}>{label}</Typography.Text>
@@ -57,13 +58,7 @@ ControlLabel.defaultProps = {
 export default function withControlLabel(WrappedControl) {
   // eslint-disable-next-line react/prop-types
   function ControlWrapper({ className, id, layout, label, labelProps, disabled, ...props }) {
-    const fallbackId = useMemo(
-      () =>
-        `visualization-editor-control-${Math.random()
-          .toString(36)
-          .substring(2, 10)}`,
-      []
-    );
+    const fallbackId = useMemo(() => `visualization-editor-control-${Math.random().toString(36).substring(2, 10)}`, []);
     labelProps = {
       ...labelProps,
       htmlFor: id || fallbackId,

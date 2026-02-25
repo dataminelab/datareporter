@@ -30,7 +30,7 @@ export function SortableContainer({ disabled, containerComponent, containerProps
     // Enabled state:
 
     // - use container element as a default helper element
-    wrapperProps.helperContainer = wrap(wrapperProps.helperContainer, helperContainer =>
+    wrapperProps.helperContainer = wrap(wrapperProps.helperContainer, (helperContainer) =>
       isFunction(helperContainer) ? helperContainer(containerRef.current) : containerRef.current
     );
 

@@ -7,8 +7,8 @@ updates:
     commit-message:
       prefix: "(plywood-server): "
     schedule:
-      interval: 'weekly'
-      day: 'saturday'
+      interval: "weekly"
+      day: "saturday"
     ignore:
       - dependency-name: "readable-stream"
         update-types: ["version-update:semver-minor"]
@@ -21,37 +21,37 @@ updates:
       - dependency-name: "readable-stream"
         update-types: ["version-update:semver-minor"]
     schedule:
-      interval: 'weekly'
-      day: 'saturday'
+      interval: "weekly"
+      day: "saturday"
   - directory: "/"
     target-branch: "develop"
     package-ecosystem: "pip"
     commit-message:
       prefix: "(python): "
     schedule:
-      interval: 'weekly'
-      day: 'saturday'
+      interval: "weekly"
+      day: "saturday"
   - directory: "/client"
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
       prefix: "(client-npm): "
     schedule:
-      interval: 'weekly'
-      day: 'saturday'
+      interval: "weekly"
+      day: "saturday"
   - directory: "/client/app/components/TurniloComponent"
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
       prefix: "(turnilo): "
     schedule:
-      interval: 'weekly'
-      day: 'saturday'
+      interval: "weekly"
+      day: "saturday"
   - directory: "/viz-lib"
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:
       prefix: "(vizlib-npm): "
     schedule:
-      interval: 'weekly'
-      day: 'saturday'
+      interval: "weekly"
+      day: "saturday"

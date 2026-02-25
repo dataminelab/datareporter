@@ -88,7 +88,8 @@ export default function ColorPicker({
               backgroundColor: currentColor,
               color: chooseTextColorForBackground(currentColor),
             }}
-            actions={actions}>
+            actions={actions}
+          >
             <ColorInput
               color={currentColor}
               presetColors={presetColors}
@@ -101,7 +102,8 @@ export default function ColorPicker({
         trigger="click"
         placement={placement}
         visible={visible}
-        onVisibleChange={setVisible}>
+        onVisibleChange={setVisible}
+      >
         {children || (
           <Swatch
             color={validatedColor}

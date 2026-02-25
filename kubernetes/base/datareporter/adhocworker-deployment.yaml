@@ -5,7 +5,6 @@ kind: Deployment
 metadata:
   name: datareporter-adhocworker
   labels:
-
     app.kubernetes.io/name: datareporter
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/version: "v2025.3.1"
@@ -26,16 +25,18 @@ spec:
         app.kubernetes.io/component: adhocworker
     spec:
       serviceAccountName: datareporter
-      securityContext:
-        {}
+      securityContext: {}
       containers:
         - name: datareporter-adhocworker
-          securityContext:
-            {}
+          securityContext: {}
           image: "europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:v2025.3.1"
           imagePullPolicy: "IfNotPresent"
           command: ["/bin/sh"]
-          args: ["-c", ". /config/dynamicenv.sh && /app/bin/docker-entrypoint worker"]
+          args:
+            [
+              "-c",
+              ". /config/dynamicenv.sh && /app/bin/docker-entrypoint worker",
+            ]
           volumeMounts:
             - name: config
               mountPath: /config

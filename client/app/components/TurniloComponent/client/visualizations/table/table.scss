@@ -35,12 +35,7 @@
 
     .left-gutter,
     .top-left-corner {
-      @include border-css-variable(
-        "border-right",
-        1px,
-        solid,
-        "border-super-light"
-      );
+      @include border-css-variable("border-right", 1px, solid, "border-super-light");
       background-color: $white;
       border-top-left-radius: $corner;
       border-bottom-left-radius: $corner;

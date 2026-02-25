@@ -2,7 +2,7 @@
 
 ## 0.22.2
 
-- Fix filtering for filtered averages in resplit queries for complex inner aggregations 
+- Fix filtering for filtered averages in resplit queries for complex inner aggregations
 
 ## 0.22.1
 
@@ -16,7 +16,6 @@
 - add `s$` (SQL ref function)
 - add `sqlAgregate`
 - Remove plywood-light build
-
 
 ## 0.21.8
 
@@ -36,7 +35,7 @@
 
 ## 0.21.4
 
-- Fix filtering for filtered averages in resplit queries 
+- Fix filtering for filtered averages in resplit queries
 
 ## 0.21.3
 
@@ -82,7 +81,7 @@
 
 ## 0.20.7
 
-- Handle large overrides better, fix `O(n^2)` issue 
+- Handle large overrides better, fix `O(n^2)` issue
 
 ## 0.20.6
 
@@ -112,7 +111,6 @@
 ## 0.20.0
 
 - Updated dependencies
-
 
 ## 0.19.15
 
@@ -413,7 +411,6 @@
 - verboseRequesterFactory callback parameters now get a single argument with lots of info
 - verboseRequesterFactory will now name queries
 
-
 ## 0.16.5
 
 - PlyQL: support for `IF()` `CASE WHEN THEN END`, and `NULLIF()`
@@ -446,7 +443,7 @@
 - Datasets now actively maintain their `keys` array
 - `Dataset#flatten` now returns a new (flat) `Dataset` and thus the `parentName` option is no longer supported
 - In `Dataset#flatten`, `Dataset#ToCSV`, e.t.c `orderedColumns` option is no longer supported use `.select()` instead
-- Added `columnOrdering` option to `Dataset#flatten` with values `'as-seen'` and  `'keys-first'`
+- Added `columnOrdering` option to `Dataset#flatten` with values `'as-seen'` and `'keys-first'`
 - `Dataset#getColumns` is now just `return this.flatten(options).attributes`
 - `Dataset#getNestedColumns` was removed
 - Added `ThenExpression`
@@ -462,7 +459,6 @@
 - Experimental support for DruidSQL
 - `DruidExternal` correctly defining numeric ordering in topN metricsSpecs
 - `DruidExternal` will now explicitly set `fromNext: false` when paginating select
-
 
 ## 0.15.13
 
@@ -516,7 +512,6 @@
   So `Dataset#apply(name, x)` now expects `x` to be and expression but `Dataset#applyFn(name, x)` has the old API
 - `AttributeInfo#type` defaults to `STRING`
 - Removed PlyQL parser from plywood-lite
-
 
 ## 0.14.12
 
@@ -578,7 +573,6 @@
 - removed `Expression#lastAction`
 - removed `Expression#headActions`
 - removed `Expression#popAction` use `.operand` instead
-
 
 ## 0.13.7
 
@@ -645,12 +639,12 @@
 - Support case insensitive RefExpression
 - PlyQL `SHOW` query rewriting is case insensitive
 - Moved methods out of `plywood` and into `immutable-class`:
-  * `plywood.find` to `SimpleArray.find`
-  * `plywood.findIndex` to `SimpleArray.findIndex`
-  * `plywood.findByName` to `NamedArray.findByName`
-  * `plywood.findIndexByName` to `NamedArray.findIndexByName`
-  * `plywood.overrideByName` to `NamedArray.overrideByName`
-  * `plywood.overridesByName` to `NamedArray.overridesByName`
+  - `plywood.find` to `SimpleArray.find`
+  - `plywood.findIndex` to `SimpleArray.findIndex`
+  - `plywood.findByName` to `NamedArray.findByName`
+  - `plywood.findIndexByName` to `NamedArray.findIndexByName`
+  - `plywood.overrideByName` to `NamedArray.overrideByName`
+  - `plywood.overridesByName` to `NamedArray.overridesByName`
 
 ## 0.12.5
 
@@ -674,24 +668,24 @@
 
 - Changed to build to use external modules
 - Moved methods out of `plywood.helper`, specifically:
-  * `helper.parseJSON` to `Dataset.parseJSON`
-  * `helper.expressionLookupFromJS` to `Expression.expressionLookupFromJS`
-  * `helper.expressionLookupToJS` to `Expression.expressionLookupToJS`
-  * `helper.find` to `plywood.find`
-  * `helper.findIndex` to `plywood.findIndex`
-  * `helper.findByName` to `plywood.findByName`
-  * `helper.findIndexByName` to `plywood.findIndexByName`
-  * `helper.overrideByName` to `plywood.overrideByName`
-  * `helper.overridesByName` to `plywood.overridesByName`
-  * `helper.shallowCopy` to `plywood.shallowCopy`
-  * `helper.deduplicateSort` to `plywood.deduplicateSort`
-  * `helper.mapLookup` to `plywood.mapLookup`
-  * `helper.emptyLookup` to `plywood.emptyLookup`
-  * `helper.nonEmptyLookup` to `plywood.nonEmptyLookup`
-  * `helper.verboseRequesterFactory` to `plywood.verboseRequesterFactory`
-  * `helper.retryRequesterFactory` to `plywood.retryRequesterFactory`
-  * `helper.concurrentLimitRequesterFactory` to `plywood.concurrentLimitRequesterFactory`
-  * `helper.promiseWhile` to `plywood.promiseWhile`
+  - `helper.parseJSON` to `Dataset.parseJSON`
+  - `helper.expressionLookupFromJS` to `Expression.expressionLookupFromJS`
+  - `helper.expressionLookupToJS` to `Expression.expressionLookupToJS`
+  - `helper.find` to `plywood.find`
+  - `helper.findIndex` to `plywood.findIndex`
+  - `helper.findByName` to `plywood.findByName`
+  - `helper.findIndexByName` to `plywood.findIndexByName`
+  - `helper.overrideByName` to `plywood.overrideByName`
+  - `helper.overridesByName` to `plywood.overridesByName`
+  - `helper.shallowCopy` to `plywood.shallowCopy`
+  - `helper.deduplicateSort` to `plywood.deduplicateSort`
+  - `helper.mapLookup` to `plywood.mapLookup`
+  - `helper.emptyLookup` to `plywood.emptyLookup`
+  - `helper.nonEmptyLookup` to `plywood.nonEmptyLookup`
+  - `helper.verboseRequesterFactory` to `plywood.verboseRequesterFactory`
+  - `helper.retryRequesterFactory` to `plywood.retryRequesterFactory`
+  - `helper.concurrentLimitRequesterFactory` to `plywood.concurrentLimitRequesterFactory`
+  - `helper.promiseWhile` to `plywood.promiseWhile`
 - Moved `simpleLocator` out
 - Removed `retryRequester` which was deprecated
 
@@ -908,7 +902,6 @@
 - Support for zero Intervals in PlyQL
 - Support for `DATE_FORMAT` in PlyQL as used in MySQL for `TIME_FLOOR`
 
-
 ## 0.9.25
 
 - Dramatically reduced PlyQL parser size
@@ -993,7 +986,7 @@
 ## 0.9.10
 
 - DruidExternal timeAttribute now defaults to `__time`
-- Moved find* methods into helper
+- Moved find\* methods into helper
 - Externals can re-introspect
 
 ## 0.9.9
@@ -1042,7 +1035,6 @@
 
 - New 'value' mode in externals. `$wikipedia.sum($added)` is now computable.
 - More relaxed date literal parsing in PlyQL
-
 
 ## 0.8.21
 
@@ -1146,7 +1138,6 @@
 ## 0.8.1
 
 - Removing d3 dependency and minimizing code size
-
 
 ## 0.7.30
 
@@ -1294,7 +1285,6 @@
 - Fix support for `sort` and `limit` in SELECT queries
 - Better escaping in MySQL driver
 
-
 ## 0.6.3
 
 - Changed JS fallbacks in DruidExternal to use native code generators and removed some null bugs.
@@ -1309,12 +1299,10 @@
   `Expression.parseSQL(blah)` ==> `Expression.parseSQL(blah).expression`
 - In PlyQL changed the meaning of `GROUP BY <number>` to be a reference to a column (just like in MySQL and Postgres)
 
-
 ## 0.5.2
 
 - Added support for case sensitive (`normal`) / case insensitive (`ignoreCase`) contains.
 - Improved concat action support in Druid
-
 
 ## 0.5
 
@@ -1323,7 +1311,6 @@
 - Misc bug fixes
 - Added SortAction DESCENDING, ASCENDING, toggleDirection
 - DruidExternal guards against duplicate aggs and postAggs
-
 
 ## 0.4
 

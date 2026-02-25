@@ -51,9 +51,9 @@ function tabTitle(tab: TimeFilterTab) {
   return tab === TimeFilterTab.RELATIVE ? STRINGS.relative : STRINGS.fixed;
 }
 
-const TabSelector: React.FunctionComponent<TabSelectorProps> = props => {
+const TabSelector: React.FunctionComponent<TabSelectorProps> = (props) => {
   const { selectedTab, onTabSelect } = props;
-  const tabs = [TimeFilterTab.RELATIVE, TimeFilterTab.FIXED].map(tab => {
+  const tabs = [TimeFilterTab.RELATIVE, TimeFilterTab.FIXED].map((tab) => {
     return {
       isSelected: selectedTab === tab,
       title: tabTitle(tab),
@@ -76,30 +76,17 @@ export interface TimeFilterMenuProps {
 }
 
 function initialTab(essence: Essence): TimeFilterTab {
-  const isRelativeTimeFilter =
-    essence.timeFilter() instanceof RelativeTimeFilterClause;
+  const isRelativeTimeFilter = essence.timeFilter() instanceof RelativeTimeFilterClause;
   return isRelativeTimeFilter ? TimeFilterTab.RELATIVE : TimeFilterTab.FIXED;
 }
 
-export class TimeFilterMenu extends React.Component<
-  TimeFilterMenuProps,
-  TimeFilterMenuState
-> {
+export class TimeFilterMenu extends React.Component<TimeFilterMenuProps, TimeFilterMenuState> {
   state: TimeFilterMenuState = { tab: initialTab(this.props.essence) };
 
   selectTab = (tab: TimeFilterTab) => this.setState({ tab });
 
   render() {
-    const {
-      essence,
-      timekeeper,
-      clicker,
-      dimension,
-      onClose,
-      containerStage,
-      openOn,
-      inside,
-    } = this.props;
+    const { essence, timekeeper, clicker, dimension, onClose, containerStage, openOn, inside } = this.props;
     if (!dimension) return null;
     const { tab } = this.state;
     const menuSize = Stage.fromSize(MENU_WIDTH, 410);
@@ -114,14 +101,9 @@ export class TimeFilterMenu extends React.Component<
         stage={menuSize}
         openOn={openOn}
         onClose={onClose}
-        inside={inside}
-      >
+        inside={inside}>
         <TabSelector selectedTab={tab} onTabSelect={this.selectTab} />
-        {isRelativeTab ? (
-          <PresetTimeTab {...tabProps} />
-        ) : (
-          <FixedTimeTab {...tabProps} />
-        )}
+        {isRelativeTab ? <PresetTimeTab {...tabProps} /> : <FixedTimeTab {...tabProps} />}
       </BubbleMenu>
     );
   }

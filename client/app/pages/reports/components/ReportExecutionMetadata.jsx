@@ -38,15 +38,11 @@ export default function ReportExecutionMetadata({
       </span>
       {extraActions}
       {showEditVisualizationButton && (
-        <EditVisualizationButton
-          openVisualizationEditor={onEditVisualization}
-          selectedTab={selectedVisualization}
-        />
+        <EditVisualizationButton openVisualizationEditor={onEditVisualization} selectedTab={selectedVisualization} />
       )}
       <span className="m-l-5 m-r-10">
         <span>
-          <strong>{queryResultData.rows.length}</strong>{" "}
-          {pluralize("row", queryResultData.rows.length)}
+          <strong>{queryResultData.rows.length}</strong> {pluralize("row", queryResultData.rows.length)}
         </span>
         <span className="m-l-5">
           {!isExecuting && (

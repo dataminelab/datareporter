@@ -1,16 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import {
-  isEmpty,
-  includes,
-  compact,
-  map,
-  has,
-  pick,
-  keys,
-  extend,
-  every,
-  get,
-} from "lodash";
+import { isEmpty, includes, compact, map, has, pick, keys, extend, every, get } from "lodash";
 import notification from "@/services/notification";
 import location from "@/services/location";
 import url from "@/services/url";
@@ -21,10 +10,7 @@ import { QueryResultError } from "@/services/query";
 import AddWidgetDialog from "@/components/dashboards/AddWidgetDialog";
 import TextboxDialog from "@/components/dashboards/TextboxDialog";
 import PermissionsEditorDialog from "@/components/PermissionsEditorDialog";
-import {
-  editableMappingsToParameterMappings,
-  synchronizeWidgetTitles,
-} from "@/components/ParameterMappingInput";
+import { editableMappingsToParameterMappings, synchronizeWidgetTitles } from "@/components/ParameterMappingInput";
 import ShareDashboardDialog from "../components/ShareDashboardDialog";
 import useFullscreenHandler from "../../../lib/hooks/useFullscreenHandler";
 import useRefreshRateHandler from "./useRefreshRateHandler";
@@ -35,15 +21,15 @@ export { DashboardStatusEnum } from "./useEditModeHandler";
 
 function getAffectedWidgets(widgets, updatedParameters = []) {
   return !isEmpty(updatedParameters)
-    ? widgets.filter(widget =>
+    ? widgets.filter((widget) =>
         Object.values(widget.getParameterMappings())
           .filter(({ type }) => type === "dashboard-level")
           .some(({ mapTo }) =>
             includes(
-              updatedParameters.map(p => p.name),
-              mapTo,
-            ),
-          ),
+              updatedParameters.map((p) => p.name),
+              mapTo
+            )
+          )
       )
     : widgets;
 }
@@ -53,25 +39,18 @@ function useDashboard(dashboardData) {
   const [filters, setFilters] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [gridDisabled, setGridDisabled] = useState(false);
-  const globalParameters = useMemo(
-    () => dashboard.getParametersDefs(),
-    [dashboard],
-  );
+  const globalParameters = useMemo(() => dashboard.getParametersDefs(), [dashboard]);
   const canEditDashboard = !dashboard.is_archived && dashboard.can_edit;
   const isDashboardOwnerOrAdmin = useMemo(
     () =>
       !dashboard.is_archived &&
       has(dashboard, "user.id") &&
-      (currentUser.id === dashboard.user.id ||
-        currentUser.hasPermission("admin")),
-    [dashboard],
+      (currentUser.id === dashboard.user.id || currentUser.hasPermission("admin")),
+    [dashboard]
   );
   const hasOnlySafeQueries = useMemo(
-    () =>
-      every(dashboard.widgets, w =>
-        w.getQuery() ? w.getQuery().is_safe : true,
-      ),
-    [dashboard],
+    () => every(dashboard.widgets, (w) => (w.getQuery() ? w.getQuery().is_safe : true)),
+    [dashboard]
   );
 
   const managePermissions = useCallback(() => {
@@ -85,21 +64,19 @@ function useDashboard(dashboardData) {
 
   const updateDashboard = useCallback(
     (data, includeVersion = true) => {
-      setDashboard(currentDashboard => extend({}, currentDashboard, data));
+      setDashboard((currentDashboard) => extend({}, currentDashboard, data));
       data = { ...data, id: dashboard.id };
       if (includeVersion) {
         data = { ...data, version: dashboard.version };
       }
       return Dashboard.save(data)
-        .then(updatedDashboard => {
-          setDashboard(currentDashboard =>
-            extend({}, currentDashboard, pick(updatedDashboard, keys(data))),
-          );
+        .then((updatedDashboard) => {
+          setDashboard((currentDashboard) => extend({}, currentDashboard, pick(updatedDashboard, keys(data))));
           if (has(data, "name")) {
             location.setPath(url.parse(updatedDashboard.url).pathname, true);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           const status = get(error, "response.status");
           if (status === 403) {
             notification.error("Dashboard update failed", "Permission Denied.");
@@ -107,12 +84,12 @@ function useDashboard(dashboardData) {
             notification.error(
               "It seems like the dashboard has been modified by another user. ",
               "Please copy/backup your changes and reload this page.",
-              { duration: null },
+              { duration: null }
             );
           }
         });
     },
-    [dashboard],
+    [dashboard]
   );
 
   const togglePublished = useCallback(() => {
@@ -122,33 +99,26 @@ function useDashboard(dashboardData) {
 
   const loadWidget = useCallback((widget, forceRefresh = false) => {
     widget.getParametersDefs(); // Force widget to read parameters values from URL
-    setDashboard(currentDashboard => extend({}, currentDashboard));
+    setDashboard((currentDashboard) => extend({}, currentDashboard));
     return widget
       .load(forceRefresh)
-      .catch(error => {
+      .catch((error) => {
         // QueryResultErrors are expected
         if (error instanceof QueryResultError) {
           return;
         }
         return Promise.reject(error);
       })
-      .finally(() =>
-        setDashboard(currentDashboard => extend({}, currentDashboard)),
-      );
+      .finally(() => setDashboard((currentDashboard) => extend({}, currentDashboard)));
   }, []);
 
-  const refreshWidget = useCallback(
-    widget => loadWidget(widget, true),
-    [loadWidget],
-  );
+  const refreshWidget = useCallback((widget) => loadWidget(widget, true), [loadWidget]);
 
-  const removeWidget = useCallback(widgetId => {
-    setDashboard(currentDashboard =>
+  const removeWidget = useCallback((widgetId) => {
+    setDashboard((currentDashboard) =>
       extend({}, currentDashboard, {
-        widgets: currentDashboard.widgets.filter(
-          widget => widget.id !== undefined && widget.id !== widgetId,
-        ),
-      }),
+        widgets: currentDashboard.widgets.filter((widget) => widget.id !== undefined && widget.id !== widgetId),
+      })
     );
   }, []);
 
@@ -157,54 +127,35 @@ function useDashboard(dashboardData) {
 
   const loadDashboard = useCallback(
     async (forceRefresh = false, updatedParameters = []) => {
-      const affectedWidgets = getAffectedWidgets(
-        dashboardRef.current.widgets,
-        updatedParameters,
-      );
+      const affectedWidgets = getAffectedWidgets(dashboardRef.current.widgets, updatedParameters);
       const loadWidgetPromises = compact(
-        affectedWidgets.map(widget =>
-          loadWidget(widget, forceRefresh).catch(error => error),
-        ),
+        affectedWidgets.map((widget) => loadWidget(widget, forceRefresh).catch((error) => error))
       );
 
       await Promise.all(loadWidgetPromises);
-      const queryResults = compact(
-        map(dashboardRef.current.widgets, widget_2 =>
-          widget_2.getQueryResult(),
-        ),
-      );
-      const updatedFilters = collectDashboardFilters(
-        dashboardRef.current,
-        queryResults,
-        location.search,
-      );
+      const queryResults = compact(map(dashboardRef.current.widgets, (widget_2) => widget_2.getQueryResult()));
+      const updatedFilters = collectDashboardFilters(dashboardRef.current, queryResults, location.search);
       setFilters(updatedFilters);
     },
-    [loadWidget],
+    [loadWidget]
   );
 
   const refreshDashboard = useCallback(() => {
     if (!refreshing) {
       setRefreshing(true);
-      setTimeout(
-        () => document.querySelector("a[data-test='Refresh']").click(),
-        333,
-      );
+      setTimeout(() => document.querySelector("a[data-test='Refresh']").click(), 333);
     }
   }, [refreshing]);
 
   const archiveDashboard = useCallback(() => {
     recordEvent("archive", "dashboard", dashboard.id);
-    Dashboard.delete(dashboard).then(updatedDashboard =>
-      setDashboard(currentDashboard =>
-        extend({}, currentDashboard, pick(updatedDashboard, ["is_archived"])),
-      ),
+    Dashboard.delete(dashboard).then((updatedDashboard) =>
+      setDashboard((currentDashboard) => extend({}, currentDashboard, pick(updatedDashboard, ["is_archived"])))
     );
   }, [dashboard]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const showShareDashboardDialog = useCallback(() => {
-    const handleDialogClose = () =>
-      setDashboard(currentDashboard => extend({}, currentDashboard));
+    const handleDialogClose = () => setDashboard((currentDashboard) => extend({}, currentDashboard));
 
     ShareDashboardDialog.showModal({
       dashboard,
@@ -217,12 +168,8 @@ function useDashboard(dashboardData) {
   const showAddTextboxDialog = useCallback(() => {
     TextboxDialog.showModal({
       isNew: true,
-    }).onClose(text =>
-      dashboard
-        .addWidget(text)
-        .then(() =>
-          setDashboard(currentDashboard => extend({}, currentDashboard)),
-        ),
+    }).onClose((text) =>
+      dashboard.addWidget(text).then(() => setDashboard((currentDashboard) => extend({}, currentDashboard)))
     );
   }, [dashboard]);
 
@@ -232,20 +179,16 @@ function useDashboard(dashboardData) {
     }).onClose(({ visualization, parameterMappings }) =>
       dashboard
         .addWidget(visualization, {
-          parameterMappings:
-            editableMappingsToParameterMappings(parameterMappings),
+          parameterMappings: editableMappingsToParameterMappings(parameterMappings),
         })
-        .then(async widget => {
+        .then(async (widget) => {
           const widgetsToSave = [
             widget,
-            ...synchronizeWidgetTitles(
-              widget.options.parameterMappings,
-              dashboard.widgets,
-            ),
+            ...synchronizeWidgetTitles(widget.options.parameterMappings, dashboard.widgets),
           ];
-          await Promise.all(widgetsToSave.map(w => w.save()));
-          return setDashboard(currentDashboard => extend({}, currentDashboard));
-        }),
+          await Promise.all(widgetsToSave.map((w) => w.save()));
+          return setDashboard((currentDashboard) => extend({}, currentDashboard));
+        })
     );
   }, [dashboard]);
 
@@ -254,31 +197,21 @@ function useDashboard(dashboardData) {
       dashboard
         .addWidget(text, options)
         .then(() => {
-          setDashboard(currentDashboard => extend({}, currentDashboard));
+          setDashboard((currentDashboard) => extend({}, currentDashboard));
         })
-        .catch(error => {
+        .catch((error) => {
           if (error instanceof QueryResultError) {
-            notification.error(
-              "Report Widget could not be added",
-              error.message,
-            );
+            notification.error("Report Widget could not be added", error.message);
           } else {
-            notification.error(
-              "Report Widget could not be added",
-              "An unexpected error occurred.",
-            );
+            notification.error("Report Widget could not be added", "An unexpected error occurred.");
           }
-        }),
+        })
     );
   }, [dashboard]);
 
-  const [refreshRate, setRefreshRate, disableRefreshRate] =
-    useRefreshRateHandler(refreshDashboard);
+  const [refreshRate, setRefreshRate, disableRefreshRate] = useRefreshRateHandler(refreshDashboard);
   const [fullscreen, toggleFullscreen] = useFullscreenHandler();
-  const editModeHandler = useEditModeHandler(
-    !gridDisabled && canEditDashboard,
-    dashboard.widgets,
-  );
+  const editModeHandler = useEditModeHandler(!gridDisabled && canEditDashboard, dashboard.widgets);
 
   useEffect(() => {
     setDashboard(dashboardData);

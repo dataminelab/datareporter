@@ -1,13 +1,4 @@
-import {
-  isEqual,
-  extend,
-  map,
-  sortBy,
-  findIndex,
-  filter,
-  pick,
-  omit,
-} from "lodash";
+import { isEqual, extend, map, sortBy, findIndex, filter, pick, omit } from "lodash";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import Modal from "antd/lib/modal";
@@ -26,15 +17,12 @@ import {
   newVisualization,
   VisualizationType,
 } from "@redash/viz/lib";
-import {
-  Renderer,
-  Editor,
-} from "@/components/visualizations/visualizationComponents";
+import { Renderer, Editor } from "@/components/visualizations/visualizationComponents";
 
 import "./EditVisualizationDialog.less";
 
 function updateQueryVisualizations(query, visualization) {
-  const index = findIndex(query.visualizations, v => v.id === visualization.id);
+  const index = findIndex(query.visualizations, (v) => v.id === visualization.id);
   if (index > -1) {
     query.visualizations[index] = visualization;
   } else {
@@ -54,11 +42,11 @@ function saveVisualization(visualization) {
   }
 
   return Visualization.save(visualization)
-    .then(result => {
+    .then((result) => {
       notification.success("Visualization saved");
       return result;
     })
-    .catch(error => {
+    .catch((error) => {
       notification.error("Visualization could not be saved");
       return Promise.reject(error);
     });
@@ -81,12 +69,7 @@ function confirmDialogClose(isDirty) {
   });
 }
 
-function EditVisualizationDialog({
-  dialog,
-  visualization,
-  query,
-  queryResult,
-}) {
+function EditVisualizationDialog({ dialog, visualization, query, queryResult }) {
   const errorHandlerRef = useRef();
 
   const isNew = !visualization;
@@ -99,13 +82,11 @@ function EditVisualizationDialog({
       columns: data.columns,
       rows: filterData(data.rows, filters),
     }),
-    [data, filters],
+    [data, filters]
   );
 
   const defaultState = useMemo(() => {
-    const config = visualization
-      ? registeredVisualizations[visualization.type]
-      : getDefaultVisualization();
+    const config = visualization ? registeredVisualizations[visualization.type] : getDefaultVisualization();
     const options = config.getOptions(isNew ? {} : visualization.options, data);
     return {
       type: config.type,
@@ -161,7 +142,7 @@ function EditVisualizationDialog({
       options: visualizationOptions,
       query_id: query.id,
     });
-    saveVisualization(visualizationData).then(savedVisualization => {
+    saveVisualization(visualizationData).then((savedVisualization) => {
       updateQueryVisualizations(query, savedVisualization);
       dialog.close(savedVisualization);
     });
@@ -177,10 +158,7 @@ function EditVisualizationDialog({
   // When editing existing visualization chart type selector is disabled, so add only existing visualization's
   // descriptor there (to properly render the component). For new visualizations show all types except of deprecated
   const availableVisualizations = isNew
-    ? filter(
-        sortBy(registeredVisualizations, ["name"]),
-        vis => !vis.isDeprecated,
-      )
+    ? filter(sortBy(registeredVisualizations, ["name"]), (vis) => !vis.isDeprecated)
     : pick(registeredVisualizations, [type]);
 
   const vizTypeId = useUniqueId("visualization-type");
@@ -198,8 +176,7 @@ function EditVisualizationDialog({
       }}
       onOk={save}
       onCancel={dismiss}
-      wrapProps={{ "data-test": "EditVisualizationDialog" }}
-    >
+      wrapProps={{ "data-test": "EditVisualizationDialog" }}>
       <div className="edit-visualization-dialog">
         <div className="visualization-settings">
           <div className="m-b-15">
@@ -210,13 +187,9 @@ function EditVisualizationDialog({
               className="w-100"
               disabled={!isNew}
               value={type}
-              onChange={onTypeChanged}
-            >
-              {map(availableVisualizations, vis => (
-                <Select.Option
-                  key={vis.type}
-                  data-test={"VisualizationType." + vis.type}
-                >
+              onChange={onTypeChanged}>
+              {map(availableVisualizations, (vis) => (
+                <Select.Option key={vis.type} data-test={"VisualizationType." + vis.type}>
                   {vis.name}
                 </Select.Option>
               ))}
@@ -229,7 +202,7 @@ function EditVisualizationDialog({
               id={vizNameId}
               className="w-100"
               value={name}
-              onChange={event => onNameChanged(event.target.value)}
+              onChange={(event) => onNameChanged(event.target.value)}
             />
           </div>
           <div data-test="VisualizationEditor">
@@ -243,10 +216,7 @@ function EditVisualizationDialog({
           </div>
         </div>
         <div className="visualization-preview">
-          <label
-            htmlFor="visualization-preview"
-            className="invisible hidden-xs"
-          >
+          <label htmlFor="visualization-preview" className="invisible hidden-xs">
             Preview
           </label>
           <Filters filters={filters} onChange={setFilters} />

@@ -13,8 +13,8 @@ function combineFilters(localFilters, globalFilters) {
     return localFilters;
   }
 
-  return map(localFilters, localFilter => {
-    const globalFilter = find(globalFilters, f => f.name === localFilter.name);
+  return map(localFilters, (localFilter) => {
+    const globalFilter = find(globalFilters, (f) => f.name === localFilter.name);
     if (globalFilter) {
       return {
         ...localFilter,
@@ -30,21 +30,19 @@ function areFiltersEqual(a, b) {
     return false;
   }
 
-  a = fromPairs(map(a, item => [item.name, item]));
-  b = fromPairs(map(b, item => [item.name, item]));
+  a = fromPairs(map(a, (item) => [item.name, item]));
+  b = fromPairs(map(b, (item) => [item.name, item]));
 
   return isEqual(a, b);
 }
 
 export default function VisualizationRenderer(props) {
   const data = useQueryResultData(props.queryResult);
-  const [filters, setFilters] = useState(() =>
-    combineFilters(data.filters, props.filters),
-  ); // lazy initialization
+  const [filters, setFilters] = useState(() => combineFilters(data.filters, props.filters)); // lazy initialization
   const filtersRef = useRef();
   filtersRef.current = filters;
 
-  const handleFiltersChange = useImmutableCallback(newFilters => {
+  const handleFiltersChange = useImmutableCallback((newFilters) => {
     if (!areFiltersEqual(newFilters, filters)) {
       setFilters(newFilters);
       props.onFiltersChange(newFilters);
@@ -68,7 +66,7 @@ export default function VisualizationRenderer(props) {
       columns: data.columns,
       rows: filterData(data.rows, filters),
     }),
-    [data, filters],
+    [data, filters]
   );
 
   const { showFilters, visualization } = props;
@@ -87,11 +85,7 @@ export default function VisualizationRenderer(props) {
       options={options}
       data={filteredData}
       visualizationName={visualization.name}
-      addonBefore={
-        showFilters && (
-          <Filters filters={filters} onChange={handleFiltersChange} />
-        )
-      }
+      addonBefore={showFilters && <Filters filters={filters} onChange={handleFiltersChange} />}
     />
   );
 }

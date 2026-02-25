@@ -16,10 +16,7 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Delta } from "../../components/delta/delta";
 import "./total.scss";
 
@@ -28,10 +25,7 @@ interface DifferenceProps {
   series: ConcreteSeries;
 }
 
-const Difference: React.FunctionComponent<DifferenceProps> = ({
-  datum,
-  series,
-}) => {
+const Difference: React.FunctionComponent<DifferenceProps> = ({ datum, series }) => {
   return (
     <React.Fragment>
       <div className="measure-value measure-value--previous">
@@ -56,12 +50,7 @@ export interface TotalProps {
   color: string;
 }
 
-export const Total: React.FunctionComponent<TotalProps> = ({
-  showPrevious,
-  datum,
-  series,
-  color,
-}) => {
+export const Total: React.FunctionComponent<TotalProps> = ({ showPrevious, datum, series, color }) => {
   if (!datum) datum = {} as Datum;
   return (
     <div className="total">

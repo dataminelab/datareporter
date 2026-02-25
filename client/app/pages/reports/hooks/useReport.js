@@ -8,11 +8,9 @@ import { Report } from "@/services/report";
 
 export default function useReport(originalReport) {
   const [report, setReport] = useState(originalReport);
-  const [originalReportSource, setOriginalReportSource] = useState(
-    originalReport.report,
-  );
+  const [originalReportSource, setOriginalReportSource] = useState(originalReport.report);
 
-  const updateReport = useUpdateReport(report, updatedReport => {
+  const updateReport = useUpdateReport(report, (updatedReport) => {
     // It's important to update URL first, and only then update state
     if (updatedReport.id !== report.id) {
       // Don't reload page when saving new report
@@ -22,7 +20,7 @@ export default function useReport(originalReport) {
     setOriginalReportSource(updatedReport.report);
   });
 
-  const saveReport = useCallback(data => {
+  const saveReport = useCallback((data) => {
     if (!data) return;
 
     return Report.saveAs(data)
@@ -30,7 +28,7 @@ export default function useReport(originalReport) {
         navigateTo("/reports");
         notification.success(`Report saved as ${data.name}`);
       })
-      .catch(error => {
+      .catch((error) => {
         if (get(error, "response.status") === 400) {
           const message = get(error, "response.data.message");
           return Promise.reject(new SaveReportError(message));
@@ -40,16 +38,14 @@ export default function useReport(originalReport) {
   }, []);
 
   const saveAsReport = useCallback(
-    name => {
+    (name) => {
       const reportCopy = extend({}, report);
       delete reportCopy.id;
       const data = {
         name: name,
         model_id: reportCopy.model_id,
         expression:
-          window.location.hash.substring(
-            window.location.hash.indexOf("4/") + 2,
-          ) ||
+          window.location.hash.substring(window.location.hash.indexOf("4/") + 2) ||
           reportCopy.hash ||
           reportCopy.expression,
         color_1: reportCopy.color_1,
@@ -58,14 +54,11 @@ export default function useReport(originalReport) {
       };
       saveReport(data);
     },
-    [report, saveReport],
+    [report, saveReport]
   );
 
   const showShareReportDialog = useCallback(() => {
-    const handleDialogClose = () =>
-      setReport(currentReport =>
-        extend({}, currentReport, { is_draft: false }),
-      );
+    const handleDialogClose = () => setReport((currentReport) => extend({}, currentReport, { is_draft: false }));
 
     ShareReportDialog.showModal({
       report,
@@ -84,12 +77,6 @@ export default function useReport(originalReport) {
       saveAsReport,
       showShareReportDialog,
     }),
-    [
-      report,
-      originalReportSource,
-      saveAsReport,
-      showShareReportDialog,
-      updateReport,
-    ],
+    [report, originalReportSource, saveAsReport, showShareReportDialog, updateReport]
   );
 }

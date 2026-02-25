@@ -51,9 +51,7 @@ const defaultProps = {
 let oldInnerHeight: number;
 
 function renderBubble(direction: Direction, align: Align = "center") {
-  return shallow(
-    <BubbleMenu {...defaultProps} direction={direction} align={align} />,
-  );
+  return shallow(<BubbleMenu {...defaultProps} direction={direction} align={align} />);
 }
 
 describe("<BubbleMenu>", () => {
@@ -62,12 +60,8 @@ describe("<BubbleMenu>", () => {
       const bubble = renderBubble("right");
       const portal = bubble.find(BodyPortal);
 
-      expect(portal.prop("left")).to.be.equal(
-        anchor.left + anchor.width - OFFSET_H,
-      );
-      expect(portal.prop("top")).to.be.equal(
-        anchor.top + anchor.height / 2 - stage.height / 2,
-      );
+      expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width - OFFSET_H);
+      expect(portal.prop("top")).to.be.equal(anchor.top + anchor.height / 2 - stage.height / 2);
       expect(portal.prop("bottom")).to.be.equal(undefined);
     });
 
@@ -101,9 +95,7 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("down", "center");
         const portal = bubble.find(BodyPortal);
 
-        expect(portal.prop("left")).to.be.equal(
-          anchor.left + anchor.width / 2 - stage.width / 2,
-        );
+        expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width / 2 - stage.width / 2);
         expect(portal.prop("top")).to.be.equal(anchor.top + anchor.height);
         expect(portal.prop("bottom")).to.be.equal(undefined);
       });
@@ -167,9 +159,7 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("down", "end");
         const portal = bubble.find(BodyPortal);
 
-        expect(portal.prop("left")).to.be.equal(
-          anchor.left + anchor.width - stage.width,
-        );
+        expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width - stage.width);
         expect(portal.prop("top")).to.be.equal(anchor.top + anchor.height);
         expect(portal.prop("bottom")).to.be.equal(undefined);
       });
@@ -212,9 +202,7 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("up", "center");
         const portal = bubble.find(BodyPortal);
 
-        expect(portal.prop("left")).to.be.equal(
-          anchor.left + anchor.width / 2 - stage.width / 2,
-        );
+        expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width / 2 - stage.width / 2);
         expect(portal.prop("bottom")).to.be.equal(windowHeight - anchor.top);
         expect(portal.prop("top")).to.be.equal(undefined);
       });
@@ -278,9 +266,7 @@ describe("<BubbleMenu>", () => {
         const bubble = renderBubble("up", "end");
         const portal = bubble.find(BodyPortal);
 
-        expect(portal.prop("left")).to.be.equal(
-          anchor.left + anchor.width - stage.width,
-        );
+        expect(portal.prop("left")).to.be.equal(anchor.left + anchor.width - stage.width);
         expect(portal.prop("bottom")).to.be.equal(windowHeight - anchor.top);
         expect(portal.prop("top")).to.be.equal(undefined);
       });
@@ -308,12 +294,7 @@ describe("<BubbleMenu>", () => {
 
   it("should set proper attributes to bubble node", () => {
     const bubble = shallow(
-      <BubbleMenu
-        {...defaultProps}
-        direction="right"
-        id="custom-id"
-        inside={{ id: "parent" } as Element}
-      />,
+      <BubbleMenu {...defaultProps} direction="right" id="custom-id" inside={{ id: "parent" } as Element} />
     );
     const div = bubble.find(contentSelector);
 
@@ -323,9 +304,7 @@ describe("<BubbleMenu>", () => {
   });
 
   it("should respect fixed size property", () => {
-    const bubble = shallow(
-      <BubbleMenu {...defaultProps} direction="right" fixedSize={true} />,
-    );
+    const bubble = shallow(<BubbleMenu {...defaultProps} direction="right" fixedSize={true} />);
     const div = bubble.find(contentSelector);
 
     expect(div.prop("style")).to.be.deep.equal({ width: 2, height: 2 });

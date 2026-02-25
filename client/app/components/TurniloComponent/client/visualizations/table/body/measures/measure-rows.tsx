@@ -33,18 +33,9 @@ interface MeasureRowsProps {
   report: any;
 }
 
-export const MeasureRows: React.FunctionComponent<MeasureRowsProps> = props => {
-  const {
-    rowWidth,
-    essence,
-    cellWidth,
-    hoverRow,
-    scales,
-    data,
-    visibleRowsIndexRange,
-    highlightedRowIndex,
-    report,
-  } = props;
+export const MeasureRows: React.FunctionComponent<MeasureRowsProps> = (props) => {
+  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex, report } =
+    props;
 
   return (
     <VisibleRows
@@ -52,7 +43,7 @@ export const MeasureRows: React.FunctionComponent<MeasureRowsProps> = props => {
       highlightedRowIndex={highlightedRowIndex}
       hoveredRowDatum={hoverRow}
       rowsData={data}
-      renderRow={props => {
+      renderRow={(props) => {
         const { index, top, datum, highlight, dimmed } = props;
         const rowStyle: React.CSSProperties = { top, width: rowWidth };
 

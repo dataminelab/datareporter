@@ -27,15 +27,15 @@ export default function UserInfoForm(props) {
       };
 
       User.save(data)
-        .then(user => {
+        .then((user) => {
           successCallback("Saved.");
           handleChange(User.convertUserInfo(user));
         })
-        .catch(error => {
+        .catch((error) => {
           errorCallback(get(error, "response.data.message", "Failed saving."));
         });
     },
-    [user, handleChange],
+    [user, handleChange]
   );
 
   const formFields = useMemo(
@@ -60,7 +60,7 @@ export default function UserInfoForm(props) {
                 title: "Groups",
                 type: "select",
                 mode: "multiple",
-                options: map(allGroups, group => ({
+                options: map(allGroups, (group) => ({
                   name: group.name,
                   value: group.id,
                 })),
@@ -73,25 +73,17 @@ export default function UserInfoForm(props) {
                 title: "Groups",
                 type: "content",
                 required: false,
-                content: isLoadingGroups ? (
-                  "Loading..."
-                ) : (
-                  <UserGroups data-test="Groups" groups={groups} />
-                ),
+                content: isLoadingGroups ? "Loading..." : <UserGroups data-test="Groups" groups={groups} />,
               },
         ],
-        field => ({ readOnly: user.isDisabled, required: true, ...field }),
+        (field) => ({ readOnly: user.isDisabled, required: true, ...field })
       ),
-    [user, groups, allGroups, isLoadingGroups],
+    [user, groups, allGroups, isLoadingGroups]
   );
 
   return (
     <DynamicComponent name="UserProfile.UserInfoForm" {...props}>
-      <DynamicForm
-        fields={formFields}
-        onSubmit={saveUser}
-        hideSubmitButton={user.isDisabled}
-      />
+      <DynamicForm fields={formFields} onSubmit={saveUser} hideSubmitButton={user.isDisabled} />
     </DynamicComponent>
   );
 }

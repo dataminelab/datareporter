@@ -4,12 +4,12 @@ import AddToDashboardDialog from "@/components/reports/AddToDashboardDialog";
 
 export default function useAddToDashboardDialog(report) {
   return useCallback(
-    visualizationId => {
+    (visualizationId) => {
       const visualization = find(report.visualizations, {
         id: visualizationId,
       });
       AddToDashboardDialog.showModal({ visualization });
     },
-    [report.visualizations],
+    [report.visualizations]
   );
 }

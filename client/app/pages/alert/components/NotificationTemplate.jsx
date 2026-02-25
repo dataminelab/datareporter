@@ -14,9 +14,7 @@ import Switch from "antd/lib/switch";
 import "./NotificationTemplate.less";
 
 function normalizeCustomTemplateData(alert, query, columnNames, resultValues) {
-  const topValue = !isEmpty(resultValues)
-    ? head(resultValues)[alert.options.column]
-    : null;
+  const topValue = !isEmpty(resultValues) ? head(resultValues)[alert.options.column] : null;
 
   return {
     ALERT_STATUS: "TRIGGERED",
@@ -26,44 +24,28 @@ function normalizeCustomTemplateData(alert, query, columnNames, resultValues) {
     ALERT_URL: `${window.location.origin}/alerts/${alert.id}`,
     QUERY_NAME: query.name,
     QUERY_URL: `${window.location.origin}/queries/${query.id}`,
-    QUERY_RESULT_VALUE:
-      isNull(topValue) || isUndefined(topValue) ? "UNKNOWN" : topValue,
+    QUERY_RESULT_VALUE: isNull(topValue) || isUndefined(topValue) ? "UNKNOWN" : topValue,
     QUERY_RESULT_ROWS: resultValues,
     QUERY_RESULT_COLS: columnNames,
   };
 }
 
-function NotificationTemplate({
-  alert,
-  query,
-  columnNames,
-  resultValues,
-  subject,
-  setSubject,
-  body,
-  setBody,
-}) {
+function NotificationTemplate({ alert, query, columnNames, resultValues, subject, setSubject, body, setBody }) {
   const hasContent = !!(subject || body);
   const [enabled, setEnabled] = useState(hasContent ? 1 : 0);
   const [showPreview, setShowPreview] = useState(false);
 
-  const renderData = normalizeCustomTemplateData(
-    alert,
-    query,
-    columnNames,
-    resultValues,
-  );
+  const renderData = normalizeCustomTemplateData(alert, query, columnNames, resultValues);
 
-  const render = tmpl => Mustache.render(tmpl || "", renderData);
-  const onEnabledChange = value => {
+  const render = (tmpl) => Mustache.render(tmpl || "", renderData);
+  const onEnabledChange = (value) => {
     if (value || !hasContent) {
       setEnabled(value);
       setShowPreview(false);
     } else {
       Modal.confirm({
         title: "Are you sure?",
-        content:
-          "Switching to default template will discard your custom template.",
+        content: "Switching to default template will discard your custom template.",
         onOk: () => {
           setSubject(null);
           setBody(null);
@@ -83,8 +65,7 @@ function NotificationTemplate({
         onChange={onEnabledChange}
         optionLabelProp="label"
         dropdownMatchSelectWidth={false}
-        style={{ width: "fit-content" }}
-      >
+        style={{ width: "fit-content" }}>
         <Select.Option value={0} label="Use default template">
           Default template
         </Select.Option>
@@ -97,17 +78,12 @@ function NotificationTemplate({
           <div className="d-flex align-items-center">
             <h5 className="flex-fill">Subject / Body</h5>
             Preview{" "}
-            <Switch
-              size="small"
-              className="alert-template-preview"
-              value={showPreview}
-              onChange={setShowPreview}
-            />
+            <Switch size="small" className="alert-template-preview" value={showPreview} onChange={setShowPreview} />
           </div>
           <Input
             value={showPreview ? render(subject) : subject}
             aria-label="Subject"
-            onChange={e => setSubject(e.target.value)}
+            onChange={(e) => setSubject(e.target.value)}
             disabled={showPreview}
             data-test="CustomSubject"
           />
@@ -115,13 +91,13 @@ function NotificationTemplate({
             value={showPreview ? render(body) : body}
             aria-label="Body"
             autoSize={{ minRows: 9 }}
-            onChange={e => setBody(e.target.value)}
+            onChange={(e) => setBody(e.target.value)}
             disabled={showPreview}
             data-test="CustomBody"
           />
           <HelpTrigger type="ALERT_NOTIF_TEMPLATE_GUIDE" className="f-13">
-            <i className="fa fa-question-circle" aria-hidden="true" />{" "}
-            Formatting guide <span className="sr-only">(help)</span>
+            <i className="fa fa-question-circle" aria-hidden="true" /> Formatting guide{" "}
+            <span className="sr-only">(help)</span>
           </HelpTrigger>
         </div>
       )}

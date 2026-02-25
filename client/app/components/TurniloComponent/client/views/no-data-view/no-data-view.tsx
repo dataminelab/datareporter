@@ -37,7 +37,7 @@ function label(appSettings: AppSettings): string {
   return !hasClusters ? STRINGS.noConnectedData : STRINGS.noQueryableDataCubes;
 }
 
-const NoDataTitle: React.SFC<{ appSettings: AppSettings }> = props => {
+const NoDataTitle: React.SFC<{ appSettings: AppSettings }> = (props) => {
   return (
     <div className="title">
       <div className="icon">
@@ -48,7 +48,7 @@ const NoDataTitle: React.SFC<{ appSettings: AppSettings }> = props => {
   );
 };
 
-export const NoDataView: React.SFC<NoDataViewProps> = props => {
+export const NoDataView: React.SFC<NoDataViewProps> = (props) => {
   const { onOpenAbout, customization, appSettings } = props;
   return (
     <div className="no-data-view">

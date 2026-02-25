@@ -15,11 +15,7 @@
  */
 
 import { Datum, PlywoodRange } from "plywood";
-import {
-  concatTruthy,
-  flatMap,
-  Unary,
-} from "../../../../common/utils/functional/functional";
+import { concatTruthy, flatMap, Unary } from "../../../../common/utils/functional/functional";
 import { ContinuousRange } from "../utils/continuous-types";
 
 type DataPoint = [number, number];
@@ -44,7 +40,7 @@ function previousMidpoint(range: ContinuousRange): number {
 function shouldInsertPreviousPoint(
   dataset: Datum[],
   currentIndex: number,
-  getX: Unary<Datum, ContinuousRange>,
+  getX: Unary<Datum, ContinuousRange>
 ): boolean {
   const previous = dataset[currentIndex - 1];
   if (!previous) return false;
@@ -52,11 +48,7 @@ function shouldInsertPreviousPoint(
   return areDetached(getX(previous), getX(current));
 }
 
-function shouldInsertNextPoint(
-  dataset: Datum[],
-  currentIndex: number,
-  getX: Unary<Datum, ContinuousRange>,
-): boolean {
+function shouldInsertNextPoint(dataset: Datum[], currentIndex: number, getX: Unary<Datum, ContinuousRange>): boolean {
   const next = dataset[currentIndex + 1];
   if (!next) return false;
   const current = dataset[currentIndex];
@@ -66,7 +58,7 @@ function shouldInsertNextPoint(
 export function prepareDataPoints(
   dataset: Datum[],
   getX: Unary<Datum, ContinuousRange>,
-  getY: Unary<Datum, number>,
+  getY: Unary<Datum, number>
 ): DataPoint[] {
   return flatMap(dataset, (datum, index) => {
     const range = getX(datum) as ContinuousRange;
@@ -81,12 +73,9 @@ export function prepareDataPoints(
     const y = isNaN(maybeY) ? 0 : maybeY;
 
     return concatTruthy<DataPoint>(
-      shouldInsertPreviousPoint(dataset, index, getX) && [
-        previousMidpoint(range),
-        0,
-      ],
+      shouldInsertPreviousPoint(dataset, index, getX) && [previousMidpoint(range), 0],
       [x, y],
-      shouldInsertNextPoint(dataset, index, getX) && [nextMidpoint(range), 0],
+      shouldInsertNextPoint(dataset, index, getX) && [nextMidpoint(range), 0]
     );
   });
 }

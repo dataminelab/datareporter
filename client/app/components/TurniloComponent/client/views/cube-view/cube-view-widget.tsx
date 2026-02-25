@@ -66,11 +66,7 @@ const defaultLayout: CubeViewLayout = {
 export interface CubeViewProps {
   initTimekeeper?: Timekeeper;
   maxFilters?: number;
-  setFilterParams: (
-    widgetId: number,
-    essence: Essence,
-    clicker: Clicker,
-  ) => void;
+  setFilterParams: (widgetId: number, essence: Essence, clicker: Clicker) => void;
   widgetId: number;
   hash: string;
   changeDataCubeAndEssence: Binary<DataCube, Essence | null, void>;
@@ -119,13 +115,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.clicker = {
       changeFilter: (filter: Filter) => {
         const essence = this.state.essence.changeFilter(filter);
-        this.setState(state => {
+        this.setState((state) => {
           return { ...state, essence };
         });
         return essence;
       },
       changeComparisonShift: (timeShift: TimeShift) => {
-        this.setState(state => ({
+        this.setState((state) => ({
           ...state,
           essence: state.essence.changeComparisonShift(timeShift),
         }));
@@ -158,10 +154,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSeries(series) });
       },
-      changeVisualization: (
-        visualization: VisualizationManifest,
-        settings: VisualizationSettings,
-      ) => {
+      changeVisualization: (visualization: VisualizationManifest, settings: VisualizationSettings) => {
         const { essence } = this.state;
         this.setState({
           essence: essence.changeVisualization(visualization, settings),
@@ -185,8 +178,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   componentWillMount() {
     const { hash, dataCube, initTimekeeper } = this.props;
     if (!dataCube) throw new Error("Data cube is required.");
-    if (!dataCube.timeAttribute)
-      throw new Error("DataCube must have a timeAttribute");
+    if (!dataCube.timeAttribute) throw new Error("DataCube must have a timeAttribute");
 
     this.setState({
       timekeeper: initTimekeeper || Timekeeper.EMPTY,
@@ -241,9 +233,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       deviceSize: Device.getSize(),
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
-      visualizationStage: Stage.fromClientRect(
-        visualizationDOM.getBoundingClientRect(),
-      ),
+      visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect()),
     });
   };
 
@@ -266,8 +256,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       }
       return { essence, clicker };
     },
-    (newArgs: any[], lastArgs: any[]) =>
-      newArgs[0].equals(lastArgs[0]) && newArgs[1] === lastArgs[1],
+    (newArgs: any[], lastArgs: any[]) => newArgs[0].equals(lastArgs[0]) && newArgs[1] === lastArgs[1]
   );
 
   render() {
@@ -290,11 +279,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   private visElement() {
-    const {
-      essence,
-      visualizationStage: stage,
-      lastRefreshRequestTimestamp,
-    } = this.state;
+    const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
     if (!(essence.visResolve.isReady() && stage)) return null;
     const visProps: VisualizationProps = {
       refreshRequestTimestamp: lastRefreshRequestTimestamp,
@@ -310,9 +295,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       },
     };
 
-    return React.createElement(
-      getVisualizationComponent(essence.visualization),
-      visProps,
-    );
+    return React.createElement(getVisualizationComponent(essence.visualization), visProps);
   }
 }

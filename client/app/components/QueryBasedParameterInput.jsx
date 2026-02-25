@@ -1,13 +1,4 @@
-import {
-  find,
-  isArray,
-  get,
-  first,
-  map,
-  intersection,
-  isEqual,
-  isEmpty,
-} from "lodash";
+import { find, isArray, get, first, map, intersection, isEqual, isEmpty } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import SelectWithVirtualScroll from "@/components/SelectWithVirtualScroll";
@@ -57,13 +48,12 @@ export default class QueryBasedParameterInput extends React.Component {
     const { options } = this.state;
     if (this.props.mode === "multiple") {
       value = isArray(value) ? value : [value];
-      const optionValues = map(options, option => option.value);
+      const optionValues = map(options, (option) => option.value);
       const validValues = intersection(value, optionValues);
       this.setState({ value: validValues });
       return validValues;
     }
-    const found =
-      find(options, option => option.value === this.props.value) !== undefined;
+    const found = find(options, (option) => option.value === this.props.value) !== undefined;
     value = found ? value : get(first(options), "value");
     this.setState({ value });
     return value;

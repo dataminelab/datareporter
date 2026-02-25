@@ -52,8 +52,7 @@ const SMALL_WIKI_DATA = [
     time: new Date("2015-09-12T00:47:00Z"),
     channel: "ca",
     cityName: null,
-    comment:
-      "Robot inserta {{Commonscat}} que enllaça amb [[commons:category:Rallicula]]",
+    comment: "Robot inserta {{Commonscat}} que enllaça amb [[commons:category:Rallicula]]",
     commentLength: 75,
     countryIsoCode: null,
     countryName: null,
@@ -79,8 +78,7 @@ const SMALL_WIKI_DATA = [
     time: new Date("2015-09-12T00:47:05Z"),
     channel: "en",
     cityName: "Auburn",
-    comment:
-      "/* Status of peremptory norms under international law */ fixed spelling of 'Wimbledon'",
+    comment: "/* Status of peremptory norms under international law */ fixed spelling of 'Wimbledon'",
     commentLength: 86,
     countryIsoCode: "AU",
     countryName: "Australia",
@@ -226,21 +224,7 @@ const SMALL_WIKI_DATA = [
     regionIsoCode: null,
     regionName: null,
     user: "New Media Theorist",
-    userChars: [
-      " ",
-      "A",
-      "D",
-      "E",
-      "H",
-      "I",
-      "M",
-      "N",
-      "O",
-      "R",
-      "S",
-      "T",
-      "W",
-    ],
+    userChars: [" ", "A", "D", "E", "H", "I", "M", "N", "O", "R", "S", "T", "W"],
     delta: 345,
     added: 345,
     deleted: 0,
@@ -318,10 +302,7 @@ export class AppSettingsFixtures {
       customization: {
         title: "Hello World",
       },
-      clusters: [
-        ClusterFixtures.druidWikiClusterJS(),
-        ClusterFixtures.druidTwitterClusterJS(),
-      ],
+      clusters: [ClusterFixtures.druidWikiClusterJS(), ClusterFixtures.druidTwitterClusterJS()],
       dataCubes: [DataCubeFixtures.WIKI_JS, DataCubeFixtures.TWITTER_JS],
     };
   }
@@ -331,10 +312,7 @@ export class AppSettingsFixtures {
   }
 
   static wikiOnly() {
-    return AppSettings.fromJS(
-      AppSettingsFixtures.wikiOnlyJS(),
-      AppSettingsFixtures.getContext(),
-    );
+    return AppSettings.fromJS(AppSettingsFixtures.wikiOnlyJS(), AppSettingsFixtures.getContext());
   }
 
   static wikiOnlyWithExecutor() {
@@ -348,9 +326,6 @@ export class AppSettingsFixtures {
   }
 
   static wikiTwitter() {
-    return AppSettings.fromJS(
-      AppSettingsFixtures.wikiTwitterJS(),
-      AppSettingsFixtures.getContext(),
-    );
+    return AppSettings.fromJS(AppSettingsFixtures.wikiTwitterJS(), AppSettingsFixtures.getContext());
   }
 }

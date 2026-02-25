@@ -19,13 +19,7 @@
 import { Dimension } from "../dimension/dimension";
 import { Essence } from "../essence/essence";
 import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
-import {
-  DimensionSort,
-  SeriesSort,
-  Sort,
-  SortDirection,
-  SortType,
-} from "../sort/sort";
+import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../sort/sort";
 
 export abstract class SortOn {
   static fromSort(sort: Sort, essence: Essence): SortOn {
@@ -57,7 +51,7 @@ export abstract class SortOn {
   protected constructor(
     public key: string,
     protected title: string,
-    protected period?: SeriesDerivation,
+    protected period?: SeriesDerivation
   ) {}
 
   abstract equals(other: SortOn): boolean;
@@ -71,11 +65,7 @@ export class DimensionSortOn extends SortOn {
   }
 
   equals(other: SortOn): boolean {
-    return (
-      other instanceof DimensionSortOn &&
-      this.key === other.key &&
-      this.title === other.title
-    );
+    return other instanceof DimensionSortOn && this.key === other.key && this.title === other.title;
   }
 
   toSort(direction: SortDirection): Sort {

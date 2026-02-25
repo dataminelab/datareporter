@@ -28,13 +28,7 @@ describe("Shpitz", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(<Shpitz direction="up" />);
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
-      "should contain class",
-    ).to.contain("shpitz");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("shpitz");
   });
 });

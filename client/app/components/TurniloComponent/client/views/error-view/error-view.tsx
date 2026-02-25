@@ -28,8 +28,7 @@ const recordedErrorMsg = (errorId: string) =>
 const defaultErrorMsg = "Unexpected error occurred";
 
 export const ErrorView: React.SFC<ErrorViewProps> = ({ errorId }) => {
-  const message =
-    errorId !== null ? recordedErrorMsg(errorId) : defaultErrorMsg;
+  const message = errorId !== null ? recordedErrorMsg(errorId) : defaultErrorMsg;
   return (
     <div className="error-view">
       <div className="error-view__container">

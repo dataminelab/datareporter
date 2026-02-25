@@ -48,10 +48,7 @@ export interface SearchableTileState {
   actionsMenuAlignOn?: Element;
 }
 
-export class SearchableTile extends React.Component<
-  SearchableTileProps,
-  SearchableTileState
-> {
+export class SearchableTile extends React.Component<SearchableTileProps, SearchableTileState> {
   public mounted: boolean;
   private header: React.RefObject<any>;
   private searchBox: React.RefObject<any>;
@@ -134,8 +131,7 @@ export class SearchableTile extends React.Component<
         <li
           className={classNames({ selected: action.selected })}
           key={action.keyString || action.toString()}
-          onClick={this.onSelectGranularity.bind(this, action)}
-        >
+          onClick={this.onSelectGranularity.bind(this, action)}>
           {action.displayValue || action.toString()}
         </li>
       );
@@ -155,26 +151,15 @@ export class SearchableTile extends React.Component<
         stage={stage}
         onClose={this.onActionsMenuClose}
         openOn={actionsMenuOpenOn}
-        alignOn={actionsMenuAlignOn}
-      >
+        alignOn={actionsMenuAlignOn}>
         <ul className="bubble-list">{this.renderGranularityElements()}</ul>
       </BubbleMenu>
     );
   }
 
   render() {
-    const {
-      className,
-      style,
-      icons,
-      title,
-      onSearchChange,
-      showSearch,
-      searchText,
-      children,
-      onDragStart,
-      actions,
-    } = this.props;
+    const { className, style, icons, title, onSearchChange, showSearch, searchText, children, onDragStart, actions } =
+      this.props;
     const { actionsMenuOpenOn } = this.state;
     let tileIcons = icons;
 
@@ -191,33 +176,18 @@ export class SearchableTile extends React.Component<
     }
 
     let qualifiedClassName = "searchable-tile " + className;
-    const header = (
-      <TileHeader
-        title={title}
-        ref={this.header}
-        icons={tileIcons}
-        onDragStart={onDragStart}
-      />
-    );
+    const header = <TileHeader title={title} ref={this.header} icons={tileIcons} onDragStart={onDragStart} />;
 
     let searchBar: JSX.Element = null;
     if (showSearch) {
       searchBar = (
         <div className="search-box" ref={this.searchBox}>
-          <ClearableInput
-            placeholder="Search"
-            focusOnMount={true}
-            value={searchText}
-            onChange={onSearchChange}
-          />
+          <ClearableInput placeholder="Search" focusOnMount={true} value={searchText} onChange={onSearchChange} />
         </div>
       );
     }
 
-    qualifiedClassName = classNames(
-      qualifiedClassName,
-      showSearch ? "has-search" : "no-search",
-    );
+    qualifiedClassName = classNames(qualifiedClassName, showSearch ? "has-search" : "no-search");
 
     return (
       <div className={qualifiedClassName} style={style}>

@@ -50,11 +50,7 @@ export class ManualFallback extends React.Component<ManualFallbackProps, {}> {
 
     const resolutionItems = visResolve.resolutions.map((resolution, i) => {
       return (
-        <li
-          className="resolution-item"
-          key={i}
-          onClick={this.onResolutionClick.bind(this, resolution)}
-        >
+        <li className="resolution-item" key={i} onClick={this.onResolutionClick.bind(this, resolution)}>
           {resolution.description}
         </li>
       );

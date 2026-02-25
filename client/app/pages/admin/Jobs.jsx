@@ -7,13 +7,7 @@ import Tabs from "antd/lib/tabs";
 import * as Grid from "antd/lib/grid";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import Layout from "@/components/admin/Layout";
-import {
-  CounterCard,
-  WorkersTable,
-  QueuesTable,
-  QueryJobsTable,
-  OtherJobsTable,
-} from "@/components/admin/RQStatus";
+import { CounterCard, WorkersTable, QueuesTable, QueryJobsTable, OtherJobsTable } from "@/components/admin/RQStatus";
 
 import { axios } from "@/services/axios";
 import location from "@/services/location";
@@ -49,8 +43,8 @@ class Jobs extends React.Component {
   refresh = () => {
     axios
       .get("/api/admin/queries/rq_status")
-      .then(data => this.processQueues(data))
-      .catch(error => this.handleError(error));
+      .then((data) => this.processQueues(data))
+      .catch((error) => this.handleError(error));
 
     this._refreshTimer = setTimeout(this.refresh, 60 * 1000);
   };
@@ -66,15 +60,15 @@ class Jobs extends React.Component {
         started: c.started + q.started,
         queued: c.queued + q.queued,
       }),
-      { started: 0, queued: 0 },
+      { started: 0, queued: 0 }
     );
 
-    const startedJobs = flatMap(values(queues), queue =>
-      queue.started.map(job => ({
+    const startedJobs = flatMap(values(queues), (queue) =>
+      queue.started.map((job) => ({
         ...job,
         enqueued_at: moment.utc(job.enqueued_at),
         started_at: moment.utc(job.started_at),
-      })),
+      }))
     );
 
     this.setState({
@@ -86,26 +80,18 @@ class Jobs extends React.Component {
     });
   };
 
-  handleError = error => {
+  handleError = (error) => {
     this.setState({ isLoading: false, error });
   };
 
   render() {
-    const {
-      isLoading,
-      error,
-      queueCounters,
-      startedJobs,
-      overallCounters,
-      workers,
-      activeTab,
-    } = this.state;
+    const { isLoading, error, queueCounters, startedJobs, overallCounters, workers, activeTab } = this.state;
     const [startedQueryJobs, otherStartedJobs] = partition(startedJobs, [
       "name",
       "redash.tasks.queries.execution.execute_query",
     ]);
 
-    const changeTab = newTab => {
+    const changeTab = (newTab) => {
       location.setHash(newTab);
       this.setState({ activeTab: newTab });
     };
@@ -113,37 +99,20 @@ class Jobs extends React.Component {
     return (
       <Layout activeTab="jobs">
         <div className="p-15">
-          {error && (
-            <Alert
-              type="error"
-              message="Failed loading status. Please refresh."
-            />
-          )}
+          {error && <Alert type="error" message="Failed loading status. Please refresh." />}
 
           {!error && (
             <React.Fragment>
               <Grid.Row gutter={15} className="m-b-15">
                 <Grid.Col span={8}>
-                  <CounterCard
-                    title="Started Jobs"
-                    value={overallCounters.started}
-                    loading={isLoading}
-                  />
+                  <CounterCard title="Started Jobs" value={overallCounters.started} loading={isLoading} />
                 </Grid.Col>
                 <Grid.Col span={8}>
-                  <CounterCard
-                    title="Queued Jobs"
-                    value={overallCounters.queued}
-                    loading={isLoading}
-                  />
+                  <CounterCard title="Queued Jobs" value={overallCounters.queued} loading={isLoading} />
                 </Grid.Col>
               </Grid.Row>
 
-              <Tabs
-                activeKey={activeTab || "queues"}
-                onTabClick={changeTab}
-                animated={false}
-              >
+              <Tabs activeKey={activeTab || "queues"} onTabClick={changeTab} animated={false}>
                 <Tabs.TabPane key="queues" tab="Queues">
                   <QueuesTable loading={isLoading} items={queueCounters} />
                 </Tabs.TabPane>
@@ -151,16 +120,10 @@ class Jobs extends React.Component {
                   <WorkersTable loading={isLoading} items={workers} />
                 </Tabs.TabPane>
                 <Tabs.TabPane key="queries" tab="Queries">
-                  <QueryJobsTable
-                    loading={isLoading}
-                    items={startedQueryJobs}
-                  />
+                  <QueryJobsTable loading={isLoading} items={startedQueryJobs} />
                 </Tabs.TabPane>
                 <Tabs.TabPane key="other" tab="Other Jobs">
-                  <OtherJobsTable
-                    loading={isLoading}
-                    items={otherStartedJobs}
-                  />
+                  <OtherJobsTable loading={isLoading} items={otherStartedJobs} />
                 </Tabs.TabPane>
               </Tabs>
             </React.Fragment>
@@ -176,6 +139,6 @@ routes.register(
   routeWithUserSession({
     path: "/admin/queries/jobs",
     title: "RQ Status",
-    render: pageProps => <Jobs {...pageProps} />,
-  }),
+    render: (pageProps) => <Jobs {...pageProps} />,
+  })
 );

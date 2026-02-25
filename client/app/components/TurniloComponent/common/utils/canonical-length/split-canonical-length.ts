@@ -18,17 +18,15 @@ import { Duration } from "chronoshift";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Split } from "../../models/split/split";
 
-export default function splitCanonicalLength(
-  split: Split,
-  dataCube: DataCube,
-): number | null {
+export default function splitCanonicalLength(split: Split, dataCube: DataCube): number | null {
   const { reference, bucket } = split;
   if (!bucket) return null;
   if (reference !== dataCube.timeAttribute.name) return null;
-  const durationBucket = bucket instanceof Duration 
-    ? bucket
-    // @ts-ignore - Handle both ISO string (P1W) and Duration-like plain objects
-    : Duration.fromJS(bucket);
-  
+  const durationBucket =
+    bucket instanceof Duration
+      ? bucket
+      : // @ts-ignore - Handle both ISO string (P1W) and Duration-like plain objects
+        Duration.fromJS(bucket);
+
   return durationBucket.getCanonicalLength();
 }

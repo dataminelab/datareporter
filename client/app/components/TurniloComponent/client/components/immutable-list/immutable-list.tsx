@@ -37,10 +37,7 @@ export interface ImmutableListState<T> {
   pendingAddItem?: T;
 }
 
-export class ImmutableList<T> extends React.Component<
-  ImmutableListProps<T>,
-  ImmutableListState<T>
-> {
+export class ImmutableList<T> extends React.Component<ImmutableListProps<T>, ImmutableListState<T>> {
   constructor(props: ImmutableListProps<T>) {
     super(props);
     this.state = {};
@@ -78,11 +75,9 @@ export class ImmutableList<T> extends React.Component<
 
     this.setState(
       {
-        tempItems: tempItems
-          .delete(oldIndex)
-          .insert(newIndex > oldIndex ? newIndex - 1 : newIndex, item),
+        tempItems: tempItems.delete(oldIndex).insert(newIndex > oldIndex ? newIndex - 1 : newIndex, item),
       },
-      this.onChange,
+      this.onChange
     );
   };
 
@@ -97,10 +92,7 @@ export class ImmutableList<T> extends React.Component<
 
     const onSave = (newItem: T) => {
       const newItems = tempItems.update(itemIndex, () => newItem);
-      this.setState(
-        { tempItems: newItems, editedIndex: undefined },
-        this.onChange,
-      );
+      this.setState({ tempItems: newItems, editedIndex: undefined }, this.onChange);
     };
 
     const onClose = () => this.setState({ editedIndex: undefined });
@@ -113,10 +105,7 @@ export class ImmutableList<T> extends React.Component<
       const { tempItems } = this.state;
       const newItems = tempItems.push(newItem);
 
-      this.setState(
-        { tempItems: newItems, pendingAddItem: null },
-        this.onChange,
-      );
+      this.setState({ tempItems: newItems, pendingAddItem: null }, this.onChange);
     };
 
     const onClose = () => this.setState({ pendingAddItem: null });

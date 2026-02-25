@@ -62,10 +62,7 @@ export interface CubeHeaderBarState {
   animating?: boolean;
 }
 
-export class CubeHeaderBar extends React.Component<
-  CubeHeaderBarProps,
-  CubeHeaderBarState
-> {
+export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeaderBarState> {
   public mounted: boolean;
   private autoRefreshTimer: number;
 
@@ -125,25 +122,16 @@ export class CubeHeaderBar extends React.Component<
 
   toggleShareMenu = (e: React.MouseEvent<Element>) => {
     const { shareMenuAnchor } = this.state;
-    shareMenuAnchor
-      ? this.closeShareMenu()
-      : this.openShareMenu(e.currentTarget);
+    shareMenuAnchor ? this.closeShareMenu() : this.openShareMenu(e.currentTarget);
   };
 
-  openShareMenu = (anchor: Element) =>
-    this.setState({ shareMenuAnchor: anchor });
+  openShareMenu = (anchor: Element) => this.setState({ shareMenuAnchor: anchor });
 
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const {
-      customization,
-      essence,
-      timekeeper,
-      openUrlShortenerModal,
-      urlForEssence,
-      getDownloadableDataset,
-    } = this.props;
+    const { customization, essence, timekeeper, openUrlShortenerModal, urlForEssence, getDownloadableDataset } =
+      this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
@@ -163,13 +151,10 @@ export class CubeHeaderBar extends React.Component<
 
   toggleAutoRefreshMenu = (e: React.MouseEvent<Element>) => {
     const { autoRefreshMenuAnchor } = this.state;
-    autoRefreshMenuAnchor
-      ? this.closeAutoRefreshMenu()
-      : this.openAutoRefreshMenu(e.currentTarget);
+    autoRefreshMenuAnchor ? this.closeAutoRefreshMenu() : this.openAutoRefreshMenu(e.currentTarget);
   };
 
-  openAutoRefreshMenu = (anchor: Element) =>
-    this.setState({ autoRefreshMenuAnchor: anchor });
+  openAutoRefreshMenu = (anchor: Element) => this.setState({ autoRefreshMenuAnchor: anchor });
 
   closeAutoRefreshMenu = () => this.setState({ autoRefreshMenuAnchor: null });
 
@@ -198,13 +183,10 @@ export class CubeHeaderBar extends React.Component<
 
   toggleTimezoneMenu = (e: React.MouseEvent<Element>) => {
     const { timezoneMenuAnchor } = this.state;
-    timezoneMenuAnchor
-      ? this.closeTimezoneMenu()
-      : this.openTimezoneMenu(e.currentTarget);
+    timezoneMenuAnchor ? this.closeTimezoneMenu() : this.openTimezoneMenu(e.currentTarget);
   };
 
-  openTimezoneMenu = (anchor: Element) =>
-    this.setState({ timezoneMenuAnchor: anchor });
+  openTimezoneMenu = (anchor: Element) => this.setState({ timezoneMenuAnchor: anchor });
 
   closeTimezoneMenu = () => this.setState({ timezoneMenuAnchor: null });
 
@@ -230,13 +212,10 @@ export class CubeHeaderBar extends React.Component<
 
   toggleDebugMenu = (e: React.MouseEvent<Element>) => {
     const { debugMenuAnchor } = this.state;
-    debugMenuAnchor
-      ? this.closeDebugMenu()
-      : this.openDebugMenu(e.currentTarget);
+    debugMenuAnchor ? this.closeDebugMenu() : this.openDebugMenu(e.currentTarget);
   };
 
-  openDebugMenu = (anchor: Element) =>
-    this.setState({ debugMenuAnchor: anchor });
+  openDebugMenu = (anchor: Element) => this.setState({ debugMenuAnchor: anchor });
 
   closeDebugMenu = () => this.setState({ debugMenuAnchor: null });
 
@@ -306,8 +285,7 @@ export class CubeHeaderBar extends React.Component<
           className={classNames("icon-button", "auto-refresh", {
             refreshing: this.state.animating,
           })}
-          onClick={this.toggleAutoRefreshMenu}
-        >
+          onClick={this.toggleAutoRefreshMenu}>
           <SvgIcon svg={require("../../../icons/full-refresh.svg")} />
         </div>
         <div className="icon-button" onClick={this.toggleShareMenu}>
@@ -333,12 +311,7 @@ export class CubeHeaderBar extends React.Component<
         <div className="title" onClick={onNavClick}>
           {dataCube.title}
         </div>
-        {dataCube.description && (
-          <InfoBubble
-            className="cube-description"
-            description={dataCube.description}
-          />
-        )}
+        {dataCube.description && <InfoBubble className="cube-description" description={dataCube.description} />}
       </div>
     );
   }

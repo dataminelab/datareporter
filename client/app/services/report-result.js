@@ -3,16 +3,7 @@ import moment from "moment";
 import { axios } from "@/services/axios";
 import { QueryResultError } from "@/services/query";
 import { Auth } from "@/services/auth";
-import {
-  isString,
-  uniqBy,
-  each,
-  isNumber,
-  includes,
-  extend,
-  forOwn,
-  get,
-} from "lodash";
+import { isString, uniqBy, each, isNumber, includes, extend, forOwn, get } from "lodash";
 import JSONbig from "json-bigint";
 import QueryResult from "./query-result";
 import { Ajax } from "@/components/TurniloComponent/client/utils/ajax/ajax";
@@ -22,7 +13,7 @@ const logger = debug("redash:services:QueryResult");
 const filterTypes = ["filter", "multi-filter", "multiFilter"];
 
 function defer() {
-  const result = { onStatusChange: status => {} };
+  const result = { onStatusChange: (status) => {} };
   result.promise = new Promise((resolve, reject) => {
     result.resolve = resolve;
     result.reject = reject;
@@ -53,19 +44,16 @@ function getColumnNameWithoutType(column) {
 }
 
 function getColumnFriendlyName(column) {
-  return getColumnNameWithoutType(column).replace(/(?:^|\s)\S/g, a =>
-    a.toUpperCase(),
-  );
+  return getColumnNameWithoutType(column).replace(/(?:^|\s)\S/g, (a) => a.toUpperCase());
 }
 
-const createOrSaveUrl = data =>
-  data.id ? `api/query_results/${data.id}` : "api/query_results";
+const createOrSaveUrl = (data) => (data.id ? `api/query_results/${data.id}` : "api/query_results");
 const QueryResultResource = {
   get: ({ id }) =>
     axios.get(`api/query_results/${id}`, {
-      transformResponse: response => jsonParse(response),
+      transformResponse: (response) => jsonParse(response),
     }),
-  post: data => axios.post(createOrSaveUrl(data), data),
+  post: (data) => axios.post(createOrSaveUrl(data), data),
 };
 
 export const ExecutionStatus = {
@@ -84,16 +72,13 @@ const statuses = {
 };
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function fetchDataFromJob(jobId, interval = 1000) {
-  return axios.get(`api/jobs/${jobId}`).then(data => {
+  return axios.get(`api/jobs/${jobId}`).then((data) => {
     const status = statuses[data.job.status];
-    if (
-      status === ExecutionStatus.WAITING ||
-      status === ExecutionStatus.PROCESSING
-    ) {
+    if (status === ExecutionStatus.WAITING || status === ExecutionStatus.PROCESSING) {
       return sleep(interval).then(() => fetchDataFromJob(data.job.id));
     } else if (status === ExecutionStatus.DONE) {
       return data.job.result;

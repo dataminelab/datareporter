@@ -27,7 +27,7 @@ import {
 
 const datum = { foobar: 100 };
 const dataset = Dataset.fromJS([datum]);
-const splitDatum = (data: unknown) => ({ [SPLIT]: data } as Datum);
+const splitDatum = (data: unknown) => ({ [SPLIT]: data }) as Datum;
 
 describe("dataset selectors", () => {
   describe("selectMainDatum", () => {
@@ -50,16 +50,12 @@ describe("dataset selectors", () => {
 
   describe("selectFirstSplitDataset", () => {
     it("should pick SPLIT prop for main Datum", () => {
-      expect(selectFirstSplitDataset(makeDataset([datum]))).to.deep.equal(
-        dataset,
-      );
+      expect(selectFirstSplitDataset(makeDataset([datum]))).to.deep.equal(dataset);
     });
   });
   describe("selectFirstSplitDatums", () => {
     it("should pick datums from SPLIT prop for main Datum", () => {
-      expect(selectFirstSplitDatums(makeDataset([datum]))).to.deep.equal([
-        datum,
-      ]);
+      expect(selectFirstSplitDatums(makeDataset([datum]))).to.deep.equal([datum]);
     });
   });
 });

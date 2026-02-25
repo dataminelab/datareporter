@@ -69,8 +69,7 @@ export class DataCubeFixtures {
     return {
       name: "twitter",
       title: "Twitter",
-      description:
-        "Twitter full description should go here - tweets and followers",
+      description: "Twitter full description should go here - tweets and followers",
       clusterName: "druid-twitter",
       source: "twitter",
       introspection: "none",
@@ -95,11 +94,7 @@ export class DataCubeFixtures {
     return DataCube.fromJS(DataCubeFixtures.TWITTER_JS, { executor });
   }
 
-  static customCube(
-    title: string,
-    description: string,
-    extendedDescription = "",
-  ): DataCube {
+  static customCube(title: string, description: string, extendedDescription = ""): DataCube {
     return DataCube.fromJS(
       {
         name: "custom",
@@ -119,7 +114,7 @@ export class DataCubeFixtures {
           rule: "realtime",
         },
       },
-      { executor },
+      { executor }
     );
   }
 
@@ -143,7 +138,7 @@ export class DataCubeFixtures {
           rule: "realtime",
         },
       },
-      { executor, cluster: ClusterFixtures.druidTwitterClusterJSWithGuard() },
+      { executor, cluster: ClusterFixtures.druidTwitterClusterJSWithGuard() }
     );
   }
 }

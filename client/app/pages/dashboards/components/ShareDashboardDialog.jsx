@@ -47,8 +47,7 @@ class ShareDashboardDialog extends React.Component {
 
     const paramValue = params["p_turnilo_daterange"];
     this.apiUrl = `${this.apiUrl}?p_turnilo_daterange=${paramValue}`;
-    this.enabled =
-      this.props.hasOnlySafeQueries || dashboard.publicAccessEnabled;
+    this.enabled = this.props.hasOnlySafeQueries || dashboard.publicAccessEnabled;
   }
 
   static get headerContent() {
@@ -56,8 +55,7 @@ class ShareDashboardDialog extends React.Component {
       <React.Fragment>
         Share Dashboard
         <div className="modal-header-desc">
-          Allow public access to this dashboard with a secret address.{" "}
-          <HelpTrigger type="SHARE_DASHBOARD" />
+          Allow public access to this dashboard with a secret address. <HelpTrigger type="SHARE_DASHBOARD" />
         </div>
       </React.Fragment>
     );
@@ -69,7 +67,7 @@ class ShareDashboardDialog extends React.Component {
 
     axios
       .post(this.apiUrl)
-      .then(data => {
+      .then((data) => {
         dashboard.publicAccessEnabled = true;
         dashboard.public_url = data.public_url;
       })
@@ -99,7 +97,7 @@ class ShareDashboardDialog extends React.Component {
       });
   };
 
-  onChange = checked => {
+  onChange = (checked) => {
     if (checked) {
       this.enableAccess();
     } else {
@@ -133,10 +131,7 @@ class ShareDashboardDialog extends React.Component {
           </Form.Item>
           {dashboard.public_url && (
             <Form.Item label="Secret address" {...this.formItemProps}>
-              <InputWithCopy
-                value={dashboard.public_url}
-                data-test="SecretAddress"
-              />
+              <InputWithCopy value={dashboard.public_url} data-test="SecretAddress" />
             </Form.Item>
           )}
         </Form>

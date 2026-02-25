@@ -17,18 +17,12 @@
 
 import { Duration, Timezone } from "chronoshift";
 import React from "react";
-import {
-  DataCube,
-  getMaxTime,
-} from "../../../common/models/data-cube/data-cube";
+import { DataCube, getMaxTime } from "../../../common/models/data-cube/data-cube";
 import { Stage } from "../../../common/models/stage/stage";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
-import {
-  formatDateTime,
-  formatTimeElapsed,
-} from "../../../common/utils/time/time";
+import { formatDateTime, formatTimeElapsed } from "../../../common/utils/time/time";
 import { STRINGS } from "../../config/constants";
 import { BubbleMenu } from "../bubble-menu/bubble-menu";
 import { Dropdown } from "../dropdown/dropdown";
@@ -67,26 +61,19 @@ export interface AutoRefreshMenuProps {
 
 const STAGE = Stage.fromSize(240, 200);
 
-function renderRefreshIntervalDropdown(
-  autoRefreshRate: Duration,
-  setAutoRefreshRate: Unary<Duration, void>,
-) {
+function renderRefreshIntervalDropdown(autoRefreshRate: Duration, setAutoRefreshRate: Unary<Duration, void>) {
   return (
     <Dropdown<Duration>
       label={STRINGS.autoUpdate}
       items={REFRESH_DURATIONS}
       selectedItem={autoRefreshRate}
-      renderItem={d => AUTO_REFRESH_LABELS[String(d)] || `Custom ${d}`}
+      renderItem={(d) => AUTO_REFRESH_LABELS[String(d)] || `Custom ${d}`}
       onSelect={setAutoRefreshRate}
     />
   );
 }
 
-function updatedText(
-  dataCube: DataCube,
-  timekeeper: Timekeeper,
-  timezone: Timezone,
-): string {
+function updatedText(dataCube: DataCube, timekeeper: Timekeeper, timezone: Timezone): string {
   const { refreshRule } = dataCube;
   if (refreshRule.isRealtime()) {
     return "Updated ~1 second ago";
@@ -110,19 +97,11 @@ export const AutoRefreshMenu: React.FunctionComponent<AutoRefreshMenuProps> = ({
   timekeeper,
   timezone,
 }) => (
-  <BubbleMenu
-    className="auto-refresh-menu"
-    direction="down"
-    stage={STAGE}
-    openOn={openOn}
-    onClose={onClose}
-  >
+  <BubbleMenu className="auto-refresh-menu" direction="down" stage={STAGE} openOn={openOn} onClose={onClose}>
     {renderRefreshIntervalDropdown(autoRefreshRate, setAutoRefreshRate)}
     <button className="update-now-button" onClick={refreshMaxTime}>
       Update now
     </button>
-    <div className="update-info">
-      {updatedText(dataCube, timekeeper, timezone)}
-    </div>
+    <div className="update-info">{updatedText(dataCube, timekeeper, timezone)}</div>
   </BubbleMenu>
 );

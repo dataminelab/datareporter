@@ -5,19 +5,11 @@ import Alert from "antd/lib/alert";
 import Button from "antd/lib/button";
 import Timer from "@/components/Timer";
 
-export default function QueryExecutionStatus({
-  status,
-  updatedAt,
-  error,
-  isCancelling,
-  onCancel,
-}) {
+export default function QueryExecutionStatus({ status, updatedAt, error, isCancelling, onCancel }) {
   const alertType = status === "failed" ? "error" : "info";
   const showTimer = status !== "failed" && updatedAt;
   const isCancelButtonAvailable = includes(["waiting", "processing"], status);
-  let message = isCancelling ? (
-    <React.Fragment>Cancelling&hellip;</React.Fragment>
-  ) : null;
+  let message = isCancelling ? <React.Fragment>Cancelling&hellip;</React.Fragment> : null;
 
   switch (status) {
     case "waiting":
@@ -54,13 +46,7 @@ export default function QueryExecutionStatus({
           </div>
           <div>
             {isCancelButtonAvailable && (
-              <Button
-                className="m-l-10"
-                type="primary"
-                size="small"
-                disabled={isCancelling}
-                onClick={onCancel}
-              >
+              <Button className="m-l-10" type="primary" size="small" disabled={isCancelling} onClick={onCancel}>
                 Cancel
               </Button>
             )}

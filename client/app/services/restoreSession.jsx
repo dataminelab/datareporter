@@ -7,10 +7,7 @@ const SESSION_RESTORED_MESSAGE = "redash_session_restored";
 
 export function notifySessionRestored() {
   if (window.opener) {
-    window.opener.postMessage(
-      { type: SESSION_RESTORED_MESSAGE },
-      window.location.origin,
-    );
+    window.opener.postMessage({ type: SESSION_RESTORED_MESSAGE }, window.location.origin);
   }
 }
 
@@ -43,7 +40,7 @@ function showRestoreSessionPrompt(loginUrl, onSuccess) {
     mask: true,
     maskClosable: false,
     keyboard: false,
-    onOk: closeModal => {
+    onOk: (closeModal) => {
       if (popup && !popup.closed) {
         popup.focus();
         return; // popup already shown
@@ -59,13 +56,9 @@ function showRestoreSessionPrompt(loginUrl, onSuccess) {
         status: "yes",
       };
 
-      popup = window.open(
-        loginUrl,
-        "Restore Session",
-        map(popupOptions, (value, key) => `${key}=${value}`).join(","),
-      );
+      popup = window.open(loginUrl, "Restore Session", map(popupOptions, (value, key) => `${key}=${value}`).join(","));
 
-      const handlePostMessage = event => {
+      const handlePostMessage = (event) => {
         if (event.data.type === SESSION_RESTORED_MESSAGE) {
           if (popup) {
             popup.close();
@@ -86,7 +79,7 @@ let restoreSessionPromise = null;
 
 export function restoreSession() {
   if (!restoreSessionPromise) {
-    restoreSessionPromise = new Promise(resolve => {
+    restoreSessionPromise = new Promise((resolve) => {
       showRestoreSessionPrompt(Auth.getLoginUrl(), () => {
         restoreSessionPromise = null;
         resolve();

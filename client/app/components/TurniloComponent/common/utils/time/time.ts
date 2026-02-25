@@ -53,17 +53,10 @@ function formatterFromDefinition(definition: string): Unary<Moment, string> {
   return (date: Moment) => date.format(definition);
 }
 
-function getShortFormat(
-  sameYear: boolean,
-  sameDate: boolean,
-  sameHour: boolean,
-): string {
-  if (sameYear && sameDate && !sameHour)
-    return SHORT_WITHOUT_YEAR_AND_DATE_FORMAT;
-  if (!sameYear && sameDate && sameHour)
-    return SHORT_WITHOUT_DATE_AND_HOUR_FORMAT;
-  if (sameYear && !sameDate && sameHour)
-    return SHORT_WITHOUT_YEAR_AND_HOUR_FORMAT;
+function getShortFormat(sameYear: boolean, sameDate: boolean, sameHour: boolean): string {
+  if (sameYear && sameDate && !sameHour) return SHORT_WITHOUT_YEAR_AND_DATE_FORMAT;
+  if (!sameYear && sameDate && sameHour) return SHORT_WITHOUT_DATE_AND_HOUR_FORMAT;
+  if (sameYear && !sameDate && sameHour) return SHORT_WITHOUT_YEAR_AND_HOUR_FORMAT;
   if (sameYear && !sameDate && !sameHour) return SHORT_WITHOUT_YEAR_FORMAT;
   if (!sameYear && sameHour) return SHORT_WITHOUT_HOUR_FORMAT;
   return SHORT_FULL_FORMAT;
@@ -81,17 +74,13 @@ export function scaleTicksFormat(scale: d3.ScaleTime<number, number>): string {
   const ticks = scale.ticks();
   if (ticks.length < 2) return SHORT_FULL_FORMAT;
   const [first, ...rest] = ticks;
-  const sameYear = rest.every(
-    date => date.getFullYear() === first.getFullYear(),
-  );
-  const sameDayAndMonth = rest.every(date => hasSameDateAndMonth(date, first));
-  const sameHour = rest.every(date => hasSameHour(date, first));
+  const sameYear = rest.every((date) => date.getFullYear() === first.getFullYear());
+  const sameDayAndMonth = rest.every((date) => hasSameDateAndMonth(date, first));
+  const sameHour = rest.every((date) => hasSameHour(date, first));
   return getShortFormat(sameYear, sameDayAndMonth, sameHour);
 }
 
-export function scaleTicksFormatter(
-  scale: d3.ScaleTime<number, number>,
-): Unary<Moment, string> {
+export function scaleTicksFormatter(scale: d3.ScaleTime<number, number>): Unary<Moment, string> {
   return formatterFromDefinition(scaleTicksFormat(scale));
 }
 
@@ -108,12 +97,7 @@ function isCurrentYear(moment: Moment, timezone: Timezone): boolean {
 }
 
 function isStartOfTheDay(date: Moment): boolean {
-  return (
-    date.milliseconds() === 0 &&
-    date.seconds() === 0 &&
-    date.minutes() === 0 &&
-    date.hours() === 0
-  );
+  return date.milliseconds() === 0 && date.seconds() === 0 && date.minutes() === 0 && date.hours() === 0;
 }
 
 function isOneWholeDay(a: Moment, b: Moment): boolean {
@@ -125,32 +109,22 @@ function formatOneWholeDay(day: Moment, timezone: Timezone): string {
   return day.format(getLongFormat(omitYear, true));
 }
 
-function formatDaysRange(
-  start: Moment,
-  end: Moment,
-  timezone: Timezone,
-): [string, string] {
+function formatDaysRange(start: Moment, end: Moment, timezone: Timezone): [string, string] {
   const dayBeforeEnd = end.subtract(1, "day");
-  const omitYear =
-    isCurrentYear(start, timezone) && isCurrentYear(dayBeforeEnd, timezone);
+  const omitYear = isCurrentYear(start, timezone) && isCurrentYear(dayBeforeEnd, timezone);
   const format = getLongFormat(omitYear, true);
   return [start.format(format), dayBeforeEnd.format(format)];
 }
 
-function formatHoursRange(
-  start: Moment,
-  end: Moment,
-  timezone: Timezone,
-): [string, string] {
-  const omitYear =
-    isCurrentYear(start, timezone) && isCurrentYear(end, timezone);
+function formatHoursRange(start: Moment, end: Moment, timezone: Timezone): [string, string] {
+  const omitYear = isCurrentYear(start, timezone) && isCurrentYear(end, timezone);
   const format = getLongFormat(omitYear, false);
   return [start.format(format), end.format(format)];
 }
 
 export function formatDatesInTimeRange(
   { start, end }: { start: Date; end: Date },
-  timezone: Timezone,
+  timezone: Timezone
 ): [string, string?] {
   const startMoment = getMoment(start, timezone);
   const endMoment = getMoment(end, timezone);
@@ -158,25 +132,18 @@ export function formatDatesInTimeRange(
   if (isOneWholeDay(startMoment, endMoment)) {
     return [formatOneWholeDay(startMoment, timezone)];
   }
-  const hasDayBoundaries =
-    isStartOfTheDay(startMoment) && isStartOfTheDay(endMoment);
+  const hasDayBoundaries = isStartOfTheDay(startMoment) && isStartOfTheDay(endMoment);
   if (hasDayBoundaries) {
     return formatDaysRange(startMoment, endMoment, timezone);
   }
   return formatHoursRange(startMoment, endMoment, timezone);
 }
 
-export function formatStartOfTimeRange(
-  range: { start: Date; end: Date },
-  timezone: Timezone,
-): string {
+export function formatStartOfTimeRange(range: { start: Date; end: Date }, timezone: Timezone): string {
   return formatDatesInTimeRange(range, timezone)[0];
 }
 
-export function formatTimeRange(
-  range: { start: Date; end: Date },
-  timezone: Timezone,
-): string {
+export function formatTimeRange(range: { start: Date; end: Date }, timezone: Timezone): string {
   return formatDatesInTimeRange(range, timezone).join(" - ");
 }
 
@@ -242,11 +209,7 @@ export function validateISOTime(time: string): boolean {
   return ISO_TIME_TEST.test(time);
 }
 
-export function combineDateAndTimeIntoMoment(
-  date: string,
-  time: string,
-  timezone: Timezone,
-): Moment {
+export function combineDateAndTimeIntoMoment(date: string, time: string, timezone: Timezone): Moment {
   return tz(`${date}T${time}`, timezone.toString());
 }
 

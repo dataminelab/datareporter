@@ -26,93 +26,55 @@ import {
 } from "../../../utils/dataset/selectors/dataset-fixtures";
 import { findClosestDatum } from "./find-closest-datum";
 
-const essenceWithoutNominalSplit =
-  EssenceFixtures.wikiLineChartNoNominalSplit();
+const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();
 const essenceWithNominalSplit = EssenceFixtures.wikiLineChart();
 
 describe("findClosestDatum", () => {
   it("should return null if dataset is empty", () => {
     const dataset = makeDataset([]);
-    expect(findClosestDatum(100, essenceWithoutNominalSplit, dataset, scale)).to
-      .be.null;
+    expect(findClosestDatum(100, essenceWithoutNominalSplit, dataset, scale)).to.be.null;
   });
 
   it("should return null if can't find dimension data inside datums", () => {
-    const dataset = makeDataset([
-      { "non-time-dimension": "foo" },
-      { "non-time-dimension": "bar" },
-    ]);
-    expect(findClosestDatum(100, essenceWithoutNominalSplit, dataset, scale)).to
-      .be.null;
+    const dataset = makeDataset([{ "non-time-dimension": "foo" }, { "non-time-dimension": "bar" }]);
+    expect(findClosestDatum(100, essenceWithoutNominalSplit, dataset, scale)).to.be.null;
   });
 
   describe("no nominal split", () => {
     it("should return range value belongs to", () => {
       const date = new Date("2000-01-03T07:32:11Z");
-      expect(
-        findClosestDatum(
-          date,
-          essenceWithoutNominalSplit,
-          nonNominalDataset,
-          scale,
-        ),
-      ).to.be.include({
+      expect(findClosestDatum(date, essenceWithoutNominalSplit, nonNominalDataset, scale)).to.be.include({
         measure: 11000,
       });
     });
 
     it("should return null if value is outside dataset range", () => {
       const date = new Date("2001-01-01");
-      expect(
-        findClosestDatum(
-          date,
-          essenceWithoutNominalSplit,
-          nonNominalDataset,
-          scale,
-        ),
-      ).to.be.null;
+      expect(findClosestDatum(date, essenceWithoutNominalSplit, nonNominalDataset, scale)).to.be.null;
     });
 
     it("should return null if value is too far away from closest datum", () => {
       const date = new Date("2000-01-04");
-      expect(
-        findClosestDatum(
-          date,
-          essenceWithoutNominalSplit,
-          sparseNonNominalDataset,
-          scale,
-        ),
-      ).to.be.null;
+      expect(findClosestDatum(date, essenceWithoutNominalSplit, sparseNonNominalDataset, scale)).to.be.null;
     });
   });
 
   describe("nominal split", () => {
     it("should return range value belongs to", () => {
       const date = new Date("2000-01-03T07:32:11Z");
-      expect(
-        findClosestDatum(date, essenceWithNominalSplit, nominalDataset, scale),
-      ).to.include({
+      expect(findClosestDatum(date, essenceWithNominalSplit, nominalDataset, scale)).to.include({
         measure: 11000,
       });
     });
 
     it("should return null if value is outside dataset range", () => {
       const date = new Date("2001-01-01");
-      expect(
-        findClosestDatum(date, essenceWithNominalSplit, nominalDataset, scale),
-      ).to.be.null;
+      expect(findClosestDatum(date, essenceWithNominalSplit, nominalDataset, scale)).to.be.null;
     });
 
     it("should return null if value is too far away from closest datum", () => {
       const date = new Date("2000-01-03");
-      expect(
-        findClosestDatum(
-          date,
-          essenceWithNominalSplit,
-          sparseNominalDataset,
-          scale,
-        ),
-      ).to.be.null;
+      expect(findClosestDatum(date, essenceWithNominalSplit, sparseNominalDataset, scale)).to.be.null;
     });
   });
 });

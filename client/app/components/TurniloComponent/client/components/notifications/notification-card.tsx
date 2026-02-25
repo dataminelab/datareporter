@@ -35,10 +35,7 @@ export interface NotificationCardState {
 
 const DEFAULT_DURATION = 6; // seconds
 
-export class NotificationCard extends React.Component<
-  NotificationCardProps,
-  NotificationCardState
-> {
+export class NotificationCard extends React.Component<NotificationCardProps, NotificationCardState> {
   private timeoutID: number;
 
   state: NotificationCardState = {
@@ -74,10 +71,7 @@ export class NotificationCard extends React.Component<
       this.setState({ appearing: false });
     } else {
       this.setState({ appearing: false }, () => {
-        this.timeoutID = window.setTimeout(
-          this.onDisappearTimerEnd,
-          (d ? d : DEFAULT_DURATION) * 1000,
-        );
+        this.timeoutID = window.setTimeout(this.onDisappearTimerEnd, (d ? d : DEFAULT_DURATION) * 1000);
       });
     }
   };
@@ -98,10 +92,7 @@ export class NotificationCard extends React.Component<
     if (this.timeoutID !== undefined) window.clearTimeout(this.timeoutID);
 
     this.setState({ disappearing: true }, () => {
-      this.timeoutID = window.setTimeout(
-        this.removeMe.bind(this, this.props.model),
-        200,
-      );
+      this.timeoutID = window.setTimeout(this.removeMe.bind(this, this.props.model), 200);
     });
   }
 
@@ -160,8 +151,7 @@ export class NotificationCard extends React.Component<
           appearing,
           disappearing,
           muted,
-        })}
-      >
+        })}>
         <div className="title">{title}</div>
         {message ? <div className="message">{message}</div> : null}
         {action ? (

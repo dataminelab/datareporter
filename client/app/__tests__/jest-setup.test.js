@@ -25,9 +25,7 @@ describe("Jest Setup", () => {
       expect(div).toBeInTheDocument();
       console.log("✅ jest-dom matchers are available");
     } catch (e) {
-      console.log(
-        "ℹ️  jest-dom matchers not available, using basic Jest matchers",
-      );
+      console.log("ℹ️  jest-dom matchers not available, using basic Jest matchers");
     }
   });
 

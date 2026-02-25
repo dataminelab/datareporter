@@ -30,10 +30,7 @@ interface TooltipWithinStageState {
   rect?: Rect;
 }
 
-export class TooltipWithinStage extends React.Component<
-  TooltipWithinStageProps,
-  TooltipWithinStageState
-> {
+export class TooltipWithinStage extends React.Component<TooltipWithinStageProps, TooltipWithinStageState> {
   private self = React.createRef<HTMLDivElement>();
 
   state: TooltipWithinStageState = {};
@@ -47,11 +44,7 @@ export class TooltipWithinStage extends React.Component<
   render() {
     const { children } = this.props;
     return (
-      <div
-        className="tooltip-within-stage"
-        style={calculatePosition(this.props, this.state.rect)}
-        ref={this.self}
-      >
+      <div className="tooltip-within-stage" style={calculatePosition(this.props, this.state.rect)} ref={this.self}>
         {children}
       </div>
     );

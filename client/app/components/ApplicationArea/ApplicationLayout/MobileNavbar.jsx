@@ -28,12 +28,7 @@ export default function MobileNavbar({ getPopupContainer }) {
           trigger={["click"]}
           getPopupContainer={getPopupContainer} // so the overlay menu stays with the fixed header when page scrolls
           overlay={
-            <Menu
-              mode="vertical"
-              theme="dark"
-              selectable={false}
-              className="mobile-navbar-menu"
-            >
+            <Menu mode="vertical" theme="dark" selectable={false} className="mobile-navbar-menu">
               {currentUser.hasPermission("list_dashboards") && (
                 <Menu.Item key="dashboards">
                   <Link href="dashboards">Dashboards</Link>
@@ -71,11 +66,7 @@ export default function MobileNavbar({ getPopupContainer }) {
               {currentUser.hasPermission("super_admin") && <Menu.Divider />}
               <Menu.Item key="help">
                 {/* eslint-disable-next-line react/jsx-no-target-blank */}
-                <Link
-                  href="https://datareporter0.com/help"
-                  target="_blank"
-                  rel="noopener"
-                >
+                <Link href="https://datareporter0.com/help" target="_blank" rel="noopener">
                   Help
                 </Link>
               </Menu.Item>
@@ -83,8 +74,7 @@ export default function MobileNavbar({ getPopupContainer }) {
                 Log out
               </Menu.Item>
             </Menu>
-          }
-        >
+          }>
           <Button className="mobile-navbar-toggle-button" ghost>
             <img height={24} width={24} src={iconMenu} alt="menu" />
           </Button>

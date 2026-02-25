@@ -32,7 +32,7 @@ interface HighlightModalProps {
   rect: ClientRect | DOMRect;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = props => {
+export const HighlightModal: React.SFC<HighlightModalProps> = (props) => {
   const {
     rect: { left, top },
     interaction,

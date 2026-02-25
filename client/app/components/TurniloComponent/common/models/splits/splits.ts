@@ -20,15 +20,9 @@ import { List, Record, Set } from "immutable";
 import { Unary } from "../../utils/functional/functional";
 import { Dimension } from "../dimension/dimension";
 import { Dimensions } from "../dimension/dimensions";
-import {
-  FixedTimeFilterClause,
-  NumberFilterClause,
-} from "../filter-clause/filter-clause";
+import { FixedTimeFilterClause, NumberFilterClause } from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
-import {
-  getBestBucketUnitForRange,
-  getDefaultGranularityForKind,
-} from "../granularity/granularity";
+import { getBestBucketUnitForRange, getDefaultGranularityForKind } from "../granularity/granularity";
 import { SeriesList } from "../series-list/series-list";
 import { DimensionSort, isSortEmpty, Sort, SortType } from "../sort/sort";
 import { Split } from "../split/split";
@@ -50,12 +44,12 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   static fromDimensions(dimensions: List<Dimension>): Splits {
-    const splits = dimensions.map(dimension => Split.fromDimension(dimension));
+    const splits = dimensions.map((dimension) => Split.fromDimension(dimension));
     return new Splits({ splits });
   }
 
   public toString() {
-    return this.splits.map(split => split.toString()).join(",");
+    return this.splits.map((split) => split.toString()).join(",");
   }
 
   public replaceByIndex(index: number, replace: Split): Splits {
@@ -63,8 +57,8 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     if (splits.count() === index) {
       return this.insertByIndex(index, replace);
     }
-    return this.updateSplits(splits => {
-      const newSplitIndex = splits.findIndex(split => split.equals(replace));
+    return this.updateSplits((splits) => {
+      const newSplitIndex = splits.findIndex((split) => split.equals(replace));
       if (newSplitIndex === -1) return splits.set(index, replace);
       const oldSplit = splits.get(index);
       return splits.set(index, replace).set(newSplitIndex, oldSplit);
@@ -72,10 +66,8 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   public insertByIndex(index: number, insert: Split): Splits {
-    return this.updateSplits(splits =>
-      splits
-        .insert(index, insert)
-        .filterNot((split, idx) => split.equals(insert) && idx !== index),
+    return this.updateSplits((splits) =>
+      splits.insert(index, insert).filterNot((split, idx) => split.equals(insert) && idx !== index)
     );
   }
 
@@ -85,20 +77,16 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   public removeSplit(split: Split): Splits {
-    return this.updateSplits(splits =>
-      splits.filter(s => s.reference !== split.reference),
-    );
+    return this.updateSplits((splits) => splits.filter((s) => s.reference !== split.reference));
   }
 
   public changeSort(sort: Sort): Splits {
-    return this.updateSplits(splits => splits.map(s => s.changeSort(sort)));
+    return this.updateSplits((splits) => splits.map((s) => s.changeSort(sort)));
   }
 
   public setSortToDimension(): Splits {
-    return this.updateSplits(splits =>
-      splits.map(split =>
-        split.changeSort(new DimensionSort({ reference: split.reference })),
-      ),
+    return this.updateSplits((splits) =>
+      splits.map((split) => split.changeSort(new DimensionSort({ reference: split.reference })))
     );
   }
 
@@ -111,7 +99,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   public findSplitForDimension({ name }: Dimension): Split {
-    return this.splits.find(s => s.reference === name);
+    return this.splits.find((s) => s.reference === name);
   }
 
   public hasSplitOn(dimension: Dimension): boolean {
@@ -119,29 +107,23 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   public replace(search: Split, replace: Split): Splits {
-    return this.updateSplits(splits =>
-      splits.map(s => (s.equals(search) ? replace : s)),
-    );
+    return this.updateSplits((splits) => splits.map((s) => (s.equals(search) ? replace : s)));
   }
 
   public removeBucketingFrom(references: Set<string>) {
-    return this.updateSplits(splits =>
-      splits.map(split => {
+    return this.updateSplits((splits) =>
+      splits.map((split) => {
         if (!split.bucket || !references.has(split.reference)) return split;
         return split.changeBucket(null);
-      }),
+      })
     );
   }
 
   public updateWithFilter(filter: Filter, dimensions: Dimensions): Splits {
-    const specificFilter = filter.getSpecificFilter(
-      Timekeeper.globalNow(),
-      Timekeeper.globalNow(),
-      Timezone.UTC,
-    );
+    const specificFilter = filter.getSpecificFilter(Timekeeper.globalNow(), Timekeeper.globalNow(), Timezone.UTC);
 
-    return this.updateSplits(splits =>
-      splits.map(split => {
+    return this.updateSplits((splits) =>
+      splits.map((split) => {
         const { bucket, reference } = split;
         if (bucket) return split;
 
@@ -156,7 +138,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
         }
         if (splitKind === "time") {
           const clause = specificFilter.clauses.find(
-            clause => clause instanceof FixedTimeFilterClause,
+            (clause) => clause instanceof FixedTimeFilterClause
           ) as FixedTimeFilterClause;
           return split.changeBucket(
             clause
@@ -164,17 +146,13 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
                   clause.values.first(),
                   false,
                   splitDimension.bucketedBy,
-                  splitDimension.granularities,
+                  splitDimension.granularities
                 )
-              : getDefaultGranularityForKind(
-                  "time",
-                  splitDimension.bucketedBy,
-                  splitDimension.granularities,
-                ),
+              : getDefaultGranularityForKind("time", splitDimension.bucketedBy, splitDimension.granularities)
           );
         } else if (splitKind === "number") {
           const clause = specificFilter.clauses.find(
-            clause => clause instanceof NumberFilterClause,
+            (clause) => clause instanceof NumberFilterClause
           ) as NumberFilterClause;
           return split.changeBucket(
             clause
@@ -182,45 +160,35 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
                   clause.values.first(),
                   false,
                   splitDimension.bucketedBy,
-                  splitDimension.granularities,
+                  splitDimension.granularities
                 )
-              : getDefaultGranularityForKind(
-                  "number",
-                  splitDimension.bucketedBy,
-                  splitDimension.granularities,
-                ),
+              : getDefaultGranularityForKind("number", splitDimension.bucketedBy, splitDimension.granularities)
           );
         }
 
         throw new Error("unknown extent type");
-      }),
+      })
     );
   }
 
-  public constrainToDimensionsAndSeries(
-    dimensions: Dimensions,
-    series: SeriesList,
-  ): Splits {
+  public constrainToDimensionsAndSeries(dimensions: Dimensions, series: SeriesList): Splits {
     function validSplit(split: Split): boolean {
       if (!dimensions.getDimensionByName(split.reference)) return false;
       if (isSortEmpty(split.sort)) return true;
       const sortRef = split.sort.reference;
-      return (
-        dimensions.containsDimensionWithName(sortRef) ||
-        series.hasSeriesWithKey(sortRef)
-      );
+      return dimensions.containsDimensionWithName(sortRef) || series.hasSeriesWithKey(sortRef);
     }
 
-    return this.updateSplits(splits => splits.filter(validSplit));
+    return this.updateSplits((splits) => splits.filter(validSplit));
   }
 
   public changeSortIfOnMeasure(fromMeasure: string, toMeasure: string): Splits {
-    return this.updateSplits(splits =>
-      splits.map(split => {
+    return this.updateSplits((splits) =>
+      splits.map((split) => {
         const { sort } = split;
         if (!sort || sort.reference !== fromMeasure) return split;
         return split.setIn(["sort", "reference"], toMeasure);
-      }),
+      })
     );
   }
 
@@ -228,9 +196,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
     const { splits } = this;
     if (splits.count() === 0) return null;
     const commonSort = splits.get(0).sort;
-    return splits.every(({ sort }) => sort.equals(commonSort))
-      ? commonSort
-      : null;
+    return splits.every(({ sort }) => sort.equals(commonSort)) ? commonSort : null;
   }
 
   private updateSplits(updater: Unary<List<Split>, List<Split>>) {
@@ -238,7 +204,7 @@ export class Splits extends Record<SplitsValue>(defaultSplits) {
   }
 
   public slice(from: number, to?: number) {
-    return this.updateSplits(splits => splits.slice(from, to));
+    return this.updateSplits((splits) => splits.slice(from, to));
   }
 }
 

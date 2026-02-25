@@ -65,12 +65,12 @@ export default function DynamicFormField({ form, field, ...otherProps }) {
 
   const fieldProps = {
     ...field.props,
-    "className": "w-100",
+    className: "w-100",
     name,
     type,
     readOnly,
     autoFocus,
-    "placeholder": field.placeholder,
+    placeholder: field.placeholder,
     "data-test": fieldLabel,
     ...otherProps,
   };

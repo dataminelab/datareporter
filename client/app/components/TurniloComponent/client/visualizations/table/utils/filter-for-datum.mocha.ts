@@ -19,11 +19,7 @@ import { List } from "immutable";
 import { NumberRange, TimeRange } from "plywood";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
 import { FilterClause } from "../../../../common/models/filter-clause/filter-clause";
-import {
-  numberRange,
-  stringIn,
-  timeRange,
-} from "../../../../common/models/filter-clause/filter-clause.fixtures";
+import { numberRange, stringIn, timeRange } from "../../../../common/models/filter-clause/filter-clause.fixtures";
 import { getFilterFromDatum } from "./filter-for-datum";
 
 describe("getFilterForDatum", () => {

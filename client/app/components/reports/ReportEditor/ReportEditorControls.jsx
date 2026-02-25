@@ -4,9 +4,7 @@ import PropTypes from "prop-types";
 import Tooltip from "antd/lib/tooltip";
 import Button from "antd/lib/button";
 import Select from "antd/lib/select";
-import KeyboardShortcuts, {
-  humanReadableShortcut,
-} from "@/services/KeyboardShortcuts";
+import KeyboardShortcuts, { humanReadableShortcut } from "@/services/KeyboardShortcuts";
 
 import AutocompleteToggle from "./AutocompleteToggle";
 import "./ReportEditorControls.less";
@@ -44,56 +42,36 @@ export default function EditorControl({
 }) {
   useEffect(() => {
     const buttons = filter(
-      [
-        addParameterButtonProps,
-        formatButtonProps,
-        saveButtonProps,
-        executeButtonProps,
-      ],
-      b => b.shortcut && isFunction(b.onClick),
+      [addParameterButtonProps, formatButtonProps, saveButtonProps, executeButtonProps],
+      (b) => b.shortcut && isFunction(b.onClick)
     );
     if (buttons.length > 0) {
-      const shortcuts = fromPairs(
-        map(buttons, b => [b.shortcut, b.disabled ? noop : b.onClick]),
-      );
+      const shortcuts = fromPairs(map(buttons, (b) => [b.shortcut, b.disabled ? noop : b.onClick]));
       KeyboardShortcuts.bind(shortcuts);
       return () => {
         KeyboardShortcuts.unbind(shortcuts);
       };
     }
-  }, [
-    addParameterButtonProps,
-    formatButtonProps,
-    saveButtonProps,
-    executeButtonProps,
-  ]);
+  }, [addParameterButtonProps, formatButtonProps, saveButtonProps, executeButtonProps]);
 
   return (
     <div className="report-editor-controls">
       {addParameterButtonProps !== false && (
-        <ButtonTooltip
-          title={addParameterButtonProps.title}
-          shortcut={addParameterButtonProps.shortcut}
-        >
+        <ButtonTooltip title={addParameterButtonProps.title} shortcut={addParameterButtonProps.shortcut}>
           <Button
             className="report-editor-controls-button m-r-5"
             disabled={addParameterButtonProps.disabled}
-            onClick={addParameterButtonProps.onClick}
-          >
+            onClick={addParameterButtonProps.onClick}>
             {"{{"}&nbsp;{"}}"}
           </Button>
         </ButtonTooltip>
       )}
       {formatButtonProps !== false && (
-        <ButtonTooltip
-          title={formatButtonProps.title}
-          shortcut={formatButtonProps.shortcut}
-        >
+        <ButtonTooltip title={formatButtonProps.title} shortcut={formatButtonProps.shortcut}>
           <Button
             className="report-editor-controls-button m-r-5"
             disabled={formatButtonProps.disabled}
-            onClick={formatButtonProps.onClick}
-          >
+            onClick={formatButtonProps.onClick}>
             <span className="zmdi zmdi-format-indent-increase" />
             {formatButtonProps.text}
           </Button>
@@ -106,17 +84,14 @@ export default function EditorControl({
           onToggle={autocompleteToggleProps.onToggle}
         />
       )}
-      {dataSourceSelectorProps === false && (
-        <span className="report-editor-controls-spacer" />
-      )}
+      {dataSourceSelectorProps === false && <span className="report-editor-controls-spacer" />}
       {dataSourceSelectorProps !== false && (
         <Select
           className="w-100 flex-fill datasource-small"
           disabled={dataSourceSelectorProps.disabled}
           value={dataSourceSelectorProps.value}
-          onChange={dataSourceSelectorProps.onChange}
-        >
-          {map(dataSourceSelectorProps.options, option => (
+          onChange={dataSourceSelectorProps.onChange}>
+          {map(dataSourceSelectorProps.options, (option) => (
             <Select.Option key={`option-${option.value}`} value={option.value}>
               {option.label}
             </Select.Option>
@@ -124,34 +99,26 @@ export default function EditorControl({
         </Select>
       )}
       {saveButtonProps !== false && (
-        <ButtonTooltip
-          title={saveButtonProps.title}
-          shortcut={saveButtonProps.shortcut}
-        >
+        <ButtonTooltip title={saveButtonProps.title} shortcut={saveButtonProps.shortcut}>
           <Button
             className="report-editor-controls-button m-l-5"
             disabled={saveButtonProps.disabled}
             loading={saveButtonProps.loading}
             onClick={saveButtonProps.onClick}
-            data-test="SaveButton"
-          >
+            data-test="SaveButton">
             {!saveButtonProps.loading && <span className="fa fa-floppy-o" />}
             {saveButtonProps.text}
           </Button>
         </ButtonTooltip>
       )}
       {executeButtonProps !== false && (
-        <ButtonTooltip
-          title={executeButtonProps.title}
-          shortcut={executeButtonProps.shortcut}
-        >
+        <ButtonTooltip title={executeButtonProps.title} shortcut={executeButtonProps.shortcut}>
           <Button
             className="report-editor-controls-button m-l-5"
             type="primary"
             disabled={executeButtonProps.disabled}
             onClick={executeButtonProps.onClick}
-            data-test="ExecuteButton"
-          >
+            data-test="ExecuteButton">
             <span className="zmdi zmdi-play" />
             {executeButtonProps.text}
           </Button>
@@ -195,7 +162,7 @@ EditorControl.propTypes = {
         PropTypes.shape({
           value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
           label: PropTypes.node,
-        }),
+        })
       ),
       onChange: PropTypes.func,
     }),

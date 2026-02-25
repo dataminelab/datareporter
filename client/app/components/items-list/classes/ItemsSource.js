@@ -14,18 +14,14 @@ export class ItemsSource {
 
   _beforeUpdate() {
     if (isFunction(this.onBeforeUpdate)) {
-      return Promise.resolve(
-        this.onBeforeUpdate(this.getState(), this.getCallbackContext()),
-      );
+      return Promise.resolve(this.onBeforeUpdate(this.getState(), this.getCallbackContext()));
     }
     return Promise.resolve();
   }
 
   _afterUpdate() {
     if (isFunction(this.onAfterUpdate)) {
-      return Promise.resolve(
-        this.onAfterUpdate(this.getState(), this.getCallbackContext()),
-      );
+      return Promise.resolve(this.onAfterUpdate(this.getState(), this.getCallbackContext()));
     }
     return Promise.resolve();
   }
@@ -41,7 +37,7 @@ export class ItemsSource {
     const customParams = {};
     const context = {
       ...this.getCallbackContext(),
-      setCustomParams: params => {
+      setCustomParams: (params) => {
         extend(customParams, params);
       },
     };
@@ -59,17 +55,11 @@ export class ItemsSource {
             return this._afterUpdate();
           }
         })
-        .catch(error => this.handleError(error));
+        .catch((error) => this.handleError(error));
     });
   }
 
-  constructor({
-    getRequest,
-    doRequest,
-    processResults,
-    isPlainList = false,
-    ...defaultState
-  }) {
+  constructor({ getRequest, doRequest, processResults, isPlainList = false, ...defaultState }) {
     if (!isFunction(getRequest)) {
       getRequest = identity;
     }
@@ -121,7 +111,7 @@ export class ItemsSource {
     });
   };
 
-  toggleSorting = orderByField => {
+  toggleSorting = (orderByField) => {
     this._sorter.toggleField(orderByField);
     this._savedOrderByField = this._sorter.field;
     this._changed({ sorting: true });
@@ -134,7 +124,7 @@ export class ItemsSource {
     this._changed({ sorting: true });
   };
 
-  updateSearch = searchTerm => {
+  updateSearch = (searchTerm) => {
     // here we update state directly, but later `fetchData` will update it properly
     this._searchTerm = searchTerm;
     // in search mode ignore the ordering and use the ranking order
@@ -149,7 +139,7 @@ export class ItemsSource {
     this._changed({ search: true, pagination: { page: true } });
   };
 
-  updateSelectedTags = selectedTags => {
+  updateSelectedTags = (selectedTags) => {
     this._selectedTags = selectedTags;
     this._paginator.setPage(1);
     this._changed({ tags: true, pagination: { page: true } });
@@ -157,7 +147,7 @@ export class ItemsSource {
 
   update = () => this._changed();
 
-  handleError = error => {
+  handleError = (error) => {
     if (isFunction(this.onError)) {
       this.onError(error);
     }
@@ -166,9 +156,7 @@ export class ItemsSource {
 
 export class ResourceItemsSource extends ItemsSource {
   constructor({ getResource, getItemProcessor, ...rest }) {
-    getItemProcessor = isFunction(getItemProcessor)
-      ? getItemProcessor
-      : () => null;
+    getItemProcessor = isFunction(getItemProcessor) ? getItemProcessor : () => null;
     super({
       ...rest,
       doRequest: (request, context) => {
@@ -178,7 +166,7 @@ export class ResourceItemsSource extends ItemsSource {
       processResults: (results, context) => {
         let processItem = getItemProcessor(context);
         processItem = isFunction(processItem) ? processItem : identity;
-        return map(results, item => processItem(item, context));
+        return map(results, (item) => processItem(item, context));
       },
     });
   }

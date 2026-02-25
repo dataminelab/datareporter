@@ -19,14 +19,8 @@ import { Duration } from "chronoshift";
 import * as React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
-import {
-  granularityToString,
-  isGranularityValid,
-} from "../../../common/models/granularity/granularity";
-import {
-  DimensionSortOn,
-  SortOn,
-} from "../../../common/models/sort-on/sort-on";
+import { granularityToString, isGranularityValid } from "../../../common/models/granularity/granularity";
+import { DimensionSortOn, SortOn } from "../../../common/models/sort-on/sort-on";
 import { Sort } from "../../../common/models/sort/sort";
 import { Bucket, Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
@@ -140,14 +134,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
     const seriesSortOns = essence.seriesSortOns(true).toArray();
     const options = [new DimensionSortOn(dimension), ...seriesSortOns];
     const selected = SortOn.fromSort(sort, essence);
-    return (
-      <SortDropdown
-        direction={sort.direction}
-        selected={selected}
-        options={options}
-        onChange={this.saveSort}
-      />
-    );
+    return <SortDropdown direction={sort.direction} selected={selected} options={options} onChange={this.saveSort} />;
   }
 
   render() {
@@ -162,19 +149,10 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
         containerStage={containerStage}
         stage={Stage.fromSize(250, 240)}
         openOn={openOn}
-        onClose={onClose}
-      >
-        <GranularityPicker
-          dimension={dimension}
-          granularityChange={this.saveGranularity}
-          granularity={granularity}
-        />
+        onClose={onClose}>
+        <GranularityPicker dimension={dimension} granularityChange={this.saveGranularity} granularity={granularity} />
         {this.renderSortDropdown()}
-        <LimitDropdown
-          onLimitSelect={this.saveLimit}
-          limit={limit}
-          includeNone={dimension.isContinuous()}
-        />
+        <LimitDropdown onLimitSelect={this.saveLimit} limit={limit} includeNone={dimension.isContinuous()} />
         <div className="button-bar">
           <Button
             className="ok"
@@ -183,11 +161,7 @@ export class SplitMenu extends React.Component<SplitMenuProps, SplitMenuState> {
             onClick={this.onOkClick}
             title={STRINGS.ok}
           />
-          <Button
-            type="secondary"
-            onClick={this.onCancelClick}
-            title={STRINGS.cancel}
-          />
+          <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
         </div>
       </BubbleMenu>
     );

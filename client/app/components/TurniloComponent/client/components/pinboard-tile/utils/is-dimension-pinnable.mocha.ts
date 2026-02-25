@@ -28,8 +28,7 @@ describe("isDimensionPinnable", () => {
   });
 
   it("should return false for number dimension", () => {
-    expect(isDimensionPinnable(DimensionFixtures.wikiCommentLength())).to.be
-      .false;
+    expect(isDimensionPinnable(DimensionFixtures.wikiCommentLength())).to.be.false;
   });
 
   it("should return false for time dimension", () => {

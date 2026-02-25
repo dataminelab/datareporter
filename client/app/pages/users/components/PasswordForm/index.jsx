@@ -19,21 +19,13 @@ export default function PasswordForm(props) {
     <DynamicComponent name="UserProfile.PasswordForm" {...props}>
       <h5>Password</h5>
       {user.id === currentUser.id && (
-        <Button
-          className="w-100 m-t-10"
-          onClick={changePassword}
-          data-test="ChangePassword"
-        >
+        <Button className="w-100 m-t-10" onClick={changePassword} data-test="ChangePassword">
           Change Password
         </Button>
       )}
       {user.id !== currentUser.id && currentUser.isAdmin && (
         <React.Fragment>
-          {user.isInvitationPending ? (
-            <ResendInvitationForm user={user} />
-          ) : (
-            <PasswordResetForm user={user} />
-          )}
+          {user.isInvitationPending ? <ResendInvitationForm user={user} /> : <PasswordResetForm user={user} />}
         </React.Fragment>
       )}
     </DynamicComponent>

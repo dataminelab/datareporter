@@ -17,10 +17,7 @@
 import { expect } from "chai";
 import { hour, month } from "chronoshift";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
-import {
-  stringSplitCombine,
-  timeSplitCombine,
-} from "../../models/split/split.fixtures";
+import { stringSplitCombine, timeSplitCombine } from "../../models/split/split.fixtures";
 import splitCanonicalLength from "./split-canonical-length";
 
 const dataCube = DataCubeFixtures.wiki();
@@ -34,15 +31,11 @@ describe("Split canonical length", () => {
 
   it("returns bucket canonical length for time split with hour granularity", () => {
     const timeSplit = timeSplitCombine(timeSplitName, "PT1H");
-    expect(splitCanonicalLength(timeSplit, dataCube)).to.equal(
-      hour.canonicalLength,
-    );
+    expect(splitCanonicalLength(timeSplit, dataCube)).to.equal(hour.canonicalLength);
   });
 
   it("returns bucket canonical length for time split with month granularity", () => {
     const timeSplit = timeSplitCombine(timeSplitName, "P1M");
-    expect(splitCanonicalLength(timeSplit, dataCube)).to.equal(
-      month.canonicalLength,
-    );
+    expect(splitCanonicalLength(timeSplit, dataCube)).to.equal(month.canonicalLength);
   });
 });

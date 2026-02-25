@@ -25,9 +25,7 @@ describe("Cohort", () => {
       cy.getByTestId("ExecuteButton").click();
     });
     cy.getByTestId("NewVisualization").click();
-    cy.getByTestId("VisualizationType").selectAntdOption(
-      "VisualizationType.COHORT",
-    );
+    cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.COHORT");
   });
 
   it("creates visualization", () => {

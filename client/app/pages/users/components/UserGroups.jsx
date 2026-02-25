@@ -6,7 +6,7 @@ import Tag from "antd/lib/tag";
 export default function UserGroups({ groups, ...props }) {
   return (
     <div {...props}>
-      {map(groups, group => (
+      {map(groups, (group) => (
         <Tag className="m-b-5 m-r-5" key={group.id}>
           <a href={`groups/${group.id}`}>{group.name}</a>
         </Tag>
@@ -20,7 +20,7 @@ UserGroups.propTypes = {
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       name: PropTypes.string,
-    }),
+    })
   ),
 };
 

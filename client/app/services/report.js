@@ -33,7 +33,7 @@ const logger = debug("redash:services:report");
 function collectParams(parts) {
   let parameters = [];
 
-  parts.forEach(part => {
+  parts.forEach((part) => {
     if (part[0] === "name" || part[0] === "&") {
       parameters.push(part[1].split(".")[0]);
     } else if (part[0] === "#") {
@@ -86,7 +86,7 @@ export class Parameters {
   }
 
   parseReport() {
-    const fallback = () => map(this.report.options.parameters, i => i.name);
+    const fallback = () => map(this.report.options.parameters, (i) => i.name);
 
     let parameters = [];
     if (this.report.report !== undefined) {
@@ -108,31 +108,26 @@ export class Parameters {
   updateParameters(update) {
     if (this.report.report === this.cachedReportText) {
       const parameters = this.report.options.parameters;
-      const hasUnprocessedParameters = find(
-        parameters,
-        p => !(p instanceof Parameter),
-      );
+      const hasUnprocessedParameters = find(parameters, (p) => !(p instanceof Parameter));
       if (hasUnprocessedParameters) {
-        this.report.options.parameters = map(parameters, p =>
-          p instanceof Parameter ? p : createParameter(p, this.report.id),
+        this.report.options.parameters = map(parameters, (p) =>
+          p instanceof Parameter ? p : createParameter(p, this.report.id)
         );
       }
       return;
     }
 
     this.cachedReportText = this.report.report;
-    const parameterNames = update
-      ? this.parseReport()
-      : map(this.report.options.parameters, p => p.name);
+    const parameterNames = update ? this.parseReport() : map(this.report.options.parameters, (p) => p.name);
 
     this.report.options.parameters = this.report.options.parameters || [];
 
     const parametersMap = {};
-    this.report.options.parameters.forEach(param => {
+    this.report.options.parameters.forEach((param) => {
       parametersMap[param.name] = param;
     });
 
-    parameterNames.forEach(param => {
+    parameterNames.forEach((param) => {
       if (!has(parametersMap, param)) {
         this.report.options.parameters.push(
           createParameter({
@@ -141,22 +136,20 @@ export class Parameters {
             type: "text",
             value: null,
             global: false,
-          }),
+          })
         );
       }
     });
 
-    const parameterExists = p => includes(parameterNames, p.name);
+    const parameterExists = (p) => includes(parameterNames, p.name);
     const parameters = this.report.options.parameters;
     this.report.options.parameters = parameters
       .filter(parameterExists)
-      .map(p =>
-        p instanceof Parameter ? p : createParameter(p, this.report.id),
-      );
+      .map((p) => (p instanceof Parameter ? p : createParameter(p, this.report.id)));
   }
 
   initFromReportString(report) {
-    this.get().forEach(param => {
+    this.get().forEach((param) => {
       param.fromUrlParams(report);
     });
   }
@@ -167,9 +160,7 @@ export class Parameters {
   }
 
   add(parameterDef) {
-    this.report.options.parameters = this.report.options.parameters.filter(
-      p => p.name !== parameterDef.name,
-    );
+    this.report.options.parameters = this.report.options.parameters.filter((p) => p.name !== parameterDef.name);
     const param = createParameter(parameterDef);
     this.report.options.parameters.push(param);
     return param;
@@ -177,8 +168,8 @@ export class Parameters {
 
   getMissing() {
     return map(
-      filter(this.get(), p => p.isEmpty),
-      i => i.title,
+      filter(this.get(), (p) => p.isEmpty),
+      (i) => i.title
     );
   }
 
@@ -189,17 +180,17 @@ export class Parameters {
   getExecutionValues(extra = {}) {
     const params = this.get();
     return zipObject(
-      map(params, i => i.name),
-      map(params, i => i.getExecutionValue(extra)),
+      map(params, (i) => i.name),
+      map(params, (i) => i.getExecutionValue(extra))
     );
   }
 
   hasPendingValues() {
-    return some(this.get(), p => p.hasPendingValue);
+    return some(this.get(), (p) => p.hasPendingValue);
   }
 
   applyPendingValues() {
-    each(this.get(), p => p.applyPendingValue());
+    each(this.get(), (p) => p.applyPendingValue());
   }
 
   toUrlParams() {
@@ -207,12 +198,10 @@ export class Parameters {
       return "";
     }
 
-    const params = Object.assign(...this.get().map(p => p.toUrlParams()));
-    Object.keys(params).forEach(
-      key => params[key] == null && delete params[key],
-    );
+    const params = Object.assign(...this.get().map((p) => p.toUrlParams()));
+    Object.keys(params).forEach((key) => params[key] == null && delete params[key]);
     return Object.keys(params)
-      .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
+      .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
       .join("&");
   }
 }
@@ -252,7 +241,7 @@ export class Report extends Query {
     }
     const queries = results.queries;
     if (queries.length === 0) return 0;
-    this.queries = map(queries, query => new ReportResult(query));
+    this.queries = map(queries, (query) => new ReportResult(query));
   }
 
   static async getData(report) {
@@ -311,9 +300,7 @@ export class Report extends Query {
 
       return new ReportResult({
         job: {
-          error: `missing ${valuesWord} for ${missingParams.join(
-            ", ",
-          )} ${paramsWord}.`,
+          error: `missing ${valuesWord} for ${missingParams.join(", ")} ${paramsWord}.`,
           status: 4,
         },
       });
@@ -333,10 +320,7 @@ export class Report extends Query {
       }
     } else if (this.latest_report_data_id && maxAge !== 0) {
       if (!this.reportResult) {
-        this.reportResult = ReportResult.getById(
-          this.id,
-          this.latest_report_data_id,
-        );
+        this.reportResult = ReportResult.getById(this.id, this.latest_report_data_id);
       }
     } else {
       this.reportResult = execute();
@@ -346,12 +330,7 @@ export class Report extends Query {
   }
 
   getReportResult(maxAge) {
-    const execute = () =>
-      ReportResult.getByReportId(
-        this.id,
-        this.getParameters().getExecutionValues(),
-        maxAge,
-      );
+    const execute = () => ReportResult.getByReportId(this.id, this.getParameters().getExecutionValues(), maxAge);
     return this.prepareReportResultExecution(execute, maxAge);
   }
 
@@ -364,14 +343,7 @@ export class Report extends Query {
     const parameters = this.getParameters().getExecutionValues({
       joinListValues: true,
     });
-    const execute = () =>
-      ReportResult.get(
-        this.data_source_id,
-        reportText,
-        parameters,
-        maxAge,
-        this.id,
-      );
+    const execute = () => ReportResult.get(this.data_source_id, reportText, parameters, maxAge, this.id);
     return this.prepareReportResultExecution(execute, maxAge);
   }
 
@@ -384,18 +356,12 @@ export class Report extends Query {
 
     let params = {};
     if (this.getParameters().isRequired()) {
-      this.getParametersDefs().forEach(param => {
+      this.getParametersDefs().forEach((param) => {
         extend(params, param.toUrlParams());
       });
     }
-    Object.keys(params).forEach(
-      key => params[key] == null && delete params[key],
-    );
-    params = map(
-      params,
-      (value, name) =>
-        `${encodeURIComponent(name)}=${encodeURIComponent(value)}`,
-    ).join("&");
+    Object.keys(params).forEach((key) => params[key] == null && delete params[key]);
+    params = map(params, (value, name) => `${encodeURIComponent(name)}=${encodeURIComponent(value)}`).join("&");
 
     if (params !== "") {
       url += `?${params}`;
@@ -425,20 +391,20 @@ export class Report extends Query {
   }
 
   queryUrlExecutorFactory() {
-    return query => {
+    return (query) => {
       // Notify status tracker of execution start
       if (this.statusTracker) {
         this.statusTracker.onExecutionStart();
       }
 
       return this.executeQuery(query)
-        .then(result => {
+        .then((result) => {
           if (this.statusTracker) {
             this.statusTracker.onExecutionComplete(result);
           }
           return result;
         })
-        .catch(error => {
+        .catch((error) => {
           if (this.statusTracker) {
             this.statusTracker.onExecutionError(error);
           }
@@ -487,7 +453,7 @@ export class Report extends Query {
   }
 }
 
-const getReport = report => new Report(report);
+const getReport = (report) => new Report(report);
 const saveOrCreateUrl = function (data) {
   if (data.id) {
     return `api/reports/${data.id}`;
@@ -495,13 +461,13 @@ const saveOrCreateUrl = function (data) {
     return "api/reports";
   }
 };
-const mapResults = data => ({ ...data, results: map(data.results, getReport) });
+const mapResults = (data) => ({ ...data, results: map(data.results, getReport) });
 const normalizeCondition = {
   "greater than": ">",
   "less than": "<",
-  "equals": "=",
+  equals: "=",
 };
-const transformResponse = data => {
+const transformResponse = (data) => {
   merge({}, data, {
     options: {
       op: normalizeCondition[data.options.op] || data.options.op,
@@ -510,55 +476,43 @@ const transformResponse = data => {
 };
 
 function transformPublicState(report) {
-  if (report.results && !report.queries.length)
-    throw new Error("Report has no queries.");
+  if (report.results && !report.queries.length) throw new Error("Report has no queries.");
   if (report.public_url) report.publicAccessEnabled = true;
   else report.publicAccessEnabled = false;
   return report;
 }
 
 const ReportService = {
-  report: params => axios.get("api/reports", { params }).then(mapResults),
-  get: data =>
+  report: (params) => axios.get("api/reports", { params }).then(mapResults),
+  get: (data) =>
     axios
       .get("api/reports/" + data.id)
       .then(getReport)
       .then(transformPublicState),
-  save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
-  saveAs: data => axios.post("api/reports", data).then(getReport),
-  delete: data =>
+  save: (data) => axios.post(saveOrCreateUrl(data), data).then(getReport),
+  saveAs: (data) => axios.post("api/reports", data).then(getReport),
+  delete: (data) =>
     axios.delete(`api/reports/${data.id}`).then(() => {
       window.location.href = "/reports";
     }),
-  recent: params =>
-    axios
-      .get(`api/reports/recent`, { params })
-      .then(data => map(data, getReport)),
-  archive: params =>
-    axios.get(`api/reports/archive`, { params }).then(mapResults),
-  archiveReport: params =>
+  recent: (params) => axios.get(`api/reports/recent`, { params }).then((data) => map(data, getReport)),
+  archive: (params) => axios.get(`api/reports/archive`, { params }).then(mapResults),
+  archiveReport: (params) =>
     axios.delete(`api/reports/archive`, { params }).then(() => {
       window.location.href = "/reports/archive";
     }),
-  myReports: params =>
-    axios.get("api/reports?type=my", { params }).then(mapResults),
-  fork: ({ id }) =>
-    axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
-  resultById: data => axios.get(`api/reports/${data.id}/results.json`),
-  asDropdown: data => axios.get(`api/reports/${data.id}/dropdown`),
+  myReports: (params) => axios.get("api/reports?type=my", { params }).then(mapResults),
+  fork: ({ id }) => axios.post(`api/reports/${id}/fork`, { id }).then(getReport),
+  resultById: (data) => axios.get(`api/reports/${data.id}/results.json`),
+  asDropdown: (data) => axios.get(`api/reports/${data.id}/dropdown`),
   associatedDropdown: ({ reportId, dropdownReportId }) =>
     axios.get(`api/reports/${reportId}/dropdowns/${dropdownReportId}`),
-  favorites: params =>
-    axios.get("api/reports/favorites", { params }).then(mapResults),
-  favorite: data => axios.post(`api/reports/${data.id}/favorite`),
-  unfavorite: data => axios.delete(`api/reports/${data.id}/favorite`),
-  getByToken: ({ token }) =>
-    axios.get(`api/reports/public/${token}`).then(transformPublicState),
+  favorites: (params) => axios.get("api/reports/favorites", { params }).then(mapResults),
+  favorite: (data) => axios.post(`api/reports/${data.id}/favorite`),
+  unfavorite: (data) => axios.delete(`api/reports/${data.id}/favorite`),
+  getByToken: ({ token }) => axios.get(`api/reports/public/${token}`).then(transformPublicState),
   getByTokenPublic: ({ token }) =>
-    axios
-      .get(`api/reports/public/${token}?get_results=true`)
-      .then(getReport)
-      .then(transformPublicState),
+    axios.get(`api/reports/public/${token}?get_results=true`).then(getReport).then(transformPublicState),
 };
 
 ReportService.newReport = function newReport() {
@@ -582,13 +536,9 @@ ReportService.format = function formatReport(syntax, report) {
       return Promise.reject(String(err));
     }
   } else if (syntax === "sql") {
-    return axios
-      .post("api/reports/format", { report })
-      .then(data => data.report);
+    return axios.post("api/reports/format", { report }).then((data) => data.report);
   } else {
-    return Promise.reject(
-      "Report formatting is not supported for your data source syntax.",
-    );
+    return Promise.reject("Report formatting is not supported for your data source syntax.");
   }
 };
 

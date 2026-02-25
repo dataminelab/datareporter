@@ -29,17 +29,11 @@ describe("FancyDragIndicator", () => {
   });
 
   it("adds the correct class", () => {
-    const renderedComponent = renderIntoDocument(
-      <FancyDragIndicator dragPosition={dragPosition} />,
-    );
+    const renderedComponent = renderIntoDocument(<FancyDragIndicator dragPosition={dragPosition} />);
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
-      "should contain class",
-    ).to.contain("fancy-drag-indicator");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "fancy-drag-indicator"
+    );
   });
 });

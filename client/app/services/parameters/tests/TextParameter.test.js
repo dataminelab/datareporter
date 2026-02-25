@@ -21,13 +21,10 @@ describe("TextParameter", () => {
     describe("Empty values", () => {
       const emptyValues = [null, undefined, ""];
 
-      test.each(emptyValues)(
-        "normalizes empty value '%s' as null",
-        emptyValue => {
-          const normalizedValue = param.normalizeValue(emptyValue);
-          expect(normalizedValue).toBeNull();
-        },
-      );
+      test.each(emptyValues)("normalizes empty value '%s' as null", (emptyValue) => {
+        const normalizedValue = param.normalizeValue(emptyValue);
+        expect(normalizedValue).toBeNull();
+      });
     });
   });
 });

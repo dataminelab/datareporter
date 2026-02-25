@@ -30,19 +30,12 @@ export interface DragPositionJS {
 
 let check: Class<DragPositionValue, DragPositionJS>;
 
-export class DragPosition
-  implements Instance<DragPositionValue, DragPositionJS>
-{
+export class DragPosition implements Instance<DragPositionValue, DragPositionJS> {
   static isDragPosition(candidate: any): candidate is DragPosition {
     return candidate instanceof DragPosition;
   }
 
-  static calculateFromOffset(
-    offset: number,
-    numItems: number,
-    itemWidth: number,
-    itemGap: number,
-  ): DragPosition {
+  static calculateFromOffset(offset: number, numItems: number, itemWidth: number, itemGap: number): DragPosition {
     if (!numItems) {
       return new DragPosition({
         replace: 0,
@@ -91,14 +84,9 @@ export class DragPosition
   public replace: number;
 
   constructor(parameters: DragPositionValue) {
-    this.insert = hasOwnProperty(parameters, "insert")
-      ? parameters.insert
-      : null;
-    this.replace = hasOwnProperty(parameters, "replace")
-      ? parameters.replace
-      : null;
-    if (this.insert == null && this.replace == null)
-      throw new Error("invalid drag position");
+    this.insert = hasOwnProperty(parameters, "insert") ? parameters.insert : null;
+    this.replace = hasOwnProperty(parameters, "replace") ? parameters.replace : null;
+    if (this.insert == null && this.replace == null) throw new Error("invalid drag position");
   }
 
   public valueOf(): DragPositionValue {
@@ -128,11 +116,7 @@ export class DragPosition
   }
 
   public equals(other: DragPosition): boolean {
-    return (
-      DragPosition.isDragPosition(other) &&
-      this.insert === other.insert &&
-      this.replace === other.replace
-    );
+    return DragPosition.isDragPosition(other) && this.insert === other.insert && this.replace === other.replace;
   }
 
   public isInsert(): boolean {

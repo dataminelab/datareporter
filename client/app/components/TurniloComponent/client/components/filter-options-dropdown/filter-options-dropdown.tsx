@@ -63,9 +63,7 @@ export interface FilterOptionsDropdownProps {
 
 export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdownProps> {
   static getFilterOptions(...filterTypes: string[]) {
-    return FILTER_OPTIONS.filter(
-      option => filterTypes.indexOf(option.value) !== -1,
-    );
+    return FILTER_OPTIONS.filter((option) => filterTypes.indexOf(option.value) !== -1);
   }
 
   onSelectOption = (option: FilterOption) => {
@@ -83,9 +81,7 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
 
   render() {
     const { selectedOption, filterOptions = FILTER_OPTIONS } = this.props;
-    const selectedItem =
-      filterOptions.find(({ value }) => value === selectedOption) ||
-      filterOptions[0];
+    const selectedItem = filterOptions.find(({ value }) => value === selectedOption) || filterOptions[0];
 
     return (
       <div className="filter-options-dropdown">
@@ -94,9 +90,9 @@ export class FilterOptionsDropdown extends React.Component<FilterOptionsDropdown
           items={filterOptions}
           selectedItem={selectedItem}
           equal={(a, b) => a.value === b.value}
-          keyItem={d => d.value}
+          keyItem={(d) => d.value}
           renderItem={this.renderFilterOption}
-          renderSelectedItem={d => <SvgIcon className="icon" svg={d.svg} />}
+          renderSelectedItem={(d) => <SvgIcon className="icon" svg={d.svg} />}
           onSelect={this.onSelectOption}
         />
       </div>

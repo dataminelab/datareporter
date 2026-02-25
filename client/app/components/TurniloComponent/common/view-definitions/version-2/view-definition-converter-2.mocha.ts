@@ -17,10 +17,7 @@
 import { expect } from "chai";
 import { DataCubeFixtures } from "../../models/data-cube/data-cube.fixtures";
 import { TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
-import {
-  stringIn,
-  timePeriod,
-} from "../../models/filter-clause/filter-clause.fixtures";
+import { stringIn, timePeriod } from "../../models/filter-clause/filter-clause.fixtures";
 import { ViewDefinitionConverter2 } from "./view-definition-converter-2";
 import { ViewDefinitionConverter2Fixtures } from "./view-definition-converter-2.fixtures";
 
@@ -76,12 +73,8 @@ describe("ViewDefinitionConverter2", () => {
     },
   ].forEach(({ label, expression, period }) => {
     it(`converts ${label} bucket expression to time period`, () => {
-      const viewDefinition =
-        ViewDefinitionConverter2Fixtures.withFilterExpression(expression);
-      const essence = new ViewDefinitionConverter2().fromViewDefinition(
-        viewDefinition,
-        DataCubeFixtures.wiki(),
-      );
+      const viewDefinition = ViewDefinitionConverter2Fixtures.withFilterExpression(expression);
+      const essence = new ViewDefinitionConverter2().fromViewDefinition(viewDefinition, DataCubeFixtures.wiki());
       const convertedClause = essence.filter.clauses.first();
 
       const expectedClause = timePeriod("time", "P1D", period);
@@ -142,7 +135,7 @@ describe("ViewDefinitionConverter2", () => {
     ]);
     const convertedFilter = new ViewDefinitionConverter2().fromViewDefinition(
       viewDefinition,
-      DataCubeFixtures.wiki(),
+      DataCubeFixtures.wiki()
     ).filter;
     const convertedClause = convertedFilter.clauses.get(1);
 
@@ -182,7 +175,7 @@ describe("ViewDefinitionConverter2", () => {
     ]);
     const convertedSplits = new ViewDefinitionConverter2().fromViewDefinition(
       viewDefinition,
-      DataCubeFixtures.wiki(),
+      DataCubeFixtures.wiki()
     ).splits;
 
     expect(convertedSplits.getSplit(0).reference).to.equal("page_last_author");

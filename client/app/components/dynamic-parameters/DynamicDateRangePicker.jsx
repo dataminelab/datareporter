@@ -11,21 +11,12 @@ import DynamicButton from "@/components/dynamic-parameters/DynamicButton";
 import "./DynamicParameters.less";
 
 function isValidDateRangeValue(value) {
-  return (
-    isArray(value) &&
-    value.length === 2 &&
-    moment.isMoment(value[0]) &&
-    moment.isMoment(value[1])
-  );
+  return isArray(value) && value.length === 2 && moment.isMoment(value[0]) && moment.isMoment(value[1]);
 }
 
 class DynamicDateRangePicker extends React.Component {
   static propTypes = {
-    type: PropTypes.oneOf([
-      "date-range",
-      "datetime-range",
-      "datetime-range-with-seconds",
-    ]).isRequired,
+    type: PropTypes.oneOf(["date-range", "datetime-range", "datetime-range-with-seconds"]).isRequired,
     className: PropTypes.string,
     value: PropTypes.any,
     parameter: PropTypes.any,
@@ -37,7 +28,7 @@ class DynamicDateRangePicker extends React.Component {
           name: PropTypes.string,
           value: PropTypes.object,
           label: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-        }),
+        })
       ),
     }),
     dateRangeOptions: PropTypes.any,
@@ -59,15 +50,11 @@ class DynamicDateRangePicker extends React.Component {
     this.dateRangeComponentRef = React.createRef();
   }
 
-  onDynamicValueSelect = dynamicValue => {
+  onDynamicValueSelect = (dynamicValue) => {
     const { onSelect, parameter } = this.props;
     if (dynamicValue === "static") {
       const parameterValue = parameter.getExecutionValue();
-      if (
-        isObject(parameterValue) &&
-        parameterValue.start &&
-        parameterValue.end
-      ) {
+      if (isObject(parameterValue) && parameterValue.start && parameterValue.end) {
         onSelect([moment(parameterValue.start), moment(parameterValue.end)]);
       } else {
         onSelect(null);
@@ -80,16 +67,7 @@ class DynamicDateRangePicker extends React.Component {
   };
 
   render() {
-    const {
-      type,
-      value,
-      onSelect,
-      className,
-      dynamicButtonOptions,
-      dateRangeOptions,
-      parameter,
-      ...rest
-    } = this.props;
+    const { type, value, onSelect, className, dynamicButtonOptions, dateRangeOptions, parameter, ...rest } = this.props;
     const isDateTimeRange = includes(type, "datetime-range");
     const hasDynamicValue = isDynamicDateRange(value);
 

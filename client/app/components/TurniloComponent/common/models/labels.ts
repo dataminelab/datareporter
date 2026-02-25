@@ -49,13 +49,11 @@ export const DIMENSION = {
   },
   granularities: {
     label: "Granularities",
-    description:
-      "A set of exactly 5 granularities that you want to be available for bucketing.",
+    description: "A set of exactly 5 granularities that you want to be available for bucketing.",
   },
   bucketingStrategy: {
     label: "Default Bucketing",
-    description:
-      "Specify whether or not the dimension should be bucketed by default.",
+    description: "Specify whether or not the dimension should be bucketed by default.",
   },
 };
 
@@ -139,13 +137,11 @@ export const CUSTOMIZATION = {
   },
   externalViews: {
     label: "External Views",
-    description:
-      "Code that generates links to external views that will appear in share menu.",
+    description: "Code that generates links to external views that will appear in share menu.",
   },
   timezones: {
     label: "Timezones",
-    description:
-      "These timezones will appear in the dropdown instead of the default.",
+    description: "These timezones will appear in the dropdown instead of the default.",
   },
   cssVariables: {
     label: "CSS Variables",
@@ -162,8 +158,7 @@ export const CLUSTER = {
 
   name: {
     label: "Name",
-    description:
-      "The name of the cluster (to be referenced later from the data cube)",
+    description: "The name of the cluster (to be referenced later from the data cube)",
   },
   url: {
     label: "Host",
@@ -224,8 +219,7 @@ export const CLUSTER = {
   },
   user: {
     label: "User",
-    description:
-      "The user to connect as. This user needs no permissions other than SELECT.",
+    description: "The user to connect as. This user needs no permissions other than SELECT.",
   },
   password: {
     label: "Password",
@@ -274,13 +268,11 @@ export const DATA_CUBE = {
   },
   source: {
     label: "Source",
-    description:
-      "The name of cube's source. The dataSource, table, or filename of the data for this cube",
+    description: "The name of cube's source. The dataSource, table, or filename of the data for this cube",
   },
   subsetFormula: {
     label: "Subset Formula",
-    description:
-      "A row level filter that is applied to the cube. This filter is never represented in the UI",
+    description: "A row level filter that is applied to the cube. This filter is never represented in the UI",
   },
   defaultDuration: {
     label: "Default duration",

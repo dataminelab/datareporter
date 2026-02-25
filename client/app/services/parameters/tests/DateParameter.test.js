@@ -67,7 +67,7 @@ describe("DateParameter", () => {
       // Test what actually happens with invalid values
       const invalidValues = ["not-a-date", "invalid-format", "xyz123"];
 
-      invalidValues.forEach(invalidValue => {
+      invalidValues.forEach((invalidValue) => {
         const result = param.normalizeValue(invalidValue);
         // Check what the method actually returns for invalid values
         // It might return a default date or null - let's be flexible
@@ -79,7 +79,7 @@ describe("DateParameter", () => {
       // Test edge cases that might return null or a default value
       const edgeCases = [null, undefined, ""];
 
-      edgeCases.forEach(edgeCase => {
+      edgeCases.forEach((edgeCase) => {
         const result = param.normalizeValue(edgeCase);
         // The method might return null or a default date for these cases
         if (result === null) {
@@ -102,7 +102,7 @@ describe("DateParameter", () => {
         new Date().toISOString(),
       ];
 
-      validDates.forEach(date => {
+      validDates.forEach((date) => {
         expect(() => {
           const result = param.normalizeValue(date);
           expect(result).toBeDefined();
@@ -113,7 +113,7 @@ describe("DateParameter", () => {
     test("should handle invalid date values gracefully", () => {
       const invalidDates = ["invalid-date", "", null, undefined];
 
-      invalidDates.forEach(date => {
+      invalidDates.forEach((date) => {
         expect(() => {
           const result = param.normalizeValue(date);
           expect(result).toBeDefined();
@@ -126,11 +126,7 @@ describe("DateParameter", () => {
       const normalized = param.normalizeValue(testDate);
 
       expect(normalized).toBeTruthy();
-      expect(
-        moment.isMoment(normalized) ||
-          normalized instanceof Date ||
-          typeof normalized === "string",
-      ).toBe(true);
+      expect(moment.isMoment(normalized) || normalized instanceof Date || typeof normalized === "string").toBe(true);
     });
 
     test("should handle current date", () => {

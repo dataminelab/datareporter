@@ -32,12 +32,7 @@ import { QueryError } from "../../components/query-error/query-error";
 import { Scroller, ScrollerLayout } from "../../components/scroller/scroller";
 import { exportOptions, STRINGS } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
-import {
-  dateFromFilter,
-  download,
-  FileFormat,
-  makeFileName,
-} from "../../utils/download/download";
+import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
 import { getVisibleSegments } from "../../utils/sizing/sizing";
 import tabularOptions from "../../utils/tabular-options/tabular-options";
 import "./raw-data-modal.scss";
@@ -84,10 +79,7 @@ function classFromAttribute(attribute: AttributeInfo): string {
   });
 }
 
-export class RawDataModal extends React.Component<
-  RawDataModalProps,
-  RawDataModalState
-> {
+export class RawDataModal extends React.Component<RawDataModalProps, RawDataModalState> {
   public mounted: boolean;
   public tableRef: React.RefObject<any>;
 
@@ -104,22 +96,20 @@ export class RawDataModal extends React.Component<
     this.tableRef = React.createRef();
   }
 
-  componentDidMount():void {
+  componentDidMount(): void {
     this.mounted = true;
     const { essence, timekeeper } = this.props;
     this.fetchData(essence, timekeeper);
   }
 
-  componentWillUnmount():void {
+  componentWillUnmount(): void {
     this.mounted = false;
   }
 
   fetchData(essence: Essence, timekeeper: Timekeeper): void {
     const { dataCube } = essence;
     const $main = $("main");
-    const query = $main
-      .filter(essence.getEffectiveFilter(timekeeper).toExpression(dataCube))
-      .limit(LIMIT);
+    const query = $main.filter(essence.getEffectiveFilter(timekeeper).toExpression(dataCube)).limit(LIMIT);
     this.setState({ loading: true });
     dataCube.executor(query, { timezone: essence.timezone }).then(
       // @ts-ignore
@@ -136,7 +126,7 @@ export class RawDataModal extends React.Component<
           error,
           loading: false,
         });
-      },
+      }
     );
   }
 
@@ -158,7 +148,7 @@ export class RawDataModal extends React.Component<
 
     return essence
       .getEffectiveFilter(timekeeper)
-      .clauses.map(clause => {
+      .clauses.map((clause) => {
         const dimension = dataCube.getDimension(clause.reference);
         if (!dimension) return null;
         return formatFilterClause(dimension, clause, essence.timezone);
@@ -167,9 +157,7 @@ export class RawDataModal extends React.Component<
   }
 
   getSortedAttributes(dataCube: DataCube): AttributeInfo[] {
-    const timeAttributeName = dataCube.timeAttribute
-      ? dataCube.timeAttribute.name
-      : null;
+    const timeAttributeName = dataCube.timeAttribute ? dataCube.timeAttribute.name : null;
 
     const attributeRank = (attribute: AttributeInfo) => {
       const name = attribute.name;
@@ -223,11 +211,7 @@ export class RawDataModal extends React.Component<
       const width = getColumnWidth(attribute);
       const style = { width };
       return (
-        <div
-          className={classNames("header-cell", classFromAttribute(attribute))}
-          style={style}
-          key={i}
-        >
+        <div className={classNames("header-cell", classFromAttribute(attribute))} style={style} key={i}>
           <div className="title-wrap">{makeTitle(name)}</div>
         </div>
       );
@@ -251,20 +235,13 @@ export class RawDataModal extends React.Component<
 
     const rawData = dataset.data;
 
-    const [firstRowToShow, lastRowToShow] = this.getVisibleIndices(
-      rawData.length,
-      stage.height,
-    );
+    const [firstRowToShow, lastRowToShow] = this.getVisibleIndices(rawData.length, stage.height);
 
     const rows = rawData.slice(firstRowToShow, lastRowToShow);
     let attributes = this.getSortedAttributes(dataCube);
     const attributeWidths = attributes.map(getColumnWidth);
 
-    const { startIndex, shownColumns } = getVisibleSegments(
-      attributeWidths,
-      scrollLeft,
-      stage.width,
-    );
+    const { startIndex, shownColumns } = getVisibleSegments(attributeWidths, scrollLeft, stage.width);
     const leftOffset = arraySum(attributeWidths.slice(0, startIndex));
 
     attributes = attributes.slice(startIndex, startIndex + shownColumns);
@@ -275,10 +252,7 @@ export class RawDataModal extends React.Component<
       attributes.forEach((attribute: AttributeInfo) => {
         const name = attribute.name;
         const datumAttribute = datum[name];
-        const value =
-          datumAttribute instanceof Expression
-            ? datumAttribute.resolve(datum).simplify()
-            : datum[name];
+        const value = datumAttribute instanceof Expression ? datumAttribute.resolve(datum).simplify() : datum[name];
         const colStyle = {
           width: getColumnWidth(attribute),
         };
@@ -290,13 +264,9 @@ export class RawDataModal extends React.Component<
         }
 
         cols.push(
-          <div
-            className={classNames("cell", classFromAttribute(attribute))}
-            key={name}
-            style={colStyle}
-          >
+          <div className={classNames("cell", classFromAttribute(attribute))} key={name} style={colStyle}>
             <span className="cell-value">{String(displayValue)}</span>
-          </div>,
+          </div>
         );
       });
 
@@ -316,15 +286,7 @@ export class RawDataModal extends React.Component<
 
     const buttons: JSX.Element[] = [];
 
-    buttons.push(
-      <Button
-        type="primary"
-        key="close"
-        className="close"
-        onClick={onClose}
-        title={STRINGS.close}
-      />,
-    );
+    buttons.push(<Button type="primary" key="close" className="close" onClick={onClose} title={STRINGS.close} />);
 
     exportOptions.forEach(({ label, fileFormat }) => {
       buttons.push(
@@ -335,7 +297,7 @@ export class RawDataModal extends React.Component<
           onClick={() => this.download(fileFormat)}
           title={label}
           disabled={Boolean(loading || error)}
-        />,
+        />
       );
     });
 
@@ -348,14 +310,8 @@ export class RawDataModal extends React.Component<
     const { dataCube } = essence;
 
     const options = tabularOptions(essence);
-    const filtersString = dateFromFilter(
-      essence.getEffectiveFilter(timekeeper),
-    );
-    download(
-      { dataset, options },
-      fileFormat,
-      makeFileName(dataCube.name, filtersString, "raw"),
-    );
+    const filtersString = dateFromFilter(essence.getEffectiveFilter(timekeeper));
+    download({ dataset, options }, fileFormat, makeFileName(dataCube.name, filtersString, "raw"));
   }
 
   render(): JSX.Element {

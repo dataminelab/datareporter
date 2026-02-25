@@ -43,10 +43,7 @@ export interface DropdownState {
   open: boolean;
 }
 
-export class Dropdown<T> extends React.Component<
-  DropdownProps<T>,
-  DropdownState
-> {
+export class Dropdown<T> extends React.Component<DropdownProps<T>, DropdownState> {
   state: DropdownState = {
     open: false,
   };
@@ -99,25 +96,20 @@ export class Dropdown<T> extends React.Component<
       menuClassName,
     } = this.props;
     if (!items || !items.length) return null;
-    const itemElements = items.map(item => {
+    const itemElements = items.map((item) => {
       return (
         <div
           className={classNames("dropdown-item", {
             selected: selectedItem && equal(item, selectedItem),
           })}
           key={keyItem(item) as string}
-          onClick={() => this.handleOnSelect(item)}
-        >
+          onClick={() => this.handleOnSelect(item)}>
           {renderItem(item)}
         </div>
       );
     });
 
-    return (
-      <div className={classNames("dropdown-menu", menuClassName)}>
-        {itemElements}
-      </div>
-    );
+    return <div className={classNames("dropdown-menu", menuClassName)}>{itemElements}</div>;
   }
 
   render() {
@@ -134,17 +126,11 @@ export class Dropdown<T> extends React.Component<
     const labelElement = label && <div className="dropdown-label">{label}</div>;
 
     return (
-      <div
-        className={classNames("dropdown", direction, className)}
-        onClick={this.onClick}
-      >
+      <div className={classNames("dropdown", direction, className)} onClick={this.onClick}>
         {labelElement}
         <div className={classNames("selected-item", { active: open })}>
           {renderSelectedItem(selectedItem)}
-          <SvgIcon
-            className="caret-icon"
-            svg={require("../../icons/dropdown-caret.svg")}
-          />
+          <SvgIcon className="caret-icon" svg={require("../../icons/dropdown-caret.svg")} />
         </div>
         {open ? this.renderMenu() : null}
       </div>

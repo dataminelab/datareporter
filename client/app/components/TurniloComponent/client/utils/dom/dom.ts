@@ -46,11 +46,7 @@ export function isInside(child: Element, parent: Element | Text): boolean {
     if (child === parent) return true;
 
     const dataset = (child as HTMLElement).dataset;
-    if (
-      dataset &&
-      dataset["parent"] &&
-      (altParent = document.getElementById(dataset["parent"]))
-    ) {
+    if (dataset && dataset["parent"] && (altParent = document.getElementById(dataset["parent"]))) {
       child = altParent;
     } else {
       child = child.parentElement;
@@ -59,10 +55,7 @@ export function isInside(child: Element, parent: Element | Text): boolean {
   return false;
 }
 
-export function findParentWithClass(
-  child: Element,
-  className: string,
-): Element {
+export function findParentWithClass(child: Element, className: string): Element {
   while (child) {
     if (child.classList.contains(className)) return child;
     child = child.parentNode as Element;
@@ -77,17 +70,9 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
   }
 
   // Thanks to http://www.kryogenix.org/code/browser/custom-drag-image.html
-  const dragGhost = d3
-    .select(document.body)
-    .append("div")
-    .attr("class", "drag-ghost")
-    .text(text);
+  const dragGhost = d3.select(document.body).append("div").attr("class", "drag-ghost").text(text);
 
-  dataTransfer.setDragImage(
-    dragGhost.node() as Element,
-    DRAG_GHOST_OFFSET_X,
-    DRAG_GHOST_OFFSET_Y,
-  );
+  dataTransfer.setDragImage(dragGhost.node() as Element, DRAG_GHOST_OFFSET_X, DRAG_GHOST_OFFSET_Y);
 
   // Remove the host after a ms because it is no longer needed
   setTimeout(() => {
@@ -95,11 +80,7 @@ export function setDragGhost(dataTransfer: DataTransfer, text: string): void {
   }, 1);
 }
 
-export const setDragData = (
-  dataTransfer: DataTransfer,
-  format: string,
-  data: string,
-): void => {
+export const setDragData = (dataTransfer: DataTransfer, format: string, data: string): void => {
   try {
     dataTransfer.setData(format, data);
   } catch (e) {
@@ -143,15 +124,11 @@ export function transformStyle(x: number, y: number): any {
   };
 }
 
-export function getXFromEvent(
-  e: MouseEvent | DragEvent | React.MouseEvent<HTMLElement>,
-): number {
+export function getXFromEvent(e: MouseEvent | DragEvent | React.MouseEvent<HTMLElement>): number {
   return e.clientX || e.pageX;
 }
 
-export function getYFromEvent(
-  e: MouseEvent | DragEvent | React.MouseEvent<HTMLElement>,
-): number {
+export function getYFromEvent(e: MouseEvent | DragEvent | React.MouseEvent<HTMLElement>): number {
   return e.clientY || e.pageY;
 }
 
@@ -167,9 +144,7 @@ export function clamp(n: number, min: number, max: number): number {
   return Math.min(Math.max(n, min), max);
 }
 
-export function classNames(
-  ...args: Array<string | Record<string, any>>
-): string {
+export function classNames(...args: Array<string | Record<string, any>>): string {
   const classes: string[] = [];
 
   for (const arg of args) {

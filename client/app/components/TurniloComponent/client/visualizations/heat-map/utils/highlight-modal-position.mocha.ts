@@ -16,11 +16,7 @@
 
 import { expect } from "chai";
 import { Stage } from "../../../../common/models/stage/stage";
-import {
-  calculateLeft,
-  calculateTop,
-  CoordinatesProps,
-} from "./highlight-modal-position";
+import { calculateLeft, calculateTop, CoordinatesProps } from "./highlight-modal-position";
 
 const defaults: CoordinatesProps = {
   layout: {
@@ -44,9 +40,7 @@ const defaults: CoordinatesProps = {
   }),
 };
 
-const mockProps = (
-  props: Partial<CoordinatesProps> = {},
-): CoordinatesProps => ({ ...defaults, ...props });
+const mockProps = (props: Partial<CoordinatesProps> = {}): CoordinatesProps => ({ ...defaults, ...props });
 
 describe("highlightModalPosition", () => {
   describe("calculateLeft", () => {

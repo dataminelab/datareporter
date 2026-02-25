@@ -15,16 +15,11 @@ export default function useUnsavedChangesAlert(shouldShowAlert = false) {
       return shouldShowAlertRef.current ? unloadMessage : undefined;
     };
 
-    const unsubscribe = location.confirmChange(
-      (nextLocation, currentLocation) => {
-        if (
-          shouldShowAlertRef.current &&
-          nextLocation.path !== currentLocation.path
-        ) {
-          return confirmMessage;
-        }
-      },
-    );
+    const unsubscribe = location.confirmChange((nextLocation, currentLocation) => {
+      if (shouldShowAlertRef.current && nextLocation.path !== currentLocation.path) {
+        return confirmMessage;
+      }
+    });
 
     return () => {
       window.onbeforeunload = savedOnBeforeUnload;

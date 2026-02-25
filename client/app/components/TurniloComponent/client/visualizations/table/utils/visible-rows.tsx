@@ -35,14 +35,8 @@ interface VisibleRowsProps {
   renderRow: Unary<RowProps, JSX.Element>;
 }
 
-export const VisibleRows: React.FunctionComponent<VisibleRowsProps> = props => {
-  const {
-    renderRow,
-    hoveredRowDatum,
-    rowsData,
-    visibleRowsIndexRange,
-    highlightedRowIndex,
-  } = props;
+export const VisibleRows: React.FunctionComponent<VisibleRowsProps> = (props) => {
+  const { renderRow, hoveredRowDatum, rowsData, visibleRowsIndexRange, highlightedRowIndex } = props;
 
   const [start, end] = visibleRowsIndexRange;
   const visibleData = rowsData.slice(start, end);

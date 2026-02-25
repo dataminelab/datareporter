@@ -9,10 +9,7 @@ import "./index.less";
 export default function ApplicationLayout({ children }) {
   const mobileNavbarContainerRef = useRef();
 
-  const getMobileNavbarPopupContainer = useCallback(
-    () => mobileNavbarContainerRef.current,
-    [],
-  );
+  const getMobileNavbarPopupContainer = useCallback(() => mobileNavbarContainerRef.current, []);
 
   return (
     <React.Fragment>
@@ -23,14 +20,8 @@ export default function ApplicationLayout({ children }) {
           </DynamicComponent>
         </div>
         <div className="application-layout-content">
-          <nav
-            className="application-layout-top-menu"
-            ref={mobileNavbarContainerRef}
-          >
-            <DynamicComponent
-              name="ApplicationMobileNavbar"
-              getPopupContainer={getMobileNavbarPopupContainer}
-            >
+          <nav className="application-layout-top-menu" ref={mobileNavbarContainerRef}>
+            <DynamicComponent name="ApplicationMobileNavbar" getPopupContainer={getMobileNavbarPopupContainer}>
               <MobileNavbar getPopupContainer={getMobileNavbarPopupContainer} />
             </DynamicComponent>
           </nav>

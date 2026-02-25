@@ -35,7 +35,7 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
       event.stopPropagation();
       onSelect(...args);
     },
-    [onSelect],
+    [onSelect]
   );
 
   if (!item) {
@@ -59,12 +59,8 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
           mouseEnterDelay={0}
           mouseLeaveDelay={0}
           placement="topRight"
-          arrowPointAtCenter
-        >
-          <PlainButton
-            className="copy-to-editor"
-            onClick={e => handleSelect(e, item.name)}
-          >
+          arrowPointAtCenter>
+          <PlainButton className="copy-to-editor" onClick={(e) => handleSelect(e, item.name)}>
             <i className="fa fa-angle-double-right" aria-hidden="true" />
           </PlainButton>
         </Tooltip>
@@ -74,7 +70,7 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
           {item.loading ? (
             <div className="table-open">Loading...</div>
           ) : (
-            map(item.columns, column => {
+            map(item.columns, (column) => {
               const columnName = get(column, "name");
               const columnType = get(column, "type");
               return (
@@ -82,25 +78,17 @@ function SchemaItem({ item, expanded, onToggle, onSelect, ...props }) {
                   title="Insert column name into query text"
                   mouseEnterDelay={0}
                   mouseLeaveDelay={0}
-                  placement="rightTop"
-                >
+                  placement="rightTop">
                   <PlainButton
                     key={columnName}
                     className="table-open-item"
-                    onClick={e => handleSelect(e, columnName)}
-                  >
+                    onClick={(e) => handleSelect(e, columnName)}>
                     <div>
-                      {columnName}{" "}
-                      {columnType && (
-                        <span className="column-type">{columnType}</span>
-                      )}
+                      {columnName} {columnType && <span className="column-type">{columnType}</span>}
                     </div>
 
                     <div className="copy-to-editor">
-                      <i
-                        className="fa fa-angle-double-right"
-                        aria-hidden="true"
-                      />
+                      <i className="fa fa-angle-double-right" aria-hidden="true" />
                     </div>
                   </PlainButton>
                 </Tooltip>
@@ -135,13 +123,7 @@ function SchemaLoadingState() {
   );
 }
 
-export function SchemaList({
-  loading,
-  schema,
-  expandedFlags,
-  onTableExpand,
-  onItemSelect,
-}) {
+export function SchemaList({ loading, schema, expandedFlags, onTableExpand, onItemSelect }) {
   const [listRef, setListRef] = useState(null);
 
   useEffect(() => {
@@ -189,10 +171,7 @@ export function SchemaList({
 }
 
 export function applyFilterOnSchema(schema, filterString) {
-  const filters = filter(
-    filterString.toLowerCase().split(/\s+/),
-    s => s.length > 0,
-  );
+  const filters = filter(filterString.toLowerCase().split(/\s+/), (s) => s.length > 0);
 
   // Empty string: return original schema
   if (filters.length === 0) {
@@ -205,11 +184,9 @@ export function applyFilterOnSchema(schema, filterString) {
     const columnFilter = filters[0];
     return filter(
       schema,
-      item =>
+      (item) =>
         includes(item.name.toLowerCase(), nameFilter) ||
-        some(item.columns, column =>
-          includes(get(column, "name").toLowerCase(), columnFilter),
-        ),
+        some(item.columns, (column) => includes(get(column, "name").toLowerCase(), columnFilter))
     );
   }
 
@@ -217,17 +194,15 @@ export function applyFilterOnSchema(schema, filterString) {
   const nameFilter = filters[0];
   const columnFilter = filters[1];
   return filter(
-    map(schema, item => {
+    map(schema, (item) => {
       if (includes(item.name.toLowerCase(), nameFilter)) {
         item = {
           ...item,
-          columns: filter(item.columns, column =>
-            includes(get(column, "name").toLowerCase(), columnFilter),
-          ),
+          columns: filter(item.columns, (column) => includes(get(column, "name").toLowerCase(), columnFilter)),
         };
         return item.columns.length > 0 ? item : null;
       }
-    }),
+    })
   );
 }
 
@@ -241,10 +216,7 @@ export default function SchemaBrowser({
 }) {
   const [schema, isLoading, refreshSchema] = useDataSourceSchema(dataSource);
   const [filterString, setFilterString] = useState("");
-  const filteredSchema = useMemo(
-    () => applyFilterOnSchema(schema, filterString),
-    [schema, filterString],
-  );
+  const filteredSchema = useMemo(() => applyFilterOnSchema(schema, filterString), [schema, filterString]);
   const [handleFilterChange] = useDebouncedCallback(setFilterString, 500);
   const [expandedFlags, setExpandedFlags] = useState({});
 
@@ -274,18 +246,13 @@ export default function SchemaBrowser({
           placeholder="Search schema..."
           aria-label="Search schema"
           disabled={schema.length === 0}
-          onChange={event => handleFilterChange(event.target.value)}
+          onChange={(event) => handleFilterChange(event.target.value)}
         />
 
         <Tooltip title="Refresh Schema">
           <Button onClick={() => refreshSchema(true)}>
-            <i
-              className={cx("zmdi zmdi-refresh", { "zmdi-hc-spin": isLoading })}
-              aria-hidden="true"
-            />
-            <span className="sr-only">
-              {isLoading ? "Loading, please wait." : "Press to refresh."}
-            </span>
+            <i className={cx("zmdi zmdi-refresh", { "zmdi-hc-spin": isLoading })} aria-hidden="true" />
+            <span className="sr-only">{isLoading ? "Loading, please wait." : "Press to refresh."}</span>
           </Button>
         </Tooltip>
       </div>

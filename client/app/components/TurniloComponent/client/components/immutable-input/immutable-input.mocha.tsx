@@ -41,20 +41,15 @@ describe("ImmutableInput", () => {
         validator={/^.+$/}
         onChange={onChange}
         onInvalid={onInvalid}
-      />,
+      />
     );
 
     node = findDOMNode(component) as any;
   });
 
   it("adds the correct class", () => {
-    expect(
-      TestUtils.isCompositeComponent(component),
-      "should be composite",
-    ).to.equal(true);
-    expect(node.className, "should contain class").to.contain(
-      "immutable-input",
-    );
+    expect(TestUtils.isCompositeComponent(component), "should be composite").to.equal(true);
+    expect(node.className, "should contain class").to.contain("immutable-input");
   });
 
   it("works for valid values", () => {
@@ -85,9 +80,7 @@ describe("ImmutableInput", () => {
     let args = onChange.args[0];
 
     expect(args[0]).to.be.instanceOf(DataCube);
-    expect(args[0].clusterName).to.equal(
-      DataCubeFixtures.twitter().clusterName,
-    );
+    expect(args[0].clusterName).to.equal(DataCubeFixtures.twitter().clusterName);
 
     expect(args[1]).to.equal(false);
 
@@ -118,8 +111,7 @@ describe("ImmutableInput", () => {
   describe("with stringToValue/valueToString", () => {
     beforeEach(() => {
       const stringToValue = (str: string) => {
-        if (str === "PLATYPUS")
-          throw new Error("It's not even like a real animal amirite");
+        if (str === "PLATYPUS") throw new Error("It's not even like a real animal amirite");
         return str.toLowerCase();
       };
 
@@ -134,7 +126,7 @@ describe("ImmutableInput", () => {
           onInvalid={onInvalid}
           stringToValue={stringToValue}
           valueToString={valueToString}
-        />,
+        />
       );
 
       node = findDOMNode(component) as any;
@@ -172,9 +164,7 @@ describe("ImmutableInput", () => {
       const args = onChange.args[0];
 
       expect(args[0]).to.be.instanceOf(DataCube);
-      expect(args[0].clusterName).to.equal(
-        DataCubeFixtures.twitter().clusterName,
-      );
+      expect(args[0].clusterName).to.equal(DataCubeFixtures.twitter().clusterName);
 
       expect(args[1]).to.equal(false);
 

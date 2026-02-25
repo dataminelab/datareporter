@@ -12,13 +12,11 @@ function ExpandedWidgetDialog({ dialog, widget }) {
       {...dialog.props}
       title={
         <>
-          <VisualizationName visualization={widget.visualization} />{" "}
-          <span>{widget.getQuery().name}</span>
+          <VisualizationName visualization={widget.visualization} /> <span>{widget.getQuery().name}</span>
         </>
       }
       width="95%"
-      footer={<Button onClick={dialog.dismiss}>Close</Button>}
-    >
+      footer={<Button onClick={dialog.dismiss}>Close</Button>}>
       <VisualizationRenderer
         visualization={widget.visualization}
         queryResult={widget.getQueryResult()}

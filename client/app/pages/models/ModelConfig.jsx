@@ -23,10 +23,10 @@ function ModelConfig({ modelId, onError }) {
   useEffect(() => {
     let isCancelled = false;
     Model.get(modelId)
-      .then(res => {
+      .then((res) => {
         setModel(res);
       })
-      .catch(error => {
+      .catch((error) => {
         if (!isCancelled) {
           handleError(error);
         }
@@ -42,7 +42,7 @@ function ModelConfig({ modelId, onError }) {
       .then(() => {
         navigateTo("models");
       })
-      .catch(error => {
+      .catch((error) => {
         handleError(error);
       });
   };
@@ -79,7 +79,7 @@ const ModelConfigPage = wrapSettingsTab(
     order: 7,
     isHide: true,
   },
-  ModelConfig,
+  ModelConfig
 );
 
 routes.register(
@@ -87,6 +87,6 @@ routes.register(
   routeWithUserSession({
     path: "/models/:modelId",
     title: "Model config",
-    render: pageProps => <ModelConfigPage {...pageProps} />,
-  }),
+    render: (pageProps) => <ModelConfigPage {...pageProps} />,
+  })
 );

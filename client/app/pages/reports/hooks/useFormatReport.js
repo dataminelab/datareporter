@@ -9,17 +9,11 @@ export default function useFormatReport(report, syntax, onChange) {
 
   return useCallback(() => {
     Report.format(syntax || "sql", report.report)
-      .then(queryText => {
+      .then((queryText) => {
         handleChange(extend(report.clone(), { report: queryText }));
       })
-      .catch(error =>
-        notification.error(
-          get(
-            error,
-            "response.data.message",
-            "Failed to format report: unknown error.",
-          ),
-        ),
+      .catch((error) =>
+        notification.error(get(error, "response.data.message", "Failed to format report: unknown error."))
       );
   }, [report, syntax, handleChange]);
 }

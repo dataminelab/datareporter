@@ -30,7 +30,7 @@ export enum SeriesDerivation {
 export abstract class ConcreteSeries<T extends Series = Series> {
   constructor(
     public readonly definition: T,
-    public readonly measure: Measure,
+    public readonly measure: Measure
   ) {}
 
   public equals(other: ConcreteSeries): boolean {
@@ -48,38 +48,27 @@ export abstract class ConcreteSeries<T extends Series = Series> {
     }
   }
 
-  protected abstract applyExpression(
-    expression: Expression,
-    name: string,
-    nestingLevel: number,
-  ): ApplyExpression;
+  protected abstract applyExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression;
 
   public plywoodKey(period = SeriesDerivation.CURRENT): string {
     return this.definition.plywoodKey(period);
   }
 
-  public plywoodExpression(
-    nestingLevel: number,
-    timeShiftEnv: TimeShiftEnv,
-  ): Expression {
+  public plywoodExpression(nestingLevel: number, timeShiftEnv: TimeShiftEnv): Expression {
     const { expression } = this.measure;
     switch (timeShiftEnv.type) {
       case TimeShiftEnvType.CURRENT:
-        return this.applyExpression(
-          expression,
-          this.definition.plywoodKey(),
-          nestingLevel,
-        );
+        return this.applyExpression(expression, this.definition.plywoodKey(), nestingLevel);
       case TimeShiftEnvType.WITH_PREVIOUS: {
         const currentName = this.plywoodKey();
         const previousName = this.plywoodKey(SeriesDerivation.PREVIOUS);
         const current = this.filterMainRefs(
           this.applyExpression(expression, currentName, nestingLevel),
-          timeShiftEnv.currentFilter,
+          timeShiftEnv.currentFilter
         );
         const previous = this.filterMainRefs(
           this.applyExpression(expression, previousName, nestingLevel),
-          timeShiftEnv.previousFilter,
+          timeShiftEnv.previousFilter
         );
         const delta = new ApplyExpression({
           name: this.plywoodKey(SeriesDerivation.DELTA),
@@ -91,7 +80,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {
-    return exp.substitute(e => {
+    return exp.substitute((e) => {
       if (e instanceof RefExpression && e.name === "main") {
         return $("main").filter(filter);
       }
@@ -126,10 +115,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 }
 
-export function titleWithDerivation(
-  { title }: Measure,
-  derivation: SeriesDerivation,
-): string {
+export function titleWithDerivation({ title }: Measure, derivation: SeriesDerivation): string {
   switch (derivation) {
     case SeriesDerivation.CURRENT:
       return title;
@@ -145,9 +131,6 @@ export function titleWithDerivation(
  * @param reference
  * @param derivation
  */
-export function getNameWithDerivation(
-  reference: string,
-  derivation: SeriesDerivation,
-) {
+export function getNameWithDerivation(reference: string, derivation: SeriesDerivation) {
   return `${derivation}${reference}`;
 }

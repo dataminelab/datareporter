@@ -35,14 +35,8 @@ export interface DimensionItemProps {
   selected: boolean;
 }
 
-export type DimensionClickHandler = (
-  dimensionName: string,
-  e: MouseEvent<HTMLElement>,
-) => void;
-export type DimensionDragStartHandler = (
-  dimensionName: string,
-  e: DragEvent<HTMLElement>,
-) => void;
+export type DimensionClickHandler = (dimensionName: string, e: MouseEvent<HTMLElement>) => void;
+export type DimensionDragStartHandler = (dimensionName: string, e: DragEvent<HTMLElement>) => void;
 
 export const DimensionItem: React.SFC<DimensionItemProps> = ({
   name,
@@ -61,8 +55,7 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({
 
   const handleClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.currentTarget;
-    if (target.classList && target.classList.contains(infoBubbleClassName))
-      return;
+    if (target.classList && target.classList.contains(infoBubbleClassName)) return;
     dimensionClick(name, e);
   };
 
@@ -71,25 +64,14 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({
   };
 
   return (
-    <div
-      className={className}
-      key={name}
-      draggable={true}
-      onDragStart={handleDragStart}
-    >
+    <div className={className} key={name} draggable={true} onDragStart={handleDragStart}>
       <div className="label-icon-container" onClick={handleClick}>
         <div className="icon">
           <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
         </div>
-        <HighlightString
-          className={"label"}
-          text={title}
-          highlight={searchText}
-        />
+        <HighlightString className={"label"} text={title} highlight={searchText} />
       </div>
-      {description && (
-        <InfoBubble className={infoBubbleClassName} description={description} />
-      )}
+      {description && <InfoBubble className={infoBubbleClassName} description={description} />}
     </div>
   );
 };

@@ -33,16 +33,12 @@ describe("visibleIndexRange", () => {
 
   describe("with scroll offset", () => {
     it("should return [1, 11] because there's space for only 10 rows and scroll is moved one row", () => {
-      expect(visibleIndexRange(12, tenRowsHeight, ROW_HEIGHT)).to.deep.equal([
-        1, 11,
-      ]);
+      expect(visibleIndexRange(12, tenRowsHeight, ROW_HEIGHT)).to.deep.equal([1, 11]);
     });
 
     it("should return [4, 12] because scroll is moved four rows and there're only 8 rows left", () => {
       const fourRowsHeight = 4 * ROW_HEIGHT;
-      expect(
-        visibleIndexRange(12, tenRowsHeight, fourRowsHeight),
-      ).to.deep.equal([4, 12]);
+      expect(visibleIndexRange(12, tenRowsHeight, fourRowsHeight)).to.deep.equal([4, 12]);
     });
   });
 });

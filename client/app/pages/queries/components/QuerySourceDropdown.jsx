@@ -1,8 +1,6 @@
 import Select from "antd/lib/select";
 import { map } from "lodash";
-import DynamicComponent, {
-  registerComponent,
-} from "@/components/DynamicComponent";
+import DynamicComponent, { registerComponent } from "@/components/DynamicComponent";
 import PropTypes from "prop-types";
 import React from "react";
 
@@ -19,15 +17,9 @@ export function QuerySourceDropdown(props) {
       loading={props.loading}
       optionFilterProp="data-name"
       showSearch
-      onChange={props.onChange}
-    >
-      {map(props.dataSources, ds => (
-        <Select.Option
-          key={`ds-${ds.id}`}
-          value={ds.id}
-          data-name={ds.name}
-          data-test={`SelectDataSource${ds.id}`}
-        >
+      onChange={props.onChange}>
+      {map(props.dataSources, (ds) => (
+        <Select.Option key={`ds-${ds.id}`} value={ds.id} data-name={ds.name} data-test={`SelectDataSource${ds.id}`}>
           <DynamicComponent name={"QuerySourceDropdownItem"} dataSource={ds} />
         </Select.Option>
       ))}

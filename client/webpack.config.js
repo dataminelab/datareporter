@@ -7,8 +7,7 @@ const ManifestPlugin = require("webpack-manifest-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
-const BundleAnalyzerPlugin =
-  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
@@ -30,8 +29,7 @@ const CONFIG = optionalRequire("../scripts/config", {});
 
 const isProduction = process.env.NODE_ENV === "production";
 const isDevelopment = !isProduction;
-const isHotReloadingEnabled =
-  isDevelopment && process.env.HOT_RELOAD === "true";
+const isHotReloadingEnabled = isDevelopment && process.env.HOT_RELOAD === "true";
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
 const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
@@ -43,14 +41,12 @@ const htmlTitle = CONFIG.title || "Data Reporter";
 const basePath = path.join(__dirname);
 const appPath = path.join(__dirname, "app");
 
-const extensionsRelativePath =
-  process.env.EXTENSIONS_DIRECTORY || path.join("app", "extensions");
+const extensionsRelativePath = process.env.EXTENSIONS_DIRECTORY || path.join("app", "extensions");
 const extensionPath = path.join(__dirname, extensionsRelativePath);
 
 // Function to apply configuration overrides (see scripts/README)
 function maybeApplyOverrides(config) {
-  const overridesLocation =
-    process.env.REDASH_WEBPACK_OVERRIDES || "./scripts/webpack/overrides";
+  const overridesLocation = process.env.REDASH_WEBPACK_OVERRIDES || "./scripts/webpack/overrides";
   const applyOverrides = optionalRequire(overridesLocation);
   if (!applyOverrides) {
     return config;
@@ -85,11 +81,7 @@ const babelLoader = {
 const config = {
   mode: isProduction ? "production" : "development",
   entry: {
-    app: [
-      "./app/index.js",
-      "./app/assets/less/main.less",
-      "./app/assets/less/ant.less",
-    ],
+    app: ["./app/index.js", "./app/assets/less/main.less", "./app/assets/less/ant.less"],
     server: ["./app/assets/less/server.less"],
   },
   output: {
@@ -106,7 +98,7 @@ const config = {
     extensions: [".js", ".jsx", ".ts", ".tsx", ".mjs"],
     alias: {
       "@": appPath,
-      "extensions": extensionPath,
+      extensions: extensionPath,
     },
   },
   plugins: [
@@ -150,7 +142,7 @@ const config = {
   ].filter(Boolean),
   optimization: {
     splitChunks: {
-      chunks: chunk => {
+      chunks: (chunk) => {
         return chunk.name != "server";
       },
     },
@@ -172,54 +164,47 @@ const config = {
       // Rule for druid-query-toolkit (needs nullish coalescing support)
       {
         test: /\.(js|mjs)$/,
-        include: [
-          /node_modules\/druid-query-toolkit/,
-          /node_modules\/plywood\/node_modules\/druid-query-toolkit/,
-        ],
+        include: [/node_modules\/druid-query-toolkit/, /node_modules\/plywood\/node_modules\/druid-query-toolkit/],
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
             presets: [
-              ['@babel/preset-env', {
-                targets: { browsers: ['last 2 versions'] }
-              }]
+              [
+                "@babel/preset-env",
+                {
+                  targets: { browsers: ["last 2 versions"] },
+                },
+              ],
             ],
-            plugins: [
-              '@babel/plugin-proposal-optional-chaining',
-              '@babel/plugin-proposal-nullish-coalescing-operator'
-            ]
-          }
-        }
+            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+          },
+        },
       },
       // Rule for @redash/viz
       {
         test: /\.js$/,
-        include: [
-          path.resolve(__dirname, 'node_modules/@redash/viz')
-        ],
+        include: [path.resolve(__dirname, "node_modules/@redash/viz")],
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
             presets: [
-              ['@babel/preset-env', {
-                targets: { browsers: ['last 2 versions'] }
-              }]
+              [
+                "@babel/preset-env",
+                {
+                  targets: { browsers: ["last 2 versions"] },
+                },
+              ],
             ],
-            plugins: [
-              '@babel/plugin-proposal-optional-chaining',
-              '@babel/plugin-proposal-nullish-coalescing-operator'
-            ]
-          }
-        }
+            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+          },
+        },
       },
       // Main rule for app code (JS/TS/JSX/TSX)
       {
         test: /\.(t|j)sx?$/,
         exclude: {
           and: [/node_modules/],
-          not: [
-            /react-syntax-highlighter/,
-          ],
+          not: [/react-syntax-highlighter/],
         },
         use: [babelLoader],
       },
@@ -255,9 +240,7 @@ const config = {
           {
             loader: "less-loader",
             options: {
-              plugins: [
-                new LessPluginAutoPrefix({ browsers: ["last 3 versions"] }),
-              ],
+              plugins: [new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })],
               javascriptEnabled: true,
             },
           },
@@ -265,11 +248,7 @@ const config = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader",
-        ],
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
       {
         test: /\.(png|jpe?g|gif)(\?.*)?$/,
@@ -342,11 +321,8 @@ const config = {
   devServer: {
     client: {
       overlay: {
-        runtimeErrors: error => {
-          if (
-            error?.message ===
-            "ResizeObserver loop completed with undelivered notifications."
-          ) {
+        runtimeErrors: (error) => {
+          if (error?.message === "ResizeObserver loop completed with undelivered notifications.") {
             console.error(error);
             return false;
           }
@@ -368,16 +344,7 @@ const config = {
     },
     proxy: [
       {
-        context: [
-          "/login",
-          "/logout",
-          "/invite",
-          "/setup",
-          "/status.json",
-          "/api",
-          "/oauth",
-          "/forgot"
-        ],
+        context: ["/login", "/logout", "/invite", "/setup", "/status.json", "/api", "/oauth", "/forgot"],
         target: redashBackend + "/",
         changeOrigin: false,
         secure: false,
@@ -389,20 +356,17 @@ const config = {
         secure: false,
       },
       {
-        context: [
-          '/ollama',
-          '/ollama-api'
-        ],
+        context: ["/ollama", "/ollama-api"],
         target: ollamaBackend + "/",
         changeOrigin: true,
         secure: false,
         pathRewrite: {
-          '^/ollama/': '/',
-          '^/ollama-api': '/api'
-        }
+          "^/ollama/": "/",
+          "^/ollama-api": "/api",
+        },
       },
       {
-        context: path => {
+        context: (path) => {
           return /^\/static\/[a-z]+\.[0-9a-fA-F]+\.(css|js)$/.test(path);
         },
         target: redashBackend + "/",

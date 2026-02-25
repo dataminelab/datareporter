@@ -20,8 +20,7 @@ import { range } from "../../../../common/utils/functional/functional";
 import { SPLIT } from "../../../config/constants";
 import { ContinuousScale } from "../../../visualizations/line-chart/utils/continuous-types";
 
-export const makeDataset = (datums: any[]) =>
-  Dataset.fromJS([{ [SPLIT]: datums }]);
+export const makeDataset = (datums: any[]) => Dataset.fromJS([{ [SPLIT]: datums }]);
 
 export const january = (n: number) => new Date(`2000-01-${n}`);
 
@@ -65,24 +64,17 @@ const sparseNonNominalDatums = [
 ];
 export const sparseNonNominalDataset = makeDataset(sparseNonNominalDatums);
 
-export const nominalDataset = makeDataset([
-  { channel: "foobar", [SPLIT]: nonNominalDatums },
-]);
+export const nominalDataset = makeDataset([{ channel: "foobar", [SPLIT]: nonNominalDatums }]);
 
-export const sparseNominalDataset = makeDataset([
-  { channel: "foobar", [SPLIT]: sparseNonNominalDatums },
-]);
+export const sparseNominalDataset = makeDataset([{ channel: "foobar", [SPLIT]: sparseNonNominalDatums }]);
 
 export const scale = d3
   .scaleTime()
   .domain([january(1), january(7)])
   .range([0, 1000]) as unknown as ContinuousScale;
 
-export function createDailyNominalDatasetInJanuary(
-  startDay: number,
-  endDay: number,
-): Dataset {
-  const datums = range(startDay, endDay).map(i => {
+export function createDailyNominalDatasetInJanuary(startDay: number, endDay: number): Dataset {
+  const datums = range(startDay, endDay).map((i) => {
     const start = january(i);
     const end = january(i + 1);
     return { time: { type: "TIME_RANGE", start, end } };

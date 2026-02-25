@@ -13,9 +13,7 @@ describe("Counter", () => {
       cy.getByTestId("ExecuteButton").click();
     });
     cy.getByTestId("NewVisualization").click();
-    cy.getByTestId("VisualizationType").selectAntdOption(
-      "VisualizationType.COUNTER",
-    );
+    cy.getByTestId("VisualizationType").selectAntdOption("VisualizationType.COUNTER");
   });
 
   it("creates simple Counter", () => {
@@ -24,9 +22,7 @@ describe("Counter", () => {
       Counter.General.ValueColumn.a
     `);
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".counter-visualization-container")
-      .should("exist");
+    cy.getByTestId("VisualizationPreview").find(".counter-visualization-container").should("exist");
 
     // wait a bit before taking snapshot
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -45,9 +41,7 @@ describe("Counter", () => {
       "Counter.General.Label": "Custom Label",
     });
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".counter-visualization-container")
-      .should("exist");
+    cy.getByTestId("VisualizationPreview").find(".counter-visualization-container").should("exist");
 
     // wait a bit before taking snapshot
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -69,9 +63,7 @@ describe("Counter", () => {
       "Counter.General.TargetValueRowNumber": "2",
     });
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".counter-visualization-container")
-      .should("exist");
+    cy.getByTestId("VisualizationPreview").find(".counter-visualization-container").should("exist");
 
     // wait a bit before taking snapshot
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -89,16 +81,11 @@ describe("Counter", () => {
       Counter.General.TargetValueColumn.b
     `);
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".counter-visualization-container")
-      .should("exist");
+    cy.getByTestId("VisualizationPreview").find(".counter-visualization-container").should("exist");
 
     // wait a bit before taking snapshot
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
-    cy.percySnapshot(
-      "Visualizations - Counter (target value + trend positive)",
-      { widths: [viewportWidth] },
-    );
+    cy.percySnapshot("Visualizations - Counter (target value + trend positive)", { widths: [viewportWidth] });
   });
 
   it("creates Counter with custom row number (trend negative)", () => {
@@ -115,9 +102,7 @@ describe("Counter", () => {
       "Counter.General.TargetValueRowNumber": "2",
     });
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".counter-visualization-container")
-      .should("exist");
+    cy.getByTestId("VisualizationPreview").find(".counter-visualization-container").should("exist");
 
     // wait a bit before taking snapshot
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -134,9 +119,7 @@ describe("Counter", () => {
       Counter.General.CountRows
     `);
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".counter-visualization-container")
-      .should("exist");
+    cy.getByTestId("VisualizationPreview").find(".counter-visualization-container").should("exist");
 
     // wait a bit before taking snapshot
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -164,9 +147,7 @@ describe("Counter", () => {
       "Counter.Formatting.StringSuffix": "%",
     });
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".counter-visualization-container")
-      .should("exist");
+    cy.getByTestId("VisualizationPreview").find(".counter-visualization-container").should("exist");
 
     // wait a bit before taking snapshot
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -195,9 +176,7 @@ describe("Counter", () => {
       "Counter.Formatting.StringSuffix": "%",
     });
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".counter-visualization-container")
-      .should("exist");
+    cy.getByTestId("VisualizationPreview").find(".counter-visualization-container").should("exist");
 
     // wait a bit before taking snapshot
     cy.wait(500); // eslint-disable-line cypress/no-unnecessary-waiting

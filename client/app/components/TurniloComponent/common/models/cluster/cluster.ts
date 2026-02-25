@@ -77,9 +77,7 @@ function validateUrl(url: string): void {
   try {
     new URL(url);
   } catch (e) {
-    throw new Error(
-      `Cluster url: ${url} has invalid format. It should be http[s]://hostname[:port]`,
-    );
+    throw new Error(`Cluster url: ${url} has invalid format. It should be http[s]://hostname[:port]`);
   }
 }
 
@@ -104,24 +102,12 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
       parameters.timeout = parseInt(parameters.timeout, 10);
     }
     if (typeof parameters.sourceListRefreshInterval === "string") {
-      parameters.sourceListRefreshInterval = parseInt(
-        parameters.sourceListRefreshInterval,
-        10,
-      );
+      parameters.sourceListRefreshInterval = parseInt(parameters.sourceListRefreshInterval, 10);
     }
     if (typeof parameters.sourceReintrospectInterval === "string") {
-      parameters.sourceReintrospectInterval = parseInt(
-        parameters.sourceReintrospectInterval,
-        10,
-      );
+      parameters.sourceReintrospectInterval = parseInt(parameters.sourceReintrospectInterval, 10);
     }
-    return new Cluster(
-      BaseImmutable.jsToValue(
-        Cluster.PROPERTIES,
-        parameters,
-        Cluster.BACKWARD_COMPATIBILITY,
-      ),
-    );
+    return new Cluster(BaseImmutable.jsToValue(Cluster.PROPERTIES, parameters, Cluster.BACKWARD_COMPATIBILITY));
   }
 
   static PROPERTIES: Property[] = [
@@ -170,13 +156,10 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
 
   static BACKWARD_COMPATIBILITY: BackCompat[] = [
     {
-      condition: cluster =>
-        !isTruthy(cluster.url) && isTruthy(oldHostParameter(cluster)),
-      action: cluster => {
+      condition: (cluster) => !isTruthy(cluster.url) && isTruthy(oldHostParameter(cluster)),
+      action: (cluster) => {
         const oldHost = oldHostParameter(cluster);
-        cluster.url = Cluster.HTTP_PROTOCOL_TEST.test(oldHost)
-          ? oldHost
-          : `http://${oldHost}`;
+        cluster.url = Cluster.HTTP_PROTOCOL_TEST.test(oldHost) ? oldHost : `http://${oldHost}`;
       },
     },
   ];
@@ -208,9 +191,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
   public getIntrospectionStrategy: () => string;
   public changeUrl: (newUrl: string) => Cluster;
   public changeTimeout: (newTimeout: string) => Cluster;
-  public changeSourceListRefreshInterval: (
-    newSourceListRefreshInterval: string,
-  ) => Cluster;
+  public changeSourceListRefreshInterval: (newSourceListRefreshInterval: string) => Cluster;
 
   public toClientCluster(): Cluster {
     return new Cluster({
@@ -219,10 +200,7 @@ export class Cluster extends BaseImmutable<ClusterValue, ClusterJS> {
     });
   }
 
-  public makeExternalFromSourceName(
-    source: string,
-    version?: string,
-  ): External {
+  public makeExternalFromSourceName(source: string, version?: string): External {
     return External.fromValue({
       engine: "druid",
       source,

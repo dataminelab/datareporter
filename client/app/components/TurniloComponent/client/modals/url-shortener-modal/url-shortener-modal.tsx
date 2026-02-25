@@ -30,11 +30,7 @@ interface UrlProp {
   url: string;
 }
 
-export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlProp> = ({
-  title,
-  onClose,
-  url,
-}) => {
+export const UrlShortenerModal: React.SFC<UrlShortenerModalProps & UrlProp> = ({ title, onClose, url }) => {
   return (
     <Modal className="short-url-modal" title={title} onClose={onClose}>
       <UrlShortenerPrompt url={url} />
@@ -47,10 +43,7 @@ interface UrlShortenerPromptState {
   error?: string;
 }
 
-export class UrlShortenerPrompt extends React.Component<
-  UrlProp,
-  UrlShortenerPromptState
-> {
+export class UrlShortenerPrompt extends React.Component<UrlProp, UrlShortenerPromptState> {
   state: UrlShortenerPromptState = { shortUrl: null };
 
   componentDidMount() {
@@ -64,9 +57,7 @@ export class UrlShortenerPrompt extends React.Component<
   }
 
   shortenUrl() {
-    return fetch("shorten?url=" + encodeURIComponent(this.props.url)).then(
-      response => response.json(),
-    );
+    return fetch("shorten?url=" + encodeURIComponent(this.props.url)).then((response) => response.json());
   }
 
   renderShortUrl() {
@@ -105,9 +96,7 @@ export class ShortUrl extends React.Component<UrlProp, UrlState> {
             <button className="copy-button">Copy</button>
           </SafeCopyToClipboard>
         </div>
-        {this.state.copied && (
-          <div className="copied-hint">{STRINGS.copied}</div>
-        )}
+        {this.state.copied && <div className="copied-hint">{STRINGS.copied}</div>}
       </div>
     );
   }
@@ -126,9 +115,7 @@ export class LongUrl extends React.Component<UrlProp, UrlState> {
           <span className="copy-action">copy full url</span>
         </SafeCopyToClipboard>
         &nbsp;instead.&nbsp;
-        {this.state.copied && (
-          <span className="copied-hint">{STRINGS.copied}</span>
-        )}
+        {this.state.copied && <span className="copied-hint">{STRINGS.copied}</span>}
       </div>
     );
   }

@@ -21,19 +21,13 @@ function ListItem({ item, keySuffix }) {
     ),
   };
 
-  return item.href ? (
-    <Link href={item.href} {...commonProps} />
-  ) : (
-    <PlainButton type="link" {...commonProps} />
-  );
+  return item.href ? <Link href={item.href} {...commonProps} /> : <PlainButton type="link" {...commonProps} />;
 }
 
 export default function CardsList({ items = [], showSearch = false }) {
   const [searchText, setSearchText] = useState("");
   const filteredItems = items.filter(
-    item =>
-      isEmpty(searchText) ||
-      includes(item.title.toLowerCase(), searchText.toLowerCase()),
+    (item) => isEmpty(searchText) || includes(item.title.toLowerCase(), searchText.toLowerCase())
   );
 
   return (
@@ -44,7 +38,7 @@ export default function CardsList({ items = [], showSearch = false }) {
             <Input.Search
               placeholder="Search..."
               aria-label="Search cards"
-              onChange={e => setSearchText(e.target.value)}
+              onChange={(e) => setSearchText(e.target.value)}
               autoFocus
             />
           </div>
@@ -72,7 +66,7 @@ CardsList.propTypes = {
       imgSrc: PropTypes.string.isRequired,
       onClick: PropTypes.func,
       href: PropTypes.string,
-    }),
+    })
   ),
   showSearch: PropTypes.bool,
 };

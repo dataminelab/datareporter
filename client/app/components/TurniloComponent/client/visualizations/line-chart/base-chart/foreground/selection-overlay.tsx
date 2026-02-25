@@ -20,11 +20,7 @@ import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Highlighter } from "../../../../components/highlighter/highlighter";
 import { constructRange } from "../../interactions/continuous-range";
-import {
-  Interaction,
-  isDragging,
-  isHighlight,
-} from "../../interactions/interaction";
+import { Interaction, isDragging, isHighlight } from "../../interactions/interaction";
 import { ContinuousRange, ContinuousScale } from "../../utils/continuous-types";
 import { isValidClause } from "../../utils/is-valid-clause";
 
@@ -35,26 +31,21 @@ interface SelectionOverlayProps {
   timezone: Timezone;
 }
 
-function getHighlightRange(
-  interaction: Interaction,
-  timezone: Timezone,
-): ContinuousRange | null {
+function getHighlightRange(interaction: Interaction, timezone: Timezone): ContinuousRange | null {
   if (isDragging(interaction)) {
     return constructRange(interaction.start, interaction.end, timezone);
   }
   if (isHighlight(interaction)) {
     const { clause } = interaction;
     if (!isValidClause(clause)) {
-      throw new Error(
-        `Expected FixedTime or Number Filter clause. Got: ${clause}`,
-      );
+      throw new Error(`Expected FixedTime or Number Filter clause. Got: ${clause}`);
     }
     return Range.fromJS(clause.values.first()) as ContinuousRange;
   }
   return null;
 }
 
-export const SelectionOverlay: React.SFC<SelectionOverlayProps> = props => {
+export const SelectionOverlay: React.SFC<SelectionOverlayProps> = (props) => {
   const { stage, timezone, interaction, xScale } = props;
   const range = getHighlightRange(interaction, timezone);
   if (!range) return null;

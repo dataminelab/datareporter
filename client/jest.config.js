@@ -3,16 +3,7 @@ const path = require("path");
 module.exports = {
   displayName: "settings",
   rootDir: ".",
-  moduleFileExtensions: [
-    "js",
-    "json",
-    "jsx",
-    "ts",
-    "tsx",
-    "node",
-    "less",
-    "cjs",
-  ],
+  moduleFileExtensions: ["js", "json", "jsx", "ts", "tsx", "node", "less", "cjs"],
   setupFiles: [
     path.resolve(__dirname, "./app/__tests__/enzyme_setup.js"),
     path.resolve(__dirname, "./app/__tests__/mocks.js"),
@@ -34,9 +25,6 @@ module.exports = {
   transform: {
     "^.+\\.[jt]sx?$": "babel-jest",
   },
-  testPathIgnorePatterns: [
-    "<rootDir>/app/__tests__/",
-    "<rootDir>/app/components/TurniloComponent/",
-  ],
+  testPathIgnorePatterns: ["<rootDir>/app/__tests__/", "<rootDir>/app/components/TurniloComponent/"],
   testEnvironment: "jsdom",
 };

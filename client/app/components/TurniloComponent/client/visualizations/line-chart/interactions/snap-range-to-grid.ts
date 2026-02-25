@@ -23,10 +23,7 @@ function roundTo(v: number, roundTo: number) {
   return Math.round(Math.floor(v / roundTo)) * roundTo;
 }
 
-export function snapRangeToGrid(
-  range: PlywoodRange,
-  essence: Essence,
-): ContinuousRange {
+export function snapRangeToGrid(range: PlywoodRange, essence: Essence): ContinuousRange {
   // floors range to scale ranges
   const continuousSplit = getContinuousSplit(essence);
 

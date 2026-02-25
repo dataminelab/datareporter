@@ -26,10 +26,7 @@ import { Stage } from "../../../../common/models/stage/stage";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
 import { BubbleMenu } from "../../bubble-menu/bubble-menu";
-import {
-  FilterOption,
-  FilterOptionsDropdown,
-} from "../../filter-options-dropdown/filter-options-dropdown";
+import { FilterOption, FilterOptionsDropdown } from "../../filter-options-dropdown/filter-options-dropdown";
 import { PreviewStringFilterMenu } from "../../preview-string-filter-menu/preview-string-filter-menu";
 import { SelectableStringFilterMenu } from "../../selectable-string-filter-menu/selectable-string-filter-menu";
 import "./string-filter-menu.scss";
@@ -50,10 +47,7 @@ export interface StringFilterMenuState {
   filterMode?: FilterMode;
 }
 
-export class StringFilterMenu extends React.Component<
-  StringFilterMenuProps,
-  StringFilterMenuState
-> {
+export class StringFilterMenu extends React.Component<StringFilterMenuProps, StringFilterMenuState> {
   private initialFilterMode = (): FilterMode => {
     const {
       essence: { filter },
@@ -65,10 +59,9 @@ export class StringFilterMenu extends React.Component<
 
   state: StringFilterMenuState = { filterMode: this.initialFilterMode() };
 
-  onSelectFilterOption = (filterMode: FilterMode) =>
-    this.setState({ filterMode });
+  onSelectFilterOption = (filterMode: FilterMode) => this.setState({ filterMode });
 
-  updateFilter: (clause: FilterClause) => Filter = clause => {
+  updateFilter: (clause: FilterClause) => Filter = (clause) => {
     const { essence, dimension, changePosition } = this.props;
     const { filter } = essence;
 
@@ -88,16 +81,10 @@ export class StringFilterMenu extends React.Component<
     const { dimension } = this.props;
     const dimensionKind = dimension.kind;
 
-    let filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(
-      FilterMode.INCLUDE,
-      FilterMode.EXCLUDE,
-    );
+    let filterOptions: FilterOption[] = FilterOptionsDropdown.getFilterOptions(FilterMode.INCLUDE, FilterMode.EXCLUDE);
     if (dimensionKind !== "boolean")
       filterOptions = filterOptions.concat(
-        FilterOptionsDropdown.getFilterOptions(
-          FilterMode.REGEX,
-          FilterMode.CONTAINS,
-        ),
+        FilterOptionsDropdown.getFilterOptions(FilterMode.REGEX, FilterMode.CONTAINS)
       );
 
     return filterOptions;
@@ -140,8 +127,7 @@ export class StringFilterMenu extends React.Component<
         stage={Stage.fromSize(300, 410)}
         openOn={openOn}
         onClose={onClose}
-        inside={inside}
-      >
+        inside={inside}>
         <div className="string-filter-content">
           <FilterOptionsDropdown
             selectedOption={filterMode}

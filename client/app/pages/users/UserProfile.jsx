@@ -25,12 +25,12 @@ function UserProfile({ userId, onError }) {
   useEffect(() => {
     let isCancelled = false;
     User.get({ id: userId || currentUser.id })
-      .then(user => {
+      .then((user) => {
         if (!isCancelled) {
           setUser(User.convertUserInfo(user));
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (!isCancelled) {
           handleError(error);
         }
@@ -44,11 +44,7 @@ function UserProfile({ userId, onError }) {
   const canEdit = user && (currentUser.isAdmin || currentUser.id === user.id);
   return (
     <React.Fragment>
-      <EmailSettingsWarning
-        featureName="invite emails"
-        className="m-b-20"
-        adminOnly
-      />
+      <EmailSettingsWarning featureName="invite emails" className="m-b-20" adminOnly />
       <div className="row">
         {!user && <LoadingState className="" />}
         {user && (
@@ -79,7 +75,7 @@ const UserProfilePage = wrapSettingsTab(
     path: "users/me",
     order: 8,
   },
-  UserProfile,
+  UserProfile
 );
 
 routes.register(
@@ -87,14 +83,14 @@ routes.register(
   routeWithUserSession({
     path: "/users/me",
     title: "Account",
-    render: pageProps => <UserProfilePage {...pageProps} />,
-  }),
+    render: (pageProps) => <UserProfilePage {...pageProps} />,
+  })
 );
 routes.register(
   "Users.ViewOrEdit",
   routeWithUserSession({
     path: "/users/:userId",
     title: "Users",
-    render: pageProps => <UserProfilePage {...pageProps} />,
-  }),
+    render: (pageProps) => <UserProfilePage {...pageProps} />,
+  })
 );

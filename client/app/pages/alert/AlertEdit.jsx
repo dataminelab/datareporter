@@ -45,15 +45,8 @@ export default class AlertEdit extends React.Component {
   };
 
   render() {
-    const {
-      alert,
-      queryResult,
-      pendingRearm,
-      onNotificationTemplateChange,
-      menuButton,
-    } = this.props;
-    const { onQuerySelected, onNameChange, onRearmChange, onCriteriaChange } =
-      this.props;
+    const { alert, queryResult, pendingRearm, onNotificationTemplateChange, menuButton } = this.props;
+    const { onQuerySelected, onNameChange, onRearmChange, onCriteriaChange } = this.props;
     const { query, name, options } = alert;
     const { saving } = this.state;
 
@@ -67,15 +60,8 @@ export default class AlertEdit extends React.Component {
           </Button>
           <Button type="primary" onClick={() => this.save()}>
             {saving ? (
-              <span
-                role="status"
-                aria-live="polite"
-                aria-relevant="additions removals"
-              >
-                <i
-                  className="fa fa-spinner fa-pulse m-r-5"
-                  aria-hidden="true"
-                />
+              <span role="status" aria-live="polite" aria-relevant="additions removals">
+                <i className="fa fa-spinner fa-pulse m-r-5" aria-hidden="true" />
                 <span className="sr-only">Saving...</span>
               </span>
             ) : (
@@ -91,19 +77,11 @@ export default class AlertEdit extends React.Component {
           <div className="d-flex">
             <Form className="flex-fill">
               <HorizontalFormItem label="Query">
-                <Query
-                  query={query}
-                  queryResult={queryResult}
-                  onChange={onQuerySelected}
-                  editMode
-                />
+                <Query query={query} queryResult={queryResult} onChange={onQuerySelected} editMode />
               </HorizontalFormItem>
               {queryResult && options && (
                 <>
-                  <HorizontalFormItem
-                    label="Trigger when"
-                    className="alert-criteria"
-                  >
+                  <HorizontalFormItem label="Trigger when" className="alert-criteria">
                     <Criteria
                       columnNames={queryResult.getColumnNames()}
                       resultValues={queryResult.getData()}
@@ -113,11 +91,7 @@ export default class AlertEdit extends React.Component {
                     />
                   </HorizontalFormItem>
                   <HorizontalFormItem label="When triggered, send notification">
-                    <Rearm
-                      value={pendingRearm || 0}
-                      onChange={onRearmChange}
-                      editMode
-                    />
+                    <Rearm value={pendingRearm || 0} onChange={onRearmChange} editMode />
                   </HorizontalFormItem>
                   <HorizontalFormItem label="Template">
                     <NotificationTemplate
@@ -126,15 +100,13 @@ export default class AlertEdit extends React.Component {
                       columnNames={queryResult.getColumnNames()}
                       resultValues={queryResult.getData()}
                       subject={options.custom_subject}
-                      setSubject={subject =>
+                      setSubject={(subject) =>
                         onNotificationTemplateChange({
                           custom_subject: subject,
                         })
                       }
                       body={options.custom_body}
-                      setBody={body =>
-                        onNotificationTemplateChange({ custom_body: body })
-                      }
+                      setBody={(body) => onNotificationTemplateChange({ custom_body: body })}
                     />
                   </HorizontalFormItem>
                 </>
@@ -142,8 +114,7 @@ export default class AlertEdit extends React.Component {
             </Form>
             <div>
               <HelpTrigger className="f-13" type="ALERT_SETUP">
-                Setup Instructions{" "}
-                <i className="fa fa-question-circle" aria-hidden="true" />
+                Setup Instructions <i className="fa fa-question-circle" aria-hidden="true" />
                 <span className="sr-only">(help)</span>
               </HelpTrigger>
             </div>

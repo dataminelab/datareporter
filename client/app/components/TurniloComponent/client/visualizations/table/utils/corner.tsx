@@ -17,6 +17,4 @@
 import * as React from "react";
 import "./corner.scss";
 
-export const Corner: React.SFC<{}> = ({ children }) => (
-  <div className="corner">{children}</div>
-);
+export const Corner: React.SFC<{}> = ({ children }) => <div className="corner">{children}</div>;

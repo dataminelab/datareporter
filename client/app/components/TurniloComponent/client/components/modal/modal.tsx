@@ -87,10 +87,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     if (this.props.startUpFocusOn) {
       const myElement = document.getElementById(this.state.id) as Element;
 
-      const target = this.getChildByID(
-        myElement.childNodes,
-        this.props.startUpFocusOn,
-      );
+      const target = this.getChildByID(myElement.childNodes, this.props.startUpFocusOn);
 
       if (!this.focusAlreadyGiven && !!target) {
         target.focus();
@@ -144,11 +141,7 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     return (
       <BodyPortal fullSize={true}>
         <div className={classNames("modal", className)}>
-          <GlobalEventListener
-            enter={this.onEnter}
-            escape={this.onEscape}
-            mouseDown={this.onMouseDown}
-          />
+          <GlobalEventListener enter={this.onEnter} escape={this.onEscape} mouseDown={this.onMouseDown} />
           <div className="backdrop" />
           <GoldenCenter>
             <div className="modal-window" id={id}>

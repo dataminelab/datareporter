@@ -27,20 +27,14 @@ import { ViewDefinitionConverter4 } from "./version-4/view-definition-converter-
 import { ViewDefinitionConverter } from "./view-definition-converter";
 import { ViewDefinitionHashEncoder } from "./view-definition-hash-encoder";
 
-export type ViewDefinition =
-  | ViewDefinition2
-  | ViewDefinition3
-  | ViewDefinition4;
+export type ViewDefinition = ViewDefinition2 | ViewDefinition3 | ViewDefinition4;
 export type ViewDefinitionVersion = "2" | "3" | "4";
 
 export const DEFAULT_VIEW_DEFINITION_VERSION = "4";
 export const LEGACY_VIEW_DEFINITION_VERSION = "2";
 
 export const definitionConverters: {
-  [version in ViewDefinitionVersion]: ViewDefinitionConverter<
-    ViewDefinition,
-    Essence
-  >;
+  [version in ViewDefinitionVersion]: ViewDefinitionConverter<ViewDefinition, Essence>;
 } = {
   2: new ViewDefinitionConverter2(),
   3: new ViewDefinitionConverter3(),
@@ -54,14 +48,7 @@ export const definitionUrlEncoders: {
   4: new ViewDefinitionHashEncoder3(),
 };
 
-export const defaultDefinitionConverter =
-  definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];
-export const defaultDefinitionUrlEncoder =
-  definitionUrlEncoders[DEFAULT_VIEW_DEFINITION_VERSION];
+export const defaultDefinitionConverter = definitionConverters[DEFAULT_VIEW_DEFINITION_VERSION];
+export const defaultDefinitionUrlEncoder = definitionUrlEncoders[DEFAULT_VIEW_DEFINITION_VERSION];
 
-export const version2Visualizations = new Set<Visualization>([
-  "totals",
-  "table",
-  "line-chart",
-  "bar-chart",
-]);
+export const version2Visualizations = new Set<Visualization>(["totals", "table", "line-chart", "bar-chart"]);

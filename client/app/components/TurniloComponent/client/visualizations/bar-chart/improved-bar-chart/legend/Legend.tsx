@@ -26,9 +26,7 @@ interface LegendValuesProps {
   colors: StackedBarChartModel["colors"];
 }
 
-const LegendValues: React.FunctionComponent<LegendValuesProps> = ({
-  colors,
-}) => {
+const LegendValues: React.FunctionComponent<LegendValuesProps> = ({ colors }) => {
   return (
     <div className="legend-values">
       <table className="legend-values-table">
@@ -55,7 +53,7 @@ const LegendValues: React.FunctionComponent<LegendValuesProps> = ({
   );
 };
 
-export const Legend: React.FunctionComponent<LegendProps> = props => {
+export const Legend: React.FunctionComponent<LegendProps> = (props) => {
   const {
     model: { nominalSplit, nominalDimension, colors },
   } = props;

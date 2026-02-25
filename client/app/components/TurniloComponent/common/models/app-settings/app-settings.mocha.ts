@@ -26,20 +26,16 @@ describe("AppSettings", () => {
   const context = AppSettingsFixtures.getContext();
 
   it("is an immutable class", () => {
-    testImmutableClass(
-      AppSettings,
-      [AppSettingsFixtures.wikiOnlyJS(), AppSettingsFixtures.wikiTwitterJS()],
-      { context },
-    );
+    testImmutableClass(AppSettings, [AppSettingsFixtures.wikiOnlyJS(), AppSettingsFixtures.wikiTwitterJS()], {
+      context,
+    });
   });
 
   describe("errors", () => {
     it("errors if there is no matching cluster", () => {
       const js = AppSettingsFixtures.wikiOnlyJS();
       js.clusters = [];
-      expect(() => AppSettings.fromJS(js, context)).to.throw(
-        "Can not find cluster 'druid-wiki' for data cube 'wiki'",
-      );
+      expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid-wiki' for data cube 'wiki'");
     });
   });
 
@@ -48,9 +44,7 @@ describe("AppSettings", () => {
       const oldJS: any = AppSettingsFixtures.wikiOnlyJS();
       oldJS.dataSources = oldJS.dataCubes;
       delete oldJS.dataCubes;
-      expect(AppSettings.fromJS(oldJS, context).toJS()).to.deep.equal(
-        AppSettingsFixtures.wikiOnlyJS(),
-      );
+      expect(AppSettings.fromJS(oldJS, context).toJS()).to.deep.equal(AppSettingsFixtures.wikiOnlyJS());
     });
 
     it("deals with old config style", () => {
@@ -159,8 +153,7 @@ describe("AppSettings", () => {
             defaultSelectedMeasures: ["count"],
             defaultSortMeasure: "count",
             defaultTimezone: "Etc/UTC",
-            description:
-              "Wiki full description something about articles and editors",
+            description: "Wiki full description something about articles and editors",
             dimensions: [
               {
                 formula: "$time",

@@ -7,11 +7,7 @@ export const ReportEditorComponents = {
   QUERY_EDITOR: "ReportEditor",
 };
 
-export function registerEditorComponent(
-  componentName,
-  component,
-  dataSourceTypes,
-) {
+export function registerEditorComponent(componentName, component, dataSourceTypes) {
   if (isNil(dataSourceTypes)) {
     dataSourceTypes = [null]; // use `null` entry for the default set of components
   }
@@ -20,7 +16,7 @@ export function registerEditorComponent(
     dataSourceTypes = [dataSourceTypes];
   }
 
-  each(dataSourceTypes, dataSourceType => {
+  each(dataSourceTypes, (dataSourceType) => {
     componentsRegistry.set(dataSourceType, {
       ...componentsRegistry.get(dataSourceType),
       [componentName]: component,

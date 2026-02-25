@@ -20,10 +20,7 @@ class ConversationService {
   // Optionally persist to localStorage
   saveToStorage(dashboardId) {
     const conversation = this.getConversation(dashboardId);
-    localStorage.setItem(
-      `conversation_${dashboardId}`,
-      JSON.stringify(conversation),
-    );
+    localStorage.setItem(`conversation_${dashboardId}`, JSON.stringify(conversation));
   }
 
   loadFromStorage(dashboardId) {

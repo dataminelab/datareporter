@@ -15,12 +15,7 @@ export default function EditableUserProfile(props) {
 
   return (
     <div className="col-md-4 col-md-offset-4">
-      <img
-        alt="Profile"
-        src={user.profileImageUrl}
-        className="profile__image"
-        width="40"
-      />
+      <img alt="Profile" src={user.profileImageUrl} className="profile__image" width="40" />
       <h3 className="profile__h3">{user.name}</h3>
       <hr />
       <UserInfoForm user={user} onChange={setUser} />

@@ -27,9 +27,7 @@ describe("nestedSplitName", () => {
   });
 
   it("should return formatted first split value for nest 1", () => {
-    expect(
-      nestedSplitName({ __nest: 1, channel: "foobar" }, wikiTable),
-    ).to.equal("foobar");
+    expect(nestedSplitName({ __nest: 1, channel: "foobar" }, wikiTable)).to.equal("foobar");
   });
 
   it("should return formatted third split values for nest 3", () => {

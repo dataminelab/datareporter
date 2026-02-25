@@ -38,8 +38,6 @@ export const MANIFESTS: AnyVisualizationManifest[] = [
   HEAT_MAP_MANIFEST,
 ];
 
-export function manifestByName(
-  visualizationName: string,
-): AnyVisualizationManifest {
+export function manifestByName(visualizationName: string): AnyVisualizationManifest {
   return NamedArray.findByName(MANIFESTS, visualizationName);
 }

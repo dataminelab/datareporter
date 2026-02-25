@@ -17,15 +17,9 @@ function ParameterApplyButton({ paramCount, onClick }) {
   );
 
   return (
-    <div
-      className="parameter-apply-button"
-      data-show={!!paramCount}
-      data-test="ParameterApplyButton"
-    >
+    <div className="parameter-apply-button" data-show={!!paramCount} data-test="ParameterApplyButton">
       <Badge count={paramCount}>
-        <Tooltip
-          title={paramCount ? `${KeyboardShortcuts.modKey} + Enter` : null}
-        >
+        <Tooltip title={paramCount ? `${KeyboardShortcuts.modKey} + Enter` : null}>
           <span>
             <Button onClick={onClick}>{icon} Apply Changes</Button>
           </span>

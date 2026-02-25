@@ -20,11 +20,7 @@ import { Stage } from "../../../../../common/models/stage/stage";
 import { ScrollerLayout } from "../../../../components/scroller/scroller";
 import equivalent from "../../../../utils/test-utils/equivalent";
 import * as calculateSegmentStageModule from "./calculate-segment-stage";
-import {
-  calculateChartStage,
-  calculateLayout,
-  calculateYAxisStage,
-} from "./layout";
+import { calculateChartStage, calculateLayout, calculateYAxisStage } from "./layout";
 
 use(equivalent);
 
@@ -80,8 +76,7 @@ describe("layout", () => {
           height: 760,
           width: 935,
         });
-        expect(calculateSegmentStageStub.calledWith(stageWithMargins, 100, 3))
-          .to.be.true;
+        expect(calculateSegmentStageStub.calledWith(stageWithMargins, 100, 3)).to.be.true;
       });
     });
 

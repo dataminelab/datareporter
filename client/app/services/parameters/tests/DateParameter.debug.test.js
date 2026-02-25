@@ -34,7 +34,7 @@ describe("DateParameter Debug", () => {
   test("debug normalizeValue with invalid input", () => {
     const testValues = ["", null, undefined, "not-a-date", "invalid-format"];
 
-    testValues.forEach(value => {
+    testValues.forEach((value) => {
       const result = param.normalizeValue(value);
       console.log(`normalizeValue('${value}'):`, result, typeof result);
     });

@@ -16,15 +16,9 @@
 
 import * as React from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
-import {
-  BottomBorder,
-  RightBorder,
-} from "../../../../components/grid-border/grid-border";
+import { BottomBorder, RightBorder } from "../../../../components/grid-border/grid-border";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
-import {
-  LinearScale,
-  pickTicks,
-} from "../../../../utils/linear-scale/linear-scale";
+import { LinearScale, pickTicks } from "../../../../utils/linear-scale/linear-scale";
 import { TICK_LENGTH } from "../y-axis/single-y-axis";
 
 interface BackgroundProps {
@@ -32,7 +26,7 @@ interface BackgroundProps {
   yScale: LinearScale;
 }
 
-export const Background: React.SFC<BackgroundProps> = props => {
+export const Background: React.SFC<BackgroundProps> = (props) => {
   const { gridStage, yScale } = props;
   const ticks = pickTicks(yScale);
   return (

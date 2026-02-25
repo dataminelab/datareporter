@@ -29,18 +29,10 @@ import { nestedDataset } from "./nested-dataset";
 export default function scrollerLayout(
   dataset: Datum[],
   topLabelsHeight: number,
-  leftLabelsWidth: number,
+  leftLabelsWidth: number
 ): ScrollerLayout {
-  const top = clamp(
-    topLabelsHeight,
-    MIN_TOP_LABELS_HEIGHT,
-    MAX_TOP_LABELS_HEIGHT,
-  );
-  const left = clamp(
-    leftLabelsWidth,
-    MIN_LEFT_LABELS_WIDTH,
-    MAX_LEFT_LABELS_WIDTH,
-  );
+  const top = clamp(topLabelsHeight, MIN_TOP_LABELS_HEIGHT, MAX_TOP_LABELS_HEIGHT);
+  const left = clamp(leftLabelsWidth, MIN_LEFT_LABELS_WIDTH, MAX_LEFT_LABELS_WIDTH);
   const height = dataset.length * TILE_SIZE;
   const width = nestedDataset(dataset[0]).length * TILE_SIZE;
 

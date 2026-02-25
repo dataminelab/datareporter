@@ -21,18 +21,11 @@ import { MeasureSeries } from "../../../common/models/series/measure-series";
 import { QuantileSeries } from "../../../common/models/series/quantile-series";
 import { fromMeasure, Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import {
-  CORE_ITEM_GAP,
-  CORE_ITEM_WIDTH,
-  STRINGS,
-} from "../../config/constants";
+import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { getXFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { getMaxItems } from "../../utils/pill-tile/pill-tile";
-import {
-  CubeContext,
-  CubeContextValue,
-} from "../../views/cube-view/cube-context";
+import { CubeContext, CubeContextValue } from "../../views/cube-view/cube-context";
 import { DragIndicator } from "../drag-indicator/drag-indicator";
 import { AddSeries } from "./add-series";
 import { SeriesTiles } from "./series-tiles";
@@ -54,10 +47,7 @@ interface SeriesTilesRowState {
   placeholderSeries?: Placeholder;
 }
 
-export class SeriesTilesRow extends React.Component<
-  SeriesTilesRowProps,
-  SeriesTilesRowState
-> {
+export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesTilesRowState> {
   static contextType = CubeContext;
   context: CubeContextValue;
 
@@ -122,11 +112,7 @@ export class SeriesTilesRow extends React.Component<
     return DragManager.isDraggingSeries();
   }
 
-  dragStart = (
-    label: string,
-    series: Series,
-    e: React.DragEvent<HTMLElement>,
-  ) => {
+  dragStart = (label: string, series: Series, e: React.DragEvent<HTMLElement>) => {
     const dataTransfer = e.dataTransfer;
     dataTransfer.effectAllowed = "all";
     setDragData(dataTransfer, "text/plain", label);
@@ -143,12 +129,7 @@ export class SeriesTilesRow extends React.Component<
     const rect = this.items.current.getBoundingClientRect();
     const x = getXFromEvent(e);
     const offset = x - rect.left;
-    const position = DragPosition.calculateFromOffset(
-      offset,
-      numItems,
-      CORE_ITEM_WIDTH,
-      CORE_ITEM_GAP,
-    );
+    const position = DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
     if (position.replace === this.maxItems()) {
       return new DragPosition({ insert: position.replace });
     }
@@ -184,15 +165,9 @@ export class SeriesTilesRow extends React.Component<
     this.setState({ dragPosition: null });
 
     if (DragManager.isDraggingSeries()) {
-      this.rearrangeSeries(
-        DragManager.draggingSeries(),
-        this.calculateDragPosition(e),
-      );
+      this.rearrangeSeries(DragManager.draggingSeries(), this.calculateDragPosition(e));
     } else {
-      this.dropNewSeries(
-        fromMeasure(DragManager.draggingMeasure()),
-        this.calculateDragPosition(e),
-      );
+      this.dropNewSeries(fromMeasure(DragManager.draggingMeasure()), this.calculateDragPosition(e));
     }
   };
 
@@ -201,8 +176,7 @@ export class SeriesTilesRow extends React.Component<
       clicker,
       essence: { series },
     } = this.context;
-    const isDuplicateQuantile =
-      newSeries instanceof QuantileSeries && series.hasSeries(newSeries);
+    const isDuplicateQuantile = newSeries instanceof QuantileSeries && series.hasSeries(newSeries);
     if (isDuplicateQuantile) {
       if (dragPosition.isReplace()) {
         clicker.removeSeries(series.series.get(dragPosition.replace));
@@ -223,13 +197,9 @@ export class SeriesTilesRow extends React.Component<
     const { clicker, essence } = this.context;
 
     if (dragPosition.isReplace()) {
-      clicker.changeSeriesList(
-        essence.series.replaceByIndex(dragPosition.replace, series),
-      );
+      clicker.changeSeriesList(essence.series.replaceByIndex(dragPosition.replace, series));
     } else {
-      clicker.changeSeriesList(
-        essence.series.insertByIndex(dragPosition.insert, series),
-      );
+      clicker.changeSeriesList(essence.series.insertByIndex(dragPosition.insert, series));
     }
   }
 
@@ -245,8 +215,7 @@ export class SeriesTilesRow extends React.Component<
   };
 
   render() {
-    const { dragPosition, openedSeries, overflowOpen, placeholderSeries } =
-      this.state;
+    const { dragPosition, openedSeries, overflowOpen, placeholderSeries } = this.state;
     const { essence } = this.context;
     const { menuStage } = this.props;
     return (
@@ -271,11 +240,7 @@ export class SeriesTilesRow extends React.Component<
             openedSeriesMenu={openedSeries}
           />
         </div>
-        <AddSeries
-          menuStage={menuStage}
-          essence={essence}
-          appendMeasureSeries={this.appendMeasureSeries}
-        />
+        <AddSeries menuStage={menuStage} essence={essence} appendMeasureSeries={this.appendMeasureSeries} />
         <DragIndicator
           dragOver={this.dragOver}
           dragLeave={this.dragLeave}

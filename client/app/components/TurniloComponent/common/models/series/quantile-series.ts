@@ -37,10 +37,7 @@ const defaultQuantileSeries: QuantileSeriesValue = {
   type: SeriesType.QUANTILE,
 };
 
-export class QuantileSeries
-  extends Record<QuantileSeriesValue>(defaultQuantileSeries)
-  implements SeriesBehaviours
-{
+export class QuantileSeries extends Record<QuantileSeriesValue>(defaultQuantileSeries) implements SeriesBehaviours {
   static fromJS({ type, reference, percentile, format }: any): QuantileSeries {
     return new QuantileSeries({
       type,
@@ -51,17 +48,14 @@ export class QuantileSeries
   }
 
   static fromQuantileMeasure({ name: reference, expression }: Measure) {
-    if (!(expression instanceof QuantileExpression))
-      throw new Error(`Expected QuantileExpression, got ${expression}`);
+    if (!(expression instanceof QuantileExpression)) throw new Error(`Expected QuantileExpression, got ${expression}`);
     return new QuantileSeries({
       reference,
       percentile: expression.value * 100,
     });
   }
 
-  constructor(
-    params: RequireOnly<QuantileSeriesValue, "percentile" | "reference">,
-  ) {
+  constructor(params: RequireOnly<QuantileSeriesValue, "percentile" | "reference">) {
     super(params);
   }
 

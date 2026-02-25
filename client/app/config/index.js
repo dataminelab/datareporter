@@ -32,29 +32,21 @@ moment.updateLocale("en", {
 
 function requireImages() {
   // client/app/assets/images/<path> => /images/<path>
-  const ctx = require.context(
-    "@/assets/images/",
-    true,
-    /\.(png|jpe?g|gif|svg)$/,
-  );
+  const ctx = require.context("@/assets/images/", true, /\.(png|jpe?g|gif|svg)$/);
   ctx.keys().forEach(ctx);
 }
 
 function registerExtensions() {
-  const context = require.context(
-    "extensions",
-    true,
-    /^((?![\\/.]test[\\./]).)*\.jsx?$/,
-  );
+  const context = require.context("extensions", true, /^((?![\\/.]test[\\./]).)*\.jsx?$/);
   const modules = context
     .keys()
     .map(context)
-    .map(module => module.default);
+    .map((module) => module.default);
 
   return modules
     .filter(isFunction)
-    .filter(f => f.init)
-    .map(f => f());
+    .filter((f) => f.init)
+    .map((f) => f());
 }
 
 requireImages();

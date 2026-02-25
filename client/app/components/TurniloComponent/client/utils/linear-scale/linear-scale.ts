@@ -20,17 +20,11 @@ export type LinearScale = d3.ScaleLinear<number, number>;
 
 export const TICKS_COUNT = 5;
 
-export function pickTicks(
-  scale: LinearScale,
-  ticksCount = TICKS_COUNT,
-): number[] {
-  return scale.ticks(ticksCount).filter(n => n !== 0);
+export function pickTicks(scale: LinearScale, ticksCount = TICKS_COUNT): number[] {
+  return scale.ticks(ticksCount).filter((n) => n !== 0);
 }
 
-export default function getScale(
-  [min, max]: number[],
-  height: number,
-): LinearScale | null {
+export default function getScale([min, max]: number[], height: number): LinearScale | null {
   if (isNaN(min) || isNaN(max)) {
     return null;
   }

@@ -26,17 +26,11 @@ import { ButtonGroup } from "./button-group";
 
 describe("ButtonGroup", () => {
   it("adds the correct class", () => {
-    const renderedComponent = renderIntoDocument(
-      <ButtonGroup title="my-buttons" groupMembers={[]} />,
-    );
+    const renderedComponent = renderIntoDocument(<ButtonGroup title="my-buttons" groupMembers={[]} />);
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
-      "should contain class",
-    ).to.contain("button-group");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "button-group"
+    );
   });
 });

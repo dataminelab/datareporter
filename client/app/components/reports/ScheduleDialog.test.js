@@ -102,9 +102,7 @@ describe("ScheduleDialog", () => {
       const defaultValue = moment().hour(5).minute(25); // 05:25
 
       test("UTC set correctly on init", () => {
-        const editor = mount(
-          <TimeEditor defaultValue={defaultValue} onChange={() => {}} />,
-        );
+        const editor = mount(<TimeEditor defaultValue={defaultValue} onChange={() => {}} />);
         const utc = findByTestID(editor, "utc");
 
         // expect utc to be 2h below initial time
@@ -113,9 +111,7 @@ describe("ScheduleDialog", () => {
 
       test("UTC time should not render", () => {
         const utcValue = moment.utc(defaultValue);
-        const editor = mount(
-          <TimeEditor defaultValue={utcValue} onChange={() => {}} />,
-        );
+        const editor = mount(<TimeEditor defaultValue={utcValue} onChange={() => {}} />);
         const utc = findByTestID(editor, "utc");
 
         // expect utc to not render
@@ -125,7 +121,7 @@ describe("ScheduleDialog", () => {
       // Disabling this test as the TimePicker wasn't setting values from here after Antd v4
       // eslint-disable-next-line jest/no-disabled-tests
       test.skip("onChange correct result", () => {
-        const onChangeCb = jest.fn(time => time.format("HH:mm"));
+        const onChangeCb = jest.fn((time) => time.format("HH:mm"));
         const editor = mount(<TimeEditor onChange={onChangeCb} />);
 
         // click TimePicker
@@ -134,21 +130,14 @@ describe("ScheduleDialog", () => {
         const timePickerPanel = editor.find(".ant-picker-panel");
 
         // select hour "07"
-        const hourSelector = timePickerPanel
-          .find(".ant-picker-time-panel-column")
-          .at(0);
+        const hourSelector = timePickerPanel.find(".ant-picker-time-panel-column").at(0);
         hourSelector.find("li").at(7).simulate("click");
 
         // select minute "30"
-        const minuteSelector = timePickerPanel
-          .find(".ant-picker-time-panel-column")
-          .at(1);
+        const minuteSelector = timePickerPanel.find(".ant-picker-time-panel-column").at(1);
         minuteSelector.find("li").at(6).simulate("click");
 
-        timePickerPanel
-          .find(".ant-picker-ok")
-          .find("button")
-          .simulate("mouseDown");
+        timePickerPanel.find(".ant-picker-ok").find("button").simulate("mouseDown");
 
         // expect utc to be 2h below initial time
         const utc = findByTestID(editor, "utc");
@@ -216,11 +205,9 @@ describe("ScheduleDialog", () => {
       findByTestID(wrapper, "interval").find(".ant-select").simulate("click");
 
       // get dropdown menu items
-      const options = mount(
-        wrapper.find("Trigger").instance().getComponent(),
-      ).find(".ant-select-item-option-content");
+      const options = mount(wrapper.find("Trigger").instance().getComponent()).find(".ant-select-item-option-content");
 
-      const texts = options.map(node => node.text());
+      const texts = options.map((node) => node.text());
       const expected = ["Never", "1 minute", "5 minutes", "1 hour", "2 hours"];
 
       // eslint-disable-next-line jest/prefer-to-have-length
@@ -248,10 +235,7 @@ describe("ScheduleDialog", () => {
       wrapper.setState({ newSchedule });
 
       // click confirm button
-      wrapper
-        .find(".ant-modal-footer")
-        .find(".ant-btn-primary")
-        .simulate("click");
+      wrapper.find(".ant-modal-footer").find(".ant-btn-primary").simulate("click");
 
       // expect calls
       expect(confirmCb).toHaveBeenCalled();
@@ -263,10 +247,7 @@ describe("ScheduleDialog", () => {
       const [wrapper] = getWrapper(null, initProps);
 
       // click confirm button
-      wrapper
-        .find(".ant-modal-footer")
-        .find(".ant-btn-primary")
-        .simulate("click");
+      wrapper.find(".ant-modal-footer").find(".ant-btn-primary").simulate("click");
 
       // expect calls
       expect(confirmCb).not.toHaveBeenCalled();
@@ -283,10 +264,7 @@ describe("ScheduleDialog", () => {
       wrapper.setState({ newSchedule });
 
       // click cancel button
-      wrapper
-        .find(".ant-modal-footer")
-        .find("button:not(.ant-btn-primary)")
-        .simulate("click");
+      wrapper.find(".ant-modal-footer").find("button:not(.ant-btn-primary)").simulate("click");
 
       // expect calls
       expect(confirmCb).not.toHaveBeenCalled();

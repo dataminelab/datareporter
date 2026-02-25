@@ -37,7 +37,7 @@ interface ColoredSeriesProps {
   hasComparison: boolean;
 }
 
-const ColoredSeries: React.FunctionComponent<ColoredSeriesProps> = props => {
+const ColoredSeries: React.FunctionComponent<ColoredSeriesProps> = (props) => {
   const {
     customization: { visualizationColors },
   } = useSettingsContext();
@@ -50,9 +50,7 @@ const ColoredSeries: React.FunctionComponent<ColoredSeriesProps> = props => {
   return <ColorSwabs colorEntries={colorEntries} />;
 };
 
-export const SplitHoverContent: React.FunctionComponent<
-  SplitHoverContentProps
-> = props => {
+export const SplitHoverContent: React.FunctionComponent<SplitHoverContentProps> = (props) => {
   const {
     essence,
     dataset,
@@ -63,19 +61,7 @@ export const SplitHoverContent: React.FunctionComponent<
   const reference = getContinuousReference(essence);
   const datum = dataset.findDatumByAttribute(reference, range) || {};
   if (series.length === 1) {
-    return (
-      <SeriesBubbleContent
-        series={series[0]}
-        datum={datum}
-        showPrevious={hasComparison}
-      />
-    );
+    return <SeriesBubbleContent series={series[0]} datum={datum} showPrevious={hasComparison} />;
   }
-  return (
-    <ColoredSeries
-      datum={datum}
-      series={series}
-      hasComparison={hasComparison}
-    />
-  );
+  return <ColoredSeries datum={datum} series={series} hasComparison={hasComparison} />;
 };

@@ -23,10 +23,7 @@ import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
 import { FixedTimeFilterClause } from "../../../../common/models/filter-clause/filter-clause";
 import { Filter } from "../../../../common/models/filter/filter";
-import {
-  isValidTimeShift,
-  TimeShift,
-} from "../../../../common/models/time-shift/time-shift";
+import { isValidTimeShift, TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { Timekeeper } from "../../../../common/models/timekeeper/timekeeper";
 import { Fn } from "../../../../common/utils/general/general";
 import { STRINGS } from "../../../config/constants";
@@ -48,10 +45,7 @@ export interface FixedTimeTabState {
   shift: string;
 }
 
-export class FixedTimeTab extends React.Component<
-  FixedTimeTabProps,
-  FixedTimeTabState
-> {
+export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTabState> {
   initialState = (): FixedTimeTabState => {
     const {
       essence,
@@ -60,14 +54,8 @@ export class FixedTimeTab extends React.Component<
     } = this.props;
     const shift = essence.timeShift.toJS();
 
-    const timeFilter = essence
-      .getEffectiveFilter(timekeeper)
-      .clauseForReference(name);
-    if (
-      timeFilter &&
-      timeFilter instanceof FixedTimeFilterClause &&
-      !timeFilter.values.isEmpty()
-    ) {
+    const timeFilter = essence.getEffectiveFilter(timekeeper).clauseForReference(name);
+    if (timeFilter && timeFilter instanceof FixedTimeFilterClause && !timeFilter.values.isEmpty()) {
       const { start, end } = timeFilter.values.get(0);
       return { start, end, shift };
     }
@@ -121,10 +109,7 @@ export class FixedTimeTab extends React.Component<
   }
 
   validateOverlap(): string | null {
-    const periodsOverlap =
-      this.isTimeShiftValid() &&
-      this.areDatesValid() &&
-      this.doesTimeShiftOverlap();
+    const periodsOverlap = this.isTimeShiftValid() && this.areDatesValid() && this.doesTimeShiftOverlap();
     return periodsOverlap ? STRINGS.overlappingPeriods : null;
   }
 
@@ -137,11 +122,7 @@ export class FixedTimeTab extends React.Component<
   }
 
   isFormValid(): boolean {
-    return (
-      this.areDatesValid() &&
-      this.isTimeShiftValid() &&
-      !this.doesTimeShiftOverlap()
-    );
+    return this.areDatesValid() && this.isTimeShiftValid() && !this.doesTimeShiftOverlap();
   }
 
   isFilterDifferent(): boolean {
@@ -193,17 +174,10 @@ export class FixedTimeTab extends React.Component<
             onShiftChange={this.setTimeShift}
             timezone={timezone}
           />
-          {overlapError && (
-            <div className="overlap-error-message">{overlapError}</div>
-          )}
+          {overlapError && <div className="overlap-error-message">{overlapError}</div>}
         </div>
         <div className="ok-cancel-bar">
-          <Button
-            type="primary"
-            onClick={this.onOkClick}
-            disabled={!this.validate()}
-            title={STRINGS.ok}
-          />
+          <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok} />
           <Button type="secondary" onClick={onClose} title={STRINGS.cancel} />
         </div>
       </div>

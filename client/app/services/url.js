@@ -5,17 +5,7 @@ const link = document.createElement("a"); // the only way to get an instance of 
 link.style.display = "none";
 document.body.appendChild(link);
 
-const fragmentProps = [
-  "origin",
-  "protocol",
-  "host",
-  "hostname",
-  "port",
-  "pathname",
-  "search",
-  "hash",
-  "href",
-];
+const fragmentProps = ["origin", "protocol", "host", "hostname", "port", "pathname", "search", "hash", "href"];
 
 export function parse(url) {
   link.setAttribute("href", url);

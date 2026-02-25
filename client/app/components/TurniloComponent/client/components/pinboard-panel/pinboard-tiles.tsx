@@ -41,19 +41,11 @@ function pinnedSortOn(essence: Essence): SortOn | null {
 
 function pinnedDimensions(essence: Essence): Dimension[] {
   const { dataCube, pinnedDimensions } = essence;
-  return mapTruthy(pinnedDimensions.toArray(), dimensionName =>
-    dataCube.getDimension(dimensionName),
-  );
+  return mapTruthy(pinnedDimensions.toArray(), (dimensionName) => dataCube.getDimension(dimensionName));
 }
 
-export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
-  const {
-    essence,
-    timekeeper,
-    clicker,
-    hidePlaceholder,
-    refreshRequestTimestamp,
-  } = props;
+export const PinboardTiles: React.SFC<PinboardTilesProps> = (props) => {
+  const { essence, timekeeper, clicker, hidePlaceholder, refreshRequestTimestamp } = props;
   const tileDimensions = pinnedDimensions(essence);
   const sortOn = pinnedSortOn(essence);
 
@@ -64,14 +56,14 @@ export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
         essence={essence}
         title={STRINGS.pinboard}
         sortOn={sortOn}
-        onSelect={sortOn => {
+        onSelect={(sortOn) => {
           const series = essence.series.getSeriesWithKey(sortOn.key);
           clicker.changePinnedSortSeries(series);
         }}
       />
 
       {sortOn &&
-        tileDimensions.map(dimension => (
+        tileDimensions.map((dimension) => (
           <PinboardTile
             key={dimension.name}
             essence={essence}
@@ -86,9 +78,7 @@ export const PinboardTiles: React.SFC<PinboardTilesProps> = props => {
       {showPlaceholder && (
         <div className="placeholder">
           <SvgIcon svg={require("../../icons/preview-pin.svg")} />
-          <div className="placeholder-message">
-            {STRINGS.pinboardPlaceholder}
-          </div>
+          <div className="placeholder-message">{STRINGS.pinboardPlaceholder}</div>
         </div>
       )}
     </React.Fragment>

@@ -42,10 +42,7 @@ interface VisSelectorMenuState {
   visualizationSettings: VisualizationSettings;
 }
 
-export class VisSelectorMenu extends React.Component<
-  VisSelectorMenuProps,
-  VisSelectorMenuState
-> {
+export class VisSelectorMenu extends React.Component<VisSelectorMenuProps, VisSelectorMenuState> {
   state: VisSelectorMenuState = {
     visualization: this.props.initialVisualization,
     visualizationSettings: this.props.initialSettings,
@@ -65,8 +62,7 @@ export class VisSelectorMenu extends React.Component<
       visualization,
       visualizationSettings: visualization.visualizationSettings.defaults,
     });
-  changeSettings = (visualizationSettings: VisualizationSettings) =>
-    this.setState({ visualizationSettings });
+  changeSettings = (visualizationSettings: VisualizationSettings) => this.setState({ visualizationSettings });
 
   renderSettings() {
     const component = this.settingsComponent();
@@ -108,9 +104,7 @@ export class VisSelectorMenu extends React.Component<
       case "bar-chart":
         return null;
       case "line-chart":
-        const LineChartSettingsComponent = settingsComponent(
-          visualization.name,
-        );
+        const LineChartSettingsComponent = settingsComponent(visualization.name);
         return (
           <LineChartSettingsComponent
             // @ts-ignore
@@ -128,7 +122,7 @@ export class VisSelectorMenu extends React.Component<
     return (
       <div className="vis-selector-menu">
         <div className="vis-items">
-          {MANIFESTS.map(visualization => (
+          {MANIFESTS.map((visualization) => (
             <VisSelectorItem
               key={visualization.name}
               // @ts-ignore
@@ -141,11 +135,7 @@ export class VisSelectorMenu extends React.Component<
         {this.renderSettings()}
         <div className="ok-cancel-bar">
           <Button type="primary" title={STRINGS.ok} onClick={this.save} />
-          <Button
-            type="secondary"
-            title={STRINGS.cancel}
-            onClick={this.close}
-          />
+          <Button type="secondary" title={STRINGS.cancel} onClick={this.close} />
         </div>
       </div>
     );

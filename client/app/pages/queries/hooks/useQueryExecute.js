@@ -61,7 +61,7 @@ export default function useQueryExecute(query) {
       },
     });
 
-    const onStatusChange = status => {
+    const onStatusChange = (status) => {
       if (queryResultInExecution.current === newQueryResult) {
         setExecutionState({
           updatedAt: newQueryResult.getUpdatedAt(),
@@ -72,7 +72,7 @@ export default function useQueryExecute(query) {
 
     newQueryResult
       .toPromise(onStatusChange)
-      .then(queryResult => {
+      .then((queryResult) => {
         if (queryResultInExecution.current === newQueryResult) {
           // TODO: this should probably belong in the QueryEditor page.
           if (queryResult && queryResult.query_result.query === query.query) {
@@ -81,10 +81,7 @@ export default function useQueryExecute(query) {
           }
 
           if (executionState.loadedInitialResults) {
-            notifications.showNotification(
-              "Data reporter",
-              `${query.name} updated.`,
-            );
+            notifications.showNotification("Data reporter", `${query.name} updated.`);
           }
 
           setExecutionState({
@@ -97,13 +94,10 @@ export default function useQueryExecute(query) {
           });
         }
       })
-      .catch(queryResult => {
+      .catch((queryResult) => {
         if (queryResultInExecution.current === newQueryResult) {
           if (executionState.loadedInitialResults) {
-            notifications.showNotification(
-              "Data reporter",
-              `${query.name} failed to run: ${queryResult.getError()}`,
-            );
+            notifications.showNotification("Data reporter", `${query.name} failed to run: ${queryResult.getError()}`);
           }
 
           setExecutionState({

@@ -40,10 +40,7 @@ export interface SegmentActionButtonsState {
   moreMenuOpenOn?: Element;
 }
 
-export class SegmentActionButtons extends React.Component<
-  SegmentActionButtonsProps,
-  SegmentActionButtonsState
-> {
+export class SegmentActionButtons extends React.Component<SegmentActionButtonsProps, SegmentActionButtonsState> {
   constructor(props: SegmentActionButtonsProps) {
     super(props);
     this.state = {
@@ -102,8 +99,7 @@ export class SegmentActionButtons extends React.Component<
         stage={menuSize}
         openOn={moreMenuOpenOn}
         align="start"
-        onClose={this.closeMoreMenu}
-      >
+        onClose={this.closeMoreMenu}>
         <ul className="bubble-list">
           {segmentValue && (
             <SafeCopyToClipboard key="copyValue" text={segmentValue}>
@@ -112,21 +108,12 @@ export class SegmentActionButtons extends React.Component<
               </li>
             </SafeCopyToClipboard>
           )}
-          <li
-            className="view-raw-data"
-            key="view-raw-data"
-            onClick={this.openRawDataModal}
-          >
+          <li className="view-raw-data" key="view-raw-data" onClick={this.openRawDataModal}>
             {STRINGS.displayRawData}
           </li>
           {url && (
             <li key="goToUrl">
-              <a
-                href={url}
-                onClick={this.closeMoreMenu}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a href={url} onClick={this.closeMoreMenu} target="_blank" rel="noreferrer">
                 {STRINGS.goToUrl}
               </a>
             </li>
@@ -142,18 +129,8 @@ export class SegmentActionButtons extends React.Component<
 
     return (
       <div className="segment-action-buttons">
-        <Button
-          type="primary"
-          className="mini"
-          onClick={this.onSelect}
-          title={STRINGS.select}
-        />
-        <Button
-          type="secondary"
-          className="mini"
-          onClick={this.onCancel}
-          title={STRINGS.cancel}
-        />
+        <Button type="primary" className="mini" onClick={this.onSelect} title={STRINGS.select} />
+        <Button type="secondary" className="mini" onClick={this.onCancel} title={STRINGS.cancel} />
         {disableMoreMenu ? null : (
           <Button
             type="secondary"

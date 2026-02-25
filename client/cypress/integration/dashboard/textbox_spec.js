@@ -30,7 +30,7 @@ describe("Textbox", () => {
   it("removes textbox by X button", function () {
     cy.addTextbox(this.dashboardId, "Hello World!")
       .then(getWidgetTestId)
-      .then(elTestId => {
+      .then((elTestId) => {
         cy.visit(this.dashboardUrl);
         editDashboard();
 
@@ -46,14 +46,12 @@ describe("Textbox", () => {
   it("removes textbox by menu", function () {
     cy.addTextbox(this.dashboardId, "Hello World!")
       .then(getWidgetTestId)
-      .then(elTestId => {
+      .then((elTestId) => {
         cy.visit(this.dashboardUrl);
         cy.getByTestId(elTestId).within(() => {
           cy.getByTestId("WidgetDropdownButton").click();
         });
-        cy.getByTestId("WidgetDropdownButtonMenu")
-          .contains("Remove from Dashboard")
-          .click();
+        cy.getByTestId("WidgetDropdownButtonMenu").contains("Remove from Dashboard").click();
 
         confirmDeletionInModal();
         cy.getByTestId(elTestId).should("not.exist");
@@ -64,11 +62,11 @@ describe("Textbox", () => {
     let elTestId1;
     cy.addTextbox(this.dashboardId, "txb 1")
       .then(getWidgetTestId)
-      .then(elTestId => {
+      .then((elTestId) => {
         elTestId1 = elTestId;
         return cy.addTextbox(this.dashboardId, "txb 2").then(getWidgetTestId);
       })
-      .then(elTestId2 => {
+      .then((elTestId2) => {
         cy.visit(this.dashboardUrl);
         editDashboard();
 
@@ -98,7 +96,7 @@ describe("Textbox", () => {
   it("edits textbox", function () {
     cy.addTextbox(this.dashboardId, "Hello World!")
       .then(getWidgetTestId)
-      .then(elTestId => {
+      .then((elTestId) => {
         cy.visit(this.dashboardUrl);
         cy.getByTestId(elTestId)
           .as("textboxEl")
@@ -130,11 +128,11 @@ describe("Textbox", () => {
     cy.addTextbox(id, "x", { position: txb1Pos })
       .then(() => cy.addTextbox(id, "x", { position: txb2Pos }))
       .then(getWidgetTestId)
-      .then(elTestId => {
+      .then((elTestId) => {
         cy.visit(this.dashboardUrl);
         return cy.getByTestId(elTestId);
       })
-      .should($el => {
+      .should(($el) => {
         const { top, left } = $el.offset();
         expect(top).to.be.oneOf([232, 232.015625, 162, 222.015625, 222.984375]);
         expect(left).to.be.oneOf([215, 282]);

@@ -43,10 +43,10 @@ const defaultTimeTag: TimeTagValue = {
   // NOTE: this value won't be used ever. Immutable.Record type does not understand that non-nullable fields should be not required in default value.
   checkInterval: 60000,
   time: null,
-  lastTimeChecked: null
+  lastTimeChecked: null,
 };
 
-export class TimeTag extends Record<TimeTagValue>(defaultTimeTag)  {
+export class TimeTag extends Record<TimeTagValue>(defaultTimeTag) {
   static isTimeTag(candidate: any): candidate is TimeTag {
     return candidate instanceof TimeTag;
   }
@@ -65,7 +65,7 @@ export class TimeTag extends Record<TimeTagValue>(defaultTimeTag)  {
       name,
       checkInterval,
       time,
-      lastTimeChecked
+      lastTimeChecked,
     });
   }
 

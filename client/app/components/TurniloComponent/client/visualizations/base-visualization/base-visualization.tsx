@@ -33,10 +33,7 @@ import {
   loading,
   VisualizationProps,
 } from "../../../common/models/visualization-props/visualization-props";
-import {
-  debounceWithPromise,
-  noop,
-} from "../../../common/utils/functional/functional";
+import { debounceWithPromise, noop } from "../../../common/utils/functional/functional";
 import makeQuery from "../../../common/utils/query/visualization-query";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { Loader } from "../../components/loader/loader";
@@ -54,9 +51,7 @@ export interface BaseVisualizationState {
   highlight: Highlight | null;
 }
 
-export class BaseVisualization<
-  S extends BaseVisualizationState,
-> extends React.Component<VisualizationProps, S> {
+export class BaseVisualization<S extends BaseVisualizationState> extends React.Component<VisualizationProps, S> {
   protected className: Visualization = null;
 
   constructor(props: VisualizationProps) {
@@ -94,10 +89,7 @@ export class BaseVisualization<
   }
 
   componentWillReceiveProps(nextProps: VisualizationProps): void {
-    if (
-      this.shouldFetchData(nextProps) &&
-      this.visualisationNotResized(nextProps)
-    ) {
+    if (this.shouldFetchData(nextProps) && this.visualisationNotResized(nextProps)) {
       const { essence, timekeeper } = nextProps;
       const hadDataLoaded = isLoaded(this.state.datasetLoad);
       const essenceChanged = !essence.equals(this.props.essence);
@@ -105,62 +97,49 @@ export class BaseVisualization<
     }
   }
 
-  private loadData(
-    essence: Essence,
-    timekeeper: Timekeeper,
-    showSpinner = true,
-  ) {
+  private loadData(essence: Essence, timekeeper: Timekeeper, showSpinner = true) {
     if (showSpinner) this.handleDatasetLoad(loading);
-    this.fetchData(essence, timekeeper)
-      .then(loadedDataset => {
-        if (!loadedDataset) return;
-        if (typeof window !== "undefined") {
-            const popResult = window.location.pathname.split('/').pop();
-            const slug = popResult ? popResult.split('?')[0] : '';
-            (window as any).loadedDatasetsByUrl = (window as any).loadedDatasetsByUrl || {};
-            (window as any).loadedDatasetsByUrl[slug] = (window as any).loadedDatasetsByUrl[slug] || [];
-            (window as any).loadedDatasetsByUrl[slug].push(loadedDataset);
-        }
-        if (isError(loadedDataset)) {
-          this.handleDatasetLoad(loadedDataset);
-        }
-        if (isLoaded(loadedDataset)) {
-          this.handleDatasetLoad(loadedDataset, this.deriveDatasetState(loadedDataset.dataset));
-        }
-      });
+    this.fetchData(essence, timekeeper).then((loadedDataset) => {
+      if (!loadedDataset) return;
+      if (typeof window !== "undefined") {
+        const popResult = window.location.pathname.split("/").pop();
+        const slug = popResult ? popResult.split("?")[0] : "";
+        (window as any).loadedDatasetsByUrl = (window as any).loadedDatasetsByUrl || {};
+        (window as any).loadedDatasetsByUrl[slug] = (window as any).loadedDatasetsByUrl[slug] || [];
+        (window as any).loadedDatasetsByUrl[slug].push(loadedDataset);
+      }
+      if (isError(loadedDataset)) {
+        this.handleDatasetLoad(loadedDataset);
+      }
+      if (isLoaded(loadedDataset)) {
+        this.handleDatasetLoad(loadedDataset, this.deriveDatasetState(loadedDataset.dataset));
+      }
+    });
   }
 
-  private fetchData(
-    essence: Essence,
-    timekeeper: Timekeeper,
-  ): Promise<DatasetLoad | null> {
+  private fetchData(essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> {
     this.lastQueryEssence = essence;
     return this.debouncedCallExecutor(essence, timekeeper);
   }
 
-  private callExecutor = (
-    essence: Essence,
-    timekeeper: Timekeeper,
-  ): Promise<DatasetLoad | null> =>
-    essence.dataCube
-      .executor(makeQuery(essence, timekeeper), { timezone: essence.timezone })
-      .then(
-        (value: any) => {
-          // signal out of order requests with null
-          if (!this.wasUsedForLastQuery(essence)) return null;
-          if (value instanceof Dataset) {
-            return loaded(value);
-          }
-          // handle unexpected value type (e.g., string, number, etc.)
-          return error(new Error("Query did not return a Dataset."));
-        },
-        err => {
-          // signal out of order requests with null
-          if (!this.wasUsedForLastQuery(essence)) return null;
-          reportError(err);
-          return error(err);
-        },
-      );
+  private callExecutor = (essence: Essence, timekeeper: Timekeeper): Promise<DatasetLoad | null> =>
+    essence.dataCube.executor(makeQuery(essence, timekeeper), { timezone: essence.timezone }).then(
+      (value: any) => {
+        // signal out of order requests with null
+        if (!this.wasUsedForLastQuery(essence)) return null;
+        if (value instanceof Dataset) {
+          return loaded(value);
+        }
+        // handle unexpected value type (e.g., string, number, etc.)
+        return error(new Error("Query did not return a Dataset."));
+      },
+      (err) => {
+        // signal out of order requests with null
+        if (!this.wasUsedForLastQuery(essence)) return null;
+        reportError(err);
+        return error(err);
+      }
+    );
 
   private wasUsedForLastQuery(essence: Essence) {
     return essence.equals(this.lastQueryEssence);
@@ -192,11 +171,7 @@ export class BaseVisualization<
     const nextTimekeeper = nextProps.timekeeper;
     return (
       nextEssence.differentDataCube(essence) ||
-      nextEssence.differentEffectiveFilter(
-        essence,
-        timekeeper,
-        nextTimekeeper,
-      ) ||
+      nextEssence.differentEffectiveFilter(essence, timekeeper, nextTimekeeper) ||
       nextEssence.differentTimeShift(essence) ||
       nextEssence.differentSplits(essence) ||
       nextEssence.differentSeries(essence) ||
@@ -208,15 +183,10 @@ export class BaseVisualization<
 
   private differentBucketingTimezone(newEssence: Essence): boolean {
     const { essence } = this.props;
-    return (
-      !essence.timezone.equals(newEssence.timezone) &&
-      newEssence.splits.hasSplitOn(essence.getTimeDimension())
-    );
+    return !essence.timezone.equals(newEssence.timezone) && newEssence.splits.hasSplitOn(essence.getTimeDimension());
   }
 
-  private differentLastRefreshRequestTimestamp({
-    refreshRequestTimestamp,
-  }: VisualizationProps): boolean {
+  private differentLastRefreshRequestTimestamp({ refreshRequestTimestamp }: VisualizationProps): boolean {
     return refreshRequestTimestamp !== this.props.refreshRequestTimestamp;
   }
 
@@ -253,16 +223,11 @@ export class BaseVisualization<
   protected acceptHighlight = (): void => {
     if (!this.hasHighlight()) return;
     const { essence, clicker } = this.props;
-    clicker.changeFilter(
-      essence.filter.mergeClauses(this.getHighlightClauses()),
-    );
+    clicker.changeFilter(essence.filter.mergeClauses(this.getHighlightClauses()));
     this.setState({ highlight: null });
   };
 
-  protected highlight = (
-    clauses: List<FilterClause>,
-    key: string | null = null,
-  ): void => {
+  protected highlight = (clauses: List<FilterClause>, key: string | null = null): void => {
     const highlight = new Highlight(clauses, key);
     this.setState({ highlight });
   };

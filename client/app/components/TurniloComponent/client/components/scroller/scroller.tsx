@@ -18,12 +18,7 @@
 import * as React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { firstUp } from "../../../common/utils/string/string";
-import {
-  clamp,
-  classNames,
-  getXFromEvent,
-  getYFromEvent,
-} from "../../utils/dom/dom";
+import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
 import "./scroller.scss";
 
 export type XSide = "left" | "right";
@@ -93,11 +88,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
   static PARTS: ScrollerPart[][] = [
     [Scroller.TOP_LEFT_CORNER, Scroller.TOP_GUTTER, Scroller.TOP_RIGHT_CORNER],
     [Scroller.LEFT_GUTTER, Scroller.BODY, Scroller.RIGHT_GUTTER],
-    [
-      Scroller.BOTTOM_LEFT_CORNER,
-      Scroller.BOTTOM_GUTTER,
-      Scroller.BOTTOM_RIGHT_CORNER,
-    ],
+    [Scroller.BOTTOM_LEFT_CORNER, Scroller.BOTTOM_GUTTER, Scroller.BOTTOM_RIGHT_CORNER],
   ];
 
   private container = React.createRef<HTMLDivElement>();
@@ -229,16 +220,8 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     const { viewportWidth, viewportHeight } = this.state;
     const target = e.target as Element;
 
-    const scrollLeft = clamp(
-      target.scrollLeft,
-      0,
-      Math.max(bodyWidth - viewportWidth, 0),
-    );
-    const scrollTop = clamp(
-      target.scrollTop,
-      0,
-      Math.max(bodyHeight - viewportHeight, 0),
-    );
+    const scrollLeft = clamp(target.scrollLeft, 0, Math.max(bodyWidth - viewportWidth, 0));
+    const scrollTop = clamp(target.scrollTop, 0, Math.max(bodyHeight - viewportHeight, 0));
 
     if (this.props.onScroll !== undefined) {
       this.setState(
@@ -246,7 +229,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
           scrollTop,
           scrollLeft,
         },
-        () => this.props.onScroll(scrollTop, scrollLeft),
+        () => this.props.onScroll(scrollTop, scrollLeft)
       );
     } else {
       this.setState({
@@ -326,8 +309,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
 
     if (side === "top") return scrollTop > 0;
     if (side === "left") return scrollLeft > 0;
-    if (side === "bottom")
-      return layout.bodyHeight - scrollTop > viewportHeight;
+    if (side === "bottom") return layout.bodyHeight - scrollTop > viewportHeight;
     if (side === "right") return layout.bodyWidth - scrollLeft > viewportWidth;
 
     throw new Error("Unknown side for shadow : " + side);
@@ -337,9 +319,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     if (!(this.props.layout as any)[side]) return null; // no gutter ? no shadow.
     if (!this.shouldHaveShadow(side)) return null;
 
-    return (
-      <div className={`${side}-shadow`} style={this.getShadowStyle(side)} />
-    );
+    return <div className={`${side}-shadow`} style={this.getShadowStyle(side)} />;
   }
 
   renderCorner(yPos: YSide, xPos: XSide): JSX.Element {
@@ -377,19 +357,13 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
     const newHeight = rect.height - top - bottom;
     const newWidth = rect.width - left - right;
 
-    if (
-      this.state.viewportHeight !== newHeight ||
-      this.state.viewportWidth !== newWidth
-    ) {
+    if (this.state.viewportHeight !== newHeight || this.state.viewportWidth !== newWidth) {
       this.setState({ viewportHeight: newHeight, viewportWidth: newWidth });
 
       const { left: x, top: y } = rect;
       const { onViewportUpdate } = this.props;
 
-      onViewportUpdate &&
-        onViewportUpdate(
-          new Stage({ x, y, width: newWidth, height: newHeight }),
-        );
+      onViewportUpdate && onViewportUpdate(new Stage({ x, y, width: newWidth, height: newHeight }));
     }
   }
 
@@ -441,8 +415,7 @@ export class Scroller extends React.Component<ScrollerProps, ScrollerState> {
           onScroll={this.onScroll}
           onClick={this.onClick}
           onMouseMove={this.onMouseMove}
-          onMouseLeave={onMouseLeave || null}
-        >
+          onMouseLeave={onMouseLeave || null}>
           <div className="event-target" style={this.getTargetStyle()} />
         </div>
       </div>

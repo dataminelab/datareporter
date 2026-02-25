@@ -29,9 +29,7 @@ export interface SegmentBubbleProps extends SegmentBubbleContentProps {
   top: number;
 }
 
-export const SegmentBubble: React.SFC<SegmentBubbleProps> = (
-  props: SegmentBubbleProps,
-) => {
+export const SegmentBubble: React.SFC<SegmentBubbleProps> = (props: SegmentBubbleProps) => {
   const { left, top, title, content } = props;
   return (
     <BodyPortal left={left} top={top + OFFSET_V}>

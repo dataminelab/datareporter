@@ -57,10 +57,7 @@ describe("DateRangeParameter", () => {
 
   describe("normalizeValue", () => {
     test("recognizes dates from moment arrays", () => {
-      const normalizedValue = param.normalizeValue([
-        moment("2019-10-05"),
-        moment("2019-10-06"),
-      ]);
+      const normalizedValue = param.normalizeValue([moment("2019-10-05"), moment("2019-10-06")]);
       expect(normalizedValue).toHaveLength(2);
       expect(normalizedValue[0].format("YYYY-MM-DD")).toBe("2019-10-05");
       expect(normalizedValue[1].format("YYYY-MM-DD")).toBe("2019-10-06");
@@ -80,9 +77,7 @@ describe("DateRangeParameter", () => {
       test("recognizes dynamic values from string index", () => {
         const normalizedValue = param.normalizeValue("d_last_week");
         expect(normalizedValue).not.toBeNull();
-        expect(normalizedValue).toEqual(
-          getDynamicDateRangeFromString("d_last_week"),
-        );
+        expect(normalizedValue).toEqual(getDynamicDateRangeFromString("d_last_week"));
       });
 
       test("recognizes dynamic values from a dynamic date range", () => {

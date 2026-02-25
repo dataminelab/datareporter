@@ -61,10 +61,7 @@ export function formatValue(value: any, timezone?: Timezone): string {
 */
 type DatumValue = Datum[string];
 
-export function formatShortSegment(
-  value: DatumValue,
-  timezone: Timezone,
-): string {
+export function formatShortSegment(value: DatumValue, timezone: Timezone): string {
   if (TimeRange.isTimeRange(value)) {
     return formatStartOfTimeRange(value, timezone);
   } else if (NumberRange.isNumberRange(value)) {
@@ -82,34 +79,23 @@ export function formatSegment(value: DatumValue, timezone: Timezone): string {
   return String(value);
 }
 
-export function formatFilterClause(
-  dimension: Dimension,
-  clause: FilterClause,
-  timezone: Timezone,
-): string {
+export function formatFilterClause(dimension: Dimension, clause: FilterClause, timezone: Timezone): string {
   const { title, values } = getFormattedClause(dimension, clause, timezone);
   return title ? `${title} ${values}` : values;
 }
 
-function getFormattedStringClauseValues({
-  values,
-  action,
-}: StringFilterClause): string {
+function getFormattedStringClauseValues({ values, action }: StringFilterClause): string {
   switch (action) {
     case StringFilterAction.MATCH:
       return `/${values.first()}/`;
     case StringFilterAction.CONTAINS:
       return `"${values.first()}"`;
     case StringFilterAction.IN:
-      return values.count() > 1
-        ? `(${values.count()})`
-        : String(values.first());
+      return values.count() > 1 ? `(${values.count()})` : String(values.first());
   }
 }
 
-function getFormattedBooleanClauseValues({
-  values,
-}: BooleanFilterClause): string {
+function getFormattedBooleanClauseValues({ values }: BooleanFilterClause): string {
   return values.count() > 1 ? `(${values.count()})` : values.first().toString();
 }
 
@@ -118,10 +104,7 @@ function getFormattedNumberClauseValues(clause: NumberFilterClause): string {
   return `${start} to ${end}`;
 }
 
-function getFilterClauseValues(
-  clause: FilterClause,
-  timezone: Timezone,
-): string {
+function getFilterClauseValues(clause: FilterClause, timezone: Timezone): string {
   if (isTimeFilter(clause)) {
     return getFormattedTimeClauseValues(clause, timezone);
   }
@@ -142,9 +125,7 @@ function getClauseLabel(clause: FilterClause, dimension: Dimension) {
   if (isTimeFilter(clause)) return "";
   const delimiter =
     clause instanceof StringFilterClause &&
-    [StringFilterAction.MATCH, StringFilterAction.CONTAINS].indexOf(
-      clause.action,
-    ) !== -1
+    [StringFilterAction.MATCH, StringFilterAction.CONTAINS].indexOf(clause.action) !== -1
       ? " ~"
       : ":";
 
@@ -156,7 +137,7 @@ function getClauseLabel(clause: FilterClause, dimension: Dimension) {
 export function getFormattedClause(
   dimension: Dimension,
   clause: FilterClause,
-  timezone: Timezone,
+  timezone: Timezone
 ): { title: string; values: string } {
   return {
     title: getClauseLabel(clause, dimension),
@@ -164,10 +145,7 @@ export function getFormattedClause(
   };
 }
 
-function getFormattedTimeClauseValues(
-  clause: TimeFilterClause,
-  timezone: Timezone,
-): string {
+function getFormattedTimeClauseValues(clause: TimeFilterClause, timezone: Timezone): string {
   if (clause instanceof FixedTimeFilterClause) {
     return formatTimeRange(clause.values.get(0), timezone);
   }

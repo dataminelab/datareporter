@@ -16,14 +16,7 @@
  */
 
 import axios from "axios";
-import {
-  Dataset,
-  DatasetJS,
-  Executor,
-  Expression,
-  LimitExpression,
-  FilterExpression,
-} from "plywood";
+import { Dataset, DatasetJS, Executor, Expression, LimitExpression, FilterExpression } from "plywood";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { setPriceButton } from "../ajax/ReportPageHeaderUtils";
 import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
@@ -45,13 +38,11 @@ const EmptyDataset = Dataset.fromJS([]);
 function getClientTimeoutDefault(): number {
   const ls = safeLocalStorage();
   const docker_timeout = ls ? ls.getItem("CLIENT_TIMEOUT") : undefined;
-  return docker_timeout && docker_timeout !== "undefined"
-    ? Number(docker_timeout)
-    : 100000;
+  return docker_timeout && docker_timeout !== "undefined" ? Number(docker_timeout) : 100000;
 }
 
 function clientTimeout(dataCube: DataCube): number {
-  const clusterTimeout = Number(dataCube && dataCube.cluster && dataCube.cluster.getTimeout() || 0);
+  const clusterTimeout = Number((dataCube && dataCube.cluster && dataCube.cluster.getTimeout()) || 0);
   return getClientTimeoutDefault() + clusterTimeout;
 }
 
@@ -64,9 +55,7 @@ function reload() {
 }
 
 function getHash() {
-  return window.location.hash
-    ? window.location.hash.substring(window.location.hash.indexOf("4/") + 2)
-    : "";
+  return window.location.hash ? window.location.hash.substring(window.location.hash.indexOf("4/") + 2) : "";
 }
 
 export interface AjaxOptions {
@@ -88,26 +77,21 @@ export class Ajax {
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
     return axios({ method, url, data, timeout, validateStatus })
-      .then(res => {
-        if (res && res.data.action === "update" && Ajax.onUpdate)
-          Ajax.onUpdate();
+      .then((res) => {
+        if (res && res.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
         else if (
-          (res.data.progress.results !== res.data.progress.all ||
-            res.data.progress.progress !== 100) &&
+          (res.data.progress.results !== res.data.progress.all || res.data.progress.progress !== 100) &&
           Ajax.onUpdate
         )
           Ajax.onUpdate();
         return res.data;
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response && error.response.data) {
           if (error.response.data.action === "reload") reload();
-          else if (error.response.data.action === "update" && Ajax.onUpdate)
-            Ajax.onUpdate();
+          else if (error.response.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
           const message = error.response.data.message || error.message;
-          throw new Error(
-            "error with response: " + error.response.status + ", " + message,
-          );
+          throw new Error("error with response: " + error.response.status + ", " + message);
         } else if (error.request) {
           throw new Error("no response received, " + error.message);
         } else {
@@ -120,7 +104,7 @@ export class Ajax {
     dataCube: DataCube,
     getEssence: () => Essence,
     statusCallback?: (status: any) => void,
-    getExecutionStatus?: () => string,
+    getExecutionStatus?: () => string
   ): Executor {
     const timeout = clientTimeout(dataCube);
 
@@ -129,7 +113,7 @@ export class Ajax {
     }
 
     function timeoutQuery(ms: number) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+      return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
@@ -140,13 +124,13 @@ export class Ajax {
         ls.removeItem("bypass_cache");
       }
       const res = await Ajax.query<APIResponse>({ method, url, timeout, data })
-        .then(result => {
+        .then((result) => {
           if (getExecutionStatus() === "cancelling") {
             statusCallback({
               reportResult: null,
               loadedInitialResults: true,
               error: null,
-              status: 'done',
+              status: "done",
               isExecuting: false,
               isCancelling: false,
               executionStatus: null,
@@ -155,8 +139,8 @@ export class Ajax {
           }
           return result;
         })
-        .catch(error => {
-          statusCallback({ status: 'failed', isExecuting: false, error });
+        .catch((error) => {
+          statusCallback({ status: "failed", isExecuting: false, error });
           throw error;
         });
       const urlHash = getHash();
@@ -167,7 +151,7 @@ export class Ajax {
         await timeoutQuery(2000);
         return await subscribe(input);
       } else {
-        statusCallback({ status: 'done', isExecuting: false });
+        statusCallback({ status: "done", isExecuting: false });
         return res;
       }
     }
@@ -176,7 +160,7 @@ export class Ajax {
       const method = "POST";
       const url = `api/reports/generate/${modelId}/filter`;
       const data = { expression: ex.toJS() };
-      statusCallback({ status: 'processing', isExecuting: true });
+      statusCallback({ status: "processing", isExecuting: true });
       return subscribe({ method, url, timeout, data });
     }
 
@@ -184,12 +168,9 @@ export class Ajax {
       const method = "POST";
       let url;
       const href = window.location.href;
-      statusCallback({ status: 'processing', isExecuting: true });
+      statusCallback({ status: "processing", isExecuting: true });
       if (href.includes("public/dashboards")) {
-        const apiKey = href
-          .split("public/dashboards/")[1]
-          .split("/")[0]
-          .split("?")[0];
+        const apiKey = href.split("public/dashboards/")[1].split("/")[0].split("?")[0];
         url = `api/reports/generate/${modelId}/public?api_key=${apiKey}`;
       } else {
         url = `api/reports/generate/${modelId}`;
@@ -210,22 +191,19 @@ export class Ajax {
 
     function getHashForExpression(): string {
       const essence = getEssenceIfExists();
-      return essence
-        ? urlHashConverter.toHash(essence).substring(2)
-        : getHash() || Ajax.hash;
+      return essence ? urlHashConverter.toHash(essence).substring(2) : getHash() || Ajax.hash;
     }
 
     function isFilterOrLimitExpression(ex: Expression): boolean {
       return (
         ex instanceof LimitExpression ||
         // @ts-ignore compiler thinks that operand does not exist in the FilterExpression
-        (ex.operand instanceof FilterExpression)
+        ex.operand instanceof FilterExpression
       );
     }
 
     return async (ex: Expression) => {
-      if (this.results)
-        return Dataset.fromJS(this.results.data || EmptyDataset);
+      if (this.results) return Dataset.fromJS(this.results.data || EmptyDataset);
 
       const modelId = Ajax.model_id;
       let sub: APIResponse;
@@ -257,4 +235,3 @@ function safeLocalStorage() {
   }
   return null;
 }
-

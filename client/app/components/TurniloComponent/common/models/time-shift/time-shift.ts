@@ -88,10 +88,7 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
     return this.toJS() || "";
   }
 
-  private isValidForTimeFilter(
-    timeFilter: TimeFilterClause,
-    timezone: Timezone,
-  ): boolean {
+  private isValidForTimeFilter(timeFilter: TimeFilterClause, timezone: Timezone): boolean {
     switch (timeFilter.type) {
       case FilterTypes.FIXED_TIME:
         const { values } = timeFilter as FixedTimeFilterClause;
@@ -105,12 +102,7 @@ export class TimeShift implements Instance<TimeShiftValue, TimeShiftJS> {
     }
   }
 
-  constrainToFilter(
-    timeFilter: TimeFilterClause,
-    timezone: Timezone,
-  ): TimeShift {
-    return this.value && this.isValidForTimeFilter(timeFilter, timezone)
-      ? this
-      : TimeShift.empty();
+  constrainToFilter(timeFilter: TimeFilterClause, timezone: Timezone): TimeShift {
+    return this.value && this.isValidForTimeFilter(timeFilter, timezone) ? this : TimeShift.empty();
   }
 }

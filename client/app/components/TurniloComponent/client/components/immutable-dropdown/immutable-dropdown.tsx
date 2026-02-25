@@ -36,10 +36,7 @@ export interface ImmutableDropdownProps<T> {
 
 export interface ImmutableDropdownState {}
 
-export class ImmutableDropdown<T> extends React.Component<
-  ImmutableDropdownProps<T>,
-  ImmutableDropdownState
-> {
+export class ImmutableDropdown<T> extends React.Component<ImmutableDropdownProps<T>, ImmutableDropdownState> {
   static simpleGenerator(instance: any, changeFn: ChangeFn) {
     const generator = (name: string, items: ListItem[]): JSX.Element => {
       return (
@@ -61,21 +58,14 @@ export class ImmutableDropdown<T> extends React.Component<
   onChange = (newSelectedItem: T) => {
     const { instance, path, onChange, keyItem } = this.props;
 
-    onChange(
-      ImmutableUtils.setProperty(instance, path, keyItem(newSelectedItem)),
-      true,
-      path,
-      undefined,
-    );
+    onChange(ImmutableUtils.setProperty(instance, path, keyItem(newSelectedItem)), true, path, undefined);
   };
 
   render() {
-    const { label, items, equal, renderItem, keyItem, instance, path } =
-      this.props;
+    const { label, items, equal, renderItem, keyItem, instance, path } = this.props;
     const selectedValue = ImmutableUtils.getProperty(instance, path);
 
-    const selectedItem: T =
-      items.filter(item => keyItem(item) === selectedValue)[0] || items[0];
+    const selectedItem: T = items.filter((item) => keyItem(item) === selectedValue)[0] || items[0];
 
     return (
       <Dropdown<T>

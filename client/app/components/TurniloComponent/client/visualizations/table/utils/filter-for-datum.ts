@@ -38,41 +38,36 @@ function createDateRange(start: any, end: any): DateRange | null {
   return new DateRange({ start, end });
 }
 
-export function getFilterFromDatum(
-  splits: Splits,
-  flatDatum: PseudoDatum,
-): List<FilterClause> {
+export function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List<FilterClause> {
   const splitNesting = flatDatum["__nest"];
   const { splits: splitCombines } = splits;
 
   if (splitNesting === 0 || splitNesting > splitCombines.size) return null;
 
-  const filterClauses = splitCombines
-    .take(splitNesting)
-    .map(({ reference, type }) => {
-      const segment: any = flatDatum[reference];
-      switch (type) {
-        case SplitType.number:
-          return new NumberFilterClause({
-            reference,
-            values: List.of(new NumberRange(segment)),
-          });
-        case SplitType.time:
-          const newDate = createDateRange(segment, undefined);
-          return new FixedTimeFilterClause({
-            reference,
-            values: List.of(newDate),
-          });
-        case SplitType.string:
-          return new StringFilterClause({
-            reference,
-            action: StringFilterAction.IN,
-            values: Set.of(segment),
-          });
-        default:
-          throw new Error(`Unsupported split type: ${type}`);
-      }
-    });
+  const filterClauses = splitCombines.take(splitNesting).map(({ reference, type }) => {
+    const segment: any = flatDatum[reference];
+    switch (type) {
+      case SplitType.number:
+        return new NumberFilterClause({
+          reference,
+          values: List.of(new NumberRange(segment)),
+        });
+      case SplitType.time:
+        const newDate = createDateRange(segment, undefined);
+        return new FixedTimeFilterClause({
+          reference,
+          values: List.of(newDate),
+        });
+      case SplitType.string:
+        return new StringFilterClause({
+          reference,
+          action: StringFilterAction.IN,
+          values: Set.of(segment),
+        });
+      default:
+        throw new Error(`Unsupported split type: ${type}`);
+    }
+  });
 
   return List(filterClauses);
 }

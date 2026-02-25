@@ -27,11 +27,7 @@ import { Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { ColorLegend } from "../../components/color-legend/color-legend";
 import { LegendSpot } from "../../components/pinboard-panel/pinboard-panel";
-import {
-  Scroller,
-  ScrollerLayout,
-  ScrollerPart,
-} from "../../components/scroller/scroller";
+import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
 import { clamp } from "../../utils/dom/dom";
 import { LinearScale } from "../../utils/linear-scale/linear-scale";
 import { Highlight } from "../base-visualization/highlight";
@@ -43,9 +39,7 @@ import { HeatmapHoverIndicator } from "./heatmap-hover-indicator";
 import { HeatmapHoverTooltip } from "./heatmap-hover-tooltip";
 import { HeatmapLabels } from "./heatmap-labels";
 import { HeatMapRectangles } from "./heatmap-rectangles";
-import createHighlightClauses, {
-  isClickablePart,
-} from "./utils/create-highlight-clauses";
+import createHighlightClauses, { isClickablePart } from "./utils/create-highlight-clauses";
 import getHighlightPosition from "./utils/get-highlight-position";
 import getHoverPosition, { HoverPosition } from "./utils/get-hover-position";
 import { modalTitle } from "./utils/modal-title";
@@ -83,18 +77,11 @@ export const MAX_LEFT_LABELS_WIDTH = 200;
 export const MIN_TOP_LABELS_HEIGHT = 100;
 export const MAX_TOP_LABELS_HEIGHT = 150;
 
-function formatSegments(
-  dataset: Datum[],
-  fieldName: string,
-  timezone: Timezone,
-): string[] {
-  return dataset.map(datum => formatSegment(datum[fieldName], timezone));
+function formatSegments(dataset: Datum[], fieldName: string, timezone: Timezone): string[] {
+  return dataset.map((datum) => formatSegment(datum[fieldName], timezone));
 }
 
-export class LabelledHeatmap extends React.PureComponent<
-  LabelledHeatmapProps,
-  LabelledHeatmapState
-> {
+export class LabelledHeatmap extends React.PureComponent<LabelledHeatmapProps, LabelledHeatmapState> {
   state: LabelledHeatmapState = {
     hoverPosition: null,
     leftLabelsWidth: 0,
@@ -105,49 +92,29 @@ export class LabelledHeatmap extends React.PureComponent<
 
   saveHover = (x: number, y: number, part: ScrollerPart) => {
     const { xScale, yScale } = this.props;
-    const hoverPosition = getHoverPosition(
-      xScale,
-      yScale,
-      x,
-      y,
-      part,
-      this.layout(),
-    );
+    const hoverPosition = getHoverPosition(xScale, yScale, x, y, part, this.layout());
     this.setState({ hoverPosition });
   };
 
   resetHover = () => this.setState({ hoverPosition: null });
 
-  saveScroll = (scrollTop: number, scrollLeft: number) =>
-    this.setState({ scrollLeft, scrollTop });
+  saveScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
 
   saveLeftLabelWidth = (maxLabelWidth: number) =>
     this.setState({
-      leftLabelsWidth: clamp(
-        maxLabelWidth,
-        MIN_LEFT_LABELS_WIDTH,
-        MAX_LEFT_LABELS_WIDTH,
-      ),
+      leftLabelsWidth: clamp(maxLabelWidth, MIN_LEFT_LABELS_WIDTH, MAX_LEFT_LABELS_WIDTH),
     });
 
   saveTopLabelHeight = (maxLabelHeight: number) =>
     this.setState({
-      topLabelsHeight: clamp(
-        maxLabelHeight,
-        MIN_TOP_LABELS_HEIGHT,
-        MAX_TOP_LABELS_HEIGHT,
-      ),
+      topLabelsHeight: clamp(maxLabelHeight, MIN_TOP_LABELS_HEIGHT, MAX_TOP_LABELS_HEIGHT),
     });
 
   handleHighlight = (x: number, y: number, part: ScrollerPart) => {
     if (!isClickablePart(part)) return;
     const { saveHighlight, essence, dataset } = this.props;
     const layout = this.layout();
-    const clauses = createHighlightClauses(
-      { x: x - layout.left, y: y - layout.top, part },
-      essence,
-      dataset,
-    );
+    const clauses = createHighlightClauses({ x: x - layout.left, y: y - layout.top, part }, essence, dataset);
     if (clauses.length > 0) {
       saveHighlight(List(clauses));
     }
@@ -160,21 +127,10 @@ export class LabelledHeatmap extends React.PureComponent<
   }
 
   render() {
-    const {
-      stage,
-      colorScale,
-      xScale,
-      yScale,
-      dataset,
-      essence,
-      highlight,
-      acceptHighlight,
-      dropHighlight,
-      report,
-    } = this.props;
+    const { stage, colorScale, xScale, yScale, dataset, essence, highlight, acceptHighlight, dropHighlight, report } =
+      this.props;
     const colorLabel = report.colorText;
-    const { scrollLeft, scrollTop, hoverPosition, topLabelsHeight } =
-      this.state;
+    const { scrollLeft, scrollTop, hoverPosition, topLabelsHeight } = this.state;
 
     const series = essence.getConcreteSeries().first();
     const {
@@ -185,11 +141,7 @@ export class LabelledHeatmap extends React.PureComponent<
     const secondSplit = splits.get(1);
 
     const leftLabels = formatSegments(dataset, firstSplit.reference, timezone);
-    const topLabels = formatSegments(
-      nestedDataset(dataset[0]),
-      secondSplit.reference,
-      timezone,
-    );
+    const topLabels = formatSegments(nestedDataset(dataset[0]), secondSplit.reference, timezone);
 
     const highlightPosition = getHighlightPosition(highlight, essence, dataset);
 
@@ -204,12 +156,7 @@ export class LabelledHeatmap extends React.PureComponent<
           onScroll={this.saveScroll}
           layout={layout}
           topLeftCorner={
-            <HeatmapCorner
-              colorScale={colorScale}
-              width={layout.left}
-              height={layout.top}
-              essence={essence}
-            />
+            <HeatmapCorner colorScale={colorScale} width={layout.left} height={layout.top} essence={essence} />
           }
           topGutter={
             <HeatmapLabels
@@ -217,9 +164,7 @@ export class LabelledHeatmap extends React.PureComponent<
               labels={topLabels}
               colorLabel={colorLabel}
               hoveredLabel={hoverPosition ? hoverPosition.column : -1}
-              highlightedLabel={
-                highlightPosition ? highlightPosition.column : -1
-              }
+              highlightedLabel={highlightPosition ? highlightPosition.column : -1}
               onMaxLabelSize={this.saveTopLabelHeight}
               labelSize={topLabelsHeight}
             />
@@ -258,21 +203,13 @@ export class LabelledHeatmap extends React.PureComponent<
                 />
               )}
               {hoverPosition && (
-                <HeatmapHoverIndicator
-                  tileSize={TILE_SIZE}
-                  tileGap={TILE_GAP}
-                  hoverPosition={hoverPosition}
-                />
+                <HeatmapHoverIndicator tileSize={TILE_SIZE} tileGap={TILE_GAP} hoverPosition={hoverPosition} />
               )}
             </React.Fragment>
           }
         />
         <LegendSpot>
-          <ColorLegend
-            title={series.title()}
-            formatter={series.formatter()}
-            colorScale={colorScale}
-          />
+          <ColorLegend title={series.title()} formatter={series.formatter()} colorScale={colorScale} />
         </LegendSpot>
         {highlightPosition && (
           <HeatmapHighlightModal

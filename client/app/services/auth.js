@@ -14,9 +14,7 @@ export const currentUser = {
 
   canCreate() {
     return (
-      this.hasPermission("create_query") ||
-      this.hasPermission("create_dashboard") ||
-      this.hasPermission("list_alerts")
+      this.hasPermission("create_query") || this.hasPermission("create_dashboard") || this.hasPermission("list_alerts")
     );
   },
 
@@ -86,14 +84,14 @@ export const Auth = {
     }
 
     Auth.setApiKey(null);
-    return axios.get("api/session").then(data => {
+    return axios.get("api/session").then((data) => {
       updateSession(data);
       return session;
     });
   },
   loadConfig() {
     logger("Loading config");
-    return axios.get("/api/config").then(data => {
+    return axios.get("/api/config").then((data) => {
       updateSession({
         client_config: data.client_config,
         user: { permissions: [] },

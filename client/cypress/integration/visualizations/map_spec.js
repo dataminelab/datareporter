@@ -21,9 +21,7 @@ describe("Map (Markers)", () => {
     const mapTileUrl = "/static/images/fixtures/map-tile.png";
 
     cy.createQuery({ query: SQL })
-      .then(({ id }) =>
-        cy.createVisualization(id, "MAP", "Map (Markers)", { mapTileUrl }),
-      )
+      .then(({ id }) => cy.createVisualization(id, "MAP", "Map (Markers)", { mapTileUrl }))
       .then(({ id: visualizationId, query_id: queryId }) => {
         cy.visit(`queries/${queryId}/source#${visualizationId}`);
         cy.getByTestId("ExecuteButton").click();
@@ -53,9 +51,7 @@ describe("Map (Markers)", () => {
     cy.fillInputs({ "ColorPicker.CustomColor": "blue{enter}" });
     cy.getByTestId("ColorPicker.CustomColor").should("not.be.visible");
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".leaflet-control-zoom-in")
-      .click();
+    cy.getByTestId("VisualizationPreview").find(".leaflet-control-zoom-in").click();
 
     // Wait for proper initialization of visualization
     cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting
@@ -89,9 +85,7 @@ describe("Map (Markers)", () => {
     cy.fillInputs({ "ColorPicker.CustomColor": "maroon{enter}" });
     cy.getByTestId("ColorPicker.CustomColor").should("not.be.visible");
 
-    cy.getByTestId("VisualizationPreview")
-      .find(".leaflet-control-zoom-in")
-      .click();
+    cy.getByTestId("VisualizationPreview").find(".leaflet-control-zoom-in").click();
 
     // Wait for proper initialization of visualization
     cy.wait(1000); // eslint-disable-line cypress/no-unnecessary-waiting

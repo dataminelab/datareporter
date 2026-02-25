@@ -24,10 +24,7 @@ function createParameter(param, parentQueryId) {
     case "datetime-range-with-seconds":
       return new DateRangeParameter(param, parentQueryId);
     case "text-pattern":
-      return new TextPatternParameter(
-        { ...param, type: "text-pattern" },
-        parentQueryId,
-      );
+      return new TextPatternParameter({ ...param, type: "text-pattern" }, parentQueryId);
     default:
       return new TextParameter({ ...param, type: "text" }, parentQueryId);
   }

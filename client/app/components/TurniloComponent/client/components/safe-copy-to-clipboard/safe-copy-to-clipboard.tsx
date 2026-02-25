@@ -17,10 +17,7 @@
 import * as React from "react";
 import CopyToClipboard from "react-copy-to-clipboard";
 
-type SafeCopyToClipboardProps = Pick<
-  CopyToClipboard.Props,
-  "text" | "onCopy" | "children"
->;
+type SafeCopyToClipboardProps = Pick<CopyToClipboard.Props, "text" | "onCopy" | "children">;
 
 export function SafeCopyToClipboard(props: SafeCopyToClipboardProps) {
   return <CopyToClipboard {...props} options={{ format: "text/plain" }} />;

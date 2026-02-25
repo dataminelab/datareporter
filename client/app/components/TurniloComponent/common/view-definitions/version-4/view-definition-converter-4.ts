@@ -41,7 +41,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     const timeShift = definition.timeShift ? TimeShift.fromJS(definition.timeShift) : TimeShift.empty();
 
     const clauses = definition.filters
-      .map(fc => {
+      .map((fc) => {
         try {
           return filterDefinitionConverter.toFilterClause(fc, dataCube);
         } catch (e) {
@@ -53,7 +53,7 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
     const filter = Filter.fromClauses(clauses);
 
     const splitDefinitions = definition.splits
-      .map(sd => {
+      .map((sd) => {
         try {
           return splitConverter.toSplitCombine(sd, dataCube);
         } catch (e) {
@@ -87,12 +87,12 @@ export class ViewDefinitionConverter4 implements ViewDefinitionConverter<ViewDef
       visualization: essence.visualization.name,
       visualizationSettings: toViewDefinition(essence.visualization, essence.visualizationSettings),
       timezone: essence.timezone.toJS(),
-      filters: essence.filter.clauses.map(fc => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
+      filters: essence.filter.clauses.map((fc) => filterDefinitionConverter.fromFilterClause(fc)).toArray(),
       splits: essence.splits.splits.map(splitConverter.fromSplitCombine).toArray(),
       series: seriesDefinitionConverter.fromEssenceSeries(essence.series),
       pinnedDimensions: essence.pinnedDimensions.toArray(),
       pinnedSort: essence.pinnedSort,
-      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined
+      timeShift: essence.hasComparison() ? essence.timeShift.toJS() : undefined,
     };
   }
 }

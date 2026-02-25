@@ -23,13 +23,9 @@ const yScale = scaleLinear({ domain: [10, 0], range: [200, 0] });
 
 describe("getHoverPosition", () => {
   it("should return null outside of body", () => {
-    expect(getHoverPosition(xScale, yScale, 0, 0, "left-gutter", {} as any)).to
-      .be.null;
-    expect(getHoverPosition(xScale, yScale, 0, 0, "top-gutter", {} as any)).to
-      .be.null;
-    expect(
-      getHoverPosition(xScale, yScale, 0, 0, "top-right-corner", {} as any),
-    ).to.be.null;
+    expect(getHoverPosition(xScale, yScale, 0, 0, "left-gutter", {} as any)).to.be.null;
+    expect(getHoverPosition(xScale, yScale, 0, 0, "top-gutter", {} as any)).to.be.null;
+    expect(getHoverPosition(xScale, yScale, 0, 0, "top-right-corner", {} as any)).to.be.null;
   });
 
   it("should return null of x is outside of heatmap width", () => {
@@ -37,7 +33,7 @@ describe("getHoverPosition", () => {
       getHoverPosition(xScale, yScale, 20000, 123, "body", {
         left: 10,
         top: 20,
-      } as any),
+      } as any)
     ).to.be.null;
   });
 
@@ -46,14 +42,12 @@ describe("getHoverPosition", () => {
       getHoverPosition(xScale, yScale, 42, 20000, "body", {
         left: 10,
         top: 20,
-      } as any),
+      } as any)
     ).to.be.null;
   });
 
   it("should pass through x and y as left and top", () => {
-    expect(
-      getHoverPosition(xScale, yScale, 42, 123, "body", {} as any),
-    ).to.include({
+    expect(getHoverPosition(xScale, yScale, 42, 123, "body", {} as any)).to.include({
       left: 42,
       top: 123,
     });
@@ -64,7 +58,7 @@ describe("getHoverPosition", () => {
       getHoverPosition(xScale, yScale, 42, 123, "body", {
         left: 10,
         top: 20,
-      } as any),
+      } as any)
     ).to.include({
       row: 5,
       column: 3,

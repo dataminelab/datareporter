@@ -34,10 +34,7 @@ export interface RangeHandleState {
   anchor: number;
 }
 
-export class RangeHandle extends React.Component<
-  RangeHandleProps,
-  RangeHandleState
-> {
+export class RangeHandle extends React.Component<RangeHandleProps, RangeHandleState> {
   public mounted: boolean;
 
   state: RangeHandleState = {
@@ -80,7 +77,7 @@ export class RangeHandle extends React.Component<
     return (
       <div
         className={classNames("range-handle", {
-          "empty": isAny,
+          empty: isAny,
           "beyond min": isBeyondMin,
           "beyond max": isBeyondMax,
         })}

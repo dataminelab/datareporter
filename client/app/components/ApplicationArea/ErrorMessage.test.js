@@ -5,8 +5,7 @@ import ErrorMessage from "./ErrorMessage";
 const ErrorMessages = {
   UNAUTHORIZED: "It seems like you don’t have permission to see this page.",
   NOT_FOUND: "It seems like the page you're looking for cannot be found.",
-  GENERIC:
-    "It seems like we encountered an error. Try refreshing this page or contact your administrator.",
+  GENERIC: "It seems like we encountered an error. Try refreshing this page or contact your administrator.",
 };
 
 function mockAxiosError(status = 500, response = {}) {
@@ -26,17 +25,12 @@ describe("Error Message", () => {
   function expectErrorMessageToBe(error, errorMessage) {
     const component = mount(<ErrorMessage error={error} />);
 
-    expect(component.find(".error-state__details h4").text()).toBe(
-      errorMessage,
-    );
+    expect(component.find(".error-state__details h4").text()).toBe(errorMessage);
     expect(spyError).toHaveBeenCalledWith(error);
   }
 
   test("displays a generic message on adhoc errors", () => {
-    expectErrorMessageToBe(
-      new Error("technical information"),
-      ErrorMessages.GENERIC,
-    );
+    expectErrorMessageToBe(new Error("technical information"), ErrorMessages.GENERIC);
   });
 
   test("displays a not found message on axios errors with 404 code", () => {

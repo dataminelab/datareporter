@@ -17,55 +17,35 @@
 import * as React from "react";
 import { SearchableFolder } from "../searchable-tile/searchable-folder";
 import { MeasureItem } from "./measure-item";
-import {
-  MeasureForView,
-  MeasureForViewType,
-  MeasureGroupForView,
-  MeasureOrGroupForView,
-} from "./measures-converter";
+import { MeasureForView, MeasureForViewType, MeasureGroupForView, MeasureOrGroupForView } from "./measures-converter";
 import { MeasureClickHandler, MeasureDragStartHandler } from "./measures-tile";
 
 export class MeasuresRenderer {
   constructor(
     private readonly measureClick: MeasureClickHandler,
     private readonly measureDragStart: MeasureDragStartHandler,
-    private readonly searchText: string,
+    private readonly searchText: string
   ) {}
 
   render(children: MeasureOrGroupForView[]): JSX.Element[] {
     const { searchText } = this;
 
-    const notInSearchModeOrHasSearchTextOrIsGroup = (
-      item: MeasureOrGroupForView,
-    ) => {
-      return (
-        !searchText ||
-        item.hasSearchText ||
-        item.type === MeasureForViewType.group
-      );
+    const notInSearchModeOrHasSearchTextOrIsGroup = (item: MeasureOrGroupForView) => {
+      return !searchText || item.hasSearchText || item.type === MeasureForViewType.group;
     };
 
-    return children
-      .filter(notInSearchModeOrHasSearchTextOrIsGroup)
-      .map(child => {
-        if (child.type === MeasureForViewType.group) {
-          return this.renderFolder(child);
-        } else {
-          return this.renderMeasure(child);
-        }
-      });
+    return children.filter(notInSearchModeOrHasSearchTextOrIsGroup).map((child) => {
+      if (child.type === MeasureForViewType.group) {
+        return this.renderFolder(child);
+      } else {
+        return this.renderMeasure(child);
+      }
+    });
   }
 
   private renderFolder(groupView: MeasureGroupForView): JSX.Element {
     const { searchText } = this;
-    const {
-      name,
-      title,
-      description,
-      hasSearchText,
-      hasSelectedMeasures,
-      children,
-    } = groupView;
+    const { name, title, description, hasSearchText, hasSelectedMeasures, children } = groupView;
 
     return (
       <SearchableFolder
@@ -75,8 +55,7 @@ export class MeasuresRenderer {
         title={title}
         inSearchMode={!!searchText}
         hasItemsWithSearchText={hasSearchText}
-        shouldBeOpened={hasSelectedMeasures}
-      >
+        shouldBeOpened={hasSelectedMeasures}>
         {this.render(children)}
       </SearchableFolder>
     );
@@ -84,8 +63,7 @@ export class MeasuresRenderer {
 
   private renderMeasure(measureView: MeasureForView): JSX.Element {
     const { measureClick, measureDragStart, searchText } = this;
-    const { name, title, approximate, description, hasSelectedMeasures } =
-      measureView;
+    const { name, title, approximate, description, hasSelectedMeasures } = measureView;
 
     return (
       <MeasureItem

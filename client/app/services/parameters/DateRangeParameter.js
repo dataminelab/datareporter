@@ -1,12 +1,4 @@
-import {
-  startsWith,
-  has,
-  includes,
-  findKey,
-  values,
-  isObject,
-  isArray,
-} from "lodash";
+import { startsWith, has, includes, findKey, values, isObject, isArray } from "lodash";
 import moment from "moment";
 import PropTypes from "prop-types";
 import Parameter from "./Parameter";
@@ -26,10 +18,7 @@ const DYNAMIC_DATE_RANGES = {
   },
   yesterday: {
     name: "Yesterday",
-    value: () => [
-      moment().subtract(1, "day").startOf("day"),
-      moment().subtract(1, "day").endOf("day"),
-    ],
+    value: () => [moment().subtract(1, "day").startOf("day"), moment().subtract(1, "day").endOf("day")],
   },
   this_week: {
     name: "This week",
@@ -45,24 +34,15 @@ const DYNAMIC_DATE_RANGES = {
   },
   last_week: {
     name: "Last week",
-    value: () => [
-      moment().subtract(1, "week").startOf("week"),
-      moment().subtract(1, "week").endOf("week"),
-    ],
+    value: () => [moment().subtract(1, "week").startOf("week"), moment().subtract(1, "week").endOf("week")],
   },
   last_month: {
     name: "Last month",
-    value: () => [
-      moment().subtract(1, "month").startOf("month"),
-      moment().subtract(1, "month").endOf("month"),
-    ],
+    value: () => [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
   },
   last_year: {
     name: "Last year",
-    value: () => [
-      moment().subtract(1, "year").startOf("year"),
-      moment().subtract(1, "year").endOf("year"),
-    ],
+    value: () => [moment().subtract(1, "year").startOf("year"), moment().subtract(1, "year").endOf("year")],
   },
   last_7_days: {
     name: "Last 7 days",
@@ -90,9 +70,7 @@ const DYNAMIC_DATE_RANGES = {
   },
 };
 
-export const DynamicDateRangeType = PropTypes.oneOf(
-  values(DYNAMIC_DATE_RANGES),
-);
+export const DynamicDateRangeType = PropTypes.oneOf(values(DYNAMIC_DATE_RANGES));
 
 export function isDynamicDateRangeString(value) {
   if (!startsWith(value, DYNAMIC_PREFIX)) {
@@ -148,8 +126,7 @@ class DateRangeParameter extends Parameter {
   setValue(value) {
     const normalizedValue = this.normalizeValue(value);
     if (isDynamicDateRange(normalizedValue)) {
-      this.value =
-        DYNAMIC_PREFIX + findKey(DYNAMIC_DATE_RANGES, normalizedValue);
+      this.value = DYNAMIC_PREFIX + findKey(DYNAMIC_DATE_RANGES, normalizedValue);
     } else if (isArray(normalizedValue)) {
       this.value = {
         start: normalizedValue[0].format(DATETIME_FORMATS[this.type]),
@@ -167,7 +144,7 @@ class DateRangeParameter extends Parameter {
 
   getExecutionValue() {
     if (this.hasDynamicValue) {
-      const format = date => date.format(DATETIME_FORMATS[this.type]);
+      const format = (date) => date.format(DATETIME_FORMATS[this.type]);
       const [start, end] = this.normalizedValue.value().map(format);
       return { start, end };
     }

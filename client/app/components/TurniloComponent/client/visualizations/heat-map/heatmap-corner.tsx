@@ -32,12 +32,7 @@ const labelOffset = 40;
 // Around half of font-size with handpicked offset to accommodate rounding errors and rotation artifacts
 const rotationAxisOffset = 7;
 
-export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({
-  colorScale,
-  width,
-  height,
-  essence,
-}) => {
+export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({ colorScale, width, height, essence }) => {
   const {
     dataCube,
     splits: { splits },
@@ -54,28 +49,14 @@ export const HeatmapCorner: React.SFC<HeatmapCornerProps> = ({
 
   return (
     <div className="heatmap-corner">
-      <HeatmapLegend
-        scale={colorScale}
-        height={legendHeight}
-        width={legendWidth}
-        series={series}
-      />
+      <HeatmapLegend scale={colorScale} height={legendHeight} width={legendWidth} series={series} />
       <div className="heatmap-corner-row-title">
-        <span
-          className="heatmap-corner-overflow-label"
-          style={{ width: `${width - labelMargin}px` }}
-        >
+        <span className="heatmap-corner-overflow-label" style={{ width: `${width - labelMargin}px` }}>
           {rowTitle}
         </span>
       </div>
-      <div
-        className="heatmap-corner-column-title"
-        style={{ left: `${width - labelMargin + rotationAxisOffset}px` }}
-      >
-        <span
-          className="heatmap-corner-overflow-label"
-          style={{ width: `${height - labelMargin}px` }}
-        >
+      <div className="heatmap-corner-column-title" style={{ left: `${width - labelMargin + rotationAxisOffset}px` }}>
+        <span className="heatmap-corner-overflow-label" style={{ width: `${height - labelMargin}px` }}>
           {columnTitle}
         </span>
       </div>

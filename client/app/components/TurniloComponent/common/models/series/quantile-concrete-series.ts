@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ApplyExpression,
-  Expression as PlywoodExpression,
-  QuantileExpression,
-} from "plywood";
+import { ApplyExpression, Expression as PlywoodExpression, QuantileExpression } from "plywood";
 import { Measure } from "../measure/measure";
 import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
 import { QuantileSeries } from "./quantile-series";
@@ -29,15 +25,13 @@ export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
   }
 
   title(derivation?: SeriesDerivation): string {
-    return `${super.title(
-      derivation,
-    )} p${this.definition.formattedPercentile()}`;
+    return `${super.title(derivation)} p${this.definition.formattedPercentile()}`;
   }
 
   protected applyExpression(
     quantileExpression: PlywoodExpression,
     name: string,
-    nestingLevel: number,
+    nestingLevel: number
   ): ApplyExpression {
     if (!(quantileExpression instanceof QuantileExpression))
       throw new Error(`Expected QuantileExpression, got ${quantileExpression}`);

@@ -12,8 +12,7 @@ const DYNAMIC_DATE_OPTIONS = [
   {
     name: "Yesterday",
     value: getDynamicDateFromString("d_yesterday"),
-    label: () =>
-      getDynamicDateFromString("d_yesterday").value().format("MMM D"),
+    label: () => getDynamicDateFromString("d_yesterday").value().format("MMM D"),
   },
 ];
 

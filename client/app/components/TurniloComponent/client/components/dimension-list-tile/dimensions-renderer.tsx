@@ -28,19 +28,14 @@ export class DimensionsRenderer {
   constructor(
     private readonly dimensionClick: DimensionClickHandler,
     private readonly dimensionDragStart: DimensionClickHandler,
-    private readonly searchText: string,
+    private readonly searchText: string
   ) {}
 
   render(children: DimensionOrGroupForView[]): JSX.Element[] {
     const { searchText } = this;
     return children
-      .filter(
-        child =>
-          !searchText ||
-          child.hasSearchText ||
-          child.type === DimensionForViewType.group,
-      )
-      .map(child => {
+      .filter((child) => !searchText || child.hasSearchText || child.type === DimensionForViewType.group)
+      .map((child) => {
         if (child.type === DimensionForViewType.group) {
           return this.renderFolder(child);
         } else {
@@ -51,14 +46,7 @@ export class DimensionsRenderer {
 
   private renderFolder(groupView: DimensionGroupForView): JSX.Element {
     const { searchText } = this;
-    const {
-      name,
-      title,
-      description,
-      hasSearchText,
-      isFilteredOrSplit,
-      children,
-    } = groupView;
+    const { name, title, description, hasSearchText, isFilteredOrSplit, children } = groupView;
 
     return (
       <SearchableFolder
@@ -68,8 +56,7 @@ export class DimensionsRenderer {
         description={description}
         inSearchMode={!!searchText}
         hasItemsWithSearchText={hasSearchText}
-        shouldBeOpened={isFilteredOrSplit}
-      >
+        shouldBeOpened={isFilteredOrSplit}>
         {this.render(children)}
       </SearchableFolder>
     );

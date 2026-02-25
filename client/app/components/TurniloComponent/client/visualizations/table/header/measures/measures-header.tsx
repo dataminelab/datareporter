@@ -15,15 +15,8 @@
  */
 
 import * as React from "react";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../../../common/models/series/concrete-series";
-import {
-  SeriesSort,
-  Sort,
-  SortDirection,
-} from "../../../../../common/models/sort/sort";
+import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
+import { SeriesSort, Sort, SortDirection } from "../../../../../common/models/sort/sort";
 import { MeasureHeaderCell } from "./measure-header-cell";
 
 interface MeasuresHeaderProps {
@@ -36,7 +29,7 @@ interface MeasuresHeaderProps {
 function sortDirection(
   commonSort: Sort,
   series: ConcreteSeries,
-  period = SeriesDerivation.CURRENT,
+  period = SeriesDerivation.CURRENT
 ): SortDirection | null {
   const isSortedBy =
     commonSort instanceof SeriesSort &&
@@ -45,12 +38,12 @@ function sortDirection(
   return isSortedBy ? commonSort.direction : null;
 }
 
-export const MeasuresHeader: React.SFC<MeasuresHeaderProps> = props => {
+export const MeasuresHeader: React.SFC<MeasuresHeaderProps> = (props) => {
   const { cellWidth, series, commonSort, showPrevious } = props;
 
   return (
     <React.Fragment>
-      {series.map(serie => {
+      {series.map((serie) => {
         const currentMeasure = (
           <MeasureHeaderCell
             key={serie.reactKey()}

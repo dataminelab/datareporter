@@ -34,10 +34,7 @@ export interface DataCubeCardState {
   showingMore: boolean;
 }
 
-export class DataCubeCard extends React.Component<
-  DataCubeCardProps,
-  DataCubeCardState
-> {
+export class DataCubeCard extends React.Component<DataCubeCardProps, DataCubeCardState> {
   state = { showingMore: false };
 
   showLess = () => {
@@ -55,9 +52,7 @@ export class DataCubeCard extends React.Component<
     }
 
     const { showingMore } = this.state;
-    const content = showingMore
-      ? `${description}\n\n${extendedDescription}`
-      : description;
+    const content = showingMore ? `${description}\n\n${extendedDescription}` : description;
     const actionLabel = showingMore ? "Show less" : "Show more";
     const action = showingMore ? this.showLess : this.showMore;
 
@@ -77,17 +72,11 @@ export class DataCubeCard extends React.Component<
       <div className="data-cube-card">
         <div className="inner-container">
           <div className="view-icon-container" onClick={onClick}>
-            <SvgIcon
-              className="view-icon"
-              svg={require(`../../../icons/${icon}.svg`)}
-            />
+            <SvgIcon className="view-icon" svg={require(`../../../icons/${icon}.svg`)} />
           </div>
           <div className="text">
             <div className="title" onClick={onClick}>
-              {title}{" "}
-              {count !== undefined ? (
-                <span className="count">{count}</span>
-              ) : null}
+              {title} {count !== undefined ? <span className="count">{count}</span> : null}
             </div>
             <div className="description">{this.renderDescription()}</div>
           </div>

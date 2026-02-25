@@ -6,10 +6,10 @@ export default function useUpdateReportDescription(report, onChange) {
   const updateReport = useUpdateReport(report, onChange);
 
   return useCallback(
-    description => {
+    (description) => {
       recordEvent("edit_description", "report", report.id);
       updateReport({ description });
     },
-    [report.id, updateReport],
+    [report.id, updateReport]
   );
 }

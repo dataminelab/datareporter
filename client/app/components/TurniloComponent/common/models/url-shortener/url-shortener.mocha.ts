@@ -16,16 +16,10 @@
 
 import { testImmutableClass } from "immutable-class-tester";
 import { UrlShortener, UrlShortenerDef } from "./url-shortener";
-import {
-  FailUrlShortenerJS,
-  SuccessUrlShortenerJS,
-} from "./url-shortener.fixtures";
+import { FailUrlShortenerJS, SuccessUrlShortenerJS } from "./url-shortener.fixtures";
 
 describe("UrlShortener", () => {
   it("is an immutable class", () => {
-    testImmutableClass<UrlShortenerDef>(UrlShortener, [
-      SuccessUrlShortenerJS,
-      FailUrlShortenerJS,
-    ]);
+    testImmutableClass<UrlShortenerDef>(UrlShortener, [SuccessUrlShortenerJS, FailUrlShortenerJS]);
   });
 });

@@ -37,11 +37,7 @@ export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
     return `${super.title(derivation)} ${this.expression.title()}`;
   }
 
-  protected applyExpression(
-    expression: PlywoodExpression,
-    name: string,
-    nestingLevel: number,
-  ): ApplyExpression {
+  protected applyExpression(expression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression {
     return this.expression.toExpression(expression, name, nestingLevel);
   }
 }

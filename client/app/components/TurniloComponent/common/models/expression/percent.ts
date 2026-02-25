@@ -17,15 +17,9 @@
 import { Record } from "immutable";
 import { $, ApplyExpression, Expression } from "plywood";
 import { Measures } from "../measure/measures";
-import {
-  ConcreteExpression,
-  ExpressionSeriesOperation,
-  ExpressionValue,
-} from "./expression";
+import { ConcreteExpression, ExpressionSeriesOperation, ExpressionValue } from "./expression";
 
-export type PercentOperation =
-  | ExpressionSeriesOperation.PERCENT_OF_PARENT
-  | ExpressionSeriesOperation.PERCENT_OF_TOTAL;
+export type PercentOperation = ExpressionSeriesOperation.PERCENT_OF_PARENT | ExpressionSeriesOperation.PERCENT_OF_TOTAL;
 
 interface ExpressionPercentOfValue extends ExpressionValue {
   operation: PercentOperation;
@@ -35,9 +29,7 @@ const defaultPercentOf: ExpressionPercentOfValue = {
   operation: null,
 };
 
-export class PercentExpression extends Record<ExpressionPercentOfValue>(
-  defaultPercentOf,
-) {
+export class PercentExpression extends Record<ExpressionPercentOfValue>(defaultPercentOf) {
   constructor(params: ExpressionPercentOfValue) {
     super(params);
   }
@@ -63,21 +55,14 @@ export class ConcretePercentExpression implements ConcreteExpression {
     }
   }
 
-  public toExpression(
-    expression: Expression,
-    name: string,
-    nestingLevel: number,
-  ): ApplyExpression {
+  public toExpression(expression: Expression, name: string, nestingLevel: number): ApplyExpression {
     const relativeNesting = this.relativeNesting(nestingLevel);
     const formulaName = `__formula_${name}`;
-    if (relativeNesting < 0)
-      throw new Error(`wrong nesting level: ${relativeNesting}`);
+    if (relativeNesting < 0) throw new Error(`wrong nesting level: ${relativeNesting}`);
     return new ApplyExpression({
       name,
       operand: new ApplyExpression({ expression, name: formulaName }),
-      expression: $(formulaName)
-        .divide($(formulaName, relativeNesting))
-        .fallback(0),
+      expression: $(formulaName).divide($(formulaName, relativeNesting)).fallback(0),
     });
   }
 

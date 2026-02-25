@@ -23,22 +23,12 @@ function deleteGroup(event, group, onGroupDeleted) {
   });
 }
 
-export default function DeleteGroupButton({
-  group,
-  title,
-  onClick,
-  children,
-  ...props
-}) {
+export default function DeleteGroupButton({ group, title, onClick, children, ...props }) {
   if (!group) {
     return null;
   }
   const button = (
-    <Button
-      {...props}
-      type="danger"
-      onClick={event => deleteGroup(event, group, onClick)}
-    >
+    <Button {...props} type="danger" onClick={(event) => deleteGroup(event, group, onClick)}>
       {children}
     </Button>
   );

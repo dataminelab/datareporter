@@ -35,7 +35,7 @@ use(equivalent);
 
 const essenceInJanuary = (start: number, end: number) =>
   EssenceFixtures.wikiLineChartNoNominalSplit().changeFilter(
-    Filter.fromClause(timeRange("time", january(start), january(end))),
+    Filter.fromClause(timeRange("time", january(start), january(end)))
   );
 
 const timeRangeInJanuary = (start: number, end: number) =>
@@ -46,11 +46,10 @@ const timeRangeInJanuary = (start: number, end: number) =>
 
 const timekeeper = Timekeeper.EMPTY;
 
-const essenceWithoutFilterOnContinuousSplit =
-  EssenceFixtures.wikiLineChartNoNominalSplit().changeSplits(
-    Splits.fromSplit(numberSplitCombine("commentLength", 10)),
-    VisStrategy.KeepAlways,
-  );
+const essenceWithoutFilterOnContinuousSplit = EssenceFixtures.wikiLineChartNoNominalSplit().changeSplits(
+  Splits.fromSplit(numberSplitCombine("commentLength", 10)),
+  VisStrategy.KeepAlways
+);
 
 describe("x-scale", () => {
   describe("calculateXRange", () => {

@@ -43,8 +43,7 @@ class ShareReportDialog extends React.Component {
       <React.Fragment>
         Share Report
         <div className="modal-header-desc">
-          Allow public access to this report with a secret address.{" "}
-          <HelpTrigger type="SHARE_DASHBOARD" />
+          Allow public access to this report with a secret address. <HelpTrigger type="SHARE_DASHBOARD" />
         </div>
       </React.Fragment>
     );
@@ -56,7 +55,7 @@ class ShareReportDialog extends React.Component {
 
     axios
       .post(this.apiUrl)
-      .then(data => {
+      .then((data) => {
         report.publicAccessEnabled = true;
         report.public_url = data.public_url;
       })
@@ -86,7 +85,7 @@ class ShareReportDialog extends React.Component {
       });
   };
 
-  onChange = checked => {
+  onChange = (checked) => {
     if (checked) {
       this.enableAccess();
     } else {
@@ -120,10 +119,7 @@ class ShareReportDialog extends React.Component {
           </Form.Item>
           {report.public_url && (
             <Form.Item label="Secret address" {...this.formItemProps}>
-              <InputWithCopy
-                value={report.public_url}
-                data-test="SecretAddress"
-              />
+              <InputWithCopy value={report.public_url} data-test="SecretAddress" />
             </Form.Item>
           )}
         </Form>

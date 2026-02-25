@@ -96,11 +96,7 @@ export class PreviewStringFilterMenu extends React.Component<
   initialSearchText = (): string => {
     const { essence, dimension } = this.props;
     const clause = essence.filter.getClauseForDimension(dimension);
-    if (
-      clause &&
-      clause instanceof StringFilterClause &&
-      clause.action !== StringFilterAction.IN
-    ) {
+    if (clause && clause instanceof StringFilterClause && clause.action !== StringFilterAction.IN) {
       return clause.values.first();
     }
     return "";
@@ -116,7 +112,7 @@ export class PreviewStringFilterMenu extends React.Component<
   private loadRows() {
     if (this.regexErrorMessage()) return;
     this.setState({ dataset: loading });
-    this.sendQueryFilter().then(dataset => {
+    this.sendQueryFilter().then((dataset) => {
       // TODO: encode it better
       // null is here when we get out of order request, so we just ignore it
       if (!dataset) return;
@@ -133,9 +129,7 @@ export class PreviewStringFilterMenu extends React.Component<
   private regexErrorMessage(): string {
     const { filterMode } = this.props;
     const { searchText } = this.state;
-    return (
-      filterMode === FilterMode.REGEX && searchText && checkRegex(searchText)
-    );
+    return filterMode === FilterMode.REGEX && searchText && checkRegex(searchText);
   }
 
   private queryFilter = (props: QueryProps): Promise<DatasetLoad> => {
@@ -147,24 +141,23 @@ export class PreviewStringFilterMenu extends React.Component<
       limit: TOP_N + 1,
     });
 
-    return essence.dataCube
-      .executor(query, { timezone: essence.timezone })
-      // @ts-ignore
-      .then((dataset: Dataset) => {
-        if (this.lastSearchText !== searchText) return null;
-        return loaded(dataset);
-      })
-      .catch((err: Error) => {
-        if (this.lastSearchText !== searchText) return null;
-        reportError(err);
-        return error(err);
-      });
+    return (
+      essence.dataCube
+        .executor(query, { timezone: essence.timezone })
+        // @ts-ignore
+        .then((dataset: Dataset) => {
+          if (this.lastSearchText !== searchText) return null;
+          return loaded(dataset);
+        })
+        .catch((err: Error) => {
+          if (this.lastSearchText !== searchText) return null;
+          reportError(err);
+          return error(err);
+        })
+    );
   };
 
-  private debouncedQueryFilter = debounceWithPromise(
-    this.queryFilter,
-    SEARCH_WAIT,
-  );
+  private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
   componentWillMount() {
     this.loadRows();
@@ -174,10 +167,7 @@ export class PreviewStringFilterMenu extends React.Component<
     this.debouncedQueryFilter.cancel();
   }
 
-  componentDidUpdate(
-    prevProps: PreviewStringFilterMenuProps,
-    prevState: PreviewStringFilterMenuState,
-  ): void {
+  componentDidUpdate(prevProps: PreviewStringFilterMenuProps, prevState: PreviewStringFilterMenuState): void {
     if (this.state.searchText !== prevState.searchText) {
       this.loadRows();
     }
@@ -202,7 +192,7 @@ export class PreviewStringFilterMenu extends React.Component<
             reference,
             values: Set.of(searchText),
             action: StringFilterAction.CONTAINS,
-          }),
+          })
         );
       case FilterMode.REGEX:
         return onClauseChange(
@@ -210,7 +200,7 @@ export class PreviewStringFilterMenu extends React.Component<
             reference,
             values: Set.of(searchText),
             action: StringFilterAction.MATCH,
-          }),
+          })
         );
     }
   }
@@ -250,12 +240,7 @@ export class PreviewStringFilterMenu extends React.Component<
           />
         </div>
         <div className="preview-string-filter-menu">
-          <div
-            className={classNames(
-              "menu-table",
-              hasMore ? "has-more" : "no-more",
-            )}
-          >
+          <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
             <div className="rows">
               {isLoaded(dataset) && (
                 <PreviewList
@@ -272,17 +257,8 @@ export class PreviewStringFilterMenu extends React.Component<
             </div>
           </div>
           <div className="ok-cancel-bar">
-            <Button
-              type="primary"
-              title={STRINGS.ok}
-              onClick={this.onOkClick}
-              disabled={!this.actionEnabled()}
-            />
-            <Button
-              type="secondary"
-              title={STRINGS.cancel}
-              onClick={this.onCancelClick}
-            />
+            <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
+            <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
           </div>
         </div>
       </React.Fragment>

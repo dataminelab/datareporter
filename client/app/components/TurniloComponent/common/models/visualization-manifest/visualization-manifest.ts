@@ -61,13 +61,7 @@ export class Resolve {
   public message: string;
   public resolutions: Resolution[];
 
-  constructor(
-    score: number,
-    state: string,
-    adjustment: Adjustment,
-    message: string,
-    resolutions: Resolution[],
-  ) {
+  constructor(score: number, state: string, adjustment: Adjustment, message: string, resolutions: Resolution[]) {
     this.score = Math.max(1, Math.min(10, score));
     this.state = state;
     this.adjustment = adjustment;
@@ -96,18 +90,13 @@ export class Resolve {
   }
 }
 
-export type Visualization =
-  | "heatmap"
-  | "table"
-  | "totals"
-  | "bar-chart"
-  | "line-chart";
+export type Visualization = "heatmap" | "table" | "totals" | "bar-chart" | "line-chart";
 
 export class VisualizationManifest<T extends object = {}> {
   constructor(
     public readonly name: Visualization,
     public readonly title: string,
     public readonly evaluateRules: VisualizationDependentEvaluator,
-    public readonly visualizationSettings: VisualizationSettingsConfig<T>,
+    public readonly visualizationSettings: VisualizationSettingsConfig<T>
   ) {}
 }

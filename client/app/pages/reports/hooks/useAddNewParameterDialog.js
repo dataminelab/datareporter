@@ -14,8 +14,8 @@ export default function useAddNewParameterDialog(report, onParameterAdded) {
         type: "text",
         value: null,
       },
-      existingParams: map(report.getParameters().get(), p => p.name),
-    }).onClose(param => {
+      existingParams: map(report.getParameters().get(), (p) => p.name),
+    }).onClose((param) => {
       const newReport = report.clone();
       param = newReport.getParameters().add(param);
       handleParameterAdded(newReport, param);

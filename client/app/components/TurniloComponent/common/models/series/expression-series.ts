@@ -36,16 +36,8 @@ const defaultSeries: ExpressionSeriesValue = {
   expression: null,
 };
 
-export class ExpressionSeries
-  extends Record<ExpressionSeriesValue>(defaultSeries)
-  implements SeriesBehaviours
-{
-  static fromJS({
-    type,
-    reference,
-    expression,
-    format,
-  }: any): ExpressionSeries {
+export class ExpressionSeries extends Record<ExpressionSeriesValue>(defaultSeries) implements SeriesBehaviours {
+  static fromJS({ type, reference, expression, format }: any): ExpressionSeries {
     return new ExpressionSeries({
       type,
       reference,
@@ -54,9 +46,7 @@ export class ExpressionSeries
     });
   }
 
-  constructor(
-    params: RequireOnly<ExpressionSeriesValue, "reference" | "expression">,
-  ) {
+  constructor(params: RequireOnly<ExpressionSeriesValue, "reference" | "expression">) {
     super(params);
   }
 

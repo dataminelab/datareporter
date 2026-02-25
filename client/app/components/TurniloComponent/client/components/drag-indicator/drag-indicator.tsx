@@ -27,19 +27,13 @@ interface DragIndicatorProps {
   dragPosition?: DragPosition;
 }
 
-export const DragIndicator: React.SFC<DragIndicatorProps> = props => {
+export const DragIndicator: React.SFC<DragIndicatorProps> = (props) => {
   const { dragPosition, dragOver, drop, dragLeave } = props;
   if (!dragPosition) return null;
   return (
     <React.Fragment>
       <FancyDragIndicator dragPosition={dragPosition} />
-      <div
-        className="drag-mask"
-        onDragOver={dragOver}
-        onDragLeave={dragLeave}
-        onDragExit={dragLeave}
-        onDrop={drop}
-      />
+      <div className="drag-mask" onDragOver={dragOver} onDragLeave={dragLeave} onDragExit={dragLeave} onDrop={drop} />
     </React.Fragment>
   );
 };

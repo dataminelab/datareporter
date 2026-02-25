@@ -33,9 +33,7 @@ describe("modalTitle", () => {
       { namespace: "column-namespace", channel: "column-channel" },
     ]);
 
-    formatSegmentStub = sinon
-      .stub(formatterModule, "formatSegment")
-      .returns("formatted-segment");
+    formatSegmentStub = sinon.stub(formatterModule, "formatSegment").returns("formatted-segment");
   });
 
   afterEach(() => {
@@ -51,9 +49,7 @@ describe("modalTitle", () => {
   it("should call formatSegments with correct params", () => {
     modalTitle(null, null, essence);
     expect(formatSegmentStub.calledTwice).to.be.true;
-    expect(formatSegmentStub.calledWith("row-channel", essence.timezone)).to.be
-      .true;
-    expect(formatSegmentStub.calledWith("column-namespace", essence.timezone))
-      .to.be.true;
+    expect(formatSegmentStub.calledWith("row-channel", essence.timezone)).to.be.true;
+    expect(formatSegmentStub.calledWith("column-namespace", essence.timezone)).to.be.true;
   });
 });

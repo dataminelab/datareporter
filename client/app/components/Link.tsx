@@ -1,20 +1,13 @@
 import React from "react";
 import Button, { ButtonProps as AntdButtonProps } from "antd/lib/button";
 
-function DefaultLinkComponent({
-  children,
-  ...props
-}: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+function DefaultLinkComponent({ children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
   return <a {...props}>{children}</a>;
 }
 
 Link.Component = DefaultLinkComponent;
 
-interface LinkProps
-  extends Omit<
-    React.AnchorHTMLAttributes<HTMLAnchorElement>,
-    "role" | "type" | "target"
-  > {
+interface LinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "role" | "type" | "target"> {
   href: string;
 }
 function Link({ children, ...props }: LinkProps): JSX.Element {
@@ -43,15 +36,7 @@ function ExternalLink({
   alt = "(opens in a new tab)",
   ...props
 }: Omit<LinkWithIconProps, "target">) {
-  return (
-    <Link.WithIcon
-      target="_blank"
-      rel="noopener noreferrer"
-      icon={icon}
-      alt={alt}
-      {...props}
-    />
-  );
+  return <Link.WithIcon target="_blank" rel="noopener noreferrer" icon={icon} alt={alt} {...props} />;
 }
 
 Link.External = ExternalLink;

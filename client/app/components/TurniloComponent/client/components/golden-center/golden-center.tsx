@@ -28,10 +28,7 @@ export interface GoldenCenterState {
   top?: number;
 }
 
-export class GoldenCenter extends React.Component<
-  GoldenCenterProps,
-  GoldenCenterState
-> {
+export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCenterState> {
   static defaultProps: Partial<GoldenCenterProps> = {
     topRatio: 0.618 / 1.618,
     minPadding: 50,
@@ -62,10 +59,7 @@ export class GoldenCenter extends React.Component<
 
     const { topRatio, minPadding } = this.props;
 
-    const top = Math.max(
-      (myRect.height - childRect.height) * topRatio,
-      minPadding,
-    );
+    const top = Math.max((myRect.height - childRect.height) * topRatio, minPadding);
     this.setState({ top });
   };
 
@@ -74,10 +68,7 @@ export class GoldenCenter extends React.Component<
     const { top } = this.state;
 
     return (
-      <div
-        className="golden-center"
-        style={{ paddingTop: top, paddingBottom: minPadding }}
-      >
+      <div className="golden-center" style={{ paddingTop: top, paddingBottom: minPadding }}>
         {React.Children.only(children)}
       </div>
     );

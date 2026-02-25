@@ -32,14 +32,12 @@ class EditDestination extends React.Component {
 
   componentDidMount() {
     Destination.get({ id: this.props.destinationId })
-      .then(destination => {
+      .then((destination) => {
         const { type } = destination;
         this.setState({ destination });
-        Destination.types().then(types =>
-          this.setState({ type: find(types, { type }), loading: false }),
-        );
+        Destination.types().then((types) => this.setState({ type: find(types, { type }), loading: false }));
       })
-      .catch(error => this.props.onError(error));
+      .catch((error) => this.props.onError(error));
   }
 
   saveDestination = (values, successCallback, errorCallback) => {
@@ -47,13 +45,13 @@ class EditDestination extends React.Component {
     helper.updateTargetWithValues(destination, values);
     Destination.save(destination)
       .then(() => successCallback("Saved."))
-      .catch(error => {
+      .catch((error) => {
         const message = get(error, "response.data.message", "Failed saving.");
         errorCallback(message);
       });
   };
 
-  deleteDestination = callback => {
+  deleteDestination = (callback) => {
     const { destination } = this.state;
 
     const doDelete = () => {
@@ -85,9 +83,7 @@ class EditDestination extends React.Component {
     const formProps = {
       fields,
       type,
-      actions: [
-        { name: "Delete", type: "danger", callback: this.deleteDestination },
-      ],
+      actions: [{ name: "Delete", type: "danger", callback: this.deleteDestination }],
       onSubmit: this.saveDestination,
       defaultShowExtraFields: helper.hasFilledExtraField(type, destination),
       feedbackIcons: true,
@@ -96,12 +92,7 @@ class EditDestination extends React.Component {
     return (
       <div className="row" data-test="Destination">
         <div className="text-center m-b-10">
-          <img
-            className="p-5"
-            src={`${IMG_ROOT}/${type.type}.png`}
-            alt={type.name}
-            width="64"
-          />
+          <img className="p-5" src={`${IMG_ROOT}/${type.type}.png`} alt={type.name} width="64" />
           <h3 className="m-0">{type.name}</h3>
         </div>
         <div className="col-md-4 col-md-offset-4 m-b-10">
@@ -112,25 +103,17 @@ class EditDestination extends React.Component {
   }
 
   render() {
-    return this.state.loading ? (
-      <LoadingState className="" />
-    ) : (
-      this.renderForm()
-    );
+    return this.state.loading ? <LoadingState className="" /> : this.renderForm();
   }
 }
 
-const EditDestinationPage = wrapSettingsTab(
-  "AlertDestinations.Edit",
-  null,
-  EditDestination,
-);
+const EditDestinationPage = wrapSettingsTab("AlertDestinations.Edit", null, EditDestination);
 
 routes.register(
   "AlertDestinations.Edit",
   routeWithUserSession({
     path: "/destinations/:destinationId",
     title: "Alert Destinations",
-    render: pageProps => <EditDestinationPage {...pageProps} />,
-  }),
+    render: (pageProps) => <EditDestinationPage {...pageProps} />,
+  })
 );

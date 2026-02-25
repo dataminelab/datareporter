@@ -21,10 +21,7 @@ import { Class, immutableArraysEqual, Instance } from "immutable-class";
 import { Locale } from "../locale/locale";
 import { LOGGER } from "../../logger/logger";
 import { ImmutableUtils } from "../../utils/immutable-utils/immutable-utils";
-import {
-  ExternalView,
-  ExternalViewValue,
-} from "../external-view/external-view";
+import { ExternalView, ExternalViewValue } from "../external-view/external-view";
 import { UrlShortener, UrlShortenerDef } from "../url-shortener/url-shortener";
 
 const availableCssVariables = [
@@ -141,9 +138,7 @@ export interface ClientCustomization {
 
 let check: Class<CustomizationValue, CustomizationJS>;
 
-export class Customization
-  implements Instance<CustomizationValue, CustomizationJS>
-{
+export class Customization implements Instance<CustomizationValue, CustomizationJS> {
   static DEFAULT_TITLE = "Turnilo (%v)";
 
   static DEFAULT_TIMEZONES: Timezone[] = [
@@ -245,10 +240,10 @@ export class Customization
     if (this.headerBackground) js.headerBackground = this.headerBackground;
     if (this.customLogoSvg) js.customLogoSvg = this.customLogoSvg;
     if (this.externalViews) {
-      js.externalViews = this.externalViews.map(view => view.toJS());
+      js.externalViews = this.externalViews.map((view) => view.toJS());
     }
     if (this.timezones) {
-      js.timezones = this.timezones.map(tz => tz.toJS());
+      js.timezones = this.timezones.map((tz) => tz.toJS());
     }
     if (this.urlShortener) {
       js.urlShortener = this.urlShortener.toJS();
@@ -265,10 +260,8 @@ export class Customization
 
   public toString(): string {
     return `[custom: (${this.headerBackground}) logo: ${Boolean(
-      this.customLogoSvg,
-    )}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(
-      this.timezones,
-    )}]`;
+      this.customLogoSvg
+    )}, externalViews: ${Boolean(this.externalViews)}, timezones: ${Boolean(this.timezones)}]`;
   }
 
   public equals(other: Customization): boolean {
@@ -311,7 +304,7 @@ export class Customization
     let valid = true;
 
     if (this.cssVariables) {
-      Object.keys(this.cssVariables).forEach(variableName => {
+      Object.keys(this.cssVariables).forEach((variableName) => {
         if (availableCssVariables.indexOf(variableName) < 0) {
           valid = false;
           LOGGER.warn(`Unsupported css variables "${variableName}" found.`);

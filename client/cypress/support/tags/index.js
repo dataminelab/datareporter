@@ -2,7 +2,7 @@ export function expectTagsToContain(tags = []) {
   cy.getByTestId("TagsControl").within(() => {
     cy.getByTestId("TagLabel")
       .should("have.length", tags.length)
-      .each($tag => expect(tags).to.contain($tag.text()));
+      .each(($tag) => expect(tags).to.contain($tag.text()));
   });
 }
 

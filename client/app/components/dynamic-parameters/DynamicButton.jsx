@@ -15,27 +15,17 @@ import "./DynamicButton.less";
 
 const { Text } = Typography;
 
-function DynamicButton({
-  options,
-  selectedDynamicValue,
-  onSelect,
-  enabled,
-  staticValueLabel,
-}) {
+function DynamicButton({ options, selectedDynamicValue, onSelect, enabled, staticValueLabel }) {
   const menu = (
     <Menu
       className="dynamic-menu"
       onClick={({ key }) => onSelect(get(options, key, "static"))}
       selectedKeys={[`${findIndex(options, { value: selectedDynamicValue })}`]}
-      data-test="DynamicButtonMenu"
-    >
+      data-test="DynamicButtonMenu">
       {options.map((option, index) => (
         // eslint-disable-next-line react/no-array-index-key
         <Menu.Item key={index}>
-          {option.name}{" "}
-          {option.label && (
-            <em>{isFunction(option.label) ? option.label() : option.label}</em>
-          )}
+          {option.name} {option.label && <em>{isFunction(option.label) ? option.label() : option.label}</em>}
         </Menu.Item>
       ))}
       {enabled && <Menu.Divider />}
@@ -52,7 +42,7 @@ function DynamicButton({
 
   return (
     <div ref={containerRef}>
-      <div role="presentation" onClick={e => e.stopPropagation()}>
+      <div role="presentation" onClick={(e) => e.stopPropagation()}>
         <Dropdown.Button
           overlay={menu}
           className="dynamic-button"
@@ -75,10 +65,7 @@ function DynamicButton({
 
 DynamicButton.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object),
-  selectedDynamicValue: PropTypes.oneOfType([
-    DynamicDateType,
-    DynamicDateRangeType,
-  ]),
+  selectedDynamicValue: PropTypes.oneOfType([DynamicDateType, DynamicDateRangeType]),
   onSelect: PropTypes.func,
   enabled: PropTypes.bool,
   staticValueLabel: PropTypes.string,

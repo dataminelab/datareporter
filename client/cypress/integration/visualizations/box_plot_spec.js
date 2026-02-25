@@ -39,9 +39,7 @@ describe("Box Plot", () => {
   beforeEach(() => {
     cy.login();
     cy.createQuery({ query: SQL })
-      .then(({ id }) =>
-        cy.createVisualization(id, "BOXPLOT", "Boxplot (Deprecated)", {}),
-      )
+      .then(({ id }) => cy.createVisualization(id, "BOXPLOT", "Boxplot (Deprecated)", {}))
       .then(({ id: visualizationId, query_id: queryId }) => {
         cy.visit(`queries/${queryId}/source#${visualizationId}`);
         cy.getByTestId("ExecuteButton").click();

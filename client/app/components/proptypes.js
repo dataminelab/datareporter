@@ -86,7 +86,7 @@ export const Report = PropTypes.shape({
       PropTypes.shape({
         name: PropTypes.string.isRequired,
         query_parameter_name: PropTypes.string.isRequired,
-      }),
+      })
     ),
     refresh_schedule: RefreshScheduleType,
   }).isRequired,
@@ -121,22 +121,10 @@ export const Alert = PropTypes.shape({
 
 function checkMoment(isRequired, props, propName, componentName) {
   const value = props[propName];
-  const isRequiredValid =
-    isRequired &&
-    value !== null &&
-    value !== undefined &&
-    moment.isMoment(value);
-  const isOptionalValid =
-    !isRequired &&
-    (value === null || value === undefined || moment.isMoment(value));
+  const isRequiredValid = isRequired && value !== null && value !== undefined && moment.isMoment(value);
+  const isOptionalValid = !isRequired && (value === null || value === undefined || moment.isMoment(value));
   if (!isRequiredValid && !isOptionalValid) {
-    return new Error(
-      "Prop `" +
-        propName +
-        "` supplied to `" +
-        componentName +
-        "` should be a Moment.js instance.",
-    );
+    return new Error("Prop `" + propName + "` supplied to `" + componentName + "` should be a Moment.js instance.");
   }
 }
 

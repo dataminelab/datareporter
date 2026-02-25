@@ -34,19 +34,11 @@ export interface GranularityPickerProps {
   granularityChange: Unary<string, void>;
 }
 
-export const GranularityPicker: React.SFC<GranularityPickerProps> = ({
-  dimension,
-  granularity,
-  granularityChange,
-}) => {
+export const GranularityPicker: React.SFC<GranularityPickerProps> = ({ dimension, granularity, granularityChange }) => {
   if (!dimension.isContinuous()) return null;
 
   const granularities =
-    dimension.granularities ||
-    getGranularities(
-      dimension.kind as ContinuousDimensionKind,
-      dimension.bucketedBy,
-    );
+    dimension.granularities || getGranularities(dimension.kind as ContinuousDimensionKind, dimension.bucketedBy);
   const presets = granularities.map((g: Bucket) => {
     return {
       name: formatGranularity(g),
@@ -54,10 +46,7 @@ export const GranularityPicker: React.SFC<GranularityPickerProps> = ({
     };
   });
 
-  const placeholder =
-    dimension.kind === "time"
-      ? STRINGS.floorableDurationsExamples
-      : "Bucket size";
+  const placeholder = dimension.kind === "time" ? STRINGS.floorableDurationsExamples : "Bucket size";
 
   return (
     <StringInputWithPresets

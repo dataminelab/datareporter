@@ -28,15 +28,9 @@ describe("Highlight Modal", () => {
     const left = 100;
     const top = 300;
     const modal = shallow(
-      <HighlightModal
-        title={title}
-        left={left}
-        top={top}
-        acceptHighlight={null}
-        dropHighlight={null}
-      >
+      <HighlightModal title={title} left={left} top={top} acceptHighlight={null} dropHighlight={null}>
         <div className="child">Child</div>
-      </HighlightModal>,
+      </HighlightModal>
     );
 
     expect(modal.find(ModalBubble).prop("left")).to.eq(left);
@@ -61,7 +55,7 @@ describe("Highlight Modal", () => {
           top={0}
           dropHighlight={dropHighlight}
           acceptHighlight={acceptHighlight}
-        />,
+        />
       );
       actions = modal.find(".actions");
     });

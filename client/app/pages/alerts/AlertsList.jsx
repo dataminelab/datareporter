@@ -4,20 +4,13 @@ import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSess
 import Link from "@/components/Link";
 import PageHeader from "@/components/PageHeader";
 import Paginator from "@/components/Paginator";
-import EmptyState, {
-  EmptyStateHelpMessage,
-} from "@/components/empty-state/EmptyState";
-import {
-  wrap as itemsList,
-  ControllerType,
-} from "@/components/items-list/ItemsList";
+import EmptyState, { EmptyStateHelpMessage } from "@/components/empty-state/EmptyState";
+import { wrap as itemsList, ControllerType } from "@/components/items-list/ItemsList";
 import { ResourceItemsSource } from "@/components/items-list/classes/ItemsSource";
 import { StateStorage } from "@/components/items-list/classes/StateStorage";
 import DynamicComponent from "@/components/DynamicComponent";
 
-import ItemsTable, {
-  Columns,
-} from "@/components/items-list/components/ItemsTable";
+import ItemsTable, { Columns } from "@/components/items-list/components/ItemsTable";
 
 import Alert from "@/services/alert";
 import { currentUser } from "@/services/auth";
@@ -38,15 +31,8 @@ class AlertsList extends React.Component {
     Columns.custom.sortable(
       (text, alert) => (
         <span title={alert.options.muted ? "Muted" : "Active"}>
-          <i
-            className={`fa fa-bell-${
-              alert.options.muted ? "slash" : "o"
-            } p-r-0`}
-            aria-hidden="true"
-          />
-          <span className="sr-only">
-            {alert.options.muted ? "Muted" : "Active"}
-          </span>
+          <i className={`fa fa-bell-${alert.options.muted ? "slash" : "o"} p-r-0`} aria-hidden="true" />
+          <span className="sr-only">{alert.options.muted ? "Muted" : "Active"}</span>
         </span>
       ),
       {
@@ -58,7 +44,7 @@ class AlertsList extends React.Component {
         ),
         field: "muted",
         width: "1%",
-      },
+      }
     ),
     Columns.custom.sortable(
       (text, alert) => (
@@ -71,7 +57,7 @@ class AlertsList extends React.Component {
       {
         title: "Name",
         field: "name",
-      },
+      }
     ),
     Columns.custom((text, item) => item.user.name, {
       title: "Created By",
@@ -80,9 +66,7 @@ class AlertsList extends React.Component {
     Columns.custom.sortable(
       (text, alert) => (
         <div>
-          <span className={`label ${STATE_CLASS[alert.state]}`}>
-            {toUpper(alert.state)}
-          </span>
+          <span className={`label ${STATE_CLASS[alert.state]}`}>{toUpper(alert.state)}</span>
         </div>
       ),
       {
@@ -90,7 +74,7 @@ class AlertsList extends React.Component {
         field: "state",
         width: "1%",
         className: "text-nowrap",
-      },
+      }
     ),
     Columns.timeAgo.sortable({
       title: "Last Updated At",
@@ -129,9 +113,7 @@ class AlertsList extends React.Component {
                   illustration="alert"
                   illustrationType=".png"
                   description="Get notified on certain events"
-                  helpMessage={
-                    <EmptyStateHelpMessage helpTriggerType="ALERTS" />
-                  }
+                  helpMessage={<EmptyStateHelpMessage helpTriggerType="ALERTS" />}
                   showAlertStep
                 />
               </DynamicComponent>
@@ -149,11 +131,9 @@ class AlertsList extends React.Component {
                   showPageSizeSelect
                   totalCount={controller.totalItemsCount}
                   pageSize={controller.itemsPerPage}
-                  onPageSizeChange={itemsPerPage =>
-                    controller.updatePagination({ itemsPerPage })
-                  }
+                  onPageSizeChange={(itemsPerPage) => controller.updatePagination({ itemsPerPage })}
                   page={controller.page}
-                  onChange={page => controller.updatePagination({ page })}
+                  onChange={(page) => controller.updatePagination({ page })}
                 />
               </div>
             )}
@@ -181,7 +161,7 @@ const AlertsListPage = itemsList(
       orderByField: "created_at",
       orderByReverse: true,
       itemsPerPage: 20,
-    }),
+    })
 );
 
 routes.register(
@@ -189,6 +169,6 @@ routes.register(
   routeWithUserSession({
     path: "/alerts",
     title: "Alerts",
-    render: pageProps => <AlertsListPage {...pageProps} currentPage="alerts" />,
-  }),
+    render: (pageProps) => <AlertsListPage {...pageProps} currentPage="alerts" />,
+  })
 );

@@ -17,10 +17,7 @@
 import { List } from "immutable";
 import { $, Expression, LimitExpression, ply } from "plywood";
 import { SPLIT } from "../../../client/config/constants";
-import {
-  Split,
-  toExpression as splitToExpression,
-} from "../../../common/models/split/split";
+import { Split, toExpression as splitToExpression } from "../../../common/models/split/split";
 import { DataCube } from "../../models/data-cube/data-cube";
 import { Dimension } from "../../models/dimension/dimension";
 import { Essence } from "../../models/essence/essence";
@@ -37,16 +34,10 @@ import { thread } from "../functional/functional";
 
 const $main = $("main");
 
-function applySeries(
-  series: List<ConcreteSeries>,
-  timeShiftEnv: TimeShiftEnv,
-  nestingLevel = 0,
-) {
+function applySeries(series: List<ConcreteSeries>, timeShiftEnv: TimeShiftEnv, nestingLevel = 0) {
   return (query: Expression) => {
     return series.reduce((query, series) => {
-      return query.performAction(
-        series.plywoodExpression(nestingLevel, timeShiftEnv),
-      );
+      return query.performAction(series.plywoodExpression(nestingLevel, timeShiftEnv));
     }, query);
   };
 }
@@ -70,11 +61,7 @@ function applyLimit(limit: number, dimension: Dimension) {
   };
 }
 
-function applySubSplit(
-  nestingLevel: number,
-  essence: Essence,
-  timeShiftEnv: TimeShiftEnv,
-) {
+function applySubSplit(nestingLevel: number, essence: Essence, timeShiftEnv: TimeShiftEnv) {
   return (query: Expression) => {
     if (nestingLevel >= essence.splits.length()) return query;
     return query.apply(SPLIT, applySplit(nestingLevel, essence, timeShiftEnv));
@@ -98,11 +85,7 @@ function applyDimensionFilter(dimension: Dimension, filter: Filter) {
   };
 }
 
-function applySplit(
-  index: number,
-  essence: Essence,
-  timeShiftEnv: TimeShiftEnv,
-): Expression {
+function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv): Expression {
   const { splits, dataCube } = essence;
   const split = splits.getSplit(index);
   const dimension = dataCube.getDimension(split.reference);
@@ -122,20 +105,15 @@ function applySplit(
     applySeries(essence.getConcreteSeries(), timeShiftEnv, nestingLevel),
     applySort(sort),
     applyLimit(limit, dimension),
-    applySubSplit(nestingLevel, essence, timeShiftEnv),
+    applySubSplit(nestingLevel, essence, timeShiftEnv)
   );
 }
 
-export default function makeQuery(
-  essence: Essence,
-  timekeeper: Timekeeper,
-): Expression {
+export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
   const { splits, dataCube } = essence;
   if (splits.length() > dataCube.getMaxSplits())
     throw new Error(
-      `Too many splits in query. DataCube "${
-        dataCube.name
-      }" supports only ${dataCube.getMaxSplits()} splits`,
+      `Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.getMaxSplits()} splits`
     );
 
   const hasComparison = essence.hasComparison();
@@ -149,10 +127,7 @@ export default function makeQuery(
     .apply("main", $main.filter(mainFilter.toExpression(dataCube)))
     .apply(CANONICAL_LENGTH_ID, timeFilterCanonicalLength(essence, timekeeper));
 
-  const queryWithMeasures = applySeries(
-    essence.getConcreteSeries(),
-    timeShiftEnv,
-  )(mainExp);
+  const queryWithMeasures = applySeries(essence.getConcreteSeries(), timeShiftEnv)(mainExp);
 
   if (splits.length() > 0) {
     return queryWithMeasures.apply(SPLIT, applySplit(0, essence, timeShiftEnv));

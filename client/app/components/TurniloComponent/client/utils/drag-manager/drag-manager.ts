@@ -59,13 +59,7 @@ interface None extends DraggedElementBase<void> {
   type: DraggedElementType.NONE;
 }
 
-type DraggedElement =
-  | DraggedDimension
-  | DraggedMeasure
-  | DraggedFilter
-  | DraggedSplit
-  | DraggedSeries
-  | None;
+type DraggedElement = DraggedDimension | DraggedMeasure | DraggedFilter | DraggedSplit | DraggedSeries | None;
 
 const none: None = { type: DraggedElementType.NONE, element: null };
 
@@ -78,7 +72,7 @@ export class DragManager {
       () => {
         DragManager.dragging = none;
       },
-      false,
+      false
     );
   }
 

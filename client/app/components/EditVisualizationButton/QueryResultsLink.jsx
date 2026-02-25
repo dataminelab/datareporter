@@ -10,22 +10,14 @@ export default function QueryResultsLink(props) {
 
   if (resultId && resultData && query.name) {
     if (query.id) {
-      href = `api/queries/${query.id}/results/${resultId}.${fileType}${
-        props.embed ? `?api_key=${props.apiKey}` : ""
-      }`;
+      href = `api/queries/${query.id}/results/${resultId}.${fileType}${props.embed ? `?api_key=${props.apiKey}` : ""}`;
     } else {
       href = `api/query_results/${resultId}.${fileType}`;
     }
   }
 
   return (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      disabled={props.disabled}
-      href={href}
-      download
-    >
+    <a target="_blank" rel="noopener noreferrer" disabled={props.disabled} href={href} download>
       {props.children}
     </a>
   );
@@ -38,10 +30,7 @@ QueryResultsLink.propTypes = {
   disabled: PropTypes.bool.isRequired,
   embed: PropTypes.bool,
   apiKey: PropTypes.string,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
 };
 
 QueryResultsLink.defaultProps = {

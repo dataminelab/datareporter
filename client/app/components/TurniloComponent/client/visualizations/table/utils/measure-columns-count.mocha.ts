@@ -27,9 +27,7 @@ describe("measureColumnsCount", () => {
   });
 
   it("should return series count times three when timeshift is on", () => {
-    const essence = EssenceFixtures.wikiTable().changeComparisonShift(
-      TimeShift.fromJS("P1D"),
-    );
+    const essence = EssenceFixtures.wikiTable().changeComparisonShift(TimeShift.fromJS("P1D"));
     const count = measureColumnsCount(essence);
     expect(count).to.equal(9);
   });

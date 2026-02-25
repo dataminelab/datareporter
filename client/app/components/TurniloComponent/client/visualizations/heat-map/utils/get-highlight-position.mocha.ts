@@ -25,28 +25,21 @@ import getHighlightPosition from "./get-highlight-position";
 
 const essence = EssenceFixtures.wikiHeatmap();
 
-const highlight = (...clauses: FilterClause[]) =>
-  new Highlight(List(clauses), null);
+const highlight = (...clauses: FilterClause[]) => new Highlight(List(clauses), null);
 
 describe("getHighlightPosition", () => {
   it("should calculate row and column", () => {
     const clauses = [stringIn("channel", ["fr"]), stringIn("namespace", ["b"])];
-    expect(
-      getHighlightPosition(highlight(...clauses), essence, dataset),
-    ).to.deep.equal({ row: 2, column: 1 });
+    expect(getHighlightPosition(highlight(...clauses), essence, dataset)).to.deep.equal({ row: 2, column: 1 });
   });
 
   it("should handle only column clause", () => {
     const clauses = [stringIn("namespace", ["d"])];
-    expect(
-      getHighlightPosition(highlight(...clauses), essence, dataset),
-    ).to.deep.equal({ row: null, column: 3 });
+    expect(getHighlightPosition(highlight(...clauses), essence, dataset)).to.deep.equal({ row: null, column: 3 });
   });
 
   it("should handle only row clause", () => {
     const clauses = [stringIn("channel", ["pl"])];
-    expect(
-      getHighlightPosition(highlight(...clauses), essence, dataset),
-    ).to.deep.equal({ row: 3, column: null });
+    expect(getHighlightPosition(highlight(...clauses), essence, dataset)).to.deep.equal({ row: 3, column: null });
   });
 });

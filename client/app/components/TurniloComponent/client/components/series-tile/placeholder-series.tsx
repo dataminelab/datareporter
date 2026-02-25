@@ -38,27 +38,12 @@ interface PlaceholderSeriesTileProps {
   closeItem: Fn;
 }
 
-export const PlaceholderSeriesTile: React.SFC<
-  PlaceholderSeriesTileProps
-> = props => {
-  const {
-    series,
-    measures,
-    seriesList,
-    containerStage,
-    saveSeries,
-    closeItem,
-    style,
-    measure,
-  } = props;
+export const PlaceholderSeriesTile: React.SFC<PlaceholderSeriesTileProps> = (props) => {
+  const { series, measures, seriesList, containerStage, saveSeries, closeItem, style, measure } = props;
   return (
     <WithRef>
       {({ ref: openOn, setRef }) => (
-        <div
-          className={classNames(SERIES_CLASS_NAME, "measure")}
-          ref={setRef}
-          style={style}
-        >
+        <div className={classNames(SERIES_CLASS_NAME, "measure")} ref={setRef} style={style}>
           <div className="reading">{measure.title}</div>
           {openOn && (
             <SeriesMenu

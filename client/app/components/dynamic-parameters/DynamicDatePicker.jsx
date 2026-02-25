@@ -24,7 +24,7 @@ class DynamicDatePicker extends React.Component {
           name: PropTypes.string,
           value: PropTypes.object,
           label: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-        }),
+        })
       ),
     }),
     dateOptions: PropTypes.any,
@@ -46,7 +46,7 @@ class DynamicDatePicker extends React.Component {
     this.dateComponentRef = React.createRef();
   }
 
-  onDynamicValueSelect = dynamicValue => {
+  onDynamicValueSelect = (dynamicValue) => {
     const { onSelect, parameter } = this.props;
     if (dynamicValue === "static") {
       const parameterValue = parameter.getExecutionValue();
@@ -63,14 +63,7 @@ class DynamicDatePicker extends React.Component {
   };
 
   render() {
-    const {
-      type,
-      value,
-      className,
-      dateOptions,
-      dynamicButtonOptions,
-      onSelect,
-    } = this.props;
+    const { type, value, className, dateOptions, dynamicButtonOptions, onSelect } = this.props;
     const hasDynamicValue = isDynamicDate(value);
     const isDateTime = includes(type, "datetime");
 

@@ -52,7 +52,7 @@ describe("ErrorBoundary", () => {
     const { getByText } = render(
       <ErrorBoundary>
         <div>Test content</div>
-      </ErrorBoundary>,
+      </ErrorBoundary>
     );
 
     const element = getByText("Test content");
@@ -64,7 +64,7 @@ describe("ErrorBoundary", () => {
     const { getByText } = render(
       <ErrorBoundary fallback={<div>Error occurred</div>}>
         <ThrowError shouldThrow={true} />
-      </ErrorBoundary>,
+      </ErrorBoundary>
     );
 
     expect(getByText("Error occurred")).toBeTruthy();
@@ -74,7 +74,7 @@ describe("ErrorBoundary", () => {
     const { getByText } = render(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
-      </ErrorBoundary>,
+      </ErrorBoundary>
     );
 
     expect(getByText("Something went wrong")).toBeTruthy();

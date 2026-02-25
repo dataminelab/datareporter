@@ -69,33 +69,18 @@ const OPERATIONS: Operation[] = [
 const renderOperation = (op: Operation): string => op.label;
 
 const renderMeasure = (m: Measure): string => m.title;
-const renderSelectedMeasure = (m: Measure): string =>
-  m ? m.title : "Select measure";
+const renderSelectedMeasure = (m: Measure): string => (m ? m.title : "Select measure");
 
-function expressionSeriesTitle(
-  series: ExpressionSeries,
-  measure: Measure,
-  measures: Measures,
-): string {
-  const concreteSeries = new ExpressionConcreteSeries(
-    series,
-    measure,
-    measures,
-  );
+function expressionSeriesTitle(series: ExpressionSeries, measure: Measure, measures: Measures): string {
+  const concreteSeries = new ExpressionConcreteSeries(series, measure, measures);
   return concreteSeries.title();
 }
 
-export const ArithmeticSeriesMenu: React.SFC<
-  ArithmeticOperationSeriesMenuProps
-> = props => {
-  const { measure, measures, initialSeries, series, seriesList, onChange } =
-    props;
+export const ArithmeticSeriesMenu: React.SFC<ArithmeticOperationSeriesMenuProps> = (props) => {
+  const { measure, measures, initialSeries, series, seriesList, onChange } = props;
 
   function isSeriesValid({ expression }: ExpressionSeries): boolean {
-    return (
-      expression instanceof ArithmeticExpression &&
-      isTruthy(expression.reference)
-    );
+    return expression instanceof ArithmeticExpression && isTruthy(expression.reference);
   }
 
   function onSeriesChange(series: ExpressionSeries) {
@@ -117,7 +102,7 @@ export const ArithmeticSeriesMenu: React.SFC<
   const otherSeries = seriesList.removeSeries(initialSeries);
   const duplicate = otherSeries.getSeriesWithKey(series.key());
   const expression = series.expression as ArithmeticExpression;
-  const operation = OPERATIONS.find(op => op.id === expression.operation);
+  const operation = OPERATIONS.find((op) => op.id === expression.operation);
   const operand = measures.getMeasureByName(expression.reference);
 
   return (
@@ -134,9 +119,7 @@ export const ArithmeticSeriesMenu: React.SFC<
       <div className="operand-select__title">Select measure</div>
       <Dropdown<Measure>
         className="operand-select"
-        items={measures.filterMeasures(
-          m => !m.equals(measure) && !m.isApproximate(),
-        )}
+        items={measures.filterMeasures((m) => !m.equals(measure) && !m.isApproximate())}
         renderItem={renderMeasure}
         renderSelectedItem={renderSelectedMeasure}
         equal={(a, b) => a.equals(b)}
@@ -145,20 +128,10 @@ export const ArithmeticSeriesMenu: React.SFC<
       />
       {duplicate && (
         <div className="arithmetic-operation-warning">
-          "
-          {expressionSeriesTitle(
-            duplicate as ExpressionSeries,
-            measure,
-            measures,
-          )}
-          " is already defined
+          "{expressionSeriesTitle(duplicate as ExpressionSeries, measure, measures)}" is already defined
         </div>
       )}
-      <FormatPicker
-        measure={measure}
-        format={series.format}
-        formatChange={onFormatChange}
-      />
+      <FormatPicker measure={measure} format={series.format} formatChange={onFormatChange} />
     </React.Fragment>
   );
 };

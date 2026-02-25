@@ -16,26 +16,18 @@ import "./SelectItemsDialog.less";
 
 function ItemsList({ items, renderItem, onItemClick }) {
   const renderListItem = useCallback(
-    item => {
+    (item) => {
       const { content, className, isDisabled } = renderItem(item);
 
       return (
         <List.Item
-          className={classNames(
-            "select-items-list",
-            "w-100",
-            "p-l-10",
-            "p-r-10",
-            { disabled: isDisabled },
-            className,
-          )}
-          onClick={isDisabled ? null : () => onItemClick(item)}
-        >
+          className={classNames("select-items-list", "w-100", "p-l-10", "p-r-10", { disabled: isDisabled }, className)}
+          onClick={isDisabled ? null : () => onItemClick(item)}>
           {content}
         </List.Item>
       );
     },
-    [renderItem, onItemClick],
+    [renderItem, onItemClick]
   );
 
   return <List size="small" dataSource={items} renderItem={renderListItem} />;
@@ -77,27 +69,27 @@ function SelectItemsDialog({
   }, [search]);
 
   const isItemSelected = useCallback(
-    item => {
+    (item) => {
       const key = itemKey(item);
-      return !!find(selectedItems, i => itemKey(i) === key);
+      return !!find(selectedItems, (i) => itemKey(i) === key);
     },
-    [selectedItems, itemKey],
+    [selectedItems, itemKey]
   );
 
   const toggleItem = useCallback(
-    item => {
+    (item) => {
       if (isItemSelected(item)) {
         const key = itemKey(item);
-        setSelectedItems(filter(selectedItems, i => itemKey(i) !== key));
+        setSelectedItems(filter(selectedItems, (i) => itemKey(i) !== key));
       } else {
         setSelectedItems([...selectedItems, item]);
       }
     },
-    [selectedItems, itemKey, isItemSelected],
+    [selectedItems, itemKey, isItemSelected]
   );
 
   const save = useCallback(() => {
-    dialog.close(selectedItems).catch(error => {
+    dialog.close(selectedItems).catch((error) => {
       if (error) {
         notification.error("Failed to save some of selected items.");
       }
@@ -112,10 +104,7 @@ function SelectItemsDialog({
       title={dialogTitle}
       footer={
         <div className="d-flex align-items-center">
-          <span
-            className="flex-fill m-r-5"
-            style={{ textAlign: "left", color: "rgba(0, 0, 0, 0.5)" }}
-          >
+          <span className="flex-fill m-r-5" style={{ textAlign: "left", color: "rgba(0, 0, 0, 0.5)" }}>
             {extraFooterContent}
           </span>
           <Button {...dialog.props.cancelButtonProps} onClick={dialog.dismiss}>
@@ -124,23 +113,17 @@ function SelectItemsDialog({
           <Button
             {...dialog.props.okButtonProps}
             onClick={save}
-            disabled={
-              selectedItems.length === 0 || dialog.props.okButtonProps.disabled
-            }
-            type="primary"
-          >
+            disabled={selectedItems.length === 0 || dialog.props.okButtonProps.disabled}
+            type="primary">
             Save
-            {showCount && !isEmpty(selectedItems)
-              ? ` (${size(selectedItems)})`
-              : null}
+            {showCount && !isEmpty(selectedItems) ? ` (${size(selectedItems)})` : null}
           </Button>
         </div>
-      }
-    >
+      }>
       <div className="d-flex align-items-center m-b-10">
         <div className="flex-fill">
           <Input.Search
-            onChange={event => search(event.target.value)}
+            onChange={(event) => search(event.target.value)}
             placeholder={inputPlaceholder}
             aria-label={inputPlaceholder}
             autoFocus
@@ -153,25 +136,16 @@ function SelectItemsDialog({
         )}
       </div>
 
-      <div
-        className="d-flex align-items-stretch"
-        style={{ minHeight: "30vh", maxHeight: "50vh" }}
-      >
+      <div className="d-flex align-items-stretch" style={{ minHeight: "30vh", maxHeight: "50vh" }}>
         <div className="flex-fill scrollbox">
           {isLoading && <LoadingState className="" />}
           {!isLoading && !hasResults && (
-            <BigMessage
-              icon="fa-search"
-              message="No items match your search."
-              className=""
-            />
+            <BigMessage icon="fa-search" message="No items match your search." className="" />
           )}
           {!isLoading && hasResults && (
             <ItemsList
               items={items}
-              renderItem={item =>
-                renderItem(item, { isSelected: isItemSelected(item) })
-              }
+              renderItem={(item) => renderItem(item, { isSelected: isItemSelected(item) })}
               onItemClick={toggleItem}
             />
           )}
@@ -181,9 +155,7 @@ function SelectItemsDialog({
             {selectedItems.length > 0 && (
               <ItemsList
                 items={selectedItems}
-                renderItem={item =>
-                  renderStagedItem(item, { isSelected: true })
-                }
+                renderItem={(item) => renderStagedItem(item, { isSelected: true })}
                 onItemClick={toggleItem}
               />
             )}
@@ -219,7 +191,7 @@ SelectItemsDialog.defaultProps = {
   dialogTitle: "Add Items",
   inputPlaceholder: "Search...",
   selectedItemsTitle: "Selected items",
-  itemKey: item => item.id,
+  itemKey: (item) => item.id,
   renderItem: () => "",
   renderStagedItem: null, // hidden by default
   width: "80%",

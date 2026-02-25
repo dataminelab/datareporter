@@ -1,13 +1,4 @@
-import {
-  isNull,
-  isUndefined,
-  isArray,
-  isEmpty,
-  get,
-  map,
-  join,
-  has,
-} from "lodash";
+import { isNull, isUndefined, isArray, isEmpty, get, map, join, has } from "lodash";
 import { Query } from "@/services/query";
 import Parameter from "./Parameter";
 
@@ -42,7 +33,7 @@ class QueryBasedDropdownParameter extends Parameter {
       const separator = get(this.multiValuesOptions, "separator", ",");
       const prefix = get(this.multiValuesOptions, "prefix", "");
       const suffix = get(this.multiValuesOptions, "suffix", "");
-      const parameterValues = map(this.value, v => `${prefix}${v}${suffix}`);
+      const parameterValues = map(this.value, (v) => `${prefix}${v}${suffix}`);
       return join(parameterValues, separator);
     }
     return this.value;

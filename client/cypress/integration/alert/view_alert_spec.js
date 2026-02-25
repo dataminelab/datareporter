@@ -2,9 +2,7 @@ describe("View Alert", () => {
   beforeEach(function () {
     cy.login().then(() => {
       cy.createQuery({ query: "select 1 as col_name" })
-        .then(({ id: queryId }) =>
-          cy.createAlert(queryId, { column: "col_name" }),
-        )
+        .then(({ id: queryId }) => cy.createAlert(queryId, { column: "col_name" }))
         .then(({ id: alertId }) => {
           this.alertId = alertId;
           this.alertUrl = `/alerts/${alertId}`;
@@ -20,9 +18,7 @@ describe("View Alert", () => {
 
   it("allows adding new destinations", function () {
     cy.visit(this.alertUrl);
-    cy.getByTestId("AlertDestinations")
-      .contains("Test Email Destination")
-      .should("not.exist");
+    cy.getByTestId("AlertDestinations").contains("Test Email Destination").should("not.exist");
 
     cy.server();
     cy.route("GET", "**/api/destinations").as("Destinations");
@@ -35,9 +31,7 @@ describe("View Alert", () => {
     cy.contains("Test Email Destination").click();
     cy.contains("Save").click();
 
-    cy.getByTestId("AlertDestinations")
-      .contains("Test Email Destination")
-      .should("exist");
+    cy.getByTestId("AlertDestinations").contains("Test Email Destination").should("exist");
   });
 
   describe("Alert Destination permissions", () => {
@@ -56,9 +50,7 @@ describe("View Alert", () => {
 
       cy.logout()
         .then(() => cy.login()) // as admin
-        .then(() =>
-          cy.addDestinationSubscription(this.alertId, "Test Email Destination"),
-        )
+        .then(() => cy.addDestinationSubscription(this.alertId, "Test Email Destination"))
         .then(() => {
           cy.visit(this.alertUrl);
 
@@ -88,9 +80,7 @@ describe("View Alert", () => {
 
       cy.logout()
         .then(() => cy.login("user@redash.io", "password"))
-        .then(() =>
-          cy.addDestinationSubscription(this.alertId, "Test Email Destination"),
-        )
+        .then(() => cy.addDestinationSubscription(this.alertId, "Test Email Destination"))
         .then(() => {
           cy.visit(this.alertUrl);
 

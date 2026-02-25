@@ -28,11 +28,7 @@ interface DruidQueryModalProps {
   timekeeper: Timekeeper;
 }
 
-export const DruidQueryModal: React.SFC<DruidQueryModalProps> = ({
-  onClose,
-  timekeeper,
-  essence,
-}) => {
+export const DruidQueryModal: React.SFC<DruidQueryModalProps> = ({ onClose, timekeeper, essence }) => {
   const {
     dataCube: {
       attributes,
@@ -51,12 +47,5 @@ export const DruidQueryModal: React.SFC<DruidQueryModalProps> = ({
   const plan = query.simulateQueryPlan({ main: external });
   const planSource = JSON.stringify(plan, null, 2);
 
-  return (
-    <SourceModal
-      onClose={onClose}
-      title="Druid query"
-      copyLabel="Copy query"
-      source={planSource}
-    />
-  );
+  return <SourceModal onClose={onClose} title="Druid query" copyLabel="Copy query" source={planSource} />;
 };

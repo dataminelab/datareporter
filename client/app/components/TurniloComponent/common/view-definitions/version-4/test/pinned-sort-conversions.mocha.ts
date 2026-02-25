@@ -14,28 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  EMPTY_SERIES,
-  SeriesList,
-} from "../../../models/series-list/series-list";
-import {
-  measureSeries,
-  quantileSeries,
-} from "../../../models/series/series.fixtures";
+import { EMPTY_SERIES, SeriesList } from "../../../models/series-list/series-list";
+import { measureSeries, quantileSeries } from "../../../models/series/series.fixtures";
 import { mockEssence } from "../../test/essence.fixture";
-import {
-  fromReference,
-  quantileSeriesDefinition,
-} from "../series-definition.fixtures";
+import { fromReference, quantileSeriesDefinition } from "../series-definition.fixtures";
 import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence } from "./utils";
 
 describe("PinnedSort", () => {
   it("reads pinned sort", () => {
-    assertConversionToEssence(
-      mockViewDefinition({ pinnedSort: "sum" }),
-      mockEssence({ pinnedSort: "sum" }),
-    );
+    assertConversionToEssence(mockViewDefinition({ pinnedSort: "sum" }), mockEssence({ pinnedSort: "sum" }));
   });
 
   it("reads pinned sort as key of complex series", () => {
@@ -47,15 +35,12 @@ describe("PinnedSort", () => {
       mockEssence({
         series: SeriesList.fromSeries([quantileSeries("quantile", 90)]),
         pinnedSort: "quantile__p90",
-      }),
+      })
     );
   });
 
   it("reverts to default pinned sort when series does not exist", () => {
-    assertConversionToEssence(
-      mockViewDefinition({ pinnedSort: "foobar" }),
-      mockEssence({ pinnedSort: "count" }),
-    );
+    assertConversionToEssence(mockViewDefinition({ pinnedSort: "foobar" }), mockEssence({ pinnedSort: "count" }));
   });
 
   it("reverts to first available series when pinned sort series is not used", () => {
@@ -67,7 +52,7 @@ describe("PinnedSort", () => {
       mockEssence({
         series: SeriesList.fromSeries([measureSeries("sum")]),
         pinnedSort: "sum",
-      }),
+      })
     );
   });
 
@@ -80,7 +65,7 @@ describe("PinnedSort", () => {
       mockEssence({
         series: EMPTY_SERIES,
         pinnedSort: "count",
-      }),
+      })
     );
   });
 
@@ -93,7 +78,7 @@ describe("PinnedSort", () => {
       mockEssence({
         series: SeriesList.fromSeries([measureSeries("sum")]),
         pinnedSort: "sum",
-      }),
+      })
     );
   });
 });

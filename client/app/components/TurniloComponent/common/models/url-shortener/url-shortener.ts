@@ -23,29 +23,17 @@ export interface UrlShortenerContext {
   clientIp: string;
 }
 
-export type UrlShortenerRef = Ternary<
-  any,
-  string,
-  UrlShortenerContext,
-  Promise<string>
->;
+export type UrlShortenerRef = Ternary<any, string, UrlShortenerContext, Promise<string>>;
 export type UrlShortenerDefSQ = string;
 
-export function fromConfig(
-  definition?: UrlShortenerDefSQ,
-): UrlShortenerRef | undefined {
-  return (
-    definition &&
-    (Function("request", "url", "context", definition) as UrlShortenerRef)
-  );
+export function fromConfig(definition?: UrlShortenerDefSQ): UrlShortenerRef | undefined {
+  return definition && (Function("request", "url", "context", definition) as UrlShortenerRef);
 }
 
 export type UrlShortenerFn = Binary<string, any, Promise<string>>;
 export type UrlShortenerDef = string;
 
-export class UrlShortener
-  implements Instance<UrlShortenerDef, UrlShortenerDef>
-{
+export class UrlShortener implements Instance<UrlShortenerDef, UrlShortenerDef> {
   static fromJS(definition: UrlShortenerDef): UrlShortener {
     return new UrlShortener(definition);
   }
@@ -53,11 +41,7 @@ export class UrlShortener
   public readonly shortenerFunction: UrlShortenerFn;
 
   constructor(private shortenerDefinition: string) {
-    this.shortenerFunction = new Function(
-      "url",
-      "request",
-      shortenerDefinition,
-    ) as UrlShortenerFn;
+    this.shortenerFunction = new Function("url", "request", shortenerDefinition) as UrlShortenerFn;
   }
 
   public toJS(): UrlShortenerDef {

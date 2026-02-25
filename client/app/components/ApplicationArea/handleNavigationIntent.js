@@ -9,11 +9,7 @@ export default function handleNavigationIntent(event) {
     }
     element = element.parentNode;
   }
-  if (
-    !element ||
-    !element.hasAttribute("href") ||
-    element.hasAttribute("download")
-  ) {
+  if (!element || !element.hasAttribute("href") || element.hasAttribute("download")) {
     return;
   }
 

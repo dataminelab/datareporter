@@ -8,23 +8,15 @@ export default function useDeleteVisualization(report, onChange) {
   const handleChange = useImmutableCallback(onChange);
 
   return useCallback(
-    visualizationId =>
+    (visualizationId) =>
       Visualization.delete({ id: visualizationId })
         .then(() => {
-          const filteredVisualizations = filter(
-            report.visualizations,
-            v => v.id !== visualizationId,
-          );
-          handleChange(
-            extend(report.clone(), { visualizations: filteredVisualizations }),
-          );
+          const filteredVisualizations = filter(report.visualizations, (v) => v.id !== visualizationId);
+          handleChange(extend(report.clone(), { visualizations: filteredVisualizations }));
         })
         .catch(() => {
-          notification.error(
-            "Error deleting visualization.",
-            "Maybe it's used in a dashboard?",
-          );
+          notification.error("Error deleting visualization.", "Maybe it's used in a dashboard?");
         }),
-    [report, handleChange],
+    [report, handleChange]
   );
 }

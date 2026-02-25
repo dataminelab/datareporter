@@ -1,10 +1,6 @@
 /* global cy */
 
-import {
-  createQueryAndAddWidget,
-  editDashboard,
-  resizeBy,
-} from "../../support/dashboard";
+import { createQueryAndAddWidget, editDashboard, resizeBy } from "../../support/dashboard";
 
 describe("Widget", () => {
   beforeEach(function () {
@@ -34,7 +30,7 @@ describe("Widget", () => {
   });
 
   it("removes widget", function () {
-    createQueryAndAddWidget(this.dashboardId).then(elTestId => {
+    createQueryAndAddWidget(this.dashboardId).then((elTestId) => {
       cy.visit(this.dashboardUrl);
       editDashboard();
       cy.getByTestId(elTestId).within(() => {
@@ -52,11 +48,9 @@ describe("Widget", () => {
         query: "select s.a FROM generate_series(1,2) AS s(a)",
       };
 
-      createQueryAndAddWidget(this.dashboardId, queryData).then(elTestId => {
+      createQueryAndAddWidget(this.dashboardId, queryData).then((elTestId) => {
         cy.visit(this.dashboardUrl);
-        cy.getByTestId(elTestId)
-          .its("0.offsetHeight")
-          .should("be.oneOf", [235, 335]);
+        cy.getByTestId(elTestId).its("0.offsetHeight").should("be.oneOf", [235, 335]);
       });
     });
 
@@ -65,11 +59,9 @@ describe("Widget", () => {
         query: "select s.a FROM generate_series(1,5) AS s(a)",
       };
 
-      createQueryAndAddWidget(this.dashboardId, queryData).then(elTestId => {
+      createQueryAndAddWidget(this.dashboardId, queryData).then((elTestId) => {
         cy.visit(this.dashboardUrl);
-        cy.getByTestId(elTestId)
-          .its("0.offsetHeight")
-          .should("be.oneOf", [335, 485]);
+        cy.getByTestId(elTestId).its("0.offsetHeight").should("be.oneOf", [335, 485]);
       });
     });
 
@@ -89,7 +81,7 @@ describe("Widget", () => {
       };
 
       beforeEach(function () {
-        createQueryAndAddWidget(this.dashboardId, queryData).then(elTestId => {
+        createQueryAndAddWidget(this.dashboardId, queryData).then((elTestId) => {
           cy.visit(this.dashboardUrl);
           cy.getByTestId(elTestId)
             .as("widget")
@@ -163,15 +155,11 @@ describe("Widget", () => {
       position: { col: 0, row: 0, sizeX: 3, sizeY: 10, autoHeight: false },
     };
 
-    createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(
-      () => {
-        cy.visit(this.dashboardUrl);
-        cy.getByTestId("TableVisualization")
-          .its("0.offsetHeight")
-          .should("be.oneOf", [380, 381, 382]);
-        cy.percySnapshot("Shows correct height of table visualization");
-      },
-    );
+    createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(() => {
+      cy.visit(this.dashboardUrl);
+      cy.getByTestId("TableVisualization").its("0.offsetHeight").should("be.oneOf", [380, 381, 382]);
+      cy.percySnapshot("Shows correct height of table visualization");
+    });
   });
 
   it("shows fixed pagination for overflowing tabular content ", function () {
@@ -183,31 +171,22 @@ describe("Widget", () => {
       position: { col: 0, row: 0, sizeX: 3, sizeY: 10, autoHeight: false },
     };
 
-    createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(
-      () => {
-        cy.visit(this.dashboardUrl);
-        cy.getByTestId("TableVisualization")
-          .next(".ant-pagination.mini")
-          .should("be.visible");
-        cy.percySnapshot(
-          "Shows fixed mini pagination for overflowing tabular content",
-        );
-      },
-    );
+    createQueryAndAddWidget(this.dashboardId, queryData, widgetOptions).then(() => {
+      cy.visit(this.dashboardUrl);
+      cy.getByTestId("TableVisualization").next(".ant-pagination.mini").should("be.visible");
+      cy.percySnapshot("Shows fixed mini pagination for overflowing tabular content");
+    });
   });
 
   it("keeps results on screen while refreshing", function () {
     const queryData = {
-      query:
-        "select pg_sleep({{sleep-time}}), 'sleep time: {{sleep-time}}' as sleeptime",
+      query: "select pg_sleep({{sleep-time}}), 'sleep time: {{sleep-time}}' as sleeptime",
       options: {
-        parameters: [
-          { name: "sleep-time", title: "Sleep time", type: "number", value: 0 },
-        ],
+        parameters: [{ name: "sleep-time", title: "Sleep time", type: "number", value: 0 }],
       },
     };
 
-    createQueryAndAddWidget(this.dashboardId, queryData).then(elTestId => {
+    createQueryAndAddWidget(this.dashboardId, queryData).then((elTestId) => {
       cy.visit(this.dashboardUrl);
       cy.getByTestId(elTestId).within(() => {
         cy.getByTestId("TableVisualization").should("contain", "sleep time: 0");

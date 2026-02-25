@@ -6,10 +6,10 @@ export default function useUpdateReportTags(report, onChange) {
   const updateReport = useUpdateReport(report, onChange);
 
   return useCallback(
-    tags => {
+    (tags) => {
       recordEvent("edit_tags", "report", report.id);
       updateReport({ tags });
     },
-    [report.id, updateReport],
+    [report.id, updateReport]
   );
 }

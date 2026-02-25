@@ -199,6 +199,25 @@ const config = {
           },
         },
       },
+      // Rule for react-draggable (uses optional chaining)
+      {
+        test: /\.js$/,
+        include: [/node_modules\/react-draggable/],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              [
+                "@babel/preset-env",
+                {
+                  targets: { browsers: ["last 2 versions"] },
+                },
+              ],
+            ],
+            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+          },
+        },
+      },
       // Main rule for app code (JS/TS/JSX/TSX)
       {
         test: /\.(t|j)sx?$/,

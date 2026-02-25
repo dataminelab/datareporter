@@ -22,17 +22,13 @@ import { ClearableInput } from "./clearable-input";
 
 describe("ClearableInput", () => {
   it("should add empty class name", () => {
-    const renderedComponent = shallow(
-      <ClearableInput onChange={null} value={null} />,
-    );
+    const renderedComponent = shallow(<ClearableInput onChange={null} value={null} />);
 
     expect(renderedComponent.hasClass("empty")).to.be.true;
   });
 
   it("should add custom class name", () => {
-    const renderedComponent = shallow(
-      <ClearableInput onChange={null} value={null} className="foobar" />,
-    );
+    const renderedComponent = shallow(<ClearableInput onChange={null} value={null} className="foobar" />);
 
     expect(renderedComponent.hasClass("foobar")).to.be.true;
   });

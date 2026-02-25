@@ -28,8 +28,6 @@ const defaults: ViewDefinition4 = {
   visualization: TOTALS_MANIFEST.name,
 };
 
-export function mockViewDefinition(
-  opts: Partial<ViewDefinition4> = {},
-): ViewDefinition4 {
+export function mockViewDefinition(opts: Partial<ViewDefinition4> = {}): ViewDefinition4 {
   return { ...defaults, ...opts };
 }

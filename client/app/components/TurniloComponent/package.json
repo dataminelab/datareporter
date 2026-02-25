@@ -21,7 +21,6 @@
     "turnilo": "./bin/turnilo"
   },
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "test": "npm-run-all -s test:*",
     "watch:test": "npm-run-all -p watch:test:*",
     "test:common": "mocha --exit --require ./test/setup/mocha.js 'common/**/*.mocha.{ts,tsx}'",

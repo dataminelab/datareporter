@@ -22,25 +22,21 @@ interface ColorSwabsProps {
   colorEntries: ColorEntry[];
 }
 
-export const ColorSwabs: React.FunctionComponent<ColorSwabsProps> = ({
-  colorEntries,
-}) => {
-  const colorSwabs = colorEntries.map(
-    ({ color, name, value, previous, delta }: ColorEntry) => {
-      const swabStyle = { background: color };
-      return (
-        <tr key={name}>
-          <td>
-            <div className="color-swab" style={swabStyle} />
-          </td>
-          <td className="color-name">{name}</td>
-          <td className="color-value">{value}</td>
-          {previous && <td className="color-previous">{previous}</td>}
-          {delta && <td className="color-delta">{delta}</td>}
-        </tr>
-      );
-    },
-  );
+export const ColorSwabs: React.FunctionComponent<ColorSwabsProps> = ({ colorEntries }) => {
+  const colorSwabs = colorEntries.map(({ color, name, value, previous, delta }: ColorEntry) => {
+    const swabStyle = { background: color };
+    return (
+      <tr key={name}>
+        <td>
+          <div className="color-swab" style={swabStyle} />
+        </td>
+        <td className="color-name">{name}</td>
+        <td className="color-value">{value}</td>
+        {previous && <td className="color-previous">{previous}</td>}
+        {delta && <td className="color-delta">{delta}</td>}
+      </tr>
+    );
+  });
 
   return (
     <table className="color-swabs">

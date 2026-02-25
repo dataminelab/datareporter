@@ -39,10 +39,7 @@ function highlightByIndex(text: string, start: number, end: number) {
   ];
 }
 
-function highlightBy(
-  text: string,
-  highlight: string | RegExp,
-): string | JSX.Element[] {
+function highlightBy(text: string, highlight: string | RegExp): string | JSX.Element[] {
   if (!highlight) return text;
 
   if (typeof highlight === "string") {
@@ -57,14 +54,6 @@ function highlightBy(
   return highlightByIndex(text, startIndex, startIndex + match[0].length);
 }
 
-export const HighlightString: React.SFC<HighlightStringProps> = ({
-  className,
-  text,
-  highlight,
-}) => {
-  return (
-    <span className={classNames("highlight-string", className)}>
-      {highlightBy(text, highlight)}
-    </span>
-  );
+export const HighlightString: React.SFC<HighlightStringProps> = ({ className, text, highlight }) => {
+  return <span className={classNames("highlight-string", className)}>{highlightBy(text, highlight)}</span>;
 };

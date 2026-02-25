@@ -37,17 +37,11 @@ export function stringFilterOptionsQuery({
   const { dataCube } = essence;
   const nativeCount = dataCube.getMeasure("count");
   const $main = $("main");
-  const measureExpression = nativeCount
-    ? nativeCount.expression
-    : $main.count();
+  const measureExpression = nativeCount ? nativeCount.expression : $main.count();
 
-  const filter = essence
-    .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
-    .toExpression(dataCube);
+  const filter = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
 
-  const filterWithSearch = searchText
-    ? filter.and(dimension.expression.contains(r(searchText), "ignoreCase"))
-    : filter;
+  const filterWithSearch = searchText ? filter.and(dimension.expression.contains(r(searchText), "ignoreCase")) : filter;
 
   return $main
     .filter(filterWithSearch)

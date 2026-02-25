@@ -1018,10 +1018,10 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
             result = hash_to_result(report.hash, report.model, self.user.org)
             # XXX probably need to check other queries in the report as well, but for now we will assume that all queries in the report return the same data
             first_query = result.queries[0]
-            if 'query_result' not in first_query:
+            if "query_result" not in first_query:
                 data = None
             else:
-                data = first_query['query_result']['data']
+                data = first_query["query_result"]["data"]
         else:
             data = self.query_rel.latest_query_data.data if self.query_rel.latest_query_data else None
         new_state = self.UNKNOWN_STATE

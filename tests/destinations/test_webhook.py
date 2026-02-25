@@ -20,6 +20,7 @@ def test_webhook_notify_handles_unicode():
     alert.rearm = None
     alert.query_id = 10
     alert.user_id = 20
+    alert.type = "alert"
 
     query = mock.Mock()
     user = mock.Mock()

@@ -38,11 +38,7 @@ describe("x-scale", () => {
 
   describe("createXScale", () => {
     describe("TimeRange", () => {
-      const domain = [
-        januaryDateAsRange(1),
-        januaryDateAsRange(2),
-        januaryDateAsRange(3),
-      ];
+      const domain = [januaryDateAsRange(1), januaryDateAsRange(2), januaryDateAsRange(3)];
       const width = 90;
 
       const scale = createXScale(domain, width);

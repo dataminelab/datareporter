@@ -2,9 +2,9 @@ namespace: staging-kustomize-test
 
 namePrefix: kustomize-
 resources:
-- namespace.yaml
-- ../../base/dependencies
-- ../../base
+  - namespace.yaml
+  - ../../base/dependencies
+  - ../../base
 images:
   - name: europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:v2025.3.1
     newTag: develop-2025.7.1-d6ac47d1

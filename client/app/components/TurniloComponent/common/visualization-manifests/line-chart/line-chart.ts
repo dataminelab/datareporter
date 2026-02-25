@@ -35,30 +35,24 @@ const COLORS_COUNT = NORMAL_COLORS.length;
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(
-    ({ dataCube }) =>
-      !(
-        dataCube.getDimensionsByKind("time").length ||
-        dataCube.getDimensionsByKind("number").length
-      ),
+    ({ dataCube }) => !(dataCube.getDimensionsByKind("time").length || dataCube.getDimensionsByKind("number").length)
   )
   .then(() => Resolve.NEVER)
 
   .when(Predicates.noSplits())
   .then(({ dataCube }) => {
-    const continuousDimensions = dataCube
-      .getDimensionsByKind("time")
-      .concat(dataCube.getDimensionsByKind("number"));
+    const continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
     return Resolve.manual(
       NORMAL_PRIORITY_ACTION,
       "This visualization requires a continuous dimension split",
-      continuousDimensions.map(continuousDimension => {
+      continuousDimensions.map((continuousDimension) => {
         return {
           description: `Add a split on ${continuousDimension.title}`,
           adjustment: {
             splits: Splits.fromSplit(Split.fromDimension(continuousDimension)),
           },
         };
-      }),
+      })
     );
   })
 
@@ -68,9 +62,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     let score = 4;
 
     let continuousSplit = splits.getSplit(0);
-    const continuousDimension = dataCube.getDimension(
-      continuousSplit.reference,
-    );
+    const continuousDimension = dataCube.getDimension(continuousSplit.reference);
     const sortStrategy = continuousDimension.sortStrategy;
 
     let sort: Sort = null;
@@ -102,8 +94,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
     if (continuousDimension.kind === "time") score += 3;
 
-    if (!autoChanged)
-      return Resolve.ready(isSelectedVisualization ? 10 : score);
+    if (!autoChanged) return Resolve.ready(isSelectedVisualization ? 10 : score);
     return Resolve.automatic(score, {
       splits: new Splits({ splits: List([continuousSplit]) }),
     });
@@ -129,11 +120,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       timeSplit = timeSplit.changeLimit(null);
     }
 
-    const colorSplit = splits
-      .getSplit(1)
-      .update("limit", limit =>
-        clamp(limit, AVAILABLE_LIMITS[0], COLORS_COUNT),
-      );
+    const colorSplit = splits.getSplit(1).update("limit", (limit) => clamp(limit, AVAILABLE_LIMITS[0], COLORS_COUNT));
 
     return Resolve.automatic(8, {
       splits: new Splits({ splits: List([colorSplit, timeSplit]) }),
@@ -165,7 +152,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
       autoChanged = true;
     }
 
-    const colorSplit = splits.getSplit(0).update("limit", limit => {
+    const colorSplit = splits.getSplit(0).update("limit", (limit) => {
       if (limit === null || limit > COLORS_COUNT) {
         autoChanged = true;
         return COLORS_COUNT;
@@ -181,45 +168,32 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .when(Predicates.haveAtLeastSplitKinds("time"))
   .then(({ splits, dataCube }) => {
-    const timeSplit = splits.splits.find(
-      split => dataCube.getDimension(split.reference).kind === "time",
-    );
-    return Resolve.manual(
-      NORMAL_PRIORITY_ACTION,
-      "Too many splits on the line chart",
-      [
-        {
-          description: "Remove all but the time split",
-          adjustment: {
-            splits: Splits.fromSplit(timeSplit),
-          },
+    const timeSplit = splits.splits.find((split) => dataCube.getDimension(split.reference).kind === "time");
+    return Resolve.manual(NORMAL_PRIORITY_ACTION, "Too many splits on the line chart", [
+      {
+        description: "Remove all but the time split",
+        adjustment: {
+          splits: Splits.fromSplit(timeSplit),
         },
-      ],
-    );
+      },
+    ]);
   })
 
   .otherwise(({ dataCube }) => {
-    const continuousDimensions = dataCube
-      .getDimensionsByKind("time")
-      .concat(dataCube.getDimensionsByKind("number"));
+    const continuousDimensions = dataCube.getDimensionsByKind("time").concat(dataCube.getDimensionsByKind("number"));
     return Resolve.manual(
       NORMAL_PRIORITY_ACTION,
       "The Line Chart needs one continuous dimension split",
-      continuousDimensions.map(continuousDimension => {
+      continuousDimensions.map((continuousDimension) => {
         return {
           description: `Split on ${continuousDimension.title} instead`,
           adjustment: {
             splits: Splits.fromSplit(Split.fromDimension(continuousDimension)),
           },
         };
-      }),
+      })
     );
   })
   .build();
 
-export const LINE_CHART_MANIFEST = new VisualizationManifest(
-  "line-chart",
-  "Line Chart",
-  rulesEvaluator,
-  settings,
-);
+export const LINE_CHART_MANIFEST = new VisualizationManifest("line-chart", "Line Chart", rulesEvaluator, settings);

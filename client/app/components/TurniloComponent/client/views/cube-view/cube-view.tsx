@@ -48,11 +48,7 @@ import { FilterTile } from "../../components/filter-tile/filter-tile";
 import { GlobalEventListener } from "../../components/global-event-listener/global-event-listener";
 import { ManualFallback } from "../../components/manual-fallback/manual-fallback";
 import { PinboardPanel } from "../../components/pinboard-panel/pinboard-panel";
-import {
-  Direction,
-  DragHandle,
-  ResizeHandle,
-} from "../../components/resize-handle/resize-handle";
+import { Direction, DragHandle, ResizeHandle } from "../../components/resize-handle/resize-handle";
 import { SeriesTilesRow } from "../../components/series-tile/series-tiles-row";
 import { SideDrawer } from "../../components/side-drawer/side-drawer";
 import { SplitTilesRow } from "../../components/split-tile/split-tiles-row";
@@ -162,14 +158,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
     this.clicker = {
       changeFilter: (filter: Filter) => {
-        this.setState(state => {
+        this.setState((state) => {
           let { essence } = state;
           essence = essence.changeFilter(filter);
           return { ...state, essence };
         });
       },
       changeComparisonShift: (timeShift: TimeShift) => {
-        this.setState(state => ({
+        this.setState((state) => ({
           ...state,
           essence: state.essence.changeComparisonShift(timeShift),
         }));
@@ -202,10 +198,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         const { essence } = this.state;
         this.setState({ essence: essence.removeSeries(series) });
       },
-      changeVisualization: (
-        visualization: VisualizationManifest,
-        settings: VisualizationSettings,
-      ) => {
+      changeVisualization: (visualization: VisualizationManifest, settings: VisualizationSettings) => {
         const { essence } = this.state;
         this.setState({
           essence: essence.changeVisualization(visualization, settings),
@@ -231,7 +224,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { dataCube } = essence;
     this.setState({ updatingMaxTime: true });
 
-    DataCube.queryMaxTime(dataCube).then(maxTime => {
+    DataCube.queryMaxTime(dataCube).then((maxTime) => {
       if (!this.mounted) return;
       const timeName = dataCube.name;
       const isBatchCube = !dataCube.refreshRule.isRealtime();
@@ -277,10 +270,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
   }
 
-  componentWillUpdate(
-    nextProps: CubeViewProps,
-    nextState: CubeViewState,
-  ): void {
+  componentWillUpdate(nextProps: CubeViewProps, nextState: CubeViewState): void {
     const { changeEssence } = this.props;
     const { essence } = this.state;
     if (!nextState.essence.equals(essence)) {
@@ -290,17 +280,12 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   componentDidUpdate(
     prevProps: CubeViewProps,
-    {
-      layout: { pinboard: prevPinboard, factPanel: prevFactPanel },
-    }: CubeViewState,
+    { layout: { pinboard: prevPinboard, factPanel: prevFactPanel } }: CubeViewState
   ) {
     const {
       layout: { pinboard, factPanel },
     } = this.state;
-    if (
-      pinboard.hidden !== prevPinboard.hidden ||
-      factPanel.hidden !== prevFactPanel.hidden
-    ) {
+    if (pinboard.hidden !== prevPinboard.hidden || factPanel.hidden !== prevFactPanel.hidden) {
       this.globalResizeListener();
     }
   }
@@ -346,9 +331,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       deviceSize: Device.getSize(),
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
-      visualizationStage: Stage.fromClientRect(
-        visualizationDOM.getBoundingClientRect(),
-      ),
+      visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect()),
     });
   };
 
@@ -376,10 +359,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     e.preventDefault();
     const dimension = DragManager.draggingDimension();
     if (dimension) {
-      this.clicker.changeSplit(
-        Split.fromDimension(dimension),
-        VisStrategy.FairGame,
-      );
+      this.clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     }
     this.setState({ dragOver: false });
   };
@@ -400,13 +380,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { showRawDataModal, essence, timekeeper } = this.state;
     if (!showRawDataModal) return null;
 
-    return (
-      <RawDataModal
-        essence={essence}
-        timekeeper={timekeeper}
-        onClose={this.onRawDataModalClose}
-      />
-    );
+    return <RawDataModal essence={essence} timekeeper={timekeeper} onClose={this.onRawDataModalClose} />;
   }
 
   openViewDefinitionModal = () => {
@@ -425,12 +399,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { showViewDefinitionModal, essence } = this.state;
     if (!showViewDefinitionModal) return null;
 
-    return (
-      <ViewDefinitionModal
-        onClose={this.onViewDefinitionModalClose}
-        essence={essence}
-      />
-    );
+    return <ViewDefinitionModal onClose={this.onViewDefinitionModalClose} essence={essence} />;
   }
 
   openDruidQueryModal = () => {
@@ -448,13 +417,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   renderDruidQueryModal() {
     const { showDruidQueryModal, essence, timekeeper } = this.state;
     if (!showDruidQueryModal) return null;
-    return (
-      <DruidQueryModal
-        timekeeper={timekeeper}
-        essence={essence}
-        onClose={this.closeDruidQueryModal}
-      />
-    );
+    return <DruidQueryModal timekeeper={timekeeper} essence={essence} onClose={this.closeDruidQueryModal} />;
   }
 
   openUrlShortenerModal = (url: string, title: string) => {
@@ -582,8 +545,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   private constructContext = memoizeOne(
     (essence: Essence, clicker: Clicker) => ({ essence, clicker }),
-    (newArgs: any[], lastArgs: any[]) =>
-      newArgs[0].equals(lastArgs[0]) && newArgs[1] === lastArgs[1],
+    (newArgs: any[], lastArgs: any[]) => newArgs[0].equals(lastArgs[0]) && newArgs[1] === lastArgs[1]
   );
 
   render() {
@@ -647,18 +609,14 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 onResize={this.onFactPanelResize}
                 onResizeEnd={this.onPanelResizeEnd}
                 min={MIN_PANEL_WIDTH}
-                max={MAX_PANEL_WIDTH}
-              >
+                max={MAX_PANEL_WIDTH}>
                 <DragHandle />
               </ResizeHandle>
             )}
 
             <div className="center-panel" style={styles.centerPanel}>
               <div className="center-top-bar">
-                <div
-                  className="dimension-panel-toggle"
-                  onClick={this.toggleFactPanel}
-                >
+                <div className="dimension-panel-toggle" onClick={this.toggleFactPanel}>
                   <ToggleArrow right={layout.factPanel.hidden} />
                 </div>
                 <div className="filter-split-section">
@@ -684,10 +642,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                     essence={essence}
                     menuStage={visualizationStage}
                   />
-                  <SeriesTilesRow
-                    ref={this.seriesTile}
-                    menuStage={visualizationStage}
-                  />
+                  <SeriesTilesRow ref={this.seriesTile} menuStage={visualizationStage} />
                 </div>
                 <VisSelector clicker={clicker} essence={essence} />
                 <div className="pinboard-toggle" onClick={this.togglePinboard}>
@@ -719,8 +674,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
                 onResize={this.onPinboardPanelResize}
                 onResizeEnd={this.onPanelResizeEnd}
                 min={MIN_PANEL_WIDTH}
-                max={MAX_PANEL_WIDTH}
-              >
+                max={MAX_PANEL_WIDTH}>
                 <DragHandle />
               </ResizeHandle>
             )}
@@ -753,8 +707,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   };
 
   renderSideDrawer() {
-    const { changeDataCubeAndEssence, openAboutModal, appSettings } =
-      this.props;
+    const { changeDataCubeAndEssence, openAboutModal, appSettings } = this.props;
     const { showSideBar, essence } = this.state;
     const { dataCubes, customization } = appSettings;
     const transitionTimeout = { enter: 500, exit: 300 };
@@ -764,8 +717,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         classNames="side-drawer"
         mountOnEnter={true}
         unmountOnExit={true}
-        timeout={transitionTimeout}
-      >
+        timeout={transitionTimeout}>
         <SideDrawer
           key="drawer"
           essence={essence}
@@ -798,9 +750,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
         width: isDimensionPanelHidden ? 0 : layout.factPanel.width,
       },
       centerPanel: {
-        left: isDimensionPanelHidden
-          ? nonSmallLayoutPadding
-          : layout.factPanel.width,
+        left: isDimensionPanelHidden ? nonSmallLayoutPadding : layout.factPanel.width,
         right: isPinboardHidden ? nonSmallLayoutPadding : layout.pinboard.width,
       },
       pinboardPanel: {
@@ -816,11 +766,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   private visElement() {
-    const {
-      essence,
-      visualizationStage: stage,
-      lastRefreshRequestTimestamp,
-    } = this.state;
+    const { essence, visualizationStage: stage, lastRefreshRequestTimestamp } = this.state;
     const { report } = this.props;
     if (!(essence.visResolve.isReady() && stage)) return null;
     const visProps: VisualizationProps = {
@@ -838,9 +784,6 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       },
     };
 
-    return React.createElement(
-      getVisualizationComponent(essence.visualization),
-      visProps,
-    );
+    return React.createElement(getVisualizationComponent(essence.visualization), visProps);
   }
 }

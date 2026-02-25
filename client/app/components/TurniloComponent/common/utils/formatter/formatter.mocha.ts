@@ -21,11 +21,7 @@ import { NumberRange, TimeRange } from "plywood";
 import * as sinon from "sinon";
 import { DimensionFixtures } from "../../models/dimension/dimension.fixtures";
 import * as TimeModule from "../time/time";
-import {
-  formatFilterClause,
-  formatSegment,
-  formatShortSegment,
-} from "./formatter";
+import { formatFilterClause, formatSegment, formatShortSegment } from "./formatter";
 import { FormatterFixtures } from "./formatter.fixtures";
 
 describe("General", () => {
@@ -41,13 +37,7 @@ describe("General", () => {
     latestDurationTests.forEach(({ duration, label }) => {
       it(`formats latest ${duration} as "${label}"`, () => {
         const timeFilterLatest = FormatterFixtures.latestDuration(duration);
-        expect(
-          formatFilterClause(
-            DimensionFixtures.time(),
-            timeFilterLatest,
-            Timezone.UTC,
-          ),
-        ).to.equal(label);
+        expect(formatFilterClause(DimensionFixtures.time(), timeFilterLatest, Timezone.UTC)).to.equal(label);
       });
     });
 
@@ -82,26 +72,14 @@ describe("General", () => {
     durationTests.forEach(({ duration, previousLabel: label }) => {
       it(`formats previous ${duration} as "${label}"`, () => {
         const timeFilterPrevious = FormatterFixtures.previousDuration(duration);
-        expect(
-          formatFilterClause(
-            DimensionFixtures.time(),
-            timeFilterPrevious,
-            Timezone.UTC,
-          ),
-        ).to.equal(label);
+        expect(formatFilterClause(DimensionFixtures.time(), timeFilterPrevious, Timezone.UTC)).to.equal(label);
       });
     });
 
     durationTests.forEach(({ duration, currentLabel: label }) => {
       it(`formats current ${duration} as "${label}"`, () => {
         const timeFilterCurrent = FormatterFixtures.currentDuration(duration);
-        expect(
-          formatFilterClause(
-            DimensionFixtures.time(),
-            timeFilterCurrent,
-            Timezone.UTC,
-          ),
-        ).to.equal(label);
+        expect(formatFilterClause(DimensionFixtures.time(), timeFilterCurrent, Timezone.UTC)).to.equal(label);
       });
     });
 
@@ -111,29 +89,19 @@ describe("General", () => {
       const end = new Date("2016-12-01");
       const filterClause = FormatterFixtures.fixedTimeFilter(start, end);
       formatFilterClause(DimensionFixtures.time(), filterClause, Timezone.UTC);
-      expect(formatTimeRange.calledWith({ start, end }, Timezone.UTC)).to.equal(
-        true,
-      );
+      expect(formatTimeRange.calledWith({ start, end }, Timezone.UTC)).to.equal(true);
       formatTimeRange.restore();
     });
 
     it("formats number", () => {
-      expect(
-        formatFilterClause(
-          DimensionFixtures.number(),
-          FormatterFixtures.numberFilter(),
-          Timezone.UTC,
-        ),
-      ).to.equal("Numeric: 1 to 3");
+      expect(formatFilterClause(DimensionFixtures.number(), FormatterFixtures.numberFilter(), Timezone.UTC)).to.equal(
+        "Numeric: 1 to 3"
+      );
     });
 
     it("formats string", () => {
       expect(
-        formatFilterClause(
-          DimensionFixtures.countryString(),
-          FormatterFixtures.stringFilterShort(),
-          Timezone.UTC,
-        ),
+        formatFilterClause(DimensionFixtures.countryString(), FormatterFixtures.stringFilterShort(), Timezone.UTC)
       ).to.equal("important countries: iceland");
     });
   });
@@ -154,8 +122,8 @@ describe("General", () => {
             start: 42,
             end: 120,
           }),
-          null,
-        ),
+          null
+        )
       ).to.be.equal("42 to 120");
     });
 
@@ -166,8 +134,8 @@ describe("General", () => {
             start: new Date("2016-11-11"),
             end: new Date("2016-12-01"),
           }),
-          Timezone.UTC,
-        ),
+          Timezone.UTC
+        )
       ).to.be.equal("11 Nov 2016");
     });
   });
@@ -188,8 +156,8 @@ describe("General", () => {
             start: 42,
             end: 120,
           }),
-          null,
-        ),
+          null
+        )
       ).to.be.equal("42");
     });
 
@@ -200,8 +168,8 @@ describe("General", () => {
             start: new Date("2016-11-11"),
             end: new Date("2016-12-01"),
           }),
-          Timezone.UTC,
-        ),
+          Timezone.UTC
+        )
       ).to.be.equal("11 Nov 2016");
     });
   });

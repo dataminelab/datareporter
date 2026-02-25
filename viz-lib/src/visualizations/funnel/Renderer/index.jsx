@@ -23,7 +23,7 @@ export default function Renderer({ data, options }) {
 
   const formatPercentValue = useMemo(() => {
     const format = createNumberFormatter(options.percentFormat);
-    return value => {
+    return (value) => {
       if (value < options.percentValuesRange.min) {
         return `<${format(options.percentValuesRange.min)}`;
       }
@@ -39,14 +39,14 @@ export default function Renderer({ data, options }) {
       return [];
     }
 
-    const maxToPrevious = maxBy(funnelData, d => (isFinite(d.pctPrevious) ? d.pctPrevious : 0)).pctPrevious;
+    const maxToPrevious = maxBy(funnelData, (d) => (isFinite(d.pctPrevious) ? d.pctPrevious : 0)).pctPrevious;
     return [
       {
         title: options.stepCol.displayAs,
         dataIndex: "step",
         width: "25%",
         className: "text-ellipsis",
-        render: text => (
+        render: (text) => (
           <Tooltip title={text} mouseEnterDelay={0} mouseLeaveDelay={0}>
             {text}
           </Tooltip>
@@ -68,14 +68,14 @@ export default function Renderer({ data, options }) {
         dataIndex: "pctMax",
         width: "15%",
         align: "center",
-        render: value => formatPercentValue(value),
+        render: (value) => formatPercentValue(value),
       },
       {
         title: "% Previous",
         dataIndex: "pctPrevious",
         width: "15%",
         align: "center",
-        render: value => (
+        render: (value) => (
           <FunnelBar className="funnel-percent-column" value={(value / maxToPrevious) * 100.0}>
             {formatPercentValue(value)}
           </FunnelBar>

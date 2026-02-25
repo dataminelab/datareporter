@@ -34,18 +34,11 @@ export interface SearchableFolderState {
   opened: boolean;
 }
 
-export class SearchableFolder extends PureComponent<
-  SearchableFolderProps,
-  SearchableFolderState
-> {
+export class SearchableFolder extends PureComponent<SearchableFolderProps, SearchableFolderState> {
   readonly folderState: SearchableFolderState;
 
-  private readonly openIcon = (
-    <SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />
-  );
-  private readonly closedIcon = (
-    <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />
-  );
+  private readonly openIcon = (<SvgIcon svg={require("../../icons/full-caret-small-bottom.svg")} />);
+  private readonly closedIcon = (<SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />);
 
   constructor(props: SearchableFolderProps) {
     super(props);
@@ -67,17 +60,11 @@ export class SearchableFolder extends PureComponent<
   }
 
   handleClick = () => {
-    this.setState(prevState => ({ opened: !prevState.opened }));
+    this.setState((prevState) => ({ opened: !prevState.opened }));
   };
 
   render() {
-    const {
-      title,
-      description,
-      inSearchMode,
-      hasItemsWithSearchText,
-      children,
-    } = this.props;
+    const { title, description, inSearchMode, hasItemsWithSearchText, children } = this.props;
     const { opened } = this.folderState;
 
     const isGroupOpen = opened || (inSearchMode && hasItemsWithSearchText);
@@ -87,18 +74,12 @@ export class SearchableFolder extends PureComponent<
       <div className={classNames("folder", { hidden })}>
         <div className="folder-header">
           <div className="icon-label-container" onClick={this.handleClick}>
-            <div className="folder-icon">
-              {isGroupOpen ? this.openIcon : this.closedIcon}
-            </div>
+            <div className="folder-icon">{isGroupOpen ? this.openIcon : this.closedIcon}</div>
             <span className="label">{title}</span>
           </div>
-          {description && (
-            <InfoBubble className="info-icon" description={description} />
-          )}
+          {description && <InfoBubble className="info-icon" description={description} />}
         </div>
-        <div className={classNames("folder-items", { closed: !isGroupOpen })}>
-          {children}
-        </div>
+        <div className={classNames("folder-items", { closed: !isGroupOpen })}>{children}</div>
       </div>
     );
   }

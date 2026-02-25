@@ -53,10 +53,7 @@ interface SeriesMenuState {
   isValid: boolean;
 }
 
-export class SeriesMenu extends React.Component<
-  SeriesMenuProps,
-  SeriesMenuState
-> {
+export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState> {
   state: SeriesMenuState = { series: this.props.initialSeries, isValid: true };
 
   componentDidMount() {
@@ -69,8 +66,7 @@ export class SeriesMenu extends React.Component<
 
   globalKeyDownListener = (e: KeyboardEvent) => enterKey(e) && this.onOkClick();
 
-  saveSeries = (series: Series, isValid: boolean) =>
-    this.setState({ series, isValid });
+  saveSeries = (series: Series, isValid: boolean) => this.setState({ series, isValid });
 
   onCancelClick = () => this.props.onClose();
 
@@ -86,21 +82,13 @@ export class SeriesMenu extends React.Component<
     const { isValid, series } = this.state;
     const { initialSeries, seriesList } = this.props;
     const isModified = !initialSeries.equals(series);
-    const otherSeries = seriesList.series.filter(s => !s.equals(initialSeries));
-    const isUnique = !isTruthy(otherSeries.find(s => s.key() === series.key()));
+    const otherSeries = seriesList.series.filter((s) => !s.equals(initialSeries));
+    const isUnique = !isTruthy(otherSeries.find((s) => s.key() === series.key()));
     return isValid && isModified && isUnique;
   }
 
   render() {
-    const {
-      measure,
-      measures,
-      initialSeries,
-      seriesList,
-      containerStage,
-      onClose,
-      openOn,
-    } = this.props;
+    const { measure, measures, initialSeries, seriesList, containerStage, onClose, openOn } = this.props;
     const { series } = this.state;
 
     return (
@@ -110,35 +98,23 @@ export class SeriesMenu extends React.Component<
         containerStage={containerStage}
         stage={Stage.fromSize(250, 240)}
         openOn={openOn}
-        onClose={onClose}
-      >
+        onClose={onClose}>
         {series instanceof MeasureSeries && (
-          <MeasureSeriesMenu
+          <MeasureSeriesMenu series={series} measure={measure} onChange={this.saveSeries} />
+        )}
+        {series instanceof ExpressionSeries && series.expression instanceof PercentExpression && (
+          <PercentSeriesMenu seriesList={seriesList} series={series} measure={measure} onChange={this.saveSeries} />
+        )}
+        {series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression && (
+          <ArithmeticSeriesMenu
+            seriesList={seriesList}
             series={series}
+            initialSeries={initialSeries}
             measure={measure}
+            measures={measures}
             onChange={this.saveSeries}
           />
         )}
-        {series instanceof ExpressionSeries &&
-          series.expression instanceof PercentExpression && (
-            <PercentSeriesMenu
-              seriesList={seriesList}
-              series={series}
-              measure={measure}
-              onChange={this.saveSeries}
-            />
-          )}
-        {series instanceof ExpressionSeries &&
-          series.expression instanceof ArithmeticExpression && (
-            <ArithmeticSeriesMenu
-              seriesList={seriesList}
-              series={series}
-              initialSeries={initialSeries}
-              measure={measure}
-              measures={measures}
-              onChange={this.saveSeries}
-            />
-          )}
         {series instanceof QuantileSeries && (
           <QuantileSeriesMenu
             seriesList={seriesList}
@@ -156,11 +132,7 @@ export class SeriesMenu extends React.Component<
             onClick={this.onOkClick}
             title={STRINGS.ok}
           />
-          <Button
-            type="secondary"
-            onClick={this.onCancelClick}
-            title={STRINGS.cancel}
-          />
+          <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
         </div>
       </BubbleMenu>
     );

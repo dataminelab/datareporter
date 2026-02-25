@@ -17,10 +17,7 @@
 import { Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../common/models/essence/essence";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../../common/models/series/concrete-series";
 import { Unary } from "../../../../common/utils/functional/functional";
 import { readNumber } from "../../../../common/utils/general/general";
 import { ChartLine, ChartLineProps } from "./chart-line";
@@ -36,23 +33,11 @@ export type SeriesChartLineProps = Pick<
 > &
   OwnProps;
 
-export const SeriesChartLine: React.SFC<SeriesChartLineProps> = props => {
-  const {
-    showArea,
-    essence,
-    series,
-    getX,
-    stage,
-    dataset,
-    xScale,
-    yScale,
-    color,
-  } = props;
+export const SeriesChartLine: React.SFC<SeriesChartLineProps> = (props) => {
+  const { showArea, essence, series, getX, stage, dataset, xScale, yScale, color } = props;
 
-  const getY: Unary<Datum, number> = (d: Datum) =>
-    readNumber(series.selectValue(d));
-  const getYP: Unary<Datum, number> = (d: Datum) =>
-    readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
+  const getY: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d));
+  const getYP: Unary<Datum, number> = (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS));
   const hasComparison = essence.hasComparison();
   return (
     <React.Fragment key={series.reactKey()}>

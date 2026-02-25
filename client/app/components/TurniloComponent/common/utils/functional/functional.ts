@@ -24,12 +24,7 @@ export type Nullary<R> = () => R;
 export type Unary<T, R> = (arg: T) => R;
 export type Binary<T, T2, R> = (arg: T, arg2: T2) => R;
 export type Ternary<T, T2, T3, R> = (arg: T, arg2: T2, arg3: T3) => R;
-export type Quaternary<T, T2, T3, T4, R> = (
-  arg: T,
-  arg2: T2,
-  arg3: T3,
-  arg4: T4,
-) => R;
+export type Quaternary<T, T2, T3, T4, R> = (arg: T, arg2: T2, arg3: T3, arg4: T4) => R;
 
 export type Predicate<T> = Unary<T, boolean>;
 
@@ -54,17 +49,13 @@ export function cons<T>(coll: T[], element: T): T[] {
 export function assoc<T, K extends string | number | symbol = string>(
   coll: Record<K, T>,
   key: K,
-  element: T,
+  element: T
 ): Record<K, T> {
   return Object.assign({}, coll, { [key]: element });
 }
 
 export function replaceAt<T>(collection: T[], index: number, element: T): T[] {
-  return [
-    ...collection.slice(0, index),
-    element,
-    ...collection.slice(index + 1),
-  ];
+  return [...collection.slice(0, index), element, ...collection.slice(index + 1)];
 }
 
 export function zip<T, U>(xs: T[], ys: U[]): Array<[T, U]> {
@@ -85,11 +76,7 @@ export function cyclicShift<T>(coll: T[], count: number): T[] {
 }
 
 export function concatTruthy<T>(...elements: T[]): T[] {
-  return elements.reduce(
-    (result: T[], element: T) =>
-      isTruthy(element) ? cons(result, element) : result,
-    [],
-  );
+  return elements.reduce((result: T[], element: T) => (isTruthy(element) ? cons(result, element) : result), []);
 }
 
 export function mapTruthy<T, S>(coll: T[], f: Binary<T, number, S>): S[] {
@@ -100,7 +87,7 @@ export function mapTruthy<T, S>(coll: T[], f: Binary<T, number, S>): S[] {
 }
 
 export function values<T>(obj: Record<string, T>): T[] {
-  return Object.keys(obj).map(k => obj[k]);
+  return Object.keys(obj).map((k) => obj[k]);
 }
 
 export function thread(x: any, ...fns: Function[]) {
@@ -122,7 +109,7 @@ export function complement<T>(p: Predicate<T>): Predicate<T> {
 }
 
 export function or<T>(...ps: Array<Predicate<T>>): Predicate<T> {
-  return (value: T) => ps.some(p => p(value));
+  return (value: T) => ps.some((p) => p(value));
 }
 
 export function range(from: number, to: number): number[] {
@@ -138,14 +125,14 @@ export function range(from: number, to: number): number[] {
 // TODO: fix to use infer on arguments tuple https://stackoverflow.com/a/50014868/1089761
 export function debounceWithPromise<T extends (...args: any[]) => Promise<any>>(
   fn: T,
-  ms: number,
+  ms: number
 ): ((...args: Parameters<T>) => Promise<any>) & { cancel: Fn } {
   let timeoutId: any;
 
   const debouncedFn = (...args: Parameters<T>) => {
     let resolve: Function;
     // @ts-ignore
-    const promise = new Promise(pResolve => {
+    const promise = new Promise((pResolve) => {
       resolve = pResolve;
     });
     const callLater = () => {

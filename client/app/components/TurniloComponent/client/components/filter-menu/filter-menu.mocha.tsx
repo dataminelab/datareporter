@@ -44,9 +44,6 @@ describe("FilterMenu", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(<Wrap />);
 
-    expect(
-      findDOMNode(renderedComponent).className,
-      "should contain class",
-    ).to.contain("filter-menu");
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("filter-menu");
   });
 });

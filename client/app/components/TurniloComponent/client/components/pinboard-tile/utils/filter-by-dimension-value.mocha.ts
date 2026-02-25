@@ -31,14 +31,7 @@ describe("filterByDimensionValue", () => {
       { [name]: "wirtten with weird casing FooBAr" },
       { [name]: "and inside another word bazfoobarqvux" },
     ];
-    const input = [
-      { [name]: "without searched word" },
-      ...output,
-      { [name]: "qvuuuuux" },
-      { [name]: "jibberish" },
-    ];
-    expect(
-      filterByDimensionValue(input, dimension, searchText),
-    ).to.be.deep.equal(output);
+    const input = [{ [name]: "without searched word" }, ...output, { [name]: "qvuuuuux" }, { [name]: "jibberish" }];
+    expect(filterByDimensionValue(input, dimension, searchText)).to.be.deep.equal(output);
   });
 });

@@ -99,13 +99,13 @@ export class SelectableStringFilterMenu extends React.Component<
   private loadRows() {
     this.setState({ dataset: loading });
     this.sendQueryFilter()
-      .then(dataset => {
+      .then((dataset) => {
         // TODO: encode it better
         // null is here when we get out of order request, so we just ignore it
         if (!dataset) return;
         this.setState({ dataset });
       })
-      .catch(_ => {
+      .catch((_) => {
         // Some weird internal error. All application logic errors are handled earlier
         this.setState({ dataset: error(new Error("Unknown error")) });
       });
@@ -121,24 +121,23 @@ export class SelectableStringFilterMenu extends React.Component<
     const { essence, searchText } = props;
     const query = stringFilterOptionsQuery({ ...props, limit: TOP_N + 1 });
 
-    return essence.dataCube
-      .executor(query, { timezone: essence.timezone })
-      // @ts-ignore
-      .then((dataset: Dataset) => {
-        if (this.lastSearchText !== searchText) return null;
-        return loaded(dataset);
-      })
-      .catch((err: Error) => {
-        if (this.lastSearchText !== searchText) return null;
-        reportError(err);
-        return error(err);
-      });
+    return (
+      essence.dataCube
+        .executor(query, { timezone: essence.timezone })
+        // @ts-ignore
+        .then((dataset: Dataset) => {
+          if (this.lastSearchText !== searchText) return null;
+          return loaded(dataset);
+        })
+        .catch((err: Error) => {
+          if (this.lastSearchText !== searchText) return null;
+          reportError(err);
+          return error(err);
+        })
+    );
   };
 
-  private debouncedQueryFilter = debounceWithPromise(
-    this.queryFilter,
-    SEARCH_WAIT,
-  );
+  private debouncedQueryFilter = debounceWithPromise(this.queryFilter, SEARCH_WAIT);
 
   componentWillMount() {
     this.loadRows();
@@ -161,10 +160,7 @@ export class SelectableStringFilterMenu extends React.Component<
     this.debouncedQueryFilter.cancel();
   }
 
-  componentDidUpdate(
-    prevProps: SelectableStringFilterMenuProps,
-    prevState: SelectableStringFilterMenuState,
-  ) {
+  componentDidUpdate(prevProps: SelectableStringFilterMenuProps, prevState: SelectableStringFilterMenuState) {
     if (this.state.searchText !== prevState.searchText) {
       this.loadRows();
     }
@@ -196,8 +192,7 @@ export class SelectableStringFilterMenu extends React.Component<
   onValueClick = (value: string, withModKey: boolean) => {
     const { selectedValues } = this.state;
     if (withModKey) {
-      const isValueSingleSelected =
-        selectedValues.contains(value) && selectedValues.count() === 1;
+      const isValueSingleSelected = selectedValues.contains(value) && selectedValues.count() === 1;
       return this.setState({
         selectedValues: isValueSingleSelected ? Set.of() : Set.of(value),
       });
@@ -216,8 +211,7 @@ export class SelectableStringFilterMenu extends React.Component<
 
   disablePasteMode = () => this.setState({ pasteModeEnabled: false });
 
-  selectValues = (values: Set<string>) =>
-    this.setState({ selectedValues: values });
+  selectValues = (values: Set<string>) => this.setState({ selectedValues: values });
 
   isFilterValid(): boolean {
     const { selectedValues } = this.state;
@@ -232,11 +226,7 @@ export class SelectableStringFilterMenu extends React.Component<
 
     return (
       <React.Fragment>
-        <div
-          className="paste-icon"
-          onClick={this.enablePasteMode}
-          title="Paste multiple values"
-        >
+        <div className="paste-icon" onClick={this.enablePasteMode} title="Paste multiple values">
           <SvgIcon svg={require("../../icons/full-multi.svg")} />
         </div>
         <div className="search-box">
@@ -247,15 +237,8 @@ export class SelectableStringFilterMenu extends React.Component<
             onChange={this.updateSearchText}
           />
         </div>
-        <div
-          className={classNames("selectable-string-filter-menu", filterMode)}
-        >
-          <div
-            className={classNames(
-              "menu-table",
-              hasMore ? "has-more" : "no-more",
-            )}
-          >
+        <div className={classNames("selectable-string-filter-menu", filterMode)}>
+          <div className={classNames("menu-table", hasMore ? "has-more" : "no-more")}>
             <div className="rows">
               {isLoaded(dataset) && (
                 <StringValuesList
@@ -275,12 +258,7 @@ export class SelectableStringFilterMenu extends React.Component<
             </div>
           </div>
           <div className="ok-cancel-bar">
-            <Button
-              type="primary"
-              title={STRINGS.ok}
-              onClick={this.onOkClick}
-              disabled={!this.isFilterValid()}
-            />
+            <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.isFilterValid()} />
             <Button type="secondary" title={STRINGS.cancel} onClick={onClose} />
           </div>
         </div>
@@ -293,10 +271,7 @@ export class SelectableStringFilterMenu extends React.Component<
       <React.Fragment>
         <div className="paste-prompt">Paste values separated by newlines</div>
         <div className="paste-form">
-          <PasteForm
-            onSelect={this.selectValues}
-            onClose={this.disablePasteMode}
-          />
+          <PasteForm onSelect={this.selectValues} onClose={this.disablePasteMode} />
         </div>
       </React.Fragment>
     );

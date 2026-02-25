@@ -38,12 +38,7 @@ export const MeasureBubbleContent: React.SFC<MeasureBubbleContentProps> = ({
     <React.Fragment>
       <strong className="current-value">{currentValue}</strong>
       <span className="previous-value">{previousValue}</span>
-      <Delta
-        formatter={formatter}
-        currentValue={current}
-        previousValue={previous}
-        lowerIsBetter={lowerIsBetter}
-      />
+      <Delta formatter={formatter} currentValue={current} previousValue={previous} lowerIsBetter={lowerIsBetter} />
     </React.Fragment>
   );
 };

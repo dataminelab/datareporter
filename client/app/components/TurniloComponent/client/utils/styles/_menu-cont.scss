@@ -18,5 +18,7 @@
 %menu-cont {
   background: $white;
   border-radius: $corner;
-  box-shadow: 0 3px 10px 0 hsla(0, 0, 0, 0.26), 0 0 3px 0 hsla(0, 0, 0, 0.16);
+  box-shadow:
+    0 3px 10px 0 hsla(0, 0, 0, 0.26),
+    0 0 3px 0 hsla(0, 0, 0, 0.16);
 }

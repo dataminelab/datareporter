@@ -20,11 +20,7 @@ import { Dimension } from "../../../common/models/dimension/dimension";
 import { Essence } from "../../../common/models/essence/essence";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
-import {
-  Binary,
-  Ternary,
-  Unary,
-} from "../../../common/utils/functional/functional";
+import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SplitMenu, SplitMenuProps } from "../split-menu/split-menu";
@@ -51,13 +47,11 @@ interface SplitTileProps extends SplitTileBaseProps {
   splitMenuComponent: React.ComponentType<SplitMenuProps>;
 }
 
-export const DefaultSplitTile: React.FunctionComponent<
-  SplitTileBaseProps
-> = props => {
+export const DefaultSplitTile: React.FunctionComponent<SplitTileBaseProps> = (props) => {
   return <SplitTile {...props} splitMenuComponent={SplitMenu} />;
 };
 
-export const SplitTile: React.FunctionComponent<SplitTileProps> = props => {
+export const SplitTile: React.FunctionComponent<SplitTileProps> = (props) => {
   const {
     essence,
     open,
@@ -89,10 +83,9 @@ export const SplitTile: React.FunctionComponent<SplitTileProps> = props => {
             ref={setRef}
             draggable={true}
             onClick={() => openMenu(split)}
-            onDragStart={e => dragStart(dimension.title, split, e)}
+            onDragStart={(e) => dragStart(dimension.title, split, e)}
             style={style}
-            title={title}
-          >
+            title={title}>
             <div className="reading">{title}</div>
             <div className="remove" onClick={remove}>
               <SvgIcon svg={require("../../icons/x.svg")} />

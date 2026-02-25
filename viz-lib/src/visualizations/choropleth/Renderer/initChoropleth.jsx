@@ -119,7 +119,7 @@ export default function initChoropleth(container, onBoundsChange) {
   });
 
   function updateLayers(geoJson, data, options) {
-    _map.eachLayer(layer => _map.removeLayer(layer));
+    _map.eachLayer((layer) => _map.removeLayer(layer));
     _map.removeControl(_legend);
 
     if (!isObject(geoJson) || !isArray(geoJson.features)) {
@@ -152,7 +152,7 @@ export default function initChoropleth(container, onBoundsChange) {
       _map.addControl(_legend);
       ReactDOM.render(
         <Legend
-          items={map(legend, item => ({ ...item, text: formatValue(item.limit) }))}
+          items={map(legend, (item) => ({ ...item, text: formatValue(item.limit) }))}
           alignText={options.legend.alignText}
         />,
         _legend.getContainer()

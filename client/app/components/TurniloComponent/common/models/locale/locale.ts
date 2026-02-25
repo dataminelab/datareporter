@@ -19,20 +19,7 @@ import { isObject, isTruthy } from "../../utils/general/general";
 
 const enUS: Locale = {
   shortDays: ["S", "M", "T", "W", "T", "F", "S"],
-  shortMonths: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sept",
-    "Oct",
-    "Nov",
-    "Dec",
-  ],
+  shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
   weekStart: 0,
   exportEncoding: "utf-8",
 };

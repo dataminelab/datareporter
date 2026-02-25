@@ -18,10 +18,7 @@ import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
-import {
-  compose,
-  Unary,
-} from "../../../../../common/utils/functional/functional";
+import { compose, Unary } from "../../../../../common/utils/functional/functional";
 import { LegendSpot } from "../../../../components/pinboard-panel/pinboard-panel";
 import {
   selectFirstSplitDatums,
@@ -46,22 +43,19 @@ interface ChartsPerSplitProps {
   stage: Stage;
 }
 
-function getChartsSelectors(
-  essence: Essence,
-  dataset: Dataset,
-): Array<Unary<Dataset, Datum>> {
+function getChartsSelectors(essence: Essence, dataset: Dataset): Array<Unary<Dataset, Datum>> {
   if (!hasNominalSplit(essence)) {
     return [selectMainDatum];
   }
 
   const splitDatums = selectFirstSplitDatums(dataset);
   return splitDatums.map((datum, index) => {
-    const getNthDatum = compose(selectSplitDatums, datums => datums[index]);
+    const getNthDatum = compose(selectSplitDatums, (datums) => datums[index]);
     return compose<Dataset, Datum, Datum>(selectMainDatum, getNthDatum);
   });
 }
 
-export const ChartsPerSplit: React.SFC<ChartsPerSplitProps> = props => {
+export const ChartsPerSplit: React.SFC<ChartsPerSplitProps> = (props) => {
   const { interactions, xScale, xTicks, essence, dataset, stage } = props;
 
   const hasMultipleSeries = essence.series.count() > 1;
@@ -74,7 +68,7 @@ export const ChartsPerSplit: React.SFC<ChartsPerSplitProps> = props => {
           <SeriesLegend essence={essence} />
         </LegendSpot>
       )}
-      {selectors.map(selector => {
+      {selectors.map((selector) => {
         const key = nominalValueKey(selector(dataset), essence);
         return (
           <SplitChart

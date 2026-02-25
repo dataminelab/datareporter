@@ -64,9 +64,7 @@ describe("Object utils", () => {
         ["c", true],
         ["d", "qvux"],
       ] as Array<[string, string | number | boolean]>;
-      expect(
-        fromEntries<string, string | number | boolean>(input),
-      ).to.be.deep.equal({
+      expect(fromEntries<string, string | number | boolean>(input)).to.be.deep.equal({
         a: "foobar",
         b: 42,
         c: true,

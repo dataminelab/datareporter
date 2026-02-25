@@ -27,11 +27,7 @@ import { isValidClause } from "./is-valid-clause";
 
 describe("isValidClause", () => {
   it("should return true for FixedTimeFilterClause", () => {
-    expect(
-      isValidClause(
-        timeRange("time", new Date("2000-01-01"), new Date("2000-01-02")),
-      ),
-    ).to.be.true;
+    expect(isValidClause(timeRange("time", new Date("2000-01-01"), new Date("2000-01-02")))).to.be.true;
   });
 
   it("should return true for NumberFilterClause", () => {
@@ -39,8 +35,7 @@ describe("isValidClause", () => {
   });
 
   it("should return false for RelativeTimeFilterClause", () => {
-    expect(isValidClause(timePeriod("time", "P1D", TimeFilterPeriod.CURRENT)))
-      .to.be.false;
+    expect(isValidClause(timePeriod("time", "P1D", TimeFilterPeriod.CURRENT))).to.be.false;
   });
 
   it("should return false for BooleanFilterClause", () => {

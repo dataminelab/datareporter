@@ -25,8 +25,8 @@ function joinColumns(array, separator = ", ") {
 }
 
 function getSearchColumns(columns, { limit = Infinity, renderColumn = (col) => col.title } = {}) {
-  const firstColumns = map(columns.slice(0, limit), col => renderColumn(col));
-  const restColumns = map(columns.slice(limit), col => col.title);
+  const firstColumns = map(columns.slice(0, limit), (col) => renderColumn(col));
+  const restColumns = map(columns.slice(limit), (col) => col.title);
   if (restColumns.length > 0) {
     return [...joinColumns(firstColumns), ` and ${restColumns.length} others`];
   }
@@ -43,9 +43,10 @@ function SearchInputInfoIcon({ searchColumns }) {
       placement="topRight"
       content={
         <div className="table-visualization-search-info-content">
-          Search {getSearchColumns(searchColumns, { renderColumn: col => <code key={col.name}>{col.title}</code> })}
+          Search {getSearchColumns(searchColumns, { renderColumn: (col) => <code key={col.name}>{col.title}</code> })}
         </div>
-      }>
+      }
+    >
       <InfoCircleFilledIcon className="table-visualization-search-info-icon" />
     </Popover>
   );
@@ -88,12 +89,10 @@ export default function Renderer({ options, data }) {
     });
   }, [options.columns, searchColumns, orderBy]);
 
-  const preparedRows = useMemo(() => sortRows(filterRows(initRows(data.rows), searchTerm, searchColumns), orderBy), [
-    data.rows,
-    searchTerm,
-    searchColumns,
-    orderBy,
-  ]);
+  const preparedRows = useMemo(
+    () => sortRows(filterRows(initRows(data.rows), searchTerm, searchColumns), orderBy),
+    [data.rows, searchTerm, searchColumns, orderBy]
+  );
 
   // If data or config columns change - reset sorting
   useEffect(() => {
@@ -120,7 +119,7 @@ export default function Renderer({ options, data }) {
           showSizeChanger: false,
         }}
         showSorterTooltip={false}
-        scroll={ (get(options, "fixedColumns", 0) > 0 ? { x : 'max-content' } : {}) }
+        scroll={get(options, "fixedColumns", 0) > 0 ? { x: "max-content" } : {}}
       />
     </div>
   );

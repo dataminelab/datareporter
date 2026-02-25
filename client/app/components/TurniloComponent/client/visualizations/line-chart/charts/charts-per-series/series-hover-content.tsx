@@ -20,49 +20,24 @@ import { ReactNode } from "react";
 import { VisualizationColors } from "../../../../../common/models/colors/colors";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import {
-  ColorEntry,
-  createColorEntry,
-} from "../../../../components/color-swabs/color-entry";
+import { ColorEntry, createColorEntry } from "../../../../components/color-swabs/color-entry";
 import { ColorSwabs } from "../../../../components/color-swabs/color-swabs";
 import { SeriesBubbleContent } from "../../../../components/series-bubble-content/series-bubble-content";
 import { selectSplitDataset } from "../../../../utils/dataset/selectors/selectors";
 import { SettingsContext } from "../../../../views/cube-view/settings-context";
-import {
-  getContinuousDimension,
-  getContinuousReference,
-  getNominalSplit,
-  hasNominalSplit,
-} from "../../utils/splits";
+import { getContinuousDimension, getContinuousReference, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 
-function findSplitDatumByAttribute(
-  d: Datum,
-  dimensionName: string,
-  range: PlywoodRange,
-): Datum {
+function findSplitDatumByAttribute(d: Datum, dimensionName: string, range: PlywoodRange): Datum {
   const dataset = selectSplitDataset(d);
-  return dataset != null
-    ? dataset.findDatumByAttribute(dimensionName, range)
-    : null;
+  return dataset != null ? dataset.findDatumByAttribute(dimensionName, range) : null;
 }
 
-function measureLabel(
-  dataset: Dataset,
-  range: PlywoodRange,
-  series: ConcreteSeries,
-  essence: Essence,
-): ReactNode {
+function measureLabel(dataset: Dataset, range: PlywoodRange, series: ConcreteSeries, essence: Essence): ReactNode {
   const continuousDimension = getContinuousDimension(essence);
   const datum = dataset.findDatumByAttribute(continuousDimension.name, range);
   if (!datum) return null;
 
-  return (
-    <SeriesBubbleContent
-      series={series}
-      datum={datum}
-      showPrevious={essence.hasComparison()}
-    />
-  );
+  return <SeriesBubbleContent series={series} datum={datum} showPrevious={essence.hasComparison()} />;
 }
 
 function colorEntries(
@@ -70,7 +45,7 @@ function colorEntries(
   range: PlywoodRange,
   series: ConcreteSeries,
   essence: Essence,
-  visualizationColors: VisualizationColors,
+  visualizationColors: VisualizationColors
 ): ColorEntry[] {
   const { data } = dataset;
   const nominalSplit = getNominalSplit(essence);
@@ -106,15 +81,12 @@ interface SeriesHoverContentProps {
   series: ConcreteSeries;
 }
 
-export const SeriesHoverContent: React.FunctionComponent<
-  SeriesHoverContentProps
-> = props => {
+export const SeriesHoverContent: React.FunctionComponent<SeriesHoverContentProps> = (props) => {
   return (
     <SettingsContext.Consumer>
-      {settingsContext => {
+      {(settingsContext) => {
         // If no context is provided, use a default
-        const customization = (settingsContext &&
-          settingsContext.customization) || {
+        const customization = (settingsContext && settingsContext.customization) || {
           visualizationColors: {
             series: [
               "#1f77b4",
@@ -142,15 +114,11 @@ export const SeriesHoverContent: React.FunctionComponent<
             series,
             essence,
             //
-            visualizationColors,
+            visualizationColors
           );
           return <ColorSwabs colorEntries={entries} />;
         }
-        return (
-          <React.Fragment>
-            {measureLabel(dataset, range, series, essence)}
-          </React.Fragment>
-        );
+        return <React.Fragment>{measureLabel(dataset, range, series, essence)}</React.Fragment>;
       }}
     </SettingsContext.Consumer>
   );

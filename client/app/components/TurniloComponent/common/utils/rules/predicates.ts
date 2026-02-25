@@ -25,21 +25,15 @@ export class Predicates {
     return ({ splits }) => splits.length() === 0;
   }
 
-  public static numberOfSplitsIsNot(
-    expected: number,
-  ): VisualizationDependentPredicate {
+  public static numberOfSplitsIsNot(expected: number): VisualizationDependentPredicate {
     return ({ splits }) => splits.length() !== expected;
   }
 
-  public static numberOfSeriesIsNot(
-    expected: number,
-  ): VisualizationDependentPredicate {
+  public static numberOfSeriesIsNot(expected: number): VisualizationDependentPredicate {
     return ({ series }) => series.count() !== expected;
   }
 
-  public static areExactSplitKinds(
-    ...selectors: string[]
-  ): VisualizationDependentPredicate {
+  public static areExactSplitKinds(...selectors: string[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
       const kinds: string[] = splits.splits
         .map((split: Split) => dataCube.getDimension(split.reference).kind)
@@ -51,9 +45,7 @@ export class Predicates {
   public static strictCompare(selectors: string[], kinds: string[]): boolean {
     if (selectors.length !== kinds.length) return false;
 
-    return selectors.every((selector, i) =>
-      Predicates.testKind(kinds[i], selector),
-    );
+    return selectors.every((selector, i) => Predicates.testKind(kinds[i], selector));
   }
 
   private static testKind(kind: string, selector: string): boolean {
@@ -73,16 +65,13 @@ export class Predicates {
     return result;
   }
 
-  public static haveAtLeastSplitKinds(
-    ...kinds: DimensionKind[]
-  ): VisualizationDependentPredicate {
+  public static haveAtLeastSplitKinds(...kinds: DimensionKind[]): VisualizationDependentPredicate {
     return ({ splits, dataCube }) => {
-      const getKind = (split: Split) =>
-        dataCube.getDimension(split.reference).kind;
+      const getKind = (split: Split) => dataCube.getDimension(split.reference).kind;
 
       const actualKinds = splits.splits.map(getKind);
 
-      return kinds.every(kind => actualKinds.indexOf(kind) > -1);
+      return kinds.every((kind) => actualKinds.indexOf(kind) > -1);
     };
   }
 

@@ -53,8 +53,7 @@ class BaseChartProps {
 
 const TEXT_SPACER = 36;
 
-const offsetX = (e: React.MouseEvent<HTMLElement> | MouseEvent) =>
-  mouseEventOffset(e)[0];
+const offsetX = (e: React.MouseEvent<HTMLElement> | MouseEvent) => mouseEventOffset(e)[0];
 
 export class BaseChart extends React.Component<BaseChartProps> {
   private container = React.createRef<HTMLDivElement>();
@@ -74,14 +73,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
       xScale,
       xTicks,
     } = this.props;
-    const {
-      interaction,
-      dropHighlight,
-      acceptHighlight,
-      mouseLeave,
-      dragStart,
-      handleHover,
-    } = interactions;
+    const { interaction, dropHighlight, acceptHighlight, mouseLeave, dragStart, handleHover } = interactions;
 
     const [, xRange] = xScale.range();
     const lineStage = chartStage.within({
@@ -95,11 +87,7 @@ export class BaseChart extends React.Component<BaseChartProps> {
 
     return (
       <React.Fragment>
-        <div
-          className="line-base-chart"
-          ref={this.container}
-          style={chartStage.getWidthHeight()}
-        >
+        <div className="line-base-chart" ref={this.container} style={chartStage.getWidthHeight()}>
           <svg className="chart-stage" viewBox={chartStage.getViewBox()}>
             <Background
               axisStage={axisStage}
@@ -111,19 +99,14 @@ export class BaseChart extends React.Component<BaseChartProps> {
             />
             {children({ yScale, lineStage })}
             {hasInteraction && isHover(interaction) && (
-              <HoverGuide
-                hover={interaction}
-                stage={lineStage}
-                yScale={yScale}
-                xScale={xScale}
-              />
+              <HoverGuide hover={interaction} stage={lineStage} yScale={yScale} xScale={xScale} />
             )}
           </svg>
           <div
             style={lineStage.getWidthHeight()}
             className="event-region"
-            onMouseDown={e => dragStart(chartId, offsetX(e))}
-            onMouseMove={e => handleHover(chartId, offsetX(e))}
+            onMouseDown={(e) => dragStart(chartId, offsetX(e))}
+            onMouseMove={(e) => handleHover(chartId, offsetX(e))}
             onMouseLeave={mouseLeave}
           />
           {label}

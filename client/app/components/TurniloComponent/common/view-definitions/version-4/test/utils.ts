@@ -21,12 +21,8 @@ import { ViewDefinition4 } from "../view-definition-4";
 import { ViewDefinitionConverter4 } from "../view-definition-converter-4";
 
 const converter = new ViewDefinitionConverter4();
-export const toEssence = (viewDef: ViewDefinition4) =>
-  converter.fromViewDefinition(viewDef, dataCube);
+export const toEssence = (viewDef: ViewDefinition4) => converter.fromViewDefinition(viewDef, dataCube);
 
-export function assertConversionToEssence(
-  viewDef: ViewDefinition4,
-  essence: Essence,
-) {
+export function assertConversionToEssence(viewDef: ViewDefinition4, essence: Essence) {
   assertEqlEssence(toEssence(viewDef), essence);
 }

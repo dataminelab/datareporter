@@ -17,10 +17,7 @@
 import { Dataset, Datum, NumberRange, TimeRange } from "plywood";
 import { Dimension } from "../../../../common/models/dimension/dimension";
 import { Essence } from "../../../../common/models/essence/essence";
-import {
-  selectFirstSplitDataset,
-  selectFirstSplitDatums,
-} from "../../../utils/dataset/selectors/selectors";
+import { selectFirstSplitDataset, selectFirstSplitDatums } from "../../../utils/dataset/selectors/selectors";
 import { ContinuousScale, ContinuousValue } from "../utils/continuous-types";
 import { getContinuousDimension, hasNominalSplit } from "../utils/splits";
 
@@ -30,15 +27,13 @@ function findClosest(
   data: Datum[],
   value: ContinuousValue,
   scaleX: ContinuousScale,
-  continuousDimension: Dimension,
+  continuousDimension: Dimension
 ): Datum | null {
   let closestDatum: Datum = null;
   let minDist = Infinity;
   for (const datum of data) {
     let mid;
-    const continuousSegmentValue = datum[continuousDimension.name] as
-      | TimeRange
-      | NumberRange;
+    const continuousSegmentValue = datum[continuousDimension.name] as TimeRange | NumberRange;
     if (!continuousSegmentValue) continue;
     else if (continuousSegmentValue.midpoint) {
       mid = continuousSegmentValue.midpoint();
@@ -60,17 +55,12 @@ export function findClosestDatum(
   value: ContinuousValue,
   essence: Essence,
   dataset: Dataset,
-  xScale: ContinuousScale,
+  xScale: ContinuousScale
 ): Datum | null {
   const continuousDimension = getContinuousDimension(essence);
   if (hasNominalSplit(essence)) {
     const flattened = selectFirstSplitDataset(dataset).flatten();
     return findClosest(flattened.data, value, xScale, continuousDimension);
   }
-  return findClosest(
-    selectFirstSplitDatums(dataset),
-    value,
-    xScale,
-    continuousDimension,
-  );
+  return findClosest(selectFirstSplitDatums(dataset), value, xScale, continuousDimension);
 }

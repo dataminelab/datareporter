@@ -26,13 +26,14 @@ declare module "react-syntax-highlighter/src/styles/hljs/github-gist" {
 }
 
 declare module "@vx/scale" {
-
   interface ScaleLinearOptions<Range, Output> {
     range: [Range, Range];
     domain: [number, number];
   }
 
-  export const scaleLinear: <Range = number, Output = number>(options: ScaleLinearOptions<Range, Output>) => ScaleLinear<Range, Output>;
+  export const scaleLinear: <Range = number, Output = number>(
+    options: ScaleLinearOptions<Range, Output>
+  ) => ScaleLinear<Range, Output>;
 }
 
 declare module "@vx/tooltip" {
@@ -50,7 +51,7 @@ declare module "*.svg" {
   export default content;
 }
 
-declare module 'has-own-prop' {
+declare module "has-own-prop" {
   function hasOwnProp(obj: any, prop: string | number | symbol): boolean;
   export default hasOwnProp;
 }

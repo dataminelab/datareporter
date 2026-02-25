@@ -45,8 +45,7 @@ export const ClearableInput: React.FunctionComponent<ClearableInputProps> = ({
   value = "",
   type = "text",
 }) => {
-  const change = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange(e.target.value);
+  const change = (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value);
 
   const clear = () => onChange("");
 
@@ -58,14 +57,7 @@ export const ClearableInput: React.FunctionComponent<ClearableInputProps> = ({
 
   return (
     <div className={classNames.join(" ")}>
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={change}
-        onBlur={onBlur}
-        ref={ref}
-      />
+      <input type={type} placeholder={placeholder} value={value} onChange={change} onBlur={onBlur} ref={ref} />
       <div className="clear" onClick={clear}>
         <SvgIcon svg={require("../../icons/x.svg")} />
       </div>

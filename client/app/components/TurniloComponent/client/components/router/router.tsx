@@ -20,10 +20,7 @@ import { extend } from "../../../common/utils/object/object";
 import { replaceHash } from "../../utils/url/url";
 import "./router.scss";
 
-export type Inflater = (
-  key: string,
-  value: string,
-) => { key: string; value: any };
+export type Inflater = (key: string, value: string) => { key: string; value: any };
 
 export interface RouteProps {
   fragment: string;
@@ -102,8 +99,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
   parseHash(hash: string): string[] {
     if (!hash) return [];
 
-    const fragments =
-      this.removeRootFragmentFromHash(hash).split(HASH_SEPARATOR);
+    const fragments = this.removeRootFragmentFromHash(hash).split(HASH_SEPARATOR);
 
     return fragments.filter(Boolean);
   }
@@ -130,20 +126,10 @@ export class Router extends React.Component<RouterProps, RouterState> {
     const { rootFragment } = this.props;
     const fragments = path.fragment.split(HASH_SEPARATOR);
 
-    const parentFragment = crumbs
-      .join("/")
-      .replace(path.crumbs.join("/"), "")
-      .replace(/\/$/, "");
-    const strippedRouteCrumbs = path.crumbs.slice(
-      0,
-      path.fragment.split(HASH_SEPARATOR).length,
-    );
+    const parentFragment = crumbs.join("/").replace(path.crumbs.join("/"), "").replace(/\/$/, "");
+    const strippedRouteCrumbs = path.crumbs.slice(0, path.fragment.split(HASH_SEPARATOR).length);
 
-    const strippedCrumbs = [
-      rootFragment,
-      parentFragment,
-      strippedRouteCrumbs.join("/"),
-    ].filter(Boolean);
+    const strippedCrumbs = [rootFragment, parentFragment, strippedRouteCrumbs.join("/")].filter(Boolean);
 
     this.replaceHash("#" + strippedCrumbs.join("/"));
   }
@@ -188,9 +174,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     // Default child for this path
     if (this.canDefaultDeeper(path.fragment, path.crumbs)) {
-      crumbs = crumbs.concat(
-        this.getDefaultDeeperCrumbs(path.fragment, path.crumbs),
-      );
+      crumbs = crumbs.concat(this.getDefaultDeeperCrumbs(path.fragment, path.crumbs));
       this.replaceHash("#" + [rootFragment].concat(crumbs).join("/"));
     }
 
@@ -206,7 +190,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     bits.splice(0, crumbs.length);
 
-    return bits.map(bit => bit.match(/^:[^=]+=(\w+)$/)[1]);
+    return bits.map((bit) => bit.match(/^:[^=]+=(\w+)$/)[1]);
   }
 
   canDefaultDeeper(fragment: string, crumbs: string[]): boolean {
@@ -216,7 +200,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
     bits.splice(0, crumbs.length);
 
-    return bits.every(bit => /^:[^=]+=\w+$/.test(bit));
+    return bits.every((bit) => /^:[^=]+=\w+$/.test(bit));
   }
 
   getDefaultFragment(children: JSX.Element[]): string {
@@ -234,7 +218,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     crumbs: string[],
     properties = {},
     orphans: JSX.Element[] = [],
-    parentRoutes: JSX.Element[] = [],
+    parentRoutes: JSX.Element[] = []
   ): QualifiedPath {
     // In case there's only one route
     if (this.isRoute(candidates as any)) {
@@ -248,10 +232,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
       if (!fragment) continue;
 
-      properties = extend(
-        this.getPropertiesFromCrumbs(crumbs, fragment),
-        properties,
-      );
+      properties = extend(this.getPropertiesFromCrumbs(crumbs, fragment), properties);
 
       if (crumbs[0] === fragment || fragment.charAt(0) === ":") {
         const children = candidate.props.children;
@@ -271,13 +252,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
             orphans = orphans.concat(children.filter(this.isSimpleChild, this));
           }
 
-          return this.getQualifiedPath(
-            children,
-            crumbs.slice(1),
-            properties,
-            orphans,
-            parents,
-          );
+          return this.getQualifiedPath(children, crumbs.slice(1), properties, orphans, parents);
         }
       }
     }
@@ -286,10 +261,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     // return a default one.
     const route = candidates.filter(this.isRoute)[0];
     const fragment = route.props.fragment;
-    properties = extend(
-      this.getPropertiesFromCrumbs(crumbs, fragment),
-      properties,
-    );
+    properties = extend(this.getPropertiesFromCrumbs(crumbs, fragment), properties);
     return {
       fragment,
       route,
@@ -328,11 +300,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     return parent.props.children.filter(this.isSimpleChild, this);
   }
 
-  getPropertiesFromCrumbs(
-    crumbs: string[],
-    fragment: string,
-    props: any = {},
-  ): any {
+  getPropertiesFromCrumbs(crumbs: string[], fragment: string, props: any = {}): any {
     const fragmentToKey = (f: string) => f.slice(1).replace(/=.*$/, "");
 
     const myCrumbs = crumbs.concat();
@@ -360,16 +328,11 @@ export class Router extends React.Component<RouterProps, RouterState> {
   fillProperties(child: JSX.Element, path: QualifiedPath, i = 0): JSX.Element {
     if (!(child.type instanceof Function)) return child;
 
-    let propsToTransmit = this.getPropertiesFromCrumbs(
-      path.crumbs,
-      path.route.props.fragment,
-    );
+    let propsToTransmit = this.getPropertiesFromCrumbs(path.crumbs, path.route.props.fragment);
 
-    path.parentRoutes.forEach(route => {
+    path.parentRoutes.forEach((route) => {
       if (route.props.transmit) {
-        route.props.transmit.forEach(
-          (key: string) => (propsToTransmit[key] = path.properties[key]),
-        );
+        route.props.transmit.forEach((key: string) => (propsToTransmit[key] = path.properties[key]));
       }
     });
 
@@ -378,10 +341,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     return React.cloneElement(child, extend(propsToTransmit, { key: i }));
   }
 
-  getQualifiedChild(
-    candidates: JSX.Element[],
-    crumbs: string[],
-  ): JSX.Element | JSX.Element[] {
+  getQualifiedChild(candidates: JSX.Element[], crumbs: string[]): JSX.Element | JSX.Element[] {
     let elements: JSX.Element[];
 
     const path = this.getQualifiedPath(candidates, crumbs);
@@ -389,13 +349,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     if (this.hasSingleChild(path.route)) {
       elements = path.orphans
         .map((orphan, i) => this.fillProperties(orphan, path, i))
-        .concat([
-          this.fillProperties(
-            path.route.props.children,
-            path,
-            path.orphans.length,
-          ),
-        ]);
+        .concat([this.fillProperties(path.route.props.children, path, path.orphans.length)]);
     } else {
       const children = this.getSimpleChildren(path.route);
 
@@ -403,11 +357,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
 
       elements = children
         .map((child, i) => this.fillProperties(child, path, i))
-        .concat(
-          path.orphans.map((orphan, i) =>
-            this.fillProperties(orphan, path, children.length + i),
-          ),
-        );
+        .concat(path.orphans.map((orphan, i) => this.fillProperties(orphan, path, children.length + i)));
     }
 
     if (!elements) return null;
@@ -424,10 +374,7 @@ export class Router extends React.Component<RouterProps, RouterState> {
     const crumbs = this.parseHash(hash);
     if (!crumbs || !crumbs.length) return null;
 
-    const qualifiedChildren = this.getQualifiedChild(
-      children as JSX.Element[],
-      crumbs,
-    ) as any;
+    const qualifiedChildren = this.getQualifiedChild(children as JSX.Element[], crumbs) as any;
 
     // I wish it wouldn't need an enclosing element but...
     // https://github.com/facebook/react/issues/2127

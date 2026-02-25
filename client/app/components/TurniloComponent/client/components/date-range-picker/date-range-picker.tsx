@@ -18,11 +18,7 @@
 import { day, month, Timezone } from "chronoshift";
 import { TimeRange } from "plywood";
 import * as React from "react";
-import {
-  datesEqual,
-  formatYearMonth,
-  getDayInMonth,
-} from "../../../common/utils/time/time";
+import { datesEqual, formatYearMonth, getDayInMonth } from "../../../common/utils/time/time";
 import { getLocale } from "../../config/constants";
 import { classNames } from "../../utils/dom/dom";
 import { DateRangeInput } from "../date-range-input/date-range-input";
@@ -45,15 +41,9 @@ export interface DateRangePickerState {
   selectionSet?: boolean;
 }
 
-export class DateRangePicker extends React.Component<
-  DateRangePickerProps,
-  DateRangePickerState
-> {
+export class DateRangePicker extends React.Component<DateRangePickerProps, DateRangePickerState> {
   state: DateRangePickerState = {
-    activeMonthStartDate: month.floor(
-      this.props.startTime || new Date(),
-      this.props.timezone,
-    ),
+    activeMonthStartDate: month.floor(this.props.startTime || new Date(), this.props.timezone),
     hoverTimeRange: null,
     selectionSet: true,
   };
@@ -146,11 +136,11 @@ export class DateRangePicker extends React.Component<
             const isSelectedEdgeStart = datesEqual(dayDate, startTime);
             const isSelectedEdgeEnd = datesEqual(dayDate, dayBeforeEnd);
             const className = classNames("day", "value", {
-              "past": isPast,
-              "future": isFuture,
+              past: isPast,
+              future: isFuture,
               "beyond-max-range": isBeyondMaxRange,
-              "selectable": this.getIsSelectable(dayDate),
-              "selected": isSelected,
+              selectable: this.getIsSelectable(dayDate),
+              selected: isSelected,
               "selected-edge": isSelectedEdgeStart || isSelectedEdgeEnd,
             });
 
@@ -159,8 +149,7 @@ export class DateRangePicker extends React.Component<
                 className={className}
                 key={column}
                 onClick={this.selectDay.bind(this, dayDate)}
-                onMouseEnter={this.calculateHoverTimeRange.bind(this, dayDate)}
-              >
+                onMouseEnter={this.calculateHoverTimeRange.bind(this, dayDate)}>
                 {getDayInMonth(dayDate, timezone)}
               </div>
             );
@@ -202,21 +191,14 @@ export class DateRangePicker extends React.Component<
   }
 
   render() {
-    const { startTime, endTime, timezone, onStartChange, onEndChange } =
-      this.props;
+    const { startTime, endTime, timezone, onStartChange, onEndChange } = this.props;
     const { activeMonthStartDate, selectionSet } = this.state;
     if (!activeMonthStartDate) return null;
 
     return (
       <div className="date-range-picker">
         <div>
-          <DateRangeInput
-            label="Start"
-            type="start"
-            time={startTime}
-            timezone={timezone}
-            onChange={onStartChange}
-          />
+          <DateRangeInput label="Start" type="start" time={startTime} timezone={timezone} onChange={onStartChange} />
           <DateRangeInput
             label="End"
             type="end"

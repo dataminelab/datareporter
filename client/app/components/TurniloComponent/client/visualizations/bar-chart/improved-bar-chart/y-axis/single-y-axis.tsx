@@ -18,10 +18,7 @@ import * as React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
-import {
-  LinearScale,
-  pickTicks,
-} from "../../../../utils/linear-scale/linear-scale";
+import { LinearScale, pickTicks } from "../../../../utils/linear-scale/linear-scale";
 
 export const TICK_LENGTH = 10;
 
@@ -31,7 +28,7 @@ interface SingleYAxisProps {
   stage: Stage;
 }
 
-export const SingleYAxis: React.SFC<SingleYAxisProps> = props => {
+export const SingleYAxis: React.SFC<SingleYAxisProps> = (props) => {
   const { scale, series, stage } = props;
   return (
     <div>

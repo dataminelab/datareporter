@@ -41,9 +41,7 @@ export interface MeasureOrGroupVisitor<R> {
   visitMeasureGroup(measureGroup: MeasureGroup): R;
 }
 
-export function measureOrGroupFromJS(
-  measureOrGroup: MeasureOrGroupJS,
-): MeasureOrGroup {
+export function measureOrGroupFromJS(measureOrGroup: MeasureOrGroupJS): MeasureOrGroup {
   if (isMeasureGroupJS(measureOrGroup)) {
     return MeasureGroup.fromJS(measureOrGroup);
   } else {
@@ -51,15 +49,11 @@ export function measureOrGroupFromJS(
   }
 }
 
-export function isMeasureGroupJS(
-  measureOrGroupJS: MeasureOrGroupJS,
-): measureOrGroupJS is MeasureGroupJS {
+export function isMeasureGroupJS(measureOrGroupJS: MeasureOrGroupJS): measureOrGroupJS is MeasureGroupJS {
   return (measureOrGroupJS as MeasureGroupJS).measures !== undefined;
 }
 
-export class MeasureGroup
-  implements Instance<MeasureGroupValue, MeasureGroupJS>
-{
+export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS> {
   static fromJS(parameters: MeasureGroupJS): MeasureGroup {
     const { name, title, description, measures } = parameters;
 
@@ -102,16 +96,14 @@ export class MeasureGroup
 
   equals(other: any): boolean {
     return (
-      this === other ||
-      (MeasureGroup.isMeasureGroup(other) &&
-        immutableArraysEqual(this.measures, other.measures))
+      this === other || (MeasureGroup.isMeasureGroup(other) && immutableArraysEqual(this.measures, other.measures))
     );
   }
 
   toJS(): MeasureGroupJS {
     const measureGroup: MeasureGroupJS = {
       name: this.name,
-      measures: this.measures.map(measure => measure.toJS()),
+      measures: this.measures.map((measure) => measure.toJS()),
       title: this.title,
     };
     if (this.description) measureGroup.description = this.description;

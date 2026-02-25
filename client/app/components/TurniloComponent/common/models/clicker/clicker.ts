@@ -45,10 +45,7 @@ export interface Clicker {
 
   removeSeries?(series: Series): void;
 
-  changeVisualization?(
-    visualization: VisualizationManifest,
-    settings: VisualizationSettings,
-  ): void;
+  changeVisualization?(visualization: VisualizationManifest, settings: VisualizationSettings): void;
 
   pin?(dimension: Dimension): void;
 

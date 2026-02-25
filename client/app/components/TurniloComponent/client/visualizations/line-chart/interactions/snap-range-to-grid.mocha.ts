@@ -27,20 +27,17 @@ const essence = EssenceFixtures.wikiLineChart();
 
 describe("snapRangeToGrid", () => {
   it("should return null for non continuous range", () => {
-    expect(snapRangeToGrid(new StringRange({ start: "a", end: "z" }), essence))
-      .to.be.null;
+    expect(snapRangeToGrid(new StringRange({ start: "a", end: "z" }), essence)).to.be.null;
   });
 
   it("should snap time range according to split bucket", () => {
     const start = new Date("2000-01-01T03:22:11Z");
     const end = new Date("2000-01-01T07:11:35Z");
-    expect(
-      snapRangeToGrid(new TimeRange({ start, end }), essence),
-    ).to.be.equivalent(
+    expect(snapRangeToGrid(new TimeRange({ start, end }), essence)).to.be.equivalent(
       new TimeRange({
         start: new Date("2000-01-01T03:00Z"),
         end: new Date("2000-01-01T08:00Z"),
-      }),
+      })
     );
   });
 
@@ -49,15 +46,13 @@ describe("snapRangeToGrid", () => {
     const end = 31;
     const essence = EssenceFixtures.twitterNoVisualisation().changeSplit(
       numberSplitCombine("tweetLength", 10),
-      VisStrategy.FairGame,
+      VisStrategy.FairGame
     );
-    expect(
-      snapRangeToGrid(new NumberRange({ start, end }), essence),
-    ).to.be.equivalent(
+    expect(snapRangeToGrid(new NumberRange({ start, end }), essence)).to.be.equivalent(
       new NumberRange({
         start: 0,
         end: 30,
-      }),
+      })
     );
   });
 });

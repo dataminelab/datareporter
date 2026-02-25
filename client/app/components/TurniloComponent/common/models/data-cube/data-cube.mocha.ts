@@ -33,10 +33,7 @@ describe("DataCube", () => {
   };
 
   it("is an immutable class", () => {
-    testImmutableClass<DataCubeJS>(DataCube, [
-      DataCubeFixtures.TWITTER_JS,
-      DataCubeFixtures.WIKI_JS,
-    ]);
+    testImmutableClass<DataCubeJS>(DataCube, [DataCubeFixtures.TWITTER_JS, DataCubeFixtures.WIKI_JS]);
   });
 
   describe("validates", () => {
@@ -64,9 +61,7 @@ describe("DataCube", () => {
             },
           ],
         });
-      }).to.throw(
-        "'wiki hello' is not a URL safe name. Try 'wiki_hello' instead?",
-      );
+      }).to.throw("'wiki hello' is not a URL safe name. Try 'wiki_hello' instead?");
     });
 
     it("throws an error if the defaultSortMeasure can not be found", () => {
@@ -121,9 +116,7 @@ describe("DataCube", () => {
             },
           ],
         });
-      }).to.throw(
-        "data cube: 'wiki', names: 'articleName' found in both dimensions and measures",
-      );
+      }).to.throw("data cube: 'wiki', names: 'articleName' found in both dimensions and measures");
     });
 
     it("throws an error if duplicate name is used in measures", () => {
@@ -154,9 +147,7 @@ describe("DataCube", () => {
             },
           ],
         });
-      }).to.throw(
-        "data cube: 'wiki', found duplicate measure or group with names: 'articleName'",
-      );
+      }).to.throw("data cube: 'wiki', found duplicate measure or group with names: 'articleName'");
     });
 
     it("throws an error if duplicate name is used in dimensions", () => {
@@ -187,9 +178,7 @@ describe("DataCube", () => {
             },
           ],
         });
-      }).to.throw(
-        "data cube: 'wiki', found duplicate dimension or group with names: 'articleName'",
-      );
+      }).to.throw("data cube: 'wiki', found duplicate dimension or group with names: 'articleName'");
     });
   });
 
@@ -390,7 +379,7 @@ describe("DataCube", () => {
             },
           ],
         },
-        context,
+        context
       );
 
       expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
@@ -450,7 +439,7 @@ describe("DataCube", () => {
             },
           ],
         },
-        context,
+        context
       );
 
       expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
@@ -735,9 +724,7 @@ describe("DataCube", () => {
       });
 
       const dataCube = dataCubeWithDim.addAttributes(attributes1);
-      expect(dataCube.toJS().measures.map(m => m.name)).to.deep.equal([
-        "deleted",
-      ]);
+      expect(dataCube.toJS().measures.map((m) => m.name)).to.deep.equal(["deleted"]);
     });
   });
 

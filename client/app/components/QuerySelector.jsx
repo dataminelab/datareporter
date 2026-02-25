@@ -24,13 +24,16 @@ function search(term) {
 
   // search by query and report
   const querySearch = Query.query({ q: term }).then(({ results }) =>
-    results.map((query) => ({ ...query, type: "query" }))
+    results.map(query => ({ ...query, type: "query" })),
   );
   const reportSearch = Report.report({ q: term }).then(({ results }) =>
-    results.map((report) => ({ ...report, type: "report" }))
+    results.map(report => ({ ...report, type: "report" })),
   );
 
-  return Promise.all([reportSearch, querySearch]).then(([reports, queries]) => [...reports, ...queries]);
+  return Promise.all([reportSearch, querySearch]).then(([reports, queries]) => [
+    ...reports,
+    ...queries,
+  ]);
 }
 
 export default function QuerySelector(props) {
@@ -97,7 +100,7 @@ export default function QuerySelector(props) {
 
     return (
       <ul className="list-group">
-        {searchResults.map((q) => {
+        {searchResults.map(q => {
           const key = `${q.type}:${q.id}`;
           return (
             <PlainButton
@@ -107,8 +110,14 @@ export default function QuerySelector(props) {
               key={key}
               role="listitem"
               onClick={() => selectQuery(key)}
-              data-test={`QueryId${q.id}`}>
-              {q.name} <QueryTagsControl isDraft={q.is_draft} tags={q.tags} className="inline-tags-control" />
+              data-test={`QueryId${q.id}`}
+            >
+              {q.name}{" "}
+              <QueryTagsControl
+                isDraft={q.is_draft}
+                tags={q.tags}
+                className="inline-tags-control"
+              />
             </PlainButton>
           );
         })}
@@ -118,7 +127,12 @@ export default function QuerySelector(props) {
 
   if (props.disabled) {
     return (
-      <Input value={selectedQuery && selectedQuery.name} aria-label="Tied query" placeholder={placeholder} disabled />
+      <Input
+        value={selectedQuery && selectedQuery.name}
+        aria-label="Tied query"
+        placeholder={placeholder}
+        disabled
+      />
     );
   }
 
@@ -139,9 +153,10 @@ export default function QuerySelector(props) {
         filterOption={false}
         defaultActiveFirstOption={false}
         className={props.className}
-        data-test="QuerySelector">
+        data-test="QuerySelector"
+      >
         {searchResults &&
-          searchResults.map((q) => {
+          searchResults.map(q => {
             const disabled = q.is_draft;
             const key = `${q.type}:${q.id}`;
             return (
@@ -150,7 +165,8 @@ export default function QuerySelector(props) {
                 key={key}
                 disabled={disabled}
                 className="query-selector-result"
-                data-test={`QueryId${q.id}`}>
+                data-test={`QueryId${q.id}`}
+              >
                 {q.name}{" "}
                 <QueryTagsControl
                   isDraft={q.is_draft}
@@ -167,13 +183,18 @@ export default function QuerySelector(props) {
   return (
     <span data-test="QuerySelector">
       {selectedQuery ? (
-        <Input value={selectedQuery.name} aria-label="Tied query" suffix={clearIcon} readOnly />
+        <Input
+          value={selectedQuery.name}
+          aria-label="Tied query"
+          suffix={clearIcon}
+          readOnly
+        />
       ) : (
         <Input
           placeholder={placeholder}
           value={searchTerm}
           aria-label="Tied query"
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           suffix={spinIcon}
         />
       )}

@@ -19,10 +19,7 @@ import { Datum } from "plywood";
 import * as React from "react";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
 import { formatValue } from "../../../../../common/utils/formatter/formatter";
-import {
-  Nullary,
-  Unary,
-} from "../../../../../common/utils/functional/functional";
+import { Nullary, Unary } from "../../../../../common/utils/functional/functional";
 import { HighlightModal as BaseHighlightModal } from "../../../../components/highlight-modal/highlight-modal";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { Highlight } from "../interactions/interaction";
@@ -41,7 +38,7 @@ interface HighlightModalProps {
   rect: ClientRect | DOMRect;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = props => {
+export const HighlightModal: React.SFC<HighlightModalProps> = (props) => {
   const {
     timezone,
     rect: { left, top },

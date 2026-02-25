@@ -21,14 +21,8 @@ import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import {
-  UrlHashConverter,
-  urlHashConverter,
-} from "../../../common/utils/url-hash-converter/url-hash-converter";
-import {
-  Notifications,
-  Questions,
-} from "../../components/notifications/notifications";
+import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { Notifications, Questions } from "../../components/notifications/notifications";
 import { AboutModal } from "../../modals/about-modal/about-modal";
 import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
@@ -68,10 +62,7 @@ export const HOME: ViewType = "home";
 export const CUBE: ViewType = "cube";
 export const NO_DATA: ViewType = "no-data";
 
-export class TurniloApplication extends React.Component<
-  TurniloApplicationProps,
-  TurniloApplicationState
-> {
+export class TurniloApplication extends React.Component<TurniloApplicationProps, TurniloApplicationState> {
   private hashUpdating = false;
   private readonly urlHashConverter: UrlHashConverter = urlHashConverter;
   state: TurniloApplicationState = {
@@ -175,10 +166,7 @@ export class TurniloApplication extends React.Component<
     };
 
     if (this.viewTypeNeedsAnItem(viewType)) {
-      const item = this.getSelectedDataCubeFromHash(
-        dataCubes,
-        hash,
-      );
+      const item = this.getSelectedDataCubeFromHash(dataCubes, hash);
       newState.selectedItem = item ? item : dataCubes[0];
     } else {
       newState.selectedItem = null;
@@ -243,9 +231,7 @@ export class TurniloApplication extends React.Component<
   }
 
   updateEssenceInHash = (essence: Essence, force = false): void => {
-    const newHash = `${
-      this.state.selectedItem.name
-    }/${this.convertEssenceToHash(essence)}`;
+    const newHash = `${this.state.selectedItem.name}/${this.convertEssenceToHash(essence)}`;
     this.changeHash(newHash, force);
     this.setReportChanged(true);
   };
@@ -283,34 +269,15 @@ export class TurniloApplication extends React.Component<
 
   renderView(): JSX.Element | Error {
     const { maxFilters, report } = this.props;
-    const {
-      viewType,
-      viewHash,
-      selectedItem,
-      appSettings,
-      timekeeper,
-      errorId,
-    } = this.state;
+    const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { dataCubes, customization } = appSettings;
 
     switch (viewType) {
       case NO_DATA:
-        return (
-          <NoDataView
-            onOpenAbout={this.openAboutModal}
-            customization={customization}
-            appSettings={appSettings}
-          />
-        );
+        return <NoDataView onOpenAbout={this.openAboutModal} customization={customization} appSettings={appSettings} />;
 
       case HOME:
-        return (
-          <HomeView
-            dataCubes={dataCubes}
-            onOpenAbout={this.openAboutModal}
-            customization={customization}
-          />
-        );
+        return <HomeView dataCubes={dataCubes} onOpenAbout={this.openAboutModal} customization={customization} />;
 
       case CUBE:
         return (

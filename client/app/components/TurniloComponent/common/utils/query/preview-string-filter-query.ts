@@ -33,9 +33,7 @@ interface QueryParams {
 function filterExpression(params: QueryParams): Expression {
   const { dimension, essence, timekeeper, searchText, filterMode } = params;
   const { dataCube } = essence;
-  const filter = essence
-    .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
-    .toExpression(dataCube);
+  const filter = essence.getEffectiveFilter(timekeeper, { unfilterDimension: dimension }).toExpression(dataCube);
 
   if (!searchText) return filter;
 
@@ -51,9 +49,7 @@ export function previewStringFilterQuery(params: QueryParams) {
   const { dimension, essence, limit } = params;
   const { dataCube } = essence;
   const nativeCount = dataCube.getMeasure("count");
-  const measureExpression = nativeCount
-    ? nativeCount.expression
-    : $("main").count();
+  const measureExpression = nativeCount ? nativeCount.expression : $("main").count();
 
   return $("main")
     .filter(filterExpression(params))

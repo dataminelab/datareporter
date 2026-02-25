@@ -28,7 +28,7 @@ const mountModalBubbleInDiv = (onClose: Fn = noop) =>
     <div className="root">
       <ModalBubble left={100} top={200} onClose={onClose} />
       <div className="outside" />
-    </div>,
+    </div>
   );
 
 describe("ModalBubble", () => {

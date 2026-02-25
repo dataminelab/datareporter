@@ -10,4 +10,3 @@ resources:
   - server-deployment.yaml
   - service.yaml
   - plywood-service.yaml
-

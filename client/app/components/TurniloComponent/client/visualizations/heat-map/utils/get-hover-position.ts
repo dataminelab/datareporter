@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ScrollerLayout,
-  ScrollerPart,
-} from "../../../components/scroller/scroller";
+import { ScrollerLayout, ScrollerPart } from "../../../components/scroller/scroller";
 import { LinearScale } from "../../../utils/linear-scale/linear-scale";
 
 export interface HoverPosition {
@@ -33,7 +30,7 @@ export default function getHoverPosition(
   x: number,
   y: number,
   part: ScrollerPart,
-  { left, top }: ScrollerLayout,
+  { left, top }: ScrollerLayout
 ): HoverPosition | null {
   if (part !== "body") return null;
 

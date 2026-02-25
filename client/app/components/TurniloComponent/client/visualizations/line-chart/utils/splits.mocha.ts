@@ -29,39 +29,29 @@ import {
 use(equivalent);
 
 const essenceWithNominalSplit = EssenceFixtures.wikiLineChart();
-const essenceWithoutNominalSplit =
-  EssenceFixtures.wikiLineChartNoNominalSplit();
+const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();
 const timeDimension = essenceWithNominalSplit.getTimeDimension();
-const channelDimension =
-  essenceWithNominalSplit.dataCube.getDimension("channel");
-const timeSplit =
-  essenceWithNominalSplit.splits.findSplitForDimension(timeDimension);
-const channelSplit =
-  essenceWithNominalSplit.splits.findSplitForDimension(channelDimension);
+const channelDimension = essenceWithNominalSplit.dataCube.getDimension("channel");
+const timeSplit = essenceWithNominalSplit.splits.findSplitForDimension(timeDimension);
+const channelSplit = essenceWithNominalSplit.splits.findSplitForDimension(channelDimension);
 
 describe("splits", () => {
   describe("without nominal split", () => {
     describe("getContinuousSplit", () => {
       it("should pick continuous split", () => {
-        expect(getContinuousSplit(essenceWithoutNominalSplit)).to.be.equivalent(
-          timeSplit,
-        );
+        expect(getContinuousSplit(essenceWithoutNominalSplit)).to.be.equivalent(timeSplit);
       });
     });
 
     describe("getContinuousDimension", () => {
       it("should pick continuous dimension", () => {
-        expect(
-          getContinuousDimension(essenceWithoutNominalSplit),
-        ).to.be.equivalent(timeDimension);
+        expect(getContinuousDimension(essenceWithoutNominalSplit)).to.be.equivalent(timeDimension);
       });
     });
 
     describe("getContinuousReference", () => {
       it("should pick continuous reference", () => {
-        expect(getContinuousReference(essenceWithoutNominalSplit)).to.be.equal(
-          "time",
-        );
+        expect(getContinuousReference(essenceWithoutNominalSplit)).to.be.equal("time");
       });
     });
 
@@ -87,41 +77,31 @@ describe("splits", () => {
   describe("with nominal split", () => {
     describe("getContinuousSplit", () => {
       it("should pick continuous split", () => {
-        expect(getContinuousSplit(essenceWithNominalSplit)).to.be.equivalent(
-          timeSplit,
-        );
+        expect(getContinuousSplit(essenceWithNominalSplit)).to.be.equivalent(timeSplit);
       });
     });
 
     describe("getContinuousDimension", () => {
       it("should pick continuous dimension", () => {
-        expect(
-          getContinuousDimension(essenceWithNominalSplit),
-        ).to.be.equivalent(timeDimension);
+        expect(getContinuousDimension(essenceWithNominalSplit)).to.be.equivalent(timeDimension);
       });
     });
 
     describe("getContinuousReference", () => {
       it("should pick continuous reference", () => {
-        expect(getContinuousReference(essenceWithNominalSplit)).to.be.equal(
-          "time",
-        );
+        expect(getContinuousReference(essenceWithNominalSplit)).to.be.equal("time");
       });
     });
 
     describe("getNominalSplit", () => {
       it("should return null", () => {
-        expect(getNominalSplit(essenceWithNominalSplit)).to.be.equivalent(
-          channelSplit,
-        );
+        expect(getNominalSplit(essenceWithNominalSplit)).to.be.equivalent(channelSplit);
       });
     });
 
     describe("getNominalDimension", () => {
       it("should return null", () => {
-        expect(getNominalDimension(essenceWithNominalSplit)).to.be.equivalent(
-          channelDimension,
-        );
+        expect(getNominalDimension(essenceWithNominalSplit)).to.be.equivalent(channelDimension);
       });
     });
 

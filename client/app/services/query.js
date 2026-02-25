@@ -270,9 +270,7 @@ export class Query {
 
       return new QueryResult({
         job: {
-          error: `missing ${valuesWord} for ${missingParams.join(
-            ", ",
-          )} ${paramsWord}.`,
+          error: `missing ${valuesWord} for ${missingParams.join(", ")} ${paramsWord}.`,
           status: 4,
         },
       });

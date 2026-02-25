@@ -51,9 +51,7 @@ export const createHighlight = (key: string, datum: Datum): Highlight => ({
   key,
 });
 
-export const isHighlight = (
-  interaction?: Interaction,
-): interaction is Highlight =>
+export const isHighlight = (interaction?: Interaction): interaction is Highlight =>
   interaction && interaction.kind === InteractionKind.HIGHLIGHT;
 
 export type Interaction = Hover | Highlight;

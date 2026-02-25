@@ -41,15 +41,10 @@ interface InputWithPresetsState {
   customValue: string;
 }
 
-export class InputWithPresets<T> extends React.Component<
-  InputWithPresetsProps<T>,
-  InputWithPresetsState
-> {
+export class InputWithPresets<T> extends React.Component<InputWithPresetsProps<T>, InputWithPresetsState> {
   initialState(): InputWithPresetsState {
     const { selected, presets, formatCustomValue } = this.props;
-    const isPresetPicked = presets.some(
-      ({ identity }) => identity === selected,
-    );
+    const isPresetPicked = presets.some(({ identity }) => identity === selected);
     const customPicked = selected !== undefined && !isPresetPicked;
     const customValue = customPicked ? formatCustomValue(selected) : "";
     return { customPicked, customValue };
@@ -77,14 +72,7 @@ export class InputWithPresets<T> extends React.Component<
   };
 
   render() {
-    const {
-      errorMessage,
-      selected,
-      presets,
-      placeholder,
-      title,
-      parseCustomValue,
-    } = this.props;
+    const { errorMessage, selected, presets, placeholder, title, parseCustomValue } = this.props;
     const { customPicked, customValue } = this.state;
 
     const presetButtons = presets.map(({ name, identity }) => ({
@@ -94,8 +82,7 @@ export class InputWithPresets<T> extends React.Component<
       onClick: () => this.pickPreset(identity),
     }));
 
-    const customSelected =
-      customPicked && selected === parseCustomValue(customValue);
+    const customSelected = customPicked && selected === parseCustomValue(customValue);
 
     const customButton: GroupMember = {
       key: "custom",
@@ -106,8 +93,7 @@ export class InputWithPresets<T> extends React.Component<
 
     const members = [...presetButtons, customButton];
 
-    const renderErrorMessage =
-      customSelected && errorMessage && customValue.length > 0;
+    const renderErrorMessage = customSelected && errorMessage && customValue.length > 0;
 
     return (
       <React.Fragment>
@@ -121,9 +107,7 @@ export class InputWithPresets<T> extends React.Component<
             onChange={this.customValueUpdate}
           />
         )}
-        {renderErrorMessage && (
-          <span className="error-message">{errorMessage}</span>
-        )}
+        {renderErrorMessage && <span className="error-message">{errorMessage}</span>}
       </React.Fragment>
     );
   }

@@ -311,9 +311,7 @@ export class Report extends Query {
 
       return new ReportResult({
         job: {
-          error: `missing ${valuesWord} for ${missingParams.join(
-            ", ",
-          )} ${paramsWord}.`,
+          error: `missing ${valuesWord} for ${missingParams.join(", ")} ${paramsWord}.`,
           status: 4,
         },
       });

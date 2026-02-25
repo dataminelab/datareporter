@@ -65,11 +65,7 @@ describe("prepareDataPoints", () => {
   });
 
   it("should pick x's and y's", () => {
-    const points = prepareDataPoints(
-      [januaryFirst, januarySecond, januaryThird],
-      getTime,
-      getMeasure,
-    );
+    const points = prepareDataPoints([januaryFirst, januarySecond, januaryThird], getTime, getMeasure);
     expect(points).to.be.deep.equal([
       [+januaryFirstNoon, 234],
       [+januarySecondNoon, 298],
@@ -78,11 +74,7 @@ describe("prepareDataPoints", () => {
   });
 
   it("should insert missing point (twice - because it inserts from both sides)", () => {
-    const points = prepareDataPoints(
-      [januaryFirst, januaryThird],
-      getTime,
-      getMeasure,
-    );
+    const points = prepareDataPoints([januaryFirst, januaryThird], getTime, getMeasure);
     expect(points).to.be.deep.equal([
       [+januaryFirstNoon, 234],
       [+januarySecondNoon, 0],
@@ -92,11 +84,7 @@ describe("prepareDataPoints", () => {
   });
 
   it("should insert missing points", () => {
-    const points = prepareDataPoints(
-      [januaryFirst, januaryFourth],
-      getTime,
-      getMeasure,
-    );
+    const points = prepareDataPoints([januaryFirst, januaryFourth], getTime, getMeasure);
     expect(points).to.be.deep.equal([
       [+januaryFirstNoon, 234],
       [+januarySecondNoon, 0],
@@ -106,11 +94,7 @@ describe("prepareDataPoints", () => {
   });
 
   it("should not insert missing point after last one", () => {
-    const points = prepareDataPoints(
-      [januaryThird, januaryFourth],
-      getTime,
-      getMeasure,
-    );
+    const points = prepareDataPoints([januaryThird, januaryFourth], getTime, getMeasure);
     expect(points).to.be.deep.equal([
       [+januaryThirdNoon, 9],
       [+januaryFourthNoon, 10000],
@@ -118,11 +102,7 @@ describe("prepareDataPoints", () => {
   });
 
   it("should not insert missing point before first one", () => {
-    const points = prepareDataPoints(
-      [januaryFirst, januarySecond],
-      getTime,
-      getMeasure,
-    );
+    const points = prepareDataPoints([januaryFirst, januarySecond], getTime, getMeasure);
     expect(points).to.be.deep.equal([
       [+januaryFirstNoon, 234],
       [+januarySecondNoon, 298],

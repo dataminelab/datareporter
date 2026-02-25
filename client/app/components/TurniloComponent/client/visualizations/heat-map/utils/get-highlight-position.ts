@@ -31,23 +31,13 @@ import { nestedDataset } from "./nested-dataset";
 function clausePredicate(clause: FilterClause): Unary<Datum, boolean> {
   switch (clause.type) {
     case FilterTypes.BOOLEAN:
-      return datum =>
-        datum[clause.reference] ===
-        (clause as BooleanFilterClause).values.first();
+      return (datum) => datum[clause.reference] === (clause as BooleanFilterClause).values.first();
     case FilterTypes.NUMBER:
-      return datum =>
-        (clause as NumberFilterClause).values
-          .first()
-          .equals(datum[clause.reference]);
+      return (datum) => (clause as NumberFilterClause).values.first().equals(datum[clause.reference]);
     case FilterTypes.STRING:
-      return datum =>
-        String(datum[clause.reference]) ===
-        (clause as StringFilterClause).values.first();
+      return (datum) => String(datum[clause.reference]) === (clause as StringFilterClause).values.first();
     case FilterTypes.FIXED_TIME:
-      return datum =>
-        (clause as FixedTimeFilterClause).values
-          .first()
-          .equals(datum[clause.reference]);
+      return (datum) => (clause as FixedTimeFilterClause).values.first().equals(datum[clause.reference]);
     case FilterTypes.RELATIVE_TIME:
       throw new Error("Unsupported filter type for highlights");
   }
@@ -65,7 +55,7 @@ export interface HighlightPosition {
 export default function getHighlightPosition(
   highlight: Highlight,
   essence: Essence,
-  dataset: Datum[],
+  dataset: Datum[]
 ): HighlightPosition {
   if (!highlight) return null;
   const {
@@ -77,16 +67,10 @@ export default function getHighlightPosition(
   const secondSplit = splits.get(1);
   const columnSplitReference = secondSplit.reference;
   const rowSplitReference = firstSplit.reference;
-  const columnClause = clauses.find(
-    ({ reference }) => reference === columnSplitReference,
-  );
-  const rowClause = clauses.find(
-    ({ reference }) => reference === rowSplitReference,
-  );
+  const columnClause = clauses.find(({ reference }) => reference === columnSplitReference);
+  const rowClause = clauses.find(({ reference }) => reference === rowSplitReference);
   const row = rowClause ? findDatumIndexByClause(dataset, rowClause) : null;
-  const column = columnClause
-    ? findDatumIndexByClause(nestedDataset(dataset[row || 0]), columnClause)
-    : null;
+  const column = columnClause ? findDatumIndexByClause(nestedDataset(dataset[row || 0]), columnClause) : null;
 
   return {
     row,

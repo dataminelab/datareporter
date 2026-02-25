@@ -24,7 +24,7 @@ export default function (chai: typeof Chai) {
       "expected objects to not be equivalent",
       other,
       this._obj,
-      true,
+      true
     );
   });
 }

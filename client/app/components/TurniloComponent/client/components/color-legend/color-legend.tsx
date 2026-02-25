@@ -54,11 +54,7 @@ export const ColorLegend: React.FunctionComponent<ColorLegendProps> = ({
     <div className="color-legend">
       <div className="color-legend-header">{title}</div>
       <div className="color-legend-stripe">
-        <svg
-          className="color-legend"
-          width={`${width}px`}
-          height={`${height}px`}
-        >
+        <svg className="color-legend" width={`${width}px`} height={`${height}px`}>
           <defs>
             <linearGradient id="color-stripe" gradientTransform="rotate(90)">
               <stop offset="0%" stopColor={endColor} />
@@ -76,26 +72,10 @@ export const ColorLegend: React.FunctionComponent<ColorLegendProps> = ({
               height={stripeLength}
               fill="url(#color-stripe)"
             />
-            <line
-              className="color-legend-stripe-axis"
-              x1={0.5}
-              x2={0.5}
-              y1={0}
-              y2={stripeLength}
-            />
+            <line className="color-legend-stripe-axis" x1={0.5} x2={0.5} y1={0} y2={stripeLength} />
             <g className="color-upper-bound">
-              <line
-                className="color-upper-bound-tick"
-                x1={0}
-                x2={tickLength + stripeWidth}
-                y1={0.5}
-                y2={0.5}
-              />
-              <text
-                className="color-upper-bound-value"
-                x={tickLabelLeftOffset + stripeWidth}
-                y={tickLabelTopOffset}
-              >
+              <line className="color-upper-bound-tick" x1={0} x2={tickLength + stripeWidth} y1={0.5} y2={0.5} />
+              <text className="color-upper-bound-value" x={tickLabelLeftOffset + stripeWidth} y={tickLabelTopOffset}>
                 {formatter(max)}
               </text>
             </g>
@@ -110,8 +90,7 @@ export const ColorLegend: React.FunctionComponent<ColorLegendProps> = ({
               <text
                 className="color-lower-bound-value"
                 x={tickLabelLeftOffset + stripeWidth}
-                y={stripeLength + tickLabelTopOffset}
-              >
+                y={stripeLength + tickLabelTopOffset}>
                 {formatter(min)}
               </text>
             </g>

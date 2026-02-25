@@ -19,10 +19,7 @@ import { Dataset } from "plywood";
 import * as React from "react";
 import { LINE_CHART_MANIFEST } from "../../../common/visualization-manifests/line-chart/line-chart";
 import { MessageCard } from "../../components/message-card/message-card";
-import {
-  BaseVisualization,
-  BaseVisualizationState,
-} from "../base-visualization/base-visualization";
+import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { Charts } from "./charts/charts";
 import { InteractionController } from "./interactions/interaction-controller";
 import "./line-chart.scss";
@@ -45,11 +42,7 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
     if (!range) {
       return <MessageCard title="No data found. Try different filters." />;
     }
-    const scale = createContinuousScale(
-      essence,
-      range,
-      stage.width - Y_AXIS_WIDTH,
-    );
+    const scale = createContinuousScale(essence, range, stage.width - Y_AXIS_WIDTH);
     const ticks = pickXAxisTicks(scale.domain(), essence.timezone);
 
     const maxHeight = stage.height - X_AXIS_HEIGHT;
@@ -63,16 +56,11 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
         highlight={this.getHighlight()}
         dropHighlight={this.dropHighlight}
         acceptHighlight={this.acceptHighlight}
-        saveHighlight={this.highlight}
-      >
-        {interactions => {
+        saveHighlight={this.highlight}>
+        {(interactions) => {
           return (
             <div className="line-chart-container">
-              <div
-                className="line-charts"
-                ref={this.chartsRef}
-                style={{ maxHeight }}
-              >
+              <div className="line-charts" ref={this.chartsRef} style={{ maxHeight }}>
                 <Charts
                   interactions={interactions}
                   stage={stage.changeHeight(maxHeight)}
@@ -82,12 +70,7 @@ export class LineChart extends BaseVisualization<BaseVisualizationState> {
                   dataset={dataset}
                 />
               </div>
-              <XAxis
-                width={stage.width}
-                ticks={ticks}
-                scale={scale}
-                timezone={essence.timezone}
-              />
+              <XAxis width={stage.width} ticks={ticks} scale={scale} timezone={essence.timezone} />
             </div>
           );
         }}

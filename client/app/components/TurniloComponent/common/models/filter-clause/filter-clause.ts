@@ -31,9 +31,7 @@ import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
 import { MAX_TIME_REF_NAME, NOW_REF_NAME } from "../time/time";
 
-type OmitType<T extends FilterDefinition> = Partial<
-  Pick<T, Exclude<keyof T, "type">>
->;
+type OmitType<T extends FilterDefinition> = Partial<Pick<T, Exclude<keyof T, "type">>>;
 
 export enum FilterTypes {
   BOOLEAN = "boolean",
@@ -61,9 +59,7 @@ const defaultBooleanFilter: BooleanFilterDefinition = {
   values: ImmutableSet([]),
 };
 
-export class BooleanFilterClause extends Record<BooleanFilterDefinition>(
-  defaultBooleanFilter,
-) {
+export class BooleanFilterClause extends Record<BooleanFilterDefinition>(defaultBooleanFilter) {
   constructor(params: OmitType<BooleanFilterDefinition>) {
     super(params);
   }
@@ -81,9 +77,7 @@ const defaultNumberRange: NumberRangeDefinition = {
   bounds: "[)",
 };
 
-export class NumberRange extends Record<NumberRangeDefinition>(
-  defaultNumberRange,
-) {}
+export class NumberRange extends Record<NumberRangeDefinition>(defaultNumberRange) {}
 
 interface NumberFilterDefinition extends FilterDefinition {
   not: boolean;
@@ -97,9 +91,7 @@ const defaultNumberFilter: NumberFilterDefinition = {
   values: List([]),
 };
 
-export class NumberFilterClause extends Record<NumberFilterDefinition>(
-  defaultNumberFilter,
-) {
+export class NumberFilterClause extends Record<NumberFilterDefinition>(defaultNumberFilter) {
   constructor(params: OmitType<NumberFilterDefinition>) {
     super(params);
   }
@@ -127,9 +119,7 @@ const defaultStringFilter: StringFilterDefinition = {
   ignoreCase: false,
 };
 
-export class StringFilterClause extends Record<StringFilterDefinition>(
-  defaultStringFilter,
-) {
+export class StringFilterClause extends Record<StringFilterDefinition>(defaultStringFilter) {
   constructor(params: OmitType<StringFilterDefinition>) {
     super(params);
   }
@@ -145,9 +135,7 @@ const defaultFixedTimeFilter: FixedTimeFilterDefinition = {
   values: List([]),
 };
 
-export class FixedTimeFilterClause extends Record<FixedTimeFilterDefinition>(
-  defaultFixedTimeFilter,
-) {
+export class FixedTimeFilterClause extends Record<FixedTimeFilterDefinition>(defaultFixedTimeFilter) {
   constructor(params: OmitType<FixedTimeFilterDefinition>) {
     super(params);
   }
@@ -171,33 +159,18 @@ const defaultRelativeTimeFilter: RelativeTimeFilterDefinition = {
   duration: null,
 };
 
-export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinition>(
-  defaultRelativeTimeFilter,
-) {
+export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinition>(defaultRelativeTimeFilter) {
   constructor(params: OmitType<RelativeTimeFilterDefinition>) {
     super(params);
   }
 
-  evaluate(
-    now: Date,
-    maxTime: Date,
-    timezone: Timezone,
-  ): FixedTimeFilterClause {
-    const selection: Expression = constructFilter(
-      this.period,
-      this.duration.toJS(),
-    );
-    const maxTimeMinuteTop = minute.shift(
-      minute.floor(maxTime || now, timezone),
-      timezone,
-      1,
-    );
+  evaluate(now: Date, maxTime: Date, timezone: Timezone): FixedTimeFilterClause {
+    const selection: Expression = constructFilter(this.period, this.duration.toJS());
+    const maxTimeMinuteTop = minute.shift(minute.floor(maxTime || now, timezone), timezone, 1);
     const datum: Datum = {};
     datum[NOW_REF_NAME] = now;
     datum[MAX_TIME_REF_NAME] = maxTimeMinuteTop;
-    const { start, end }: TimeRange = selection
-      .defineEnvironment({ timezone })
-      .getFn()(datum);
+    const { start, end }: TimeRange = selection.defineEnvironment({ timezone }).getFn()(datum);
     return new FixedTimeFilterClause({
       reference: this.reference,
       values: List.of(new DateRange({ start, end })),
@@ -223,10 +196,7 @@ export class RelativeTimeFilterClause extends Record<RelativeTimeFilterDefinitio
 export type TimeFilterClause = FixedTimeFilterClause | RelativeTimeFilterClause;
 
 export function isTimeFilter(clause: FilterClause): clause is TimeFilterClause {
-  return (
-    clause instanceof FixedTimeFilterClause ||
-    clause instanceof RelativeTimeFilterClause
-  );
+  return clause instanceof FixedTimeFilterClause || clause instanceof RelativeTimeFilterClause;
 }
 
 export type FilterClause =
@@ -236,10 +206,7 @@ export type FilterClause =
   | FixedTimeFilterClause
   | RelativeTimeFilterClause;
 
-export function toExpression(
-  clause: FilterClause,
-  { expression }: Dimension,
-): Expression {
+export function toExpression(clause: FilterClause, { expression }: Dimension): Expression {
   const { type } = clause;
   switch (type) {
     case FilterTypes.BOOLEAN: {
@@ -249,9 +216,7 @@ export function toExpression(
     }
     case FilterTypes.NUMBER: {
       const { not, values } = clause as NumberFilterClause;
-      const elements = values
-        .toArray()
-        .map(range => new PlywoodNumberRange(range));
+      const elements = values.toArray().map((range) => new PlywoodNumberRange(range));
       const set = new PlywoodSet({ elements, setType: "NUMBER_RANGE" });
       const numExp = expression.overlap(r(set));
       return not ? numExp.not() : numExp;
@@ -263,9 +228,7 @@ export function toExpression(
         case StringFilterAction.CONTAINS:
           stringExp = expression.contains(
             r(values.first()),
-            ignoreCase
-              ? ContainsExpression.IGNORE_CASE
-              : ContainsExpression.NORMAL,
+            ignoreCase ? ContainsExpression.IGNORE_CASE : ContainsExpression.NORMAL
           );
           break;
         case StringFilterAction.IN:
@@ -279,15 +242,11 @@ export function toExpression(
     }
     case FilterTypes.FIXED_TIME: {
       const values = (clause as FixedTimeFilterClause).values.toArray();
-      const elements = values.map(value => new TimeRange(value));
-      return expression.overlap(
-        r(new PlywoodSet({ elements, setType: "TIME_RANGE" })),
-      );
+      const elements = values.map((value) => new TimeRange(value));
+      return expression.overlap(r(new PlywoodSet({ elements, setType: "TIME_RANGE" })));
     }
     case FilterTypes.RELATIVE_TIME: {
-      throw new Error(
-        "Can't call toExpression on RelativeFilterClause. Evaluate clause first",
-      );
+      throw new Error("Can't call toExpression on RelativeFilterClause. Evaluate clause first");
     }
   }
 }
@@ -338,14 +297,10 @@ export function fromJS(parameters: FilterDefinition): FilterClause {
   }
 }
 
-export function isStringFilterClause(
-  clause: FilterClause,
-): clause is StringFilterClause {
+export function isStringFilterClause(clause: FilterClause): clause is StringFilterClause {
   return clause.type === FilterTypes.STRING;
 }
 
-export function isBooleanFilterClause(
-  clause: FilterClause,
-): clause is BooleanFilterClause {
+export function isBooleanFilterClause(clause: FilterClause): clause is BooleanFilterClause {
   return clause.type === FilterTypes.BOOLEAN;
 }

@@ -51,20 +51,8 @@ describe("Delta", () => {
 
   describe("<Delta>", () => {
     it("should handle cases with empty values", () => {
-      const emptyCurrent = shallow(
-        <Delta
-          currentValue={undefined}
-          previousValue={2}
-          formatter={formatter}
-        />,
-      );
-      const emptyPrevious = shallow(
-        <Delta
-          currentValue={2}
-          previousValue={undefined}
-          formatter={formatter}
-        />,
-      );
+      const emptyCurrent = shallow(<Delta currentValue={undefined} previousValue={2} formatter={formatter} />);
+      const emptyPrevious = shallow(<Delta currentValue={2} previousValue={undefined} formatter={formatter} />);
 
       expect(emptyCurrent.find("span").hasClass("delta-neutral")).to.be.true;
       expect(emptyCurrent.find("span").contains("-")).to.be.true;
@@ -74,9 +62,7 @@ describe("Delta", () => {
     });
 
     it("should render properly positive delta", () => {
-      const delta = shallow(
-        <Delta currentValue={100} previousValue={50} formatter={formatter} />,
-      );
+      const delta = shallow(<Delta currentValue={100} previousValue={50} formatter={formatter} />);
 
       const deltaNode = delta.find("span");
 
@@ -85,14 +71,7 @@ describe("Delta", () => {
     });
 
     it("should render properly positive delta for lower-is-better measure", () => {
-      const delta = shallow(
-        <Delta
-          currentValue={100}
-          previousValue={50}
-          lowerIsBetter={true}
-          formatter={formatter}
-        />,
-      );
+      const delta = shallow(<Delta currentValue={100} previousValue={50} lowerIsBetter={true} formatter={formatter} />);
 
       const deltaNode = delta.find("span");
 
@@ -101,9 +80,7 @@ describe("Delta", () => {
     });
 
     it("should render properly negative delta", () => {
-      const delta = shallow(
-        <Delta currentValue={100} previousValue={200} formatter={formatter} />,
-      );
+      const delta = shallow(<Delta currentValue={100} previousValue={200} formatter={formatter} />);
 
       const deltaNode = delta.find("span");
 
@@ -113,12 +90,7 @@ describe("Delta", () => {
 
     it("should render properly negative delta for lower-is-better measure", () => {
       const delta = shallow(
-        <Delta
-          currentValue={100}
-          previousValue={200}
-          lowerIsBetter={true}
-          formatter={formatter}
-        />,
+        <Delta currentValue={100} previousValue={200} lowerIsBetter={true} formatter={formatter} />
       );
 
       const deltaNode = delta.find("span");
@@ -128,9 +100,7 @@ describe("Delta", () => {
     });
 
     it("should render properly neutral delta", () => {
-      const delta = shallow(
-        <Delta currentValue={100} previousValue={100} formatter={formatter} />,
-      );
+      const delta = shallow(<Delta currentValue={100} previousValue={100} formatter={formatter} />);
 
       const deltaNode = delta.find("span");
 
@@ -139,12 +109,8 @@ describe("Delta", () => {
     });
 
     it("should handle infinite cases for delta percentage", () => {
-      const positive = shallow(
-        <Delta currentValue={100} previousValue={0} formatter={formatter} />,
-      );
-      const negative = shallow(
-        <Delta currentValue={-100} previousValue={0} formatter={formatter} />,
-      );
+      const positive = shallow(<Delta currentValue={100} previousValue={0} formatter={formatter} />);
+      const negative = shallow(<Delta currentValue={-100} previousValue={0} formatter={formatter} />);
 
       const positiveNode = positive.find("span");
       const negativeNode = negative.find("span");
@@ -158,13 +124,7 @@ describe("Delta", () => {
 
     describe("rounding for percentage", () => {
       it("should round down ratios below 0.5 decimal", () => {
-        const delta = shallow(
-          <Delta
-            currentValue={10004}
-            previousValue={10000}
-            formatter={formatter}
-          />,
-        );
+        const delta = shallow(<Delta currentValue={10004} previousValue={10000} formatter={formatter} />);
 
         const node = delta.find("span");
 
@@ -172,13 +132,7 @@ describe("Delta", () => {
       });
 
       it("should round up ratios above 0.5 decimal", () => {
-        const delta = shallow(
-          <Delta
-            currentValue={10005}
-            previousValue={10000}
-            formatter={formatter}
-          />,
-        );
+        const delta = shallow(<Delta currentValue={10005} previousValue={10000} formatter={formatter} />);
 
         const node = delta.find("span");
 

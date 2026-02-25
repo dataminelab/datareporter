@@ -35,12 +35,10 @@ interface ChartsProps {
   stage: Stage;
 }
 
-export const Charts: React.FunctionComponent<ChartsProps> = props => {
+export const Charts: React.FunctionComponent<ChartsProps> = (props) => {
   const { essence } = props;
   // @ts-ignore not assignable to type
   const { groupSeries } = essence.visualizationSettings as ImmutableRecord<LineChartSettings>;
 
-  return groupSeries
-    ? <ChartsPerSplit {...props} />
-    : <ChartsPerSeries {...props} />;
+  return groupSeries ? <ChartsPerSplit {...props} /> : <ChartsPerSeries {...props} />;
 };

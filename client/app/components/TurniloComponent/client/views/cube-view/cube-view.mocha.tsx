@@ -39,7 +39,7 @@ describe.skip("CubeView", () => {
         getEssenceFromHash={null}
         changeEssence={noop}
         urlForEssence={null}
-      />,
+      />
     );
 
     expect(cubeView.find(".visualization").find(Totals)).to.have.lengthOf(1);

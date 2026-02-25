@@ -33,10 +33,7 @@ export class MeasuresFixtures {
       {
         name: "other",
         title: "Other",
-        measures: [
-          MeasureGroupFixtures.wikiAddedJS(),
-          MeasureGroupFixtures.wikiDeltaJS(),
-        ],
+        measures: [MeasureGroupFixtures.wikiAddedJS(), MeasureGroupFixtures.wikiDeltaJS()],
       },
     ];
   }

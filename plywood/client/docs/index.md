@@ -58,7 +58,6 @@ Maybe all you want is to have a SQL-like interface to Druid. You can use the [pl
 
 ![plyql](images/plyql.png)
 
-
 ## Installation
 
 To use Plywood from npm simply run: `npm install plywood`.
@@ -72,31 +71,34 @@ Plywood can be also used by the browser.
 Here is an example of a simple plywood query that illustrates the different ways by which expressions can be created.
 First of all plywood and its component parts need to be imported into the project.
 We will import two plywood functions here:
+
 ```javascript
 var plywood = require('plywood');
 var ply = plywood.ply;
 var $ = plywood.$;
 ```
-* `ply()` creates a dataset with one empty datum inside of it. This is the base of many plywood operations.
 
-* `$()` creates a [Reference Expression](http://plywood.imply.io/expressions)
+- `ply()` creates a dataset with one empty datum inside of it. This is the base of many plywood operations.
+
+- `$()` creates a [Reference Expression](http://plywood.imply.io/expressions)
 
 Now, a simple query can be issued:
+
 ```javascript
 var ex0 = ply() // Create an empty singleton dataset literal [{}]
   // 1 is converted into a literal
-  .apply("one", 1)
+  .apply('one', 1)
 
   // The string "$one + 1" is parsed into an expression
-  .apply("two", "$one + 1")
+  .apply('two', '$one + 1')
 
   // The method chaining approach is used to make an expression
-  .apply("four", $("two").multiply(2))
+  .apply('four', $('two').multiply(2));
 ```
 
-* `apply(name, expression)` evaluates the given `expression` for every element of the dataset and saves the result as `name`.
+- `apply(name, expression)` evaluates the given `expression` for every element of the dataset and saves the result as `name`.
 
-* Calling ```ex0.compute()``` will return a [Q](https://github.com/kriskowal/q) promise that will resolve to:
+- Calling `ex0.compute()` will return a [Q](https://github.com/kriskowal/q) promise that will resolve to:
 
 ```javascript
 [
@@ -118,28 +120,31 @@ var External = plywood.External;
 var druidRequesterFactory = require('plywood-druid-requester').druidRequesterFactory;
 ```
 
-* External: An external acts as a query planner and scheduler for its database. [More about them here](./design-overview.md)
-* DruidRequesterFactory: This is a node specific module. Each external requires a requester function and this module exposes a factory function that makes these requester functions.
+- External: An external acts as a query planner and scheduler for its database. [More about them here](./design-overview.md)
+- DruidRequesterFactory: This is a node specific module. Each external requires a requester function and this module exposes a factory function that makes these requester functions.
 
 Next, the druid connection needs to be configured:
 
 ```javascript
 var druidRequester = druidRequesterFactory({
-  host: '192.168.60.100:8082' // Where ever your Druid may be
+  host: '192.168.60.100:8082', // Where ever your Druid may be
 });
 ```
 
 Construct an external from a JSON definition.
 
 ```javascript
-var wikiDataset = External.fromJS({
-  engine: 'druid',
-  source: 'wikipedia',  // The datasource name in Druid
-  timeAttribute: 'time',  // Druid's anonymous time attribute will be called 'time',
-  context: {
-    timeout: 10000 // The Druid context
-  }
-}, druidRequester);
+var wikiDataset = External.fromJS(
+  {
+    engine: 'druid',
+    source: 'wikipedia', // The datasource name in Druid
+    timeAttribute: 'time', // Druid's anonymous time attribute will be called 'time',
+    context: {
+      timeout: 10000, // The Druid context
+    },
+  },
+  druidRequester,
+);
 ```
 
 Once that is up and running, we should configure our execution context
@@ -151,7 +156,7 @@ Less helpfully, we can also refer to the number 70 with the string "seventy".
 ```javascript
 var context = {
   wiki: wikiDataset,
-  seventy: 70
+  seventy: 70,
 };
 ```
 
@@ -187,11 +192,11 @@ This will output:
 ```javascript
 [
   {
-    "70": 70,
-    "TotalAdded": 32553107,
-    "Count": 113240
-  }
-]
+    70: 70,
+    TotalAdded: 32553107,
+    Count: 113240,
+  },
+];
 ```
 
 This result is a dataset with a single datum in it.
@@ -205,29 +210,36 @@ Using the same setup as before we can issue a more interesting query:
 
 ```javascript
 var context = {
-  wiki: wikiDataset
+  wiki: wikiDataset,
 };
 
 var ex = ply()
-  .apply("wiki",
-    $('wiki').filter($("time").overlap({
-      start: new Date("2015-09-12T00:00:00Z"),
-      end: new Date("2015-09-13T00:00:00Z")
-    }))
+  .apply(
+    'wiki',
+    $('wiki').filter(
+      $('time').overlap({
+        start: new Date('2015-09-12T00:00:00Z'),
+        end: new Date('2015-09-13T00:00:00Z'),
+      }),
+    ),
   )
   .apply('Count', $('wiki').count())
   .apply('TotalAdded', '$wiki.sum($added)')
-  .apply('Pages',
-    $('wiki').split('$page', 'Page')
+  .apply(
+    'Pages',
+    $('wiki')
+      .split('$page', 'Page')
       .apply('Count', $('wiki').count())
       .sort('$Count', 'descending')
-      .limit(6)
+      .limit(6),
   );
 
-ex.compute(context).then(function(data) {
-  // Log the data while converting it to a readable standard
-  console.log(JSON.stringify(data.toJS(), null, 2));
-}).done();
+ex.compute(context)
+  .then(function (data) {
+    // Log the data while converting it to a readable standard
+    console.log(JSON.stringify(data.toJS(), null, 2));
+  })
+  .done();
 ```
 
 Here a sub split is added. The `Pages` attribute will actually be a dataset that represents the data in `wiki`
@@ -239,40 +251,39 @@ The output will look like so:
 ```javascript
 [
   {
-    "TotalAdded": 32553107,
-    "Count": 113240
-  }
-]
-[
+    TotalAdded: 32553107,
+    Count: 113240,
+  },
+][
   {
-    "TotalAdded": 97393743,
-    "Count": 389319,
-    "Pages": [
+    TotalAdded: 97393743,
+    Count: 389319,
+    Pages: [
       {
-        "Page": "Jeremy Corbyn",
-        "Count": 314
+        Page: 'Jeremy Corbyn',
+        Count: 314,
       },
       {
-        "Page": "User:Cyde/List of candidates for speedy deletion/Subpage",
-        "Count": 255
+        Page: 'User:Cyde/List of candidates for speedy deletion/Subpage',
+        Count: 255,
       },
       {
-        "Page": "Wikipedia:Administrators' noticeboard/Incidents",
-        "Count": 228
+        Page: "Wikipedia:Administrators' noticeboard/Incidents",
+        Count: 228,
       },
       {
-        "Page": "Wikipedia:Vandalismusmeldung",
-        "Count": 186
+        Page: 'Wikipedia:Vandalismusmeldung',
+        Count: 186,
       },
       {
-        "Page": "Total Drama Presents: The Ridonculous Race",
-        "Count": 160
+        Page: 'Total Drama Presents: The Ridonculous Race',
+        Count: 160,
       },
       {
-        "Page": "Wikipedia:Administrator intervention against vandalism",
-        "Count": 145
-      }
-    ]
+        Page: 'Wikipedia:Administrator intervention against vandalism',
+        Count: 145,
+      },
+    ],
   }
-]
+];
 ```

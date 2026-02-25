@@ -27,10 +27,7 @@ import {
   seriesFormatter,
   SeriesFormatType,
 } from "../../../common/models/series/series-format";
-import {
-  concatTruthy,
-  Unary,
-} from "../../../common/utils/functional/functional";
+import { concatTruthy, Unary } from "../../../common/utils/functional/functional";
 import { STRINGS } from "../../config/constants";
 import { StringInputWithPresets } from "../input-with-presets/string-input-with-presets";
 
@@ -68,17 +65,13 @@ function printFormat(format: SeriesFormat, measureFormat: string): string {
   }
 }
 
-export const FormatPicker: React.SFC<FormatPickerProps> = ({
-  format,
-  measure,
-  formatChange,
-}) => {
+export const FormatPicker: React.SFC<FormatPickerProps> = ({ format, measure, formatChange }) => {
   const measureFormat = measure.getFormat();
 
   const formatPresets = concatTruthy(
     { name: "Default", identity: measureFormat },
     measureFormat !== exactFormat && { name: "Exact", identity: exactFormat },
-    { name: "Percent", identity: percentFormat },
+    { name: "Percent", identity: percentFormat }
   );
 
   function onFormatChange(format: string) {
@@ -96,23 +89,15 @@ export const FormatPicker: React.SFC<FormatPickerProps> = ({
       />
       {format.type === SeriesFormatType.CUSTOM && (
         <div className="format-hint">
-          You can use custom numbro format to present measure values. Please
-          refer to the{" "}
-          <a
-            target="_blank"
-            className="documentation-link"
-            href="http://numbrojs.com/old-format.html"
-            rel="noreferrer"
-          >
+          You can use custom numbro format to present measure values. Please refer to the{" "}
+          <a target="_blank" className="documentation-link" href="http://numbrojs.com/old-format.html" rel="noreferrer">
             numbro documentation
           </a>
         </div>
       )}
       <div className="preview">
         <span className="value">{PREVIEW_VALUE} → </span>
-        <span className="formatted">
-          {seriesFormatter(format, measure)(PREVIEW_VALUE)}
-        </span>
+        <span className="formatted">{seriesFormatter(format, measure)(PREVIEW_VALUE)}</span>
       </div>
     </React.Fragment>
   );

@@ -46,7 +46,7 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
     const tags = mapValues(timeTags, (tag: TimeTagJS) => TimeTag.fromJS(tag));
     return new Timekeeper({
       timeTags: Map(tags),
-      nowOverride: nowOverride && new Date(nowOverride)
+      nowOverride: nowOverride && new Date(nowOverride),
     });
   }
 
@@ -54,9 +54,10 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   public nowOverride: Date = null;
 
   constructor({ timeTags, nowOverride = null }: TimekeeperValue) {
-    this.timeTags = (timeTags && typeof timeTags === "object" && !(timeTags instanceof Map) && Object.keys(timeTags).length === 0)
-      ? Map()
-      : timeTags;
+    this.timeTags =
+      timeTags && typeof timeTags === "object" && !(timeTags instanceof Map) && Object.keys(timeTags).length === 0
+        ? Map()
+        : timeTags;
     this.nowOverride = nowOverride;
   }
 
@@ -73,7 +74,7 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   private changeTimeTags(timeTags: Map<string, TimeTag>): Timekeeper {
     return new Timekeeper({
       ...this.valueOf(),
-      timeTags
+      timeTags,
     });
   }
 
@@ -95,16 +96,18 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   }
 
   equals(other: Instance<TimekeeperValue, TimekeeperJS> | undefined): boolean {
-    return Timekeeper.isTimekeeper(other)
-      && datesEqual(this.nowOverride, other.nowOverride)
-      && immutableLookupsEqual(this.timeTags.toObject(), other.timeTags.toObject());
+    return (
+      Timekeeper.isTimekeeper(other) &&
+      datesEqual(this.nowOverride, other.nowOverride) &&
+      immutableLookupsEqual(this.timeTags.toObject(), other.timeTags.toObject())
+    );
   }
 
   toJS(): TimekeeperJS {
     const tags = this.timeTags.toObject();
     return {
       nowOverride: this.nowOverride,
-      timeTags: mapValues(tags, tag => tag.toJS())
+      timeTags: mapValues(tags, (tag) => tag.toJS()),
     };
   }
 
@@ -119,10 +122,9 @@ export class Timekeeper implements Instance<TimekeeperValue, TimekeeperJS> {
   valueOf(): TimekeeperValue {
     return {
       timeTags: this.timeTags,
-      nowOverride: this.nowOverride
+      nowOverride: this.nowOverride,
     };
   }
-
 }
 
 Timekeeper.EMPTY = new Timekeeper({ timeTags: Map() });

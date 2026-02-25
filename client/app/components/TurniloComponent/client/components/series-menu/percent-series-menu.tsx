@@ -16,10 +16,7 @@
 
 import * as React from "react";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
-import {
-  PercentExpression,
-  PercentOperation,
-} from "../../../common/models/expression/percent";
+import { PercentExpression, PercentOperation } from "../../../common/models/expression/percent";
 import { Measure } from "../../../common/models/measure/measure";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
@@ -58,16 +55,11 @@ function operationToExpression(operation: PercentOperation): PercentExpression {
 
 const renderOperation = (op: Operation): string => op.label;
 
-export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({
-  series,
-  seriesList,
-  measure,
-  onChange,
-}) => {
+export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({ series, seriesList, measure, onChange }) => {
   const selectedOperations = seriesList
     .getExpressionSeriesFor(measure.name)
-    .filter(s => !s.equals(series))
-    .filter(s => s.expression instanceof PercentExpression)
+    .filter((s) => !s.equals(series))
+    .filter((s) => s.expression instanceof PercentExpression)
     .map((s: ExpressionSeries) => s.expression.operation)
     .toSet();
 
@@ -95,17 +87,10 @@ export const PercentSeriesMenu: React.SFC<PercentSeriesMenuProps> = ({
         renderItem={renderOperation}
         renderSelectedItem={renderOperation}
         equal={(a, b) => a.id === b.id}
-        selectedItem={
-          series.expression &&
-          OPERATIONS.find(op => op.id === series.expression.operation)
-        }
+        selectedItem={series.expression && OPERATIONS.find((op) => op.id === series.expression.operation)}
         onSelect={onOperationSelect}
       />
-      <FormatPicker
-        measure={measure}
-        format={series.format}
-        formatChange={onFormatChange}
-      />
+      <FormatPicker measure={measure} format={series.format} formatChange={onFormatChange} />
     </React.Fragment>
   );
 };

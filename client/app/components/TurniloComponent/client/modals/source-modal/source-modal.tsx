@@ -45,28 +45,17 @@ export const SourceModal: React.FunctionComponent<SourceModalProps> = ({
 
   const onCopy = useCallback(() => setCopied(true), [setCopied]);
 
-  const SyntaxHighlighter = React.lazy(
-    () => import(/* webpackChunkName: "highlighter" */ "./highlighter"),
-  );
+  const SyntaxHighlighter = React.lazy(() => import(/* webpackChunkName: "highlighter" */ "./highlighter"));
 
   return (
-    <Modal
-      onClose={onClose}
-      title={title}
-      className={classNames("source-modal", className)}
-    >
+    <Modal onClose={onClose} title={title} className={classNames("source-modal", className)}>
       <div className="content">
         {header}
         <React.Suspense fallback={Loader}>
           <SyntaxHighlighter>{source}</SyntaxHighlighter>
         </React.Suspense>
         <div className="button-bar">
-          <Button
-            type="primary"
-            className="close"
-            onClick={onClose}
-            title={STRINGS.close}
-          />
+          <Button type="primary" className="close" onClick={onClose} title={STRINGS.close} />
           <SafeCopyToClipboard text={source} onCopy={onCopy}>
             <Button type="secondary" title={copyLabel} />
           </SafeCopyToClipboard>

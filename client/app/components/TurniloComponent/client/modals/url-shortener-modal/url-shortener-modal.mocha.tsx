@@ -22,12 +22,7 @@ import { SinonStub } from "sinon";
 import { Modal } from "../../components/modal/modal";
 import { SafeCopyToClipboard } from "../../components/safe-copy-to-clipboard/safe-copy-to-clipboard";
 import { STRINGS } from "../../config/constants";
-import {
-  LongUrl,
-  ShortUrl,
-  UrlShortenerModal,
-  UrlShortenerPrompt,
-} from "./url-shortener-modal";
+import { LongUrl, ShortUrl, UrlShortenerModal, UrlShortenerPrompt } from "./url-shortener-modal";
 
 const tick = () => Promise.resolve();
 
@@ -37,9 +32,7 @@ describe("<UrlShortenerModal>", () => {
     const url = "foobar.com";
     const title = "TITLE";
 
-    const modal = shallow(
-      <UrlShortenerModal url={url} title={title} onClose={onClose} />,
-    );
+    const modal = shallow(<UrlShortenerModal url={url} title={title} onClose={onClose} />);
 
     expect(modal.find(UrlShortenerPrompt).prop("url")).to.be.eq(url);
     expect(modal.find(Modal).prop("title")).to.be.eq(title);

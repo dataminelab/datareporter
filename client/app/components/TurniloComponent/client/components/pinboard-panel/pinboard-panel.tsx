@@ -41,10 +41,7 @@ const Legend = createTeleporter();
 
 export const LegendSpot = Legend.Source;
 
-export class PinboardPanel extends React.Component<
-  PinboardPanelProps,
-  PinboardPanelState
-> {
+export class PinboardPanel extends React.Component<PinboardPanelProps, PinboardPanelState> {
   constructor(props: PinboardPanelProps) {
     super(props);
     this.state = {
@@ -54,11 +51,7 @@ export class PinboardPanel extends React.Component<
 
   canDrop(): boolean {
     const dimension = DragManager.draggingDimension();
-    return (
-      dimension &&
-      this.isStringOrBoolean(dimension) &&
-      !this.alreadyPinned(dimension)
-    );
+    return dimension && this.isStringOrBoolean(dimension) && !this.alreadyPinned(dimension);
   }
 
   isStringOrBoolean({ kind }: Dimension): boolean {
@@ -96,16 +89,11 @@ export class PinboardPanel extends React.Component<
   };
 
   render() {
-    const { clicker, essence, timekeeper, style, refreshRequestTimestamp } =
-      this.props;
+    const { clicker, essence, timekeeper, style, refreshRequestTimestamp } = this.props;
     const { dragOver } = this.state;
 
     return (
-      <div
-        className="pinboard-panel"
-        onDragEnter={this.dragEnter}
-        style={style}
-      >
+      <div className="pinboard-panel" onDragEnter={this.dragEnter} style={style}>
         <Legend.Target />
         <PinboardTiles
           hidePlaceholder={dragOver}

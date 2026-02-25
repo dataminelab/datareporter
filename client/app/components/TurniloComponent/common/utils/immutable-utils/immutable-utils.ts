@@ -41,8 +41,7 @@ export class ImmutableUtils {
       if (currentObject.change instanceof Function) {
         lastObject = currentObject.change(bit, lastObject);
       } else {
-        const message =
-          "Can't find `change()` method on " + currentObject.constructor.name;
+        const message = "Can't find `change()` method on " + currentObject.constructor.name;
         throw new Error(message);
       }
     }
@@ -70,12 +69,7 @@ export class ImmutableUtils {
     return new (instance as any).constructor(v);
   }
 
-  public static addInArray<T>(
-    instance: T,
-    propertyName: string,
-    newItem: any,
-    index = -1,
-  ): T {
+  public static addInArray<T>(instance: T, propertyName: string, newItem: any, index = -1): T {
     const newArray = (instance as any)[propertyName];
 
     if (index === -1) {

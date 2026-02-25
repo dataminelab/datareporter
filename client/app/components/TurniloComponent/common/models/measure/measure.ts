@@ -30,11 +30,7 @@ import {
   QuantileExpression,
   RefExpression,
 } from "plywood";
-import {
-  makeTitle,
-  makeUrlSafeName,
-  verifyUrlSafeName,
-} from "../../utils/general/general";
+import { makeTitle, makeUrlSafeName, verifyUrlSafeName } from "../../utils/general/general";
 import some from "../../utils/plywood/some";
 import { formatFnFactory, measureDefaultFormat } from "../series/series-format";
 import { MeasureOrGroupVisitor } from "./measure-group";
@@ -73,7 +69,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   static getMeasure(measures: List<Measure>, measureName: string): Measure {
     if (!measureName) return null;
     measureName = measureName.toLowerCase(); // Case insensitive
-    return measures.find(measure => measure.name.toLowerCase() === measureName);
+    return measures.find((measure) => measure.name.toLowerCase() === measureName);
   }
 
   static getReferences(ex: Expression): string[] {
@@ -87,11 +83,11 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   static hasCountDistinctReferences(ex: Expression): boolean {
-    return some(ex, e => e instanceof CountDistinctExpression);
+    return some(ex, (e) => e instanceof CountDistinctExpression);
   }
 
   static hasQuantileReferences(ex: Expression): boolean {
-    return some(ex, e => e instanceof QuantileExpression);
+    return some(ex, (e) => e instanceof QuantileExpression);
   }
 
   static measuresFromAttributeInfo(attribute: AttributeInfo): Measure[] {
@@ -100,21 +96,14 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     const ref = $(name);
 
     if (nativeType) {
-      if (
-        nativeType === "hyperUnique" ||
-        nativeType === "thetaSketch" ||
-        nativeType === "HLLSketch"
-      ) {
+      if (nativeType === "hyperUnique" || nativeType === "thetaSketch" || nativeType === "HLLSketch") {
         return [
           new Measure({
             name: makeUrlSafeName(name),
             formula: $main.countDistinct(ref).toString(),
           }),
         ];
-      } else if (
-        nativeType === "approximateHistogram" ||
-        nativeType === "quantilesDoublesSketch"
-      ) {
+      } else if (nativeType === "approximateHistogram" || nativeType === "quantilesDoublesSketch") {
         return [
           new Measure({
             name: makeUrlSafeName(name + "_p98"),
@@ -153,9 +142,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
     if (!parameters.formula) {
       const parameterExpression = (parameters as any).expression;
       parameters.formula =
-        typeof parameterExpression === "string"
-          ? parameterExpression
-          : $("main").sum($(parameters.name)).toString();
+        typeof parameterExpression === "string" ? parameterExpression : $("main").sum($(parameters.name)).toString();
     }
     return new Measure(BaseImmutable.jsToValue(Measure.PROPERTIES, parameters));
   }
@@ -211,10 +198,7 @@ export class Measure extends BaseImmutable<MeasureValue, MeasureJS> {
   }
 
   public isApproximate(): boolean {
-    return (
-      Measure.hasCountDistinctReferences(this.expression) ||
-      Measure.hasQuantileReferences(this.expression)
-    );
+    return Measure.hasCountDistinctReferences(this.expression) || Measure.hasQuantileReferences(this.expression);
   }
 
   public isQuantile() {

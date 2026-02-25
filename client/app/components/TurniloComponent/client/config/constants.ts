@@ -171,7 +171,7 @@ export const STRINGS: any = {
 
 // Data cubes introspection strategies
 export const DATA_CUBES_STRATEGIES_LABELS = {
-  "none": "None",
+  none: "None",
   "no-autofill": "No autofill",
   "autofill-dimensions-only": "Autofill dimensions only",
   "autofill-measures-only": "Autofill measures only",
@@ -180,20 +180,7 @@ export const DATA_CUBES_STRATEGIES_LABELS = {
 
 const EN_US: Locale = {
   shortDays: ["S", "M", "T", "W", "T", "F", "S"],
-  shortMonths: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sept",
-    "Oct",
-    "Nov",
-    "Dec",
-  ],
+  shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
   weekStart: 0,
 };
 
@@ -201,7 +188,7 @@ export function getLocale(): Locale {
   return EN_US;
 }
 
-export const exportOptions: Array<{ label: string, fileFormat: FileFormat }> = [
+export const exportOptions: Array<{ label: string; fileFormat: FileFormat }> = [
   { label: STRINGS.exportToCSV, fileFormat: "csv" },
-  { label: STRINGS.exportToTSV, fileFormat: "tsv" }
+  { label: STRINGS.exportToTSV, fileFormat: "tsv" },
 ];

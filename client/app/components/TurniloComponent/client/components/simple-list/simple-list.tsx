@@ -16,12 +16,7 @@
  */
 
 import * as React from "react";
-import {
-  classNames,
-  getYFromEvent,
-  setDragData,
-  setDragGhost,
-} from "../../utils/dom/dom";
+import { classNames, getYFromEvent, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./simple-list.scss";
 
@@ -43,10 +38,7 @@ export interface SimpleListState {
   dropIndex?: number;
 }
 
-export class SimpleList extends React.Component<
-  SimpleListProps,
-  SimpleListState
-> {
+export class SimpleList extends React.Component<SimpleListProps, SimpleListState> {
   private listRef: React.RefObject<HTMLDivElement>;
 
   constructor(props: SimpleListProps) {
@@ -105,10 +97,7 @@ export class SimpleList extends React.Component<
     const { onEdit, onRemove, onReorder } = this.props;
     const { draggedItem, dropIndex } = this.state;
 
-    const svgize = (iconName: string) =>
-      iconName ? (
-        <SvgIcon svg={require(`../../icons/${iconName}.svg`)} />
-      ) : null;
+    const svgize = (iconName: string) => (iconName ? <SvgIcon svg={require(`../../icons/${iconName}.svg`)} /> : null);
 
     return rows.map((row, i) => {
       const { title, description, icon } = row;
@@ -130,9 +119,7 @@ export class SimpleList extends React.Component<
       const actions = (
         <div className="actions">
           <button onClick={onEdit.bind(this, i)}>{svgize("full-edit")}</button>
-          <button onClick={onRemove.bind(this, i)}>
-            {svgize("full-remove")}
-          </button>
+          <button onClick={onRemove.bind(this, i)}>{svgize("full-remove")}</button>
         </div>
       );
 
@@ -144,7 +131,7 @@ export class SimpleList extends React.Component<
         // last item takes care of both before and after indications
         "drop-after": i === rows.length - 1 && dropIndex === i + 1,
 
-        "dragged": isBeingDragged,
+        dragged: isBeingDragged,
       });
 
       return (
@@ -155,8 +142,7 @@ export class SimpleList extends React.Component<
           onDragOver={this.dragOver.bind(this, row)}
           draggable={!!onReorder}
           // @ts-ignore [not assignable to type]
-          onDragStart={this.dragStart.bind(this, row)}
-        >
+          onDragStart={this.dragStart.bind(this, row)}>
           {onReorder ? dragHandle : null}
           {svg}
           {text}

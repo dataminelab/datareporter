@@ -78,12 +78,7 @@ $row-height: 30px;
       .header-cell,
       .cell {
         @include ellipsis;
-        @include border-css-variable(
-          "border-right",
-          1px,
-          solid,
-          "border-extra-light"
-        );
+        @include border-css-variable("border-right", 1px, solid, "border-extra-light");
         display: inline-block;
         height: 100%;
         padding-left: 16px;
@@ -96,12 +91,7 @@ $row-height: 30px;
       }
 
       .header-cell {
-        @include border-css-variable(
-          "border-bottom",
-          1px,
-          solid,
-          "border-extra-light"
-        );
+        @include border-css-variable("border-bottom", 1px, solid, "border-extra-light");
         @include css-variable(background-color, background-lightest);
         height: $header-height;
 

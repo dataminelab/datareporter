@@ -18,7 +18,7 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
   const fieldNames = get(visualizationsSettings, `choroplethAvailableMaps.${options.mapType}.fieldNames`, {});
 
   const handleMapChange = useCallback(
-    mapType => {
+    (mapType) => {
       onOptionsChange({ mapType: mapType || null });
     },
     [onOptionsChange]
@@ -31,7 +31,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
           label="Map"
           data-test="Choropleth.Editor.MapType"
           defaultValue={options.mapType}
-          onChange={handleMapChange}>
+          onChange={handleMapChange}
+        >
           {map(visualizationsSettings.choroplethAvailableMaps, (_, mapType) => (
             <Select.Option key={mapType} data-test={`Choropleth.Editor.MapType.${mapType}`}>
               {get(visualizationsSettings, `choroplethAvailableMaps.${mapType}.name`, mapType)}
@@ -49,7 +50,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
               data-test="Choropleth.Editor.KeyColumn"
               disabled={data.columns.length === 0}
               defaultValue={options.keyColumn}
-              onChange={(keyColumn) => onOptionsChange({ keyColumn })}>
+              onChange={(keyColumn) => onOptionsChange({ keyColumn })}
+            >
               {map(data.columns, ({ name }) => (
                 <Select.Option key={name} data-test={`Choropleth.Editor.KeyColumn.${name}`}>
                   {name}
@@ -65,8 +67,9 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
               disabled={isLoadingGeoJson || targetFields.length === 0}
               loading={isLoadingGeoJson}
               value={options.targetField}
-              onChange={(targetField) => onOptionsChange({ targetField })}>
-              {map(targetFields, field => (
+              onChange={(targetField) => onOptionsChange({ targetField })}
+            >
+              {map(targetFields, (field) => (
                 <Select.Option key={field} data-test={`Choropleth.Editor.TargetField.${field}`}>
                   {fieldNames[field] || field}
                 </Select.Option>
@@ -82,7 +85,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
           data-test="Choropleth.Editor.ValueColumn"
           disabled={data.columns.length === 0}
           defaultValue={options.valueColumn}
-          onChange={(valueColumn) => onOptionsChange({ valueColumn })}>
+          onChange={(valueColumn) => onOptionsChange({ valueColumn })}
+        >
           {map(data.columns, ({ name }) => (
             <Select.Option key={name} data-test={`Choropleth.Editor.ValueColumn.${name}`}>
               {name}

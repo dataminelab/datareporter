@@ -25,11 +25,7 @@ import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
 import { Unary } from "../../../common/utils/functional/functional";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import {
-  findParentWithClass,
-  setDragData,
-  setDragGhost,
-} from "../../utils/dom/dom";
+import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { MeasureActionsMenu } from "../measure-actions-menu/measure-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
@@ -52,23 +48,13 @@ export interface MeasuresTileState {
   searchText?: string;
 }
 
-export type MeasureClickHandler = (
-  measureName: string,
-  e: MouseEvent<HTMLElement>,
-) => void;
-export type MeasureDragStartHandler = (
-  measureName: string,
-  e: DragEvent<HTMLElement>,
-) => void;
+export type MeasureClickHandler = (measureName: string, e: MouseEvent<HTMLElement>) => void;
+export type MeasureDragStartHandler = (measureName: string, e: DragEvent<HTMLElement>) => void;
 
 const hasSearchTextPredicate =
   (searchText: string) =>
   (measure: Measure): boolean => {
-    return (
-      searchText != null &&
-      searchText !== "" &&
-      measure.title.toLowerCase().includes(searchText.toLowerCase())
-    );
+    return searchText != null && searchText !== "" && measure.title.toLowerCase().includes(searchText.toLowerCase());
   };
 
 const isSelectedMeasurePredicate =
@@ -77,10 +63,7 @@ const isSelectedMeasurePredicate =
     return seriesList.hasMeasure(measure);
   };
 
-export class MeasuresTile extends Component<
-  MeasuresTileProps,
-  MeasuresTileState
-> {
+export class MeasuresTile extends Component<MeasuresTileProps, MeasuresTileState> {
   private searchRef: React.RefObject<any>;
   constructor(props: Readonly<any>) {
     super(props);
@@ -152,13 +135,10 @@ export class MeasuresTile extends Component<
     });
   };
 
-  renderMessageIfNoMeasuresFound(
-    measuresForView: MeasureOrGroupForView[],
-  ): JSX.Element {
+  renderMessageIfNoMeasuresFound(measuresForView: MeasureOrGroupForView[]): JSX.Element {
     const { searchText } = this.state;
 
-    if (!searchText || measuresForView.some(measure => measure.hasSearchText))
-      return null;
+    if (!searchText || measuresForView.some((measure) => measure.hasSearchText)) return null;
     const noMeasuresFound = `No measures for "${searchText}"`;
     return <div className="message">{noMeasuresFound}</div>;
   }
@@ -170,15 +150,11 @@ export class MeasuresTile extends Component<
 
     const measuresConverter = new MeasuresConverter(
       hasSearchTextPredicate(searchText),
-      isSelectedMeasurePredicate(essence.series),
+      isSelectedMeasurePredicate(essence.series)
     );
     const measuresForView = dataCube.measures.accept(measuresConverter);
 
-    const measuresRenderer = new MeasuresRenderer(
-      this.measureClick,
-      this.dragStart,
-      searchText,
-    );
+    const measuresRenderer = new MeasuresRenderer(this.measureClick, this.dragStart, searchText);
     const rows = measuresRenderer.render(measuresForView);
     const message = this.renderMessageIfNoMeasuresFound(measuresForView);
 
@@ -201,8 +177,7 @@ export class MeasuresTile extends Component<
         searchText={searchText}
         showSearch={showSearch}
         icons={icons}
-        className="measures-tile"
-      >
+        className="measures-tile">
         <div className="rows">
           {rows}
           {message}

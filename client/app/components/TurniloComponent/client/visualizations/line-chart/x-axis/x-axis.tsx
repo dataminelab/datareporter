@@ -20,10 +20,7 @@ import * as d3 from "d3";
 import * as React from "react";
 import { Stage } from "../../../../common/models/stage/stage";
 import { Unary } from "../../../../common/utils/functional/functional";
-import {
-  getMoment,
-  scaleTicksFormatter,
-} from "../../../../common/utils/time/time";
+import { getMoment, scaleTicksFormatter } from "../../../../common/utils/time/time";
 import { roundToHalfPx } from "../../../utils/dom/dom";
 import { ContinuousScale } from "../utils/continuous-types";
 import "./x-axis.scss";
@@ -41,10 +38,7 @@ export interface XAxisProps {
 
 const floatFormat = d3.format(".1f");
 
-function labelFormatter(
-  scale: ContinuousScale,
-  timezone: Timezone,
-): Unary<Date | number, string> {
+function labelFormatter(scale: ContinuousScale, timezone: Timezone): Unary<Date | number, string> {
   const [start] = scale.domain();
   if (start instanceof Date) {
     const formatter = scaleTicksFormatter(scale as any);
@@ -55,7 +49,7 @@ function labelFormatter(
   return (value: number) => String(floatFormat(value));
 }
 
-export const XAxis: React.SFC<XAxisProps> = props => {
+export const XAxis: React.SFC<XAxisProps> = (props) => {
   const { width, ticks, scale, timezone } = props;
   const stage = Stage.fromSize(width, X_AXIS_HEIGHT);
   const format = labelFormatter(scale, timezone);
@@ -84,12 +78,7 @@ export const XAxis: React.SFC<XAxisProps> = props => {
       tickIndex += x - prevElementX;
     }
     return (
-      <text
-        key={String(tick)}
-        x={x}
-        y={labelY}
-        style={{ textAnchor: index === 0 ? "start" : "middle" }}
-      >
+      <text key={String(tick)} x={x} y={labelY} style={{ textAnchor: index === 0 ? "start" : "middle" }}>
         {innerText}
       </text>
     );

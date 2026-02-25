@@ -34,10 +34,7 @@ const defaultMeasureSeries: MeasureSeriesValue = {
   type: SeriesType.MEASURE,
 };
 
-export class MeasureSeries
-  extends Record<MeasureSeriesValue>(defaultMeasureSeries)
-  implements SeriesBehaviours
-{
+export class MeasureSeries extends Record<MeasureSeriesValue>(defaultMeasureSeries) implements SeriesBehaviours {
   static fromMeasure(measure: Measure) {
     return new MeasureSeries({ reference: measure.name });
   }

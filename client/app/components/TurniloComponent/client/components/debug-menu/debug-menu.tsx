@@ -61,8 +61,7 @@ export const DebugMenu: React.SFC<DebugMenuProps> = ({
       direction="down"
       stage={Stage.fromSize(200, 200)}
       openOn={openOn}
-      onClose={onClose}
-    >
+      onClose={onClose}>
       <ul className="bubble-list">
         <li key="view-raw-data" onClick={displayRawData}>
           {STRINGS.displayRawData}

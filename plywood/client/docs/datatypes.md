@@ -46,7 +46,7 @@ Represents a categorical attribute.
 
 Native example: `'USA'`
 
-## SET/*
+## SET/\*
 
 Represents a set of distinct elements. The elements within a set must all have the same type.
 

@@ -42,7 +42,6 @@ describe("ImmutableArrayEquals", () => {
   });
 
   it("should return false if one member is different", () => {
-    expect(immutableArrayEquals([dummy(1), dummy(1)], [dummy(1), dummy(2)])).to
-      .be.false;
+    expect(immutableArrayEquals([dummy(1), dummy(1)], [dummy(1), dummy(2)])).to.be.false;
   });
 });

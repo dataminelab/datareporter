@@ -1,40 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html class="no-js">
-<head>
-  <title>{% block title %}{% endblock %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <link rel="stylesheet" href="{{ asset_url('server.css') }}">
+    <link rel="stylesheet" href="{{ asset_url('server.css') }}" />
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
-  <link rel="manifest" href="/static/images/site.webmanifest">
-  <link rel="mask-icon" href="/static/images/safari-pinned-tab.svg" color="#5bbad5">
-  <meta name="msapplication-TileColor" content="#da532c">
-  <meta name="theme-color" content="#ffffff">
-  {% block head %}{% endblock %}
-</head>
-<body class="d-flex flex-column justify-content-center align-items-center signed-out">
-
-  <div>
-    <div class="header">
-      <div class="text-center m-b-15">
-        <a href="./">
-          <img class="logo" src="/static/images/report_icon_small.png">
-        </a>
-      </div>
-      {% if not hide_page_header %}
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/static/images/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/static/images/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/static/images/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/static/images/site.webmanifest" />
+    <link
+      rel="mask-icon"
+      href="/static/images/safari-pinned-tab.svg"
+      color="#5bbad5"
+    />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
+    {% block head %}{% endblock %}
+  </head>
+  <body
+    class="d-flex flex-column justify-content-center align-items-center signed-out"
+  >
+    <div>
+      <div class="header">
+        <div class="text-center m-b-15">
+          <a href="./">
+            <img class="logo" src="/static/images/report_icon_small.png" />
+          </a>
+        </div>
+        {% if not hide_page_header %}
         <h3 class="text-center m-t-0 m-b-25">{{ self.title() }}</h3>
-      {% endif %}
+        {% endif %}
+      </div>
+      {% block content %}{% endblock %}
     </div>
-    {% block content %}{% endblock %}
-  </div>
 
-{% block scripts %}{% endblock %}
-
-{% include '_includes/signed_out_tail.html' %}
-
-</body>
+    {% block scripts %}{% endblock %} {% include
+    '_includes/signed_out_tail.html' %}
+  </body>
 </html>

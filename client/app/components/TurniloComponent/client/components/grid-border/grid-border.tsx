@@ -24,10 +24,7 @@ interface BottomBorderProps {
   tickLength: number;
 }
 
-export const BottomBorder: React.SFC<BottomBorderProps> = ({
-  stage,
-  tickLength,
-}) => {
+export const BottomBorder: React.SFC<BottomBorderProps> = ({ stage, tickLength }) => {
   return (
     <line
       className="grid-border grid-bottom-border"

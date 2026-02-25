@@ -41,12 +41,7 @@ interface SplitSelection {
   dimension: Dimension;
 }
 
-function splitSelection(
-  split: Split,
-  offset: number,
-  dataCube: DataCube,
-  dataset: Datum[],
-): SplitSelection {
+function splitSelection(split: Split, offset: number, dataCube: DataCube, dataset: Datum[]): SplitSelection {
   const dimensionName = split.reference;
   const dimension = dataCube.getDimension(dimensionName);
   const labelIndex = Math.floor(offset / TILE_SIZE);
@@ -57,11 +52,7 @@ function splitSelection(
   return { value, dimension };
 }
 
-function firstSplitSelection(
-  topOffset: number,
-  essence: Essence,
-  dataset: Datum[],
-): SplitSelection {
+function firstSplitSelection(topOffset: number, essence: Essence, dataset: Datum[]): SplitSelection {
   const {
     dataCube,
     splits: { splits },
@@ -70,11 +61,7 @@ function firstSplitSelection(
   return splitSelection(split, topOffset, dataCube, dataset);
 }
 
-function secondSplitSelection(
-  leftOffset: number,
-  essence: Essence,
-  dataset: Datum[],
-): SplitSelection {
+function secondSplitSelection(leftOffset: number, essence: Essence, dataset: Datum[]): SplitSelection {
   const {
     dataCube,
     splits: { splits },
@@ -83,10 +70,7 @@ function secondSplitSelection(
   return splitSelection(split, leftOffset, dataCube, nestedDataset(dataset[0]));
 }
 
-function splitSelectionToClause({
-  value,
-  dimension: { kind, name: reference },
-}: SplitSelection): FilterClause {
+function splitSelectionToClause({ value, dimension: { kind, name: reference } }: SplitSelection): FilterClause {
   switch (kind) {
     case "string":
       return new StringFilterClause({
@@ -124,29 +108,18 @@ interface Position {
   y: number;
 }
 
-function pickSplitSelections(
-  { x, y, part }: Position,
-  essence: Essence,
-  dataset: Datum[],
-): SplitSelection[] {
+function pickSplitSelections({ x, y, part }: Position, essence: Essence, dataset: Datum[]): SplitSelection[] {
   switch (part) {
     case "top-gutter":
       return [secondSplitSelection(x, essence, dataset)];
     case "left-gutter":
       return [firstSplitSelection(y, essence, dataset)];
     case "body":
-      return [
-        firstSplitSelection(y, essence, dataset),
-        secondSplitSelection(x, essence, dataset),
-      ];
+      return [firstSplitSelection(y, essence, dataset), secondSplitSelection(x, essence, dataset)];
   }
 }
 
-export default function createHighlightClauses(
-  position: Position,
-  essence: Essence,
-  dataset: Datum[],
-): FilterClause[] {
+export default function createHighlightClauses(position: Position, essence: Essence, dataset: Datum[]): FilterClause[] {
   const selections = pickSplitSelections(position, essence, dataset);
   if (selections.every(isTruthy)) {
     return selections.map(splitSelectionToClause);

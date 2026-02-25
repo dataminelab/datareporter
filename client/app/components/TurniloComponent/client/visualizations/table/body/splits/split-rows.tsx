@@ -32,7 +32,7 @@ interface SplitRowsProps {
   highlightedRowIndex: number | null;
 }
 
-export const SplitRows: React.FunctionComponent<SplitRowsProps> = props => {
+export const SplitRows: React.FunctionComponent<SplitRowsProps> = (props) => {
   const { collapseRows, color, ...rest } = props;
   const {
     data,
@@ -45,13 +45,7 @@ export const SplitRows: React.FunctionComponent<SplitRowsProps> = props => {
   return collapseRows ? (
     <FlattenedSplits
       {...rest}
-      splitLabel={({ datum }) => (
-        <FlattenedSplitColumns
-          splits={splits}
-          datum={datum}
-          timezone={timezone}
-        />
-      )}
+      splitLabel={({ datum }) => <FlattenedSplitColumns splits={splits} datum={datum} timezone={timezone} />}
     />
   ) : (
     <NestedSplits color={color} {...rest} />

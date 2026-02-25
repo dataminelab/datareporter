@@ -47,6 +47,8 @@ class TestModelsCreateResource(BaseTestCase):
             defaultSelectedMeasures:
               - id
             attributes:
+              - name: time
+                type: TIME
               - name: api_key
                 type: CHARACTER VARYING
               - name: created_at

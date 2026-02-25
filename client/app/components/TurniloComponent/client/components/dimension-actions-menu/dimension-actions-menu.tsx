@@ -44,19 +44,10 @@ export interface DimensionActionsProps {
   triggerFilterMenu: (dimension: Dimension) => void;
 }
 
-export const DimensionActionsMenu: React.SFC<
-  DimensionActionsProps & DimensionActionsMenuProps
-> = (props: DimensionActionsMenuProps & DimensionActionsProps) => {
-  const {
-    triggerFilterMenu,
-    clicker,
-    essence,
-    direction,
-    containerStage,
-    openOn,
-    dimension,
-    onClose,
-  } = props;
+export const DimensionActionsMenu: React.SFC<DimensionActionsProps & DimensionActionsMenuProps> = (
+  props: DimensionActionsMenuProps & DimensionActionsProps
+) => {
+  const { triggerFilterMenu, clicker, essence, direction, containerStage, openOn, dimension, onClose } = props;
   return (
     <BubbleMenu
       className="dimension-actions-menu"
@@ -65,8 +56,7 @@ export const DimensionActionsMenu: React.SFC<
       stage={Stage.fromSize(ACTION_SIZE * 2, ACTION_SIZE * 2)}
       fixedSize={true}
       openOn={openOn}
-      onClose={onClose}
-    >
+      onClose={onClose}>
       <DimensionActions
         essence={essence}
         clicker={clicker}
@@ -78,9 +68,7 @@ export const DimensionActionsMenu: React.SFC<
   );
 };
 
-export const DimensionActions: React.SFC<DimensionActionsProps> = (
-  props: DimensionActionsProps,
-) => {
+export const DimensionActions: React.SFC<DimensionActionsProps> = (props: DimensionActionsProps) => {
   const {
     onClose,
     triggerFilterMenu,
@@ -100,18 +88,14 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (
   }
 
   function onSplit() {
-    if (!isOnlySplit)
-      clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
+    if (!isOnlySplit) clicker.changeSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
     onClose();
   }
 
   function onSubSplit() {
     if (!hasSplitOn) {
       if (dimension.kind !== "time") {
-        clicker.changeSplits(
-          splits.insertByIndex(0, Split.fromDimension(dimension)),
-          VisStrategy.FairGame,
-        );
+        clicker.changeSplits(splits.insertByIndex(0, Split.fromDimension(dimension)), VisStrategy.FairGame);
       } else {
         clicker.addSplit(Split.fromDimension(dimension), VisStrategy.FairGame);
       }
@@ -130,24 +114,15 @@ export const DimensionActions: React.SFC<DimensionActionsProps> = (
         <SvgIcon svg={require("../../icons/preview-filter.svg")} />
         <div className="action-label">{STRINGS.filter}</div>
       </div>
-      <div
-        className={classNames("pin", "action", { disabled: !isPinable })}
-        onClick={onPin}
-      >
+      <div className={classNames("pin", "action", { disabled: !isPinable })} onClick={onPin}>
         <SvgIcon svg={require("../../icons/preview-pin.svg")} />
         <div className="action-label">{STRINGS.pin}</div>
       </div>
-      <div
-        className={classNames("split", "action", { disabled: isOnlySplit })}
-        onClick={onSplit}
-      >
+      <div className={classNames("split", "action", { disabled: isOnlySplit })} onClick={onSplit}>
         <SvgIcon svg={require("../../icons/preview-split.svg")} />
         <div className="action-label">{STRINGS.split}</div>
       </div>
-      <div
-        className={classNames("subsplit", "action", { disabled: hasSplitOn })}
-        onClick={onSubSplit}
-      >
+      <div className={classNames("subsplit", "action", { disabled: hasSplitOn })} onClick={onSubSplit}>
         <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
         <div className="action-label">{STRINGS.subsplit}</div>
       </div>

@@ -1,11 +1,6 @@
 import React from "react";
 
-type DefaultStepKey =
-  | "dataSources"
-  | "queries"
-  | "alerts"
-  | "dashboards"
-  | "users";
+type DefaultStepKey = "dataSources" | "queries" | "alerts" | "dashboards" | "users";
 export type StepKey<K> = DefaultStepKey | K;
 
 export interface StepItem<K> {

@@ -1,10 +1,5 @@
 {
-  "extends": [
-    "tslint:recommended",
-    "tslint-eslint-rules",
-    "tslint-react",
-    "tslint-no-focused-test"
-  ],
+  "extends": ["tslint:recommended", "tslint-eslint-rules", "tslint-react", "tslint-no-focused-test"],
   "rules": {
     "arrow-parens": [
       true, // disallow parens around single argument arrow functions

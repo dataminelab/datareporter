@@ -67,11 +67,7 @@ L.MarkerClusterIcon = L.DivIcon.extend({
 });
 L.markerClusterIcon = (...args) => new L.MarkerClusterIcon(...args);
 
-function createIconMarker(
-  lat,
-  lon,
-  { iconShape, iconFont, foregroundColor, backgroundColor, borderColor }
-) {
+function createIconMarker(lat, lon, { iconShape, iconFont, foregroundColor, backgroundColor, borderColor }) {
   const icon = L.BeautifyIcon.icon({
     iconShape,
     icon: iconFont,
@@ -176,12 +172,12 @@ export default function initMap(container) {
   function updateLayers(groups, options) {
     _tileLayer.setUrl(options.mapTileUrl);
 
-    _markerLayers.eachLayer(layer => {
+    _markerLayers.eachLayer((layer) => {
       _markerLayers.removeLayer(layer);
       _layersControls.removeLayer(layer);
     });
 
-    each(groups, group => {
+    each(groups, (group) => {
       const layer = createMarkersLayer(options, group);
       _markerLayers.addLayer(layer);
       _layersControls.addOverlay(layer, group.name);

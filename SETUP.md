@@ -3,8 +3,8 @@
 This is a setup guide for datareporter's devolopment environment
 DataReporter builds correctly with Node version 18.20, consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
 
-* [ensure shims are added to PATH](https://github.com/nodenv/nodenv#how-it-works)
-* [for windows-wsl2-nvm](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl)
+- [ensure shims are added to PATH](https://github.com/nodenv/nodenv#how-it-works)
+- [for windows-wsl2-nvm](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl)
 
 ```sh
 nodenv install 18.20
@@ -55,7 +55,7 @@ poetry install --only $install_groups $POETRY_OPTIONS
 ```sh
 # This step is required on first build
 docker compose up --build # or make up to start required services like postgres app server
-docker compose run --rm server create_db # start server and run. exec /app/manage.py database create_tables. 
+docker compose run --rm server create_db # start server and run. exec /app/manage.py database create_tables.
 # Database Update process
 docker compose run server manage db stamp head # If you get an error saying "target database is not up to date" you can run this command
 docker compose run server manage db migrate # Any change to back-end models requires to create a migration
@@ -107,33 +107,33 @@ npm run cypress run # Run cypress tests in headless mode
 
 #### DataReporter server and client
 
-* **directory**: `redash`
-  * **debug**: Please follow the instruction from the [debugging guide](/docs/open-source/dev-guide/debugging/)
-  * **changes:**
-    * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
+- **directory**: `redash`
+  - **debug**: Please follow the instruction from the [debugging guide](/docs/open-source/dev-guide/debugging/)
+  - **changes:**
+    - All changes are immediately visible as the python application is interpreted and it's running directly from source code.
 
 #### Data Reporter client
 
-* **directory:** `viz-lib`
-* **directory:** `plywood/client`
-* **directory:** `client`
-  * **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
-  * **changes:**
-    * By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.
-    That will start watched for source code changes for Data Reporter frontend and all submodules.
-    * At liniux system you may face problem of too many file system watchers. That will result in error message
-    `Error: ENOSPC: System limit for number of file watchers reached, watch`
-    To solve it you need to increase the number of available watches by :
-    `sudo sysctl -w fs.inotify.max_user_watches=512000`
+- **directory:** `viz-lib`
+- **directory:** `plywood/client`
+- **directory:** `client`
+  - **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
+  - **changes:**
+    - By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.
+      That will start watched for source code changes for Data Reporter frontend and all submodules.
+    - At liniux system you may face problem of too many file system watchers. That will result in error message
+      `Error: ENOSPC: System limit for number of file watchers reached, watch`
+      To solve it you need to increase the number of available watches by :
+      `sudo sysctl -w fs.inotify.max_user_watches=512000`
 
 #### Plywood server
 
-* **directory:** `plywood`
-* **debug:** connect nodejs debugger to `localhost:9231`
-* **changes:**
-  * All changes should be reflected automatically. The server is running in watch mode with incremental build support
+- **directory:** `plywood`
+- **debug:** connect nodejs debugger to `localhost:9231`
+- **changes:**
+  - All changes should be reflected automatically. The server is running in watch mode with incremental build support
     and should rebuild at any source code change.
-  * To see details/logs of build go into repo root dir and run `docker compose logs plywood`
+  - To see details/logs of build go into repo root dir and run `docker compose logs plywood`
 
 ## Local Development
 
@@ -194,14 +194,14 @@ this will rewrite environment variables from `.env` and the compose file
 docker-compose -f compose.dev.yml up -d
 ```
 
-* Supported Report Engines
-  * postgres
-  * mysql  
-  * bigquery
-  * athena
-  * druid
-  * pg
-  * json
+- Supported Report Engines
+  - postgres
+  - mysql
+  - bigquery
+  - athena
+  - druid
+  - pg
+  - json
 
 ### Docker connectivity issues for testing connection between containers
 

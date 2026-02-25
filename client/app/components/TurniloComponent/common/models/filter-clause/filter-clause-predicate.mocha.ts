@@ -38,12 +38,7 @@ describe("Clause Predicate", () => {
         values: Set.of("bar", "baz"),
       });
       const predicate = clausePredicate(clause);
-      expect(input.filter(predicate)).to.be.deep.eq([
-        "foo",
-        "qvux",
-        "spam",
-        "eggs",
-      ]);
+      expect(input.filter(predicate)).to.be.deep.eq(["foo", "qvux", "spam", "eggs"]);
     });
     it("Contains", () => {
       const clause = new StringFilterClause({

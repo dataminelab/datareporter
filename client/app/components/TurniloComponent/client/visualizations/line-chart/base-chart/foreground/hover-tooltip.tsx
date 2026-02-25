@@ -32,9 +32,7 @@ interface HoverTooltipProps {
   stage: Stage;
 }
 
-export const HoverTooltip: React.FunctionComponent<
-  HoverTooltipProps
-> = props => {
+export const HoverTooltip: React.FunctionComponent<HoverTooltipProps> = (props) => {
   const { content, interaction, xScale, timezone, stage } = props;
   const { range } = interaction;
   let x;
@@ -47,10 +45,7 @@ export const HoverTooltip: React.FunctionComponent<
   }
   return (
     <TooltipWithinStage key={x} top={60} left={x} stage={stage}>
-      <SegmentBubbleContent
-        title={formatValue(range, timezone)}
-        content={content}
-      />
+      <SegmentBubbleContent title={formatValue(range, timezone)} content={content} />
     </TooltipWithinStage>
   );
 };

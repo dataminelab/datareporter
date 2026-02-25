@@ -157,26 +157,14 @@ describe("Functional utilities", () => {
 
   describe("concatTruthy", () => {
     it("should omit falsy values", () => {
-      const result = concatTruthy<any>(
-        0,
-        1,
-        false,
-        2,
-        3,
-        null,
-        4,
-        undefined,
-        5,
-      );
+      const result = concatTruthy<any>(0, 1, false, 2, 3, null, 4, undefined, 5);
       expect(result).to.deep.eq([0, 1, 2, 3, 4, 5]);
     });
   });
 
   describe("mapTruthy", () => {
     it("should omit falsy values from mapper", () => {
-      const result = mapTruthy<any, any>([1, 2, 3, 4, 5], (i: number) =>
-        i % 2 ? i : null,
-      );
+      const result = mapTruthy<any, any>([1, 2, 3, 4, 5], (i: number) => (i % 2 ? i : null));
       expect(result).to.deep.eq([1, 3, 5]);
     });
   });

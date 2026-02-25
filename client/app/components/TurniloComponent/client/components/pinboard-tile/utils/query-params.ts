@@ -27,10 +27,7 @@ export interface QueryParams {
   dimension: Dimension;
 }
 
-export function equalParams(
-  params: QueryParams,
-  otherParams: Partial<QueryParams>,
-): boolean {
+export function equalParams(params: QueryParams, otherParams: Partial<QueryParams>): boolean {
   const { essence, searchText, sortOn, dimension, timekeeper } = params;
   const {
     essence: otherEssence,

@@ -37,8 +37,7 @@ export interface ButtonState {}
 
 export class Button extends React.Component<ButtonProps, ButtonState> {
   render() {
-    const { title, type, className, svg, active, disabled, onClick } =
-      this.props;
+    const { title, type, className, svg, active, disabled, onClick } = this.props;
 
     let icon: JSX.Element = null;
     if (svg) {
@@ -46,11 +45,7 @@ export class Button extends React.Component<ButtonProps, ButtonState> {
     }
 
     return (
-      <button
-        className={classNames("button", type, className, { icon, active })}
-        onClick={onClick}
-        disabled={disabled}
-      >
+      <button className={classNames("button", type, className, { icon, active })} onClick={onClick} disabled={disabled}>
         {icon}
         {title}
       </button>

@@ -39,9 +39,7 @@ class AlertsList extends React.Component {
       (text, alert) => (
         <span title={alert.options.muted ? "Muted" : "Active"}>
           <i
-            className={`fa fa-bell-${
-              alert.options.muted ? "slash" : "o"
-            } p-r-0`}
+            className={`fa fa-bell-${alert.options.muted ? "slash" : "o"} p-r-0`}
             aria-hidden="true"
           />
           <span className="sr-only">

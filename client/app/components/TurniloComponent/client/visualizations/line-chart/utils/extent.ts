@@ -20,25 +20,17 @@ import { Essence } from "../../../../common/models/essence/essence";
 import { ConcreteSeries } from "../../../../common/models/series/concrete-series";
 import { flatMap } from "../../../../common/utils/functional/functional";
 import { selectSplitDataset } from "../../../utils/dataset/selectors/selectors";
-import {
-  datumsExtent,
-  Extent,
-  seriesSelectors,
-} from "../../../utils/extent/extent";
+import { datumsExtent, Extent, seriesSelectors } from "../../../utils/extent/extent";
 import { hasNominalSplit } from "./splits";
 
 export function extentAcrossSeries(dataset: Dataset, essence: Essence): Extent {
   const hasComparison = essence.hasComparison();
   const series = essence.getConcreteSeries().toArray();
-  const getters = flatMap(series, s => seriesSelectors(s, hasComparison));
+  const getters = flatMap(series, (s) => seriesSelectors(s, hasComparison));
   return datumsExtent(dataset.data, getters);
 }
 
-export function extentAcrossSplits(
-  dataset: Dataset,
-  essence: Essence,
-  series: ConcreteSeries,
-): Extent {
+export function extentAcrossSplits(dataset: Dataset, essence: Essence, series: ConcreteSeries): Extent {
   const getters = seriesSelectors(series, essence.hasComparison());
   if (hasNominalSplit(essence)) {
     return dataset.data.reduce(
@@ -48,7 +40,7 @@ export function extentAcrossSplits(
         const extent = datumsExtent(splitDataset.data, getters);
         return d3.extent([...acc, ...extent]);
       },
-      [0, 0],
+      [0, 0]
     ) as Extent;
   }
 

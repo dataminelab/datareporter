@@ -17,22 +17,14 @@
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { SortDirection, SortType } from "../../models/sort/sort";
 import { SplitType } from "../../models/split/split";
-import {
-  NumberSplitDefinition,
-  StringSplitDefinition,
-  TimeSplitDefinition,
-} from "./split-definition";
+import { NumberSplitDefinition, StringSplitDefinition, TimeSplitDefinition } from "./split-definition";
 
 export function stringSplitDefinition(
   dimension: string,
   {
     limit = 50,
-    sort: {
-      direction = SortDirection.ascending,
-      period = SeriesDerivation.CURRENT,
-      reference = dimension,
-    } = {},
-  } = {},
+    sort: { direction = SortDirection.ascending, period = SeriesDerivation.CURRENT, reference = dimension } = {},
+  } = {}
 ): StringSplitDefinition {
   return {
     type: SplitType.string,
@@ -52,12 +44,8 @@ export function timeSplitDefinition(
   granularity: string,
   {
     limit = 50,
-    sort: {
-      direction = SortDirection.ascending,
-      period = SeriesDerivation.CURRENT,
-      reference = dimension,
-    } = {},
-  } = {},
+    sort: { direction = SortDirection.ascending, period = SeriesDerivation.CURRENT, reference = dimension } = {},
+  } = {}
 ): TimeSplitDefinition {
   return {
     granularity,
@@ -78,12 +66,8 @@ export function numberSplitDefinition(
   granularity: number,
   {
     limit = 50,
-    sort: {
-      direction = SortDirection.ascending,
-      period = SeriesDerivation.CURRENT,
-      reference = dimension,
-    } = {},
-  } = {},
+    sort: { direction = SortDirection.ascending, period = SeriesDerivation.CURRENT, reference = dimension } = {},
+  } = {}
 ): NumberSplitDefinition {
   return {
     granularity,

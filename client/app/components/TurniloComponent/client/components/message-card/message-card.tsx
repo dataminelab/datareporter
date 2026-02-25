@@ -21,7 +21,7 @@ interface MessageCardProps {
   title: string;
 }
 
-export const MessageCard: React.SFC<MessageCardProps> = props => {
+export const MessageCard: React.SFC<MessageCardProps> = (props) => {
   const { title, children } = props;
   return (
     <div className="message-card">

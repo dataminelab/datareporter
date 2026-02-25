@@ -33,25 +33,13 @@ interface MeasureRowProps {
   scales: Array<d3.ScaleLinear<number, number>>;
 }
 
-export const MeasureRow: React.FunctionComponent<MeasureRowProps> = props => {
-  const {
-    datum,
-    scales,
-    cellWidth,
-    highlight,
-    dimmed,
-    style,
-    essence,
-    report,
-  } = props;
+export const MeasureRow: React.FunctionComponent<MeasureRowProps> = (props) => {
+  const { datum, scales, cellWidth, highlight, dimmed, style, essence, report } = props;
   const concreteSeries = essence.getConcreteSeries().toArray();
   const splitLength = essence.splits.length();
 
   return (
-    <div
-      className={classNames("measure-row", { highlight, dimmed })}
-      style={style}
-    >
+    <div className={classNames("measure-row", { highlight, dimmed })} style={style}>
       {concreteSeries.map((series, i) => {
         return (
           <MeasureValue

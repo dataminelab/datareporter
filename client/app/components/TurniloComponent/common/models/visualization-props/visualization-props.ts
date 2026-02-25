@@ -65,11 +65,8 @@ export const loaded = (dataset: Dataset): DatasetLoaded => ({
   dataset,
 });
 
-export const isLoading = (dl: DatasetLoad): dl is DatasetLoading =>
-  dl.status === DatasetLoadStatus.LOADING;
-export const isLoaded = (dl: DatasetLoad): dl is DatasetLoaded =>
-  dl.status === DatasetLoadStatus.LOADED;
-export const isError = (dl: DatasetLoad): dl is DatasetLoadError =>
-  dl.status === DatasetLoadStatus.ERROR;
+export const isLoading = (dl: DatasetLoad): dl is DatasetLoading => dl.status === DatasetLoadStatus.LOADING;
+export const isLoaded = (dl: DatasetLoad): dl is DatasetLoaded => dl.status === DatasetLoadStatus.LOADED;
+export const isError = (dl: DatasetLoad): dl is DatasetLoadError => dl.status === DatasetLoadStatus.ERROR;
 
 export type DatasetLoad = DatasetLoading | DatasetLoaded | DatasetLoadError;

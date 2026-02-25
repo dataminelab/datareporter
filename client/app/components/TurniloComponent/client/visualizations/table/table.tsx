@@ -26,19 +26,9 @@ import { ImmutableRecord } from "../../../common/utils/immutable-utils/immutable
 import { TableSettings } from "../../../common/visualization-manifests/table/settings";
 import { TABLE_MANIFEST } from "../../../common/visualization-manifests/table/table";
 import { HighlightModal } from "../../components/highlight-modal/highlight-modal";
-import {
-  Direction,
-  ResizeHandle,
-} from "../../components/resize-handle/resize-handle";
-import {
-  Scroller,
-  ScrollerLayout,
-  ScrollerPart,
-} from "../../components/scroller/scroller";
-import {
-  BaseVisualization,
-  BaseVisualizationState,
-} from "../base-visualization/base-visualization";
+import { Direction, ResizeHandle } from "../../components/resize-handle/resize-handle";
+import { Scroller, ScrollerLayout, ScrollerPart } from "../../components/scroller/scroller";
+import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import { MeasureRows } from "./body/measures/measure-rows";
 import { nestedSplitName } from "./body/splits/nested-split-name";
 import { SplitRows } from "./body/splits/split-rows";
@@ -46,12 +36,7 @@ import { MeasuresHeader } from "./header/measures/measures-header";
 import { SplitsHeader } from "./header/splits/splits-header";
 import { Highlighter } from "./highlight/highlight";
 import "./table.scss";
-import {
-  HoverElement,
-  PositionHover,
-  rowPosition,
-  seriesPosition,
-} from "./utils/calculate-hover-position";
+import { HoverElement, PositionHover, rowPosition, seriesPosition } from "./utils/calculate-hover-position";
 import { getFilterFromDatum } from "./utils/filter-for-datum";
 import { measureColumnsCount } from "./utils/measure-columns-count";
 import { visibleIndexRange } from "./utils/visible-index-range";
@@ -88,13 +73,10 @@ export class Table extends BaseVisualization<TableState> {
   }
 
   private getIdealColumnWidth(): number {
-    const availableWidth =
-      this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
+    const availableWidth = this.props.stage.width - SPACE_LEFT - this.getSegmentWidth();
     const count = measureColumnsCount(this.props.essence);
 
-    return count * MEASURE_WIDTH >= availableWidth
-      ? MEASURE_WIDTH
-      : availableWidth / count;
+    return count * MEASURE_WIDTH >= availableWidth ? MEASURE_WIDTH : availableWidth / count;
   }
 
   maxSegmentWidth(): number {
@@ -121,13 +103,8 @@ export class Table extends BaseVisualization<TableState> {
       direction: SortDirection.descending,
     });
     const sortWithDirection =
-      commonSort && commonSort.equals(sort)
-        ? sort.set("direction", SortDirection.ascending)
-        : sort;
-    clicker.changeSplits(
-      splits.changeSort(sortWithDirection),
-      VisStrategy.KeepAlways,
-    ); // set all to measure
+      commonSort && commonSort.equals(sort) ? sort.set("direction", SortDirection.ascending) : sort;
+    clicker.changeSplits(splits.changeSort(sortWithDirection), VisStrategy.KeepAlways); // set all to measure
   }
 
   private setSortToDimension() {
@@ -146,8 +123,7 @@ export class Table extends BaseVisualization<TableState> {
 
     if (!rowHighlight) return;
 
-    const alreadyHighlighted =
-      this.hasHighlight() && rowHighlight.equals(this.getHighlightClauses());
+    const alreadyHighlighted = this.hasHighlight() && rowHighlight.equals(this.getHighlightClauses());
     if (alreadyHighlighted) {
       this.dropHighlight();
       return;
@@ -156,21 +132,12 @@ export class Table extends BaseVisualization<TableState> {
     this.highlight(rowHighlight, null);
   }
 
-  private calculateMousePosition(
-    x: number,
-    y: number,
-    part: ScrollerPart,
-  ): PositionHover {
+  private calculateMousePosition(x: number, y: number, part: ScrollerPart): PositionHover {
     switch (part) {
       case "top-left-corner":
         return { element: HoverElement.CORNER };
       case "top-gutter":
-        return seriesPosition(
-          x,
-          this.props.essence,
-          this.getSegmentWidth(),
-          this.getIdealColumnWidth(),
-        );
+        return seriesPosition(x, this.props.essence, this.getSegmentWidth(), this.getIdealColumnWidth());
       case "body":
       case "left-gutter":
         return rowPosition(y, this.state.flatData);
@@ -210,8 +177,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   };
 
-  setScroll = (scrollTop: number, scrollLeft: number): void =>
-    this.setState({ scrollLeft, scrollTop });
+  setScroll = (scrollTop: number, scrollLeft: number): void => this.setState({ scrollLeft, scrollTop });
 
   setSegmentWidth = (segmentWidth: number): void => this.setState({ segmentWidth });
 
@@ -229,14 +195,11 @@ export class Table extends BaseVisualization<TableState> {
     return { flatData };
   }
 
-  private getScalesForColumns(
-    essence: Essence,
-    flatData: PseudoDatum[],
-  ): Array<d3.ScaleLinear<number, number>> {
+  private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.ScaleLinear<number, number>> {
     const concreteSeries = essence.getConcreteSeries().toArray();
     const splitLength = essence.splits.length();
 
-    return concreteSeries.map(series => {
+    return concreteSeries.map((series) => {
       const measureValues = flatData
         .filter((d: Datum) => d["__nest"] === splitLength)
         .map((d: Datum) => series.selectValue(d));
@@ -265,9 +228,7 @@ export class Table extends BaseVisualization<TableState> {
     if (!flatData) return null;
     if (!this.hasHighlight()) return null;
     const { splits } = essence;
-    const index = flatData.findIndex(d =>
-      this.getHighlightClauses().equals(getFilterFromDatum(splits, d)),
-    );
+    const index = flatData.findIndex((d) => this.getHighlightClauses().equals(getFilterFromDatum(splits, d)));
     if (index >= 0) return index;
     return null;
   }
@@ -282,11 +243,7 @@ export class Table extends BaseVisualization<TableState> {
 
     const columnsCount = measureColumnsCount(essence);
     const rowsCount = flatData ? flatData.length : 0;
-    const visibleRowsRange = visibleIndexRange(
-      rowsCount,
-      stage.height,
-      scrollTop,
-    );
+    const visibleRowsRange = visibleIndexRange(rowsCount, stage.height, scrollTop);
     const showHighlight = highlightedRowIndex !== null && flatData;
 
     const scrollerLayout: ScrollerLayout = {
@@ -333,9 +290,7 @@ export class Table extends BaseVisualization<TableState> {
               segmentWidth={this.getSegmentWidth()}
             />
           }
-          topLeftCorner={
-            <SplitsHeader essence={essence} collapseRows={collapseRows} />
-          }
+          topLeftCorner={<SplitsHeader essence={essence} collapseRows={collapseRows} />}
           body={
             flatData && (
               <MeasureRows
@@ -371,13 +326,7 @@ export class Table extends BaseVisualization<TableState> {
           <HighlightModal
             title={nestedSplitName(flatData[highlightedRowIndex], essence)}
             left={stage.x + stage.width / 2}
-            top={
-              stage.y +
-              HEADER_HEIGHT +
-              highlightedRowIndex * ROW_HEIGHT -
-              scrollTop -
-              HIGHLIGHT_BUBBLE_V_OFFSET
-            }
+            top={stage.y + HEADER_HEIGHT + highlightedRowIndex * ROW_HEIGHT - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
             acceptHighlight={this.acceptHighlight}
             dropHighlight={this.dropHighlight}
           />

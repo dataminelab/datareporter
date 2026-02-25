@@ -36,10 +36,7 @@ export function pad(n: number, padding = 3): string {
   return str;
 }
 
-export function generateUniqueName(
-  prefix: string,
-  isUnique: (name: string) => boolean,
-) {
+export function generateUniqueName(prefix: string, isUnique: (name: string) => boolean) {
   let i = 0;
 
   let name = prefix + pad(i);

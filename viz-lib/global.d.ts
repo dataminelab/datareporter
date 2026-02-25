@@ -1,1 +1,1 @@
-declare module '@redash/viz/lib/components/ErrorBoundary';
+declare module "@redash/viz/lib/components/ErrorBoundary";

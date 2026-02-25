@@ -64,19 +64,22 @@ export default function DefaultColorsSettings({ options, data, onOptionsChange }
   return (
     <React.Fragment>
       <Section>
-          <Select
-            label="Color Scheme"
-            defaultValue={options.color_scheme}
-            data-test="ColorScheme"
-            onChange={(val) => onOptionsChange({ color_scheme: val })}>
-            {Object.keys(AllColorPalettes).map(option => (
-              <Select.Option data-test={`ColorOption${option}`} key={option} value={option}>{option}</Select.Option>
-            ))}
-          </Select>
-        </Section>
+        <Select
+          label="Color Scheme"
+          defaultValue={options.color_scheme}
+          data-test="ColorScheme"
+          onChange={(val) => onOptionsChange({ color_scheme: val })}
+        >
+          {Object.keys(AllColorPalettes).map((option) => (
+            <Select.Option data-test={`ColorOption${option}`} key={option} value={option}>
+              {option}
+            </Select.Option>
+          ))}
+        </Select>
+      </Section>
       <Table showHeader={false} dataSource={series} columns={columns} pagination={false} />
     </React.Fragment>
-  )
+  );
 }
 
 DefaultColorsSettings.propTypes = EditorPropTypes;

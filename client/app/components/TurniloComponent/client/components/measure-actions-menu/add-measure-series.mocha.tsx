@@ -34,7 +34,7 @@ const renderButton = (measure: Measure) =>
       measure={measure}
       addSeries={null}
       onClose={noop}
-    />,
+    />
   );
 
 const mountButton = (measure: Measure, addSeries: Fn, onClose: Fn) =>
@@ -44,7 +44,7 @@ const mountButton = (measure: Measure, addSeries: Fn, onClose: Fn) =>
       measure={measure}
       onClose={onClose}
       addSeries={addSeries}
-    />,
+    />
   ).find(".add-series");
 
 describe("Add Measure Series Button", () => {

@@ -38,7 +38,6 @@ spec:
         checksum/scripts: 82f1bcb916ec2d2e5924f88898fd21733c5f4bc401537271529e3dc638e3195d
         checksum/secret: eab0233a36005d937f6452d876bdc4a65745d0ddf0e88309ae318dfcc298182d
     spec:
-
       securityContext:
         fsGroup: 1001
       serviceAccountName: redis

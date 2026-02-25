@@ -12,7 +12,7 @@ function mount(column, done) {
     <Column.Editor
       visualizationName="Test"
       column={column}
-      onChange={changedColumn => {
+      onChange={(changedColumn) => {
         expect(changedColumn).toMatchSnapshot();
         done();
       }}
@@ -22,7 +22,7 @@ function mount(column, done) {
 
 describe("Visualizations -> Table -> Columns -> Boolean", () => {
   describe("Editor", () => {
-    test("Changes value for FALSE", done => {
+    test("Changes value for FALSE", (done) => {
       const el = mount(
         {
           name: "a",
@@ -37,7 +37,7 @@ describe("Visualizations -> Table -> Columns -> Boolean", () => {
         .simulate("change", { target: { value: "no" } });
     });
 
-    test("Changes value for TRUE", done => {
+    test("Changes value for TRUE", (done) => {
       const el = mount(
         {
           name: "a",

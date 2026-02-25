@@ -21,12 +21,7 @@ import { DataCube } from "../data-cube/data-cube";
 import { Filter } from "../filter/filter";
 import { Splits } from "../splits/splits";
 
-export type LinkGenerator = (
-  dataCube: DataCube,
-  timezone: Timezone,
-  filter: Filter,
-  splits: Splits,
-) => string;
+export type LinkGenerator = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => string;
 
 export interface ExternalViewValue {
   title: string;
@@ -37,9 +32,7 @@ export interface ExternalViewValue {
 
 let check: Class<ExternalViewValue, ExternalViewValue>;
 
-export class ExternalView
-  implements Instance<ExternalViewValue, ExternalViewValue>
-{
+export class ExternalView implements Instance<ExternalViewValue, ExternalViewValue> {
   static isExternalView(candidate: any): candidate is ExternalView {
     return candidate instanceof ExternalView;
   }
@@ -62,8 +55,7 @@ export class ExternalView
   constructor(parameters: ExternalViewValue) {
     const { title, linkGenerator } = parameters;
     if (!title) throw new Error("External view must have title");
-    if (typeof linkGenerator !== "string")
-      throw new Error("Must provide link generator function");
+    if (typeof linkGenerator !== "string") throw new Error("Must provide link generator function");
 
     this.title = title;
     this.linkGenerator = linkGenerator;
@@ -76,26 +68,17 @@ export class ExternalView
         "timezone",
         "filter",
         "splits",
-        linkGenerator,
+        linkGenerator
       ) as LinkGenerator;
     } catch (e) {
-      throw new Error(
-        `Error constructing link generator function: ${e.message}`,
-      );
+      throw new Error(`Error constructing link generator function: ${e.message}`);
     }
 
-    this.linkGeneratorFn = (
-      dataCube: DataCube,
-      timezone: Timezone,
-      filter: Filter,
-      splits: Splits,
-    ) => {
+    this.linkGeneratorFn = (dataCube: DataCube, timezone: Timezone, filter: Filter, splits: Splits) => {
       try {
         return linkGeneratorFnRaw(dataCube, dataCube, timezone, filter, splits);
       } catch (e) {
-        console.warn(
-          `Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`,
-        );
+        console.warn(`Error with custom link generating function '${title}': ${e.message} [${linkGenerator}]`);
         return null;
       }
     };

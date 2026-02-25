@@ -31,7 +31,7 @@ describe("calculateChartStage", () => {
         y: 0,
         width: 980,
         height: 770,
-      }),
+      })
     );
   });
 
@@ -42,7 +42,7 @@ describe("calculateChartStage", () => {
         y: 0,
         width: 980,
         height: 385,
-      }),
+      })
     );
   });
 
@@ -53,7 +53,7 @@ describe("calculateChartStage", () => {
         y: 0,
         width: 980,
         height: 200,
-      }),
+      })
     );
   });
 });

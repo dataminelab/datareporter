@@ -63,9 +63,7 @@ describe("General", () => {
     it("works in bad case", () => {
       expect(() => {
         verifyUrlSafeName("abcd%po#@$moon is!cool");
-      }).to.throw(
-        "'abcd%po#@$moon is!cool' is not a URL safe name. Try 'abcd_po_moon_is_cool' instead?",
-      );
+      }).to.throw("'abcd%po#@$moon is!cool' is not a URL safe name. Try 'abcd_po_moon_is_cool' instead?");
     });
   });
 
@@ -94,8 +92,8 @@ describe("General", () => {
   describe("inlineVars", () => {
     it("works in simple case", () => {
       const json: any = {
-        "hello": 1,
-        "port": "%{PORT}%",
+        hello: 1,
+        port: "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%",
       };
 
@@ -105,16 +103,16 @@ describe("General", () => {
       };
 
       expect(inlineVars(json, vars)).to.deep.equal({
-        "hello": 1,
-        "port": "1234",
+        hello: 1,
+        port: "1234",
         "fox says %{}%": "Meow",
       });
     });
 
     it("throw error if can not find var", () => {
       const json: any = {
-        "hello": 1,
-        "port": "%{PORT}%",
+        hello: 1,
+        port: "%{PORT}%",
         "fox says %{}%": "%{FOX_SAYS}%",
       };
 
@@ -122,9 +120,7 @@ describe("General", () => {
         PORT: "1234",
       };
 
-      expect(() => inlineVars(json, vars)).to.throw(
-        "could not find variable 'FOX_SAYS'",
-      );
+      expect(() => inlineVars(json, vars)).to.throw("could not find variable 'FOX_SAYS'");
     });
   });
 
@@ -136,17 +132,13 @@ describe("General", () => {
     it("throw error not one of", () => {
       expect(() => {
         ensureOneOf("United Kingdom", ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw(
-        "Car must be one of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')",
-      );
+      }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is 'United Kingdom')");
     });
 
     it("throw error not one of (undefined)", () => {
       expect(() => {
         ensureOneOf(undefined, ["Honda", "Toyota", "BMW"], "Car");
-      }).to.throw(
-        "Car must be one of 'Honda', 'Toyota', 'BMW' (is not defined)",
-      );
+      }).to.throw("Car must be one of 'Honda', 'Toyota', 'BMW' (is not defined)");
     });
   });
 

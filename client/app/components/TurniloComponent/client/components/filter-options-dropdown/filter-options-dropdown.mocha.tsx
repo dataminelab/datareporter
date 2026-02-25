@@ -26,16 +26,10 @@ import { FilterOptionsDropdown } from "./filter-options-dropdown";
 describe("FilterOptionsDropdown", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(
-      <FilterOptionsDropdown selectedOption={null} onSelectOption={() => {}} />,
+      <FilterOptionsDropdown selectedOption={null} onSelectOption={() => {}} />
     );
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      findDOMNode(renderedComponent).className,
-      "should contain class",
-    ).to.contain("filter-options-dropdown");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("filter-options-dropdown");
   });
 });

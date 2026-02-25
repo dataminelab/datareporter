@@ -15,26 +15,17 @@
  */
 import * as d3 from "d3";
 import { Datum } from "plywood";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Unary } from "../../../common/utils/functional/functional";
 import { readNumber } from "../../../common/utils/general/general";
 
 export type Selector = Unary<Datum, number>;
 export type Extent = [number, number];
 
-export function seriesSelectors(
-  series: ConcreteSeries,
-  hasComparison: boolean,
-): Selector[] {
+export function seriesSelectors(series: ConcreteSeries, hasComparison: boolean): Selector[] {
   const get = (d: Datum) => readNumber(series.selectValue(d));
   if (!hasComparison) return [get];
-  return [
-    get,
-    (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS)),
-  ];
+  return [get, (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS))];
 }
 
 export function datumsExtent(datums: Datum[], selectors: Selector[]): Extent {
@@ -43,6 +34,6 @@ export function datumsExtent(datums: Datum[], selectors: Selector[]): Extent {
       const extent = d3.extent(datums, selector);
       return d3.extent([...extent, ...acc]);
     },
-    [0, 0],
+    [0, 0]
   ) as Extent;
 }

@@ -43,8 +43,7 @@ describe("shallowArrayEquals", () => {
   });
 
   it("should return true when all elements are the same", () => {
-    expect(shallowEqualArrays([1, "foobar", true], [1, "foobar", true])).to.be
-      .true;
+    expect(shallowEqualArrays([1, "foobar", true], [1, "foobar", true])).to.be.true;
   });
 });
 

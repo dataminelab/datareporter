@@ -25,9 +25,7 @@ export function calculateChartStage(stage: Stage, chartsCount: number): Stage {
   const width = stage.width - VIS_H_PADDING * 2;
   const maxHeightFromRatio = width / MAX_ASPECT_RATIO;
   const heightFromStageDivision = (stage.height - X_AXIS_HEIGHT) / chartsCount;
-  const boundedChartHeight = Math.floor(
-    Math.min(maxHeightFromRatio, heightFromStageDivision),
-  );
+  const boundedChartHeight = Math.floor(Math.min(maxHeightFromRatio, heightFromStageDivision));
   const height = Math.max(MIN_CHART_HEIGHT, boundedChartHeight);
 
   return new Stage({

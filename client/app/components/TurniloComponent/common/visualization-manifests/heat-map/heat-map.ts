@@ -16,17 +16,9 @@
  */
 
 import { MeasureSeries } from "../../models/series/measure-series";
-import {
-  DimensionSort,
-  isSortEmpty,
-  SeriesSort,
-  SortDirection,
-} from "../../models/sort/sort";
+import { DimensionSort, isSortEmpty, SeriesSort, SortDirection } from "../../models/sort/sort";
 import { Split, SplitType } from "../../models/split/split";
-import {
-  Resolve,
-  VisualizationManifest,
-} from "../../models/visualization-manifest/visualization-manifest";
+import { Resolve, VisualizationManifest } from "../../models/visualization-manifest/visualization-manifest";
 import { emptySettingsConfig } from "../../models/visualization-settings/empty-settings-config";
 import { Predicates } from "../../utils/rules/predicates";
 import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visualization-dependent-evaluator";
@@ -34,28 +26,24 @@ import { ActionVariables } from "../../utils/rules/visualization-dependent-evalu
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.numberOfSplitsIsNot(2))
-  .then(variables =>
+  .then((variables) =>
     Resolve.manual(
       3,
       "Heatmap needs exactly 2 splits",
-      variables.splits.length() > 2
-        ? suggestRemovingSplits(variables)
-        : suggestAddingSplits(variables),
-    ),
+      variables.splits.length() > 2 ? suggestRemovingSplits(variables) : suggestAddingSplits(variables)
+    )
   )
   .when(Predicates.numberOfSeriesIsNot(1))
-  .then(variables =>
+  .then((variables) =>
     Resolve.manual(
       3,
       "Heatmap needs exactly 1 measure",
-      variables.series.series.size === 0
-        ? suggestAddingMeasure(variables)
-        : suggestRemovingMeasures(variables),
-    ),
+      variables.series.series.size === 0 ? suggestAddingMeasure(variables) : suggestRemovingMeasures(variables)
+    )
   )
   .otherwise(({ splits, dataCube, series }) => {
     let autoChanged = false;
-    const newSplits = splits.update("splits", splits =>
+    const newSplits = splits.update("splits", (splits) =>
       splits.map((split, i) => {
         const splitDimension = dataCube.getDimension(split.reference);
         const sortStrategy = splitDimension.sortStrategy;
@@ -67,14 +55,14 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
                 new DimensionSort({
                   reference: splitDimension.name,
                   direction: SortDirection.descending,
-                }),
+                })
               );
             } else {
               split = split.changeSort(
                 new SeriesSort({
                   reference: sortStrategy,
                   direction: SortDirection.descending,
-                }),
+                })
               );
             }
           } else {
@@ -83,14 +71,14 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
                 new SeriesSort({
                   reference: series.series.first().reference,
                   direction: SortDirection.descending,
-                }),
+                })
               );
             } else {
               split = split.changeSort(
                 new DimensionSort({
                   reference: splitDimension.name,
                   direction: SortDirection.descending,
-                }),
+                })
               );
             }
             autoChanged = true;
@@ -103,30 +91,25 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
         }
 
         return split;
-      }),
+      })
     );
 
-    return autoChanged
-      ? Resolve.automatic(10, { splits: newSplits })
-      : Resolve.ready(10);
+    return autoChanged ? Resolve.automatic(10, { splits: newSplits }) : Resolve.ready(10);
   })
   .build();
 
 const suggestRemovingSplits = ({ splits }: ActionVariables) => [
   {
-    description:
-      splits.length() === 3
-        ? "Remove last split"
-        : `Remove last ${splits.length() - 2} splits`,
+    description: splits.length() === 3 ? "Remove last split" : `Remove last ${splits.length() - 2} splits`,
     adjustment: { splits: splits.slice(0, 2) },
   },
 ];
 
 const suggestAddingSplits = ({ dataCube, splits }: ActionVariables) =>
   dataCube.dimensions
-    .filterDimensions(dimension => !splits.hasSplitOn(dimension))
+    .filterDimensions((dimension) => !splits.hasSplitOn(dimension))
     .slice(0, 2)
-    .map(dimension => ({
+    .map((dimension) => ({
       description: `Add ${dimension.title} split`,
       adjustment: {
         splits: splits.addSplit(Split.fromDimension(dimension)),
@@ -137,28 +120,18 @@ const suggestAddingMeasure = ({ dataCube, series }: ActionVariables) => [
   {
     description: `Add measure ${dataCube.measures.first().title}`,
     adjustment: {
-      series: series.addSeries(
-        MeasureSeries.fromMeasure(dataCube.measures.first()),
-      ),
+      series: series.addSeries(MeasureSeries.fromMeasure(dataCube.measures.first())),
     },
   },
 ];
 
 const suggestRemovingMeasures = ({ series }: ActionVariables) => [
   {
-    description:
-      series.count() === 2
-        ? "Remove last measure"
-        : `Remove last ${series.count() - 1} measures`,
+    description: series.count() === 2 ? "Remove last measure" : `Remove last ${series.count() - 1} measures`,
     adjustment: {
       series: series.takeFirst(),
     },
   },
 ];
 
-export const HEAT_MAP_MANIFEST = new VisualizationManifest(
-  "heatmap",
-  "Heatmap",
-  rulesEvaluator,
-  emptySettingsConfig,
-);
+export const HEAT_MAP_MANIFEST = new VisualizationManifest("heatmap", "Heatmap", rulesEvaluator, emptySettingsConfig);

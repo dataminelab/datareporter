@@ -49,8 +49,7 @@ export const TimezoneMenu: React.SFC<TimezoneMenuProps> = ({
       direction="down"
       stage={Stage.fromSize(240, 200)}
       openOn={openOn}
-      onClose={onClose}
-    >
+      onClose={onClose}>
       <Dropdown<Timezone>
         label={STRINGS.timezone}
         selectedItem={timezone}

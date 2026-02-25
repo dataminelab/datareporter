@@ -69,6 +69,8 @@ class TestModelsConfigCreateResource(BaseTestCase):
     defaultSelectedMeasures:
       - deltaByTen
     attributes:
+      - name: time
+        type: TIME
       - name: deltaByTen
         type: number
     dimensions:
@@ -101,6 +103,8 @@ class TestModelsConfigCreateResource(BaseTestCase):
     defaultSelectedMeasures:
       - deltaByTen
     attributes:
+      - name: time
+        type: TIME
       - name: deltaByTen
         type: number
     dimensions:
@@ -137,6 +141,8 @@ class TestModelsConfigCreateResource(BaseTestCase):
     defaultSelectedMeasures:
       - deltaByTen
     attributes:
+      - name: time
+        type: TIME
       - name: deltaByTen
         type: number
     dimensions:

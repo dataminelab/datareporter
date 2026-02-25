@@ -34,12 +34,7 @@ const tickLabelTopOffset = 4;
 const tickLabelLeftOffset = 17;
 const stripeWidth = 10;
 
-export const HeatmapLegend: React.SFC<HeatmapLegendProps> = ({
-  width,
-  height,
-  series,
-  scale,
-}) => {
+export const HeatmapLegend: React.SFC<HeatmapLegendProps> = ({ width, height, series, scale }) => {
   const [min, max] = scale.domain();
   if (isNaN(min) || isNaN(max)) return null;
 
@@ -66,26 +61,10 @@ export const HeatmapLegend: React.SFC<HeatmapLegendProps> = ({
           height={stripeLength}
           fill="url(#heatmap-stripe)"
         />
-        <line
-          className="heatmap-legend-stripe-axis"
-          x1={0.5}
-          x2={0.5}
-          y1={0}
-          y2={stripeLength}
-        />
+        <line className="heatmap-legend-stripe-axis" x1={0.5} x2={0.5} y1={0} y2={stripeLength} />
         <g className="heatmap-lower-bound">
-          <line
-            className="heatmap-lower-bound-tick"
-            x1={0}
-            x2={tickLength}
-            y1={0.5}
-            y2={0.5}
-          />
-          <text
-            className="heatmap-lower-bound-value"
-            x={tickLabelLeftOffset}
-            y={tickLabelTopOffset}
-          >
+          <line className="heatmap-lower-bound-tick" x1={0} x2={tickLength} y1={0.5} y2={0.5} />
+          <text className="heatmap-lower-bound-value" x={tickLabelLeftOffset} y={tickLabelTopOffset}>
             {format(min)}
           </text>
         </g>
@@ -97,11 +76,7 @@ export const HeatmapLegend: React.SFC<HeatmapLegendProps> = ({
             y1={stripeLength + 0.5}
             y2={stripeLength + 0.5}
           />
-          <text
-            className="heatmap-upper-bound-value"
-            x={tickLabelLeftOffset}
-            y={stripeLength + tickLabelTopOffset}
-          >
+          <text className="heatmap-upper-bound-value" x={tickLabelLeftOffset} y={stripeLength + tickLabelTopOffset}>
             {format(max)}
           </text>
         </g>

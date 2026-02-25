@@ -20,11 +20,7 @@ import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { Series } from "../../../common/models/series/series";
 import { Stage } from "../../../common/models/stage/stage";
-import {
-  Binary,
-  Ternary,
-  Unary,
-} from "../../../common/utils/functional/functional";
+import { Binary, Ternary, Unary } from "../../../common/utils/functional/functional";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames } from "../../utils/dom/dom";
 import { SeriesMenu } from "../series-menu/series-menu";
@@ -46,7 +42,7 @@ interface SeriesTileProps {
   containerStage: Stage;
 }
 
-export const SeriesTile: React.SFC<SeriesTileProps> = props => {
+export const SeriesTile: React.SFC<SeriesTileProps> = (props) => {
   const {
     seriesList,
     measures,
@@ -78,9 +74,8 @@ export const SeriesTile: React.SFC<SeriesTileProps> = props => {
             draggable={true}
             ref={setRef}
             onClick={() => openSeriesMenu(definition)}
-            onDragStart={e => dragStart(measure.title, definition, e)}
-            style={style}
-          >
+            onDragStart={(e) => dragStart(measure.title, definition, e)}
+            style={style}>
             <div className="reading">{title}</div>
             <div className="remove" onClick={remove}>
               <SvgIcon svg={require("../../icons/x.svg")} />

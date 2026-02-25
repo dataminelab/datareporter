@@ -24,10 +24,7 @@ export interface MeasuresDefinitionJS {
 }
 
 export interface SeriesDefinitionConverter {
-  toEssenceSeries(
-    measuresDefs: MeasuresDefinitionJS,
-    measures: Measures,
-  ): SeriesList;
+  toEssenceSeries(measuresDefs: MeasuresDefinitionJS, measures: Measures): SeriesList;
 }
 
 export const seriesDefinitionConverter: SeriesDefinitionConverter = {

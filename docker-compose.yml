@@ -69,7 +69,7 @@ services:
     ports:
       - "6379"
   postgres:
-    image: pgautoupgrade/pgautoupgrade:16
+    image: pgautoupgrade/pgautoupgrade:latest
     ports:
       - "15432:5432"
       - "5432:5432"
@@ -108,4 +108,3 @@ services:
   #     - ./ollama-models:/root/.ollama
   #   ports:
   #     - 11434:11434
-

@@ -12,7 +12,7 @@ function mount(column, done) {
     <Column.Editor
       visualizationName="Test"
       column={column}
-      onChange={changedColumn => {
+      onChange={(changedColumn) => {
         expect(changedColumn).toMatchSnapshot();
         done();
       }}
@@ -22,7 +22,7 @@ function mount(column, done) {
 
 describe("Visualizations -> Table -> Columns -> Text", () => {
   describe("Editor", () => {
-    test("Enables HTML content", done => {
+    test("Enables HTML content", (done) => {
       const el = mount(
         {
           name: "a",
@@ -38,7 +38,7 @@ describe("Visualizations -> Table -> Columns -> Text", () => {
         .simulate("change", { target: { checked: true } });
     });
 
-    test("Enables highlight links option", done => {
+    test("Enables highlight links option", (done) => {
       const el = mount(
         {
           name: "a",

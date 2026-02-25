@@ -27,22 +27,14 @@ interface MeasureSeriesMenuProps {
   onChange: Binary<MeasureSeries, boolean, void>;
 }
 
-export const MeasureSeriesMenu: React.SFC<MeasureSeriesMenuProps> = ({
-  measure,
-  series,
-  onChange,
-}) => {
+export const MeasureSeriesMenu: React.SFC<MeasureSeriesMenuProps> = ({ measure, series, onChange }) => {
   function onFormatChange(format: SeriesFormat) {
     onChange(series.set("format", format), true);
   }
 
   return (
     <React.Fragment>
-      <FormatPicker
-        measure={measure}
-        format={series.format}
-        formatChange={onFormatChange}
-      />
+      <FormatPicker measure={measure} format={series.format} formatChange={onFormatChange} />
     </React.Fragment>
   );
 };

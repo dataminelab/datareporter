@@ -27,15 +27,15 @@ interface AddSeriesProps {
   essence: Essence;
 }
 
-export const AddSeries: React.SFC<AddSeriesProps> = props => {
+export const AddSeries: React.SFC<AddSeriesProps> = (props) => {
   const {
     appendMeasureSeries,
     menuStage,
     essence: { dataCube, series },
   } = props;
   const tiles = dataCube.measures
-    .filterMeasures(measure => !series.hasMeasure(measure))
-    .map(measure => {
+    .filterMeasures((measure) => !series.hasMeasure(measure))
+    .map((measure) => {
       return {
         key: measure.name,
         label: measure.title,

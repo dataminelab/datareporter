@@ -25,7 +25,7 @@ import { SvgIcon } from "./svg-icon";
 describe("SvgIcon", () => {
   it("adds the correct class", () => {
     expect(ReactDOM.renderToStaticMarkup(<SvgIcon svg={null} />)).to.equal(
-      `<svg class="svg-icon " viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet"><rect width=16 height=16 fill='red'></rect></svg>`,
+      `<svg class="svg-icon " viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet"><rect width=16 height=16 fill='red'></rect></svg>`
     );
 
     const svg = `<svg width="10px" height="8px" viewBox="0 0 10 8" version="1.1" xmlns="http://www.w3.org/2000/svg">

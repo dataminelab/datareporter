@@ -36,7 +36,10 @@ context("Totals", () => {
   });
 
   it("should load data for defined filters and measures", () => {
-    visualization().find(".measure-name").should("have.length", 1).should("contain", "Data Source");
+    visualization()
+      .find(".measure-name")
+      .should("have.length", 1)
+      .should("contain", "Data Source");
 
     visualization().find(".measure-value").should("have.length", 1);
     //.should("contain", "9.4 m");

@@ -16,8 +16,7 @@
 
 import { UrlShortener } from "./url-shortener";
 
-export const FailUrlShortenerJS =
-  "return Promise.reject(new Error('error message'));";
+export const FailUrlShortenerJS = "return Promise.reject(new Error('error message'));";
 export const FailUrlShortener = new UrlShortener(FailUrlShortenerJS);
 
 export const SuccessUrlShortenerJS = "return Promise.resolve('http://foobar');";

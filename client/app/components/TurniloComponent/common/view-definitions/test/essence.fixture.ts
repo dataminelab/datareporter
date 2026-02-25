@@ -17,10 +17,7 @@
 import { day, Duration, Timezone } from "chronoshift";
 import { OrderedSet } from "immutable";
 import { Essence, EssenceValue } from "../../models/essence/essence";
-import {
-  RelativeTimeFilterClause,
-  TimeFilterPeriod,
-} from "../../models/filter-clause/filter-clause";
+import { RelativeTimeFilterClause, TimeFilterPeriod } from "../../models/filter-clause/filter-clause";
 import { Filter } from "../../models/filter/filter";
 import { SeriesList } from "../../models/series-list/series-list";
 import { Splits } from "../../models/splits/splits";

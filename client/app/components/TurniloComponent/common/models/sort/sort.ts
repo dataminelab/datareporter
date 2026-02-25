@@ -59,10 +59,7 @@ const defaultSeriesSort: SeriesSortDefinition = {
   period: SeriesDerivation.CURRENT,
 };
 
-export class SeriesSort
-  extends Record<SeriesSortDefinition>(defaultSeriesSort)
-  implements SortBehaviour
-{
+export class SeriesSort extends Record<SeriesSortDefinition>(defaultSeriesSort) implements SortBehaviour {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(params: RequireOnly<SeriesSortDefinition, "reference">) {
     super(params);
@@ -87,10 +84,7 @@ const defaultDimensionSort: DimensionSortDefinition = {
   direction: SortDirection.descending,
 };
 
-export class DimensionSort
-  extends Record<DimensionSortDefinition>(defaultDimensionSort)
-  implements SortBehaviour
-{
+export class DimensionSort extends Record<DimensionSortDefinition>(defaultDimensionSort) implements SortBehaviour {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(params: RequireOnly<DimensionSortDefinition, "reference">) {
     super(params);

@@ -36,13 +36,9 @@ export interface InfoBubbleProps {
   className?: string;
 }
 
-export class InfoBubble extends React.Component<
-  InfoBubbleProps,
-  InfoBubbleState
-> {
+export class InfoBubble extends React.Component<InfoBubbleProps, InfoBubbleState> {
   showDescription = ({ currentTarget }: React.MouseEvent<HTMLElement>) => {
-    const willBubbleFit =
-      currentTarget.getBoundingClientRect().top > BUBBLE_MAX_VERTICAL_SPACE;
+    const willBubbleFit = currentTarget.getBoundingClientRect().top > BUBBLE_MAX_VERTICAL_SPACE;
     const direction = willBubbleFit ? "up" : "down";
     this.setState({ showInfo: { target: currentTarget, direction } });
   };
@@ -65,8 +61,7 @@ export class InfoBubble extends React.Component<
         <div
           className={classNames("info-button", className)}
           title={title || defaultTitle}
-          onClick={this.showDescription}
-        >
+          onClick={this.showDescription}>
           <SvgIcon svg={icon || require("../../icons/info.svg")} />
         </div>
         {showInfo && (
@@ -75,8 +70,7 @@ export class InfoBubble extends React.Component<
             direction={showInfo.direction}
             onClose={this.closeDescription}
             stage={Stage.fromSize(300, 200)}
-            openOn={showInfo.target}
-          >
+            openOn={showInfo.target}>
             <MarkdownNode markdown={description} />
           </BubbleMenu>
         )}

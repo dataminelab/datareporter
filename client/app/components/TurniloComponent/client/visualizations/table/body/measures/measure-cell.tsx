@@ -23,7 +23,7 @@ interface MeasureCellProps {
   value: string | JSX.Element;
 }
 
-export const MeasureCell: React.SFC<MeasureCellProps> = props => {
+export const MeasureCell: React.SFC<MeasureCellProps> = (props) => {
   const { width, value, children, color } = props;
   return (
     <div className="measure-cell" style={{ width }}>

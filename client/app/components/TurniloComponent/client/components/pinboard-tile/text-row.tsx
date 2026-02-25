@@ -27,21 +27,16 @@ interface TextRowProps {
   searchText: string;
 }
 
-export const TextRow: React.SFC<TextRowProps> = props => {
+export const TextRow: React.SFC<TextRowProps> = (props) => {
   const { measure, value, searchText, onClick } = props;
   const strValue = String(value);
   const clickable = !!onClick;
   return (
     <div
       className={classNames("pinboard-text-row", { selectable: clickable })}
-      onClick={() => clickable && onClick(value)}
-    >
+      onClick={() => clickable && onClick(value)}>
       <div className="segment-value" title={strValue}>
-        <HighlightString
-          className="label"
-          text={strValue}
-          highlight={searchText}
-        />
+        <HighlightString className="label" text={strValue} highlight={searchText} />
       </div>
       {measure && <div className="measure-value">{measure}</div>}
     </div>

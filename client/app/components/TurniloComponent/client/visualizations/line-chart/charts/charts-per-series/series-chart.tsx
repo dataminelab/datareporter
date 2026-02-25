@@ -34,11 +34,7 @@ import { InteractionsProps } from "../../interactions/interaction-controller";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { extentAcrossSplits } from "../../utils/extent";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
-import {
-  getContinuousSplit,
-  getNominalSplit,
-  hasNominalSplit,
-} from "../../utils/splits";
+import { getContinuousSplit, getNominalSplit, hasNominalSplit } from "../../utils/splits";
 import { SeriesHoverContent } from "./series-hover-content";
 
 interface SeriesChartProps {
@@ -53,67 +49,47 @@ interface SeriesChartProps {
   visualisationStage: Stage;
 }
 
-export const SeriesChart: React.FunctionComponent<SeriesChartProps> = props => {
+export const SeriesChart: React.FunctionComponent<SeriesChartProps> = (props) => {
   return (
     <SettingsContext.Consumer>
       {(settingsContext) => {
         // If no context is provided, use a default
-        const visualizationColors =
-          (settingsContext &&
-            settingsContext.customization &&
-            settingsContext.customization.visualizationColors) ||
-          {
-            series: [
-              "#1f77b4",
-              "#ff7f0e",
-              "#2ca02c",
-              "#d62728",
-              "#9467bd",
-              "#8c564b",
-              "#e377c2",
-              "#7f7f7f",
-              "#bcbd22",
-              "#17becf"
-            ]
-          };
+        const visualizationColors = (settingsContext &&
+          settingsContext.customization &&
+          settingsContext.customization.visualizationColors) || {
+          series: [
+            "#1f77b4",
+            "#ff7f0e",
+            "#2ca02c",
+            "#d62728",
+            "#9467bd",
+            "#8c564b",
+            "#e377c2",
+            "#7f7f7f",
+            "#bcbd22",
+            "#17becf",
+          ],
+        };
 
-        const {
-          chartId,
-          interactions,
-          visualisationStage,
-          chartStage,
-          essence,
-          series,
-          xScale,
-          xTicks,
-          dataset,
-        } = props;
+        const { chartId, interactions, visualisationStage, chartStage, essence, series, xScale, xTicks, dataset } =
+          props;
         const hasComparison = essence.hasComparison();
         const continuousSplitDataset = selectFirstSplitDataset(dataset);
         const { interaction } = interactions;
 
-        const hoverContent = isHover(interaction)
-          ? (
-            <SeriesHoverContent
-              essence={essence}
-              dataset={continuousSplitDataset}
-              range={interaction.range}
-              series={series}
-            />
-          )
-          : null;
-
-        const label = (
-          <VisMeasureLabel
+        const hoverContent = isHover(interaction) ? (
+          <SeriesHoverContent
+            essence={essence}
+            dataset={continuousSplitDataset}
+            range={interaction.range}
             series={series}
-            datum={selectMainDatum(dataset)}
-            showPrevious={hasComparison}
           />
-        );
+        ) : null;
+
+        const label = <VisMeasureLabel series={series} datum={selectMainDatum(dataset)} showPrevious={hasComparison} />;
 
         const continuousSplit = getContinuousSplit(essence);
-        const getX = (d: Datum) =>
-          continuousSplit.selectValue<TimeRange | NumberRange>(d);
+        const getX = (d: Datum) => continuousSplit.selectValue<TimeRange | NumberRange>(d);
 
         const domain = extentAcrossSplits(continuousSplitDataset, essence, series);
 
@@ -131,8 +107,7 @@ export const SeriesChart: React.FunctionComponent<SeriesChartProps> = props => {
               xTicks={xTicks}
               chartStage={chartStage}
               formatter={series.formatter()}
-              yDomain={domain}
-            >
+              yDomain={domain}>
               {({ yScale, lineStage }) => (
                 <React.Fragment>
                   {continuousSplitDataset.data.map((datum, index) => {
@@ -169,8 +144,7 @@ export const SeriesChart: React.FunctionComponent<SeriesChartProps> = props => {
             yDomain={domain}
             formatter={series.formatter()}
             xScale={xScale}
-            xTicks={xTicks}
-          >
+            xTicks={xTicks}>
             {({ yScale, lineStage }) => (
               <SingletonSeriesChartLine
                 xScale={xScale}

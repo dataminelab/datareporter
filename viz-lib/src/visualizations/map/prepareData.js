@@ -11,7 +11,7 @@ export default function prepareData(data, options) {
   return filter(
     map(pointGroups, (rows, name) => {
       const points = filter(
-        map(rows, row => {
+        map(rows, (row) => {
           const lat = row[latColName];
           const lon = row[lonColName];
           if (isNil(lat) || isNil(lon)) {

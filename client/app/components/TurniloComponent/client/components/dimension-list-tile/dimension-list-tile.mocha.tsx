@@ -31,16 +31,12 @@ describe("DimensionListTile", () => {
         essence={EssenceFixtures.wikiTotals()}
         menuStage={null}
         triggerFilterMenu={null}
-      />,
+      />
     );
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
-      "should contain class",
-    ).to.contain("dimension-list-tile");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "dimension-list-tile"
+    );
   });
 });

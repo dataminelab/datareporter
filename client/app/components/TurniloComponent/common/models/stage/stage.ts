@@ -135,9 +135,7 @@ export class Stage implements Instance<StageValue, StageJS> {
   }
 
   public getViewBox(widthOffset = 0, heightOffset = 0): string {
-    return `0 0 ${this.width + widthOffset} ${
-      this.height + this.y + heightOffset
-    }`;
+    return `0 0 ${this.width + widthOffset} ${this.height + this.y + heightOffset}`;
   }
 
   public getLeftTop(): React.CSSProperties {
@@ -147,10 +145,7 @@ export class Stage implements Instance<StageValue, StageJS> {
     };
   }
 
-  public getWidthHeight(
-    widthOffset = 0,
-    heightOffset = 0,
-  ): React.CSSProperties {
+  public getWidthHeight(widthOffset = 0, heightOffset = 0): React.CSSProperties {
     return {
       width: this.width + widthOffset,
       height: this.height + this.y + heightOffset,

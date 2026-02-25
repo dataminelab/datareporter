@@ -17,13 +17,7 @@
 
 import { Duration, Timezone } from "chronoshift";
 import { Record } from "immutable";
-import {
-  Datum,
-  Expression,
-  NumberBucketExpression,
-  PlywoodValue,
-  TimeBucketExpression,
-} from "plywood";
+import { Datum, Expression, NumberBucketExpression, PlywoodValue, TimeBucketExpression } from "plywood";
 import { formatValue } from "../../utils/formatter/formatter";
 import { isTruthy } from "../../utils/general/general";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
@@ -67,24 +61,14 @@ export function bucketToAction(bucket: Bucket): Expression {
     : new NumberBucketExpression({ size: bucket });
 }
 
-function applyTimeShift(
-  type: SplitType,
-  expression: Expression,
-  env: TimeShiftEnv,
-): Expression {
+function applyTimeShift(type: SplitType, expression: Expression, env: TimeShiftEnv): Expression {
   if (env.type === TimeShiftEnvType.WITH_PREVIOUS && type === SplitType.time) {
-    return env.currentFilter
-      .then(expression)
-      .fallback(expression.timeShift(env.shift));
+    return env.currentFilter.then(expression).fallback(expression.timeShift(env.shift));
   }
   return expression;
 }
 
-export function toExpression(
-  { bucket, type }: Split,
-  { expression }: Dimension,
-  env: TimeShiftEnv,
-): Expression {
+export function toExpression({ bucket, type }: Split, { expression }: Dimension, env: TimeShiftEnv): Expression {
   const expWithShift = applyTimeShift(type, expression, env);
   if (!bucket) return expWithShift;
   return expWithShift.performAction(bucketToAction(bucket));

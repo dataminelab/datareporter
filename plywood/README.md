@@ -13,68 +13,79 @@ docker-compose ps
 ### Endpoints
 
 - Service status
-    
-    URL
-    
-    ```bash
-    GET http://0.0.0.0:3000/api/v1/status
-    ```
-    
-    Response
-    
-    ```json
-    {"status":"UP"}
-    ```
+
+  URL
+
+  ```bash
+  GET http://0.0.0.0:3000/api/v1/status
+  ```
+
+  Response
+
+  ```json
+  { "status": "UP" }
+  ```
 
 - Expression to SQL
 
-    URL
-    ```bash
-    POST http://0.0.0.0:3000/api/v1/plywood
-    ```
-    
-    Request Body
-    ```json
-    {
-        "dataCube": "wiki",
-        "context": {
-            "engine": "mysql",
-            "source": "wikipedia",
-            "timeAttribute": "time",
-            "attributes": [
-                {"name": "time", "type": "TIME"},
-                {"name": "page", "type": "STRING"},
-                {"name": "language", "type": "STRING"},
-                {"name": "added", "type": "NUMBER"}
-            ]
+  URL
+
+  ```bash
+  POST http://0.0.0.0:3000/api/v1/plywood
+  ```
+
+  Request Body
+
+  ```json
+  {
+    "dataCube": "wiki",
+    "context": {
+      "engine": "mysql",
+      "source": "wikipedia",
+      "timeAttribute": "time",
+      "attributes": [
+        { "name": "time", "type": "TIME" },
+        { "name": "page", "type": "STRING" },
+        { "name": "language", "type": "STRING" },
+        { "name": "added", "type": "NUMBER" }
+      ]
+    },
+    "expression": {
+      "op": "apply",
+      "operand": {
+        "op": "apply",
+        "operand": {
+          "op": "literal",
+          "value": { "attributes": [], "data": [{}] },
+          "type": "DATASET"
         },
         "expression": {
-            "op": "apply",
-            "operand": {
-                "op": "apply",
-                "operand": {"op": "literal", "value": {"attributes": [], "data": [{}]}, "type": "DATASET"},
-                "expression": {"op": "count", "operand": {"op": "ref", "name": "wiki"}},
-                "name": "Count"
-            },
-            "expression": {
-                "op": "sum",
-                "operand": {"op": "ref", "name": "wiki"},
-                "expression": {"op": "ref", "name": "added"}
-            },
-            "name": "TotalAdded"
-        }
+          "op": "count",
+          "operand": { "op": "ref", "name": "wiki" }
+        },
+        "name": "Count"
+      },
+      "expression": {
+        "op": "sum",
+        "operand": { "op": "ref", "name": "wiki" },
+        "expression": { "op": "ref", "name": "added" }
+      },
+      "name": "TotalAdded"
     }
-    ```
-    curl: `curl -XPOST http://localhost:3000/api/v1/plywood -H "Content-type: application/json" -d '{"dataCube":"wiki","context":{"engine":"bigquery","source":"wikipedia","timeAttribute":"time","attributes":[{"name":"time","type":"TIME"},{"name":"page","type":"STRING"},{"name":"language","type":"STRING"},{"name":"added","type":"NUMBER"}]},"expression":{"op":"apply","operand":{"op":"apply","operand":{"op":"literal","value":{"attributes":[],"data":[{}]},"type":"DATASET"},"expression":{"op":"count","operand":{"op":"ref","name":"wiki"}},"name":"Count"},"expression":{"op":"sum","operand":{"op":"ref","name":"wiki"},"expression":{"op":"ref","name":"added"}},"name":"TotalAdded"}}'`
+  }
+  ```
 
-    Response
-    ```json
+  curl: `curl -XPOST http://localhost:3000/api/v1/plywood -H "Content-type: application/json" -d '{"dataCube":"wiki","context":{"engine":"bigquery","source":"wikipedia","timeAttribute":"time","attributes":[{"name":"time","type":"TIME"},{"name":"page","type":"STRING"},{"name":"language","type":"STRING"},{"name":"added","type":"NUMBER"}]},"expression":{"op":"apply","operand":{"op":"apply","operand":{"op":"literal","value":{"attributes":[],"data":[{}]},"type":"DATASET"},"expression":{"op":"count","operand":{"op":"ref","name":"wiki"}},"name":"Count"},"expression":{"op":"sum","operand":{"op":"ref","name":"wiki"},"expression":{"op":"ref","name":"added"}},"name":"TotalAdded"}}'`
+
+  Response
+
+  ```json
+  [
     [
-        [
-            "SELECT COUNT(*) AS `Count`, SUM(`added`) AS `TotalAdded` FROM `wikipedia` GROUP BY ''"
-        ]
+      "SELECT COUNT(*) AS `Count`, SUM(`added`) AS `TotalAdded` FROM `wikipedia` GROUP BY ''"
     ]
-    ```
+  ]
+  ```
 
 ## Troubles installing a new dialect
 

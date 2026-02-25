@@ -21,6 +21,6 @@
 <!-- If Manually, please describe. -->
 
 ## Related Tickets & Documents
-<!-- If applicable, please include a link to your documentation PR against getredash/website -->
+<!-- If applicable, please include a link to your documentation PR against dataminelab/datareporter-docs -->
 
 ## Mobile & Desktop Screenshots/Recordings (if there are UI changes)

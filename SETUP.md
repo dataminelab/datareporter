@@ -105,10 +105,10 @@ npm run cypress run # Run cypress tests in headless mode
 
 ### Components
 
-#### Redash server and client
+#### DataReporter server and client
 
 * **directory**: `redash`
-  * **debug**: Please follow the instruction from [redash](https://redash.io/help/open-source/dev-guide/debugging)
+  * **debug**: Please follow the instruction from the [debugging guide](/docs/open-source/dev-guide/debugging/)
   * **changes:**
     * All changes are immediately visible as the python application is interpreted and it's running directly from source code.
 
@@ -172,7 +172,7 @@ docker compose exec ollama ollama pull deepseek-r1:7b # Pull deepseek-r1:7b mode
 
 ### Debugging notes
 
-If you are working on Visual Studio Code follow this [tutorial](https://redash.io/help/open-source/dev-guide/debugging) then you can run the debugging session following below:
+If you are working on Visual Studio Code follow the [debugging guide](/docs/open-source/dev-guide/debugging/) then you can run the debugging session following below:
 
 ```sh
 pip install ptvsd # install below library

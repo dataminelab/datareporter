@@ -41,15 +41,6 @@ install_groups="main,all_ds,dev"
 poetry install --only $install_groups $POETRY_OPTIONS
 ```
 
-## Build UI - Required to build ui for
-
-```sh
-  cd client # Enter front-end directory
-  npm install # Install dependencies
-  npm run build # Build for `client/dist/`
-  # this also buils for wiz-lib, plywood client and plywood server
-```
-
 ## Setup docker compose
 
 ```sh

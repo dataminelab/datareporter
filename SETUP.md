@@ -1,26 +1,32 @@
-# Dev environment
+# Dev Environment
 
-This is a setup guide for datareporter's devolopment environment
-DataReporter builds correctly with Node version 18.20, consider using [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/)
+Setup guide for DataReporter's development environment.
 
-- [ensure shims are added to PATH](https://github.com/nodenv/nodenv#how-it-works)
-- [for windows-wsl2-nvm](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl)
+## Prerequisites
+
+### Node.js 18.20
+
+DataReporter builds correctly with Node version 18.20. Use [nodenv](https://joshmorel.ca/post/node-virtual-environments-with-nodenv/) or nvm:
+
+- [Ensure shims are added to PATH](https://github.com/nodenv/nodenv#how-it-works)
+- [For Windows WSL2 with nvm](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl)
+
+**Using nodenv:**
 
 ```sh
 nodenv install 18.20
 nodenv local 18.20
 ```
 
-Alternatively you can use nvm
+**Using nvm:**
 
 ```sh
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-# Set nvm version
 nvm install v18.20
 nvm alias default v18.20
 ```
 
-Now you can enhance `.bashrc` or `.bash_profile` in order to use v18.20 automatically or you might need to run `nvm use v18.20` every time you open a new terminal in case above technique didnt work
+To auto-select the Node version on new terminals, add to `.bashrc` or `.bash_profile`:
 
 ```sh
 export NVM_DIR="$HOME/.nvm"
@@ -28,7 +34,7 @@ export NVM_DIR="$HOME/.nvm"
 nvm use v18.20 > /dev/null
 ```
 
-## Install python3 and it's dependencies on your local environment
+### Python 3.10 and dependencies
 
 ```sh
 sudo apt install -y python3.10 python3.10-venv python3.10-dev
@@ -41,193 +47,235 @@ install_groups="main,all_ds,dev"
 poetry install --only $install_groups $POETRY_OPTIONS
 ```
 
-## Setup docker compose
+## Environment Setup
 
-```sh
-# This step is required on first build
-docker compose up --build # or make up to start required services like postgres app server
-docker compose run --rm server create_db # start server and run. exec /app/manage.py database create_tables.
-# Database Update process
-docker compose run server manage db stamp head # If you get an error saying "target database is not up to date" you can run this command
-docker compose run server manage db migrate # Any change to back-end models requires to create a migration
-docker compose run --rm server manage db upgrade # Upgrade database with recent migration
-```
-
-## Installation for Linux using virtualenvwrapper
-
-```sh
-sudo pacman -S yay
-yay -S python38
-mkvirtualenv -p /usr/bin/python3.8 python38
-```
-
-### Testing
-
-#### Backend
-
-```sh
-# First ensure that the "tests" database is created
-docker compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
-# Run the tests
-docker compose run --rm server tests
-# Run tests for a specific module
-docker-compose run --rm server pytest -v tests/plywood/test_json.py
-```
-
-#### viz-lib
-
-```sh
-cd viz-lib
-npm run test
-```
-
-#### e2e
-
-use below to seed client
-
-```sh
-cd client && npm run cypress db-seed # Seed the database with initial data for cypress tests
-```
-
-```sh
-cd client
-npm run cypress run # Run cypress tests in headless mode
-```
-
-### Components
-
-#### DataReporter server and client
-
-- **directory**: `redash`
-  - **debug**: Please follow the instruction from the [debugging guide](/docs/open-source/dev-guide/debugging/)
-  - **changes:**
-    - All changes are immediately visible as the python application is interpreted and it's running directly from source code.
-
-#### Data Reporter client
-
-- **directory:** `viz-lib`
-- **directory:** `plywood/client`
-- **directory:** `client`
-  - **debug:** Can be debugged from browser open application at `http://localhost:8080` || `5000` and use browser debugger.
-  - **changes:**
-    - By default, changes are not reflected. You need go into `client` directory and start `npm run watch`.
-      That will start watched for source code changes for Data Reporter frontend and all submodules.
-    - At liniux system you may face problem of too many file system watchers. That will result in error message
-      `Error: ENOSPC: System limit for number of file watchers reached, watch`
-      To solve it you need to increase the number of available watches by :
-      `sudo sysctl -w fs.inotify.max_user_watches=512000`
-
-#### Plywood server
-
-- **directory:** `plywood`
-- **debug:** connect nodejs debugger to `localhost:9231`
-- **changes:**
-  - All changes should be reflected automatically. The server is running in watch mode with incremental build support
-    and should rebuild at any source code change.
-  - To see details/logs of build go into repo root dir and run `docker compose logs plywood`
-
-## Local Development
-
-Consider using [pyenv](https://github.com/pyenv/pyenv#installation) for installing local Python pyenv app. Data Reporter container images are shipped with Python 3.8.7, [ubuntu guide](https://www.dedicatedcore.com/blog/install-pyenv-ubuntu/)
-
-```sh
-# install necessary python version
-pyenv install 3.8.7
-# make sure you run below command in the datareported folder
-# automatically select whenever you are in the current directory (or its subdirectories)
-pyenv local 3.8.7
-# note that on certani linux distros you might need to also run below command
-# $ git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
-# create virtualenv
-pyenv virtualenv 3.8.7 .venv
-source ./.venv/bin/activate
-# note that in some system .venv might be created in your home folder: /.pyenv/versions/.venv
-# $ source ~/.pyenv/versions/.venv/bin/activate
-```
-
-### Settting up environment
-
-You have to set up environment variables in the `.env` file in the root directory of the project. This file is used to configure various settings for the application, such as database connections, API keys, and other configurations.
-For reference, see the `.env.example` file in the project root. It contains sample environment variables and their expected formats. Copy this file to `.env` and adjust the values as needed for your local setup.
+Set up environment variables before starting Docker services. Copy the example file and adjust values for your local setup:
 
 ```sh
 cp .env.example .env
 # Edit .env to set your configuration
 ```
 
-if you setup the deepseek wth ollama server on local you need to download the model first
+For reference, see `.env.example` in the project root for sample variables and expected formats.
+
+## Docker Compose Setup
+
+Start the backend services (postgres, redis, server, plywood):
 
 ```sh
-docker compose exec ollama ollama pull deepseek-r1:7b # Pull deepseek-r1:7b model from ollama
+docker compose up --build
 ```
 
-### Debugging notes
-
-If you are working on Visual Studio Code follow the [debugging guide](/docs/open-source/dev-guide/debugging/) then you can run the debugging session following below:
+Initialize the database (first time only):
 
 ```sh
-pip install ptvsd # install below library
-docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server # start debugging session
+docker compose run --rm server create_db
 ```
 
-To log messages from Plywood (in docker compose): `LOG_MODE=request_and_response` or `LOG_MODE=response_only`
+Database migration commands:
 
-if you are having issue building docker images, try to remove `config.json` file from docker folder
+```sh
+# If you get "target database is not up to date":
+docker compose run server manage db stamp head
+# Create migration after backend model changes:
+docker compose run server manage db migrate
+# Apply pending migrations:
+docker compose run --rm server manage db upgrade
+```
+
+## Frontend Development
+
+There are two ways to develop the frontend. **Option 1 is recommended** for day-to-day work.
+
+### Option 1: Hot-reload with webpack-dev-server (recommended)
+
+Runs a local dev server with hot module replacement. Changes appear instantly in the browser without rebuilding.
+
+**Terminal 1 — Backend (Docker):**
+
+```sh
+docker compose up
+```
+
+**Terminal 2 — Frontend (host):**
+
+```sh
+cd client
+npm install   # first time only
+npm run start
+```
+
+Open **`http://localhost:8080`** in your browser. The webpack-dev-server proxies API calls (`/api`, `/login`, `/plywood`, etc.) to the Docker backend at `localhost:5000` and plywood at `localhost:3000`. Edit client code, save, and see changes immediately.
+
+| Command | What it does |
+|---------|-------------|
+| `npm run start` | webpack-dev-server + viz-lib watcher — hot reload at port 8080 |
+| `npm run watch` | Rebuilds `client/dist/` on file change — Docker serves updates at port 5000 (slower) |
+| `npm run dev` | Same as `start` with `--openssl-legacy-provider` for older Node compatibility |
+
+### Linux: file watcher limit
+
+On Linux you may hit the inotify watcher limit:
+
+```
+Error: ENOSPC: System limit for number of file watchers reached, watch
+```
+
+Fix:
+
+```sh
+sudo sysctl -w fs.inotify.max_user_watches=512000
+```
+
+## Architecture
+
+### Ports
+
+| Service | Port | Purpose |
+|---------|------|---------|
+| webpack-dev-server | 8080 | Frontend dev with hot reload (host only, not Docker) |
+| server | 5000 | Python backend API + serves production `client/dist/` |
+| plywood | 3000 | Plywood/Turnilo OLAP server |
+| postgres | 5432, 15432 | Database |
+| redis | 6379 | Cache and job queue |
+| email (maildev) | 1080, 1025 | Local email testing UI and SMTP |
+| server debug | 5678 | Python debugger |
+| plywood debug | 9231 | Node.js debugger |
+
+### Components
+
+#### Backend (Python)
+
+- **Directory:** `redash`
+- **Debug:** Follow the [debugging guide](/docs/open-source/dev-guide/debugging/)
+- **Changes:** Immediately visible — Python runs directly from source via the bind mount.
+
+#### Frontend (JavaScript)
+
+- **Directories:** `client`, `viz-lib`, `plywood/client`
+- **Debug:** Open `http://localhost:8080` (dev server) or `http://localhost:5000` (Docker) and use browser devtools.
+- **Changes:** Use `npm run start` in `client/` for hot reload, or `npm run watch` to rebuild `dist/` on change.
+
+#### Plywood server (Node.js)
+
+- **Directory:** `plywood`
+- **Debug:** Connect Node.js debugger to `localhost:9231`
+- **Changes:** Automatically reflected — runs in watch mode with incremental builds.
+- **Logs:** `docker compose logs plywood`
+
+### Supported Report Engines
+
+postgres, mysql, bigquery, athena, druid, pg, json
+
+## Testing
+
+### Backend
+
+```sh
+# Create test database (first time only):
+docker compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
+# Run all tests:
+docker compose run --rm server tests
+# Run tests for a specific module:
+docker compose run --rm server pytest -v tests/plywood/test_json.py
+```
+
+### viz-lib
+
+```sh
+cd viz-lib
+npm run test
+```
+
+### End-to-end (Cypress)
+
+```sh
+cd client
+npm run cypress db-seed  # Seed database with test data
+npm run cypress run       # Run Cypress tests in headless mode
+```
+
+## Debugging
+
+### Python backend (VS Code)
+
+Follow the [debugging guide](/docs/open-source/dev-guide/debugging/), then:
+
+```sh
+pip install ptvsd
+docker compose stop server && docker compose run --rm --service-ports server debug && docker compose start server
+```
+
+### Plywood logs
+
+Set log mode in `docker-compose.yml` environment or override:
+
+- `LOG_MODE=request_and_response` — full request/response logging
+- `LOG_MODE=response_only` — responses only
+
+### Ollama (local AI)
+
+If using the Ollama service for local AI, download the model first:
+
+```sh
+docker compose exec ollama ollama pull deepseek-r1:7b
+```
+
+### Alternative Docker Compose config
+
+To use the dev-specific compose override:
+
+```sh
+docker compose -f compose.dev.yml up -d
+```
+
+## Troubleshooting
+
+### Docker build issues
+
+If you have issues building Docker images, try removing the Docker config:
 
 ```bash
-rm  ~/.docker/config.json
+rm ~/.docker/config.json
 ```
 
-below is for how to start the development environment using docker compose
-this will rewrite environment variables from `.env` and the compose file
+### Docker container networking
 
-```sh
-docker-compose -f compose.dev.yml up -d
-```
-
-- Supported Report Engines
-  - postgres
-  - mysql
-  - bigquery
-  - athena
-  - druid
-  - pg
-  - json
-
-### Docker connectivity issues for testing connection between containers
-
-This is useful when testing fresh datasources so cross server connections are needed. For example, if you want to connect to a router container from the datareporter-server container.
+Useful when testing connections between containers (e.g., connecting to a router container from DataReporter):
 
 ```bash
->> docker network connect datareporter_default router
->> docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' router
-docker_default, datareporter_default
->> docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' datareporter-server-1
-datareporter_default
->> docker exec datareporter-server-1 ping router -c2
-PING router (172.19.0.9) 56(84) bytes of data.
-64 bytes from router.datareporter_default (172.19.0.9): icmp_seq=1 ttl=64 time=1.51 ms
-64 bytes from router.datareporter_default (172.19.0.9): icmp_seq=2 ttl=64 time=0.057 ms
-
---- router ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 3ms
-rtt min/avg/max/mdev = 0.057/0.781/1.506/0.725 ms
+docker network connect datareporter_default router
+docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' router
+docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' datareporter-server-1
+docker exec datareporter-server-1 ping router -c2
 ```
 
-### Python package handling
+## Reference
 
-We are using poetry for package control on backend [see this redash commit tree for more info](https://github.com/getredash/redash/blob/c97afeb327d8d54e7219ac439cc93d0f234763e5), and npm for client and viz-lib
+### Python environment with pyenv
+
+For local Python development outside Docker:
 
 ```sh
-# Install poetry using pip
-pip3 install poetry==1.8.3
+pyenv install 3.10
+pyenv local 3.10
+pyenv virtualenv 3.10 .venv
+source ./.venv/bin/activate
+```
 
-# Uninstall Poetry locally
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/901bdf0491005f1b3db41947d0d938da6838ecb9/get-poetry.py | python3 - --uninstall
+See [pyenv installation](https://github.com/pyenv/pyenv#installation) for setup instructions.
 
-# Install a new package
+### Python package management (Poetry)
+
+Backend uses [Poetry](https://python-poetry.org/) for dependency management:
+
+```sh
+# Install poetry
+pip3 install poetry==2.1.1
+
+# Add a new package
 poetry add <package-name>
 
-# Uninstall an old package
+# Remove a package
 poetry remove <package-name>
 ```

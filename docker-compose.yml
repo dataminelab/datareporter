@@ -11,6 +11,7 @@ x-redash-service: &redash-service
       skip_ds_deps: "${skip_ds_deps-}"
   volumes:
     - .:/app
+    - /app/client/dist
   env_file:
     - .env
 x-redash-environment: &redash-environment
@@ -45,6 +46,7 @@ services:
       PLYWOOD_SERVER_URL: "http://plywood:3000"
     volumes:
       - .:/app
+      - /app/client/dist
   scheduler:
     <<: *redash-service
     command: dev_scheduler

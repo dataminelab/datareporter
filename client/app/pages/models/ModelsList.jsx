@@ -296,7 +296,7 @@ const ModelsListPage = wrapSettingsTab(
     permission: "admin",
     title: "Models",
     path: "models",
-    isActive: path => path.startsWith("/models") && path !== "/models/me",
+    isActive: path => path === "/models" || path === "/models/new",
     order: 2,
   },
   itemsList(

@@ -120,6 +120,33 @@ class ModelConfigValidator:
                     message="Your config has an issue on line {} at position {}".format(pm.line, pm.column),
                 )
 
+    def _format_cerberus_errors(self, errors, path=None):
+        """
+        Recursively format Cerberus errors into user-friendly messages.
+        """
+        if path is None:
+            path = []
+        messages = []
+        if isinstance(errors, dict):
+            for key, value in errors.items():
+                if isinstance(key, int):
+                    new_path = path + [f"[{key}]"]
+                else:
+                    new_path = path + [str(key)]
+                messages.extend(self._format_cerberus_errors(value, new_path))
+        elif isinstance(errors, list):
+            for item in errors:
+                if isinstance(item, dict):
+                    messages.extend(self._format_cerberus_errors(item, path))
+                else:
+                    # item is a string error message
+                    location = ".".join(path)
+                    messages.append(f"At '{location}': {item}")
+        else:
+            location = ".".join(path)
+            messages.append(f"At '{location}': {errors}")
+        return messages
+
     def _validate_schema(self):
         with io.StringIO(self.content) as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
@@ -127,9 +154,11 @@ class ModelConfigValidator:
             validator.validate(config)
 
             if bool(validator.errors):
+                # Format errors for user-friendly output
+                error_messages = self._format_cerberus_errors(validator.errors)
                 abort(
                     http_status_code=400,
-                    message="Config has the following issues: {}".format(validator.errors),
+                    message="Config has the following issues:\n" + "\n".join(error_messages),
                 )
 
     def _validate_values(self):

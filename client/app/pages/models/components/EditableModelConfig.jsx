@@ -245,8 +245,13 @@ export default function EditableModelConfig({ model, saveConfig }) {
     for (let i = 0; i < attributesList.length; i++) {
       const attribute = attributesList[i];
       if (attribute.includes(timeAttribute)) {
-        const attributeType = attribute.split("type: ")[1].split("\n")[0];
-        if (attributeType !== "TIME") {
+        const typeSplit = attribute.split("type: ");
+        if (typeSplit.length < 2) {
+          alert(`Attribute \"${timeAttribute}\" is missing a type declaration`);
+          return;
+        }
+        const attributeType = typeSplit[1].split("\n")[0];
+        if (attributeType.trim().toUpperCase() !== "TIME") {
           alert("timeAttribute must be of type TIME");
           return;
         }

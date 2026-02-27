@@ -116,6 +116,7 @@ from redash.handlers.visualizations import (
     VisualizationResource,
 )
 from redash.handlers.widgets import WidgetListResource, WidgetResource
+from redash.ai.nl_query import NLQueryConfigResource, NLQueryGenerateResource
 from redash.utils import json_dumps
 
 
@@ -166,6 +167,9 @@ api.add_org_resource(
     "/api/dashboards/<dashboard_id>/share",
     endpoint="dashboard_share",
 )
+
+api.add_org_resource(NLQueryGenerateResource, "/api/nl-query/generate", endpoint="nl_query_generate")
+api.add_org_resource(NLQueryConfigResource, "/api/nl-query/config", endpoint="nl_query_config")
 
 api.add_org_resource(DataSourceTypeListResource, "/api/data_sources/types", endpoint="data_source_types")
 api.add_org_resource(DataSourceListResource, "/api/data_sources", endpoint="data_sources")

@@ -5,6 +5,20 @@ from redash.models import Organization, db
 from redash.permissions import require_admin
 from redash.settings.organization import settings as org_settings
 
+# Keys that contain secrets — mask on GET, never return in plaintext
+_SECRET_SETTINGS_KEYS = frozenset([
+    "ai_openai_api_key",
+    "ai_gemini_api_key",
+    "ai_anthropic_api_key",
+])
+
+
+def _mask_secret(value):
+    """Show only last 4 characters of a secret, or empty string if not set."""
+    if not value:
+        return ""
+    return "••••" + value[-4:]
+
 
 def get_settings_with_defaults(defaults, org):
     values = org.settings.get("settings", {})
@@ -25,12 +39,21 @@ def get_settings_with_defaults(defaults, org):
     return settings
 
 
+def _mask_secrets(settings_dict):
+    """Mask secret values before returning to client."""
+    result = dict(settings_dict)
+    for key in _SECRET_SETTINGS_KEYS:
+        if key in result:
+            result[key] = _mask_secret(result[key])
+    return result
+
+
 class OrganizationSettings(BaseResource):
     @require_admin
     def get(self):
         settings = get_settings_with_defaults(org_settings, self.current_org)
 
-        return {"settings": settings}
+        return {"settings": _mask_secrets(settings)}
 
     @require_admin
     def post(self):
@@ -44,6 +67,9 @@ class OrganizationSettings(BaseResource):
             if k == "auth_google_apps_domains":
                 previous_values[k] = self.current_org.google_apps_domains
                 self.current_org.settings[Organization.SETTING_GOOGLE_APPS_DOMAINS] = v
+            elif k in _SECRET_SETTINGS_KEYS and v and v.startswith("••••"):
+                # Client sent back a masked value — skip, don't overwrite with mask
+                continue
             else:
                 previous_values[k] = self.current_org.get_setting(k, raise_on_missing=False)
                 self.current_org.set_setting(k, v)
@@ -56,11 +82,11 @@ class OrganizationSettings(BaseResource):
                 "action": "edit",
                 "object_id": self.current_org.id,
                 "object_type": "settings",
-                "new_values": new_values,
-                "previous_values": previous_values,
+                "new_values": {k: "***" if k in _SECRET_SETTINGS_KEYS else v for k, v in new_values.items()},
+                "previous_values": {k: "***" if k in _SECRET_SETTINGS_KEYS else v for k, v in previous_values.items()},
             }
         )
 
         settings = get_settings_with_defaults(org_settings, self.current_org)
 
-        return {"settings": settings}
+        return {"settings": _mask_secrets(settings)}

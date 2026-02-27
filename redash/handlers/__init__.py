@@ -1,7 +1,6 @@
 from flask import jsonify
 from flask_login import login_required
 
-from redash.handlers.api import api
 from redash.handlers.base import routes
 from redash.monitor import get_status
 from redash.permissions import require_super_admin
@@ -23,6 +22,7 @@ def status_api():
 
 
 def init_app(app):
+    from redash.handlers.api import api  # noqa: deferred to break circular import with redash.ai.nl_query
     from redash.handlers import (
         admin,
         authentication,

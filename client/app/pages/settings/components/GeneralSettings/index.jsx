@@ -5,6 +5,7 @@ import FormatSettings from "./FormatSettings";
 import PlotlySettings from "./PlotlySettings";
 import FeatureFlagsSettings from "./FeatureFlagsSettings";
 import BeaconConsentSettings from "./BeaconConsentSettings";
+import AISettings from "./AISettings";
 
 export default function GeneralSettings(props) {
   return (
@@ -14,6 +15,7 @@ export default function GeneralSettings(props) {
       <FormatSettings {...props} />
       <PlotlySettings {...props} />
       <FeatureFlagsSettings {...props} />
+      <AISettings {...props} />
       <BeaconConsentSettings {...props} />
     </DynamicComponent>
   );

@@ -20,7 +20,16 @@ PLYWOOD_SERVER_URL = os.environ.get("PLYWOOD_SERVER_URL", "http://plywood-server
 OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://ollama:11434")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 SERVER_WORKER_URL = os.environ.get("SERVER_WORKER_URL", "")
+
+# AI NL Query settings
+AI_PROVIDER = os.environ.get("AI_PROVIDER", "")  # openai, gemini, anthropic, ollama
+AI_MODEL = os.environ.get("AI_MODEL", "")  # Model override (default per provider)
+AI_API_ENDPOINT = os.environ.get("AI_API_ENDPOINT", "")  # Custom API endpoint
+AI_QUERY_TIMEOUT = int(os.environ.get("AI_QUERY_TIMEOUT", "60"))  # Seconds
+AI_MAX_RESULT_ROWS = int(os.environ.get("AI_MAX_RESULT_ROWS", "10000"))
+AI_SHOW_FAILED_SQL = parse_boolean(os.environ.get("AI_SHOW_FAILED_SQL", "false"))
 
 # _REDIS_URL is the unchanged REDIS_URL we get from env vars, to be used later with RQ
 _REDIS_URL = os.environ.get("REDASH_REDIS_URL", os.environ.get("REDIS_URL", "redis://localhost:6379/0"))

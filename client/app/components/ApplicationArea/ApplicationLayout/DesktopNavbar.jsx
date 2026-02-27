@@ -63,6 +63,7 @@ function useNavbarActiveState() {
         ["Reports.List", "Reports.View", "Reports.Edit", "Reports.New"],
         currentRoute.id,
       ),
+      ai: includes(["AI.Chat"], currentRoute.id),
     }),
     [currentRoute.id],
   );
@@ -154,6 +155,18 @@ export default function DesktopNavbar() {
             <Tooltip placement="bottom" title="Alerts">
               <Link href="alerts">
                 <i className="icon-ui  icon-notifications-allerts-bell"></i>
+              </Link>
+            </Tooltip>
+          </Menu.Item>
+        )}
+        {currentUser.hasPermission("view_query") && (
+          <Menu.Item
+            key="ai"
+            className={activeState.ai ? "navbar-active-item" : null}
+          >
+            <Tooltip placement="bottom" title="AI Query">
+              <Link href="ai">
+                <i className="fa fa-magic"></i>
               </Link>
             </Tooltip>
           </Menu.Item>

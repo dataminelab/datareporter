@@ -13,7 +13,7 @@ force-exclude = '''
 
 [tool.poetry]
 name = "redash"
-version = "26.02.0-dev"
+version = "26.03.0-dev"
 description = ""
 authors = ["Radoslaw Maciaszek <radek@dataminelab.com>"]
 license = "Apache-2.0"

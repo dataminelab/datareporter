@@ -16,9 +16,11 @@ DIMENSION_KINDS = (BOOLEAN, NUMBER, TIME)
 MEASURE_TYPES = (NUMBER,)
 TIME_ATTRIBUTE_TYPES = (TIME,)
 
+
 def get_table_name(schema_name):
     # Use only the part after the last dot if present
     return schema_name.rsplit(".", 1)[-1]
+
 
 class ConfigDumper(yaml.SafeDumper):
     def write_line_break(self, data=None):

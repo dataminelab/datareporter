@@ -58,6 +58,8 @@ Open [http://localhost:5000](http://localhost:5000) and start asking questions.
 
 **3. Auto-generated data cubes.** Connect a database, and DataReporter automatically discovers your schema and generates OLAP cubes for drag-and-drop exploration. No manual configuration needed.
 
+**4. Ephemeral reports — the URL is the report.** Every Turnilo report view is encoded directly in the URL. Filters, splits, visualizations, time ranges — the entire state is compressed into a shareable link. No saved objects, no database rows, no clutter. Paste a link in Slack and your teammate sees the exact same chart. Bookmark a complex analysis and come back to it months later. Generate report URLs programmatically from your AI assistant or API scripts — no write permissions needed. Traditional BI tools make you save, name, and organize every view. DataReporter lets you just share a link.
+
 ## Features
 
 **AI Engine**
@@ -73,6 +75,7 @@ Open [http://localhost:5000](http://localhost:5000) and start asking questions.
 - Drag-and-drop dashboard builder
 - Scheduled refreshes and alerts
 - Shareable URLs for every dashboard and report
+- Ephemeral Turnilo reports — full view state encoded in URL, no server-side storage needed
 
 **Enterprise Ready**
 

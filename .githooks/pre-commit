@@ -1,53 +1,82 @@
 #!/bin/bash
-# Pre-commit hook: check prettier formatting on staged files
-# This hook WARNS but does NOT block the commit (exits 0 always)
+# Pre-commit hook: check formatting on staged files
+# Blocks the commit if any check fails. Fix issues and re-commit.
 
-# Get repo root
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+FAILED=0
 
-# Get staged files matching prettier-supported extensions
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|json|css|scss|less|md)$')
+# ─── Prettier (JS/TS/CSS/JSON/MD) ────────────────────────────
 
-if [ -z "$STAGED_FILES" ]; then
-  exit 0
-fi
+STAGED_JS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|json|css|scss|less|md)$')
 
-# Check if prettier is available
-if ! command -v npx &> /dev/null; then
-  echo "[prettier-check] npx not found, skipping formatting check"
-  exit 0
-fi
+if [ -n "$STAGED_JS" ]; then
+  if command -v npx &> /dev/null; then
+    echo "[prettier] Checking formatting..."
 
-echo ""
-echo "[prettier-check] Checking formatting of staged files..."
-echo ""
-
-# Run prettier --check using the root config
-UNFORMATTED=""
-for FILE in $STAGED_FILES; do
-  if [ -f "$REPO_ROOT/$FILE" ]; then
-    if ! npx prettier --config "$REPO_ROOT/.prettierrc.json" --check "$REPO_ROOT/$FILE" 2>/dev/null; then
-      UNFORMATTED="$UNFORMATTED  $FILE\n"
-    fi
+    for FILE in $STAGED_JS; do
+      if [ -f "$REPO_ROOT/$FILE" ]; then
+        if ! npx prettier --config "$REPO_ROOT/.prettierrc.json" --check "$REPO_ROOT/$FILE" 2>/dev/null; then
+          echo ""
+          echo "── $FILE ──"
+          npx prettier --config "$REPO_ROOT/.prettierrc.json" "$REPO_ROOT/$FILE" 2>/dev/null | diff --color=always "$REPO_ROOT/$FILE" - || true
+          FAILED=1
+        fi
+      fi
+    done
+  else
+    echo "[prettier] npx not found, skipping"
   fi
-done
-
-if [ -n "$UNFORMATTED" ]; then
-  echo ""
-  echo "========================================="
-  echo " WARNING: These files need formatting:"
-  echo "========================================="
-  echo -e "$UNFORMATTED"
-  echo "Run from client/:"
-  echo "  npx prettier --config ../.prettierrc.json --write <file>"
-  echo ""
-  echo "Or format all staged files:"
-  echo "  npx prettier --config .prettierrc.json --write \$(git diff --cached --name-only)"
-  echo ""
-  echo "Proceeding with commit anyway..."
-  echo "========================================="
-  echo ""
 fi
 
-# Always exit 0 — warn but don't block
+# ─── Black + Ruff (Python) ───────────────────────────────────
+
+STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$')
+
+if [ -n "$STAGED_PY" ]; then
+  # Black — code formatter (--diff shows what it would change)
+  if command -v black &> /dev/null; then
+    echo "[black] Checking Python formatting..."
+    for FILE in $STAGED_PY; do
+      if [ -f "$REPO_ROOT/$FILE" ]; then
+        DIFF=$(black --diff --quiet "$REPO_ROOT/$FILE" 2>/dev/null)
+        if [ -n "$DIFF" ]; then
+          echo ""
+          echo "── $FILE ──"
+          echo "$DIFF"
+          FAILED=1
+        fi
+      fi
+    done
+  else
+    echo "[black] black not found, skipping"
+  fi
+
+  # Ruff — linter (already shows file:line:col and error code)
+  if command -v ruff &> /dev/null; then
+    echo "[ruff] Linting Python files..."
+    for FILE in $STAGED_PY; do
+      if [ -f "$REPO_ROOT/$FILE" ]; then
+        RUFF_OUT=$(ruff check "$REPO_ROOT/$FILE" 2>&1)
+        if [ $? -ne 0 ]; then
+          echo ""
+          echo "── $FILE ──"
+          echo "$RUFF_OUT"
+          FAILED=1
+        fi
+      fi
+    done
+  else
+    echo "[ruff] ruff not found, skipping"
+  fi
+fi
+
+if [ $FAILED -ne 0 ]; then
+  echo ""
+  echo "========================================="
+  echo "Run 'make fmt' to fix and re-stage all, then re-commit."
+  echo "To bypass (not recommended): git commit --no-verify"
+  echo "========================================="
+  exit 1
+fi
+
 exit 0

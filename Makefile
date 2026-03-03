@@ -1,4 +1,4 @@
-.PHONY: compose_build up test_db create_database clean down tests lint backend-unit-tests frontend-unit-tests test build watch start redis-cli bash
+.PHONY: compose_build up test_db create_database clean down tests lint fmt backend-unit-tests frontend-unit-tests test build watch start redis-cli bash
 
 compose_build:
 	docker compose build
@@ -27,6 +27,16 @@ down:
 
 tests:
 	docker compose run server tests
+
+fmt:
+	@echo "Formatting staged files..."
+	@STAGED=$$(git diff --cached --name-only --diff-filter=ACM); \
+	JS_FILES=$$(echo "$$STAGED" | grep -E '\.(js|jsx|ts|tsx|json|css|scss|less|md)$$'); \
+	PY_FILES=$$(echo "$$STAGED" | grep -E '\.py$$'); \
+	if [ -n "$$JS_FILES" ]; then echo "$$JS_FILES" | xargs npx prettier --config .prettierrc.json --write; fi; \
+	if [ -n "$$PY_FILES" ]; then echo "$$PY_FILES" | xargs black; echo "$$PY_FILES" | xargs ruff check --fix 2>/dev/null; fi; \
+	if [ -n "$$STAGED" ]; then echo "$$STAGED" | xargs git add; fi
+	@echo "Done. Files formatted and re-staged."
 
 lint:
 	flake8 --config=.flake8 .

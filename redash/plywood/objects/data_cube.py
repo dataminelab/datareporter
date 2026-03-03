@@ -89,7 +89,7 @@ class DataCube:
         return yaml.load(self._model.config.content, Loader=yaml.FullLoader)
 
     @property
-    def data_cube(self, lower_case_kind=True):
+    def data_cube(self, lower_case_kind=True) -> Union[None, "DataCube"]:
         if not self._model.config:
             return None
         data_cube = pydash.head(self.config["dataCubes"])
@@ -97,7 +97,7 @@ class DataCube:
         if lower_case_kind and isinstance(data_cube, dict):
             lower_kind(data_cube)
 
-        return data_cube
+        return data_cube  # type: ignore
 
     @property
     def context(self) -> Dict:

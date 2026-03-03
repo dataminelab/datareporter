@@ -155,7 +155,7 @@ class ModelConfigGenerator:
     @staticmethod
     def _build(model: Model, refresh):
         schemas = model.data_source.get_schema(refresh=refresh)
-        table_schema = next((schema for schema in schemas if model.table == get_table_name(schema["name"])), None)
+        table_schema = next((schema for schema in schemas if (model.table == schema["name"]) or model.table == get_table_name(schema["name"])), None)
         if table_schema is None:
             raise ValueError("Data source {} doesn't contain {} table".format(model.data_source, model.table))
 

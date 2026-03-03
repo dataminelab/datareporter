@@ -49,6 +49,9 @@ def hash_report(report, can_edit=False):
             _external=True,
         )
         api_key = api_key.api_key
+    config = ModelConfig.get_model_config(report.model_id)
+    if not config:
+        config = {"customization": {}, "timekeeper": {}}
     result = {
         "color_1": report.color_1,
         "color_2": report.color_2,
@@ -71,7 +74,7 @@ def hash_report(report, can_edit=False):
         "is_favorite": is_favorite,
         "is_archived": report.is_archived,
         "landed": True,
-        "appSettings": ModelConfig.get_model_config(report.model_id),
+        "appSettings": config,
         "id": report.id,
         "api_key": api_key,
         "public_url": public_url,

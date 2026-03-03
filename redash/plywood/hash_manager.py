@@ -247,6 +247,8 @@ class ReportHash:
     def __init__(self, o: Report):
         self.version = "1.26.0-beta.1"
         config = ModelConfig.get_model_config(o.model_id)
+        if not config:
+            logger.warning(f"No model config found for model_id {o.model_id}")
         if config:
             config["customization"][
                 "urlShortener"

@@ -1,0 +1,53 @@
+#!/bin/bash
+# Pre-commit hook: check prettier formatting on staged files
+# This hook WARNS but does NOT block the commit (exits 0 always)
+
+# Get repo root
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Get staged files matching prettier-supported extensions
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|json|css|scss|less|md)$')
+
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+# Check if prettier is available
+if ! command -v npx &> /dev/null; then
+  echo "[prettier-check] npx not found, skipping formatting check"
+  exit 0
+fi
+
+echo ""
+echo "[prettier-check] Checking formatting of staged files..."
+echo ""
+
+# Run prettier --check using the root config
+UNFORMATTED=""
+for FILE in $STAGED_FILES; do
+  if [ -f "$REPO_ROOT/$FILE" ]; then
+    if ! npx prettier --config "$REPO_ROOT/.prettierrc.json" --check "$REPO_ROOT/$FILE" 2>/dev/null; then
+      UNFORMATTED="$UNFORMATTED  $FILE\n"
+    fi
+  fi
+done
+
+if [ -n "$UNFORMATTED" ]; then
+  echo ""
+  echo "========================================="
+  echo " WARNING: These files need formatting:"
+  echo "========================================="
+  echo -e "$UNFORMATTED"
+  echo "Run from client/:"
+  echo "  npx prettier --config ../.prettierrc.json --write <file>"
+  echo ""
+  echo "Or format all staged files:"
+  echo "  npx prettier --config .prettierrc.json --write \$(git diff --cached --name-only)"
+  echo ""
+  echo "Proceeding with commit anyway..."
+  echo "========================================="
+  echo ""
+fi
+
+# Always exit 0 — warn but don't block
+exit 0

@@ -58,6 +58,30 @@ cp .env.example .env
 
 For reference, see `.env.example` in the project root for sample variables and expected formats.
 
+## Git Hooks
+
+The repo includes shared git hooks in `.githooks/`. To enable them, point git at that directory:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+This is a one-time setup per clone. The setting is stored in your local `.git/config` and doesn't affect other repos.
+
+**What the hooks do:**
+
+| Hook | Behavior |
+|------|----------|
+| `pre-commit` | Checks prettier formatting on staged files. **Warns but does not block** the commit. |
+
+If the hook reports unformatted files, fix them with:
+
+```sh
+npx prettier --config .prettierrc.json --write <file>
+```
+
+> **Note:** `core.hooksPath` replaces `.git/hooks/` entirely. If you have personal hooks there, move them to `.githooks/` instead.
+
 ## Docker Compose Setup
 
 Start the backend services (postgres, redis, server, plywood):

@@ -20,9 +20,7 @@ class TestModelConfigValidator(unittest.TestCase):
                   - deltaByTen
                 attributes:
                     {}
-                    """.format(
-            attributes
-        )
+                    """.format(attributes)
         validator = ModelConfigValidator(content=content)
 
         with self.assertRaises(BadRequest) as cm:
@@ -190,7 +188,5 @@ class TestModelConfigValidator(unittest.TestCase):
         self.assertEqual(ex.code, 400)
         self.assertEqual(
             ex.data,
-            {
-                "message": "Config has the following issues: {'dataCubes': [{0: [{'measures': [{0: [{'formula': ['required field']}]}]}]}]}"
-            },
+            {"message": "Config has the following issues:\nAt 'dataCubes.[0].measures.[0].formula': required field"},
         )

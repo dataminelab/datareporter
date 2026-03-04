@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: "3.10"
       - run: python -m ensurepip --upgrade
-      - run: sudo pip install black==23.1.0 ruff==0.0.287
+      - run: sudo pip install black ruff
       - run: ruff check .
       - run: black --check .
   backend-unit-tests:

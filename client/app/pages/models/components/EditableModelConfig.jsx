@@ -274,7 +274,9 @@ export default function EditableModelConfig({ model, saveConfig }) {
       const attributeType = typeSplit[1].split("\n")[0].trim().toUpperCase();
       // Check for invalid type
       if (!allowedTypes.includes(attributeType)) {
-        alert(`Attribute type '${attributeType}' is not allowed. Allowed types: ${allowedTypes.join(", ")}`);
+        alert(
+          `Attribute type '${attributeType}' is not allowed. Allowed types: ${allowedTypes.join(", ")}`,
+        );
         return;
       }
       // Only check timeAttribute type for TIME

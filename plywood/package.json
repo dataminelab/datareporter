@@ -37,7 +37,7 @@
     "has-own-prop": "^2.0.0",
     "http-status": "^1.4.2",
     "immer": "^9.0.6",
-    "immutable": "^4.0.0-rc.14",
+    "immutable": "^4.3.8",
     "immutable-class": "^0.9.4",
     "immutable-class-tester": "^0.7.2",
     "l": "^0.6.0",

@@ -27,9 +27,7 @@ class TestModelsConfigCreateResource(BaseTestCase):
                         - deltaByTen
                       attributes:
                           {}
-                          """.format(
-            attributes
-        )
+                          """.format(attributes)
 
         group = self.factory.create_group(permissions=["edit_model_config"])
         db.session.commit()

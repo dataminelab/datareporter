@@ -16,8 +16,12 @@
  */
 
 import * as React from "react";
-import { isFunction } from "util";
-import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
+import {
+  clamp,
+  classNames,
+  getXFromEvent,
+  getYFromEvent,
+} from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
 import "./resize-handle.scss";
 
@@ -42,9 +46,14 @@ export interface ResizeHandleState {
   anchor?: number;
 }
 
-export const DragHandle = () => <SvgIcon svg={require("../../icons/drag-handle.svg")} />;
+export const DragHandle = () => (
+  <SvgIcon svg={require("../../icons/drag-handle.svg")} />
+);
 
-export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandleState> {
+export class ResizeHandle extends React.Component<
+  ResizeHandleProps,
+  ResizeHandleState
+> {
   state: ResizeHandleState = {};
 
   onMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -71,7 +80,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     window.removeEventListener("mouseup", this.onGlobalMouseUp);
     window.removeEventListener("mousemove", this.onGlobalMouseMove);
 
-    if (isFunction(this.props.onResizeEnd)) {
+    if (typeof this.props.onResizeEnd === "function") {
       this.props.onResizeEnd();
     }
   };
@@ -81,15 +90,21 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     switch (this.props.direction) {
       case Direction.TOP:
         if (150 > anchor) {
-          const currentValue = this.constrainValue(this.getCoordinate(event) - 150);
+          const currentValue = this.constrainValue(
+            this.getCoordinate(event) - 150,
+          );
           if (this.props.onResize) this.props.onResize(currentValue);
         } else {
-          const currentValue = this.constrainValue(this.getCoordinate(event) - anchor);
+          const currentValue = this.constrainValue(
+            this.getCoordinate(event) - anchor,
+          );
           if (this.props.onResize) this.props.onResize(currentValue);
         }
         break;
       default:
-        const currentValue = this.constrainValue(this.getCoordinate(event) - anchor);
+        const currentValue = this.constrainValue(
+          this.getCoordinate(event) - anchor,
+        );
         if (this.props.onResize) this.props.onResize(currentValue);
         break;
     }
@@ -99,7 +114,9 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     return this.constrainValue(this.getCoordinate(event));
   }
 
-  private getCoordinate(event: MouseEvent | React.MouseEvent<HTMLElement>): number {
+  private getCoordinate(
+    event: MouseEvent | React.MouseEvent<HTMLElement>,
+  ): number {
     switch (this.props.direction) {
       case Direction.LEFT:
         return getXFromEvent(event);
@@ -124,7 +141,11 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     };
 
     return (
-      <div className={classNames("resize-handle", direction)} style={style} onMouseDown={this.onMouseDown}>
+      <div
+        className={classNames("resize-handle", direction)}
+        style={style}
+        onMouseDown={this.onMouseDown}
+      >
         {children}
       </div>
     );

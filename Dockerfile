@@ -94,7 +94,7 @@ WORKDIR /app
 ENV POETRY_VERSION=2.1.1
 ENV POETRY_HOME=/etc/poetry
 ENV POETRY_VIRTUALENVS_CREATE=false
-RUN pip install --no-cache-dir "poetry==${POETRY_VERSION}" distlib
+RUN pip install --no-cache-dir "poetry==${POETRY_VERSION}" "distlib<0.4.0"
 
 # Avoid crashes, including corrupted cache artifacts, when building multi-platform images with GitHub Actions.
 RUN poetry cache clear pypi --all

@@ -293,7 +293,24 @@ const config = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
+        use: [
+          "style-loader",
+          "css-loader",
+          {
+            loader: "sass-loader",
+            options: {
+              sassOptions: {
+                silenceDeprecations: [
+                  "legacy-js-api",
+                  "import",
+                  "global-builtin",
+                  "function-units",
+                  "color-functions",
+                ],
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.(png|jpe?g|gif)(\?.*)?$/,

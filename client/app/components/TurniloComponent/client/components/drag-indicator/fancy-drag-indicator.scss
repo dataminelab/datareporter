@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+@use "sass:math";
 @import "../../imports";
 
 $arrow-width: 16px;
@@ -39,6 +40,6 @@ $arrow-width: 16px;
     // left: 0; It gets left from the JS
     top: -12px;
     width: $arrow-width;
-    margin-left: -$arrow-width / 2;
+    margin-left: math.div(-$arrow-width, 2);
   }
 }

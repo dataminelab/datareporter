@@ -2,6 +2,10 @@
 # Pre-commit hook: check formatting on staged files
 # Blocks the commit if any check fails. Fix issues and re-commit.
 
+# Set locale to avoid warnings
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 FAILED=0
 
@@ -12,17 +16,22 @@ STAGED_JS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx
 if [ -n "$STAGED_JS" ]; then
   if command -v npx &> /dev/null; then
     echo "[prettier] Checking formatting..."
-
+    
+    # Check all files at once for efficiency
+    FILES_TO_CHECK=""
     for FILE in $STAGED_JS; do
       if [ -f "$REPO_ROOT/$FILE" ]; then
-        if ! npx prettier --config "$REPO_ROOT/.prettierrc.json" --check "$REPO_ROOT/$FILE" 2>/dev/null; then
-          echo ""
-          echo "── $FILE ──"
-          npx prettier --config "$REPO_ROOT/.prettierrc.json" "$REPO_ROOT/$FILE" 2>/dev/null | diff --color=always "$REPO_ROOT/$FILE" - || true
-          FAILED=1
-        fi
+        FILES_TO_CHECK="$FILES_TO_CHECK $REPO_ROOT/$FILE"
       fi
     done
+    
+    if [ -n "$FILES_TO_CHECK" ]; then
+      if ! npx prettier --config "$REPO_ROOT/.prettierrc.json" --check $FILES_TO_CHECK 2>&1 | grep -v "Checking formatting..."; then
+        echo ""
+        echo "Some files need formatting. Run 'make fmt' to fix."
+        FAILED=1
+      fi
+    fi
   else
     echo "[prettier] npx not found, skipping"
   fi

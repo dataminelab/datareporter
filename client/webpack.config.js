@@ -267,7 +267,18 @@ const config = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
+        use: [
+          "style-loader",
+          "css-loader",
+          {
+            loader: "sass-loader",
+            options: {
+              sassOptions: {
+                silenceDeprecations: ["legacy-js-api", "import", "global-builtin", "function-units", "color-functions"],
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.(png|jpe?g|gif)(\?.*)?$/,
@@ -328,7 +339,7 @@ const config = {
       },
     ],
   },
-  devtool: isProduction ? "source-map" : "cheap-eval-module-source-map",
+  devtool: "source-map",
   stats: {
     children: false,
     modules: false,

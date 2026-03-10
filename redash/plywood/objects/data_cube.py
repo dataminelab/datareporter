@@ -76,7 +76,17 @@ class DataCube:
         attributes = data_cube["attributes"] if isinstance(data_cube, dict) and "attributes" in data_cube else []
         return attributes
 
+    @property
+    def is_query_based(self):
+        """True if this cube is defined by a SQL query rather than a table."""
+        return bool(self._model.query_id)
+
     def _get_table_name(self):
+        if self.is_query_based:
+            # Query-based models use the model name as a synthetic source identifier.
+            # Plywood uses this as the data cube name in expressions; the actual SQL
+            # comes from withQuery in the context.
+            return self._model.name
         return self._model.table
 
     @property
@@ -102,4 +112,7 @@ class DataCube:
     @property
     def context(self) -> Dict:
         """Returns context of the DataCube in dict format"""
-        return {"engine": self.ply_engine, "source": self._get_table_name(), "attributes": self.attributes}
+        ctx = {"engine": self.ply_engine, "source": self._get_table_name(), "attributes": self.attributes}
+        if self.is_query_based:
+            ctx["withQuery"] = self._model.query_rel.query_text
+        return ctx

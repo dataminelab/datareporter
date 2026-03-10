@@ -1,3 +1,5 @@
+import json
+import logging
 from typing import List
 
 import yaml
@@ -5,6 +7,8 @@ from inflection import titleize
 
 from redash.models.models import Model
 from redash.plywood.plywood import ENGINE_MAPPING, PlywoodApi
+
+logger = logging.getLogger(__name__)
 
 INDENT_LEVELS = [3, 4]
 
@@ -154,6 +158,12 @@ class ModelConfigGenerator:
 
     @staticmethod
     def _build(model: Model, refresh):
+        if model.query_id:
+            return ModelConfigGenerator._build_from_query(model)
+        return ModelConfigGenerator._build_from_table(model, refresh)
+
+    @staticmethod
+    def _build_from_table(model: Model, refresh):
         schemas = model.data_source.get_schema(refresh=refresh)
         table_schema = next(
             (
@@ -178,6 +188,52 @@ class ModelConfigGenerator:
 
         return ModelConfigAttributes(
             name=model.table,
+            attributes=plywood_attributes,
+            dimensions=dimensions,
+            measures=measures,
+            cluster_name=cluster_name,
+        )
+
+    @staticmethod
+    def _build_from_query(model: Model):
+        """Build config by introspecting a SQL query's result columns.
+
+        Runs the query with LIMIT 0 to get column metadata without scanning data.
+        This avoids full table scans and works across PostgreSQL, BigQuery, MySQL,
+        and Athena.
+        """
+        query_text = model.query_rel.query_text
+        introspect_query = "SELECT * FROM ({}) AS __introspect__ LIMIT 0".format(query_text.rstrip(";"))
+
+        query_runner = model.data_source.query_runner
+        data, error = query_runner.run_query(introspect_query, None)
+
+        if error:
+            raise ValueError("Failed to introspect query columns: {}".format(error))
+
+        result = json.loads(data) if isinstance(data, str) else data
+        columns = result.get("columns", [])
+
+        if not columns:
+            raise ValueError("Query returned no columns. Verify the SQL is valid.")
+
+        # Build a synthetic table schema from query result columns
+        table_schema = {
+            "name": model.name,
+            "columns": [{"name": col["name"], "type": col.get("type", "STRING")} for col in columns],
+        }
+
+        attributes = ModelConfigGenerator.find_attributes(model, table_schema)
+        plywood_attributes = ModelConfigGenerator.convert_attributes(model, attributes)
+
+        dimensions = ModelConfigGenerator.find_dimensions(plywood_attributes)
+        measures = ModelConfigGenerator.find_measures(plywood_attributes)
+
+        db_type = model.data_source.type
+        cluster_name = ENGINE_MAPPING.get(db_type, "native")
+
+        return ModelConfigAttributes(
+            name=model.name,
             attributes=plywood_attributes,
             dimensions=dimensions,
             measures=measures,

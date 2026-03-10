@@ -59,7 +59,11 @@ from redash.handlers.groups import (
     GroupResource,
 )
 from redash.handlers.model_configs import ModelsConfigGetResource, ModelsConfigResource
-from redash.handlers.models import ModelsListResource, ModelsResource
+from redash.handlers.models import (
+    ModelQueriesResource,
+    ModelsListResource,
+    ModelsResource,
+)
 from redash.handlers.permissions import (
     CheckPermissionResource,
     ObjectPermissionsListResource,
@@ -314,6 +318,7 @@ api.add_org_resource(QuerySnippetListResource, "/api/query_snippets", endpoint="
 api.add_org_resource(OrganizationSettings, "/api/settings/organization", endpoint="organization_settings")
 
 api.add_org_resource(ModelsListResource, "/api/models", endpoint="models")
+api.add_org_resource(ModelQueriesResource, "/api/models/queries", endpoint="model_queries")
 api.add_org_resource(ModelsResource, "/api/models/<int:model_id>", endpoint="model")
 api.add_org_resource(ModelsConfigResource, "/api/models/<int:model_id>/config", endpoint="model_configs")
 api.add_org_resource(ModelsConfigGetResource, "/api/model_configs/<int:config_id>", endpoint="model_config")

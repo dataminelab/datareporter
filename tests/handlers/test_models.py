@@ -282,6 +282,222 @@ class TestModelsEditResource(BaseTestCase):
         self.assertEqual(200, response.status_code)
 
 
+class TestModelsCreateWithQueryResource(BaseTestCase):
+    """Tests for query-based model creation (SQL-powered OLAP cubes)."""
+
+    @mock.patch("redash.services.model_config_generator.ModelConfigGenerator.yaml", return_value="")
+    def test_create_model_with_query_id(self, _content):
+        data_source = self.factory.create_data_source()
+        db.session.commit()
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        query = self.factory.create_query(data_source=data_source)
+        db.session.commit()
+
+        response = self.make_request(
+            "post",
+            "/api/models",
+            data={"name": "Query Model", "data_source_id": data_source.id, "query_id": query.id},
+            user=user,
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(query.id, response.json["query_id"])
+        self.assertIsNone(response.json["table"])
+
+    def test_rejects_both_table_and_query_id(self):
+        data_source = self.factory.create_data_source()
+        db.session.commit()
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        query = self.factory.create_query(data_source=data_source)
+        db.session.commit()
+
+        response = self.make_request(
+            "post",
+            "/api/models",
+            data={
+                "name": "Bad Model",
+                "data_source_id": data_source.id,
+                "table": "users",
+                "query_id": query.id,
+            },
+            user=user,
+        )
+
+        self.assertEqual(400, response.status_code)
+
+    def test_rejects_neither_table_nor_query_id(self):
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        response = self.make_request(
+            "post",
+            "/api/models",
+            data={"name": "Bad Model", "data_source_id": 1000},
+            user=user,
+        )
+
+        self.assertEqual(400, response.status_code)
+
+    @mock.patch("redash.services.model_config_generator.ModelConfigGenerator.yaml", return_value="")
+    def test_rejects_nonexistent_query_id(self, _content):
+        data_source = self.factory.create_data_source()
+        db.session.commit()
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        response = self.make_request(
+            "post",
+            "/api/models",
+            data={"name": "Bad Model", "data_source_id": data_source.id, "query_id": 99999},
+            user=user,
+        )
+
+        self.assertEqual(404, response.status_code)
+
+    @mock.patch("redash.services.model_config_generator.ModelConfigGenerator.yaml", return_value="")
+    def test_rejects_query_from_different_data_source(self, _content):
+        ds1 = self.factory.create_data_source()
+        ds2 = self.factory.create_data_source()
+        db.session.commit()
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        query = self.factory.create_query(data_source=ds2)
+        db.session.commit()
+
+        response = self.make_request(
+            "post",
+            "/api/models",
+            data={"name": "Bad Model", "data_source_id": ds1.id, "query_id": query.id},
+            user=user,
+        )
+
+        self.assertEqual(400, response.status_code)
+
+
+class TestModelsEditWithQueryResource(BaseTestCase):
+    """Tests for editing query-based models."""
+
+    @mock.patch("redash.services.model_config_generator.ModelConfigGenerator.yaml", return_value="")
+    def test_update_query_id(self, _content):
+        group = self.factory.create_group(permissions=["edit_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        data_source = self.factory.create_data_source()
+        query = self.factory.create_query(data_source=data_source)
+        model = self.factory.create_model(user=user, data_source=data_source)
+        db.session.flush()
+
+        response = self.make_request(
+            "post",
+            "/api/models/{}".format(model.id),
+            user=user,
+            data={"query_id": query.id},
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(query.id, response.json["query_id"])
+
+    @mock.patch("redash.services.model_config_generator.ModelConfigGenerator.yaml", return_value="")
+    def test_warns_about_downstream_reports(self, _content):
+        group = self.factory.create_group(permissions=["edit_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        data_source = self.factory.create_data_source()
+        query1 = self.factory.create_query(data_source=data_source)
+        query2 = self.factory.create_query(data_source=data_source)
+        model = self.factory.create_model(user=user, data_source=data_source, query_id=query1.id)
+        self.factory.create_report(model=model, user=user, data_source_id=data_source.id)
+        db.session.flush()
+
+        response = self.make_request(
+            "post",
+            "/api/models/{}".format(model.id),
+            user=user,
+            data={"query_id": query2.id},
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertIn("_warnings", response.json)
+        self.assertIn("1 report(s)", response.json["_warnings"][0])
+
+
+class TestModelQueriesResource(BaseTestCase):
+    """Tests for the query picker endpoint."""
+
+    def test_returns_queries_for_data_source(self):
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        data_source = self.factory.create_data_source()
+        q1 = self.factory.create_query(data_source=data_source, name="Revenue Report", is_draft=False)
+        q2 = self.factory.create_query(data_source=data_source, name="User Stats", is_draft=False)
+        db.session.commit()
+
+        response = self.make_request(
+            "get",
+            "/api/models/queries?data_source_id={}".format(data_source.id),
+            user=user,
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(2, response.json["count"])
+        names = {r["name"] for r in response.json["results"]}
+        self.assertIn("Revenue Report", names)
+        self.assertIn("User Stats", names)
+
+    def test_excludes_archived_and_draft_queries(self):
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        data_source = self.factory.create_data_source()
+        self.factory.create_query(data_source=data_source, name="Active", is_draft=False, is_archived=False)
+        self.factory.create_query(data_source=data_source, name="Draft", is_draft=True)
+        self.factory.create_query(data_source=data_source, name="Archived", is_draft=False, is_archived=True)
+        db.session.commit()
+
+        response = self.make_request(
+            "get",
+            "/api/models/queries?data_source_id={}".format(data_source.id),
+            user=user,
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, response.json["count"])
+        self.assertEqual("Active", response.json["results"][0]["name"])
+
+    def test_requires_data_source_id_parameter(self):
+        group = self.factory.create_group(permissions=["create_model"])
+        db.session.commit()
+        user = self.factory.create_admin(group_ids=[group.id])
+        db.session.commit()
+
+        response = self.make_request("get", "/api/models/queries", user=user)
+        self.assertEqual(400, response.status_code)
+
+
 class TestModelsDeleteResource(BaseTestCase):
     def test_not_existing_model(self):
         response = self.make_request("delete", "/api/models/{}".format(1))

@@ -1,4 +1,5 @@
 from flask import make_response, request
+from flask_restful import abort
 from funcy import project
 
 from redash import models
@@ -26,16 +27,37 @@ class ModelsListResource(BaseResource):
     def post(self):
         req = request.get_json(True)
 
-        require_fields(req, ("name", "data_source_id", "table"))
+        require_fields(req, ("name", "data_source_id"))
 
-        name, data_source_id, table = req["name"], req["data_source_id"], req["table"]
+        name, data_source_id = req["name"], req["data_source_id"]
+        table = req.get("table")
+        query_id = req.get("query_id")
+
+        if not table and not query_id:
+            abort(400, message="Either 'table' or 'query_id' must be provided.")
+
+        if table and query_id:
+            abort(400, message="Provide either 'table' or 'query_id', not both.")
 
         content = req.get("content", None)
 
         data_source = get_object_or_404(models.DataSource.get_by_id_and_org, data_source_id, self.current_org)
 
+        # Validate query exists and uses the same data source
+        if query_id:
+            query_obj = models.Query.query.get(query_id)
+            if not query_obj:
+                abort(404, message="Query not found.")
+            if query_obj.data_source_id != data_source.id:
+                abort(400, message="Query must use the same data source as the model.")
+
         model = Model(
-            name=name, data_source_id=data_source.id, user_id=self.current_user.id, user=self.current_user, table=table
+            name=name,
+            data_source_id=data_source.id,
+            user_id=self.current_user.id,
+            user=self.current_user,
+            table=table,
+            query_id=query_id,
         )
 
         if content is None:
@@ -88,6 +110,47 @@ class ModelsListResource(BaseResource):
         return response
 
 
+class ModelQueriesResource(BaseResource):
+    """
+    GET /api/models/queries?data_source_id=<id> — List queries available for model creation.
+
+    Returns non-archived, non-draft queries for the given data source,
+    filtered by the current user's group permissions. Used by the UI
+    to populate the query picker when creating a query-based model.
+    """
+
+    @require_permission("create_model")
+    def get(self):
+        data_source_id = request.args.get("data_source_id", type=int)
+        if not data_source_id:
+            abort(400, message="'data_source_id' query parameter is required.")
+
+        data_source = get_object_or_404(models.DataSource.get_by_id_and_org, data_source_id, self.current_org)
+
+        queries = (
+            models.Query.query.filter(
+                models.Query.data_source_id == data_source.id,
+                models.Query.is_archived == False,  # noqa: E712
+                models.Query.is_draft == False,  # noqa: E712
+            )
+            .order_by(models.Query.name)
+            .all()
+        )
+
+        return {
+            "results": [
+                {
+                    "id": q.id,
+                    "name": q.name,
+                    "description": q.description,
+                    "created_at": str(q.created_at),
+                }
+                for q in queries
+            ],
+            "count": len(queries),
+        }
+
+
 class ModelsResource(BaseResource):
     @require_permission("view_model")
     def get(self, model_id):
@@ -105,8 +168,17 @@ class ModelsResource(BaseResource):
 
         updates = project(
             model_properties,
-            ("name", "data_source_id", "table"),
+            ("name", "data_source_id", "table", "query_id"),
         )
+
+        # Validate query_id if being updated
+        if "query_id" in updates and updates["query_id"]:
+            query_obj = models.Query.query.get(updates["query_id"])
+            if not query_obj:
+                abort(404, message="Query not found.")
+            ds_id = updates.get("data_source_id", model.data_source_id)
+            if query_obj.data_source_id != ds_id:
+                abort(400, message="Query must use the same data source as the model.")
 
         self.update_model(model, updates)
         models.db.session.commit()
@@ -117,9 +189,17 @@ class ModelsResource(BaseResource):
             self.update_model(model.config, {"content": content})
             models.db.session.commit()
 
+        result = ModelSerializer(model).serialize()
+
+        # Warn about downstream reports affected by this change
+        if "query_id" in updates and model.reports:
+            result["_warnings"] = [
+                "{} report(s) use this model and may be affected by the query change.".format(len(model.reports))
+            ]
+
         self.record_event({"action": "edit", "object_id": model.id, "object_type": "model"})
 
-        return ModelSerializer(model).serialize()
+        return result
 
     def delete(self, model_id):
         model = get_object_or_404(Model.get_by_id, model_id)

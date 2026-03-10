@@ -23,6 +23,8 @@ class Model(ChangeTrackingMixin, TimestampMixin, db.Model):
     user = db.relationship(User)
     version = Column(db.Integer)
     table = Column(db.String(length=255), nullable=True)
+    query_id = Column(key_type("Query"), db.ForeignKey("queries.id"), nullable=True)
+    query_rel = db.relationship("Query", backref="models")
     config = db.relationship("ModelConfig", back_populates="model", uselist=False)
 
     reports = db.relationship("Report", back_populates="model")

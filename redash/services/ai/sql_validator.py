@@ -60,6 +60,32 @@ DANGEROUS_FUNCTIONS = frozenset(
         "pg_sleep",
         "pg_sleep_for",
         "pg_sleep_until",
+        # Session/config manipulation (can disable logging, change search_path)
+        "set_config",
+        "current_setting",
+        # Advisory locks (can deadlock the database — DoS)
+        "pg_advisory_lock",
+        "pg_advisory_lock_shared",
+        "pg_try_advisory_lock",
+        "pg_try_advisory_lock_shared",
+        "pg_advisory_unlock",
+        "pg_advisory_unlock_shared",
+        "pg_advisory_unlock_all",
+        # Backend control (can kill other users' sessions)
+        "pg_terminate_backend",
+        "pg_cancel_backend",
+        "pg_reload_conf",
+        # XML functions that execute arbitrary SQL internally
+        "query_to_xml",
+        "query_to_xml_and_xmlschema",
+        "cursor_to_xml",
+        "table_to_xml",
+        "table_to_xml_and_xmlschema",
+        # Infrastructure info disclosure
+        "inet_server_addr",
+        "inet_server_port",
+        "inet_client_addr",
+        "inet_client_port",
         # MySQL equivalents (for MySQL data sources)
         "sleep",
         "benchmark",
@@ -102,8 +128,9 @@ INJECTION_PATTERNS = [
     re.compile(r"\bCOPY\b.*\b(TO|FROM)\b", re.IGNORECASE),
     # Stacked queries via comment tricks
     re.compile(r"/\*.*\*/\s*;", re.IGNORECASE),
-    # SELECT INTO (creates tables/files)
-    re.compile(r"\bSELECT\b.*\bINTO\b\s+(OUTFILE|DUMPFILE|TABLE|TEMP)", re.IGNORECASE),
+    # SELECT INTO (creates tables/files in PostgreSQL, MySQL, MSSQL)
+    # Catches all variants: INTO OUTFILE, INTO TABLE, and bare SELECT INTO <name>
+    re.compile(r"\bSELECT\b[^;]*\bINTO\b", re.IGNORECASE),
     # System table direct access
     re.compile(r"\bpg_shadow\b|\bpg_authid\b|\bpg_roles\b", re.IGNORECASE),
 ]
@@ -164,9 +191,12 @@ def validate_sql(sql, allow_explain=False):
     stmt = statements[0]
 
     # Layer 3: AST statement type — must be SELECT (or WITH...SELECT for CTEs)
-    first_word = _validate_statement_type(stmt, sql, allow_explain)
-    if first_word == "EXPLAIN":
-        return sql
+    _validate_statement_type(stmt, sql, allow_explain)
+
+    # NOTE: EXPLAIN path does NOT return early. Layers 4-6 still run on the
+    # full SQL string because EXPLAIN ANALYZE *executes* the query in
+    # PostgreSQL. Skipping these layers would allow dangerous functions,
+    # injection patterns, and forbidden keywords inside EXPLAIN statements.
 
     # Layer 4: Dangerous function scan
     sql_lower = sql.lower()

@@ -43,11 +43,9 @@ class ModelsListResource(BaseResource):
 
         data_source = get_object_or_404(models.DataSource.get_by_id_and_org, data_source_id, self.current_org)
 
-        # Validate query exists and uses the same data source
+        # Validate query exists, belongs to current org, and uses the same data source
         if query_id:
-            query_obj = models.Query.query.get(query_id)
-            if not query_obj:
-                abort(404, message="Query not found.")
+            query_obj = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
             if query_obj.data_source_id != data_source.id:
                 abort(400, message="Query must use the same data source as the model.")
 
@@ -151,6 +149,64 @@ class ModelQueriesResource(BaseResource):
         }
 
 
+class EphemeralModelResource(BaseResource):
+    """POST /api/models/ephemeral — Create a model from a saved query for quick OLAP exploration.
+
+    Reuses the standard model creation pipeline (ModelConfigGenerator with smart
+    discovery) but names the model with an "[AI Explore]" prefix so it's easy to
+    identify and clean up later.
+    """
+
+    @require_permission("create_model")
+    def post(self):
+        req = request.get_json(True)
+        require_fields(req, ("query_id", "data_source_id"))
+
+        query_id = req["query_id"]
+        data_source_id = req["data_source_id"]
+
+        try:
+            query_id = int(query_id)
+            data_source_id = int(data_source_id)
+        except (ValueError, TypeError):
+            abort(400, message="query_id and data_source_id must be integers.")
+
+        query_obj = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
+
+        data_source = get_object_or_404(models.DataSource.get_by_id_and_org, data_source_id, self.current_org)
+
+        if query_obj.data_source_id != data_source.id:
+            abort(400, message="Query must use the same data source.")
+
+        model_name = "[AI Explore] {}".format(query_obj.name or "Query {}".format(query_id))
+
+        model = Model(
+            name=model_name,
+            data_source_id=data_source.id,
+            user_id=self.current_user.id,
+            user=self.current_user,
+            query_id=query_id,
+        )
+
+        content = ModelConfigGenerator.yaml(model=model, refresh=True)
+        model_config = ModelConfig(user=self.current_user, model=model, content=content)
+
+        models.db.session.add(model)
+        models.db.session.add(model_config)
+        models.db.session.commit()
+
+        self.record_event(
+            {
+                "action": "create",
+                "object_id": model.id,
+                "object_type": "model",
+                "ephemeral": True,
+            }
+        )
+
+        return ModelSerializer(model).serialize()
+
+
 class ModelsResource(BaseResource):
     @require_permission("view_model")
     def get(self, model_id):
@@ -173,9 +229,7 @@ class ModelsResource(BaseResource):
 
         # Validate query_id if being updated
         if "query_id" in updates and updates["query_id"]:
-            query_obj = models.Query.query.get(updates["query_id"])
-            if not query_obj:
-                abort(404, message="Query not found.")
+            query_obj = get_object_or_404(models.Query.get_by_id_and_org, updates["query_id"], self.current_org)
             ds_id = updates.get("data_source_id", model.data_source_id)
             if query_obj.data_source_id != ds_id:
                 abort(400, message="Query must use the same data source as the model.")

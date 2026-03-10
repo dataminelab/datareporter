@@ -10,6 +10,7 @@ from redash import rq_redis_connection, settings
 from redash.tasks.failure_report import send_aggregated_errors
 from redash.tasks.general import sync_user_details
 from redash.tasks.queries import (
+    cleanup_ephemeral_models,
     cleanup_query_results,
     empty_schedules,
     refresh_queries,
@@ -81,6 +82,8 @@ def periodic_job_definitions():
 
     if settings.QUERY_RESULTS_CLEANUP_ENABLED:
         jobs.append({"func": cleanup_query_results, "interval": timedelta(minutes=5)})
+
+    jobs.append({"func": cleanup_ephemeral_models, "interval": timedelta(hours=1)})
 
     # Add your own custom periodic jobs in your dynamic_settings module.
     jobs.extend(settings.dynamic_settings.periodic_jobs() or [])

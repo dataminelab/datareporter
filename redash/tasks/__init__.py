@@ -18,6 +18,7 @@ from .general import (
     test_connection,
 )
 from .queries import (
+    cleanup_ephemeral_models,
     cleanup_query_results,
     empty_schedules,
     enqueue_query,

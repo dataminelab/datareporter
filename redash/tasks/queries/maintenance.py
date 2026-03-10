@@ -141,6 +141,50 @@ def cleanup_query_results():
     logger.info("Deleted %d unused query results.", deleted_count)
 
 
+def cleanup_ephemeral_models():
+    """
+    Deletes ephemeral [AI Explore] models older than EPHEMERAL_MODEL_TTL_DAYS (7 days default).
+
+    These are auto-generated for quick OLAP exploration and are fully disposable —
+    they can be regenerated on demand. Batched to avoid database pressure.
+    """
+    from datetime import datetime, timedelta
+
+    from redash.models.models import Model
+
+    ttl_days = settings.EPHEMERAL_MODEL_TTL_DAYS
+    max_count = settings.EPHEMERAL_MODEL_CLEANUP_COUNT
+    cutoff = datetime.utcnow() - timedelta(days=ttl_days)
+
+    logger.info(
+        "Running ephemeral model cleanup (TTL=%d days, max=%d per run)",
+        ttl_days,
+        max_count,
+    )
+
+    expired_models = (
+        Model.query.filter(
+            Model.name.like("[AI Explore]%"),
+            Model.created_at < cutoff,
+        )
+        .order_by(Model.created_at.asc())
+        .limit(max_count)
+        .all()
+    )
+
+    deleted_count = 0
+    for model in expired_models:
+        if model.config is not None:
+            models.db.session.delete(model.config)
+        for report in model.reports:
+            models.db.session.delete(report)
+        models.db.session.delete(model)
+        deleted_count += 1
+
+    models.db.session.commit()
+    logger.info("Deleted %d expired ephemeral models.", deleted_count)
+
+
 def remove_ghost_locks():
     """
     Removes query locks that reference a non existing RQ job.

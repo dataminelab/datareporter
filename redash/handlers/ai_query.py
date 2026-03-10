@@ -23,7 +23,10 @@ from redash import models
 from redash.handlers.base import BaseResource, get_object_or_404
 from redash.permissions import has_access, require_permission, view_only
 from redash.services.ai import AIService
-from redash.services.ai.input_sanitizer import InputSanitizationError
+from redash.services.ai.input_sanitizer import (
+    InputSanitizationError,
+    sanitize_input,
+)
 from redash.services.ai.providers.base import AIProviderError
 from redash.services.ai.sql_validator import SQLValidationError
 
@@ -34,6 +37,37 @@ logger = logging.getLogger(__name__)
 # For now, it provides per-process protection.
 _rate_limit_store = {}
 _RATE_LIMIT_WINDOW = 86400  # 24 hours in seconds
+
+
+def _parse_conversation(data):
+    """Parse and sanitize conversation history from request data.
+
+    Returns a list of (question, sql) tuples, or None if no valid history.
+    Each entry is sanitized against prompt injection and validated as SELECT SQL.
+    """
+    raw_conversation = data.get("conversation")
+    if not raw_conversation or not isinstance(raw_conversation, list):
+        return None
+
+    conversation = []
+    for entry in raw_conversation[-3:]:  # Max 3 previous exchanges
+        q = entry.get("question", "")
+        s = entry.get("sql", "")
+        if q and s:
+            try:
+                q = sanitize_input(q)
+            except InputSanitizationError:
+                continue  # Skip poisoned conversation entries
+            # Validate SQL: must be string, bounded length, start with SELECT/WITH
+            if not isinstance(s, str):
+                continue
+            s = s[:2000]
+            s_stripped = s.strip().upper()
+            if not (s_stripped.startswith("SELECT") or s_stripped.startswith("WITH")):
+                continue  # Reject non-SELECT SQL in conversation history
+            conversation.append((q, s))
+
+    return conversation or None
 
 
 class NLQueryResource(BaseResource):
@@ -96,16 +130,9 @@ class NLQueryResource(BaseResource):
         provider_id = data.get("provider")
         model = data.get("model")
 
-        # Parse conversation context
-        conversation = None
-        raw_conversation = data.get("conversation")
-        if raw_conversation and isinstance(raw_conversation, list):
-            conversation = []
-            for entry in raw_conversation[-3:]:  # Max 3 previous exchanges
-                q = entry.get("question", "")
-                s = entry.get("sql", "")
-                if q and s:
-                    conversation.append((q, s))
+        # Parse conversation context — sanitize each entry to prevent
+        # second-order prompt injection via poisoned history.
+        conversation = _parse_conversation(data)
 
         try:
             result = AIService.generate_sql(

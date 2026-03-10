@@ -336,10 +336,8 @@ function QuerySource(props) {
                     {dataSource && (
                       <AIQueryBar
                         dataSourceId={dataSource.id}
-                        onSQLGenerated={(sql) => {
-                          setQuery(
-                            extend(query.clone(), { query: sql })
-                          );
+                        onSQLGenerated={sql => {
+                          setQuery(extend(query.clone(), { query: sql }));
                         }}
                         disabled={!queryFlags.canEdit}
                       />
@@ -485,6 +483,7 @@ function QuerySource(props) {
                   {loadedInitialResults &&
                     !(queryFlags.isNew && !queryResult) && (
                       <QueryVisualizationTabs
+                        query={query}
                         queryResult={queryResult}
                         visualizations={query.visualizations}
                         showNewVisualizationButton={

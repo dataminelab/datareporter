@@ -17,6 +17,7 @@ class TestModelSerializer(BaseTestCase):
                 "data_source_name",
                 "model_config_id",
                 "table",
+                "query_id",
                 "created_at",
                 "updated_at",
             },

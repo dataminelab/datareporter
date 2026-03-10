@@ -36,6 +36,7 @@ const Model = {
   save: data => axios.post(`api/models/${data.id}`, data),
   saveConfig: (id, content) =>
     axios.post(`api/models/${id}/config`, { content }),
+  createEphemeral: data => axios.post(`api/models/ephemeral`, data),
   deleteModel,
 };
 

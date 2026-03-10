@@ -15,6 +15,33 @@
     text-align: right;
   }
 
+  .explore-olap-btn {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+
   &:before {
     content: "";
     height: 50px;

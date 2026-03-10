@@ -6,8 +6,10 @@ import useMedia from "use-media";
 import Tabs from "antd/lib/tabs";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
+import { BarChartOutlined } from "@ant-design/icons";
 import VisualizationRenderer from "@/components/visualizations/VisualizationRenderer";
 import PlainButton from "@/components/PlainButton";
+import OLAPExplorerPanel from "@/components/queries/OLAPExplorerPanel";
 
 import "./QueryVisualizationTabs.less";
 
@@ -106,6 +108,7 @@ export default function QueryVisualizationTabs({
   onDeleteVisualization,
   refreshButton,
   canRefresh,
+  query,
   ...props
 }) {
   const visualizations = useMemo(
@@ -155,7 +158,10 @@ export default function QueryVisualizationTabs({
       data-test="QueryPageVisualizationTabs"
       animated={false}
       tabBarGutter={0}
-      onChange={activeKey => onChangeTab(+activeKey)}
+      onChange={activeKey => {
+        if (activeKey === "olap") return;
+        onChangeTab(+activeKey);
+      }}
       destroyInactiveTabPane
     >
       {orderedVisualizations.map(visualization => (
@@ -195,6 +201,19 @@ export default function QueryVisualizationTabs({
           )}
         </TabPane>
       ))}
+      {query && query.id && queryResult && (
+        <TabPane
+          key="olap"
+          tab={
+            <span data-test="QueryPageVisualizationTabOLAP">
+              <BarChartOutlined style={{ marginRight: 4 }} />
+              OLAP Explorer
+            </span>
+          }
+        >
+          <OLAPExplorerPanel query={query} />
+        </TabPane>
+      )}
     </Tabs>
   );
 }
@@ -210,6 +229,7 @@ QueryVisualizationTabs.propTypes = {
   onDeleteVisualization: PropTypes.func,
   refreshButton: PropTypes.node,
   canRefresh: PropTypes.bool,
+  query: PropTypes.object,
 };
 
 QueryVisualizationTabs.defaultProps = {
@@ -223,4 +243,5 @@ QueryVisualizationTabs.defaultProps = {
   onDeleteVisualization: () => {},
   refreshButton: null,
   canRefresh: true,
+  query: null,
 };

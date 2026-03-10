@@ -1,0 +1,78 @@
+.olap-explorer-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 13px;
+  color: #666;
+
+  &--loading {
+    gap: 8px;
+
+    .olap-explorer-panel__icon {
+      color: #2196f3;
+      font-size: 18px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  }
+
+  &--error {
+    flex-direction: column;
+    gap: 12px;
+
+    .olap-explorer-panel__error-text {
+      color: #e24c4c;
+    }
+
+    .olap-explorer-panel__retry {
+      background: none;
+      border: 1px solid #2196f3;
+      color: #2196f3;
+      border-radius: 2px;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #2196f3;
+        color: #fff;
+      }
+    }
+  }
+
+  &--empty {
+    gap: 8px;
+
+    .olap-explorer-panel__icon {
+      font-size: 24px;
+      color: #ccc;
+    }
+  }
+
+  &--active {
+    min-height: 600px;
+    height: calc(100vh - 300px);
+    padding: 0;
+  }
+
+  &__iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 2px;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

@@ -61,6 +61,9 @@ QUERY_RESULTS_CLEANUP_ENABLED = parse_boolean(os.environ.get("REDASH_QUERY_RESUL
 QUERY_RESULTS_CLEANUP_COUNT = int(os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_COUNT", "100"))
 QUERY_RESULTS_CLEANUP_MAX_AGE = int(os.environ.get("REDASH_QUERY_RESULTS_CLEANUP_MAX_AGE", "7"))
 
+EPHEMERAL_MODEL_TTL_DAYS = int(os.environ.get("REDASH_EPHEMERAL_MODEL_TTL_DAYS", "7"))
+EPHEMERAL_MODEL_CLEANUP_COUNT = int(os.environ.get("REDASH_EPHEMERAL_MODEL_CLEANUP_COUNT", "50"))
+
 QUERY_RESULTS_EXPIRED_TTL_ENABLED = parse_boolean(os.environ.get("REDASH_QUERY_RESULTS_EXPIRED_TTL_ENABLED", "false"))
 # default set query results expired ttl 86400 seconds
 QUERY_RESULTS_EXPIRED_TTL = int(os.environ.get("REDASH_QUERY_RESULTS_EXPIRED_TTL", "86400"))
@@ -483,10 +486,10 @@ SQLPARSE_FORMAT_OPTIONS = {
 # requests
 REQUESTS_ALLOW_REDIRECTS = parse_boolean(os.environ.get("REDASH_REQUESTS_ALLOW_REDIRECTS", "false"))
 
-# Enforces CSRF token validation on API requests.
-# This is turned off by default to avoid breaking any existing deployments,
-# but it is highly recommended to turn this toggle on to prevent CSRF attacks.
-ENFORCE_CSRF = parse_boolean(os.environ.get("REDASH_ENFORCE_CSRF", "false"))
+# Enforces CSRF token validation on cookie-authenticated requests.
+# API key-authenticated requests are exempt (no session cookie to forge).
+# Set REDASH_ENFORCE_CSRF=false only if you have a specific integration reason.
+ENFORCE_CSRF = parse_boolean(os.environ.get("REDASH_ENFORCE_CSRF", "true"))
 
 # Databricks
 

@@ -114,6 +114,10 @@ const config = {
   },
   plugins: [
     new WebpackBuildNotifierPlugin({ title: "Data Reporter" }),
+    // Polyfill `process` for browser (removed in webpack 5)
+    new webpack.ProvidePlugin({
+      process: "process/browser",
+    }),
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
     new HtmlWebpackPlugin({

@@ -5,8 +5,7 @@ describe("Create Model", () => {
 
   it("opens the creation dialog when clicking in the create link or button", () => {
     cy.visit("/models");
-    cy.server();
-    cy.route("**/api/models", []); // force an empty response
+    cy.intercept("**/api/models", []); // force an empty response
 
     ["CreateModelButton"].forEach(createElementTestId => {
       cy.getByTestId(createElementTestId).click();

@@ -22,8 +22,7 @@ export function createChartThroughUI(
 
   chartSpecificAssertionFn();
 
-  cy.server();
-  cy.route("POST", "**/api/visualizations").as("SaveVisualization");
+  cy.intercept("POST", "**/api/visualizations").as("SaveVisualization");
 
   cy.getByTestId("EditVisualizationDialog").contains("button", "Save").click();
 

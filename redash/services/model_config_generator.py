@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from typing import List
 
 import yaml
@@ -270,12 +271,59 @@ class ModelConfigGenerator:
             attributes.append(Attribute(name=name, kind=kind))
         return attributes
 
+    # Name suffixes that indicate a column is a dimension (identifier/categorical),
+    # even when its Plywood type is NUMBER.
+    _DIMENSION_SUFFIXES = (
+        "_id",
+        "_key",
+        "_code",
+        "_type",
+        "_status",
+        "_category",
+        "_num",
+        "_number",
+    )
+
+    # camelCase equivalents: capital letter followed by the suffix word at end of name.
+    _DIMENSION_CAMEL_RE = re.compile(r"(?<=[a-z])(Id|Key|Code|Type|Status|Category|Num|Number)$")
+
+    # Patterns that reinforce a column as a measure (aggregation-oriented names).
+    # These match as complete words at word boundaries (underscore or camelCase).
+    _MEASURE_RE = re.compile(
+        r"(?:^|_)(?:count|total|sum|avg|average)(?:_|$)"
+        r"|(?:_|^)(?:count|total|sum|amount|revenue|cost|price|avg|average)$"
+        r"|^(?:min_|max_)",
+        re.IGNORECASE,
+    )
+
+    @staticmethod
+    def _classify_column(name: str, plywood_type: str) -> str:
+        """Return 'dimension' or 'measure' using name heuristics first, then type fallback."""
+        lower_name = name.lower()
+
+        # 1. Check dimension name patterns (highest priority)
+        for suffix in ModelConfigGenerator._DIMENSION_SUFFIXES:
+            if lower_name.endswith(suffix):
+                return "dimension"
+
+        if ModelConfigGenerator._DIMENSION_CAMEL_RE.search(name):
+            return "dimension"
+
+        # 2. Check measure name patterns (word-boundary aware)
+        if ModelConfigGenerator._MEASURE_RE.search(name):
+            return "measure"
+
+        # 3. Fall back to type-based classification
+        if plywood_type.upper() in MEASURE_TYPES:
+            return "measure"
+        return "dimension"
+
     @staticmethod
     def find_dimensions(attributes: List[PlywoodAttribute]):
         dimensions = []
 
         for attribute in attributes:
-            if attribute.type_.upper() not in MEASURE_TYPES:
+            if ModelConfigGenerator._classify_column(attribute.name, attribute.type_) == "dimension":
                 dimensions.append(Dimension(name=attribute.name, kind=attribute.type_))
         return dimensions
 
@@ -283,6 +331,6 @@ class ModelConfigGenerator:
     def find_measures(cls, attributes: List[PlywoodAttribute]):
         measures = []
         for attribute in attributes:
-            if attribute.type_.upper() in MEASURE_TYPES:
+            if ModelConfigGenerator._classify_column(attribute.name, attribute.type_) == "measure":
                 measures.append(Measure(name=attribute.name, kind=attribute.type_))
         return measures

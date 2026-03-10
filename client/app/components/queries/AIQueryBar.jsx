@@ -1,5 +1,9 @@
 import React, { useState, useCallback } from "react";
-import { ThunderboltOutlined, SendOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  ThunderboltOutlined,
+  SendOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { Tag } from "antd";
 import useAIQuery from "@/pages/queries/hooks/useAIQuery";
 import "./AIQueryBar.less";
@@ -15,6 +19,8 @@ export default function AIQueryBar({ dataSourceId, onSQLGenerated, disabled }) {
     error,
     refused,
     conversation,
+    generationTimeMs,
+    provider,
   } = useAIQuery(dataSourceId);
 
   const handleSubmit = useCallback(async () => {
@@ -27,13 +33,13 @@ export default function AIQueryBar({ dataSourceId, onSQLGenerated, disabled }) {
   }, [question, loading, disabled, generateSQL, onSQLGenerated]);
 
   const handleKeyDown = useCallback(
-    (e) => {
+    e => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         handleSubmit();
       }
     },
-    [handleSubmit]
+    [handleSubmit],
   );
 
   const hasConversation = conversation && conversation.length > 0;
@@ -45,9 +51,9 @@ export default function AIQueryBar({ dataSourceId, onSQLGenerated, disabled }) {
         <input
           className="ai-query-bar__input"
           type="text"
-          placeholder="Ask a question about your data..."
+          placeholder="Ask about your data... (Enter to generate)"
           value={question}
-          onChange={(e) => setQuestion(e.target.value)}
+          onChange={e => setQuestion(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={loading || disabled}
         />
@@ -57,19 +63,26 @@ export default function AIQueryBar({ dataSourceId, onSQLGenerated, disabled }) {
         <button
           className="ai-query-bar__submit"
           onClick={handleSubmit}
-          disabled={loading || disabled || !question.trim()}>
+          disabled={loading || disabled || !question.trim()}
+        >
           {loading ? <LoadingOutlined /> : <SendOutlined />}
         </button>
       </div>
 
       {error && <div className="ai-query-bar__error">{error}</div>}
 
+      {generationTimeMs && !error && !loading && (
+        <div className="ai-query-bar__meta">
+          Generated in {generationTimeMs}ms via {provider}
+        </div>
+      )}
+
       {explanation && !error && (
         <div className="ai-query-bar__result">
           {explanation}
           {tablesUsed.length > 0 && (
             <span className="ai-query-bar__tables">
-              {tablesUsed.map((table) => (
+              {tablesUsed.map(table => (
                 <Tag key={table} className="ai-query-bar__tag">
                   {table}
                 </Tag>

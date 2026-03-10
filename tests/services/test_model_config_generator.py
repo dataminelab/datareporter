@@ -3,7 +3,10 @@ import unittest
 import mock
 import yaml
 
-from redash.services.model_config_generator import ModelConfigGenerator
+from redash.services.model_config_generator import (
+    ModelConfigGenerator,
+    PlywoodAttribute,
+)
 
 
 class TestModelConfigGenerator(unittest.TestCase):
@@ -38,6 +41,7 @@ class TestModelConfigGenerator(unittest.TestCase):
                 {"nativeType": "TIMESTAMP", "name": "sometimeLater", "type": "TIME", "isSupported": True},
             ]
 
+            mock_model.query_id = None
             mock_model.table = "wikiticker"
             mock_model.data_source.type = "bigquery"
             mock_model.data_source.get_schema = lambda refresh: [
@@ -206,6 +210,11 @@ class TestModelConfigGenerator(unittest.TestCase):
         title: Region Iso Code
         formula: $regionIsoCode
 
+      - name: metroCode
+        title: Metro Code
+        formula: $metroCode
+        kind: NUMBER
+
       - name: namespace
         title: Namespace
         formula: $namespace
@@ -283,10 +292,6 @@ class TestModelConfigGenerator(unittest.TestCase):
         title: Deleted
         formula: $main.sum($deleted)
 
-      - name: metroCode
-        title: Metro Code
-        formula: $main.sum($metroCode)
-
       - name: deltaBucket100
         title: Delta Bucket100
         formula: $main.sum($deltaBucket100)
@@ -340,6 +345,7 @@ class TestModelConfigGenerator(unittest.TestCase):
                 {"nativeType": "TIMESTAMP", "name": "sometimeLater", "type": "TIME", "isSupported": True},
             ]
 
+            mock_model.query_id = None
             mock_model.table = "wikiticker"
             mock_model.data_source.type = "bigquery"
             mock_model.data_source.get_schema = lambda refresh: [
@@ -433,6 +439,7 @@ class TestModelConfigGenerator(unittest.TestCase):
                         {"name": "regionName", "title": "Region Name", "formula": "$regionName"},
                         {"name": "user", "title": "User", "formula": "$user"},
                         {"name": "regionIsoCode", "title": "Region Iso Code", "formula": "$regionIsoCode"},
+                        {"name": "metroCode", "title": "Metro Code", "formula": "$metroCode", "kind": "NUMBER"},
                         {"name": "namespace", "title": "Namespace", "formula": "$namespace"},
                         {"name": "isNew", "title": "Is New", "formula": "$isNew", "kind": "BOOLEAN"},
                         {"name": "page", "title": "Page", "formula": "$page"},
@@ -462,7 +469,6 @@ class TestModelConfigGenerator(unittest.TestCase):
                     "measures": [
                         {"name": "deltaByTen", "title": "Delta By Ten", "formula": "$main.sum($deltaByTen)"},
                         {"name": "deleted", "title": "Deleted", "formula": "$main.sum($deleted)"},
-                        {"name": "metroCode", "title": "Metro Code", "formula": "$main.sum($metroCode)"},
                         {
                             "name": "deltaBucket100",
                             "title": "Delta Bucket100",
@@ -680,3 +686,93 @@ class TestModelConfigGeneratorFromQuery(unittest.TestCase):
             attr_types = {a["name"]: a["type"] for a in data_cube["attributes"]}
             self.assertEqual("NUMBER", attr_types["id"], f"Failed for engine: {engine}")
             self.assertEqual("TIME", attr_types["ts"], f"Failed for engine: {engine}")
+
+
+class TestSmartModelDiscovery(unittest.TestCase):
+    """Tests for name-based heuristic column classification."""
+
+    def _make_attr(self, name, plywood_type):
+        return PlywoodAttribute(name=name, type_=plywood_type, native_type="INTEGER", is_supported=True)
+
+    def _dim_names(self, attrs):
+        return [d.name for d in ModelConfigGenerator.find_dimensions(attrs)]
+
+    def _measure_names(self, attrs):
+        return [m.name for m in ModelConfigGenerator.find_measures(attrs)]
+
+    def test_id_column_classified_as_dimension(self):
+        attrs = [self._make_attr("user_id", "NUMBER")]
+        self.assertIn("user_id", self._dim_names(attrs))
+        self.assertNotIn("user_id", self._measure_names(attrs))
+
+    def test_key_column_classified_as_dimension(self):
+        attrs = [self._make_attr("order_key", "NUMBER")]
+        self.assertIn("order_key", self._dim_names(attrs))
+        self.assertNotIn("order_key", self._measure_names(attrs))
+
+    def test_code_column_classified_as_dimension(self):
+        attrs = [self._make_attr("country_code", "NUMBER")]
+        self.assertIn("country_code", self._dim_names(attrs))
+        self.assertNotIn("country_code", self._measure_names(attrs))
+
+    def test_camel_case_id_classified_as_dimension(self):
+        attrs = [self._make_attr("userId", "NUMBER")]
+        self.assertIn("userId", self._dim_names(attrs))
+        self.assertNotIn("userId", self._measure_names(attrs))
+
+    def test_status_column_classified_as_dimension(self):
+        attrs = [self._make_attr("order_status", "NUMBER")]
+        self.assertIn("order_status", self._dim_names(attrs))
+        self.assertNotIn("order_status", self._measure_names(attrs))
+
+    def test_revenue_stays_as_measure(self):
+        attrs = [self._make_attr("total_revenue", "NUMBER")]
+        self.assertIn("total_revenue", self._measure_names(attrs))
+        self.assertNotIn("total_revenue", self._dim_names(attrs))
+
+    def test_count_stays_as_measure(self):
+        attrs = [self._make_attr("order_count", "NUMBER")]
+        self.assertIn("order_count", self._measure_names(attrs))
+        self.assertNotIn("order_count", self._dim_names(attrs))
+
+    def test_plain_number_stays_as_measure(self):
+        attrs = [self._make_attr("amount", "NUMBER")]
+        self.assertIn("amount", self._measure_names(attrs))
+        self.assertNotIn("amount", self._dim_names(attrs))
+
+    def test_string_stays_as_dimension(self):
+        attrs = [self._make_attr("name", "STRING")]
+        self.assertIn("name", self._dim_names(attrs))
+        self.assertNotIn("name", self._measure_names(attrs))
+
+    def test_time_stays_as_dimension(self):
+        attrs = [self._make_attr("created_at", "TIME")]
+        self.assertIn("created_at", self._dim_names(attrs))
+        self.assertNotIn("created_at", self._measure_names(attrs))
+
+    def test_classify_column_directly(self):
+        """Verify _classify_column returns correct classification for various patterns."""
+        classify = ModelConfigGenerator._classify_column
+        # Dimension patterns
+        self.assertEqual("dimension", classify("user_id", "NUMBER"))
+        self.assertEqual("dimension", classify("orderId", "NUMBER"))
+        self.assertEqual("dimension", classify("country_code", "NUMBER"))
+        self.assertEqual("dimension", classify("metroCode", "NUMBER"))
+        self.assertEqual("dimension", classify("order_type", "NUMBER"))
+        self.assertEqual("dimension", classify("orderStatus", "NUMBER"))
+        self.assertEqual("dimension", classify("item_category", "NUMBER"))
+        self.assertEqual("dimension", classify("invoice_num", "NUMBER"))
+        self.assertEqual("dimension", classify("order_number", "NUMBER"))
+        # Measure patterns
+        self.assertEqual("measure", classify("total_revenue", "NUMBER"))
+        self.assertEqual("measure", classify("order_count", "NUMBER"))
+        self.assertEqual("measure", classify("sum_amount", "NUMBER"))
+        self.assertEqual("measure", classify("avg_price", "NUMBER"))
+        self.assertEqual("measure", classify("total_cost", "NUMBER"))
+        self.assertEqual("measure", classify("min_value", "NUMBER"))
+        self.assertEqual("measure", classify("max_score", "NUMBER"))
+        # Type-based fallback
+        self.assertEqual("measure", classify("delta", "NUMBER"))
+        self.assertEqual("dimension", classify("name", "STRING"))
+        self.assertEqual("dimension", classify("created_at", "TIME"))
+        self.assertEqual("dimension", classify("is_active", "BOOLEAN"))

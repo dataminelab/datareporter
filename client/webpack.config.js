@@ -3,11 +3,12 @@ const webpack = require("webpack");
 const { IgnorePlugin } = webpack;
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
-const ManifestPlugin = require("webpack-manifest-plugin");
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const LessPluginAutoPrefix = require("less-plugin-autoprefix");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
@@ -29,7 +30,8 @@ const CONFIG = optionalRequire("../scripts/config", {});
 
 const isProduction = process.env.NODE_ENV === "production";
 const isDevelopment = !isProduction;
-const isHotReloadingEnabled = isDevelopment && process.env.HOT_RELOAD === "true";
+const isHotReloadingEnabled =
+  isDevelopment && process.env.HOT_RELOAD === "true";
 
 const redashBackend = process.env.REDASH_BACKEND || "http://localhost:5000";
 const turniloBackend = process.env.TURNILO_BACKEND || "http://localhost:3000";
@@ -41,12 +43,14 @@ const htmlTitle = CONFIG.title || "Data Reporter";
 const basePath = path.join(__dirname);
 const appPath = path.join(__dirname, "app");
 
-const extensionsRelativePath = process.env.EXTENSIONS_DIRECTORY || path.join("app", "extensions");
+const extensionsRelativePath =
+  process.env.EXTENSIONS_DIRECTORY || path.join("app", "extensions");
 const extensionPath = path.join(__dirname, extensionsRelativePath);
 
 // Function to apply configuration overrides (see scripts/README)
 function maybeApplyOverrides(config) {
-  const overridesLocation = process.env.REDASH_WEBPACK_OVERRIDES || "./scripts/webpack/overrides";
+  const overridesLocation =
+    process.env.REDASH_WEBPACK_OVERRIDES || "./scripts/webpack/overrides";
   const applyOverrides = optionalRequire(overridesLocation);
   if (!applyOverrides) {
     return config;
@@ -81,7 +85,11 @@ const babelLoader = {
 const config = {
   mode: isProduction ? "production" : "development",
   entry: {
-    app: ["./app/index.js", "./app/assets/less/main.less", "./app/assets/less/ant.less"],
+    app: [
+      "./app/index.js",
+      "./app/assets/less/main.less",
+      "./app/assets/less/ant.less",
+    ],
     server: ["./app/assets/less/server.less"],
   },
   output: {
@@ -89,20 +97,27 @@ const config = {
     filename: isProduction ? "[name].[chunkhash].js" : "[name].js",
     publicPath: staticPath,
   },
-  node: {
-    fs: "empty",
-    path: "empty",
-  },
   resolve: {
+    fallback: {
+      fs: false,
+      path: false,
+      url: false,
+      util: false,
+      stream: false,
+    },
     symlinks: false,
     extensions: [".js", ".jsx", ".ts", ".tsx", ".mjs"],
     alias: {
       "@": appPath,
-      extensions: extensionPath,
+      "extensions": extensionPath,
     },
   },
   plugins: [
     new WebpackBuildNotifierPlugin({ title: "Data Reporter" }),
+    // Polyfill `process` for browser (removed in webpack 5)
+    new webpack.ProvidePlugin({
+      process: "process/browser",
+    }),
     // bundle only default `moment` locale (`en`)
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
     new HtmlWebpackPlugin({
@@ -122,7 +137,7 @@ const config = {
     new MiniCssExtractPlugin({
       filename: "[name].[chunkhash].css",
     }),
-    new ManifestPlugin({
+    new WebpackManifestPlugin({
       fileName: "asset-manifest.json",
       publicPath: "",
     }),
@@ -130,19 +145,21 @@ const config = {
       resourceRegExp: /^\.\/locale$/,
       contextRegExp: /moment$/,
     }),
-    new CopyWebpackPlugin([
-      { from: "app/assets/robots.txt" },
-      { from: "app/assets/manifest.json" },
-      { from: "app/unsupported.html" },
-      { from: "app/unsupportedRedirect.js" },
-      { from: "app/assets/css/*.css", to: "styles/", flatten: true },
-      { from: "app/assets/fonts", to: "fonts/" },
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "app/assets/robots.txt" },
+        { from: "app/assets/manifest.json" },
+        { from: "app/unsupported.html" },
+        { from: "app/unsupportedRedirect.js" },
+        { from: "app/assets/css/*.css", to: "styles/[name][ext]" },
+        { from: "app/assets/fonts", to: "fonts/" },
+      ],
+    }),
     isHotReloadingEnabled && new ReactRefreshWebpackPlugin({ overlay: false }),
   ].filter(Boolean),
   optimization: {
     splitChunks: {
-      chunks: (chunk) => {
+      chunks: chunk => {
         return chunk.name != "server";
       },
     },
@@ -164,7 +181,10 @@ const config = {
       // Rule for druid-query-toolkit (needs nullish coalescing support)
       {
         test: /\.(js|mjs)$/,
-        include: [/node_modules\/druid-query-toolkit/, /node_modules\/plywood\/node_modules\/druid-query-toolkit/],
+        include: [
+          /node_modules\/druid-query-toolkit/,
+          /node_modules\/plywood\/node_modules\/druid-query-toolkit/,
+        ],
         use: {
           loader: "babel-loader",
           options: {
@@ -176,7 +196,10 @@ const config = {
                 },
               ],
             ],
-            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+            plugins: [
+              "@babel/plugin-proposal-optional-chaining",
+              "@babel/plugin-proposal-nullish-coalescing-operator",
+            ],
           },
         },
       },
@@ -195,7 +218,10 @@ const config = {
                 },
               ],
             ],
-            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+            plugins: [
+              "@babel/plugin-proposal-optional-chaining",
+              "@babel/plugin-proposal-nullish-coalescing-operator",
+            ],
           },
         },
       },
@@ -214,7 +240,10 @@ const config = {
                 },
               ],
             ],
-            plugins: ["@babel/plugin-proposal-optional-chaining", "@babel/plugin-proposal-nullish-coalescing-operator"],
+            plugins: [
+              "@babel/plugin-proposal-optional-chaining",
+              "@babel/plugin-proposal-nullish-coalescing-operator",
+            ],
           },
         },
       },
@@ -230,11 +259,7 @@ const config = {
       {
         test: /\.html$/,
         exclude: [/node_modules/, /index\.html/, /multi_org\.html/],
-        use: [
-          {
-            loader: "raw-loader",
-          },
-        ],
+        type: "asset/source",
       },
       {
         test: /\.css$/,
@@ -259,8 +284,13 @@ const config = {
           {
             loader: "less-loader",
             options: {
-              plugins: [new LessPluginAutoPrefix({ browsers: ["last 3 versions"] })],
-              javascriptEnabled: true,
+              sourceMap: false,
+              lessOptions: {
+                plugins: [
+                  new LessPluginAutoPrefix({ browsers: ["last 3 versions"] }),
+                ],
+                javascriptEnabled: true,
+              },
             },
           },
         ],
@@ -274,7 +304,13 @@ const config = {
             loader: "sass-loader",
             options: {
               sassOptions: {
-                silenceDeprecations: ["legacy-js-api", "import", "global-builtin", "function-units", "color-functions"],
+                silenceDeprecations: [
+                  "legacy-js-api",
+                  "import",
+                  "global-builtin",
+                  "function-units",
+                  "color-functions",
+                ],
               },
             },
           },
@@ -327,19 +363,19 @@ const config = {
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        use: [
-          {
-            loader: "url-loader",
-            options: {
-              limit: 10000,
-              name: "fonts/[name].[hash:7].[ext]",
-            },
+        type: "asset",
+        parser: {
+          dataUrlCondition: {
+            maxSize: 10000,
           },
-        ],
+        },
+        generator: {
+          filename: "fonts/[name].[hash:7][ext]",
+        },
       },
     ],
   },
-  devtool: "source-map",
+  devtool: isProduction ? "source-map" : "eval-cheap-module-source-map",
   stats: {
     children: false,
     modules: false,
@@ -351,8 +387,11 @@ const config = {
   devServer: {
     client: {
       overlay: {
-        runtimeErrors: (error) => {
-          if (error?.message === "ResizeObserver loop completed with undelivered notifications.") {
+        runtimeErrors: error => {
+          if (
+            error?.message ===
+            "ResizeObserver loop completed with undelivered notifications."
+          ) {
             console.error(error);
             return false;
           }
@@ -374,7 +413,16 @@ const config = {
     },
     proxy: [
       {
-        context: ["/login", "/logout", "/invite", "/setup", "/status.json", "/api", "/oauth", "/forgot"],
+        context: [
+          "/login",
+          "/logout",
+          "/invite",
+          "/setup",
+          "/status.json",
+          "/api",
+          "/oauth",
+          "/forgot",
+        ],
         target: redashBackend + "/",
         changeOrigin: false,
         secure: false,
@@ -396,7 +444,7 @@ const config = {
         },
       },
       {
-        context: (path) => {
+        context: path => {
           return /^\/static\/[a-z]+\.[0-9a-fA-F]+\.(css|js)$/.test(path);
         },
         target: redashBackend + "/",

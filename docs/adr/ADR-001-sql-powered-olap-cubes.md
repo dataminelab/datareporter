@@ -4,13 +4,13 @@ lifecycle: living
 owner: radek
 canonical_location: source-repo
 last_verified: 2026-03-10
-status: proposed
+status: accepted
 ---
 
 # ADR-001: SQL-Powered OLAP Cubes via withQuery CTE
 
 **Date:** 2026-03-10
-**Status:** Proposed
+**Status:** Accepted (Phase 1 complete)
 **Decision Makers:** Radek Maciaszek
 
 ## 1. Context and Problem
@@ -102,17 +102,18 @@ A user writes a SQL query (with JOINs, aggregations, window functions — anythi
 
 ### 3.2 Key Integration Points
 
-| Component                | File                                                 | Current                                                    | Change                                      |
-| ------------------------ | ---------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------- |
-| **Model**                | `redash/models/models.py`                            | `table` field only                                         | Add `query` field (TEXT, nullable)          |
-| **DataCube.context**     | `redash/plywood/objects/data_cube.py:105`            | `{"engine", "source", "attributes"}`                       | Add `"withQuery"` when `model.query` is set |
-| **Plywood endpoint**     | `plywood/src/endpoint/plywood-endpoint.ts:33`        | `External.fromJS(context)`                                 | Already handles `withQuery` — no change     |
-| **SQLExternal**          | `plywood/client/src/external/sqlExternal.ts:181`     | `WITH __with__ AS (${withQuery})`                          | Already implemented — no change             |
-| **ModelConfigGenerator** | `redash/services/model_config_generator.py:156`      | Introspects table schema                                   | Add query-based introspection path          |
-| **BigQueryExternal**     | `plywood/client/src/external/bigQueryExternal.ts:77` | `INFORMATION_SCHEMA.COLUMNS`                               | Add `LIMIT 0` introspection for withQuery   |
-| **Model handler**        | `redash/handlers/models.py:29`                       | `require_fields(req, ("name", "data_source_id", "table"))` | Accept `query` field, validate SQL          |
-| **Model serializer**     | `redash/serializers/model_serializer.py`             | Serializes table                                           | Include query field                         |
-| **Migration**            | New migration file                                   | —                                                          | Add `query` column to `models` table        |
+| Component                | File                                                 | Current                                                    | Change                                                          |
+| ------------------------ | ---------------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------- |
+| **Model**                | `redash/models/models.py`                            | `table` field only                                         | Add `query_id` FK to `queries` table (nullable)                 |
+| **DataCube.context**     | `redash/plywood/objects/data_cube.py:105`            | `{"engine", "source", "attributes"}`                       | Add `"withQuery"` when `model.query_id` is set                  |
+| **Plywood endpoint**     | `plywood/src/endpoint/plywood-endpoint.ts:33`        | `External.fromJS(context)`                                 | Already handles `withQuery` — no change                         |
+| **SQLExternal**          | `plywood/client/src/external/sqlExternal.ts:181`     | `WITH __with__ AS (${withQuery})`                          | Already implemented — no change                                 |
+| **ModelConfigGenerator** | `redash/services/model_config_generator.py:156`      | Introspects table schema                                   | Add query-based introspection path                              |
+| **BigQueryExternal**     | `plywood/client/src/external/bigQueryExternal.ts:77` | `INFORMATION_SCHEMA.COLUMNS`                               | Add `LIMIT 0` introspection for withQuery                       |
+| **Model handler**        | `redash/handlers/models.py:29`                       | `require_fields(req, ("name", "data_source_id", "table"))` | Accept `query_id` FK, validate query exists + data source match |
+| **Model serializer**     | `redash/serializers/model_serializer.py`             | Serializes table                                           | Include `query_id` field                                        |
+| **Migration**            | `8726b10fc3f6_add_query_to_models.py`                | —                                                          | Add `query_id` FK column to `models` table                      |
+| **Stale config refresh** | `redash/plywood/hash_manager.py`                     | No staleness detection                                     | Lazy refresh when query updated_at > config updated_at          |
 
 ## 4. Engine-Specific Analysis
 
@@ -436,16 +437,20 @@ Plywood adds WHERE clauses to the outer query. For the CTE pattern, some databas
 
 ## 8. Implementation Plan
 
-### Phase 1: Core (MVP)
+### Phase 1: Core (MVP) — COMPLETE
 
-| #   | File                                         | Change Type | Description                                                                   |
-| --- | -------------------------------------------- | ----------- | ----------------------------------------------------------------------------- |
-| 1   | `redash/models/models.py`                    | Edit        | Add `query = Column(db.Text, nullable=True)` field                            |
-| 2   | `migrations/versions/add_query_to_models.py` | Create      | Alembic migration: `ALTER TABLE models ADD COLUMN query TEXT`                 |
-| 3   | `redash/handlers/models.py`                  | Edit        | Accept `query` in POST/PUT. Validate SQL (SELECT-only, no DDL/DML)            |
-| 4   | `redash/serializers/model_serializer.py`     | Edit        | Include `query` in serialized output                                          |
-| 5   | `redash/plywood/objects/data_cube.py`        | Edit        | Update `context` property: add `withQuery` from `model.query` when present    |
-| 6   | `redash/services/model_config_generator.py`  | Edit        | Add query-based introspection path (run `LIMIT 0` query for schema discovery) |
+| #   | File                                                      | Change Type | Description                                                                                                               | Status |
+| --- | --------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1   | `redash/models/models.py`                                 | Edit        | Add `query_id` FK to `queries` table + `query_rel` relationship                                                           | Done   |
+| 2   | `migrations/versions/8726b10fc3f6_add_query_to_models.py` | Create      | Alembic migration: add `query_id` integer column + FK constraint                                                          | Done   |
+| 3   | `redash/handlers/models.py`                               | Edit        | Accept `query_id` in POST/PUT. Validate query exists + same data source. `ModelQueriesResource` endpoint for query picker | Done   |
+| 4   | `redash/serializers/model_serializer.py`                  | Edit        | Include `query_id` in serialized output                                                                                   | Done   |
+| 5   | `redash/plywood/objects/data_cube.py`                     | Edit        | `context` adds `withQuery` from linked query. `source_name` uses model name for query-based                               | Done   |
+| 6   | `redash/services/model_config_generator.py`               | Edit        | Query-based introspection via `LIMIT 0`. Column type derivation across PG/BQ/MySQL/Athena                                 | Done   |
+| 7   | `redash/plywood/hash_manager.py`                          | Edit        | Lazy config refresh: auto-regenerate config when backing query SQL changes                                                | Done   |
+| 8   | `redash/handlers/api.py`                                  | Edit        | Register `ModelQueriesResource` at `/api/models/queries`                                                                  | Done   |
+
+**Design decision:** Uses `query_id` FK referencing existing Redash `queries` table (not raw SQL storage). Dependency chain: Query → Model → Report (clean DAG). Eliminates need for SQL validation at model creation — SQL is validated when queries are created/saved.
 
 ### Phase 2: Safety & Cost Controls
 

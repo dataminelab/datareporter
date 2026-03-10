@@ -232,7 +232,34 @@ def clean_errored(queries: list) -> list:
     return errored
 
 
+def _refresh_stale_config(model: Model) -> None:
+    """Regenerate model config if the backing query's SQL has changed.
+
+    For query-based models, compares the query's updated_at timestamp against
+    the model config's updated_at. If the query is newer, the config is
+    regenerated to reflect any column changes.
+    """
+    if not model.query_id or not model.config:
+        return
+
+    query = model.query_rel
+    if query and query.updated_at > model.config.updated_at:
+        from redash.models import db
+        from redash.services.model_config_generator import ModelConfigGenerator
+
+        logger.info(
+            "Refreshing stale config for model %d (query %d updated at %s, config at %s)",
+            model.id,
+            model.query_id,
+            query.updated_at,
+            model.config.updated_at,
+        )
+        model.config.content = ModelConfigGenerator.yaml(model=model, refresh=False)
+        db.session.commit()
+
+
 def get_data_cube(model: Model) -> DataCube:
+    _refresh_stale_config(model)
     data_cube = DataCube(model)
     return data_cube
 

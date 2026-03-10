@@ -476,3 +476,207 @@ class TestModelConfigGenerator(unittest.TestCase):
             ]
         }
         self.assertDictEqual(exptected_json, actual_json)
+
+
+class TestModelConfigGeneratorFromQuery(unittest.TestCase):
+    """Tests for query-based model config generation (_build_from_query)."""
+
+    @mock.patch("redash.models.models.Model")
+    def test_build_from_query_produces_correct_config(self, mock_model):
+        """Verifies that _build_from_query introspects columns via LIMIT 0
+        and produces a valid config with correct dimensions and measures."""
+        import json
+
+        # Simulate a query-based model
+        mock_model.query_id = 42
+        mock_model.name = "revenue_cube"
+        mock_model.table = None
+        mock_model.data_source.type = "pg"
+        mock_model.query_rel.query_text = "SELECT id, name, amount, created_at FROM orders"
+
+        # Mock query runner to return LIMIT 0 column metadata
+        introspect_result = json.dumps(
+            {
+                "columns": [
+                    {"name": "id", "type": "INTEGER"},
+                    {"name": "name", "type": "CHARACTER VARYING"},
+                    {"name": "amount", "type": "FLOAT"},
+                    {"name": "created_at", "type": "TIMESTAMP"},
+                ],
+                "rows": [],
+            }
+        )
+        mock_model.data_source.query_runner.run_query.return_value = (introspect_result, None)
+
+        with mock.patch("redash.plywood.plywood.PlywoodApi.convert_attributes") as converter:
+            converter.return_value = [
+                {"name": "id", "type": "NUMBER", "nativeType": "INTEGER", "isSupported": True},
+                {"name": "name", "type": "STRING", "nativeType": "CHARACTER VARYING", "isSupported": True},
+                {"name": "amount", "type": "NUMBER", "nativeType": "FLOAT", "isSupported": True},
+                {"name": "created_at", "type": "TIME", "nativeType": "TIMESTAMP", "isSupported": True},
+            ]
+
+            result = ModelConfigGenerator.json(model=mock_model, refresh=False)
+
+        data_cube = result["dataCubes"][0]
+
+        # Name comes from model.name (not table)
+        self.assertEqual("revenue_cube", data_cube["name"])
+        self.assertEqual("Revenue Cube", data_cube["title"])
+
+        # Time attribute detected
+        self.assertEqual("created_at", data_cube["timeAttribute"])
+
+        # Verify introspection query was called correctly
+        call_args = mock_model.data_source.query_runner.run_query.call_args
+        introspect_sql = call_args[0][0]
+        self.assertIn("SELECT * FROM (", introspect_sql)
+        self.assertIn("__introspect__", introspect_sql)
+        self.assertIn("LIMIT 0", introspect_sql)
+
+        # Verify dimensions (STRING, TIME, BOOLEAN — non-NUMBER types)
+        dim_names = [d["name"] for d in data_cube["dimensions"]]
+        self.assertIn("name", dim_names)
+        self.assertIn("created_at", dim_names)
+        self.assertNotIn("id", dim_names)  # NUMBER -> measure
+        self.assertNotIn("amount", dim_names)  # NUMBER -> measure
+
+        # Verify measures (NUMBER types)
+        measure_names = [m["name"] for m in data_cube["measures"]]
+        self.assertIn("id", measure_names)
+        self.assertIn("amount", measure_names)
+
+    @mock.patch("redash.models.models.Model")
+    def test_build_from_query_raises_on_runner_error(self, mock_model):
+        """Query runner failure should raise ValueError."""
+        mock_model.query_id = 42
+        mock_model.name = "bad_cube"
+        mock_model.table = None
+        mock_model.query_rel.query_text = "SELECT * FROM nonexistent"
+        mock_model.data_source.query_runner.run_query.return_value = (None, "relation does not exist")
+
+        with self.assertRaises(ValueError) as ctx:
+            ModelConfigGenerator.json(model=mock_model, refresh=False)
+
+        self.assertIn("Failed to introspect", str(ctx.exception))
+
+    @mock.patch("redash.models.models.Model")
+    def test_build_from_query_raises_on_no_columns(self, mock_model):
+        """Query returning no columns should raise ValueError."""
+        import json
+
+        mock_model.query_id = 42
+        mock_model.name = "empty_cube"
+        mock_model.table = None
+        mock_model.query_rel.query_text = "SELECT 1 WHERE false"
+        mock_model.data_source.query_runner.run_query.return_value = (
+            json.dumps({"columns": [], "rows": []}),
+            None,
+        )
+
+        with self.assertRaises(ValueError) as ctx:
+            ModelConfigGenerator.json(model=mock_model, refresh=False)
+
+        self.assertIn("no columns", str(ctx.exception))
+
+    @mock.patch("redash.models.models.Model")
+    def test_build_from_query_strips_trailing_semicolon(self, mock_model):
+        """Trailing semicolons in query SQL should be stripped before wrapping."""
+        import json
+
+        mock_model.query_id = 42
+        mock_model.name = "semicolon_cube"
+        mock_model.table = None
+        mock_model.data_source.type = "pg"
+        mock_model.query_rel.query_text = "SELECT id FROM orders;"
+
+        mock_model.data_source.query_runner.run_query.return_value = (
+            json.dumps({"columns": [{"name": "id", "type": "INTEGER"}], "rows": []}),
+            None,
+        )
+
+        with mock.patch("redash.plywood.plywood.PlywoodApi.convert_attributes") as converter:
+            converter.return_value = [
+                {"name": "id", "type": "NUMBER", "nativeType": "INTEGER", "isSupported": True},
+            ]
+            ModelConfigGenerator.json(model=mock_model, refresh=False)
+
+        call_args = mock_model.data_source.query_runner.run_query.call_args
+        introspect_sql = call_args[0][0]
+        # Should not have double semicolons or trailing semicolons inside subquery
+        self.assertNotIn(";)", introspect_sql)
+        self.assertIn("SELECT id FROM orders)", introspect_sql)
+
+    @mock.patch("redash.models.models.Model")
+    def test_build_dispatches_to_query_path_when_query_id_set(self, mock_model):
+        """When model.query_id is set, _build should use _build_from_query."""
+        import json
+
+        mock_model.query_id = 42
+        mock_model.name = "dispatch_test"
+        mock_model.table = None
+        mock_model.data_source.type = "pg"
+        mock_model.query_rel.query_text = "SELECT 1 AS val"
+
+        mock_model.data_source.query_runner.run_query.return_value = (
+            json.dumps({"columns": [{"name": "val", "type": "INTEGER"}], "rows": []}),
+            None,
+        )
+
+        with mock.patch("redash.plywood.plywood.PlywoodApi.convert_attributes") as converter:
+            converter.return_value = [
+                {"name": "val", "type": "NUMBER", "nativeType": "INTEGER", "isSupported": True},
+            ]
+            result = ModelConfigGenerator.json(model=mock_model, refresh=False)
+
+        # Should NOT have called get_schema (table path)
+        mock_model.data_source.get_schema.assert_not_called()
+
+        # Should have called run_query (query path)
+        mock_model.data_source.query_runner.run_query.assert_called_once()
+
+        # Config should use model name, not table
+        self.assertEqual("dispatch_test", result["dataCubes"][0]["name"])
+
+    @mock.patch("redash.models.models.Model")
+    def test_build_from_query_column_types_across_engines(self, mock_model):
+        """Column types should be correctly derived regardless of engine type."""
+        import json
+
+        engines = ["pg", "bigquery", "mysql", "athena"]
+        for engine in engines:
+            mock_model.query_id = 42
+            mock_model.name = f"engine_test_{engine}"
+            mock_model.table = None
+            mock_model.data_source.type = engine
+            mock_model.query_rel.query_text = "SELECT id, ts FROM t"
+
+            mock_model.data_source.query_runner.run_query.return_value = (
+                json.dumps(
+                    {
+                        "columns": [
+                            {"name": "id", "type": "INTEGER"},
+                            {"name": "ts", "type": "TIMESTAMP"},
+                        ],
+                        "rows": [],
+                    }
+                ),
+                None,
+            )
+
+            with mock.patch("redash.plywood.plywood.PlywoodApi.convert_attributes") as converter:
+                converter.return_value = [
+                    {"name": "id", "type": "NUMBER", "nativeType": "INTEGER", "isSupported": True},
+                    {"name": "ts", "type": "TIME", "nativeType": "TIMESTAMP", "isSupported": True},
+                ]
+                result = ModelConfigGenerator.json(model=mock_model, refresh=False)
+
+            data_cube = result["dataCubes"][0]
+
+            # Converter should have been called with the engine type
+            converter.assert_called_once_with(engine, mock.ANY)
+
+            # Verify correct type mapping
+            attr_types = {a["name"]: a["type"] for a in data_cube["attributes"]}
+            self.assertEqual("NUMBER", attr_types["id"], f"Failed for engine: {engine}")
+            self.assertEqual("TIME", attr_types["ts"], f"Failed for engine: {engine}")

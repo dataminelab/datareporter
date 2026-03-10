@@ -43,6 +43,8 @@ import useUpdateQuery from "./hooks/useUpdateQuery";
 import useUpdateQueryDescription from "./hooks/useUpdateQueryDescription";
 import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
 
+import AIQueryBar from "@/components/queries/AIQueryBar";
+
 import "./components/QuerySourceDropdown"; // register QuerySourceDropdown
 import "./QuerySource.less";
 
@@ -331,6 +333,17 @@ function QuerySource(props) {
                     className="query-editor-wrapper"
                     data-test="QueryEditor"
                   >
+                    {dataSource && (
+                      <AIQueryBar
+                        dataSourceId={dataSource.id}
+                        onSQLGenerated={(sql) => {
+                          setQuery(
+                            extend(query.clone(), { query: sql })
+                          );
+                        }}
+                        disabled={!queryFlags.canEdit}
+                      />
+                    )}
                     <QueryEditor
                       ref={editorRef}
                       data-executing={isQueryExecuting ? "true" : null}

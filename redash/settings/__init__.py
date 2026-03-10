@@ -17,9 +17,19 @@ from .helpers import (
 from .organization import DATE_FORMAT, TIME_FORMAT  # noqa
 
 PLYWOOD_SERVER_URL = os.environ.get("PLYWOOD_SERVER_URL", "http://plywood-server:3000")
-OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://ollama:11434")
+OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+
+# AI Query Settings
+AI_PROVIDER = os.environ.get("AI_PROVIDER", "")  # Default provider (auto-detect if empty)
+AI_MODEL = os.environ.get("AI_MODEL", "")  # Default model override
+AI_QUERY_TIMEOUT = int(os.environ.get("AI_QUERY_TIMEOUT", "60"))
+AI_MAX_RESULT_ROWS = int(os.environ.get("AI_MAX_RESULT_ROWS", "10000"))
+AI_SHOW_FAILED_SQL = os.environ.get("AI_SHOW_FAILED_SQL", "false").lower() == "true"
+AI_RATE_LIMIT_PER_DAY = int(os.environ.get("AI_RATE_LIMIT_PER_DAY", "50"))
+
 SERVER_WORKER_URL = os.environ.get("SERVER_WORKER_URL", "")
 
 # _REDIS_URL is the unchanged REDIS_URL we get from env vars, to be used later with RQ

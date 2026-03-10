@@ -2,6 +2,7 @@ from flask import make_response
 from flask_restful import Api
 from werkzeug.wrappers import Response
 
+from redash.handlers.ai_query import AIProvidersResource, NLQueryResource
 from redash.handlers.alerts import (
     AlertEvaluateResource,
     AlertListResource,
@@ -363,3 +364,8 @@ api.add_org_resource(
     "/api/reports/<int:report_id>/results.<filetype>",
     endpoint="report_file_download",
 )
+
+# AI Query endpoints
+api.add_org_resource(NLQueryResource, "/api/ai/query", endpoint="ai_query")
+api.add_org_resource(NLQueryResource, "/api/nl-query/generate", endpoint="nl_query_generate")  # MCP compat
+api.add_org_resource(AIProvidersResource, "/api/ai/providers", endpoint="ai_providers")

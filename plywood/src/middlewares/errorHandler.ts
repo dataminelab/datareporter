@@ -1,9 +1,17 @@
+import { NextFunction, Request, Response } from "express";
+
 import { ValidationError } from "../errors/ValidationError";
 import { FieldError } from "../errors/FieldError";
 
 import { logger } from "../logger/logger";
-// @ts-ignore
-export const handleError = (err, _req, res, next) => {
+import { remapPlywoodBundleStack } from "../logger/plywoodStackMapper";
+
+export const handleError = async (
+  err: any,
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<Response | void> => {
   if (!err) return next();
 
   if (err instanceof ValidationError) {
@@ -18,6 +26,10 @@ export const handleError = (err, _req, res, next) => {
       field: err.fieldName,
     });
   } else {
+    if (typeof err?.stack === "string") {
+      err.stack = await remapPlywoodBundleStack(err.stack);
+    }
+
     logger.error(err);
     return res.status(500).json({
       message: `Unexpected error, ${err.message} `,

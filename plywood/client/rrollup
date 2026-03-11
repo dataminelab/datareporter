@@ -120,6 +120,7 @@ cat \
   build/external/jsonExternal.js \
   build/executor/basicExecutor.js \
   extra/postfix.js \
+  | sed -E 's@//# sourceMappingURL=[^[:space:]]*\.map@@g' \
   | grep -v '^import ' \
   | ./node_modules/.bin/f 'l.replace(/^export function ([\w$]+)\(/, "var $1 = exports.$1 = function(")' \
   | ./node_modules/.bin/f 'l.replace(/^export var ([\w$]+) =/, "var $1 = exports.$1 =")' \

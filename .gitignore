@@ -17,7 +17,7 @@ _build
 
 dump.rdb
 
-node_modules
+**/node_modules
 .tmp
 .sass-cache
 npm-debug.log
@@ -27,5 +27,6 @@ client/cypress/videos
 *.iml
 
 dist
+**/build
 
 scripts/config.js

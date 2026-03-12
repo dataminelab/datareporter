@@ -166,6 +166,11 @@ GOOGLE_PRODUCT_ID = os.environ.get("REDASH_GOOGLE_PROJECT_ID", "")
 GOOGLE_PUBSUB_WORKER_TOPIC_ID = os.environ.get("REDASH_GOOGLE_PUBSUB_WORKER_TOPIC_ID", "")
 WORKER_NOTIFY_URL = os.environ.get("REDASH_WORKER_NOTIFY_URL", "")
 
+# Shared secret for authenticating Pub/Sub webhook requests.
+# When set, the webhook endpoint requires Authorization: Bearer <token>.
+# When empty, the webhook endpoint rejects all requests (fail-closed).
+WEBHOOK_AUTH_TOKEN = os.environ.get("REDASH_WEBHOOK_AUTH_TOKEN", "")
+
 # If Redash is behind a proxy it might sometimes receive a X-Forwarded-Proto of HTTP
 # even if your actual Redash URL scheme is HTTPS. This will cause Flask to build
 # the SAML redirect URL incorrect thus failing auth. This is especially common if

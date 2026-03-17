@@ -29,6 +29,8 @@ x-redash-environment: &redash-environment
   REDASH_VERSION_CHECK: "false"
   WORKERS_COUNT: 10
   QUEUES: 100
+  # below is neccesary for debugging plywood
+  PLYWOOD_SERVER_URL: "http://host.docker.internal:3000"
 services:
   server:
     <<: *redash-service
@@ -41,8 +43,6 @@ services:
       - "5678:5678"
     environment:
       <<: *redash-environment
-      # below is neccesary for debugging plywood
-      PLYWOOD_SERVER_URL: "http://host.docker.internal:3000"
     volumes:
       - .:/app
     extra_hosts:

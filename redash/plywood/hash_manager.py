@@ -8,10 +8,9 @@ from flask import url_for
 from flask_restful import abort
 
 from redash import redis_connection
-from redash.handlers.base import get_object_or_404
-from redash.handlers.query_results import run_query
 from redash.models import (
     ApiKey,
+    DataSource,
     Organization,
     ParameterizedQuery,
     QueryResult,
@@ -56,15 +55,46 @@ def replace_item(obj, value, replace_value):
 
 
 def execute_query(query, model, query_id, org):
+    from redash.tasks.queries import enqueue_query
+
     parameterized_query = ParameterizedQuery(query, org=org)
     parameters = {}
     should_apply_auto_limit = False
-    return run_query(
-        parameterized_query, parameters, model.data_source, query_id, should_apply_auto_limit, REDASH_QUERY_CACHE
+    try:
+        parameterized_query.apply(parameters)
+    except Exception as e:
+        return {"job": {"status": FAILED_QUERY_CODE, "error": str(e)}}
+
+    query_text = model.data_source.query_runner.apply_auto_limit(parameterized_query.text, should_apply_auto_limit)
+
+    if parameterized_query.missing_params:
+        return {
+            "job": {
+                "status": FAILED_QUERY_CODE,
+                "error": "Missing parameter value for: {}".format(", ".join(parameterized_query.missing_params)),
+            }
+        }
+
+    job = enqueue_query(
+        query_text,
+        model.data_source,
+        None,
+        False,
+        metadata={
+            "Username": "system",
+            "query_id": query_id,
+        },
     )
+
+    if not job:
+        return {"job": {"status": FAILED_QUERY_CODE, "error": "Failed enqueueing query job."}}
+
+    return serialize_job(job)
 
 
 def parse_job(job_id: str, current_org: Organization):
+    from redash.handlers.base import get_object_or_404
+
     job_data = serialize_job(Job.fetch(job_id))
 
     if job_data["job"]["status"] == SUCCESS_CODE:
@@ -266,7 +296,7 @@ class ReportHash:
         public_key = ApiKey.get_by_object(o)
         self.api_key = o.api_key
         if public_key:
-            self.public_url = url_for("public.public", token=public_key.api_key, _external=True)
+            self.public_url = url_for("public_report", token=public_key.api_key, _external=True)
         else:
             self.public_url = None
         self.id = o.id
@@ -288,12 +318,14 @@ class ReportHash:
             "permissions": o.user.permissions,
             "isAdmin": is_admin(o.user),
         }
-        self.landed = True
         self.can_edit = None
         self.queries = []
         self.last_modified_by_id = o.last_modified_by_id
-        self.last_modified_by = User.get_by_id(o.last_modified_by_id).to_dict()
+        self.last_modified_by = None
+        self.schedule = o.schedule if o.schedule else None
         self.results = None
+        self.created_at = o.created_at
+        self.updated_at = o.updated_at
 
     def set_data_cube(self, data_cube: DataCube):
         self.appSettings["dataCubes"].append(data_cube)
@@ -315,6 +347,16 @@ class ReportHash:
         obj = {}
         for key, value in self.__dict__.items():
             obj[key] = value
+
+        data_source = DataSource.get_by_id(self.data_source_id)
+        obj["dataSource"] = data_source.to_dict() if data_source else None
+
+        if self.last_modified_by_id:
+            last_modified_by = User.get_by_id(self.last_modified_by_id)
+            obj["last_modified_by"] = last_modified_by.to_dict() if last_modified_by else None
+        else:
+            obj["last_modified_by"] = None
+
         return obj
 
     def to_dict(self):

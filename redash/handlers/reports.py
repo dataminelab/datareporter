@@ -50,6 +50,7 @@ COLOR_1 = "color_1"
 COLOR_2 = "color_2"
 TAGS = "tags"
 DATA_SOURCE_ID = "data_source_id"
+SCHEDULE = "schedule"
 
 
 # Custom JSON encoder to handle datetime objects
@@ -140,9 +141,29 @@ class ReportApiKeyAccess(BaseResource):
     @staticmethod
     def make_json_response(query_results):
         results = []
+        merged_rows = []
+        all_columns = []
+
+        # Merge results into a single list of rows, matching on common columns
         for query in query_results:
-            results.append(query.to_dict())
-        data = json_dumps({"query_results": results})
+            query_data = query.data
+            # Track all columns seen across all queries
+            for col in query_data.get("columns", []):
+                if col not in all_columns:
+                    all_columns.append(col)
+
+            for row in query_data.get("rows", []):
+                found = False
+                for existing_row in merged_rows:
+                    common_keys = set(row.keys()) & set(existing_row.keys())
+                    if common_keys and all(row[k] == existing_row[k] for k in common_keys):
+                        existing_row.update(row)
+                        found = True
+                        break
+                if not found:
+                    merged_rows.append(dict(row))
+
+        data = json_dumps({"columns": all_columns, "rows": merged_rows})
         headers = {"Content-Type": "application/json"}
         return make_response(data, 200, headers)
 
@@ -358,16 +379,24 @@ class ReportResource(BaseResource):
 
     @require_permission("edit_report")
     def post(self, report_id: int):
-        """## Modify a report
+        """
+        Modify a report
 
-        ### Args:
-            - `report_id (int)`: _description_
+        - param `report_id (int)`: ID of report to update
+        - json `string` name:
+        - json `number` data_source_id: The ID of the data source this report will run on
+        - json `string` expression: hash of the report expression, encoded in base64
+        - json `string` color_1: Hex code of the first color used in the report visualizations
+        - json `string` color_2: Hex code of the second color used in the report visualizations
+        - json `array` tags: List of tags associated with the report
+        - json `string` schedule: Schedule interval, in seconds, for repeated execution of this report
 
-        ### Returns:
-            - `_type_`: _description_
+        Responds with the updated :ref:`report <report-response-label>` object.
         """
         report_properties = request.get_json(force=True)
-        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
+        updates = project(
+            report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS, SCHEDULE, DATA_SOURCE_ID)
+        )
         report: Report = get_object_or_404(Report.get_by_id, report_id)
         require_object_modify_permission(report, self.current_user)
 
@@ -480,15 +509,14 @@ class PublicReportResource(BaseResource):
 
         :param token: An API key for a public dashboard.
         """
+        if self.current_org.get_setting("disable_public_urls"):
+            abort(400, message="Public URLs are disabled.")
+
         if not isinstance(self.current_user, models.ApiUser):
             api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
             report = api_key.object
         else:
-            report_id = request.args.get("report_id", None)
-            if not report_id or report_id == "null":
-                report = self.current_user.object
-            else:
-                report = get_object_or_404(Report.get_by_id, report_id)
+            report = self.current_user.object
         get_results = parse_boolean(request.args.get("get_results", "False"))
         can_edit = False
         return hash_report(report, can_edit, get_results)

@@ -449,7 +449,7 @@ export class Report extends Query {
     return this.getParameters().get(update);
   }
 
-  executeQuery(query) {
+  executeQuery(query) { // eslint-disable-line no-unused-vars
     // TODO: Use Ajax.queryUrlExecutorFactory
   }
 
@@ -469,7 +469,9 @@ export class Report extends Query {
   }
 
   onExecutionStatusChange(status) {
-    this.triggerExecution(status);
+    if (typeof this.triggerExecution === "function") {
+      this.triggerExecution(status);
+    }
   }
 
   setTriggerExecution(triggerFn) {
@@ -499,7 +501,7 @@ const normalizeCondition = {
   "less than": "<",
   "equals": "=",
 };
-const transformResponse = data => {
+const transformResponse = data => {  // eslint-disable-line no-unused-vars
   merge({}, data, {
     options: {
       op: normalizeCondition[data.options.op] || data.options.op,

@@ -110,12 +110,11 @@ class JSONEncoder(json.JSONEncoder):
             result = binascii.hexlify(o).decode()
         elif isinstance(o, bytes):
             result = binascii.hexlify(o).decode()
-        elif "queries" in dir(o):
-            # ReportSerializer
+        elif "queries" in dir(o):  # ReportSerializer
             result = o.queries
-        elif "landed" in dir(o):
-            # single report | api/report/<int>
-            return o
+        elif "ply_engine" in dir(o):
+            # Dashboards have a reference to the ply engine, which is not serializable, but we can get the context from it.
+            result = o.context
         else:
             result = super(JSONEncoder, self).default(o)
         return result

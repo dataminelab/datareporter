@@ -313,17 +313,17 @@ class MyQueriesResource(BaseResource):
 
 class QueryResource(BaseResource):
     @require_permission("edit_query")
-    def post(self, query_id):
+    def post(self, query_id: int):
         """
         Modify a query.
 
-        :param query_id: ID of query to update
-        :<json number data_source_id: The ID of the data source this query will run on
-        :<json string query: Query text
-        :<json string name:
-        :<json string description:
-        :<json string schedule: Schedule interval, in seconds, for repeated execution of this query
-        :<json object options: Query options
+        - param query_id: ID of query to update
+        - json `number` data_source_id: The ID of the data source this query will run on
+        - json `string` query: Query text
+        - json `string` name:
+        - json `string` description:
+        - json `string` schedule: Schedule interval, in seconds, for repeated execution of this query
+        - json `object` options: Query options
 
         Responds with the updated :ref:`query <query-response-label>` object.
         """

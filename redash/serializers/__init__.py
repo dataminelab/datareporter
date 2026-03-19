@@ -35,9 +35,8 @@ def get_data_cube(model):
     return data_cube
 
 
-# TODO use redash.plywood.hash_manager.ReportHash instead
+# for public dashboards
 def hash_report(report, can_edit=False):
-    # carry this into serializers folder and name it into serialize_report
     data_cube = get_data_cube(report.model)
     is_favorite = report.is_favorite_v2(report.user, report)
     api_key = models.ApiKey.get_by_object(report)
@@ -59,6 +58,7 @@ def hash_report(report, can_edit=False):
         "name": report.name,
         "model_id": report.model_id,
         "can_edit": can_edit,
+        "dataSource": data_cube,
         "source_name": data_cube.source_name,
         "data_source_id": report.model.data_source.id,
         "report": "",
@@ -73,11 +73,12 @@ def hash_report(report, can_edit=False):
         },
         "is_favorite": is_favorite,
         "is_archived": report.is_archived,
-        "landed": True,
         "appSettings": config,
         "id": report.id,
         "api_key": api_key,
         "public_url": public_url,
+        "created_at": report.created_at,
+        "updated_at": report.updated_at,
     }
     with_last_modified_by = True
     if with_last_modified_by:

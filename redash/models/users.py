@@ -463,7 +463,7 @@ class ApiUser(UserMixin, PermissionsCheckMixin):
 
     @property
     def permissions(self):
-        return ["view_query"]
+        return ["view_query", "view_report"]
 
     @staticmethod
     def has_access(obj, access_type):

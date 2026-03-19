@@ -57,7 +57,7 @@ function createMenu(menu) {
     filter(
       map(group, (props, key) => {
         props = extend(
-          { isAvailable: true, isEnabled: true, onClick: () => {} },
+          { isAvailable: true, isEnabled: true, onClick: () => { } },
           props,
         );
         if (props.isAvailable) {
@@ -234,8 +234,7 @@ export default function ReportPageHeader(props) {
     const res = await Model.query({ data_source: data_source_id });
     newModels = res.results;
     const updates = {
-      data_source_id,
-      landed: false,
+      data_source_id
     };
     setModels(newModels);
     return updates;
@@ -298,13 +297,13 @@ export default function ReportPageHeader(props) {
 
   const getSettings = useCallback(
     async modelId => {
-      if (report.landed) {
+      if (!report.isNew() && report.appSettings) {
         return { appSettings: report.appSettings, timekeeper: {} };
       } else {
         return await Model.getReporterConfig(modelId);
       }
     },
-    [report.landed, report.appSettings],
+    [report],
   );
 
   const getModelDataCube = useCallback(
@@ -340,8 +339,7 @@ export default function ReportPageHeader(props) {
         const updates = {
           model_id: modelId,
           appSettings: settings,
-          timekeeper: settings.timekeeper,
-          landed: false,
+          timekeeper: settings.timekeeper
         };
         if (report.data_source_id) {
           updates.data_source_id = report.data_source_id;
@@ -514,7 +512,6 @@ export default function ReportPageHeader(props) {
           },
           share: {
             isAvailable:
-              report.publicAccessEnabled &&
               !queryFlags.isNew &&
               queryFlags.canEdit &&
               !queryFlags.isArchived,
@@ -571,7 +568,6 @@ export default function ReportPageHeader(props) {
       openApiKeyDialog,
       deleteReport,
       handleSaveReport,
-      report.publicAccessEnabled,
       showShareReportDialog,
     ],
   );
@@ -583,7 +579,7 @@ export default function ReportPageHeader(props) {
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
-    if (report.landed) {
+    if (!report.isNew()) {
       if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
       if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
       if (report.data_source_id !== selectedDataSource) {
@@ -654,29 +650,6 @@ export default function ReportPageHeader(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSourcesLoaded]);
 
-  useEffect(() => {
-    // this function is working on report/new page for setting first model to report
-    if (report.landed) return;
-    const firstEncounterModelSetter = async models => {
-      const modelId = models[0].id;
-      const modelDataCube = await getModelDataCube(modelId);
-      if (!modelDataCube) return;
-      if (!modelDataCube.timeAttribute) return;
-      handleModelChange(modelId);
-      const model = getModel(modelId);
-      replaceHash(model, window.location.hash.split("/4/")[1]);
-    };
-    if (modelsLoaded && !selectedModel && models.length)
-      firstEncounterModelSetter(models);
-  }, [
-    modelsLoaded,
-    getModel,
-    getModelDataCube,
-    handleModelChange,
-    models,
-    report.landed,
-    selectedModel,
-  ]);
 
   return (
     <div className="report-page-header">
@@ -864,7 +837,7 @@ export default function ReportPageHeader(props) {
 
 ReportPageHeader.propTypes = {
   report: ReportType.isRequired,
-  dataSource: PropTypes.array,
+  dataSource: PropTypes.object,
   sourceMode: PropTypes.bool,
   selectedVisualization: PropTypes.number,
   headerExtra: PropTypes.node,
@@ -881,5 +854,5 @@ ReportPageHeader.defaultProps = {
   headerExtra: null,
   tagsExtra: null,
   reportChanged: null,
-  setReportChanged: () => {},
+  setReportChanged: () => { },
 };

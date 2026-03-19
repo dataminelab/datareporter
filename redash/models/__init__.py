@@ -112,6 +112,13 @@ class ScheduledQueriesExecutions:
 scheduled_queries_executions = ScheduledQueriesExecutions()
 
 
+class ScheduledReportsExecutions(ScheduledQueriesExecutions):
+    KEY_NAME = "sr:executed_at"
+
+
+scheduled_reports_executions = ScheduledReportsExecutions()
+
+
 @generic_repr("id", "name", "type", "org_id", "created_at")
 class DataSource(BelongsToOrgMixin, db.Model):
     id = primary_key("DataSource")
@@ -1607,22 +1614,19 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     expression = db.Column(db.JSON())
     model_id = Column(db.Integer, db.ForeignKey("models.id"))
     model = db.relationship("Model", back_populates="reports")
-
     data_source_id = Column(db.Integer, db.ForeignKey("data_sources.id"), nullable=True)
     data_source = db.relationship("DataSource", back_populates="reports")
-
     color_1 = Column(db.String(length=32))
     color_2 = Column(db.String(length=32))
-
     version = Column(db.Integer)
-
     last_modified_by_id = Column(key_type("User"), db.ForeignKey("users.id"), nullable=True)
     last_modified_by = db.relationship(User, backref="modified_reports", foreign_keys=[last_modified_by_id])
     is_archived = Column(db.Boolean, default=False, index=True)
-
     tags = Column("tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True)
-
     api_key = Column(db.String(40), default=lambda: generate_token(40), nullable=True)
+    schedule = Column(MutableDict.as_mutable(JSONB), nullable=True)
+    interval = json_cast_property(db.Integer, "schedule", "interval", default=0)
+    schedule_failures = Column(db.Integer, default=0)
 
     # options = Column(MutableDict.as_mutable(PseudoJSON), default={})
 
@@ -1632,16 +1636,85 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     def __str__(self):
         return "{}".format(self.name)
 
-    def archive(self):
+    def archive(self, user=None):
         db.session.add(self)
         self.is_archived = True
-        db.session.commit()
+        self.schedule = None
+
+        if user:
+            self.record_changes(user)
 
     def regenerate_api_key(self):
         self.api_key = generate_token(40)
 
     def set_api_key(self, api_key):
         self.api_key = api_key
+
+    @classmethod
+    def past_scheduled_reports(cls):
+        now = utils.utcnow()
+        reports = cls.query.filter(func.jsonb_typeof(cls.schedule) != "null").order_by(cls.id)
+        return [
+            report
+            for report in reports
+            if "until" in report.schedule
+            and report.schedule["until"] is not None
+            and pytz.utc.localize(datetime.datetime.strptime(report.schedule["until"], "%Y-%m-%d")) <= now
+        ]
+
+    @classmethod
+    def outdated_reports(cls):
+        reports = cls.query.filter(func.jsonb_typeof(cls.schedule) != "null").order_by(cls.id).all()
+
+        now = utils.utcnow()
+        outdated_reports = {}
+        scheduled_reports_executions.refresh()
+
+        for report in reports:
+            try:
+                if report.schedule.get("disabled"):
+                    continue
+
+                if all(value is None for value in report.schedule.values()):
+                    continue
+
+                if report.schedule["until"]:
+                    schedule_until = pytz.utc.localize(
+                        datetime.datetime.strptime(report.schedule["until"], "%Y-%m-%d")
+                    )
+
+                    if schedule_until <= now:
+                        continue
+
+                if all(value is None for value in report.schedule.values()):
+                    continue
+
+                retrieved_at = scheduled_reports_executions.get(report.id)
+
+                if (
+                    should_schedule_next(
+                        retrieved_at,
+                        now,
+                        report.schedule["interval"],
+                        report.schedule["time"],
+                        report.schedule["day_of_week"],
+                        report.schedule_failures,
+                    )
+                    or not retrieved_at
+                ):
+                    outdated_reports[report.id] = report
+            except Exception as e:
+                report.schedule["disabled"] = True
+                db.session.commit()
+
+                message = (
+                    "Could not determine if report %d is outdated due to %s. The schedule for this report has been disabled."
+                    % (report.id, repr(e))
+                )
+                logging.info(message)
+                sentry.capture_exception(type(e)(message).with_traceback(e.__traceback__))
+
+        return list(outdated_reports.values())
 
     @classmethod
     def all_tags(self, user, include_drafts=False):

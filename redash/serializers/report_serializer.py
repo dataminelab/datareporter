@@ -29,6 +29,7 @@ def _serialize_report(report: Report, formatting: str = "base64") -> dict:
         "is_archived": report.is_archived,
         "user": {"name": report.user.name, "id": report.user.id, "email": report.user.email},
         "data_source_id": report.data_source_id,
+        "schedule": report.schedule,
     }
 
     return d

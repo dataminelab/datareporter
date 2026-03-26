@@ -1,20 +1,22 @@
 import time
 from inspect import isclass
+from typing import Optional, Union
 
-from flask import Blueprint, current_app, request
+from flask import Blueprint, current_app, request, Response
 from flask_login import current_user, login_required
 from flask_restful import Resource, abort
 from sqlalchemy import cast
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm import Query
 
 from redash import settings
 from redash.authentication import current_org
-from redash.models import db
+from redash.models import db, Organization
 from redash.tasks import record_event as record_event_task
 from redash.utils import json_dumps
-from redash.utils.query_order import sort_query
-
+from redash.utils.query_order import QuerySorter, sort_query
+# pyright: ignore[reportUnknownVariableType]
 routes = Blueprint("redash", __name__, template_folder=settings.fix_assets_path("templates"))
 
 
@@ -46,14 +48,13 @@ class BaseResource(Resource):
         for k, v in updates.items():
             setattr(model, k, v)
 
-
-def get_org_id(org):
+def get_org_id(org: Optional[Organization]) -> Union[int, None]:
     if not org:
         return None
     return org.id
 
 
-def record_event(org, user, options):
+def record_event(org: Organization, user, options: dict):
     if user.is_api_user():
         options.update({"api_key": user.name, "org_id": get_org_id(org)})
     else:
@@ -106,25 +107,25 @@ def paginate(query_set, page, page_size, serializer, **kwargs):
     return {"count": count, "page": page, "page_size": page_size, "results": items}
 
 
-def org_scoped_rule(rule):
+def org_scoped_rule(rule: str) -> str:
     if settings.MULTI_ORG:
         return "/<org_slug>{}".format(rule)
 
     return rule
 
 
-def json_response(response):
+def json_response(response) -> Response:
     return current_app.response_class(json_dumps(response), mimetype="application/json")
 
 
-def filter_by_tags(result_set, column):
+def filter_by_tags(result_set, column) -> Query:
     if request.args.getlist("tags"):
         tags = request.args.getlist("tags")
         result_set = result_set.filter(cast(column, ARRAY(db.Text)).contains(tags))
     return result_set
 
 
-def order_results(results, default_order, allowed_orders, fallback=True):
+def order_results(results: Query, default_order, allowed_orders: dict, fallback=True) -> Union[QuerySorter, Query]:
     """
     Orders the given results with the sort order as requested in the
     "order" request query parameter or the given default order.

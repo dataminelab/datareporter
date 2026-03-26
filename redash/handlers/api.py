@@ -357,7 +357,7 @@ api.add_org_resource(
     "/api/reports/<int:report_id>/regenerate_api_key",
     endpoint="report_regenerate_api_key",
 )
-# api/reports/3/results.csv
+
 api.add_org_resource(
     ReportApiKeyAccess,
     "/api/reports/<int:report_id>/results.<filetype>",

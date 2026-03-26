@@ -252,7 +252,7 @@ class QuerySorter:
         return self.query
 
 
-def sort_query(query, *args, **kwargs):
+def sort_query(query, *args, **kwargs) -> QuerySorter:
     """
     Applies an sql ORDER BY for given query. This function can be easily used
     with user-defined sorting.

@@ -263,7 +263,7 @@ export class RefExpression extends Expression {
     // Look for the reference in the parent chain
     let nestDiff = 0;
     while (myTypeContext && !hasOwnProp(myTypeContext.datasetType, myName)) {
-        nestDiff++;
+      nestDiff++;
       if (!hasOwnProp(myTypeContext, "parent")) {
         myTypeContext = typeContext;
         break;

@@ -20,7 +20,8 @@ const EXPORT_FUNCTION_RE = /^export function ([\w$]+)\(/;
 const EXPORT_VAR_RE = /^export var ([\w$]+) =/;
 const EXPORT_NAMED_RE = /^export \{ ([\w$]+) \};$/;
 const SOURCE_MAP_TOKEN_RE = /\/\/# sourceMappingURL=[^\s]*\.map/g;
-const PLYWOOD_FRAME_RE = /^(.*?)(\/client\/build\/plywood\.js):(\d+)(?::(\d+))?(.*)$/;
+const PLYWOOD_FRAME_RE =
+  /^(.*?)(\/client\/build\/plywood\.js):(\d+)(?::(\d+))?(.*)$/;
 
 let bundleLineMapCache: BundleLineMapping[] | null = null;
 const sourceMapCache = new Map<string, SourceMapConsumer>();
@@ -157,7 +158,9 @@ function getOriginalPosition(
   });
 }
 
-async function getSourceMapConsumerFor(buildRelPath: string): Promise<SourceMapConsumer | null> {
+async function getSourceMapConsumerFor(
+  buildRelPath: string,
+): Promise<SourceMapConsumer | null> {
   const clientDir = getClientDir();
   const mapPath = path.resolve(clientDir, `${buildRelPath}.map`);
 
@@ -194,7 +197,9 @@ async function remapPlywoodFrame(frame: ParsedFrame): Promise<string> {
   return `${frame.prefix}${mappedPath}:${pos.line}${mappedCol}${frame.suffix}`;
 }
 
-export async function remapPlywoodBundleStack(stack?: string): Promise<string | undefined> {
+export async function remapPlywoodBundleStack(
+  stack?: string,
+): Promise<string | undefined> {
   if (!stack) return stack;
 
   const lines = stack.split("\n");

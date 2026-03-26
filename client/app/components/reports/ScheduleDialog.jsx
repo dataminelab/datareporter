@@ -246,11 +246,15 @@ class ScheduleDialog extends React.Component {
               </Option>
               {Object.keys(this.intervals).map(int => (
                 <OptGroup label={capitalize(pluralize(int))} key={int}>
-                  {this.intervals[int].map(([cnt, secs]) => ( // eslint-disable-line no-unused-vars
-                    <Option value={secs} key={secs}>
-                      {durationHumanize(secs)}
-                    </Option>
-                  ))}
+                  {this.intervals[int].map(
+                    (
+                      [cnt, secs], // eslint-disable-line no-unused-vars
+                    ) => (
+                      <Option value={secs} key={secs}>
+                        {durationHumanize(secs)}
+                      </Option>
+                    ),
+                  )}
                 </OptGroup>
               ))}
             </Select>

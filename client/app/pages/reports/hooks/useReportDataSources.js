@@ -15,11 +15,13 @@ export default function useReportDataSources(report) {
   );
   const dataSource = useMemo(() => {
     if (!Array.isArray(dataSources)) return null;
-    return dataSources.find(ds => {
-      const dsId = String(ds.id);
-      const reportId = String(report?.data_source_id);
-      return dsId === reportId;
-    }) || null;
+    return (
+      dataSources.find(ds => {
+        const dsId = String(ds.id);
+        const reportId = String(report?.data_source_id);
+        return dsId === reportId;
+      }) || null
+    );
   }, [report?.data_source_id, dataSources]);
 
   useEffect(() => {

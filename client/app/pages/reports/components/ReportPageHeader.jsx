@@ -57,7 +57,7 @@ function createMenu(menu) {
     filter(
       map(group, (props, key) => {
         props = extend(
-          { isAvailable: true, isEnabled: true, onClick: () => { } },
+          { isAvailable: true, isEnabled: true, onClick: () => {} },
           props,
         );
         if (props.isAvailable) {
@@ -234,7 +234,7 @@ export default function ReportPageHeader(props) {
     const res = await Model.query({ data_source: data_source_id });
     newModels = res.results;
     const updates = {
-      data_source_id
+      data_source_id,
     };
     setModels(newModels);
     return updates;
@@ -339,7 +339,7 @@ export default function ReportPageHeader(props) {
         const updates = {
           model_id: modelId,
           appSettings: settings,
-          timekeeper: settings.timekeeper
+          timekeeper: settings.timekeeper,
         };
         if (report.data_source_id) {
           updates.data_source_id = report.data_source_id;
@@ -512,9 +512,7 @@ export default function ReportPageHeader(props) {
           },
           share: {
             isAvailable:
-              !queryFlags.isNew &&
-              queryFlags.canEdit &&
-              !queryFlags.isArchived,
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
             title: "Share",
             onClick: showShareReportDialog,
           },
@@ -649,7 +647,6 @@ export default function ReportPageHeader(props) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSourcesLoaded]);
-
 
   return (
     <div className="report-page-header">
@@ -854,5 +851,5 @@ ReportPageHeader.defaultProps = {
   headerExtra: null,
   tagsExtra: null,
   reportChanged: null,
-  setReportChanged: () => { },
+  setReportChanged: () => {},
 };

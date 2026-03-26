@@ -449,7 +449,8 @@ export class Report extends Query {
     return this.getParameters().get(update);
   }
 
-  executeQuery(query) { // eslint-disable-line no-unused-vars
+  executeQuery(query) {
+    // eslint-disable-line no-unused-vars
     // TODO: Use Ajax.queryUrlExecutorFactory
   }
 
@@ -501,7 +502,8 @@ const normalizeCondition = {
   "less than": "<",
   "equals": "=",
 };
-const transformResponse = data => {  // eslint-disable-line no-unused-vars
+const transformResponse = data => {
+  // eslint-disable-line no-unused-vars
   merge({}, data, {
     options: {
       op: normalizeCondition[data.options.op] || data.options.op,

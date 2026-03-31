@@ -140,7 +140,6 @@ class ReportApiKeyAccess(BaseResource):
 
     @staticmethod
     def make_json_response(query_results):
-        results = []
         merged_rows = []
         all_columns = []
 

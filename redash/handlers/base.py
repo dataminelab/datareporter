@@ -2,20 +2,21 @@ import time
 from inspect import isclass
 from typing import Optional, Union
 
-from flask import Blueprint, current_app, request, Response
+from flask import Blueprint, Response, current_app, request
 from flask_login import current_user, login_required
 from flask_restful import Resource, abort
 from sqlalchemy import cast
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import Query
+from sqlalchemy.orm.exc import NoResultFound
 
 from redash import settings
 from redash.authentication import current_org
-from redash.models import db, Organization
+from redash.models import Organization, db
 from redash.tasks import record_event as record_event_task
 from redash.utils import json_dumps
 from redash.utils.query_order import QuerySorter, sort_query
+
 # pyright: ignore[reportUnknownVariableType]
 routes = Blueprint("redash", __name__, template_folder=settings.fix_assets_path("templates"))
 

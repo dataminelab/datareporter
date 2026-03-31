@@ -63,8 +63,10 @@ INVITATION_TOKEN_MAX_AGE = int(os.environ.get("REDASH_INVITATION_TOKEN_MAX_AGE",
 
 SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET")
 if SECRET_KEY is None:
-    raise Exception("You must set the REDASH_COOKIE_SECRET environment variable. \
-        Visit https://datareporter.com/docs/open-source/admin-guide/secrets for more information.")
+    raise Exception(
+        "You must set the REDASH_COOKIE_SECRET environment variable. \
+        Visit https://datareporter.com/docs/open-source/admin-guide/secrets for more information."
+    )
 
 # The secret key to use when encrypting data source options
 DATASOURCE_SECRET_KEY = os.environ.get("REDASH_SECRET_KEY", SECRET_KEY)

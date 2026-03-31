@@ -108,9 +108,9 @@ class Expression:
         if not cube:
             raise Exception("Data cube not found")
         old_name = cube["name"]
-        cube["name"] = (
-            REPLACE_DATA_CUBE_NAME  # data cube: 'public.wikiticker', Expression parse error: Expected ( but "." found. on '$public.wikiticker.sum($added)'
-        )
+        cube[
+            "name"
+        ] = REPLACE_DATA_CUBE_NAME  # data cube: 'public.wikiticker', Expression parse error: Expected ( but "." found. on '$public.wikiticker.sum($added)'
 
         res = self._get_from_cache_or_set(
             name="expression", func=lambda: PlywoodApi.convert_hash_to_expression(hash=self.hash, data_cube=cube)

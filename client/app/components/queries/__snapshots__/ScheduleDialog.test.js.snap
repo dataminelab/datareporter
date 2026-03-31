@@ -91,17 +91,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                         "options": Array [
                           Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                         ],
@@ -112,29 +112,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                     Object {
                       "data": Object {
                         "children": "1 minute",
-                        "key": "minute-1",
+                        "key": "1",
                         "value": 60,
                       },
                       "groupOption": true,
-                      "key": "minute-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "5 minutes",
-                        "key": "minute-5",
+                        "key": "5",
                         "value": 300,
                       },
                       "groupOption": true,
-                      "key": "minute-5",
+                      "key": "5",
                     },
                     Object {
                       "data": Object {
                         "children": "10 minutes",
-                        "key": "minute-10",
+                        "key": "10",
                         "value": 600,
                       },
                       "groupOption": true,
-                      "key": "minute-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
@@ -143,17 +143,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                         "options": Array [
                           Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                         ],
@@ -164,29 +164,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                     Object {
                       "data": Object {
                         "children": "1 hour",
-                        "key": "hour-1",
+                        "key": "1",
                         "value": 3600,
                       },
                       "groupOption": true,
-                      "key": "hour-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "10 hours",
-                        "key": "hour-10",
+                        "key": "10",
                         "value": 36000,
                       },
                       "groupOption": true,
-                      "key": "hour-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
                         "children": "23 hours",
-                        "key": "hour-23",
+                        "key": "23",
                         "value": 82800,
                       },
                       "groupOption": true,
-                      "key": "hour-23",
+                      "key": "23",
                     },
                     Object {
                       "data": Object {
@@ -195,17 +195,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                         "options": Array [
                           Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                         ],
@@ -216,29 +216,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                     Object {
                       "data": Object {
                         "children": "1 day",
-                        "key": "day-1",
+                        "key": "1",
                         "value": 86400,
                       },
                       "groupOption": true,
-                      "key": "day-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 days",
-                        "key": "day-2",
+                        "key": "2",
                         "value": 172800,
                       },
                       "groupOption": true,
-                      "key": "day-2",
+                      "key": "2",
                     },
                     Object {
                       "data": Object {
                         "children": "6 days",
-                        "key": "day-6",
+                        "key": "6",
                         "value": 518400,
                       },
                       "groupOption": true,
-                      "key": "day-6",
+                      "key": "6",
                     },
                     Object {
                       "data": Object {
@@ -247,12 +247,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                         "options": Array [
                           Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                         ],
@@ -263,20 +263,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                     Object {
                       "data": Object {
                         "children": "1 week",
-                        "key": "week-1",
+                        "key": "1",
                         "value": 604800,
                       },
                       "groupOption": true,
-                      "key": "week-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 weeks",
-                        "key": "week-2",
+                        "key": "2",
                         "value": 1209600,
                       },
                       "groupOption": true,
-                      "key": "week-2",
+                      "key": "2",
                     },
                   ]
                 }
@@ -307,17 +307,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                       "options": Array [
                         Object {
                           "children": "1 minute",
-                          "key": "minute-1",
+                          "key": "1",
                           "value": 60,
                         },
                         Object {
                           "children": "5 minutes",
-                          "key": "minute-5",
+                          "key": "5",
                           "value": 300,
                         },
                         Object {
                           "children": "10 minutes",
-                          "key": "minute-10",
+                          "key": "10",
                           "value": 600,
                         },
                       ],
@@ -328,17 +328,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                       "options": Array [
                         Object {
                           "children": "1 hour",
-                          "key": "hour-1",
+                          "key": "1",
                           "value": 3600,
                         },
                         Object {
                           "children": "10 hours",
-                          "key": "hour-10",
+                          "key": "10",
                           "value": 36000,
                         },
                         Object {
                           "children": "23 hours",
-                          "key": "hour-23",
+                          "key": "23",
                           "value": 82800,
                         },
                       ],
@@ -349,17 +349,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                       "options": Array [
                         Object {
                           "children": "1 day",
-                          "key": "day-1",
+                          "key": "1",
                           "value": 86400,
                         },
                         Object {
                           "children": "2 days",
-                          "key": "day-2",
+                          "key": "2",
                           "value": 172800,
                         },
                         Object {
                           "children": "6 days",
-                          "key": "day-6",
+                          "key": "6",
                           "value": 518400,
                         },
                       ],
@@ -370,12 +370,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                       "options": Array [
                         Object {
                           "children": "1 week",
-                          "key": "week-1",
+                          "key": "1",
                           "value": 604800,
                         },
                         Object {
                           "children": "2 weeks",
-                          "key": "week-2",
+                          "key": "2",
                           "value": 1209600,
                         },
                       ],
@@ -496,17 +496,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                             "options": Array [
                               Object {
                                 "children": "1 minute",
-                                "key": "minute-1",
+                                "key": "1",
                                 "value": 60,
                               },
                               Object {
                                 "children": "5 minutes",
-                                "key": "minute-5",
+                                "key": "5",
                                 "value": 300,
                               },
                               Object {
                                 "children": "10 minutes",
-                                "key": "minute-10",
+                                "key": "10",
                                 "value": 600,
                               },
                             ],
@@ -517,29 +517,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                         Object {
                           "data": Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           "groupOption": true,
-                          "key": "minute-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           "groupOption": true,
-                          "key": "minute-5",
+                          "key": "5",
                         },
                         Object {
                           "data": Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                           "groupOption": true,
-                          "key": "minute-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
@@ -548,17 +548,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                             "options": Array [
                               Object {
                                 "children": "1 hour",
-                                "key": "hour-1",
+                                "key": "1",
                                 "value": 3600,
                               },
                               Object {
                                 "children": "10 hours",
-                                "key": "hour-10",
+                                "key": "10",
                                 "value": 36000,
                               },
                               Object {
                                 "children": "23 hours",
-                                "key": "hour-23",
+                                "key": "23",
                                 "value": 82800,
                               },
                             ],
@@ -569,29 +569,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                         Object {
                           "data": Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           "groupOption": true,
-                          "key": "hour-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           "groupOption": true,
-                          "key": "hour-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                           "groupOption": true,
-                          "key": "hour-23",
+                          "key": "23",
                         },
                         Object {
                           "data": Object {
@@ -600,17 +600,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                             "options": Array [
                               Object {
                                 "children": "1 day",
-                                "key": "day-1",
+                                "key": "1",
                                 "value": 86400,
                               },
                               Object {
                                 "children": "2 days",
-                                "key": "day-2",
+                                "key": "2",
                                 "value": 172800,
                               },
                               Object {
                                 "children": "6 days",
-                                "key": "day-6",
+                                "key": "6",
                                 "value": 518400,
                               },
                             ],
@@ -621,29 +621,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                         Object {
                           "data": Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           "groupOption": true,
-                          "key": "day-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           "groupOption": true,
-                          "key": "day-2",
+                          "key": "2",
                         },
                         Object {
                           "data": Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                           "groupOption": true,
-                          "key": "day-6",
+                          "key": "6",
                         },
                         Object {
                           "data": Object {
@@ -652,12 +652,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                             "options": Array [
                               Object {
                                 "children": "1 week",
-                                "key": "week-1",
+                                "key": "1",
                                 "value": 604800,
                               },
                               Object {
                                 "children": "2 weeks",
-                                "key": "week-2",
+                                "key": "2",
                                 "value": 1209600,
                               },
                             ],
@@ -668,20 +668,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                         Object {
                           "data": Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           "groupOption": true,
-                          "key": "week-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                           "groupOption": true,
-                          "key": "week-2",
+                          "key": "2",
                         },
                       ]
                     }
@@ -712,17 +712,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                           "options": Array [
                             Object {
                               "children": "1 minute",
-                              "key": "minute-1",
+                              "key": "1",
                               "value": 60,
                             },
                             Object {
                               "children": "5 minutes",
-                              "key": "minute-5",
+                              "key": "5",
                               "value": 300,
                             },
                             Object {
                               "children": "10 minutes",
-                              "key": "minute-10",
+                              "key": "10",
                               "value": 600,
                             },
                           ],
@@ -733,17 +733,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                           "options": Array [
                             Object {
                               "children": "1 hour",
-                              "key": "hour-1",
+                              "key": "1",
                               "value": 3600,
                             },
                             Object {
                               "children": "10 hours",
-                              "key": "hour-10",
+                              "key": "10",
                               "value": 36000,
                             },
                             Object {
                               "children": "23 hours",
-                              "key": "hour-23",
+                              "key": "23",
                               "value": 82800,
                             },
                           ],
@@ -754,17 +754,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                           "options": Array [
                             Object {
                               "children": "1 day",
-                              "key": "day-1",
+                              "key": "1",
                               "value": 86400,
                             },
                             Object {
                               "children": "2 days",
-                              "key": "day-2",
+                              "key": "2",
                               "value": 172800,
                             },
                             Object {
                               "children": "6 days",
-                              "key": "day-6",
+                              "key": "6",
                               "value": 518400,
                             },
                           ],
@@ -775,12 +775,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "1 Day 22:15" Set
                           "options": Array [
                             Object {
                               "children": "1 week",
-                              "key": "week-1",
+                              "key": "1",
                               "value": 604800,
                             },
                             Object {
                               "children": "2 weeks",
-                              "key": "week-2",
+                              "key": "2",
                               "value": 1209600,
                             },
                           ],
@@ -2043,17 +2043,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                         "options": Array [
                           Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                         ],
@@ -2064,29 +2064,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                     Object {
                       "data": Object {
                         "children": "1 minute",
-                        "key": "minute-1",
+                        "key": "1",
                         "value": 60,
                       },
                       "groupOption": true,
-                      "key": "minute-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "5 minutes",
-                        "key": "minute-5",
+                        "key": "5",
                         "value": 300,
                       },
                       "groupOption": true,
-                      "key": "minute-5",
+                      "key": "5",
                     },
                     Object {
                       "data": Object {
                         "children": "10 minutes",
-                        "key": "minute-10",
+                        "key": "10",
                         "value": 600,
                       },
                       "groupOption": true,
-                      "key": "minute-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
@@ -2095,17 +2095,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                         "options": Array [
                           Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                         ],
@@ -2116,29 +2116,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                     Object {
                       "data": Object {
                         "children": "1 hour",
-                        "key": "hour-1",
+                        "key": "1",
                         "value": 3600,
                       },
                       "groupOption": true,
-                      "key": "hour-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "10 hours",
-                        "key": "hour-10",
+                        "key": "10",
                         "value": 36000,
                       },
                       "groupOption": true,
-                      "key": "hour-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
                         "children": "23 hours",
-                        "key": "hour-23",
+                        "key": "23",
                         "value": 82800,
                       },
                       "groupOption": true,
-                      "key": "hour-23",
+                      "key": "23",
                     },
                     Object {
                       "data": Object {
@@ -2147,17 +2147,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                         "options": Array [
                           Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                         ],
@@ -2168,29 +2168,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                     Object {
                       "data": Object {
                         "children": "1 day",
-                        "key": "day-1",
+                        "key": "1",
                         "value": 86400,
                       },
                       "groupOption": true,
-                      "key": "day-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 days",
-                        "key": "day-2",
+                        "key": "2",
                         "value": 172800,
                       },
                       "groupOption": true,
-                      "key": "day-2",
+                      "key": "2",
                     },
                     Object {
                       "data": Object {
                         "children": "6 days",
-                        "key": "day-6",
+                        "key": "6",
                         "value": 518400,
                       },
                       "groupOption": true,
-                      "key": "day-6",
+                      "key": "6",
                     },
                     Object {
                       "data": Object {
@@ -2199,12 +2199,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                         "options": Array [
                           Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                         ],
@@ -2215,20 +2215,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                     Object {
                       "data": Object {
                         "children": "1 week",
-                        "key": "week-1",
+                        "key": "1",
                         "value": 604800,
                       },
                       "groupOption": true,
-                      "key": "week-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 weeks",
-                        "key": "week-2",
+                        "key": "2",
                         "value": 1209600,
                       },
                       "groupOption": true,
-                      "key": "week-2",
+                      "key": "2",
                     },
                   ]
                 }
@@ -2259,17 +2259,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                       "options": Array [
                         Object {
                           "children": "1 minute",
-                          "key": "minute-1",
+                          "key": "1",
                           "value": 60,
                         },
                         Object {
                           "children": "5 minutes",
-                          "key": "minute-5",
+                          "key": "5",
                           "value": 300,
                         },
                         Object {
                           "children": "10 minutes",
-                          "key": "minute-10",
+                          "key": "10",
                           "value": 600,
                         },
                       ],
@@ -2280,17 +2280,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                       "options": Array [
                         Object {
                           "children": "1 hour",
-                          "key": "hour-1",
+                          "key": "1",
                           "value": 3600,
                         },
                         Object {
                           "children": "10 hours",
-                          "key": "hour-10",
+                          "key": "10",
                           "value": 36000,
                         },
                         Object {
                           "children": "23 hours",
-                          "key": "hour-23",
+                          "key": "23",
                           "value": 82800,
                         },
                       ],
@@ -2301,17 +2301,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                       "options": Array [
                         Object {
                           "children": "1 day",
-                          "key": "day-1",
+                          "key": "1",
                           "value": 86400,
                         },
                         Object {
                           "children": "2 days",
-                          "key": "day-2",
+                          "key": "2",
                           "value": 172800,
                         },
                         Object {
                           "children": "6 days",
-                          "key": "day-6",
+                          "key": "6",
                           "value": 518400,
                         },
                       ],
@@ -2322,12 +2322,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                       "options": Array [
                         Object {
                           "children": "1 week",
-                          "key": "week-1",
+                          "key": "1",
                           "value": 604800,
                         },
                         Object {
                           "children": "2 weeks",
-                          "key": "week-2",
+                          "key": "2",
                           "value": 1209600,
                         },
                       ],
@@ -2448,17 +2448,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                             "options": Array [
                               Object {
                                 "children": "1 minute",
-                                "key": "minute-1",
+                                "key": "1",
                                 "value": 60,
                               },
                               Object {
                                 "children": "5 minutes",
-                                "key": "minute-5",
+                                "key": "5",
                                 "value": 300,
                               },
                               Object {
                                 "children": "10 minutes",
-                                "key": "minute-10",
+                                "key": "10",
                                 "value": 600,
                               },
                             ],
@@ -2469,29 +2469,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                         Object {
                           "data": Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           "groupOption": true,
-                          "key": "minute-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           "groupOption": true,
-                          "key": "minute-5",
+                          "key": "5",
                         },
                         Object {
                           "data": Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                           "groupOption": true,
-                          "key": "minute-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
@@ -2500,17 +2500,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                             "options": Array [
                               Object {
                                 "children": "1 hour",
-                                "key": "hour-1",
+                                "key": "1",
                                 "value": 3600,
                               },
                               Object {
                                 "children": "10 hours",
-                                "key": "hour-10",
+                                "key": "10",
                                 "value": 36000,
                               },
                               Object {
                                 "children": "23 hours",
-                                "key": "hour-23",
+                                "key": "23",
                                 "value": 82800,
                               },
                             ],
@@ -2521,29 +2521,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                         Object {
                           "data": Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           "groupOption": true,
-                          "key": "hour-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           "groupOption": true,
-                          "key": "hour-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                           "groupOption": true,
-                          "key": "hour-23",
+                          "key": "23",
                         },
                         Object {
                           "data": Object {
@@ -2552,17 +2552,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                             "options": Array [
                               Object {
                                 "children": "1 day",
-                                "key": "day-1",
+                                "key": "1",
                                 "value": 86400,
                               },
                               Object {
                                 "children": "2 days",
-                                "key": "day-2",
+                                "key": "2",
                                 "value": 172800,
                               },
                               Object {
                                 "children": "6 days",
-                                "key": "day-6",
+                                "key": "6",
                                 "value": 518400,
                               },
                             ],
@@ -2573,29 +2573,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                         Object {
                           "data": Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           "groupOption": true,
-                          "key": "day-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           "groupOption": true,
-                          "key": "day-2",
+                          "key": "2",
                         },
                         Object {
                           "data": Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                           "groupOption": true,
-                          "key": "day-6",
+                          "key": "6",
                         },
                         Object {
                           "data": Object {
@@ -2604,12 +2604,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                             "options": Array [
                               Object {
                                 "children": "1 week",
-                                "key": "week-1",
+                                "key": "1",
                                 "value": 604800,
                               },
                               Object {
                                 "children": "2 weeks",
-                                "key": "week-2",
+                                "key": "2",
                                 "value": 1209600,
                               },
                             ],
@@ -2620,20 +2620,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                         Object {
                           "data": Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           "groupOption": true,
-                          "key": "week-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                           "groupOption": true,
-                          "key": "week-2",
+                          "key": "2",
                         },
                       ]
                     }
@@ -2664,17 +2664,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                           "options": Array [
                             Object {
                               "children": "1 minute",
-                              "key": "minute-1",
+                              "key": "1",
                               "value": 60,
                             },
                             Object {
                               "children": "5 minutes",
-                              "key": "minute-5",
+                              "key": "5",
                               "value": 300,
                             },
                             Object {
                               "children": "10 minutes",
-                              "key": "minute-10",
+                              "key": "10",
                               "value": 600,
                             },
                           ],
@@ -2685,17 +2685,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                           "options": Array [
                             Object {
                               "children": "1 hour",
-                              "key": "hour-1",
+                              "key": "1",
                               "value": 3600,
                             },
                             Object {
                               "children": "10 hours",
-                              "key": "hour-10",
+                              "key": "10",
                               "value": 36000,
                             },
                             Object {
                               "children": "23 hours",
-                              "key": "hour-23",
+                              "key": "23",
                               "value": 82800,
                             },
                           ],
@@ -2706,17 +2706,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                           "options": Array [
                             Object {
                               "children": "1 day",
-                              "key": "day-1",
+                              "key": "1",
                               "value": 86400,
                             },
                             Object {
                               "children": "2 days",
-                              "key": "day-2",
+                              "key": "2",
                               "value": 172800,
                             },
                             Object {
                               "children": "6 days",
-                              "key": "day-6",
+                              "key": "6",
                               "value": 518400,
                             },
                           ],
@@ -2727,12 +2727,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Hours" 1`] = `
                           "options": Array [
                             Object {
                               "children": "1 week",
-                              "key": "week-1",
+                              "key": "1",
                               "value": 604800,
                             },
                             Object {
                               "children": "2 weeks",
-                              "key": "week-2",
+                              "key": "2",
                               "value": 1209600,
                             },
                           ],
@@ -3204,17 +3204,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                         "options": Array [
                           Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                         ],
@@ -3225,29 +3225,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                     Object {
                       "data": Object {
                         "children": "1 minute",
-                        "key": "minute-1",
+                        "key": "1",
                         "value": 60,
                       },
                       "groupOption": true,
-                      "key": "minute-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "5 minutes",
-                        "key": "minute-5",
+                        "key": "5",
                         "value": 300,
                       },
                       "groupOption": true,
-                      "key": "minute-5",
+                      "key": "5",
                     },
                     Object {
                       "data": Object {
                         "children": "10 minutes",
-                        "key": "minute-10",
+                        "key": "10",
                         "value": 600,
                       },
                       "groupOption": true,
-                      "key": "minute-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
@@ -3256,17 +3256,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                         "options": Array [
                           Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                         ],
@@ -3277,29 +3277,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                     Object {
                       "data": Object {
                         "children": "1 hour",
-                        "key": "hour-1",
+                        "key": "1",
                         "value": 3600,
                       },
                       "groupOption": true,
-                      "key": "hour-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "10 hours",
-                        "key": "hour-10",
+                        "key": "10",
                         "value": 36000,
                       },
                       "groupOption": true,
-                      "key": "hour-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
                         "children": "23 hours",
-                        "key": "hour-23",
+                        "key": "23",
                         "value": 82800,
                       },
                       "groupOption": true,
-                      "key": "hour-23",
+                      "key": "23",
                     },
                     Object {
                       "data": Object {
@@ -3308,17 +3308,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                         "options": Array [
                           Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                         ],
@@ -3329,29 +3329,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                     Object {
                       "data": Object {
                         "children": "1 day",
-                        "key": "day-1",
+                        "key": "1",
                         "value": 86400,
                       },
                       "groupOption": true,
-                      "key": "day-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 days",
-                        "key": "day-2",
+                        "key": "2",
                         "value": 172800,
                       },
                       "groupOption": true,
-                      "key": "day-2",
+                      "key": "2",
                     },
                     Object {
                       "data": Object {
                         "children": "6 days",
-                        "key": "day-6",
+                        "key": "6",
                         "value": 518400,
                       },
                       "groupOption": true,
-                      "key": "day-6",
+                      "key": "6",
                     },
                     Object {
                       "data": Object {
@@ -3360,12 +3360,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                         "options": Array [
                           Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                         ],
@@ -3376,20 +3376,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                     Object {
                       "data": Object {
                         "children": "1 week",
-                        "key": "week-1",
+                        "key": "1",
                         "value": 604800,
                       },
                       "groupOption": true,
-                      "key": "week-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 weeks",
-                        "key": "week-2",
+                        "key": "2",
                         "value": 1209600,
                       },
                       "groupOption": true,
-                      "key": "week-2",
+                      "key": "2",
                     },
                   ]
                 }
@@ -3420,17 +3420,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                       "options": Array [
                         Object {
                           "children": "1 minute",
-                          "key": "minute-1",
+                          "key": "1",
                           "value": 60,
                         },
                         Object {
                           "children": "5 minutes",
-                          "key": "minute-5",
+                          "key": "5",
                           "value": 300,
                         },
                         Object {
                           "children": "10 minutes",
-                          "key": "minute-10",
+                          "key": "10",
                           "value": 600,
                         },
                       ],
@@ -3441,17 +3441,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                       "options": Array [
                         Object {
                           "children": "1 hour",
-                          "key": "hour-1",
+                          "key": "1",
                           "value": 3600,
                         },
                         Object {
                           "children": "10 hours",
-                          "key": "hour-10",
+                          "key": "10",
                           "value": 36000,
                         },
                         Object {
                           "children": "23 hours",
-                          "key": "hour-23",
+                          "key": "23",
                           "value": 82800,
                         },
                       ],
@@ -3462,17 +3462,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                       "options": Array [
                         Object {
                           "children": "1 day",
-                          "key": "day-1",
+                          "key": "1",
                           "value": 86400,
                         },
                         Object {
                           "children": "2 days",
-                          "key": "day-2",
+                          "key": "2",
                           "value": 172800,
                         },
                         Object {
                           "children": "6 days",
-                          "key": "day-6",
+                          "key": "6",
                           "value": 518400,
                         },
                       ],
@@ -3483,12 +3483,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                       "options": Array [
                         Object {
                           "children": "1 week",
-                          "key": "week-1",
+                          "key": "1",
                           "value": 604800,
                         },
                         Object {
                           "children": "2 weeks",
-                          "key": "week-2",
+                          "key": "2",
                           "value": 1209600,
                         },
                       ],
@@ -3609,17 +3609,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                             "options": Array [
                               Object {
                                 "children": "1 minute",
-                                "key": "minute-1",
+                                "key": "1",
                                 "value": 60,
                               },
                               Object {
                                 "children": "5 minutes",
-                                "key": "minute-5",
+                                "key": "5",
                                 "value": 300,
                               },
                               Object {
                                 "children": "10 minutes",
-                                "key": "minute-10",
+                                "key": "10",
                                 "value": 600,
                               },
                             ],
@@ -3630,29 +3630,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                         Object {
                           "data": Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           "groupOption": true,
-                          "key": "minute-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           "groupOption": true,
-                          "key": "minute-5",
+                          "key": "5",
                         },
                         Object {
                           "data": Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                           "groupOption": true,
-                          "key": "minute-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
@@ -3661,17 +3661,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                             "options": Array [
                               Object {
                                 "children": "1 hour",
-                                "key": "hour-1",
+                                "key": "1",
                                 "value": 3600,
                               },
                               Object {
                                 "children": "10 hours",
-                                "key": "hour-10",
+                                "key": "10",
                                 "value": 36000,
                               },
                               Object {
                                 "children": "23 hours",
-                                "key": "hour-23",
+                                "key": "23",
                                 "value": 82800,
                               },
                             ],
@@ -3682,29 +3682,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                         Object {
                           "data": Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           "groupOption": true,
-                          "key": "hour-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           "groupOption": true,
-                          "key": "hour-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                           "groupOption": true,
-                          "key": "hour-23",
+                          "key": "23",
                         },
                         Object {
                           "data": Object {
@@ -3713,17 +3713,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                             "options": Array [
                               Object {
                                 "children": "1 day",
-                                "key": "day-1",
+                                "key": "1",
                                 "value": 86400,
                               },
                               Object {
                                 "children": "2 days",
-                                "key": "day-2",
+                                "key": "2",
                                 "value": 172800,
                               },
                               Object {
                                 "children": "6 days",
-                                "key": "day-6",
+                                "key": "6",
                                 "value": 518400,
                               },
                             ],
@@ -3734,29 +3734,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                         Object {
                           "data": Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           "groupOption": true,
-                          "key": "day-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           "groupOption": true,
-                          "key": "day-2",
+                          "key": "2",
                         },
                         Object {
                           "data": Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                           "groupOption": true,
-                          "key": "day-6",
+                          "key": "6",
                         },
                         Object {
                           "data": Object {
@@ -3765,12 +3765,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                             "options": Array [
                               Object {
                                 "children": "1 week",
-                                "key": "week-1",
+                                "key": "1",
                                 "value": 604800,
                               },
                               Object {
                                 "children": "2 weeks",
-                                "key": "week-2",
+                                "key": "2",
                                 "value": 1209600,
                               },
                             ],
@@ -3781,20 +3781,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                         Object {
                           "data": Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           "groupOption": true,
-                          "key": "week-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                           "groupOption": true,
-                          "key": "week-2",
+                          "key": "2",
                         },
                       ]
                     }
@@ -3825,17 +3825,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                           "options": Array [
                             Object {
                               "children": "1 minute",
-                              "key": "minute-1",
+                              "key": "1",
                               "value": 60,
                             },
                             Object {
                               "children": "5 minutes",
-                              "key": "minute-5",
+                              "key": "5",
                               "value": 300,
                             },
                             Object {
                               "children": "10 minutes",
-                              "key": "minute-10",
+                              "key": "10",
                               "value": 600,
                             },
                           ],
@@ -3846,17 +3846,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                           "options": Array [
                             Object {
                               "children": "1 hour",
-                              "key": "hour-1",
+                              "key": "1",
                               "value": 3600,
                             },
                             Object {
                               "children": "10 hours",
-                              "key": "hour-10",
+                              "key": "10",
                               "value": 36000,
                             },
                             Object {
                               "children": "23 hours",
-                              "key": "hour-23",
+                              "key": "23",
                               "value": 82800,
                             },
                           ],
@@ -3867,17 +3867,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                           "options": Array [
                             Object {
                               "children": "1 day",
-                              "key": "day-1",
+                              "key": "1",
                               "value": 86400,
                             },
                             Object {
                               "children": "2 days",
-                              "key": "day-2",
+                              "key": "2",
                               "value": 172800,
                             },
                             Object {
                               "children": "6 days",
-                              "key": "day-6",
+                              "key": "6",
                               "value": 518400,
                             },
                           ],
@@ -3888,12 +3888,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "2 Weeks 22:15 Tu
                           "options": Array [
                             Object {
                               "children": "1 week",
-                              "key": "week-1",
+                              "key": "1",
                               "value": 604800,
                             },
                             Object {
                               "children": "2 weeks",
-                              "key": "week-2",
+                              "key": "2",
                               "value": 1209600,
                             },
                           ],
@@ -5572,17 +5572,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                         "options": Array [
                           Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                         ],
@@ -5593,29 +5593,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                     Object {
                       "data": Object {
                         "children": "1 minute",
-                        "key": "minute-1",
+                        "key": "1",
                         "value": 60,
                       },
                       "groupOption": true,
-                      "key": "minute-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "5 minutes",
-                        "key": "minute-5",
+                        "key": "5",
                         "value": 300,
                       },
                       "groupOption": true,
-                      "key": "minute-5",
+                      "key": "5",
                     },
                     Object {
                       "data": Object {
                         "children": "10 minutes",
-                        "key": "minute-10",
+                        "key": "10",
                         "value": 600,
                       },
                       "groupOption": true,
-                      "key": "minute-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
@@ -5624,17 +5624,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                         "options": Array [
                           Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                         ],
@@ -5645,29 +5645,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                     Object {
                       "data": Object {
                         "children": "1 hour",
-                        "key": "hour-1",
+                        "key": "1",
                         "value": 3600,
                       },
                       "groupOption": true,
-                      "key": "hour-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "10 hours",
-                        "key": "hour-10",
+                        "key": "10",
                         "value": 36000,
                       },
                       "groupOption": true,
-                      "key": "hour-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
                         "children": "23 hours",
-                        "key": "hour-23",
+                        "key": "23",
                         "value": 82800,
                       },
                       "groupOption": true,
-                      "key": "hour-23",
+                      "key": "23",
                     },
                     Object {
                       "data": Object {
@@ -5676,17 +5676,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                         "options": Array [
                           Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                         ],
@@ -5697,29 +5697,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                     Object {
                       "data": Object {
                         "children": "1 day",
-                        "key": "day-1",
+                        "key": "1",
                         "value": 86400,
                       },
                       "groupOption": true,
-                      "key": "day-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 days",
-                        "key": "day-2",
+                        "key": "2",
                         "value": 172800,
                       },
                       "groupOption": true,
-                      "key": "day-2",
+                      "key": "2",
                     },
                     Object {
                       "data": Object {
                         "children": "6 days",
-                        "key": "day-6",
+                        "key": "6",
                         "value": 518400,
                       },
                       "groupOption": true,
-                      "key": "day-6",
+                      "key": "6",
                     },
                     Object {
                       "data": Object {
@@ -5728,12 +5728,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                         "options": Array [
                           Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                         ],
@@ -5744,20 +5744,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                     Object {
                       "data": Object {
                         "children": "1 week",
-                        "key": "week-1",
+                        "key": "1",
                         "value": 604800,
                       },
                       "groupOption": true,
-                      "key": "week-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 weeks",
-                        "key": "week-2",
+                        "key": "2",
                         "value": 1209600,
                       },
                       "groupOption": true,
-                      "key": "week-2",
+                      "key": "2",
                     },
                   ]
                 }
@@ -5788,17 +5788,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                       "options": Array [
                         Object {
                           "children": "1 minute",
-                          "key": "minute-1",
+                          "key": "1",
                           "value": 60,
                         },
                         Object {
                           "children": "5 minutes",
-                          "key": "minute-5",
+                          "key": "5",
                           "value": 300,
                         },
                         Object {
                           "children": "10 minutes",
-                          "key": "minute-10",
+                          "key": "10",
                           "value": 600,
                         },
                       ],
@@ -5809,17 +5809,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                       "options": Array [
                         Object {
                           "children": "1 hour",
-                          "key": "hour-1",
+                          "key": "1",
                           "value": 3600,
                         },
                         Object {
                           "children": "10 hours",
-                          "key": "hour-10",
+                          "key": "10",
                           "value": 36000,
                         },
                         Object {
                           "children": "23 hours",
-                          "key": "hour-23",
+                          "key": "23",
                           "value": 82800,
                         },
                       ],
@@ -5830,17 +5830,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                       "options": Array [
                         Object {
                           "children": "1 day",
-                          "key": "day-1",
+                          "key": "1",
                           "value": 86400,
                         },
                         Object {
                           "children": "2 days",
-                          "key": "day-2",
+                          "key": "2",
                           "value": 172800,
                         },
                         Object {
                           "children": "6 days",
-                          "key": "day-6",
+                          "key": "6",
                           "value": 518400,
                         },
                       ],
@@ -5851,12 +5851,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                       "options": Array [
                         Object {
                           "children": "1 week",
-                          "key": "week-1",
+                          "key": "1",
                           "value": 604800,
                         },
                         Object {
                           "children": "2 weeks",
-                          "key": "week-2",
+                          "key": "2",
                           "value": 1209600,
                         },
                       ],
@@ -5977,17 +5977,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                             "options": Array [
                               Object {
                                 "children": "1 minute",
-                                "key": "minute-1",
+                                "key": "1",
                                 "value": 60,
                               },
                               Object {
                                 "children": "5 minutes",
-                                "key": "minute-5",
+                                "key": "5",
                                 "value": 300,
                               },
                               Object {
                                 "children": "10 minutes",
-                                "key": "minute-10",
+                                "key": "10",
                                 "value": 600,
                               },
                             ],
@@ -5998,29 +5998,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                         Object {
                           "data": Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           "groupOption": true,
-                          "key": "minute-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           "groupOption": true,
-                          "key": "minute-5",
+                          "key": "5",
                         },
                         Object {
                           "data": Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                           "groupOption": true,
-                          "key": "minute-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
@@ -6029,17 +6029,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                             "options": Array [
                               Object {
                                 "children": "1 hour",
-                                "key": "hour-1",
+                                "key": "1",
                                 "value": 3600,
                               },
                               Object {
                                 "children": "10 hours",
-                                "key": "hour-10",
+                                "key": "10",
                                 "value": 36000,
                               },
                               Object {
                                 "children": "23 hours",
-                                "key": "hour-23",
+                                "key": "23",
                                 "value": 82800,
                               },
                             ],
@@ -6050,29 +6050,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                         Object {
                           "data": Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           "groupOption": true,
-                          "key": "hour-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           "groupOption": true,
-                          "key": "hour-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                           "groupOption": true,
-                          "key": "hour-23",
+                          "key": "23",
                         },
                         Object {
                           "data": Object {
@@ -6081,17 +6081,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                             "options": Array [
                               Object {
                                 "children": "1 day",
-                                "key": "day-1",
+                                "key": "1",
                                 "value": 86400,
                               },
                               Object {
                                 "children": "2 days",
-                                "key": "day-2",
+                                "key": "2",
                                 "value": 172800,
                               },
                               Object {
                                 "children": "6 days",
-                                "key": "day-6",
+                                "key": "6",
                                 "value": 518400,
                               },
                             ],
@@ -6102,29 +6102,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                         Object {
                           "data": Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           "groupOption": true,
-                          "key": "day-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           "groupOption": true,
-                          "key": "day-2",
+                          "key": "2",
                         },
                         Object {
                           "data": Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                           "groupOption": true,
-                          "key": "day-6",
+                          "key": "6",
                         },
                         Object {
                           "data": Object {
@@ -6133,12 +6133,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                             "options": Array [
                               Object {
                                 "children": "1 week",
-                                "key": "week-1",
+                                "key": "1",
                                 "value": 604800,
                               },
                               Object {
                                 "children": "2 weeks",
-                                "key": "week-2",
+                                "key": "2",
                                 "value": 1209600,
                               },
                             ],
@@ -6149,20 +6149,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                         Object {
                           "data": Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           "groupOption": true,
-                          "key": "week-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                           "groupOption": true,
-                          "key": "week-2",
+                          "key": "2",
                         },
                       ]
                     }
@@ -6193,17 +6193,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                           "options": Array [
                             Object {
                               "children": "1 minute",
-                              "key": "minute-1",
+                              "key": "1",
                               "value": 60,
                             },
                             Object {
                               "children": "5 minutes",
-                              "key": "minute-5",
+                              "key": "5",
                               "value": 300,
                             },
                             Object {
                               "children": "10 minutes",
-                              "key": "minute-10",
+                              "key": "10",
                               "value": 600,
                             },
                           ],
@@ -6214,17 +6214,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                           "options": Array [
                             Object {
                               "children": "1 hour",
-                              "key": "hour-1",
+                              "key": "1",
                               "value": 3600,
                             },
                             Object {
                               "children": "10 hours",
-                              "key": "hour-10",
+                              "key": "10",
                               "value": 36000,
                             },
                             Object {
                               "children": "23 hours",
-                              "key": "hour-23",
+                              "key": "23",
                               "value": 82800,
                             },
                           ],
@@ -6235,17 +6235,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                           "options": Array [
                             Object {
                               "children": "1 day",
-                              "key": "day-1",
+                              "key": "1",
                               "value": 86400,
                             },
                             Object {
                               "children": "2 days",
-                              "key": "day-2",
+                              "key": "2",
                               "value": 172800,
                             },
                             Object {
                               "children": "6 days",
-                              "key": "day-6",
+                              "key": "6",
                               "value": 518400,
                             },
                           ],
@@ -6256,12 +6256,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "5 Minutes" 1`] =
                           "options": Array [
                             Object {
                               "children": "1 week",
-                              "key": "week-1",
+                              "key": "1",
                               "value": 604800,
                             },
                             Object {
                               "children": "2 weeks",
-                              "key": "week-2",
+                              "key": "2",
                               "value": 1209600,
                             },
                           ],
@@ -6730,17 +6730,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                         "options": Array [
                           Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                         ],
@@ -6751,29 +6751,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                     Object {
                       "data": Object {
                         "children": "1 minute",
-                        "key": "minute-1",
+                        "key": "1",
                         "value": 60,
                       },
                       "groupOption": true,
-                      "key": "minute-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "5 minutes",
-                        "key": "minute-5",
+                        "key": "5",
                         "value": 300,
                       },
                       "groupOption": true,
-                      "key": "minute-5",
+                      "key": "5",
                     },
                     Object {
                       "data": Object {
                         "children": "10 minutes",
-                        "key": "minute-10",
+                        "key": "10",
                         "value": 600,
                       },
                       "groupOption": true,
-                      "key": "minute-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
@@ -6782,17 +6782,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                         "options": Array [
                           Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                         ],
@@ -6803,29 +6803,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                     Object {
                       "data": Object {
                         "children": "1 hour",
-                        "key": "hour-1",
+                        "key": "1",
                         "value": 3600,
                       },
                       "groupOption": true,
-                      "key": "hour-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "10 hours",
-                        "key": "hour-10",
+                        "key": "10",
                         "value": 36000,
                       },
                       "groupOption": true,
-                      "key": "hour-10",
+                      "key": "10",
                     },
                     Object {
                       "data": Object {
                         "children": "23 hours",
-                        "key": "hour-23",
+                        "key": "23",
                         "value": 82800,
                       },
                       "groupOption": true,
-                      "key": "hour-23",
+                      "key": "23",
                     },
                     Object {
                       "data": Object {
@@ -6834,17 +6834,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                         "options": Array [
                           Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                         ],
@@ -6855,29 +6855,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                     Object {
                       "data": Object {
                         "children": "1 day",
-                        "key": "day-1",
+                        "key": "1",
                         "value": 86400,
                       },
                       "groupOption": true,
-                      "key": "day-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 days",
-                        "key": "day-2",
+                        "key": "2",
                         "value": 172800,
                       },
                       "groupOption": true,
-                      "key": "day-2",
+                      "key": "2",
                     },
                     Object {
                       "data": Object {
                         "children": "6 days",
-                        "key": "day-6",
+                        "key": "6",
                         "value": 518400,
                       },
                       "groupOption": true,
-                      "key": "day-6",
+                      "key": "6",
                     },
                     Object {
                       "data": Object {
@@ -6886,12 +6886,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                         "options": Array [
                           Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                         ],
@@ -6902,20 +6902,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                     Object {
                       "data": Object {
                         "children": "1 week",
-                        "key": "week-1",
+                        "key": "1",
                         "value": 604800,
                       },
                       "groupOption": true,
-                      "key": "week-1",
+                      "key": "1",
                     },
                     Object {
                       "data": Object {
                         "children": "2 weeks",
-                        "key": "week-2",
+                        "key": "2",
                         "value": 1209600,
                       },
                       "groupOption": true,
-                      "key": "week-2",
+                      "key": "2",
                     },
                   ]
                 }
@@ -6946,17 +6946,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                       "options": Array [
                         Object {
                           "children": "1 minute",
-                          "key": "minute-1",
+                          "key": "1",
                           "value": 60,
                         },
                         Object {
                           "children": "5 minutes",
-                          "key": "minute-5",
+                          "key": "5",
                           "value": 300,
                         },
                         Object {
                           "children": "10 minutes",
-                          "key": "minute-10",
+                          "key": "10",
                           "value": 600,
                         },
                       ],
@@ -6967,17 +6967,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                       "options": Array [
                         Object {
                           "children": "1 hour",
-                          "key": "hour-1",
+                          "key": "1",
                           "value": 3600,
                         },
                         Object {
                           "children": "10 hours",
-                          "key": "hour-10",
+                          "key": "10",
                           "value": 36000,
                         },
                         Object {
                           "children": "23 hours",
-                          "key": "hour-23",
+                          "key": "23",
                           "value": 82800,
                         },
                       ],
@@ -6988,17 +6988,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                       "options": Array [
                         Object {
                           "children": "1 day",
-                          "key": "day-1",
+                          "key": "1",
                           "value": 86400,
                         },
                         Object {
                           "children": "2 days",
-                          "key": "day-2",
+                          "key": "2",
                           "value": 172800,
                         },
                         Object {
                           "children": "6 days",
-                          "key": "day-6",
+                          "key": "6",
                           "value": 518400,
                         },
                       ],
@@ -7009,12 +7009,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                       "options": Array [
                         Object {
                           "children": "1 week",
-                          "key": "week-1",
+                          "key": "1",
                           "value": 604800,
                         },
                         Object {
                           "children": "2 weeks",
-                          "key": "week-2",
+                          "key": "2",
                           "value": 1209600,
                         },
                       ],
@@ -7131,17 +7131,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                             "options": Array [
                               Object {
                                 "children": "1 minute",
-                                "key": "minute-1",
+                                "key": "1",
                                 "value": 60,
                               },
                               Object {
                                 "children": "5 minutes",
-                                "key": "minute-5",
+                                "key": "5",
                                 "value": 300,
                               },
                               Object {
                                 "children": "10 minutes",
-                                "key": "minute-10",
+                                "key": "10",
                                 "value": 600,
                               },
                             ],
@@ -7152,29 +7152,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                         Object {
                           "data": Object {
                             "children": "1 minute",
-                            "key": "minute-1",
+                            "key": "1",
                             "value": 60,
                           },
                           "groupOption": true,
-                          "key": "minute-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "5 minutes",
-                            "key": "minute-5",
+                            "key": "5",
                             "value": 300,
                           },
                           "groupOption": true,
-                          "key": "minute-5",
+                          "key": "5",
                         },
                         Object {
                           "data": Object {
                             "children": "10 minutes",
-                            "key": "minute-10",
+                            "key": "10",
                             "value": 600,
                           },
                           "groupOption": true,
-                          "key": "minute-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
@@ -7183,17 +7183,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                             "options": Array [
                               Object {
                                 "children": "1 hour",
-                                "key": "hour-1",
+                                "key": "1",
                                 "value": 3600,
                               },
                               Object {
                                 "children": "10 hours",
-                                "key": "hour-10",
+                                "key": "10",
                                 "value": 36000,
                               },
                               Object {
                                 "children": "23 hours",
-                                "key": "hour-23",
+                                "key": "23",
                                 "value": 82800,
                               },
                             ],
@@ -7204,29 +7204,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                         Object {
                           "data": Object {
                             "children": "1 hour",
-                            "key": "hour-1",
+                            "key": "1",
                             "value": 3600,
                           },
                           "groupOption": true,
-                          "key": "hour-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "10 hours",
-                            "key": "hour-10",
+                            "key": "10",
                             "value": 36000,
                           },
                           "groupOption": true,
-                          "key": "hour-10",
+                          "key": "10",
                         },
                         Object {
                           "data": Object {
                             "children": "23 hours",
-                            "key": "hour-23",
+                            "key": "23",
                             "value": 82800,
                           },
                           "groupOption": true,
-                          "key": "hour-23",
+                          "key": "23",
                         },
                         Object {
                           "data": Object {
@@ -7235,17 +7235,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                             "options": Array [
                               Object {
                                 "children": "1 day",
-                                "key": "day-1",
+                                "key": "1",
                                 "value": 86400,
                               },
                               Object {
                                 "children": "2 days",
-                                "key": "day-2",
+                                "key": "2",
                                 "value": 172800,
                               },
                               Object {
                                 "children": "6 days",
-                                "key": "day-6",
+                                "key": "6",
                                 "value": 518400,
                               },
                             ],
@@ -7256,29 +7256,29 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                         Object {
                           "data": Object {
                             "children": "1 day",
-                            "key": "day-1",
+                            "key": "1",
                             "value": 86400,
                           },
                           "groupOption": true,
-                          "key": "day-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 days",
-                            "key": "day-2",
+                            "key": "2",
                             "value": 172800,
                           },
                           "groupOption": true,
-                          "key": "day-2",
+                          "key": "2",
                         },
                         Object {
                           "data": Object {
                             "children": "6 days",
-                            "key": "day-6",
+                            "key": "6",
                             "value": 518400,
                           },
                           "groupOption": true,
-                          "key": "day-6",
+                          "key": "6",
                         },
                         Object {
                           "data": Object {
@@ -7287,12 +7287,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                             "options": Array [
                               Object {
                                 "children": "1 week",
-                                "key": "week-1",
+                                "key": "1",
                                 "value": 604800,
                               },
                               Object {
                                 "children": "2 weeks",
-                                "key": "week-2",
+                                "key": "2",
                                 "value": 1209600,
                               },
                             ],
@@ -7303,20 +7303,20 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                         Object {
                           "data": Object {
                             "children": "1 week",
-                            "key": "week-1",
+                            "key": "1",
                             "value": 604800,
                           },
                           "groupOption": true,
-                          "key": "week-1",
+                          "key": "1",
                         },
                         Object {
                           "data": Object {
                             "children": "2 weeks",
-                            "key": "week-2",
+                            "key": "2",
                             "value": 1209600,
                           },
                           "groupOption": true,
-                          "key": "week-2",
+                          "key": "2",
                         },
                       ]
                     }
@@ -7347,17 +7347,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                           "options": Array [
                             Object {
                               "children": "1 minute",
-                              "key": "minute-1",
+                              "key": "1",
                               "value": 60,
                             },
                             Object {
                               "children": "5 minutes",
-                              "key": "minute-5",
+                              "key": "5",
                               "value": 300,
                             },
                             Object {
                               "children": "10 minutes",
-                              "key": "minute-10",
+                              "key": "10",
                               "value": 600,
                             },
                           ],
@@ -7368,17 +7368,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                           "options": Array [
                             Object {
                               "children": "1 hour",
-                              "key": "hour-1",
+                              "key": "1",
                               "value": 3600,
                             },
                             Object {
                               "children": "10 hours",
-                              "key": "hour-10",
+                              "key": "10",
                               "value": 36000,
                             },
                             Object {
                               "children": "23 hours",
-                              "key": "hour-23",
+                              "key": "23",
                               "value": 82800,
                             },
                           ],
@@ -7389,17 +7389,17 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                           "options": Array [
                             Object {
                               "children": "1 day",
-                              "key": "day-1",
+                              "key": "1",
                               "value": 86400,
                             },
                             Object {
                               "children": "2 days",
-                              "key": "day-2",
+                              "key": "2",
                               "value": 172800,
                             },
                             Object {
                               "children": "6 days",
-                              "key": "day-6",
+                              "key": "6",
                               "value": 518400,
                             },
                           ],
@@ -7410,12 +7410,12 @@ exports[`ScheduleDialog Sets correct schedule settings Sets to "Never" 1`] = `
                           "options": Array [
                             Object {
                               "children": "1 week",
-                              "key": "week-1",
+                              "key": "1",
                               "value": 604800,
                             },
                             Object {
                               "children": "2 weeks",
-                              "key": "week-2",
+                              "key": "2",
                               "value": 1209600,
                             },
                           ],

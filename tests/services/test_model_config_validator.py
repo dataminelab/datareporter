@@ -20,7 +20,9 @@ class TestModelConfigValidator(unittest.TestCase):
                   - deltaByTen
                 attributes:
                     {}
-                    """.format(attributes)
+                    """.format(
+            attributes
+        )
         validator = ModelConfigValidator(content=content)
 
         with self.assertRaises(BadRequest) as cm:

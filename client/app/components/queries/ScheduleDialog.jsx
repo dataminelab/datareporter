@@ -249,7 +249,7 @@ class ScheduleDialog extends React.Component {
                 .map(int => (
                   <OptGroup label={capitalize(pluralize(int))} key={int}>
                     {this.intervals[int].map(([cnt, secs]) => (
-                      <Option value={secs} key={`${int}-${cnt}`}>
+                      <Option value={secs} key={cnt}>
                         {durationHumanize(secs)}
                       </Option>
                     ))}

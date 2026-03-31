@@ -80,7 +80,7 @@
     "druid.d.ts": "^0.12.1",
     "has-own-prop": "^1.0.1",
     "immutable-class": "^0.9.4",
-    "moment-timezone": "^0.5.26",
+    "moment-timezone": "^0.6.1",
     "plywood-base-api": "^0.2.8",
     "readable-stream": "^2.3.5",
     "stream-to-array": "^2.3.0",

@@ -12,8 +12,9 @@ FAILED=0
 # ─── Prettier (JS/TS/CSS/JSON/MD) ────────────────────────────
 
 STAGED_JS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|json|css|scss|less|md)$')
-
+echo "Checking staged files for formatting issues..."
 if [ -n "$STAGED_JS" ]; then
+  echo "Staged files: $STAGED_JS"
   if command -v npx &> /dev/null; then
     echo "[prettier] Checking formatting..."
     

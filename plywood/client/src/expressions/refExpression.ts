@@ -265,7 +265,7 @@ export class RefExpression extends Expression {
     while (myTypeContext && !hasOwnProp(myTypeContext.datasetType, myName)) {
       nestDiff++;
       if (!hasOwnProp(myTypeContext, "parent")) {
-        myTypeContext = typeContext;
+        myTypeContext = undefined;
         break;
       } else {
         myTypeContext = myTypeContext.parent;
@@ -275,6 +275,9 @@ export class RefExpression extends Expression {
       throw new Error(`could not resolve ${this}`);
     }
     const myFullType = myTypeContext.datasetType[myName];
+    if (!myFullType) {
+      throw new Error(`could not resolve ${this}`);
+    }
     const myType = myFullType.type;
 
     if (this.type && this.type !== myType) {

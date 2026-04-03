@@ -16,5 +16,8 @@
   },
   "githubPullRequests.ignoredPullRequestBranches": ["develop"],
   "python-envs.defaultEnvManager": "ms-python.python:poetry",
-  "python-envs.defaultPackageManager": "ms-python.python:poetry"
+  "python-envs.defaultPackageManager": "ms-python.python:poetry",
+  "chat.tools.terminal.autoApprove": {
+    "./node_modules/.bin/mocha": true
+  }
 }

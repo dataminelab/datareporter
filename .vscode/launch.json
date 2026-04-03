@@ -51,8 +51,6 @@
       "request": "attach",
       "name": "Attach to Plywood Server",
       "port": 9229,
-      // cd plywood
-      // npm run dev:debug
       "address": "localhost",
       "cwd": "${workspaceFolder}/plywood",
       "restart": true,
@@ -78,19 +76,6 @@
       "skipFiles": [
         "<node_internals>/**"
       ]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Jest Debug",
-      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
-      "args": ["--runInBand", "--testPathPattern=${fileBasenameNoExtension}"],
-      "cwd": "${workspaceFolder}/client",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "env": {
-        "TZ": "Africa/Khartoum"
-      }
     },
     {
       "type": "node",

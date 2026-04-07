@@ -71,8 +71,9 @@ class DataCube:
     @property
     def attributes(self):
         """Returns DataCube attributes"""
-        config = yaml.load(self._model.config.content, Loader=yaml.FullLoader)
-        data_cube = pydash.head(config["dataCubes"])
+        config = self.config
+        data_cubes = config.get("dataCubes", []) if isinstance(config, dict) else []
+        data_cube = pydash.head(data_cubes)
         attributes = data_cube["attributes"] if isinstance(data_cube, dict) and "attributes" in data_cube else []
         return attributes
 
@@ -86,7 +87,9 @@ class DataCube:
     @property
     def config(self) -> dict:
         """Returns full config for model the example if above the file"""
-        return yaml.load(self._model.config.content, Loader=yaml.FullLoader)
+        if not self._model.config or not self._model.config.content:
+            return {}
+        return yaml.load(self._model.config.content, Loader=yaml.FullLoader) or {}
 
     @property
     def data_cube(self, lower_case_kind=True) -> Union[None, "DataCube"]:

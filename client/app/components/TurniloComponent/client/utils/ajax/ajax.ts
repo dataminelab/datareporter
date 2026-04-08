@@ -75,6 +75,18 @@ export class Ajax {
   private static results: any;
   public static hash: string;
 
+  static setInitialResults(results: any): void {
+    Ajax.results = results;
+  }
+
+  static hasReadyResults(results: any): boolean {
+    if (!results || !Array.isArray(results.queries) || results.queries.length === 0) {
+      return false;
+    }
+
+    return results.queries.every((query: any) => Boolean(query && query.query_result && query.query_result.data));
+  }
+
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
     return axios({ method, url, data, timeout, validateStatus })
       .then((res) => {
@@ -167,10 +179,10 @@ export class Ajax {
     async function subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
       let url;
-      const href = window.location.href;
       statusCallback({ status: "processing", isExecuting: true });
-      if (href.includes("public/dashboards")) {
-        const apiKey = href.split("public/dashboards/")[1].split("/")[0].split("?")[0];
+      const publicPathMatch = window.location.pathname.match(/\/public\/(?:dashboards|reports)\/([^/]+)/);
+      if (publicPathMatch && publicPathMatch[1]) {
+        const apiKey = decodeURIComponent(publicPathMatch[1]);
         url = `api/reports/generate/${modelId}/public?api_key=${apiKey}`;
       } else {
         url = `api/reports/generate/${modelId}`;
@@ -203,7 +215,9 @@ export class Ajax {
     }
 
     return async (ex: Expression) => {
-      if (this.results) return Dataset.fromJS(this.results.data || EmptyDataset);
+      if (Ajax.hasReadyResults(Ajax.results)) {
+        return Dataset.fromJS(Ajax.results.data || EmptyDataset);
+      }
 
       const modelId = Ajax.model_id;
       let sub: APIResponse;

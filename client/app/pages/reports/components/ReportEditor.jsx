@@ -48,6 +48,7 @@ function ReportPage({ report, reportChanged, setReportChanged }) {
     ) => {
       Ajax.model_id = report.model_id;
       Ajax.hash = report.hash;
+      Ajax.setInitialResults(report.results);
       return Ajax.queryUrlExecutorFactory(
         dataCube,
         getEssence,
@@ -87,7 +88,7 @@ ReportPage.propTypes = {
 ReportPage.defaultProps = {
   report: {},
   reportChanged: false,
-  setReportChanged: () => {},
+  setReportChanged: () => { },
   dashboardSlug: null,
   dashboardId: null,
   onError: null,

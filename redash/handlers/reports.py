@@ -450,6 +450,20 @@ class ReportResource(BaseResource):
         return make_response("", 204)
 
 
+class ReportForkResource(BaseResource):
+    @require_permission("edit_report")
+    def post(self, report_id):
+        report = get_object_or_404(Report.get_by_id_and_org, report_id, self.current_org)
+        require_object_view_permission(report, self.current_user)
+
+        forked_report = report.fork(self.current_user)
+        models.db.session.commit()
+
+        self.record_event({"action": "fork", "object_id": report_id, "object_type": "report"})
+
+        return ReportSerializer(forked_report).serialize()
+
+
 class ReportTagsResource(BaseResource):
     def get(self):
         """

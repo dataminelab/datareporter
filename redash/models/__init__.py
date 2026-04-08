@@ -1,4 +1,5 @@
 import calendar
+import copy
 import datetime
 import logging
 import numbers
@@ -1649,6 +1650,26 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     def set_api_key(self, api_key):
         self.api_key = api_key
+
+    def fork(self, user):
+        expression = copy.deepcopy(self.expression) if self.expression else self.expression
+        tags = list(self.tags) if self.tags else self.tags
+
+        forked_report = Report(
+            name="Copy of (#{}) {}".format(self.id, self.name),
+            user=user,
+            expression=expression,
+            model_id=self.model_id,
+            data_source_id=self.data_source_id,
+            color_1=self.color_1,
+            color_2=self.color_2,
+            tags=tags,
+            is_archived=False,
+            last_modified_by=user,
+        )
+
+        db.session.add(forked_report)
+        return forked_report
 
     @classmethod
     def past_scheduled_reports(cls):

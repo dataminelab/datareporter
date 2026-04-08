@@ -649,6 +649,34 @@ class TestReportEditResource(BaseTestCase):
         self.assertTrue(isinstance(response.json["expression"], dict))
 
 
+class TestReportForkResource(BaseTestCase):
+    def test_forks_a_report(self):
+        owner = self.factory.create_user()
+        forking_user = self.factory.create_user()
+        model = self.factory.create_model(user=owner)
+        report = self.factory.create_report(user=owner, model=model, tags=["sales"])
+
+        response = self.make_request("post", f"/api/reports/{report.id}/fork", user=forking_user)
+
+        self.assertEqual(200, response.status_code)
+        self.assertNotEqual(report.id, response.json["id"])
+        self.assertEqual(f"Copy of (#{report.id}) {report.name}", response.json["name"])
+        self.assertEqual(forking_user.id, response.json["user_id"])
+        self.assertEqual(report.model_id, response.json["model_id"])
+        self.assertEqual(report.data_source_id, response.json["data_source_id"])
+        self.assertEqual(report.tags, response.json["tags"])
+
+    def test_requires_edit_report_permission(self):
+        owner = self.factory.create_user()
+        report = self.factory.create_report(user=owner)
+        group_without_permissions = self.factory.create_group(permissions=[""])
+        user_without_permissions = self.factory.create_user(group_ids=[group_without_permissions.id])
+
+        response = self.make_request("post", f"/api/reports/{report.id}/fork", user=user_without_permissions)
+
+        self.assertEqual(403, response.status_code)
+
+
 class TestReportDeleteResource(BaseTestCase):
     def test_delete_without_permission(self):
         group = self.factory.create_group(permissions=[""])

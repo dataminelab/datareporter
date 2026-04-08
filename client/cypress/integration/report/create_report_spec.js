@@ -5,13 +5,12 @@ describe("Create Report", () => {
     cy.getByTestId("ReportPageHeaderMoreButton").click();
   });
 
-  it("executes and saves a report", () => {
-    cy.contains("Save As").should("exist").click();
+  it("saves a report", () => {
+    // executes happens in beforeEach
+    cy.contains("Save").should("exist").click();
   });
 
   it("archives a report", () => {
-    cy.contains("Save As").should("exist");
-    cy.wait(500);
     cy.get(".ant-dropdown-menu").contains("Archive").click();
     cy.wait(500);
     cy.get(".ant-modal-confirm-btns").contains("Archive").click();

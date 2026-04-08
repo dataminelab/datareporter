@@ -144,7 +144,6 @@ export default function ReportPageHeader(props) {
   const reportChanged = props.reportChanged;
   const setReportChanged = props.setReportChanged;
   const [reportName, setReportName] = useState(report.name);
-  const [newName, setNewName] = useState("Copy of " + report.name);
   const [saveButtonClicked, setSaveButtonClicked] = useState(false);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
@@ -157,10 +156,6 @@ export default function ReportPageHeader(props) {
     },
     [report.data_source_id, report.model_id, setReportChanged],
   );
-
-  const handleNewNameChange = event => {
-    setNewName(event.target.value);
-  };
 
   const styles = useMemo(
     () => reactCSS(reportPageStyles(colorTextHex, colorBodyHex)),
@@ -376,7 +371,6 @@ export default function ReportPageHeader(props) {
   const handleUpdateName = useCallback(
     name => {
       setReportName(name);
-      setNewName("Copy of " + name);
       handleReportChanged(true);
     },
     [handleReportChanged],
@@ -462,12 +456,6 @@ export default function ReportPageHeader(props) {
             isAvailable: queryFlags.canEdit && !queryFlags.isArchived,
             title: "Save",
             onClick: handleSaveReport,
-          },
-          saveAs: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Save As",
-            onClick: () => handleGivenModal("save-as-ul"),
           },
         },
         {
@@ -788,35 +776,6 @@ export default function ReportPageHeader(props) {
               </Link.Button>
             )}
           </span>
-        )}
-        {report.id && (
-          <>
-            <ul
-              id="save-as-ul"
-              className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
-              role="menu"
-              onClick={e => e.stopPropagation()}
-            >
-              <div
-                style={styles.cover}
-                onClick={() => handleGivenModal("save-as-ul")}
-              />
-              <p className="new-name-label">name</p>
-              <input
-                id="new-name-input"
-                className="new-name-input"
-                type="text"
-                value={newName}
-                onChange={handleNewNameChange}
-              />
-              <Button
-                className="ant-menu-item-group-title"
-                onClick={() => saveAsReport(newName)}
-              >
-                Save now
-              </Button>
-            </ul>
-          </>
         )}
         <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
           {/* ### TODO write tests for below code  disabled={(report.id || report.model_id) ? false : true} */}

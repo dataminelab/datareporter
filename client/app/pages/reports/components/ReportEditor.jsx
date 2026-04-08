@@ -88,7 +88,7 @@ ReportPage.propTypes = {
 ReportPage.defaultProps = {
   report: {},
   reportChanged: false,
-  setReportChanged: () => { },
+  setReportChanged: () => {},
   dashboardSlug: null,
   dashboardId: null,
   onError: null,

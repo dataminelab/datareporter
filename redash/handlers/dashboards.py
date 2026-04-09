@@ -23,7 +23,7 @@ from redash.permissions import (
 )
 from redash.security import csp_allows_embeding
 from redash.serializers import DashboardSerializer, public_dashboard
-from redash.settings import GEMINI_API_KEY, OPENAI_API_KEY
+from redash.settings import GEMINI_API_KEY, OPENAI_API_KEY, parse_boolean
 
 try:
     from google import genai
@@ -461,7 +461,8 @@ class PublicDashboardResource(BaseResource):
         else:
             dashboard = self.current_user.object
 
-        return public_dashboard(dashboard)
+        get_results = parse_boolean(request.args.get("get_results", "False"))
+        return public_dashboard(dashboard, get_results=get_results)
 
 
 class DashboardShareResource(BaseResource):

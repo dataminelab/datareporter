@@ -28,7 +28,8 @@ import { CubeView } from "../../views/cube-view/cube-view-widget";
 import { ErrorView } from "../../views/error-view/error-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
 import { Fn } from "../../../common/utils/general/general";
-import "./turnilo-application.scss";
+
+require("./turnilo-application.scss");
 
 export interface TurniloApplicationProps {
   version: string;
@@ -134,14 +135,18 @@ export class TurniloApplication extends React.Component<TurniloApplicationProps,
     };
     const { config } = this.props;
     Ajax.version = config.version;
+    const getEssence: () => Essence | null = this.props.getEssence
+      ? this.props.getEssence.bind(config, this.props.widget?.id)
+      : () => null;
 
     const appSettings = AppSettings.fromJS(config.appSettings, {
       executorFactory: (dataCube, getEssence, statusCallback, getExecutionStatus) => {
         Ajax.model_id = config.model_id;
         Ajax.hash = config.hash;
+        Ajax.setInitialResults(config.results);
         return Ajax.queryUrlExecutorFactory(dataCube, getEssence, statusCallback, getExecutionStatus);
       },
-      getEssence: this.props.getEssence.bind(config, this.props.widget.id),
+      getEssence,
       statusCallback: (status) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
       getExecutionStatus: () => {
         return null;

@@ -159,16 +159,6 @@ module.exports = {
       },
     },
     {
-      files: ["cypress/**/*.{js,jsx,ts,tsx}"],
-      env: {
-        "cypress/globals": true,
-      },
-      plugins: ["cypress"],
-      rules: {
-        "no-redeclare": "warn",
-      },
-    },
-    {
       files: ["**/__tests__/**/*.{js,jsx,ts,tsx}"],
       rules: {
         "no-console": "off",

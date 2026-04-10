@@ -60,6 +60,8 @@ from redash.models.users import (  # noqa
     Group,
     User,
 )
+from redash.plywood.objects.data_cube import DataCube
+from redash.plywood.objects.expression import Expression
 from redash.query_runner import (
     TYPE_BOOLEAN,
     TYPE_DATE,
@@ -81,8 +83,6 @@ from redash.utils import (
     sentry,
 )
 from redash.utils.configuration import ConfigurationContainer
-from redash.plywood.objects.data_cube import DataCube
-from redash.plywood.objects.expression import Expression
 
 from .changes import Change, ChangeTrackingMixin  # noqa
 from .mixins import BelongsToOrgMixin, TimestampMixin

@@ -3,7 +3,6 @@ from typing import Dict, List, Union
 import pydash
 import yaml
 
-from redash.models.models import Model
 from redash.plywood.objects.report_serializer import ReportMetaData
 from redash.plywood.plywood import PlywoodApi
 from redash.utils.big_query_utils import get_price_for_query
@@ -16,7 +15,7 @@ def lower_kind(obj: dict):
 
 
 class DataCube:
-    def __init__(self, model: Model):
+    def __init__(self, model):
         self._model = model
 
     @property

@@ -319,7 +319,7 @@ class ReportHash:
             "isAdmin": is_admin(o.user),
         }
         self.can_edit = None
-        self.queries = []
+        self.queries = o.get_queries()
         self.last_modified_by_id = o.last_modified_by_id
         self.last_modified_by = None
         self.schedule = o.schedule if o.schedule else None

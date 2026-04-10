@@ -34,17 +34,17 @@ describe("BigQueryDialect", () => {
 
     expect(str).to.be.equal(
       "TIMESTAMP(DATE_ADD(DATE(" +
-        "TIMESTAMP(DATE_ADD(DATE(" +
-        "TIMESTAMP(DATE_ADD(DATE(" +
-        "TIMESTAMP(DATE_ADD(DATE(" +
-        "TIMESTAMP(DATE_ADD(DATE(" +
-        "TIMESTAMP(DATE_ADD(DATE(CURRENT_DATETIME), " +
-        "INTERVAL 1 MONTH))), " +
-        "INTERVAL 1 YEAR))), " +
-        "INTERVAL 1 DAY))), " +
-        "INTERVAL 1 HOUR))), " +
-        "INTERVAL 1 MINUTE))), " +
-        "INTERVAL 1 SECOND))",
+      "TIMESTAMP(DATE_ADD(DATE(" +
+      "TIMESTAMP(DATE_ADD(DATE(" +
+      "TIMESTAMP(DATE_ADD(DATE(" +
+      "TIMESTAMP(DATE_ADD(DATE(" +
+      "TIMESTAMP(DATE_ADD(DATE(CURRENT_DATETIME), " +
+      "INTERVAL 1 MONTH))), " +
+      "INTERVAL 1 YEAR))), " +
+      "INTERVAL 1 DAY))), " +
+      "INTERVAL 1 HOUR))), " +
+      "INTERVAL 1 MINUTE))), " +
+      "INTERVAL 1 SECOND))",
     );
   });
 
@@ -56,6 +56,17 @@ describe("BigQueryDialect", () => {
     );
     expect(expression).to.be.equal(
       "FORMAT_DATETIME('%Y-%m-%d %H:%M:%SZ', CAST(2015-09-12 00:48:02Z AS DATETIME))",
+    );
+  });
+
+  it("should support multi-minute time buckets", () => {
+    const expression = dialect.timeBucketExpression(
+      "my_time",
+      Duration.fromJS("PT5M"),
+      new Timezone("UTC"),
+    );
+    expect(expression).to.be.equal(
+      "FORMAT_DATETIME('%Y-%m-%d %H:%M:00Z', CAST(TIMESTAMP_SECONDS(DIV(UNIX_SECONDS(my_time), 300) * 300) AS DATETIME))",
     );
   });
 });

@@ -81,6 +81,8 @@ from redash.utils import (
     sentry,
 )
 from redash.utils.configuration import ConfigurationContainer
+from redash.plywood.objects.data_cube import DataCube
+from redash.plywood.objects.expression import Expression
 
 from .changes import Change, ChangeTrackingMixin  # noqa
 from .mixins import BelongsToOrgMixin, TimestampMixin
@@ -1872,6 +1874,16 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     def get_expression(self):
         return self.expression
+
+    @property
+    def queries(self) -> List[str]:
+        if not self.expression:
+            return []
+        data_cube = DataCube(self.model)
+        return Expression(self.hash, data_cube).queries
+
+    def get_queries(self) -> List[str]:
+        return self.queries
 
     @property
     def groups(self):

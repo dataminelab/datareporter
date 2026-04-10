@@ -34,17 +34,17 @@ describe("BigQueryDialect", () => {
 
     expect(str).to.be.equal(
       "TIMESTAMP(DATE_ADD(DATE(" +
-      "TIMESTAMP(DATE_ADD(DATE(" +
-      "TIMESTAMP(DATE_ADD(DATE(" +
-      "TIMESTAMP(DATE_ADD(DATE(" +
-      "TIMESTAMP(DATE_ADD(DATE(" +
-      "TIMESTAMP(DATE_ADD(DATE(CURRENT_DATETIME), " +
-      "INTERVAL 1 MONTH))), " +
-      "INTERVAL 1 YEAR))), " +
-      "INTERVAL 1 DAY))), " +
-      "INTERVAL 1 HOUR))), " +
-      "INTERVAL 1 MINUTE))), " +
-      "INTERVAL 1 SECOND))",
+        "TIMESTAMP(DATE_ADD(DATE(" +
+        "TIMESTAMP(DATE_ADD(DATE(" +
+        "TIMESTAMP(DATE_ADD(DATE(" +
+        "TIMESTAMP(DATE_ADD(DATE(" +
+        "TIMESTAMP(DATE_ADD(DATE(CURRENT_DATETIME), " +
+        "INTERVAL 1 MONTH))), " +
+        "INTERVAL 1 YEAR))), " +
+        "INTERVAL 1 DAY))), " +
+        "INTERVAL 1 HOUR))), " +
+        "INTERVAL 1 MINUTE))), " +
+        "INTERVAL 1 SECOND))",
     );
   });
 

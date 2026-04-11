@@ -57,7 +57,7 @@ function createMenu(menu) {
     filter(
       map(group, (props, key) => {
         props = extend(
-          { isAvailable: true, isEnabled: true, onClick: () => { } },
+          { isAvailable: true, isEnabled: true, onClick: () => {} },
           props,
         );
         if (props.isAvailable) {
@@ -820,5 +820,5 @@ ReportPageHeader.defaultProps = {
   headerExtra: null,
   tagsExtra: null,
   reportChanged: null,
-  setReportChanged: () => { },
+  setReportChanged: () => {},
 };

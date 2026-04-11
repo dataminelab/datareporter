@@ -51,6 +51,7 @@ COLOR_2 = "color_2"
 TAGS = "tags"
 DATA_SOURCE_ID = "data_source_id"
 SCHEDULE = "schedule"
+IS_DRAFT = "is_draft"
 
 
 # Custom JSON encoder to handle datetime objects
@@ -275,6 +276,7 @@ class ReportsListResource(BaseResource):
             req[DATA_SOURCE_ID],
         )
         is_archived = req.get("is_archived", False)
+        is_draft = req.get(IS_DRAFT, True)
         formatting = request.args.get("format", "base64")
         model = get_object_or_404(Model.get_by_id, model_id)
 
@@ -290,6 +292,7 @@ class ReportsListResource(BaseResource):
             data_source_id=data_source_id,
             last_modified_by=self.current_user,
             is_archived=is_archived,
+            is_draft=is_draft,
         )
 
         models.db.session.add(report)
@@ -394,7 +397,7 @@ class ReportResource(BaseResource):
         """
         report_properties = request.get_json(force=True)
         updates = project(
-            report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS, SCHEDULE, DATA_SOURCE_ID)
+            report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS, SCHEDULE, DATA_SOURCE_ID, IS_DRAFT)
         )
         report: Report = get_object_or_404(Report.get_by_id, report_id)
         require_object_modify_permission(report, self.current_user)

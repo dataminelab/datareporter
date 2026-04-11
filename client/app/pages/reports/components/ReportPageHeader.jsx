@@ -57,7 +57,7 @@ function createMenu(menu) {
     filter(
       map(group, (props, key) => {
         props = extend(
-          { isAvailable: true, isEnabled: true, onClick: () => {} },
+          { isAvailable: true, isEnabled: true, onClick: () => { } },
           props,
         );
         if (props.isAvailable) {
@@ -753,6 +753,16 @@ export default function ReportPageHeader(props) {
           handleDataSourceChange={handleDataSourceChange}
           handleModelChange={handleModelChange}
         />
+        {isDesktop &&
+          queryFlags.isDraft &&
+          !queryFlags.isArchived &&
+          !queryFlags.isNew &&
+          queryFlags.canEdit && (
+            <Button className="m-r-5" onClick={publishReport}>
+              <i className="fa fa-paper-plane m-r-5" aria-hidden="true" />{" "}
+              Publish
+            </Button>
+          )}
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
             {!props.sourceMode && (
@@ -810,5 +820,5 @@ ReportPageHeader.defaultProps = {
   headerExtra: null,
   tagsExtra: null,
   reportChanged: null,
-  setReportChanged: () => {},
+  setReportChanged: () => { },
 };

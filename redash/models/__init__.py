@@ -1625,6 +1625,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
     last_modified_by_id = Column(key_type("User"), db.ForeignKey("users.id"), nullable=True)
     last_modified_by = db.relationship(User, backref="modified_reports", foreign_keys=[last_modified_by_id])
     is_archived = Column(db.Boolean, default=False, index=True)
+    is_draft = Column(db.Boolean, default=True, index=True)
     tags = Column("tags", MutableList.as_mutable(ARRAY(db.Unicode)), nullable=True)
     api_key = Column(db.String(40), default=lambda: generate_token(40), nullable=True)
     schedule = Column(MutableDict.as_mutable(JSONB), nullable=True)
@@ -1780,7 +1781,9 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
 
     @classmethod
     def all(self, org, groups_ids, user_id):
-        return self.query.filter(self.user.has(org=org))
+        return self.query.filter(self.user.has(org=org)).filter(
+            or_(Report.is_draft.is_(False), Report.user_id == user_id)
+        )
 
     @classmethod
     def search(self, org, groups_ids, user_id, search_term):
@@ -1853,6 +1856,7 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
                 cls.is_archived.is_(False),  # Only non-archived reports
                 user_alias.org_id == user.org.id,  # Match the user's organization
                 user_alias.group_ids.overlap(user.group_ids),  # Overlapping group IDs
+                or_(cls.is_draft.is_(False), cls.user_id == user.id),  # Drafts only visible to owner
             )
         )
 

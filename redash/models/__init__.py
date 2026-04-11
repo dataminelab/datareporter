@@ -1884,6 +1884,8 @@ class Report(ChangeTrackingMixin, TimestampMixin, db.Model):
         if not self.expression:
             return []
         data_cube = DataCube(self.model)
+        if not data_cube.data_cube:
+            return []
         return Expression(self.hash, data_cube).queries
 
     def get_queries(self) -> List[str]:

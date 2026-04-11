@@ -470,9 +470,9 @@ class TestReportListGetResource(BaseTestCase):
         user1 = self.factory.create_user()
         user2 = self.factory.create_user()
 
-        self.factory.create_report(user=user2)
-        self.factory.create_report(user=user2)
-        self.factory.create_report(user=user1)
+        self.factory.create_report(user=user2, is_draft=False)
+        self.factory.create_report(user=user2, is_draft=False)
+        self.factory.create_report(user=user1, is_draft=False)
 
         response = self.make_request("get", "/api/reports", user=user1)
         self.assertEqual(200, response.status_code)

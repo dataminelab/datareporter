@@ -34,6 +34,8 @@ class EmbedReportDialog extends React.Component {
       queryParts.push(`api_key=${encodeURIComponent(report.api_key)}`);
     }
 
+    queryParts.push("get_results=True");
+
     const params = report.getParameters().toUrlParams();
     if (params) {
       queryParts.push(params);

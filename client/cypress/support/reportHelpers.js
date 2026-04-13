@@ -18,18 +18,13 @@ export const setupReportTests = (additionalSetup = null) => {
     }
 
     cy.then(() => {
-      const moreButton = Cypress.$('[data-test="ReportPageHeaderMoreButton"]');
+      const saveButton = Cypress.$('[data-test="ReportPageSaveButton"]');
 
-      if (!moreButton.length) {
+      if (!saveButton.length) {
         return;
       }
 
-      cy.wrap(moreButton).click();
-      cy.contains(
-        ".ant-dropdown-menu .ant-dropdown-menu-item, .ant-dropdown-menu .ant-menu-item, .ant-dropdown-menu [role='menuitem']",
-        "Save",
-        { timeout: 10000 },
-      ).click();
+      cy.get('[data-test="ReportPageSaveButton"]', { timeout: 10000 }).click();
     });
   });
 };

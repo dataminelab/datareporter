@@ -362,17 +362,19 @@ class ReportResource(BaseResource):
 
         self.record_event({"action": "view", "object_id": report.id, "object_type": "report"})
         report_user_email = report.user.email if report.user else None
-        current_user = self.current_user.email
-        if report_user_email != current_user:
+        is_api_user = isinstance(self.current_user, models.ApiUser)
+        viewer_identity = getattr(self.current_user, "email", None) or getattr(self.current_user, "name", None)
+
+        if report_user_email != viewer_identity:
             self.record_event(
                 {
                     "action": "view",
                     "object_id": report.id,
                     "object_type": "report",
-                    "message": f"Report viewed by {current_user}",
+                    "message": f"Report viewed by {viewer_identity}",
                 }
             )
-        if report_user_email != current_user:
+        if is_api_user or report_user_email != viewer_identity:
             can_edit = False
         else:
             can_edit = True

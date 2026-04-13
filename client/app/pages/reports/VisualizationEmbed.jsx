@@ -210,7 +210,15 @@ function VisualizationEmbed({ reportId, visualizationId, apiKey, onError }) {
 
   useEffect(() => {
     let isCancelled = false;
-    Report.get({ id: reportId })
+    const reportRequestParams = {};
+    if (has(location, "search.get_results")) {
+      reportRequestParams.get_results = location.search.get_results;
+    }
+
+    Report.get({
+      id: reportId,
+      params: reportRequestParams,
+    })
       .then(result => {
         if (!isCancelled) {
           setReport(result);

@@ -28,10 +28,21 @@ class EmbedReportDialog extends React.Component {
     super(props);
     const { report, visualization } = props;
     const visualizationId = visualization && visualization.id;
+    const queryParts = [];
+
+    if (report.api_key) {
+      queryParts.push(`api_key=${encodeURIComponent(report.api_key)}`);
+    }
+
     const params = report.getParameters().toUrlParams();
+    if (params) {
+      queryParts.push(params);
+    }
+
+    const queryString = queryParts.join("&");
 
     this.embedUrl = `${clientConfig.basePath}embed/report/${report.id}${visualizationId ? `/visualization/${visualizationId}` : ""
-      }${params ? `?${params}` : ""}`;
+      }${queryString ? `?${queryString}` : ""}`;
 
     if (window.snapshotUrlBuilder) {
       this.snapshotUrl = window.snapshotUrlBuilder(report, visualization);

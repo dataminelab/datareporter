@@ -274,9 +274,8 @@ function VisualizationEmbed({ reportId, visualizationId, apiKey, onError }) {
   const parsedVisualizationId = parseInt(visualizationId, 10);
   const visualization = Number.isNaN(parsedVisualizationId)
     ? visualizations[0]
-    :
-    find(visualizations, vis => vis.id === parsedVisualizationId) ||
-    visualizations[0];
+    : find(visualizations, vis => vis.id === parsedVisualizationId) ||
+      visualizations[0];
 
   if (!visualization) {
     // call error handler async, otherwise it will destroy the component on render phase
@@ -353,7 +352,7 @@ VisualizationEmbed.propTypes = {
 };
 
 VisualizationEmbed.defaultProps = {
-  onError: () => { },
+  onError: () => {},
 };
 
 routes.register(

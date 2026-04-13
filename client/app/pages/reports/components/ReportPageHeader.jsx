@@ -58,7 +58,7 @@ function createMenu(menu) {
     filter(
       map(group, (props, key) => {
         props = extend(
-          { isAvailable: true, isEnabled: true, onClick: () => { } },
+          { isAvailable: true, isEnabled: true, onClick: () => {} },
           props,
         );
         if (props.isAvailable) {
@@ -434,73 +434,94 @@ export default function ReportPageHeader(props) {
     setReportChanged,
   ]);
 
-  const moreActionsMenu = useMemo(() => createMenu([
-    {
-      fork: {
-        isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
-        title: (
-          <React.Fragment>
-            <ShareAltOutlined /> Embed Elsewhere
-          </React.Fragment>
-        ),
-        onClick: () => openEmbedDialog(report, props.selectedVisualization),
-      },
-    },
-    {
-      share: {
-        isEnabled: !queryFlags.isNew,
-        title: (
-          <React.Fragment>
-            Fork <i className="fa fa-external-link m-l-5" aria-hidden="true" />
-            <span className="sr-only">(opens in a new tab)</span>
-          </React.Fragment>
-        ),
-        onClick: duplicateReport,
-      },
-    },
-    {
-      archive: {
-        isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-        title: "Archive",
-        onClick: archiveReport,
-      },
-      managePermissions: {
-        isAvailable:
-          !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
-        title: "Manage Permissions",
-        onClick: openPermissionsEditorDialog,
-      },
-      publish: {
-        isAvailable:
-          !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
-        title: "Publish",
-        onClick: publishReport,
-      },
-      unpublish: {
-        isAvailable: !clientConfig.disablePublish && !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
-        title: "Unpublish",
-        onClick: unpublishReport,
-      },
-    },
-    {
-      downloadCSV: {
-        isAvailable: true,
-        title: "Download as CSV File",
-        onClick: () => { document.querySelector("#export-data-csv").click() },
-      },
-      downloadTSV: {
-        isAvailable: true,
-        title: "Download as TSV File",
-        onClick: () => { document.querySelector("#export-data-tsv").click() },
-      }
-    },
-    {
-      showAPIKey: {
-        isAvailable: !clientConfig.disablePublicUrls && !queryFlags.isNew,
-        title: "Show API Key",
-        onClick: openApiKeyDialog,
-      },
-    }]),
+  const moreActionsMenu = useMemo(
+    () =>
+      createMenu([
+        {
+          fork: {
+            isEnabled:
+              !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+            title: (
+              <React.Fragment>
+                <ShareAltOutlined /> Embed Elsewhere
+              </React.Fragment>
+            ),
+            onClick: () => openEmbedDialog(report, props.selectedVisualization),
+          },
+        },
+        {
+          share: {
+            isEnabled: !queryFlags.isNew,
+            title: (
+              <React.Fragment>
+                Fork{" "}
+                <i className="fa fa-external-link m-l-5" aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </React.Fragment>
+            ),
+            onClick: duplicateReport,
+          },
+        },
+        {
+          archive: {
+            isAvailable:
+              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+            title: "Archive",
+            onClick: archiveReport,
+          },
+          managePermissions: {
+            isAvailable:
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isArchived &&
+              clientConfig.showPermissionsControl,
+            title: "Manage Permissions",
+            onClick: openPermissionsEditorDialog,
+          },
+          publish: {
+            isAvailable:
+              !isDesktop &&
+              queryFlags.isDraft &&
+              !queryFlags.isArchived &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit,
+            title: "Publish",
+            onClick: publishReport,
+          },
+          unpublish: {
+            isAvailable:
+              !clientConfig.disablePublish &&
+              !queryFlags.isNew &&
+              queryFlags.canEdit &&
+              !queryFlags.isDraft,
+            title: "Unpublish",
+            onClick: unpublishReport,
+          },
+        },
+        {
+          downloadCSV: {
+            isAvailable: true,
+            title: "Download as CSV File",
+            onClick: () => {
+              document.querySelector("#export-data-csv").click();
+            },
+          },
+          downloadTSV: {
+            isAvailable: true,
+            title: "Download as TSV File",
+            onClick: () => {
+              document.querySelector("#export-data-tsv").click();
+            },
+          },
+        },
+        {
+          showAPIKey: {
+            isAvailable: !clientConfig.disablePublicUrls && !queryFlags.isNew,
+            title: "Show API Key",
+            onClick: openApiKeyDialog,
+          },
+        },
+      ]),
     [
       queryFlags.isNew,
       queryFlags.canFork,
@@ -630,16 +651,16 @@ export default function ReportPageHeader(props) {
       <div className="header-actions">
         {((queryFlags.canEdit && !queryFlags.isArchived) ||
           (queryFlags.isNew && queryFlags.canCreate)) && (
-            <Button
-              type="primary"
-              className="m-r-5"
-              onClick={handleSaveReport}
-              data-test="ReportPageSaveButton"
-            >
-              <i className="fa fa-floppy-o m-r-5" aria-hidden="true" />
-              Save
-            </Button>
-          )}
+          <Button
+            type="primary"
+            className="m-r-5"
+            onClick={handleSaveReport}
+            data-test="ReportPageSaveButton"
+          >
+            <i className="fa fa-floppy-o m-r-5" aria-hidden="true" />
+            Save
+          </Button>
+        )}
         {props.headerExtra}
         <div>
           <ul
@@ -795,5 +816,5 @@ ReportPageHeader.defaultProps = {
   headerExtra: null,
   tagsExtra: null,
   reportChanged: null,
-  setReportChanged: () => { },
+  setReportChanged: () => {},
 };

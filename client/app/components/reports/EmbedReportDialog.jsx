@@ -41,8 +41,9 @@ class EmbedReportDialog extends React.Component {
 
     const queryString = queryParts.join("&");
 
-    this.embedUrl = `${clientConfig.basePath}embed/report/${report.id}${visualizationId ? `/visualization/${visualizationId}` : ""
-      }${queryString ? `?${queryString}` : ""}`;
+    this.embedUrl = `${clientConfig.basePath}embed/report/${report.id}${
+      visualizationId ? `/visualization/${visualizationId}` : ""
+    }${queryString ? `?${queryString}` : ""}`;
 
     if (window.snapshotUrlBuilder) {
       this.snapshotUrl = window.snapshotUrlBuilder(report, visualization);
@@ -58,7 +59,8 @@ class EmbedReportDialog extends React.Component {
         {...dialog.props}
         className="embed-report-dialog"
         title="Embed Report"
-        footer={<Button onClick={dialog.dismiss}>Close</Button>}>
+        footer={<Button onClick={dialog.dismiss}>Close</Button>}
+      >
         <React.Fragment>
           {!report.is_safe && (
             <Alert

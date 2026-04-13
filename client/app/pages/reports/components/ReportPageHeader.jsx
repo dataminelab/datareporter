@@ -14,6 +14,7 @@ import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
 import EllipsisOutlinedIcon from "@ant-design/icons/EllipsisOutlined";
 import { ShareAltOutlined } from "@ant-design/icons";
+import PlusCircleFilledIcon from "@ant-design/icons/PlusCircleFilled";
 import useMedia from "use-media";
 import Link from "@/components/Link";
 import EditInPlace from "@/components/EditInPlace";
@@ -46,6 +47,7 @@ import { reportPageStyles } from "./reportPageStyles";
 import DataSourceModelSelector from "./DataSourceModelSelector.jsx";
 import { Report as ReportType } from "@/components/proptypes";
 import useEmbedDialog from "@/pages/reports/hooks/useEmbedDialog";
+import useAddToDashboardDialog from "@/pages/reports/hooks/useAddToDashboardDialog";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
@@ -129,6 +131,7 @@ export default function ReportPageHeader(props) {
   const openApiKeyDialog = useApiKeyDialog(report, setReport);
   const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
   const openEmbedDialog = useEmbedDialog(report);
+  const openAddToDashboardDialog = useAddToDashboardDialog(report);
   const { dataSourcesLoaded, dataSources, dataSource } =
     useReportDataSources(report);
   const [models, setModels] = useState([]);
@@ -438,12 +441,27 @@ export default function ReportPageHeader(props) {
     () =>
       createMenu([
         {
+          addToDashboard: {
+            isAvailable:
+              !queryFlags.isNew &&
+              (!queryFlags.isDraft || !queryFlags.isArchived),
+            title: (
+              <React.Fragment>
+                <PlusCircleFilledIcon /> Add to Dashboard
+              </React.Fragment>
+            ),
+            onClick: () =>
+              openAddToDashboardDialog(props.selectedVisualization),
+          },
+        },
+        {
           fork: {
             isEnabled:
               !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
             title: (
               <React.Fragment>
-                <ShareAltOutlined /> Embed Elsewhere
+                <ShareAltOutlined data-test="ShowEmbedDialogButton" /> Embed
+                Elsewhere
               </React.Fragment>
             ),
             onClick: () => openEmbedDialog(report, props.selectedVisualization),
@@ -537,6 +555,7 @@ export default function ReportPageHeader(props) {
       unpublishReport,
       openApiKeyDialog,
       openEmbedDialog,
+      openAddToDashboardDialog,
       props.selectedVisualization,
       report,
     ],

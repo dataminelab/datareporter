@@ -1,10 +1,6 @@
 import { editDashboard } from "../../support/dashboard";
 
 describe("Dashboard with Turnilo widget", () => {
-  const confirmDeletionInModal = () => {
-    cy.get(".ant-modal .ant-btn").contains("Delete").click({ force: true });
-  };
-
   beforeEach(function () {
     cy.login();
   });
@@ -19,6 +15,7 @@ describe("Dashboard with Turnilo widget", () => {
       .then(() => cy.createReportDraft({ name: "Turnilo Cypress Report" }))
       .then(({ id }) => {
         this.reportId = id;
+        return cy.publishReportAPI(id);
       });
   });
 
@@ -48,12 +45,14 @@ describe("Dashboard with Turnilo widget", () => {
   it("removes report widget", function () {
     cy.visit(this.dashboardUrl);
     editDashboard();
-    cy.get('.widget-wrapper[data-test^="WidgetId"]:has(.turnilo-widget-view)')
-      .first()
+    cy.get(".turnilo-widget-view")
+      .parent()
+      .parent()
+      .parent()
       .within(() => {
         cy.getByTestId("WidgetDeleteButton").click();
       });
-    confirmDeletionInModal();
+    cy.contains("button", "Delete").click();
     cy.get(".turnilo-widget-view").should("not.exist");
   });
 });

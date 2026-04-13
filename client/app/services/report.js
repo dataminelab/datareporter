@@ -345,11 +345,7 @@ export class Report extends Query {
 
   getReportResult(maxAge) {
     const execute = () =>
-      ReportResult.getByReportId(
-        this.id,
-        this.getParameters().getExecutionValues(),
-        maxAge,
-      );
+      ReportResult.getByReport(this, maxAge);
     return this.prepareReportResultExecution(execute, maxAge);
   }
 

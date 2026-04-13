@@ -301,6 +301,7 @@ class ReportHash:
             self.public_url = None
         self.id = o.id
         self.is_archived = o.is_archived
+        self.is_draft = o.is_draft
         self.color_1 = o.color_1
         self.color_2 = o.color_2
         self.hash = o.hash

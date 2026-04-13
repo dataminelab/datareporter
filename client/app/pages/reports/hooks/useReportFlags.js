@@ -9,7 +9,7 @@ export default function useReportFlags(report, dataSource = null) {
     () => ({
       // state flags
       isNew: isNil(report.id),
-      isDraft: report.is_draft ?? true,
+      isDraft: report.is_draft,
       isArchived: report.is_archived,
 
       // permissions flags

@@ -13,6 +13,7 @@ import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
 import EllipsisOutlinedIcon from "@ant-design/icons/EllipsisOutlined";
+import { ShareAltOutlined } from "@ant-design/icons";
 import useMedia from "use-media";
 import Link from "@/components/Link";
 import EditInPlace from "@/components/EditInPlace";
@@ -22,7 +23,6 @@ import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
-import useDeleteReport from "../hooks/useDeleteReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
@@ -45,6 +45,7 @@ import getTags from "@/services/getTags";
 import { reportPageStyles } from "./reportPageStyles";
 import DataSourceModelSelector from "./DataSourceModelSelector.jsx";
 import { Report as ReportType } from "@/components/proptypes";
+import useEmbedDialog from "@/pages/reports/hooks/useEmbedDialog";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
@@ -57,7 +58,7 @@ function createMenu(menu) {
     filter(
       map(group, (props, key) => {
         props = extend(
-          { isAvailable: true, isEnabled: true, onClick: () => {} },
+          { isAvailable: true, isEnabled: true, onClick: () => { } },
           props,
         );
         if (props.isAvailable) {
@@ -118,17 +119,16 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 export default function ReportPageHeader(props) {
   const isMountedRef = useRef(true);
   const isDesktop = useMedia({ minWidth: 768 });
-  const { report, setReport, saveReport, saveAsReport, showShareReportDialog } =
-    useReport(props.report);
+  const { report, setReport, saveReport } = useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
   const updateTags = useUpdateReportTags(report, setReport);
   const archiveReport = useArchiveReport(report, setReport);
-  const deleteReport = useDeleteReport(report, setReport);
   const publishReport = usePublishReport(report, setReport);
   const unpublishReport = useUnpublishReport(report, setReport);
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
   const openApiKeyDialog = useApiKeyDialog(report, setReport);
   const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
+  const openEmbedDialog = useEmbedDialog(report);
   const { dataSourcesLoaded, dataSources, dataSource } =
     useReportDataSources(report);
   const [models, setModels] = useState([]);
@@ -434,110 +434,73 @@ export default function ReportPageHeader(props) {
     setReportChanged,
   ]);
 
-  const moreActionsMenu = useMemo(
-    () =>
-      createMenu([
-        {
-          fork: {
-            isEnabled:
-              !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
-            title: (
-              <React.Fragment>
-                Fork{" "}
-                <i className="fa fa-external-link m-l-5" aria-hidden="true" />
-                <span className="sr-only">(opens in a new tab)</span>
-              </React.Fragment>
-            ),
-            onClick: duplicateReport,
-          },
-        },
-        {
-          save: {
-            isAvailable: queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Save",
-            onClick: handleSaveReport,
-          },
-        },
-        {
-          archive: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Archive",
-            onClick: archiveReport,
-          },
-          managePermissions: {
-            isAvailable:
-              !queryFlags.isNew &&
-              queryFlags.canEdit &&
-              !queryFlags.isArchived &&
-              clientConfig.showPermissionsControl,
-            title: "Manage Permissions",
-            onClick: openPermissionsEditorDialog,
-          },
-          publish: {
-            isAvailable:
-              !isDesktop &&
-              queryFlags.isDraft &&
-              !queryFlags.isArchived &&
-              !queryFlags.isNew &&
-              queryFlags.canEdit,
-            title: "Publish",
-            onClick: publishReport,
-          },
-          unpublish: {
-            isAvailable:
-              !clientConfig.disablePublish &&
-              !queryFlags.isNew &&
-              queryFlags.canEdit &&
-              !queryFlags.isDraft,
-            title: "Unpublish",
-            onClick: unpublishReport,
-          },
-          delete: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit,
-            title: "Delete",
-            onClick: deleteReport,
-          },
-          share: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Share",
-            onClick: showShareReportDialog,
-          },
-        },
-        {
-          downloadCSV: {
-            isAvailable: true,
-            title: "Download as CSV File",
-            onClick: () => {
-              document.querySelector("#export-data-csv").click();
-            },
-          },
-          downloadTSV: {
-            isAvailable: true,
-            title: "Download as TSV File",
-            onClick: () => {
-              document.querySelector("#export-data-tsv").click();
-            },
-          },
-        },
-        {
-          showAPIKey: {
-            isAvailable:
-              !queryFlags.isNew &&
-              queryFlags.canEdit &&
-              !clientConfig.disablePublicUrls,
-            title: "Show API Key",
-            onClick: openApiKeyDialog,
-          },
-          sessionCost: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Show Session Cost",
-            onClick: () => handleGivenModal("meta-modal"),
-          },
-        },
-      ]),
+  const moreActionsMenu = useMemo(() => createMenu([
+    {
+      fork: {
+        isEnabled: !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+        title: (
+          <React.Fragment>
+            <ShareAltOutlined /> Embed Elsewhere
+          </React.Fragment>
+        ),
+        onClick: () => openEmbedDialog(report, props.selectedVisualization),
+      },
+    },
+    {
+      share: {
+        isEnabled: !queryFlags.isNew,
+        title: (
+          <React.Fragment>
+            Fork <i className="fa fa-external-link m-l-5" aria-hidden="true" />
+            <span className="sr-only">(opens in a new tab)</span>
+          </React.Fragment>
+        ),
+        onClick: duplicateReport,
+      },
+    },
+    {
+      archive: {
+        isAvailable: !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
+        title: "Archive",
+        onClick: archiveReport,
+      },
+      managePermissions: {
+        isAvailable:
+          !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived && clientConfig.showPermissionsControl,
+        title: "Manage Permissions",
+        onClick: openPermissionsEditorDialog,
+      },
+      publish: {
+        isAvailable:
+          !isDesktop && queryFlags.isDraft && !queryFlags.isArchived && !queryFlags.isNew && queryFlags.canEdit,
+        title: "Publish",
+        onClick: publishReport,
+      },
+      unpublish: {
+        isAvailable: !clientConfig.disablePublish && !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isDraft,
+        title: "Unpublish",
+        onClick: unpublishReport,
+      },
+    },
+    {
+      downloadCSV: {
+        isAvailable: true,
+        title: "Download as CSV File",
+        onClick: () => { document.querySelector("#export-data-csv").click() },
+      },
+      downloadTSV: {
+        isAvailable: true,
+        title: "Download as TSV File",
+        onClick: () => { document.querySelector("#export-data-tsv").click() },
+      }
+    },
+    {
+      showAPIKey: {
+        isAvailable: !clientConfig.disablePublicUrls && !queryFlags.isNew,
+        title: "Show API Key",
+        onClick: openApiKeyDialog,
+      },
+    }]),
     [
       queryFlags.isNew,
       queryFlags.canFork,
@@ -552,9 +515,9 @@ export default function ReportPageHeader(props) {
       publishReport,
       unpublishReport,
       openApiKeyDialog,
-      deleteReport,
-      handleSaveReport,
-      showShareReportDialog,
+      openEmbedDialog,
+      props.selectedVisualization,
+      report,
     ],
   );
 
@@ -665,6 +628,18 @@ export default function ReportPageHeader(props) {
         </div>
       </div>
       <div className="header-actions">
+        {((queryFlags.canEdit && !queryFlags.isArchived) ||
+          (queryFlags.isNew && queryFlags.canCreate)) && (
+            <Button
+              type="primary"
+              className="m-r-5"
+              onClick={handleSaveReport}
+              data-test="ReportPageSaveButton"
+            >
+              <i className="fa fa-floppy-o m-r-5" aria-hidden="true" />
+              Save
+            </Button>
+          )}
         {props.headerExtra}
         <div>
           <ul
@@ -820,5 +795,5 @@ ReportPageHeader.defaultProps = {
   headerExtra: null,
   tagsExtra: null,
   reportChanged: null,
-  setReportChanged: () => {},
+  setReportChanged: () => { },
 };

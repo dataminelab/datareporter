@@ -459,7 +459,8 @@ class TestReportListCreateResource(BaseTestCase):
         self.assertTrue("id" in data)
         self.assertEqual(model.id, data["model_id"])
         self.assertTrue(isinstance(data["expression"], dict))
-        self.assertDictEqual(hash2split, data["expression"])
+        expected_expression = json.loads(parser.decompressFromBase64(hash2split))
+        self.assertDictEqual(expected_expression, data["expression"])
 
 
 class TestReportListGetResource(BaseTestCase):

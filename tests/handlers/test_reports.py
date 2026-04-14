@@ -454,7 +454,6 @@ class TestReportListCreateResource(BaseTestCase):
             user=user,
         )
         data = response.json
-        breakpoint()
         self.assertEqual(200, response.status_code)
         self.assertTrue("id" in data)
         self.assertEqual(model.id, data["model_id"])

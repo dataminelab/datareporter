@@ -1,9 +1,9 @@
 [project]
 name = "redash"
-requires-python = ">=3.8"
+requires-python = ">=3.11,<3.12"
 
 [tool.black]
-target-version = ['py38']
+target-version = ['py311']
 line-length = 119
 force-exclude = '''
 /(
@@ -20,7 +20,7 @@ license = "Apache-2.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.11,<3.12"
 advocate = "1.0.0"
 aniso8601 = "8.0.0"
 authlib = "0.15.5"
@@ -40,7 +40,7 @@ flask-talisman = "0.7.0"
 flask-wtf = "1.1.1"
 funcy = "1.13"
 gevent = "23.9.1"
-greenlet = "2.0.2"
+greenlet = "3.0.3"
 gunicorn = "22.0.0"
 httplib2 = "0.19.0"
 itsdangerous = "2.1.2"

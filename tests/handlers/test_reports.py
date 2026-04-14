@@ -450,6 +450,7 @@ class TestReportListCreateResource(BaseTestCase):
                 "expression": hash2split,
                 "color_1": "color_2",
                 "color_2": "color_2",
+                "data_source_id": 1,
             },
             user=user,
         )

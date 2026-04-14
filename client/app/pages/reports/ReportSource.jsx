@@ -9,32 +9,50 @@ import routes from "@/services/routes";
 
 import ReportPageHeader from "./components/ReportPageHeader";
 import wrapReportPage from "./components/wrapReportPage";
-import ReportExecutionMetadata from "./components/ReportExecutionMetadata";
 import ReportEditor from "./components/ReportEditor";
+import ReportMetadata from "./components/ReportMetadata";
+import QueryExecutionStatus from "../queries/components/QueryExecutionStatus";
 
 import useReport from "./hooks/useReport";
 import useVisualizationTabHandler from "./hooks/useVisualizationTabHandler";
 import useReportExecute from "./hooks/useReportExecute";
+import useReportDataSources from "./hooks/useReportDataSources";
 import useReportFlags from "./hooks/useReportFlags";
-import useEditVisualizationDialog from "./hooks/useEditVisualizationDialog";
+import useEditScheduleDialog from "./hooks/useEditScheduleDialog";
 import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
 
 import "./ReportSource.less";
 
-
 function ReportSource(props) {
   const { report, setReport, isDirty } = useReport(props.report);
-  const reportFlags = useReportFlags(report, []);
-  const [selectedVisualization] = useVisualizationTabHandler(report.visualizations);
+  const { dataSource } = useReportDataSources(report);
+  const reportFlags = useReportFlags(report, dataSource);
+  const [selectedVisualization] = useVisualizationTabHandler(
+    report.visualizations,
+  );
   const isMobile = !useMedia({ minWidth: 768 });
   const [reportChanged, setReportChanged] = useState(false);
+  const editSchedule = useEditScheduleDialog(report, setReport);
 
   useUnsavedChangesAlert(isDirty);
-
   const {
-    reportResult,
-    isExecuting: isReportExecuting,
+    isExecuting,
+    error: executionError,
+    executionStatus,
+    updatedAt,
+    isCancelling: isExecutionCancelling,
+    cancelCallback: cancelExecution,
+    triggerExecution,
   } = useReportExecute(report);
+
+  useEffect(() => {
+    report.setTriggerExecution(triggerExecution);
+    report.setExecutionStatus(executionStatus);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    report.setExecutionStatus(executionStatus);
+  }, [executionStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // TODO: ignore new pages?
@@ -45,20 +63,18 @@ function ReportSource(props) {
     document.title = report.name;
   }, [report.name]);
 
-
-  const editVisualization = useEditVisualizationDialog(report, reportResult, newReport => {
-    setReport(newReport);
-    setReportChanged(true);
-  });
-
   return (
-    <div className={cx("report-page-wrapper", { "report-fixed-layout": !isMobile })}>
+    <div
+      className={cx("report-page-wrapper", {
+        "report-fixed-layout": !isMobile,
+      })}
+    >
       <div className="container w-100 p-b-10">
         <ReportPageHeader
           reportChanged={reportChanged}
           setReportChanged={setReportChanged}
           report={report}
-          dataSource={[]}
+          dataSource={dataSource}
           sourceMode
           selectedVisualization={selectedVisualization}
           onChange={setReport}
@@ -69,23 +85,33 @@ function ReportSource(props) {
           <div className="flex-fill p-relative">
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
-              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
-              <ReportEditor 
-                report={report} 
+              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}
+            >
+              <ReportEditor
+                report={report}
                 reportChanged={reportChanged}
                 setReportChanged={setReportChanged}
               />
+              {!reportFlags.isNew && (
+                <div className="report-source-metadata-overlay">
+                  <ReportMetadata
+                    layout="horizontal"
+                    report={report}
+                    dataSource={dataSource}
+                    onEditSchedule={editSchedule}
+                  />
+                </div>
+              )}
             </div>
           </div>
-          {reportResult && !reportResult.getError() && (
-            <div className="bottom-controller-container">
-              <ReportExecutionMetadata
-                report={report}
-                reportResult={reportResult}
-                selectedVisualization={selectedVisualization}
-                isReportExecuting={isReportExecuting}
-                showEditVisualizationButton={!reportFlags.isNew && reportFlags.canEdit}
-                onEditVisualization={editVisualization}
+          {(executionError || isExecuting) && (
+            <div className="query-alerts">
+              <QueryExecutionStatus
+                status={executionStatus}
+                updatedAt={updatedAt}
+                error={executionError}
+                isCancelling={isExecutionCancelling}
+                onCancel={cancelExecution}
               />
             </div>
           )}
@@ -96,7 +122,7 @@ function ReportSource(props) {
 }
 
 ReportSource.propTypes = {
-  report: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  report: PropTypes.object.isRequired,
 };
 
 const ReportSourcePage = wrapReportPage(ReportSource);
@@ -106,16 +132,23 @@ routes.register(
   routeWithUserSession({
     path: "/reports/new",
     render: pageProps => <ReportSourcePage {...pageProps} />,
-    headerBlock: <h1></h1>,
     bodyClass: "fixed-layout",
-  })
+  }),
 );
+
 routes.register(
   "Reports.Edit",
   routeWithUserSession({
     path: "/reports/:reportId/source",
     render: pageProps => <ReportSourcePage {...pageProps} />,
-    headerBlock: <h1></h1>,
     bodyClass: "fixed-layout",
-  })
+  }),
+);
+
+routes.register(
+  "Reports.View",
+  routeWithUserSession({
+    path: "/reports/:reportId",
+    render: pageProps => <ReportSourcePage {...pageProps} />,
+  }),
 );

@@ -31,11 +31,11 @@ export interface GoldenCenterState {
 export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCenterState> {
   static defaultProps: Partial<GoldenCenterProps> = {
     topRatio: 0.618 / 1.618,
-    minPadding: 50
+    minPadding: 50,
   };
 
   state: GoldenCenterState = {
-    top: 0
+    top: 0,
   };
 
   componentDidMount() {
@@ -48,18 +48,18 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
   }
 
   globalResizeListener = () => {
-    var myNode = ReactDOM.findDOMNode(this) as Element;
+    const myNode = ReactDOM.findDOMNode(this) as Element;
     if (!myNode) return;
 
-    var childNode = myNode.firstChild as Element;
+    const childNode = myNode.firstChild as Element;
     if (!childNode) return;
 
-    var myRect = myNode.getBoundingClientRect();
-    var childRect = childNode.getBoundingClientRect();
+    const myRect = myNode.getBoundingClientRect();
+    const childRect = childNode.getBoundingClientRect();
 
     const { topRatio, minPadding } = this.props;
 
-    var top = Math.max((myRect.height - childRect.height) * topRatio, minPadding);
+    const top = Math.max((myRect.height - childRect.height) * topRatio, minPadding);
     this.setState({ top });
   };
 
@@ -67,11 +67,10 @@ export class GoldenCenter extends React.Component<GoldenCenterProps, GoldenCente
     const { minPadding, children } = this.props;
     const { top } = this.state;
 
-    return <div
-      className="golden-center"
-      style={{ paddingTop: top, paddingBottom: minPadding }}
-    >
-      {React.Children.only(children)}
-    </div>;
+    return (
+      <div className="golden-center" style={{ paddingTop: top, paddingBottom: minPadding }}>
+        {React.Children.only(children)}
+      </div>
+    );
   }
 }

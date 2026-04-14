@@ -31,26 +31,32 @@ export interface TimezoneMenuProps {
   timezones?: Timezone[];
 }
 
-export const TimezoneMenu: React.SFC<TimezoneMenuProps> = ({ timezone, timezones, onClose, changeTimezone, openOn }) => {
-
+export const TimezoneMenu: React.SFC<TimezoneMenuProps> = ({
+  timezone,
+  timezones,
+  onClose,
+  changeTimezone,
+  openOn,
+}) => {
   function selectTimezone(newTimezone: Timezone) {
     changeTimezone(newTimezone);
     onClose();
   }
 
-  return <BubbleMenu
-    className="timezone-menu"
-    direction="down"
-    stage={Stage.fromSize(240, 200)}
-    openOn={openOn}
-    onClose={onClose}
-  >
-    <Dropdown<Timezone>
-      label={STRINGS.timezone}
-      selectedItem={timezone}
-      renderItem={(d: Timezone) => d.toString().replace(/_/g, " ")}
-      items={timezones}
-      onSelect={selectTimezone}
-    />
-  </BubbleMenu>;
+  return (
+    <BubbleMenu
+      className="timezone-menu"
+      direction="down"
+      stage={Stage.fromSize(240, 200)}
+      openOn={openOn}
+      onClose={onClose}>
+      <Dropdown<Timezone>
+        label={STRINGS.timezone}
+        selectedItem={timezone}
+        renderItem={(d: Timezone) => d.toString().replace(/_/g, " ")}
+        items={timezones}
+        onSelect={selectTimezone}
+      />
+    </BubbleMenu>
+  );
 };

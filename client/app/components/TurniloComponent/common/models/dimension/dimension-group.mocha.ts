@@ -19,17 +19,10 @@ import { DimensionGroup } from "./dimension-group";
 import { DimensionGroupFixtures } from "./dimension-group.fixtures";
 
 describe("DimensionGroup", () => {
-
   it("should convert to / from JS", () => {
     const dimensionGroup = DimensionGroup.fromJS(DimensionGroupFixtures.commentsJS());
 
     expect(dimensionGroup.toJS()).to.deep.equal(DimensionGroupFixtures.commentsJS());
-  });
-
-  it("should infer title from name", () => {
-    const dimensionGroup = DimensionGroup.fromJS(DimensionGroupFixtures.noTitleJS());
-
-    expect(dimensionGroup.toJS()).to.deep.equal(DimensionGroupFixtures.withTitleInferredJS());
   });
 
   it("should infer title from name", () => {
@@ -57,5 +50,4 @@ describe("DimensionGroup", () => {
 
     expect(dimensionGroupConversion).to.throw(`dimension group '${groupWithEmptyDimensions.name}' has no dimensions`);
   });
-
 });

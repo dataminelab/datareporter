@@ -23,7 +23,7 @@ def calculate_metrics(response):
     endpoint = (request.endpoint or "unknown").replace(".", "_")
 
     metrics_logger.info(
-        "method=%s path=%s endpoint=%s status=%d content_type=%s content_length=%d duration=%.2f query_count=%d query_duration=%.2f",
+        "method=%s path=%s endpoint=%s status=%d content_type=%s content_length=%d duration=%.2f query_count=%d query_duration=%.2f",  # noqa: E501
         request.method,
         request.path,
         endpoint,

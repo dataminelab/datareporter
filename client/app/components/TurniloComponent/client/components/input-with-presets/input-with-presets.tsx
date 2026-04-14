@@ -42,7 +42,6 @@ interface InputWithPresetsState {
 }
 
 export class InputWithPresets<T> extends React.Component<InputWithPresetsProps<T>, InputWithPresetsState> {
-
   initialState(): InputWithPresetsState {
     const { selected, presets, formatCustomValue } = this.props;
     const isPresetPicked = presets.some(({ identity }) => identity === selected);
@@ -80,7 +79,7 @@ export class InputWithPresets<T> extends React.Component<InputWithPresetsProps<T
       key: String(identity),
       title: name,
       isSelected: !customPicked && identity === selected,
-      onClick: () => this.pickPreset(identity)
+      onClick: () => this.pickPreset(identity),
     }));
 
     const customSelected = customPicked && selected === parseCustomValue(customValue);
@@ -89,21 +88,27 @@ export class InputWithPresets<T> extends React.Component<InputWithPresetsProps<T
       key: "custom",
       title: "…",
       onClick: this.pickCustom,
-      isSelected: customSelected
+      isSelected: customSelected,
     };
 
     const members = [...presetButtons, customButton];
 
     const renderErrorMessage = customSelected && errorMessage && customValue.length > 0;
 
-    return <React.Fragment>
-      <ButtonGroup title={title} groupMembers={members} />
-      {customSelected && <input type="text"
-                                className={classNames("custom-input", { invalid: errorMessage })}
-                                placeholder={placeholder}
-                                value={customValue}
-                                onChange={this.customValueUpdate} />}
-      {renderErrorMessage && <span className="error-message">{errorMessage}</span>}
-    </React.Fragment>;
+    return (
+      <React.Fragment>
+        <ButtonGroup title={title} groupMembers={members} />
+        {customSelected && (
+          <input
+            type="text"
+            className={classNames("custom-input", { invalid: errorMessage })}
+            placeholder={placeholder}
+            value={customValue}
+            onChange={this.customValueUpdate}
+          />
+        )}
+        {renderErrorMessage && <span className="error-message">{errorMessage}</span>}
+      </React.Fragment>
+    );
   }
 }

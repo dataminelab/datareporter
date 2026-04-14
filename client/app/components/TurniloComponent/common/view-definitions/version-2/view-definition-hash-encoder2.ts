@@ -35,28 +35,28 @@ export class ViewDefinitionHashEncoder2 implements ViewDefinitionHashEncoder<Vie
       pinnedDimensions: jsArray[6],
       pinnedSort: jsArray[7],
       compare: jsArray[9] || null,
-      highlight: jsArray[10] || null
+      highlight: jsArray[10] || null,
     };
   }
 
   encodeUrlHash(definition: ViewDefinition2): string {
     const compressed: any[] = [
-      definition.timezone,         // 0
-      definition.filter,           // 1
-      definition.splits,           // 2
+      definition.timezone, // 0
+      definition.filter, // 1
+      definition.splits, // 2
       definition.multiMeasureMode, // 3
-      definition.singleMeasure,    // 4
+      definition.singleMeasure, // 4
       definition.selectedMeasures, // 5
       definition.pinnedDimensions, // 6
-      definition.pinnedSort,       // 7
+      definition.pinnedSort, // 7
       /*
        There were stored colors. We don't support them anymore so we write null here.
        We can't omit it here because that would force us to change decodeUrlHash and that
        would make it incompatible with old urls.
       */
-      null,                        // 8
-      definition.compare,          // 9
-      definition.highlight         // 10
+      null, // 8
+      definition.compare, // 9
+      definition.highlight, // 10
     ];
 
     return arrayToHash(compressed);

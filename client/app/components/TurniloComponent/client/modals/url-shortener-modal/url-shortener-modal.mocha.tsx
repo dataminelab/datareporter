@@ -28,8 +28,7 @@ const tick = () => Promise.resolve();
 
 describe("<UrlShortenerModal>", () => {
   it("should pass props correctly", () => {
-    const onClose = () => {
-    };
+    const onClose = () => {};
     const url = "foobar.com";
     const title = "TITLE";
 
@@ -42,7 +41,6 @@ describe("<UrlShortenerModal>", () => {
 });
 
 describe("<UrlShortenerPrompt>", () => {
-
   let stub: SinonStub;
 
   const mountPrompt = (fails = false) => {

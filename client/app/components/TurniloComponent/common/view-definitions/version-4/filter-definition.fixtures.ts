@@ -21,7 +21,7 @@ import {
   FilterType,
   NumberFilterClauseDefinition,
   StringFilterClauseDefinition,
-  TimeFilterClauseDefinition
+  TimeFilterClauseDefinition,
 } from "./filter-definition";
 
 export function booleanFilterDefinition(ref: string, values: Booleanish[], not = false): BooleanFilterClauseDefinition {
@@ -29,26 +29,37 @@ export function booleanFilterDefinition(ref: string, values: Booleanish[], not =
     ref,
     type: FilterType.boolean,
     not,
-    values
+    values,
   };
 }
 
-export function stringFilterDefinition(ref: string, action: StringFilterAction, values: string[], not = false): StringFilterClauseDefinition {
+export function stringFilterDefinition(
+  ref: string,
+  action: StringFilterAction,
+  values: string[],
+  not = false
+): StringFilterClauseDefinition {
   return {
     ref,
     type: FilterType.string,
     action,
     not,
-    values
+    values,
   };
 }
 
-export function numberRangeFilterDefinition(ref: string, start: number, end: number, bounds: string | null = "[)", not = false): NumberFilterClauseDefinition {
+export function numberRangeFilterDefinition(
+  ref: string,
+  start: number,
+  end: number,
+  bounds: string | null = "[)",
+  not = false
+): NumberFilterClauseDefinition {
   return {
     ref,
     type: FilterType.number,
     not,
-    ranges: [{ start, end, bounds }]
+    ranges: [{ start, end, bounds }],
   };
 }
 
@@ -56,15 +67,20 @@ export function timeRangeFilterDefinition(ref: string, start: string, end: strin
   return {
     ref,
     type: FilterType.time,
-    timeRanges: [{ start, end }]
+    timeRanges: [{ start, end }],
   };
 }
 
-export function latestTimeFilterDefinition(ref: string, multiple: number, duration: string, multiply = false): TimeFilterClauseDefinition {
+export function latestTimeFilterDefinition(
+  ref: string,
+  multiple: number,
+  duration: string,
+  multiply = false
+): TimeFilterClauseDefinition {
   return {
     ref,
     type: FilterType.time,
-    timePeriods: [{ type: "latest", duration, step: multiple }]
+    timePeriods: [{ type: "latest", duration, step: multiple }],
   };
 }
 
@@ -72,7 +88,7 @@ export function flooredTimeFilterDefinition(ref: string, step: number, duration:
   return {
     ref,
     type: FilterType.time,
-    timePeriods: [{ type: "floored", duration, step }]
+    timePeriods: [{ type: "floored", duration, step }],
   };
 }
 

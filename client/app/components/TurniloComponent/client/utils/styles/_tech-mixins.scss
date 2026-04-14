@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import './browser-type';
+@use "sass:math";
+@import "./browser-type";
 
 // positioning
 @mixin pin-full {
@@ -103,23 +104,20 @@
   left: 50%;
   width: $width;
   height: $height;
-  margin-left: -$width / 2;
-  margin-top: -$height / 2;
+  margin-left: math.div(-$width, 2);
+  margin-top: math.div(-$height, 2);
 }
 
 @mixin ellipsis {
   @include internet-explorer {
     overflow-x: visible;
   }
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
 }
 
 // for the shpitz
 @mixin triangle($direction, $base, $altitude, $color) {
   @if $direction == up {
-    @include border-css-variable('border-bottom', $altitude, solid, $color);
+    @include border-css-variable("border-bottom", $altitude, solid, $color);
     width: 0;
     height: 0;
     border-top: 0;
@@ -128,7 +126,7 @@
   }
 
   @if $direction == down {
-    @include border-css-variable('border-top', $altitude, solid, $color);
+    @include border-css-variable("border-top", $altitude, solid, $color);
     width: 0;
     height: 0;
     border-bottom: 0;
@@ -137,7 +135,7 @@
   }
 
   @if $direction == left {
-    @include border-css-variable('border-right', $altitude, solid, $color);
+    @include border-css-variable("border-right", $altitude, solid, $color);
     width: 0;
     height: 0;
     border-top: $base solid transparent;
@@ -146,7 +144,7 @@
   }
 
   @if $direction == right {
-    @include border-css-variable('border-left', $altitude, solid, $color);
+    @include border-css-variable("border-left", $altitude, solid, $color);
     width: 0;
     height: 0;
     border-top: $base solid transparent;
@@ -154,4 +152,3 @@
     border-right: 0;
   }
 }
-

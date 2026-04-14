@@ -24,8 +24,8 @@ export function clausePredicate({ action, values, not }: StringFilterClause): Pr
       return not ? complement(predicate) : predicate;
     case StringFilterAction.MATCH:
       const regExp = new RegExp(values.first());
-      return str => regExp.test(str);
+      return (str) => regExp.test(str);
     case StringFilterAction.CONTAINS:
-      return str => str.includes(values.first());
+      return (str) => str.includes(values.first());
   }
 }

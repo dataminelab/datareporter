@@ -32,7 +32,9 @@
     margin-bottom: 8px;
   }
 
-  input, .input, .checkbox {
+  input,
+  .input,
+  .checkbox {
     &:not(.actionable) {
       margin-bottom: 25px;
     }

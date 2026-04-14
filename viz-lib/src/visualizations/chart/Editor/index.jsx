@@ -12,14 +12,14 @@ import CustomChartSettings from "./CustomChartSettings";
 
 import "./editor.less";
 
-const isCustomChart = options => options.globalSeriesType === "custom";
-const isPieChart = options => options.globalSeriesType === "pie";
+const isCustomChart = (options) => options.globalSeriesType === "custom";
+const isPieChart = (options) => options.globalSeriesType === "pie";
 
 export default createTabbedEditor([
   {
     key: "General",
     title: "General",
-    component: props => (
+    component: (props) => (
       <React.Fragment>
         <GeneralSettings {...props} />
         {isCustomChart(props.options) && <CustomChartSettings {...props} />}
@@ -28,32 +28,32 @@ export default createTabbedEditor([
   },
   {
     key: "XAxis",
-    title: "X Axis",
+    title: ({ swappedAxes }) => (!swappedAxes ? "X Axis" : "Y Axis"),
     component: XAxisSettings,
-    isAvailable: options => !isCustomChart(options) && !isPieChart(options),
+    isAvailable: (options) => !isCustomChart(options) && !isPieChart(options),
   },
   {
     key: "YAxis",
-    title: "Y Axis",
+    title: ({ swappedAxes }) => (!swappedAxes ? "Y Axis" : "X Axis"),
     component: YAxisSettings,
-    isAvailable: options => !isCustomChart(options) && !isPieChart(options),
+    isAvailable: (options) => !isCustomChart(options) && !isPieChart(options),
   },
   {
     key: "Series",
     title: "Series",
     component: SeriesSettings,
-    isAvailable: options => !isCustomChart(options),
+    isAvailable: (options) => !isCustomChart(options),
   },
   {
     key: "Colors",
     title: "Colors",
     component: ColorsSettings,
-    isAvailable: options => !isCustomChart(options),
+    isAvailable: (options) => !isCustomChart(options),
   },
   {
     key: "DataLabels",
     title: "Data Labels",
     component: DataLabelsSettings,
-    isAvailable: options => !isCustomChart(options),
+    isAvailable: (options) => !isCustomChart(options),
   },
 ]);

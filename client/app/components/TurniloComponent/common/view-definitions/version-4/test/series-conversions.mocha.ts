@@ -25,29 +25,30 @@ import { mockViewDefinition } from "../view-definition-4.fixture";
 import { assertConversionToEssence } from "./utils";
 
 describe("Series", () => {
-  const mockViewDefinitionWithSeries = (...series: SeriesDefinition[]) =>
-    mockViewDefinition({ series });
+  const mockViewDefinitionWithSeries = (...series: SeriesDefinition[]) => mockViewDefinition({ series });
 
-  const mockEssenceWithSeries = (...series: Series[]) =>
-    mockEssence({ series: SeriesList.fromSeries(series) });
+  const mockEssenceWithSeries = (...series: Series[]) => mockEssence({ series: SeriesList.fromSeries(series) });
 
   describe("Just reference in Definition", () => {
     it("reads single series", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(fromReference("count")),
-        mockEssenceWithSeries(measureSeries("count")));
+        mockEssenceWithSeries(measureSeries("count"))
+      );
     });
 
     it("reads multiple series", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(fromReference("count"), fromReference("sum")),
-        mockEssenceWithSeries(measureSeries("count"), measureSeries("sum")));
+        mockEssenceWithSeries(measureSeries("count"), measureSeries("sum"))
+      );
     });
 
     it("infers quantile series from reference to measure that has quantile expression", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(fromReference("quantile")),
-        mockEssenceWithSeries(quantileSeries("quantile")));
+        mockEssenceWithSeries(quantileSeries("quantile"))
+      );
     });
   });
 
@@ -55,13 +56,15 @@ describe("Series", () => {
     it("reads series", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(measureSeriesDefinition("count")),
-        mockEssenceWithSeries(measureSeries("count")));
+        mockEssenceWithSeries(measureSeries("count"))
+      );
     });
 
     it("reads series with custom format", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(measureSeriesDefinition("sum", PERCENT_FORMAT)),
-        mockEssenceWithSeries(measureSeries("sum", PERCENT_FORMAT)));
+        mockEssenceWithSeries(measureSeries("sum", PERCENT_FORMAT))
+      );
     });
   });
 
@@ -69,25 +72,29 @@ describe("Series", () => {
     it("reads series", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile")),
-        mockEssenceWithSeries(quantileSeries("quantile")));
+        mockEssenceWithSeries(quantileSeries("quantile"))
+      );
     });
 
     it("reads series with custom format", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile", 90, PERCENT_FORMAT)),
-        mockEssenceWithSeries(quantileSeries("quantile", 90, PERCENT_FORMAT)));
+        mockEssenceWithSeries(quantileSeries("quantile", 90, PERCENT_FORMAT))
+      );
     });
 
     it("reads series with custom percentile", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(quantileSeriesDefinition("quantile", 90)),
-        mockEssenceWithSeries(quantileSeries("quantile", 90)));
+        mockEssenceWithSeries(quantileSeries("quantile", 90))
+      );
     });
 
     it.skip("omit quantile series referencing non quantile measure", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(fromReference("sum"), quantileSeriesDefinition("count")),
-        mockEssenceWithSeries(measureSeries("sum")));
+        mockEssenceWithSeries(measureSeries("sum"))
+      );
     });
   });
 
@@ -95,13 +102,15 @@ describe("Series", () => {
     it("omits series for non existing measure", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(fromReference("sum"), fromReference("foobar")),
-        mockEssenceWithSeries(measureSeries("sum")));
+        mockEssenceWithSeries(measureSeries("sum"))
+      );
     });
 
     it("omits measure series for non existing measure", () => {
       assertConversionToEssence(
         mockViewDefinitionWithSeries(measureSeriesDefinition("sum"), measureSeriesDefinition("foobar")),
-        mockEssenceWithSeries(measureSeries("sum")));
+        mockEssenceWithSeries(measureSeries("sum"))
+      );
     });
   });
 });

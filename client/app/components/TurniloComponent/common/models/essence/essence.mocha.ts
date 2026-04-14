@@ -38,32 +38,32 @@ import { Essence, VisStrategy } from "./essence";
 import { EssenceFixtures } from "./essence.fixtures";
 
 describe("EssenceProps", () => {
-  var dataCubeJS = {
+  const dataCubeJS = {
     name: "twitter",
     title: "Twitter",
     clusterName: "druid",
     source: "twitter",
-    introspection: ("none" as Introspection),
+    introspection: "none" as Introspection,
     dimensions: [
       {
         kind: "time" as DimensionKind,
         name: "time",
         title: "Time",
-        formula: "$time"
+        formula: "$time",
       },
       {
         kind: "string" as DimensionKind,
         name: "twitterHandle",
         title: "Twitter Handle",
-        formula: "$twitterHandle"
-      }
+        formula: "$twitterHandle",
+      },
     ],
     measures: [
       {
         name: "count",
         title: "count",
-        formula: "$main.count()"
-      }
+        formula: "$main.count()",
+      },
     ],
     timeAttribute: "time",
     defaultTimezone: "Etc/UTC",
@@ -73,8 +73,8 @@ describe("EssenceProps", () => {
     defaultPinnedDimensions: ["twitterHandle"],
     refreshRule: {
       rule: "fixed",
-      time: new Date("2015-09-13T00:00:00Z")
-    }
+      time: new Date("2015-09-13T00:00:00Z"),
+    },
   };
 
   const dataCube = DataCube.fromJS(dataCubeJS);
@@ -92,62 +92,85 @@ describe("EssenceProps", () => {
             step: -1,
             operand: {
               name: "m",
-              op: "ref"
-            }
+              op: "ref",
+            },
           },
           op: "OVERLAP",
           operand: {
             name: "time",
-            op: "ref"
-          }
+            op: "ref",
+          },
         },
-        pinnedDimensions: [
-          "twitterHandle"
-        ],
+        pinnedDimensions: ["twitterHandle"],
         pinnedSort: "count",
         singleMeasure: "count",
-        selectedMeasures: [
-          "count"
-        ],
+        selectedMeasures: ["count"],
         splits: [
           {
             bucketAction: {
               op: "timeBucket",
-              duration: "PT1H"
+              duration: "PT1H",
             },
             expression: {
               name: "time",
-              op: "ref"
+              op: "ref",
             },
             sortAction: {
               op: "sort",
               direction: "ascending",
               expression: {
                 name: "time",
-                op: "ref"
-              }
-            }
-          }
+                op: "ref",
+              },
+            },
+          },
         ],
         timezone: "Etc/UTC",
-        visualization: LINE_CHART_MANIFEST
+        visualization: LINE_CHART_MANIFEST,
       });
     });
-
   });
 
   describe("vis picking", () => {
-
     describe("#getBestVisualization", () => {
       const tests = [
         { splits: [], current: null, expected: TOTALS_MANIFEST },
-        { splits: [new Split({ reference: "tweetLength", type: SplitType.number, sort: new DimensionSort({ reference: "tweetLength" }) })], current: TOTALS_MANIFEST, expected: BAR_CHART_MANIFEST },
-        { splits: [new Split({ reference: "twitterHandle", type: SplitType.string, sort: new DimensionSort({ reference: "twitterHandle" }) })], current: TOTALS_MANIFEST, expected: TABLE_MANIFEST },
         {
-          splits: [new Split({ reference: "time", type: SplitType.time, sort: new DimensionSort({ reference: "time", direction: SortDirection.ascending }) })],
+          splits: [
+            new Split({
+              reference: "tweetLength",
+              type: SplitType.number,
+              sort: new DimensionSort({ reference: "tweetLength" }),
+            }),
+          ],
+          current: TOTALS_MANIFEST,
+          expected: BAR_CHART_MANIFEST,
+        },
+        {
+          splits: [
+            new Split({
+              reference: "twitterHandle",
+              type: SplitType.string,
+              sort: new DimensionSort({ reference: "twitterHandle" }),
+            }),
+          ],
+          current: TOTALS_MANIFEST,
+          expected: TABLE_MANIFEST,
+        },
+        {
+          splits: [
+            new Split({
+              reference: "time",
+              type: SplitType.time,
+              sort: new DimensionSort({
+                reference: "time",
+                direction: SortDirection.ascending,
+              }),
+            }),
+          ],
           current: null,
-          expected: LINE_CHART_MANIFEST
-        }
+          expected: LINE_CHART_MANIFEST,
+        },
       ];
 
       tests.forEach(({ splits, current, expected }) => {
@@ -156,7 +179,8 @@ describe("EssenceProps", () => {
             DataCubeFixtures.twitter(),
             Splits.fromSplits(splits),
             SeriesList.fromMeasureNames([]),
-            current);
+            current
+          );
 
           expect(visualization).to.deep.equal(expected);
         });
@@ -164,9 +188,21 @@ describe("EssenceProps", () => {
     });
 
     describe("#changeSplits", () => {
-      const timeSplit = new Split({ type: SplitType.time, reference: "time", sort: new DimensionSort({ reference: "time" }) });
-      const tweetLengthSplit = new Split({ type: SplitType.number, reference: "tweetLength", sort: new DimensionSort({ reference: "tweetLength" }) });
-      const twitterHandleSplit = new Split({ type: SplitType.string, reference: "twitterHandle", sort: new DimensionSort({ reference: "twitterHandle" }) });
+      const timeSplit = new Split({
+        type: SplitType.time,
+        reference: "time",
+        sort: new DimensionSort({ reference: "time" }),
+      });
+      const tweetLengthSplit = new Split({
+        type: SplitType.number,
+        reference: "tweetLength",
+        sort: new DimensionSort({ reference: "tweetLength" }),
+      });
+      const twitterHandleSplit = new Split({
+        type: SplitType.string,
+        reference: "twitterHandle",
+        sort: new DimensionSort({ reference: "twitterHandle" }),
+      });
 
       it("defaults to bar chart with numeric dimension and is sorted on self", () => {
         const essence = EssenceFixtures.twitterNoVisualisation().addSplit(tweetLengthSplit, VisStrategy.FairGame);
@@ -225,7 +261,7 @@ describe("EssenceProps", () => {
       const noMeasuresTests = [
         { splits: [timeSplit], visualization: LINE_CHART_MANIFEST },
         { splits: [tweetLengthSplit], visualization: BAR_CHART_MANIFEST },
-        { splits: [twitterHandleSplit], visualization: TABLE_MANIFEST }
+        { splits: [twitterHandleSplit], visualization: TABLE_MANIFEST },
       ];
 
       noMeasuresTests.forEach(({ splits, visualization }) => {
@@ -269,8 +305,8 @@ describe("EssenceProps", () => {
     });
 
     describe("#changeVisualisation", () => {
-      [TABLE_MANIFEST, LINE_CHART_MANIFEST, BAR_CHART_MANIFEST].forEach(manifest => {
-        it("it sets visResolve to manual", () => {
+      [TABLE_MANIFEST, LINE_CHART_MANIFEST, BAR_CHART_MANIFEST].forEach((manifest) => {
+        it("sets visResolve to manual", () => {
           const essence = EssenceFixtures.twitterNoVisualisation().changeVisualization(manifest);
           expect(essence.visualization.name).to.deep.equal(manifest.name);
           expect(essence.visResolve.isManual()).to.be.true;
@@ -281,10 +317,8 @@ describe("EssenceProps", () => {
     describe("constrain timeshift", () => {
       it("calls timeshift method with correct params", () => {
         const essence = EssenceFixtures.wikiTable();
-        const timeFilterSpy = stub(essence, "timeFilter")
-          .returns("stubbed-time-filter");
-        const constrainToFilterSpy = stub(essence.timeShift, "constrainToFilter")
-          .returns("constrained-time-shift");
+        const timeFilterSpy = stub(essence, "timeFilter").returns("stubbed-time-filter");
+        const constrainToFilterSpy = stub(essence.timeShift, "constrainToFilter").returns("constrained-time-shift");
 
         // @ts-ignore
         const newEssence = essence.constrainTimeShift();

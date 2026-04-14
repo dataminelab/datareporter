@@ -5,8 +5,10 @@ import cx from "classnames";
 import Popover from "antd/lib/popover";
 import Card from "antd/lib/card";
 import Tooltip from "antd/lib/tooltip";
-import Icon from "antd/lib/icon";
 import chooseTextColorForBackground from "@/lib/chooseTextColorForBackground";
+
+import CloseOutlinedIcon from "@ant-design/icons/CloseOutlined";
+import CheckOutlinedIcon from "@ant-design/icons/CheckOutlined";
 
 import ColorInput from "./Input";
 import Swatch from "./Swatch";
@@ -46,12 +48,12 @@ export default function ColorPicker({
   if (!interactive) {
     actions.push(
       <Tooltip key="cancel" title="Cancel">
-        <Icon type="close" onClick={handleCancel} />
+        <CloseOutlinedIcon onClick={handleCancel} />
       </Tooltip>
     );
     actions.push(
       <Tooltip key="apply" title="Apply">
-        <Icon type="check" onClick={handleApply} />
+        <CheckOutlinedIcon onClick={handleApply} />
       </Tooltip>
     );
   }
@@ -86,7 +88,8 @@ export default function ColorPicker({
               backgroundColor: currentColor,
               color: chooseTextColorForBackground(currentColor),
             }}
-            actions={actions}>
+            actions={actions}
+          >
             <ColorInput
               color={currentColor}
               presetColors={presetColors}
@@ -99,7 +102,8 @@ export default function ColorPicker({
         trigger="click"
         placement={placement}
         visible={visible}
-        onVisibleChange={setVisible}>
+        onVisibleChange={setVisible}
+      >
         {children || (
           <Swatch
             color={validatedColor}

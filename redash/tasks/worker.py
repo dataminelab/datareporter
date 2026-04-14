@@ -1,23 +1,24 @@
-import errno
-import sys
 import base64
+import errno
+import logging
 import os
 import signal
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
 import requests
-from redash import statsd_client
-from rq import Worker as BaseWorker, Queue as BaseQueue, get_current_job
+from rq import Queue as BaseQueue
+from rq.job import Job as BaseJob
+from rq.job import JobStatus
+from rq.timeouts import HorseMonitorTimeoutException, UnixSignalDeathPenalty
 from rq.utils import utcnow
-from rq.timeouts import UnixSignalDeathPenalty, HorseMonitorTimeoutException
-from rq.job import Job as BaseJob, JobStatus
 from rq.worker import (
     HerokuWorker,  # HerokuWorker implements graceful shutdown on SIGTERM
     Worker,
 )
-import logging
 
+from redash import statsd_client
 from redash.settings import GOOGLE_PUBSUB_WORKER_TOPIC_ID, WORKER_NOTIFY_URL
-
-logger = logging.getLogger("pubsub")
 
 # HerokuWorker does not work in OSX https://github.com/getredash/redash/issues/5413
 if sys.platform == "darwin":
@@ -25,9 +26,11 @@ if sys.platform == "darwin":
 else:
     BaseWorker = HerokuWorker
 
+logger = logging.getLogger("pubsub")
+
 
 class CancellableJob(BaseJob):
-    def cancel(self, pipeline=None):
+    def cancel(self, pipeline=None, enqueue_dependents=False):
         self.meta["cancelled"] = True
         self.save_meta()
 
@@ -37,32 +40,34 @@ class CancellableJob(BaseJob):
     def is_cancelled(self):
         return self.meta.get("cancelled", False)
 
+
 class NoopNotifier:
     def notify(self, message):
         try:
-            logger.debug(f"skipping notify worker for {message}")
+            logger.debug("skipping notify worker for %s", message)
         except Exception as error:
             logger.warning(error)
 
 
 class HttpNotifier:
-    publisher = None
+    worker = None
 
     def notify(self, message):
-        resp = requests.post(WORKER_NOTIFY_URL,
-                             headers={
-                                 "Accept": "application/json",
-                                 "Content-Type": "application/json"
-                             },
-                             json={
-                                 "message": {
-                                     "data": base64.b64encode(message.encode('ascii')).decode('ascii')
-                                 }
-                             })
+        if self.worker is None:
+            self.worker = ThreadPoolExecutor(max_workers=2)
+        self.worker.submit(self._send, message)
+
+    def _send(self, message):
+        resp = requests.post(
+            WORKER_NOTIFY_URL,
+            timeout=45,
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
+            json={"message": {"data": base64.b64encode(message.encode("ascii")).decode("ascii")}},
+        )
         try:
             resp.raise_for_status()
         except requests.HTTPError as e:
-            logger.error("Request failed: {}", e.response.text, e)
+            logger.error("Request failed: %s", e.response.text)
             raise e
 
 
@@ -72,30 +77,31 @@ class GooglePubSubNotifier:
     def notify(self, message):
         if self.publisher is None:
             from google.cloud import pubsub_v1
+
             self.publisher = pubsub_v1.PublisherClient()
         # Data must be a bytestring
         data = message.encode("utf-8")
         # When you publish a message, the client returns a future.
-        logger.info(f"publishing {GOOGLE_PUBSUB_WORKER_TOPIC_ID} : {data}")
+        logger.info("publishing %s: %s", GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
         future = self.publisher.publish(GOOGLE_PUBSUB_WORKER_TOPIC_ID, data)
         return future.result()
 
 
 class NotifyWorkerQueue(BaseQueue):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if GOOGLE_PUBSUB_WORKER_TOPIC_ID:
             self.worker_notifier = GooglePubSubNotifier()
         elif WORKER_NOTIFY_URL:
             self.worker_notifier = HttpNotifier()
-        else:
+        else:  # schedules will never hit /execute for workers
             self.worker_notifier = NoopNotifier()
 
     def enqueue_job(self, *args, **kwargs):
         job = super().enqueue_job(*args, **kwargs)
         self.worker_notifier.notify(self.name)
         return job
+
 
 class StatsdRecordingQueue(BaseQueue):
     """
@@ -112,7 +118,7 @@ class CancellableQueue(BaseQueue):
     job_class = CancellableJob
 
 
-class RedashQueue(NotifyWorkerQueue, CancellableQueue):
+class RedashQueue(NotifyWorkerQueue, StatsdRecordingQueue, CancellableQueue):
     pass
 
 

@@ -38,9 +38,20 @@ export interface DimensionItemProps {
 export type DimensionClickHandler = (dimensionName: string, e: MouseEvent<HTMLElement>) => void;
 export type DimensionDragStartHandler = (dimensionName: string, e: DragEvent<HTMLElement>) => void;
 
-export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dimensionClick, dimensionDragStart, description, classSuffix, searchText, selected }) => {
+export const DimensionItem: React.SFC<DimensionItemProps> = ({
+  name,
+  title,
+  dimensionClick,
+  dimensionDragStart,
+  description,
+  classSuffix,
+  searchText,
+  selected,
+}) => {
   const infoBubbleClassName = "info-icon";
-  const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, { selected });
+  const className = classNames(DIMENSION_CLASS_NAME, "type-" + classSuffix, {
+    selected,
+  });
 
   const handleClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.currentTarget;
@@ -52,18 +63,15 @@ export const DimensionItem: React.SFC<DimensionItemProps> = ({ name, title, dime
     dimensionDragStart(name, e);
   };
 
-  return <div
-    className={className}
-    key={name}
-    draggable={true}
-    onDragStart={handleDragStart}
-  >
-    <div className="label-icon-container" onClick={handleClick}>
-      <div className="icon">
-        <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
+  return (
+    <div className={className} key={name} draggable={true} onDragStart={handleDragStart}>
+      <div className="label-icon-container" onClick={handleClick}>
+        <div className="icon">
+          <SvgIcon svg={require("../../icons/dim-" + classSuffix + ".svg")} />
+        </div>
+        <HighlightString className={"label"} text={title} highlight={searchText} />
       </div>
-      <HighlightString className={"label"} text={title} highlight={searchText} />
+      {description && <InfoBubble className={infoBubbleClassName} description={description} />}
     </div>
-    {description && <InfoBubble className={infoBubbleClassName} description={description} />}
-  </div>;
+  );
 };

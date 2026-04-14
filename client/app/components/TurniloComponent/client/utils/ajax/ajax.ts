@@ -16,63 +16,34 @@
  */
 
 import axios from "axios";
-import {
-  ChainableExpression,
-  Dataset,
-  DatasetJS,
-  Environment,
-  Executor,
-  Expression,
-  LimitExpression,
-  SplitExpression
-} from "plywood";
-import { Cluster } from "../../../common/models/cluster/cluster";
+import { Dataset, DatasetJS, Executor, Expression, LimitExpression, FilterExpression } from "plywood";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
-import { setPriceButton } from "../../../../../pages/reports/components/ReportPageHeaderUtils"; 
+import { setPriceButton } from "../ajax/ReportPageHeaderUtils";
+import { urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { Essence } from "../../../common/models/essence/essence";
 
 interface Meta {
-  // Inner response object that returns two parameters:
   price: number;
   proceed_data: number;
 }
 
 interface APIResponse {
-    meta: Meta;
-    status: number;
-    data: DatasetJS;
+  meta: Meta;
+  status: number;
+  data: DatasetJS;
 }
 
-function getSplitsDescription(ex: Expression): string {
-  const splits: string[] = [];
-  ex.forEach(ex => {
-    if (ex instanceof ChainableExpression) {
-      ex.getArgumentExpressions().forEach(action => {
-        if (action instanceof SplitExpression) {
-          splits.push(action.firstSplitExpression().toString());
-        }
-      });
-    }
-  });
-  return splits.join(";");
+const EmptyDataset = Dataset.fromJS([]);
+
+function getClientTimeoutDefault(): number {
+  const ls = safeLocalStorage();
+  const docker_timeout = ls ? ls.getItem("CLIENT_TIMEOUT") : undefined;
+  return docker_timeout && docker_timeout !== "undefined" ? Number(docker_timeout) : 100000;
 }
 
-const CLIENT_TIMEOUT_DELTA:number = 30000;
-
-async function getDefaultTimeout() {
-  const method = "GET";
-  const url = `api/timeout`;
-  return axios({ method, url })
-    .then(res => {
-      console.log("timeout", res.data)
-      return res.data;
-    }
-  )
-}
-
-function clientTimeout(cluster: Cluster): number {
-  const defaultTimeout = localStorage.getItem("CLIENT_TIMEOUT_DELTA") ? Number(localStorage.getItem("CLIENT_TIMEOUT_DELTA")) : CLIENT_TIMEOUT_DELTA;
-  const clusterTimeout = cluster ? cluster.getTimeout() : 0;
-  return clusterTimeout + defaultTimeout;
+function clientTimeout(dataCube: DataCube): number {
+  const clusterTimeout = Number((dataCube && dataCube.cluster && dataCube.cluster.getTimeout()) || 0);
+  return getClientTimeoutDefault() + clusterTimeout;
 }
 
 let reloadRequested = false;
@@ -83,38 +54,55 @@ function reload() {
   window.location.reload();
 }
 
+function getHash() {
+  return window.location.hash ? window.location.hash.substring(window.location.hash.indexOf("4/") + 2) : "";
+}
 
 export interface AjaxOptions {
   method: "GET" | "POST";
   url: string;
-  timeout: number;
+  timeout?: number;
   data?: any;
 }
 
-const validateStatus = (s: number) => 200 <= s && s < 300 || s === 304;
+const validateStatus = (s: number) => (200 <= s && s < 300) || s === 304;
 
 export class Ajax {
   static version: string;
-
   static settingsVersionGetter: () => number;
   static onUpdate: () => void;
-  private static model_id: number;
-  static hash: string;
+  public static model_id: number;
+  private static results: any;
+  public static hash: string;
+
+  static setInitialResults(results: any): void {
+    Ajax.results = results;
+  }
+
+  static hasReadyResults(results: any): boolean {
+    if (!results || !Array.isArray(results.queries) || results.queries.length === 0) {
+      return false;
+    }
+
+    return results.queries.every((query: any) => Boolean(query && query.query_result && query.query_result.data));
+  }
 
   static query<T>({ data, url, timeout, method }: AjaxOptions): Promise<T> {
     return axios({ method, url, data, timeout, validateStatus })
-      .then(res => {
+      .then((res) => {
         if (res && res.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
+        else if (
+          (res.data.progress.results !== res.data.progress.all || res.data.progress.progress !== 100) &&
+          Ajax.onUpdate
+        )
+          Ajax.onUpdate();
         return res.data;
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response && error.response.data) {
-          if (error.response.data.action === "reload") {
-            reload();
-          } else if (error.response.data.action === "update" && Ajax.onUpdate) {
-            Ajax.onUpdate();
-          }
-          var message =  error.response.data.message || error.message;
+          if (error.response.data.action === "reload") reload();
+          else if (error.response.data.action === "update" && Ajax.onUpdate) Ajax.onUpdate();
+          const message = error.response.data.message || error.message;
           throw new Error("error with response: " + error.response.status + ", " + message);
         } else if (error.request) {
           throw new Error("no response received, " + error.message);
@@ -124,64 +112,140 @@ export class Ajax {
       });
   }
 
-  static queryUrlExecutorFactory(dataCube: DataCube): Executor {
-    const timeout = clientTimeout(dataCube.cluster);
-    // @ts-ignore
-    function timeoutQuery(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+  static queryUrlExecutorFactory(
+    dataCube: DataCube,
+    getEssence: () => Essence,
+    statusCallback?: (status: any) => void,
+    getExecutionStatus?: () => string
+  ): Executor {
+    const timeout = clientTimeout(dataCube);
+
+    function getEssenceIfExists() {
+      return getEssence ? getEssence() : null;
+    }
+
+    function timeoutQuery(ms: number) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     async function subscribe(input: AjaxOptions): Promise<APIResponse> {
-        const { data, method, timeout , url } = input;
-        data.bypass_cache = localStorage.getItem("bypass_cache") === "true";
-        localStorage.removeItem("bypass_cache");
-        const res = await Ajax.query<APIResponse>({ method, url, timeout, data });
-        if ([1, 2].indexOf(res.status) >= 0) {
-            await timeoutQuery(2000);
-            return await subscribe(input);
-       } else return res;
+      const { data, method, timeout, url } = input;
+      const ls = safeLocalStorage();
+      if (ls) {
+        data.bypass_cache = ls.getItem("bypass_cache") === "true";
+        ls.removeItem("bypass_cache");
+      }
+      const res = await Ajax.query<APIResponse>({ method, url, timeout, data })
+        .then((result) => {
+          if (getExecutionStatus() === "cancelling") {
+            statusCallback({
+              reportResult: null,
+              loadedInitialResults: true,
+              error: null,
+              status: "done",
+              isExecuting: false,
+              isCancelling: false,
+              executionStatus: null,
+            });
+            throw new Error("Query cancelled by user");
+          }
+          return result;
+        })
+        .catch((error) => {
+          statusCallback({ status: "failed", isExecuting: false, error });
+          throw error;
+        });
+      const urlHash = getHash();
+      if (!url.endsWith("filter") && urlHash && data.hash !== urlHash) {
+        console.warn(`Hash mismatch: expected ${data.hash}, got ${urlHash}`);
+        return res;
+      } else if ([1, 2].indexOf(res.status) >= 0) {
+        await timeoutQuery(2000);
+        return await subscribe(input);
+      } else {
+        statusCallback({ status: "done", isExecuting: false });
+        return res;
+      }
     }
 
-    async function subscribeToFilter(ex: LimitExpression, modelId: number) {
+    async function subscribeToFilter(ex: LimitExpression | Expression, modelId: number) {
       const method = "POST";
       const url = `api/reports/generate/${modelId}/filter`;
-      const data = { expression : ex.toJS() };
+      const data = { expression: ex.toJS() };
+      statusCallback({ status: "processing", isExecuting: true });
       return subscribe({ method, url, timeout, data });
     }
 
     async function subscribeToSplit(hash: string, modelId: number) {
       const method = "POST";
-      const url = `api/reports/generate/${modelId}`;
+      let url;
+      statusCallback({ status: "processing", isExecuting: true });
+      const publicPathMatch = window.location.pathname.match(/\/public\/(?:dashboards|reports)\/([^/]+)/);
+      if (publicPathMatch && publicPathMatch[1]) {
+        const apiKey = decodeURIComponent(publicPathMatch[1]);
+        url = `api/reports/generate/${modelId}/public?api_key=${apiKey}`;
+      } else {
+        url = `api/reports/generate/${modelId}`;
+      }
       const data = { hash };
       return subscribe({ method, url, timeout, data });
     }
 
-    return async (ex: Expression, env: Environment = {}) => {
-      const modelId = this.model_id;
-      if (ex instanceof  LimitExpression) {
-        const sub = await subscribeToFilter(ex, modelId);
-        if (sub.meta) {
-          setPriceButton(
-            Number(sub.meta.price), 
-            Number(sub.meta.proceed_data),
-            false);
-        }
-        return Dataset.fromJS(sub.data);
+    function parseMeta(sub: APIResponse) {
+      // This function parses the meta information from the subscription response
+      // how much the query costs and how much data has been processed
+      const meta = sub.meta;
+      if (!meta) return;
+      // TODO: proceed_data is a byte type, parse it better, use big int
+      // TODO: make it also visible on dashboard page
+      setPriceButton(Number(meta.price), Number(meta.proceed_data), false);
+    }
+
+    function getHashForExpression(): string {
+      const essence = getEssenceIfExists();
+      return essence ? urlHashConverter.toHash(essence).substring(2) : getHash() || Ajax.hash;
+    }
+
+    function isFilterOrLimitExpression(ex: Expression): boolean {
+      return (
+        ex instanceof LimitExpression ||
+        // @ts-ignore compiler thinks that operand does not exist in the FilterExpression
+        ex.operand instanceof FilterExpression
+      );
+    }
+
+    return async (ex: Expression) => {
+      if (Ajax.hasReadyResults(Ajax.results)) {
+        return Dataset.fromJS(Ajax.results.data || EmptyDataset);
       }
-      var hash;
-      if (window.location.hash) {
-        hash = window.location.hash.substring(window.location.hash.indexOf("4/") + 2);
+
+      const modelId = Ajax.model_id;
+      let sub: APIResponse;
+
+      if (isFilterOrLimitExpression(ex)) {
+        sub = await subscribeToFilter(ex, modelId);
       } else {
-        hash = this.hash;
+        const hash = getHashForExpression();
+        sub = await subscribeToSplit(hash, modelId);
       }
-      const sub = await subscribeToSplit(hash, modelId);
-      if (sub.meta) {
-        setPriceButton(
-          Number(sub.meta.price), 
-          Number(sub.meta.proceed_data),
-          false);
-      }
-      return Dataset.fromJS(sub.data);
+
+      parseMeta(sub);
+      return Dataset.fromJS(sub.data || EmptyDataset);
     };
   }
+}
+
+function safeLocalStorage() {
+  try {
+    if (typeof window !== "undefined" && window.localStorage) {
+      // Try a test write to check for SecurityError
+      const testKey = "__test__";
+      window.localStorage.setItem(testKey, "1");
+      window.localStorage.removeItem(testKey);
+      return window.localStorage;
+    }
+  } catch {
+    // localStorage is not available
+  }
+  return null;
 }

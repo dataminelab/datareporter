@@ -8,7 +8,7 @@ from rq_scheduler import Scheduler
 
 from redash import rq_redis_connection, settings
 from redash.tasks.failure_report import send_aggregated_errors
-from redash.tasks.general import sync_user_details, version_check
+from redash.tasks.general import sync_user_details
 from redash.tasks.queries import (
     cleanup_query_results,
     empty_schedules,
@@ -16,6 +16,7 @@ from redash.tasks.queries import (
     refresh_schemas,
     remove_ghost_locks,
 )
+from redash.tasks.reports import empty_report_schedules, refresh_reports
 from redash.tasks.worker import Queue
 
 logger = logging.getLogger(__name__)
@@ -56,13 +57,15 @@ def schedule(kwargs):
 
 def periodic_job_definitions():
     jobs = [
-        {"func": refresh_queries, "timeout": 600, "interval": 30, "result_ttl": 600},
+        {"func": refresh_queries, "timeout": 60, "interval": 30, "result_ttl": 600},
+        {"func": refresh_reports, "timeout": 60, "interval": 30, "result_ttl": 600},
         {
             "func": remove_ghost_locks,
             "interval": timedelta(minutes=1),
             "result_ttl": 600,
         },
         {"func": empty_schedules, "interval": timedelta(minutes=60)},
+        {"func": empty_report_schedules, "interval": timedelta(minutes=60)},
         {
             "func": refresh_schemas,
             "interval": timedelta(minutes=settings.SCHEMAS_REFRESH_SCHEDULE),
@@ -78,9 +81,6 @@ def periodic_job_definitions():
             "interval": timedelta(minutes=settings.SEND_FAILURE_EMAIL_INTERVAL),
         },
     ]
-
-    if settings.VERSION_CHECK:
-        jobs.append({"func": version_check, "interval": timedelta(days=1)})
 
     if settings.QUERY_RESULTS_CLEANUP_ENABLED:
         jobs.append({"func": cleanup_query_results, "interval": timedelta(minutes=5)})

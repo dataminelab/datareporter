@@ -5,14 +5,16 @@ import datetime
 import decimal
 import hashlib
 import io
+import json
+import math
 import os
 import random
 import re
+import sys
 import uuid
 
 import pystache
 import pytz
-import simplejson
 import sqlparse
 from flask import current_app
 from funcy import select_values
@@ -59,7 +61,7 @@ def gen_query_hash(sql):
     """
     sql = COMMENTS_REGEX.sub("", sql)
     sql = "".join(sql.split())
-    return hashlib.md5(sql.encode("utf-8")).hexdigest()
+    return hashlib.md5(sql.encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 def generate_token(length):
@@ -69,11 +71,20 @@ def generate_token(length):
     return "".join(rand.choice(chars) for x in range(length))
 
 
-class JSONEncoder(simplejson.JSONEncoder):
-    """Adapter for `simplejson.dumps`."""
+class JSONEncoder(json.JSONEncoder):
+    """Adapter for `json.dumps`."""
 
-    def default(self, o):
-        # Some SQLAlchemy collections are lazy.
+    def __init__(self, **kwargs):
+        from redash.query_runner import query_runners
+
+        self.encoders = [r.custom_json_encoder for r in query_runners.values() if hasattr(r, "custom_json_encoder")]
+        super().__init__(**kwargs)
+
+    def default(self, o):  # noqa: C901
+        for encoder in self.encoders:
+            result = encoder(self, o)
+            if result:
+                return result
         if isinstance(o, Query):
             result = list(o)
         elif isinstance(o, decimal.Decimal):
@@ -99,12 +110,11 @@ class JSONEncoder(simplejson.JSONEncoder):
             result = binascii.hexlify(o).decode()
         elif isinstance(o, bytes):
             result = binascii.hexlify(o).decode()
-        elif "queries" in dir(o):
-            # ReportSerializer
+        elif "queries" in dir(o):  # ReportSerializer
             result = o.queries
-        elif "isJustLanded" in dir(o):
-            # single report | api/report/<int>
-            return o
+        elif "ply_engine" in dir(o):
+            # Dashboards have a reference to the ply engine, which is not serializable, but we can get the context from it.
+            result = o.context
         else:
             result = super(JSONEncoder, self).default(o)
         return result
@@ -112,19 +122,30 @@ class JSONEncoder(simplejson.JSONEncoder):
 
 def json_loads(data, *args, **kwargs):
     """A custom JSON loading function which passes all parameters to the
-    simplejson.loads function."""
-    return simplejson.loads(data, *args, **kwargs)
+    json.loads function."""
+    return json.loads(data, *args, **kwargs)
+
+
+# Convert NaN, Inf, and -Inf to None, as they are not valid JSON values.
+def _sanitize_data(data):
+    if isinstance(data, dict):
+        return {k: _sanitize_data(v) for k, v in data.items()}
+    if isinstance(data, list):
+        return [_sanitize_data(v) for v in data]
+    if isinstance(data, float) and (math.isnan(data) or math.isinf(data)):
+        return None
+    return data
 
 
 def json_dumps(data, *args, **kwargs):
     """A custom JSON dumping function which passes all parameters to the
-    simplejson.dumps function."""
+    json.dumps function."""
     kwargs.setdefault("cls", JSONEncoder)
-    kwargs.setdefault("encoding", None)
+    kwargs.setdefault("ensure_ascii", False)
     # Float value nan or inf in Python should be render to None or null in json.
-    # Using ignore_nan = False will make Python render nan as NaN, leading to parse error in front-end
-    kwargs.setdefault("ignore_nan", True)
-    return simplejson.dumps(data, *args, **kwargs)
+    # Using allow_nan = True will make Python render nan as NaN, leading to parse error in front-end
+    kwargs.setdefault("allow_nan", False)
+    return json.dumps(_sanitize_data(data), *args, **kwargs)
 
 
 def mustache_render(template, context=None, **kwargs):
@@ -224,3 +245,35 @@ def render_template(path, context):
     function decorated with the `context_processor` decorator, which is not explicitly required for rendering purposes.
     """
     return current_app.jinja_env.get_template(path).render(**context)
+
+
+def query_is_select_no_limit(query):
+    parsed_query = sqlparse.parse(query)[0]
+    last_keyword_idx = find_last_keyword_idx(parsed_query)
+    # Either invalid query or query that is not select
+    if last_keyword_idx == -1 or parsed_query.tokens[0].value.upper() != "SELECT":
+        return False
+
+    no_limit = (
+        parsed_query.tokens[last_keyword_idx].value.upper() != "LIMIT"
+        and parsed_query.tokens[last_keyword_idx].value.upper() != "OFFSET"
+    )
+    return no_limit
+
+
+def find_last_keyword_idx(parsed_query):
+    for i in reversed(range(len(parsed_query.tokens))):
+        if parsed_query.tokens[i].ttype in sqlparse.tokens.Keyword:
+            return i
+    return -1
+
+
+def add_limit_to_query(query):
+    parsed_query = sqlparse.parse(query)[0]
+    limit_tokens = sqlparse.parse(" LIMIT 1000")[0].tokens
+    length = len(parsed_query.tokens)
+    if parsed_query.tokens[length - 1].ttype == sqlparse.tokens.Punctuation:
+        parsed_query.tokens[length - 1 : length - 1] = limit_tokens  # noqa: E203
+    else:
+        parsed_query.tokens += limit_tokens
+    return str(parsed_query)

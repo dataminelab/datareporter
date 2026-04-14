@@ -20,5 +20,6 @@ import { InputWithPresets, InputWithPresetsProps } from "./input-with-presets";
 
 type StringInputWithPresetsProps = Omit<InputWithPresetsProps<string>, "parseCustomValue" | "formatCustomValue">;
 
-export const StringInputWithPresets: React.SFC<StringInputWithPresetsProps> = props =>
-  <InputWithPresets<string> {...props} parseCustomValue={identity} formatCustomValue={identity} />;
+export const StringInputWithPresets: React.SFC<StringInputWithPresetsProps> = (props) => (
+  <InputWithPresets<string> {...props} parseCustomValue={identity} formatCustomValue={identity} />
+);

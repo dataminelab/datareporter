@@ -26,40 +26,56 @@ interface MeasuresHeaderProps {
   showPrevious: boolean;
 }
 
-function sortDirection(commonSort: Sort, series: ConcreteSeries, period = SeriesDerivation.CURRENT): SortDirection | null {
-  const isSortedBy = commonSort instanceof SeriesSort && commonSort.reference === series.definition.key() && commonSort.period === period;
+function sortDirection(
+  commonSort: Sort,
+  series: ConcreteSeries,
+  period = SeriesDerivation.CURRENT
+): SortDirection | null {
+  const isSortedBy =
+    commonSort instanceof SeriesSort &&
+    commonSort.reference === series.definition.key() &&
+    commonSort.period === period;
   return isSortedBy ? commonSort.direction : null;
 }
 
-export const MeasuresHeader: React.SFC<MeasuresHeaderProps> = props => {
+export const MeasuresHeader: React.SFC<MeasuresHeaderProps> = (props) => {
   const { cellWidth, series, commonSort, showPrevious } = props;
 
-  return <React.Fragment>
-    {series.map(serie => {
-      const currentMeasure = <MeasureHeaderCell
-        key={serie.reactKey()}
-        width={cellWidth}
-        title={serie.title()}
-        sort={sortDirection(commonSort, serie)} />;
+  return (
+    <React.Fragment>
+      {series.map((serie) => {
+        const currentMeasure = (
+          <MeasureHeaderCell
+            key={serie.reactKey()}
+            width={cellWidth}
+            title={serie.title()}
+            sort={sortDirection(commonSort, serie)}
+          />
+        );
 
-      if (!showPrevious) {
-        return currentMeasure;
-      }
+        if (!showPrevious) {
+          return currentMeasure;
+        }
 
-      return <React.Fragment>
-        {currentMeasure}
-        <MeasureHeaderCell
-          key={serie.reactKey(SeriesDerivation.PREVIOUS)}
-          width={cellWidth}
-          title={serie.title(SeriesDerivation.PREVIOUS)}
-          sort={sortDirection(commonSort, serie, SeriesDerivation.PREVIOUS)} />
-        <MeasureHeaderCell
-          className="measure-delta"
-          key={serie.reactKey(SeriesDerivation.DELTA)}
-          width={cellWidth}
-          title="Difference"
-          sort={sortDirection(commonSort, serie, SeriesDerivation.DELTA)} />
-      </React.Fragment>;
-    })}
-  </React.Fragment>;
+        return (
+          <React.Fragment>
+            {currentMeasure}
+            <MeasureHeaderCell
+              key={serie.reactKey(SeriesDerivation.PREVIOUS)}
+              width={cellWidth}
+              title={serie.title(SeriesDerivation.PREVIOUS)}
+              sort={sortDirection(commonSort, serie, SeriesDerivation.PREVIOUS)}
+            />
+            <MeasureHeaderCell
+              className="measure-delta"
+              key={serie.reactKey(SeriesDerivation.DELTA)}
+              width={cellWidth}
+              title="Difference"
+              sort={sortDirection(commonSort, serie, SeriesDerivation.DELTA)}
+            />
+          </React.Fragment>
+        );
+      })}
+    </React.Fragment>
+  );
 };

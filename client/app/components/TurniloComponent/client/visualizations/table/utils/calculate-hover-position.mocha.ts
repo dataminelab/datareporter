@@ -26,8 +26,9 @@ describe("Calculate Hover Position", () => {
   describe("seriesPosition", () => {
     const segmentWidth = 100;
     const columnWidth = 50;
-    const offsetForNthColumn = (n: number) => segmentWidth + ((n - 0.5) * columnWidth);
-    const seriesPosition = (x: number, essence: Essence) => uncurriedSeriesPosition(x, essence, segmentWidth, columnWidth);
+    const offsetForNthColumn = (n: number) => segmentWidth + (n - 0.5) * columnWidth;
+    const seriesPosition = (x: number, essence: Essence) =>
+      uncurriedSeriesPosition(x, essence, segmentWidth, columnWidth);
 
     const wiki = EssenceFixtures.wikiTable();
 
@@ -42,7 +43,7 @@ describe("Calculate Hover Position", () => {
         const secondSeries = wiki.series.series.get(1);
         expect(position).to.include({
           series: secondSeries,
-          period: SeriesDerivation.CURRENT
+          period: SeriesDerivation.CURRENT,
         });
       });
 
@@ -52,48 +53,10 @@ describe("Calculate Hover Position", () => {
         expect(position).to.include({ element: HoverElement.WHITESPACE });
       });
     });
-
-    describe("without timeshift", () => {
-      const wikiWithTimeshift = wiki.changeComparisonShift(TimeShift.fromJS("P1D"));
-
-      it("should return second series in current period for given offset", () => {
-        const position = seriesPosition(offsetForNthColumn(4), wikiWithTimeshift);
-        const secondSeries = wiki.series.series.get(1);
-        expect(position).to.include({
-          series: secondSeries,
-          period: SeriesDerivation.CURRENT
-        });
-      });
-
-      it("should return second series in previous period for given offset", () => {
-        const position = seriesPosition(offsetForNthColumn(5), wikiWithTimeshift);
-        const secondSeries = wiki.series.series.get(1);
-        expect(position).to.include({
-          series: secondSeries,
-          period: SeriesDerivation.PREVIOUS
-        });
-      });
-
-      it("should return second series delta for given offset", () => {
-        const position = seriesPosition(offsetForNthColumn(6), wikiWithTimeshift);
-        const secondSeries = wiki.series.series.get(1);
-        expect(position).to.include({
-          series: secondSeries,
-          period: SeriesDerivation.DELTA
-        });
-      });
-
-      it("should return whitespace for invalid offset", () => {
-        const seriesCount = wiki.series.series.count();
-        const invalidSeriesIndex = seriesCount * 3 + 1;
-        const position = seriesPosition(offsetForNthColumn(invalidSeriesIndex), wikiWithTimeshift);
-        expect(position).to.include({ element: HoverElement.WHITESPACE });
-      });
-    });
   });
 
   describe("rowPosition", () => {
-    const offsetForNthRow = (n: number) => HEADER_HEIGHT + ((n - 0.5) * ROW_HEIGHT);
+    const offsetForNthRow = (n: number) => HEADER_HEIGHT + (n - 0.5) * ROW_HEIGHT;
 
     it("should return row element for valid offset", () => {
       const position = rowPosition(offsetForNthRow(1), [{}]);

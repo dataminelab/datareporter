@@ -18,7 +18,7 @@ function Editor({ column, onChange }) {
         }
         data-test="Table.ColumnEditor.Number.Format"
         defaultValue={column.numberFormat}
-        onChange={event => onChangeDebounced({ numberFormat: event.target.value })}
+        onChange={(event) => onChangeDebounced({ numberFormat: event.target.value })}
       />
     </Section>
   );

@@ -16,7 +16,14 @@
 
 import { expect } from "chai";
 import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtures";
-import { makeDataset, nominalDataset, nonNominalDataset, scale, sparseNominalDataset, sparseNonNominalDataset } from "../../../utils/dataset/selectors/dataset-fixtures";
+import {
+  makeDataset,
+  nominalDataset,
+  nonNominalDataset,
+  scale,
+  sparseNominalDataset,
+  sparseNonNominalDataset,
+} from "../../../utils/dataset/selectors/dataset-fixtures";
 import { findClosestDatum } from "./find-closest-datum";
 
 const essenceWithoutNominalSplit = EssenceFixtures.wikiLineChartNoNominalSplit();
@@ -37,7 +44,7 @@ describe("findClosestDatum", () => {
     it("should return range value belongs to", () => {
       const date = new Date("2000-01-03T07:32:11Z");
       expect(findClosestDatum(date, essenceWithoutNominalSplit, nonNominalDataset, scale)).to.be.include({
-        measure: 11000
+        measure: 11000,
       });
     });
 
@@ -56,7 +63,7 @@ describe("findClosestDatum", () => {
     it("should return range value belongs to", () => {
       const date = new Date("2000-01-03T07:32:11Z");
       expect(findClosestDatum(date, essenceWithNominalSplit, nominalDataset, scale)).to.include({
-        measure: 11000
+        measure: 11000,
       });
     });
 

@@ -55,7 +55,9 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   private items = React.createRef<HTMLDivElement>();
 
   private maxItems(): number {
-    const { essence: { series } } = this.context;
+    const {
+      essence: { series },
+    } = this.context;
     const { menuStage } = this.props;
     return menuStage && getMaxItems(menuStage.width, series.count());
   }
@@ -69,8 +71,8 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     this.setState({
       placeholderSeries: {
         series,
-        index: this.context.essence.series.count()
-      }
+        index: this.context.essence.series.count(),
+      },
     });
   }
 
@@ -102,7 +104,9 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   };
 
   canDrop(): boolean {
-    const { essence: { series: seriesList } } = this.context;
+    const {
+      essence: { series: seriesList },
+    } = this.context;
     const measure = DragManager.draggingMeasure();
     if (measure) return !seriesList.hasMeasure(measure);
     return DragManager.isDraggingSeries();
@@ -136,7 +140,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({
-      dragPosition: this.calculateDragPosition(e)
+      dragPosition: this.calculateDragPosition(e),
     });
   };
 
@@ -151,7 +155,7 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   dragLeave = () => {
     if (!this.canDrop()) return;
     this.setState({
-      dragPosition: null
+      dragPosition: null,
     });
   };
 
@@ -168,14 +172,21 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
   };
 
   private dropNewSeries(newSeries: Series, dragPosition: DragPosition) {
-    const { clicker, essence: { series } } = this.context;
+    const {
+      clicker,
+      essence: { series },
+    } = this.context;
     const isDuplicateQuantile = newSeries instanceof QuantileSeries && series.hasSeries(newSeries);
     if (isDuplicateQuantile) {
       if (dragPosition.isReplace()) {
         clicker.removeSeries(series.series.get(dragPosition.replace));
-        this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.replace } });
+        this.setState({
+          placeholderSeries: { series: newSeries, index: dragPosition.replace },
+        });
       } else {
-        this.setState({ placeholderSeries: { series: newSeries, index: dragPosition.insert } });
+        this.setState({
+          placeholderSeries: { series: newSeries, index: dragPosition.insert },
+        });
       }
     } else {
       this.rearrangeSeries(newSeries, dragPosition);
@@ -207,28 +218,36 @@ export class SeriesTilesRow extends React.Component<SeriesTilesRowProps, SeriesT
     const { dragPosition, openedSeries, overflowOpen, placeholderSeries } = this.state;
     const { essence } = this.context;
     const { menuStage } = this.props;
-    return <div className="series-tile" onDragEnter={this.dragEnter}>
-      <div className="title">{STRINGS.series}</div>
-      <div className="items" ref={this.items}>
-        <SeriesTiles
-          menuStage={menuStage}
-          placeholderSeries={placeholderSeries}
-          maxItems={this.maxItems()}
-          essence={essence}
-          removeSeries={this.removeSeries}
-          updateSeries={this.updateSeries}
-          openSeriesMenu={this.openSeriesMenu}
-          closeSeriesMenu={this.closeSeriesMenu}
-          dragStart={this.dragStart}
-          removePlaceholderSeries={this.removePlaceholderSeries}
-          savePlaceholderSeries={this.savePlaceholderSeries}
-          overflowOpen={overflowOpen}
-          closeOverflowMenu={this.closeOverflowMenu}
-          openOverflowMenu={this.openOverflowMenu}
-          openedSeriesMenu={openedSeries} />
+    return (
+      <div className="series-tile" onDragEnter={this.dragEnter}>
+        <div className="title">{STRINGS.series}</div>
+        <div className="items" ref={this.items}>
+          <SeriesTiles
+            menuStage={menuStage}
+            placeholderSeries={placeholderSeries}
+            maxItems={this.maxItems()}
+            essence={essence}
+            removeSeries={this.removeSeries}
+            updateSeries={this.updateSeries}
+            openSeriesMenu={this.openSeriesMenu}
+            closeSeriesMenu={this.closeSeriesMenu}
+            dragStart={this.dragStart}
+            removePlaceholderSeries={this.removePlaceholderSeries}
+            savePlaceholderSeries={this.savePlaceholderSeries}
+            overflowOpen={overflowOpen}
+            closeOverflowMenu={this.closeOverflowMenu}
+            openOverflowMenu={this.openOverflowMenu}
+            openedSeriesMenu={openedSeries}
+          />
+        </div>
+        <AddSeries menuStage={menuStage} essence={essence} appendMeasureSeries={this.appendMeasureSeries} />
+        <DragIndicator
+          dragOver={this.dragOver}
+          dragLeave={this.dragLeave}
+          drop={this.drop}
+          dragPosition={dragPosition}
+        />
       </div>
-      <AddSeries menuStage={menuStage} essence={essence} appendMeasureSeries={this.appendMeasureSeries} />
-      <DragIndicator dragOver={this.dragOver} dragLeave={this.dragLeave} drop={this.drop} dragPosition={dragPosition} />
-    </div>;
+    );
   }
 }

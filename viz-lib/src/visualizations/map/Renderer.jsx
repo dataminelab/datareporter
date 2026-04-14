@@ -47,7 +47,7 @@ export default function Renderer({ data, options, onOptionsChange }) {
 
   useEffect(() => {
     if (map && onOptionsChange) {
-      map.onBoundsChange = bounds => {
+      map.onBoundsChange = (bounds) => {
         onOptionsChange(merge({}, options, { bounds }));
       };
     }

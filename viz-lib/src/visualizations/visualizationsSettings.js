@@ -11,7 +11,8 @@ function HelpTrigger({ title, href, className, children }) {
           {title}
           <i className="fa fa-external-link" style={{ marginLeft: 5 }} />
         </React.Fragment>
-      }>
+      }
+    >
       <a className={className} href={href} target="_blank" rel="noopener noreferrer">
         {children}
       </a>
@@ -32,11 +33,16 @@ HelpTrigger.defaultValues = {
   children: null,
 };
 
+function Link(props) {
+  return <a {...props} />;
+}
+
 export const visualizationsSettings = {
   HelpTriggerComponent: HelpTrigger,
+  LinkComponent: Link,
   dateFormat: "DD/MM/YYYY",
   dateTimeFormat: "DD/MM/YYYY HH:mm",
-  integetFormat: "0,0",
+  integerFormat: "0,0",
   floatFormat: "0,0.00",
   booleanValues: ["false", "true"],
   tableCellMaxJSONSize: 50000,

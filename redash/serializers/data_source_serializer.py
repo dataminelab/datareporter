@@ -3,7 +3,7 @@ from redash.serializers import Serializer
 
 def _serialize_table(schema):
     d = {
-        "name": schema['name'],
+        "name": schema["name"],
     }
     return d
 
@@ -14,8 +14,6 @@ class TableSerializer(Serializer):
         self.options = kwargs
 
     def serialize(self):
-        result = [
-            _serialize_table(query) for query in self.schemas
-        ]
+        result = [_serialize_table(query) for query in self.schemas]
 
         return result

@@ -1,96 +1,119 @@
-FROM node:14.17 as frontend-builder
+FROM node:18-bookworm-slim AS frontend-builder
 
 # Controls whether to build the frontend assets
 ARG skip_frontend_build
 
+ENV CYPRESS_INSTALL_BINARY=0
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
+
+RUN useradd -m -d /frontend datareporter
+USER datareporter
+
 WORKDIR /frontend
-COPY bin/build_frontend.sh .
-COPY client/ /frontend/client
-COPY viz-lib/ /frontend/viz-lib
-COPY plywood/server/ /frontend/plywood/server/
-RUN if [ "x$skip_frontend_build" = "x" ] ; then \
-    echo "Building frontend";\
-    ./build_frontend.sh;\
-  else \
-    echo "Skipping frontend build" &&\
-    mkdir -p /frontend/client/dist &&\
-    touch /frontend/client/dist/multi_org.html &&\
-    touch /frontend/client/dist/index.html;\
+COPY --chown=datareporter client /frontend/client
+COPY --chown=datareporter viz-lib /frontend/viz-lib
+COPY --chown=datareporter plywood /frontend/plywood
+
+# Controls whether to instrument code for coverage information
+ARG code_coverage
+ENV BABEL_ENV=${code_coverage:+test}
+
+RUN <<EOF
+  if [ "x$skip_frontend_build" = "x" ]; then
+    cd client && npm ci && npm run build
+  else
+    mkdir -p /frontend/client/dist
+    touch /frontend/client/dist/multi_org.html
+    touch /frontend/client/dist/index.html
   fi
-FROM python:3.8-slim-bookworm
+
+FROM python:3.10-slim-bookworm
 
 EXPOSE 5000
 
-# Controls whether to install extra dependencies needed for all data sources.
-ARG skip_ds_deps
-# Controls whether to install dev dependencies.
-ARG skip_dev_deps
-
-
-RUN useradd --create-home redash
+RUN useradd --create-home datareporter
 
 # Ubuntu packages
 RUN apt-get update && \
-  apt-get install -y \
-    curl \
-    gnupg \
-    build-essential \
-    pwgen \
-    libffi-dev \
-    sudo \
-    git-core \
-    wget \
-    # Postgres client
-    libpq-dev \
-    # ODBC support:
-    g++ unixodbc-dev \
-    # for SAML
-    xmlsec1 \
-    # Additional packages required for data sources:
-    libssl-dev \
-    default-libmysqlclient-dev \
-    freetds-dev \
-    libsasl2-dev \
-    unzip \
-    libsasl2-modules-gssapi-mit && \
-  # MSSQL ODBC Driver:
-#  curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-#  curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-  apt-get update && \
-#  ACCEPT_EULA=Y apt-get install -y msodbcsql17 && \
+  apt-get install -y --no-install-recommends \
+  pkg-config \
+  curl \
+  gnupg \
+  build-essential \
+  pwgen \
+  libffi-dev \
+  sudo \
+  git-core \
+  wget \
+  # Kerberos, needed for MS SQL Python driver to compile on arm64
+  libkrb5-dev \
+  # OSError: mysql_config not found
+  libmariadb-dev \
+  # Postgres client
+  libpq-dev \
+  # ODBC support:
+  g++ unixodbc-dev \
+  # for SAML
+  xmlsec1 \
+  # Additional packages required for data sources:
+  libssl-dev \
+  default-libmysqlclient-dev \
+  freetds-dev \
+  libsasl2-dev \
+  unzip \
+  python3-distutils \
+  python3-venv \
+  libsasl2-modules-gssapi-mit && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-#ARG databricks_odbc_driver_url=https://databricks.com/wp-content/uploads/2.6.10.1010-2/SimbaSparkODBC-2.6.10.1010-2-Debian-64bit.zip
-#ADD $databricks_odbc_driver_url /tmp/simba_odbc.zip
-#RUN unzip /tmp/simba_odbc.zip -d /tmp/ \
-#  && dpkg -i /tmp/SimbaSparkODBC-*/*.deb \
-#  && echo "[Simba]\nDriver = /opt/simba/spark/lib/64/libsparkodbc_sb64.so" >> /etc/odbcinst.ini \
-#  && rm /tmp/simba_odbc.zip \
-#  && rm -rf /tmp/SimbaSparkODBC*
+
+ARG TARGETPLATFORM
+ARG databricks_odbc_driver_url=https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/odbc/2.6.26/SimbaSparkODBC-2.6.26.1045-Debian-64bit.zip
+RUN <<EOF
+  if [ "$TARGETPLATFORM" = "linux/amd64" ]; then
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+    curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list
+    apt-get update
+    ACCEPT_EULA=Y apt-get install  -y --no-install-recommends msodbcsql18
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+    curl "$databricks_odbc_driver_url" --location --output /tmp/simba_odbc.zip
+    chmod 600 /tmp/simba_odbc.zip
+    unzip /tmp/simba_odbc.zip -d /tmp/simba
+    dpkg -i /tmp/simba/*.deb
+    printf "[Simba]\nDriver = /opt/simba/spark/lib/64/libsparkodbc_sb64.so" >> /etc/odbcinst.ini
+    rm /tmp/simba_odbc.zip
+    rm -rf /tmp/simba
+  fi
+EOF
 
 WORKDIR /app
 
-ENV POETRY_VERSION=1.6.1
+ENV POETRY_VERSION=2.1.1
 ENV POETRY_HOME=/etc/poetry
 ENV POETRY_VIRTUALENVS_CREATE=false
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN pip install --no-cache-dir "poetry==${POETRY_VERSION}" "distlib<0.4.0"
 
-COPY pyproject.toml ./
-# poetry.lock ./
+# Avoid crashes, including corrupted cache artifacts, when building multi-platform images with GitHub Actions.
+RUN poetry cache clear pypi --all
+
+COPY pyproject.toml poetry.lock ./
 
 ARG POETRY_OPTIONS="--no-root --no-interaction --no-ansi"
 # for LDAP authentication, install with `ldap3` group
 # disabled by default due to GPL license conflict
 ARG install_groups="main,all_ds,dev"
-RUN /etc/poetry/bin/poetry install --only $install_groups $POETRY_OPTIONS
+RUN poetry install --only $install_groups $POETRY_OPTIONS
 
-COPY --chown=redash . /app
-COPY --chown=redash --from=frontend-builder /frontend/client/dist /app/client/dist
-RUN find /app
-USER redash
+COPY --chown=datareporter . /app
+COPY --chown=datareporter --from=frontend-builder /frontend/client/dist /app/client/dist
+RUN chown datareporter:datareporter -R /app
+USER datareporter
+
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 ARG version
 ENV DATAREPORTER_VERSION=$version
+
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
 CMD ["server"]

@@ -1,5 +1,5 @@
-from tests import BaseTestCase
 from redash import models
+from tests import BaseTestCase
 
 
 class WidgetAPITest(BaseTestCase):
@@ -42,10 +42,11 @@ class WidgetAPITest(BaseTestCase):
 
     def test_create_text_widget(self):
         dashboard = self.factory.create_dashboard()
-
+        report = self.factory.create_report()
+        text = f"[turnilo-widget]{report.id}/Sample text."
         data = {
             "visualization_id": None,
-            "text": "Sample text.",
+            "text": text,
             "dashboard_id": dashboard.id,
             "options": {},
             "width": 2,
@@ -54,7 +55,28 @@ class WidgetAPITest(BaseTestCase):
         rv = self.make_request("post", "/api/widgets", data=data)
 
         self.assertEqual(rv.status_code, 200)
-        self.assertEqual(rv.json["text"], "Sample text.")
+        self.assertEqual(rv.json["text"], text)
+
+    def test_filter_parameterized_report_widget(self):
+        dashboard = self.factory.create_dashboard()
+        report = self.factory.create_report()
+        text = f"[turnilo-widget]{report.id}/Sample text."
+        data = {
+            "visualization_id": None,
+            "text": text,
+            "dashboard_id": dashboard.id,
+            "options": {
+                "description": "See the selected daterange for selected reports in the dashboard",
+                "id": -1,
+                "type": "TURNILO",
+            },
+            "width": 2,
+        }
+
+        rv = self.make_request("post", "/api/widgets", data=data)
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.json["options"]["type"], "TURNILO")
 
     def test_delete_widget(self):
         widget = self.factory.create_widget()
@@ -62,7 +84,5 @@ class WidgetAPITest(BaseTestCase):
         rv = self.make_request("delete", "/api/widgets/{0}".format(widget.id))
 
         self.assertEqual(rv.status_code, 200)
-        dashboard = models.Dashboard.get_by_slug_and_org(
-            widget.dashboard.slug, widget.dashboard.org
-        )
+        dashboard = models.Dashboard.get_by_slug_and_org(widget.dashboard.slug, widget.dashboard.org)
         self.assertEqual(dashboard.widgets.count(), 0)

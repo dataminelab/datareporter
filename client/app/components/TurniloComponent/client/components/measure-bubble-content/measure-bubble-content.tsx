@@ -26,12 +26,19 @@ export interface MeasureBubbleContentProps {
   lowerIsBetter?: boolean;
 }
 
-export const MeasureBubbleContent: React.SFC<MeasureBubbleContentProps> = ({ lowerIsBetter, formatter, current, previous }) => {
+export const MeasureBubbleContent: React.SFC<MeasureBubbleContentProps> = ({
+  lowerIsBetter,
+  formatter,
+  current,
+  previous,
+}) => {
   const currentValue = formatter(current);
   const previousValue = formatter(previous);
-  return <React.Fragment>
-    <strong className="current-value">{currentValue}</strong>
-    <span className="previous-value">{previousValue}</span>
-    <Delta formatter={formatter} currentValue={current} previousValue={previous} lowerIsBetter={lowerIsBetter} />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <strong className="current-value">{currentValue}</strong>
+      <span className="previous-value">{previousValue}</span>
+      <Delta formatter={formatter} currentValue={current} previousValue={previous} lowerIsBetter={lowerIsBetter} />
+    </React.Fragment>
+  );
 };

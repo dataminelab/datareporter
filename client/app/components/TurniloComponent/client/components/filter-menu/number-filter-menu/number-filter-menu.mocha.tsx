@@ -26,11 +26,11 @@ import { findDOMNode, renderIntoDocument } from "../../../utils/test-utils/index
 import { NumberFilterMenu } from "./number-filter-menu";
 
 describe("NumberFilterMenu", () => {
-  var div = document.createElement("div");
+  const div = document.createElement("div");
   div.setAttribute("id", "Div1");
 
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <NumberFilterMenu
         clicker={null}
         dimension={DimensionFixtures.wikiCommentLength()}
@@ -40,12 +40,10 @@ describe("NumberFilterMenu", () => {
         containerStage={StageFixtures.defaultA()}
         openOn={div}
         inside={div}
-
       />
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
     expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("number-filter-menu");
   });
-
 });

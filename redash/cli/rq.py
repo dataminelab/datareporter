@@ -2,7 +2,7 @@ import datetime
 import socket
 from itertools import chain
 
-from click import argument
+from click import argument, option
 from flask.cli import AppGroup
 from rq import Connection
 from rq.worker import WorkerStatus
@@ -12,30 +12,30 @@ from supervisor_checks.check_modules import base
 
 from redash import rq_redis_connection
 from redash.tasks import (
+    Worker,
     periodic_job_definitions,
     rq_scheduler,
     schedule_periodic_jobs,
 )
-from redash.tasks.worker import Worker
 from redash.worker import default_queues
 
 manager = AppGroup(help="RQ management commands.")
 
 
-@manager.command()
+@manager.command(name="scheduler")
 def scheduler():
     jobs = periodic_job_definitions()
     schedule_periodic_jobs(jobs)
     rq_scheduler.run()
 
 
-@manager.command()
+@manager.command(name="worker")
 @argument("queues", nargs=-1)
-def worker(queues):
+@option("--burst", "burst", is_flag=True, default=False, help="run worker with burst mode")
+def worker(queues, burst=False):
     # Configure any SQLAlchemy mappers loaded until now so that the mapping configuration
     # will already be available to the forked work horses and they won't need
     # to spend valuable time re-doing that on every fork.
-    print("queues", queues)
     configure_mappers()
 
     if not queues:
@@ -45,14 +45,31 @@ def worker(queues):
 
     with Connection(rq_redis_connection):
         w = Worker(queues, log_job_description=False, job_monitoring_interval=5)
-        w.work()
+        w.work(burst=burst)
 
 
 class WorkerHealthcheck(base.BaseCheck):
     NAME = "RQ Worker Healthcheck"
+    INTERVAL = datetime.timedelta(minutes=5)
+    _last_check_time = {}
+
+    def time_to_check(self, pid):
+        now = datetime.datetime.utcnow()
+
+        if pid not in self._last_check_time:
+            self._last_check_time[pid] = now
+
+        if now - self._last_check_time[pid] >= self.INTERVAL:
+            self._last_check_time[pid] = now
+            return True
+
+        return False
 
     def __call__(self, process_spec):
         pid = process_spec["pid"]
+        if not self.time_to_check(pid):
+            return True
+
         all_workers = Worker.all(connection=rq_redis_connection)
         workers = [w for w in all_workers if w.hostname == socket.gethostname() and w.pid == pid]
 
@@ -89,6 +106,6 @@ class WorkerHealthcheck(base.BaseCheck):
         return is_healthy
 
 
-@manager.command()
+@manager.command(name="healthcheck")
 def healthcheck():
     return check_runner.CheckRunner("worker_healthcheck", "worker", None, [(WorkerHealthcheck, {})]).run()

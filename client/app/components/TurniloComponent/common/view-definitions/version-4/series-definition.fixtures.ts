@@ -26,15 +26,19 @@ export function measureSeriesDefinition(reference: string, format: SeriesFormat 
   return {
     reference,
     format,
-    type: SeriesType.MEASURE
+    type: SeriesType.MEASURE,
   };
 }
 
-export function quantileSeriesDefinition(reference: string, percentile = 95, format: SeriesFormat = DEFAULT_FORMAT): SeriesDefinition {
+export function quantileSeriesDefinition(
+  reference: string,
+  percentile = 95,
+  format: SeriesFormat = DEFAULT_FORMAT
+): SeriesDefinition {
   return {
     reference,
     format,
     percentile,
-    type: SeriesType.QUANTILE
+    type: SeriesType.QUANTILE,
   };
 }

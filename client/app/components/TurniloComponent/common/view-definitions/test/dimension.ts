@@ -26,13 +26,13 @@ export const dimensions: Dimension[] = [
   dimension("numeric", "number"),
   dimension("string_a", "string"),
   dimension("string_b", "string"),
-  dimension("boolean", "boolean")
+  dimension("boolean", "boolean"),
 ];
 
 function dimension(name: DimensionRefs, kind: DimensionKind, opts: Omit<DimensionValue, "name" | "kind"> = {}) {
   return new Dimension({
     name,
     kind,
-    ...opts
+    ...opts,
   });
 }

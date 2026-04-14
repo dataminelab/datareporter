@@ -23,11 +23,7 @@ export function calendarDays(startDay: Date, timezone: Timezone, locale: Locale)
   const firstWeek = monthWeeks[0];
   const lastWeek = monthWeeks[monthWeeks.length - 1];
   const middleWeeks = monthWeeks.slice(1, -1);
-  return [
-    padFirstWeek(firstWeek, timezone),
-    ...middleWeeks,
-    padLastWeek(lastWeek, timezone)
-  ];
+  return [padFirstWeek(firstWeek, timezone), ...middleWeeks, padLastWeek(lastWeek, timezone)];
 }
 
 function padLastWeek(lastWeek: Date[], timezone: Timezone): Date[] {
@@ -64,11 +60,9 @@ export function monthToWeeks(startDay: Date, timezone: Timezone, locale: Locale)
 }
 
 export function previousNDates(start: Date, n: number, timezone: Timezone): Date[] {
-  return range(0, n)
-    .map(i => day.shift(start, timezone, -n + i));
+  return range(0, n).map((i) => day.shift(start, timezone, -n + i));
 }
 
 export function nextNDates(start: Date, n: number, timezone: Timezone): Date[] {
-  return range(0, n)
-    .map(i => day.shift(start, timezone, i + 1));
+  return range(0, n).map((i) => day.shift(start, timezone, i + 1));
 }

@@ -72,7 +72,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     autoRefreshRate: null,
     timezoneMenuAnchor: null,
     debugMenuAnchor: null,
-    animating: false
+    animating: false,
   };
 
   componentDidMount() {
@@ -109,7 +109,7 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     }
 
     this.setState({
-      autoRefreshRate: rate
+      autoRefreshRate: rate,
     });
   };
 
@@ -130,20 +130,23 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeShareMenu = () => this.setState({ shareMenuAnchor: null });
 
   renderShareMenu() {
-    const { customization, essence, timekeeper, openUrlShortenerModal, urlForEssence, getDownloadableDataset } = this.props;
+    const { customization, essence, timekeeper, openUrlShortenerModal, urlForEssence, getDownloadableDataset } =
+      this.props;
     const { shareMenuAnchor } = this.state;
     if (!shareMenuAnchor) return null;
 
-    return <ShareMenu
-      essence={essence}
-      openUrlShortenerModal={openUrlShortenerModal}
-      timekeeper={timekeeper}
-      openOn={shareMenuAnchor}
-      onClose={this.closeShareMenu}
-      customization={customization}
-      urlForEssence={urlForEssence}
-      getDownloadableDataset={getDownloadableDataset}
-    />;
+    return (
+      <ShareMenu
+        essence={essence}
+        openUrlShortenerModal={openUrlShortenerModal}
+        timekeeper={timekeeper}
+        openOn={shareMenuAnchor}
+        onClose={this.closeShareMenu}
+        customization={customization}
+        urlForEssence={urlForEssence}
+        getDownloadableDataset={getDownloadableDataset}
+      />
+    );
   }
 
   toggleAutoRefreshMenu = (e: React.MouseEvent<Element>) => {
@@ -156,20 +159,26 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeAutoRefreshMenu = () => this.setState({ autoRefreshMenuAnchor: null });
 
   renderAutoRefreshMenu() {
-    const { refreshMaxTime, essence: { dataCube, timezone }, timekeeper } = this.props;
+    const {
+      refreshMaxTime,
+      essence: { dataCube, timezone },
+      timekeeper,
+    } = this.props;
     const { autoRefreshMenuAnchor, autoRefreshRate } = this.state;
     if (!autoRefreshMenuAnchor) return null;
 
-    return <AutoRefreshMenu
-      timekeeper={timekeeper}
-      openOn={autoRefreshMenuAnchor}
-      onClose={this.closeAutoRefreshMenu}
-      autoRefreshRate={autoRefreshRate}
-      setAutoRefreshRate={this.setAutoRefreshRate}
-      refreshMaxTime={refreshMaxTime}
-      dataCube={dataCube}
-      timezone={timezone}
-    />;
+    return (
+      <AutoRefreshMenu
+        timekeeper={timekeeper}
+        openOn={autoRefreshMenuAnchor}
+        onClose={this.closeAutoRefreshMenu}
+        autoRefreshRate={autoRefreshRate}
+        setAutoRefreshRate={this.setAutoRefreshRate}
+        refreshMaxTime={refreshMaxTime}
+        dataCube={dataCube}
+        timezone={timezone}
+      />
+    );
   }
 
   toggleTimezoneMenu = (e: React.MouseEvent<Element>) => {
@@ -182,17 +191,23 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
   closeTimezoneMenu = () => this.setState({ timezoneMenuAnchor: null });
 
   renderTimezoneMenu() {
-    const { changeTimezone, essence: { timezone }, customization } = this.props;
+    const {
+      changeTimezone,
+      essence: { timezone },
+      customization,
+    } = this.props;
     const { timezoneMenuAnchor } = this.state;
     if (!timezoneMenuAnchor) return null;
 
-    return <TimezoneMenu
-      timezone={timezone}
-      timezones={customization.getTimezones()}
-      changeTimezone={changeTimezone}
-      openOn={timezoneMenuAnchor}
-      onClose={this.closeTimezoneMenu}
-    />;
+    return (
+      <TimezoneMenu
+        timezone={timezone}
+        timezones={customization.getTimezones()}
+        changeTimezone={changeTimezone}
+        openOn={timezoneMenuAnchor}
+        onClose={this.closeTimezoneMenu}
+      />
+    );
   }
 
   toggleDebugMenu = (e: React.MouseEvent<Element>) => {
@@ -208,14 +223,22 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     const { debugMenuAnchor } = this.state;
     if (!debugMenuAnchor) return null;
 
-    const { essence: { dataCube }, openRawDataModal, openViewDefinitionModal, openDruidQueryModal } = this.props;
-    return <DebugMenu
-      dataCube={dataCube}
-      openRawDataModal={openRawDataModal}
-      openDruidQueryModal={openDruidQueryModal}
-      openViewDefinitionModal={openViewDefinitionModal}
-      openOn={debugMenuAnchor}
-      onClose={this.closeDebugMenu} />;
+    const {
+      essence: { dataCube },
+      openRawDataModal,
+      openViewDefinitionModal,
+      openDruidQueryModal,
+    } = this.props;
+    return (
+      <DebugMenu
+        dataCube={dataCube}
+        openRawDataModal={openRawDataModal}
+        openDruidQueryModal={openDruidQueryModal}
+        openViewDefinitionModal={openViewDefinitionModal}
+        openOn={debugMenuAnchor}
+        onClose={this.closeDebugMenu}
+      />
+    );
   }
 
   render() {
@@ -225,56 +248,71 @@ export class CubeHeaderBar extends React.Component<CubeHeaderBarProps, CubeHeade
     if (customization && customization.headerBackground) {
       headerStyle = {
         background: customization.headerBackground,
-        display: "none"
+        display: "none",
       };
     } else {
       headerStyle = {
-        display: "none"
+        display: "none",
       };
     }
 
-    return <header className="cube-header-bar" style={headerStyle}>
-      <UtilsMenu 
-        onClose={this.closeDebugMenu}
-        openRawDataModal={this.props.openRawDataModal}
-        downloadCSV={this.props.getDownloadableDataset}
-        essence={this.props.essence}
-        timekeeper={this.props.timekeeper}
-        getDownloadableDataset={this.props.getDownloadableDataset}
-      />
-      {this.renderRightBar()}
-      {this.renderShareMenu()}
-      {this.renderAutoRefreshMenu()}
-      {this.renderTimezoneMenu()}
-      {this.renderDebugMenu()}
-    </header>;
+    return (
+      <header className="cube-header-bar" style={headerStyle}>
+        <UtilsMenu
+          onClose={this.closeDebugMenu}
+          openRawDataModal={this.props.openRawDataModal}
+          downloadCSV={this.props.getDownloadableDataset}
+          essence={this.props.essence}
+          timekeeper={this.props.timekeeper}
+          getDownloadableDataset={this.props.getDownloadableDataset}
+        />
+        {this.renderRightBar()}
+        {this.renderShareMenu()}
+        {this.renderAutoRefreshMenu()}
+        {this.renderTimezoneMenu()}
+        {this.renderDebugMenu()}
+      </header>
+    );
   }
 
   private renderRightBar(): JSX.Element {
-    return <div className="right-bar">
-      <div className="text-button" onClick={this.toggleTimezoneMenu}>
-        {this.props.essence.timezone.toString()}
+    return (
+      <div className="right-bar">
+        <div className="text-button" onClick={this.toggleTimezoneMenu}>
+          {this.props.essence.timezone.toString()}
+        </div>
+        <div
+          className={classNames("icon-button", "auto-refresh", {
+            refreshing: this.state.animating,
+          })}
+          onClick={this.toggleAutoRefreshMenu}>
+          <SvgIcon svg={require("../../../icons/full-refresh.svg")} />
+        </div>
+        <div className="icon-button" onClick={this.toggleShareMenu}>
+          <SvgIcon svg={require("../../../icons/full-hiluk.svg")} />
+        </div>
+        <div className="icon-button" onClick={this.toggleDebugMenu}>
+          <SvgIcon svg={require("../../../icons/full-settings.svg")} />
+        </div>
       </div>
-      <div className={classNames("icon-button", "auto-refresh", { refreshing: this.state.animating })} onClick={this.toggleAutoRefreshMenu}>
-        <SvgIcon svg={require("../../../icons/full-refresh.svg")} />
-      </div>
-      <div className="icon-button" onClick={this.toggleShareMenu}>
-        <SvgIcon svg={require("../../../icons/full-hiluk.svg")} />
-      </div>
-      <div className="icon-button" onClick={this.toggleDebugMenu}>
-        <SvgIcon svg={require("../../../icons/full-settings.svg")} />
-      </div>
-    </div>;
+    );
   }
 
   private renderLeftBar() {
-    const { onNavClick, essence: { dataCube } } = this.props;
-    return <div className="left-bar">
-      <div className="menu-icon" onClick={onNavClick}>
-        <SvgIcon svg={require("../../../icons/menu.svg")} />
+    const {
+      onNavClick,
+      essence: { dataCube },
+    } = this.props;
+    return (
+      <div className="left-bar">
+        <div className="menu-icon" onClick={onNavClick}>
+          <SvgIcon svg={require("../../../icons/menu.svg")} />
+        </div>
+        <div className="title" onClick={onNavClick}>
+          {dataCube.title}
+        </div>
+        {dataCube.description && <InfoBubble className="cube-description" description={dataCube.description} />}
       </div>
-      <div className="title" onClick={onNavClick}>{dataCube.title}</div>
-      {dataCube.description && <InfoBubble className="cube-description" description={dataCube.description} />}
-    </div>;
+    );
   }
 }

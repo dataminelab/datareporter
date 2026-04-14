@@ -5,7 +5,7 @@ from redash.settings.organization import settings as org_settings
 
 from .base import Column, db, primary_key
 from .mixins import TimestampMixin
-from .types import MutableDict, PseudoJSON
+from .types import JSONText
 from .users import Group, User
 
 
@@ -14,12 +14,13 @@ class Organization(TimestampMixin, db.Model):
     SETTING_GOOGLE_APPS_DOMAINS = "google_apps_domains"
     SETTING_IS_PUBLIC = "is_public"
 
-    id = primary_key("Organization")
+    id: int = primary_key("Organization")
     name = Column(db.String(255))
     slug = Column(db.String(255), unique=True)
-    settings = Column(MutableDict.as_mutable(PseudoJSON))
+    settings = Column(JSONText, nullable=True)
     groups = db.relationship("Group", lazy="dynamic")
     events = db.relationship("Event", lazy="dynamic", order_by="desc(Event.created_at)")
+    query_snippets = db.relationship("QuerySnippet", back_populates="org")
 
     __tablename__ = "organizations"
 

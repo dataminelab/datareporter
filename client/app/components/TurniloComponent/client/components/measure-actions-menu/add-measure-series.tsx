@@ -32,7 +32,7 @@ interface AddMeasureSeriesButtonProps {
   onClose: Fn;
 }
 
-export const AddMeasureSeriesButton: React.SFC<AddMeasureSeriesButtonProps> = props => {
+export const AddMeasureSeriesButton: React.SFC<AddMeasureSeriesButtonProps> = (props) => {
   const { series, measure, onClose, addSeries } = props;
   const measureDisabled = series.hasMeasure(measure);
 
@@ -41,8 +41,14 @@ export const AddMeasureSeriesButton: React.SFC<AddMeasureSeriesButtonProps> = pr
     onClose();
   }
 
-  return <div className={classNames("add-series", "action", { disabled: measureDisabled })} onClick={onAddSeries}>
-    <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
-    <div className="action-label">{STRINGS.add}</div>
-  </div>;
+  return (
+    <div
+      className={classNames("add-series", "action", {
+        disabled: measureDisabled,
+      })}
+      onClick={onAddSeries}>
+      <SvgIcon svg={require("../../icons/preview-subsplit.svg")} />
+      <div className="action-label">{STRINGS.add}</div>
+    </div>
+  );
 };

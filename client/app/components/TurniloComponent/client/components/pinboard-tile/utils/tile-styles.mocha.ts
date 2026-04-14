@@ -21,8 +21,7 @@ import { tileStyles } from "./tile-styles";
 
 const minimalMaxHeight = 148;
 
-const datasetWithNRows = (n: number) =>
-  new Dataset({ attributes: [], data: Array.from({ length: n }) });
+const datasetWithNRows = (n: number) => new Dataset({ attributes: [], data: Array.from({ length: n }) });
 
 describe("tileStyles", () => {
   it("should return minimal maxHeight for loading dataset", () => {
@@ -31,13 +30,17 @@ describe("tileStyles", () => {
 
   it("should return minimal maxHeight for errored dataset", () => {
     const erroredDataset = error(new Error("foobar"));
-    expect(tileStyles(erroredDataset)).to.include({ maxHeight: minimalMaxHeight });
+    expect(tileStyles(erroredDataset)).to.include({
+      maxHeight: minimalMaxHeight,
+    });
   });
 
   it("should return minimal maxHeight for dataset with less than 5 rows", () => {
-    range(0, 5).forEach(n => {
+    range(0, 5).forEach((n) => {
       const datasetLoaded = loaded(datasetWithNRows(n));
-      expect(tileStyles(datasetLoaded)).to.include({ maxHeight: minimalMaxHeight });
+      expect(tileStyles(datasetLoaded)).to.include({
+        maxHeight: minimalMaxHeight,
+      });
     });
   });
 

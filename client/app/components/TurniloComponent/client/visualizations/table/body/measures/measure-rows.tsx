@@ -25,7 +25,7 @@ interface MeasureRowsProps {
   visibleRowsIndexRange: [number, number];
   essence: Essence;
   highlightedRowIndex: number | null;
-  scales: Array<d3.scale.Linear<number, number>>;
+  scales: Array<d3.ScaleLinear<number, number>>;
   data: PseudoDatum[];
   hoverRow?: Datum;
   cellWidth: number;
@@ -33,27 +33,34 @@ interface MeasureRowsProps {
   report: any;
 }
 
-export const MeasureRows: React.SFC<MeasureRowsProps> = props => {
-  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex, report } = props;
+export const MeasureRows: React.FunctionComponent<MeasureRowsProps> = (props) => {
+  const { rowWidth, essence, cellWidth, hoverRow, scales, data, visibleRowsIndexRange, highlightedRowIndex, report } =
+    props;
 
-  return <VisibleRows
-    visibleRowsIndexRange={visibleRowsIndexRange}
-    highlightedRowIndex={highlightedRowIndex}
-    hoveredRowDatum={hoverRow}
-    rowsData={data}
-    renderRow={props => {
-      const { index, top, datum, highlight, dimmed } = props;
-      const rowStyle: React.CSSProperties = { top, width: rowWidth };
+  return (
+    <VisibleRows
+      visibleRowsIndexRange={visibleRowsIndexRange}
+      highlightedRowIndex={highlightedRowIndex}
+      hoveredRowDatum={hoverRow}
+      rowsData={data}
+      renderRow={(props) => {
+        const { index, top, datum, highlight, dimmed } = props;
+        const rowStyle: React.CSSProperties = { top, width: rowWidth };
 
-      return <MeasureRow
-        key={`row_${index}`}
-        essence={essence}
-        report={report}
-        highlight={highlight}
-        dimmed={dimmed}
-        style={rowStyle}
-        datum={datum}
-        cellWidth={cellWidth}
-        scales={scales} />;
-    }} />;
+        return (
+          <MeasureRow
+            key={`row_${index}`}
+            essence={essence}
+            report={report}
+            highlight={highlight}
+            dimmed={dimmed}
+            style={rowStyle}
+            datum={datum}
+            cellWidth={cellWidth}
+            scales={scales}
+          />
+        );
+      }}
+    />
+  );
 };

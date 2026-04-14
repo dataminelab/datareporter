@@ -1,6 +1,7 @@
 import logging
 import time
 
+from requests.exceptions import ConnectionError, MissingSchema
 from rq.timeouts import JobTimeoutException
 
 from redash import models, redis_connection, settings, statsd_client
@@ -9,6 +10,7 @@ from redash.models.parameterized_query import (
     QueryDetachedFromDataSourceError,
 )
 from redash.monitor import rq_job_ids
+from redash.query_runner import NotSupported
 from redash.tasks.failure_report import track_failure
 from redash.utils import json_dumps, sentry
 from redash.worker import get_job_logger, job
@@ -113,13 +115,13 @@ def refresh_queries():
     }
 
     redis_connection.hset("redash:status", mapping=status)
-    logger.info("Done refreshing queries: %s" % status)
+    logger.info("Done refreshing queries: %s", status)
 
 
 def cleanup_query_results():
     """
     Job to cleanup unused query results -- such that no query links to them anymore, and older than
-    settings.QUERY_RESULTS_CLEANUP_MAX_AGE (a week by default, so it's less likely to be open in someone's browser and be used).
+    settings.QUERY_RESULTS_CLEANUP_MAX_AGE (a week by default, so it's less likely to be open in someone's browser and be used)
 
     Each time the job deletes only settings.QUERY_RESULTS_CLEANUP_COUNT (100 by default) query results so it won't choke
     the database in case of many such results.
@@ -157,7 +159,7 @@ def remove_ghost_locks():
     logger.info("Locks found: {}, Locks removed: {}".format(len(locks), count))
 
 
-@job("schemas")
+@job("schemas", timeout=settings.SCHEMAS_REFRESH_TIMEOUT)
 def refresh_schema(data_source_id):
     ds = models.DataSource.get_by_id(data_source_id)
     logger.info("task=refresh_schema state=start ds_id=%s", ds.id)
@@ -177,6 +179,23 @@ def refresh_schema(data_source_id):
             time.time() - start_time,
         )
         statsd_client.incr("refresh_schema.timeout")
+    except ConnectionError:
+        logger.info(
+            "task=refresh_schema state=connection_error ds_id=%s runtime=%.2f",
+            ds.id,
+            time.time() - start_time,
+        )
+        statsd_client.incr("refresh_schema.connection_error")
+    except MissingSchema:
+        logger.warning(
+            "task=refresh_schema state=missing_url ds_id=%s ds_name=%s runtime=%.2f",
+            ds.id,
+            ds.name,
+            time.time() - start_time,
+        )
+        statsd_client.incr("refresh_schema.missing_url")
+    except NotSupported:
+        logger.debug("Datasource %s does not support schema refresh", ds.name)
     except Exception:
         logger.warning("Failed refreshing schema for the data source: %s", ds.name, exc_info=1)
         statsd_client.incr("refresh_schema.error")
@@ -196,7 +215,7 @@ def refresh_schemas():
 
     logger.info("task=refresh_schemas state=start")
 
-    for ds in models.DataSource.query:
+    for ds in models.DataSource.query.all():
         if ds.paused:
             logger.info(
                 "task=refresh_schema state=skip ds_id=%s reason=paused(%s)",
@@ -208,7 +227,7 @@ def refresh_schemas():
         elif ds.org.is_disabled:
             logger.info("task=refresh_schema state=skip ds_id=%s reason=org_disabled", ds.id)
         else:
-            refresh_schema.delay(ds.id)
+            refresh_schema.delay(ds.id)  # type: ignore
 
     logger.info(
         "task=refresh_schemas state=finish total_runtime=%.2f",

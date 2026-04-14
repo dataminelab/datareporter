@@ -33,13 +33,13 @@ export default function DetailsRenderer({ data }) {
   const types = mapValues(keyBy(data.columns, "name"), "type");
 
   // We use columsn to maintain order of columns in the view.
-  const columns = data.columns.map(column => column.name);
+  const columns = data.columns.map((column) => column.name);
   const row = data.rows[page];
 
   return (
     <div className="details-viz">
       <Descriptions size="small" column={1} bordered>
-        {map(columns, key => (
+        {map(columns, (key) => (
           <Descriptions.Item key={key} label={key}>
             {renderValue(row[key], types[key])}
           </Descriptions.Item>
@@ -47,7 +47,12 @@ export default function DetailsRenderer({ data }) {
       </Descriptions>
       {data.rows.length > 1 && (
         <div className="paginator-container">
-          <Pagination current={page + 1} defaultPageSize={1} total={data.rows.length} onChange={p => setPage(p - 1)} />
+          <Pagination
+            current={page + 1}
+            defaultPageSize={1}
+            total={data.rows.length}
+            onChange={(p) => setPage(p - 1)}
+          />
         </div>
       )}
     </div>

@@ -34,7 +34,7 @@ export function formatDelta(currentValue: number, previousValue: number): DeltaA
   }
 
   const delta = currentValue - previousValue;
-  const deltaSign = delta ? delta < 0 ? -1 : 1 : 0;
+  const deltaSign = delta ? (delta < 0 ? -1 : 1) : 0;
   const deltaRatio = Math.abs(delta / previousValue);
 
   return { deltaSign, deltaRatio, delta };
@@ -83,9 +83,11 @@ export const Delta: React.SFC<DeltaProps> = ({ lowerIsBetter, currentValue, prev
   }
 
   const { delta, deltaRatio, deltaSign } = formattedDelta;
-  return <span className={deltaSignToClassName(deltaSign, lowerIsBetter)}>
-    {deltaSignToSymbol(deltaSign)}
-    {formatter(Math.abs(delta))}
-    {printDeltaRatio(deltaRatio)}
-  </span>;
+  return (
+    <span className={deltaSignToClassName(deltaSign, lowerIsBetter)}>
+      {deltaSignToSymbol(deltaSign)}
+      {formatter(Math.abs(delta))}
+      {printDeltaRatio(deltaRatio)}
+    </span>
+  );
 };

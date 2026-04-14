@@ -40,44 +40,53 @@ export const orderByValueIncreasing: Order<unknown> = (a, b) => {
   return -orderByValueDecreasing(a, b);
 };
 
-export const orderByTimeDimensionDecreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
-export const orderByTimeDimensionIncreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
+export const orderByTimeDimensionDecreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) =>
+  -originalA.compare(originalB);
+export const orderByTimeDimensionIncreasing: Order<TimeRange> = ([_, __, originalA], [___, ____, originalB]) =>
+  originalA.compare(originalB);
 
-export const orderByNumberRangeDimensionDecreasing: Order<NumberRange> = ([_, __, originalA], [___, ____, originalB]) => -originalA.compare(originalB);
-export const orderByNumberRangeDimensionIncreasing: Order<NumberRange> = ([_, __, originalA], [___, ____, originalB]) => originalA.compare(originalB);
+export const orderByNumberRangeDimensionDecreasing: Order<NumberRange> = ([_, __, originalA], [___, ____, originalB]) =>
+  -originalA.compare(originalB);
+export const orderByNumberRangeDimensionIncreasing: Order<NumberRange> = ([_, __, originalA], [___, ____, originalB]) =>
+  originalA.compare(originalB);
 
-const datumKey = (dataset: Datum, key: string, timezone: Timezone): string =>
-  formatValue(dataset[key], timezone);
+const datumKey = (dataset: Datum, key: string, timezone: Timezone): string => formatValue(dataset[key], timezone);
 
-const splitToFillOrder = (split: Split): Order<unknown> => {
+const splitToFillOrder = <D = unknown>(split: Split): Order<D> => {
   const sort = split.sort;
   switch (split.type) {
     case SplitType.string:
     default:
       if (sort.direction === SortDirection.ascending) {
-        return orderByValueIncreasing;
+        return orderByValueIncreasing as unknown as Order<D>;
       } else {
-        return orderByValueDecreasing;
+        return orderByValueDecreasing as unknown as Order<D>;
       }
     case SplitType.time:
       if (sort.direction === SortDirection.ascending) {
-        return orderByTimeDimensionIncreasing;
+        return orderByTimeDimensionIncreasing as unknown as Order<D>;
       } else {
-        return orderByTimeDimensionDecreasing;
+        return orderByTimeDimensionDecreasing as unknown as Order<D>;
       }
     case SplitType.number:
       if (sort.direction === SortDirection.ascending) {
-        return orderByNumberRangeDimensionIncreasing;
+        return orderByNumberRangeDimensionIncreasing as unknown as Order<D>;
       } else {
-        return orderByNumberRangeDimensionDecreasing;
+        return orderByNumberRangeDimensionDecreasing as unknown as Order<D>;
       }
   }
 };
 
-export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: string, secondSplit: Split, timezone: Timezone): Dataset => {
+export const fillDatasetWithMissingValues = (
+  dataset: Dataset,
+  measureName: string,
+  secondSplit: Split,
+  timezone: Timezone
+): Dataset => {
   const totals: { [ident: string]: number } = {};
   const identToOriginalKey: { [ident: string]: any } = {};
-  const order = splitToFillOrder(secondSplit);
+  // Type assertion is safe here because the original key type is preserved in identToOriginalKey
+  const order = splitToFillOrder<any>(secondSplit);
   const secondSplitName = secondSplit.reference;
 
   for (const datum of dataset.data) {
@@ -97,37 +106,39 @@ export const fillDatasetWithMissingValues = (dataset: Dataset, measureName: stri
   }
 
   const sortedIdents = Object.keys(totals)
-    .map(ident => [ident, totals[ident], identToOriginalKey[ident]] as [string, number, any])
+    .map((ident) => [ident, totals[ident], identToOriginalKey[ident]] as [string, number, any])
     .sort(order)
     .map(([ident]) => ident);
 
-  const newDataset = dataset.data.map(datum => {
+  const newDataset = dataset.data.map((datum) => {
+    const identToNestedDatum = (datum[SPLIT] as Dataset).data.reduce(
+      (datumsByIdent, datum) => {
+        const ident = datumKey(datum, secondSplitName, timezone);
+        datumsByIdent[ident] = datum;
+        return datumsByIdent;
+      },
+      {} as { [index: string]: Datum }
+    );
 
-    const identToNestedDatum = (datum[SPLIT] as Dataset).data.reduce((datumsByIdent, datum) => {
-      const ident = datumKey(datum, secondSplitName, timezone);
-      datumsByIdent[ident] = datum;
-      return datumsByIdent;
-    }, {} as {[index: string]: Datum});
-
-    const filledNestedDataset = sortedIdents.map(ident => {
+    const filledNestedDataset = sortedIdents.map((ident) => {
       const nestedDatum = identToNestedDatum[ident];
 
       if (nestedDatum) {
         return {
           ...nestedDatum,
-          [measureName]: Number.isNaN(Number(nestedDatum[measureName])) ? 0 : nestedDatum[measureName]
+          [measureName]: Number.isNaN(Number(nestedDatum[measureName])) ? 0 : nestedDatum[measureName],
         };
       } else {
         return {
           [secondSplitName]: identToOriginalKey[ident],
-          [measureName]: 0
+          [measureName]: 0,
         } as Datum;
       }
     });
 
     return {
       ...datum,
-      [SPLIT]: (datum[SPLIT] as Dataset).changeData(filledNestedDataset)
+      [SPLIT]: (datum[SPLIT] as Dataset).changeData(filledNestedDataset),
     } as Datum;
   });
 

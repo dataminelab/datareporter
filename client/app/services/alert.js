@@ -5,7 +5,7 @@ import { merge } from "lodash";
 const normalizeCondition = {
   "greater than": ">",
   "less than": "<",
-  equals: "=",
+  "equals": "=",
 };
 
 const transformResponse = data =>
@@ -27,7 +27,8 @@ const transformRequest = data => {
   return newData;
 };
 
-const saveOrCreateUrl = data => (data.id ? `api/alerts/${data.id}` : "api/alerts");
+const saveOrCreateUrl = data =>
+  data.id ? `api/alerts/${data.id}` : "api/alerts";
 
 const Alert = {
   query: () => axios.get("api/alerts"),
@@ -36,6 +37,7 @@ const Alert = {
   delete: data => axios.delete(`api/alerts/${data.id}`),
   mute: data => axios.post(`api/alerts/${data.id}/mute`),
   unmute: data => axios.delete(`api/alerts/${data.id}/mute`),
+  evaluate: data => axios.post(`api/alerts/${data.id}/eval`),
 };
 
 export default Alert;

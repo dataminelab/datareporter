@@ -9,6 +9,7 @@ function getQueryResultData(queryResult, queryResultStatus = null) {
     filters: invoke(queryResult, "getFilters") || [],
     updatedAt: invoke(queryResult, "getUpdatedAt") || null,
     retrievedAt: get(queryResult, "query_result.retrieved_at", null),
+    truncated: invoke(queryResult, "getTruncated") || null,
     log: invoke(queryResult, "getLog") || [],
     error: invoke(queryResult, "getError") || null,
     runtime: invoke(queryResult, "getRuntime") || null,
@@ -19,5 +20,8 @@ function getQueryResultData(queryResult, queryResultStatus = null) {
 export default function useQueryResultData(queryResult) {
   // make sure it re-executes when queryResult status changes
   const queryResultStatus = invoke(queryResult, "getStatus");
-  return useMemo(() => getQueryResultData(queryResult, queryResultStatus), [queryResult, queryResultStatus]);
+  return useMemo(
+    () => getQueryResultData(queryResult, queryResultStatus),
+    [queryResult, queryResultStatus],
+  );
 }

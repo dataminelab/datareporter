@@ -34,11 +34,11 @@ export function createContinuousScale(essence: Essence, domainRange: PlywoodRang
   switch (kind) {
     case "number": {
       const domain = [domainRange.start, domainRange.end] as [number, number];
-      return (d3.scale.linear().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
+      return (d3.scaleLinear().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
     }
     case "time": {
       const domain = [domainRange.start, domainRange.end] as [Date, Date];
-      return (d3.time.scale().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
+      return (d3.scaleTime().clamp(true) as unknown as ContinuousScale).domain(domain).range(range);
     }
   }
 }
@@ -54,7 +54,10 @@ function includeMaxTimeBucket(filterRange: PlywoodRange, maxTime: Date, continuo
     const filterRangeEndFloored = continuousBucket.floor(filterRangeEnd, timezone);
     const filterRangeEndCeiled = continuousBucket.shift(filterRangeEndFloored, timezone);
     if (filterRangeEndFloored < maxTime && maxTime < filterRangeEndCeiled) {
-      return Range.fromJS({ start: filterRange.start, end: filterRangeEndCeiled });
+      return Range.fromJS({
+        start: filterRange.start,
+        end: filterRangeEndCeiled,
+      });
     }
   }
   return filterRange;
@@ -71,25 +74,21 @@ function getFilterRange(essence: Essence, timekeeper: Timekeeper): PlywoodRange 
 }
 
 function safeRangeSum(a: PlywoodRange | null, b: PlywoodRange | null): PlywoodRange {
-  return (a && b) ? a.extend(b) : (a || b);
+  return a && b ? a.extend(b) : a || b;
 }
 
 function getDatasetXRange(dataset: Dataset, continuousDimension: Dimension): PlywoodRange | null {
   const continuousDimensionKey = continuousDimension.name;
-  const flatDataset = dataset.flatten()
-    .data
-    .map(datum => datum[continuousDimensionKey] as PlywoodRange);
+  const flatDataset = dataset.flatten().data.map((datum) => datum[continuousDimensionKey] as PlywoodRange);
   if (typeof flatDataset[0] === "object") {
-    return flatDataset
-      .reduce(safeRangeSum, null);
+    return flatDataset.reduce(safeRangeSum, null);
   } else if (typeof flatDataset[0] === "string") {
-    // ["21-05-2022:HH:MM:SS", ...]
-    //@ts-ignore
-    var start = new Date(flatDataset[0]);
-    //@ts-ignore
-    var end = new Date(flatDataset[0]);
-    flatDataset.map(datum => {
-      let currentDate = new Date(datum.toString());
+    // @ts-ignore TS2769
+    let start = new Date(flatDataset[0]);
+    // @ts-ignore TS2769
+    let end = new Date(flatDataset[0]);
+    flatDataset.map((datum) => {
+      const currentDate = new Date(datum.toString());
       if (currentDate < start) {
         start = currentDate;
       }

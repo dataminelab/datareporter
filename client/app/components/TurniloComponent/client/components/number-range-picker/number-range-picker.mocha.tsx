@@ -26,7 +26,7 @@ import { NumberRangePicker } from "./number-range-picker";
 
 describe("NumberRangePicker", () => {
   it("adds the correct class", () => {
-    var renderedComponent = renderIntoDocument(
+    const renderedComponent = renderIntoDocument(
       <NumberRangePicker
         start={2}
         end={10}
@@ -42,5 +42,4 @@ describe("NumberRangePicker", () => {
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
     expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("number-range-picker");
   });
-
 });

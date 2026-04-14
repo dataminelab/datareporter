@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
-import EmailSettingsWarning from "@/components/EmailSettingsWarning";
 import DynamicComponent from "@/components/DynamicComponent";
 import LoadingState from "@/components/items-list/components/LoadingState";
 import wrapSettingsTab from "@/components/SettingsWrapper";
@@ -46,7 +45,7 @@ function ModelConfig({ modelId, onError }) {
       .catch(error => {
         handleError(error);
       });
-  }
+  };
 
   return (
     <React.Fragment>
@@ -78,9 +77,9 @@ const ModelConfigPage = wrapSettingsTab(
     title: "Model config",
     path: "models/config",
     order: 7,
-    isHide: true
+    isHide: true,
   },
-  ModelConfig
+  ModelConfig,
 );
 
 routes.register(
@@ -89,5 +88,5 @@ routes.register(
     path: "/models/:modelId",
     title: "Model config",
     render: pageProps => <ModelConfigPage {...pageProps} />,
-  })
+  }),
 );

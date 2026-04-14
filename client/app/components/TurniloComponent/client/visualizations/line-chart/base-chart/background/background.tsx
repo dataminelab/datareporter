@@ -35,30 +35,34 @@ interface BackgroundProps {
   formatter: Unary<number, string>;
 }
 
-export const Background: React.SFC<BackgroundProps> = props => {
+export const Background: React.SFC<BackgroundProps> = (props) => {
   const { formatter, gridStage, axisStage, xScale, yScale, xTicks } = props;
 
-  return <React.Fragment>
-    <GridLines
-      orientation="horizontal"
-      scale={yScale}
-      ticks={pickTicks(yScale)}
-      stage={gridStage}
-    />
-    {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
-    <GridLines
-      orientation="vertical"
-      scale={xScale}
-      ticks={xTicks}
-      stage={gridStage}
-    />
-    <VerticalAxis
-      tickSize={TICK_WIDTH}
-      stage={axisStage}
-      formatter={formatter}
-      ticks={pickTicks(yScale)}
-      scale={yScale}
-    />
-    <BottomBorder stage={gridStage} tickLength={TICK_WIDTH} />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <GridLines
+        orientation="horizontal"
+        // @ts-ignore TS2322
+        scale={yScale}
+        ticks={pickTicks(yScale)}
+        stage={gridStage}
+      />
+      {/* TODO: omit last xTick if it's equal to last data point so we don't overplot with yAxis */}
+      <GridLines
+        orientation="vertical"
+        // @ts-ignore TS2322
+        scale={xScale}
+        ticks={xTicks}
+        stage={gridStage}
+      />
+      <VerticalAxis
+        tickSize={TICK_WIDTH}
+        stage={axisStage}
+        formatter={formatter}
+        ticks={pickTicks(yScale)}
+        scale={yScale}
+      />
+      <BottomBorder stage={gridStage} tickLength={TICK_WIDTH} />
+    </React.Fragment>
+  );
 };

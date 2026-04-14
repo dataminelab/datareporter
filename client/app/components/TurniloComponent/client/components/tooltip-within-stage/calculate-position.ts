@@ -32,17 +32,19 @@ export function calculatePosition(props: TooltipWithinStageProps, rect?: Rect): 
   const stageBottom = stage.y + stage.height;
   const stageRight = stage.x + stage.width;
 
-  const top = rect.bottom > stageBottom
-    ? initialTop - margin - rect.height
-    : rect.top < stage.y
-      ? initialTop + rect.height
-      : initialTop + margin;
+  const top =
+    rect.bottom > stageBottom
+      ? initialTop - margin - rect.height
+      : rect.top < stage.y
+        ? initialTop + rect.height
+        : initialTop + margin;
 
-  const left = rect.right > stageRight
-    ? initialLeft - margin - rect.width
-    : rect.left < stage.x
-      ? initialLeft + rect.width
-      : initialLeft + margin;
+  const left =
+    rect.right > stageRight
+      ? initialLeft - margin - rect.width
+      : rect.left < stage.x
+        ? initialLeft + rect.width
+        : initialLeft + margin;
 
   return { top, left };
 }

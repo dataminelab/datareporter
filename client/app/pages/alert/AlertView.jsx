@@ -2,12 +2,13 @@ import React from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 
+import Link from "@/components/Link";
 import TimeAgo from "@/components/TimeAgo";
 import { Alert as AlertType } from "@/components/proptypes";
 
 import Form from "antd/lib/form";
 import Button from "antd/lib/button";
-import Tooltip from "antd/lib/tooltip";
+import Tooltip from "@/components/Tooltip";
 import AntAlert from "antd/lib/alert";
 import * as Grid from "antd/lib/grid";
 
@@ -18,14 +19,21 @@ import Query from "./components/Query";
 import AlertDestinations from "./components/AlertDestinations";
 import HorizontalFormItem from "./components/HorizontalFormItem";
 import { STATE_CLASS } from "../alerts/AlertsList";
+import DynamicComponent from "@/components/DynamicComponent";
 
 function AlertState({ state, lastTriggered }) {
   return (
     <div className="alert-state">
-      <span className={`alert-state-indicator label ${STATE_CLASS[state]}`}>Status: {state}</span>
-      {state === "unknown" && <div className="ant-form-explain">Alert condition has not been evaluated.</div>}
+      <span className={`alert-state-indicator label ${STATE_CLASS[state]}`}>
+        Status: {state}
+      </span>
+      {state === "unknown" && (
+        <div className="ant-form-item-explain">
+          Alert condition has not been evaluated.
+        </div>
+      )}
       {lastTriggered && (
-        <div className="ant-form-explain">
+        <div className="ant-form-item-explain">
           Last triggered{" "}
           <span className="alert-last-triggered">
             <TimeAgo date={lastTriggered} />
@@ -65,38 +73,69 @@ export default class AlertView extends React.Component {
     return (
       <>
         <Title name={name} alert={alert}>
-          <Tooltip title={canEdit ? "" : "You do not have sufficient permissions to edit this alert"}>
-            <Button type="default" onClick={canEdit ? onEdit : null} className={cx({ disabled: !canEdit })}>
-              <i className="fa fa-edit m-r-5" />
-              Edit
-            </Button>
-            {menuButton}
-          </Tooltip>
+          <DynamicComponent name="AlertView.HeaderExtra" alert={alert} />
+          {canEdit ? (
+            <>
+              <Button
+                type="default"
+                onClick={canEdit ? onEdit : null}
+                className={cx({ disabled: !canEdit })}
+              >
+                <i className="fa fa-edit m-r-5" aria-hidden="true" />
+                Edit
+              </Button>
+              {menuButton}
+            </>
+          ) : (
+            <Tooltip title="You do not have sufficient permissions to edit this alert">
+              <Button
+                type="default"
+                onClick={canEdit ? onEdit : null}
+                className={cx({ disabled: !canEdit })}
+              >
+                <i className="fa fa-edit m-r-5" aria-hidden="true" />
+                Edit
+              </Button>
+              {menuButton}
+            </Tooltip>
+          )}
         </Title>
         <div className="bg-white tiled p-20">
           <Grid.Row type="flex" gutter={16}>
             <Grid.Col xs={24} md={16} className="d-flex">
               <Form className="flex-fill">
                 <HorizontalFormItem>
-                  <AlertState state={alert.state} lastTriggered={alert.last_triggered_at} />
+                  <AlertState
+                    state={alert.state}
+                    lastTriggered={alert.last_triggered_at}
+                  />
                 </HorizontalFormItem>
                 <HorizontalFormItem label="Query">
                   <Query query={query} queryResult={queryResult} />
                 </HorizontalFormItem>
                 {queryResult && options && (
                   <>
-                    <HorizontalFormItem label="Trigger when" className="alert-criteria">
+                    <HorizontalFormItem
+                      label="Trigger when"
+                      className="alert-criteria"
+                    >
                       <Criteria
                         columnNames={queryResult.getColumnNames()}
                         resultValues={queryResult.getData()}
                         alertOptions={options}
                       />
                     </HorizontalFormItem>
-                    <HorizontalFormItem label="Notifications" className="form-item-line-height-normal">
+                    <HorizontalFormItem
+                      label="Notifications"
+                      className="form-item-line-height-normal"
+                    >
                       <Rearm value={rearm || 0} />
                       <br />
-                      Set to {options.custom_subject || options.custom_body ? "custom" : "default"} notification
-                      template.
+                      Set to{" "}
+                      {options.custom_subject || options.custom_body
+                        ? "custom"
+                        : "default"}{" "}
+                      notification template.
                     </HorizontalFormItem>
                   </>
                 )}
@@ -108,7 +147,8 @@ export default class AlertView extends React.Component {
                   className="m-b-20"
                   message={
                     <>
-                      <i className="fa fa-bell-slash-o" /> Notifications are muted
+                      <i className="fa fa-bell-slash-o" aria-hidden="true" />{" "}
+                      Notifications are muted
                     </>
                   }
                   description={
@@ -123,7 +163,8 @@ export default class AlertView extends React.Component {
                             type="primary"
                             onClick={this.unmute}
                             loading={this.state.unmuting}
-                            className="m-t-5 m-l-5">
+                            className="m-t-5 m-l-5"
+                          >
                             Unmute
                           </Button>
                         </>
@@ -136,9 +177,13 @@ export default class AlertView extends React.Component {
               <h4>
                 Destinations{" "}
                 <Tooltip title="Open Alert Destinations page in a new tab.">
-                  <a href="destinations" target="_blank">
-                    <i className="fa fa-external-link f-13" />
-                  </a>
+                  <Link href="destinations" target="_blank">
+                    <i
+                      className="fa fa-external-link f-13"
+                      aria-hidden="true"
+                    />
+                    <span className="sr-only">(opens in a new tab)</span>
+                  </Link>
                 </Tooltip>
               </h4>
               <AlertDestinations alertId={alert.id} />
@@ -152,7 +197,7 @@ export default class AlertView extends React.Component {
 
 AlertView.propTypes = {
   alert: AlertType.isRequired,
-  queryResult: PropTypes.object, // eslint-disable-line react/forbid-prop-types,
+  queryResult: PropTypes.object,
   canEdit: PropTypes.bool.isRequired,
   onEdit: PropTypes.func.isRequired,
   menuButton: PropTypes.node.isRequired,

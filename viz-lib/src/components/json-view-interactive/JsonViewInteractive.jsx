@@ -35,7 +35,8 @@ function JsonBlock({ value, children, openingBrace, closingBrace, withKeys }) {
             return (
               <span
                 key={"item-" + key}
-                className={cx("jvi-item", { "jvi-nested-first": isFirst, "jvi-nested-last": isLast })}>
+                className={cx("jvi-item", { "jvi-nested-first": isFirst, "jvi-nested-last": isLast })}
+              >
                 {withKeys && (
                   <span className="jvi-object-key">
                     <JsonValue value={key}>

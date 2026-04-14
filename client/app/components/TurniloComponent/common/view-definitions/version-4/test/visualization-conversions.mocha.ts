@@ -26,14 +26,14 @@ describe("Visualization", () => {
   const mockViewDefinitionWithVis = (visualization: Visualization, visualizationSettings: object | null = null) =>
     mockViewDefinition({ visualization, visualizationSettings });
 
-  const mockEssenceWithVis = (visualization: VisualizationManifest, visualizationSettings: ImmutableRecord<object> | null = null) =>
-    mockEssence({ visualization, visualizationSettings });
+  const mockEssenceWithVis = (
+    visualization: VisualizationManifest,
+    visualizationSettings: ImmutableRecord<object> | null = null
+  ) => mockEssence({ visualization, visualizationSettings });
 
   describe("Totals", () => {
     it("reads totals visualization", () => {
-      assertConversionToEssence(
-        mockViewDefinitionWithVis("totals"),
-        mockEssenceWithVis(TOTALS_MANIFEST));
+      assertConversionToEssence(mockViewDefinitionWithVis("totals"), mockEssenceWithVis(TOTALS_MANIFEST));
     });
   });
 
@@ -43,7 +43,8 @@ describe("Visualization", () => {
     it("reads table visualization and use default settings", () => {
       assertConversionToEssence(
         mockViewDefinitionWithVis("table"),
-        mockEssenceWithVis(manifest, manifest.visualizationSettings.defaults));
+        mockEssenceWithVis(manifest, manifest.visualizationSettings.defaults)
+      );
     });
 
     it("reads table visualization and converts settings", () => {
@@ -51,8 +52,8 @@ describe("Visualization", () => {
       const convertedSettings = manifest.visualizationSettings.converter.read(settings);
       assertConversionToEssence(
         mockViewDefinitionWithVis("table", settings),
-        mockEssenceWithVis(manifest, convertedSettings));
+        mockEssenceWithVis(manifest, convertedSettings)
+      );
     });
   });
-
 });

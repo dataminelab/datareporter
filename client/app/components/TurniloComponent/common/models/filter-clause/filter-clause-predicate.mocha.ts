@@ -24,22 +24,35 @@ describe("Clause Predicate", () => {
     const input = ["foo", "bar", "baz", "qvux", "spam", "eggs"];
 
     it("Include", () => {
-      const clause = new StringFilterClause({ action: StringFilterAction.IN, values: Set.of("bar", "baz") });
+      const clause = new StringFilterClause({
+        action: StringFilterAction.IN,
+        values: Set.of("bar", "baz"),
+      });
       const predicate = clausePredicate(clause);
       expect(input.filter(predicate)).to.be.deep.eq(["bar", "baz"]);
     });
     it("Exclude", () => {
-      const clause = new StringFilterClause({ action: StringFilterAction.IN, not: true, values: Set.of("bar", "baz") });
+      const clause = new StringFilterClause({
+        action: StringFilterAction.IN,
+        not: true,
+        values: Set.of("bar", "baz"),
+      });
       const predicate = clausePredicate(clause);
       expect(input.filter(predicate)).to.be.deep.eq(["foo", "qvux", "spam", "eggs"]);
     });
     it("Contains", () => {
-      const clause = new StringFilterClause({ action: StringFilterAction.CONTAINS, values: Set.of("a") });
+      const clause = new StringFilterClause({
+        action: StringFilterAction.CONTAINS,
+        values: Set.of("a"),
+      });
       const predicate = clausePredicate(clause);
       expect(input.filter(predicate)).to.be.deep.eq(["bar", "baz", "spam"]);
     });
     it("Regular Expression", () => {
-      const clause = new StringFilterClause({ action: StringFilterAction.MATCH, values: Set.of("a(r|z)") });
+      const clause = new StringFilterClause({
+        action: StringFilterAction.MATCH,
+        values: Set.of("a(r|z)"),
+      });
       const predicate = clausePredicate(clause);
       expect(input.filter(predicate)).to.be.deep.eq(["bar", "baz"]);
     });

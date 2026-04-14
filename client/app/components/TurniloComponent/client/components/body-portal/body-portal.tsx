@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import { classNames } from "../../utils/dom/dom";
 import "./body-portal.scss";
@@ -39,19 +39,21 @@ interface BodyPortalState {
 export class BodyPortal extends React.Component<BodyPortalProps, BodyPortalState> {
   public static defaultProps: Partial<BodyPortalProps> = {
     disablePointerEvents: false,
-    isAboveAll: false
+    isAboveAll: false,
   };
 
   private static aboveAll: any;
 
   state = {
-    isAttached: false
+    isAttached: false,
   };
 
   constructor(props: BodyPortalProps) {
     super(props);
     this.target = document.createElement("div");
-    this.target.className = classNames("body-portal", { "full-size": props.fullSize });
+    this.target.className = classNames("body-portal", {
+      "full-size": props.fullSize,
+    });
   }
 
   private readonly target: HTMLElement = null;

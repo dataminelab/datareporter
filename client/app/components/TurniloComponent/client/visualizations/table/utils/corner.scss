@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-@import '../../../imports';
-@import 'dimensions';
+@import "../../../imports";
+@import "dimensions";
 
 .corner {
-  @include border-css-variable('border-bottom', 1px, solid, 'border-super-light');
+  @include border-css-variable("border-bottom", 1px, solid, "border-super-light");
   position: absolute;
   background-color: $white;
   left: 0;

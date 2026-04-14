@@ -35,10 +35,9 @@ import { thread } from "../functional/functional";
 const $main = $("main");
 
 function applySeries(series: List<ConcreteSeries>, timeShiftEnv: TimeShiftEnv, nestingLevel = 0) {
-
   return (query: Expression) => {
     return series.reduce((query, series) => {
-        return query.performAction(series.plywoodExpression(nestingLevel, timeShiftEnv));
+      return query.performAction(series.plywoodExpression(nestingLevel, timeShiftEnv));
     }, query);
   };
 }
@@ -112,10 +111,15 @@ function applySplit(index: number, essence: Essence, timeShiftEnv: TimeShiftEnv)
 
 export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Expression {
   const { splits, dataCube } = essence;
-  if (splits.length() > dataCube.getMaxSplits()) throw new Error(`Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.getMaxSplits()} splits`);
+  if (splits.length() > dataCube.getMaxSplits())
+    throw new Error(
+      `Too many splits in query. DataCube "${dataCube.name}" supports only ${dataCube.getMaxSplits()} splits`
+    );
 
   const hasComparison = essence.hasComparison();
-  const mainFilter = essence.getEffectiveFilter(timekeeper, { combineWithPrevious: hasComparison });
+  const mainFilter = essence.getEffectiveFilter(timekeeper, {
+    combineWithPrevious: hasComparison,
+  });
 
   const timeShiftEnv: TimeShiftEnv = essence.getTimeShiftEnv(timekeeper);
 
@@ -126,8 +130,7 @@ export default function makeQuery(essence: Essence, timekeeper: Timekeeper): Exp
   const queryWithMeasures = applySeries(essence.getConcreteSeries(), timeShiftEnv)(mainExp);
 
   if (splits.length() > 0) {
-    return queryWithMeasures
-      .apply(SPLIT, applySplit(0, essence, timeShiftEnv));
+    return queryWithMeasures.apply(SPLIT, applySplit(0, essence, timeShiftEnv));
   }
   return queryWithMeasures;
 }

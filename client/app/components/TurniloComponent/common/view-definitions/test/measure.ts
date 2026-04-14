@@ -27,13 +27,7 @@ export const avg = measure("average", $("main").average($("row")));
 export const quantile = measure("quantile", $("main").quantile($("histogram"), 0.95, "tuning"));
 export const complex = measure("complex", $("main").sum($("a")).divide($("b").multiply(100)));
 
-export const measures: Measure[] = [
-  count,
-  sum,
-  avg,
-  quantile,
-  complex
-];
+export const measures: Measure[] = [count, sum, avg, quantile, complex];
 
 export const measuresCollection: Measures = Measures.fromMeasures(measures);
 
@@ -41,6 +35,6 @@ export function measure(name: MeasureRefs, expression: Expression, opts: Omit<Me
   return new Measure({
     name,
     formula: expression.toString(),
-    ...opts
+    ...opts,
   });
 }

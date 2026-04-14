@@ -18,7 +18,24 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import { SinonSpy } from "sinon";
 import { sleep } from "../../../client/utils/test-utils";
-import { complement, concatTruthy, cons, constant, debounceWithPromise, flatMap, mapTruthy, range, thread, threadConditionally, threadNullable, zip } from "./functional";
+import {
+  assoc,
+  complement,
+  concatTruthy,
+  cons,
+  constant,
+  cyclicShift,
+  debounceWithPromise,
+  flatMap,
+  mapTruthy,
+  range,
+  replaceAt,
+  thread,
+  threadConditionally,
+  threadNullable,
+  values,
+  zip,
+} from "./functional";
 
 const inc = (x: number) => x + 1;
 const double = (x: number) => x * 2;
@@ -26,7 +43,6 @@ const nil = (): void => null;
 const wrap = (...numbers: number[]) => numbers;
 
 describe("Functional utilities", () => {
-
   describe("constant", () => {
     it("should return function that always returns initial argument", () => {
       const f = constant(42);
@@ -44,27 +60,76 @@ describe("Functional utilities", () => {
     });
   });
 
+  describe("assoc", () => {
+    it("should add to object", () => {
+      expect(assoc<number>({ a: 2 }, "b", 3)).to.deep.eq({ a: 2, b: 3 });
+    });
+
+    it("should add to empty object", () => {
+      expect(assoc<number>({}, "a", 1)).to.deep.eq({ a: 1 });
+    });
+
+    it("should override key", () => {
+      expect(assoc<number>({ a: 1 }, "a", 2)).to.deep.eq({ a: 2 });
+    });
+
+    it("should not change source object", () => {
+      const source = { a: 1 };
+      assoc(source, "a", 3);
+      expect(source).to.deep.eq({ a: 1 });
+    });
+  });
+
+  describe("replaceAt", () => {
+    it("should replace element at index 1", () => {
+      expect(replaceAt([1, 2, 3], 1, 42)).to.deep.eq([1, 42, 3]);
+    });
+
+    it("should append if index is out of bounds", () => {
+      expect(replaceAt([1, 2, 3], 100, 42)).to.deep.eq([1, 2, 3, 42]);
+    });
+  });
+
+  describe("cyclicShift", () => {
+    it("should rotate array by one element", () => {
+      expect(cyclicShift([1, 2, 3, 4], 1)).to.deep.eq([2, 3, 4, 1]);
+    });
+  });
+
   describe("zip", () => {
     it("should merge arrays with same length", () => {
       expect(zip([1, 2, 3], ["a", "b", "c"])).to.deep.eq([
         [1, "a"],
         [2, "b"],
-        [3, "c"]
+        [3, "c"],
       ]);
     });
 
     it("should merge common subsets of arrays with different length (first array longer)", () => {
       expect(zip([1, 2, 3, 4], ["a", "b"])).to.deep.eq([
         [1, "a"],
-        [2, "b"]
+        [2, "b"],
       ]);
     });
 
     it("should merge common subsets of arrays with different length (second array longer)", () => {
       expect(zip([1, 2], ["a", "b", "c", "d"])).to.deep.eq([
         [1, "a"],
-        [2, "b"]
+        [2, "b"],
       ]);
+    });
+  });
+
+  describe("values", () => {
+    it("should return all values from object", () => {
+      const input = {
+        a: "foobar",
+        b: "bazz",
+        c: 42,
+        d: "qvux",
+        e: true,
+      };
+      expect(values(input)).to.deep.equal(["foobar", "bazz", 42, "qvux", true]);
     });
   });
 
@@ -99,7 +164,7 @@ describe("Functional utilities", () => {
 
   describe("mapTruthy", () => {
     it("should omit falsy values from mapper", () => {
-      const result = mapTruthy<any, any>([1, 2, 3, 4, 5], (i: number) => i % 2 ? i : null);
+      const result = mapTruthy<any, any>([1, 2, 3, 4, 5], (i: number) => (i % 2 ? i : null));
       expect(result).to.deep.eq([1, 3, 5]);
     });
   });
@@ -194,7 +259,7 @@ describe("Functional utilities", () => {
 
     it("should return promise with value", async () => {
       const returnVal = 5;
-      const debounced = debounceWithPromise(() => returnVal, 10);
+      const debounced = debounceWithPromise(async () => returnVal, 10);
       const x = await debounced();
       expect(x).to.be.eq(returnVal);
     });

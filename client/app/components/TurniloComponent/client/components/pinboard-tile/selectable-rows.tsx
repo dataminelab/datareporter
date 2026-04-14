@@ -30,20 +30,25 @@ interface SelectableRowsProps {
   onSelect: Unary<unknown, void>;
 }
 
-export const SelectableRows: React.SFC<SelectableRowsProps> = props => {
+export const SelectableRows: React.SFC<SelectableRowsProps> = (props) => {
   const { data, onSelect, dimension, formatter, clause, searchText } = props;
-  return <React.Fragment>
-    {data.map(datum => {
-      const value = datum[dimension.name];
-      const measure = formatter(datum);
-      const selected = clause.values.has(value as string);
-      return <SelectableRow
-        key={String(value)}
-        value={value}
-        selected={selected}
-        onSelect={onSelect}
-        measure={measure}
-        searchText={searchText}/>;
-    })}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {data.map((datum) => {
+        const value = datum[dimension.name];
+        const measure = formatter(datum);
+        const selected = clause.values.has(value as string);
+        return (
+          <SelectableRow
+            key={String(value)}
+            value={value}
+            selected={selected}
+            onSelect={onSelect}
+            measure={measure}
+            searchText={searchText}
+          />
+        );
+      })}
+    </React.Fragment>
+  );
 };

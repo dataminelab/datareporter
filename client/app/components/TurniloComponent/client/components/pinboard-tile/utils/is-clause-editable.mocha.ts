@@ -15,7 +15,12 @@
  */
 
 import { expect } from "chai";
-import { boolean, stringContains, stringIn, stringMatch } from "../../../../common/models/filter-clause/filter-clause.fixtures";
+import {
+  boolean,
+  stringContains,
+  stringIn,
+  stringMatch,
+} from "../../../../common/models/filter-clause/filter-clause.fixtures";
 import { isClauseEditable } from "./is-clause-editable";
 
 describe("isClauseEditable", () => {

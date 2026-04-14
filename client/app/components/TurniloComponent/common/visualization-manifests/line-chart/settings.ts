@@ -25,17 +25,21 @@ export interface LineChartSettings {
 }
 
 const defaults: LineChartSettings = {
-  groupSeries: false
+  groupSeries: false,
 };
 
 const settingsFactory = Record<LineChartSettings>(defaults);
 
-const createSettings = (settings: Partial<LineChartSettings>): ImmutableRecord<LineChartSettings> => new (settingsFactory)(settings);
+const createSettings = (settings: Partial<LineChartSettings>): ImmutableRecord<LineChartSettings> =>
+  new settingsFactory(settings);
 
 export const settings: LineChartVisualizationSettings = {
   converter: {
+    // @ts-ignore not assignable to type
     print: (settings: ImmutableRecord<LineChartSettings>) => settings.toJS(),
-    read: (input: LineChartSettings) => createSettings({ groupSeries: !!input.groupSeries })
+    // @ts-ignore not assignable to type
+    read: (input: LineChartSettings) => createSettings({ groupSeries: !!input.groupSeries }),
   },
-  defaults: createSettings({})
+  // @ts-ignore not assignable to type
+  defaults: createSettings({}) as ImmutableRecord<object>,
 };

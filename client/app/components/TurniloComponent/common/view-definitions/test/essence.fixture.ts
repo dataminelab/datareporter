@@ -26,8 +26,8 @@ import { TOTALS_MANIFEST } from "../../visualization-manifests/totals/totals";
 import { dataCube } from "./data-cube.fixture";
 import { count, sum } from "./measure";
 
-type EssenceKeys
-  = "visualization"
+type EssenceKeys =
+  | "visualization"
   | "visualizationSettings"
   | "timezone"
   | "filter"
@@ -42,7 +42,7 @@ type EssenceOptions = Pick<EssenceValue, EssenceKeys>;
 export const defaultTimeClause = new RelativeTimeFilterClause({
   reference: "time",
   duration: Duration.fromCanonicalLength(day.canonicalLength),
-  period: TimeFilterPeriod.PREVIOUS
+  period: TimeFilterPeriod.PREVIOUS,
 });
 
 // reuse this in fixtures (AnyObject - minimal case)
@@ -56,13 +56,13 @@ const defaults: EssenceOptions = {
   timeShift: TimeShift.empty(),
   timezone: Timezone.UTC,
   visualization: TOTALS_MANIFEST,
-  visualizationSettings: null
+  visualizationSettings: null,
 };
 
 export function mockEssence(opts: Partial<EssenceOptions> = {}) {
   return new Essence({
     dataCube,
     ...defaults,
-    ...opts
+    ...opts,
   });
 }

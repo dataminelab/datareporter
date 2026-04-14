@@ -61,13 +61,14 @@ export interface TableState extends BaseVisualizationState {
 export class Table extends BaseVisualization<TableState> {
   protected className = TABLE_MANIFEST.name;
   protected innerTableRef = React.createRef<HTMLDivElement>();
+  private scrollerRef = React.createRef<Scroller>();
 
   getDefaultState(): TableState {
     return {
       flatData: null,
       hoverRow: null,
       segmentWidth: SEGMENT_WIDTH,
-      ...super.getDefaultState()
+      ...super.getDefaultState(),
     };
   }
 
@@ -96,18 +97,28 @@ export class Table extends BaseVisualization<TableState> {
     const { splits } = essence;
     const commonSort = essence.getCommonSort();
     const reference = series.key();
-    const sort = new SeriesSort({ reference, period, direction: SortDirection.descending });
-    const sortWithDirection = commonSort && commonSort.equals(sort) ? sort.set("direction", SortDirection.ascending) : sort;
+    const sort = new SeriesSort({
+      reference,
+      period,
+      direction: SortDirection.descending,
+    });
+    const sortWithDirection =
+      commonSort && commonSort.equals(sort) ? sort.set("direction", SortDirection.ascending) : sort;
     clicker.changeSplits(splits.changeSort(sortWithDirection), VisStrategy.KeepAlways); // set all to measure
   }
 
   private setSortToDimension() {
-    const { clicker, essence: { splits } } = this.props;
+    const {
+      clicker,
+      essence: { splits },
+    } = this.props;
     clicker.changeSplits(splits.setSortToDimension(), VisStrategy.KeepAlways); // set each to dimension ascending
   }
 
   private highlightRow(datum: Datum) {
-    const { essence: { splits } } = this.props;
+    const {
+      essence: { splits },
+    } = this.props;
     const rowHighlight = getFilterFromDatum(splits, datum);
 
     if (!rowHighlight) return;
@@ -135,7 +146,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   }
 
-  onClick = (x: number, y: number, part: ScrollerPart) => {
+  onClick = (x: number, y: number, part: ScrollerPart): void => {
     const position = this.calculateMousePosition(x, y, part);
 
     switch (position.element) {
@@ -151,7 +162,7 @@ export class Table extends BaseVisualization<TableState> {
     }
   };
 
-  setHoverRow = (x: number, y: number, part: ScrollerPart) => {
+  setHoverRow = (x: number, y: number, part: ScrollerPart): void => {
     const { hoverRow } = this.state;
     const position = this.calculateMousePosition(x, y, part);
     if (position.element === HoverElement.ROW && position.datum !== hoverRow) {
@@ -159,16 +170,16 @@ export class Table extends BaseVisualization<TableState> {
     }
   };
 
-  resetHover = () => {
+  resetHover = (): void => {
     const { hoverRow } = this.state;
     if (hoverRow) {
       this.setState({ hoverRow: null });
     }
   };
 
-  setScroll = (scrollTop: number, scrollLeft: number) => this.setState({ scrollLeft, scrollTop });
+  setScroll = (scrollTop: number, scrollLeft: number): void => this.setState({ scrollLeft, scrollTop });
 
-  setSegmentWidth = (segmentWidth: number) => this.setState({ segmentWidth });
+  setSegmentWidth = (segmentWidth: number): void => this.setState({ segmentWidth });
 
   private flattenOptions(): FlattenOptions {
     if (this.shouldCollapseRows()) {
@@ -184,25 +195,30 @@ export class Table extends BaseVisualization<TableState> {
     return { flatData };
   }
 
-  private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.scale.Linear<number, number>> {
+  private getScalesForColumns(essence: Essence, flatData: PseudoDatum[]): Array<d3.ScaleLinear<number, number>> {
     const concreteSeries = essence.getConcreteSeries().toArray();
     const splitLength = essence.splits.length();
 
-    return concreteSeries.map(series => {
+    return concreteSeries.map((series) => {
       const measureValues = flatData
         .filter((d: Datum) => d["__nest"] === splitLength)
         .map((d: Datum) => series.selectValue(d));
 
-      return d3.scale.linear()
-        // Ensure that 0 is in there
-        .domain(d3.extent([0, ...measureValues]))
-        .range([0, 100]);
+      return (
+        d3
+          .scaleLinear()
+          // Ensure that 0 is in there
+          .domain(d3.extent([0, ...measureValues]))
+          .range([0, 100])
+      );
     });
   }
 
   private shouldCollapseRows(): boolean {
-    const { essence: { visualizationSettings } } = this.props;
-    //@ts-ignore
+    const {
+      essence: { visualizationSettings },
+    } = this.props;
+    // @ts-ignore conversation error
     const { collapseRows } = visualizationSettings as ImmutableRecord<TableSettings>;
     return collapseRows;
   }
@@ -212,12 +228,12 @@ export class Table extends BaseVisualization<TableState> {
     if (!flatData) return null;
     if (!this.hasHighlight()) return null;
     const { splits } = essence;
-    const index = flatData.findIndex(d => this.getHighlightClauses().equals(getFilterFromDatum(splits, d)));
+    const index = flatData.findIndex((d) => this.getHighlightClauses().equals(getFilterFromDatum(splits, d)));
     if (index >= 0) return index;
     return null;
   }
 
-  protected renderInternals() {
+  protected renderInternals(): React.ReactElement {
     const { essence, stage, report } = this.props;
     const { flatData, scrollTop, hoverRow, segmentWidth } = this.state;
     const collapseRows = this.shouldCollapseRows();
@@ -239,75 +255,83 @@ export class Table extends BaseVisualization<TableState> {
       top: HEADER_HEIGHT,
       right: 0,
       bottom: 0,
-      left: this.getSegmentWidth()
+      left: this.getSegmentWidth(),
     };
 
-    return <div className="internals table-inner" ref={this.innerTableRef}>
-      <ResizeHandle
-        direction={Direction.LEFT}
-        onResize={this.setSegmentWidth}
-        min={SEGMENT_WIDTH}
-        max={this.maxSegmentWidth()}
-        value={segmentWidth}
-      />
-      <Scroller
-        ref="scroller"
-        layout={scrollerLayout}
+    return (
+      <div className="internals table-inner" ref={this.innerTableRef}>
+        <ResizeHandle
+          direction={Direction.LEFT}
+          onResize={this.setSegmentWidth}
+          min={SEGMENT_WIDTH}
+          max={this.maxSegmentWidth()}
+          value={segmentWidth}
+        />
+        <Scroller
+          ref={this.scrollerRef}
+          layout={scrollerLayout}
+          topGutter={
+            <MeasuresHeader
+              cellWidth={columnWidth}
+              series={essence.getConcreteSeries().toArray()}
+              commonSort={essence.getCommonSort()}
+              showPrevious={essence.hasComparison()}
+            />
+          }
+          leftGutter={
+            <SplitRows
+              color={report ? report.colorText : undefined}
+              collapseRows={collapseRows}
+              highlightedRowIndex={highlightedRowIndex}
+              visibleRowsIndexRange={visibleRowsRange}
+              hoverRow={hoverRow}
+              essence={essence}
+              data={flatData}
+              segmentWidth={this.getSegmentWidth()}
+            />
+          }
+          topLeftCorner={<SplitsHeader essence={essence} collapseRows={collapseRows} />}
+          body={
+            flatData && (
+              <MeasureRows
+                report={report ? report : undefined}
+                hoverRow={hoverRow}
+                visibleRowsIndexRange={visibleRowsRange}
+                essence={essence}
+                highlightedRowIndex={highlightedRowIndex}
+                scales={this.getScalesForColumns(essence, flatData)}
+                data={flatData}
+                cellWidth={columnWidth}
+                rowWidth={columnWidth * columnsCount}
+              />
+            )
+          }
+          overlay={
+            showHighlight && (
+              <Highlighter
+                highlightedIndex={highlightedRowIndex}
+                highlightedNesting={flatData[highlightedRowIndex].__nest}
+                scrollTopOffset={scrollTop}
+                collapseRows={collapseRows}
+              />
+            )
+          }
+          onClick={this.onClick}
+          onMouseMove={this.setHoverRow}
+          onMouseLeave={this.resetHover}
+          onScroll={this.setScroll}
+        />
 
-        topGutter={
-          <MeasuresHeader
-            cellWidth={columnWidth}
-            series={essence.getConcreteSeries().toArray()}
-            commonSort={essence.getCommonSort()}
-            showPrevious={essence.hasComparison()}
+        {highlightedRowIndex !== null && (
+          <HighlightModal
+            title={nestedSplitName(flatData[highlightedRowIndex], essence)}
+            left={stage.x + stage.width / 2}
+            top={stage.y + HEADER_HEIGHT + highlightedRowIndex * ROW_HEIGHT - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
+            acceptHighlight={this.acceptHighlight}
+            dropHighlight={this.dropHighlight}
           />
-        }
-
-        leftGutter={<SplitRows
-          color={report ? report.colorText: null}
-          collapseRows={collapseRows}
-          highlightedRowIndex={highlightedRowIndex}
-          visibleRowsIndexRange={visibleRowsRange}
-          hoverRow={hoverRow}
-          essence={essence}
-          data={flatData}
-          segmentWidth={this.getSegmentWidth()} />
-        }
-
-        topLeftCorner={<SplitsHeader essence={essence} collapseRows={collapseRows} />}
-
-        body={flatData &&
-        <MeasureRows
-          report={report || null}
-          hoverRow={hoverRow}
-          visibleRowsIndexRange={visibleRowsRange}
-          essence={essence}
-          highlightedRowIndex={highlightedRowIndex}
-          scales={this.getScalesForColumns(essence, flatData)}
-          data={flatData}
-          cellWidth={columnWidth}
-          rowWidth={columnWidth * columnsCount} />}
-
-        overlay={showHighlight && <Highlighter
-          highlightedIndex={highlightedRowIndex}
-          highlightedNesting={flatData[highlightedRowIndex].__nest}
-          scrollTopOffset={scrollTop}
-          collapseRows={collapseRows} />}
-
-        onClick={this.onClick}
-        onMouseMove={this.setHoverRow}
-        onMouseLeave={this.resetHover}
-        onScroll={this.setScroll}
-
-      />
-
-      {highlightedRowIndex !== null &&
-      <HighlightModal
-        title={nestedSplitName(flatData[highlightedRowIndex], essence)}
-        left={stage.x + stage.width / 2}
-        top={stage.y + HEADER_HEIGHT + (highlightedRowIndex * ROW_HEIGHT) - scrollTop - HIGHLIGHT_BUBBLE_V_OFFSET}
-        acceptHighlight={this.acceptHighlight}
-        dropHighlight={this.dropHighlight} />}
-    </div>;
+        )}
+      </div>
+    );
   }
 }

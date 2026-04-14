@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { BooleanFilterClause, StringFilterAction, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  BooleanFilterClause,
+  StringFilterAction,
+  StringFilterClause,
+} from "../../../../common/models/filter-clause/filter-clause";
 
 export function isClauseEditable(clause: StringFilterClause | BooleanFilterClause): boolean {
   if (clause.not) return false;

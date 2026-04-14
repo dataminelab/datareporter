@@ -1,11 +1,10 @@
-import json
 from typing import List
 
 import yaml
 from inflection import titleize
 
 from redash.models.models import Model
-from redash.plywood.plywood import PlywoodApi
+from redash.plywood.plywood import ENGINE_MAPPING, PlywoodApi
 
 INDENT_LEVELS = [3, 4]
 
@@ -18,6 +17,11 @@ MEASURE_TYPES = (NUMBER,)
 TIME_ATTRIBUTE_TYPES = (TIME,)
 
 
+def get_table_name(schema_name):
+    # Use only the part after the last dot if present
+    return schema_name.rsplit(".", 1)[-1]
+
+
 class ConfigDumper(yaml.SafeDumper):
     def write_line_break(self, data=None):
         super(ConfigDumper, self).write_line_break(data)
@@ -28,7 +32,7 @@ class ConfigDumper(yaml.SafeDumper):
         return super(ConfigDumper, self).increase_indent(flow, False)
 
 
-class BaseConfig(object):
+class BaseConfig:
     def to_json(self):
         raise NotImplementedError()
 
@@ -37,7 +41,6 @@ class BaseConfig(object):
 
 
 class PlywoodAttribute(BaseConfig):
-
     def __init__(self, name, type_: str, native_type: str, is_supported: bool):
         self.name = name
         self.type_ = type_
@@ -47,14 +50,10 @@ class PlywoodAttribute(BaseConfig):
     def to_json(self):
         native_type = self.native_type.upper()
 
-        if 'SET' in self.type_:
+        if "SET" in self.type_:
             native_type = "ARRAY/" + native_type
 
-        return {
-            "name": self.name,
-            "type": self.type_.upper(),
-            "nativeType": native_type
-        }
+        return {"name": self.name, "type": self.type_.upper(), "nativeType": native_type}
 
 
 class Attribute(BaseConfig):
@@ -63,10 +62,7 @@ class Attribute(BaseConfig):
         self.kind = kind
 
     def to_json(self):
-        return {
-            "name": self.name,
-            "type": self.kind.upper()
-        }
+        return {"name": self.name, "type": self.kind.upper()}
 
 
 class Dimension(Attribute):
@@ -74,11 +70,9 @@ class Dimension(Attribute):
         super().__init__(name, kind)
 
     def to_json(self):
-        json_data = {
-            "name": self.name,
-            "title": titleize(self.name),
-            "formula": "${}".format(self.name)
-        }
+        # Escape column names with dots or other special characters
+        formula = "${{{}}}".format(self.name) if "." in self.name else "${}".format(self.name)
+        json_data = {"name": self.name, "title": titleize(self.name), "formula": formula}
         if self.kind.upper() in DIMENSION_KINDS:
             json_data["kind"] = self.kind
         return json_data
@@ -89,19 +83,16 @@ class Measure(Attribute):
         super().__init__(name, kind)
 
     def to_json(self):
-        return {
-            "name": self.name,
-            "title": titleize(self.name),
-            "formula": "${}.sum(${})".format("main", self.name)
-        }
+        return {"name": self.name, "title": titleize(self.name), "formula": "${}.sum(${})".format("main", self.name)}
 
 
 class ModelConfigAttributes(BaseConfig):
-    def __init__(self, name, attributes: List[PlywoodAttribute], dimensions, measures):
+    def __init__(self, name, attributes: List[PlywoodAttribute], dimensions, measures, cluster_name="native"):
         self.name = name
         self.attributes = attributes
         self.dimensions = dimensions
         self.measures = measures
+        self.cluster_name = cluster_name
 
     def to_json(self):
         return self._build()
@@ -123,19 +114,15 @@ class ModelConfigAttributes(BaseConfig):
             "name": self.name,
             "title": titleize(self.name),
             "timeAttribute": self._find_time_attribute(),
-            "clusterName": "native",
+            "clusterName": self.cluster_name,
             "defaultSortMeasure": self._find_default_sort_measure(),
             "defaultSelectedMeasures": self._find_default_selected_measures(),
             "attributes": attributes,
             "dimensions": [dimension.to_json() for dimension in self.dimensions],
-            "measures": [measure.to_json() for measure in self.measures]
+            "measures": [measure.to_json() for measure in self.measures],
         }
 
-        return {
-            "dataCubes": [
-                data_cube_config
-            ]
-        }
+        return {"dataCubes": [data_cube_config]}
 
     def _find_default_sort_measure(self):
         first_measure = next(iter(self.measures), None)
@@ -152,7 +139,7 @@ class ModelConfigAttributes(BaseConfig):
         return None
 
 
-class ModelConfigGenerator(object):
+class ModelConfigGenerator:
     @staticmethod
     def yaml(model: Model, refresh=False):
         config_attributes = ModelConfigGenerator._build(model, refresh)
@@ -167,9 +154,15 @@ class ModelConfigGenerator(object):
 
     @staticmethod
     def _build(model: Model, refresh):
-
         schemas = model.data_source.get_schema(refresh=refresh)
-        table_schema = next((schema for schema in schemas if schema["name"] == model.table), None)
+        table_schema = next(
+            (
+                schema
+                for schema in schemas
+                if (model.table == schema["name"]) or model.table == get_table_name(schema["name"])
+            ),
+            None,
+        )
         if table_schema is None:
             raise ValueError("Data source {} doesn't contain {} table".format(model.data_source, model.table))
 
@@ -179,29 +172,40 @@ class ModelConfigGenerator(object):
         dimensions = ModelConfigGenerator.find_dimensions(plywood_attributes)
         measures = ModelConfigGenerator.find_measures(plywood_attributes)
 
-        return ModelConfigAttributes(name=model.table, attributes=plywood_attributes, dimensions=dimensions,
-                                     measures=measures)
+        # Map the data source type to Plywood engine
+        db_type = model.data_source.type
+        cluster_name = ENGINE_MAPPING.get(db_type, "native")
+
+        return ModelConfigAttributes(
+            name=model.table,
+            attributes=plywood_attributes,
+            dimensions=dimensions,
+            measures=measures,
+            cluster_name=cluster_name,
+        )
 
     @staticmethod
     def convert_attributes(model: Model, attributes: List[Attribute]) -> List[PlywoodAttribute]:
-
         db_type = model.data_source.type
         plywood_attributes = PlywoodApi.convert_attributes(db_type, [a.to_json() for a in attributes])
         res = []
 
         for attribute in plywood_attributes:
-            plywood_attribute = PlywoodAttribute(name=attribute['name'], type_=attribute['type'],
-                                                 native_type=attribute['nativeType'],
-                                                 is_supported=attribute['isSupported'])
+            plywood_attribute = PlywoodAttribute(
+                name=attribute["name"],
+                type_=attribute["type"],
+                native_type=attribute["nativeType"],
+                is_supported=attribute["isSupported"],
+            )
             res.append(plywood_attribute)
 
         return res
 
     @staticmethod
     def find_attributes(_model, table_schema) -> List[Attribute]:
-        columns =  table_schema['columns']
-        if 'typed_columns' in table_schema and table_schema['typed_columns']:
-            columns = table_schema['typed_columns']
+        columns = table_schema["columns"]
+        if "typed_columns" in table_schema and table_schema["typed_columns"]:
+            columns = table_schema["typed_columns"]
 
         attributes = []
         for column in columns:

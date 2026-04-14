@@ -4,11 +4,14 @@ import logging
 import time
 from functools import reduce
 from operator import or_
+from typing import Any, Dict, List
 
-from flask import current_app, request_started, url_for
+from flask import current_app as app
+from flask import request_started, url_for
 from flask_login import AnonymousUserMixin, UserMixin, current_user
 from passlib.apps import custom_app_context as pwd_context
-from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy_utils import EmailType
 from sqlalchemy_utils.models import generic_repr
 
@@ -60,7 +63,7 @@ def init_app(app):
     request_started.connect(update_user_active_at, app)
 
 
-class PermissionsCheckMixin(object):
+class PermissionsCheckMixin:
     def has_permission(self, permission):
         return self.has_permissions((permission,))
 
@@ -84,14 +87,14 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
     password_hash = Column(db.String(128), nullable=True)
     group_ids = Column(
         "groups",
-        MutableList.as_mutable(postgresql.ARRAY(key_type("Group"))),
+        MutableList.as_mutable(ARRAY(key_type("Group"))),
         nullable=True,
     )
     api_key = Column(db.String(40), default=lambda: generate_token(40), unique=True)
 
     disabled_at = Column(db.DateTime(True), default=None, nullable=True)
     details = Column(
-        MutableDict.as_mutable(postgresql.JSONB),
+        MutableDict.as_mutable(JSONB),
         nullable=True,
         server_default="{}",
         default={},
@@ -128,7 +131,7 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
     def to_dict(self, with_api_key=False):
         profile_image_url = self.profile_image_url
         if self.is_disabled:
-            assets = current_app.extensions["webpack"]["assets"] or {}
+            assets = app.extensions["webpack"]["assets"] or {}
             path = "images/avatar.svg"
             profile_image_url = url_for("static", filename=assets.get(path, path))
 
@@ -157,8 +160,7 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
 
         return d
 
-    @staticmethod
-    def is_api_user():
+    def is_api_user(self):
         return False
 
     @property
@@ -188,7 +190,18 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
 
     @classmethod
     def get_by_api_key_and_org(cls, api_key, org):
-        return cls.get_by_org(org).filter(cls.api_key == api_key).one()
+        return cls.get_by_org(org).filter(cls.api_key == api_key).one()  # cant find available api key for reports
+
+    @classmethod
+    def get_by_api_key_and_org_safe(cls, api_key, org):
+        try:
+            return cls.get_by_api_key_and_org(api_key, org)
+        except NoResultFound:
+            logger.error(f"API key {api_key} not found for org {org}")
+            return None
+        except MultipleResultsFound:
+            logger.error(f"Multiple results found for API key {api_key} in org {org}")
+            return None
 
     @classmethod
     def all(cls, org):
@@ -242,7 +255,7 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
 
 @generic_repr("id", "name", "type", "org_id")
 class Group(db.Model, BelongsToOrgMixin):
-    DEFAULT_PERMISSIONS = [
+    DEFAULT_PERMISSIONS: List[str] = [
         "create_dashboard",
         "create_query",
         "edit_dashboard",
@@ -265,18 +278,19 @@ class Group(db.Model, BelongsToOrgMixin):
         "create_report",
         "generate_report",
     ]
-    ADMIN_PERMISSIONS = ["admin", "super_admin"]
+    ADMIN_PERMISSIONS: List[str] = ["admin", "super_admin"]
+    AI_PERMISSIONS: List[str] = ["ai:ask", "ai:use", "ai:manage", "ai:admin", "ai:generate_report", "ai:edit_report"]
 
-    BUILTIN_GROUP = "builtin"
-    REGULAR_GROUP = "regular"
+    BUILTIN_GROUP: str = "builtin"
+    REGULAR_GROUP: str = "regular"
 
-    id = primary_key("Group")
+    id: int = primary_key("Group")
     data_sources = db.relationship("DataSourceGroup", back_populates="group", cascade="all")
-    org_id = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
+    org_id: int = Column(key_type("Organization"), db.ForeignKey("organizations.id"))
     org = db.relationship("Organization", back_populates="groups")
-    type = Column(db.String(255), default=REGULAR_GROUP)
-    name = Column(db.String(100))
-    permissions = Column(postgresql.ARRAY(db.String(255)), default=DEFAULT_PERMISSIONS)
+    type: str = Column(db.String(255), default=REGULAR_GROUP)
+    name: str = Column(db.String(100))
+    permissions: List[str] = Column(MutableList.as_mutable(ARRAY(db.String(255))), default=DEFAULT_PERMISSIONS)
     created_at = Column(db.DateTime(True), default=db.func.now())
 
     __tablename__ = "groups"
@@ -284,7 +298,7 @@ class Group(db.Model, BelongsToOrgMixin):
     def __str__(self):
         return str(self.id)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -305,6 +319,28 @@ class Group(db.Model, BelongsToOrgMixin):
     def find_by_name(cls, org, group_names):
         result = cls.query.filter(cls.org == org, cls.name.in_(group_names))
         return list(result)
+
+    def add_permission(self, permission):
+        """
+        Adds a permission to the group if it doesn't already exist.
+        """
+        if permission not in self.permissions:
+            self.permissions.append(permission)
+            db.session.add(self)
+            db.session.commit()
+            return True
+        return False
+
+    def remove_permission(self, permission):
+        """
+        Removes a permission from the group if it exists.
+        """
+        if permission in self.permissions:
+            self.permissions.remove(permission)
+            db.session.add(self)
+            db.session.commit()
+            return True
+        return False
 
 
 @generic_repr("id", "object_type", "object_id", "access_type", "grantor_id", "grantee_id")
@@ -381,13 +417,22 @@ class AccessPermission(GFKBase, db.Model):
         return d
 
 
+class PseudoOrg:
+    id = None
+    slug = None
+
+
 class AnonymousUser(AnonymousUserMixin, PermissionsCheckMixin):
+    org = PseudoOrg()
+    id = None
+    name = "anonymous"
+    group_ids = []
+
     @property
     def permissions(self):
         return []
 
-    @staticmethod
-    def is_api_user():
+    def is_api_user(self):
         return False
 
 
@@ -407,8 +452,7 @@ class ApiUser(UserMixin, PermissionsCheckMixin):
     def __repr__(self):
         return "<{}>".format(self.name)
 
-    @staticmethod
-    def is_api_user():
+    def is_api_user(self):
         return True
 
     @property
@@ -419,7 +463,7 @@ class ApiUser(UserMixin, PermissionsCheckMixin):
 
     @property
     def permissions(self):
-        return ["view_query"]
+        return ["view_query", "view_report"]
 
     @staticmethod
     def has_access(obj, access_type):

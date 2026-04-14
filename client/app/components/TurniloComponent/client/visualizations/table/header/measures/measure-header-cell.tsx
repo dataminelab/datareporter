@@ -16,7 +16,7 @@
 import * as React from "react";
 import { SortDirection } from "../../../../../common/models/sort/sort";
 import { classNames } from "../../../../utils/dom/dom";
-import { SortIcon } from "../../utils/sort-icon";
+import { SortIcon } from "../../sort-icon/sort-icon";
 import "./measure-header-cell.scss";
 
 interface MeasureHeaderCellProps {
@@ -28,10 +28,10 @@ interface MeasureHeaderCellProps {
 
 export const MeasureHeaderCell: React.SFC<MeasureHeaderCellProps> = ({ sort, width, title, className }) => {
   const sorted = sort !== null;
-  return <div
-    className={classNames("measure-header-cell", className, { sorted })}
-    style={{ width }}>
-    <div className="title-wrap">{title}</div>
-    {sort && <SortIcon direction={sort} />}
-  </div>;
+  return (
+    <div className={classNames("measure-header-cell", className, { sorted })} style={{ width }}>
+      <div className="title-wrap">{title}</div>
+      {sort && <SortIcon direction={sort} />}
+    </div>
+  );
 };

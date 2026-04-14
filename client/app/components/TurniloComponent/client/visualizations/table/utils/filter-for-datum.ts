@@ -16,7 +16,14 @@
 import { List, Set } from "immutable";
 import { PseudoDatum } from "plywood";
 import { DateRange } from "../../../../common/models/date-range/date-range";
-import { FilterClause, FixedTimeFilterClause, NumberFilterClause, NumberRange, StringFilterAction, StringFilterClause } from "../../../../common/models/filter-clause/filter-clause";
+import {
+  FilterClause,
+  FixedTimeFilterClause,
+  NumberFilterClause,
+  NumberRange,
+  StringFilterAction,
+  StringFilterClause,
+} from "../../../../common/models/filter-clause/filter-clause";
 import { SplitType } from "../../../../common/models/split/split";
 import { Splits } from "../../../../common/models/splits/splits";
 import { day, Timezone } from "chronoshift";
@@ -37,24 +44,30 @@ export function getFilterFromDatum(splits: Splits, flatDatum: PseudoDatum): List
 
   if (splitNesting === 0 || splitNesting > splitCombines.size) return null;
 
-  const filterClauses = splitCombines
-    .take(splitNesting)
-    .map(({ reference, type }) => {
-      const segment: any = flatDatum[reference];
-      // if (!segment && segment !== 0) {
-      //   segment = reference;
-      // }
-
-      switch (type) {
-        case SplitType.number:
-          return new NumberFilterClause({ reference, values: List.of(new NumberRange(segment)) });
-        case SplitType.time:
-          const newDate = createDateRange(segment, undefined);
-          return new FixedTimeFilterClause({ reference, values: List.of(newDate) });
-        case SplitType.string:
-          return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(segment) });
-      }
-    });
+  const filterClauses = splitCombines.take(splitNesting).map(({ reference, type }) => {
+    const segment: any = flatDatum[reference];
+    switch (type) {
+      case SplitType.number:
+        return new NumberFilterClause({
+          reference,
+          values: List.of(new NumberRange(segment)),
+        });
+      case SplitType.time:
+        const newDate = createDateRange(segment, undefined);
+        return new FixedTimeFilterClause({
+          reference,
+          values: List.of(newDate),
+        });
+      case SplitType.string:
+        return new StringFilterClause({
+          reference,
+          action: StringFilterAction.IN,
+          values: Set.of(segment),
+        });
+      default:
+        throw new Error(`Unsupported split type: ${type}`);
+    }
+  });
 
   return List(filterClauses);
 }

@@ -20,7 +20,8 @@ import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
 import { ConcreteExpression, ExpressionSeriesOperation, ExpressionValue } from "./expression";
 
-export type ArithmeticOperation = ExpressionSeriesOperation.ADD
+export type ArithmeticOperation =
+  | ExpressionSeriesOperation.ADD
   | ExpressionSeriesOperation.SUBTRACT
   | ExpressionSeriesOperation.MULTIPLY
   | ExpressionSeriesOperation.DIVIDE;
@@ -32,11 +33,10 @@ interface ExpressionArithmeticOperationValue extends ExpressionValue {
 
 const defaultExpression: ExpressionArithmeticOperationValue = {
   operation: null,
-  reference: null
+  reference: null,
 };
 
 export class ArithmeticExpression extends Record<ExpressionArithmeticOperationValue>(defaultExpression) {
-
   constructor(params: ExpressionArithmeticOperationValue) {
     super(params);
   }
@@ -51,9 +51,10 @@ export class ArithmeticExpression extends Record<ExpressionArithmeticOperationVa
 }
 
 export class ConcreteArithmeticOperation implements ConcreteExpression {
-
-  constructor(private operation: ArithmeticOperation, private measure: Measure) {
-  }
+  constructor(
+    private operation: ArithmeticOperation,
+    private measure: Measure
+  ) {}
 
   private operationName(): string {
     switch (this.operation) {
@@ -89,7 +90,7 @@ export class ConcreteArithmeticOperation implements ConcreteExpression {
   toExpression(expression: Expression, name: string, _nestingLevel: number): ApplyExpression {
     return new ApplyExpression({
       name,
-      expression: this.calculate(expression)
+      expression: this.calculate(expression),
     });
   }
 }

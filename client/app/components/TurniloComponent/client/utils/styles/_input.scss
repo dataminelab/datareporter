@@ -16,7 +16,7 @@
  */
 
 %input-cont {
-  @include border-css-variable('border', 1px, solid, 'border-light');
+  @include border-css-variable("border", 1px, solid, "border-light");
   background: $white;
   border-radius: $corner;
   cursor: pointer;
@@ -33,7 +33,7 @@
 }
 
 %input-cont-inset {
-  @include border-css-variable('border', 1px, solid, 'border-light');
+  @include border-css-variable("border", 1px, solid, "border-light");
   background: $white;
   border-radius: $corner;
   box-shadow: inset 0 1px 1px 0 hsla(0, 0, 0, 0.1);

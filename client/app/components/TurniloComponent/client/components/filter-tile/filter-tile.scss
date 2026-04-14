@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 $overflow-width: 40px;
 
@@ -65,5 +65,5 @@ $overflow-width: 40px;
 }
 
 .overflow-menu {
-  @extend %overflow-menu
+  @extend %overflow-menu;
 }

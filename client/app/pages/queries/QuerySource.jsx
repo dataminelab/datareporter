@@ -1,18 +1,20 @@
-import { isEmpty, find, map, extend, includes } from "lodash";
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import { extend, find, includes, isEmpty, map } from "lodash";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
 import { useDebouncedCallback } from "use-debounce";
 import useMedia from "use-media";
 import Button from "antd/lib/button";
-import Select from "antd/lib/select";
 import routeWithUserSession from "@/components/ApplicationArea/routeWithUserSession";
 import Resizable from "@/components/Resizable";
 import Parameters from "@/components/Parameters";
 import EditInPlace from "@/components/EditInPlace";
+import DynamicComponent from "@/components/DynamicComponent";
 import recordEvent from "@/services/recordEvent";
 import { ExecutionStatus } from "@/services/query-result";
 import routes from "@/services/routes";
+import notification from "@/services/notification";
+import * as queryFormat from "@/lib/queryFormat";
 
 import QueryPageHeader from "./components/QueryPageHeader";
 import QueryMetadata from "./components/QueryMetadata";
@@ -26,6 +28,7 @@ import { getEditorComponents } from "@/components/queries/editor-components";
 import useQuery from "./hooks/useQuery";
 import useVisualizationTabHandler from "./hooks/useVisualizationTabHandler";
 import useAutocompleteFlags from "./hooks/useAutocompleteFlags";
+import useAutoLimitFlags from "./hooks/useAutoLimitFlags";
 import useQueryExecute from "./hooks/useQueryExecute";
 import useQueryResultData from "@/lib/useQueryResultData";
 import useQueryDataSources from "./hooks/useQueryDataSources";
@@ -36,27 +39,31 @@ import useEditScheduleDialog from "./hooks/useEditScheduleDialog";
 import useAddVisualizationDialog from "./hooks/useAddVisualizationDialog";
 import useEditVisualizationDialog from "./hooks/useEditVisualizationDialog";
 import useDeleteVisualization from "./hooks/useDeleteVisualization";
-import useFormatQuery from "./hooks/useFormatQuery";
 import useUpdateQuery from "./hooks/useUpdateQuery";
 import useUpdateQueryDescription from "./hooks/useUpdateQueryDescription";
 import useUnsavedChangesAlert from "./hooks/useUnsavedChangesAlert";
 
+import "./components/QuerySourceDropdown"; // register QuerySourceDropdown
 import "./QuerySource.less";
 
 function chooseDataSourceId(dataSourceIds, availableDataSources) {
-  dataSourceIds = map(dataSourceIds, v => parseInt(v, 10));
   availableDataSources = map(availableDataSources, ds => ds.id);
   return find(dataSourceIds, id => includes(availableDataSources, id)) || null;
 }
 
 function QuerySource(props) {
   const { query, setQuery, isDirty, saveQuery } = useQuery(props.query);
-  const { dataSourcesLoaded, dataSources, dataSource } = useQueryDataSources(query);
+  const { dataSourcesLoaded, dataSources, dataSource } =
+    useQueryDataSources(query);
   const [schema, setSchema] = useState([]);
   const queryFlags = useQueryFlags(query, dataSource);
-  const [parameters, areParametersDirty, updateParametersDirtyFlag] = useQueryParameters(query);
-  const [selectedVisualization, setSelectedVisualization] = useVisualizationTabHandler(query.visualizations);
-  const { QueryEditor, SchemaBrowser } = getEditorComponents(dataSource && dataSource.type);
+  const [parameters, areParametersDirty, updateParametersDirtyFlag] =
+    useQueryParameters(query);
+  const [selectedVisualization, setSelectedVisualization] =
+    useVisualizationTabHandler(query.visualizations);
+  const { QueryEditor, SchemaBrowser } = getEditorComponents(
+    dataSource && dataSource.type,
+  );
   const isMobile = !useMedia({ minWidth: 768 });
 
   useUnsavedChangesAlert(isDirty);
@@ -76,7 +83,10 @@ function QuerySource(props) {
   const queryResultData = useQueryResultData(queryResult);
 
   const editorRef = useRef(null);
-  const [autocompleteAvailable, autocompleteEnabled, toggleAutocomplete] = useAutocompleteFlags(schema);
+  const [autocompleteAvailable, autocompleteEnabled, toggleAutocomplete] =
+    useAutocompleteFlags(schema);
+  const [autoLimitAvailable, autoLimitChecked, setAutoLimit] =
+    useAutoLimitFlags(dataSource, query, setQuery);
 
   const [handleQueryEditorChange] = useDebouncedCallback(queryText => {
     setQuery(extend(query.clone(), { query: queryText }));
@@ -93,7 +103,20 @@ function QuerySource(props) {
 
   const updateQuery = useUpdateQuery(query, setQuery);
   const updateQueryDescription = useUpdateQueryDescription(query, setQuery);
-  const formatQuery = useFormatQuery(query, dataSource ? dataSource.syntax : null, setQuery);
+  const querySyntax = dataSource ? dataSource.syntax || "sql" : null;
+  const isFormatQueryAvailable =
+    queryFormat.isFormatQueryAvailable(querySyntax);
+  const formatQuery = () => {
+    try {
+      const formattedQueryText = queryFormat.formatQuery(
+        query.query,
+        querySyntax,
+      );
+      setQuery(extend(query.clone(), { query: formattedQueryText }));
+    } catch (err) {
+      notification.error(String(err));
+    }
+  };
 
   const handleDataSourceChange = useCallback(
     dataSourceId => {
@@ -115,30 +138,43 @@ function QuerySource(props) {
         updateQuery(updates, { successMessage: null }); // show message only on error
       }
     },
-    [query, setQuery, updateQuery]
+    [query, setQuery, updateQuery],
   );
 
   useEffect(() => {
     // choose data source id for new queries
     if (dataSourcesLoaded && queryFlags.isNew) {
-      const firstDataSourceId = dataSources.length > 0 ? dataSources[0].id : null;
+      const firstDataSourceId =
+        dataSources.length > 0 ? dataSources[0].id : null;
+      const selectedDataSourceId =
+        parseInt(localStorage.getItem("lastSelectedDataSourceId")) || null;
+
       handleDataSourceChange(
         chooseDataSourceId(
-          [query.data_source_id, localStorage.getItem("lastSelectedDataSourceId"), firstDataSourceId],
-          dataSources
-        )
+          [query.data_source_id, selectedDataSourceId, firstDataSourceId],
+          dataSources,
+        ),
       );
     }
-  }, [query.data_source_id, queryFlags.isNew, dataSourcesLoaded, dataSources, handleDataSourceChange]);
+  }, [
+    query.data_source_id,
+    queryFlags.isNew,
+    dataSourcesLoaded,
+    dataSources,
+    handleDataSourceChange,
+  ]);
 
   const editSchedule = useEditScheduleDialog(query, setQuery);
-  const openAddNewParameterDialog = useAddNewParameterDialog(query, (newQuery, param) => {
-    if (editorRef.current) {
-      editorRef.current.paste(param.toQueryTextFragment());
-      editorRef.current.focus();
-    }
-    setQuery(newQuery);
-  });
+  const openAddNewParameterDialog = useAddNewParameterDialog(
+    query,
+    (newQuery, param) => {
+      if (editorRef.current) {
+        editorRef.current.paste(param.toQueryTextFragment());
+        editorRef.current.focus();
+      }
+      setQuery(newQuery);
+    },
+  );
 
   const handleSchemaItemSelect = useCallback(schemaItem => {
     if (editorRef.current) {
@@ -150,7 +186,10 @@ function QuerySource(props) {
 
   const doExecuteQuery = useCallback(
     (skipParametersDirtyFlag = false) => {
-      if (!queryFlags.canExecute || (!skipParametersDirtyFlag && (areParametersDirty || isQueryExecuting))) {
+      if (
+        !queryFlags.canExecute ||
+        (!skipParametersDirtyFlag && (areParametersDirty || isQueryExecuting))
+      ) {
         return;
       }
       if (isDirty || !isEmpty(selectedText)) {
@@ -161,7 +200,15 @@ function QuerySource(props) {
         executeQuery();
       }
     },
-    [query, queryFlags.canExecute, areParametersDirty, isQueryExecuting, isDirty, selectedText, executeQuery]
+    [
+      query,
+      queryFlags.canExecute,
+      areParametersDirty,
+      isQueryExecuting,
+      isDirty,
+      selectedText,
+      executeQuery,
+    ],
   );
 
   const [isQuerySaving, setIsQuerySaving] = useState(false);
@@ -173,50 +220,63 @@ function QuerySource(props) {
     }
   }, [isQuerySaving, saveQuery]);
 
-  const addVisualization = useAddVisualizationDialog(query, queryResult, doSaveQuery, (newQuery, visualization) => {
-    setQuery(newQuery);
-    setSelectedVisualization(visualization.id);
-  });
-  const editVisualization = useEditVisualizationDialog(query, queryResult, newQuery => setQuery(newQuery));
+  const addVisualization = useAddVisualizationDialog(
+    query,
+    queryResult,
+    doSaveQuery,
+    (newQuery, visualization) => {
+      setQuery(newQuery);
+      setSelectedVisualization(visualization.id);
+    },
+  );
+  const editVisualization = useEditVisualizationDialog(
+    query,
+    queryResult,
+    newQuery => setQuery(newQuery),
+  );
   const deleteVisualization = useDeleteVisualization(query, setQuery);
+
   return (
-    <div className={cx("query-page-wrapper", { "query-fixed-layout": !isMobile })}>
-      <QuerySourceAlerts query={query} dataSourcesAvailable={!dataSourcesLoaded || dataSources.length > 0} />
+    <div
+      className={cx("query-page-wrapper", { "query-fixed-layout": !isMobile })}
+    >
+      <QuerySourceAlerts
+        query={query}
+        dataSourcesAvailable={!dataSourcesLoaded || dataSources.length > 0}
+      />
       <div className="container w-100 p-b-10">
         <QueryPageHeader
           query={query}
           dataSource={dataSource}
           sourceMode
           selectedVisualization={selectedVisualization}
+          headerExtra={
+            <DynamicComponent name="QuerySource.HeaderExtra" query={query} />
+          }
           onChange={setQuery}
         />
       </div>
       <main className="query-fullscreen">
-        <Resizable direction="horizontal" sizeAttribute="flex-basis" toggleShortcut="Alt+Shift+D, Alt+D">
+        <Resizable
+          direction="horizontal"
+          sizeAttribute="flex-basis"
+          toggleShortcut="Alt+Shift+D, Alt+D"
+        >
           <nav>
             {dataSourcesLoaded && (
               <div className="editor__left__data-source">
-                <Select
-                  className="w-100"
-                  data-test="SelectDataSource"
-                  placeholder="Choose data source..."
+                <DynamicComponent
+                  name={"QuerySourceDropdown"}
+                  dataSources={dataSources}
                   value={dataSource ? dataSource.id : undefined}
-                  disabled={!queryFlags.canEdit || !dataSourcesLoaded || dataSources.length === 0}
+                  disabled={
+                    !queryFlags.canEdit ||
+                    !dataSourcesLoaded ||
+                    dataSources.length === 0
+                  }
                   loading={!dataSourcesLoaded}
-                  optionFilterProp="data-name"
-                  showSearch
-                  onChange={handleDataSourceChange}>
-                  {map(dataSources, ds => (
-                    <Select.Option
-                      key={`ds-${ds.id}`}
-                      value={ds.id}
-                      data-name={ds.name}
-                      data-test={`SelectDataSource${ds.id}`}>
-                      <img src={`/static/images/db-logos/${ds.type}.png`} width="20" alt={ds.name} />
-                      <span>{ds.name}</span>
-                    </Select.Option>
-                  ))}
-                </Select>
+                  onChange={handleDataSourceChange}
+                />
               </div>
             )}
             <div className="editor__left__schema">
@@ -224,7 +284,11 @@ function QuerySource(props) {
                 dataSource={dataSource}
                 options={query.options.schemaOptions}
                 onOptionsUpdate={schemaOptions =>
-                  setQuery(extend(query.clone(), { options: { ...query.options, schemaOptions } }))
+                  setQuery(
+                    extend(query.clone(), {
+                      options: { ...query.options, schemaOptions },
+                    }),
+                  )
                 }
                 onSchemaUpdate={setSchema}
                 onItemSelect={handleSchemaItemSelect}
@@ -245,7 +309,13 @@ function QuerySource(props) {
               </div>
             )}
 
-            {!query.isNew() && <QueryMetadata layout="table" query={query} onEditSchedule={editSchedule} />}
+            {!query.isNew() && (
+              <QueryMetadata
+                layout="table"
+                query={query}
+                onEditSchedule={editSchedule}
+              />
+            )}
           </nav>
         </Resizable>
 
@@ -253,17 +323,23 @@ function QuerySource(props) {
           <div className="flex-fill p-relative">
             <div
               className="p-absolute d-flex flex-column p-l-15 p-r-15"
-              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}>
+              style={{ left: 0, top: 0, right: 0, bottom: 0, overflow: "auto" }}
+            >
               <Resizable direction="vertical" sizeAttribute="flex-basis">
                 <div className="row editor">
-                  <section className="query-editor-wrapper" data-test="QueryEditor">
+                  <section
+                    className="query-editor-wrapper"
+                    data-test="QueryEditor"
+                  >
                     <QueryEditor
                       ref={editorRef}
                       data-executing={isQueryExecuting ? "true" : null}
                       syntax={dataSource ? dataSource.syntax : null}
                       value={query.query}
                       schema={schema}
-                      autocompleteEnabled={autocompleteAvailable && autocompleteEnabled}
+                      autocompleteEnabled={
+                        autocompleteAvailable && autocompleteEnabled
+                      }
                       onChange={handleQueryEditorChange}
                       onSelectionChange={setSelectedText}
                     />
@@ -275,8 +351,11 @@ function QuerySource(props) {
                         onClick: openAddNewParameterDialog,
                       }}
                       formatButtonProps={{
-                        title: "Format Query",
-                        shortcut: "mod+shift+f",
+                        title: isFormatQueryAvailable
+                          ? "Format Query"
+                          : "Query formatting is not supported for your Data Source syntax",
+                        disabled: !dataSource || !isFormatQueryAvailable,
+                        shortcut: isFormatQueryAvailable ? "mod+shift+f" : null,
                         onClick: formatQuery,
                       }}
                       saveButtonProps={
@@ -293,11 +372,19 @@ function QuerySource(props) {
                         }
                       }
                       executeButtonProps={{
-                        disabled: !queryFlags.canExecute || isQueryExecuting || areParametersDirty,
-                        shortcut: "mod+enter, alt+enter, ctrl+enter, shift+enter",
+                        disabled:
+                          !queryFlags.canExecute ||
+                          isQueryExecuting ||
+                          areParametersDirty,
+                        shortcut:
+                          "mod+enter, alt+enter, ctrl+enter, shift+enter",
                         onClick: doExecuteQuery,
                         text: (
-                          <span className="hidden-xs">{selectedText === null ? "Execute" : "Execute Selected"}</span>
+                          <span className="hidden-xs">
+                            {selectedText === null
+                              ? "Execute"
+                              : "Execute Selected"}
+                          </span>
                         ),
                       }}
                       autocompleteToggleProps={{
@@ -305,13 +392,21 @@ function QuerySource(props) {
                         enabled: autocompleteEnabled,
                         onToggle: toggleAutocomplete,
                       }}
+                      autoLimitCheckboxProps={{
+                        available: autoLimitAvailable,
+                        checked: autoLimitChecked,
+                        onChange: setAutoLimit,
+                      }}
                       dataSourceSelectorProps={
                         dataSource
                           ? {
                               disabled: !queryFlags.canEdit,
                               value: dataSource.id,
                               onChange: handleDataSourceChange,
-                              options: map(dataSources, ds => ({ value: ds.id, label: ds.name })),
+                              options: map(dataSources, ds => ({
+                                value: ds.id,
+                                label: ds.name,
+                              })),
                             }
                           : false
                       }
@@ -320,13 +415,20 @@ function QuerySource(props) {
                 </div>
               </Resizable>
 
-              {!queryFlags.isNew && <QueryMetadata layout="horizontal" query={query} onEditSchedule={editSchedule} />}
+              {!queryFlags.isNew && (
+                <QueryMetadata
+                  layout="horizontal"
+                  query={query}
+                  onEditSchedule={editSchedule}
+                />
+              )}
 
               <section className="query-results-wrapper">
                 {query.hasParameters() && (
                   <div className="query-parameters-wrapper">
                     <Parameters
                       editable={queryFlags.canEdit}
+                      sortable={queryFlags.canEdit}
                       disableUrlUpdate={queryFlags.isNew}
                       parameters={parameters}
                       onPendingValuesChange={() => updateParametersDirtyFlag()}
@@ -367,28 +469,40 @@ function QuerySource(props) {
                       ))}
                     </div>
                   )}
-                  {loadedInitialResults && !(queryFlags.isNew && !queryResult) && (
-                    <QueryVisualizationTabs
-                      queryResult={queryResult}
-                      visualizations={query.visualizations}
-                      showNewVisualizationButton={queryFlags.canEdit && queryResultData.status === ExecutionStatus.DONE}
-                      canDeleteVisualizations={queryFlags.canEdit}
-                      selectedTab={selectedVisualization}
-                      onChangeTab={setSelectedVisualization}
-                      onAddVisualization={addVisualization}
-                      onDeleteVisualization={deleteVisualization}
-                      refreshButton={
-                        <Button
-                          type="primary"
-                          disabled={!queryFlags.canExecute || areParametersDirty}
-                          loading={isQueryExecuting}
-                          onClick={doExecuteQuery}>
-                          {!isQueryExecuting && <i className="zmdi zmdi-refresh m-r-5" aria-hidden="true" />}
-                          Refresh Now
-                        </Button>
-                      }
-                    />
-                  )}
+                  {loadedInitialResults &&
+                    !(queryFlags.isNew && !queryResult) && (
+                      <QueryVisualizationTabs
+                        queryResult={queryResult}
+                        visualizations={query.visualizations}
+                        showNewVisualizationButton={
+                          queryFlags.canEdit &&
+                          queryResultData.status === ExecutionStatus.DONE
+                        }
+                        canDeleteVisualizations={queryFlags.canEdit}
+                        selectedTab={selectedVisualization}
+                        onChangeTab={setSelectedVisualization}
+                        onAddVisualization={addVisualization}
+                        onDeleteVisualization={deleteVisualization}
+                        refreshButton={
+                          <Button
+                            type="primary"
+                            disabled={
+                              !queryFlags.canExecute || areParametersDirty
+                            }
+                            loading={isQueryExecuting}
+                            onClick={doExecuteQuery}
+                          >
+                            {!isQueryExecuting && (
+                              <i
+                                className="zmdi zmdi-refresh m-r-5"
+                                aria-hidden="true"
+                              />
+                            )}
+                            Refresh Now
+                          </Button>
+                        }
+                      />
+                    )}
                 </React.Fragment>
               </section>
             </div>
@@ -400,7 +514,9 @@ function QuerySource(props) {
                 queryResult={queryResult}
                 selectedVisualization={selectedVisualization}
                 isQueryExecuting={isQueryExecuting}
-                showEditVisualizationButton={!queryFlags.isNew && queryFlags.canEdit}
+                showEditVisualizationButton={
+                  !queryFlags.isNew && queryFlags.canEdit
+                }
                 onEditVisualization={editVisualization}
               />
             </div>
@@ -412,7 +528,7 @@ function QuerySource(props) {
 }
 
 QuerySource.propTypes = {
-  query: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  query: PropTypes.object.isRequired,
 };
 
 const QuerySourcePage = wrapQueryPage(QuerySource);
@@ -423,7 +539,7 @@ routes.register(
     path: "/queries/new",
     render: pageProps => <QuerySourcePage {...pageProps} />,
     bodyClass: "fixed-layout",
-  })
+  }),
 );
 routes.register(
   "Queries.Edit",
@@ -431,5 +547,5 @@ routes.register(
     path: "/queries/:queryId/source",
     render: pageProps => <QuerySourcePage {...pageProps} />,
     bodyClass: "fixed-layout",
-  })
+  }),
 );

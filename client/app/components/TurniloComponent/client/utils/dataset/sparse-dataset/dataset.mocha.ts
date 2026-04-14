@@ -23,12 +23,23 @@ import { Split, SplitType } from "../../../../common/models/split/split";
 import { SPLIT } from "../../../config/constants";
 import "../../test-utils";
 import { fillDatasetWithMissingValues } from "./dataset";
-import { expectedDataset, expectedDatasetReversed, rawDataset, rawDatasetWithTimeDimension, rawDataWithNumberRanges, reversedDatasetWithTimeDimension } from "./test-fixtures";
+import {
+  expectedDataset,
+  expectedDatasetReversed,
+  rawDataset,
+  rawDatasetWithTimeDimension,
+  rawDataWithNumberRanges,
+  reversedDatasetWithTimeDimension,
+} from "./test-fixtures";
 
 const timezone = Timezone.UTC;
 
 const mockSplit = (reference: string, type: SplitType, direction: SortDirection) =>
-  new Split({ reference, type, sort: new DimensionSort({ reference, direction }) });
+  new Split({
+    reference,
+    type,
+    sort: new DimensionSort({ reference, direction }),
+  });
 
 const pickNestedDataset = (dataset: Dataset) => Dataset.fromJS(dataset.data[0][SPLIT] as Dataset);
 

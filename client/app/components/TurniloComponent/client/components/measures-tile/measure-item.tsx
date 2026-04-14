@@ -36,8 +36,16 @@ export interface MeasureItemProps {
   searchText: string;
 }
 
-export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureDragStart, measureClick, description, searchText, approximate, selected }) => {
-
+export const MeasureItem: React.SFC<MeasureItemProps> = ({
+  title,
+  name,
+  measureDragStart,
+  measureClick,
+  description,
+  searchText,
+  approximate,
+  selected,
+}) => {
   const infoBubbleClassName = "measure-info-icon";
   const handleClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.target as Element;
@@ -49,11 +57,13 @@ export const MeasureItem: React.SFC<MeasureItemProps> = ({ title, name, measureD
     measureDragStart(name, e);
   };
 
-  return <div className={classNames(MEASURE_CLASS_NAME, "row", { selected })}>
-    <div className="measure-item-name" onClick={handleClick} draggable={true} onDragStart={handleDragStart}>
-      <HighlightString className="label measure-item-label" text={title} highlight={searchText} />
-      {approximate && <SvgIcon className="approximate-measure-icon" svg={require("../../icons/approx.svg")} />}
+  return (
+    <div className={classNames(MEASURE_CLASS_NAME, "row", { selected })}>
+      <div className="measure-item-name" onClick={handleClick} draggable={true} onDragStart={handleDragStart}>
+        <HighlightString className="label measure-item-label" text={title} highlight={searchText} />
+        {approximate && <SvgIcon className="approximate-measure-icon" svg={require("../../icons/approx.svg")} />}
+      </div>
+      {description && <InfoBubble className={infoBubbleClassName} description={description} />}
     </div>
-    {description && <InfoBubble className={infoBubbleClassName} description={description} />}
-  </div>;
+  );
 };

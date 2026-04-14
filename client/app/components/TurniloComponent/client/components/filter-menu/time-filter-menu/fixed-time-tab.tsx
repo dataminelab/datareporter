@@ -46,9 +46,12 @@ export interface FixedTimeTabState {
 }
 
 export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTabState> {
-
   initialState = (): FixedTimeTabState => {
-    const { essence, timekeeper, dimension: { name } } = this.props;
+    const {
+      essence,
+      timekeeper,
+      dimension: { name },
+    } = this.props;
     const shift = essence.timeShift.toJS();
 
     const timeFilter = essence.getEffectiveFilter(timekeeper).clauseForReference(name);
@@ -77,9 +80,15 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   constructFixedFilter(): Filter {
-    const { essence: { filter }, dimension: { name } } = this.props;
+    const {
+      essence: { filter },
+      dimension: { name },
+    } = this.props;
 
-    const clause = new FixedTimeFilterClause({ reference: name, values: List.of(this.createDateRange()) });
+    const clause = new FixedTimeFilterClause({
+      reference: name,
+      values: List.of(this.createDateRange()),
+    });
     return filter.setClause(clause);
   }
 
@@ -90,7 +99,9 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   doesTimeShiftOverlap(): boolean {
     const shift = this.constructTimeShift();
     if (shift.isEmpty()) return false;
-    const { essence: { timezone } } = this.props;
+    const {
+      essence: { timezone },
+    } = this.props;
     const currentRange = this.createDateRange();
     const duration = shift.valueOf();
     const previousRange = currentRange.shift(duration, timezone);
@@ -115,7 +126,9 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   }
 
   isFilterDifferent(): boolean {
-    const { essence: { filter, timeShift } } = this.props;
+    const {
+      essence: { filter, timeShift },
+    } = this.props;
     const newTimeShift = this.constructTimeShift();
     const newFilter = this.constructFixedFilter();
     return !filter.equals(newFilter) || !timeShift.equals(newTimeShift);
@@ -134,32 +147,40 @@ export class FixedTimeTab extends React.Component<FixedTimeTabProps, FixedTimeTa
   };
 
   render() {
-    const { essence: { timezone, dataCube }, timekeeper, dimension, onClose } = this.props;
+    const {
+      essence: { timezone, dataCube },
+      timekeeper,
+      dimension,
+      onClose,
+    } = this.props;
     if (!dimension) return null;
     const { shift, start, end } = this.state;
     const overlapError = this.validateOverlap();
 
-    return <div>
-      <DateRangePicker
-        startTime={start}
-        endTime={end}
-        maxTime={dataCube.getMaxTime(timekeeper)}
-        timezone={timezone}
-        onStartChange={this.onStartChange}
-        onEndChange={this.onEndChange}
-      />
-      <div className="cont">
-        <TimeShiftSelector
-          shift={shift}
-          time={this.createDateRange()}
-          onShiftChange={this.setTimeShift}
-          timezone={timezone} />
-        {overlapError && <div className="overlap-error-message">{overlapError}</div>}
+    return (
+      <div>
+        <DateRangePicker
+          startTime={start}
+          endTime={end}
+          maxTime={dataCube.getMaxTime(timekeeper)}
+          timezone={timezone}
+          onStartChange={this.onStartChange}
+          onEndChange={this.onEndChange}
+        />
+        <div className="cont">
+          <TimeShiftSelector
+            shift={shift}
+            time={this.createDateRange()}
+            onShiftChange={this.setTimeShift}
+            timezone={timezone}
+          />
+          {overlapError && <div className="overlap-error-message">{overlapError}</div>}
+        </div>
+        <div className="ok-cancel-bar">
+          <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok} />
+          <Button type="secondary" onClick={onClose} title={STRINGS.cancel} />
+        </div>
       </div>
-      <div className="ok-cancel-bar">
-        <Button type="primary" onClick={this.onOkClick} disabled={!this.validate()} title={STRINGS.ok} />
-        <Button type="secondary" onClick={onClose} title={STRINGS.cancel} />
-      </div>
-    </div>;
+    );
   }
 }

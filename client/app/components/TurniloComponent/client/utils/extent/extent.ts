@@ -25,15 +25,15 @@ export type Extent = [number, number];
 export function seriesSelectors(series: ConcreteSeries, hasComparison: boolean): Selector[] {
   const get = (d: Datum) => readNumber(series.selectValue(d));
   if (!hasComparison) return [get];
-  return [
-    get,
-    (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS))
-  ];
+  return [get, (d: Datum) => readNumber(series.selectValue(d, SeriesDerivation.PREVIOUS))];
 }
 
 export function datumsExtent(datums: Datum[], selectors: Selector[]): Extent {
-  return selectors.reduce((acc, selector) => {
-    const extent =  d3.extent(datums, selector);
-    return d3.extent([...extent, ...acc]);
-  }, [0, 0]) as Extent;
+  return selectors.reduce(
+    (acc, selector) => {
+      const extent = d3.extent(datums, selector);
+      return d3.extent([...extent, ...acc]);
+    },
+    [0, 0]
+  ) as Extent;
 }

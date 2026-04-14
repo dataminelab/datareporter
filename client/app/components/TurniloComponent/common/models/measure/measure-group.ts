@@ -69,7 +69,7 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
       name,
       title,
       description,
-      measures: measures.map(measureOrGroupFromJS)
+      measures: measures.map(measureOrGroupFromJS),
     });
   }
 
@@ -95,15 +95,16 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
   }
 
   equals(other: any): boolean {
-    return this === other
-      || MeasureGroup.isMeasureGroup(other) && immutableArraysEqual(this.measures, other.measures);
+    return (
+      this === other || (MeasureGroup.isMeasureGroup(other) && immutableArraysEqual(this.measures, other.measures))
+    );
   }
 
   toJS(): MeasureGroupJS {
-    let measureGroup: MeasureGroupJS = {
+    const measureGroup: MeasureGroupJS = {
       name: this.name,
-      measures: this.measures.map(measure => measure.toJS()),
-      title: this.title
+      measures: this.measures.map((measure) => measure.toJS()),
+      title: this.title,
     };
     if (this.description) measureGroup.description = this.description;
     return measureGroup;
@@ -114,10 +115,10 @@ export class MeasureGroup implements Instance<MeasureGroupValue, MeasureGroupJS>
   }
 
   valueOf(): MeasureGroupValue {
-    let measureGroup: MeasureGroupValue = {
+    const measureGroup: MeasureGroupValue = {
       name: this.name,
       title: this.title,
-      measures: this.measures
+      measures: this.measures,
     };
     if (this.description) measureGroup.description = this.description;
     return measureGroup;

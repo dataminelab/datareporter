@@ -5,6 +5,8 @@ import cx from "classnames";
 import Input from "antd/lib/input";
 import Select from "antd/lib/select";
 import { Query } from "@/services/query";
+import { Report } from "@/services/report";
+import PlainButton from "@/components/PlainButton";
 import notification from "@/services/notification";
 import { QueryTagsControl } from "@/components/tags-control/TagsControl";
 import useSearchResults from "@/lib/hooks/useSearchResults";
@@ -17,21 +19,61 @@ function search(term) {
 
   // get recent
   if (!term) {
-    return Query.recent().then(results => results.filter(item => !item.is_draft)); // filter out draft
+    const recentQueries = Query.recent().then(results =>
+      results
+        .filter(item => !item.is_draft)
+        .map(query => ({ ...query, type: "query" })),
+    );
+    const recentReports = Report.recent().then(results =>
+      results.map(report => ({ ...report, type: "report" })),
+    );
+    return Promise.all([recentReports, recentQueries]).then(
+      ([reports, queries]) => [...reports, ...queries],
+    );
   }
 
-  // search by query
-  return Query.query({ q: term }).then(({ results }) => results);
+  // search by query and report
+  const querySearch = Query.query({ q: term }).then(({ results }) =>
+    results.map(query => ({ ...query, type: "query" })),
+  );
+  const reportSearch = Report.report({ q: term }).then(({ results }) =>
+    results.map(report => ({ ...report, type: "report" })),
+  );
+
+  return Promise.all([reportSearch, querySearch]).then(([reports, queries]) => [
+    ...reports,
+    ...queries,
+  ]);
 }
 
 export default function QuerySelector(props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedQuery, setSelectedQuery] = useState();
-  const [doSearch, searchResults, searching] = useSearchResults(search, { initialResults: [] });
+  const [doSearch, searchResults, searching] = useSearchResults(search, {
+    initialResults: [],
+  });
 
-  const placeholder = "Search a query by name";
-  const clearIcon = <i className="fa fa-times hide-in-percy" onClick={() => selectQuery(null)} />;
-  const spinIcon = <i className={cx("fa fa-spinner fa-pulse hide-in-percy", { hidden: !searching })} />;
+  const placeholder = "Search a query or report by name";
+  const clearIcon = (
+    <i
+      className="fa fa-times hide-in-percy"
+      role="button"
+      tabIndex={0}
+      aria-label="Clear"
+      onClick={() => selectQuery(null)}
+    />
+  );
+  const spinIcon = (
+    <span role="status" aria-live="polite" aria-relevant="additions removals">
+      <i
+        className={cx("fa fa-spinner fa-pulse hide-in-percy", {
+          hidden: !searching,
+        })}
+        aria-hidden="true"
+      />
+      <span className="sr-only">Searching...</span>
+    </span>
+  );
 
   useEffect(() => {
     doSearch(searchTerm);
@@ -44,14 +86,16 @@ export default function QuerySelector(props) {
     }
   }, [props.selectedQuery]);
 
-  function selectQuery(queryId) {
+  function selectQuery(key) {
     let query = null;
-    if (queryId) {
-      query = find(searchResults, { id: queryId });
+    if (key) {
+      const [type, id] = key.split(":");
+      query = find(searchResults, { id: parseInt(id, 10), type });
       if (!query) {
         // shouldn't happen
         notification.error("Something went wrong...", "Couldn't select query");
       }
+      query = { type, ...query };
     }
 
     setSearchTerm(query ? null : ""); // empty string triggers recent fetch
@@ -65,22 +109,41 @@ export default function QuerySelector(props) {
     }
 
     return (
-      <div className="list-group">
-        {searchResults.map(q => (
-          <a
-            className={cx("query-selector-result", "list-group-item", { inactive: q.is_draft })}
-            key={q.id}
-            onClick={() => selectQuery(q.id)}
-            data-test={`QueryId${q.id}`}>
-            {q.name} <QueryTagsControl isDraft={q.is_draft} tags={q.tags} className="inline-tags-control" />
-          </a>
-        ))}
-      </div>
+      <ul className="list-group">
+        {searchResults.map(q => {
+          const key = `${q.type}:${q.id}`;
+          return (
+            <PlainButton
+              className={cx("query-selector-result", "list-group-item", {
+                inactive: q.is_draft,
+              })}
+              key={key}
+              role="listitem"
+              onClick={() => selectQuery(key)}
+              data-test={`QueryId${q.id}`}
+            >
+              {q.name}{" "}
+              <QueryTagsControl
+                isDraft={q.is_draft}
+                tags={q.tags}
+                className="inline-tags-control"
+              />
+            </PlainButton>
+          );
+        })}
+      </ul>
     );
   }
 
   if (props.disabled) {
-    return <Input value={selectedQuery && selectedQuery.name} placeholder={placeholder} disabled />;
+    return (
+      <Input
+        value={selectedQuery && selectedQuery.name}
+        aria-label="Tied query"
+        placeholder={placeholder}
+        disabled
+      />
+    );
   }
 
   if (props.type === "select") {
@@ -100,17 +163,20 @@ export default function QuerySelector(props) {
         filterOption={false}
         defaultActiveFirstOption={false}
         className={props.className}
-        data-test="QuerySelector">
+        data-test="QuerySelector"
+      >
         {searchResults &&
           searchResults.map(q => {
             const disabled = q.is_draft;
+            const key = `${q.type}:${q.id}`;
             return (
               <Option
-                value={q.id}
-                key={q.id}
+                value={key}
+                key={key}
                 disabled={disabled}
                 className="query-selector-result"
-                data-test={`QueryId${q.id}`}>
+                data-test={`QueryId${q.id}`}
+              >
                 {q.name}{" "}
                 <QueryTagsControl
                   isDraft={q.is_draft}
@@ -127,11 +193,17 @@ export default function QuerySelector(props) {
   return (
     <span data-test="QuerySelector">
       {selectedQuery ? (
-        <Input value={selectedQuery.name} suffix={clearIcon} readOnly />
+        <Input
+          value={selectedQuery.name}
+          aria-label="Tied query"
+          suffix={clearIcon}
+          readOnly
+        />
       ) : (
         <Input
           placeholder={placeholder}
           value={searchTerm}
+          aria-label="Tied query"
           onChange={e => setSearchTerm(e.target.value)}
           suffix={spinIcon}
         />
@@ -145,7 +217,7 @@ export default function QuerySelector(props) {
 
 QuerySelector.propTypes = {
   onChange: PropTypes.func.isRequired,
-  selectedQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  selectedQuery: PropTypes.object,
   type: PropTypes.oneOf(["select", "default"]),
   className: PropTypes.string,
   disabled: PropTypes.bool,

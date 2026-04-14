@@ -28,7 +28,6 @@ import { CubeView } from "./cube-view";
 // TODO: skip this test till we resolve issue with esModuleInterop in ts-register in mocha. We should consider migrating to mochapack and test code processed by webpack
 describe.skip("CubeView", () => {
   it("embeds correct Visualization component", () => {
-
     const cubeView = mount(
       <CubeView
         openAboutModal={noop}

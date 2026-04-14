@@ -26,11 +26,10 @@ interface ExpressionPercentOfValue extends ExpressionValue {
 }
 
 const defaultPercentOf: ExpressionPercentOfValue = {
-  operation: null
+  operation: null,
 };
 
 export class PercentExpression extends Record<ExpressionPercentOfValue>(defaultPercentOf) {
-
   constructor(params: ExpressionPercentOfValue) {
     super(params);
   }
@@ -45,9 +44,7 @@ export class PercentExpression extends Record<ExpressionPercentOfValue>(defaultP
 }
 
 export class ConcretePercentExpression implements ConcreteExpression {
-
-  constructor(private operation: PercentOperation) {
-  }
+  constructor(private operation: PercentOperation) {}
 
   private relativeNesting(nestingLevel: number): number {
     switch (this.operation) {
@@ -65,7 +62,7 @@ export class ConcretePercentExpression implements ConcreteExpression {
     return new ApplyExpression({
       name,
       operand: new ApplyExpression({ expression, name: formulaName }),
-      expression: $(formulaName).divide($(formulaName, relativeNesting)).fallback(0)
+      expression: $(formulaName).divide($(formulaName, relativeNesting)).fallback(0),
     });
   }
 

@@ -18,7 +18,7 @@
 @mixin bounce($properties...) {
   $result: ();
   @each $property in $properties {
-    $result: append($result, $property 0.2s cubic-bezier(.87, -.41, .19, 1.44), comma);
+    $result: append($result, $property 0.2s cubic-bezier(0.87, -0.41, 0.19, 1.44), comma);
   }
 
   transition: $result;

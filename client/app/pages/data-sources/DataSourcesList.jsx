@@ -8,9 +8,12 @@ import navigateTo from "@/components/ApplicationArea/navigateTo";
 import CardsList from "@/components/cards-list/CardsList";
 import LoadingState from "@/components/items-list/components/LoadingState";
 import CreateSourceDialog from "@/components/CreateSourceDialog";
-import DynamicComponent, { registerComponent } from "@/components/DynamicComponent";
+import DynamicComponent, {
+  registerComponent,
+} from "@/components/DynamicComponent";
 import helper from "@/components/dynamic-form/dynamicFormHelper";
 import wrapSettingsTab from "@/components/SettingsWrapper";
+import PlainButton from "@/components/PlainButton";
 
 import DataSource, { IMG_ROOT } from "@/services/data-source";
 import { policy } from "@/services/policy";
@@ -29,9 +32,13 @@ export function DataSourcesListComponent({ dataSources, onClickCreate }) {
       There are no data sources yet.
       {policy.isCreateDataSourceEnabled() && (
         <div className="m-t-5">
-          <a className="clickable" onClick={onClickCreate} data-test="CreateDataSourceLink">
+          <PlainButton
+            type="link"
+            onClick={onClickCreate}
+            data-test="CreateDataSourceLink"
+          >
             Click here
-          </a>{" "}
+          </PlainButton>{" "}
           to add one.
         </div>
       )}
@@ -80,8 +87,8 @@ class DataSourcesList extends React.Component {
                 navigateTo("data_sources", true);
               }
             }
-          }
-        )
+          },
+        ),
       )
       .catch(error => this.props.onError(error));
   }
@@ -98,7 +105,9 @@ class DataSourcesList extends React.Component {
 
     return DataSource.create(target).then(dataSource => {
       this.setState({ loading: true });
-      DataSource.query().then(dataSources => this.setState({ dataSources, loading: false }));
+      DataSource.query().then(dataSources =>
+        this.setState({ dataSources, loading: false }),
+      );
       return dataSource;
     });
   };
@@ -128,9 +137,11 @@ class DataSourcesList extends React.Component {
 
   render() {
     const newDataSourceProps = {
-      type: "primary",
-      onClick: policy.isCreateDataSourceEnabled() ? this.showCreateSourceDialog : null,
-      disabled: !policy.isCreateDataSourceEnabled(),
+      "type": "primary",
+      "onClick": policy.isCreateDataSourceEnabled()
+        ? this.showCreateSourceDialog
+        : null,
+      "disabled": !policy.isCreateDataSourceEnabled(),
       "data-test": "CreateDataSourceButton",
     };
 
@@ -138,7 +149,7 @@ class DataSourcesList extends React.Component {
       <div>
         <div className="m-b-15">
           <Button {...newDataSourceProps}>
-            <i className="fa fa-plus m-r-5" />
+            <i className="fa fa-plus m-r-5" aria-hidden="true" />
             New Data Source
           </Button>
           <DynamicComponent name="DataSourcesListExtra" />
@@ -165,7 +176,7 @@ const DataSourcesListPage = wrapSettingsTab(
     path: "data_sources",
     order: 1,
   },
-  DataSourcesList
+  DataSourcesList,
 );
 
 routes.register(
@@ -174,13 +185,15 @@ routes.register(
     path: "/data_sources",
     title: "Data Sources",
     render: pageProps => <DataSourcesListPage {...pageProps} />,
-  })
+  }),
 );
 routes.register(
   "DataSources.New",
   routeWithUserSession({
     path: "/data_sources/new",
     title: "Data Sources",
-    render: pageProps => <DataSourcesListPage {...pageProps} isNewDataSourcePage />,
-  })
+    render: pageProps => (
+      <DataSourcesListPage {...pageProps} isNewDataSourcePage />
+    ),
+  }),
 );

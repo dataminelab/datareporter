@@ -54,7 +54,6 @@ interface SeriesMenuState {
 }
 
 export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState> {
-
   state: SeriesMenuState = { series: this.props.initialSeries, isValid: true };
 
   componentDidMount() {
@@ -83,8 +82,8 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
     const { isValid, series } = this.state;
     const { initialSeries, seriesList } = this.props;
     const isModified = !initialSeries.equals(series);
-    const otherSeries = seriesList.series.filter(s => !s.equals(initialSeries));
-    const isUnique = !isTruthy(otherSeries.find(s => s.key() === series.key()));
+    const otherSeries = seriesList.series.filter((s) => !s.equals(initialSeries));
+    const isUnique = !isTruthy(otherSeries.find((s) => s.key() === series.key()));
     return isValid && isModified && isUnique;
   }
 
@@ -92,44 +91,50 @@ export class SeriesMenu extends React.Component<SeriesMenuProps, SeriesMenuState
     const { measure, measures, initialSeries, seriesList, containerStage, onClose, openOn } = this.props;
     const { series } = this.state;
 
-    return <BubbleMenu
-      className="series-menu"
-      direction="down"
-      containerStage={containerStage}
-      stage={Stage.fromSize(250, 240)}
-      openOn={openOn}
-      onClose={onClose}
-    >
-      {series instanceof MeasureSeries && <MeasureSeriesMenu
-        series={series}
-        measure={measure}
-        onChange={this.saveSeries}
-      />}
-      {series instanceof ExpressionSeries && series.expression instanceof PercentExpression && <PercentSeriesMenu
-        seriesList={seriesList}
-        series={series}
-        measure={measure}
-        onChange={this.saveSeries}
-      />}
-      {series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression && <ArithmeticSeriesMenu
-        seriesList={seriesList}
-        series={series}
-        initialSeries={initialSeries}
-        measure={measure}
-        measures={measures}
-        onChange={this.saveSeries}
-      />}
-      {series instanceof QuantileSeries && <QuantileSeriesMenu
-        seriesList={seriesList}
-        measure={measure}
-        onChange={this.saveSeries}
-        initialSeries={initialSeries}
-        series={series}
-      />}
-      <div className="button-bar">
-        <Button className="ok" type="primary" disabled={!this.validate()} onClick={this.onOkClick} title={STRINGS.ok} />
-        <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
-      </div>
-    </BubbleMenu>;
+    return (
+      <BubbleMenu
+        className="series-menu"
+        direction="down"
+        containerStage={containerStage}
+        stage={Stage.fromSize(250, 240)}
+        openOn={openOn}
+        onClose={onClose}>
+        {series instanceof MeasureSeries && (
+          <MeasureSeriesMenu series={series} measure={measure} onChange={this.saveSeries} />
+        )}
+        {series instanceof ExpressionSeries && series.expression instanceof PercentExpression && (
+          <PercentSeriesMenu seriesList={seriesList} series={series} measure={measure} onChange={this.saveSeries} />
+        )}
+        {series instanceof ExpressionSeries && series.expression instanceof ArithmeticExpression && (
+          <ArithmeticSeriesMenu
+            seriesList={seriesList}
+            series={series}
+            initialSeries={initialSeries}
+            measure={measure}
+            measures={measures}
+            onChange={this.saveSeries}
+          />
+        )}
+        {series instanceof QuantileSeries && (
+          <QuantileSeriesMenu
+            seriesList={seriesList}
+            measure={measure}
+            onChange={this.saveSeries}
+            initialSeries={initialSeries}
+            series={series}
+          />
+        )}
+        <div className="button-bar">
+          <Button
+            className="ok"
+            type="primary"
+            disabled={!this.validate()}
+            onClick={this.onOkClick}
+            title={STRINGS.ok}
+          />
+          <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
+        </div>
+      </BubbleMenu>
+    );
   }
 }

@@ -42,54 +42,45 @@ export const HeatmapLegend: React.SFC<HeatmapLegendProps> = ({ width, height, se
   const [startColor, endColor] = scale.range();
   const format = series.formatter();
 
-  return <svg
-    className="heatmap-legend"
-    width={`${width}px`}
-    height={`${height}px`}>
-    <defs>
-      <linearGradient id="heatmap-stripe" gradientTransform="rotate(90)">
-        <stop offset="0%" stopColor={startColor} />
-        <stop offset="10%" stopColor={startColor} />
-        <stop offset="90%" stopColor={endColor} />
-        <stop offset="100%" stopColor={endColor} />
-      </linearGradient>
-    </defs>
-    <g transform={`translate(${leftMargin}, ${topMargin})`}>
-      <rect className="heatmap-legend-stripe"
-            x={0}
-            y={0}
-            width={stripeWidth}
-            height={stripeLength}
-            fill="url(#heatmap-stripe)" />
-      <line className="heatmap-legend-stripe-axis"
-            x1={0.5}
-            x2={0.5}
-            y1={0}
-            y2={stripeLength} />
-      <g className="heatmap-lower-bound">
-        <line className="heatmap-lower-bound-tick"
-              x1={0}
-              x2={tickLength}
-              y1={0.5}
-              y2={0.5} />
-        <text className="heatmap-lower-bound-value"
-              x={tickLabelLeftOffset}
-              y={tickLabelTopOffset}>
-          {format(min)}
-        </text>
+  return (
+    <svg className="heatmap-legend" width={`${width}px`} height={`${height}px`}>
+      <defs>
+        <linearGradient id="heatmap-stripe" gradientTransform="rotate(90)">
+          <stop offset="0%" stopColor={startColor} />
+          <stop offset="10%" stopColor={startColor} />
+          <stop offset="90%" stopColor={endColor} />
+          <stop offset="100%" stopColor={endColor} />
+        </linearGradient>
+      </defs>
+      <g transform={`translate(${leftMargin}, ${topMargin})`}>
+        <rect
+          className="heatmap-legend-stripe"
+          x={0}
+          y={0}
+          width={stripeWidth}
+          height={stripeLength}
+          fill="url(#heatmap-stripe)"
+        />
+        <line className="heatmap-legend-stripe-axis" x1={0.5} x2={0.5} y1={0} y2={stripeLength} />
+        <g className="heatmap-lower-bound">
+          <line className="heatmap-lower-bound-tick" x1={0} x2={tickLength} y1={0.5} y2={0.5} />
+          <text className="heatmap-lower-bound-value" x={tickLabelLeftOffset} y={tickLabelTopOffset}>
+            {format(min)}
+          </text>
+        </g>
+        <g className="heatmap-upper-bound">
+          <line
+            className="heatmap-upper-bound-tick"
+            x1={0}
+            x2={tickLength}
+            y1={stripeLength + 0.5}
+            y2={stripeLength + 0.5}
+          />
+          <text className="heatmap-upper-bound-value" x={tickLabelLeftOffset} y={stripeLength + tickLabelTopOffset}>
+            {format(max)}
+          </text>
+        </g>
       </g>
-      <g className="heatmap-upper-bound">
-        <line className="heatmap-upper-bound-tick"
-              x1={0}
-              x2={tickLength}
-              y1={stripeLength + 0.5}
-              y2={stripeLength + 0.5} />
-        <text className="heatmap-upper-bound-value"
-              x={tickLabelLeftOffset}
-              y={stripeLength + tickLabelTopOffset}>
-          {format(max)}
-        </text>
-      </g>
-    </g>
-  </svg>;
+    </svg>
+  );
 };

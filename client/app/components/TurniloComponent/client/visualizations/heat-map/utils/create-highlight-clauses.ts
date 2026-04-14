@@ -27,7 +27,7 @@ import {
   NumberFilterClause,
   NumberRange,
   StringFilterAction,
-  StringFilterClause
+  StringFilterClause,
 } from "../../../../common/models/filter-clause/filter-clause";
 import { Split } from "../../../../common/models/split/split";
 import { isTruthy } from "../../../../common/utils/general/general";
@@ -53,13 +53,19 @@ function splitSelection(split: Split, offset: number, dataCube: DataCube, datase
 }
 
 function firstSplitSelection(topOffset: number, essence: Essence, dataset: Datum[]): SplitSelection {
-  const { dataCube, splits: { splits } } = essence;
+  const {
+    dataCube,
+    splits: { splits },
+  } = essence;
   const split = splits.get(0);
   return splitSelection(split, topOffset, dataCube, dataset);
 }
 
 function secondSplitSelection(leftOffset: number, essence: Essence, dataset: Datum[]): SplitSelection {
-  const { dataCube, splits: { splits } } = essence;
+  const {
+    dataCube,
+    splits: { splits },
+  } = essence;
   const split = splits.get(1);
   return splitSelection(split, leftOffset, dataCube, nestedDataset(dataset[0]));
 }
@@ -67,13 +73,26 @@ function secondSplitSelection(leftOffset: number, essence: Essence, dataset: Dat
 function splitSelectionToClause({ value, dimension: { kind, name: reference } }: SplitSelection): FilterClause {
   switch (kind) {
     case "string":
-      return new StringFilterClause({ reference, action: StringFilterAction.IN, values: Set.of(String(value)) });
+      return new StringFilterClause({
+        reference,
+        action: StringFilterAction.IN,
+        values: Set.of(String(value)),
+      });
     case "boolean":
-      return new BooleanFilterClause({ reference, values: Set.of(value as Booleanish) });
+      return new BooleanFilterClause({
+        reference,
+        values: Set.of(value as Booleanish),
+      });
     case "time":
-      return new FixedTimeFilterClause({ reference, values: List.of(value as DateRange) });
+      return new FixedTimeFilterClause({
+        reference,
+        values: List.of(value as DateRange),
+      });
     case "number":
-      return new NumberFilterClause({ reference, values: List.of(value as NumberRange) });
+      return new NumberFilterClause({
+        reference,
+        values: List.of(value as NumberRange),
+      });
   }
 }
 

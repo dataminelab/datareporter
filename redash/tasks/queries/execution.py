@@ -1,12 +1,13 @@
 import signal
+import sys
 import time
+from collections import deque
 
 import redis
 from rq import get_current_job
 from rq.exceptions import NoSuchJobError
 from rq.job import JobStatus
 from rq.timeouts import JobTimeoutException
-from sqlalchemy.orm.exc import NoResultFound
 
 from redash import models, redis_connection, settings
 from redash.query_runner import InterruptException
@@ -28,7 +29,9 @@ def _unlock(query_hash, data_source_id):
     redis_connection.delete(_job_lock_id(query_hash, data_source_id))
 
 
-def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata={}):
+def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query=None, metadata=None):  # noqa: C901
+    if metadata is None:
+        metadata = {}
     query_hash = gen_query_hash(query)
     logger.info("Inserting job for %s with metadata=%s", query_hash, metadata)
     try_count = 0
@@ -45,7 +48,7 @@ def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query
                 logger.info("[%s] Found existing job: %s", query_hash, job_id)
                 job_complete = None
                 job_cancelled = None
-
+                message = None
                 try:
                     job = Job.fetch(job_id)
                     job_exists = True
@@ -56,7 +59,7 @@ def enqueue_query(query, data_source, user_id, is_api_key=False, scheduled_query
                     if job_complete:
                         message = "job found is complete (%s)" % status
                     elif job_cancelled:
-                        message = "job found has ben cancelled"
+                        message = "job found has been cancelled"
                 except NoSuchJobError:
                     message = "job found has expired"
                     job_exists = False
@@ -130,36 +133,59 @@ class QueryExecutionError(Exception):
     pass
 
 
-def _resolve_user(user_id, is_api_key, metadata):
-    """ Resolves user from user_id or api_key or metadata if exists
+def is_api_key(text: str) -> bool:
+    if text is None:
+        return False
+    if len(text) >= 32:
+        return True
+    return False
 
-    Args:
-        user_id (_type_): user id, int
-        is_api_key (bool): string api key from content creator
-        metadata (_type_): neccessary metadata
 
-    Returns:
-        _type_: User or ApiUser or None
-    """
+def _resolve_user(user_id, _is_api_key, query_id):
     if user_id is not None:
-        if is_api_key:
+        if _is_api_key:
             api_key = user_id
-            query_id = metadata.get("query_id")
+            if is_api_key(api_key):
+                _api_key = models.ApiKey.get_by_api_key_safe(api_key)
+                if _api_key:
+                    return models.ApiUser(_api_key, _api_key.org, [])
             if query_id is not None:
                 q = models.Query.get_by_id(query_id)
             else:
                 q = models.Query.by_api_key(api_key)
 
             return models.ApiUser(api_key, q.org, q.groups)
-        try:
+        else:
             return models.User.get_by_id(user_id)
-        except NoResultFound:
-            user_email = metadata.get("Username")
-            return models.User.find_by_email(user_email)
-    return None
+    else:
+        return None
 
 
-class QueryExecutor(object):
+def _get_size_iterative(dict_obj):
+    """Iteratively finds size of objects in bytes"""
+    seen = set()
+    size = 0
+    objects = deque([dict_obj])
+
+    while objects:
+        current = objects.popleft()
+        if id(current) in seen:
+            continue
+        seen.add(id(current))
+        size += sys.getsizeof(current)
+
+        if isinstance(current, dict):
+            objects.extend(current.keys())
+            objects.extend(current.values())
+        elif hasattr(current, "__dict__"):
+            objects.append(current.__dict__)
+        elif hasattr(current, "__iter__") and not isinstance(current, (str, bytes, bytearray)):
+            objects.extend(current)
+
+    return size
+
+
+class QueryExecutor:
     def __init__(self, query, data_source_id, user_id, is_api_key, metadata, is_scheduled_query):
         self.job = get_current_job()
         self.query = query
@@ -209,7 +235,7 @@ class QueryExecutor(object):
             "job=execute_query query_hash=%s ds_id=%d data_length=%s error=[%s]",
             self.query_hash,
             self.data_source_id,
-            data and len(data),
+            data and _get_size_iterative(data),
             error,
         )
 
@@ -243,7 +269,7 @@ class QueryExecutor(object):
             models.db.session.commit()  # make sure that alert sees the latest query result
             self._log_progress("checking_alerts")
             for query_id in updated_query_ids:
-                check_alerts_for_query.delay(query_id, self.metadata)
+                check_alerts_for_query.delay(query_id, self.metadata)  # type: ignore
             self._log_progress("finished")
 
             result = query_result.id

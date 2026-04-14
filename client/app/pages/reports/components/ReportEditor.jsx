@@ -1,54 +1,97 @@
-import React  from 'react';
+import React, { useRef, useCallback } from "react";
 import PropTypes from "prop-types";
-import {Timekeeper} from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
-import {TurniloApplication} from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application";
-import {init as errorReporterInit} from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
-import {Ajax} from "@/components/TurniloComponent/client/utils/ajax/ajax";
-import {AppSettings} from "@/components/TurniloComponent/common/models/app-settings/app-settings";
+import { Timekeeper } from "@/components/TurniloComponent/common/models/timekeeper/timekeeper";
+import { TurniloApplication } from "@/components/TurniloComponent/client/applications/turnilo-application/turnilo-application";
+import { init as errorReporterInit } from "@/components/TurniloComponent/client/utils/error-reporter/error-reporter";
+import { Ajax } from "@/components/TurniloComponent/client/utils/ajax/ajax";
+import { AppSettings } from "@/components/TurniloComponent/common/models/app-settings/app-settings";
 import "@/components/TurniloComponent/client/main.scss";
 import "@/components/TurniloComponent/client/polyfills";
+import { Report } from "../../../services/report.js";
 
+/**
+ * @param {Object} props
+ * @param {Report} props.report
+ * @param {boolean} props.reportChanged
+ * @param {Function} props.setReportChanged
+ */
 function ReportPage({ report, reportChanged, setReportChanged }) {
-  if (report.appSettings) {
-    if (report.appSettings.customization.sentryDSN) {
-      errorReporterInit(report.appSettings.customization.sentryDSN, report.version);
-    }
+  const reportRef = useRef(report);
+  reportRef.current = report;
+  const getExecutionStatus = useCallback(
+    () => reportRef.current.getExecutionStatus(),
+    [],
+  );
 
-    const version = report.version;
+  if (!report.appSettings) {
+    return (
+      <div style={{ margin: "20px" }}>
+        Please select data source and model...
+      </div>
+    );
+  }
 
-    Ajax.version = version;
+  if (report.appSettings.customization.sentryDSN) {
+    errorReporterInit(
+      report.appSettings.customization.sentryDSN,
+      report.version,
+    );
+  }
 
-    const appSettings = AppSettings.fromJS(report.appSettings, {
-      executorFactory: Ajax.queryUrlExecutorFactory.bind(report)
-    });
+  Ajax.version = report.version;
+  const appSettings = AppSettings.fromJS(report.appSettings, {
+    executorFactory: (
+      dataCube,
+      getEssence,
+      statusCallback,
+      getExecutionStatus,
+    ) => {
+      Ajax.model_id = report.model_id;
+      Ajax.hash = report.hash;
+      Ajax.setInitialResults(report.results);
+      return Ajax.queryUrlExecutorFactory(
+        dataCube,
+        getEssence,
+        statusCallback,
+        getExecutionStatus,
+      );
+    },
+    statusCallback: report.onExecutionStatusChange.bind(report),
+    getExecutionStatus: getExecutionStatus,
+  });
 
-    return <turnilo-widget>
+  const initTimekeeper = Timekeeper.fromJS({ timeTags: {} });
+
+  return (
+    <turnilo-widget>
       <TurniloApplication
-        version={version}
+        version={report.version} // get rid of the version prop in TurniloApplication
         report={report}
         reportChanged={reportChanged}
         setReportChanged={setReportChanged}
         appSettings={appSettings}
-        initTimekeeper={report.timekeeper ? Timekeeper.fromJS(report.timekeeper) : new Timekeeper({ timeTags: [] })}
+        initTimekeeper={initTimekeeper}
       />
-    </turnilo-widget>;
-  } else {
-    return <div style={{margin: '20px'}}>
-            Please select data source and model...
-          </div>
-  }
+    </turnilo-widget>
+  );
 }
 
 ReportPage.propTypes = {
+  report: PropTypes.instanceOf(Report),
+  reportChanged: PropTypes.bool,
+  setReportChanged: PropTypes.func,
   dashboardSlug: PropTypes.string,
   dashboardId: PropTypes.string,
   onError: PropTypes.func,
 };
 
 ReportPage.defaultProps = {
+  report: {},
+  reportChanged: false,
+  setReportChanged: () => {},
   dashboardSlug: null,
   dashboardId: null,
-  onError: PropTypes.func,
+  onError: null,
 };
 
 export default ReportPage;

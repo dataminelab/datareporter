@@ -9,13 +9,26 @@ import { IMG_ROOT } from "@/services/data-source";
 
 import "./QueryMetadata.less";
 
-export default function QueryMetadata({ query, dataSource, layout, onEditSchedule }) {
+export default function QueryMetadata({
+  query,
+  dataSource,
+  layout,
+  onEditSchedule,
+}) {
   return (
     <div className={`query-metadata query-metadata-${layout}`}>
       <div className="query-metadata-item">
-        <img className="profile__image_thumb" src={query.user.profile_image_url} alt="Avatar" />
+        <img
+          className="profile__image_thumb"
+          src={query.user.profile_image_url}
+          alt="Avatar"
+        />
         <div className="query-metadata-property">
-          <strong className={cx("query-metadata-label", { "text-muted": query.user.is_disabled })}>
+          <strong
+            className={cx("query-metadata-label", {
+              "text-muted": query.user.is_disabled,
+            })}
+          >
             {query.user.name}
           </strong>
           <span className="query-metadata-value">
@@ -27,9 +40,17 @@ export default function QueryMetadata({ query, dataSource, layout, onEditSchedul
         </div>
       </div>
       <div className="query-metadata-item">
-        <img className="profile__image_thumb" src={query.last_modified_by.profile_image_url} alt="Avatar" />
+        <img
+          className="profile__image_thumb"
+          src={query.last_modified_by.profile_image_url}
+          alt="Avatar"
+        />
         <div className="query-metadata-property">
-          <strong className={cx("query-metadata-label", { "text-muted": query.last_modified_by.is_disabled })}>
+          <strong
+            className={cx("query-metadata-label", {
+              "text-muted": query.last_modified_by.is_disabled,
+            })}
+          >
             {query.last_modified_by.name}
           </strong>
           <span className="query-metadata-value">
@@ -44,7 +65,11 @@ export default function QueryMetadata({ query, dataSource, layout, onEditSchedul
       {has(dataSource, "name") && has(dataSource, "type") && (
         <div className="query-metadata-item">
           Data Source:
-          <img src={`${IMG_ROOT}/${dataSource.type}.png`} width="20" alt={dataSource.type} />
+          <img
+            src={`${IMG_ROOT}/${dataSource.type}.png`}
+            width="20"
+            alt={dataSource.type}
+          />
           <div className="query-metadata-property">
             <div className="query-metadata-label">{dataSource.name}</div>
           </div>

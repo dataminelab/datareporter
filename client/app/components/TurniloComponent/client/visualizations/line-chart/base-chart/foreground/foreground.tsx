@@ -37,27 +37,41 @@ interface ForegroundProps {
   timezone: Timezone;
 }
 
-export const Foreground: React.SFC<ForegroundProps> = props => {
-  const { stage, interaction, container, xScale, timezone, visualisationStage, hoverContent, dropHighlight, acceptHighlight } = props;
+export const Foreground: React.SFC<ForegroundProps> = (props) => {
+  const {
+    stage,
+    interaction,
+    container,
+    xScale,
+    timezone,
+    visualisationStage,
+    hoverContent,
+    dropHighlight,
+    acceptHighlight,
+  } = props;
 
-  return <React.Fragment>
-    <SelectionOverlay
-      stage={stage}
-      interaction={interaction}
-      timezone={timezone}
-      xScale={xScale} />
-    {isHover(interaction) && <HoverTooltip
-      stage={visualisationStage}
-      interaction={interaction}
-      xScale={xScale}
-      content={hoverContent}
-      timezone={timezone} />}
-    {isHighlight(interaction) && <HighlightModal
-      rect={container.current.getBoundingClientRect()}
-      interaction={interaction}
-      xScale={xScale}
-      timezone={timezone}
-      dropHighlight={dropHighlight}
-      acceptHighlight={acceptHighlight} />}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <SelectionOverlay stage={stage} interaction={interaction} timezone={timezone} xScale={xScale} />
+      {isHover(interaction) && (
+        <HoverTooltip
+          stage={visualisationStage}
+          interaction={interaction}
+          xScale={xScale}
+          content={hoverContent}
+          timezone={timezone}
+        />
+      )}
+      {isHighlight(interaction) && (
+        <HighlightModal
+          rect={container.current.getBoundingClientRect()}
+          interaction={interaction}
+          xScale={xScale}
+          timezone={timezone}
+          dropHighlight={dropHighlight}
+          acceptHighlight={acceptHighlight}
+        />
+      )}
+    </React.Fragment>
+  );
 };

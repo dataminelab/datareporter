@@ -42,11 +42,11 @@ export default function normalizeStyles(source: StyleDefinition): React.CSSPrope
     top: normalizeDimension(top),
     bottom: normalizeDimension(bottom),
     left: normalizeDimension(left),
-    right: normalizeDimension(right)
+    right: normalizeDimension(right),
   };
   return {
     ...omitFalsyValues(dimensions),
     zIndex: 200 + (isAboveAll ? 1 : 0),
-    pointerEvents: disablePointerEvents ? "none" : "auto"
+    pointerEvents: disablePointerEvents ? "none" : "auto",
   };
 }

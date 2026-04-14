@@ -1,15 +1,23 @@
 from rq.connections import pop_connection, push_connection
 
 from redash import rq_redis_connection
-from redash.tasks.alerts import check_alerts_for_query
-from redash.tasks.failure_report import send_aggregated_errors
-from redash.tasks.general import (
+
+from .alerts import check_alerts_for_query
+from .databricks import (
+    get_database_tables_with_columns,
+    get_databricks_databases,
+    get_databricks_table_columns,
+    get_databricks_tables,
+)
+from .failure_report import send_aggregated_errors
+from .general import (
+    get_schema,
     record_event,
     send_mail,
     sync_user_details,
-    version_check,
+    test_connection,
 )
-from redash.tasks.queries import (
+from .queries import (
     cleanup_query_results,
     empty_schedules,
     enqueue_query,
@@ -18,12 +26,14 @@ from redash.tasks.queries import (
     refresh_schemas,
     remove_ghost_locks,
 )
-from redash.tasks.schedule import (
-    periodic_job_definitions,
-    rq_scheduler,
-    schedule_periodic_jobs,
+from .reports import (
+    empty_report_schedules,
+    enqueue_report,
+    execute_report,
+    refresh_reports,
 )
-from redash.tasks.worker import Job, Queue, Worker
+from .schedule import periodic_job_definitions, rq_scheduler, schedule_periodic_jobs
+from .worker import Job, Queue, Worker
 
 
 def init_app(app):

@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import Tooltip from "antd/lib/tooltip";
+import Tooltip from "@/components/Tooltip";
 import notification from "@/services/notification";
 import Group from "@/services/group";
 
@@ -23,12 +23,22 @@ function deleteGroup(event, group, onGroupDeleted) {
   });
 }
 
-export default function DeleteGroupButton({ group, title, onClick, children, ...props }) {
+export default function DeleteGroupButton({
+  group,
+  title,
+  onClick,
+  children,
+  ...props
+}) {
   if (!group) {
     return null;
   }
   const button = (
-    <Button {...props} type="danger" onClick={event => deleteGroup(event, group, onClick)}>
+    <Button
+      {...props}
+      type="danger"
+      onClick={event => deleteGroup(event, group, onClick)}
+    >
       {children}
     </Button>
   );
@@ -45,7 +55,7 @@ export default function DeleteGroupButton({ group, title, onClick, children, ...
 }
 
 DeleteGroupButton.propTypes = {
-  group: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  group: PropTypes.object,
   title: PropTypes.string,
   onClick: PropTypes.func,
   children: PropTypes.node,

@@ -38,4 +38,5 @@ export type VisualizationDependentAction = Action<ActionVariables>;
 
 export type VisualizationDependentEvaluator = RulesEvaluator<PredicateVariables, ActionVariables>;
 
-export const visualizationDependentEvaluatorBuilder: RulesEvaluatorBuilderEmpty<PredicateVariables, ActionVariables> = RulesEvaluatorBuilder.empty();
+export const visualizationDependentEvaluatorBuilder: RulesEvaluatorBuilderEmpty<PredicateVariables, ActionVariables> =
+  RulesEvaluatorBuilder.empty();

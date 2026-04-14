@@ -25,37 +25,37 @@ import { Resolution } from "../../models/visualization-manifest/visualization-ma
 export class Resolutions {
   static someDimensions = (dataCube: DataCube): Resolution[] => {
     const numberOfSuggestedSplitDimensions = 2;
-    const suggestedSplitDimensions = dataCube
-      .getDimensionsByKind("string")
-      .slice(0, numberOfSuggestedSplitDimensions);
+    const suggestedSplitDimensions = dataCube.getDimensionsByKind("string").slice(0, numberOfSuggestedSplitDimensions);
 
-    return suggestedSplitDimensions.map(dimension => {
+    return suggestedSplitDimensions.map((dimension) => {
       return {
         description: `Add a split on ${dimension.title}`,
         adjustment: {
-          splits: Splits.fromSplit(Split.fromDimension(dimension))
-        }
+          splits: Splits.fromSplit(Split.fromDimension(dimension)),
+        },
       };
     });
-  }
+  };
 
   static defaultSelectedMeasures = (dataCube: DataCube): Resolution[] => {
     const defaultSelectedMeasures = dataCube.defaultSelectedMeasures || OrderedSet();
-    const measures = defaultSelectedMeasures.map(measureName => dataCube.getMeasure(measureName)).toArray();
+    const measures = defaultSelectedMeasures.map((measureName) => dataCube.getMeasure(measureName)).toArray();
     if (measures.length === 0) {
       return [];
     }
 
-    const measureTitles = measures.map(measure => measure.title);
+    const measureTitles = measures.map((measure) => measure.title);
     return [
       {
         description: `Select default measures: ${measureTitles.join(", ")}`,
         adjustment: {
-          series: new SeriesList({ series: List(measures.map(measure => MeasureSeries.fromMeasure(measure))) })
-        }
-      }
+          series: new SeriesList({
+            series: List(measures.map((measure) => MeasureSeries.fromMeasure(measure))),
+          }),
+        },
+      },
     ];
-  }
+  };
 
   static firstMeasure = (dataCube: DataCube): Resolution[] => {
     const firstMeasure = dataCube.measures.first();
@@ -64,8 +64,11 @@ export class Resolutions {
       {
         description: `Select measure: ${firstMeasure.title}`,
         adjustment: {
-          series: new SeriesList({ series: List.of(MeasureSeries.fromMeasure(firstMeasure)) })
-        }
-      }];
-  }
+          series: new SeriesList({
+            series: List.of(MeasureSeries.fromMeasure(firstMeasure)),
+          }),
+        },
+      },
+    ];
+  };
 }

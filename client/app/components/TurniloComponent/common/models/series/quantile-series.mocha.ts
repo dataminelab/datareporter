@@ -22,7 +22,7 @@ import { QuantileSeries } from "./quantile-series";
 
 const quantileMeasure = Measure.fromJS({
   name: "my-quantile",
-  formula: "$main.quantile($histogram, 0.92, 'tuning')"
+  formula: "$main.quantile($histogram, 0.92, 'tuning')",
 });
 
 const quantileSeries = QuantileSeries.fromQuantileMeasure(quantileMeasure);
@@ -30,7 +30,9 @@ const quantileSeries = QuantileSeries.fromQuantileMeasure(quantileMeasure);
 describe("QuantileSeries", () => {
   describe("fromQuantileMeasure", () => {
     it("throws when measure expression is not a quantile", () => {
-      expect(() => QuantileSeries.fromQuantileMeasure(MeasureFixtures.wikiCount())).throws(/Expected QuantileExpression/);
+      expect(() => QuantileSeries.fromQuantileMeasure(MeasureFixtures.wikiCount())).throws(
+        /Expected QuantileExpression/
+      );
     });
 
     it("creates QuantileSeries from Measure with quantile expression", () => {

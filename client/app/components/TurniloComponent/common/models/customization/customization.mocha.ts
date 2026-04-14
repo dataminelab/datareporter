@@ -26,12 +26,12 @@ describe("Customization", () => {
       {
         title: "Hello World",
         headerBackground: "brown",
-        customLogoSvg: "ansvgstring"
+        customLogoSvg: "ansvgstring",
       },
       {
         urlShortener: SuccessUrlShortenerJS,
         headerBackground: "green",
-        externalViews: []
+        externalViews: [],
       },
       {
         urlShortener: SuccessUrlShortenerJS,
@@ -39,30 +39,30 @@ describe("Customization", () => {
           {
             title: "corporate dashboard",
             linkGenerator: "{ return 'https://dashboard.corporate.com/'+filter.toString() }",
-            sameWindow: true
+            sameWindow: true,
           },
           {
             title: "google docs",
-            linkGenerator: "{ return 'http://182.343.32.2273:8080/'+dataCube.name }"
+            linkGenerator: "{ return 'http://182.343.32.2273:8080/'+dataCube.name }",
           },
           {
             title: "google docs",
-            linkGenerator: "{ return 'http://182.343.32.2273:8080/'+timezone.timezone }"
-          }
-        ]
+            linkGenerator: "{ return 'http://182.343.32.2273:8080/'+timezone.timezone }",
+          },
+        ],
       },
       {
         headerBackground: "green",
         externalViews: [],
-        timezones: ["Pacific/Niue", "America/Los_Angeles"]
+        timezones: ["Pacific/Niue", "America/Los_Angeles"],
       },
       {
         headerBackground: "green",
         externalViews: [],
         urlShortener: SuccessUrlShortenerJS,
         timezones: ["Pacific/Niue", "America/Los_Angeles"],
-        logoutHref: "/log-me-out-now"
-      }
+        logoutHref: "/log-me-out-now",
+      },
     ]);
   });
 
@@ -71,9 +71,8 @@ describe("Customization", () => {
       Customization.fromJS({
         headerBackground: "green",
         externalViews: [],
-        timezones: ["Pacific/Niue", "Not a timezone"]
+        timezones: ["Pacific/Niue", "Not a timezone"],
       });
     }).to.throw("timezone 'Not a timezone' does not exist");
   });
-
 });

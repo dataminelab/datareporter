@@ -21,11 +21,17 @@ import { RefExpression } from "plywood";
 import { thread } from "../../utils/functional/functional";
 import nullableEquals from "../../utils/immutable-utils/nullable-equals";
 import { visualizationIndependentEvaluator } from "../../utils/rules/visualization-independent-evaluator";
-import { MANIFESTS } from "../../visualization-manifests";
+import { MANIFESTS, AnyVisualizationManifest } from "../../visualization-manifests";
 import { DataCube } from "../data-cube/data-cube";
 import { DateRange } from "../date-range/date-range";
 import { Dimension } from "../dimension/dimension";
-import { FilterClause, FixedTimeFilterClause, isTimeFilter, TimeFilterClause, toExpression } from "../filter-clause/filter-clause";
+import {
+  FilterClause,
+  FixedTimeFilterClause,
+  isTimeFilter,
+  TimeFilterClause,
+  toExpression,
+} from "../filter-clause/filter-clause";
 import { Filter } from "../filter/filter";
 import { SeriesList } from "../series-list/series-list";
 import { ConcreteSeries, SeriesDerivation } from "../series/concrete-series";
@@ -42,11 +48,11 @@ import { Resolve, VisualizationManifest } from "../visualization-manifest/visual
 import { VisualizationSettings } from "../visualization-settings/visualization-settings";
 
 function constrainDimensions(dimensions: OrderedSet<string>, dataCube: DataCube): OrderedSet<string> {
-  return <OrderedSet<string>> dimensions.filter(dimensionName => Boolean(dataCube.getDimension(dimensionName)));
+  return dimensions.filter((dimensionName) => Boolean(dataCube.getDimension(dimensionName))) as OrderedSet<string>;
 }
 
 export interface VisualizationAndResolve {
-  visualization: VisualizationManifest;
+  visualization: AnyVisualizationManifest;
   resolve: Resolve;
 }
 
@@ -58,14 +64,14 @@ export interface VisualizationAndResolve {
 export enum VisStrategy {
   FairGame,
   UnfairGame,
-  KeepAlways
+  KeepAlways,
 }
 
 type DimensionId = string;
 
 export interface EssenceValue {
   dataCube: DataCube;
-  visualization: VisualizationManifest;
+  visualization: VisualizationManifest | VisualizationManifest<any> | null;
   visualizationSettings: VisualizationSettings | null;
   timezone: Timezone;
   filter: Filter;
@@ -88,7 +94,7 @@ const defaultEssence: EssenceValue = {
   pinnedDimensions: OrderedSet([]),
   pinnedSort: null,
   timeShift: TimeShift.empty(),
-  visResolve: null
+  visResolve: null,
 };
 
 export interface EffectiveFilterOptions {
@@ -99,8 +105,12 @@ export interface EffectiveFilterOptions {
 type VisualizationResolverResult = Pick<EssenceValue, "splits" | "visualization" | "visResolve">;
 type VisualizationResolverParameters = Pick<EssenceValue, "visualization" | "dataCube" | "splits" | "series">;
 
-function resolveVisualization({ visualization, dataCube, splits, series }: VisualizationResolverParameters): VisualizationResolverResult {
-
+function resolveVisualization({
+  visualization,
+  dataCube,
+  splits,
+  series,
+}: VisualizationResolverParameters): VisualizationResolverResult {
   let visResolve: Resolve;
   // Place vis here because it needs to know about splits and colors (and maybe later other things)
   if (!visualization) {
@@ -108,7 +118,12 @@ function resolveVisualization({ visualization, dataCube, splits, series }: Visua
     visualization = visAndResolve.visualization;
   }
 
-  const ruleVariables = { dataCube, series, splits, isSelectedVisualization: true };
+  const ruleVariables = {
+    dataCube,
+    series,
+    splits,
+    isSelectedVisualization: true,
+  };
   visResolve = visualization.evaluateRules(ruleVariables);
   if (visResolve.isAutomatic()) {
     const adjustment = visResolve.adjustment;
@@ -127,23 +142,29 @@ function resolveVisualization({ visualization, dataCube, splits, series }: Visua
 }
 
 export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
-
   static getBestVisualization(
     dataCube: DataCube,
     splits: Splits,
     series: SeriesList,
-    currentVisualization: VisualizationManifest
+    currentVisualization: AnyVisualizationManifest
   ): VisualizationAndResolve {
-    const visAndResolves = MANIFESTS.map(visualization => {
+    const visAndResolves = MANIFESTS.map((visualization: AnyVisualizationManifest) => {
       const isSelectedVisualization = visualization === currentVisualization;
-      const ruleVariables = { dataCube, splits, series, isSelectedVisualization };
+      const ruleVariables = {
+        dataCube,
+        splits,
+        series,
+        isSelectedVisualization,
+      };
       return {
         visualization,
-        resolve: visualization.evaluateRules(ruleVariables)
+        resolve: visualization.evaluateRules(ruleVariables),
       };
     });
 
-    return visAndResolves.sort((vr1, vr2) => Resolve.compare(vr1.resolve, vr2.resolve))[0];
+    return visAndResolves.sort((vr1: VisualizationAndResolve, vr2: VisualizationAndResolve) =>
+      Resolve.compare(vr1.resolve, vr2.resolve)
+    )[0];
   }
 
   static fromDataCube(dataCube: DataCube): Essence {
@@ -157,14 +178,14 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       splits: dataCube.getDefaultSplits(),
       series: SeriesList.fromMeasureNames(dataCube.getDefaultSelectedMeasures().toArray()),
       pinnedDimensions: dataCube.getDefaultPinnedDimensions(),
-      pinnedSort: dataCube.getDefaultSortMeasure()
+      pinnedSort: dataCube.getDefaultSortMeasure(),
     });
 
     return essence.updateSplitsWithFilter();
   }
 
   static defaultSortReference(series: SeriesList, dataCube: DataCube): string {
-    const seriesRefs = Set(series.series.map(series => series.key()));
+    const seriesRefs = Set(series.series.map((series) => series.key()));
     const defaultSort = dataCube.getDefaultSortMeasure();
     if (seriesRefs.has(defaultSort)) return defaultSort;
     //@ts-ignore
@@ -185,24 +206,19 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public visResolve: Resolve;
 
   constructor(parameters: EssenceValue) {
-    const {
-      filter,
-      dataCube,
-      timezone,
-      timeShift,
-      series,
-      pinnedDimensions,
-      pinnedSort
-    } = parameters;
+    const { filter, dataCube, timezone, timeShift, series, pinnedDimensions, pinnedSort } = parameters;
 
     if (!dataCube) throw new Error("Essence must have a dataCube");
+    if (!dataCube.timeAttribute) throw new Error("DataCube must have a timeAttribute");
 
     const { visResolve, visualization, splits } = resolveVisualization(parameters);
 
     const constrainedSeries = series && series.constrainToMeasures(dataCube.measures);
 
     const isPinnedSortValid = series && constrainedSeries.hasMeasureSeries(pinnedSort);
-    const constrainedPinnedSort = isPinnedSortValid ? pinnedSort : Essence.defaultSortReference(constrainedSeries, dataCube);
+    const constrainedPinnedSort = isPinnedSortValid
+      ? pinnedSort
+      : Essence.defaultSortReference(constrainedSeries, dataCube);
 
     const constrainedFilter = filter.constrainToDimensions(dataCube.dimensions);
 
@@ -222,7 +238,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       series: constrainedSeries,
       pinnedDimensions: constrainDimensions(pinnedDimensions, dataCube),
       pinnedSort: constrainedPinnedSort,
-      visResolve
+      visResolve,
     });
   }
 
@@ -242,7 +258,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       timeShift: this.timeShift.toJS(),
       pinnedSort: this.pinnedSort,
       pinnedDimensions: this.pinnedDimensions.toJS(),
-      visResolve: this.visResolve
+      visResolve: this.visResolve,
     };
   }
 
@@ -282,7 +298,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       type: TimeShiftEnvType.WITH_PREVIOUS,
       shift: this.timeShift.valueOf(),
       currentFilter,
-      previousFilter
+      previousFilter,
     };
   }
 
@@ -293,7 +309,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
 
   public getEffectiveFilter(
     timekeeper: Timekeeper,
-    { combineWithPrevious = false, unfilterDimension = null }: EffectiveFilterOptions = {}): Filter {
+    { combineWithPrevious = false, unfilterDimension = null }: EffectiveFilterOptions = {}
+  ): Filter {
     const { dataCube, timezone } = this;
     let filter = this.filter;
     if (unfilterDimension) filter = filter.removeClause(unfilterDimension.name);
@@ -311,12 +328,15 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   private combinePeriods(timeFilter: FixedTimeFilterClause): TimeFilterClause {
     const { timezone, timeShift } = this;
     const duration = timeShift.valueOf();
-    return timeFilter.update("values", values =>
-      values.flatMap(({ start, end }) =>
-        [
-          new DateRange({ start, end }),
-          new DateRange({ start: duration.shift(start, timezone, -1), end: duration.shift(end, timezone, -1) })
-        ]));
+    return timeFilter.update("values", (values) =>
+      values.flatMap(({ start, end }) => [
+        new DateRange({ start, end }),
+        new DateRange({
+          start: duration.shift(start, timezone, -1),
+          end: duration.shift(end, timezone, -1),
+        }),
+      ])
+    );
   }
 
   public timeFilter(): TimeFilterClause {
@@ -338,11 +358,15 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   private shiftToPrevious(timeFilter: FixedTimeFilterClause): FixedTimeFilterClause {
     const { timezone, timeShift } = this;
     const duration = timeShift.valueOf();
-    return timeFilter.update("values", values =>
-      values.map(({ start, end }) => new DateRange({
-        start: duration.shift(start, timezone, -1),
-        end: duration.shift(end, timezone, -1)
-      })));
+    return timeFilter.update("values", (values) =>
+      values.map(
+        ({ start, end }) =>
+          new DateRange({
+            start: duration.shift(start, timezone, -1),
+            end: duration.shift(end, timezone, -1),
+          })
+      )
+    );
   }
 
   public previousTimeFilter(timekeeper: Timekeeper): FixedTimeFilterClause {
@@ -363,13 +387,13 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   public findConcreteSeries(key: string): ConcreteSeries {
-    const series = this.series.series.find(series => series.key() === key);
+    const series = this.series.series.find((series) => series.key() === key);
     if (!series) return null;
     return this.concreteSeriesFromSeries(series);
   }
 
   public getConcreteSeries(): List<ConcreteSeries> {
-    return this.series.series.map(series => this.concreteSeriesFromSeries(series));
+    return this.series.series.map((series) => this.concreteSeriesFromSeries(series));
   }
 
   public differentDataCube(other: Essence): boolean {
@@ -392,9 +416,18 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     return !nullableEquals(this.visualizationSettings, other.visualizationSettings);
   }
 
-  public differentEffectiveFilter(other: Essence, myTimekeeper: Timekeeper, otherTimekeeper: Timekeeper, unfilterDimension: Dimension = null): boolean {
-    const myEffectiveFilter = this.getEffectiveFilter(myTimekeeper, { unfilterDimension });
-    const otherEffectiveFilter = other.getEffectiveFilter(otherTimekeeper, { unfilterDimension });
+  public differentEffectiveFilter(
+    other: Essence,
+    myTimekeeper: Timekeeper,
+    otherTimekeeper: Timekeeper,
+    unfilterDimension: Dimension = null
+  ): boolean {
+    const myEffectiveFilter = this.getEffectiveFilter(myTimekeeper, {
+      unfilterDimension,
+    });
+    const otherEffectiveFilter = other.getEffectiveFilter(otherTimekeeper, {
+      unfilterDimension,
+    });
     return !myEffectiveFilter.equals(otherEffectiveFilter);
   }
 
@@ -405,10 +438,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   // Setters
 
   public changeComparisonShift(timeShift: TimeShift): Essence {
-    return this
-      .set("timeShift", timeShift)
-      .constrainTimeShift()
-      .updateSorts();
+    return this.set("timeShift", timeShift).constrainTimeShift().updateSorts();
   }
 
   public updateDataCube(newDataCube: DataCube): Essence {
@@ -426,41 +456,36 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
         : SeriesList.fromMeasureNames(newDataCube.getDefaultSelectedMeasures().toArray());
 
       return essence
-        .update("filter", filter => filter.constrainToDimensions(newDataCube.dimensions))
+        .update("filter", (filter) => filter.constrainToDimensions(newDataCube.dimensions))
         .set("series", newSeriesList)
-        .update("splits", splits => splits.constrainToDimensionsAndSeries(newDataCube.dimensions, newSeriesList))
-        .update("pinnedDimensions", pinned => constrainDimensions(pinned, newDataCube))
-        .update("pinnedSort", sort => !newDataCube.getMeasure(sort) ? newDataCube.getDefaultSortMeasure() : sort);
+        .update("splits", (splits) => splits.constrainToDimensionsAndSeries(newDataCube.dimensions, newSeriesList))
+        .update("pinnedDimensions", (pinned) => constrainDimensions(pinned, newDataCube))
+        .update("pinnedSort", (sort) => (!newDataCube.getMeasure(sort) ? newDataCube.getDefaultSortMeasure() : sort));
     }
 
     function adjustVisualization(essence: Essence): Essence {
       const { dataCube, visualization, splits, series } = essence;
-      const { visualization: newVis } = Essence.getBestVisualization(
-        dataCube, splits, series, visualization);
+      const { visualization: newVis } = Essence.getBestVisualization(dataCube, splits, series, visualization);
       if (newVis === visualization) return essence;
       return essence.changeVisualization(newVis, newVis.visualizationSettings.defaults);
     }
 
-    return thread(
-      this,
-      setDataCube,
-      constrainProps,
-      adjustVisualization,
-      (essence: Essence) => essence.resolveVisualizationAndUpdate());
+    return thread(this, setDataCube, constrainProps, adjustVisualization, (essence: Essence) =>
+      essence.resolveVisualizationAndUpdate()
+    );
   }
 
   public changeFilter(filter: Filter): Essence {
     const { filter: oldFilter } = this;
 
-    return this
-      .set("filter", filter)
+    return this.set("filter", filter)
       .constrainTimeShift()
-      .update("splits", splits => {
-        const differentClauses = filter.clauses.filter(clause => {
+      .update("splits", (splits) => {
+        const differentClauses = filter.clauses.filter((clause) => {
           const otherClause = oldFilter.clauseForReference(clause.reference);
           return !clause.equals(otherClause);
         });
-        return splits.removeBucketingFrom(Set(differentClauses.map(clause => clause.reference)));
+        return splits.removeBucketingFrom(Set(differentClauses.map((clause) => clause.reference)));
       })
       .updateSplitsWithFilter();
   }
@@ -482,21 +507,35 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
     const dimension = dataCube.getDimension(split.reference);
     const { sortStrategy, name, kind } = dimension;
     if (sortStrategy === "self" || sortStrategy === name) {
-      return new DimensionSort({ reference: name, direction: SortDirection.ascending });
+      return new DimensionSort({
+        reference: name,
+        direction: SortDirection.ascending,
+      });
     }
     if (sortStrategy && series.hasMeasureSeries(sortStrategy)) {
-      return new SeriesSort({ reference: sortStrategy, direction: SortDirection.descending });
+      return new SeriesSort({
+        reference: sortStrategy,
+        direction: SortDirection.descending,
+      });
     }
     if (kind === "time") {
-      return new DimensionSort({ reference: name, direction: SortDirection.ascending });
+      return new DimensionSort({
+        reference: name,
+        direction: SortDirection.ascending,
+      });
     }
-    return new SeriesSort({ reference: this.defaultSort(), direction: SortDirection.descending });
+    return new SeriesSort({
+      reference: this.defaultSort(),
+      direction: SortDirection.descending,
+    });
   }
 
   private setSortOnSplits(splits: Splits): Splits {
-    return splits.update("splits", list => list.map(split => {
-      return isSortEmpty(split.sort) ? split.set("sort", this.defaultSplitSort(split)) : split;
-    }));
+    return splits.update("splits", (list) =>
+      list.map((split) => {
+        return isSortEmpty(split.sort) ? split.set("sort", this.defaultSplitSort(split)) : split;
+      })
+    );
   }
 
   public changeSplits(splits: Splits, strategy: VisStrategy): Essence {
@@ -526,7 +565,8 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
       this,
       (essence: Essence) => essence.set("splits", newSplits),
       adjustVisualization,
-      (essence: Essence) => essence.resolveVisualizationAndUpdate());
+      (essence: Essence) => essence.resolveVisualizationAndUpdate()
+    );
   }
 
   public changeSplit(splitCombine: Split, strategy: VisStrategy): Essence {
@@ -550,10 +590,7 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   changeSeriesList(series: SeriesList): Essence {
-    return this
-      .set("series", series)
-      .updateSorts()
-      .resolveVisualizationAndUpdate();
+    return this.set("series", series).updateSorts().resolveVisualizationAndUpdate();
   }
 
   public defaultSort(): string {
@@ -561,70 +598,87 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   }
 
   private updateSorts(): Essence {
-    const seriesRefs = Set(this.series.series.map(series => series.reference));
-    return this
-      .update("pinnedSort", sort => {
-        if (seriesRefs.has(sort)) return sort;
-        return this.defaultSort();
-      })
-      .update("splits", splits => splits.update("splits", splits => splits.map((split: Split) => {
-        const { sort } = split;
-        const { type, reference } = sort;
-        switch (type) {
-          case SortType.DIMENSION:
-            return split;
-          case SortType.SERIES: {
-            const measureSort = sort as SeriesSort;
-            if (!seriesRefs.has(reference)) {
-              const measureSortRef = this.defaultSort();
-              if (measureSortRef) {
-                return split.changeSort(new SeriesSort({
-                  reference: measureSortRef
-                }));
+    const seriesRefs = Set(this.series.series.map((series) => series.reference));
+    return this.update("pinnedSort", (sort) => {
+      if (seriesRefs.has(sort)) return sort;
+      return this.defaultSort();
+    }).update("splits", (splits) =>
+      splits.update("splits", (splits) =>
+        splits.map((split: Split) => {
+          const { sort } = split;
+          const { type, reference } = sort;
+          switch (type) {
+            case SortType.DIMENSION:
+              return split;
+            case SortType.SERIES: {
+              const measureSort = sort as SeriesSort;
+              if (!seriesRefs.has(reference)) {
+                const measureSortRef = this.defaultSort();
+                if (measureSortRef) {
+                  return split.changeSort(
+                    new SeriesSort({
+                      reference: measureSortRef,
+                    })
+                  );
+                }
+                return split.changeSort(
+                  new DimensionSort({
+                    reference: split.reference,
+                  })
+                );
               }
-              return split.changeSort(new DimensionSort({
-                reference: split.reference
-              }));
+              if (measureSort.period !== SeriesDerivation.CURRENT && !this.hasComparison()) {
+                return split.update("sort", (sort: Sort) =>
+                  (sort as SeriesSort).set("period", SeriesDerivation.CURRENT)
+                );
+              }
+              return split;
             }
-            if (measureSort.period !== SeriesDerivation.CURRENT && !this.hasComparison()) {
-              return split.update("sort", (sort: SeriesSort) =>
-                sort.set("period", SeriesDerivation.CURRENT));
-            }
-            return split;
           }
-        }
-      })));
+        })
+      )
+    );
   }
 
   public updateSplitsWithFilter(): Essence {
-    const { filter, dataCube: { dimensions }, splits } = this;
+    const {
+      filter,
+      dataCube: { dimensions },
+      splits,
+    } = this;
     const newSplits = splits.updateWithFilter(filter, dimensions);
     if (splits === newSplits) return this;
     return this.set("splits", newSplits).resolveVisualizationAndUpdate();
   }
 
-  public changeVisualization(visualization: VisualizationManifest, settings: VisualizationSettings = visualization.visualizationSettings.defaults): Essence {
-    return this
-      .set("visualization", visualization)
+  public changeVisualization(
+    visualization: AnyVisualizationManifest,
+    settings: VisualizationSettings = visualization.visualizationSettings.defaults
+  ): Essence {
+    return this.set("visualization", visualization)
       .set("visualizationSettings", settings)
       .resolveVisualizationAndUpdate();
   }
 
   public resolveVisualizationAndUpdate() {
     const { visualization, splits, dataCube, series } = this;
-    const result = resolveVisualization({ splits, dataCube, visualization, series });
-    return this
-      .set("visResolve", result.visResolve)
+    const result = resolveVisualization({
+      splits,
+      dataCube,
+      visualization,
+      series,
+    });
+    return this.set("visResolve", result.visResolve)
       .set("visualization", result.visualization)
       .set("splits", result.splits);
   }
 
   public pin({ name }: Dimension): Essence {
-    return this.update("pinnedDimensions", pinned => pinned.add(name));
+    return this.update("pinnedDimensions", (pinned) => pinned.add(name));
   }
 
   public unpin({ name }: Dimension): Essence {
-    return this.update("pinnedDimensions", pinned => pinned.remove(name));
+    return this.update("pinnedDimensions", (pinned) => pinned.remove(name));
   }
 
   public changePinnedSortSeries(series: Series): Essence {
@@ -634,12 +688,12 @@ export class Essence extends ImmutableRecord<EssenceValue>(defaultEssence) {
   public seriesSortOns(withTimeShift?: boolean): List<SortOn> {
     const series = this.getConcreteSeries();
     const addPrevious = withTimeShift && this.hasComparison();
-    if (!addPrevious) return series.map(series => new SeriesSortOn(series));
-    return series.flatMap(series => {
+    if (!addPrevious) return series.map((series) => new SeriesSortOn(series));
+    return series.flatMap((series) => {
       return [
         new SeriesSortOn(series),
         new SeriesSortOn(series, SeriesDerivation.PREVIOUS),
-        new SeriesSortOn(series, SeriesDerivation.DELTA)
+        new SeriesSortOn(series, SeriesDerivation.DELTA),
       ];
     });
   }

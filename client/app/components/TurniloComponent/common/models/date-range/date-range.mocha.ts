@@ -15,7 +15,7 @@
  */
 
 import { expect, use } from "chai";
-import * as chaiDatetime from "chai-datetime";
+import chaiDatetime from "chai-datetime";
 import { Duration, Timezone } from "chronoshift";
 import { DateRange } from "./date-range";
 
@@ -24,7 +24,7 @@ use(chaiDatetime);
 function makeRange(startIso: string, endIso: string): DateRange {
   return new DateRange({
     start: new Date(startIso),
-    end: new Date(endIso)
+    end: new Date(endIso),
   });
 }
 

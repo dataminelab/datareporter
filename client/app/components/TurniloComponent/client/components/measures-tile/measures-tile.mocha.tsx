@@ -27,8 +27,7 @@ import { MeasuresTile } from "./measures-tile";
 describe("MeasuresTile", () => {
   it("adds the correct class", () => {
     const fakeClicker: Clicker = {
-      addSeries: () => {
-      }
+      addSeries: () => {},
     };
 
     const renderedComponent = renderIntoDocument(
@@ -41,7 +40,8 @@ describe("MeasuresTile", () => {
     );
 
     expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
-    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("measures-tile");
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "measures-tile"
+    );
   });
-
 });

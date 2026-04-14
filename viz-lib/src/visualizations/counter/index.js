@@ -15,7 +15,7 @@ const DEFAULT_OPTIONS = {
 export default {
   type: "COUNTER",
   name: "Counter",
-  getOptions: options => ({ ...DEFAULT_OPTIONS, ...options }),
+  getOptions: (options) => ({ ...DEFAULT_OPTIONS, ...options }),
   Renderer,
   Editor,
 

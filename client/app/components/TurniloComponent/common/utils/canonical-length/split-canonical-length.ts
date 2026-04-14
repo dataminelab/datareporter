@@ -20,6 +20,9 @@ import { Split } from "../../models/split/split";
 
 export default function splitCanonicalLength(split: Split, dataCube: DataCube): number | null {
   const { reference, bucket } = split;
+  if (!bucket) return null;
   if (reference !== dataCube.timeAttribute.name) return null;
-  return (bucket as Duration).getCanonicalLength();
+  if (!(bucket instanceof Duration)) return null;
+
+  return bucket.getCanonicalLength();
 }

@@ -35,21 +35,16 @@ interface SingleBarProps {
 
 const SIDE_PADDING = 5;
 
-const SingleBar: React.SFC<SingleBarProps> = props => {
+const SingleBar: React.SFC<SingleBarProps> = (props) => {
   const { datum, xScale, yScale, getX, series, maxHeight } = props;
   const x = getX(datum);
   const xPos = xScale.calculate(x) + SIDE_PADDING;
-  const width = xScale.rangeBand() - (2 * SIDE_PADDING);
+  const width = xScale.bandwidth() - 2 * SIDE_PADDING;
   const y = series.selectValue(datum);
   const yPos = yScale(y);
   const height = maxHeight - yPos;
 
-  return <rect
-    className="bar-chart-bar"
-    x={xPos}
-    y={yPos}
-    width={width}
-    height={height} />;
+  return <rect className="bar-chart-bar" x={xPos} y={yPos} width={width} height={height} />;
 };
 
 interface TimeShiftBarProps {
@@ -61,33 +56,37 @@ interface TimeShiftBarProps {
   maxHeight: number;
 }
 
-const TimeShiftBar: React.SFC<TimeShiftBarProps> = props => {
+const TimeShiftBar: React.SFC<TimeShiftBarProps> = (props) => {
   const { datum, xScale, yScale, getX, series, maxHeight } = props;
   const x = getX(datum);
   const xStart = xScale.calculate(x);
-  const rangeBand = xScale.rangeBand();
-  const fullWidth = rangeBand - 2 * SIDE_PADDING;
-  const barWidth = fullWidth * 2 / 3;
+  const bandwidth = xScale.bandwidth();
+  const fullWidth = bandwidth - 2 * SIDE_PADDING;
+  const barWidth = (fullWidth * 2) / 3;
 
   const yCurrent = series.selectValue(datum);
   const yPrevious = series.selectValue(datum, SeriesDerivation.PREVIOUS);
   const yCurrentStart = yScale(yCurrent);
   const yPreviousStart = yScale(yPrevious);
 
-  return <React.Fragment>
-    <rect
-      className="bar-chart-bar"
-      x={xStart + SIDE_PADDING}
-      y={yCurrentStart}
-      width={barWidth}
-      height={maxHeight - yCurrentStart} />
-    <rect
-      className="bar-chart-bar-previous"
-      x={xStart + rangeBand - SIDE_PADDING - barWidth}
-      y={yPreviousStart}
-      width={barWidth}
-      height={maxHeight - yPreviousStart} />
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <rect
+        className="bar-chart-bar"
+        x={xStart + SIDE_PADDING}
+        y={yCurrentStart}
+        width={barWidth}
+        height={maxHeight - yCurrentStart}
+      />
+      <rect
+        className="bar-chart-bar-previous"
+        x={xStart + bandwidth - SIDE_PADDING - barWidth}
+        y={yPreviousStart}
+        width={barWidth}
+        height={maxHeight - yPreviousStart}
+      />
+    </React.Fragment>
+  );
 };
 
 interface BarProps {
@@ -100,9 +99,7 @@ interface BarProps {
   maxHeight: number;
 }
 
-export const Bar: React.SFC<BarProps> = props => {
+export const Bar: React.SFC<BarProps> = (props) => {
   const { showPrevious, ...otherProps } = props;
-  return showPrevious ?
-    <TimeShiftBar {...otherProps} /> :
-    <SingleBar {...otherProps} />;
+  return showPrevious ? <TimeShiftBar {...otherProps} /> : <SingleBar {...otherProps} />;
 };

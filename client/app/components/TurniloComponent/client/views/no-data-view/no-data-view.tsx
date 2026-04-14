@@ -37,28 +37,29 @@ function label(appSettings: AppSettings): string {
   return !hasClusters ? STRINGS.noConnectedData : STRINGS.noQueryableDataCubes;
 }
 
-const NoDataTitle: React.SFC<{ appSettings: AppSettings }> = props => {
-  return <div className="title">
-    <div className="icon">
-      <SvgIcon svg={require("../../icons/data-cubes.svg")} />
+const NoDataTitle: React.SFC<{ appSettings: AppSettings }> = (props) => {
+  return (
+    <div className="title">
+      <div className="icon">
+        <SvgIcon svg={require("../../icons/data-cubes.svg")} />
+      </div>
+      <div className="label">{label(props.appSettings)}</div>
     </div>
-    <div className="label">{label(props.appSettings)}</div>
-  </div>;
+  );
 };
 
-export const NoDataView: React.SFC<NoDataViewProps> = props => {
+export const NoDataView: React.SFC<NoDataViewProps> = (props) => {
   const { onOpenAbout, customization, appSettings } = props;
-  return <div className="no-data-view">
-    <HeaderBar
-      customization={customization}
-      title={STRINGS.home}
-    >
-      <button className="text-button" onClick={onOpenAbout}>
-        {STRINGS.infoAndFeedback}
-      </button>
-    </HeaderBar>
-    <div className="container">
-      <NoDataTitle appSettings={appSettings} />
+  return (
+    <div className="no-data-view">
+      <HeaderBar customization={customization} title={STRINGS.home}>
+        <button className="text-button" onClick={onOpenAbout}>
+          {STRINGS.infoAndFeedback}
+        </button>
+      </HeaderBar>
+      <div className="container">
+        <NoDataTitle appSettings={appSettings} />
+      </div>
     </div>
-  </div>;
+  );
 };

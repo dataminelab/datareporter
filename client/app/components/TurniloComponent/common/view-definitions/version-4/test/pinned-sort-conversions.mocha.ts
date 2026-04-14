@@ -23,41 +23,35 @@ import { assertConversionToEssence } from "./utils";
 
 describe("PinnedSort", () => {
   it("reads pinned sort", () => {
-    assertConversionToEssence(
-      mockViewDefinition({ pinnedSort: "sum" }),
-      mockEssence({ pinnedSort: "sum" })
-    );
+    assertConversionToEssence(mockViewDefinition({ pinnedSort: "sum" }), mockEssence({ pinnedSort: "sum" }));
   });
 
   it("reads pinned sort as key of complex series", () => {
     assertConversionToEssence(
       mockViewDefinition({
         series: [quantileSeriesDefinition("quantile", 90)],
-        pinnedSort: "quantile__p90"
+        pinnedSort: "quantile__p90",
       }),
       mockEssence({
         series: SeriesList.fromSeries([quantileSeries("quantile", 90)]),
-        pinnedSort: "quantile__p90"
+        pinnedSort: "quantile__p90",
       })
     );
   });
 
   it("reverts to default pinned sort when series does not exist", () => {
-    assertConversionToEssence(
-      mockViewDefinition({ pinnedSort: "foobar" }),
-      mockEssence({ pinnedSort: "count" })
-    );
+    assertConversionToEssence(mockViewDefinition({ pinnedSort: "foobar" }), mockEssence({ pinnedSort: "count" }));
   });
 
   it("reverts to first available series when pinned sort series is not used", () => {
     assertConversionToEssence(
       mockViewDefinition({
         series: [fromReference("sum")],
-        pinnedSort: "count"
+        pinnedSort: "count",
       }),
       mockEssence({
         series: SeriesList.fromSeries([measureSeries("sum")]),
-        pinnedSort: "sum"
+        pinnedSort: "sum",
       })
     );
   });
@@ -66,11 +60,11 @@ describe("PinnedSort", () => {
     assertConversionToEssence(
       mockViewDefinition({
         series: [],
-        pinnedSort: "sum"
+        pinnedSort: "sum",
       }),
       mockEssence({
         series: EMPTY_SERIES,
-        pinnedSort: "count"
+        pinnedSort: "count",
       })
     );
   });
@@ -79,11 +73,11 @@ describe("PinnedSort", () => {
     assertConversionToEssence(
       mockViewDefinition({
         series: [fromReference("sum")],
-        pinnedSort: "__previous_sum"
+        pinnedSort: "__previous_sum",
       }),
       mockEssence({
         series: SeriesList.fromSeries([measureSeries("sum")]),
-        pinnedSort: "sum"
+        pinnedSort: "sum",
       })
     );
   });

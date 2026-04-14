@@ -33,11 +33,8 @@ export class MeasuresFixtures {
       {
         name: "other",
         title: "Other",
-        measures: [
-          MeasureGroupFixtures.wikiAddedJS(),
-          MeasureGroupFixtures.wikiDeltaJS()
-        ]
-      }
+        measures: [MeasureGroupFixtures.wikiAddedJS(), MeasureGroupFixtures.wikiDeltaJS()],
+      },
     ];
   }
 
@@ -46,8 +43,8 @@ export class MeasuresFixtures {
       {
         name: "count",
         title: "count",
-        formula: "$main.count()"
-      }
+        formula: "$main.count()",
+      },
     ];
   }
 }

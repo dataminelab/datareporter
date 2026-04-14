@@ -48,7 +48,12 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   state: SplitTilesRowState = {};
 
   private maxItems(): number {
-    const { menuStage, essence: { splits: { splits } } } = this.props;
+    const {
+      menuStage,
+      essence: {
+        splits: { splits },
+      },
+    } = this.props;
     return menuStage && getMaxItems(menuStage.width, splits.count());
   }
 
@@ -72,7 +77,9 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   };
 
   canDrop(): boolean {
-    const { essence: { splits, dataCube } } = this.props;
+    const {
+      essence: { splits, dataCube },
+    } = this.props;
     const dimension = DragManager.draggingDimension();
     if (dimension) return !splits.hasSplitOn(dimension);
     if (DragManager.isDraggingFilter()) {
@@ -110,7 +117,7 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
     if (!this.canDrop()) return;
     e.preventDefault();
     this.setState({
-      dragPosition: this.calculateDragPosition(e)
+      dragPosition: this.calculateDragPosition(e),
     });
   };
 
@@ -125,12 +132,14 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   dragLeave = () => {
     if (!this.canDrop()) return;
     this.setState({
-      dragPosition: null
+      dragPosition: null,
     });
   };
 
   draggingSplit(): Split {
-    const { essence: { dataCube } } = this.props;
+    const {
+      essence: { dataCube },
+    } = this.props;
     if (DragManager.isDraggingSplit()) return DragManager.draggingSplit();
     if (DragManager.isDraggingFilter()) {
       const dimension = dataCube.getDimension(DragManager.draggingFilter().reference);
@@ -166,42 +175,64 @@ export class SplitTilesRow extends React.Component<SplitTilesRowProps, SplitTile
   };
 
   insertSplitFromDimension = (dimension: Dimension, index: number) => {
-    const { clicker, essence: { splits } } = this.props;
+    const {
+      clicker,
+      essence: { splits },
+    } = this.props;
     clicker.changeSplits(splits.insertByIndex(index, Split.fromDimension(dimension)), VisStrategy.FairGame);
   };
 
   insertSplit = (split: Split, index: number) => {
-    const { clicker, essence: { splits } } = this.props;
+    const {
+      clicker,
+      essence: { splits },
+    } = this.props;
     clicker.changeSplits(splits.insertByIndex(index, split), VisStrategy.FairGame);
   };
 
   replaceSplit = (split: Split, index: number) => {
-    const { clicker, essence: { splits } } = this.props;
+    const {
+      clicker,
+      essence: { splits },
+    } = this.props;
     clicker.changeSplits(splits.replaceByIndex(index, split), VisStrategy.FairGame);
   };
 
   render() {
     const { essence, menuStage } = this.props;
     const { dragPosition, overflowOpen, openedSplit } = this.state;
-    return <div className="split-tile" onDragEnter={this.dragEnter}>
-      <div className="title">{STRINGS.split}</div>
-      <div className="items" ref={this.items}>
-        <SplitTiles
-          essence={essence}
-          openedSplit={openedSplit}
-          removeSplit={this.removeSplit}
-          updateSplit={this.updateSplit}
-          openMenu={this.openMenu}
-          closeMenu={this.closeMenu}
-          dragStart={this.dragStart}
+    return (
+      <div className="split-tile" onDragEnter={this.dragEnter}>
+        <div className="title">{STRINGS.split}</div>
+        <div className="items" ref={this.items}>
+          <SplitTiles
+            essence={essence}
+            openedSplit={openedSplit}
+            removeSplit={this.removeSplit}
+            updateSplit={this.updateSplit}
+            openMenu={this.openMenu}
+            closeMenu={this.closeMenu}
+            dragStart={this.dragStart}
+            menuStage={menuStage}
+            maxItems={this.maxItems()}
+            overflowOpen={overflowOpen}
+            closeOverflowMenu={this.closeOverflowMenu}
+            openOverflowMenu={this.openOverflowMenu}
+          />
+        </div>
+        <DragIndicator
+          dragOver={this.dragOver}
+          dragLeave={this.dragLeave}
+          drop={this.drop}
+          dragPosition={dragPosition}
+        />
+        <AddSplit
+          appendSplit={this.appendSplit}
+          insertSplit={this.insertSplitFromDimension}
           menuStage={menuStage}
-          maxItems={this.maxItems()}
-          overflowOpen={overflowOpen}
-          closeOverflowMenu={this.closeOverflowMenu}
-          openOverflowMenu={this.openOverflowMenu} />
+          essence={essence}
+        />
       </div>
-      <DragIndicator dragOver={this.dragOver} dragLeave={this.dragLeave} drop={this.drop} dragPosition={dragPosition} />
-      <AddSplit appendSplit={this.appendSplit} insertSplit={this.insertSplitFromDimension} menuStage={menuStage} essence={essence} />
-    </div>;
+    );
   }
 }

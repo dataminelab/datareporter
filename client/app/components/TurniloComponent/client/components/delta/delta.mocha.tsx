@@ -22,7 +22,6 @@ import { Delta, formatDelta } from "./delta";
 const formatter = (i: number) => i.toFixed();
 
 describe("Delta", () => {
-
   describe("formatDelta", () => {
     it("should handle nil values", () => {
       expect(formatDelta(null, 5)).to.equal(null);
@@ -32,9 +31,21 @@ describe("Delta", () => {
     });
 
     it("should calculate delta attributes correctly", () => {
-      expect(formatDelta(10, 5)).to.deep.equal({ delta: 5, deltaRatio: 1, deltaSign: 1 });
-      expect(formatDelta(5, 10)).to.deep.equal({ delta: -5, deltaRatio: 0.5, deltaSign: -1 });
-      expect(formatDelta(10, 10)).to.deep.equal({ delta: 0, deltaRatio: 0, deltaSign: 0 });
+      expect(formatDelta(10, 5)).to.deep.equal({
+        delta: 5,
+        deltaRatio: 1,
+        deltaSign: 1,
+      });
+      expect(formatDelta(5, 10)).to.deep.equal({
+        delta: -5,
+        deltaRatio: 0.5,
+        deltaSign: -1,
+      });
+      expect(formatDelta(10, 10)).to.deep.equal({
+        delta: 0,
+        deltaRatio: 0,
+        deltaSign: 0,
+      });
     });
   });
 
@@ -78,7 +89,9 @@ describe("Delta", () => {
     });
 
     it("should render properly negative delta for lower-is-better measure", () => {
-      const delta = shallow(<Delta currentValue={100} previousValue={200} lowerIsBetter={true} formatter={formatter} />);
+      const delta = shallow(
+        <Delta currentValue={100} previousValue={200} lowerIsBetter={true} formatter={formatter} />
+      );
 
       const deltaNode = delta.find("span");
 

@@ -15,6 +15,7 @@
  */
 
 import { Duration } from "chronoshift";
+import { DataCube } from "../../models/data-cube/data-cube";
 import { AVAILABLE_LIMITS } from "../../limit/limit";
 import { SeriesDerivation } from "../../models/series/concrete-series";
 import { DimensionSort, SeriesSort, Sort, SortDirection, SortType } from "../../models/sort/sort";
@@ -49,7 +50,11 @@ export interface TimeSplitDefinition extends BaseSplitDefinition {
   granularity: string;
 }
 
-export type SplitDefinition = NumberSplitDefinition | StringSplitDefinition | TimeSplitDefinition;
+export interface BooleanSplitDefinition extends BaseSplitDefinition {
+  type: SplitType.boolean;
+}
+
+export type SplitDefinition = BaseSplitDefinition | NumberSplitDefinition | StringSplitDefinition | TimeSplitDefinition;
 
 interface SplitDefinitionConversion<In extends SplitDefinition> {
   toSplitCombine(split: In): Split;
@@ -71,10 +76,21 @@ function inferType(type: string, reference: string, dimensionName: string) {
   }
 }
 
-function inferPeriodAndReference({ ref, period }: { ref: string, period?: SeriesDerivation }): { reference: string, period: SeriesDerivation } {
+function inferPeriodAndReference({ ref, period }: { ref: string; period?: SeriesDerivation }): {
+  reference: string;
+  period: SeriesDerivation;
+} {
   if (period) return { period, reference: ref };
-  if (ref.indexOf(PREVIOUS_PREFIX) === 0) return { reference: ref.substring(PREVIOUS_PREFIX.length), period: SeriesDerivation.PREVIOUS };
-  if (ref.indexOf(DELTA_PREFIX) === 0) return { reference: ref.substring(DELTA_PREFIX.length), period: SeriesDerivation.DELTA };
+  if (ref.indexOf(PREVIOUS_PREFIX) === 0)
+    return {
+      reference: ref.substring(PREVIOUS_PREFIX.length),
+      period: SeriesDerivation.PREVIOUS,
+    };
+  if (ref.indexOf(DELTA_PREFIX) === 0)
+    return {
+      reference: ref.substring(DELTA_PREFIX.length),
+      period: SeriesDerivation.DELTA,
+    };
   return { reference: ref, period: SeriesDerivation.CURRENT };
 }
 
@@ -101,6 +117,26 @@ function toLimit(limit: unknown): number | null {
   return AVAILABLE_LIMITS[0];
 }
 
+const booleanSplitConversion: SplitDefinitionConversion<BooleanSplitDefinition> = {
+  fromSplitCombine({ limit, sort, reference }: Split): BooleanSplitDefinition {
+    return {
+      type: SplitType.boolean,
+      dimension: reference,
+      sort: sort && fromSort(sort),
+      limit,
+    };
+  },
+
+  toSplitCombine(split: BooleanSplitDefinition): Split {
+    const { dimension, limit, sort } = split;
+    return new Split({
+      reference: dimension,
+      sort: sort && toSort(sort, dimension),
+      limit: toLimit(limit),
+    });
+  },
+};
+
 const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = {
   toSplitCombine(split: NumberSplitDefinition): Split {
     const { dimension, limit, sort, granularity } = split;
@@ -109,7 +145,7 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
       reference: dimension,
       bucket: granularity,
       sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
+      limit: toLimit(limit),
     });
   },
 
@@ -120,12 +156,12 @@ const numberSplitConversion: SplitDefinitionConversion<NumberSplitDefinition> = 
         dimension: reference,
         granularity: bucket,
         sort: sort && fromSort(sort),
-        limit
+        limit,
       };
     } else {
       throw new Error("");
     }
-  }
+  },
 };
 
 const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
@@ -136,7 +172,7 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
       reference: dimension,
       bucket: Duration.fromJS(granularity),
       sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
+      limit: toLimit(limit),
     });
   },
 
@@ -147,13 +183,12 @@ const timeSplitConversion: SplitDefinitionConversion<TimeSplitDefinition> = {
         dimension: reference,
         granularity: bucket.toJS(),
         sort: sort && fromSort(sort),
-        limit
+        limit,
       };
     } else {
       throw new Error("");
     }
-  }
-
+  },
 };
 
 const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = {
@@ -162,7 +197,7 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
     return new Split({
       reference: dimension,
       sort: sort && toSort(sort, dimension),
-      limit: toLimit(limit)
+      limit: toLimit(limit),
     });
   },
 
@@ -171,19 +206,22 @@ const stringSplitConversion: SplitDefinitionConversion<StringSplitDefinition> = 
       type: SplitType.string,
       dimension: reference,
       sort: sort && fromSort(sort),
-      limit
+      limit,
     };
-  }
+  },
 };
 
-const splitConversions: { [type in SplitType]: SplitDefinitionConversion<SplitDefinition> } = {
+const splitConversions: {
+  [type in SplitType]: SplitDefinitionConversion<SplitDefinition>;
+} = {
+  boolean: booleanSplitConversion,
   number: numberSplitConversion,
   string: stringSplitConversion,
-  time: timeSplitConversion
+  time: timeSplitConversion,
 };
 
 export interface SplitDefinitionConverter {
-  toSplitCombine(split: SplitDefinition): Split;
+  toSplitCombine(split: SplitDefinition, dataCube: Pick<DataCube, "dimensions" | "name">): Split;
 
   fromSplitCombine(splitCombine: Split): SplitDefinition;
 }
@@ -203,5 +241,5 @@ export const splitConverter: SplitDefinitionConverter = {
     } else {
       return stringSplitConversion.fromSplitCombine(splitCombine);
     }
-  }
+  },
 };

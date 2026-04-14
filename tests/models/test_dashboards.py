@@ -1,5 +1,5 @@
+from redash.models import Dashboard, db
 from tests import BaseTestCase
-from redash.models import db, Dashboard
 
 
 class DashboardTest(BaseTestCase):
@@ -15,7 +15,7 @@ class DashboardTest(BaseTestCase):
         widget1 = self.factory.create_widget(visualization=vis1, dashboard=dashboard)
         widget2 = self.factory.create_widget(visualization=vis2, dashboard=dashboard)
         widget3 = self.factory.create_widget(visualization=vis3, dashboard=dashboard)
-        dashboard.layout = "[[{}, {}, {}]]".format(widget1.id, widget2.id, widget3.id)
+        dashboard.layout = [[widget1.id, widget2.id, widget3.id]]
         db.session.commit()
         return dashboard
 

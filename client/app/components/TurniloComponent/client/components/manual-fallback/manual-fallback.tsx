@@ -28,10 +28,11 @@ export interface ManualFallbackProps {
 }
 
 export class ManualFallback extends React.Component<ManualFallbackProps, {}> {
-
   onResolutionClick(resolution: Resolution): void {
     const { clicker } = this.props;
-    const { adjustment: { splits, series } } = resolution;
+    const {
+      adjustment: { splits, series },
+    } = resolution;
 
     if (series != null) {
       clicker.changeSeriesList(series);
@@ -48,13 +49,17 @@ export class ManualFallback extends React.Component<ManualFallbackProps, {}> {
     if (!visResolve.isManual()) return null;
 
     const resolutionItems = visResolve.resolutions.map((resolution, i) => {
-      return <li className="resolution-item" key={i} onClick={this.onResolutionClick.bind(this, resolution)}>{resolution.description}</li>;
+      return (
+        <li className="resolution-item" key={i} onClick={this.onResolutionClick.bind(this, resolution)}>
+          {resolution.description}
+        </li>
+      );
     });
 
-    return <MessageCard title={visResolve.message}>
-      <ul className="manual-fallback">
-        {resolutionItems}
-      </ul>
-    </MessageCard>;
+    return (
+      <MessageCard title={visResolve.message}>
+        <ul className="manual-fallback">{resolutionItems}</ul>
+      </MessageCard>
+    );
   }
 }

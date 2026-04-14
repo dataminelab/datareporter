@@ -27,7 +27,13 @@ interface QueryParams {
   searchText: string;
 }
 
-export function stringFilterOptionsQuery({ essence, timekeeper, limit, dimension, searchText }: QueryParams): Expression {
+export function stringFilterOptionsQuery({
+  essence,
+  timekeeper,
+  limit,
+  dimension,
+  searchText,
+}: QueryParams): Expression {
   const { dataCube } = essence;
   const nativeCount = dataCube.getMeasure("count");
   const $main = $("main");

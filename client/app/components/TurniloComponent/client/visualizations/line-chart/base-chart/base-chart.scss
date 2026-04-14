@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '../../../imports';
+@import "../../../imports";
 
 .line-base-chart {
   position: relative;
@@ -40,7 +40,8 @@
     stroke-width: 1;
   }
 
-  &:nth-child(n+2) { // same as not(first-child)
+  &:nth-child(n + 2) {
+    // same as not(first-child)
     .highlighter .frame {
       border-top: 0;
     }

@@ -24,17 +24,20 @@ export interface HeaderBarProps {
   title?: string;
 }
 
-export const HeaderBar: React.SFC<HeaderBarProps> = props => {
+export const HeaderBar: React.SFC<HeaderBarProps> = (props) => {
   const { customization, title } = props;
 
-  const headerStyle: React.CSSProperties = customization && customization.headerBackground && { background: customization.headerBackground };
+  const headerStyle: React.CSSProperties = customization &&
+    customization.headerBackground && {
+      background: customization.headerBackground,
+    };
 
-  return <header className="header-bar" style={headerStyle}>
-    <div className="left-bar">
-      <div className="title">{title}</div>
-    </div>
-    <div className="right-bar">
-      {props.children}
-    </div>
-  </header>;
+  return (
+    <header className="header-bar" style={headerStyle}>
+      <div className="left-bar">
+        <div className="title">{title}</div>
+      </div>
+      <div className="right-bar">{props.children}</div>
+    </header>
+  );
 };

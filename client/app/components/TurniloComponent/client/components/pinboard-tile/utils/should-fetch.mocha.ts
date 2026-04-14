@@ -31,11 +31,11 @@ const props = {
   essence: wikiTotals,
   dimension: wikiChannel,
   timekeeper: Timekeeper.EMPTY,
-  sortOn: SortOnFixtures.defaultA()
+  sortOn: SortOnFixtures.defaultA(),
 } as PinboardTileProps;
 
 const state = {
-  searchText: "foobar"
+  searchText: "foobar",
 } as PinboardTileState;
 
 describe("shouldFetch", () => {
@@ -50,18 +50,29 @@ describe("shouldFetch", () => {
 
   it("should return true if effective filter in essence in props is different", () => {
     const essenceWithNewFilterClause = wikiTotals.changeFilter(wikiTotals.filter.addClause(boolean("isRobot", [true])));
-    const propsWithChangedEssence = { ...props, essence: essenceWithNewFilterClause };
+    const propsWithChangedEssence = {
+      ...props,
+      essence: essenceWithNewFilterClause,
+    };
     expect(shouldFetchData(propsWithChangedEssence, props, state, state)).to.be.true;
   });
 
   it("should return false if filter on pinned dimension in essence in props is different", () => {
-    const essenceWithChangedFilterClause = wikiTotals.changeFilter(wikiTotals.filter.addClause(stringIn("channel", ["en"])));
-    const propsWithChangedEssence = { ...props, essence: essenceWithChangedFilterClause };
+    const essenceWithChangedFilterClause = wikiTotals.changeFilter(
+      wikiTotals.filter.addClause(stringIn("channel", ["en"]))
+    );
+    const propsWithChangedEssence = {
+      ...props,
+      essence: essenceWithChangedFilterClause,
+    };
     expect(shouldFetchData(propsWithChangedEssence, props, state, state)).to.be.false;
   });
 
   it("should return true if sortOn in props is different", () => {
-    const propsWithChangedSortOn = { ...props, sortOn: SortOnFixtures.defaultC() };
+    const propsWithChangedSortOn = {
+      ...props,
+      sortOn: SortOnFixtures.defaultC(),
+    };
     expect(shouldFetchData(propsWithChangedSortOn, props, state, state)).to.be.true;
   });
 
@@ -71,7 +82,10 @@ describe("shouldFetch", () => {
   });
 
   it("should return true if dimension in props is different", () => {
-    const propsWithChangedDimension = { ...props, dimension: DimensionFixtures.countryURL() };
+    const propsWithChangedDimension = {
+      ...props,
+      dimension: DimensionFixtures.countryURL(),
+    };
     expect(shouldFetchData(propsWithChangedDimension, props, state, state)).to.be.true;
   });
 });

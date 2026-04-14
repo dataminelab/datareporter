@@ -26,13 +26,15 @@ interface ErrorProps {
   level?: MessageLevel;
 }
 
-export const Message: React.SFC<ErrorProps> = props => {
+export const Message: React.SFC<ErrorProps> = (props) => {
   const { content, title, level = "notice" } = props;
-  return <div className={classNames("message", level)}>
-    <div className="whiteout" />
-    <div className="message-container">
-      <div className="message-title">{title}</div>
-      <div className="message-content">{content}</div>
+  return (
+    <div className={classNames("message", level)}>
+      <div className="whiteout" />
+      <div className="message-container">
+        <div className="message-title">{title}</div>
+        <div className="message-content">{content}</div>
+      </div>
     </div>
-  </div>;
+  );
 };

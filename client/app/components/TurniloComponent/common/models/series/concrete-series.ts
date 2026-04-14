@@ -21,15 +21,20 @@ import { TimeShiftEnv, TimeShiftEnvType } from "../time-shift/time-shift-env";
 import { Series } from "./series";
 import { seriesFormatter } from "./series-format";
 
-export enum SeriesDerivation { CURRENT = "", PREVIOUS = "_previous__", DELTA = "_delta__" }
+export enum SeriesDerivation {
+  CURRENT = "",
+  PREVIOUS = "_previous__",
+  DELTA = "_delta__",
+}
 
 export abstract class ConcreteSeries<T extends Series = Series> {
-
-  constructor(public readonly definition: T, public readonly measure: Measure) {
-  }
+  constructor(
+    public readonly definition: T,
+    public readonly measure: Measure
+  ) {}
 
   public equals(other: ConcreteSeries): boolean {
-    return this.definition.equals(other.definition) && this.measure.equals(other.measure);
+    return this.definition.equals(other.definition);
   }
 
   public reactKey(derivation = SeriesDerivation.CURRENT): string {
@@ -57,11 +62,17 @@ export abstract class ConcreteSeries<T extends Series = Series> {
       case TimeShiftEnvType.WITH_PREVIOUS: {
         const currentName = this.plywoodKey();
         const previousName = this.plywoodKey(SeriesDerivation.PREVIOUS);
-        const current = this.applyExpression(this.filterMainRefs(expression, timeShiftEnv.currentFilter), currentName, nestingLevel);
-        const previous = this.applyExpression(this.filterMainRefs(expression, timeShiftEnv.previousFilter), previousName, nestingLevel);
+        const current = this.filterMainRefs(
+          this.applyExpression(expression, currentName, nestingLevel),
+          timeShiftEnv.currentFilter
+        );
+        const previous = this.filterMainRefs(
+          this.applyExpression(expression, previousName, nestingLevel),
+          timeShiftEnv.previousFilter
+        );
         const delta = new ApplyExpression({
           name: this.plywoodKey(SeriesDerivation.DELTA),
-          expression: $(currentName).subtract($(previousName))
+          expression: $(currentName).subtract($(previousName)),
         });
         return current.performAction(previous).performAction(delta);
       }
@@ -69,7 +80,7 @@ export abstract class ConcreteSeries<T extends Series = Series> {
   }
 
   private filterMainRefs(exp: Expression, filter: Expression): Expression {
-    return exp.substitute(e => {
+    return exp.substitute((e) => {
       if (e instanceof RefExpression && e.name === "main") {
         return $("main").filter(filter);
       }

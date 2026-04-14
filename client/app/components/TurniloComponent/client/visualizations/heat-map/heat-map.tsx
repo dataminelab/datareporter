@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// For some reason tsc compiler does not see this file.
-// Remove when issue is identified.
-// tslint:disable-next-line: no-reference
-/// <reference path="../../index.d.ts" />
-
 import memoizeOne from "memoize-one";
 import { Dataset } from "plywood";
 import * as React from "react";
@@ -50,23 +44,25 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
 
     const { preparedDataset: dataset } = this.state;
 
-    const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, this.series());
+    const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, this.series(), report);
 
-    return <div className="internals heatmap-container" style={{ maxHeight: stage.height }}>
-      <LabelledHeatmap
-        stage={stage}
-        dataset={dataset.data}
-        report={report}
-        xScale={x}
-        yScale={y}
-        colorScale={color}
-        saveHighlight={this.highlight}
-        highlight={this.getHighlight()}
-        acceptHighlight={this.acceptHighlight}
-        dropHighlight={this.dropHighlight}
-        essence={essence}
-      />
-    </div>;
+    return (
+      <div className="internals heatmap-container" style={{ maxHeight: stage.height }}>
+        <LabelledHeatmap
+          stage={stage}
+          dataset={dataset.data}
+          report={report}
+          xScale={x}
+          yScale={y}
+          colorScale={color}
+          saveHighlight={this.highlight}
+          highlight={this.getHighlight()}
+          acceptHighlight={this.acceptHighlight}
+          dropHighlight={this.dropHighlight}
+          essence={essence}
+        />
+      </div>
+    );
   }
 
   deriveDatasetState(dataset: Dataset): Partial<HeatmapState> {
@@ -75,7 +71,7 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
     const secondSplit = essence.splits.splits.get(1);
 
     const preparedDataset = fillDatasetWithMissingValues(
-      (dataset.data[0][SPLIT] as Dataset),
+      dataset.data[0][SPLIT] as Dataset,
       this.series().plywoodKey(),
       secondSplit,
       timezone

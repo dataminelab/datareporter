@@ -38,7 +38,7 @@ interface HighlightModalProps {
   rect: ClientRect | DOMRect;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = props => {
+export const HighlightModal: React.SFC<HighlightModalProps> = (props) => {
   const {
     timezone,
     rect: { left, top },
@@ -48,15 +48,19 @@ export const HighlightModal: React.SFC<HighlightModalProps> = props => {
     yScale,
     getX,
     series,
-    xScale } = props;
+    xScale,
+  } = props;
   const xValue = getX(datum);
-  const x = xScale.calculate(xValue) + (xScale.rangeBand() / 2);
+  const x = xScale.calculate(xValue) + xScale.bandwidth() / 2;
   const yValue = series.selectValue(datum);
   const y = yScale(yValue);
-  return <BaseHighlightModal
-    title={formatValue(xValue, timezone)}
-    left={left + x}
-    top={top + y}
-    dropHighlight={dropHighlight}
-    acceptHighlight={acceptHighlight} />;
+  return (
+    <BaseHighlightModal
+      title={formatValue(xValue, timezone)}
+      left={left + x}
+      top={top + y}
+      dropHighlight={dropHighlight}
+      acceptHighlight={acceptHighlight}
+    />
+  );
 };

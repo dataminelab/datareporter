@@ -20,7 +20,6 @@ import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
 import { QuantileSeries } from "./quantile-series";
 
 export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
-
   constructor(series: QuantileSeries, measure: Measure) {
     super(series, measure);
   }
@@ -29,9 +28,17 @@ export class QuantileConcreteSeries extends ConcreteSeries<QuantileSeries> {
     return `${super.title(derivation)} p${this.definition.formattedPercentile()}`;
   }
 
-  protected applyExpression(quantileExpression: PlywoodExpression, name: string, nestingLevel: number): ApplyExpression {
-    if (!(quantileExpression instanceof QuantileExpression)) throw new Error(`Expected QuantileExpression, got ${quantileExpression}`);
-    const expression = new QuantileExpression({ ...quantileExpression.valueOf(), value: this.definition.percentile / 100 });
+  protected applyExpression(
+    quantileExpression: PlywoodExpression,
+    name: string,
+    nestingLevel: number
+  ): ApplyExpression {
+    if (!(quantileExpression instanceof QuantileExpression))
+      throw new Error(`Expected QuantileExpression, got ${quantileExpression}`);
+    const expression = new QuantileExpression({
+      ...quantileExpression.valueOf(),
+      value: this.definition.percentile / 100,
+    });
     return new ApplyExpression({ name, expression });
   }
 }

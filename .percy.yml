@@ -1,0 +1,7 @@
+version: 2
+discovery:
+  concurrency: 10 # increase to 10 parallel processes
+snapshot:
+  widths:
+    - 375
+    - 1280

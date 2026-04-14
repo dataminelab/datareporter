@@ -33,8 +33,7 @@ export interface GlobalEventListenerProps {
   left?: (e: KeyboardEvent) => void;
 }
 
-export interface GlobalEventListenerState {
-}
+export interface GlobalEventListenerState {}
 
 export class GlobalEventListener extends React.Component<GlobalEventListenerProps, GlobalEventListenerState> {
   public mounted: boolean;
@@ -49,7 +48,7 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
     enter: "keydown",
     escape: "keydown",
     right: "keydown",
-    left: "keydown"
+    left: "keydown",
   };
 
   componentWillReceiveProps(nextProps: GlobalEventListenerProps) {
@@ -58,26 +57,34 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
 
   componentDidMount() {
     this.refreshListeners(this.props);
-    window.addEventListener("widgetResize", () => {
-      this.onResize();
-    }, false);
+    window.addEventListener(
+      "widgetResize",
+      () => {
+        this.onResize();
+      },
+      false
+    );
   }
 
   componentWillUnmount() {
-    for (let prop in this.propsToEvents) {
+    for (const prop in this.propsToEvents) {
       this.removeListener(this.propsToEvents[prop]);
     }
-    window.removeEventListener("widgetResize", () => {
-      this.onResize();
-    }, false);
+    window.removeEventListener(
+      "widgetResize",
+      () => {
+        this.onResize();
+      },
+      false
+    );
   }
 
   refreshListeners(nextProps: any, currentProps: any = {}) {
-    var toAdd: string[] = [];
-    var toRemove: string[] = [];
+    const toAdd: string[] = [];
+    const toRemove: string[] = [];
 
-    for (let prop in this.propsToEvents) {
-      let event = this.propsToEvents[prop];
+    for (const prop in this.propsToEvents) {
+      const event = this.propsToEvents[prop];
 
       if (currentProps[prop] && nextProps[prop]) continue;
 
@@ -93,7 +100,7 @@ export class GlobalEventListener extends React.Component<GlobalEventListenerProp
   }
 
   addListener(event: string) {
-    var useCapture = event === "scroll";
+    const useCapture = event === "scroll";
     window.addEventListener(event, (this as any)[`on${firstUp(event)}`], useCapture);
   }
 

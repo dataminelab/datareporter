@@ -45,7 +45,7 @@ function getHighlightRange(interaction: Interaction, timezone: Timezone): Contin
   return null;
 }
 
-export const SelectionOverlay: React.SFC<SelectionOverlayProps> = props => {
+export const SelectionOverlay: React.SFC<SelectionOverlayProps> = (props) => {
   const { stage, timezone, interaction, xScale } = props;
   const range = getHighlightRange(interaction, timezone);
   if (!range) return null;
@@ -53,7 +53,9 @@ export const SelectionOverlay: React.SFC<SelectionOverlayProps> = props => {
   const left = xScale(range.start);
   const right = xScale(range.end);
 
-  return <div style={stage.getLeftTopWidthHeight()}>
-    <Highlighter left={left} right={right}/>
-  </div>;
+  return (
+    <div style={stage.getLeftTopWidthHeight()}>
+      <Highlighter left={left} right={right} />
+    </div>
+  );
 };

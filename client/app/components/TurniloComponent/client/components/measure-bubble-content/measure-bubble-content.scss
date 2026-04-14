@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '../../imports';
+@import "../../imports";
 
 .current-value {
   margin-right: 8px;
@@ -25,4 +25,3 @@
   @include css-variable(color, text-lighterish);
   margin-right: 8px;
 }
-

@@ -17,9 +17,7 @@
 import { compressToBase64, decompressFromBase64 } from "lz-string";
 
 export function arrayToHash(array: string[]): string {
-  const concatenated = array
-    .map(element => JSON.stringify(element || null))
-    .join(",");
+  const concatenated = array.map((element) => JSON.stringify(element || null)).join(",");
 
   return compressToBase64(concatenated);
 }

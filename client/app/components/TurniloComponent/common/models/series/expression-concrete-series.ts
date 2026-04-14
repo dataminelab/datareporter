@@ -22,7 +22,6 @@ import { ConcreteSeries, SeriesDerivation } from "./concrete-series";
 import { ExpressionSeries } from "./expression-series";
 
 export class ExpressionConcreteSeries extends ConcreteSeries<ExpressionSeries> {
-
   private expression: ConcreteExpression;
 
   constructor(series: ExpressionSeries, measure: Measure, measures: Measures) {

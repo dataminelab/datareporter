@@ -39,7 +39,7 @@ function titleRank(title: string, query: string): number {
   const lowerCaseQuery = query.toLowerCase();
   const lowerCaseTitle = title.toLowerCase();
   if (lowerCaseTitle.includes(lowerCaseQuery)) {
-    return (Number.MAX_SAFE_INTEGER / 4) - lowerCaseTitle.indexOf(lowerCaseQuery);
+    return Number.MAX_SAFE_INTEGER / 4 - lowerCaseTitle.indexOf(lowerCaseQuery);
   }
   return 0;
 }

@@ -25,8 +25,7 @@ export class MeasuresRenderer {
     private readonly measureClick: MeasureClickHandler,
     private readonly measureDragStart: MeasureDragStartHandler,
     private readonly searchText: string
-  ) {
-  }
+  ) {}
 
   render(children: MeasureOrGroupForView[]): JSX.Element[] {
     const { searchText } = this;
@@ -35,48 +34,49 @@ export class MeasuresRenderer {
       return !searchText || item.hasSearchText || item.type === MeasureForViewType.group;
     };
 
-    return children
-      .filter(notInSearchModeOrHasSearchTextOrIsGroup)
-      .map(child => {
-        if (child.type === MeasureForViewType.group) {
-          return this.renderFolder(child);
-        } else {
-          return this.renderMeasure(child);
-        }
-      });
+    return children.filter(notInSearchModeOrHasSearchTextOrIsGroup).map((child) => {
+      if (child.type === MeasureForViewType.group) {
+        return this.renderFolder(child);
+      } else {
+        return this.renderMeasure(child);
+      }
+    });
   }
 
   private renderFolder(groupView: MeasureGroupForView): JSX.Element {
     const { searchText } = this;
     const { name, title, description, hasSearchText, hasSelectedMeasures, children } = groupView;
 
-    return <SearchableFolder
-      key={name}
-      name={name}
-      description={description}
-      title={title}
-      inSearchMode={!!searchText}
-      hasItemsWithSearchText={hasSearchText}
-      shouldBeOpened={hasSelectedMeasures}
-    >
-      {this.render(children)}
-    </SearchableFolder>;
+    return (
+      <SearchableFolder
+        key={name}
+        name={name}
+        description={description}
+        title={title}
+        inSearchMode={!!searchText}
+        hasItemsWithSearchText={hasSearchText}
+        shouldBeOpened={hasSelectedMeasures}>
+        {this.render(children)}
+      </SearchableFolder>
+    );
   }
 
   private renderMeasure(measureView: MeasureForView): JSX.Element {
     const { measureClick, measureDragStart, searchText } = this;
     const { name, title, approximate, description, hasSelectedMeasures } = measureView;
 
-    return <MeasureItem
-      key={name}
-      name={name}
-      title={title}
-      description={description}
-      approximate={approximate}
-      selected={hasSelectedMeasures}
-      measureClick={measureClick}
-      measureDragStart={measureDragStart}
-      searchText={searchText}
-    />;
+    return (
+      <MeasureItem
+        key={name}
+        name={name}
+        title={title}
+        description={description}
+        approximate={approximate}
+        selected={hasSelectedMeasures}
+        measureClick={measureClick}
+        measureDragStart={measureDragStart}
+        searchText={searchText}
+      />
+    );
   }
 }

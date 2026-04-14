@@ -19,7 +19,6 @@ import { MeasureGroup } from "./measure-group";
 import { MeasureGroupFixtures } from "./measure-group.fixtures";
 
 describe("MeasureGroup", () => {
-
   it("should convert to / from JS", () => {
     const measureGroup = MeasureGroup.fromJS(MeasureGroupFixtures.wikiAddedJS());
 
@@ -32,7 +31,7 @@ describe("MeasureGroup", () => {
     expect(measureGroup.toJS()).to.deep.equal(MeasureGroupFixtures.withTitleInferredJS());
   });
 
-  it("should infer title from name", () => {
+  it("should infer title from name again", () => {
     const measureGroup = MeasureGroup.fromJS(MeasureGroupFixtures.noTitleJS());
 
     expect(measureGroup.toJS()).to.deep.equal(MeasureGroupFixtures.withTitleInferredJS());
@@ -57,5 +56,4 @@ describe("MeasureGroup", () => {
 
     expect(measureGroupConversion).to.throw(`measure group '${groupWithEmptyMeasures.name}' has no measures`);
   });
-
 });

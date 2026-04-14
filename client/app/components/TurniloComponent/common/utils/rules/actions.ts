@@ -15,7 +15,11 @@
  */
 
 import { Splits } from "../../models/splits/splits";
-import { HIGH_PRIORITY_ACTION, NORMAL_PRIORITY_ACTION, Resolve } from "../../models/visualization-manifest/visualization-manifest";
+import {
+  HIGH_PRIORITY_ACTION,
+  NORMAL_PRIORITY_ACTION,
+  Resolve,
+} from "../../models/visualization-manifest/visualization-manifest";
 import { Resolutions } from "./resolutions";
 import { Action } from "./rules-evaluator-builder";
 import { VisualizationDependentAction } from "./visualization-dependent-evaluator";
@@ -37,15 +41,19 @@ export class Actions {
       const newSplits = splits.splits.take(dataCube.getMaxSplits());
       const excessiveSplits = splits.splits
         .skip(dataCube.getMaxSplits())
-        .map(split => dataCube.getDimension(split.reference).title);
-      return Resolve.manual(NORMAL_PRIORITY_ACTION, `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`, [
-        {
-          description: `Remove excessive splits: ${excessiveSplits.toArray().join(", ")}`,
-          adjustment: {
-            splits: Splits.fromSplits(newSplits.toArray())
-          }
-        }
-      ]);
+        .map((split) => dataCube.getDimension(split.reference).title);
+      return Resolve.manual(
+        NORMAL_PRIORITY_ACTION,
+        `${visualizationName} supports only ${dataCube.getMaxSplits()} splits`,
+        [
+          {
+            description: `Remove excessive splits: ${excessiveSplits.toArray().join(", ")}`,
+            adjustment: {
+              splits: Splits.fromSplits(newSplits.toArray()),
+            },
+          },
+        ]
+      );
     };
   }
 

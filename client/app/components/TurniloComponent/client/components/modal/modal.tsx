@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { classNames, isInside, uniqueId } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
@@ -44,15 +44,15 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   constructor(props: ModalProps) {
     super(props);
     this.state = {
-      id: null
+      id: null,
     };
   }
 
-  componentWillMount() {
-    var { id } = this.props;
+  UNSAFE_componentWillMount() {
+    const { id } = this.props;
 
     this.setState({
-      id: id || uniqueId("modal-")
+      id: id || uniqueId("modal-"),
     });
   }
 
@@ -70,12 +70,12 @@ export class Modal extends React.Component<ModalProps, ModalState> {
     const n = children.length;
 
     for (let i = 0; i < n; i++) {
-      let child = children[i] as HTMLElement;
+      const child = children[i] as HTMLElement;
 
       if (child.getAttribute && child.getAttribute("id") === id) return child;
 
       if (child.childNodes) {
-        let foundChild = this.getChildByID(child.childNodes, id);
+        const foundChild = this.getChildByID(child.childNodes, id);
         if (foundChild) return foundChild;
       }
     }
@@ -85,12 +85,9 @@ export class Modal extends React.Component<ModalProps, ModalState> {
 
   maybeFocus() {
     if (this.props.startUpFocusOn) {
-      var myElement = document.getElementById(this.state.id) as Element;
+      const myElement = document.getElementById(this.state.id) as Element;
 
-      let target = this.getChildByID(
-        myElement.childNodes,
-        this.props.startUpFocusOn
-      );
+      const target = this.getChildByID(myElement.childNodes, this.props.startUpFocusOn);
 
       if (!this.focusAlreadyGiven && !!target) {
         target.focus();
@@ -112,48 +109,48 @@ export class Modal extends React.Component<ModalProps, ModalState> {
   };
 
   onMouseDown = (e: MouseEvent) => {
-    var { onClose, mandatory } = this.props;
+    const { onClose, mandatory } = this.props;
     if (mandatory) return;
 
-    var { id } = this.state;
+    const { id } = this.state;
     // can not use ReactDOM.findDOMNode(this) because portal?
-    var myElement = document.getElementById(id) as Element;
+    const myElement = document.getElementById(id) as Element;
     if (!myElement) return;
-    var target = e.target as Element;
+    const target = e.target as Element;
 
     if (isInside(target, myElement)) return;
     onClose();
   };
 
   render() {
-    var { className, title, children, onClose } = this.props;
-    var { id } = this.state;
+    const { className, title, children, onClose } = this.props;
+    const { id } = this.state;
 
-    var titleElement: JSX.Element = null;
+    let titleElement: JSX.Element = null;
     if (typeof title === "string") {
-      titleElement = <div className="modal-title">
-        <div className="text">{title}</div>
-        <div className="close" onClick={onClose}>
-          <SvgIcon svg={require("../../icons/full-remove.svg")} />
+      titleElement = (
+        <div className="modal-title">
+          <div className="text">{title}</div>
+          <div className="close" onClick={onClose}>
+            <SvgIcon svg={require("../../icons/full-remove.svg")} />
+          </div>
         </div>
-      </div>;
+      );
     }
 
-    return <BodyPortal fullSize={true}>
-      <div className={classNames("modal", className)}>
-        <GlobalEventListener
-          enter={this.onEnter}
-          escape={this.onEscape}
-          mouseDown={this.onMouseDown}
-        />
-        <div className="backdrop" />
-        <GoldenCenter>
-          <div className="modal-window" id={id}>
-            {titleElement}
-            {children}
-          </div>
-        </GoldenCenter>
-      </div>
-    </BodyPortal>;
+    return (
+      <BodyPortal fullSize={true}>
+        <div className={classNames("modal", className)}>
+          <GlobalEventListener enter={this.onEnter} escape={this.onEscape} mouseDown={this.onMouseDown} />
+          <div className="backdrop" />
+          <GoldenCenter>
+            <div className="modal-window" id={id}>
+              {titleElement}
+              {children}
+            </div>
+          </GoldenCenter>
+        </div>
+      </BodyPortal>
+    );
   }
 }

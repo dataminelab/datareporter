@@ -29,25 +29,22 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
 
   .otherwise(({ splits, dataCube, isSelectedVisualization }) => {
     let autoChanged = false;
-    const newSplits = splits.update("splits", splits => splits.map((split, i) => {
-      const splitDimension = dataCube.getDimension(split.reference);
+    const newSplits = splits.update("splits", (splits) =>
+      splits.map((split, i) => {
+        const splitDimension = dataCube.getDimension(split.reference);
 
-      // ToDo: review this
-      if (!split.limit && splitDimension.kind !== "time") {
-        split = split.changeLimit(i ? 5 : 50);
-        autoChanged = true;
-      }
+        // ToDo: review this
+        if (!split.limit && splitDimension.kind !== "time") {
+          split = split.changeLimit(i ? 5 : 50);
+          autoChanged = true;
+        }
 
-      return split;
-    }));
+        return split;
+      })
+    );
 
     return autoChanged ? Resolve.automatic(6, { splits: newSplits }) : Resolve.ready(isSelectedVisualization ? 10 : 6);
   })
   .build();
 
-export const TABLE_MANIFEST = new VisualizationManifest<TableSettings>(
-  "table",
-  "Table",
-  rulesEvaluator,
-  settings
-);
+export const TABLE_MANIFEST = new VisualizationManifest<TableSettings>("table", "Table", rulesEvaluator, settings);

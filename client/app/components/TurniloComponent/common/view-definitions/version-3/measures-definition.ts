@@ -31,5 +31,5 @@ export const seriesDefinitionConverter: SeriesDefinitionConverter = {
   toEssenceSeries: ({ isMulti, multi, single }, measures: Measures) => {
     const names = isMulti ? multi : [single];
     return SeriesList.fromMeasures(measures.getMeasuresByNames(names));
-  }
+  },
 };

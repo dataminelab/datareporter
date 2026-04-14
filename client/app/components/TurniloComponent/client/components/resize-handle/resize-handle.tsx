@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { isFunction } from "util";
 import { clamp, classNames, getXFromEvent, getYFromEvent } from "../../utils/dom/dom";
 import { SvgIcon } from "../svg-icon/svg-icon";
@@ -28,66 +28,126 @@ export interface ResizeHandleProps {
   min: number;
   max: number;
   value: number;
-  onResize?: (newX: number) => void;
+  onResize?: (newValue: number) => void;
   onResizeEnd?: () => void;
 }
 
 export interface ResizeHandleState {
-  dragging?: boolean;
   anchor?: number;
 }
 
-export const DragHandle = () => <SvgIcon svg={require("../../icons/drag-handle.svg")} />;
+export const DragHandle = (): React.ReactElement => <SvgIcon svg={require("../../icons/drag-handle.svg")} />;
 
 export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandleState> {
-
   state: ResizeHandleState = {};
 
-  onMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  private currentHandleElement: HTMLDivElement | null = null;
+  private currentParentElement: HTMLElement | null = null;
+
+  onMouseDown = (event: React.MouseEvent<HTMLDivElement>): void => {
     if (event.button !== 0) return;
 
     window.addEventListener("mouseup", this.onGlobalMouseUp);
     window.addEventListener("mousemove", this.onGlobalMouseMove);
 
-    const { value } = this.props;
-    const eventX = this.getValue(event);
+    const handleElement = event.currentTarget; // The div with className="resize-handle"
+    const parentElement = handleElement.offsetParent; // The positioned ancestor (e.g., .dimension-measure-panel--container)
+
+    if (!parentElement) {
+      console.warn("ResizeHandle: No offsetParent found. Cannot calculate relative position.");
+      return;
+    }
+
+    this.currentHandleElement = handleElement;
+    this.currentParentElement = parentElement as HTMLElement; // Cast to HTMLElement for safety
+
+    const handleRect = handleElement.getBoundingClientRect();
+    const parentRect = parentElement.getBoundingClientRect();
+
+    let dragOffset: number;
+
+    switch (this.props.direction) {
+      case Direction.LEFT:
+        // Distance from parent's left to mouse. Then subtract handle's left-to-parent offset.
+        dragOffset = (event.clientX - parentRect.left) - (handleRect.left - parentRect.left);
+        break;
+      case Direction.RIGHT:
+        // Distance from parent's right to mouse. Then subtract handle's right-to-parent offset.
+        dragOffset = (parentRect.right - event.clientX) - (parentRect.right - handleRect.right);
+        break;
+      case Direction.TOP:
+        // Distance from handle's top edge to the mouse cursor, in viewport coordinates.
+        dragOffset = event.clientY - handleRect.top;
+        break;
+      case Direction.BOTTOM:
+        // Distance from handle's bottom edge to the mouse cursor, in viewport coordinates.
+        dragOffset = handleRect.bottom - event.clientY;
+        break;
+      default:
+        dragOffset = 0;
+    }
 
     this.setState({
-      dragging: true,
-      anchor: eventX - value
+      anchor: dragOffset
     });
 
     event.preventDefault();
   };
 
-  onGlobalMouseUp = () => {
-    this.setState({
-      dragging: false
-    });
+  onGlobalMouseUp = (): void => {
     window.removeEventListener("mouseup", this.onGlobalMouseUp);
     window.removeEventListener("mousemove", this.onGlobalMouseMove);
+
+    this.currentHandleElement = null;
+    this.currentParentElement = null;
 
     if (isFunction(this.props.onResizeEnd)) {
       this.props.onResizeEnd();
     }
   };
 
-  onGlobalMouseMove = (event: MouseEvent) => {
+  onGlobalMouseMove = (event: MouseEvent): void => {
     const { anchor } = this.state;
+    if (anchor === undefined) return;
+
+    const handleElement = this.currentHandleElement;
+    const parentElement = this.currentParentElement;
+
+    if (!handleElement || !parentElement) {
+      console.warn("ResizeHandle: Missing element references during mousemove. Dragging aborted.");
+      this.onGlobalMouseUp();
+      return;
+    }
+
+    const parentRect = parentElement.getBoundingClientRect(); // Get fresh rect for accurate parent position
+
+    let newPositionValue: number;
+
     switch (this.props.direction) {
+      case Direction.LEFT:
+        // Current mouse X relative to parent's left, minus the drag offset.
+        newPositionValue = (event.clientX - parentRect.left) - anchor;
+        break;
+      case Direction.RIGHT:
+        // Current mouse X relative to parent's right, minus the drag offset.
+        newPositionValue = (parentRect.right - event.clientX) - anchor;
+        break;
       case Direction.TOP:
-        if (150 > anchor) {
-          const currentValue = this.constrainValue(this.getCoordinate(event)-150);
-          if (!!this.props.onResize) this.props.onResize(currentValue);
-        } else {
-          const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
-          if (!!this.props.onResize) this.props.onResize(currentValue);
-        }
+        // Mouse Y relative to parent's top, minus the drag offset (distance from handle's top to mouse click point)
+        newPositionValue = (event.clientY - parentRect.top) - anchor;
+        break;
+      case Direction.BOTTOM:
+        // Mouse Y relative to parent's bottom, minus the drag offset (distance from handle's bottom to mouse click point)
+        newPositionValue = (parentRect.bottom - event.clientY) - anchor;
         break;
       default:
-        const currentValue = this.constrainValue(this.getCoordinate(event)-anchor);
-        if (!!this.props.onResize) this.props.onResize(currentValue);
-        break;
+        newPositionValue = 0;
+    }
+
+    const constrainedNewValue = this.constrainValue(newPositionValue);
+
+    if (this.props.onResize) {
+      this.props.onResize(constrainedNewValue);
     }
   };
 
@@ -112,7 +172,7 @@ export class ResizeHandle extends React.Component<ResizeHandleProps, ResizeHandl
     return clamp(value, this.props.min, this.props.max);
   }
 
-  render() {
+  render(): React.ReactElement {
     const { direction, children, value } = this.props;
 
     const style: React.CSSProperties = {

@@ -1,12 +1,16 @@
-import { useState, useMemo } from "react";
-import useUpdateReport from "./useUpdateReport";
-import useSaveReport from "./useSaveReport";
+import { useState, useMemo, useCallback } from "react";
+import { extend, get } from "lodash";
 import navigateTo from "@/components/ApplicationArea/navigateTo";
+import ShareReportDialog from "../components/ShareReportDialog";
+import useUpdateReport, { SaveReportError } from "./useUpdateReport";
+import notification from "@/services/notification";
 import { Report } from "@/services/report";
 
 export default function useReport(originalReport) {
   const [report, setReport] = useState(originalReport);
-  const [originalReportSource, setOriginalReportSource] = useState(originalReport.report);
+  const [originalReportSource, setOriginalReportSource] = useState(
+    originalReport.report,
+  );
 
   const updateReport = useUpdateReport(report, updatedReport => {
     // It's important to update URL first, and only then update state
@@ -18,34 +22,58 @@ export default function useReport(originalReport) {
     setOriginalReportSource(updatedReport.report);
   });
 
-  const saveAsReport = (name) => {
-    delete report.id;
-    const data = {
-      name: name,
-      model_id: report.model_id,
-      expression: window.location.hash.substring(window.location.hash.indexOf("4/") + 2) || report.hash,
-      color_1: report.color_1,
-      color_2: report.color_2,
-    }
-    useSaveReport(data);
-  };
+  const saveReport = useCallback(data => {
+    if (!data) return;
 
-  const doDeleteReport = (report) => {
-    // use this for delete submissions
-    return Report.delete({ id: report.id })
+    return Report.saveAs(data)
       .then(() => {
-        notification.success("Report Deleted.");
-        // clear saved meta price data
-        localStorage.removeItem(`${window.location.pathname}-proceed_data`);
-        localStorage.removeItem(`${window.location.pathname}-price`);
-
-        return extend(report.clone(), { is_archived: true, schedule: null });
+        navigateTo("/reports");
+        notification.success(`Report saved as ${data.name}`);
       })
       .catch(error => {
-        notification.error("Report could not be deleted.");
-        return Promise.reject(error);
+        if (get(error, "response.status") === 400) {
+          const message = get(error, "response.data.message");
+          return Promise.reject(new SaveReportError(message));
+        }
+        return Promise.reject(new SaveReportError("Report could not be saved"));
       });
-  }
+  }, []);
+
+  const saveAsReport = useCallback(
+    name => {
+      const reportCopy = extend({}, report);
+      delete reportCopy.id;
+      const data = {
+        name: name,
+        model_id: reportCopy.model_id,
+        expression:
+          window.location.hash.substring(
+            window.location.hash.indexOf("4/") + 2,
+          ) ||
+          reportCopy.hash ||
+          reportCopy.expression,
+        color_1: reportCopy.color_1,
+        color_2: reportCopy.color_2,
+        data_source_id: reportCopy.data_source_id,
+      };
+      saveReport(data);
+    },
+    [report, saveReport],
+  );
+
+  const showShareReportDialog = useCallback(() => {
+    const handleDialogClose = () =>
+      setReport(currentReport =>
+        extend({}, currentReport, { is_draft: false }),
+      );
+
+    ShareReportDialog.showModal({
+      report,
+      hasOnlySafeQueries: true,
+    })
+      .onClose(handleDialogClose)
+      .onDismiss(handleDialogClose);
+  }, [report]);
 
   return useMemo(
     () => ({
@@ -53,9 +81,15 @@ export default function useReport(originalReport) {
       setReport,
       isDirty: report.report !== originalReportSource,
       saveReport: () => updateReport(),
-      saveAsReport: (name) => saveAsReport(name),
-      deleteReport: (report) => doDeleteReport(report),
+      saveAsReport,
+      showShareReportDialog,
     }),
-    [report, originalReportSource, updateReport]
+    [
+      report,
+      originalReportSource,
+      saveAsReport,
+      showShareReportDialog,
+      updateReport,
+    ],
   );
 }

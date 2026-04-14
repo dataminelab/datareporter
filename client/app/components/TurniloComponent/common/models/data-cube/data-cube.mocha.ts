@@ -24,19 +24,16 @@ import { DataCube, DataCubeJS } from "./data-cube";
 import { DataCubeFixtures } from "./data-cube.fixtures";
 
 describe("DataCube", () => {
-  var druidCluster = Cluster.fromJS({
-    name: "druid"
+  const druidCluster = Cluster.fromJS({
+    name: "druid",
   });
 
-  var context = {
-    cluster: druidCluster
+  const context = {
+    cluster: druidCluster,
   };
 
   it("is an immutable class", () => {
-    testImmutableClass<DataCubeJS>(DataCube, [
-      DataCubeFixtures.TWITTER_JS,
-      DataCubeFixtures.WIKI_JS
-    ]);
+    testImmutableClass<DataCubeJS>(DataCube, [DataCubeFixtures.TWITTER_JS, DataCubeFixtures.WIKI_JS]);
   });
 
   describe("validates", () => {
@@ -49,20 +46,20 @@ describe("DataCube", () => {
           attributes: [
             { name: "__time", type: "TIME" },
             { name: "articleName", type: "STRING" },
-            { name: "count", type: "NUMBER" }
+            { name: "count", type: "NUMBER" },
           ],
           dimensions: [
             {
               name: "articleName",
-              formula: "$articleName"
-            }
+              formula: "$articleName",
+            },
           ],
           measures: [
             {
               name: "count",
-              formula: "$main.sum($count)"
-            }
-          ]
+              formula: "$main.sum($count)",
+            },
+          ],
         });
       }).to.throw("'wiki hello' is not a URL safe name. Try 'wiki_hello' instead?");
     });
@@ -77,20 +74,20 @@ describe("DataCube", () => {
           attributes: [
             { name: "__time", type: "TIME" },
             { name: "articleName", type: "STRING" },
-            { name: "count", type: "NUMBER" }
+            { name: "count", type: "NUMBER" },
           ],
           dimensions: [
             {
               name: "articleName",
-              formula: "$articleName"
-            }
+              formula: "$articleName",
+            },
           ],
           measures: [
             {
               name: "count",
-              formula: "$main.sum($count)"
-            }
-          ]
+              formula: "$main.sum($count)",
+            },
+          ],
         });
       }).to.throw("can not find defaultSortMeasure 'gaga'");
     });
@@ -104,20 +101,20 @@ describe("DataCube", () => {
           attributes: [
             { name: "__time", type: "TIME" },
             { name: "articleName", type: "STRING" },
-            { name: "count", type: "NUMBER" }
+            { name: "count", type: "NUMBER" },
           ],
           dimensions: [
             {
               name: "articleName",
-              formula: "$articleName"
-            }
+              formula: "$articleName",
+            },
           ],
           measures: [
             {
               name: "articleName",
-              formula: "$main.sum($count)"
-            }
-          ]
+              formula: "$main.sum($count)",
+            },
+          ],
         });
       }).to.throw("data cube: 'wiki', names: 'articleName' found in both dimensions and measures");
     });
@@ -131,24 +128,24 @@ describe("DataCube", () => {
           attributes: [
             { name: "__time", type: "TIME" },
             { name: "articleName", type: "STRING" },
-            { name: "count", type: "NUMBER" }
+            { name: "count", type: "NUMBER" },
           ],
           dimensions: [
             {
               name: "notArticleName",
-              formula: "$notArticleName"
-            }
+              formula: "$notArticleName",
+            },
           ],
           measures: [
             {
               name: "articleName",
-              formula: "$main.sum($count)"
+              formula: "$main.sum($count)",
             },
             {
               name: "articleName",
-              formula: "$articleName"
-            }
-          ]
+              formula: "$articleName",
+            },
+          ],
         });
       }).to.throw("data cube: 'wiki', found duplicate measure or group with names: 'articleName'");
     });
@@ -162,73 +159,72 @@ describe("DataCube", () => {
           attributes: [
             { name: "__time", type: "TIME" },
             { name: "articleName", type: "STRING" },
-            { name: "count", type: "NUMBER" }
+            { name: "count", type: "NUMBER" },
           ],
           dimensions: [
             {
               name: "articleName",
-              formula: "$articleName"
+              formula: "$articleName",
             },
             {
               name: "articleName",
-              formula: "$articleName.slice(0,2)"
-            }
+              formula: "$articleName.substr(0,2)",
+            },
           ],
           measures: [
             {
               name: "articleName",
-              formula: "$main.sum($count)"
-            }
-          ]
+              formula: "$main.sum($count)",
+            },
+          ],
         });
       }).to.throw("data cube: 'wiki', found duplicate dimension or group with names: 'articleName'");
     });
-
   });
 
   describe("#getIssues", () => {
     it("raises issues", () => {
-      var dataCube = DataCube.fromJS({
+      const dataCube = DataCube.fromJS({
         name: "wiki",
         clusterName: "druid",
         source: "wiki",
         attributes: [
           { name: "__time", type: "TIME" },
           { name: "articleName", type: "STRING" },
-          { name: "count", type: "NUMBER" }
+          { name: "count", type: "NUMBER" },
         ],
         dimensions: [
           {
             name: "gaga",
-            formula: "$gaga"
+            formula: "$gaga",
           },
           {
             name: "bucketArticleName",
-            formula: "$articleName.numberBucket(5)"
-          }
+            formula: "$articleName.numberBucket(5)",
+          },
         ],
         measures: [
           {
             name: "count",
-            formula: "$main.sum($count)"
+            formula: "$main.sum($count)",
           },
           {
             name: "added",
-            formula: "$main.sum($added)"
+            formula: "$main.sum($added)",
           },
           {
             name: "sumArticleName",
-            formula: "$main.sum($articleName)"
+            formula: "$main.sum($articleName)",
           },
           {
             name: "koalaCount",
-            formula: "$koala.sum($count)"
+            formula: "$koala.sum($count)",
           },
           {
             name: "countByThree",
-            formula: "$count / 3"
-          }
-        ]
+            formula: "$count / 3",
+          },
+        ],
       });
 
       expect(dataCube.getIssues()).to.deep.equal([
@@ -237,14 +233,14 @@ describe("DataCube", () => {
         "failed to validate measure 'added': could not resolve $added",
         "failed to validate measure 'sumArticleName': sum must have expression of type NUMBER (is STRING)",
         "failed to validate measure 'koalaCount': measure must contain a $main reference",
-        "failed to validate measure 'countByThree': measure must contain a $main reference"
+        "failed to validate measure 'countByThree': measure must contain a $main reference",
       ]);
     });
   });
 
   describe.skip("back compat", () => {
     it("works in a generic case", () => {
-      var legacyDataCubeJS: any = {
+      const legacyDataCubeJS: any = {
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -254,41 +250,41 @@ describe("DataCube", () => {
           {
             kind: "time",
             name: "__time",
-            formula: "$__time"
+            formula: "$__time",
           },
           {
-            name: "page"
-          }
+            name: "page",
+          },
         ],
         measures: [
           {
             name: "added",
-            formula: "$main.sum($added)"
-          }
+            formula: "$main.sum($added)",
+          },
         ],
         options: {
           skipIntrospection: true,
           attributeOverrides: [
             {
               name: "page",
-              type: "STRING"
-            }
+              type: "STRING",
+            },
           ],
           defaultSplits: "__time",
           druidContext: {
-            priority: 13
-          }
-        }
+            priority: 13,
+          },
+        },
       };
 
-      var dataCube = DataCube.fromJS(legacyDataCubeJS, context);
+      const dataCube = DataCube.fromJS(legacyDataCubeJS, context);
 
       expect(dataCube.toJS()).to.deep.equal({
         attributeOverrides: [
           {
             name: "page",
-            type: "STRING"
-          }
+            type: "STRING",
+          },
         ],
         clusterName: "druid",
         defaultSortMeasure: "added",
@@ -296,9 +292,9 @@ describe("DataCube", () => {
           {
             expression: {
               name: "__time",
-              op: "ref"
-            }
-          }
+              op: "ref",
+            },
+          },
         ],
         description: "",
         dimensions: [
@@ -306,162 +302,165 @@ describe("DataCube", () => {
             kind: "time",
             name: "__time",
             title: "Time",
-            formula: "$__time"
+            formula: "$__time",
           },
           {
             kind: "string",
             name: "page",
             title: "Page",
-            formula: "$page"
-          }
+            formula: "$page",
+          },
         ],
         introspection: "none",
         measures: [
           {
             name: "added",
             title: "Added",
-            formula: "$main.sum($added)"
-          }
+            formula: "$main.sum($added)",
+          },
         ],
         name: "wiki",
         options: {
           druidContext: {
-            priority: 13
-          }
+            priority: 13,
+          },
         },
         refreshRule: {
-          rule: "query"
+          rule: "query",
         },
         source: "wiki",
         subsetFormula: "$page.in(['en', 'fr'])",
         timeAttribute: "__time",
-        title: "Wiki"
+        title: "Wiki",
       });
-
     });
-
   });
 
   describe("#deduceAttributes", () => {
     it("works in a generic case", () => {
-      var dataCube = DataCube.fromJS({
-        name: "wiki",
-        clusterName: "druid",
-        source: "wiki",
-        introspection: "autofill-all",
-        defaultSortMeasure: "added",
-        defaultTimezone: "Etc/UTC",
-        dimensions: [
-          {
-            kind: "time",
-            name: "__time",
-            formula: "$__time"
-          },
-          {
-            name: "page"
-          },
-          {
-            name: "pageInBrackets",
-            formula: "'[' ++ $page ++ ']'"
-          },
-          {
-            name: "userInBrackets",
-            formula: "'[' ++ $user ++ ']'"
-          },
-          {
-            name: "languageLookup",
-            formula: "$language.lookup(wiki_language_lookup)"
-          }
-        ],
-        measures: [
-          {
-            name: "added",
-            formula: "$main.sum($added)"
-          },
-          {
-            name: "addedByDeleted",
-            formula: "$main.sum($added) / $main.sum($deleted)"
-          }
-        ]
-      }, context);
+      const dataCube = DataCube.fromJS(
+        {
+          name: "wiki",
+          clusterName: "druid",
+          source: "wiki",
+          introspection: "autofill-all",
+          defaultSortMeasure: "added",
+          defaultTimezone: "Etc/UTC",
+          dimensions: [
+            {
+              kind: "time",
+              name: "__time",
+              formula: "$__time",
+            },
+            {
+              name: "page",
+            },
+            {
+              name: "pageInBrackets",
+              formula: "'[' ++ $page ++ ']'",
+            },
+            {
+              name: "userInBrackets",
+              formula: "'[' ++ $user ++ ']'",
+            },
+            {
+              name: "languageLookup",
+              formula: "$language.lookup(wiki_language_lookup)",
+            },
+          ],
+          measures: [
+            {
+              name: "added",
+              formula: "$main.sum($added)",
+            },
+            {
+              name: "addedByDeleted",
+              formula: "$main.sum($added) / $main.sum($deleted)",
+            },
+          ],
+        },
+        context
+      );
 
       expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
         {
           name: "__time",
-          type: "TIME"
+          type: "TIME",
         },
         {
           name: "page",
-          type: "STRING"
+          type: "STRING",
         },
         {
           name: "user",
-          type: "STRING"
+          type: "STRING",
         },
         {
           name: "language",
-          type: "STRING"
+          type: "STRING",
         },
         {
           name: "added",
-          type: "NUMBER"
+          type: "NUMBER",
         },
         {
           name: "deleted",
-          type: "NUMBER"
-        }
+          type: "NUMBER",
+        },
       ]);
     });
 
     it("omits unsupported expressions", () => {
-      var dataCube = DataCube.fromJS({
-        name: "wiki",
-        clusterName: "druid",
-        source: "wiki",
-        introspection: "autofill-all",
-        defaultSortMeasure: "added",
-        defaultTimezone: "Etc/UTC",
-        dimensions: [],
-        measures: [
-          {
-            name: "added",
-            formula: "$main.sum($added)"
-          },
-          {
-            name: "addedByDeleted",
-            formula: "$main.sum($added) / $main.sum($deleted)"
-          },
-          {
-            name: "unsupported_unique_user",
-            formula: "$main.countDistinct($unique_user)"
-          },
-          {
-            name: "unsupported_click_percentile",
-            formula: "$main.quantile($click_histogram,0.95)"
-          }
-        ]
-      }, context);
+      const dataCube = DataCube.fromJS(
+        {
+          name: "wiki",
+          clusterName: "druid",
+          source: "wiki",
+          introspection: "autofill-all",
+          defaultSortMeasure: "added",
+          defaultTimezone: "Etc/UTC",
+          dimensions: [],
+          measures: [
+            {
+              name: "added",
+              formula: "$main.sum($added)",
+            },
+            {
+              name: "addedByDeleted",
+              formula: "$main.sum($added) / $main.sum($deleted)",
+            },
+            {
+              name: "unsupported_unique_user",
+              formula: "$main.countDistinct($unique_user)",
+            },
+            {
+              name: "unsupported_click_percentile",
+              formula: "$main.quantile($click_histogram,0.95)",
+            },
+          ],
+        },
+        context
+      );
 
       expect(AttributeInfo.toJSs(dataCube.deduceAttributes())).to.deep.equal([
         {
           name: "__time",
-          type: "TIME"
+          type: "TIME",
         },
         {
           name: "added",
-          type: "NUMBER"
+          type: "NUMBER",
         },
         {
           name: "deleted",
-          type: "NUMBER"
-        }
+          type: "NUMBER",
+        },
       ]);
     });
-
   });
 
   describe("#addAttributes", () => {
-    var dataCubeStub = DataCube.fromJS({
+    const dataCubeStub = DataCube.fromJS({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -469,8 +468,8 @@ describe("DataCube", () => {
       introspection: "autofill-all",
       defaultTimezone: "Etc/UTC",
       refreshRule: {
-        rule: "realtime"
-      }
+        rule: "realtime",
+      },
     });
     /* TODO: check the correctness of the test */
     /*
@@ -694,14 +693,14 @@ describe("DataCube", () => {
         });*/
 
     it("works with existing dimension", () => {
-      var attributes1 = AttributeInfo.fromJSs([
+      const attributes1 = AttributeInfo.fromJSs([
         { name: "__time", type: "TIME" },
         { name: "added", type: "NUMBER" },
         { name: "added!!!", type: "NUMBER" },
-        { name: "deleted", type: "NUMBER" }
+        { name: "deleted", type: "NUMBER" },
       ]);
 
-      var dataCubeWithDim = DataCube.fromJS({
+      const dataCubeWithDim = DataCube.fromJS({
         name: "wiki",
         title: "Wiki",
         clusterName: "druid",
@@ -710,28 +709,27 @@ describe("DataCube", () => {
         introspection: "autofill-all",
         defaultTimezone: "Etc/UTC",
         refreshRule: {
-          rule: "realtime"
+          rule: "realtime",
         },
         dimensions: [
           {
             name: "added",
-            formula: "$added"
+            formula: "$added",
           },
           {
             name: "added_",
-            formula: "${added!!!}"
-          }
-        ]
+            formula: "${added!!!}",
+          },
+        ],
       });
 
-      var dataCube = dataCubeWithDim.addAttributes(attributes1);
-      expect(dataCube.toJS().measures.map(m => m.name)).to.deep.equal(["deleted"]);
+      const dataCube = dataCubeWithDim.addAttributes(attributes1);
+      expect(dataCube.toJS().measures.map((m) => m.name)).to.deep.equal(["deleted"]);
     });
-
   });
 
   describe("#addAttributes (new dim)", () => {
-    var dataCube = DataCube.fromJS({
+    const dataCube = DataCube.fromJS({
       name: "wiki",
       title: "Wiki",
       clusterName: "druid",
@@ -740,63 +738,73 @@ describe("DataCube", () => {
       introspection: "autofill-all",
       defaultTimezone: "Etc/UTC",
       refreshRule: {
-        rule: "realtime"
-      }
+        rule: "realtime",
+      },
     });
 
     it("adds new dimensions", () => {
-      var columns: any = [
+      const columns: any = [
         { name: "__time", type: "TIME" },
-        { name: "added", makerAction: { action: "sum", expression: { name: "added", op: "ref" } }, type: "NUMBER", unsplitable: true },
-        { name: "count", makerAction: { action: "count" }, type: "NUMBER", unsplitable: true },
+        {
+          name: "added",
+          makerAction: {
+            action: "sum",
+            expression: { name: "added", op: "ref" },
+          },
+          type: "NUMBER",
+          unsplitable: true,
+        },
+        {
+          name: "count",
+          makerAction: { action: "count" },
+          type: "NUMBER",
+          unsplitable: true,
+        },
         { name: "delta_hist", special: "histogram", type: "NUMBER" },
         { name: "page", type: "STRING" },
-        { name: "page_unique", special: "unique", type: "STRING" }
+        { name: "page_unique", special: "unique", type: "STRING" },
       ];
 
-      var dataCube1 = dataCube.addAttributes(AttributeInfo.fromJSs(columns));
+      const dataCube1 = dataCube.addAttributes(AttributeInfo.fromJSs(columns));
 
       expect(dataCube1.toJS().dimensions).to.deep.equal([
         {
           kind: "time",
           name: "__time",
           title: "Time",
-          formula: "$__time"
+          formula: "$__time",
         },
         {
           kind: "string",
           name: "page",
           title: "Page",
-          formula: "$page"
-        }
+          formula: "$page",
+        },
       ]);
 
       columns.push({ name: "channel", type: "STRING" });
-      var dataCube2 = dataCube1.addAttributes(AttributeInfo.fromJSs(columns));
+      const dataCube2 = dataCube1.addAttributes(AttributeInfo.fromJSs(columns));
 
       expect(dataCube2.toJS().dimensions).to.deep.equal([
         {
           kind: "time",
           name: "__time",
           title: "Time",
-          formula: "$__time"
+          formula: "$__time",
         },
         {
           kind: "string",
           name: "page",
           title: "Page",
-          formula: "$page"
+          formula: "$page",
         },
         {
           kind: "string",
           name: "channel",
           title: "Channel",
-          formula: "$channel"
-        }
+          formula: "$channel",
+        },
       ]);
-
     });
-
   });
-
 });

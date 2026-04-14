@@ -15,21 +15,42 @@
  * limitations under the License.
  */
 
+import { assoc, Predicate, Unary } from "../functional/functional";
 import { isTruthy } from "../general/general";
 
 export function extend(source: any, target: any): any {
-  for (let key in source) {
+  for (const key in source) {
     target[key] = source[key];
   }
-
   return target;
 }
 
 export function omitFalsyValues<T>(obj: T): Partial<T> {
-  return Object.keys(obj).reduce<Partial<T>>((res, key: keyof T & string) => {
-    if (isTruthy(obj[key])) {
-      res[key] = obj[key];
+  return pickValues(obj, isTruthy);
+}
+
+type Key = string;
+
+export function mapValues<K extends Key, S, T>(obj: Record<K, S>, fn: Unary<S, T>): Record<K, T> {
+  return Object.keys(obj).reduce(
+    (result, key) => {
+      result[key as K] = fn(obj[key as K]);
+      return result;
+    },
+    {} as Record<K, T>
+  );
+}
+
+export function pickValues<T, K extends keyof T>(obj: T, predicate: Predicate<T[K]>): Partial<T> {
+  return (Object.keys(obj) as K[]).reduce((result, key) => {
+    const value = obj[key];
+    if (predicate(value)) {
+      result[key] = value;
     }
-    return res;
-  }, {});
+    return result;
+  }, {} as Partial<T>);
+}
+
+export function fromEntries<K extends Key, T>(entries: Array<[K, T]>): Record<K, T> {
+  return entries.reduce((result, [key, value]) => assoc(result, key, value), {} as Record<K, T>);
 }

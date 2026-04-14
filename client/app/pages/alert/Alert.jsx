@@ -16,6 +16,7 @@ import MenuButton from "./components/MenuButton";
 import AlertView from "./AlertView";
 import AlertEdit from "./AlertEdit";
 import AlertNew from "./AlertNew";
+import notifications from "@/services/notifications";
 
 const MODES = {
   NEW: 0,
@@ -23,7 +24,9 @@ const MODES = {
   EDIT: 2,
 };
 
-const defaultNameBuilder = template("<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>");
+const defaultNameBuilder = template(
+  "<%= query.name %>: <%= options.column %> <%= options.op %> <%= options.value %>",
+);
 
 export function getDefaultName(alert) {
   if (!alert.query) {
@@ -64,6 +67,7 @@ class Alert extends React.Component {
       this.setState({
         alert: {
           options: {
+            selector: "first",
             op: ">",
             value: 1,
             muted: false,
@@ -85,12 +89,13 @@ class Alert extends React.Component {
               notification.warn(
                 "You cannot edit this alert",
                 "You do not have sufficient permissions to edit this alert, and have been redirected to the view-only page.",
-                { duration: 0 }
+                { duration: 0 },
               );
             }
 
             this.setState({ alert, canEdit, pendingRearm: alert.rearm });
-            this.onQuerySelected(alert.query);
+            const query = { type: alert.type, ...alert.query };
+            this.onQuerySelected(query);
           }
         })
         .catch(error => {
@@ -110,6 +115,7 @@ class Alert extends React.Component {
 
     alert.name = trim(alert.name) || getDefaultName(alert);
     alert.rearm = pendingRearm || null;
+    alert.type = alert.query.type; // "query" or "report"
 
     return AlertService.save(alert)
       .then(alert => {
@@ -177,6 +183,19 @@ class Alert extends React.Component {
       });
   };
 
+  evaluate = () => {
+    const { alert } = this.state;
+    return AlertService.evaluate(alert)
+      .then(() => {
+        notification.success(
+          "Alert evaluated. Refresh page for updated status.",
+        );
+      })
+      .catch(() => {
+        notifications.error("Failed to evaluate alert.");
+      });
+  };
+
   mute = () => {
     const { alert } = this.state;
     return AlertService.mute(alert)
@@ -223,7 +242,14 @@ class Alert extends React.Component {
     const { queryResult, mode, canEdit, pendingRearm } = this.state;
 
     const menuButton = (
-      <MenuButton doDelete={this.delete} muted={muted} mute={this.mute} unmute={this.unmute} canEdit={canEdit} />
+      <MenuButton
+        doDelete={this.delete}
+        muted={muted}
+        mute={this.mute}
+        unmute={this.unmute}
+        canEdit={canEdit}
+        evaluate={this.evaluate}
+      />
     );
 
     const commonProps = {
@@ -244,9 +270,17 @@ class Alert extends React.Component {
         <div className="container">
           {mode === MODES.NEW && <AlertNew {...commonProps} />}
           {mode === MODES.VIEW && (
-            <AlertView canEdit={canEdit} onEdit={this.edit} muted={muted} unmute={this.unmute} {...commonProps} />
+            <AlertView
+              canEdit={canEdit}
+              onEdit={this.edit}
+              muted={muted}
+              unmute={this.unmute}
+              {...commonProps}
+            />
           )}
-          {mode === MODES.EDIT && <AlertEdit cancel={this.cancel} {...commonProps} />}
+          {mode === MODES.EDIT && (
+            <AlertEdit cancel={this.cancel} {...commonProps} />
+          )}
         </div>
       </div>
     );
@@ -259,7 +293,7 @@ routes.register(
     path: "/alerts/new",
     title: "New Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.NEW} />,
-  })
+  }),
 );
 routes.register(
   "Alerts.View",
@@ -267,7 +301,7 @@ routes.register(
     path: "/alerts/:alertId",
     title: "Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.VIEW} />,
-  })
+  }),
 );
 routes.register(
   "Alerts.Edit",
@@ -275,5 +309,5 @@ routes.register(
     path: "/alerts/:alertId/edit",
     title: "Alert",
     render: pageProps => <Alert {...pageProps} mode={MODES.EDIT} />,
-  })
+  }),
 );

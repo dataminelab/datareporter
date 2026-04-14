@@ -22,6 +22,7 @@ import * as React from "react";
 import { CSSTransition } from "react-transition-group";
 import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { Clicker } from "../../../common/models/clicker/clicker";
+import { LOCALES } from "../../../common/models/locale/locale";
 import { Customization } from "../../../common/models/customization/customization";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Device, DeviceSize } from "../../../common/models/device/device";
@@ -66,9 +67,11 @@ import { CubeHeaderBar } from "./cube-header-bar/cube-header-bar";
 import "./cube-view.scss";
 
 const ToggleArrow: React.SFC<{ right: boolean }> = ({ right }) =>
-  right
-    ? <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />
-    : <SvgIcon svg={require("../../icons/full-caret-small-left.svg")} />;
+  right ? (
+    <SvgIcon svg={require("../../icons/full-caret-small-right.svg")} />
+  ) : (
+    <SvgIcon svg={require("../../icons/full-caret-small-left.svg")} />
+  );
 
 export interface CubeViewLayout {
   factPanel: {
@@ -83,7 +86,7 @@ export interface CubeViewLayout {
 
 const defaultLayout: CubeViewLayout = {
   factPanel: { width: 240 },
-  pinboard: { width: 240, hidden: true }
+  pinboard: { width: 240, hidden: true },
 };
 
 export interface CubeViewProps {
@@ -111,7 +114,7 @@ export interface CubeViewState {
   showRawDataModal?: boolean;
   showViewDefinitionModal?: boolean;
   showDruidQueryModal?: boolean;
-  urlShortenerModalProps?: { url: string, title: string };
+  urlShortenerModalProps?: { url: string; title: string };
   layout?: CubeViewLayout;
   deviceSize?: DeviceSize;
   updatingMaxTime?: boolean;
@@ -150,20 +153,22 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       dragOver: false,
       layout: this.getStoredLayout(),
       lastRefreshRequestTimestamp: 0,
-      updatingMaxTime: false
+      updatingMaxTime: false,
     };
 
     this.clicker = {
       changeFilter: (filter: Filter) => {
-        this.setState(state => {
+        this.setState((state) => {
           let { essence } = state;
           essence = essence.changeFilter(filter);
           return { ...state, essence };
         });
       },
       changeComparisonShift: (timeShift: TimeShift) => {
-        this.setState(state =>
-          ({ ...state, essence: state.essence.changeComparisonShift(timeShift) }));
+        this.setState((state) => ({
+          ...state,
+          essence: state.essence.changeComparisonShift(timeShift),
+        }));
       },
       changeSplits: (splits: Splits, strategy: VisStrategy) => {
         const { essence } = this.state;
@@ -195,7 +200,9 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       },
       changeVisualization: (visualization: VisualizationManifest, settings: VisualizationSettings) => {
         const { essence } = this.state;
-        this.setState({ essence: essence.changeVisualization(visualization, settings) });
+        this.setState({
+          essence: essence.changeVisualization(visualization, settings),
+        });
       },
       pin: (dimension: Dimension) => {
         const { essence } = this.state;
@@ -208,7 +215,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       changePinnedSortSeries: (series: Series) => {
         const { essence } = this.state;
         this.setState({ essence: essence.changePinnedSortSeries(series) });
-      }
+      },
     };
   }
 
@@ -217,22 +224,21 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { dataCube } = essence;
     this.setState({ updatingMaxTime: true });
 
-    DataCube.queryMaxTime(dataCube)
-      .then(maxTime => {
-        if (!this.mounted) return;
-        const timeName = dataCube.name;
-        const isBatchCube = !dataCube.refreshRule.isRealtime();
-        const isCubeUpToDate = datesEqual(maxTime, timekeeper.getTime(timeName));
-        if (isBatchCube && isCubeUpToDate) {
-          this.setState({ updatingMaxTime: false });
-          return;
-        }
-        this.setState({
-          timekeeper: timekeeper.updateTime(timeName, maxTime),
-          updatingMaxTime: false,
-          lastRefreshRequestTimestamp: (new Date()).getTime()
-        });
+    DataCube.queryMaxTime(dataCube).then((maxTime) => {
+      if (!this.mounted) return;
+      const timeName = dataCube.name;
+      const isBatchCube = !dataCube.refreshRule.isRealtime();
+      const isCubeUpToDate = datesEqual(maxTime, timekeeper.getTime(timeName));
+      if (isBatchCube && isCubeUpToDate) {
+        this.setState({ updatingMaxTime: false });
+        return;
+      }
+      this.setState({
+        timekeeper: timekeeper.updateTime(timeName, maxTime),
+        updatingMaxTime: false,
+        lastRefreshRequestTimestamp: new Date().getTime(),
       });
+    });
   };
 
   componentWillMount() {
@@ -242,7 +248,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
 
     this.setState({
-      timekeeper: initTimekeeper || Timekeeper.EMPTY
+      timekeeper: initTimekeeper || Timekeeper.EMPTY,
     });
     this.updateEssenceFromHashOrDataCube(hash, dataCube);
   }
@@ -272,8 +278,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     }
   }
 
-  componentDidUpdate(prevProps: CubeViewProps, { layout: { pinboard: prevPinboard, factPanel: prevFactPanel } }: CubeViewState) {
-    const { layout: { pinboard, factPanel } } = this.state;
+  componentDidUpdate(
+    prevProps: CubeViewProps,
+    { layout: { pinboard: prevPinboard, factPanel: prevFactPanel } }: CubeViewState
+  ) {
+    const {
+      layout: { pinboard, factPanel },
+    } = this.state;
     if (pinboard.hidden !== prevPinboard.hidden || factPanel.hidden !== prevFactPanel.hidden) {
       this.globalResizeListener();
     }
@@ -320,7 +331,7 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     this.setState({
       deviceSize: Device.getSize(),
       menuStage: Stage.fromClientRect(containerDOM.getBoundingClientRect()),
-      visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect())
+      visualizationStage: Stage.fromClientRect(visualizationDOM.getBoundingClientRect()),
     });
   };
 
@@ -355,13 +366,13 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
 
   openRawDataModal = () => {
     this.setState({
-      showRawDataModal: true
+      showRawDataModal: true,
     });
   };
 
   onRawDataModalClose = () => {
     this.setState({
-      showRawDataModal: false
+      showRawDataModal: false,
     });
   };
 
@@ -369,22 +380,18 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { showRawDataModal, essence, timekeeper } = this.state;
     if (!showRawDataModal) return null;
 
-    return <RawDataModal
-      essence={essence}
-      timekeeper={timekeeper}
-      onClose={this.onRawDataModalClose}
-    />;
+    return <RawDataModal essence={essence} timekeeper={timekeeper} onClose={this.onRawDataModalClose} />;
   }
 
   openViewDefinitionModal = () => {
     this.setState({
-      showViewDefinitionModal: true
+      showViewDefinitionModal: true,
     });
   };
 
   onViewDefinitionModalClose = () => {
     this.setState({
-      showViewDefinitionModal: false
+      showViewDefinitionModal: false,
     });
   };
 
@@ -392,52 +399,49 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { showViewDefinitionModal, essence } = this.state;
     if (!showViewDefinitionModal) return null;
 
-    return <ViewDefinitionModal
-      onClose={this.onViewDefinitionModalClose}
-      essence={essence}
-    />;
+    return <ViewDefinitionModal onClose={this.onViewDefinitionModalClose} essence={essence} />;
   }
 
   openDruidQueryModal = () => {
     this.setState({
-      showDruidQueryModal: true
+      showDruidQueryModal: true,
     });
   };
 
   closeDruidQueryModal = () => {
     this.setState({
-      showDruidQueryModal: false
+      showDruidQueryModal: false,
     });
   };
 
   renderDruidQueryModal() {
     const { showDruidQueryModal, essence, timekeeper } = this.state;
     if (!showDruidQueryModal) return null;
-    return <DruidQueryModal
-      timekeeper={timekeeper}
-      essence={essence}
-      onClose={this.closeDruidQueryModal} />;
+    return <DruidQueryModal timekeeper={timekeeper} essence={essence} onClose={this.closeDruidQueryModal} />;
   }
 
   openUrlShortenerModal = (url: string, title: string) => {
     this.setState({
-      urlShortenerModalProps: { url, title }
+      urlShortenerModalProps: { url, title },
     });
   };
 
   closeUrlShortenerModal = () => {
     this.setState({
-      urlShortenerModalProps: null
+      urlShortenerModalProps: null,
     });
   };
 
   renderUrlShortenerModal() {
     const { urlShortenerModalProps } = this.state;
     if (!urlShortenerModalProps) return null;
-    return <UrlShortenerModal
-      title={urlShortenerModalProps.title}
-      url={urlShortenerModalProps.url}
-      onClose={this.closeUrlShortenerModal} />;
+    return (
+      <UrlShortenerModal
+        title={urlShortenerModalProps.title}
+        url={urlShortenerModalProps.url}
+        onClose={this.closeUrlShortenerModal}
+      />
+    );
   }
 
   triggerFilterMenu = (dimension: Dimension) => {
@@ -470,46 +474,58 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   toggleFactPanel = () => {
-    const { layout: { factPanel }, layout } = this.state;
+    const {
+      layout: { factPanel },
+      layout,
+    } = this.state;
     this.updateLayout({
       ...layout,
       factPanel: {
         ...factPanel,
-        hidden: !factPanel.hidden
-      }
+        hidden: !factPanel.hidden,
+      },
     });
   };
 
   togglePinboard = () => {
-    const { layout: { pinboard }, layout } = this.state;
+    const {
+      layout: { pinboard },
+      layout,
+    } = this.state;
     this.updateLayout({
       ...layout,
       pinboard: {
         ...pinboard,
-        hidden: true
-      }
+        hidden: true,
+      },
     });
   };
 
   onFactPanelResize = (width: number) => {
-    const { layout: { factPanel }, layout } = this.state;
+    const {
+      layout: { factPanel },
+      layout,
+    } = this.state;
     this.updateLayout({
       ...layout,
       factPanel: {
         ...factPanel,
-        width
-      }
+        width,
+      },
     });
   };
 
   onPinboardPanelResize = (width: number) => {
-    const { layout: { pinboard }, layout } = this.state;
+    const {
+      layout: { pinboard },
+      layout,
+    } = this.state;
     this.updateLayout({
       ...layout,
       pinboard: {
         ...pinboard,
-        width
-      }
+        width,
+      },
     });
   };
 
@@ -528,131 +544,158 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
   }
 
   private constructContext = memoizeOne(
-    (essence: Essence, clicker: Clicker) =>
-      ({ essence, clicker }),
-    ([nextEssence, nextClicker]: [Essence, Clicker], [prevEssence, prevClicker]: [Essence, Clicker]) =>
-      nextEssence.equals(prevEssence) && nextClicker === prevClicker);
+    (essence: Essence, clicker: Clicker) => ({ essence, clicker }),
+    (newArgs: any[], lastArgs: any[]) => newArgs[0].equals(lastArgs[0]) && newArgs[1] === lastArgs[1]
+  );
 
   render() {
     const clicker = this.clicker;
 
     const { urlForEssence, customization } = this.props;
-    const { layout, essence, timekeeper, menuStage, visualizationStage, dragOver, updatingMaxTime, lastRefreshRequestTimestamp } = this.state;
+    const {
+      layout,
+      essence,
+      timekeeper,
+      menuStage,
+      visualizationStage,
+      dragOver,
+      updatingMaxTime,
+      lastRefreshRequestTimestamp,
+    } = this.state;
 
     if (!essence) return null;
 
     const styles = this.calculateStyles();
 
-    const headerBar = <CubeHeaderBar
-      clicker={clicker}
-      essence={essence}
-      timekeeper={timekeeper}
-      onNavClick={this.sideDrawerOpen}
-      urlForEssence={urlForEssence}
-      refreshMaxTime={this.refreshMaxTime}
-      openRawDataModal={this.openRawDataModal}
-      openViewDefinitionModal={this.openViewDefinitionModal}
-      openUrlShortenerModal={this.openUrlShortenerModal}
-      openDruidQueryModal={this.openDruidQueryModal}
-      customization={customization}
-      getDownloadableDataset={() => this.downloadableDataset}
-      changeTimezone={this.changeTimezone}
-      updatingMaxTime={updatingMaxTime}
-    />;
+    const headerBar = (
+      <CubeHeaderBar
+        clicker={clicker}
+        essence={essence}
+        timekeeper={timekeeper}
+        onNavClick={this.sideDrawerOpen}
+        urlForEssence={urlForEssence}
+        refreshMaxTime={this.refreshMaxTime}
+        openRawDataModal={this.openRawDataModal}
+        openViewDefinitionModal={this.openViewDefinitionModal}
+        openUrlShortenerModal={this.openUrlShortenerModal}
+        openDruidQueryModal={this.openDruidQueryModal}
+        customization={customization}
+        getDownloadableDataset={() => this.downloadableDataset}
+        changeTimezone={this.changeTimezone}
+        updatingMaxTime={updatingMaxTime}
+      />
+    );
 
-    return <CubeContext.Provider value={this.getCubeContext()}>
-      <div className="cube-view">
-        <GlobalEventListener resize={this.globalResizeListener} />
-        {headerBar}
-        <div className="container" ref={this.container}>
-          {!layout.factPanel.hidden && <DimensionMeasurePanel
-            style={styles.dimensionMeasurePanel}
-            clicker={clicker}
-            essence={essence}
-            menuStage={menuStage}
-            triggerFilterMenu={this.triggerFilterMenu}
-            appendDirtySeries={this.appendDirtySeries}
-          />}
-          {!this.isSmallDevice() && !layout.factPanel.hidden && <ResizeHandle
-            direction={Direction.LEFT}
-            value={layout.factPanel.width}
-            onResize={this.onFactPanelResize}
-            onResizeEnd={this.onPanelResizeEnd}
-            min={MIN_PANEL_WIDTH}
-            max={MAX_PANEL_WIDTH}
-          >
-            <DragHandle />
-          </ResizeHandle>}
+    return (
+      <CubeContext.Provider value={this.getCubeContext()}>
+        <div className="cube-view">
+          <GlobalEventListener resize={this.globalResizeListener} />
+          {headerBar}
+          <div className="container" ref={this.container}>
+            {!layout.factPanel.hidden && (
+              <DimensionMeasurePanel
+                style={styles.dimensionMeasurePanel}
+                clicker={clicker}
+                essence={essence}
+                menuStage={menuStage}
+                triggerFilterMenu={this.triggerFilterMenu}
+                appendDirtySeries={this.appendDirtySeries}
+              />
+            )}
+            {!this.isSmallDevice() && !layout.factPanel.hidden && (
+              <ResizeHandle
+                direction={Direction.LEFT}
+                value={layout.factPanel.width}
+                onResize={this.onFactPanelResize}
+                onResizeEnd={this.onPanelResizeEnd}
+                min={MIN_PANEL_WIDTH}
+                max={MAX_PANEL_WIDTH}>
+                <DragHandle />
+              </ResizeHandle>
+            )}
 
-          <div className="center-panel" style={styles.centerPanel}>
-            <div className="center-top-bar">
-              <div className="dimension-panel-toggle"
-                   onClick={this.toggleFactPanel}>
-                <ToggleArrow right={layout.factPanel.hidden} />
+            <div className="center-panel" style={styles.centerPanel}>
+              <div className="center-top-bar">
+                <div className="dimension-panel-toggle" onClick={this.toggleFactPanel}>
+                  <ToggleArrow right={layout.factPanel.hidden} />
+                </div>
+                <div className="filter-split-section">
+                  <FilterTile
+                    ref={this.filterTile}
+                    clicker={clicker}
+                    essence={essence}
+                    timekeeper={timekeeper}
+                    clause={essence.filter.clauses.first()} // Example clause
+                    open={false} // Example value
+                    dimension={essence.dataCube.dimensions.first()} // Example dimension
+                    saveClause={() => {}} // Example function
+                    removeClause={() => {}} // Example function
+                    openFilterMenu={() => {}} // Example function
+                    closeFilterMenu={() => {}} // Example function
+                    dragStart={() => {}} // Example function
+                    stage={visualizationStage} // Example stage
+                    locale={LOCALES["en-US"]} // Example locale
+                  />
+                  <SplitTilesRow
+                    ref={this.splitTile}
+                    clicker={clicker}
+                    essence={essence}
+                    menuStage={visualizationStage}
+                  />
+                  <SeriesTilesRow ref={this.seriesTile} menuStage={visualizationStage} />
+                </div>
+                <VisSelector clicker={clicker} essence={essence} />
+                <div className="pinboard-toggle" onClick={this.togglePinboard}>
+                  <ToggleArrow right={!layout.pinboard.hidden} />
+                </div>
               </div>
-              <div className="filter-split-section">
-                <FilterTile
-                  ref={this.filterTile}
-                  clicker={clicker}
-                  essence={essence}
-                  timekeeper={timekeeper}
-                  menuStage={visualizationStage}
-                />
-                <SplitTilesRow
-                  ref={this.splitTile}
-                  clicker={clicker}
-                  essence={essence}
-                  menuStage={visualizationStage}
-                />
-                <SeriesTilesRow ref={this.seriesTile} menuStage={visualizationStage} />
-              </div>
-              <VisSelector clicker={clicker} essence={essence} />
-              <div className="pinboard-toggle"
-                   onClick={this.togglePinboard}>
-                <ToggleArrow right={!layout.pinboard.hidden} />
+              <div className="center-main" onDragEnter={this.dragEnter}>
+                <div className="visualization" ref={this.visualization}>
+                  {this.visElement()}
+                </div>
+                {this.manualFallback()}
+                {dragOver ? <DropIndicator /> : null}
+                {dragOver ? (
+                  <div
+                    className="drag-mask"
+                    onDragOver={this.dragOver}
+                    onDragLeave={this.dragLeave}
+                    onDragExit={this.dragLeave}
+                    onDrop={this.drop}
+                  />
+                ) : null}
               </div>
             </div>
-            <div
-              className="center-main"
-              onDragEnter={this.dragEnter}
-            >
-              <div className="visualization" ref={this.visualization}>{this.visElement()}</div>
-              {this.manualFallback()}
-              {dragOver ? <DropIndicator /> : null}
-              {dragOver ? <div
-                className="drag-mask"
-                onDragOver={this.dragOver}
-                onDragLeave={this.dragLeave}
-                onDragExit={this.dragLeave}
-                onDrop={this.drop}
-              /> : null}
-            </div>
+
+            {!this.isSmallDevice() && !layout.pinboard.hidden && (
+              <ResizeHandle
+                direction={Direction.RIGHT}
+                value={layout.pinboard.width}
+                onResize={this.onPinboardPanelResize}
+                onResizeEnd={this.onPanelResizeEnd}
+                min={MIN_PANEL_WIDTH}
+                max={MAX_PANEL_WIDTH}>
+                <DragHandle />
+              </ResizeHandle>
+            )}
+            {!layout.pinboard.hidden && (
+              <PinboardPanel
+                style={styles.pinboardPanel}
+                clicker={clicker}
+                essence={essence}
+                timekeeper={timekeeper}
+                refreshRequestTimestamp={lastRefreshRequestTimestamp}
+              />
+            )}
           </div>
-
-          {!this.isSmallDevice() && !layout.pinboard.hidden && <ResizeHandle
-            direction={Direction.RIGHT}
-            value={layout.pinboard.width}
-            onResize={this.onPinboardPanelResize}
-            onResizeEnd={this.onPanelResizeEnd}
-            min={MIN_PANEL_WIDTH}
-            max={MAX_PANEL_WIDTH}
-          >
-            <DragHandle />
-          </ResizeHandle>}
-          {!layout.pinboard.hidden && <PinboardPanel
-            style={styles.pinboardPanel}
-            clicker={clicker}
-            essence={essence}
-            timekeeper={timekeeper}
-            refreshRequestTimestamp={lastRefreshRequestTimestamp} />}
+          {this.renderDruidQueryModal()}
+          {this.renderRawDataModal()}
+          {this.renderViewDefinitionModal()}
+          {this.renderUrlShortenerModal()}
         </div>
-        {this.renderDruidQueryModal()}
-        {this.renderRawDataModal()}
-        {this.renderViewDefinitionModal()}
-        {this.renderUrlShortenerModal()}
-      </div>
-      {this.renderSideDrawer()}
-    </CubeContext.Provider>;
+        {this.renderSideDrawer()}
+      </CubeContext.Provider>
+    );
   }
 
   sideDrawerOpen = () => {
@@ -668,23 +711,24 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
     const { showSideBar, essence } = this.state;
     const { dataCubes, customization } = appSettings;
     const transitionTimeout = { enter: 500, exit: 300 };
-    return <CSSTransition
-      in={showSideBar}
-      classNames="side-drawer"
-      mountOnEnter={true}
-      unmountOnExit={true}
-      timeout={transitionTimeout}
-    >
-      <SideDrawer
-        key="drawer"
-        essence={essence}
-        dataCubes={dataCubes}
-        onOpenAbout={openAboutModal}
-        onClose={this.sideDrawerClose}
-        customization={customization}
-        changeDataCubeAndEssence={changeDataCubeAndEssence}
-      />
-    </CSSTransition>;
+    return (
+      <CSSTransition
+        in={showSideBar}
+        classNames="side-drawer"
+        mountOnEnter={true}
+        unmountOnExit={true}
+        timeout={transitionTimeout}>
+        <SideDrawer
+          key="drawer"
+          essence={essence}
+          dataCubes={dataCubes}
+          onOpenAbout={openAboutModal}
+          onClose={this.sideDrawerClose}
+          customization={customization}
+          changeDataCubeAndEssence={changeDataCubeAndEssence}
+        />
+      </CSSTransition>
+    );
   }
 
   private calculateStyles() {
@@ -697,21 +741,21 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       return {
         dimensionMeasurePanel: { width: dimensionsWidth },
         centerPanel: { left: dimensionsWidth, right: pinboardWidth },
-        pinboardPanel: { width: pinboardWidth }
+        pinboardPanel: { width: pinboardWidth },
       };
     }
     const nonSmallLayoutPadding = 10;
     return {
       dimensionMeasurePanel: {
-        width: isDimensionPanelHidden ? 0 : layout.factPanel.width
+        width: isDimensionPanelHidden ? 0 : layout.factPanel.width,
       },
       centerPanel: {
         left: isDimensionPanelHidden ? nonSmallLayoutPadding : layout.factPanel.width,
-        right: isPinboardHidden ? nonSmallLayoutPadding : layout.pinboard.width
+        right: isPinboardHidden ? nonSmallLayoutPadding : layout.pinboard.width,
       },
       pinboardPanel: {
-        width: isPinboardHidden ? 0 : layout.pinboard.width
-      }
+        width: isPinboardHidden ? 0 : layout.pinboard.width,
+      },
     };
   }
 
@@ -733,8 +777,11 @@ export class CubeView extends React.Component<CubeViewProps, CubeViewState> {
       stage,
       report,
       registerDownloadableDataset: (dataset: Dataset) => {
-        this.downloadableDataset = { dataset, options: tabularOptions(essence) };
-      }
+        this.downloadableDataset = {
+          dataset,
+          options: tabularOptions(essence),
+        };
+      },
     };
 
     return React.createElement(getVisualizationComponent(essence.visualization), visProps);

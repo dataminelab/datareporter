@@ -19,6 +19,8 @@ import { List } from "immutable";
 import { FilterClause } from "../../../common/models/filter-clause/filter-clause";
 
 export class Highlight {
-  constructor(public readonly clauses: List<FilterClause>, public readonly key: string | null) {
-  }
+  constructor(
+    public readonly clauses: List<FilterClause>,
+    public readonly key: string | null
+  ) {}
 }

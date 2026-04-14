@@ -42,7 +42,7 @@ export interface DimensionGroupForView {
 
 export enum DimensionForViewType {
   dimension = "dimension",
-  group = "group"
+  group = "group",
 }
 
 export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrGroupForView> {
@@ -50,8 +50,7 @@ export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrG
     private readonly hasSearchTextPredicate: (dimension: Dimension) => boolean,
     private readonly isFilteredOrSplitPredicate: (dimension: Dimension) => boolean,
     private readonly isSelectedDimensionPredicate: (dimension: Dimension) => boolean
-  ) {
-  }
+  ) {}
 
   visitDimension(dimension: Dimension): DimensionOrGroupForView {
     const { hasSearchTextPredicate, isFilteredOrSplitPredicate, isSelectedDimensionPredicate } = this;
@@ -65,22 +64,22 @@ export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrG
       isFilteredOrSplit: isFilteredOrSplitPredicate(dimension),
       hasSearchText: hasSearchTextPredicate(dimension),
       selected: isSelectedDimensionPredicate(dimension),
-      type: DimensionForViewType.dimension
+      type: DimensionForViewType.dimension,
     };
   }
 
   visitDimensionGroup(dimensionGroup: DimensionGroup): DimensionOrGroupForView {
     const { name, description, title, dimensions } = dimensionGroup;
-    const dimensionsForView = dimensions.map(item => item.accept(this));
+    const dimensionsForView = dimensions.map((item) => item.accept(this));
 
     return {
       name,
       title,
       description,
-      hasSearchText: dimensionsForView.some(item => item.hasSearchText),
-      isFilteredOrSplit: dimensionsForView.some(item => item.isFilteredOrSplit),
+      hasSearchText: dimensionsForView.some((item) => item.hasSearchText),
+      isFilteredOrSplit: dimensionsForView.some((item) => item.isFilteredOrSplit),
       children: dimensionsForView,
-      type: DimensionForViewType.group
+      type: DimensionForViewType.group,
     };
   }
 }

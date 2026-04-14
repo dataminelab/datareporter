@@ -33,7 +33,11 @@ function safeDurationFromJS(duration: string): Duration | null {
   }
 }
 
-function timeShiftPreviewForRange({ shift, time, timezone }: Pick<TimeShiftSelectorProps, "shift" | "time" | "timezone">): string {
+function timeShiftPreviewForRange({
+  shift,
+  time,
+  timezone,
+}: Pick<TimeShiftSelectorProps, "shift" | "time" | "timezone">): string {
   if (time === null || !time.start || !time.end) return null;
   const duration: Duration = safeDurationFromJS(shift);
   if (duration === null) return null;
@@ -50,21 +54,24 @@ export interface TimeShiftSelectorProps {
 
 const presets = COMPARISON_PRESETS.map(({ shift, label }) => ({
   name: label,
-  identity: shift.toJS()
+  identity: shift.toJS(),
 }));
 
-export const TimeShiftSelector: React.SFC<TimeShiftSelectorProps> = props => {
+export const TimeShiftSelector: React.SFC<TimeShiftSelectorProps> = (props) => {
   const { onShiftChange, shift: selectedTimeShift } = props;
   const timeShiftPreview = timeShiftPreviewForRange(props);
 
-  return <React.Fragment>
-    <StringInputWithPresets
-      title={STRINGS.timeShift}
-      presets={presets}
-      selected={selectedTimeShift}
-      onChange={onShiftChange}
-      errorMessage={isValidTimeShift(selectedTimeShift) ? null : STRINGS.invalidDurationFormat}
-      placeholder={STRINGS.timeShiftExamples} />
-    {timeShiftPreview ? <div className="preview">{timeShiftPreview}</div> : null}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      <StringInputWithPresets
+        title={STRINGS.timeShift}
+        presets={presets}
+        selected={selectedTimeShift}
+        onChange={onShiftChange}
+        errorMessage={isValidTimeShift(selectedTimeShift) ? null : STRINGS.invalidDurationFormat}
+        placeholder={STRINGS.timeShiftExamples}
+      />
+      {timeShiftPreview ? <div className="preview">{timeShiftPreview}</div> : null}
+    </React.Fragment>
+  );
 };

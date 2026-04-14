@@ -26,19 +26,17 @@ interface LabelProps {
   datum: Datum;
 }
 
-export const Label: React.SFC<LabelProps> = props => {
+export const Label: React.SFC<LabelProps> = (props) => {
   const { essence, datum } = props;
   if (hasNominalSplit(essence)) {
     const nominalDimension = getNominalDimension(essence);
     const splitValue = datum[nominalDimension.name] as PlywoodValue;
-    return <div className="split-chart-label">
-    <span className="split-chart-dimension-title">
-      {nominalDimension.title}
-    </span>
-      <span className="split-chart-value">
-      : {formatSegment(splitValue, essence.timezone)}
-    </span>
-    </div>;
+    return (
+      <div className="split-chart-label">
+        <span className="split-chart-dimension-title">{nominalDimension.title}</span>
+        <span className="split-chart-value">: {formatSegment(splitValue, essence.timezone)}</span>
+      </div>
+    );
   }
   return null;
 };

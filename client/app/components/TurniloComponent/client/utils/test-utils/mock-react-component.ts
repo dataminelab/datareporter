@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-export function mockReactComponent(_class: any) {
-  let prototype = _class.prototype;
-  let toUndo: Array<() => void> = [];
+import hasOwnProp from "has-own-prop";
 
-  if (prototype.hasOwnProperty("componentDidMount") === true) {
-    let oldComponentDidMount = prototype.componentDidMount;
+export function mockReactComponent(_class: any) {
+  const prototype = _class.prototype;
+  const toUndo: Array<() => void> = [];
+
+  if (hasOwnProp(prototype, "componentDidMount")) {
+    const oldComponentDidMount = prototype.componentDidMount;
     toUndo.push(() => {
       prototype.componentDidMount = oldComponentDidMount;
     });
-    prototype.componentDidMount = () => {};
+    prototype.componentDidMount = () => {
+      // Intentionally left blank to mock componentDidMount
+    };
   }
 
-  if (prototype.hasOwnProperty("render") === true) {
-    let oldRender = prototype.render;
+  if (hasOwnProp(prototype, "render")) {
+    const oldRender = prototype.render;
     toUndo.push(() => {
       prototype.render = oldRender;
     });
@@ -36,7 +40,7 @@ export function mockReactComponent(_class: any) {
     prototype.render = (): any => null;
   }
 
-  _class.restore = function() {
+  _class.restore = function () {
     toUndo.map((fn: any) => fn());
     delete this.restore;
   };

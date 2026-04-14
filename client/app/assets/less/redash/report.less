@@ -67,10 +67,6 @@
     }
   }
 
-  .report-metadata.report-metadata-horizontal {
-    border-bottom: 1px solid #efefef;
-  }
-
   .tile,
   .tiled {
     box-shadow: none;
@@ -268,15 +264,12 @@
   display: none;
 }
 
-@media (min-width: 880px) {
+// Smaller screens
+@media (max-height: 600px) {
   .report-fullscreen {
-    .report-metadata.report-metadata-horizontal {
-      display: none;
-    }
+    height: 100vh;
   }
 }
-
-// Smaller screens
 
 @media (max-width: 880px) {
   .btn--showhide,
@@ -336,14 +329,15 @@
     visibility: visible;
   }
 }
+// end of Smaller screens
 
 .data-source-box {
   height: fit-content;
   background: #ffffff;
-  min-width: 200px;
+  width: 130px;
   .ant-select {
     display: inline-block;
-    width: calc(100% - 37px);
+    width: calc(100% - 13px);
   }
   .icon {
     display: inline-block;
@@ -382,7 +376,7 @@
   box-shadow: 2px 8px 8px rgba(0, 0, 0, 0.15);
   .icon-ui {
     position: relative;
-    opacity: 0.50;
+    opacity: 0.5;
     top: 1px;
   }
   &:hover {
@@ -399,11 +393,12 @@
 .mobile-navbar-toggle-button {
   border-color: transparent !important;
   &.ant-dropdown-open {
-    opacity: 0.50;
+    opacity: 0.5;
   }
 }
 
-.ant-btn-primary, .ant-btn-danger {
+.ant-btn-primary,
+.ant-btn-danger {
   svg path {
     fill: #ffffff !important;
   }

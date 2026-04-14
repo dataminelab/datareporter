@@ -41,22 +41,23 @@ function goToDataCube(name: string) {
 }
 
 export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
-
   state = { query: "" };
 
   queryChange = (query: string) => {
-    this.setState(state => ({ ...state, query }));
+    this.setState((state) => ({ ...state, query }));
   };
 
   renderDataCube({ name, title, description, extendedDescription }: DataCube): JSX.Element {
-    return <DataCubeCard
-      key={name}
-      title={title}
-      description={description}
-      extendedDescription={extendedDescription}
-      icon="full-cube"
-      onClick={() => goToDataCube(name)}
-    />;
+    return (
+      <DataCubeCard
+        key={name}
+        title={title}
+        description={description}
+        extendedDescription={extendedDescription}
+        icon="full-cube"
+        onClick={() => goToDataCube(name)}
+      />
+    );
   }
 
   renderDataCubes(): JSX.Element {
@@ -75,28 +76,28 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     const { onOpenAbout, customization } = this.props;
     const { query } = this.state;
 
-    return <div className="home-view">
-      <HeaderBar
-        customization={customization}
-        title={STRINGS.home}
-      >
-        <button className="text-button" onClick={onOpenAbout}>
-          {STRINGS.infoAndFeedback}
-        </button>
-      </HeaderBar>
+    return (
+      <div className="home-view">
+        <HeaderBar customization={customization} title={STRINGS.home}>
+          <button className="text-button" onClick={onOpenAbout}>
+            {STRINGS.infoAndFeedback}
+          </button>
+        </HeaderBar>
 
-      <div className="container">
-        <div className="data-cubes">
-          <div className="data-cubes__search-box">
-            <ClearableInput
-              onChange={this.queryChange}
-              value={query}
-              placeholder="Search data cubes..."
-              focusOnMount={true} />
+        <div className="container">
+          <div className="data-cubes">
+            <div className="data-cubes__search-box">
+              <ClearableInput
+                onChange={this.queryChange}
+                value={query}
+                placeholder="Search data cubes..."
+                focusOnMount={true}
+              />
+            </div>
+            {this.renderDataCubes()}
           </div>
-          {this.renderDataCubes()}
         </div>
       </div>
-    </div>;
+    );
   }
 }

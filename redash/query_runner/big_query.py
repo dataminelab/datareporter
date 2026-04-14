@@ -1,3 +1,4 @@
+# pyright: reportMissingImports=false
 import datetime
 import logging
 import socket
@@ -7,6 +8,7 @@ from base64 import b64decode
 from redash import settings
 from redash.query_runner import (
     TYPE_BOOLEAN,
+    TYPE_DATE,
     TYPE_DATETIME,
     TYPE_FLOAT,
     TYPE_INTEGER,
@@ -16,7 +18,7 @@ from redash.query_runner import (
     JobTimeoutException,
     register,
 )
-from redash.utils import json_dumps, json_loads
+from redash.utils import json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +39,8 @@ types_map = {
     "BOOLEAN": TYPE_BOOLEAN,
     "STRING": TYPE_STRING,
     "TIMESTAMP": TYPE_DATETIME,
+    "DATETIME": TYPE_DATETIME,
+    "DATE": TYPE_DATE,
 }
 
 
@@ -83,7 +87,7 @@ def _get_query_results(jobs, project_id, location, job_id, start_index):
     ).execute()
     logging.debug("query_reply %s", query_reply)
     if not query_reply["jobComplete"]:
-        time.sleep(10)
+        time.sleep(1)
         return _get_query_results(jobs, project_id, location, job_id, start_index)
 
     return query_reply
@@ -100,10 +104,7 @@ class BigQuery(BaseQueryRunner):
 
     def __init__(self, configuration):
         super().__init__(configuration)
-        try:
-            self.should_annotate_query = configuration["useQueryAnnotation"]
-        except:
-            self.should_annotate_query = False
+        self.should_annotate_query = configuration.get("useQueryAnnotation", False)
 
     @classmethod
     def enabled(cls):
@@ -130,7 +131,7 @@ class BigQuery(BaseQueryRunner):
                     "default": True,
                 },
                 "location": {"type": "string", "title": "Processing Location"},
-                "loadSchema": {"type": "boolean", "title": "Load Schema"},
+                "loadSchema": {"type": "boolean", "title": "Load Schema", "default:": True},
                 "maximumBillingTier": {
                     "type": "number",
                     "title": "Maximum Billing Tier",
@@ -154,7 +155,7 @@ class BigQuery(BaseQueryRunner):
                 "useQueryAnnotation",
             ],
             "secret": ["jsonKeyFile"],
-        }
+        }  # pyright: ignore[reportUnknownVariableType]
 
     def _get_bigquery_service(self):
         socket.setdefaulttimeout(settings.BIGQUERY_HTTP_TIMEOUT)
@@ -277,7 +278,7 @@ class BigQuery(BaseQueryRunner):
             for field in column["fields"]:
                 columns.append("{}.{}".format(column["name"], field["name"]))
         else:
-            columns.append(column["name"])
+            columns.append({"name": column["name"], "type": column["type"]})
 
         return columns
 
@@ -299,36 +300,36 @@ class BigQuery(BaseQueryRunner):
     def get_schema(self, get_stats=False):
         if not self.configuration.get("loadSchema", False):
             return []
-
+        service = self._get_bigquery_service()
         project_id = self._get_project_id()
         datasets = self._get_project_datasets(project_id)
-
-        query_base = """
-        SELECT table_schema, table_name, field_path
-        FROM `{dataset_id}`.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS
-        WHERE table_schema NOT IN ('information_schema')
-        """
-
-        schema = {}
-        queries = []
+        schema = []
         for dataset in datasets:
             dataset_id = dataset["datasetReference"]["datasetId"]
-            query = query_base.format(dataset_id=dataset_id)
-            queries.append(query)
+            tables = service.tables().list(projectId=project_id, datasetId=dataset_id).execute()
+            while True:
+                for table in tables.get("tables", []):
+                    table_data = (
+                        service.tables()
+                        .get(
+                            projectId=project_id,
+                            datasetId=dataset_id,
+                            tableId=table["tableReference"]["tableId"],
+                        )
+                        .execute()
+                    )
+                    table_schema = self._get_columns_schema(table_data)
+                    schema.append(table_schema)
 
-        query = "\nUNION ALL\n".join(queries)
-        results, error = self.run_query(query, None)
-        if error is not None:
-            self._handle_run_query_error(error)
+                next_token = tables.get("nextPageToken", None)
+                if next_token is None:
+                    break
 
-        results = json_loads(results)
-        for row in results["rows"]:
-            table_name = "{0}.{1}".format(row["table_schema"], row["table_name"])
-            if table_name not in schema:
-                schema[table_name] = {"name": table_name, "columns": []}
-            schema[table_name]["columns"].append(row["field_path"])
+                tables = (
+                    service.tables().list(projectId=project_id, datasetId=dataset_id, pageToken=next_token).execute()
+                )
 
-        return list(schema.values())
+        return schema
 
     def run_query(self, query, user):
         logger.debug("BigQuery got query: %s", query)
@@ -338,20 +339,19 @@ class BigQuery(BaseQueryRunner):
 
         try:
             if "totalMBytesProcessedLimit" in self.configuration:
-                limitMB = self.configuration["totalMBytesProcessedLimit"]
-                processedMB = self._get_total_bytes_processed(jobs, query) / 1000.0 / 1000.0
-                if limitMB < processedMB:
+                limit_mb = self.configuration["totalMBytesProcessedLimit"]
+                processed_mb = self._get_total_bytes_processed(jobs, query) / 1000.0 / 1000.0
+                if limit_mb < processed_mb:
                     return (
                         None,
-                        "Larger than %d MBytes will be processed (%f MBytes)" % (limitMB, processedMB),
+                        "Larger than %d MBytes will be processed (%f MBytes)" % (limit_mb, processed_mb),
                     )
 
             data = self._get_query_result(jobs, query)
             error = None
 
-            json_data = json_dumps(data, ignore_nan=True)
         except apiclient.errors.HttpError as e:
-            json_data = None
+            data = None
             if e.resp.status in [400, 404]:
                 error = json_loads(e.content)["error"]["message"]
             else:
@@ -366,7 +366,7 @@ class BigQuery(BaseQueryRunner):
 
             raise
 
-        return json_data, error
+        return data, error
 
 
 register(BigQuery)

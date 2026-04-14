@@ -1,6 +1,7 @@
-## API for Models
+# API for Models
 
 - Create `model` endpoint
+
 ```bash
 POST http://{host}/api/models
 
@@ -81,7 +82,7 @@ Status: 200 (Ok)
     "user_id": model.user_id,
     "data_source_id": model.data_source_id,
     "table": model.table,
-    "model_config_id": : model.config.id ,
+    "model_config_id": model.config.id,
     "created_at": model.created_at,
     "updated_at": model.updated_at,
 }
@@ -94,7 +95,7 @@ Example
     "table": "users",
     "model_config_id": 3,
     "created_at": "2021-04-30T14:34:25.096Z",
-    "updated_at": "2021-04-30T14:34:25.096Z"
+    "updated_at": "2021-04-30T14:34:25.096Z",
 }
 
 
@@ -124,6 +125,7 @@ Status: 200 (Ok)
     "updated_at": model.updated_at,
 }
 ```
+
 - Edit `model` by it's id
 
 ```bash
@@ -154,6 +156,7 @@ Status: 200 (Ok)
     "updated_at": model.updated_at,
 }
 ```
+
 - Delete `model` by it's id
 
 ```bash
@@ -178,6 +181,7 @@ Status: 204 (No Content)
 ```
 
 - Get current user's `models`
+
 ```bash
 GET http://{host}/api/models?page=1&page_size=25
 

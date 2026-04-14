@@ -22,12 +22,8 @@ import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures
 import { MessageCard } from "../message-card/message-card";
 import { ManualFallback } from "./manual-fallback";
 
-const renderFallback = () => shallow(
-  <ManualFallback
-    clicker={null}
-    essence={EssenceFixtures.wikiLineChartNoSplits()}
-  />
-);
+const renderFallback = () =>
+  shallow(<ManualFallback clicker={null} essence={EssenceFixtures.wikiLineChartNoSplits()} />);
 
 describe("ManualFallback", () => {
   it("should render MessageCard", () => {
@@ -58,7 +54,7 @@ describe("ManualFallback", () => {
     expect(firstResolution.text()).to.be.equal("Add a split on Time");
   });
 
-  it("should render resolutions", () => {
+  it("should render resolutions again", () => {
     const fallback = renderFallback();
     const secondResolution = fallback.find(".resolution-item").at(1);
 

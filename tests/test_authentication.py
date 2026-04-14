@@ -272,7 +272,7 @@ class TestRedirectToUrlAfterLoggingIn(BaseTestCase):
 
     def test_starts_scheme_url_in_next_param(self):
         response = self.post_request(
-            "/login?next=https://redash.io",
+            "/login?next=https://datareporter.com",
             data={"email": self.user.email, "password": self.password},
             org=self.factory.org,
         )
@@ -280,7 +280,7 @@ class TestRedirectToUrlAfterLoggingIn(BaseTestCase):
 
     def test_without_scheme_url_in_next_param(self):
         response = self.post_request(
-            "/login?next=//redash.io",
+            "/login?next=//datareporter.com",
             data={"email": self.user.email, "password": self.password},
             org=self.factory.org,
         )

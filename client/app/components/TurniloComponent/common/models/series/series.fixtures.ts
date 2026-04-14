@@ -21,7 +21,7 @@ import { DEFAULT_FORMAT } from "./series-format";
 export function measureSeries(reference: string, format = DEFAULT_FORMAT): MeasureSeries {
   return new MeasureSeries({
     reference,
-    format
+    format,
   });
 }
 
@@ -29,6 +29,6 @@ export function quantileSeries(reference: string, percentile = 95, format = DEFA
   return new QuantileSeries({
     reference,
     percentile,
-    format
+    format,
   });
 }

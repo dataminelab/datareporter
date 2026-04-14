@@ -23,41 +23,36 @@ import { AppSettings } from "./app-settings";
 import { AppSettingsFixtures } from "./app-settings.fixtures";
 
 describe("AppSettings", () => {
-  var context = AppSettingsFixtures.getContext();
+  const context = AppSettingsFixtures.getContext();
 
   it("is an immutable class", () => {
-    testImmutableClass(
-      AppSettings,
-      [
-        AppSettingsFixtures.wikiOnlyJS(),
-        AppSettingsFixtures.wikiTwitterJS()
-      ],
-      { context });
+    testImmutableClass(AppSettings, [AppSettingsFixtures.wikiOnlyJS(), AppSettingsFixtures.wikiTwitterJS()], {
+      context,
+    });
   });
 
   describe("errors", () => {
     it("errors if there is no matching cluster", () => {
-      var js = AppSettingsFixtures.wikiOnlyJS();
+      const js = AppSettingsFixtures.wikiOnlyJS();
       js.clusters = [];
       expect(() => AppSettings.fromJS(js, context)).to.throw("Can not find cluster 'druid-wiki' for data cube 'wiki'");
     });
-
   });
 
   describe.skip("back compat", () => {
     it("works with dataSources", () => {
-      var oldJS: any = AppSettingsFixtures.wikiOnlyJS();
+      const oldJS: any = AppSettingsFixtures.wikiOnlyJS();
       oldJS.dataSources = oldJS.dataCubes;
       delete oldJS.dataCubes;
       expect(AppSettings.fromJS(oldJS, context).toJS()).to.deep.equal(AppSettingsFixtures.wikiOnlyJS());
     });
 
     it("deals with old config style", () => {
-      var wikiDataCubeJS = DataCubeFixtures.WIKI_JS;
+      const wikiDataCubeJS = DataCubeFixtures.WIKI_JS;
       delete wikiDataCubeJS.clusterName;
       (wikiDataCubeJS as any).engine = "druid";
 
-      var oldJS: any = {
+      const oldJS: any = {
         customization: {},
         druidHost: "192.168.99.100",
         timeout: 30003,
@@ -65,9 +60,7 @@ describe("AppSettings", () => {
         sourceListRefreshInterval: 10001,
         sourceReintrospectInterval: 10002,
         sourceReintrospectOnLoad: true,
-        dataSources: [
-          wikiDataCubeJS
-        ]
+        dataSources: [wikiDataCubeJS],
       };
 
       expect(AppSettings.fromJS(oldJS, context).toJS().clusters).to.deep.equal([
@@ -79,18 +72,16 @@ describe("AppSettings", () => {
           sourceListScan: "auto",
           sourceReintrospectInterval: 10002,
           sourceReintrospectOnLoad: true,
-          timeout: 30003
-        }
+          timeout: 30003,
+        },
       ]);
     });
 
     it("deals with old config style no sourceListScan=disabled", () => {
-      var oldJS: any = {
+      const oldJS: any = {
         druidHost: "192.168.99.100",
         sourceListScan: "disable",
-        dataSources: [
-          { ...DataCubeFixtures.WIKI_JS, clusterName: "druid" }
-        ]
+        dataSources: [{ ...DataCubeFixtures.WIKI_JS, clusterName: "druid" }],
       };
 
       expect(AppSettings.fromJS(oldJS, context).toJS().clusters).to.deep.equal([
@@ -98,11 +89,10 @@ describe("AppSettings", () => {
           host: "192.168.99.100",
           name: "druid",
           sourceListScan: "disable",
-          type: "druid"
-        }
+          type: "druid",
+        },
       ]);
     });
-
   });
 
   describe("general", () => {
@@ -110,7 +100,7 @@ describe("AppSettings", () => {
       expect(AppSettings.BLANK.toJS()).to.deep.equal({
         clusters: [],
         customization: {},
-        dataCubes: []
+        dataCubes: [],
       });
     });
 
@@ -121,50 +111,46 @@ describe("AppSettings", () => {
         clusters: [
           {
             name: "druid-wiki",
-            timeout: 30000
-          }
+            timeout: 30000,
+          },
         ],
         customization: {
           customLogoSvg: "ansvgstring",
           headerBackground: "brown",
-          title: "Hello World"
+          title: "Hello World",
         },
         dataCubes: [
           {
             attributes: [
               {
                 name: "time",
-                type: "TIME"
+                type: "TIME",
               },
               {
                 name: "articleName",
-                type: "STRING"
+                type: "STRING",
               },
               {
                 name: "page",
-                type: "STRING"
+                type: "STRING",
               },
               {
                 name: "userChars",
-                type: "SET/STRING"
+                type: "SET/STRING",
               },
               {
                 maker: {
-                  op: "count"
+                  op: "count",
                 },
                 name: "count",
                 type: "NUMBER",
-                unsplitable: true
-              }
+                unsplitable: true,
+              },
             ],
             clusterName: "druid-wiki",
             defaultDuration: "P3D",
-            defaultPinnedDimensions: [
-              "articleName"
-            ],
-            defaultSelectedMeasures: [
-              "count"
-            ],
+            defaultPinnedDimensions: ["articleName"],
+            defaultSelectedMeasures: ["count"],
             defaultSortMeasure: "count",
             defaultTimezone: "Etc/UTC",
             description: "Wiki full description something about articles and editors",
@@ -173,19 +159,19 @@ describe("AppSettings", () => {
                 formula: "$time",
                 kind: "time",
                 name: "time",
-                title: "Time"
+                title: "Time",
               },
               {
                 kind: "string",
                 name: "country",
                 title: "Country",
-                formula: "$country"
+                formula: "$country",
               },
               {
                 formula: "$channel",
                 kind: "string",
                 name: "channel",
-                title: "Channel"
+                title: "Channel",
               },
               {
                 name: "comment_group",
@@ -195,64 +181,64 @@ describe("AppSettings", () => {
                     kind: "string",
                     name: "comment",
                     title: "Comment",
-                    formula: "$comment"
+                    formula: "$comment",
                   },
                   {
                     kind: "number",
                     name: "commentLength",
                     title: "Comment Length",
-                    formula: "$commentLength"
+                    formula: "$commentLength",
                   },
                   {
                     kind: "boolean",
                     name: "commentLengthOver100",
                     title: "Comment Length Over 100",
-                    formula: "$commentLength > 100"
-                  }
-                ]
+                    formula: "$commentLength > 100",
+                  },
+                ],
               },
               {
                 formula: "$isRobot",
                 kind: "string",
                 name: "isRobot",
-                title: "Is Robot"
+                title: "Is Robot",
               },
               {
                 kind: "string",
                 name: "namespace",
                 title: "Namespace",
-                formula: "$namespace"
+                formula: "$namespace",
               },
               {
                 formula: "$articleName",
                 kind: "string",
                 name: "articleName",
-                title: "Article Name"
+                title: "Article Name",
               },
               {
                 formula: "$page",
                 kind: "string",
                 name: "page",
-                title: "Page"
+                title: "Page",
               },
               {
                 formula: "$page.lookup(page_last_author)",
                 kind: "string",
                 name: "page_last_author",
-                title: "Page Author"
+                title: "Page Author",
               },
               {
                 formula: "$userChars",
                 kind: "string",
                 name: "userChars",
-                title: "User Chars"
-              }
+                title: "User Chars",
+              },
             ],
             measures: [
               {
                 formula: "$main.sum($count)",
                 name: "count",
-                title: "Count"
+                title: "Count",
               },
               {
                 name: "other",
@@ -265,14 +251,14 @@ describe("AppSettings", () => {
                       {
                         name: "added",
                         title: "Added",
-                        formula: "$main.sum($added)"
+                        formula: "$main.sum($added)",
                       },
                       {
                         name: "avg_added",
                         title: "Avg Added",
-                        formula: "$main.average($added)"
-                      }
-                    ]
+                        formula: "$main.average($added)",
+                      },
+                    ],
                   },
                   {
                     name: "delta_group",
@@ -281,32 +267,30 @@ describe("AppSettings", () => {
                       {
                         name: "delta",
                         title: "Delta",
-                        formula: "$main.sum($delta)"
+                        formula: "$main.sum($delta)",
                       },
                       {
                         name: "avg_delta",
                         title: "Avg Delta",
-                        formula: "$main.average($delta)"
-                      }
-                    ]
-                  }
-                ]
-              }
+                        formula: "$main.average($delta)",
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
             name: "wiki",
             refreshRule: {
               rule: "fixed",
-              time: new Date("2016-04-30T12:39:51.350Z")
+              time: new Date("2016-04-30T12:39:51.350Z"),
             },
             maxSplits: 4,
             source: "wiki",
             timeAttribute: "time",
-            title: "Wiki"
-          }
-        ]
+            title: "Wiki",
+          },
+        ],
       });
     });
-
   });
-
 });

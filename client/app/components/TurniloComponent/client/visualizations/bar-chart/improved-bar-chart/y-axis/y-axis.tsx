@@ -15,7 +15,7 @@
  */
 
 import * as d3 from "d3";
-import { Dataset } from "plywood";
+import { Dataset, Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { Stage } from "../../../../../common/models/stage/stage";
@@ -30,23 +30,22 @@ interface YAxisProps {
   essence: Essence;
 }
 
-export const YAxis: React.SFC<YAxisProps> = props => {
+export const YAxis: React.SFC<YAxisProps> = (props) => {
   const { essence, stage, dataset } = props;
   const seriesList = essence.getConcreteSeries().toArray();
   const datums = selectFirstSplitDatums(dataset);
   const axisStage = calculateYAxisStage(stage);
-  return <React.Fragment>
-    {seriesList.map(series => {
-      const extent = d3.extent(datums, datum => series.selectValue(datum));
-      const scale = getScale(extent, axisStage.height);
-      return <div
-        style={stage.getWidthHeight()}
-        key={series.reactKey()}>
-        {scale && <SingleYAxis
-          series={series}
-          scale={scale}
-          stage={axisStage} />}
-      </div>;
-    })}
-  </React.Fragment>;
+  return (
+    <React.Fragment>
+      {seriesList.map((series) => {
+        const extent = d3.extent(datums, (datum: Datum) => series.selectValue(datum));
+        const scale = getScale(extent, axisStage.height);
+        return (
+          <div style={stage.getWidthHeight()} key={series.reactKey()}>
+            {scale && <SingleYAxis series={series} scale={scale} stage={axisStage} />}
+          </div>
+        );
+      })}
+    </React.Fragment>
+  );
 };

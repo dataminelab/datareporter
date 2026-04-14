@@ -30,7 +30,14 @@ interface HighlightModalProps {
   acceptHighlight: Fn;
 }
 
-export const HighlightModal: React.SFC<HighlightModalProps> = ({ title, children, left, top, acceptHighlight, dropHighlight }) =>
+export const HighlightModal: React.SFC<HighlightModalProps> = ({
+  title,
+  children,
+  left,
+  top,
+  acceptHighlight,
+  dropHighlight,
+}) => (
   <ModalBubble className="highlight-modal" left={left} top={top} onClose={dropHighlight}>
     <BubbleTitle title={title} />
     <div className="value">{children}</div>
@@ -38,4 +45,5 @@ export const HighlightModal: React.SFC<HighlightModalProps> = ({ title, children
       <Button type="primary" className="accept mini" onClick={acceptHighlight} title={STRINGS.select} />
       <Button type="secondary" className="drop mini" onClick={dropHighlight} title={STRINGS.cancel} />
     </div>
-  </ModalBubble>;
+  </ModalBubble>
+);

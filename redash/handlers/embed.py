@@ -15,6 +15,31 @@ from .authentication import current_org
 
 
 @routes.route(
+    org_scoped_rule("/embed/report/<report_id>/visualization/<visualization_id>"),
+    methods=["GET"],
+)
+@routes.route(
+    org_scoped_rule("/embed/report/<report_id>"),
+    methods=["GET"],
+)
+@login_required
+@csp_allows_embeding
+def embed_report(report_id, visualization_id=None, org_slug=None):
+    record_event(
+        current_org,
+        current_user._get_current_object(),
+        {
+            "action": "view",
+            "object_id": report_id,
+            "object_type": "report",
+            "embed": True,
+            "referer": request.headers.get("Referer"),
+        },
+    )
+    return render_index()
+
+
+@routes.route(
     org_scoped_rule("/embed/query/<query_id>/visualization/<visualization_id>"),
     methods=["GET"],
 )

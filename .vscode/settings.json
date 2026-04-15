@@ -15,6 +15,9 @@
     "reportUnknownVariableType": "information"
   },
   "githubPullRequests.ignoredPullRequestBranches": ["develop"],
-  "python-envs.defaultEnvManager": "ms-python.python:poetry",
-  "python-envs.defaultPackageManager": "ms-python.python:poetry"
+  "python-envs.defaultEnvManager": "ms-python.python:venv",
+  "python-envs.defaultPackageManager": "ms-python.python:pip",
+  "chat.tools.terminal.autoApprove": {
+    "./node_modules/.bin/mocha": true
+  }
 }

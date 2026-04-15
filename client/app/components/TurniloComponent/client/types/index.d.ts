@@ -51,6 +51,11 @@ declare module "*.svg" {
   export default content;
 }
 
+declare module "*.scss" {
+  const content: string;
+  export default content;
+}
+
 declare module "has-own-prop" {
   function hasOwnProp(obj: any, prop: string | number | symbol): boolean;
   export default hasOwnProp;

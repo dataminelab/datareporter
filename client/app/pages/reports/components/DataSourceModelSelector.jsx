@@ -50,7 +50,7 @@ export default function DataSourceModelSelector({
     const dataSource = getDataSource(report.data_source_id);
     if (!dataSource) {
       button = (
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div className="data-source-box m-r-5">
           <Select
             data-test="SelectModel"
             placeholder="Choose model data source..."
@@ -58,7 +58,6 @@ export default function DataSourceModelSelector({
             optionFilterProp="data-name"
             showSearch
             ref={modelSelectElement}
-            style={{ flex: 1 }}
           >
             <Select.Option
               key={`no-ds`}
@@ -69,26 +68,17 @@ export default function DataSourceModelSelector({
               <span>No Data Source</span>
             </Select.Option>
           </Select>
-          <Button
-            type="primary"
-            icon={<RightOutlined />}
-            onClick={handleArrowClick}
-            disabled={!selectedModel && !report.model_id}
-            style={{ marginLeft: 8 }}
-            data-test="LoadModelButton"
-          />
         </div>
       );
     } else if (dataSource.name === "json") {
       button = (
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div className="data-source-box m-r-5">
           <Input
             ref={modelInputRef}
             data-test="InputModel"
             placeholder="Enter JSON model..."
             value={selectedModel}
             onChange={handleJsonModelChange}
-            style={{ flex: 1 }}
           />
           <Button
             type="primary"
@@ -118,7 +108,6 @@ export default function DataSourceModelSelector({
           showSearch
           ref={modelSelectElement}
           onChange={handleModelChange}
-          style={{ flex: 1 }}
         >
           {map(models, m => (
             <Select.Option
@@ -153,7 +142,8 @@ export default function DataSourceModelSelector({
           disabled={
             !reportFlags.canEdit ||
             !dataSourcesLoaded ||
-            dataSources.length === 0
+            dataSources.length === 0 ||
+            selectedModel
           }
           loading={!dataSourcesLoaded}
           optionFilterProp="data-name"
@@ -202,4 +192,5 @@ DataSourceModelSelector.propTypes = {
   getSettings: PropTypes.func.isRequired,
   getModelDataCube: PropTypes.func.isRequired,
   handleDataSourceChange: PropTypes.func.isRequired,
+  handleModelChange: PropTypes.func.isRequired,
 };

@@ -128,7 +128,7 @@ export class Measures {
     return this.measures.map(measureOrGroup => measureOrGroup.accept(visitor));
   }
 
-  size(): int {
+  size(): number {
     return this.flattenedMeasures.size;
   }
 

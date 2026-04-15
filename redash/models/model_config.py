@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from redash.plywood.objects.data_cube import DataCube
 
@@ -30,30 +30,21 @@ class ModelConfig(ChangeTrackingMixin, TimestampMixin, db.Model):
         return cls.query.filter(cls.id == _id).one()
 
     @classmethod
-    def get_model_config(cls, model_id):
+    def get_model_config(cls, model_id) -> Union[None, "ModelConfig"]:
         model: Model = Model.get_by_id(model_id)
         if not model:
-            return False
+            return None
         models: list[Model] = Model.query.filter(Model.data_source_id == model.data_source_id).all()
-        data_cubes: List[DataCube.data_cube] = []
-        table_names: list[str] = []
-        cluster_names: set[str] = set()
-
-        for model in models:
-            cube = DataCube(model).data_cube
-            if cube is None:
-                continue
-            if cube["name"] not in table_names:
-                table_names.append(cube["name"])
-                data_cubes.append(cube)
-                # Collect cluster names from data cubes
-                if "clusterName" in cube:
-                    cluster_names.add(cube["clusterName"])
-
-        # Build cluster objects from collected cluster names
-        clusters = []
-        for cluster_name in cluster_names:
-            if cluster_name != "native":  # native is a special case, doesn't need a cluster object
-                clusters.append({"name": cluster_name, "type": cluster_name})
-
-        return {"dataCubes": data_cubes, "clusters": clusters, "customization": {}, "timekeeper": {}}
+        data_cubes: List[DataCube] = [d for d in [DataCube(m).data_cube for m in models] if d is not None]
+        cluster_names: set[str] = set(
+            [cube["clusterName"] for cube in data_cubes if "clusterName" in cube]
+        )  # native is a special case, doesn't need a cluster object
+        clusters: list[dict] = [
+            {"name": c, "type": c} for c in cluster_names if c != "native"
+        ]  # native is a special case, doesn't need a cluster object
+        return {
+            "dataCubes": [DataCube(model).data_cube],
+            "clusters": clusters,
+            "customization": {},
+            "timekeeper": {},
+        }  # type: ignore

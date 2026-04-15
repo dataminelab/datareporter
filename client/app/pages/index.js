@@ -31,7 +31,6 @@ import "./queries/VisualizationEmbed";
 
 import "./reports-list/ReportsList";
 import "./reports/ReportSource";
-import "./reports/ReportView";
 import "./reports/VisualizationEmbed";
 import "./reports/PublicReportPage";
 

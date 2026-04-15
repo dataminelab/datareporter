@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: "3.10"
       - run: python -m ensurepip --upgrade
-      - run: sudo pip install black==23.1.0 ruff==0.0.287
+      - run: sudo pip install black==26.3.1 ruff
       - run: ruff check .
       - run: black --check .
   backend-unit-tests:
@@ -335,7 +335,7 @@ jobs:
               find cypress/e2e -name '*.cy.js' | head -10
               echo ''
               echo '=== Running Cypress Tests ==='
-              npx cypress run --reporter spec --browser chrome
+              npx cypress run --reporter spec --browser chrome --record
               exit \$?
             " > ../test-artifacts/cypress-logs.txt 2>&1
 

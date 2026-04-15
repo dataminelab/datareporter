@@ -58,6 +58,15 @@ export default class DefaultPolicy {
     return isArray(result) ? result : null;
   }
 
+  getReportRefreshIntervals() {
+    const result = clientConfig.reportRefreshIntervals;
+    if (isArray(result)) {
+      return result;
+    }
+
+    return this.getQueryRefreshIntervals();
+  }
+
   canEdit(object) {
     return get(object, "can_edit", false);
   }

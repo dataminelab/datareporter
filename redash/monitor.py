@@ -4,7 +4,7 @@ from rq.job import Job
 from rq.registry import StartedJobRegistry
 
 from redash import __version__, redis_connection, rq_redis_connection, settings
-from redash.models import Dashboard, Query, QueryResult, Widget, db
+from redash.models import Dashboard, Query, QueryResult, Report, Widget, db
 
 
 def get_redis_status():
@@ -18,6 +18,7 @@ def get_redis_status():
 def get_object_counts():
     status = {}
     status["queries_count"] = Query.query.count()
+    status["reports_count"] = Report.query.count()
     if settings.FEATURE_SHOW_QUERY_RESULTS_COUNT:
         status["query_results_count"] = QueryResult.query.count()
         status["unused_query_results_count"] = QueryResult.unused(settings.QUERY_RESULTS_CLEANUP_MAX_AGE).count()

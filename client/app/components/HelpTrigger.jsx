@@ -14,7 +14,7 @@ import DynamicComponent, {
 
 import "./HelpTrigger.less";
 
-const DOMAIN = "https://datareporter.com";
+const DOMAIN = "https://www.datareporter.com";
 const HELP_PATH = "/docs";
 const IFRAME_TIMEOUT = 20000;
 const IFRAME_URL_UPDATE_MESSAGE = "iframe_url";

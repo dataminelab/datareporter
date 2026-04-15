@@ -66,7 +66,12 @@ def send_failure_report(user_id):
 
 
 def notify_of_failure(message, query):
-    subscribed = query.org.get_setting("send_email_on_failed_scheduled_queries")
+    org = getattr(query, "org", None) or (query.user and query.user.org)
+    if org is None:
+        logger.warning("Skipping failure notification: unable to resolve org for object id=%s", query.id)
+        return
+
+    subscribed = org.get_setting("send_email_on_failed_scheduled_queries")
     exceeded_threshold = query.schedule_failures >= settings.MAX_FAILURE_REPORTS_PER_QUERY
 
     if subscribed and not query.user.is_disabled and not exceeded_threshold:

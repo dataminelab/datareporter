@@ -244,6 +244,12 @@ export class Report extends Query {
   setResults(report) {
     const results = report.results;
     if (!results) return 0;
+    this.reportResult = new ReportResult(results);
+    this.latest_report_data = this.reportResult.query_result || null;
+    this.latest_report_data_id = this.latest_report_data
+      ? this.latest_report_data.id
+      : null;
+
     // if (results.progress.progress < 100) return 0;
     for (let i = 0; i < results.queries.length; i++) {
       const query = results.queries[i];
@@ -326,7 +332,7 @@ export class Report extends Query {
     if (this.latest_report_data && maxAge !== 0) {
       if (!this.reportResult) {
         this.reportResult = new ReportResult({
-          report_result: this.latest_report_data,
+          query_result: this.latest_report_data,
         });
       }
     } else if (this.latest_report_data_id && maxAge !== 0) {
@@ -344,12 +350,7 @@ export class Report extends Query {
   }
 
   getReportResult(maxAge) {
-    const execute = () =>
-      ReportResult.getByReportId(
-        this.id,
-        this.getParameters().getExecutionValues(),
-        maxAge,
-      );
+    const execute = () => ReportResult.getByReport(this, maxAge);
     return this.prepareReportResultExecution(execute, maxAge);
   }
 
@@ -450,6 +451,7 @@ export class Report extends Query {
   }
 
   executeQuery(query) {
+    // eslint-disable-line no-unused-vars
     // TODO: Use Ajax.queryUrlExecutorFactory
   }
 
@@ -469,7 +471,9 @@ export class Report extends Query {
   }
 
   onExecutionStatusChange(status) {
-    this.triggerExecution(status);
+    if (typeof this.triggerExecution === "function") {
+      this.triggerExecution(status);
+    }
   }
 
   setTriggerExecution(triggerFn) {
@@ -500,6 +504,7 @@ const normalizeCondition = {
   "equals": "=",
 };
 const transformResponse = data => {
+  // eslint-disable-line no-unused-vars
   merge({}, data, {
     options: {
       op: normalizeCondition[data.options.op] || data.options.op,
@@ -517,11 +522,14 @@ function transformPublicState(report) {
 
 const ReportService = {
   report: params => axios.get("api/reports", { params }).then(mapResults),
-  get: data =>
-    axios
-      .get("api/reports/" + data.id)
+  get: data => {
+    const { id, params } = data;
+
+    return axios
+      .get("api/reports/" + id, { params })
       .then(getReport)
-      .then(transformPublicState),
+      .then(transformPublicState);
+  },
   save: data => axios.post(saveOrCreateUrl(data), data).then(getReport),
   saveAs: data => axios.post("api/reports", data).then(getReport),
   delete: data =>

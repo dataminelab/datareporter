@@ -25,8 +25,10 @@ function downloadCSV(data) {
   link.setAttribute("href", encodedUri);
   // TODO: use report name
   link.setAttribute("download", "data.csv");
-  document.body.appendChild(link);
-  link.click();
+  if (document.body) {
+    document.body.appendChild(link);
+    link.click();
+  }
 }
 
 function getExtraOptions(report) {

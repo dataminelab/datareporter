@@ -34,6 +34,31 @@ Cypress.Commands.add("createReport", data => {
   );
 });
 
+Cypress.Commands.add("createReportDraft", data => {
+  const merged = extend(
+    {
+      color_1: "#f17013",
+      color_2: "#000",
+      data_source_id: 1,
+      expression:
+        "N4IgbglgzgrghgGwgLzgFwgewHYgFwhqZqJQgA0408SqGOAygKZobYDmZe2MCClGALZNkOJvhABRNAGMA9AFUAKgGEKIAGYQEaJgCcuAbVBoAngAdxBIeMp6mGiTPvomAEwD66dTYAK+rDcjUDcYPXQsXAJfAEYAEXUoXXN8AFoYgQsrEARXJJAAXwBdYsoocyQ0IyKygKZgkHsNfSZsGWy3dDgPKEww9o8IN3UNTD1BbzwTLIk3BzheNHUwRBhswszLCWE4WHtCmpBzCGxsdziIYWwoSOrKY9P3BjGlgk6SHr69AaHCoA==",
+      model_id: 1,
+      name: "New Report",
+    },
+    data,
+  );
+
+  return post({ url: "/api/reports", body: merged }).then(({ body }) => body);
+});
+
+Cypress.Commands.add("publishReportAPI", reportId => {
+  return post({ url: `/api/reports/${reportId}`, body: { is_draft: false } });
+});
+
+Cypress.Commands.add("unpublishReportAPI", reportId => {
+  return post({ url: `/api/reports/${reportId}`, body: { is_draft: true } });
+});
+
 Cypress.Commands.add("createQuery", (data, shouldPublish = true) => {
   const merged = extend(
     {

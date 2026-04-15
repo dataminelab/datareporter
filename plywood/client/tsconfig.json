@@ -18,7 +18,8 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "sourceMap": false
+    "sourceMap": true,
+    "inlineSources": true
   },
   "include": ["typings/private.d.ts", "src/**/*.ts"]
 }

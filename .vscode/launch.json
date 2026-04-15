@@ -51,25 +51,31 @@
       "request": "attach",
       "name": "Attach to Plywood Server",
       "port": 9229,
-      // cd plywood/server
-      // npm run dev:debug
       "address": "localhost",
-      "localRoot": "${workspaceFolder}",
-      "remoteRoot": "${workspaceFolder}",
-      "skipFiles": ["<node_internals>/**"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Jest Debug",
-      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
-      "args": ["--runInBand", "--testPathPattern=${fileBasenameNoExtension}"],
-      "cwd": "${workspaceFolder}/client",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "env": {
-        "TZ": "Africa/Khartoum"
-      }
+      "cwd": "${workspaceFolder}/plywood",
+      "restart": true,
+      "smartStep": true,
+      "autoAttachChildProcesses": true,
+      "localRoot": "${workspaceFolder}/plywood",
+      "remoteRoot": "${workspaceFolder}/plywood",
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/plywood/**/*.js",
+        "${workspaceFolder}/plywood/node_modules/reporter-plywood/**/*.js"
+      ],
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${workspaceFolder}/plywood/*",
+        "webpack:///*": "${workspaceFolder}/plywood/*",
+        "../../src/*": "${workspaceFolder}/plywood/client/src/*",
+        "../src/*": "${workspaceFolder}/plywood/client/src/*",
+        "src/*": "${workspaceFolder}/plywood/client/src/*",
+        "*/node_modules/reporter-plywood/src/*": "${workspaceFolder}/plywood/client/src/*",
+        "/src/*": "${workspaceFolder}/plywood/src/*",
+        "/*": "${workspaceFolder}/plywood/*"
+      },
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "type": "node",
@@ -88,7 +94,7 @@
   "compounds": [
     {
       "name": "Python: Remote",
-      "configurations": ["Python Debugger: Remote Attach"]
+      "configurations": ["Server Debugger: Remote Attach"]
     },
     {
       "name": "Node: Attach",

@@ -13,6 +13,8 @@ import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
 import EllipsisOutlinedIcon from "@ant-design/icons/EllipsisOutlined";
+import { ShareAltOutlined } from "@ant-design/icons";
+import PlusCircleFilledIcon from "@ant-design/icons/PlusCircleFilled";
 import useMedia from "use-media";
 import Link from "@/components/Link";
 import EditInPlace from "@/components/EditInPlace";
@@ -22,7 +24,6 @@ import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 import useReportFlags from "../hooks/useReportFlags";
 import useArchiveReport from "../hooks/useArchiveReport";
-import useDeleteReport from "../hooks/useDeleteReport";
 import usePublishReport from "../hooks/usePublishReport";
 import useUnpublishReport from "../hooks/useUnpublishReport";
 import useDuplicateReport from "../hooks/useDuplicateReport";
@@ -45,6 +46,8 @@ import getTags from "@/services/getTags";
 import { reportPageStyles } from "./reportPageStyles";
 import DataSourceModelSelector from "./DataSourceModelSelector.jsx";
 import { Report as ReportType } from "@/components/proptypes";
+import useEmbedDialog from "@/pages/reports/hooks/useEmbedDialog";
+import useAddToDashboardDialog from "@/pages/reports/hooks/useAddToDashboardDialog";
 
 function getQueryTags() {
   return getTags("api/reports/tags").then(tags => map(tags, t => t.name));
@@ -118,17 +121,17 @@ export function setColorElements(chartTextColor, chartColor, chartBorderColor) {
 export default function ReportPageHeader(props) {
   const isMountedRef = useRef(true);
   const isDesktop = useMedia({ minWidth: 768 });
-  const { report, setReport, saveReport, saveAsReport, showShareReportDialog } =
-    useReport(props.report);
+  const { report, setReport, saveReport } = useReport(props.report);
   const queryFlags = useReportFlags(report, props.dataSource);
   const updateTags = useUpdateReportTags(report, setReport);
   const archiveReport = useArchiveReport(report, setReport);
-  const deleteReport = useDeleteReport(report, setReport);
   const publishReport = usePublishReport(report, setReport);
   const unpublishReport = useUnpublishReport(report, setReport);
   const [isDuplicating, duplicateReport] = useDuplicateReport(report);
   const openApiKeyDialog = useApiKeyDialog(report, setReport);
   const openPermissionsEditorDialog = usePermissionsEditorDialog(report);
+  const openEmbedDialog = useEmbedDialog(report);
+  const openAddToDashboardDialog = useAddToDashboardDialog(report);
   const { dataSourcesLoaded, dataSources, dataSource } =
     useReportDataSources(report);
   const [models, setModels] = useState([]);
@@ -144,7 +147,6 @@ export default function ReportPageHeader(props) {
   const reportChanged = props.reportChanged;
   const setReportChanged = props.setReportChanged;
   const [reportName, setReportName] = useState(report.name);
-  const [newName, setNewName] = useState("Copy of " + report.name);
   const [saveButtonClicked, setSaveButtonClicked] = useState(false);
   const modelSelectElement = useRef();
   const modelSelectElementText = useRef("");
@@ -157,10 +159,6 @@ export default function ReportPageHeader(props) {
     },
     [report.data_source_id, report.model_id, setReportChanged],
   );
-
-  const handleNewNameChange = event => {
-    setNewName(event.target.value);
-  };
 
   const styles = useMemo(
     () => reactCSS(reportPageStyles(colorTextHex, colorBodyHex)),
@@ -235,7 +233,6 @@ export default function ReportPageHeader(props) {
     newModels = res.results;
     const updates = {
       data_source_id,
-      landed: false,
     };
     setModels(newModels);
     return updates;
@@ -298,13 +295,13 @@ export default function ReportPageHeader(props) {
 
   const getSettings = useCallback(
     async modelId => {
-      if (report.landed) {
+      if (!report.isNew() && report.appSettings) {
         return { appSettings: report.appSettings, timekeeper: {} };
       } else {
         return await Model.getReporterConfig(modelId);
       }
     },
-    [report.landed, report.appSettings],
+    [report],
   );
 
   const getModelDataCube = useCallback(
@@ -341,7 +338,6 @@ export default function ReportPageHeader(props) {
           model_id: modelId,
           appSettings: settings,
           timekeeper: settings.timekeeper,
-          landed: false,
         };
         if (report.data_source_id) {
           updates.data_source_id = report.data_source_id;
@@ -378,7 +374,6 @@ export default function ReportPageHeader(props) {
   const handleUpdateName = useCallback(
     name => {
       setReportName(name);
-      setNewName("Copy of " + name);
       handleReportChanged(true);
     },
     [handleReportChanged],
@@ -446,9 +441,35 @@ export default function ReportPageHeader(props) {
     () =>
       createMenu([
         {
+          addToDashboard: {
+            isAvailable:
+              !queryFlags.isNew &&
+              (!queryFlags.isDraft || !queryFlags.isArchived),
+            title: (
+              <React.Fragment>
+                <PlusCircleFilledIcon /> Add to Dashboard
+              </React.Fragment>
+            ),
+            onClick: () =>
+              openAddToDashboardDialog(props.selectedVisualization),
+          },
+        },
+        {
           fork: {
             isEnabled:
               !queryFlags.isNew && queryFlags.canFork && !isDuplicating,
+            title: (
+              <React.Fragment>
+                <ShareAltOutlined data-test="ShowEmbedDialogButton" /> Embed
+                Elsewhere
+              </React.Fragment>
+            ),
+            onClick: () => openEmbedDialog(report, props.selectedVisualization),
+          },
+        },
+        {
+          share: {
+            isEnabled: !queryFlags.isNew,
             title: (
               <React.Fragment>
                 Fork{" "}
@@ -457,19 +478,6 @@ export default function ReportPageHeader(props) {
               </React.Fragment>
             ),
             onClick: duplicateReport,
-          },
-        },
-        {
-          save: {
-            isAvailable: queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Save",
-            onClick: handleSaveReport,
-          },
-          saveAs: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Save As",
-            onClick: () => handleGivenModal("save-as-ul"),
           },
         },
         {
@@ -507,20 +515,6 @@ export default function ReportPageHeader(props) {
             title: "Unpublish",
             onClick: unpublishReport,
           },
-          delete: {
-            isAvailable: !queryFlags.isNew && queryFlags.canEdit,
-            title: "Delete",
-            onClick: deleteReport,
-          },
-          share: {
-            isAvailable:
-              report.publicAccessEnabled &&
-              !queryFlags.isNew &&
-              queryFlags.canEdit &&
-              !queryFlags.isArchived,
-            title: "Share",
-            onClick: showShareReportDialog,
-          },
         },
         {
           downloadCSV: {
@@ -540,18 +534,9 @@ export default function ReportPageHeader(props) {
         },
         {
           showAPIKey: {
-            isAvailable:
-              !queryFlags.isNew &&
-              queryFlags.canEdit &&
-              !clientConfig.disablePublicUrls,
+            isAvailable: !clientConfig.disablePublicUrls && !queryFlags.isNew,
             title: "Show API Key",
             onClick: openApiKeyDialog,
-          },
-          sessionCost: {
-            isAvailable:
-              !queryFlags.isNew && queryFlags.canEdit && !queryFlags.isArchived,
-            title: "Show Session Cost",
-            onClick: () => handleGivenModal("meta-modal"),
           },
         },
       ]),
@@ -569,10 +554,10 @@ export default function ReportPageHeader(props) {
       publishReport,
       unpublishReport,
       openApiKeyDialog,
-      deleteReport,
-      handleSaveReport,
-      report.publicAccessEnabled,
-      showShareReportDialog,
+      openEmbedDialog,
+      openAddToDashboardDialog,
+      props.selectedVisualization,
+      report,
     ],
   );
 
@@ -583,7 +568,7 @@ export default function ReportPageHeader(props) {
   }, [dataSourcesLoaded]);
 
   useEffect(() => {
-    if (report.landed) {
+    if (!report.isNew()) {
       if (colorTextHex !== report.color_2) handleColorChange(report.color_2, 1);
       if (colorBodyHex !== report.color_1) handleColorChange(report.color_1, 2);
       if (report.data_source_id !== selectedDataSource) {
@@ -654,30 +639,6 @@ export default function ReportPageHeader(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSourcesLoaded]);
 
-  useEffect(() => {
-    // this function is working on report/new page for setting first model to report
-    if (report.landed) return;
-    const firstEncounterModelSetter = async models => {
-      const modelId = models[0].id;
-      const modelDataCube = await getModelDataCube(modelId);
-      if (!modelDataCube) return;
-      if (!modelDataCube.timeAttribute) return;
-      handleModelChange(modelId);
-      const model = getModel(modelId);
-      replaceHash(model, window.location.hash.split("/4/")[1]);
-    };
-    if (modelsLoaded && !selectedModel && models.length)
-      firstEncounterModelSetter(models);
-  }, [
-    modelsLoaded,
-    getModel,
-    getModelDataCube,
-    handleModelChange,
-    models,
-    report.landed,
-    selectedModel,
-  ]);
-
   return (
     <div className="report-page-header">
       <div className="title-with-tags m-l-5">
@@ -707,6 +668,18 @@ export default function ReportPageHeader(props) {
         </div>
       </div>
       <div className="header-actions">
+        {((queryFlags.canEdit && !queryFlags.isArchived) ||
+          (queryFlags.isNew && queryFlags.canCreate)) && (
+          <Button
+            type="primary"
+            className="m-r-5"
+            onClick={handleSaveReport}
+            data-test="ReportPageSaveButton"
+          >
+            <i className="fa fa-floppy-o m-r-5" aria-hidden="true" />
+            Save
+          </Button>
+        )}
         {props.headerExtra}
         <div>
           <ul
@@ -795,6 +768,16 @@ export default function ReportPageHeader(props) {
           handleDataSourceChange={handleDataSourceChange}
           handleModelChange={handleModelChange}
         />
+        {isDesktop &&
+          queryFlags.isDraft &&
+          !queryFlags.isArchived &&
+          !queryFlags.isNew &&
+          queryFlags.canEdit && (
+            <Button className="m-r-5" onClick={publishReport}>
+              <i className="fa fa-paper-plane m-r-5" aria-hidden="true" />{" "}
+              Publish
+            </Button>
+          )}
         {!queryFlags.isNew && queryFlags.canViewSource && (
           <span>
             {!props.sourceMode && (
@@ -819,35 +802,6 @@ export default function ReportPageHeader(props) {
             )}
           </span>
         )}
-        {report.id && (
-          <>
-            <ul
-              id="save-as-ul"
-              className="ant-menu ant-menu-sub ant-menu-hidden ant-menu-vertical"
-              role="menu"
-              onClick={e => e.stopPropagation()}
-            >
-              <div
-                style={styles.cover}
-                onClick={() => handleGivenModal("save-as-ul")}
-              />
-              <p className="new-name-label">name</p>
-              <input
-                id="new-name-input"
-                className="new-name-input"
-                type="text"
-                value={newName}
-                onChange={handleNewNameChange}
-              />
-              <Button
-                className="ant-menu-item-group-title"
-                onClick={() => saveAsReport(newName)}
-              >
-                Save now
-              </Button>
-            </ul>
-          </>
-        )}
         <Dropdown overlay={moreActionsMenu} trigger={["click"]}>
           {/* ### TODO write tests for below code  disabled={(report.id || report.model_id) ? false : true} */}
           <Button
@@ -864,7 +818,7 @@ export default function ReportPageHeader(props) {
 
 ReportPageHeader.propTypes = {
   report: ReportType.isRequired,
-  dataSource: PropTypes.array,
+  dataSource: PropTypes.object,
   sourceMode: PropTypes.bool,
   selectedVisualization: PropTypes.number,
   headerExtra: PropTypes.node,

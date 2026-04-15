@@ -58,6 +58,37 @@ cp .env.example .env
 
 For reference, see `.env.example` in the project root for sample variables and expected formats.
 
+## Git Hooks
+
+The repo includes shared git hooks in `.githooks/`. To enable them, point git at that directory:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+This is a one-time setup per clone. The setting is stored in your local `.git/config` and doesn't affect other repos.
+
+**What the hooks do:**
+
+The pre-commit hook **blocks the commit** if any check fails. It checks:
+
+| Check                           | Tool     | Fix command                                             |
+| ------------------------------- | -------- | ------------------------------------------------------- |
+| JS/TS/CSS/JSON/MD formatting    | prettier | `npx prettier --config .prettierrc.json --write <file>` |
+| Python formatting               | black    | `black <file>`                                          |
+| Python linting + import sorting | ruff     | `ruff check --fix <file>`                               |
+
+Tools that aren't installed are skipped silently.
+
+### VS Code / GUI clients
+
+The hook works with VS Code's commit button and other GUI git clients — they respect `core.hooksPath`. If a co-worker reports the hook isn't running, check:
+
+1. **Did they run the setup command?** `git config core.hooksPath .githooks` must be run once per clone. Verify with: `git config --get core.hooksPath` (should print `.githooks`).
+2. **Check the error output.** VS Code shows hook output in the Git Output panel (`View → Output → Git`). If the commit is blocked, fix the listed files and re-commit. To bypass in emergencies: `git commit --no-verify`.
+
+> **Note:** `core.hooksPath` replaces `.git/hooks/` entirely. If you have personal hooks there, move them to `.githooks/` instead.
+
 ## Docker Compose Setup
 
 Start the backend services (postgres, redis, server, plywood):
@@ -107,11 +138,11 @@ npm run start
 
 Open **`http://localhost:8080`** in your browser. The webpack-dev-server proxies API calls (`/api`, `/login`, `/plywood`, etc.) to the Docker backend at `localhost:5000` and plywood at `localhost:3000`. Edit client code, save, and see changes immediately.
 
-| Command | What it does |
-|---------|-------------|
-| `npm run start` | webpack-dev-server + viz-lib watcher — hot reload at port 8080 |
+| Command         | What it does                                                                         |
+| --------------- | ------------------------------------------------------------------------------------ |
+| `npm run start` | webpack-dev-server + viz-lib watcher — hot reload at port 8080                       |
 | `npm run watch` | Rebuilds `client/dist/` on file change — Docker serves updates at port 5000 (slower) |
-| `npm run dev` | Same as `start` with `--openssl-legacy-provider` for older Node compatibility |
+| `npm run dev`   | Same as `start` with `--openssl-legacy-provider` for older Node compatibility        |
 
 ### Linux: file watcher limit
 
@@ -131,16 +162,16 @@ sudo sysctl -w fs.inotify.max_user_watches=512000
 
 ### Ports
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| webpack-dev-server | 8080 | Frontend dev with hot reload (host only, not Docker) |
-| server | 5000 | Python backend API + serves production `client/dist/` |
-| plywood | 3000 | Plywood/Turnilo OLAP server |
-| postgres | 5432, 15432 | Database |
-| redis | 6379 | Cache and job queue |
-| email (maildev) | 1080, 1025 | Local email testing UI and SMTP |
-| server debug | 5678 | Python debugger |
-| plywood debug | 9231 | Node.js debugger |
+| Service            | Port        | Purpose                                               |
+| ------------------ | ----------- | ----------------------------------------------------- |
+| webpack-dev-server | 8080        | Frontend dev with hot reload (host only, not Docker)  |
+| server             | 5000        | Python backend API + serves production `client/dist/` |
+| plywood            | 3000        | Plywood/Turnilo OLAP server                           |
+| postgres           | 5432, 15432 | Database                                              |
+| redis              | 6379        | Cache and job queue                                   |
+| email (maildev)    | 1080, 1025  | Local email testing UI and SMTP                       |
+| server debug       | 5678        | Python debugger                                       |
+| plywood debug      | 9231        | Node.js debugger                                      |
 
 ### Components
 
@@ -176,6 +207,7 @@ postgres, mysql, bigquery, athena, druid, pg, json
 docker compose run --rm postgres psql -h postgres -U postgres -c "create database tests"
 # Run all tests:
 docker compose run --rm server tests
+
 # Run tests for a specific module:
 docker compose run --rm server pytest -v tests/plywood/test_json.py
 ```

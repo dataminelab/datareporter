@@ -26,9 +26,27 @@ export function createQueryAndAddWidget(
 }
 
 export function editDashboard() {
-  cy.getByTestId("DashboardMoreButton").click();
+  return cy.get("body").then($body => {
+    const alreadyEditing = $body
+      .find(".dashboard-control")
+      .toArray()
+      .some(control => {
+        const $control = Cypress.$(control);
+        const saveStatus = $control.find(".save-status").text().trim();
+        const buttonLabel = $control.find("button").text().trim();
 
-  cy.getByTestId("DashboardMoreButtonMenu").contains("Edit").click();
+        return saveStatus === "Saved" && buttonLabel.includes("Done Editing");
+      });
+
+    if (alreadyEditing) {
+      return cy.wrap(true);
+    }
+
+    cy.getByTestId("DashboardMoreButton").click();
+    cy.getByTestId("DashboardMoreButtonMenu").contains("Edit").click();
+
+    return cy.wrap(true);
+  });
 }
 
 export function shareDashboard() {

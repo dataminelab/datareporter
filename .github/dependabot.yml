@@ -1,7 +1,14 @@
 version: 2
 updates:
   # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-  - directory: "/plywood"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    commit-message:
+      prefix: "(actions): "
+  - directory: "/plywood/server"
     target-branch: "develop"
     package-ecosystem: "npm"
     commit-message:

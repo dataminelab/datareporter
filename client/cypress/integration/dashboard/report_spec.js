@@ -7,10 +7,16 @@ describe("Dashboard with Turnilo widget", () => {
 
   before(function () {
     cy.login();
-    cy.createDashboard("Turnilo Dashboard").then(({ id }) => {
-      this.dashboardId = id;
-      this.dashboardUrl = `/dashboards/${id}`;
-    });
+    cy.createDashboard("Turnilo Dashboard")
+      .then(({ id }) => {
+        this.dashboardId = id;
+        this.dashboardUrl = `/dashboards/${id}`;
+      })
+      .then(() => cy.createReportDraft({ name: "Turnilo Cypress Report" }))
+      .then(({ id }) => {
+        this.reportId = id;
+        return cy.publishReportAPI(id);
+      });
   });
 
   it("adds report widget", function () {
@@ -18,20 +24,19 @@ describe("Dashboard with Turnilo widget", () => {
     editDashboard();
     cy.getByTestId("AddReportButton").click();
     cy.getByTestId("AddReportDialog").within(() => {
-      cy.get("input").type("New Report");
-      cy.get(".report-selector-result").first().click();
+      cy.get("input").type("Turnilo Cypress Report");
+      cy.get(`.report-selector-result[data-test="QueryId${this.reportId}"]`)
+        .should("be.visible")
+        .click();
     });
     cy.contains("button", "Add to Dashboard").click();
     cy.getByTestId("AddReportDialog").should("not.exist");
-    cy.get(".turnilo-widget-view").should("exist");
+    cy.get(".turnilo-widget-view", { timeout: 30000 }).should("be.visible");
   });
 
   it("should load report widget", function () {
     cy.visit(this.dashboardUrl);
-    // Find the turnilo-widget element within the dashboard
-    cy.get(".turnilo-widget-view").should("be.visible");
-    cy.wait(5000); // eslint-disable-line cypress/no-unnecessary-waiting
-    // Check for the report page header which should not be present
+    cy.get(".turnilo-widget-view", { timeout: 30000 }).should("be.visible");
     cy.get(".turnilo-widget-view").within(() => {
       cy.get(".message.error").should("not.exist");
     });

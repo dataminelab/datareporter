@@ -1,116 +1,98 @@
-import debug from "debug";
-import moment from "moment";
 import { axios } from "@/services/axios";
-import { QueryResultError } from "@/services/query";
-import { Auth } from "@/services/auth";
-import {
-  isString,
-  uniqBy,
-  each,
-  isNumber,
-  includes,
-  extend,
-  forOwn,
-  get,
-} from "lodash";
-import JSONbig from "json-bigint";
 import QueryResult from "./query-result";
-import { Ajax } from "@/components/TurniloComponent/client/utils/ajax/ajax";
+import { get } from "lodash";
 
-const { parse: jsonParse } = JSONbig({ storeAsString: true });
-const logger = debug("redash:services:QueryResult");
-const filterTypes = ["filter", "multi-filter", "multiFilter"];
+function getLatestQueryResult(queries = []) {
+  for (let i = queries.length - 1; i >= 0; i -= 1) {
+    const queryResult = get(queries[i], "query_result");
+    if (queryResult && queryResult.data) {
+      return queryResult;
+    }
+  }
 
-function defer() {
-  const result = { onStatusChange: status => {} };
-  result.promise = new Promise((resolve, reject) => {
-    result.resolve = resolve;
-    result.reject = reject;
-  });
-  return result;
+  return null;
 }
 
-function getColumnNameWithoutType(column) {
-  let typeSplit;
-  if (column.indexOf("::") !== -1) {
-    typeSplit = "::";
-  } else if (column.indexOf("__") !== -1) {
-    typeSplit = "__";
-  } else {
-    return column;
-  }
-
-  const parts = column.split(typeSplit);
-  if (parts[0] === "" && parts.length === 2) {
-    return parts[1];
-  }
-
-  if (!includes(filterTypes, parts[1])) {
-    return column;
-  }
-
-  return parts[0];
-}
-
-function getColumnFriendlyName(column) {
-  return getColumnNameWithoutType(column).replace(/(?:^|\s)\S/g, a =>
-    a.toUpperCase(),
+function getErrorMessage(error) {
+  return get(
+    error,
+    "response.data.message",
+    "Unknown error occurred. Please try again later.",
   );
 }
 
-const createOrSaveUrl = data =>
-  data.id ? `api/query_results/${data.id}` : "api/query_results";
-const QueryResultResource = {
-  get: ({ id }) =>
-    axios.get(`api/query_results/${id}`, {
-      transformResponse: response => jsonParse(response),
-    }),
-  post: data => axios.post(createOrSaveUrl(data), data),
-};
-
-export const ExecutionStatus = {
-  WAITING: "waiting",
-  PROCESSING: "processing",
-  DONE: "done",
-  FAILED: "failed",
-  LOADING_RESULT: "loading-result",
-};
-
-const statuses = {
-  1: ExecutionStatus.WAITING,
-  2: ExecutionStatus.PROCESSING,
-  3: ExecutionStatus.DONE,
-  4: ExecutionStatus.FAILED,
-};
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export function fetchDataFromJob(jobId, interval = 1000) {
-  return axios.get(`api/jobs/${jobId}`).then(data => {
-    const status = statuses[data.job.status];
-    if (
-      status === ExecutionStatus.WAITING ||
-      status === ExecutionStatus.PROCESSING
-    ) {
-      return sleep(interval).then(() => fetchDataFromJob(data.job.id));
-    } else if (status === ExecutionStatus.DONE) {
-      return data.job.result;
-    } else if (status === ExecutionStatus.FAILED) {
-      return Promise.reject(data.job.error);
-    }
-  });
-}
-
 class ReportResult extends QueryResult {
-  constructor(data) {
-    super(data);
+  constructor(data = {}) {
+    super();
     this.reportId = data.report_id;
+
+    if ("query_result" in data || "job" in data) {
+      this.update(data);
+    } else if ("data" in data || "queries" in data || "status" in data) {
+      this.updateFromReport(data);
+    }
   }
 
-  getByReportId() {
-    return new ReportResult({ report_id: this.reportId });
+  updateFromReport(reportData) {
+    const latestQueryResult = getLatestQueryResult(reportData.queries);
+
+    if (latestQueryResult) {
+      this.update({ query_result: latestQueryResult });
+      return;
+    }
+
+    if (get(reportData, "data.rows") && get(reportData, "data.columns")) {
+      this.update({
+        query_result: {
+          id: get(latestQueryResult, "id"),
+          data: reportData.data,
+          retrieved_at: get(latestQueryResult, "retrieved_at"),
+          runtime: get(latestQueryResult, "runtime"),
+        },
+      });
+      return;
+    }
+
+    if (reportData.status === 4 || reportData.failed) {
+      this.update({
+        job: {
+          error: "Failed to execute report.",
+          status: 4,
+        },
+      });
+      return;
+    }
+
+    if (reportData.status) {
+      this.update({
+        job: {
+          status: reportData.status,
+        },
+      });
+    }
+  }
+
+  static getByReport(report, maxAge) {
+    const reportResult = new ReportResult({ report_id: report.id });
+
+    axios
+      .post(`api/reports/generate/${report.model_id}`, {
+        hash: report.hash,
+        bypass_cache: maxAge === 0,
+      })
+      .then(response => {
+        reportResult.updateFromReport(response);
+      })
+      .catch(error => {
+        reportResult.update({
+          job: {
+            error: getErrorMessage(error),
+            status: 4,
+          },
+        });
+      });
+
+    return reportResult;
   }
 }
 

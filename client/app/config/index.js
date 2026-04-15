@@ -7,7 +7,7 @@ import "@/assets/images/avatar.svg";
 // Register visualizations
 import "@redash/viz/lib";
 
-// Register routes before registering extensions as they may want to override some
+// Register routes before registering extensions as they may want to override some of them.
 import "@/pages";
 
 import "./antd-spinner";

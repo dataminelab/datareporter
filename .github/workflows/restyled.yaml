@@ -25,6 +25,8 @@ jobs:
 
       - id: restyler
         uses: restyled-io/actions/run@v4
+        env:
+          BLACK_NUM_WORKERS: "1"
         with:
           fail-on-differences: true
 

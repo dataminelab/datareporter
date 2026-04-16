@@ -260,7 +260,9 @@ def test_filter_expression_to_result_success(monkeypatch):
             self.model = model
 
     monkeypatch.setattr(hash_manager, "DataCube", Cube)
-    monkeypatch.setattr(hash_manager, "cache_or_get", lambda **kwargs: [{"query_result": {"data": {"rows": [{"y": 2}]}}}])
+    monkeypatch.setattr(
+        hash_manager, "cache_or_get", lambda **kwargs: [{"query_result": {"data": {"rows": [{"y": 2}]}}}]
+    )
     monkeypatch.setattr(hash_manager, "jobs_status", lambda data: None)
     monkeypatch.setattr(hash_manager.ExpressionBase64Parser, "parse_dict_to_base64", lambda obj: "encoded")
     monkeypatch.setattr(hash_manager.Expression, "get_queries_from_prepared_expression", lambda cube, expr: ["Q1"])

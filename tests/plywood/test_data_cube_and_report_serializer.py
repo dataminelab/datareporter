@@ -1,7 +1,11 @@
 from unittest.mock import patch
 
 from redash.plywood.objects.data_cube import DataCube
-from redash.plywood.objects.report_serializer import Progress, ReportMetaData, ReportSerializer
+from redash.plywood.objects.report_serializer import (
+    Progress,
+    ReportMetaData,
+    ReportSerializer,
+)
 
 
 class DummyConfig:
@@ -26,8 +30,7 @@ class DummyModel:
 def test_data_cube_config_attributes_and_context():
     model = DummyModel(
         data_source=DummyDataSource(ds_type="pg"),
-        config=DummyConfig(
-            """
+        config=DummyConfig("""
 dataCubes:
   - name: TestCube
     attributes:
@@ -36,8 +39,7 @@ dataCubes:
     dimensions:
       - name: country
         kind: TIME
-"""
-        ),
+"""),
         table="analytics.events",
     )
 

@@ -1,9 +1,9 @@
 import pytest
 
 from redash.plywood.objects.expression import (
+    REPLACE_DATA_CUBE_NAME,
     Expression,
     ExpressionNotSupported,
-    REPLACE_DATA_CUBE_NAME,
     replace_value_in_dict,
 )
 

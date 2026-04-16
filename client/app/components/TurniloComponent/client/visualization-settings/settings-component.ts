@@ -19,23 +19,21 @@ import { LineChartSettingsComponent } from "./line-chart/line-chart-settings";
 import { TableSettingsComponent } from "./table/table-settings";
 
 interface SettingsComponents {
-  "table": typeof TableSettingsComponent;
+  table: typeof TableSettingsComponent;
   "bar-chart": null;
   "line-chart": typeof LineChartSettingsComponent;
-  "heatmap": null;
-  "totals": null;
+  heatmap: null;
+  totals: null;
 }
 
 const Components: SettingsComponents = {
   "bar-chart": null,
   "line-chart": LineChartSettingsComponent,
-  "heatmap": null,
-  "totals": null,
-  "table": TableSettingsComponent,
+  heatmap: null,
+  totals: null,
+  table: TableSettingsComponent,
 };
 
-export function settingsComponent<T extends Visualization>(
-  visualization: T,
-): SettingsComponents[T] {
+export function settingsComponent<T extends Visualization>(visualization: T): SettingsComponents[T] {
   return Components[visualization];
 }

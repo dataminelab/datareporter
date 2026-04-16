@@ -34,9 +34,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - run: python -m ensurepip --upgrade
-      - run: sudo pip install black==23.1.0 ruff==0.0.287
+      - run: sudo pip install black==26.3.1 ruff
       - run: ruff check .
       - run: black --check .
   backend-unit-tests:
@@ -59,7 +59,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          version: v0.12.1
+          version: v0.17.0
       - name: Build docker Images
         run: |
           set -x
@@ -91,13 +91,6 @@ jobs:
           docker cp tests:/app/coverage.xml ./coverage.xml
           docker cp tests:/app/junit.xml ./results.xml
           ls -l
-      - name: "Extract test results"
-        shell: bash
-        if: always()
-        run: |
-          docker cp tests:/app/coverage.xml ./coverage.xml
-          docker cp tests:/app/junit.xml ./results.xml
-          ls -l
       - name: "Publish unit test report"
         uses: mikepenz/action-junit-report@v4
         if: always()
@@ -120,7 +113,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '60 80'
+          thresholds: "60 80"
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
@@ -144,10 +137,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: 'npm'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
       - name: Install Dependencies
         working-directory: client
-        run: npm install
+        run: npm ci
       - name: Run Lint
         working-directory: client
         run: npm run lint
@@ -182,7 +176,7 @@ jobs:
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: Install App dependencies
         working-directory: client
-        run: npm install
+        run: npm ci
       - name: List the state of node modules
         working-directory: client
         run: npm list
@@ -197,19 +191,19 @@ jobs:
         run: npm run test
       - name: Install plywood-server dependencies
         working-directory: plywood
-        run: npm install
+        run: npm ci
       - name: Run plywood-server Tests
         working-directory: plywood
         run: npm run test
       - name: Install plywood-client dependencies
         working-directory: plywood/client
-        run: npm install
+        run: npm ci
       - name: Run plywood-client Tests
         working-directory: plywood/client
         run: npm run test
       - name: turnilo dependencies install
         working-directory: client/app/components/TurniloComponent
-        run: npm install
+        run: npm ci
       - name: turnilo client tests
         working-directory: client/app/components/TurniloComponent
         run: npm run test:client
@@ -225,10 +219,8 @@ jobs:
       COMPOSE_PROJECT_NAME: cypress
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
       COMPOSE_BAKE: true
-      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-      PERCY_PROJECT: ${{ secrets.CYPRESS_PROJECT_ID }}
-      CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      # SECURITY: Secrets moved to step-level env to limit exposure during npm install.
+      # Only steps that actually need secrets should reference them.
       PERCY_PARALLEL_TOTAL: 1
       PERCY_PARALLEL_NONCE: ${{ github.run_id }}
       PERCY_PARALLEL: true
@@ -267,7 +259,7 @@ jobs:
       - name: Install Dependencies
         working-directory: client
         run: |
-          npm install
+          npm ci
           npm install --save-dev @percy/cypress @percy/cli
       - name: Check and Install Cypress Binary
         run: |
@@ -287,23 +279,33 @@ jobs:
         run: docker build -f .ci/Dockerfile.cypress -t cypress .
       - name: Setup Cypress via npm scripts
         working-directory: client
+        env:
+          # Secrets set at step-level only, not job-level, to prevent exposure during npm install
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          # Use intermediate env vars to prevent script injection from PR metadata
+          SAFE_COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title || github.event.head_commit.message }}
+          SAFE_COMMIT_INFO_AUTHOR: ${{ github.event.pull_request.user.login || github.actor }}
+          SAFE_PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
+          SAFE_PERCY_COMMIT: ${{ github.sha }}
+          SAFE_PERCY_PR: ${{ github.event.pull_request.number }}
+          SAFE_PERCY_NONCE: ${{ github.run_id }}
         run: |
           set -x
           npm run cypress build
           npm run cypress start -- --skip-db-seed
           docker compose run \
-            -e PERCY_TOKEN="${{ secrets.PERCY_TOKEN }}" \
-            -e PERCY_BRANCH="${{ github.head_ref || github.ref_name }}" \
-            -e PERCY_COMMIT="${{ github.sha }}" \
-            -e PERCY_PULL_REQUEST="${{ github.event.pull_request.number }}" \
+            -e PERCY_TOKEN="$PERCY_TOKEN" \
+            -e PERCY_BRANCH="$SAFE_PERCY_BRANCH" \
+            -e PERCY_COMMIT="$SAFE_PERCY_COMMIT" \
+            -e PERCY_PULL_REQUEST="$SAFE_PERCY_PR" \
             -e PERCY_PARALLEL_TOTAL=1 \
-            -e PERCY_PARALLEL_NONCE="${{ github.run_id }}" \
+            -e PERCY_PARALLEL_NONCE="$SAFE_PERCY_NONCE" \
             -e PERCY_PARALLEL=true \
             -e PERCY_LOGLEVEL=debug \
-            -e COMMIT_INFO_BRANCH="${{ github.head_ref || github.ref_name }}" \
-            -e COMMIT_INFO_MESSAGE="${{ github.event.pull_request.title || github.event.head_commit.message }}" \
-            -e COMMIT_INFO_AUTHOR="${{ github.event.pull_request.user.login || github.actor }}" \
-            -e COMMIT_INFO_SHA="${{ github.sha }}" \
+            -e COMMIT_INFO_BRANCH="$SAFE_PERCY_BRANCH" \
+            -e COMMIT_INFO_MESSAGE="$SAFE_COMMIT_INFO_MESSAGE" \
+            -e COMMIT_INFO_AUTHOR="$SAFE_COMMIT_INFO_AUTHOR" \
+            -e COMMIT_INFO_SHA="$SAFE_PERCY_COMMIT" \
             cypress npm run cypress db-seed
           sleep 10
       - name: Execute Cypress Tests
@@ -313,69 +315,70 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |
           set +e  # Don't exit on error, we want to capture logs first
-          
-          echo "🎯 Starting Cypress tests..."
-          
+
+          echo "Starting Cypress tests..."
+
           # Create directory for logs
           mkdir -p ../test-artifacts
-          
+
           # Run Cypress and save output to file first
+          # Use env vars instead of direct expression interpolation to prevent injection
           docker compose run \
-            -e CYPRESS_PROJECT_ID="${{ secrets.CYPRESS_PROJECT_ID }}" \
-            -e CYPRESS_RECORD_KEY="${{ secrets.CYPRESS_RECORD_KEY }}" \
+            -e CYPRESS_PROJECT_ID="$CYPRESS_PROJECT_ID" \
+            -e CYPRESS_RECORD_KEY="$CYPRESS_RECORD_KEY" \
             -e CYPRESS_baseUrl="http://server:5000" \
             cypress \
             bash -c "
-              echo '=== Starting Cypress Test Execution ===' 
+              echo '=== Starting Cypress Test Execution ==='
               echo 'Current directory:' \$(pwd)
               echo 'Available test files:'
               find cypress/e2e -name '*.cy.js' | head -10
               echo ''
               echo '=== Running Cypress Tests ==='
-              npx cypress run --reporter spec --browser chrome
+              npx cypress run --reporter spec --browser chrome --record
               exit \$?
             " > ../test-artifacts/cypress-logs.txt 2>&1
-          
+
           test_exit_code=$?
-          
+
           # Always display the captured output regardless of exit code
           echo ""
-          echo "📋 Cypress test output:"
+          echo "Cypress test output:"
           if [ -f ../test-artifacts/cypress-logs.txt ]; then
             cat ../test-artifacts/cypress-logs.txt
           else
-            echo "⚠️ No test output file found"
+            echo "No test output file found"
           fi
           echo ""
-          echo "📊 Test execution completed with exit code: $test_exit_code"
-          
+          echo "Test execution completed with exit code: $test_exit_code"
+
           if [ $test_exit_code -eq 0 ]; then
-            echo "✅ Tests passed"
+            echo "Tests passed"
           else
-            echo "❌ Tests failed with exit code: $test_exit_code"
+            echo "Tests failed with exit code: $test_exit_code"
             exit 1
           fi
-      - name: Capture Test Artifacts  
+      - name: Capture Test Artifacts
         if: always()
         working-directory: client
         run: |
-          echo "📦 Capturing test artifacts..."
-          
+          echo "Capturing test artifacts..."
+
           # Ensure artifacts directory exists
           mkdir -p ../test-artifacts
-          
+
           # Try to get artifacts from any cypress containers
           CONTAINER_NAMES=$(docker ps -a --filter "name=cypress" --format "{{.Names}}")
-          
+
           if [ ! -z "$CONTAINER_NAMES" ]; then
             for CONTAINER_NAME in $CONTAINER_NAMES; do
               echo "Attempting to extract artifacts from: $CONTAINER_NAME"
-              
+
               # Copy test artifacts (ignore errors if paths don't exist)
               docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/screenshots ../test-artifacts/ 2>/dev/null && echo "Screenshots copied" || echo "No screenshots found"
               docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/videos ../test-artifacts/ 2>/dev/null && echo "Videos copied" || echo "No videos found"
               docker cp $CONTAINER_NAME:/usr/src/app/client/cypress/reports ../test-artifacts/ 2>/dev/null && echo "Reports copied" || echo "No reports found"
-              
+
               # Only copy container logs if we don't already have captured logs
               if [ ! -f ../test-artifacts/cypress-logs.txt ]; then
                 docker logs $CONTAINER_NAME > ../test-artifacts/cypress-container-logs.txt 2>&1 && echo "Container logs copied" || echo "No container logs"
@@ -384,9 +387,9 @@ jobs:
           else
             echo "No cypress containers available for artifact extraction"
           fi
-          
+
           # Show what we captured
-          echo "📋 Final captured artifacts:"
+          echo "Final captured artifacts:"
           find ../test-artifacts -type f 2>/dev/null | while read file; do
             size=$(du -h "$file" 2>/dev/null | cut -f1)
             echo "  $file ($size)"
@@ -407,13 +410,13 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
-            let comment = '## 🧪 E2E Test Results Analysis\n\n';
+
+            let comment = '## E2E Test Results Analysis\n\n';
             let testsPassed = true;
             let totalTests = 0;
             let passCount = 0;
             let failCount = 0;
-            
+
             try {
               const resultsDir = './test-artifacts';
               if (fs.existsSync(resultsDir)) {
@@ -422,21 +425,13 @@ jobs:
                   try {
                     const logContent = fs.readFileSync(logFile, 'utf8');
                     const lines = logContent.split('\n');
-                    
-                    // Strategy: Look for the overall test summary patterns
-                    // Cypress outputs patterns like:
-                    // - "X passing" / "X failing" for individual specs
-                    // - "X of Y" patterns for overall results
-                    // - Final stats summary
-                    
+
                     let overallFailedPattern = null;
                     let passCount = 0;
                     let failCount = 0;
                     let totalTests = 0;
-                    // First pass: find all summary patterns and sum them
                     for (let i = 0; i < lines.length; i++) {
                       const line = lines[i];
-                      // Look for overall test result pattern: "X of Y failed"
                       const overallMatch = line.match(/(\d+)\s+of\s+(\d+)\s+failed/i);
                       if (overallMatch && !overallFailedPattern) {
                         overallFailedPattern = {
@@ -445,60 +440,52 @@ jobs:
                           line: line.trim()
                         };
                       }
-                      // Sum all "X passing" and "X failing" lines
                       const passMatch = line.match(/(\d+)\s+passing/);
                       if (passMatch) passCount += parseInt(passMatch[1]);
                       const failMatch = line.match(/(\d+)\s+failing/);
                       if (failMatch) failCount += parseInt(failMatch[1]);
                     }
                     totalTests = passCount + failCount;
-                    // If we have an overall summary, prefer it for fail/total
                     if (overallFailedPattern) {
                       failCount = overallFailedPattern.failed;
                       totalTests = overallFailedPattern.total;
                       passCount = totalTests - failCount;
                     }
-                    
+
                     testsPassed = failCount === 0;
-                    
-                    // Build status section
+
                     comment += '### ';
                     if (testsPassed) {
-                      comment += '✅ Test Status: PASSED\n\n';
+                      comment += 'Test Status: PASSED\n\n';
                       if (totalTests > 0) {
                         comment += `**All ${totalTests} tests passed!**\n\n`;
                       }
                     } else {
-                      comment += '❌ Test Status: FAILED\n\n';
+                      comment += 'Test Status: FAILED\n\n';
                       if (totalTests > 0) {
                         comment += `**${failCount} of ${totalTests} tests failed** (${passCount} passed)\n\n`;
                       } else if (passCount > 0 || failCount > 0) {
                         comment += `**${failCount} test(s) failed**, ${passCount} test(s) passed\n\n`;
                       }
                     }
-                    
-                    // Show test statistics
+
                     comment += '**Test Statistics:**\n';
-                    comment += `- 🎯 Total Tests: ${totalTests || 'Unknown'}\n`;
-                    comment += `- ✅ Passed: ${passCount}\n`;
-                    comment += `- ❌ Failed: ${failCount}\n`;
+                    comment += `- Total Tests: ${totalTests || 'Unknown'}\n`;
+                    comment += `- Passed: ${passCount}\n`;
+                    comment += `- Failed: ${failCount}\n`;
                     if (totalTests > 0) {
                       const passPercentage = Math.round((passCount / totalTests) * 100);
-                      comment += `- 📊 Pass Rate: ${passPercentage}%\n`;
+                      comment += `- Pass Rate: ${passPercentage}%\n`;
                     }
                     comment += '\n';
-                    
-                    // Extract and show failed spec files if any
+
                     if (failCount > 0) {
                       const failedSpecs = new Set();
-                      
+
                       for (let i = 0; i < lines.length; i++) {
                         const line = lines[i];
-                        // Look for lines that show failed specs: "Running: path/to/file.cy.js"
-                        // followed by failures
                         const runningMatch = line.match(/Running:\s+(.+\.cy\.js)/);
                         if (runningMatch) {
-                          // Check next lines for failures
                           for (let j = i + 1; j < Math.min(i + 50, lines.length); j++) {
                             if (lines[j].match(/\d+\s+failing/) || lines[j].includes('✖')) {
                               failedSpecs.add(runningMatch[1]);
@@ -507,11 +494,11 @@ jobs:
                           }
                         }
                       }
-                      
+
                       if (failedSpecs.size > 0) {
                         comment += '**Failed Spec Files:**\n';
                         Array.from(failedSpecs).slice(0, 15).forEach((spec) => {
-                          comment += `- 📄 ${spec}\n`;
+                          comment += `- ${spec}\n`;
                         });
                         if (failedSpecs.size > 15) {
                           comment += `- ... and ${failedSpecs.size - 15} more\n`;
@@ -519,53 +506,51 @@ jobs:
                         comment += '\n';
                       }
                     }
-                    
+
                   } catch (e) {
-                    comment += `⚠️ Error parsing logs: ${e.message}\n\n`;
+                    comment += `Error parsing logs: ${e.message}\n\n`;
                   }
                 } else {
-                  comment += '⚠️ No Cypress logs found\n\n';
+                  comment += 'No Cypress logs found\n\n';
                 }
-                
-                // Artifacts section
+
                 comment += '**Test Artifacts:**\n';
                 const videoDir = path.join(resultsDir, 'videos');
                 const screenshotDir = path.join(resultsDir, 'screenshots');
                 let videoCount = 0;
                 let screenshotCount = 0;
-                
+
                 if (fs.existsSync(videoDir)) {
                   videoCount = fs.readdirSync(videoDir, { recursive: true })
                     .filter(file => file.endsWith('.mp4')).length;
                   if (videoCount > 0) {
-                    comment += `- 🎥 ${videoCount} test video(s) recorded\n`;
+                    comment += `- ${videoCount} test video(s) recorded\n`;
                   }
                 }
-                
+
                 if (fs.existsSync(screenshotDir)) {
                   screenshotCount = fs.readdirSync(screenshotDir, { recursive: true })
                     .filter(file => file.match(/\.(png|jpg|jpeg)$/)).length;
                   if (screenshotCount > 0) {
-                    comment += `- 📸 ${screenshotCount} screenshot(s) captured\n`;
+                    comment += `- ${screenshotCount} screenshot(s) captured\n`;
                   }
                 }
-                
+
                 if (videoCount === 0 && screenshotCount === 0) {
-                  comment += '- 📦 No additional artifacts captured\n';
+                  comment += '- No additional artifacts captured\n';
                 }
-                
+
               } else {
-                comment += '### ⚠️ No Test Artifacts Found\n';
+                comment += '### No Test Artifacts Found\n';
                 comment += 'Tests did not run or artifacts were not saved.\n';
               }
-              
+
             } catch (error) {
-              comment += `### ❌ Error Analyzing Results\n${error.message}\n`;
+              comment += `### Error Analyzing Results\n${error.message}\n`;
             }
-            
+
             comment += '\n---\n*Generated from E2E test artifacts*';
-            
-            // Only post comment if there are failures
+
             if (!testsPassed) {
               github.rest.issues.createComment({
                 issue_number: context.issue.number,

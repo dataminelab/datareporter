@@ -58,4 +58,15 @@ describe("BigQueryDialect", () => {
       "FORMAT_DATETIME('%Y-%m-%d %H:%M:%SZ', CAST(2015-09-12 00:48:02Z AS DATETIME))",
     );
   });
+
+  it("should support multi-minute time buckets", () => {
+    const expression = dialect.timeBucketExpression(
+      "my_time",
+      Duration.fromJS("PT5M"),
+      new Timezone("UTC"),
+    );
+    expect(expression).to.be.equal(
+      "FORMAT_DATETIME('%Y-%m-%d %H:%M:00Z', CAST(TIMESTAMP_SECONDS(DIV(UNIX_SECONDS(my_time), 300) * 300) AS DATETIME))",
+    );
+  });
 });

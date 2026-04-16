@@ -63,10 +63,8 @@ INVITATION_TOKEN_MAX_AGE = int(os.environ.get("REDASH_INVITATION_TOKEN_MAX_AGE",
 
 SECRET_KEY = os.environ.get("REDASH_COOKIE_SECRET")
 if SECRET_KEY is None:
-    raise Exception(
-        "You must set the REDASH_COOKIE_SECRET environment variable. \
-        Visit http://redash.io/help/open-source/admin-guide/secrets for more information."
-    )
+    raise Exception("You must set the REDASH_COOKIE_SECRET environment variable. \
+        Visit https://datareporter.com/docs/open-source/admin-guide/secrets for more information.")
 
 # The secret key to use when encrypting data source options
 DATASOURCE_SECRET_KEY = os.environ.get("REDASH_SECRET_KEY", SECRET_KEY)
@@ -123,7 +121,7 @@ HSTS_INCLUDE_SUBDOMAINS = parse_boolean(os.environ.get("REDASH_HSTS_INCLUDE_SUBD
 # for more information. E.g.:
 CONTENT_SECURITY_POLICY = os.environ.get(
     "REDASH_CONTENT_SECURITY_POLICY",
-    "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval'; font-src 'self' data:; img-src 'self' http: https: data: blob:; object-src 'none'; frame-ancestors 'none'; frame-src redash.io;",
+    "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval'; font-src 'self' data:; img-src 'self' http: https: data: blob:; object-src 'none'; frame-ancestors 'none'; frame-src datareporter.com;",
 )
 CONTENT_SECURITY_POLICY_REPORT_URI = os.environ.get("REDASH_CONTENT_SECURITY_POLICY_REPORT_URI", "")
 CONTENT_SECURITY_POLICY_REPORT_ONLY = parse_boolean(

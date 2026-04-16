@@ -24,9 +24,6 @@
     "lib": ["dom", "es6", "es5"],
     "types": ["node", "express", "mocha", "cypress", "webpack-env"]
   },
-  "include": [
-    "client/**/*",
-    "common/**/*",
-  ],
+  "include": ["client/**/*", "common/**/*"],
   "exclude": []
 }

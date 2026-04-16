@@ -41,8 +41,7 @@ describe("Chronoshift Duration", () => {
       expect(isFloorableDuration(null), "<null>").to.be.false;
       expect(isFloorableDuration(""), "empty string").to.be.false;
       expect(isFloorableDuration("1234"), "number").to.be.false;
-      expect(isFloorableDuration("1D"), "duration without leading P").to.be
-        .false;
+      expect(isFloorableDuration("1D"), "duration without leading P").to.be.false;
       expect(isFloorableDuration("P1H"), "hour duration without T").to.be.false;
     });
 

@@ -12,7 +12,7 @@ function mount(column, done) {
     <Column.Editor
       visualizationName="Test"
       column={column}
-      onChange={changedColumn => {
+      onChange={(changedColumn) => {
         expect(changedColumn).toMatchSnapshot();
         done();
       }}
@@ -22,7 +22,7 @@ function mount(column, done) {
 
 describe("Visualizations -> Table -> Columns -> Link", () => {
   describe("Editor", () => {
-    test("Changes URL template", done => {
+    test("Changes URL template", (done) => {
       const el = mount(
         {
           name: "a",
@@ -37,7 +37,7 @@ describe("Visualizations -> Table -> Columns -> Link", () => {
         .simulate("change", { target: { value: "http://{{ @ }}/index.html" } });
     });
 
-    test("Changes text template", done => {
+    test("Changes text template", (done) => {
       const el = mount(
         {
           name: "a",
@@ -52,7 +52,7 @@ describe("Visualizations -> Table -> Columns -> Link", () => {
         .simulate("change", { target: { value: "Text of {{ @ }}" } });
     });
 
-    test("Changes title template", done => {
+    test("Changes title template", (done) => {
       const el = mount(
         {
           name: "a",
@@ -67,7 +67,7 @@ describe("Visualizations -> Table -> Columns -> Link", () => {
         .simulate("change", { target: { value: "Title of {{ @ }}" } });
     });
 
-    test("Makes link open in new tab ", done => {
+    test("Makes link open in new tab ", (done) => {
       const el = mount(
         {
           name: "a",

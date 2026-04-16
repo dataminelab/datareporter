@@ -23,10 +23,7 @@ export interface DropIndicatorProps {}
 
 export interface DropIndicatorState {}
 
-export class DropIndicator extends React.Component<
-  DropIndicatorProps,
-  DropIndicatorState
-> {
+export class DropIndicator extends React.Component<DropIndicatorProps, DropIndicatorState> {
   render() {
     return (
       <div className="drop-indicator">

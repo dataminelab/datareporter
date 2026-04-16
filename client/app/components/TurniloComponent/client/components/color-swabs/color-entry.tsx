@@ -16,10 +16,7 @@
 
 import { Datum } from "plywood";
 import React from "react";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { Delta } from "../delta/delta";
 
 export interface ColorEntry {
@@ -38,13 +35,7 @@ interface Parameters {
   hasComparison: boolean;
 }
 
-export function createColorEntry({
-  color,
-  name,
-  series,
-  datum,
-  hasComparison,
-}: Parameters): ColorEntry {
+export function createColorEntry({ color, name, series, datum, hasComparison }: Parameters): ColorEntry {
   const current = {
     color,
     name,

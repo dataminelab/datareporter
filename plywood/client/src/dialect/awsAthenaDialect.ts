@@ -144,7 +144,7 @@ export class AwsAthenaDialect extends SQLDialect {
   ): string {
     const timePartFunction = AwsAthenaDialect.TIME_PART_TO_FUNCTION[part];
     if (!timePartFunction)
-      throw new Error(`unsupported part ${part} in BigQuery dialect`);
+      throw new Error(`unsupported part ${part} in Athena(AWS) dialect`);
     return timePartFunction.replace(
       /\$\$/g,
       this.utcToWalltime(operand, timezone),

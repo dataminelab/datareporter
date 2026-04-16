@@ -489,10 +489,7 @@ class QueryResult {
   }
 
   getName(queryName, fileType) {
-    return `${
-      queryName.replace(/ /g, "_") +
-      moment(this.getUpdatedAt()).format("_YYYY_MM_DD")
-    }.${fileType}`;
+    return `${queryName.replace(/ /g, "_") + moment(this.getUpdatedAt()).format("_YYYY_MM_DD")}.${fileType}`;
   }
 
   static getByQueryId(id, parameters, applyAutoLimit, maxAge) {

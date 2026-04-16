@@ -21,6 +21,6 @@ import { FilterClause } from "../../../common/models/filter-clause/filter-clause
 export class Highlight {
   constructor(
     public readonly clauses: List<FilterClause>,
-    public readonly key: string | null,
+    public readonly key: string | null
   ) {}
 }

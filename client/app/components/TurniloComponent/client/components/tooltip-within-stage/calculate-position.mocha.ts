@@ -73,7 +73,7 @@ describe("calculatePosition", () => {
             left: defaultRect.left,
             stage,
           },
-          defaultRect,
+          defaultRect
         );
         expect(position).to.include({ top: 220 });
       });
@@ -87,7 +87,7 @@ describe("calculatePosition", () => {
             left: rect.left,
             stage,
           },
-          rect,
+          rect
         );
         expect(position).to.include({ top: 490 });
       });
@@ -101,7 +101,7 @@ describe("calculatePosition", () => {
             left: rect.left,
             stage,
           },
-          rect,
+          rect
         );
         expect(position).to.include({ top: 300 });
       });
@@ -115,7 +115,7 @@ describe("calculatePosition", () => {
             left: defaultRect.left,
             stage,
           },
-          defaultRect,
+          defaultRect
         );
         expect(position).to.include({ left: 120 });
       });
@@ -129,7 +129,7 @@ describe("calculatePosition", () => {
             left: rect.left,
             stage,
           },
-          rect,
+          rect
         );
         expect(position).to.include({ left: 690 });
       });
@@ -143,7 +143,7 @@ describe("calculatePosition", () => {
             left: rect.left,
             stage,
           },
-          rect,
+          rect
         );
         expect(position).to.include({ left: 250 });
       });

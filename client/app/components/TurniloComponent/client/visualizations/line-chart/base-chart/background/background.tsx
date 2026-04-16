@@ -20,10 +20,7 @@ import { Unary } from "../../../../../common/utils/functional/functional";
 import { BottomBorder } from "../../../../components/grid-border/grid-border";
 import { GridLines } from "../../../../components/grid-lines/grid-lines";
 import { VerticalAxis } from "../../../../components/vertical-axis/vertical-axis";
-import {
-  LinearScale,
-  pickTicks,
-} from "../../../../utils/linear-scale/linear-scale";
+import { LinearScale, pickTicks } from "../../../../utils/linear-scale/linear-scale";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { ContinuousTicks } from "../../utils/pick-x-axis-ticks";
 
@@ -38,7 +35,7 @@ interface BackgroundProps {
   formatter: Unary<number, string>;
 }
 
-export const Background: React.SFC<BackgroundProps> = props => {
+export const Background: React.SFC<BackgroundProps> = (props) => {
   const { formatter, gridStage, axisStage, xScale, yScale, xTicks } = props;
 
   return (

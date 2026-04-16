@@ -34,13 +34,9 @@ export function stringWithAction(
   reference: string,
   action: StringFilterAction,
   values: string[],
-  not = false,
+  not = false
 ): FilterClause {
-  if (
-    action !== StringFilterAction.IN &&
-    values instanceof Array &&
-    values.length !== 1
-  ) {
+  if (action !== StringFilterAction.IN && values instanceof Array && values.length !== 1) {
     throw new Error(`Unsupported values: ${values} for action: ${action}.`);
   }
 
@@ -52,11 +48,7 @@ export function stringWithAction(
   });
 }
 
-export function stringIn(
-  reference: string,
-  values: string[],
-  not = false,
-): StringFilterClause {
+export function stringIn(reference: string, values: string[], not = false): StringFilterClause {
   return new StringFilterClause({
     reference,
     action: StringFilterAction.IN,
@@ -65,11 +57,7 @@ export function stringIn(
   });
 }
 
-export function stringContains(
-  reference: string,
-  value: string,
-  not = false,
-): StringFilterClause {
+export function stringContains(reference: string, value: string, not = false): StringFilterClause {
   return new StringFilterClause({
     reference,
     action: StringFilterAction.CONTAINS,
@@ -78,11 +66,7 @@ export function stringContains(
   });
 }
 
-export function stringMatch(
-  reference: string,
-  value: string,
-  not = false,
-): StringFilterClause {
+export function stringMatch(reference: string, value: string, not = false): StringFilterClause {
   return new StringFilterClause({
     reference,
     action: StringFilterAction.MATCH,
@@ -91,11 +75,7 @@ export function stringMatch(
   });
 }
 
-export function boolean(
-  reference: string,
-  values: Booleanish[],
-  not = false,
-): BooleanFilterClause {
+export function boolean(reference: string, values: Booleanish[], not = false): BooleanFilterClause {
   return new BooleanFilterClause({ reference, not, values: Set(values) });
 }
 
@@ -104,7 +84,7 @@ export function numberRange(
   start: number,
   end: number,
   bounds = "[)",
-  not = false,
+  not = false
 ): NumberFilterClause {
   return new NumberFilterClause({
     reference,
@@ -113,22 +93,14 @@ export function numberRange(
   });
 }
 
-export function timeRange(
-  reference: string,
-  start: Date,
-  end: Date,
-): FixedTimeFilterClause {
+export function timeRange(reference: string, start: Date, end: Date): FixedTimeFilterClause {
   return new FixedTimeFilterClause({
     reference,
     values: List.of(new DateRange({ start, end })),
   });
 }
 
-export function timePeriod(
-  reference: string,
-  duration: string,
-  period: TimeFilterPeriod,
-): RelativeTimeFilterClause {
+export function timePeriod(reference: string, duration: string, period: TimeFilterPeriod): RelativeTimeFilterClause {
   return new RelativeTimeFilterClause({
     reference,
     duration: Duration.fromJS(duration),

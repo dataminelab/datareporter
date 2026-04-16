@@ -16,10 +16,7 @@
 
 import React from "react";
 import { Dimension } from "../../../common/models/dimension/dimension";
-import {
-  coerceGranularity,
-  isGranularityValid,
-} from "../../../common/models/granularity/granularity";
+import { coerceGranularity, isGranularityValid } from "../../../common/models/granularity/granularity";
 import { Sort } from "../../../common/models/sort/sort";
 import { Split } from "../../../common/models/split/split";
 import { Stage } from "../../../common/models/stage/stage";
@@ -91,8 +88,7 @@ export class SplitMenuBase extends React.Component<SplitMenuBaseProps> {
   };
 
   render() {
-    const { containerStage, openOn, dimension, onClose, children, isValid } =
-      this.props;
+    const { containerStage, openOn, dimension, onClose, children, isValid } = this.props;
     if (!dimension) return null;
 
     return (
@@ -102,22 +98,11 @@ export class SplitMenuBase extends React.Component<SplitMenuBaseProps> {
         containerStage={containerStage}
         stage={Stage.fromSize(250, 240)}
         openOn={openOn}
-        onClose={onClose}
-      >
+        onClose={onClose}>
         {children}
         <div className="button-bar">
-          <Button
-            className="ok"
-            type="primary"
-            disabled={!isValid}
-            onClick={this.onOkClick}
-            title={STRINGS.ok}
-          />
-          <Button
-            type="secondary"
-            onClick={this.onCancelClick}
-            title={STRINGS.cancel}
-          />
+          <Button className="ok" type="primary" disabled={!isValid} onClick={this.onOkClick} title={STRINGS.ok} />
+          <Button type="secondary" onClick={this.onCancelClick} title={STRINGS.cancel} />
         </div>
       </BubbleMenu>
     );

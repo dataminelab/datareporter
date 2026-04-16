@@ -57,32 +57,18 @@ function renderIcon(iconSvg: string): JSX.Element {
   ) : null;
 }
 
-function renderLink(
-  { name, title, href, newTab, tooltip }: NavLink,
-  icon: string,
-  selected: boolean,
-): JSX.Element {
+function renderLink({ name, title, href, newTab, tooltip }: NavLink, icon: string, selected: boolean): JSX.Element {
   const target = newTab ? "_blank" : null;
   const className = classNames("item", { selected });
   return (
-    <a
-      className={className}
-      href={href}
-      title={tooltip}
-      target={target}
-      key={name}
-    >
+    <a className={className} href={href} title={tooltip} target={target} key={name}>
       {renderIcon(icon)}
       {title}
     </a>
   );
 }
 
-function renderAction(
-  { name, title, onClick, tooltip }: NavAction,
-  icon: string,
-  selected: boolean,
-): JSX.Element {
+function renderAction({ name, title, onClick, tooltip }: NavAction, icon: string, selected: boolean): JSX.Element {
   const className = classNames("item", { selected });
   return (
     <div className={className} title={tooltip} key={name} onClick={onClick}>
@@ -92,29 +78,16 @@ function renderAction(
   );
 }
 
-function renderItem(
-  item: NavItem,
-  iconSvg: string,
-  selectedName: string,
-): JSX.Element {
+function renderItem(item: NavItem, iconSvg: string, selectedName: string): JSX.Element {
   const selected = selectedName && selectedName === item.name;
-  return isNavLink(item)
-    ? renderLink(item, iconSvg, selected)
-    : renderAction(item, iconSvg, selected);
+  return isNavLink(item) ? renderLink(item, iconSvg, selected) : renderAction(item, iconSvg, selected);
 }
 
-export const NavList: React.FunctionComponent<NavListProps> = ({
-  title,
-  navLinks,
-  iconSvg,
-  selected,
-}) => {
+export const NavList: React.FunctionComponent<NavListProps> = ({ title, navLinks, iconSvg, selected }) => {
   return (
     <div className={classNames("nav-list", { "no-title": !title })}>
       {title && <div className="group-title">{title}</div>}
-      <div className="items">
-        {navLinks.map(navLink => renderItem(navLink, iconSvg, selected))}
-      </div>
+      <div className="items">{navLinks.map((navLink) => renderItem(navLink, iconSvg, selected))}</div>
     </div>
   );
 };

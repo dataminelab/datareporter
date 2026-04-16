@@ -22,10 +22,7 @@ import { ConcreteSeries } from "../../../../../common/models/series/concrete-ser
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
 import { VisMeasureLabel } from "../../../../components/vis-measure-label/vis-measure-label";
-import {
-  selectFirstSplitDatums,
-  selectMainDatum,
-} from "../../../../utils/dataset/selectors/selectors";
+import { selectFirstSplitDatums, selectMainDatum } from "../../../../utils/dataset/selectors/selectors";
 import getScale from "../../../../utils/linear-scale/linear-scale";
 import { Foreground } from "../foreground/foreground";
 import { Interaction } from "../interactions/interaction";
@@ -55,17 +52,8 @@ export class Bars extends React.Component<BarsProps> {
   private container = React.createRef<HTMLDivElement>();
 
   render() {
-    const {
-      dropHighlight,
-      acceptHighlight,
-      interaction,
-      stage,
-      scrollLeft,
-      series,
-      dataset,
-      essence,
-      xScale,
-    } = this.props;
+    const { dropHighlight, acceptHighlight, interaction, stage, scrollLeft, series, dataset, essence, xScale } =
+      this.props;
     const chartStage = calculateChartStage(stage);
     const firstSplitReference = firstSplitRef(essence);
     const getX = xGetter(firstSplitReference);
@@ -74,20 +62,9 @@ export class Bars extends React.Component<BarsProps> {
     const yScale = getScale(extent, chartStage.height);
 
     return (
-      <div
-        ref={this.container}
-        className="bar-chart-bars"
-        style={stage.getWidthHeight()}
-      >
-        <div
-          className="bar-chart-total"
-          style={{ left: scrollLeft + TOTAL_LABEL_OFFSET }}
-        >
-          <VisMeasureLabel
-            series={series}
-            datum={selectMainDatum(dataset)}
-            showPrevious={essence.hasComparison()}
-          />
+      <div ref={this.container} className="bar-chart-bars" style={stage.getWidthHeight()}>
+        <div className="bar-chart-total" style={{ left: scrollLeft + TOTAL_LABEL_OFFSET }}>
+          <VisMeasureLabel series={series} datum={selectMainDatum(dataset)} showPrevious={essence.hasComparison()} />
         </div>
         {yScale && (
           <React.Fragment>

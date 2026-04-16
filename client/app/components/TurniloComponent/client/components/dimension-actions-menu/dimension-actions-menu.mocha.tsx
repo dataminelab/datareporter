@@ -28,19 +28,20 @@ import { Split } from "../../../common/models/split/split";
 import { Splits } from "../../../common/models/splits/splits";
 import { DimensionActions } from "./dimension-actions-menu";
 
-const onClose = () => {
-};
+const onClose = () => {};
 
 describe("<DimensionActions>", () => {
   describe("Split Action", () => {
-
-    const dimActions = (dimension: Dimension, essence: Essence) => shallow(<DimensionActions
-      triggerFilterMenu={null}
-      dimension={dimension}
-      essence={essence}
-      onClose={onClose}
-      clicker={null}
-    />);
+    const dimActions = (dimension: Dimension, essence: Essence) =>
+      shallow(
+        <DimensionActions
+          triggerFilterMenu={null}
+          dimension={dimension}
+          essence={essence}
+          onClose={onClose}
+          clicker={null}
+        />
+      );
 
     it("renders enabled action when dimension is not selected", () => {
       const actions = dimActions(DimensionFixtures.countryURL(), EssenceFixtures.wikiTable());
@@ -58,7 +59,7 @@ describe("<DimensionActions>", () => {
       const dimension = DimensionFixtures.wikiCommentLength();
       const essenceWithOneSplit = EssenceFixtures.wikiTable().changeSplits(
         Splits.fromDimensions(List.of(dimension)),
-        VisStrategy.FairGame,
+        VisStrategy.FairGame
       );
 
       const actions = dimActions(dimension, essenceWithOneSplit);
@@ -67,7 +68,6 @@ describe("<DimensionActions>", () => {
     });
 
     describe("click should call action", () => {
-
       let onCloseSpy: SinonSpy;
       let changeSplitSpy: SinonSpy;
 
@@ -84,7 +84,7 @@ describe("<DimensionActions>", () => {
             dimension={dimension}
             onClose={onCloseSpy}
             triggerFilterMenu={null}
-          />,
+          />
         );
 
       it("call clicker.changeSplit and onClose when dimension is not selected", () => {
@@ -102,7 +102,7 @@ describe("<DimensionActions>", () => {
         const dimension = DimensionFixtures.countryURL();
         const essenceWithOneSplit = EssenceFixtures.wikiTable().changeSplits(
           Splits.fromDimensions(List.of(dimension)),
-          VisStrategy.FairGame,
+          VisStrategy.FairGame
         );
         const actions = dimActions(dimension, essenceWithOneSplit);
 
@@ -123,7 +123,7 @@ describe("<DimensionActions>", () => {
           essence={EssenceFixtures.wikiTable()}
           onClose={onClose}
           clicker={null}
-        />,
+        />
       );
 
     it("renders enabled action when dimension is not selected", () => {
@@ -139,7 +139,6 @@ describe("<DimensionActions>", () => {
     });
 
     describe("click should call action", () => {
-
       let onCloseSpy: SinonSpy;
       let addSplitSpy: SinonSpy;
 
@@ -156,7 +155,7 @@ describe("<DimensionActions>", () => {
             dimension={dimension}
             onClose={onCloseSpy}
             triggerFilterMenu={null}
-          />,
+          />
         );
 
       it.skip("call clicker.changeSplit and onClose when dimension is not selected", () => {
@@ -167,12 +166,7 @@ describe("<DimensionActions>", () => {
 
         expect(onCloseSpy.calledOnce).to.be.true;
         expect(addSplitSpy.calledOnce).to.be.true;
-        expect(
-          addSplitSpy.calledWith(
-            Split.fromDimension(dimension),
-            VisStrategy.FairGame,
-          ),
-        ).to.be.true;
+        expect(addSplitSpy.calledWith(Split.fromDimension(dimension), VisStrategy.FairGame)).to.be.true;
       });
 
       it("calls onClose but not clicker.changeSplit when dimension is selected", () => {
@@ -199,7 +193,7 @@ describe("<DimensionActions>", () => {
           essence={EssenceFixtures.wikiTable()}
           onClose={onCloseSpy}
           clicker={null}
-        />,
+        />
       );
 
       actions.find(".filter").simulate("click");
@@ -223,7 +217,7 @@ describe("<DimensionActions>", () => {
           essence={EssenceFixtures.wikiTable()}
           onClose={onCloseSpy}
           clicker={clicker}
-        />,
+        />
       );
 
       actions.find(".pin").simulate("click");

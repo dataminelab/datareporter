@@ -55,10 +55,7 @@ interface BooleanFilterMenuState {
   selectedValues: Set<Booleanish>;
 }
 
-export class BooleanFilterMenu extends React.Component<
-  BooleanFilterMenuProps,
-  BooleanFilterMenuState
-> {
+export class BooleanFilterMenu extends React.Component<BooleanFilterMenuProps, BooleanFilterMenuState> {
   state = this.initialValues();
 
   initialValues(): BooleanFilterMenuState {
@@ -87,9 +84,7 @@ export class BooleanFilterMenu extends React.Component<
       .getEffectiveFilter(timekeeper, { unfilterDimension: dimension })
       .toExpression(dataCube);
 
-    const query = $("main")
-      .filter(filterExpression)
-      .split(dimension.expression, dimension.name);
+    const query = $("main").filter(filterExpression).split(dimension.expression, dimension.name);
     const maxQueries = dataCube.maxQueries;
     const timezone = essence.timezone;
 
@@ -99,7 +94,7 @@ export class BooleanFilterMenu extends React.Component<
       (dataset: Dataset) => {
         this.setState({
           loading: false,
-          values: dataset.data.map(d => d[dimension.name] as Booleanish),
+          values: dataset.data.map((d) => d[dimension.name] as Booleanish),
           error: null,
         });
       },
@@ -109,7 +104,7 @@ export class BooleanFilterMenu extends React.Component<
           values: [],
           error,
         });
-      },
+      }
     );
   }
 
@@ -125,7 +120,7 @@ export class BooleanFilterMenu extends React.Component<
       new BooleanFilterClause({
         reference: dimension.name,
         values: selectedValues,
-      }),
+      })
     );
   }
 
@@ -149,21 +144,14 @@ export class BooleanFilterMenu extends React.Component<
 
   selectValue = (value: Booleanish) => {
     const { selectedValues } = this.state;
-    const newSelection = selectedValues.has(value)
-      ? selectedValues.remove(value)
-      : selectedValues.add(value);
+    const newSelection = selectedValues.has(value) ? selectedValues.remove(value) : selectedValues.add(value);
     this.setState({ selectedValues: newSelection });
   };
 
   renderRow = (value: Booleanish) => {
     const { selectedValues } = this.state;
     return (
-      <div
-        className="row"
-        key={String(value)}
-        title={String(value)}
-        onClick={() => this.selectValue(value)}
-      >
+      <div className="row" key={String(value)} title={String(value)} onClick={() => this.selectValue(value)}>
         <div className="row-wrapper">
           <Checkbox selected={selectedValues.has(value)} />
           <span className="label">{String(value)}</span>
@@ -184,25 +172,15 @@ export class BooleanFilterMenu extends React.Component<
         stage={Stage.fromSize(250, 210)}
         openOn={openOn}
         onClose={onClose}
-        inside={inside}
-      >
+        inside={inside}>
         <div className="menu-table">
           <div className="rows">{values.map(this.renderRow)}</div>
           {error && <QueryError error={error} />}
           {loading && <Loader />}
         </div>
         <div className="ok-cancel-bar">
-          <Button
-            type="primary"
-            title={STRINGS.ok}
-            onClick={this.onOkClick}
-            disabled={!this.actionEnabled()}
-          />
-          <Button
-            type="secondary"
-            title={STRINGS.cancel}
-            onClick={this.onCancelClick}
-          />
+          <Button type="primary" title={STRINGS.ok} onClick={this.onOkClick} disabled={!this.actionEnabled()} />
+          <Button type="secondary" title={STRINGS.cancel} onClick={this.onCancelClick} />
         </div>
       </BubbleMenu>
     );

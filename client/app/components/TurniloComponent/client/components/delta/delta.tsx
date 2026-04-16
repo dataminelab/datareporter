@@ -28,10 +28,7 @@ export interface DeltaAttributes {
   deltaSign: DeltaSign;
 }
 
-export function formatDelta(
-  currentValue: number,
-  previousValue: number,
-): DeltaAttributes {
+export function formatDelta(currentValue: number, previousValue: number): DeltaAttributes {
   if (isNil(currentValue) || isNil(previousValue)) {
     return null;
   }
@@ -54,10 +51,7 @@ function deltaSignToSymbol(deltaSign: DeltaSign): string {
   }
 }
 
-function deltaSignToClassName(
-  deltaSign: DeltaSign,
-  lowerIsBetter = false,
-): string {
+function deltaSignToClassName(deltaSign: DeltaSign, lowerIsBetter = false): string {
   switch (deltaSign) {
     case -1:
       return lowerIsBetter ? "delta-positive" : "delta-negative";
@@ -82,12 +76,7 @@ export interface DeltaProps {
   lowerIsBetter?: boolean;
 }
 
-export const Delta: React.SFC<DeltaProps> = ({
-  lowerIsBetter,
-  currentValue,
-  previousValue,
-  formatter,
-}) => {
+export const Delta: React.SFC<DeltaProps> = ({ lowerIsBetter, currentValue, previousValue, formatter }) => {
   const formattedDelta = formatDelta(currentValue, previousValue);
   if (formattedDelta === null) {
     return <span className="delta-neutral">-</span>;

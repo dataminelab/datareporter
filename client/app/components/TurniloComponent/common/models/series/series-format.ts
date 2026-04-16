@@ -51,8 +51,7 @@ export const PERCENT_FORMAT = new SeriesFormat({
   type: SeriesFormatType.PERCENT,
 });
 
-export const customFormat = (value: string) =>
-  new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
+export const customFormat = (value: string) => new SeriesFormat({ type: SeriesFormatType.CUSTOM, value });
 
 export function formatFnFactory(format: string): (n: number) => string {
   return (n: any) => {
@@ -68,10 +67,7 @@ const percentFormatter = formatFnFactory(percentFormat);
 export const measureDefaultFormat = "0,0.0 a";
 export const defaultFormatter = formatFnFactory(measureDefaultFormat);
 
-export function seriesFormatter(
-  format: SeriesFormat,
-  measure: Measure,
-): Unary<number, string> {
+export function seriesFormatter(format: SeriesFormat, measure: Measure): Unary<number, string> {
   switch (format.type) {
     case SeriesFormatType.DEFAULT:
       return measure.formatFn;

@@ -26,10 +26,7 @@ import {
 import { ContinuousRange } from "../../visualizations/line-chart/utils/continuous-types";
 import { isValidClause } from "../../visualizations/line-chart/utils/is-valid-clause";
 
-export function toFilterClause(
-  range: ContinuousRange,
-  reference: string,
-): FilterClause {
+export function toFilterClause(range: ContinuousRange, reference: string): FilterClause {
   if (TimeRange.isTimeRange(range)) {
     const dateRange = new DateRange(range);
     const values = List.of(dateRange);
@@ -45,9 +42,7 @@ export function toFilterClause(
 
 export function toPlywoodRange(clause: FilterClause): ContinuousRange {
   if (!isValidClause(clause)) {
-    throw new Error(
-      `Expected Number or FixedTime Filter Clause. Got ${clause}`,
-    );
+    throw new Error(`Expected Number or FixedTime Filter Clause. Got ${clause}`);
   }
   const value = clause.values.first();
   return Range.fromJS(value) as ContinuousRange;

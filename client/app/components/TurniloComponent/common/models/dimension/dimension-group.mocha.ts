@@ -20,51 +20,34 @@ import { DimensionGroupFixtures } from "./dimension-group.fixtures";
 
 describe("DimensionGroup", () => {
   it("should convert to / from JS", () => {
-    const dimensionGroup = DimensionGroup.fromJS(
-      DimensionGroupFixtures.commentsJS(),
-    );
+    const dimensionGroup = DimensionGroup.fromJS(DimensionGroupFixtures.commentsJS());
 
-    expect(dimensionGroup.toJS()).to.deep.equal(
-      DimensionGroupFixtures.commentsJS(),
-    );
+    expect(dimensionGroup.toJS()).to.deep.equal(DimensionGroupFixtures.commentsJS());
   });
 
   it("should infer title from name", () => {
-    const dimensionGroup = DimensionGroup.fromJS(
-      DimensionGroupFixtures.noTitleJS(),
-    );
+    const dimensionGroup = DimensionGroup.fromJS(DimensionGroupFixtures.noTitleJS());
 
-    expect(dimensionGroup.toJS()).to.deep.equal(
-      DimensionGroupFixtures.withTitleInferredJS(),
-    );
+    expect(dimensionGroup.toJS()).to.deep.equal(DimensionGroupFixtures.withTitleInferredJS());
   });
 
   it("should throw when no name given", () => {
-    const dimensionGroupConversion = () =>
-      DimensionGroup.fromJS(DimensionGroupFixtures.noNameJS());
+    const dimensionGroupConversion = () => DimensionGroup.fromJS(DimensionGroupFixtures.noNameJS());
 
-    expect(dimensionGroupConversion).to.throw(
-      "dimension group requires a name",
-    );
+    expect(dimensionGroupConversion).to.throw("dimension group requires a name");
   });
 
   it("should throw when no dimensions given", () => {
     const groupWithNoDimensions = DimensionGroupFixtures.noDimensionsJS();
-    const dimensionGroupConversion = () =>
-      DimensionGroup.fromJS(groupWithNoDimensions);
+    const dimensionGroupConversion = () => DimensionGroup.fromJS(groupWithNoDimensions);
 
-    expect(dimensionGroupConversion).to.throw(
-      `dimension group '${groupWithNoDimensions.name}' has no dimensions`,
-    );
+    expect(dimensionGroupConversion).to.throw(`dimension group '${groupWithNoDimensions.name}' has no dimensions`);
   });
 
   it("should throw when empty dimensions given", () => {
     const groupWithEmptyDimensions = DimensionGroupFixtures.emptyDimensionsJS();
-    const dimensionGroupConversion = () =>
-      DimensionGroup.fromJS(groupWithEmptyDimensions);
+    const dimensionGroupConversion = () => DimensionGroup.fromJS(groupWithEmptyDimensions);
 
-    expect(dimensionGroupConversion).to.throw(
-      `dimension group '${groupWithEmptyDimensions.name}' has no dimensions`,
-    );
+    expect(dimensionGroupConversion).to.throw(`dimension group '${groupWithEmptyDimensions.name}' has no dimensions`);
   });
 });

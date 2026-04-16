@@ -33,9 +33,7 @@ interface HoverTooltipProps {
   rect: ClientRect | DOMRect;
 }
 
-export const HoverTooltip: React.FunctionComponent<
-  HoverTooltipProps
-> = props => {
+export const HoverTooltip: React.FunctionComponent<HoverTooltipProps> = (props) => {
   const {
     model,
     rect: { left, top },

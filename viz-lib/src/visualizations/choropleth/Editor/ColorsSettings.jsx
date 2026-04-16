@@ -15,7 +15,8 @@ export default function ColorsSettings({ options, onOptionsChange }) {
           label="Clustering Mode"
           data-test="Choropleth.Editor.ClusteringMode"
           defaultValue={options.clusteringMode}
-          onChange={(clusteringMode) => onOptionsChange({ clusteringMode })}>
+          onChange={(clusteringMode) => onOptionsChange({ clusteringMode })}
+        >
           <Select.Option value="q" data-test="Choropleth.Editor.ClusteringMode.q">
             quantile
           </Select.Option>

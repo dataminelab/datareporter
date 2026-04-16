@@ -30,15 +30,13 @@ interface TileOverflowContainerMenuProps {
 
 const SEGMENT_HEIGHT = 29 + CORE_ITEM_GAP;
 
-const TileOverflowContainerMenu: React.SFC<
-  TileOverflowContainerMenuProps
-> = props => {
+const TileOverflowContainerMenu: React.SFC<TileOverflowContainerMenuProps> = (props) => {
   const { items, openOn, closeOverflowMenu } = props;
 
   const positionedItems = items.map((item, idx) =>
     React.cloneElement(item, {
       style: transformStyle(0, CORE_ITEM_GAP + idx * SEGMENT_HEIGHT),
-    }),
+    })
   );
 
   return (
@@ -48,8 +46,7 @@ const TileOverflowContainerMenu: React.SFC<
       stage={Stage.fromSize(208, CORE_ITEM_GAP + items.length * SEGMENT_HEIGHT)}
       fixedSize={true}
       openOn={openOn}
-      onClose={closeOverflowMenu}
-    >
+      onClose={closeOverflowMenu}>
       {positionedItems}
     </BubbleMenu>
   );
@@ -64,31 +61,19 @@ interface TileOverflowContainerProps {
   closeOverflowMenu: Fn;
 }
 
-export const TileOverflowContainer: React.SFC<
-  TileOverflowContainerProps
-> = props => {
-  const { x, items, open, openOverflowMenu, className, closeOverflowMenu } =
-    props;
+export const TileOverflowContainer: React.SFC<TileOverflowContainerProps> = (props) => {
+  const { x, items, open, openOverflowMenu, className, closeOverflowMenu } = props;
 
   const style = transformStyle(x, 0);
   return (
     <WithRef>
       {({ ref: openOn, setRef }) => (
         <React.Fragment>
-          <div
-            className={classNames("overflow", className)}
-            style={style}
-            ref={setRef}
-            onClick={openOverflowMenu}
-          >
+          <div className={classNames("overflow", className)} style={style} ref={setRef} onClick={openOverflowMenu}>
             <div className="count">{"+" + items.length}</div>
           </div>
           {open && openOn && (
-            <TileOverflowContainerMenu
-              openOn={openOn}
-              items={items}
-              closeOverflowMenu={closeOverflowMenu}
-            />
+            <TileOverflowContainerMenu openOn={openOn} items={items} closeOverflowMenu={closeOverflowMenu} />
           )}
         </React.Fragment>
       )}

@@ -10,7 +10,7 @@ import { EditorPropTypes } from "@/visualizations/prop-types";
 import ChartTypeSelect from "./ChartTypeSelect";
 import getChartData from "../getChartData";
 
-const SortableBodyRow = sortableElement(props => <tr {...props} />);
+const SortableBodyRow = sortableElement((props) => <tr {...props} />);
 
 function getTableColumns(options, updateSeriesOption, debouncedUpdateSeriesOption) {
   const result = [
@@ -32,7 +32,7 @@ function getTableColumns(options, updateSeriesOption, debouncedUpdateSeriesOptio
           data-test={`Chart.Series.${item.key}.Label`}
           placeholder={item.key}
           defaultValue={item.name}
-          onChange={event => debouncedUpdateSeriesOption(item.key, "name", event.target.value)}
+          onChange={(event) => debouncedUpdateSeriesOption(item.key, "name", event.target.value)}
         />
       ),
     },
@@ -47,7 +47,8 @@ function getTableColumns(options, updateSeriesOption, debouncedUpdateSeriesOptio
           <Radio.Group
             className="series-settings-y-axis"
             value={item.yAxis === 1 ? 1 : 0}
-            onChange={event => updateSeriesOption(item.key, "yAxis", event.target.value)}>
+            onChange={(event) => updateSeriesOption(item.key, "yAxis", event.target.value)}
+          >
             <Radio value={0} data-test={`Chart.Series.${item.key}.UseLeftAxis`}>
               left
             </Radio>
@@ -111,11 +112,10 @@ export default function SeriesSettings({ options, data, onOptionsChange }) {
   );
   const [debouncedUpdateSeriesOption] = useDebouncedCallback(updateSeriesOption, 200);
 
-  const columns = useMemo(() => getTableColumns(options, updateSeriesOption, debouncedUpdateSeriesOption), [
-    options,
-    updateSeriesOption,
-    debouncedUpdateSeriesOption,
-  ]);
+  const columns = useMemo(
+    () => getTableColumns(options, updateSeriesOption, debouncedUpdateSeriesOption),
+    [options, updateSeriesOption, debouncedUpdateSeriesOption]
+  );
 
   return (
     <SortableContainer
@@ -124,11 +124,12 @@ export default function SeriesSettings({ options, data, onOptionsChange }) {
       lockToContainerEdges
       useDragHandle
       helperClass="chart-editor-series-dragged-item"
-      helperContainer={container => container.querySelector("tbody")}
+      helperContainer={(container) => container.querySelector("tbody")}
       onSortEnd={handleSortEnd}
       containerProps={{
         className: "chart-editor-series",
-      }}>
+      }}
+    >
       <Table
         dataSource={series}
         columns={columns}
@@ -137,7 +138,7 @@ export default function SeriesSettings({ options, data, onOptionsChange }) {
             row: SortableBodyRow,
           },
         }}
-        onRow={item => ({ index: item.zIndex })}
+        onRow={(item) => ({ index: item.zIndex })}
         pagination={false}
       />
     </SortableContainer>

@@ -25,7 +25,7 @@ interface HeatMapRectangleRowProps {
 export class HeatMapRectangleRow extends React.PureComponent<HeatMapRectangleRowProps> {
   render() {
     const { bins } = this.props;
-    return bins.map(bin => (
+    return bins.map((bin) => (
       <rect
         key={`heatmap-rect-${bin.row}-${bin.column}`}
         width={bin.width}

@@ -25,7 +25,7 @@ const createSort = (
   { reference, direction, period }: SortOpts = {
     direction: SortDirection.ascending,
     period: SeriesDerivation.CURRENT,
-  },
+  }
 ): Sort => {
   if (isDimension) return new DimensionSort({ reference, direction });
   return new SeriesSort({ reference, direction, period });
@@ -46,12 +46,8 @@ export function stringSplitCombine(
   dimension: string,
   {
     limit = 50,
-    sort: {
-      direction = SortDirection.ascending,
-      period = SeriesDerivation.CURRENT,
-      reference = dimension,
-    } = {},
-  }: SplitOpts = {},
+    sort: { direction = SortDirection.ascending, period = SeriesDerivation.CURRENT, reference = dimension } = {},
+  }: SplitOpts = {}
 ): Split {
   return new Split({
     reference: dimension,
@@ -65,12 +61,8 @@ export function numberSplitCombine(
   granularity = 100,
   {
     limit = 50,
-    sort: {
-      direction = SortDirection.ascending,
-      period = SeriesDerivation.CURRENT,
-      reference = dimension,
-    } = {},
-  }: SplitOpts = {},
+    sort: { direction = SortDirection.ascending, period = SeriesDerivation.CURRENT, reference = dimension } = {},
+  }: SplitOpts = {}
 ): Split {
   return new Split({
     type: SplitType.number,
@@ -86,12 +78,8 @@ export function timeSplitCombine(
   granularity = "PT1H",
   {
     limit = 50,
-    sort: {
-      direction = SortDirection.ascending,
-      period = SeriesDerivation.CURRENT,
-      reference = dimension,
-    } = {},
-  }: SplitOpts = {},
+    sort: { direction = SortDirection.ascending, period = SeriesDerivation.CURRENT, reference = dimension } = {},
+  }: SplitOpts = {}
 ): Split {
   return new Split({
     type: SplitType.time,

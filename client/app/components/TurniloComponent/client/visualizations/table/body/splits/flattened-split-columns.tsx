@@ -28,11 +28,13 @@ interface FlattenedSplitColumnsProps {
   timezone: Timezone;
 }
 
-export const FlattenedSplitColumns: React.FunctionComponent<
-  FlattenedSplitColumnsProps
-> = ({ splits, datum, timezone }) => (
+export const FlattenedSplitColumns: React.FunctionComponent<FlattenedSplitColumnsProps> = ({
+  splits,
+  datum,
+  timezone,
+}) => (
   <React.Fragment>
-    {splits.map(split => {
+    {splits.map((split) => {
       const { reference } = split;
       const value = split.selectValue(datum);
       return (

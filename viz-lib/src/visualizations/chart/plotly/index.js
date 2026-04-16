@@ -1,6 +1,6 @@
 import * as Plotly from "plotly.js";
 
-import "./locales"
+import "./locales";
 import prepareData from "./prepareData";
 import prepareLayout from "./prepareLayout";
 import updateData from "./updateData";

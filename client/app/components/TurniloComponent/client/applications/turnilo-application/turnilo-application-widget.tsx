@@ -21,17 +21,15 @@ import { AppSettings } from "../../../common/models/app-settings/app-settings";
 import { DataCube } from "../../../common/models/data-cube/data-cube";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
-import {
-  UrlHashConverter,
-  urlHashConverter,
-} from "../../../common/utils/url-hash-converter/url-hash-converter";
+import { UrlHashConverter, urlHashConverter } from "../../../common/utils/url-hash-converter/url-hash-converter";
 import { Ajax } from "../../utils/ajax/ajax";
 import { reportError } from "../../utils/error-reporter/error-reporter";
 import { CubeView } from "../../views/cube-view/cube-view-widget";
 import { ErrorView } from "../../views/error-view/error-view";
 import { NoDataView } from "../../views/no-data-view/no-data-view";
 import { Fn } from "../../../common/utils/general/general";
-import "./turnilo-application.scss";
+
+require("./turnilo-application.scss");
 
 export interface TurniloApplicationProps {
   version: string;
@@ -63,10 +61,7 @@ const ERROR: ViewType = "general-error";
 export const CUBE: ViewType = "cube";
 export const NO_DATA: ViewType = "no-data";
 
-export class TurniloApplication extends React.Component<
-  TurniloApplicationProps,
-  TurniloApplicationState
-> {
+export class TurniloApplication extends React.Component<TurniloApplicationProps, TurniloApplicationState> {
   private hashUpdating = false;
   private readonly urlHashConverter: UrlHashConverter = urlHashConverter;
   state: TurniloApplicationState = {
@@ -140,26 +135,22 @@ export class TurniloApplication extends React.Component<
     };
     const { config } = this.props;
     Ajax.version = config.version;
+    const getEssence: () => Essence | null = this.props.getEssence
+      ? this.props.getEssence.bind(config, this.props.widget?.id)
+      : () => null;
 
     const appSettings = AppSettings.fromJS(config.appSettings, {
-      executorFactory: (
-        dataCube,
-        getEssence,
-        statusCallback,
-        getExecutionStatus,
-      ) => {
+      executorFactory: (dataCube, getEssence, statusCallback, getExecutionStatus) => {
         Ajax.model_id = config.model_id;
         Ajax.hash = config.hash;
-        return Ajax.queryUrlExecutorFactory(
-          dataCube,
-          getEssence,
-          statusCallback,
-          getExecutionStatus,
-        );
+        Ajax.setInitialResults(config.results);
+        return Ajax.queryUrlExecutorFactory(dataCube, getEssence, statusCallback, getExecutionStatus);
       },
-      getEssence: this.props.getEssence.bind(config, this.props.widget.id),
+      getEssence,
       statusCallback: (status) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
-      getExecutionStatus: () => { return null; },
+      getExecutionStatus: () => {
+        return null;
+      },
     });
 
     if (this.viewTypeNeedsAnItem(viewType)) {
@@ -213,9 +204,7 @@ export class TurniloApplication extends React.Component<
   }
 
   updateEssenceInHash = (essence: Essence, force = false): void => {
-    const newHash = `${
-      this.state.selectedItem.name
-    }/${this.convertEssenceToHash(essence)}`;
+    const newHash = `${this.state.selectedItem.name}/${this.convertEssenceToHash(essence)}`;
     this.changeHash(newHash, force);
   };
 
@@ -243,29 +232,13 @@ export class TurniloApplication extends React.Component<
 
   renderView(): React.ReactNode {
     const { maxFilters, setFilterParams } = this.props;
-    const {
-      viewType,
-      viewHash,
-      selectedItem,
-      appSettings,
-      timekeeper,
-      errorId,
-    } = this.state;
+    const { viewType, viewHash, selectedItem, appSettings, timekeeper, errorId } = this.state;
     const { customization } = appSettings;
-    const widgetId =
-      this.props.widget.options.type === "TURNILO"
-        ? this.props.widget.id
-        : null;
+    const widgetId = this.props.widget.options.type === "TURNILO" ? this.props.widget.id : null;
 
     switch (viewType) {
       case NO_DATA:
-        return (
-          <NoDataView
-            onOpenAbout={this.openAboutModal}
-            customization={customization}
-            appSettings={appSettings}
-          />
-        );
+        return <NoDataView onOpenAbout={this.openAboutModal} customization={customization} appSettings={appSettings} />;
 
       case CUBE:
         return (

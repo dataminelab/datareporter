@@ -6,12 +6,9 @@ export const replaceHash = (model: any, hash: any) => {
 export const hexToRgb = (hex: any) => {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(
-    shorthandRegex,
-    function (_: number, r: number, g: number, b: number) {
-      return r + r + g + g + b + b;
-    },
-  );
+  hex = hex.replace(shorthandRegex, function (_: number, r: number, g: number, b: number) {
+    return r + r + g + g + b + b;
+  });
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
@@ -25,11 +22,7 @@ export const hexToRgb = (hex: any) => {
 };
 
 let buttonVisible = false;
-export function setPriceButton(
-  price: number,
-  proceedData: number,
-  set = false,
-): void {
+export function setPriceButton(price: number, proceedData: number, set = false): void {
   // args: price, proceedData, set
   // set:
   //    TRUE means set given data into local storage
@@ -52,13 +45,7 @@ export function setPriceButton(
   priceDiv.setAttribute("alt", currentPrice.toString());
   bytesDiv.setAttribute("alt", currentBytes.toString());
   if (set) {
-    localStorage.setItem(
-      `${window.location.pathname}-proceed_data`,
-      currentBytes.toString(),
-    );
-    localStorage.setItem(
-      `${window.location.pathname}-price`,
-      currentPrice.toString(),
-    );
+    localStorage.setItem(`${window.location.pathname}-proceed_data`, currentBytes.toString());
+    localStorage.setItem(`${window.location.pathname}-price`, currentPrice.toString());
   }
 }

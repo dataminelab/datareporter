@@ -1,0 +1,91 @@
+#!/bin/bash
+# Pre-commit hook: check formatting on staged files
+# Blocks the commit if any check fails. Fix issues and re-commit.
+
+# Set locale to avoid warnings
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+FAILED=0
+
+# ─── Prettier (JS/TS/CSS/JSON/MD) ────────────────────────────
+
+STAGED_JS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|json|css|scss|less|md)$')
+
+if [ -n "$STAGED_JS" ]; then
+  if command -v npx &> /dev/null; then
+    echo "[prettier] Checking formatting..."
+    
+    # Check all files at once for efficiency
+    FILES_TO_CHECK=""
+    for FILE in $STAGED_JS; do
+      if [ -f "$REPO_ROOT/$FILE" ]; then
+        FILES_TO_CHECK="$FILES_TO_CHECK $REPO_ROOT/$FILE"
+      fi
+    done
+    
+    if [ -n "$FILES_TO_CHECK" ]; then
+      if ! npx prettier --config "$REPO_ROOT/.prettierrc.json" --check $FILES_TO_CHECK 2>&1 | grep -v "Checking formatting..."; then
+        echo ""
+        echo "Some files need formatting. Run 'make fmt' to fix."
+        FAILED=1
+      fi
+    fi
+  else
+    echo "[prettier] npx not found, skipping"
+  fi
+fi
+
+# ─── Black + Ruff (Python) ───────────────────────────────────
+
+STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$')
+
+if [ -n "$STAGED_PY" ]; then
+  # Black — code formatter (--diff shows what it would change)
+  if command -v black &> /dev/null; then
+    echo "[black] Checking Python formatting..."
+    for FILE in $STAGED_PY; do
+      if [ -f "$REPO_ROOT/$FILE" ]; then
+        DIFF=$(black --diff --quiet "$REPO_ROOT/$FILE" 2>/dev/null)
+        if [ -n "$DIFF" ]; then
+          echo ""
+          echo "── $FILE ──"
+          echo "$DIFF"
+          FAILED=1
+        fi
+      fi
+    done
+  else
+    echo "[black] black not found, skipping"
+  fi
+
+  # Ruff — linter (already shows file:line:col and error code)
+  if command -v ruff &> /dev/null; then
+    echo "[ruff] Linting Python files..."
+    for FILE in $STAGED_PY; do
+      if [ -f "$REPO_ROOT/$FILE" ]; then
+        RUFF_OUT=$(ruff check "$REPO_ROOT/$FILE" 2>&1)
+        if [ $? -ne 0 ]; then
+          echo ""
+          echo "── $FILE ──"
+          echo "$RUFF_OUT"
+          FAILED=1
+        fi
+      fi
+    done
+  else
+    echo "[ruff] ruff not found, skipping"
+  fi
+fi
+
+if [ $FAILED -ne 0 ]; then
+  echo ""
+  echo "========================================="
+  echo "Run 'make fmt' to fix and re-stage all, then re-commit."
+  echo "To bypass (not recommended): git commit --no-verify"
+  echo "========================================="
+  exit 1
+fi
+
+exit 0

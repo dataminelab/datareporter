@@ -38,19 +38,16 @@ describe("Customization", () => {
         externalViews: [
           {
             title: "corporate dashboard",
-            linkGenerator:
-              "{ return 'https://dashboard.corporate.com/'+filter.toString() }",
+            linkGenerator: "{ return 'https://dashboard.corporate.com/'+filter.toString() }",
             sameWindow: true,
           },
           {
             title: "google docs",
-            linkGenerator:
-              "{ return 'http://182.343.32.2273:8080/'+dataCube.name }",
+            linkGenerator: "{ return 'http://182.343.32.2273:8080/'+dataCube.name }",
           },
           {
             title: "google docs",
-            linkGenerator:
-              "{ return 'http://182.343.32.2273:8080/'+timezone.timezone }",
+            linkGenerator: "{ return 'http://182.343.32.2273:8080/'+timezone.timezone }",
           },
         ],
       },

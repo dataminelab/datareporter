@@ -12,7 +12,7 @@ function box() {
 
   // For each small multiple…
   function box(g) {
-    g.each(function(d, i) {
+    g.each(function (d, i) {
       d = d.map(value).sort(d3.ascending);
       let g = d3.select(this),
         n = d.length,
@@ -24,7 +24,7 @@ function box() {
 
       // Compute whiskers. Must return exactly 2 elements, or null.
       let whiskerIndices = whiskers && whiskers.call(this, d, i),
-        whiskerData = whiskerIndices && whiskerIndices.map(i => d[i]);
+        whiskerData = whiskerIndices && whiskerIndices.map((i) => d[i]);
 
       // Compute outliers. If no whiskers are specified, all data are "outliers".
       // We compute the outliers as indices, so that we can join across transitions!
@@ -39,12 +39,7 @@ function box() {
         .range([height, 0]);
 
       // Retrieve the old x-scale, if this is an update.
-      const x0 =
-        this.__chart__ ||
-        d3.scale
-          .linear()
-          .domain([0, Infinity])
-          .range(x1.range());
+      const x0 = this.__chart__ || d3.scale.linear().domain([0, Infinity]).range(x1.range());
 
       // Stash the new scale.
       this.__chart__ = x1;
@@ -62,30 +57,30 @@ function box() {
         .insert("line", "rect")
         .attr("class", "center")
         .attr("x1", width / 2)
-        .attr("y1", d => x0(d[0]))
+        .attr("y1", (d) => x0(d[0]))
         .attr("x2", width / 2)
-        .attr("y2", d => x0(d[1]))
+        .attr("y2", (d) => x0(d[1]))
         .style("opacity", 1e-6)
         .transition()
         .duration(duration)
         .style("opacity", 1)
-        .attr("y1", d => x1(d[0]))
-        .attr("y2", d => x1(d[1]));
+        .attr("y1", (d) => x1(d[0]))
+        .attr("y2", (d) => x1(d[1]));
 
       center
         .transition()
         .duration(duration)
         .style("opacity", 1)
-        .attr("y1", d => x1(d[0]))
-        .attr("y2", d => x1(d[1]));
+        .attr("y1", (d) => x1(d[0]))
+        .attr("y2", (d) => x1(d[1]));
 
       center
         .exit()
         .transition()
         .duration(duration)
         .style("opacity", 1e-6)
-        .attr("y1", d => x1(d[0]))
-        .attr("y2", d => x1(d[1]))
+        .attr("y1", (d) => x1(d[0]))
+        .attr("y2", (d) => x1(d[1]))
         .remove();
 
       // Update innerquartile box.
@@ -96,19 +91,19 @@ function box() {
         .append("rect")
         .attr("class", "box")
         .attr("x", 0)
-        .attr("y", d => x0(d[2]))
+        .attr("y", (d) => x0(d[2]))
         .attr("width", width)
-        .attr("height", d => x0(d[0]) - x0(d[2]))
+        .attr("height", (d) => x0(d[0]) - x0(d[2]))
         .transition()
         .duration(duration)
-        .attr("y", d => x1(d[2]))
-        .attr("height", d => x1(d[0]) - x1(d[2]));
+        .attr("y", (d) => x1(d[2]))
+        .attr("height", (d) => x1(d[0]) - x1(d[2]));
 
       box
         .transition()
         .duration(duration)
-        .attr("y", d => x1(d[2]))
-        .attr("height", d => x1(d[0]) - x1(d[2]));
+        .attr("y", (d) => x1(d[2]))
+        .attr("height", (d) => x1(d[0]) - x1(d[2]));
 
       box.exit().remove();
 
@@ -128,11 +123,7 @@ function box() {
         .attr("y1", x1)
         .attr("y2", x1);
 
-      medianLine
-        .transition()
-        .duration(duration)
-        .attr("y1", x1)
-        .attr("y2", x1);
+      medianLine.transition().duration(duration).attr("y1", x1).attr("y2", x1);
 
       medianLine.exit().remove();
 
@@ -154,21 +145,9 @@ function box() {
         .attr("y2", x1)
         .style("opacity", 1);
 
-      whisker
-        .transition()
-        .duration(duration)
-        .attr("y1", x1)
-        .attr("y2", x1)
-        .style("opacity", 1);
+      whisker.transition().duration(duration).attr("y1", x1).attr("y2", x1).style("opacity", 1);
 
-      whisker
-        .exit()
-        .transition()
-        .duration(duration)
-        .attr("y1", x1)
-        .attr("y2", x1)
-        .style("opacity", 1e-6)
-        .remove();
+      whisker.exit().transition().duration(duration).attr("y1", x1).attr("y2", x1).style("opacity", 1e-6).remove();
 
       // Update outliers.
       const outlier = g.selectAll("circle.outlier").data(outlierIndices, Number);
@@ -179,24 +158,24 @@ function box() {
         .attr("class", "outlier")
         .attr("r", 5)
         .attr("cx", width / 2)
-        .attr("cy", i => x0(d[i]))
+        .attr("cy", (i) => x0(d[i]))
         .style("opacity", 1e-6)
         .transition()
         .duration(duration)
-        .attr("cy", i => x1(d[i]))
+        .attr("cy", (i) => x1(d[i]))
         .style("opacity", 1);
 
       outlier
         .transition()
         .duration(duration)
-        .attr("cy", i => x1(d[i]))
+        .attr("cy", (i) => x1(d[i]))
         .style("opacity", 1);
 
       outlier
         .exit()
         .transition()
         .duration(duration)
-        .attr("cy", i => x1(d[i]))
+        .attr("cy", (i) => x1(d[i]))
         .style("opacity", 1e-6)
         .remove();
 
@@ -220,11 +199,7 @@ function box() {
         .duration(duration)
         .attr("y", x1);
 
-      boxTick
-        .transition()
-        .duration(duration)
-        .text(format)
-        .attr("y", x1);
+      boxTick.transition().duration(duration).text(format).attr("y", x1);
 
       boxTick.exit().remove();
 
@@ -248,67 +223,56 @@ function box() {
         .attr("y", x1)
         .style("opacity", 1);
 
-      whiskerTick
-        .transition()
-        .duration(duration)
-        .text(format)
-        .attr("y", x1)
-        .style("opacity", 1);
+      whiskerTick.transition().duration(duration).text(format).attr("y", x1).style("opacity", 1);
 
-      whiskerTick
-        .exit()
-        .transition()
-        .duration(duration)
-        .attr("y", x1)
-        .style("opacity", 1e-6)
-        .remove();
+      whiskerTick.exit().transition().duration(duration).attr("y", x1).style("opacity", 1e-6).remove();
     });
     d3.timer.flush();
   }
 
-  box.width = function(x) {
+  box.width = function (x) {
     if (!arguments.length) return width;
     width = x;
     return box;
   };
 
-  box.height = function(x) {
+  box.height = function (x) {
     if (!arguments.length) return height;
     height = x;
     return box;
   };
 
-  box.tickFormat = function(x) {
+  box.tickFormat = function (x) {
     if (!arguments.length) return tickFormat;
     tickFormat = x;
     return box;
   };
 
-  box.duration = function(x) {
+  box.duration = function (x) {
     if (!arguments.length) return duration;
     duration = x;
     return box;
   };
 
-  box.domain = function(x) {
+  box.domain = function (x) {
     if (!arguments.length) return domain;
     domain = x == null ? x : d3.functor(x);
     return box;
   };
 
-  box.value = function(x) {
+  box.value = function (x) {
     if (!arguments.length) return value;
     value = x;
     return box;
   };
 
-  box.whiskers = function(x) {
+  box.whiskers = function (x) {
     if (!arguments.length) return whiskers;
     whiskers = x;
     return box;
   };
 
-  box.quartiles = function(x) {
+  box.quartiles = function (x) {
     if (!arguments.length) return quartiles;
     quartiles = x;
     return box;

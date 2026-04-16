@@ -21,30 +21,18 @@ import { nestedDataset } from "./nested-dataset";
 
 describe("datumByPosition", () => {
   it("should find row and column datums", () => {
-    expect(datumByPosition(dataset, { row: 1, column: 2 })).to.deep.equal([
-      dataset[1],
-      nestedDataset(dataset[1])[2],
-    ]);
+    expect(datumByPosition(dataset, { row: 1, column: 2 })).to.deep.equal([dataset[1], nestedDataset(dataset[1])[2]]);
   });
 
   it("should handle incorrect row", () => {
-    expect(datumByPosition(dataset, { row: -10, column: 2 })).to.deep.equal([
-      null,
-      nestedDataset(dataset[0])[2],
-    ]);
+    expect(datumByPosition(dataset, { row: -10, column: 2 })).to.deep.equal([null, nestedDataset(dataset[0])[2]]);
   });
 
   it("should handle incorrect column", () => {
-    expect(datumByPosition(dataset, { row: 3, column: -10 })).to.deep.equal([
-      dataset[3],
-      null,
-    ]);
+    expect(datumByPosition(dataset, { row: 3, column: -10 })).to.deep.equal([dataset[3], null]);
   });
 
   it("should handle incorrect row and column", () => {
-    expect(datumByPosition(dataset, { row: -10, column: -10 })).to.deep.equal([
-      null,
-      null,
-    ]);
+    expect(datumByPosition(dataset, { row: -10, column: -10 })).to.deep.equal([null, null]);
   });
 });

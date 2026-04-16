@@ -31,11 +31,7 @@ import { visualizationDependentEvaluatorBuilder } from "../../utils/rules/visual
 
 const rulesEvaluator = visualizationDependentEvaluatorBuilder
   .when(Predicates.noSplits())
-  .then(
-    Actions.manualDimensionSelection(
-      "The Bar Chart requires at least one split",
-    ),
-  )
+  .then(Actions.manualDimensionSelection("The Bar Chart requires at least one split"))
 
   .when(Predicates.areExactSplitKinds("*"))
   .or(Predicates.areExactSplitKinds("*", "*"))
@@ -45,18 +41,15 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
     // Auto adjustment
     let autoChanged = false;
 
-    const newSplits = splits.update("splits", splits =>
+    const newSplits = splits.update("splits", (splits) =>
       splits.map((split: Split) => {
         const splitDimension = dataCube.getDimension(split.reference);
-        if (
-          splitDimension.canBucketByDefault() &&
-          split.sort.reference !== splitDimension.name
-        ) {
+        if (splitDimension.canBucketByDefault() && split.sort.reference !== splitDimension.name) {
           split = split.changeSort(
             new DimensionSort({
               reference: splitDimension.name,
               direction: split.sort.direction,
-            }),
+            })
           );
           autoChanged = true;
         }
@@ -72,7 +65,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
         }
 
         return split;
-      }),
+      })
     );
 
     if (autoChanged) {
@@ -83,9 +76,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
   })
 
   .otherwise(({ dataCube }) => {
-    const categoricalDimensions = dataCube.dimensions.filterDimensions(
-      dimension => dimension.kind !== "time",
-    );
+    const categoricalDimensions = dataCube.dimensions.filterDimensions((dimension) => dimension.kind !== "time");
 
     return Resolve.manual(
       NORMAL_PRIORITY_ACTION,
@@ -97,7 +88,7 @@ const rulesEvaluator = visualizationDependentEvaluatorBuilder
             splits: Splits.fromSplit(Split.fromDimension(dimension)),
           },
         };
-      }),
+      })
     );
   })
   .build();
@@ -106,5 +97,5 @@ export const BAR_CHART_MANIFEST = new VisualizationManifest(
   "bar-chart",
   "Bar Chart",
   rulesEvaluator,
-  emptySettingsConfig,
+  emptySettingsConfig
 );

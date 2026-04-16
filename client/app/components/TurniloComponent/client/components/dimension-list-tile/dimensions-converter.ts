@@ -15,10 +15,7 @@
  */
 
 import { Dimension } from "../../../common/models/dimension/dimension";
-import {
-  DimensionGroup,
-  DimensionOrGroupVisitor,
-} from "../../../common/models/dimension/dimension-group";
+import { DimensionGroup, DimensionOrGroupVisitor } from "../../../common/models/dimension/dimension-group";
 
 export type DimensionOrGroupForView = DimensionForView | DimensionGroupForView;
 
@@ -48,25 +45,15 @@ export enum DimensionForViewType {
   group = "group",
 }
 
-export class DimensionsConverter
-  implements DimensionOrGroupVisitor<DimensionOrGroupForView>
-{
+export class DimensionsConverter implements DimensionOrGroupVisitor<DimensionOrGroupForView> {
   constructor(
     private readonly hasSearchTextPredicate: (dimension: Dimension) => boolean,
-    private readonly isFilteredOrSplitPredicate: (
-      dimension: Dimension,
-    ) => boolean,
-    private readonly isSelectedDimensionPredicate: (
-      dimension: Dimension,
-    ) => boolean,
+    private readonly isFilteredOrSplitPredicate: (dimension: Dimension) => boolean,
+    private readonly isSelectedDimensionPredicate: (dimension: Dimension) => boolean
   ) {}
 
   visitDimension(dimension: Dimension): DimensionOrGroupForView {
-    const {
-      hasSearchTextPredicate,
-      isFilteredOrSplitPredicate,
-      isSelectedDimensionPredicate,
-    } = this;
+    const { hasSearchTextPredicate, isFilteredOrSplitPredicate, isSelectedDimensionPredicate } = this;
     const { name, title, description, className } = dimension;
 
     return {
@@ -83,14 +70,14 @@ export class DimensionsConverter
 
   visitDimensionGroup(dimensionGroup: DimensionGroup): DimensionOrGroupForView {
     const { name, description, title, dimensions } = dimensionGroup;
-    const dimensionsForView = dimensions.map(item => item.accept(this));
+    const dimensionsForView = dimensions.map((item) => item.accept(this));
 
     return {
       name,
       title,
       description,
-      hasSearchText: dimensionsForView.some(item => item.hasSearchText),
-      isFilteredOrSplit: dimensionsForView.some(item => item.isFilteredOrSplit),
+      hasSearchText: dimensionsForView.some((item) => item.hasSearchText),
+      isFilteredOrSplit: dimensionsForView.some((item) => item.isFilteredOrSplit),
       children: dimensionsForView,
       type: DimensionForViewType.group,
     };

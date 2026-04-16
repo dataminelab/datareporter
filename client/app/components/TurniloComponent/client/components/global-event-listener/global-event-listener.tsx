@@ -35,10 +35,7 @@ export interface GlobalEventListenerProps {
 
 export interface GlobalEventListenerState {}
 
-export class GlobalEventListener extends React.Component<
-  GlobalEventListenerProps,
-  GlobalEventListenerState
-> {
+export class GlobalEventListener extends React.Component<GlobalEventListenerProps, GlobalEventListenerState> {
   public mounted: boolean;
   private propsToEvents: any = {
     resize: "resize",
@@ -65,7 +62,7 @@ export class GlobalEventListener extends React.Component<
       () => {
         this.onResize();
       },
-      false,
+      false
     );
   }
 
@@ -78,7 +75,7 @@ export class GlobalEventListener extends React.Component<
       () => {
         this.onResize();
       },
-      false,
+      false
     );
   }
 
@@ -104,11 +101,7 @@ export class GlobalEventListener extends React.Component<
 
   addListener(event: string) {
     const useCapture = event === "scroll";
-    window.addEventListener(
-      event,
-      (this as any)[`on${firstUp(event)}`],
-      useCapture,
-    );
+    window.addEventListener(event, (this as any)[`on${firstUp(event)}`], useCapture);
   }
 
   removeListener(event: string) {

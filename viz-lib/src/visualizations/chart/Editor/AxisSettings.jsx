@@ -15,14 +15,14 @@ export default function AxisSettings({ id, options, features, onChange }) {
     onChange(merge({}, options, newOptions));
   }
 
-  const [handleNameChange] = useDebouncedCallback(text => {
+  const [handleNameChange] = useDebouncedCallback((text) => {
     const title = isString(text) && text !== "" ? { text } : null;
     optionsChanged({ title });
   }, 200);
 
-  const [handleMinMaxChange] = useDebouncedCallback(opts => optionsChanged(opts), 200);
+  const [handleMinMaxChange] = useDebouncedCallback((opts) => optionsChanged(opts), 200);
 
-  const [handleTickFormatChange] = useDebouncedCallback(opts => optionsChanged(opts), 200);
+  const [handleTickFormatChange] = useDebouncedCallback((opts) => optionsChanged(opts), 200);
 
   return (
     <React.Fragment>
@@ -31,7 +31,8 @@ export default function AxisSettings({ id, options, features, onChange }) {
           label="Scale"
           data-test={`Chart.${id}.Type`}
           defaultValue={options.type}
-          onChange={(type) => optionsChanged({ type })}>
+          onChange={(type) => optionsChanged({ type })}
+        >
           {features.autoDetectType && (
             <Select.Option value="-" data-test={`Chart.${id}.Type.Auto`}>
               Auto Detect

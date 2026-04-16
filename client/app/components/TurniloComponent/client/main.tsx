@@ -17,14 +17,8 @@
 
 import React from "react";
 import * as ReactDOM from "react-dom";
-import {
-  AppSettings,
-  AppSettingsJS,
-} from "../common/models/app-settings/app-settings";
-import {
-  Timekeeper,
-  TimekeeperJS,
-} from "../common/models/timekeeper/timekeeper";
+import { AppSettings, AppSettingsJS } from "../common/models/app-settings/app-settings";
+import { Timekeeper, TimekeeperJS } from "../common/models/timekeeper/timekeeper";
 import { TurniloApplication } from "./applications/turnilo-application/turnilo-application";
 import { Loader } from "./components/loader/loader";
 import applyDragAndDropPolyfill from "./drag-and-drop-polyfill";

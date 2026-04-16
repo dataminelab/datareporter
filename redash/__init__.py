@@ -14,7 +14,7 @@ from redash.app import create_app  # noqa
 from redash.destinations import import_destinations
 from redash.query_runner import import_query_runners
 
-__version__ = "26.02.0-dev"
+__version__ = "26.04.0-dev"
 
 
 if os.environ.get("REMOTE_DEBUG"):
@@ -43,8 +43,18 @@ def setup_logging():
 
 setup_logging()
 
-redis_connection = redis.from_url(settings.REDIS_URL)
-rq_redis_connection = redis.from_url(settings.RQ_REDIS_URL)
+redis_connection = redis.from_url(
+    settings.REDIS_URL,
+    retry_on_timeout=True,
+    socket_keepalive=True,
+    health_check_interval=30,
+)
+rq_redis_connection = redis.from_url(
+    settings.RQ_REDIS_URL,
+    retry_on_timeout=True,
+    socket_keepalive=True,
+    health_check_interval=30,
+)
 mail = Mail()
 migrate = Migrate(compare_type=True)
 statsd_client = StatsClient(host=settings.STATSD_HOST, port=settings.STATSD_PORT, prefix=settings.STATSD_PREFIX)

@@ -29,25 +29,15 @@ import { Fn } from "../../../common/utils/general/general";
 import { AddArithmeticOperationButton } from "./add-arithmetic-operation";
 
 const renderButton = (measure: Measure) =>
-  shallow(
-    <AddArithmeticOperationButton
-      measure={measure}
-      addExpressionPlaceholder={null}
-      onClose={noop}
-    />,
-  );
+  shallow(<AddArithmeticOperationButton measure={measure} addExpressionPlaceholder={null} onClose={noop} />);
 
-const mountButton = (
-  measure: Measure,
-  addExpressionPlaceholder: Fn,
-  onClose: Fn,
-) =>
+const mountButton = (measure: Measure, addExpressionPlaceholder: Fn, onClose: Fn) =>
   mount(
     <AddArithmeticOperationButton
       measure={measure}
       onClose={onClose}
       addExpressionPlaceholder={addExpressionPlaceholder}
-    />,
+    />
   ).find(".new-arithmetic-expression");
 
 describe("Add Arithmetic Operation Button", () => {
@@ -66,11 +56,7 @@ describe("Add Arithmetic Operation Button", () => {
       onCloseSpy = sinon.spy();
       addExpressionPlaceholderSpy = sinon.spy();
       measure = MeasureFixtures.wikiUniqueUsers();
-      const addButton = mountButton(
-        measure,
-        addExpressionPlaceholderSpy,
-        onCloseSpy,
-      );
+      const addButton = mountButton(measure, addExpressionPlaceholderSpy, onCloseSpy);
       addButton.simulate("click");
     });
 

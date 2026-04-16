@@ -52,7 +52,11 @@ export default function QueryFormItem({
       ) : (
         <Tooltip title="Open query in a new tab.">
           <Link
-            href={`queries/${query.id}`}
+            href={
+              query.type === "query"
+                ? `queries/${query.id}`
+                : `reports/${query.id}`
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="alert-query-link"

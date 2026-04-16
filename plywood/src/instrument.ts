@@ -1,3 +1,4 @@
+import "source-map-support/register";
 import { env } from "process";
 import * as Sentry from "@sentry/node";
 

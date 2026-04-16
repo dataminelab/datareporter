@@ -24,8 +24,6 @@ interface SortIconProps {
   direction: SortDirection;
 }
 
-export const SortIcon: React.FunctionComponent<SortIconProps> = ({
-  direction,
-}) => (
+export const SortIcon: React.FunctionComponent<SortIconProps> = ({ direction }) => (
   <SvgIcon svg={require("../../../icons/sort-arrow.svg")} className={classNames("sort-arrow", direction)} />
 );

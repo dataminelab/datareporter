@@ -25,21 +25,14 @@ import { Filter } from "../../../common/models/filter/filter";
 import { Splits } from "../../../common/models/splits/splits";
 import { Stage } from "../../../common/models/stage/stage";
 import { MAX_SEARCH_LENGTH, STRINGS } from "../../config/constants";
-import {
-  findParentWithClass,
-  setDragData,
-  setDragGhost,
-} from "../../utils/dom/dom";
+import { findParentWithClass, setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
 import { DimensionActionsMenu } from "../dimension-actions-menu/dimension-actions-menu";
 import { SearchableTile } from "../searchable-tile/searchable-tile";
 import { TileHeaderIcon } from "../tile-header/tile-header";
 import { DIMENSION_CLASS_NAME } from "./dimension-item";
 import "./dimension-list-tile.scss";
-import {
-  DimensionOrGroupForView,
-  DimensionsConverter,
-} from "./dimensions-converter";
+import { DimensionOrGroupForView, DimensionsConverter } from "./dimensions-converter";
 import { DimensionsRenderer } from "./dimensions-renderer";
 
 export interface DimensionListTileProps {
@@ -67,30 +60,15 @@ const isFilteredOrSplitPredicate =
   (essence: Essence) =>
   (dimension: Dimension): boolean => {
     const { dataCube, filter, splits } = essence;
-    return (
-      isFiltered(dimension, filter, dataCube) ||
-      isSplit(dimension, splits, dataCube)
-    );
+    return isFiltered(dimension, filter, dataCube) || isSplit(dimension, splits, dataCube);
   };
 
-const isSplit = (
-  dimension: Dimension,
-  { splits }: Splits,
-  dataCube: DataCube,
-): boolean => {
-  return splits
-    .map(split => dataCube.dimensions.getDimensionByName(split.reference))
-    .contains(dimension);
+const isSplit = (dimension: Dimension, { splits }: Splits, dataCube: DataCube): boolean => {
+  return splits.map((split) => dataCube.dimensions.getDimensionByName(split.reference)).contains(dimension);
 };
 
-const isFiltered = (
-  dimension: Dimension,
-  filter: Filter,
-  dataCube: DataCube,
-): boolean => {
-  return filter.clauses
-    .map(clause => dataCube.dimensions.getDimensionByName(clause.reference))
-    .contains(dimension);
+const isFiltered = (dimension: Dimension, filter: Filter, dataCube: DataCube): boolean => {
+  return filter.clauses.map((clause) => dataCube.dimensions.getDimensionByName(clause.reference)).contains(dimension);
 };
 
 const isSelectedDimensionPredicate =
@@ -99,10 +77,7 @@ const isSelectedDimensionPredicate =
     return menuDimension === dimension;
   };
 
-export class DimensionListTile extends Component<
-  DimensionListTileProps,
-  DimensionListTileState
-> {
+export class DimensionListTile extends Component<DimensionListTileProps, DimensionListTileState> {
   private item: React.RefObject<any>;
   private search: React.RefObject<any>;
   constructor(props: DimensionListTileProps) {
@@ -196,15 +171,10 @@ export class DimensionListTile extends Component<
     );
   }
 
-  private renderMessageIfNoDimensionsFound(
-    dimensionsForView: DimensionOrGroupForView[],
-  ) {
+  private renderMessageIfNoDimensionsFound(dimensionsForView: DimensionOrGroupForView[]) {
     const { searchText } = this.state;
 
-    if (
-      !!searchText &&
-      !dimensionsForView.some(dimension => dimension.hasSearchText)
-    ) {
+    if (!!searchText && !dimensionsForView.some((dimension) => dimension.hasSearchText)) {
       const noDimensionsFound = `No dimensions for "${searchText}"`;
       return <div className="message">{noDimensionsFound}</div>;
     } else {
@@ -220,15 +190,15 @@ export class DimensionListTile extends Component<
     const dimensionsConverter = new DimensionsConverter(
       hasSearchTextPredicate(searchText),
       isFilteredOrSplitPredicate(essence),
-      isSelectedDimensionPredicate(menuDimension),
+      isSelectedDimensionPredicate(menuDimension)
     );
     const dimensionsForView = dataCube.dimensions.accept(dimensionsConverter);
 
     const dimensionsRenderer = new DimensionsRenderer(
       this.clickDimension,
-      // @ts-ignore 
+      // @ts-ignore
       this.dragStart,
-      searchText,
+      searchText
     );
     const items = dimensionsRenderer.render(dimensionsForView);
     const message = this.renderMessageIfNoDimensionsFound(dimensionsForView);
@@ -252,8 +222,7 @@ export class DimensionListTile extends Component<
         searchText={searchText}
         showSearch={showSearch}
         icons={icons}
-        className="dimension-list-tile"
-      >
+        className="dimension-list-tile">
         <div className="rows" ref={this.item}>
           {items}
           {message}

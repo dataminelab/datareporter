@@ -27,10 +27,7 @@ export interface FancyDragIndicatorProps {
 
 export interface FancyDragIndicatorState {}
 
-export class FancyDragIndicator extends React.Component<
-  FancyDragIndicatorProps,
-  FancyDragIndicatorState
-> {
+export class FancyDragIndicator extends React.Component<FancyDragIndicatorProps, FancyDragIndicatorState> {
   render() {
     const { dragPosition } = this.props;
     if (!dragPosition) return null;
@@ -42,12 +39,9 @@ export class FancyDragIndicator extends React.Component<
     if (dragPosition.isInsert()) {
       ghostArrowLeft = dragPosition.insert * sectionWidth - CORE_ITEM_GAP / 2;
     } else {
-      ghostArrowLeft =
-        dragPosition.replace * sectionWidth + CORE_ITEM_WIDTH / 2;
+      ghostArrowLeft = dragPosition.replace * sectionWidth + CORE_ITEM_WIDTH / 2;
       const left = dragPosition.replace * sectionWidth;
-      dragGhostElement = (
-        <div className="drag-ghost-element" style={{ left }}></div>
-      );
+      dragGhostElement = <div className="drag-ghost-element" style={{ left }}></div>;
     }
 
     return (

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { setupReportTests } from '../../support/reportHelpers';
+import { setupReportTests } from "../../support/reportHelpers";
 
 context("Split Tile", () => {
-  const splitsContainer = () =>
-    cy.get(".center-top-bar:not(.fallback) .split-tile");
+  const splitsContainer = () => cy.get(".center-top-bar .split-tile");
   const dragMask = () => cy.get(".drag-mask");
   const splitTile = dimension =>
     splitsContainer().find(`.split.dimension:contains(${dimension})`);

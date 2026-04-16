@@ -27,7 +27,10 @@ function ReportPage({ dashboardSlug, dashboardId, onError }) {
   }
 
   if (config.appSettings.customization.sentryDSN) {
-    errorReporterInit(config.appSettings.customization.sentryDSN, config.version);
+    errorReporterInit(
+      config.appSettings.customization.sentryDSN,
+      config.version,
+    );
   }
 
   Ajax.version = config.version;
@@ -38,9 +41,12 @@ function ReportPage({ dashboardSlug, dashboardId, onError }) {
 
   let initTimekeeper;
   try {
-    const timekeeper = config.timekeeper && typeof config.timekeeper === 'object' && !Array.isArray(config.timekeeper)
-      ? config.timekeeper
-      : { timeTags: {} };
+    const timekeeper =
+      config.timekeeper &&
+      typeof config.timekeeper === "object" &&
+      !Array.isArray(config.timekeeper)
+        ? config.timekeeper
+        : { timeTags: {} };
     initTimekeeper = Timekeeper.fromJS(timekeeper);
   } catch {
     initTimekeeper = Timekeeper.fromJS({ timeTags: {} });

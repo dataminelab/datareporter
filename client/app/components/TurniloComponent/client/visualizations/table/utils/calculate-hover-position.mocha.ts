@@ -20,18 +20,13 @@ import { EssenceFixtures } from "../../../../common/models/essence/essence.fixtu
 import { SeriesDerivation } from "../../../../common/models/series/concrete-series";
 import { TimeShift } from "../../../../common/models/time-shift/time-shift";
 import { HEADER_HEIGHT, ROW_HEIGHT } from "../table";
-import {
-  HoverElement,
-  rowPosition,
-  seriesPosition as uncurriedSeriesPosition,
-} from "./calculate-hover-position";
+import { HoverElement, rowPosition, seriesPosition as uncurriedSeriesPosition } from "./calculate-hover-position";
 
 describe("Calculate Hover Position", () => {
   describe("seriesPosition", () => {
     const segmentWidth = 100;
     const columnWidth = 50;
-    const offsetForNthColumn = (n: number) =>
-      segmentWidth + (n - 0.5) * columnWidth;
+    const offsetForNthColumn = (n: number) => segmentWidth + (n - 0.5) * columnWidth;
     const seriesPosition = (x: number, essence: Essence) =>
       uncurriedSeriesPosition(x, essence, segmentWidth, columnWidth);
 
@@ -54,18 +49,14 @@ describe("Calculate Hover Position", () => {
 
       it("should return whitespace for invalid offset", () => {
         const seriesCount = wiki.series.series.count();
-        const position = seriesPosition(
-          offsetForNthColumn(seriesCount + 1),
-          wiki,
-        );
+        const position = seriesPosition(offsetForNthColumn(seriesCount + 1), wiki);
         expect(position).to.include({ element: HoverElement.WHITESPACE });
       });
     });
   });
 
   describe("rowPosition", () => {
-    const offsetForNthRow = (n: number) =>
-      HEADER_HEIGHT + (n - 0.5) * ROW_HEIGHT;
+    const offsetForNthRow = (n: number) => HEADER_HEIGHT + (n - 0.5) * ROW_HEIGHT;
 
     it("should return row element for valid offset", () => {
       const position = rowPosition(offsetForNthRow(1), [{}]);

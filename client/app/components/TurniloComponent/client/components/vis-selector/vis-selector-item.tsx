@@ -27,16 +27,11 @@ interface VisSelectorItemProps {
   onClick?: Unary<VisualizationManifest, void>;
 }
 
-export const VisSelectorItem: React.SFC<VisSelectorItemProps> = ({
-  visualization,
-  selected,
-  onClick,
-}) => (
+export const VisSelectorItem: React.SFC<VisSelectorItemProps> = ({ visualization, selected, onClick }) => (
   <div
     className={classNames("vis-item", selected ? "selected" : "not-selected")}
     key={visualization.name}
-    onClick={() => onClick && !selected && onClick(visualization)}
-  >
+    onClick={() => onClick && !selected && onClick(visualization)}>
     <SvgIcon svg={require("../../icons/vis-" + visualization.name + ".svg")} />
     <div className="vis-title">{visualization.title}</div>
   </div>

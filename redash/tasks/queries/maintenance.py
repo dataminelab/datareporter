@@ -1,7 +1,7 @@
 import logging
 import time
 
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, MissingSchema
 from rq.timeouts import JobTimeoutException
 
 from redash import models, redis_connection, settings, statsd_client
@@ -10,6 +10,7 @@ from redash.models.parameterized_query import (
     QueryDetachedFromDataSourceError,
 )
 from redash.monitor import rq_job_ids
+from redash.query_runner import NotSupported
 from redash.tasks.failure_report import track_failure
 from redash.utils import json_dumps, sentry
 from redash.worker import get_job_logger, job
@@ -185,6 +186,16 @@ def refresh_schema(data_source_id):
             time.time() - start_time,
         )
         statsd_client.incr("refresh_schema.connection_error")
+    except MissingSchema:
+        logger.warning(
+            "task=refresh_schema state=missing_url ds_id=%s ds_name=%s runtime=%.2f",
+            ds.id,
+            ds.name,
+            time.time() - start_time,
+        )
+        statsd_client.incr("refresh_schema.missing_url")
+    except NotSupported:
+        logger.debug("Datasource %s does not support schema refresh", ds.name)
     except Exception:
         logger.warning("Failed refreshing schema for the data source: %s", ds.name, exc_info=1)
         statsd_client.incr("refresh_schema.error")
@@ -216,7 +227,7 @@ def refresh_schemas():
         elif ds.org.is_disabled:
             logger.info("task=refresh_schema state=skip ds_id=%s reason=org_disabled", ds.id)
         else:
-            refresh_schema.delay(ds.id)
+            refresh_schema.delay(ds.id)  # type: ignore
 
     logger.info(
         "task=refresh_schemas state=finish total_runtime=%.2f",

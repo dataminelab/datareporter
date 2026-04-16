@@ -22,9 +22,9 @@
 
 DataReporter combines two major BI paradigms:
 
-| Paradigm | Origin | Use Case |
-|----------|--------|----------|
-| **SQL Queries** | Redash | Write SQL, execute against databases, visualize results |
+| Paradigm             | Origin  | Use Case                                                |
+| -------------------- | ------- | ------------------------------------------------------- |
+| **SQL Queries**      | Redash  | Write SQL, execute against databases, visualize results |
 | **OLAP Exploration** | Turnilo | Drag-drop dimensions/measures, automatic SQL generation |
 
 The integration allows users to switch between SQL-based queries (traditional Redash) and OLAP exploration (Turnilo), with automatic SQL translation via the Plywood server.
@@ -32,8 +32,8 @@ The integration allows users to switch between SQL-based queries (traditional Re
 ### High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          Frontend (React)                           │
+┌────────────────────────────────────────────────────────────────────┐
+│                          Frontend (React)                          │
 │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────────────┐   │
 │  │ Query Editor │  │  Dashboards  │  │   TurniloComponent      │   │
 │  │   (SQL)      │  │   (Widgets)  │  │   (OLAP UI v1.40.5)     │   │
@@ -41,8 +41,8 @@ The integration allows users to switch between SQL-based queries (traditional Re
 └─────────┼─────────────────┼──────────────────────┼─────────────────┘
           │                 │                      │
           ▼                 ▼                      ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Backend API (Flask)                              │
+┌────────────────────────────────────────────────────────────────────┐
+│                    Backend API (Flask)                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────────────┐   │
 │  │ /api/queries │  │/api/dashboards│ │    /api/reports         │   │
 │  └──────┬───────┘  └──────┬───────┘  └───────────┬─────────────┘   │
@@ -51,10 +51,10 @@ The integration allows users to switch between SQL-based queries (traditional Re
           ▼                 ▼                      ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      Query Execution Layer                          │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │                    Query Runners (40+)                        │  │
-│  │  PostgreSQL │ MySQL │ BigQuery │ Athena │ Druid │ ...        │  │
-│  └──────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │                    Query Runners (40+)                       │   │
+│  │  PostgreSQL │ MySQL │ BigQuery │ Athena │ Druid │ ...        │   │
+│  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
           │                                        │
           │                                        ▼
@@ -67,7 +67,7 @@ The integration allows users to switch between SQL-based queries (traditional Re
           ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        Data Sources                                 │
-│   PostgreSQL │ MySQL │ BigQuery │ Snowflake │ Druid │ ...          │
+│  PostgreSQL │ MySQL │ BigQuery │ Snowflake │ Druid │ Athena │ JSON  │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -77,50 +77,50 @@ The integration allows users to switch between SQL-based queries (traditional Re
 
 ### Backend (Python/Flask)
 
-| Component | Technology | Version |
-|-----------|------------|---------|
-| Framework | Flask | 2.3.2 |
-| Language | Python | 3.10 |
-| ORM | SQLAlchemy | 1.3.24 |
-| Database | PostgreSQL | (psycopg2 2.9.6) |
-| Cache/Queue | Redis | 4.6.0 |
-| Task Queue | RQ (Redis Queue) | 1.16.2 |
-| HTTP Server | Gunicorn | 22.0.0 |
-| API | Flask-RESTful | 0.3.10 |
-| Auth | Flask-Login, Authlib, PyJWT | 0.6.0, 0.15.5, 2.4.0 |
-| Security | Flask-Talisman, Cryptography | 0.7.0, 43.0.1 |
-| Monitoring | Sentry-SDK, StatsD | 2.8.0, 3.3.0 |
-| AI | google-genai | ^1.56.0 |
+| Component   | Technology                   | Version              |
+| ----------- | ---------------------------- | -------------------- |
+| Framework   | Flask                        | 2.3.2                |
+| Language    | Python                       | 3.10                 |
+| ORM         | SQLAlchemy                   | 1.3.24               |
+| Database    | PostgreSQL                   | (psycopg2 2.9.6)     |
+| Cache/Queue | Redis                        | 4.6.0                |
+| Task Queue  | RQ (Redis Queue)             | 1.16.2               |
+| HTTP Server | Gunicorn                     | 22.0.0               |
+| API         | Flask-RESTful                | 0.3.10               |
+| Auth        | Flask-Login, Authlib, PyJWT  | 0.6.0, 0.15.5, 2.4.0 |
+| Security    | Flask-Talisman, Cryptography | 0.7.0, 43.0.1        |
+| Monitoring  | Sentry-SDK, StatsD           | 2.8.0, 3.3.0         |
+| AI          | google-genai                 | ^1.56.0              |
 
 ### Frontend (React/TypeScript)
 
-| Component | Technology | Version |
-|-----------|------------|---------|
-| Framework | React | >=16.14.0 |
-| Language | TypeScript/JSX | - |
-| Build | Webpack | - |
-| UI Library | Ant Design | 4.4.3 |
-| Visualization | D3, Plotly.js, Leaflet | - |
-| Testing | Jest, Cypress | - |
-| Code Quality | ESLint, Prettier | - |
+| Component     | Technology             | Version   |
+| ------------- | ---------------------- | --------- |
+| Framework     | React                  | >=16.14.0 |
+| Language      | TypeScript/JSX         | -         |
+| Build         | Webpack                | -         |
+| UI Library    | Ant Design             | 4.4.3     |
+| Visualization | D3, Plotly.js, Leaflet | -         |
+| Testing       | Jest, Cypress          | -         |
+| Code Quality  | ESLint, Prettier       | -         |
 
 ### Plywood Server (TypeScript/Node.js)
 
-| Component | Technology | Version |
-|-----------|------------|---------|
-| Runtime | Node.js | 18.20 |
-| Framework | Express | 4.19.2 |
-| Query Engine | Druid Toolkit | 0.19.1 |
-| Data Structures | Immutable.js | 4.0.0-rc.14 |
-| Monitoring | Sentry | 7.119.0 |
+| Component       | Technology    | Version     |
+| --------------- | ------------- | ----------- |
+| Runtime         | Node.js       | 18.20       |
+| Framework       | Express       | 4.19.2      |
+| Query Engine    | Druid Toolkit | 0.19.1      |
+| Data Structures | Immutable.js  | 4.0.0-rc.14 |
+| Monitoring      | Sentry        | 7.119.0     |
 
 ### Turnilo Component
 
-| Component | Technology | Version |
-|-----------|------------|---------|
-| Framework | TypeScript/React | - |
-| Origin | Allegro Turnilo (hardforked) | 1.40.5 |
-| License | Apache 2.0 | - |
+| Component | Technology                   | Version |
+| --------- | ---------------------------- | ------- |
+| Framework | TypeScript/React             | -       |
+| Origin    | Allegro Turnilo (hardforked) | 1.40.5  |
+| License   | Apache 2.0                   | -       |
 
 ### Data Source Drivers
 
@@ -206,42 +206,44 @@ datareporter/
 
 #### API Handlers (`redash/handlers/`)
 
-| Handler | File | Purpose |
-|---------|------|---------|
-| Queries | `queries.py` | Query CRUD, execution, formatting |
-| Dashboards | `dashboards.py` | Dashboard CRUD, sharing, widgets |
-| Reports | `reports.py` | Turnilo report management |
-| Visualizations | `visualizations.py` | Visualization types and configs |
-| Data Sources | `data_sources.py` | Database connection management |
-| Users | `users.py` | User management |
-| Groups | `groups.py` | Group/permission management |
-| Alerts | `alerts.py` | Query-based alerts |
-| Model Configs | `model_configs.py` | OLAP data cube definitions |
+| Handler        | File                | Purpose                           |
+| -------------- | ------------------- | --------------------------------- |
+| Queries        | `queries.py`        | Query CRUD, execution, formatting |
+| Dashboards     | `dashboards.py`     | Dashboard CRUD, sharing, widgets  |
+| Reports        | `reports.py`        | Turnilo report management         |
+| Visualizations | `visualizations.py` | Visualization types and configs   |
+| Data Sources   | `data_sources.py`   | Database connection management    |
+| Users          | `users.py`          | User management                   |
+| Groups         | `groups.py`         | Group/permission management       |
+| Alerts         | `alerts.py`         | Query-based alerts                |
+| Model Configs  | `model_configs.py`  | OLAP data cube definitions        |
 
 #### Data Models (`redash/models/`)
 
-| Model | Purpose |
-|-------|---------|
-| `Query` | SQL query definitions |
-| `QueryResult` | Cached query results |
-| `Dashboard` | Dashboard containers |
-| `Widget` | Dashboard widgets |
+| Model           | Purpose                      |
+| --------------- | ---------------------------- |
+| `Query`         | SQL query definitions        |
+| `QueryResult`   | Cached query results         |
+| `Dashboard`     | Dashboard containers         |
+| `Widget`        | Dashboard widgets            |
 | `Visualization` | Visualization configurations |
-| `DataSource` | Database connections |
-| `User` | User accounts |
-| `Group` | User groups with permissions |
-| `Organization` | Multi-tenant organizations |
-| `Report` | Turnilo-based OLAP reports |
-| `Model` | OLAP data cube definitions |
-| `Alert` | Query-based alerts |
+| `DataSource`    | Database connections         |
+| `User`          | User accounts                |
+| `Group`         | User groups with permissions |
+| `Organization`  | Multi-tenant organizations   |
+| `Report`        | Turnilo-based OLAP reports   |
+| `Model`         | OLAP data cube definitions   |
+| `Alert`         | Query-based alerts           |
 
 #### Query Runners (`redash/query_runner/`)
 
 Base classes:
+
 - `BaseQueryRunner` - Abstract base for all connectors
 - `BaseSQLQueryRunner` - SQL-specific base class
 
 Key implementations:
+
 - `postgres.py` - PostgreSQL
 - `mysql.py` - MySQL
 - `big_query.py` - Google BigQuery
@@ -251,67 +253,68 @@ Key implementations:
 
 #### Background Tasks (`redash/tasks/`)
 
-| Queue | Purpose |
-|-------|---------|
-| `periodic` | Scheduled tasks (5-min intervals) |
-| `queries` | Query execution |
-| `scheduled_queries` | Scheduled query runs |
-| `emails` | Email notifications |
-| `schemas` | Schema refresh |
-| `default` | General operations |
+| Queue               | Purpose                           |
+| ------------------- | --------------------------------- |
+| `periodic`          | Scheduled tasks (5-min intervals) |
+| `queries`           | Query execution                   |
+| `scheduled_queries` | Scheduled query runs              |
+| `emails`            | Email notifications               |
+| `schemas`           | Schema refresh                    |
+| `default`           | General operations                |
 
 #### Plywood Bridge (`redash/plywood/`)
 
-| File | Purpose |
-|------|---------|
-| `plywood.py` | `PlywoodApi` class - main interface to Plywood server |
-| `hash_manager.py` | Hash serialization/deserialization for reports |
-| `objects/data_cube.py` | OLAP DataCube model |
-| `objects/expression.py` | Plywood expression objects |
-| `parsers/query_parser_v2.py` | Query parsing with engine support |
+| File                         | Purpose                                               |
+| ---------------------------- | ----------------------------------------------------- |
+| `plywood.py`                 | `PlywoodApi` class - main interface to Plywood server |
+| `hash_manager.py`            | Hash serialization/deserialization for reports        |
+| `objects/data_cube.py`       | OLAP DataCube model                                   |
+| `objects/expression.py`      | Plywood expression objects                            |
+| `parsers/query_parser_v2.py` | Query parsing with engine support                     |
 
 ### Frontend (React)
 
 #### Key Components (`client/app/components/`)
 
-| Component | Purpose |
-|-----------|---------|
-| `TurniloComponent/` | OLAP exploration UI (Turnilo v1.40.5) |
-| `visualizations/` | Visualization widget selector |
-| `queries/` | Query editor components |
-| `dashboards/` | Dashboard builder |
-| `reports/` | Report management |
-| `dynamic-parameters/` | Query parameter handling |
+| Component             | Purpose                               |
+| --------------------- | ------------------------------------- |
+| `TurniloComponent/`   | OLAP exploration UI (Turnilo v1.40.5) |
+| `visualizations/`     | Visualization widget selector         |
+| `queries/`            | Query editor components               |
+| `dashboards/`         | Dashboard builder                     |
+| `reports/`            | Report management                     |
+| `dynamic-parameters/` | Query parameter handling              |
 
 #### Pages (`client/app/pages/`)
 
-| Page | Route | Purpose |
-|------|-------|---------|
-| `queries/` | `/queries/:id` | Query editor |
-| `queries-list/` | `/queries` | Query browser |
-| `dashboards/` | `/dashboards/:id` | Dashboard view/edit |
-| `reports/` | `/reports` | Report browser |
-| `report/` | `/reports/:id` | Report viewer (Turnilo) |
-| `models/` | `/models` | Data cube management |
-| `data-sources/` | `/data_sources` | Data source setup |
+| Page            | Route             | Purpose                 |
+| --------------- | ----------------- | ----------------------- |
+| `queries/`      | `/queries/:id`    | Query editor            |
+| `queries-list/` | `/queries`        | Query browser           |
+| `dashboards/`   | `/dashboards/:id` | Dashboard view/edit     |
+| `reports/`      | `/reports`        | Report browser          |
+| `report/`       | `/reports/:id`    | Report viewer (Turnilo) |
+| `models/`       | `/models`         | Data cube management    |
+| `data-sources/` | `/data_sources`   | Data source setup       |
 
 ### Plywood Server (TypeScript/Express)
 
 #### Endpoints (`plywood/src/endpoint/`)
 
-| Endpoint | Purpose |
-|----------|---------|
-| `/api/v1/plywood` | Main query translation |
-| `/api/v1/plywood/attributes` | Extract dimensions/measures from schema |
-| `/api/v1/plywood/attributes/engines` | List supported database engines |
-| `/api/v1/plywood/expression` | Hash to expression conversion |
-| `/api/v1/plywood/filter-to-hash` | Serialize filter to hash |
-| `/api/v1/plywood/hash-to-filter` | Deserialize hash to filter |
-| `/api/v1/plywood/response-shape` | Detect result data structure |
+| Endpoint                             | Purpose                                 |
+| ------------------------------------ | --------------------------------------- |
+| `/api/v1/plywood`                    | Main query translation                  |
+| `/api/v1/plywood/attributes`         | Extract dimensions/measures from schema |
+| `/api/v1/plywood/attributes/engines` | List supported database engines         |
+| `/api/v1/plywood/expression`         | Hash to expression conversion           |
+| `/api/v1/plywood/filter-to-hash`     | Serialize filter to hash                |
+| `/api/v1/plywood/hash-to-filter`     | Deserialize hash to filter              |
+| `/api/v1/plywood/response-shape`     | Detect result data structure            |
 
 #### Attribute Parsers (`plywood/src/formatter/attributesFormatter/parsers/`)
 
 Database-specific parsers that extract column metadata:
+
 - `PostgresAttributeParser.ts`
 - `MySqlAttributeParser.ts`
 - `BigQueryParser.ts`
@@ -390,13 +393,13 @@ Database-specific parsers that extract column metadata:
 Redash data source types map to Plywood engines:
 
 | Redash Type | Plywood Engine |
-|-------------|----------------|
-| `pg` | `postgres` |
-| `mysql` | `mysql` |
-| `bigquery` | `bigquery` |
-| `athena` | `athena` |
-| `druid` | `druid` |
-| `json` | `json` |
+| ----------- | -------------- |
+| `pg`        | `postgres`     |
+| `mysql`     | `mysql`        |
+| `bigquery`  | `bigquery`     |
+| `athena`    | `athena`       |
+| `druid`     | `druid`        |
+| `json`      | `json`         |
 
 ---
 
@@ -404,38 +407,38 @@ Redash data source types map to Plywood engines:
 
 ### Main API (`/api/`)
 
-| Endpoint | Methods | Purpose |
-|----------|---------|---------|
-| `/api/queries` | GET, POST | List/create queries |
-| `/api/queries/{id}` | GET, PUT, DELETE | Query CRUD |
-| `/api/queries/{id}/results` | POST | Execute query |
-| `/api/queries/format` | POST | Format SQL |
-| `/api/dashboards` | GET, POST | List/create dashboards |
-| `/api/dashboards/{id}` | GET, PUT, DELETE | Dashboard CRUD |
-| `/api/dashboards/{id}/widgets` | POST | Add widget |
-| `/api/reports` | GET, POST | List/create reports |
-| `/api/reports/{id}` | GET, DELETE | Report CRUD |
-| `/api/reports/{id}/results` | POST | Execute report (hash) |
-| `/api/visualizations` | GET, POST | Visualization types |
-| `/api/data_sources` | GET, POST | Data source management |
-| `/api/model_configs` | GET, POST | Data cube configs |
-| `/api/model_configs/generate` | POST | Auto-generate cubes |
-| `/api/users` | GET, POST | User management |
-| `/api/groups` | GET, POST | Group management |
-| `/api/alerts` | GET, POST | Alert management |
+| Endpoint                       | Methods          | Purpose                |
+| ------------------------------ | ---------------- | ---------------------- |
+| `/api/queries`                 | GET, POST        | List/create queries    |
+| `/api/queries/{id}`            | GET, PUT, DELETE | Query CRUD             |
+| `/api/queries/{id}/results`    | POST             | Execute query          |
+| `/api/queries/format`          | POST             | Format SQL             |
+| `/api/dashboards`              | GET, POST        | List/create dashboards |
+| `/api/dashboards/{id}`         | GET, PUT, DELETE | Dashboard CRUD         |
+| `/api/dashboards/{id}/widgets` | POST             | Add widget             |
+| `/api/reports`                 | GET, POST        | List/create reports    |
+| `/api/reports/{id}`            | GET, DELETE      | Report CRUD            |
+| `/api/reports/{id}/results`    | POST             | Execute report (hash)  |
+| `/api/visualizations`          | GET, POST        | Visualization types    |
+| `/api/data_sources`            | GET, POST        | Data source management |
+| `/api/model_configs`           | GET, POST        | Data cube configs      |
+| `/api/model_configs/generate`  | POST             | Auto-generate cubes    |
+| `/api/users`                   | GET, POST        | User management        |
+| `/api/groups`                  | GET, POST        | Group management       |
+| `/api/alerts`                  | GET, POST        | Alert management       |
 
 ### Plywood API (`http://plywood:3000/api/v1/`)
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/status` | GET | Health check |
-| `/plywood` | POST | Query translation |
-| `/plywood/attributes` | POST | Extract dimensions/measures |
-| `/plywood/attributes/engines` | GET | List supported engines |
-| `/plywood/expression` | POST | Hash to expression |
-| `/plywood/filter-to-hash` | POST | Serialize filter |
-| `/plywood/hash-to-filter` | POST | Deserialize filter |
-| `/plywood/response-shape` | POST | Detect result schema |
+| Endpoint                      | Method | Purpose                     |
+| ----------------------------- | ------ | --------------------------- |
+| `/status`                     | GET    | Health check                |
+| `/plywood`                    | POST   | Query translation           |
+| `/plywood/attributes`         | POST   | Extract dimensions/measures |
+| `/plywood/attributes/engines` | GET    | List supported engines      |
+| `/plywood/expression`         | POST   | Hash to expression          |
+| `/plywood/filter-to-hash`     | POST   | Serialize filter            |
+| `/plywood/hash-to-filter`     | POST   | Deserialize filter          |
+| `/plywood/response-shape`     | POST   | Detect result schema        |
 
 ---
 
@@ -444,6 +447,7 @@ Redash data source types map to Plywood engines:
 ### Environment Variables
 
 **Core:**
+
 ```bash
 REDASH_COOKIE_SECRET        # Session encryption (REQUIRED)
 REDASH_DATABASE_URL         # PostgreSQL connection
@@ -452,11 +456,13 @@ RQ_REDIS_URL                # Redis for job queue
 ```
 
 **Plywood Integration:**
+
 ```bash
 PLYWOOD_SERVER_URL          # Default: http://plywood-server:3000
 ```
 
 **AI/LLM:**
+
 ```bash
 OPENAI_API_KEY              # OpenAI integration
 GEMINI_API_KEY              # Google Gemini
@@ -464,6 +470,7 @@ OLLAMA_API_URL              # Default: http://ollama:11434
 ```
 
 **Email:**
+
 ```bash
 REDASH_MAIL_SERVER          # SMTP server
 REDASH_MAIL_PORT            # SMTP port
@@ -473,6 +480,7 @@ REDASH_MAIL_USE_TLS         # TLS flag
 ```
 
 **Security:**
+
 ```bash
 REDASH_ENFORCE_HTTPS        # Redirect HTTP to HTTPS
 REDASH_COOKIES_SECURE       # Secure cookie flag
@@ -480,6 +488,7 @@ REDASH_AUTH_TYPE            # Auth method
 ```
 
 **Performance:**
+
 ```bash
 SQLALCHEMY_POOL_SIZE        # DB connection pool
 WORKERS_COUNT               # Background workers
@@ -489,15 +498,15 @@ REDASH_SCHEMAS_REFRESH_SCHEDULE  # Minutes between refresh
 
 ### Docker Services
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| `server` | 5000 | Flask API |
-| `scheduler` | - | RQ scheduler |
-| `worker-server` | 5001 | Worker HTTP |
-| `redis` | 6379 | Cache/queue |
-| `postgres` | 5432 | Database |
-| `plywood` | 3000 | OLAP server |
-| `email` | 1080, 1025 | Mail (dev) |
+| Service         | Port       | Purpose      |
+| --------------- | ---------- | ------------ |
+| `server`        | 5000       | Flask API    |
+| `scheduler`     | -          | RQ scheduler |
+| `worker-server` | 5001       | Worker HTTP  |
+| `redis`         | 6379       | Cache/queue  |
+| `postgres`      | 5432       | Database     |
+| `plywood`       | 3000       | OLAP server  |
+| `email`         | 1080, 1025 | Mail (dev)   |
 
 ---
 
@@ -521,19 +530,19 @@ npm run watch
 
 ### Entry Points (`bin/docker-entrypoint`)
 
-| Command | Purpose |
-|---------|---------|
-| `server` | Production Flask (gunicorn) |
-| `dev_server` | Development Flask (auto-reload) |
-| `debug` | Flask with debugger (PTVSD) |
-| `worker` | RQ worker (supervisord) |
-| `dev_worker` | Dev RQ worker (watch) |
-| `scheduler` | RQ scheduler |
-| `worker_server` | Worker HTTP server |
-| `create_db` | Initialize tables |
-| `shell` | Python shell |
-| `manage` | CLI commands |
-| `tests` | Run pytest |
+| Command         | Purpose                         |
+| --------------- | ------------------------------- |
+| `server`        | Production Flask (gunicorn)     |
+| `dev_server`    | Development Flask (auto-reload) |
+| `debug`         | Flask with debugger (PTVSD)     |
+| `worker`        | RQ worker (supervisord)         |
+| `dev_worker`    | Dev RQ worker (watch)           |
+| `dev_scheduler` | RQ scheduler                    |
+| `worker_server` | Worker HTTP server              |
+| `create_db`     | Initialize tables               |
+| `shell`         | Python shell                    |
+| `manage`        | CLI commands                    |
+| `tests`         | Run pytest                      |
 
 ### NPM Scripts
 
@@ -565,51 +574,51 @@ make clean              # Clean Docker
 
 ### Backend Core
 
-| File | Purpose |
-|------|---------|
-| `redash/__init__.py` | Global init (Redis, RQ, Mail) |
-| `redash/app.py` | Flask app factory |
-| `redash/wsgi.py` | Production entry |
-| `redash/settings/__init__.py` | Configuration (400+ vars) |
-| `redash/models/__init__.py` | ORM models (1,771 lines) |
-| `redash/handlers/queries.py` | Query API |
-| `redash/handlers/reports.py` | Report API |
-| `redash/handlers/dashboards.py` | Dashboard API |
+| File                            | Purpose                       |
+| ------------------------------- | ----------------------------- |
+| `redash/__init__.py`            | Global init (Redis, RQ, Mail) |
+| `redash/app.py`                 | Flask app factory             |
+| `redash/wsgi.py`                | Production entry              |
+| `redash/settings/__init__.py`   | Configuration (400+ vars)     |
+| `redash/models/__init__.py`     | ORM models (1,771 lines)      |
+| `redash/handlers/queries.py`    | Query API                     |
+| `redash/handlers/reports.py`    | Report API                    |
+| `redash/handlers/dashboards.py` | Dashboard API                 |
 
 ### Plywood Integration
 
-| File | Purpose |
-|------|---------|
-| `redash/plywood/plywood.py` | PlywoodApi client |
-| `redash/plywood/hash_manager.py` | Hash serialization |
-| `redash/plywood/objects/data_cube.py` | OLAP model |
+| File                                  | Purpose            |
+| ------------------------------------- | ------------------ |
+| `redash/plywood/plywood.py`           | PlywoodApi client  |
+| `redash/plywood/hash_manager.py`      | Hash serialization |
+| `redash/plywood/objects/data_cube.py` | OLAP model         |
 
 ### Frontend
 
-| File | Purpose |
-|------|---------|
-| `client/app/index.js` | React entry |
-| `client/app/components/TurniloComponent/` | OLAP UI |
-| `client/app/pages/queries/` | Query editor |
-| `client/app/pages/reports/` | Report viewer |
+| File                                      | Purpose       |
+| ----------------------------------------- | ------------- |
+| `client/app/index.js`                     | React entry   |
+| `client/app/components/TurniloComponent/` | OLAP UI       |
+| `client/app/pages/queries/`               | Query editor  |
+| `client/app/pages/reports/`               | Report viewer |
 
 ### Plywood Server
 
-| File | Purpose |
-|------|---------|
-| `plywood/src/app.ts` | Express app |
-| `plywood/src/endpoint/` | API endpoints |
+| File                                         | Purpose        |
+| -------------------------------------------- | -------------- |
+| `plywood/src/app.ts`                         | Express app    |
+| `plywood/src/endpoint/`                      | API endpoints  |
 | `plywood/src/formatter/attributesFormatter/` | Column parsing |
 
 ### Build & Config
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Multi-stage build |
-| `docker-compose.yml` | Dev services |
-| `pyproject.toml` | Python deps |
-| `client/package.json` | Frontend deps |
-| `bin/docker-entrypoint` | Container entry |
+| File                    | Purpose           |
+| ----------------------- | ----------------- |
+| `Dockerfile`            | Multi-stage build |
+| `docker-compose.yml`    | Dev services      |
+| `pyproject.toml`        | Python deps       |
+| `client/package.json`   | Frontend deps     |
+| `bin/docker-entrypoint` | Container entry   |
 
 ---
 
@@ -624,10 +633,10 @@ make clean              # Clean Docker
 
 ### Permission Levels
 
-| Level | Access |
-|-------|--------|
-| View | Read-only |
-| Edit | Modify objects |
+| Level | Access                 |
+| ----- | ---------------------- |
+| View  | Read-only              |
+| Edit  | Modify objects         |
 | Admin | Full control + sharing |
 
 ### Security Features
@@ -665,4 +674,4 @@ make clean              # Clean Docker
 
 ---
 
-*Generated for development reference. Last updated: 2026-02-04*
+_Generated for development reference. Last updated: 2026-02-04_

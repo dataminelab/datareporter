@@ -42,10 +42,7 @@ export interface ImmutableInputState {
   validString?: string;
 }
 
-export class ImmutableInput extends React.Component<
-  ImmutableInputProps,
-  ImmutableInputState
-> {
+export class ImmutableInput extends React.Component<ImmutableInputProps, ImmutableInputState> {
   static defaultProps: Partial<ImmutableInputProps> = {
     type: "text",
     stringToValue: String,
@@ -83,21 +80,12 @@ export class ImmutableInput extends React.Component<
     let validString: string;
 
     if (this.state.validString === undefined) {
-      validString = props.valueToString(
-        ImmutableUtils.getProperty(props.instance, props.path),
-      );
+      validString = props.valueToString(ImmutableUtils.getProperty(props.instance, props.path));
     } else {
-      const currentCanonical = props.valueToString(
-        props.stringToValue(this.state.validString),
-      );
-      const possibleCanonical = props.valueToString(
-        ImmutableUtils.getProperty(props.instance, props.path),
-      );
+      const currentCanonical = props.valueToString(props.stringToValue(this.state.validString));
+      const possibleCanonical = props.valueToString(ImmutableUtils.getProperty(props.instance, props.path));
 
-      validString =
-        currentCanonical === possibleCanonical
-          ? this.state.validString
-          : possibleCanonical;
+      validString = currentCanonical === possibleCanonical ? this.state.validString : possibleCanonical;
     }
 
     this.setState({
@@ -113,7 +101,7 @@ export class ImmutableInput extends React.Component<
         invalidString: undefined,
         validString: undefined,
       },
-      callback,
+      callback
     );
   }
 
@@ -123,10 +111,7 @@ export class ImmutableInput extends React.Component<
       return;
     }
 
-    if (
-      this.state.invalidString === undefined &&
-      nextProps.instance !== this.state.myInstance
-    ) {
+    if (this.state.invalidString === undefined && nextProps.instance !== this.state.myInstance) {
       this.initFromProps(nextProps);
     }
   }
@@ -141,11 +126,7 @@ export class ImmutableInput extends React.Component<
   }
 
   maybeFocus(): void {
-    if (
-      !this.focusAlreadyGiven &&
-      this.props.focusOnStartUp &&
-      this.input.current
-    ) {
+    if (!this.focusAlreadyGiven && this.props.focusOnStartUp && this.input.current) {
       this.input.current.select();
       this.focusAlreadyGiven = true;
     }
@@ -168,8 +149,7 @@ export class ImmutableInput extends React.Component<
   }
 
   update(newString: string): void {
-    const { path, onChange, instance, validator, onInvalid, stringToValue } =
-      this.props;
+    const { path, onChange, instance, validator, onInvalid, stringToValue } = this.props;
 
     let myInstance: any;
     let invalidString: string;
@@ -196,14 +176,12 @@ export class ImmutableInput extends React.Component<
     }
 
     this.setState({ myInstance, invalidString, validString }, () => {
-      if (onChange)
-        onChange(myInstance, invalidString === undefined, path, error);
+      if (onChange) onChange(myInstance, invalidString === undefined, path, error);
     });
   }
 
-  onChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ): void => this.update(event.target.value);
+  onChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void =>
+    this.update(event.target.value);
 
   render(): React.ReactNode {
     const { path, type, className } = this.props;

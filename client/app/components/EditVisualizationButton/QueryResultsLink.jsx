@@ -10,9 +10,7 @@ export default function QueryResultsLink(props) {
 
   if (resultId && resultData && query.name) {
     if (query.id) {
-      href = `api/queries/${query.id}/results/${resultId}.${fileType}${
-        props.embed ? `?api_key=${props.apiKey}` : ""
-      }`;
+      href = `api/queries/${query.id}/results/${resultId}.${fileType}${props.embed ? `?api_key=${props.apiKey}` : ""}`;
     } else {
       href = `api/query_results/${resultId}.${fileType}`;
     }

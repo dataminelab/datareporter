@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@use "sass:math";
 @import "./browser-type";
 
 // positioning
@@ -57,12 +58,7 @@
   width: $width;
 }
 
-@mixin unpin-full(
-  $distance,
-  $right: $distance,
-  $bottom: $distance,
-  $left: $distance
-) {
+@mixin unpin-full($distance, $right: $distance, $bottom: $distance, $left: $distance) {
   position: absolute;
   top: $distance;
   bottom: $bottom;
@@ -108,8 +104,8 @@
   left: 50%;
   width: $width;
   height: $height;
-  margin-left: -$width / 2;
-  margin-top: -$height / 2;
+  margin-left: math.div(-$width, 2);
+  margin-top: math.div(-$height, 2);
 }
 
 @mixin ellipsis {

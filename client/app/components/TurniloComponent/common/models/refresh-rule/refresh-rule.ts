@@ -59,14 +59,8 @@ export class RefreshRule implements Instance<RefreshRuleValue, RefreshRuleJS> {
 
   constructor(parameters: RefreshRuleValue) {
     const rule = parameters.rule;
-    if (
-      rule !== RefreshRule.FIXED &&
-      rule !== RefreshRule.QUERY &&
-      rule !== RefreshRule.REALTIME
-    ) {
-      throw new Error(
-        `rule must be on of: ${RefreshRule.FIXED}, ${RefreshRule.QUERY}, or ${RefreshRule.REALTIME}`,
-      );
+    if (rule !== RefreshRule.FIXED && rule !== RefreshRule.QUERY && rule !== RefreshRule.REALTIME) {
+      throw new Error(`rule must be on of: ${RefreshRule.FIXED}, ${RefreshRule.QUERY}, or ${RefreshRule.REALTIME}`);
     }
     this.rule = rule;
     this.time = parameters.time;

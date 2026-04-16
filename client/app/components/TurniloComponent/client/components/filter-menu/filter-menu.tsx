@@ -41,9 +41,7 @@ export interface FilterMenuProps {
   inside?: Element;
 }
 
-export const FilterMenu: React.FunctionComponent<FilterMenuProps> = (
-  props: FilterMenuProps,
-) => {
+export const FilterMenu: React.FunctionComponent<FilterMenuProps> = (props: FilterMenuProps) => {
   if (!props.dimension) return null;
   switch (props.dimension.kind) {
     case "time":

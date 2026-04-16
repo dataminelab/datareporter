@@ -41,7 +41,7 @@ function renderInputWithPresets(selected: string, errorMessage?: string) {
       selected={selected}
       formatCustomValue={identity}
       parseCustomValue={identity}
-    />,
+    />
   );
 }
 
@@ -54,10 +54,7 @@ describe("<InputWithPresets>", () => {
 
     expect(selectedMember, "one member is selected").to.exist;
     expect(selectedMember.title, "member has correct title").to.equal("A");
-    expect(
-      selectedMember.key,
-      "members key is equal to selected prop",
-    ).to.equal("a");
+    expect(selectedMember.key, "members key is equal to selected prop").to.equal("a");
   });
 
   it("should hide input if one of presets selected", () => {

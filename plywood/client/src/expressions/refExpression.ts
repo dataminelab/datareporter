@@ -263,14 +263,21 @@ export class RefExpression extends Expression {
     // Look for the reference in the parent chain
     let nestDiff = 0;
     while (myTypeContext && !hasOwnProp(myTypeContext.datasetType, myName)) {
-      myTypeContext = myTypeContext.parent;
       nestDiff++;
+      if (!hasOwnProp(myTypeContext, "parent")) {
+        myTypeContext = undefined;
+        break;
+      } else {
+        myTypeContext = myTypeContext.parent;
+      }
     }
     if (!myTypeContext) {
       throw new Error(`could not resolve ${this}`);
     }
-
     const myFullType = myTypeContext.datasetType[myName];
+    if (!myFullType) {
+      throw new Error(`could not resolve ${this}`);
+    }
     const myType = myFullType.type;
 
     if (this.type && this.type !== myType) {
@@ -295,9 +302,9 @@ export class RefExpression extends Expression {
     if (this.type !== "DATASET") return typeContext;
 
     const { nest, name } = this;
-    let myTypeContext = typeContext;
+    let myTypeContext: DatasetFullType | undefined = typeContext;
     for (let i = nest; i > 0; i--) {
-      myTypeContext = myTypeContext.parent;
+      myTypeContext = myTypeContext?.parent;
       if (!myTypeContext)
         throw new Error("went too deep on " + this.toString());
     }

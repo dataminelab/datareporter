@@ -4,10 +4,10 @@ on:
   workflow_call:
     inputs:
       ref:
-        description: 'The git reference to checkout'
+        description: "The git reference to checkout"
         required: false
         type: string
-        default: ''
+        default: ""
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,7 +25,7 @@ jobs:
         with:
           name: e2e-test-results
           path: test-results/
-      
+
       - name: Show downloaded artifacts
         run: |
           echo "📁 Downloaded artifacts for backup:"
@@ -35,7 +35,7 @@ jobs:
         if: always()
         run: |
           echo "📸 Uploading screenshots to Percy..."
-          
+
           # Check what we downloaded
           if [ -d "test-results/screenshots" ]; then
             echo "Found screenshots, uploading to Percy..."

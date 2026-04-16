@@ -10,8 +10,7 @@ export interface CurrentRoute<P> {
   routeParams: P;
 }
 
-export interface RedashRoute<P = {}, C extends Context = Context, R = any>
-  extends UniversalRouterRoute<C, R> {
+export interface RedashRoute<P = {}, C extends Context = Context, R = any> extends UniversalRouterRoute<C, R> {
   path: string; // we don't use other UniversalRouterRoute options, path should be available and should be a string
   key?: string; // generated in Router.jsx
   title: string;
@@ -35,9 +34,9 @@ class Routes {
   get items(): RouteItem[] {
     if (!this._sorted) {
       this._items = sortBy(this._items, [
-        item => getRouteParamsCount(item.path), // simple definitions first, with more params - last
-        item => -item.path.length, // longer first
-        item => item.path, // if same type and length - sort alphabetically
+        (item) => getRouteParamsCount(item.path), // simple definitions first, with more params - last
+        (item) => -item.path.length, // longer first
+        (item) => item.path, // if same type and length - sort alphabetically
       ]);
       this._sorted = true;
     }
@@ -56,7 +55,7 @@ class Routes {
   public unregister(id: string | null) {
     if (isString(id)) {
       // removing item does not break their order (if already sorted)
-      this._items = filter(this.items, item => item.id !== id);
+      this._items = filter(this.items, (item) => item.id !== id);
     }
   }
 }

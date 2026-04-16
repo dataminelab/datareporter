@@ -16,11 +16,7 @@
 
 import { expect, use } from "chai";
 import { NumberRange, StringRange, TimeRange } from "plywood";
-import {
-  numberRange,
-  stringIn,
-  timeRange,
-} from "../../../common/models/filter-clause/filter-clause.fixtures";
+import { numberRange, stringIn, timeRange } from "../../../common/models/filter-clause/filter-clause.fixtures";
 import equivalent from "../test-utils/equivalent";
 import { toFilterClause, toPlywoodRange } from "./highlight-clause";
 
@@ -29,52 +25,39 @@ use(equivalent);
 describe("highlightClause", () => {
   describe("toFilterClause", () => {
     it("should throw on invalid range type", () => {
-      expect(() =>
-        toFilterClause(
-          new StringRange({ start: "a", end: "z" }) as any,
-          "foobar",
-        ),
-      ).to.throw("Expected Number or Time range");
+      expect(() => toFilterClause(new StringRange({ start: "a", end: "z" }) as any, "foobar")).to.throw(
+        "Expected Number or Time range"
+      );
     });
 
     it("should create fixed time clause for time range", () => {
       const start = new Date("2000-01-01");
       const end = new Date("2000-01-02");
-      expect(
-        toFilterClause(new TimeRange({ start, end }), "time"),
-      ).to.equivalent(timeRange("time", start, end));
+      expect(toFilterClause(new TimeRange({ start, end }), "time")).to.equivalent(timeRange("time", start, end));
     });
 
     it("should create number clause for number range", () => {
       const start = 0;
       const end = 100;
-      expect(
-        toFilterClause(new NumberRange({ start, end }), "count"),
-      ).to.equivalent(numberRange("count", start, end));
+      expect(toFilterClause(new NumberRange({ start, end }), "count")).to.equivalent(numberRange("count", start, end));
     });
   });
 
   describe("toPlywoodRange", () => {
     it("should throw on invalid clause type", () => {
-      expect(() => toPlywoodRange(stringIn("foobar", []))).to.throw(
-        "Expected Number or FixedTime Filter Clause",
-      );
+      expect(() => toPlywoodRange(stringIn("foobar", []))).to.throw("Expected Number or FixedTime Filter Clause");
     });
 
     it("should create time range for fixed time clause", () => {
       const start = new Date("2000-01-01");
       const end = new Date("2000-01-02");
-      expect(toPlywoodRange(timeRange("time", start, end))).to.equivalent(
-        new TimeRange({ start, end }),
-      );
+      expect(toPlywoodRange(timeRange("time", start, end))).to.equivalent(new TimeRange({ start, end }));
     });
 
     it("should create number range for number clause", () => {
       const start = 0;
       const end = 100;
-      expect(toPlywoodRange(numberRange("count", start, end))).to.equivalent(
-        new NumberRange({ start, end }),
-      );
+      expect(toPlywoodRange(numberRange("count", start, end))).to.equivalent(new NumberRange({ start, end }));
     });
   });
 });

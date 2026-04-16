@@ -38,17 +38,9 @@ export interface BarChartLayout {
   segment: Stage;
 }
 
-export function calculateLayout(
-  visualisationStage: Stage,
-  domainLength: number,
-  seriesCount: number,
-): BarChartLayout {
+export function calculateLayout(visualisationStage: Stage, domainLength: number, seriesCount: number): BarChartLayout {
   const bodyStage = visualisationStage.within(MARGINS);
-  const segmentStage = calculateSegmentStage(
-    bodyStage,
-    domainLength,
-    seriesCount,
-  );
+  const segmentStage = calculateSegmentStage(bodyStage, domainLength, seriesCount);
   const innerBodyHeight = segmentStage.height * seriesCount;
   return {
     scroller: {

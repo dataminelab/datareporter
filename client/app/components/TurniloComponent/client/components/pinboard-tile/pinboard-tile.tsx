@@ -36,10 +36,7 @@ import {
   loaded,
   loading,
 } from "../../../common/models/visualization-props/visualization-props";
-import {
-  debounceWithPromise,
-  Unary,
-} from "../../../common/utils/functional/functional";
+import { debounceWithPromise, Unary } from "../../../common/utils/functional/functional";
 import { MAX_SEARCH_LENGTH } from "../../config/constants";
 import { setDragData, setDragGhost } from "../../utils/dom/dom";
 import { DragManager } from "../../utils/drag-manager/drag-manager";
@@ -77,10 +74,7 @@ export interface PinboardTileState {
 
 const noMeasureError = new Error("No measure selected");
 
-export class PinboardTile extends React.Component<
-  PinboardTileProps,
-  PinboardTileState
-> {
+export class PinboardTile extends React.Component<PinboardTileProps, PinboardTileState> {
   state: PinboardTileState = {
     searchText: "",
     showSearch: false,
@@ -89,7 +83,7 @@ export class PinboardTile extends React.Component<
 
   private loadData(params: QueryParams) {
     this.setState({ datasetLoad: loading });
-    this.fetchData(params).then(loadedDataset => {
+    this.fetchData(params).then((loadedDataset) => {
       // TODO: encode it better
       // null is here when we get out of order request, so we just ignore it
       if (!loadedDataset) return;
@@ -114,16 +108,14 @@ export class PinboardTile extends React.Component<
         if (Dataset.isDataset(value)) {
           return loaded(value);
         }
-        throw new Error(
-          "Expected a Dataset but received a different PlywoodValue.",
-        );
+        throw new Error("Expected a Dataset but received a different PlywoodValue.");
       },
-      err => {
+      (err) => {
         // signal out of order requests with null
         if (!equalParams(params, this.lastQueryParams)) return null;
         reportError(err);
         return error(err);
-      },
+      }
     );
   };
 
@@ -138,10 +130,7 @@ export class PinboardTile extends React.Component<
     this.debouncedCallExecutor.cancel();
   }
 
-  componentDidUpdate(
-    previousProps: PinboardTileProps,
-    previousState: PinboardTileState,
-  ) {
+  componentDidUpdate(previousProps: PinboardTileProps, previousState: PinboardTileState) {
     if (shouldFetchData(this.props, previousProps, this.state, previousState)) {
       const { essence, timekeeper, dimension, sortOn } = this.props;
       const { searchText } = this.state;
@@ -173,14 +162,12 @@ export class PinboardTile extends React.Component<
   private getFormatter(): Unary<Datum, string> {
     const { sortOn, essence } = this.props;
     const series = essence.findConcreteSeries(sortOn.key);
-    return d => series.formatValue(d);
+    return (d) => series.formatValue(d);
   }
 
   private isEditable(): boolean {
     const clause = this.pinnedClause();
-    return clause
-      ? isClauseEditable(clause)
-      : isDimensionPinnable(this.props.dimension);
+    return clause ? isClauseEditable(clause) : isDimensionPinnable(this.props.dimension);
   }
 
   private isInEdit(): boolean {
@@ -229,19 +216,13 @@ export class PinboardTile extends React.Component<
 
   private toggleFilterValue = (value: string) => {
     const clause = this.pinnedClause();
-    if (!isPinnableClause(clause))
-      throw Error(`Expected Boolean or String filter clause, got ${clause}`);
-    const updater = (values: Set<string>) =>
-      values.has(value) ? values.remove(value) : values.add(value);
+    if (!isPinnableClause(clause)) throw Error(`Expected Boolean or String filter clause, got ${clause}`);
+    const updater = (values: Set<string>) => (values.has(value) ? values.remove(value) : values.add(value));
     // TODO: call looks the same but typescript distinguish them and otherwise can't find common call signature
     const newClause =
       clause instanceof StringFilterClause
-        ? clause.update("values", (values: Set<string | boolean>) =>
-            updater(values as Set<string>),
-          )
-        : clause.update("values", (values: Set<string | boolean>) =>
-            updater(values as Set<string>),
-          );
+        ? clause.update("values", (values: Set<string | boolean>) => updater(values as Set<string>))
+        : clause.update("values", (values: Set<string | boolean>) => updater(values as Set<string>));
     if (newClause.values.isEmpty()) {
       this.removeClause(newClause);
     } else {
@@ -301,8 +282,7 @@ export class PinboardTile extends React.Component<
           onClose: this.unpin,
           onSearchClick: this.toggleSearch,
         })}
-        className="pinboard-tile"
-      >
+        className="pinboard-tile">
         {isLoaded(datasetLoad) && (
           <PinboardDataset
             rowMode={this.getRowMode()}

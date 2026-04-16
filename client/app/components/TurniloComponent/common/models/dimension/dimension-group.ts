@@ -41,9 +41,7 @@ export interface DimensionOrGroupVisitor<R> {
   visitDimensionGroup(dimensionGroup: DimensionGroup): R;
 }
 
-export function dimensionOrGroupFromJS(
-  dimensionOrGroup: DimensionOrGroupJS,
-): DimensionOrGroup {
+export function dimensionOrGroupFromJS(dimensionOrGroup: DimensionOrGroupJS): DimensionOrGroup {
   if (isDimensionGroupJS(dimensionOrGroup)) {
     return DimensionGroup.fromJS(dimensionOrGroup);
   } else {
@@ -51,15 +49,11 @@ export function dimensionOrGroupFromJS(
   }
 }
 
-function isDimensionGroupJS(
-  dimensionOrGroup: DimensionOrGroupJS,
-): dimensionOrGroup is DimensionGroupJS {
+function isDimensionGroupJS(dimensionOrGroup: DimensionOrGroupJS): dimensionOrGroup is DimensionGroupJS {
   return (dimensionOrGroup as DimensionGroupJS).dimensions !== undefined;
 }
 
-export class DimensionGroup
-  implements Instance<DimensionGroupValue, DimensionGroupJS>
-{
+export class DimensionGroup implements Instance<DimensionGroupValue, DimensionGroupJS> {
   static fromJS(dimensionGroup: DimensionGroupJS) {
     const { name, title, dimensions, description } = dimensionGroup;
 
@@ -103,8 +97,7 @@ export class DimensionGroup
   equals(other: any): boolean {
     return (
       this === other ||
-      (DimensionGroup.isDimensionGroup(other) &&
-        immutableArraysEqual(this.dimensions, other.dimensions))
+      (DimensionGroup.isDimensionGroup(other) && immutableArraysEqual(this.dimensions, other.dimensions))
     );
   }
 
@@ -112,7 +105,7 @@ export class DimensionGroup
     const dimensionGroup: DimensionGroupJS = {
       name: this.name,
       title: this.title,
-      dimensions: this.dimensions.map(dimension => dimension.toJS()),
+      dimensions: this.dimensions.map((dimension) => dimension.toJS()),
     };
     if (this.description) dimensionGroup.description = this.description;
     return dimensionGroup;

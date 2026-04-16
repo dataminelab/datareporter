@@ -17,6 +17,11 @@ MEASURE_TYPES = (NUMBER,)
 TIME_ATTRIBUTE_TYPES = (TIME,)
 
 
+def get_table_name(schema_name):
+    # Use only the part after the last dot if present
+    return schema_name.rsplit(".", 1)[-1]
+
+
 class ConfigDumper(yaml.SafeDumper):
     def write_line_break(self, data=None):
         super(ConfigDumper, self).write_line_break(data)
@@ -150,7 +155,14 @@ class ModelConfigGenerator:
     @staticmethod
     def _build(model: Model, refresh):
         schemas = model.data_source.get_schema(refresh=refresh)
-        table_schema = next((schema for schema in schemas if schema["name"] == model.table), None)
+        table_schema = next(
+            (
+                schema
+                for schema in schemas
+                if (model.table == schema["name"]) or model.table == get_table_name(schema["name"])
+            ),
+            None,
+        )
         if table_schema is None:
             raise ValueError("Data source {} doesn't contain {} table".format(model.data_source, model.table))
 

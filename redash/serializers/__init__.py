@@ -35,9 +35,8 @@ def get_data_cube(model):
     return data_cube
 
 
-# TODO use redash.plywood.hash_manager.ReportHash instead
-def hash_report(report, can_edit=False):
-    # carry this into serializers folder and name it into serialize_report
+# for public dashboards
+def hash_report(report, can_edit=False, get_results=False):
     data_cube = get_data_cube(report.model)
     is_favorite = report.is_favorite_v2(report.user, report)
     api_key = models.ApiKey.get_by_object(report)
@@ -49,6 +48,9 @@ def hash_report(report, can_edit=False):
             _external=True,
         )
         api_key = api_key.api_key
+    config = ModelConfig.get_model_config(report.model_id)
+    if not config:
+        config = {"customization": {}, "timekeeper": {}}
     result = {
         "color_1": report.color_1,
         "color_2": report.color_2,
@@ -56,6 +58,7 @@ def hash_report(report, can_edit=False):
         "name": report.name,
         "model_id": report.model_id,
         "can_edit": can_edit,
+        "dataSource": data_cube,
         "source_name": data_cube.source_name,
         "data_source_id": report.model.data_source.id,
         "report": "",
@@ -70,11 +73,12 @@ def hash_report(report, can_edit=False):
         },
         "is_favorite": is_favorite,
         "is_archived": report.is_archived,
-        "landed": True,
-        "appSettings": ModelConfig.get_model_config(report.model_id),
+        "appSettings": config,
         "id": report.id,
         "api_key": api_key,
         "public_url": public_url,
+        "created_at": report.created_at,
+        "updated_at": report.updated_at,
     }
     with_last_modified_by = True
     if with_last_modified_by:
@@ -82,18 +86,35 @@ def hash_report(report, can_edit=False):
     else:
         result["last_modified_by_id"] = report.last_modified_by_id
 
+    if get_results:
+        org = report.user.org if report.user else None
+        if org is not None:
+            from redash.plywood.hash_manager import hash_to_result
+
+            result["results"] = hash_to_result(report.hash, report.model, org).serialized()
+
     return result
 
 
-def public_widget(widget):
+def public_widget(widget, get_results=False):
+    options = dict(widget.options or {})
+    report = widget.get_report()
     res = {
         "id": widget.id,
         "width": widget.width,
-        "options": widget.options,
+        "options": options,
         "text": widget.text,
         "updated_at": widget.updated_at,
         "created_at": widget.created_at,
+        "report_id": widget.get_report_id(),
+        "report": hash_report(report, get_results=get_results) if report else None,
+        "is_public": True,
     }
+
+    if res["report"]:
+        res["options"]["widget_type"] = "report"
+    else:
+        res["options"]["widget_type"] = "query"
 
     v = widget.visualization
     if v and v.id:
@@ -115,7 +136,7 @@ def public_widget(widget):
     return res
 
 
-def public_dashboard(dashboard):
+def public_dashboard(dashboard, get_results=False):
     dashboard_dict = project(
         serialize_dashboard(dashboard, with_favorite_state=False, with_widgets=True, is_public=True),
         ("name", "layout", "dashboard_filters_enabled", "updated_at", "created_at", "options", "widgets"),
@@ -127,7 +148,7 @@ def public_dashboard(dashboard):
         .outerjoin(models.Query)
     )
 
-    dashboard_dict["widgets"] = [public_widget(w) for w in widget_list]
+    dashboard_dict["widgets"] = [public_widget(w, get_results=get_results) for w in widget_list]
     return dashboard_dict
 
 
@@ -259,6 +280,7 @@ def serialize_alert(alert, full=True):
         "updated_at": alert.updated_at,
         "created_at": alert.created_at,
         "rearm": alert.rearm,
+        "type": alert.type,
     }
 
     if full:

@@ -20,10 +20,7 @@ import * as React from "react";
 import { SinonSpy, spy } from "sinon";
 import { EssenceFixtures } from "../../../common/models/essence/essence.fixtures";
 import { ExpressionSeriesOperation } from "../../../common/models/expression/expression";
-import {
-  PercentExpression,
-  PercentOperation,
-} from "../../../common/models/expression/percent";
+import { PercentExpression, PercentOperation } from "../../../common/models/expression/percent";
 import { SeriesList } from "../../../common/models/series-list/series-list";
 import { ExpressionSeries } from "../../../common/models/series/expression-series";
 import { PERCENT_FORMAT } from "../../../common/models/series/series-format";
@@ -42,30 +39,15 @@ const constructPercentSeries = (operation: PercentOperation) =>
   });
 
 const seriesWithPercents = (...percents: PercentOperation[]): SeriesList =>
-  percents.reduce(
-    (e, operation) => e.addSeries(constructPercentSeries(operation)),
-    essence,
-  ).series;
+  percents.reduce((e, operation) => e.addSeries(constructPercentSeries(operation)), essence).series;
 
 const renderButton = (series: SeriesList) =>
-  shallow(
-    <AddPercentSeriesButton
-      addSeries={null}
-      series={series}
-      measure={firstMeasure}
-      onClose={null}
-    />,
-  );
+  shallow(<AddPercentSeriesButton addSeries={null} series={series} measure={firstMeasure} onClose={null} />);
 
 const mountButton = (series: SeriesList, addSeries: Fn, onClose: Fn) =>
-  mount(
-    <AddPercentSeriesButton
-      addSeries={addSeries}
-      series={series}
-      measure={firstMeasure}
-      onClose={onClose}
-    />,
-  ).find(".new-percent-expression");
+  mount(<AddPercentSeriesButton addSeries={addSeries} series={series} measure={firstMeasure} onClose={onClose} />).find(
+    ".new-percent-expression"
+  );
 
 describe("Add Percent Series Button", () => {
   it("button is enabled when no percents already selected", () => {
@@ -75,9 +57,7 @@ describe("Add Percent Series Button", () => {
   });
 
   it("button is enabled when only one percent already selected", () => {
-    const btn = renderButton(
-      seriesWithPercents(ExpressionSeriesOperation.PERCENT_OF_PARENT),
-    );
+    const btn = renderButton(seriesWithPercents(ExpressionSeriesOperation.PERCENT_OF_PARENT));
 
     expect(btn.hasClass("disabled")).to.be.false;
   });
@@ -85,7 +65,7 @@ describe("Add Percent Series Button", () => {
   it("button is disabled when both percents already selected", () => {
     const series = seriesWithPercents(
       ExpressionSeriesOperation.PERCENT_OF_PARENT,
-      ExpressionSeriesOperation.PERCENT_OF_TOTAL,
+      ExpressionSeriesOperation.PERCENT_OF_TOTAL
     );
     const btn = renderButton(series);
 
@@ -107,11 +87,7 @@ describe("Add Percent Series Button", () => {
       it("calls addSeries with '% of Parent'", () => {
         expect(addSeriesSpy.calledOnce).to.be.true;
         const argument = addSeriesSpy.args[0][0];
-        expect(
-          argument.equals(
-            constructPercentSeries(ExpressionSeriesOperation.PERCENT_OF_PARENT),
-          ),
-        ).to.be.true;
+        expect(argument.equals(constructPercentSeries(ExpressionSeriesOperation.PERCENT_OF_PARENT))).to.be.true;
       });
 
       it("should call onClose", () => {
@@ -129,7 +105,7 @@ describe("Add Percent Series Button", () => {
         const addButton = mountButton(
           seriesWithPercents(ExpressionSeriesOperation.PERCENT_OF_PARENT),
           addSeriesSpy,
-          onCloseSpy,
+          onCloseSpy
         );
         addButton.simulate("click");
       });
@@ -137,11 +113,7 @@ describe("Add Percent Series Button", () => {
       it("calls addSeries with '% of Total'", () => {
         expect(addSeriesSpy.calledOnce).to.be.true;
         const argument = addSeriesSpy.args[0][0];
-        expect(
-          argument.equals(
-            constructPercentSeries(ExpressionSeriesOperation.PERCENT_OF_TOTAL),
-          ),
-        ).to.be.true;
+        expect(argument.equals(constructPercentSeries(ExpressionSeriesOperation.PERCENT_OF_TOTAL))).to.be.true;
       });
 
       it("should call onClose", () => {
@@ -157,12 +129,9 @@ describe("Add Percent Series Button", () => {
         onCloseSpy = spy();
         addSeriesSpy = spy();
         const addButton = mountButton(
-          seriesWithPercents(
-            ExpressionSeriesOperation.PERCENT_OF_PARENT,
-            ExpressionSeriesOperation.PERCENT_OF_TOTAL,
-          ),
+          seriesWithPercents(ExpressionSeriesOperation.PERCENT_OF_PARENT, ExpressionSeriesOperation.PERCENT_OF_TOTAL),
           addSeriesSpy,
-          onCloseSpy,
+          onCloseSpy
         );
         addButton.simulate("click");
       });

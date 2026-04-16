@@ -50,6 +50,8 @@ COLOR_1 = "color_1"
 COLOR_2 = "color_2"
 TAGS = "tags"
 DATA_SOURCE_ID = "data_source_id"
+SCHEDULE = "schedule"
+IS_DRAFT = "is_draft"
 
 
 # Custom JSON encoder to handle datetime objects
@@ -71,6 +73,18 @@ class ReportFilter(BaseResource):
         if filtered_result.data:
             filtered_result.meta = data_cube.get_meta(filtered_result.queries)
         return filtered_result.serialized()
+
+
+class ReportRecentResource(BaseResource):
+    @require_permission("view_report")
+    def get(self):
+        """
+        Retrieve up to 10 reports recently modified by the user.
+
+        Responds with a list of report objects.
+        """
+        recent_reports = Report.get_by_user(self.current_user).order_by(Report.updated_at.desc()).limit(10)
+        return ReportSerializer(recent_reports).serialize()
 
 
 class ReportGeneratePublicResource(BaseResource):
@@ -127,10 +141,29 @@ class ReportApiKeyAccess(BaseResource):
 
     @staticmethod
     def make_json_response(query_results):
-        results = []
+        merged_rows = []
+        all_columns = []
+
+        # Merge results into a single list of rows, matching on common columns
         for query in query_results:
-            results.append(query.to_dict())
-        data = json_dumps({"query_results": results})
+            query_data = query.data
+            # Track all columns seen across all queries
+            for col in query_data.get("columns", []):
+                if col not in all_columns:
+                    all_columns.append(col)
+
+            for row in query_data.get("rows", []):
+                found = False
+                for existing_row in merged_rows:
+                    common_keys = set(row.keys()) & set(existing_row.keys())
+                    if common_keys and all(row[k] == existing_row[k] for k in common_keys):
+                        existing_row.update(row)
+                        found = True
+                        break
+                if not found:
+                    merged_rows.append(dict(row))
+
+        data = json_dumps({"columns": all_columns, "rows": merged_rows})
         headers = {"Content-Type": "application/json"}
         return make_response(data, 200, headers)
 
@@ -243,6 +276,7 @@ class ReportsListResource(BaseResource):
             req[DATA_SOURCE_ID],
         )
         is_archived = req.get("is_archived", False)
+        is_draft = req.get(IS_DRAFT, True)
         formatting = request.args.get("format", "base64")
         model = get_object_or_404(Model.get_by_id, model_id)
 
@@ -258,6 +292,7 @@ class ReportsListResource(BaseResource):
             data_source_id=data_source_id,
             last_modified_by=self.current_user,
             is_archived=is_archived,
+            is_draft=is_draft,
         )
 
         models.db.session.add(report)
@@ -327,17 +362,19 @@ class ReportResource(BaseResource):
 
         self.record_event({"action": "view", "object_id": report.id, "object_type": "report"})
         report_user_email = report.user.email if report.user else None
-        current_user = self.current_user.email
-        if report_user_email != current_user:
+        is_api_user = isinstance(self.current_user, models.ApiUser)
+        viewer_identity = getattr(self.current_user, "email", None) or getattr(self.current_user, "name", None)
+
+        if report_user_email != viewer_identity:
             self.record_event(
                 {
                     "action": "view",
                     "object_id": report.id,
                     "object_type": "report",
-                    "message": f"Report viewed by {current_user}",
+                    "message": f"Report viewed by {viewer_identity}",
                 }
             )
-        if report_user_email != current_user:
+        if is_api_user or report_user_email != viewer_identity:
             can_edit = False
         else:
             can_edit = True
@@ -346,16 +383,24 @@ class ReportResource(BaseResource):
 
     @require_permission("edit_report")
     def post(self, report_id: int):
-        """## Modify a report
+        """
+        Modify a report
 
-        ### Args:
-            - `report_id (int)`: _description_
+        - param `report_id (int)`: ID of report to update
+        - json `string` name:
+        - json `number` data_source_id: The ID of the data source this report will run on
+        - json `string` expression: hash of the report expression, encoded in base64
+        - json `string` color_1: Hex code of the first color used in the report visualizations
+        - json `string` color_2: Hex code of the second color used in the report visualizations
+        - json `array` tags: List of tags associated with the report
+        - json `string` schedule: Schedule interval, in seconds, for repeated execution of this report
 
-        ### Returns:
-            - `_type_`: _description_
+        Responds with the updated :ref:`report <report-response-label>` object.
         """
         report_properties = request.get_json(force=True)
-        updates = project(report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS))
+        updates = project(
+            report_properties, (NAME, MODEL_ID, EXPRESSION, COLOR_1, COLOR_2, TAGS, SCHEDULE, DATA_SOURCE_ID, IS_DRAFT)
+        )
         report: Report = get_object_or_404(Report.get_by_id, report_id)
         require_object_modify_permission(report, self.current_user)
 
@@ -408,6 +453,20 @@ class ReportResource(BaseResource):
         )
 
         return make_response("", 204)
+
+
+class ReportForkResource(BaseResource):
+    @require_permission("edit_report")
+    def post(self, report_id):
+        report = get_object_or_404(Report.get_by_id_and_org, report_id, self.current_org)
+        require_object_view_permission(report, self.current_user)
+
+        forked_report = report.fork(self.current_user)
+        models.db.session.commit()
+
+        self.record_event({"action": "fork", "object_id": report_id, "object_type": "report"})
+
+        return ReportSerializer(forked_report).serialize()
 
 
 class ReportTagsResource(BaseResource):
@@ -468,15 +527,14 @@ class PublicReportResource(BaseResource):
 
         :param token: An API key for a public dashboard.
         """
+        if self.current_org.get_setting("disable_public_urls"):
+            abort(400, message="Public URLs are disabled.")
+
         if not isinstance(self.current_user, models.ApiUser):
             api_key = get_object_or_404(models.ApiKey.get_by_api_key, token)
             report = api_key.object
         else:
-            report_id = request.args.get("report_id", None)
-            if not report_id or report_id == "null":
-                report = self.current_user.object
-            else:
-                report = get_object_or_404(Report.get_by_id, report_id)
+            report = self.current_user.object
         get_results = parse_boolean(request.args.get("get_results", "False"))
         can_edit = False
         return hash_report(report, can_edit, get_results)

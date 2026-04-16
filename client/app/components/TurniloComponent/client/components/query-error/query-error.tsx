@@ -24,7 +24,5 @@ export interface QueryErrorProps {
 }
 
 export const QueryError: React.SFC<QueryErrorProps> = ({ error }) => {
-  return (
-    <Message level="error" content={error.message} title={STRINGS.queryError} />
-  );
+  return <Message level="error" content={error.message} title={STRINGS.queryError} />;
 };

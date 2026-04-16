@@ -24,7 +24,7 @@ describe("TimeShift", () => {
     assertConversionToEssence(
       // not really mocks
       mockViewDefinition({ timeShift: undefined }),
-      mockEssence({ timeShift: TimeShift.empty() }),
+      mockEssence({ timeShift: TimeShift.empty() })
     );
   });
 
@@ -32,14 +32,11 @@ describe("TimeShift", () => {
     // TODO: timeshift comparison doesn't work because of incompatibility between immutable.equal and imply libs insisting on overriting valueOf
     assertConversionToEssence(
       mockViewDefinition({ timeShift: "P3D" }),
-      mockEssence({ timeShift: TimeShift.fromJS("P3D") }),
+      mockEssence({ timeShift: TimeShift.fromJS("P3D") })
     );
   });
 
   it("constrains to empty if shifted period overlaps with time filter period", () => {
-    assertConversionToEssence(
-      mockViewDefinition({ timeShift: "PT3H" }),
-      mockEssence({ timeShift: TimeShift.empty() }),
-    );
+    assertConversionToEssence(mockViewDefinition({ timeShift: "PT3H" }), mockEssence({ timeShift: TimeShift.empty() }));
   });
 });

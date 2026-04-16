@@ -1,4 +1,4 @@
-You can use this folder to add scripts and configurations to customize Redash build and development loop.
+You can use this folder to add scripts and configurations to customize DataReporter build and development loop.
 
 ## How to customize Webpack
 
@@ -8,13 +8,13 @@ You can override the values of configurable parameters by exporting a `CONFIG` o
 
 Currently the following parameters are supported:
 
-- **staticPath**: Override the location of Redash static files (default = `/static/`).
+- **staticPath**: Override the location of DataReporter static files (default = `/static/`).
 
 #### Example Configuration (`scripts/config.js`):
 
 ```javascript
 module.exports = {
-  staticPath: "my/redash/static/path"
+  staticPath: "my/redash/static/path",
 };
 ```
 
@@ -35,8 +35,8 @@ function applyOverrides(webpackConfig) {
     stats: {
       children: true,
       modules: true,
-      chunkModules: true
-    }
+      chunkModules: true,
+    },
   };
 }
 

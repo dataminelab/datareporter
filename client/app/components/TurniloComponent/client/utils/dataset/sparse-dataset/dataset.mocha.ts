@@ -18,10 +18,7 @@
 import { expect } from "chai";
 import { Timezone } from "chronoshift";
 import { Dataset } from "plywood";
-import {
-  DimensionSort,
-  SortDirection,
-} from "../../../../common/models/sort/sort";
+import { DimensionSort, SortDirection } from "../../../../common/models/sort/sort";
 import { Split, SplitType } from "../../../../common/models/split/split";
 import { SPLIT } from "../../../config/constants";
 import "../../test-utils";
@@ -37,105 +34,53 @@ import {
 
 const timezone = Timezone.UTC;
 
-const mockSplit = (
-  reference: string,
-  type: SplitType,
-  direction: SortDirection,
-) =>
+const mockSplit = (reference: string, type: SplitType, direction: SortDirection) =>
   new Split({
     reference,
     type,
     sort: new DimensionSort({ reference, direction }),
   });
 
-const pickNestedDataset = (dataset: Dataset) =>
-  Dataset.fromJS(dataset.data[0][SPLIT] as Dataset);
+const pickNestedDataset = (dataset: Dataset) => Dataset.fromJS(dataset.data[0][SPLIT] as Dataset);
 
 describe("Dataset", () => {
   it("works", () => {
-    const siteSplit = mockSplit(
-      "site",
-      SplitType.string,
-      SortDirection.descending,
-    );
+    const siteSplit = mockSplit("site", SplitType.string, SortDirection.descending);
     const inputDataset = pickNestedDataset(rawDataset);
     const expectedInnerDataset = pickNestedDataset(expectedDataset);
-    const filledInnerDataset = fillDatasetWithMissingValues(
-      inputDataset,
-      "pv_count",
-      siteSplit,
-      timezone,
-    );
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "pv_count", siteSplit, timezone);
     expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 
   it("works reversed", () => {
-    const siteSplit = mockSplit(
-      "site",
-      SplitType.string,
-      SortDirection.ascending,
-    );
+    const siteSplit = mockSplit("site", SplitType.string, SortDirection.ascending);
     const inputDataset = pickNestedDataset(rawDataset);
     const expectedInnerDataset = pickNestedDataset(expectedDatasetReversed);
-    const filledInnerDataset = fillDatasetWithMissingValues(
-      inputDataset,
-      "pv_count",
-      siteSplit,
-      timezone,
-    );
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "pv_count", siteSplit, timezone);
     expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 
   it("works with time dimension", () => {
-    const timeSplit = mockSplit(
-      "__time",
-      SplitType.time,
-      SortDirection.ascending,
-    );
+    const timeSplit = mockSplit("__time", SplitType.time, SortDirection.ascending);
     const inputDataset = pickNestedDataset(rawDatasetWithTimeDimension);
     const expectedInnerDataset = pickNestedDataset(rawDatasetWithTimeDimension);
-    const filledInnerDataset = fillDatasetWithMissingValues(
-      inputDataset,
-      "click",
-      timeSplit,
-      timezone,
-    );
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "click", timeSplit, timezone);
     expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 
   it("works when reversing time dimension", () => {
-    const timeSplit = mockSplit(
-      "__time",
-      SplitType.time,
-      SortDirection.descending,
-    );
+    const timeSplit = mockSplit("__time", SplitType.time, SortDirection.descending);
     const inputDataset = pickNestedDataset(rawDatasetWithTimeDimension);
-    const expectedInnerDataset = pickNestedDataset(
-      reversedDatasetWithTimeDimension,
-    );
-    const filledInnerDataset = fillDatasetWithMissingValues(
-      inputDataset,
-      "click",
-      timeSplit,
-      timezone,
-    );
+    const expectedInnerDataset = pickNestedDataset(reversedDatasetWithTimeDimension);
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "click", timeSplit, timezone);
     expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 
   it("works with number ranges", () => {
-    const deltaSplit = mockSplit(
-      "deltaBucket100",
-      SplitType.number,
-      SortDirection.ascending,
-    );
+    const deltaSplit = mockSplit("deltaBucket100", SplitType.number, SortDirection.ascending);
     const inputDataset = pickNestedDataset(rawDataWithNumberRanges);
     const expectedInnerDataset = pickNestedDataset(rawDataWithNumberRanges);
-    const filledInnerDataset = fillDatasetWithMissingValues(
-      inputDataset,
-      "added",
-      deltaSplit,
-      timezone,
-    );
+    const filledInnerDataset = fillDatasetWithMissingValues(inputDataset, "added", deltaSplit, timezone);
     expect(filledInnerDataset.equals(expectedInnerDataset)).to.be.true;
   });
 });

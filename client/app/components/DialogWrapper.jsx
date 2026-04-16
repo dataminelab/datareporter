@@ -146,7 +146,10 @@ function openDialog(DialogComponent, props) {
       ReactDOM.unmountComponentAtNode(container);
       if (document.body && document.body.contains(container)) {
         document.body.removeChild(container);
-      } else if (document.documentElement && document.documentElement.contains(container)) {
+      } else if (
+        document.documentElement &&
+        document.documentElement.contains(container)
+      ) {
         document.documentElement.removeChild(container);
       }
     }, 10);

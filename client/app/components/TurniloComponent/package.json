@@ -21,7 +21,6 @@
     "turnilo": "./bin/turnilo"
   },
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "test": "npm-run-all -s test:*",
     "watch:test": "npm-run-all -p watch:test:*",
     "test:common": "mocha --exit --require ./test/setup/mocha.js 'common/**/*.mocha.{ts,tsx}'",
@@ -82,7 +81,7 @@
     "react": "16.14.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "16.14.0",
-    "react-syntax-highlighter": "15.5.0",
+    "react-syntax-highlighter": "16.1.0",
     "react-transition-group": "4.4.5",
     "request": "^2.88.0",
     "request-promise-native": "1.0.9",

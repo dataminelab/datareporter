@@ -1,4 +1,39 @@
 .report-fullscreen {
+  .report-source-metadata-overlay {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1100;
+    max-width: min(640px, calc(100vw - 40px));
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+    .report-metadata-horizontal {
+      margin: 0;
+      padding: 0;
+    }
+
+    .report-metadata.report-metadata-horizontal {
+      display: flex;
+    }
+
+    @media (max-width: 767px) {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      max-width: none;
+    }
+
+    @media (min-width: 880px) {
+      .report-metadata.report-metadata-horizontal {
+        display: flex !important;
+      }
+    }
+  }
+
   .report-editor-wrapper {
     padding: 15px;
     margin-bottom: 10px;
@@ -79,11 +114,8 @@
 
         @media (min-width: 880px) {
           .ant-tabs-tabpane {
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
+            position: relative;
+            min-height: 1px;
             overflow: auto;
           }
         }

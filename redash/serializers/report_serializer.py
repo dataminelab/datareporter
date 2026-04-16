@@ -27,7 +27,10 @@ def _serialize_report(report: Report, formatting: str = "base64") -> dict:
         "updated_at": report.updated_at,
         "tags": report.tags,
         "is_archived": report.is_archived,
-        "user": {"name": report.user.name},
+        "is_draft": report.is_draft,
+        "user": {"name": report.user.name, "id": report.user.id, "email": report.user.email},
+        "data_source_id": report.data_source_id,
+        "schedule": report.schedule,
     }
 
     return d
@@ -45,7 +48,7 @@ class ReportSerializer(Serializer):
             if self.options.get("with_favorite_state", True) and not current_user.is_api_user():
                 result["is_favorite"] = models.Favorite.is_favorite(current_user.id, self.object_or_list)
         else:
-            result = [_serialize_report(query, self.formatting) for query in self.object_or_list]
+            result = [_serialize_report(report, self.formatting) for report in self.object_or_list]
             if self.options.get("with_favorite_state", True):
                 favorite_ids = models.Favorite.are_favorites(current_user.id, self.object_or_list)
                 for obj in result:

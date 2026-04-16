@@ -15,10 +15,7 @@
  */
 
 import { Measure } from "../../../common/models/measure/measure";
-import {
-  MeasureGroup,
-  MeasureOrGroupVisitor,
-} from "../../../common/models/measure/measure-group";
+import { MeasureGroup, MeasureOrGroupVisitor } from "../../../common/models/measure/measure-group";
 
 export type MeasureOrGroupForView = MeasureForView | MeasureGroupForView;
 
@@ -47,12 +44,10 @@ export enum MeasureForViewType {
   group = "group",
 }
 
-export class MeasuresConverter
-  implements MeasureOrGroupVisitor<MeasureOrGroupForView>
-{
+export class MeasuresConverter implements MeasureOrGroupVisitor<MeasureOrGroupForView> {
   constructor(
     private hasSearchTextPredicate: (measure: Measure) => boolean,
-    private isSelectedMeasurePredicate: (measure: Measure) => boolean,
+    private isSelectedMeasurePredicate: (measure: Measure) => boolean
   ) {}
 
   visitMeasure(measure: Measure): MeasureOrGroupForView {
@@ -71,20 +66,14 @@ export class MeasuresConverter
 
   visitMeasureGroup(measureGroup: MeasureGroup): MeasureOrGroupForView {
     const { name, title, description, measures } = measureGroup;
-    const measuresForView = measures.map(measureOrGroup =>
-      measureOrGroup.accept(this),
-    );
+    const measuresForView = measures.map((measureOrGroup) => measureOrGroup.accept(this));
 
     return {
       name,
       title,
       description,
-      hasSearchText: measuresForView.some(
-        measureForView => measureForView.hasSearchText,
-      ),
-      hasSelectedMeasures: measuresForView.some(
-        measureForView => measureForView.hasSelectedMeasures,
-      ),
+      hasSearchText: measuresForView.some((measureForView) => measureForView.hasSearchText),
+      hasSelectedMeasures: measuresForView.some((measureForView) => measureForView.hasSelectedMeasures),
       children: measuresForView,
       type: MeasureForViewType.group,
     };

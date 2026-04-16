@@ -27,9 +27,7 @@ class TestModelsConfigCreateResource(BaseTestCase):
                         - deltaByTen
                       attributes:
                           {}
-                          """.format(
-            attributes
-        )
+                          """.format(attributes)
 
         group = self.factory.create_group(permissions=["edit_model_config"])
         db.session.commit()
@@ -69,6 +67,8 @@ class TestModelsConfigCreateResource(BaseTestCase):
     defaultSelectedMeasures:
       - deltaByTen
     attributes:
+      - name: time
+        type: TIME
       - name: deltaByTen
         type: number
     dimensions:
@@ -101,6 +101,8 @@ class TestModelsConfigCreateResource(BaseTestCase):
     defaultSelectedMeasures:
       - deltaByTen
     attributes:
+      - name: time
+        type: TIME
       - name: deltaByTen
         type: number
     dimensions:
@@ -137,6 +139,8 @@ class TestModelsConfigCreateResource(BaseTestCase):
     defaultSelectedMeasures:
       - deltaByTen
     attributes:
+      - name: time
+        type: TIME
       - name: deltaByTen
         type: number
     dimensions:

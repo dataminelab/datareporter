@@ -27,7 +27,7 @@ interface HoverGuideProps {
   xScale: ContinuousScale;
 }
 
-export const HoverGuide: React.FunctionComponent<HoverGuideProps> = props => {
+export const HoverGuide: React.FunctionComponent<HoverGuideProps> = (props) => {
   const {
     stage,
     hover: { range },
@@ -41,14 +41,5 @@ export const HoverGuide: React.FunctionComponent<HoverGuideProps> = props => {
     // @ts-ignore
     x = xScale(new Date(range));
   }
-  return (
-    <line
-      transform={stage.getTransform()}
-      x1={x}
-      x2={x}
-      y1={0}
-      y2={stage.height}
-      className="hover-guide"
-    />
-  );
+  return <line transform={stage.getTransform()} x1={x} x2={x} y1={0} y2={stage.height} className="hover-guide" />;
 };

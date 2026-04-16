@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ErrorBoundary, {
-  ErrorBoundaryContext,
-} from "@redash/viz/lib/components/ErrorBoundary";
+import ErrorBoundary, { ErrorBoundaryContext } from "@redash/viz/lib/components/ErrorBoundary";
 import { Auth } from "@/services/auth";
 import { policy } from "@/services/policy";
 import { CurrentRoute } from "@/services/routes";
@@ -32,16 +30,10 @@ export function UserSessionWrapper<P>({
   currentRoute,
   render,
 }: UserSessionWrapperProps<P>): React.ReactElement | null {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!Auth.isAuthenticated(),
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(!!Auth.isAuthenticated());
   useEffect(() => {
     let isCancelled = false;
-    Promise.all([
-      Auth.requireSession(),
-      organizationStatus.refresh(),
-      policy.refresh(),
-    ])
+    Promise.all([Auth.requireSession(), organizationStatus.refresh(), policy.refresh()])
       .then(() => {
         if (!isCancelled) {
           setIsAuthenticated(!!Auth.isAuthenticated());
@@ -73,9 +65,7 @@ export function UserSessionWrapper<P>({
   return (
     <ApplicationLayout>
       <React.Fragment key={currentRoute.key}>
-        <ErrorBoundary
-          renderError={(error: Error) => <ErrorMessage error={error} />}
-        >
+        <ErrorBoundary renderError={(error: Error) => <ErrorMessage error={error} />}>
           <ErrorBoundaryContext.Consumer>
             {({ handleError }: { handleError: (error: any) => void }) =>
               render({
@@ -100,16 +90,11 @@ export type RouteWithUserSessionOptions<P> = {
 
 export const UserSessionWrapperDynamicComponentName = "UserSessionWrapper";
 
-export default function routeWithUserSession<
-  P extends Record<string, unknown> = Record<string, unknown>,
->({
+export default function routeWithUserSession<P extends Record<string, unknown> = Record<string, unknown>>({
   render: originalRender,
   bodyClass,
   ...rest
-}: RouteWithUserSessionOptions<P>): Omit<
-  RouteWithUserSessionOptions<P>,
-  "render"
-> & {
+}: RouteWithUserSessionOptions<P>): Omit<RouteWithUserSessionOptions<P>, "render"> & {
   render: (currentRoute: CurrentRoute<P>) => React.ReactNode;
 } {
   return {

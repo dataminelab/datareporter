@@ -22,11 +22,7 @@ import { integerDivision } from "../../../../common/utils/general/general";
 import { HEADER_HEIGHT, ROW_HEIGHT } from "../table";
 
 function indexToPeriod(index: number): SeriesDerivation {
-  return [
-    SeriesDerivation.CURRENT,
-    SeriesDerivation.PREVIOUS,
-    SeriesDerivation.DELTA,
-  ][index % 3];
+  return [SeriesDerivation.CURRENT, SeriesDerivation.PREVIOUS, SeriesDerivation.DELTA][index % 3];
 }
 
 export enum HoverElement {
@@ -55,18 +51,9 @@ interface WhiteSpaceHover {
   element: HoverElement.WHITESPACE;
 }
 
-export type PositionHover =
-  | RowHover
-  | SeriesHover
-  | CornerHover
-  | WhiteSpaceHover;
+export type PositionHover = RowHover | SeriesHover | CornerHover | WhiteSpaceHover;
 
-export function seriesPosition(
-  x: number,
-  essence: Essence,
-  segmentWidth: number,
-  columnWidth: number,
-): PositionHover {
+export function seriesPosition(x: number, essence: Essence, segmentWidth: number, columnWidth: number): PositionHover {
   const seriesList = essence.series.series;
   const xOffset = x - segmentWidth;
   const seriesIndex = Math.floor(xOffset / columnWidth);

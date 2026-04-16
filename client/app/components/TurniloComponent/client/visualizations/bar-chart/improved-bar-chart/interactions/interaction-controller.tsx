@@ -19,15 +19,9 @@ import { Dataset, Datum, TimeRange } from "plywood";
 import * as React from "react";
 import { DateRange } from "../../../../../common/models/date-range/date-range";
 import { Essence } from "../../../../../common/models/essence/essence";
-import {
-  FilterClause,
-  FixedTimeFilterClause,
-} from "../../../../../common/models/filter-clause/filter-clause";
+import { FilterClause, FixedTimeFilterClause } from "../../../../../common/models/filter-clause/filter-clause";
 import { ConcreteSeries } from "../../../../../common/models/series/concrete-series";
-import {
-  Binary,
-  Unary,
-} from "../../../../../common/utils/functional/functional";
+import { Binary, Unary } from "../../../../../common/utils/functional/functional";
 import { safeEquals } from "../../../../../common/utils/immutable-utils/immutable-utils";
 import { ScrollerPart } from "../../../../components/scroller/scroller";
 import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
@@ -37,13 +31,7 @@ import { BarChartLayout } from "../utils/layout";
 import { firstSplitRef } from "../utils/splits";
 import { DomainValue } from "../utils/x-domain";
 import { XScale } from "../utils/x-scale";
-import {
-  createHighlight,
-  createHover,
-  equalInteractions,
-  Hover,
-  Interaction,
-} from "./interaction";
+import { createHighlight, createHover, equalInteractions, Hover, Interaction } from "./interaction";
 
 interface InteractionProps {
   onClick?: (x: number, y: number, part: ScrollerPart) => void;
@@ -71,10 +59,7 @@ interface InteractionControllerState {
   scrollTop: number;
 }
 
-export class InteractionController extends React.Component<
-  InteractionControllerProps,
-  InteractionControllerState
-> {
+export class InteractionController extends React.Component<InteractionControllerProps, InteractionControllerState> {
   state: InteractionControllerState = {
     hover: null,
     scrollLeft: 0,
@@ -131,7 +116,7 @@ export class InteractionController extends React.Component<
     const { essence, dataset } = this.props;
     const datums = selectFirstSplitDatums(dataset);
     const reference = firstSplitRef(essence);
-    return datums.find(datum => safeEquals(value, datum[reference]));
+    return datums.find((datum) => safeEquals(value, datum[reference]));
   }
 
   getSeriesFromEvent(y: number, part: ScrollerPart): ConcreteSeries | null {

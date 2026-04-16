@@ -15,7 +15,7 @@ function Editor({ column, onChange }) {
           label="URL template"
           data-test="Table.ColumnEditor.Link.UrlTemplate"
           defaultValue={column.linkUrlTemplate}
-          onChange={event => onChangeDebounced({ linkUrlTemplate: event.target.value })}
+          onChange={(event) => onChangeDebounced({ linkUrlTemplate: event.target.value })}
         />
       </Section>
 
@@ -24,7 +24,7 @@ function Editor({ column, onChange }) {
           label="Text template"
           data-test="Table.ColumnEditor.Link.TextTemplate"
           defaultValue={column.linkTextTemplate}
-          onChange={event => onChangeDebounced({ linkTextTemplate: event.target.value })}
+          onChange={(event) => onChangeDebounced({ linkTextTemplate: event.target.value })}
         />
       </Section>
 
@@ -33,7 +33,7 @@ function Editor({ column, onChange }) {
           label="Title template"
           data-test="Table.ColumnEditor.Link.TitleTemplate"
           defaultValue={column.linkTitleTemplate}
-          onChange={event => onChangeDebounced({ linkTitleTemplate: event.target.value })}
+          onChange={(event) => onChangeDebounced({ linkTitleTemplate: event.target.value })}
         />
       </Section>
 
@@ -41,7 +41,8 @@ function Editor({ column, onChange }) {
         <Checkbox
           data-test="Table.ColumnEditor.Link.OpenInNewTab"
           checked={column.linkOpenInNewTab}
-          onChange={event => onChange({ linkOpenInNewTab: event.target.checked })}>
+          onChange={(event) => onChange({ linkOpenInNewTab: event.target.checked })}
+        >
           Open in new tab
         </Checkbox>
       </Section>
@@ -50,7 +51,8 @@ function Editor({ column, onChange }) {
         <ContextHelp
           placement="topLeft"
           arrowPointAtCenter
-          icon={<span style={{ cursor: "default" }}>Format specs {ContextHelp.defaultIcon}</span>}>
+          icon={<span style={{ cursor: "default" }}>Format specs {ContextHelp.defaultIcon}</span>}
+        >
           <div>
             All columns can be referenced using <code>{"{{ column_name }}"}</code> syntax.
           </div>

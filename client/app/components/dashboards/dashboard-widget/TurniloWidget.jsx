@@ -70,7 +70,7 @@ TurniloWidget.propTypes = {
 
 TurniloWidget.defaultProps = {
   canEdit: false,
-  onDelete: () => { },
+  onDelete: () => {},
 };
 
 export default TurniloWidget;

@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  Dimension,
-  DimensionKind,
-  DimensionValue,
-} from "../../models/dimension/dimension";
+import { Dimension, DimensionKind, DimensionValue } from "../../models/dimension/dimension";
 import { Omit } from "../../utils/functional/functional";
 
-export type DimensionRefs =
-  | "string_a"
-  | "string_b"
-  | "time"
-  | "numeric"
-  | "boolean";
+export type DimensionRefs = "string_a" | "string_b" | "time" | "numeric" | "boolean";
 
 export const timeDimension = dimension("time", "time");
 
@@ -38,11 +29,7 @@ export const dimensions: Dimension[] = [
   dimension("boolean", "boolean"),
 ];
 
-function dimension(
-  name: DimensionRefs,
-  kind: DimensionKind,
-  opts: Omit<DimensionValue, "name" | "kind"> = {},
-) {
+function dimension(name: DimensionRefs, kind: DimensionKind, opts: Omit<DimensionValue, "name" | "kind"> = {}) {
   return new Dimension({
     name,
     kind,

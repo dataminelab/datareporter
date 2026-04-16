@@ -18,21 +18,14 @@ import { MeasureSeries } from "./measure-series";
 import { QuantileSeries } from "./quantile-series";
 import { DEFAULT_FORMAT } from "./series-format";
 
-export function measureSeries(
-  reference: string,
-  format = DEFAULT_FORMAT,
-): MeasureSeries {
+export function measureSeries(reference: string, format = DEFAULT_FORMAT): MeasureSeries {
   return new MeasureSeries({
     reference,
     format,
   });
 }
 
-export function quantileSeries(
-  reference: string,
-  percentile = 95,
-  format = DEFAULT_FORMAT,
-): QuantileSeries {
+export function quantileSeries(reference: string, percentile = 95, format = DEFAULT_FORMAT): QuantileSeries {
   return new QuantileSeries({
     reference,
     percentile,

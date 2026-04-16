@@ -49,8 +49,7 @@ export const MeasureItem: React.SFC<MeasureItemProps> = ({
   const infoBubbleClassName = "measure-info-icon";
   const handleClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.target as Element;
-    if (target.classList && target.classList.contains(infoBubbleClassName))
-      return;
+    if (target.classList && target.classList.contains(infoBubbleClassName)) return;
     measureClick(name, e);
   };
 
@@ -60,27 +59,11 @@ export const MeasureItem: React.SFC<MeasureItemProps> = ({
 
   return (
     <div className={classNames(MEASURE_CLASS_NAME, "row", { selected })}>
-      <div
-        className="measure-item-name"
-        onClick={handleClick}
-        draggable={true}
-        onDragStart={handleDragStart}
-      >
-        <HighlightString
-          className="label measure-item-label"
-          text={title}
-          highlight={searchText}
-        />
-        {approximate && (
-          <SvgIcon
-            className="approximate-measure-icon"
-            svg={require("../../icons/approx.svg")}
-          />
-        )}
+      <div className="measure-item-name" onClick={handleClick} draggable={true} onDragStart={handleDragStart}>
+        <HighlightString className="label measure-item-label" text={title} highlight={searchText} />
+        {approximate && <SvgIcon className="approximate-measure-icon" svg={require("../../icons/approx.svg")} />}
       </div>
-      {description && (
-        <InfoBubble className={infoBubbleClassName} description={description} />
-      )}
+      {description && <InfoBubble className={infoBubbleClassName} description={description} />}
     </div>
   );
 };

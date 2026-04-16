@@ -24,11 +24,7 @@ import {
   TimeFilterClauseDefinition,
 } from "./filter-definition";
 
-export function booleanFilterDefinition(
-  ref: string,
-  values: Booleanish[],
-  not = false,
-): BooleanFilterClauseDefinition {
+export function booleanFilterDefinition(ref: string, values: Booleanish[], not = false): BooleanFilterClauseDefinition {
   return {
     ref,
     type: FilterType.boolean,
@@ -41,7 +37,7 @@ export function stringFilterDefinition(
   ref: string,
   action: StringFilterAction,
   values: string[],
-  not = false,
+  not = false
 ): StringFilterClauseDefinition {
   return {
     ref,
@@ -57,7 +53,7 @@ export function numberRangeFilterDefinition(
   start: number,
   end: number,
   bounds: string | null = "[)",
-  not = false,
+  not = false
 ): NumberFilterClauseDefinition {
   return {
     ref,
@@ -67,11 +63,7 @@ export function numberRangeFilterDefinition(
   };
 }
 
-export function timeRangeFilterDefinition(
-  ref: string,
-  start: string,
-  end: string,
-): TimeFilterClauseDefinition {
+export function timeRangeFilterDefinition(ref: string, start: string, end: string): TimeFilterClauseDefinition {
   return {
     ref,
     type: FilterType.time,
@@ -83,7 +75,7 @@ export function latestTimeFilterDefinition(
   ref: string,
   multiple: number,
   duration: string,
-  multiply = false,
+  multiply = false
 ): TimeFilterClauseDefinition {
   return {
     ref,
@@ -92,11 +84,7 @@ export function latestTimeFilterDefinition(
   };
 }
 
-export function flooredTimeFilterDefinition(
-  ref: string,
-  step: number,
-  duration: string,
-): TimeFilterClauseDefinition {
+export function flooredTimeFilterDefinition(ref: string, step: number, duration: string): TimeFilterClauseDefinition {
   return {
     ref,
     type: FilterType.time,
@@ -104,16 +92,10 @@ export function flooredTimeFilterDefinition(
   };
 }
 
-export function currentTimeFilterDefinition(
-  ref: string,
-  duration: string,
-): TimeFilterClauseDefinition {
+export function currentTimeFilterDefinition(ref: string, duration: string): TimeFilterClauseDefinition {
   return flooredTimeFilterDefinition(ref, 1, duration);
 }
 
-export function previousTimeFilterDefinition(
-  ref: string,
-  duration: string,
-): TimeFilterClauseDefinition {
+export function previousTimeFilterDefinition(ref: string, duration: string): TimeFilterClauseDefinition {
   return flooredTimeFilterDefinition(ref, -1, duration);
 }

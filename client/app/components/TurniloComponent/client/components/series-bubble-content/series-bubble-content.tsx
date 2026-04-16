@@ -16,10 +16,7 @@
 
 import { Datum } from "plywood";
 import React from "react";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { MeasureBubbleContent } from "../measure-bubble-content/measure-bubble-content";
 
 interface SeriesBubbleContentProps {
@@ -28,9 +25,7 @@ interface SeriesBubbleContentProps {
   showPrevious: boolean;
 }
 
-export const SeriesBubbleContent: React.FunctionComponent<
-  SeriesBubbleContentProps
-> = props => {
+export const SeriesBubbleContent: React.FunctionComponent<SeriesBubbleContentProps> = (props) => {
   const { series, datum, showPrevious } = props;
   if (!showPrevious) {
     return <React.Fragment>{series.formatValue(datum)}</React.Fragment>;

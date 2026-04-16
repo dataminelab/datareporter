@@ -36,16 +36,12 @@ describe("MeasuresTile", () => {
         clicker={fakeClicker}
         menuStage={null}
         essence={EssenceFixtures.wikiTotals()}
-      />,
+      />
     );
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
-      "should contain class",
-    ).to.contain("measures-tile");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "measures-tile"
+    );
   });
 });

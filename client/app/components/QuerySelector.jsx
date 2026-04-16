@@ -5,6 +5,7 @@ import cx from "classnames";
 import Input from "antd/lib/input";
 import Select from "antd/lib/select";
 import { Query } from "@/services/query";
+import { Report } from "@/services/report";
 import PlainButton from "@/components/PlainButton";
 import notification from "@/services/notification";
 import { QueryTagsControl } from "@/components/tags-control/TagsControl";
@@ -18,13 +19,31 @@ function search(term) {
 
   // get recent
   if (!term) {
-    return Query.recent().then(results =>
-      results.filter(item => !item.is_draft),
-    ); // filter out draft
+    const recentQueries = Query.recent().then(results =>
+      results
+        .filter(item => !item.is_draft)
+        .map(query => ({ ...query, type: "query" })),
+    );
+    const recentReports = Report.recent().then(results =>
+      results.map(report => ({ ...report, type: "report" })),
+    );
+    return Promise.all([recentReports, recentQueries]).then(
+      ([reports, queries]) => [...reports, ...queries],
+    );
   }
 
-  // search by query
-  return Query.query({ q: term }).then(({ results }) => results);
+  // search by query and report
+  const querySearch = Query.query({ q: term }).then(({ results }) =>
+    results.map(query => ({ ...query, type: "query" })),
+  );
+  const reportSearch = Report.report({ q: term }).then(({ results }) =>
+    results.map(report => ({ ...report, type: "report" })),
+  );
+
+  return Promise.all([reportSearch, querySearch]).then(([reports, queries]) => [
+    ...reports,
+    ...queries,
+  ]);
 }
 
 export default function QuerySelector(props) {
@@ -34,7 +53,7 @@ export default function QuerySelector(props) {
     initialResults: [],
   });
 
-  const placeholder = "Search a query by name";
+  const placeholder = "Search a query or report by name";
   const clearIcon = (
     <i
       className="fa fa-times hide-in-percy"
@@ -67,14 +86,16 @@ export default function QuerySelector(props) {
     }
   }, [props.selectedQuery]);
 
-  function selectQuery(queryId) {
+  function selectQuery(key) {
     let query = null;
-    if (queryId) {
-      query = find(searchResults, { id: queryId });
+    if (key) {
+      const [type, id] = key.split(":");
+      query = find(searchResults, { id: parseInt(id, 10), type });
       if (!query) {
         // shouldn't happen
         notification.error("Something went wrong...", "Couldn't select query");
       }
+      query = { type, ...query };
     }
 
     setSearchTerm(query ? null : ""); // empty string triggers recent fetch
@@ -89,24 +110,27 @@ export default function QuerySelector(props) {
 
     return (
       <ul className="list-group">
-        {searchResults.map(q => (
-          <PlainButton
-            className={cx("query-selector-result", "list-group-item", {
-              inactive: q.is_draft,
-            })}
-            key={q.id}
-            role="listitem"
-            onClick={() => selectQuery(q.id)}
-            data-test={`QueryId${q.id}`}
-          >
-            {q.name}{" "}
-            <QueryTagsControl
-              isDraft={q.is_draft}
-              tags={q.tags}
-              className="inline-tags-control"
-            />
-          </PlainButton>
-        ))}
+        {searchResults.map(q => {
+          const key = `${q.type}:${q.id}`;
+          return (
+            <PlainButton
+              className={cx("query-selector-result", "list-group-item", {
+                inactive: q.is_draft,
+              })}
+              key={key}
+              role="listitem"
+              onClick={() => selectQuery(key)}
+              data-test={`QueryId${q.id}`}
+            >
+              {q.name}{" "}
+              <QueryTagsControl
+                isDraft={q.is_draft}
+                tags={q.tags}
+                className="inline-tags-control"
+              />
+            </PlainButton>
+          );
+        })}
       </ul>
     );
   }
@@ -144,10 +168,11 @@ export default function QuerySelector(props) {
         {searchResults &&
           searchResults.map(q => {
             const disabled = q.is_draft;
+            const key = `${q.type}:${q.id}`;
             return (
               <Option
-                value={q.id}
-                key={q.id}
+                value={key}
+                key={key}
                 disabled={disabled}
                 className="query-selector-result"
                 data-test={`QueryId${q.id}`}

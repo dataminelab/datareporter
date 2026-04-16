@@ -27,7 +27,7 @@ interface LegendValuesProps {
   values: string[];
 }
 
-const LegendValues: React.SFC<LegendValuesProps> = props => {
+const LegendValues: React.SFC<LegendValuesProps> = (props) => {
   const { values } = props;
   return (
     <div className="legend-values">
@@ -52,7 +52,7 @@ const LegendValues: React.SFC<LegendValuesProps> = props => {
   );
 };
 
-export const Legend: React.SFC<LegendProps> = props => {
+export const Legend: React.SFC<LegendProps> = (props) => {
   const { values, title } = props;
 
   return (

@@ -26,13 +26,7 @@ describe("Loader", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(<Loader />);
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
-      "should contain class",
-    ).to.contain("loader");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain("loader");
   });
 });

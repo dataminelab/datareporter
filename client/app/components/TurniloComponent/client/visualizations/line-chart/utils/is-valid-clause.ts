@@ -20,11 +20,6 @@ import {
   NumberFilterClause,
 } from "../../../../common/models/filter-clause/filter-clause";
 
-export function isValidClause(
-  clause: FilterClause,
-): clause is FixedTimeFilterClause | NumberFilterClause {
-  return (
-    clause instanceof FixedTimeFilterClause ||
-    clause instanceof NumberFilterClause
-  );
+export function isValidClause(clause: FilterClause): clause is FixedTimeFilterClause | NumberFilterClause {
+  return clause instanceof FixedTimeFilterClause || clause instanceof NumberFilterClause;
 }

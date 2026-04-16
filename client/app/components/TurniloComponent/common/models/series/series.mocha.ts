@@ -130,9 +130,7 @@ describe("Series", () => {
 
   describe("fromMeasure", () => {
     it("should create Measure Series for non-quantile expression", () => {
-      expect(fromMeasure(MeasureFixtures.wikiCount())).to.be.instanceOf(
-        MeasureSeries,
-      );
+      expect(fromMeasure(MeasureFixtures.wikiCount())).to.be.instanceOf(MeasureSeries);
     });
 
     it("should create Quantile Series for quantile expression", () => {
@@ -140,9 +138,7 @@ describe("Series", () => {
     });
 
     it("should create Measure Series for expression with quantile operand", () => {
-      expect(fromMeasure(quantileOperandMeasure)).to.be.instanceOf(
-        MeasureSeries,
-      );
+      expect(fromMeasure(quantileOperandMeasure)).to.be.instanceOf(MeasureSeries);
     });
   });
 });

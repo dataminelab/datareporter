@@ -16,10 +16,7 @@
 
 import { Datum } from "plywood";
 import * as React from "react";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
 import { Unary } from "../../../../../common/utils/functional/functional";
 import { LinearScale } from "../../../../utils/linear-scale/linear-scale";
 import { DomainValue } from "../utils/x-domain";
@@ -38,7 +35,7 @@ interface SingleBarProps {
 
 const SIDE_PADDING = 5;
 
-const SingleBar: React.SFC<SingleBarProps> = props => {
+const SingleBar: React.SFC<SingleBarProps> = (props) => {
   const { datum, xScale, yScale, getX, series, maxHeight } = props;
   const x = getX(datum);
   const xPos = xScale.calculate(x) + SIDE_PADDING;
@@ -47,15 +44,7 @@ const SingleBar: React.SFC<SingleBarProps> = props => {
   const yPos = yScale(y);
   const height = maxHeight - yPos;
 
-  return (
-    <rect
-      className="bar-chart-bar"
-      x={xPos}
-      y={yPos}
-      width={width}
-      height={height}
-    />
-  );
+  return <rect className="bar-chart-bar" x={xPos} y={yPos} width={width} height={height} />;
 };
 
 interface TimeShiftBarProps {
@@ -67,7 +56,7 @@ interface TimeShiftBarProps {
   maxHeight: number;
 }
 
-const TimeShiftBar: React.SFC<TimeShiftBarProps> = props => {
+const TimeShiftBar: React.SFC<TimeShiftBarProps> = (props) => {
   const { datum, xScale, yScale, getX, series, maxHeight } = props;
   const x = getX(datum);
   const xStart = xScale.calculate(x);
@@ -110,11 +99,7 @@ interface BarProps {
   maxHeight: number;
 }
 
-export const Bar: React.SFC<BarProps> = props => {
+export const Bar: React.SFC<BarProps> = (props) => {
   const { showPrevious, ...otherProps } = props;
-  return showPrevious ? (
-    <TimeShiftBar {...otherProps} />
-  ) : (
-    <SingleBar {...otherProps} />
-  );
+  return showPrevious ? <TimeShiftBar {...otherProps} /> : <SingleBar {...otherProps} />;
 };

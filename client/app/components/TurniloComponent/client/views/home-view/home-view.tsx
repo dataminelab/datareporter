@@ -44,15 +44,10 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
   state = { query: "" };
 
   queryChange = (query: string) => {
-    this.setState(state => ({ ...state, query }));
+    this.setState((state) => ({ ...state, query }));
   };
 
-  renderDataCube({
-    name,
-    title,
-    description,
-    extendedDescription,
-  }: DataCube): JSX.Element {
+  renderDataCube({ name, title, description, extendedDescription }: DataCube): JSX.Element {
     return (
       <DataCubeCard
         key={name}
@@ -71,16 +66,10 @@ export class HomeView extends React.Component<HomeViewProps, HomeViewState> {
     const cubes = filterDataCubes(dataCubes, query);
 
     if (cubes.length === 0) {
-      const message = query
-        ? `${STRINGS.noDataCubesFound}${query}`
-        : STRINGS.noDataCubes;
+      const message = query ? `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
       return <div className="data-cubes__message">{message}</div>;
     }
-    return (
-      <div className="data-cubes__container">
-        {cubes.map(this.renderDataCube)}
-      </div>
-    );
+    return <div className="data-cubes__container">{cubes.map(this.renderDataCube)}</div>;
   }
 
   render() {

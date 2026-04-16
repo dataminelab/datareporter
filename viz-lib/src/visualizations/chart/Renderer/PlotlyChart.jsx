@@ -23,7 +23,7 @@ export default function PlotlyChart({ options, data }) {
       let isDestroyed = false;
 
       const chartData = getChartData(data.rows, options);
-      const _chart = initChart(container, options, chartData, visualizationsSettings, error => {
+      const _chart = initChart(container, options, chartData, visualizationsSettings, (error) => {
         errorHandlerRef.current.handleError(error);
       });
       _chart.initialized.then(() => {

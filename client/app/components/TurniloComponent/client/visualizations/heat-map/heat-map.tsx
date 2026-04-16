@@ -21,10 +21,7 @@ import { ConcreteSeries } from "../../../common/models/series/concrete-series";
 import { HEAT_MAP_MANIFEST } from "../../../common/visualization-manifests/heat-map/heat-map";
 import { SPLIT } from "../../config/constants";
 import { fillDatasetWithMissingValues } from "../../utils/dataset/sparse-dataset/dataset";
-import {
-  BaseVisualization,
-  BaseVisualizationState,
-} from "../base-visualization/base-visualization";
+import { BaseVisualization, BaseVisualizationState } from "../base-visualization/base-visualization";
 import "./heat-map.scss";
 import { LabelledHeatmap, TILE_SIZE } from "./labeled-heatmap";
 import scales from "./utils/scales";
@@ -47,18 +44,10 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
 
     const { preparedDataset: dataset } = this.state;
 
-    const { x, y, color } = this.getScales(
-      dataset.data,
-      TILE_SIZE,
-      this.series(),
-      report,
-    );
+    const { x, y, color } = this.getScales(dataset.data, TILE_SIZE, this.series(), report);
 
     return (
-      <div
-        className="internals heatmap-container"
-        style={{ maxHeight: stage.height }}
-      >
+      <div className="internals heatmap-container" style={{ maxHeight: stage.height }}>
         <LabelledHeatmap
           stage={stage}
           dataset={dataset.data}
@@ -85,7 +74,7 @@ export class HeatMap extends BaseVisualization<HeatmapState> {
       dataset.data[0][SPLIT] as Dataset,
       this.series().plywoodKey(),
       secondSplit,
-      timezone,
+      timezone
     );
 
     return { preparedDataset };

@@ -36,16 +36,10 @@ describe("NumberRangePicker", () => {
         dimension={DimensionFixtures.wikiCommentLength()}
         onRangeEndChange={null}
         exclude={false}
-      />,
+      />
     );
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      findDOMNode(renderedComponent).className,
-      "should contain class",
-    ).to.contain("number-range-picker");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("number-range-picker");
   });
 });

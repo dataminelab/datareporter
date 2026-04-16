@@ -32,10 +32,7 @@ export const SplitValue: React.FunctionComponent<SplitValueProps> = ({
   children,
   style,
 }) => (
-  <div
-    className={classNames("split-value", className, { dimmed, highlight })}
-    style={style}
-  >
+  <div className={classNames("split-value", className, { dimmed, highlight })} style={style}>
     {children}
   </div>
 );

@@ -49,20 +49,14 @@ export interface Dragging extends InteractionBase {
   end: ContinuousValue;
 }
 
-export const createDragging = (
-  key: string,
-  start: ContinuousValue,
-  end: ContinuousValue,
-): Dragging => ({
+export const createDragging = (key: string, start: ContinuousValue, end: ContinuousValue): Dragging => ({
   kind: InteractionKind.DRAGGING,
   start,
   end,
   key,
 });
 
-export const isDragging = (
-  interaction?: Interaction,
-): interaction is Dragging =>
+export const isDragging = (interaction?: Interaction): interaction is Dragging =>
   interaction && interaction.kind === InteractionKind.DRAGGING;
 
 export interface Highlight extends InteractionBase {
@@ -76,9 +70,7 @@ export const createHighlight = (highlight: VizHighlight): Highlight => ({
   key: highlight.key,
 });
 
-export const isHighlight = (
-  interaction?: Interaction,
-): interaction is Highlight =>
+export const isHighlight = (interaction?: Interaction): interaction is Highlight =>
   interaction && interaction.kind === InteractionKind.HIGHLIGHT;
 
 export type MouseInteraction = Hover | Dragging;

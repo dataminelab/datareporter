@@ -1,5 +1,5 @@
 module.exports = {
   staticPath: "/static/",
   title: "REPORTER",
-  jsx: "react"
+  jsx: "react",
 };

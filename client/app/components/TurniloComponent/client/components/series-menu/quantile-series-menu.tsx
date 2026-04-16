@@ -91,11 +91,7 @@ export const QuantileSeriesMenu: React.SFC<QuantileSeriesMenuProps> = ({
           onChange={onPercentileChange}
         />
       </div>
-      <FormatPicker
-        measure={measure}
-        format={series.format}
-        formatChange={onFormatChange}
-      />
+      <FormatPicker measure={measure} format={series.format} formatChange={onFormatChange} />
     </React.Fragment>
   );
 };

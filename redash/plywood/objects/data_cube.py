@@ -3,7 +3,6 @@ from typing import Dict, List, Union
 import pydash
 import yaml
 
-from redash.models.models import Model
 from redash.plywood.objects.report_serializer import ReportMetaData
 from redash.plywood.plywood import PlywoodApi
 from redash.utils.big_query_utils import get_price_for_query
@@ -16,7 +15,7 @@ def lower_kind(obj: dict):
 
 
 class DataCube:
-    def __init__(self, model: Model):
+    def __init__(self, model):
         self._model = model
 
     @property
@@ -71,8 +70,9 @@ class DataCube:
     @property
     def attributes(self):
         """Returns DataCube attributes"""
-        config = yaml.load(self._model.config.content, Loader=yaml.FullLoader)
-        data_cube = pydash.head(config["dataCubes"])
+        config = self.config
+        data_cubes = config.get("dataCubes", []) if isinstance(config, dict) else []
+        data_cube = pydash.head(data_cubes)
         attributes = data_cube["attributes"] if isinstance(data_cube, dict) and "attributes" in data_cube else []
         return attributes
 
@@ -86,10 +86,12 @@ class DataCube:
     @property
     def config(self) -> dict:
         """Returns full config for model the example if above the file"""
-        return yaml.load(self._model.config.content, Loader=yaml.FullLoader)
+        if not self._model.config or not self._model.config.content:
+            return {}
+        return yaml.load(self._model.config.content, Loader=yaml.FullLoader) or {}
 
     @property
-    def data_cube(self, lower_case_kind=True):
+    def data_cube(self, lower_case_kind=True) -> Union[None, "DataCube"]:
         if not self._model.config:
             return None
         data_cube = pydash.head(self.config["dataCubes"])
@@ -97,7 +99,7 @@ class DataCube:
         if lower_case_kind and isinstance(data_cube, dict):
             lower_kind(data_cube)
 
-        return data_cube
+        return data_cube  # type: ignore
 
     @property
     def context(self) -> Dict:

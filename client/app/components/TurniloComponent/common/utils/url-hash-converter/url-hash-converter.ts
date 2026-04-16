@@ -62,9 +62,7 @@ export function getHashSegments(hash: string): HashSegments {
   const hashParts = hash.split(SEGMENT_SEPARATOR);
 
   if (hashParts.length < MINIMAL_HASH_SEGMENTS_COUNT) {
-    throw new Error(
-      `Expected ${MINIMAL_HASH_SEGMENTS_COUNT} hash segments, got ${hashParts.length}.`,
-    );
+    throw new Error(`Expected ${MINIMAL_HASH_SEGMENTS_COUNT} hash segments, got ${hashParts.length}.`);
   }
 
   if (isLegacyWithVisualizationPrefix(hashParts)) {
@@ -101,10 +99,7 @@ export const urlHashConverter: UrlHashConverter = {
     return definitionConverter.fromViewDefinition(definition, dataCube);
   },
 
-  toHash(
-    essence: Essence,
-    version: ViewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION,
-  ): string {
+  toHash(essence: Essence, version: ViewDefinitionVersion = DEFAULT_VIEW_DEFINITION_VERSION): string {
     const { visualization } = essence;
 
     const urlEncoder = definitionUrlEncoders[version];

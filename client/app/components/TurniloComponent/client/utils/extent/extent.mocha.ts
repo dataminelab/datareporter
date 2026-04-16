@@ -31,7 +31,7 @@ describe("extent", () => {
         title: "Count",
         name: reference,
         formula: "$main.count()",
-      }),
+      })
     );
 
     const datumFixture = {
@@ -70,8 +70,8 @@ describe("extent", () => {
   });
 
   describe("datumsExtent", () => {
-    const fooSelector: Selector = d => d.foo as number;
-    const barSelector: Selector = d => d.bar as number;
+    const fooSelector: Selector = (d) => d.foo as number;
+    const barSelector: Selector = (d) => d.bar as number;
 
     const datumsFixture = [
       { foo: 0, bar: 100 },
@@ -86,9 +86,7 @@ describe("extent", () => {
 
     it("should pick extent by two selectors", () => {
       const selectors = [fooSelector, barSelector];
-      expect(datumsExtent(datumsFixture, selectors)).to.be.deep.equal([
-        -200, 100,
-      ]);
+      expect(datumsExtent(datumsFixture, selectors)).to.be.deep.equal([-200, 100]);
     });
   });
 });

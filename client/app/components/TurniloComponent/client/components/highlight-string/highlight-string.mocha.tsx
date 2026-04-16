@@ -25,20 +25,12 @@ import { HighlightString } from "./highlight-string";
 
 describe("HighlightString", () => {
   it("properly highlights different types", () => {
-    expect(
-      ReactDOM.renderToStaticMarkup(
-        <HighlightString highlight={/[0-9]*/} text="2me2" />,
-      ),
-    ).to.equal(
-      '<span class="highlight-string"><span class="pre"></span><span class="bold">2</span><span class="post">me2</span></span>',
+    expect(ReactDOM.renderToStaticMarkup(<HighlightString highlight={/[0-9]*/} text="2me2" />)).to.equal(
+      '<span class="highlight-string"><span class="pre"></span><span class="bold">2</span><span class="post">me2</span></span>'
     );
 
-    expect(
-      ReactDOM.renderToStaticMarkup(
-        <HighlightString highlight="me" text="2me2" />,
-      ),
-    ).to.equal(
-      '<span class="highlight-string"><span class="pre">2</span><span class="bold">me</span><span class="post">2</span></span>',
+    expect(ReactDOM.renderToStaticMarkup(<HighlightString highlight="me" text="2me2" />)).to.equal(
+      '<span class="highlight-string"><span class="pre">2</span><span class="bold">me</span><span class="post">2</span></span>'
     );
     // expect(TestUtils.isCompositeComponent(renderedComponent), 'should be composite').to.equal(true);
     // expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, 'should contain class').to.contain('highlight-string');

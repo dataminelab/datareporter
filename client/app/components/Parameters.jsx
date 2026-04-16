@@ -206,7 +206,9 @@ export default class Parameters extends React.Component {
         lockToContainerEdges
         helperClass="parameter-dragged"
         helperContainer={containerEl => {
-          return appendSortableToParent ? containerEl : document.getElementsByTagName("body")[0];
+          return appendSortableToParent
+            ? containerEl
+            : document.getElementsByTagName("body")[0];
         }}
         updateBeforeSortStart={this.onBeforeSortStart}
         onSortEnd={this.moveParameter}

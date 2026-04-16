@@ -27,13 +27,7 @@ describe("Notifications", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(<Notifications />);
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      findDOMNode(renderedComponent).className,
-      "should contain class",
-    ).to.contain("notifications");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect(findDOMNode(renderedComponent).className, "should contain class").to.contain("notifications");
   });
 });

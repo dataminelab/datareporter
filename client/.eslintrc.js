@@ -18,21 +18,12 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react/jsx-runtime", // This tells ESLint about the new JSX transform
   ],
-  plugins: [
-    "jest",
-    "prettier",
-    "compat",
-    "no-only-tests",
-    "@typescript-eslint",
-    "jsx-a11y",
-    "cypress",
-    "react",
-  ],
+  plugins: ["jest", "prettier", "compat", "no-only-tests", "@typescript-eslint", "jsx-a11y", "cypress", "react"],
   settings: {
     "import/resolver": "webpack",
     react: {
-      "version": "detect"
-    }
+      version: "detect",
+    },
   },
   env: {
     browser: true,
@@ -63,13 +54,11 @@ module.exports = {
         paths: [
           {
             name: "antd",
-            message:
-              "Please use 'import XXX from antd/lib/XXX' import instead.",
+            message: "Please use 'import XXX from antd/lib/XXX' import instead.",
           },
           {
             name: "antd/lib",
-            message:
-              "Please use 'import XXX from antd/lib/XXX' import instead.",
+            message: "Please use 'import XXX from antd/lib/XXX' import instead.",
           },
         ],
       },
@@ -98,10 +87,7 @@ module.exports = {
     "react/display-name": "off",
     "react/jsx-no-comment-textnodes": "warn",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      { varsIgnorePattern: "^React$" },
-    ],
+    "@typescript-eslint/no-unused-vars": ["warn", { varsIgnorePattern: "^React$" }],
     "no-case-declarations": "off",
     "react/prop-types": "off",
     "compat/compat": "warn",
@@ -109,7 +95,7 @@ module.exports = {
       "warn",
       {
         "ts-ignore": "allow-with-description",
-        "minimumDescriptionLength": 3,
+        minimumDescriptionLength: 3,
       },
     ],
     "no-useless-escape": "warn",
@@ -136,16 +122,10 @@ module.exports = {
         "no-redeclare": "warn", // Re-enable base rule for JS files
         "no-unused-vars": ["warn", { varsIgnorePattern: "^React$" }], // Re-enable base rule for JS files
         "react/prop-types": "warn",
-      }
-
+      },
     },
     {
-      files: [
-        "**/*.mocha.ts",
-        "**/*.mocha.tsx",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
+      files: ["**/*.mocha.ts", "**/*.mocha.tsx", "**/*.test.ts", "**/*.test.tsx"],
       parser: null,
       env: {
         mocha: true,
@@ -169,10 +149,7 @@ module.exports = {
         "@typescript-eslint/no-empty-interface": "off",
         "no-var": "warn",
         "prefer-const": "warn",
-        "@typescript-eslint/no-namespace": [
-          "warn",
-          { allowDeclarations: true },
-        ],
+        "@typescript-eslint/no-namespace": ["warn", { allowDeclarations: true }],
         "getter-return": "off",
         "@typescript-eslint/no-empty-function": "off",
         "jest/no-done-callback": "off",
@@ -182,28 +159,11 @@ module.exports = {
       },
     },
     {
-      files: ["cypress/**/*.{js,jsx,ts,tsx}"],
-      env: {
-        "cypress/globals": true,
-      },
-      plugins: ["cypress"],
-      rules: {
-        "no-redeclare": "warn",
-      },
-    },
-    {
       files: ["**/__tests__/**/*.{js,jsx,ts,tsx}"],
       rules: {
         "no-console": "off",
       },
     },
   ],
-  ignorePatterns: [
-    "**/*.min.js",
-    "build/*.js",
-    "dist",
-    "config/*.js",
-    "client/dist",
-    "node_modules",
-  ],
+  ignorePatterns: ["**/*.min.js", "build/*.js", "dist", "config/*.js", "client/dist", "node_modules"],
 };

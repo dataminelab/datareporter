@@ -22,21 +22,14 @@ import { Clicker } from "../../../common/models/clicker/clicker";
 import { Dimension } from "../../../common/models/dimension/dimension";
 import { DragPosition } from "../../../common/models/drag-position/drag-position";
 import { Essence } from "../../../common/models/essence/essence";
-import {
-  FilterClause,
-  isTimeFilter,
-} from "../../../common/models/filter-clause/filter-clause";
+import { FilterClause, isTimeFilter } from "../../../common/models/filter-clause/filter-clause";
 import { Stage } from "../../../common/models/stage/stage";
 import { Locale } from "../../../common/models/locale/locale";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
 import { getFormattedClause } from "../../../common/utils/formatter/formatter";
 import { Deferred } from "../../../common/utils/promise/promise";
 import { Fn } from "../../../common/utils/general/general";
-import {
-  CORE_ITEM_GAP,
-  CORE_ITEM_WIDTH,
-  STRINGS,
-} from "../../config/constants";
+import { CORE_ITEM_GAP, CORE_ITEM_WIDTH, STRINGS } from "../../config/constants";
 import { Ternary, Unary } from "../../../common/utils/functional/functional";
 import {
   classNames,
@@ -80,12 +73,7 @@ export interface FilterTileProps {
   saveClause: Unary<FilterClause, void>;
   openFilterMenu: Unary<FilterClause, void>;
   closeFilterMenu: Fn;
-  dragStart: Ternary<
-    Dimension,
-    FilterClause,
-    React.DragEvent<HTMLElement>,
-    void
-  >;
+  dragStart: Ternary<Dimension, FilterClause, React.DragEvent<HTMLElement>, void>;
   stage: Stage;
   essence: Essence;
   timekeeper: Timekeeper;
@@ -104,10 +92,7 @@ export interface FilterTileState {
   maxWidth?: number;
 }
 
-export class FilterTile extends React.Component<
-  FilterTileProps,
-  FilterTileState
-> {
+export class FilterTile extends React.Component<FilterTileProps, FilterTileState> {
   private readonly overflowMenuId: string;
   private dummyDeferred: Deferred<Element>;
   private overflowMenuDeferred: Deferred<Element>;
@@ -206,8 +191,7 @@ export class FilterTile extends React.Component<
 
   openMenu(dimension: Dimension, target: Element): void {
     const overflowMenu = this.getOverflowMenu();
-    const menuInside =
-      overflowMenu && isInside(target, overflowMenu) ? overflowMenu : null;
+    const menuInside = overflowMenu && isInside(target, overflowMenu) ? overflowMenu : null;
     this.setState({
       menuOpenOn: target,
       menuDimension: dimension,
@@ -258,9 +242,7 @@ export class FilterTile extends React.Component<
   removeFilter(itemBlank: ItemBlank, e: React.MouseEvent): void {
     const { essence, clicker } = this.props;
     if (itemBlank.clause) {
-      clicker.changeFilter(
-        essence.filter.removeClause(itemBlank.clause.reference),
-      );
+      clicker.changeFilter(essence.filter.removeClause(itemBlank.clause.reference));
     }
     this.closeMenu();
     this.closeOverflowMenu();
@@ -285,12 +267,7 @@ export class FilterTile extends React.Component<
     const numItems = essence.filter.length();
     const rect = this.items.current.getBoundingClientRect();
     const offset = getXFromEvent(e) - rect.left;
-    return DragPosition.calculateFromOffset(
-      offset,
-      numItems,
-      CORE_ITEM_WIDTH,
-      CORE_ITEM_GAP,
-    );
+    return DragPosition.calculateFromOffset(offset, numItems, CORE_ITEM_WIDTH, CORE_ITEM_GAP);
   }
 
   canDrop(): boolean {
@@ -358,9 +335,7 @@ export class FilterTile extends React.Component<
     let tryingToReplaceTime = false;
     if (dragPosition.replace !== null) {
       const targetClause = filter.clauses.get(dragPosition.replace);
-      tryingToReplaceTime =
-        targetClause &&
-        targetClause.reference === dataCube.getTimeDimension().name;
+      tryingToReplaceTime = targetClause && targetClause.reference === dataCube.getTimeDimension().name;
     }
     if (dragPosition && !tryingToReplaceTime) {
       this.addDummy(dimension, dragPosition);
@@ -380,10 +355,7 @@ export class FilterTile extends React.Component<
   }
 
   appendFilter = (dimension: Dimension): void => {
-    this.addDummy(
-      dimension,
-      new DragPosition({ insert: this.props.essence.filter.length() }),
-    );
+    this.addDummy(dimension, new DragPosition({ insert: this.props.essence.filter.length() }));
   };
 
   addDummy(dimension: Dimension, possiblePosition: DragPosition): void {
@@ -412,13 +384,7 @@ export class FilterTile extends React.Component<
 
   renderMenu(): JSX.Element {
     const { essence, timekeeper, clicker, stage } = this.props;
-    const {
-      menuOpenOn,
-      menuDimension,
-      menuInside,
-      maxItems,
-      overflowMenuOpenOn,
-    } = this.state;
+    const { menuOpenOn, menuDimension, menuInside, maxItems, overflowMenuOpenOn } = this.state;
     let { possiblePosition } = this.state;
     if (!menuDimension) return null;
 
@@ -461,8 +427,7 @@ export class FilterTile extends React.Component<
         stage={Stage.fromSize(208, stageHeight)}
         fixedSize={true}
         openOn={overflowMenuOpenOn}
-        onClose={this.closeOverflowMenu}
-      >
+        onClose={this.closeOverflowMenu}>
         {filterItems}
       </BubbleMenu>
     );
@@ -477,8 +442,7 @@ export class FilterTile extends React.Component<
         ref={this.overflow}
         key="overflow"
         style={style}
-        onClick={this.overflowButtonClick}
-      >
+        onClick={this.overflowButtonClick}>
         <div className="count">{"+" + overflowItemBlanks.length}</div>
         {this.renderOverflowMenu(overflowItemBlanks)}
       </div>
@@ -488,8 +452,7 @@ export class FilterTile extends React.Component<
   renderRemoveButton(itemBlank: ItemBlank): JSX.Element {
     const { essence } = this.props;
     const dataCube = essence.dataCube;
-    if (itemBlank.dimension.expression.equals(dataCube.timeAttribute))
-      return null;
+    if (itemBlank.dimension.expression.equals(dataCube.timeAttribute)) return null;
     return (
       <div className="remove" onClick={this.removeFilter.bind(this, itemBlank)}>
         <SvgIcon svg={require("../../icons/x.svg")} />
@@ -499,17 +462,12 @@ export class FilterTile extends React.Component<
 
   renderTimeShiftLabel(dimension: Dimension): string {
     const { essence } = this.props;
-    if (!dimension.expression.equals(essence.dataCube.timeAttribute))
-      return null;
+    if (!dimension.expression.equals(essence.dataCube.timeAttribute)) return null;
     if (!essence.hasComparison()) return null;
     return `(Shift: ${essence.timeShift.getDescription(true)})`;
   }
 
-  renderItemLabel(
-    dimension: Dimension,
-    clause: FilterClause,
-    timezone: Timezone,
-  ): JSX.Element {
+  renderItemLabel(dimension: Dimension, clause: FilterClause, timezone: Timezone): JSX.Element {
     const { title, values } = getFormattedClause(dimension, clause, timezone);
     const timeShift = this.renderTimeShiftLabel(dimension);
 
@@ -556,20 +514,14 @@ export class FilterTile extends React.Component<
           draggable={true}
           onClick={this.clickDimension.bind(this, dimension)}
           onDragStart={this.dragStart.bind(this, dimension, clause)}
-          style={style}
-        >
+          style={style}>
           {this.renderItemLabel(dimension, clause, timezone)}
           {this.renderRemoveButton(itemBlank)}
         </div>
       );
     } else {
       return (
-        <div
-          className={className}
-          key={dimensionName}
-          ref={ref}
-          style={style}
-        >
+        <div className={className} key={dimensionName} ref={ref} style={style}>
           <div className="reading">{formatLabelDummy(dimension)}</div>
           {this.renderRemoveButton(itemBlank)}
         </div>
@@ -623,8 +575,8 @@ export class FilterTile extends React.Component<
       stage,
     } = this.props;
     const tiles = dataCube.dimensions
-      .filterDimensions(dimension => !filter.getClauseForDimension(dimension))
-      .map(dimension => {
+      .filterDimensions((dimension) => !filter.getClauseForDimension(dimension))
+      .map((dimension) => {
         return {
           key: dimension.name,
           label: dimension.title,
@@ -664,9 +616,7 @@ export class FilterTile extends React.Component<
           {filterItems}
         </div>
         {this.renderAddButton()}
-        {dragPosition ? (
-          <FancyDragIndicator dragPosition={dragPosition} />
-        ) : null}
+        {dragPosition ? <FancyDragIndicator dragPosition={dragPosition} /> : null}
         {dragPosition ? (
           <div
             className="drag-mask"

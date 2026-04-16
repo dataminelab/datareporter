@@ -18,13 +18,7 @@
 import React from "react";
 import { Stage } from "../../../common/models/stage/stage";
 import { Fn } from "../../../common/utils/general/general";
-import {
-  clamp,
-  classNames,
-  escapeKey,
-  isInside,
-  uniqueId,
-} from "../../utils/dom/dom";
+import { clamp, classNames, escapeKey, isInside, uniqueId } from "../../utils/dom/dom";
 import { BodyPortal } from "../body-portal/body-portal";
 import { Shpitz } from "../shpitz/shpitz";
 import "./bubble-menu.scss";
@@ -83,10 +77,7 @@ function defaultStage(): Stage {
   });
 }
 
-function alignHorizontalInside(
-  align: Align,
-  { left, width }: ClientRect,
-): number {
+function alignHorizontalInside(align: Align, { left, width }: ClientRect): number {
   switch (align) {
     case "center":
       return left + width / 2;
@@ -97,11 +88,7 @@ function alignHorizontalInside(
   }
 }
 
-function alignHorizontalOutside(
-  align: Align,
-  x: number,
-  width: number,
-): number {
+function alignHorizontalOutside(align: Align, x: number, width: number): number {
   switch (align) {
     case "center":
       return x - width / 2;
@@ -112,10 +99,7 @@ function alignHorizontalOutside(
   }
 }
 
-export class BubbleMenu extends React.Component<
-  BubbleMenuProps,
-  BubbleMenuState
-> {
+export class BubbleMenu extends React.Component<BubbleMenuProps, BubbleMenuState> {
   static defaultProps: Partial<BubbleMenuProps> = {
     align: "center",
   };
@@ -230,9 +214,7 @@ export class BubbleMenu extends React.Component<
     }
   }
 
-  private calcShpitzPosition(
-    menuStyle: PositionCSSProperties,
-  ): PositionCSSProperties {
+  private calcShpitzPosition(menuStyle: PositionCSSProperties): PositionCSSProperties {
     const { x, y } = this.state;
     const { direction } = this.props;
     const { left, top } = menuStyle;
@@ -269,22 +251,17 @@ export class BubbleMenu extends React.Component<
   }
 
   render(): any {
-    const { className, direction, stage, fixedSize, layout, align, children } =
-      this.props;
+    const { className, direction, stage, fixedSize, layout, align, children } = this.props;
     const { id } = this.state;
     const insideId = this.getInsideId();
 
     const menuCoordinates = this.calcMenuPosition();
 
     const hasShpitz = align === "center";
-    const shpitzCoordinates =
-      hasShpitz && this.calcShpitzPosition(menuCoordinates);
+    const shpitzCoordinates = hasShpitz && this.calcShpitzPosition(menuCoordinates);
 
-    const { maxHeight, maxWidth, left, top, bottom, height, width } =
-      menuCoordinates;
-    const menuSize = fixedSize
-      ? { width: stage.width, height: stage.height }
-      : { maxHeight, maxWidth, height, width };
+    const { maxHeight, maxWidth, left, top, bottom, height, width } = menuCoordinates;
+    const menuSize = fixedSize ? { width: stage.width, height: stage.height } : { maxHeight, maxWidth, height, width };
 
     const myClass = classNames("bubble-menu", direction, className, {
       mini: layout === "mini",
@@ -292,16 +269,9 @@ export class BubbleMenu extends React.Component<
 
     return (
       <BodyPortal left={left} top={top} bottom={bottom}>
-        <div
-          className={myClass}
-          id={id}
-          data-parent={insideId}
-          style={menuSize}
-        >
+        <div className={myClass} id={id} data-parent={insideId} style={menuSize}>
           {children}
-          {hasShpitz && (
-            <Shpitz style={shpitzCoordinates} direction={direction} />
-          )}
+          {hasShpitz && <Shpitz style={shpitzCoordinates} direction={direction} />}
         </div>
       </BodyPortal>
     );

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { setupReportTests } from '../../support/reportHelpers';
+import { setupReportTests } from "../../support/reportHelpers";
 
 context("Bar Chart", () => {
   const barChart = () => cy.get(".bar-chart");

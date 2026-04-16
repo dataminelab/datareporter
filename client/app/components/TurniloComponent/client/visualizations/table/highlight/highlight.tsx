@@ -25,17 +25,10 @@ interface HighlighterProps {
   collapseRows: boolean;
 }
 
-export const Highlighter: React.SFC<HighlighterProps> = props => {
-  const {
-    highlightedIndex,
-    scrollTopOffset,
-    highlightedNesting,
-    collapseRows,
-  } = props;
+export const Highlighter: React.SFC<HighlighterProps> = (props) => {
+  const { highlightedIndex, scrollTopOffset, highlightedNesting, collapseRows } = props;
   const top = highlightedIndex * ROW_HEIGHT - scrollTopOffset;
-  const left = collapseRows
-    ? 0
-    : Math.max(0, highlightedNesting - 1) * INDENT_WIDTH;
+  const left = collapseRows ? 0 : Math.max(0, highlightedNesting - 1) * INDENT_WIDTH;
   return (
     <div className="highlight-cont">
       <div className="highlight">

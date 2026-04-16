@@ -15,7 +15,7 @@ function Editor({ column, onChange }) {
           label="URL template"
           data-test="Table.ColumnEditor.Image.UrlTemplate"
           defaultValue={column.imageUrlTemplate}
-          onChange={event => onChangeDebounced({ imageUrlTemplate: event.target.value })}
+          onChange={(event) => onChangeDebounced({ imageUrlTemplate: event.target.value })}
         />
       </Section>
 
@@ -29,20 +29,21 @@ function Editor({ column, onChange }) {
                 <div>Leave empty to use default value.</div>
               </ContextHelp>
             </React.Fragment>
-          }>
+          }
+        >
           <div className="image-dimension-selector">
             <Input
               data-test="Table.ColumnEditor.Image.Width"
               placeholder="Width"
               defaultValue={column.imageWidth}
-              onChange={event => onChangeDebounced({ imageWidth: event.target.value })}
+              onChange={(event) => onChangeDebounced({ imageWidth: event.target.value })}
             />
             <span className="image-dimension-selector-spacer">&times;</span>
             <Input
               data-test="Table.ColumnEditor.Image.Height"
               placeholder="Height"
               defaultValue={column.imageHeight}
-              onChange={event => onChangeDebounced({ imageHeight: event.target.value })}
+              onChange={(event) => onChangeDebounced({ imageHeight: event.target.value })}
             />
           </div>
         </ControlLabel>
@@ -53,7 +54,7 @@ function Editor({ column, onChange }) {
           label="Title template"
           data-test="Table.ColumnEditor.Image.TitleTemplate"
           defaultValue={column.imageTitleTemplate}
-          onChange={event => onChangeDebounced({ imageTitleTemplate: event.target.value })}
+          onChange={(event) => onChangeDebounced({ imageTitleTemplate: event.target.value })}
         />
       </Section>
 
@@ -61,7 +62,8 @@ function Editor({ column, onChange }) {
         <ContextHelp
           placement="topLeft"
           arrowPointAtCenter
-          icon={<span style={{ cursor: "default" }}>Format specs {ContextHelp.defaultIcon}</span>}>
+          icon={<span style={{ cursor: "default" }}>Format specs {ContextHelp.defaultIcon}</span>}
+        >
           <div>
             All columns can be referenced using <code>{"{{ column_name }}"}</code> syntax.
           </div>

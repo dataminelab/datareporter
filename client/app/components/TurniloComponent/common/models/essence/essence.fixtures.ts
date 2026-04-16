@@ -40,20 +40,13 @@ import {
 import { Filter } from "../filter/filter";
 import { EMPTY_SERIES, SeriesList } from "../series-list/series-list";
 import { SortDirection } from "../sort/sort";
-import {
-  numberSplitCombine,
-  stringSplitCombine,
-  timeSplitCombine,
-} from "../split/split.fixtures";
+import { numberSplitCombine, stringSplitCombine, timeSplitCombine } from "../split/split.fixtures";
 import { EMPTY_SPLITS, Splits } from "../splits/splits";
 import { TimeShift } from "../time-shift/time-shift";
 import { Essence, EssenceValue, VisStrategy } from "./essence";
 
 const defaultEssence: EssenceValue = {
-  dataCube: DataCubeFixtures.customCube(
-    "essence-fixture-data-cube",
-    "essence-fixture-data-cube",
-  ),
+  dataCube: DataCubeFixtures.customCube("essence-fixture-data-cube", "essence-fixture-data-cube"),
   visualization: null,
   visualizationSettings: null,
   timezone: Timezone.UTC,
@@ -113,13 +106,7 @@ export class EssenceFixtures {
   }
 
   static wikiHeatmap(): Essence {
-    const filterClauses = [
-      timeRange(
-        "time",
-        new Date("2015-09-12T00:00:00Z"),
-        new Date("2015-09-13T00:00:00Z"),
-      ),
-    ];
+    const filterClauses = [timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z"))];
     const splitCombines = [
       stringSplitCombine("channel", {
         sort: { reference: "added", direction: SortDirection.descending },
@@ -146,11 +133,7 @@ export class EssenceFixtures {
 
   static wikiTable(): Essence {
     const filterClauses = [
-      timeRange(
-        "time",
-        new Date("2015-09-12T00:00:00Z"),
-        new Date("2015-09-13T00:00:00Z"),
-      ),
+      timeRange("time", new Date("2015-09-12T00:00:00Z"), new Date("2015-09-13T00:00:00Z")),
       stringIn("channel", ["en"]),
       boolean("isRobot", [true], true),
       stringContains("page", "Jeremy", false),

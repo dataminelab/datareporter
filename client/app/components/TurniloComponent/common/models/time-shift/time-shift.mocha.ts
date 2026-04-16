@@ -21,11 +21,7 @@ import { testImmutableClass } from "immutable-class-tester";
 import equivalent from "../../../client/utils/test-utils/equivalent";
 
 import { DateRange } from "../date-range/date-range";
-import {
-  FixedTimeFilterClause,
-  RelativeTimeFilterClause,
-  TimeFilterPeriod,
-} from "../filter-clause/filter-clause";
+import { FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterPeriod } from "../filter-clause/filter-clause";
 import { isValidTimeShift, TimeShift } from "./time-shift";
 
 use(equivalent);
@@ -65,12 +61,10 @@ describe("isValidTimeShift", () => {
             new DateRange({
               start: new Date("2010-01-01"),
               end: new Date("2010-01-02"),
-            }),
+            })
           ),
         });
-        expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(
-          oneDay,
-        );
+        expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
       });
 
       it("returns empty time shift if shifted period overlap with original", () => {
@@ -80,12 +74,10 @@ describe("isValidTimeShift", () => {
             new DateRange({
               start: new Date("2010-01-01"),
               end: new Date("2010-01-03"),
-            }),
+            })
           ),
         });
-        expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(
-          empty,
-        );
+        expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);
       });
     });
 
@@ -97,9 +89,7 @@ describe("isValidTimeShift", () => {
             period: TimeFilterPeriod.LATEST,
             duration: Duration.fromJS("P1D"),
           });
-          expect(
-            oneDay.constrainToFilter(filter, Timezone.UTC),
-          ).to.be.equivalent(oneDay);
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
         });
 
         it("returns empty time shift if shifted period overlap with original", () => {
@@ -108,9 +98,7 @@ describe("isValidTimeShift", () => {
             period: TimeFilterPeriod.LATEST,
             duration: Duration.fromJS("P2D"),
           });
-          expect(
-            oneDay.constrainToFilter(filter, Timezone.UTC),
-          ).to.be.equivalent(empty);
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);
         });
       });
 
@@ -121,9 +109,7 @@ describe("isValidTimeShift", () => {
             period: TimeFilterPeriod.PREVIOUS,
             duration: Duration.fromJS("P1D"),
           });
-          expect(
-            oneDay.constrainToFilter(filter, Timezone.UTC),
-          ).to.be.equivalent(oneDay);
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
         });
 
         it("returns empty time shift if shifted period overlap with original", () => {
@@ -132,9 +118,7 @@ describe("isValidTimeShift", () => {
             period: TimeFilterPeriod.PREVIOUS,
             duration: Duration.fromJS("P2D"),
           });
-          expect(
-            oneDay.constrainToFilter(filter, Timezone.UTC),
-          ).to.be.equivalent(empty);
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);
         });
       });
 
@@ -145,9 +129,7 @@ describe("isValidTimeShift", () => {
             period: TimeFilterPeriod.CURRENT,
             duration: Duration.fromJS("P1D"),
           });
-          expect(
-            oneDay.constrainToFilter(filter, Timezone.UTC),
-          ).to.be.equivalent(oneDay);
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(oneDay);
         });
 
         it("returns empty time shift if shifted period overlap with original", () => {
@@ -156,9 +138,7 @@ describe("isValidTimeShift", () => {
             period: TimeFilterPeriod.CURRENT,
             duration: Duration.fromJS("P2D"),
           });
-          expect(
-            oneDay.constrainToFilter(filter, Timezone.UTC),
-          ).to.be.equivalent(empty);
+          expect(oneDay.constrainToFilter(filter, Timezone.UTC)).to.be.equivalent(empty);
         });
       });
     });

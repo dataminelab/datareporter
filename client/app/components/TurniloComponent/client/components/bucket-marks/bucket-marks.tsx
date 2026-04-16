@@ -33,10 +33,7 @@ export interface BucketMarksProps {
 // eslint-disable-next-line
 export interface BucketMarksState {}
 
-export class BucketMarks extends React.Component<
-  BucketMarksProps,
-  BucketMarksState
-> {
+export class BucketMarks extends React.Component<BucketMarksProps, BucketMarksState> {
   render() {
     const { stage, ticks, scale } = this.props;
     const stageWidth = stage.width;
@@ -53,9 +50,7 @@ export class BucketMarks extends React.Component<
       addLine(x, "_" + tick);
     }
     if (ticks.length) {
-      const x = roundToHalfPx(
-        scale(ticks[ticks.length - 1]) + scale.bandwidth(),
-      );
+      const x = roundToHalfPx(scale(ticks[ticks.length - 1]) + scale.bandwidth());
       addLine(x, "last");
     }
 

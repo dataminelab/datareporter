@@ -436,6 +436,32 @@ class TestReportListCreateResource(BaseTestCase):
         self.assertTrue(isinstance(data["expression"], dict))
         self.assertDictEqual(EXPRESSION_OBJ, data["expression"])
 
+    def test_2_split_queries(self):
+        hash2split = "N4IgbglgzgrghgGwgLzgFwgewHYgFwhLYCmAtAMYAWcATmiADTjTxKoY4DKxaG2A5lHyh+NTDAAO3GhGJC8AM0RRiAXyYYAtsWQ5i+EAFE05APQBVACoBhRiAUQEaYjXkBtUGgCeE/QS36TDTECgbkmJoSCDzEACYA+rHogSABAAouWLHuoLEwNOhYuARpAIwAmnZQzhL4pKUaPn6EydUgqgC66p5NBtUyAnbBoQThCJg0dnDkHMUgELhMYIgwcvhu2DAICEwAcnBgXnaWxFTYEGMTdgDiWwoABJxowXCaIB1M2Jj0eM+rnUwoFEIGgcqlegR+gt+HZYhBtNgoEUwphxpNARMfqBhgYQcRNPEJDJyClvL4+pk1kw4cEZsiCLE5CTsHDBkxfDJMLEDO0mEhNCD8KUAAzdcHk/zwlJwhFInBhF7OBJJZx2URwTYIWggo4lADMAFkqpjhCAcaNFXFEsk7GTmjLiIjkdSILTZgY4FBmayYepCPDBXhNQgASAVDI1ngPGaQi5HSTcc4CUSLikFBNNOhTXaDIylFt6EsVs1eeLmtpPfl9GLhnHsAmCHiCQBHbx2dM0TNYsu5kJwAt2ZYIVY8v05ggV2DBXnY2PBevNJvxNDfRDtjNZvA9CUgPP9pyD4ujxo7ydV9ofEASBYkWIAESlTpw7kv1+wt84JsbScJxOrQA="
+        user = self.factory.create_user()
+        model = self.factory.create_model(user=user)
+
+        response = self.make_request(
+            "post",
+            "/api/reports?format=json",
+            data={
+                "name": NAME,
+                "model_id": model.id,
+                "expression": hash2split,
+                "color_1": "color_2",
+                "color_2": "color_2",
+                "data_source_id": 1,
+            },
+            user=user,
+        )
+        data = response.json
+        self.assertEqual(200, response.status_code)
+        self.assertTrue("id" in data)
+        self.assertEqual(model.id, data["model_id"])
+        self.assertTrue(isinstance(data["expression"], dict))
+        expected_expression = json.loads(parser.decompressFromBase64(hash2split))
+        self.assertDictEqual(expected_expression, data["expression"])
+
 
 class TestReportListGetResource(BaseTestCase):
     def test_without_user_permission(self):
@@ -470,9 +496,9 @@ class TestReportListGetResource(BaseTestCase):
         user1 = self.factory.create_user()
         user2 = self.factory.create_user()
 
-        self.factory.create_report(user=user2)
-        self.factory.create_report(user=user2)
-        self.factory.create_report(user=user1)
+        self.factory.create_report(user=user2, is_draft=False)
+        self.factory.create_report(user=user2, is_draft=False)
+        self.factory.create_report(user=user1, is_draft=False)
 
         response = self.make_request("get", "/api/reports", user=user1)
         self.assertEqual(200, response.status_code)
@@ -647,6 +673,34 @@ class TestReportEditResource(BaseTestCase):
 
         self.assertEqual(200, response.status_code)
         self.assertTrue(isinstance(response.json["expression"], dict))
+
+
+class TestReportForkResource(BaseTestCase):
+    def test_forks_a_report(self):
+        owner = self.factory.create_user()
+        forking_user = self.factory.create_user()
+        model = self.factory.create_model(user=owner)
+        report = self.factory.create_report(user=owner, model=model, tags=["sales"])
+
+        response = self.make_request("post", f"/api/reports/{report.id}/fork", user=forking_user)
+
+        self.assertEqual(200, response.status_code)
+        self.assertNotEqual(report.id, response.json["id"])
+        self.assertEqual(f"Copy of (#{report.id}) {report.name}", response.json["name"])
+        self.assertEqual(forking_user.id, response.json["user_id"])
+        self.assertEqual(report.model_id, response.json["model_id"])
+        self.assertEqual(report.data_source_id, response.json["data_source_id"])
+        self.assertEqual(report.tags, response.json["tags"])
+
+    def test_requires_edit_report_permission(self):
+        owner = self.factory.create_user()
+        report = self.factory.create_report(user=owner)
+        group_without_permissions = self.factory.create_group(permissions=[""])
+        user_without_permissions = self.factory.create_user(group_ids=[group_without_permissions.id])
+
+        response = self.make_request("post", f"/api/reports/{report.id}/fork", user=user_without_permissions)
+
+        self.assertEqual(403, response.status_code)
 
 
 class TestReportDeleteResource(BaseTestCase):

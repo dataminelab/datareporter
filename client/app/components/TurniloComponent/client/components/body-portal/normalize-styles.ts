@@ -36,9 +36,7 @@ export interface StyleDefinition {
   isAboveAll?: boolean;
 }
 
-export default function normalizeStyles(
-  source: StyleDefinition,
-): React.CSSProperties {
+export default function normalizeStyles(source: StyleDefinition): React.CSSProperties {
   const { left, top, bottom, right, disablePointerEvents, isAboveAll } = source;
   const dimensions = {
     top: normalizeDimension(top),

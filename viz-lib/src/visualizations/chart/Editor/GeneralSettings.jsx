@@ -32,12 +32,12 @@ function getAvailableColumnMappingTypes(options) {
 function getMappedColumns(options, availableColumns) {
   const mappedColumns = {};
   const availableTypes = getAvailableColumnMappingTypes(options);
-  each(availableTypes, type => {
+  each(availableTypes, (type) => {
     // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     mappedColumns[type] = ColumnMappingSelect.MappingTypes[type].multiple ? [] : null;
   });
 
-  availableColumns = map(availableColumns, c => c.name);
+  availableColumns = map(availableColumns, (c) => c.name);
   const usedColumns = [];
 
   each(options.columnMapping, (type, column) => {
@@ -65,7 +65,7 @@ function mappedColumnsToColumnMappings(mappedColumns) {
   const result = {};
   each(mappedColumns, (value, type) => {
     if (isArray(value)) {
-      each(value, v => {
+      each(value, (v) => {
         // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         result[v] = type;
       });
@@ -80,17 +80,17 @@ function mappedColumnsToColumnMappings(mappedColumns) {
 }
 
 export default function GeneralSettings({ options, data, onOptionsChange }) {
-  const { mappedColumns, unusedColumns } = useMemo(() => getMappedColumns(options, data.columns), [
-    options,
-    data.columns,
-  ]);
+  const { mappedColumns, unusedColumns } = useMemo(
+    () => getMappedColumns(options, data.columns),
+    [options, data.columns]
+  );
 
   function handleGlobalSeriesTypeChange(globalSeriesType) {
     onOptionsChange({
       globalSeriesType,
       showDataLabels: globalSeriesType === "pie",
       swappedAxes: false,
-      seriesOptions: mapValues(options.seriesOptions, series => ({
+      seriesOptions: mapValues(options.seriesOptions, (series) => ({
         ...series,
         type: globalSeriesType,
       })),
@@ -115,7 +115,7 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
 
   function handleAxesSwapping() {
     // moves any item in the right Y axis to the left one
-    const seriesOptions = mapValues(options.seriesOptions, series => ({
+    const seriesOptions = mapValues(options.seriesOptions, (series) => ({
       ...series,
       yAxis: 0,
     }));
@@ -144,7 +144,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
             data-test="Chart.SwappedAxes"
             defaultChecked={options.swappedAxes}
             checked={options.swappedAxes}
-            onChange={handleAxesSwapping}>
+            onChange={handleAxesSwapping}
+          >
             Horizontal Chart
           </Checkbox>
         </Section>
@@ -184,7 +185,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
               label="Bubble Size Proportional To"
               data-test="Chart.SizeMode"
               defaultValue={options.sizemode}
-              onChange={(mode) => onOptionsChange({ sizemode: mode })}>
+              onChange={(mode) => onOptionsChange({ sizemode: mode })}
+            >
               {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
               <Select.Option value="area" data-test="Chart.SizeMode.Area">
                 Area
@@ -207,7 +209,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
             label="Direction"
             data-test="Chart.PieDirection"
             defaultValue={options.direction.type}
-            onChange={(type) => onOptionsChange({ direction: { type } })}>
+            onChange={(type) => onOptionsChange({ direction: { type } })}
+          >
             {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
             <Select.Option value="counterclockwise" data-test="Chart.PieDirection.Counterclockwise">
               Counterclockwise
@@ -219,10 +222,7 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
               {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
             </Select.Option>
           </Select>
-          <Select
-            label="Sort"
-            defaultValue={options.piesort}
-            onChange={(val) => onOptionsChange({ piesort: val })}>
+          <Select label="Sort" defaultValue={options.piesort} onChange={(val) => onOptionsChange({ piesort: val })}>
             {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
             <Select.Option value={true}>
               True
@@ -245,7 +245,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
               label="Legend Placement"
               data-test="Chart.LegendPlacement"
               value={options.legend.enabled ? options.legend.placement : "hidden"}
-              onChange={handleLegendPlacementChange}>
+              onChange={handleLegendPlacementChange}
+            >
               {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
               <Select.Option value="hidden" data-test="Chart.LegendPlacement.HideLegend">
                 Hide legend
@@ -271,7 +272,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
                 label="Legend Items Order"
                 data-test="Chart.LegendItemsOrder"
                 value={options.legend.traceorder}
-                onChange={(traceorder) => onOptionsChange({ legend: { traceorder } })}>
+                onChange={(traceorder) => onOptionsChange({ legend: { traceorder } })}
+              >
                 {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
                 <Select.Option value="normal" data-test="Chart.LegendItemsOrder.Normal">
                   Normal
@@ -294,7 +296,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
           <Checkbox
             data-test="Chart.ShowPoints"
             defaultChecked={options.showpoints}
-            onChange={event => onOptionsChange({ showpoints: event.target.checked })}>
+            onChange={(event) => onOptionsChange({ showpoints: event.target.checked })}
+          >
             Show All Points
           </Checkbox>
         </Section>
@@ -308,7 +311,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
             data-test="Chart.Stacking"
             defaultValue={options.series.stacking}
             disabled={!includes(["line", "area", "column"], options.globalSeriesType)}
-            onChange={(stacking) => onOptionsChange({ series: { stacking } })}>
+            onChange={(stacking) => onOptionsChange({ series: { stacking } })}
+          >
             {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
             <Select.Option value={null} data-test="Chart.Stacking.Disabled">
               Disabled
@@ -329,7 +333,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
           <Checkbox
             data-test="Chart.NormalizeValues"
             defaultChecked={options.series.percentValues}
-            onChange={event => onOptionsChange({ series: { percentValues: event.target.checked } })}>
+            onChange={(event) => onOptionsChange({ series: { percentValues: event.target.checked } })}
+          >
             Normalize values to percentage
           </Checkbox>
         </Section>
@@ -342,7 +347,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
             label="Missing and NULL values"
             data-test="Chart.MissingValues"
             defaultValue={options.missingValuesAsZero ? 1 : 0}
-            onChange={(value) => onOptionsChange({ missingValuesAsZero: !!value })}>
+            onChange={(value) => onOptionsChange({ missingValuesAsZero: !!value })}
+          >
             {/* @ts-expect-error ts-migrate(2339) FIXME: Property 'Option' does not exist on type '({ class... Remove this comment to see the full error message */}
             <Select.Option value={0} data-test="Chart.MissingValues.Keep">
               Do not display in chart
@@ -362,7 +368,8 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
         <Checkbox
           data-test="Chart.EnableClickEvents"
           defaultChecked={options.enableLink}
-          onChange={event => onOptionsChange({ enableLink: event.target.checked })}>
+          onChange={(event) => onOptionsChange({ enableLink: event.target.checked })}
+        >
           Enable click events
         </Checkbox>
       </Section>
@@ -372,7 +379,7 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
         <Checkbox
           data-test="Chart.EnableClickEvents.NewTab"
           defaultChecked={options.linkOpenNewTab}
-          onChange={event => onOptionsChange({ linkOpenNewTab: event.target.checked })}
+          onChange={(event) => onOptionsChange({ linkOpenNewTab: event.target.checked })}
           disabled={!(options.enableLink === true)}
         >
           Open in new tab
@@ -390,17 +397,19 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
                 placement="topLeft"
                 arrowPointAtCenter
                 // @ts-expect-error ts-migrate(2322) FIXME: Type 'Element' is not assignable to type 'null | u... Remove this comment to see the full error message
-                icon={ContextHelp.defaultIcon}>
+                icon={ContextHelp.defaultIcon}
+              >
                 <div>
-                  Every curve can be referenced using <code>{"{{ @@x1 }} {{ @@y1 }} {{ @@x2 }} {{ @@y2 }} ..."}</code> syntax:<br/>
+                  Every curve can be referenced using <code>{"{{ @@x1 }} {{ @@y1 }} {{ @@x2 }} {{ @@y2 }} ..."}</code>{" "}
+                  syntax:
+                  <br />
                   axis with any curve number according to the Series config.
                 </div>
                 <div>
-                  The first met curve X and Y values can be referenced by just<code>{"{{ @@x }} {{ @@y }}"}</code> syntax.
+                  The first met curve X and Y values can be referenced by just<code>{"{{ @@x }} {{ @@y }}"}</code>{" "}
+                  syntax.
                 </div>
-                <div>
-                  Any unresolved reference would be replaced with an empty string.
-                </div>
+                <div>Any unresolved reference would be replaced with an empty string.</div>
               </ContextHelp>
             </React.Fragment>
           }

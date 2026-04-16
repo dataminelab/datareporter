@@ -18,11 +18,7 @@ import { Record } from "immutable";
 import { ApplyExpression, Expression } from "plywood";
 import { Measure } from "../measure/measure";
 import { Measures } from "../measure/measures";
-import {
-  ConcreteExpression,
-  ExpressionSeriesOperation,
-  ExpressionValue,
-} from "./expression";
+import { ConcreteExpression, ExpressionSeriesOperation, ExpressionValue } from "./expression";
 
 export type ArithmeticOperation =
   | ExpressionSeriesOperation.ADD
@@ -40,9 +36,7 @@ const defaultExpression: ExpressionArithmeticOperationValue = {
   reference: null,
 };
 
-export class ArithmeticExpression extends Record<ExpressionArithmeticOperationValue>(
-  defaultExpression,
-) {
+export class ArithmeticExpression extends Record<ExpressionArithmeticOperationValue>(defaultExpression) {
   constructor(params: ExpressionArithmeticOperationValue) {
     super(params);
   }
@@ -52,17 +46,14 @@ export class ArithmeticExpression extends Record<ExpressionArithmeticOperationVa
   }
 
   toConcreteExpression(measures: Measures): ConcreteArithmeticOperation {
-    return new ConcreteArithmeticOperation(
-      this.operation,
-      measures.getMeasureByName(this.reference),
-    );
+    return new ConcreteArithmeticOperation(this.operation, measures.getMeasureByName(this.reference));
   }
 }
 
 export class ConcreteArithmeticOperation implements ConcreteExpression {
   constructor(
     private operation: ArithmeticOperation,
-    private measure: Measure,
+    private measure: Measure
   ) {}
 
   private operationName(): string {
@@ -96,11 +87,7 @@ export class ConcreteArithmeticOperation implements ConcreteExpression {
     }
   }
 
-  toExpression(
-    expression: Expression,
-    name: string,
-    _nestingLevel: number,
-  ): ApplyExpression {
+  toExpression(expression: Expression, name: string, _nestingLevel: number): ApplyExpression {
     return new ApplyExpression({
       name,
       expression: this.calculate(expression),

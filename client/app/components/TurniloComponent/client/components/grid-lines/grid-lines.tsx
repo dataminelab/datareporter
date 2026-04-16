@@ -35,11 +35,7 @@ interface Coordinates {
   y2: number;
 }
 
-function lineCoordinates(
-  orientation: "horizontal" | "vertical",
-  value: number,
-  stage: Stage,
-): Coordinates {
+function lineCoordinates(orientation: "horizontal" | "vertical", value: number, stage: Stage): Coordinates {
   switch (orientation) {
     case "horizontal":
       return { x1: 0, x2: stage.width, y1: value, y2: value };
@@ -48,14 +44,11 @@ function lineCoordinates(
   }
 }
 
-export const GridLines: React.SFC<GridLinesProps> = props => {
+export const GridLines: React.SFC<GridLinesProps> = (props) => {
   const { orientation, stage, ticks, scale } = props;
 
   return (
-    <g
-      className={classNames("grid-lines", orientation)}
-      transform={stage.getTransform()}
-    >
+    <g className={classNames("grid-lines", orientation)} transform={stage.getTransform()}>
       {ticks.map((tick: unknown) => {
         const value = roundToHalfPx(scale(tick));
         const coordinates = lineCoordinates(orientation, value, stage);

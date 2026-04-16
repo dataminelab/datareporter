@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+@use "sass:math";
 @import "../../imports";
 
 $num-size: 16px;
@@ -32,8 +33,8 @@ $bar-height: 6px;
 
     &.full {
       @include css-variable(background-color, background-medium);
-      left: $num-size / 2;
-      right: $num-size / 2;
+      left: math.div($num-size, 2);
+      right: math.div($num-size, 2);
     }
 
     &.selected {

@@ -14,7 +14,7 @@ class Organization(TimestampMixin, db.Model):
     SETTING_GOOGLE_APPS_DOMAINS = "google_apps_domains"
     SETTING_IS_PUBLIC = "is_public"
 
-    id = primary_key("Organization")
+    id: int = primary_key("Organization")
     name = Column(db.String(255))
     slug = Column(db.String(255), unique=True)
     settings = Column(JSONText, nullable=True)

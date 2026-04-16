@@ -32,8 +32,15 @@ import routes from "@/services/routes";
 
 import logoUrl from "@/assets/images/report_icon_small.png";
 
+const DEFAULT_EMBED_VISUALIZATION = {
+  type: "TABLE",
+  name: "Table",
+  id: null,
+  options: {},
+};
+
 function VisualizationEmbedHeader({
-  queryName,
+  reportName,
   queryDescription,
   visualization,
 }) {
@@ -45,7 +52,7 @@ function VisualizationEmbedHeader({
           alt="Data Reporter Logo"
           style={{ height: "24px", verticalAlign: "text-bottom" }}
         />
-        <VisualizationName visualization={visualization} /> {queryName}
+        <VisualizationName visualization={visualization} /> {reportName}
         {queryDescription && (
           <small>
             <HtmlContent className="markdown text-muted">
@@ -59,7 +66,7 @@ function VisualizationEmbedHeader({
 }
 
 VisualizationEmbedHeader.propTypes = {
-  queryName: PropTypes.string.isRequired,
+  reportName: PropTypes.string.isRequired,
   queryDescription: PropTypes.string,
   visualization: VisualizationType.isRequired,
 };
@@ -193,7 +200,7 @@ VisualizationEmbedFooter.defaultProps = {
   apiKey: null,
 };
 
-function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
+function VisualizationEmbed({ reportId, visualizationId, apiKey, onError }) {
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
   const [refreshStartedAt, setRefreshStartedAt] = useState(null);
@@ -203,7 +210,15 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
 
   useEffect(() => {
     let isCancelled = false;
-    Report.get({ id: queryId })
+    const reportRequestParams = {};
+    if (has(location, "search.get_results")) {
+      reportRequestParams.get_results = location.search.get_results;
+    }
+
+    Report.get({
+      id: reportId,
+      params: reportRequestParams,
+    })
       .then(result => {
         if (!isCancelled) {
           setReport(result);
@@ -214,7 +229,7 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
     return () => {
       isCancelled = true;
     };
-  }, [queryId, handleError]);
+  }, [reportId, handleError]);
 
   const refreshReportResults = useCallback(() => {
     if (report) {
@@ -223,6 +238,11 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
       report
         .getReportResultPromise()
         .then(result => {
+          if (result && result.query_result) {
+            report.latest_report_data = result.query_result;
+            report.latest_report_data_id = result.query_result.id;
+            report.reportResult = result;
+          }
           setReportResults(result);
         })
         .catch(err => {
@@ -247,11 +267,15 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
   const hideTimestamp = has(location.search, "hide_timestamp");
 
   const showReportDescription = has(location.search, "showDescription");
-  visualizationId = parseInt(visualizationId, 10);
-  const visualization = find(
-    report.visualizations,
-    vis => vis.id === visualizationId,
-  );
+  const visualizations =
+    Array.isArray(report.visualizations) && report.visualizations.length > 0
+      ? report.visualizations
+      : [DEFAULT_EMBED_VISUALIZATION];
+  const parsedVisualizationId = parseInt(visualizationId, 10);
+  const visualization = Number.isNaN(parsedVisualizationId)
+    ? visualizations[0]
+    : find(visualizations, vis => vis.id === parsedVisualizationId) ||
+      visualizations[0];
 
   if (!visualization) {
     // call error handler async, otherwise it will destroy the component on render phase
@@ -268,7 +292,7 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
     >
       {!hideHeader && (
         <VisualizationEmbedHeader
-          queryName={report.name}
+          reportName={report.name}
           queryDescription={showReportDescription ? report.description : null}
           visualization={visualization}
         />
@@ -321,7 +345,7 @@ function VisualizationEmbed({ queryId, visualizationId, apiKey, onError }) {
 }
 
 VisualizationEmbed.propTypes = {
-  queryId: PropTypes.string.isRequired,
+  reportId: PropTypes.string.isRequired,
   visualizationId: PropTypes.string,
   apiKey: PropTypes.string.isRequired,
   onError: PropTypes.func,
@@ -334,7 +358,16 @@ VisualizationEmbed.defaultProps = {
 routes.register(
   "Reports.ViewShared",
   routeWithApiKeySession({
-    path: "/embed/report/:queryId/visualization/:visualizationId",
+    path: "/embed/report/:reportId/visualization/:visualizationId",
+    render: pageProps => <VisualizationEmbed {...pageProps} />,
+    getApiKey: () => location.search.api_key,
+  }),
+);
+
+routes.register(
+  "Reports.ViewShared.Legacy",
+  routeWithApiKeySession({
+    path: "/embed/report/:reportId",
     render: pageProps => <VisualizationEmbed {...pageProps} />,
     getApiKey: () => location.search.api_key,
   }),

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+@use "sass:math";
 @import "../../imports";
 
 .resize-handle {
@@ -48,12 +49,12 @@
 
   &.left {
     transform: translate(-50%, 0);
-    margin-left: -$tile-margin-h / 2;
+    margin-left: math.div(-$tile-margin-h, 2);
   }
 
   &.right {
     transform: translate(50%, 0);
-    margin-right: -$tile-margin-h / 2;
+    margin-right: math.div(-$tile-margin-h, 2);
   }
 
   &.top,

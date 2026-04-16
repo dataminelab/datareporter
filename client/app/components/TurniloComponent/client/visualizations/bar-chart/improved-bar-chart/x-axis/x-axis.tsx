@@ -41,7 +41,7 @@ function calculateTicks(domain: XDomain, essence: Essence): DomainValue[] {
   return domain;
 }
 
-export const XAxis: React.SFC<XAxisProps> = props => {
+export const XAxis: React.SFC<XAxisProps> = (props) => {
   const { essence, stage, scale } = props;
   const ticks = calculateTicks(scale.domain(), essence);
   return (

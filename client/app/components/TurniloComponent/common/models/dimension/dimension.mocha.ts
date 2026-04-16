@@ -18,12 +18,7 @@
 import { expect } from "chai";
 import { testImmutableClass } from "immutable-class-tester";
 
-import {
-  BucketingStrategy,
-  Dimension,
-  DimensionJS,
-  DimensionKind,
-} from "./dimension";
+import { BucketingStrategy, Dimension, DimensionJS, DimensionKind } from "./dimension";
 
 describe("Dimension", () => {
   it("is an immutable class", () => {
@@ -73,7 +68,7 @@ describe("Dimension", () => {
           title: "important countries",
           expression: "$country",
           kind: "string",
-        } as any).toJS(),
+        } as any).toJS()
       ).to.deep.equal({
         name: "country",
         title: "important countries",

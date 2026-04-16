@@ -41,13 +41,13 @@ export default class AlertNew extends React.Component {
           <div className="d-flex">
             <Form className="flex-fill">
               <div className="m-b-30">
-                Start by selecting the query that you would like to monitor
-                using the search bar.
+                Start by selecting the query or report that you would like to
+                monitor using the search bar.
                 <br />
-                Keep in mind that Alerts do not work with queries that use
-                parameters.
+                Keep in mind that Alerts do not work with queries or reports
+                that use parameters.
               </div>
-              <HorizontalFormItem label="Query">
+              <HorizontalFormItem label="Query or Report">
                 <Query
                   query={query}
                   queryResult={queryResult}

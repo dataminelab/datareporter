@@ -26,13 +26,9 @@ describe("Dropdown", () => {
   it("adds the correct class", () => {
     const renderedComponent = renderIntoDocument(<Dropdown items={null} />);
 
-    expect(
-      TestUtils.isCompositeComponent(renderedComponent),
-      "should be composite",
-    ).to.equal(true);
-    expect(
-      (ReactDOM.findDOMNode(renderedComponent) as Element).className,
-      "should contain class",
-    ).to.contain("dropdown");
+    expect(TestUtils.isCompositeComponent(renderedComponent), "should be composite").to.equal(true);
+    expect((ReactDOM.findDOMNode(renderedComponent) as Element).className, "should contain class").to.contain(
+      "dropdown"
+    );
   });
 });

@@ -30,17 +30,9 @@ export interface SortDropdownProps {
   onChange: Unary<Sort, void>;
 }
 
-export const SortDropdown: React.SFC<SortDropdownProps> = ({
-  direction,
-  options,
-  selected,
-  onChange,
-}) => {
+export const SortDropdown: React.SFC<SortDropdownProps> = ({ direction, options, selected, onChange }) => {
   function toggleDirection() {
-    const newDirection =
-      direction === SortDirection.descending
-        ? SortDirection.ascending
-        : SortDirection.descending;
+    const newDirection = direction === SortDirection.descending ? SortDirection.ascending : SortDirection.descending;
     onChange(selected.toSort(newDirection));
   }
 

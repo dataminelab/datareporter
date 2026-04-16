@@ -29,7 +29,7 @@ class AlertResource(BaseResource):
 
     def post(self, alert_id):
         req = request.get_json(True)
-        params = project(req, ("options", "name", "query_id", "rearm"))
+        params = project(req, ("options", "name", "query_id", "rearm", "type"))
         alert = get_object_or_404(models.Alert.get_by_id_and_org, alert_id, self.current_org)
         require_admin_or_owner(alert.user.id)
 
@@ -96,6 +96,7 @@ class AlertListResource(BaseResource):
             user=self.current_user,
             rearm=req.get("rearm"),
             options=req["options"],
+            type=req.get("type", "query"),
         )
 
         models.db.session.add(alert)

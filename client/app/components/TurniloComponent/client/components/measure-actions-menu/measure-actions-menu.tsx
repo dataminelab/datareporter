@@ -47,9 +47,7 @@ export interface MeasureActionsProps {
   onClose: Fn;
 }
 
-export const MeasureActionsMenu: React.SFC<
-  MeasureActionsMenuProps & MeasureActionsProps
-> = props => {
+export const MeasureActionsMenu: React.SFC<MeasureActionsMenuProps & MeasureActionsProps> = (props) => {
   const { direction, containerStage, openOn, measure, onClose } = props;
   if (!measure) return null;
 
@@ -60,14 +58,10 @@ export const MeasureActionsMenu: React.SFC<
       className="measure-actions-menu"
       direction={direction}
       containerStage={containerStage}
-      stage={Stage.fromSize(
-        MENU_PADDING + ACTION_WIDTH * actions.length,
-        ACTION_HEIGHT + MENU_PADDING,
-      )}
+      stage={Stage.fromSize(MENU_PADDING + ACTION_WIDTH * actions.length, ACTION_HEIGHT + MENU_PADDING)}
       fixedSize={true}
       openOn={openOn}
-      onClose={onClose}
-    >
+      onClose={onClose}>
       {actions}
     </BubbleMenu>
   );
@@ -91,31 +85,13 @@ function measureActions(props: MeasureActionsProps): JSX.Element[] {
 
   if (measure.isApproximate()) {
     return [
-      <AddMeasureSeriesButton
-        key="Add"
-        addSeries={addSeries}
-        series={series}
-        measure={measure}
-        onClose={onClose}
-      />,
+      <AddMeasureSeriesButton key="Add" addSeries={addSeries} series={series} measure={measure} onClose={onClose} />,
     ];
   }
 
   return [
-    <AddMeasureSeriesButton
-      key="Add"
-      addSeries={addSeries}
-      series={series}
-      measure={measure}
-      onClose={onClose}
-    />,
-    <AddPercentSeriesButton
-      key="Percent"
-      addSeries={addSeries}
-      measure={measure}
-      onClose={onClose}
-      series={series}
-    />,
+    <AddMeasureSeriesButton key="Add" addSeries={addSeries} series={series} measure={measure} onClose={onClose} />,
+    <AddPercentSeriesButton key="Percent" addSeries={addSeries} measure={measure} onClose={onClose} series={series} />,
     <AddArithmeticOperationButton
       key="Arithmetic"
       addExpressionPlaceholder={appendDirtySeries}

@@ -17,10 +17,7 @@
 import { HeatmapHighlightModalProps } from "../heatmap-highlight-modal";
 import { TILE_GAP, TILE_SIZE } from "../labeled-heatmap";
 
-export type CoordinatesProps = Pick<
-  HeatmapHighlightModalProps,
-  "position" | "layout" | "stage" | "scroll"
->;
+export type CoordinatesProps = Pick<HeatmapHighlightModalProps, "position" | "layout" | "stage" | "scroll">;
 
 export function calculateLeft(props: CoordinatesProps): number {
   const {
@@ -30,13 +27,9 @@ export function calculateLeft(props: CoordinatesProps): number {
     scroll,
   } = props;
   if (column !== null) {
-    return (
-      column * TILE_SIZE + TILE_GAP + layout.left + 20 + stage.x - scroll.left
-    );
+    return column * TILE_SIZE + TILE_GAP + layout.left + 20 + stage.x - scroll.left;
   }
-  return (
-    stage.x + Math.min(stage.width / 2, layout.left + layout.bodyWidth / 2)
-  );
+  return stage.x + Math.min(stage.width / 2, layout.left + layout.bodyWidth / 2);
 }
 
 export function calculateTop(props: CoordinatesProps): number {
@@ -49,7 +42,5 @@ export function calculateTop(props: CoordinatesProps): number {
   if (row !== null) {
     return row * TILE_SIZE + layout.top + stage.y - 5 - scroll.top;
   }
-  return (
-    stage.y + Math.min(stage.height / 2, layout.top + layout.bodyHeight / 2)
-  );
+  return stage.y + Math.min(stage.height / 2, layout.top + layout.bodyHeight / 2);
 }

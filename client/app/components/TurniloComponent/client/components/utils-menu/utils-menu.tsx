@@ -1,12 +1,7 @@
 import * as React from "react";
 import { Fn } from "../../../common/utils/general/general";
 import { exportOptions } from "../../config/constants";
-import {
-  dateFromFilter,
-  download,
-  FileFormat,
-  makeFileName,
-} from "../../utils/download/download";
+import { dateFromFilter, download, FileFormat, makeFileName } from "../../utils/download/download";
 import { DataSetWithTabOptions } from "../../views/cube-view/cube-view";
 import { Essence } from "../../../common/models/essence/essence";
 import { Timekeeper } from "../../../common/models/timekeeper/timekeeper";
@@ -34,21 +29,14 @@ export const UtilsMenu: React.SFC<UtilsMenuProps> = ({
     const { dataCube } = essence;
     const effectiveFilter = essence.getEffectiveFilter(timekeeper);
 
-    const fileName = makeFileName(
-      dataCube.name,
-      dateFromFilter(effectiveFilter),
-    );
+    const fileName = makeFileName(dataCube.name, dateFromFilter(effectiveFilter));
     download(dataSetWithTabOptions, fileFormat, fileName);
     onClose();
   }
 
   function exportItems() {
     return exportOptions.map(({ label, fileFormat }) => (
-      <li
-        key={`export-${fileFormat}`}
-        id={`export-data-${fileFormat}`}
-        onClick={() => onExport(fileFormat)}
-      >
+      <li key={`export-${fileFormat}`} id={`export-data-${fileFormat}`} onClick={() => onExport(fileFormat)}>
         {label}
       </li>
     ));

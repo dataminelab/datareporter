@@ -25,11 +25,6 @@ labels:
   - restyled
   - "Skip CI"
 
-# Labels to ignore
-# ignore_labels:
-#   - restyled-ignore
-
-# Restylers to run, and how
 restylers:
   - name: black
     image: restyled/restyler-black:v24.4.2

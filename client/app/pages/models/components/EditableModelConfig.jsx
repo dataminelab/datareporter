@@ -242,10 +242,45 @@ export default function EditableModelConfig({ model, saveConfig }) {
     // if timeAttribute's type is not TIME then alert
     const attributesList = attributes.split("- name: ");
     attributesList.shift();
+    // Allowed types from DEFAULT_FORMATTER
+    const allowedTypes = [
+      "NULL",
+      "TIME",
+      "TIME_RANGE",
+      "SET/TIME",
+      "SET/TIME_RANGE",
+      "STRING",
+      "SET/STRING",
+      "IP",
+      "BOOLEAN",
+      "NUMBER",
+      "NUMBER_RANGE",
+      "SET/NUMBER",
+      "SET/NUMBER_RANGE",
+      "DATASET",
+    ];
     for (let i = 0; i < attributesList.length; i++) {
       const attribute = attributesList[i];
+      // Extract type
+      const typeSplit = attribute.split("type: ");
+      if (typeSplit.length < 2) {
+        // Only check for missing type if this is the timeAttribute
+        if (attribute.includes(timeAttribute)) {
+          alert(`Attribute \"${timeAttribute}\" is missing a type declaration`);
+          return;
+        }
+        continue;
+      }
+      const attributeType = typeSplit[1].split("\n")[0].trim().toUpperCase();
+      // Check for invalid type
+      if (!allowedTypes.includes(attributeType)) {
+        alert(
+          `Attribute type '${attributeType}' is not allowed. Allowed types: ${allowedTypes.join(", ")}`,
+        );
+        return;
+      }
+      // Only check timeAttribute type for TIME
       if (attribute.includes(timeAttribute)) {
-        const attributeType = attribute.split("type: ")[1].split("\n")[0];
         if (attributeType !== "TIME") {
           alert("timeAttribute must be of type TIME");
           return;

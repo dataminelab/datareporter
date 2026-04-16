@@ -48,14 +48,11 @@ export interface SideDrawerState {
   query: string;
 }
 
-export class SideDrawer extends React.Component<
-  SideDrawerProps,
-  SideDrawerState
-> {
+export class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
   state = { query: "" };
 
   queryChange = (query: string) => {
-    this.setState(state => ({ ...state, query }));
+    this.setState((state) => ({ ...state, query }));
   };
 
   globalMouseDownListener = (e: MouseEvent) => {
@@ -113,12 +110,10 @@ export class SideDrawer extends React.Component<
 
     const cubes = filterDataCubes(dataCubes, query, false);
     if (cubes.length === 0) {
-      const message = query
-        ? `${STRINGS.noDataCubesFound}${query}`
-        : STRINGS.noDataCubes;
+      const message = query ? `${STRINGS.noDataCubesFound}${query}` : STRINGS.noDataCubes;
       return <div className="data-cubes__message">{message}</div>;
     }
-    const navLinks = cubes.map(dataCube => {
+    const navLinks = cubes.map((dataCube) => {
       const { name, title } = dataCube;
       return {
         name,
@@ -127,13 +122,7 @@ export class SideDrawer extends React.Component<
       };
     });
 
-    return (
-      <NavList
-        selected={dataCube.name}
-        navLinks={navLinks}
-        iconSvg={require("../../icons/full-cube.svg")}
-      />
-    );
+    return <NavList selected={dataCube.name} navLinks={navLinks} iconSvg={require("../../icons/full-cube.svg")} />;
   }
 
   private renderDataCubes(): JSX.Element {
@@ -142,11 +131,7 @@ export class SideDrawer extends React.Component<
     return (
       <div className="data-cubes__list">
         <div className="search-input">
-          <ClearableInput
-            value={query}
-            onChange={this.queryChange}
-            placeholder="Search data cubes..."
-          />
+          <ClearableInput value={query} onChange={this.queryChange} placeholder="Search data cubes..." />
         </div>
         {this.renderDataCubeList()}
       </div>

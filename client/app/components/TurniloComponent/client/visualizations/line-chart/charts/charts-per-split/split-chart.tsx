@@ -46,18 +46,9 @@ interface SplitChartProps {
   visualisationStage: Stage;
 }
 
-export const SplitChart: React.SFC<SplitChartProps> = props => {
-  const {
-    chartId,
-    interactions,
-    visualisationStage,
-    chartStage,
-    essence,
-    xScale,
-    xTicks,
-    selectDatum,
-    dataset,
-  } = props;
+export const SplitChart: React.SFC<SplitChartProps> = (props) => {
+  const { chartId, interactions, visualisationStage, chartStage, essence, xScale, xTicks, selectDatum, dataset } =
+    props;
   const { interaction } = interactions;
   const splitDatum = selectDatum(dataset);
   const splitDataset = selectSplitDataset(splitDatum);
@@ -66,16 +57,11 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
 
   const label = <Label essence={essence} datum={splitDatum} />;
   const hoverContent = isHover(interaction) && (
-    <SplitHoverContent
-      interaction={interaction}
-      essence={essence}
-      dataset={splitDataset}
-    />
+    <SplitHoverContent interaction={interaction} essence={essence} dataset={splitDataset} />
   );
 
   const continuousSplit = getContinuousSplit(essence);
-  const getX = (d: Datum) =>
-    d[continuousSplit.reference] as TimeRange | NumberRange;
+  const getX = (d: Datum) => d[continuousSplit.reference] as TimeRange | NumberRange;
   const domain = extentAcrossSeries(splitDataset, essence);
 
   if (series.count() === 1) {
@@ -92,8 +78,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
         chartStage={chartStage}
         formatter={firstSeries.formatter()}
         yDomain={domain}
-        visualisationStage={visualisationStage}
-      >
+        visualisationStage={visualisationStage}>
         {({ yScale, lineStage }) => {
           return (
             <SingletonSeriesChartLine
@@ -123,8 +108,7 @@ export const SplitChart: React.SFC<SplitChartProps> = props => {
       xTicks={xTicks}
       chartStage={chartStage}
       formatter={defaultFormatter}
-      yDomain={domain}
-    >
+      yDomain={domain}>
       {({ yScale, lineStage }) => (
         <React.Fragment>
           {series.toArray().map((series, index) => {

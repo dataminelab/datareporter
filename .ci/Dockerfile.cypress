@@ -10,7 +10,7 @@ COPY --chown=datareporter viz-lib/ $APP/viz-lib
 COPY --chown=datareporter plywood $APP/plywood
 
 WORKDIR $APP/client
-RUN npm i && npm run build
+RUN npm ci && npm run build
 
 # Verify Cypress installation
 RUN ./node_modules/.bin/cypress verify

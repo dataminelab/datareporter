@@ -9,8 +9,8 @@ import { Section, Select } from "@/components/visualizations/editor";
 
 function getUniqueValues(chartData) {
   const uniqueValuesNames = new Set();
-  each(chartData, series => {
-    each(series.data, row => {
+  each(chartData, (series) => {
+    each(series.data, (row) => {
       uniqueValuesNames.add(row.x);
     });
   });
@@ -28,7 +28,7 @@ export default function PieColorsSettings({ options, data, onOptionsChange }) {
 
   const series = useMemo(
     () =>
-      map(getUniqueValues(getChartData(data.rows, options)), value => ({
+      map(getUniqueValues(getChartData(data.rows, options)), (value) => ({
         key: value,
         color: (options.valuesOptions[value] || {}).color || null,
       })),
@@ -74,19 +74,22 @@ export default function PieColorsSettings({ options, data, onOptionsChange }) {
   return (
     <React.Fragment>
       <Section>
-          <Select
-            label="Color Scheme"
-            defaultValue={options.color_scheme}
-            data-test="ColorScheme"
-            onChange={(val ) => onOptionsChange({ color_scheme: val })}>
-            {Object.keys(AllColorPalettes).map(option => (
-             <Select.Option data-test={`ColorOption${option}`} key={option} value={option}>{option}</Select.Option>
-            ))}
-          </Select>
-        </Section>
+        <Select
+          label="Color Scheme"
+          defaultValue={options.color_scheme}
+          data-test="ColorScheme"
+          onChange={(val) => onOptionsChange({ color_scheme: val })}
+        >
+          {Object.keys(AllColorPalettes).map((option) => (
+            <Select.Option data-test={`ColorOption${option}`} key={option} value={option}>
+              {option}
+            </Select.Option>
+          ))}
+        </Select>
+      </Section>
       <Table showHeader={false} dataSource={series} columns={columns} pagination={false} />
     </React.Fragment>
-  )
+  );
 }
 
 PieColorsSettings.propTypes = EditorPropTypes;

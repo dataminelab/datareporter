@@ -50,20 +50,15 @@ describe("ImmutableDropdown", () => {
         equal={(a: ListItem, b: ListItem) => a.value === b.value}
         renderItem={(a: ListItem) => a.label}
         keyItem={(a: ListItem) => a.value}
-      />,
+      />
     );
 
     node = findDOMNode(component) as any;
   });
 
   it("adds the correct class", () => {
-    expect(
-      TestUtils.isCompositeComponent(component),
-      "should be composite",
-    ).to.equal(true);
-    expect(node.className, "should contain class").to.contain(
-      "immutable-dropdown",
-    );
+    expect(TestUtils.isCompositeComponent(component), "should be composite").to.equal(true);
+    expect(node.className, "should contain class").to.contain("immutable-dropdown");
   });
 
   it("selects an item and calls onChange", () => {
@@ -71,10 +66,7 @@ describe("ImmutableDropdown", () => {
 
     TestUtils.Simulate.click(node);
 
-    const items = TestUtils.scryRenderedDOMComponentsWithClass(
-      component,
-      "dropdown-item",
-    );
+    const items = TestUtils.scryRenderedDOMComponentsWithClass(component, "dropdown-item");
 
     TestUtils.Simulate.click(items[1]);
 

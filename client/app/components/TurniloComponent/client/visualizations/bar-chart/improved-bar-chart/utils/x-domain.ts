@@ -19,13 +19,7 @@ import { Essence } from "../../../../../common/models/essence/essence";
 import { selectFirstSplitDatums } from "../../../../utils/dataset/selectors/selectors";
 import { firstSplitRef } from "./splits";
 
-export type DomainValue =
-  | boolean
-  | number
-  | string
-  | Date
-  | NumberRange
-  | TimeRange;
+export type DomainValue = boolean | number | string | Date | NumberRange | TimeRange;
 
 export type XDomain = DomainValue[];
 
@@ -33,5 +27,5 @@ export function getXDomain(essence: Essence, dataset: Dataset): XDomain {
   const ref = firstSplitRef(essence);
   const firstSplitDatums = selectFirstSplitDatums(dataset);
 
-  return firstSplitDatums.map(datum => datum[ref] as DomainValue);
+  return firstSplitDatums.map((datum) => datum[ref] as DomainValue);
 }

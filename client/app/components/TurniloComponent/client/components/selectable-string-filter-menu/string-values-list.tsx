@@ -26,9 +26,7 @@ import "./string-values-list.scss";
 function filterRows<T>(rows: T[], searchText: string): T[] {
   if (!searchText) return rows;
   const searchTextLower = searchText.toLowerCase();
-  return rows.filter(
-    d => String(d).toLowerCase().indexOf(searchTextLower) !== -1,
-  );
+  return rows.filter((d) => String(d).toLowerCase().indexOf(searchTextLower) !== -1);
 }
 
 interface RowsListProps {
@@ -50,31 +48,18 @@ function sortRows<T>(rows: T[], promoted: Set<T>): T[] {
   });
 }
 
-export const StringValuesList: React.SFC<RowsListProps> = props => {
-  const {
-    onRowSelect,
-    filterMode,
-    dataset,
-    dimension,
-    searchText,
-    limit,
-    promotedValues,
-    selectedValues,
-  } = props;
-  const rows = dataset.data
-    .slice(0, limit)
-    .map(d => d[dimension.name] as string);
+export const StringValuesList: React.SFC<RowsListProps> = (props) => {
+  const { onRowSelect, filterMode, dataset, dimension, searchText, limit, promotedValues, selectedValues } = props;
+  const rows = dataset.data.slice(0, limit).map((d) => d[dimension.name] as string);
   const matchingRows = filterRows(rows, searchText);
   if (searchText && matchingRows.length === 0) {
-    return (
-      <div className="no-string-values no-result">{`No results for "${searchText}"`}</div>
-    );
+    return <div className="no-string-values no-result">{`No results for "${searchText}"`}</div>;
   }
   const sortedRows = sortRows(matchingRows, promotedValues);
   const checkboxStyle = filterMode === FilterMode.EXCLUDE ? "cross" : "check";
   return (
     <React.Fragment>
-      {sortedRows.map(value => (
+      {sortedRows.map((value) => (
         <StringValue
           key={String(value)}
           value={value}

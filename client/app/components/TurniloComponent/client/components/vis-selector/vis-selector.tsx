@@ -38,10 +38,7 @@ export interface VisSelectorState {
 
 const visSelectorMenuStage = Stage.fromSize(268, 176);
 
-export class VisSelector extends React.Component<
-  VisSelectorProps,
-  VisSelectorState
-> {
+export class VisSelector extends React.Component<VisSelectorProps, VisSelectorState> {
   private selector = React.createRef<HTMLDivElement>();
 
   state: VisSelectorState = { openMenu: false };
@@ -60,10 +57,8 @@ export class VisSelector extends React.Component<
 
   closeMenu = () => this.setState({ openMenu: false });
 
-  changeVisualization = (
-    vis: VisualizationManifest,
-    settings: VisualizationSettings,
-  ) => this.props.clicker.changeVisualization(vis, settings);
+  changeVisualization = (vis: VisualizationManifest, settings: VisualizationSettings) =>
+    this.props.clicker.changeVisualization(vis, settings);
 
   renderMenu() {
     const { openMenu } = this.state;
@@ -76,8 +71,7 @@ export class VisSelector extends React.Component<
         direction="down"
         stage={visSelectorMenuStage}
         openOn={this.selector.current}
-        onClose={this.closeMenu}
-      >
+        onClose={this.closeMenu}>
         <VisSelectorMenu
           initialVisualization={essence.visualization}
           initialSettings={essence.visualizationSettings}
@@ -96,11 +90,7 @@ export class VisSelector extends React.Component<
 
     return (
       <React.Fragment>
-        <div
-          ref={this.selector}
-          className={classNames("vis-selector", { active: openMenu })}
-          onClick={this.openMenu}
-        >
+        <div ref={this.selector} className={classNames("vis-selector", { active: openMenu })} onClick={this.openMenu}>
           <VisSelectorItem visualization={visualization} selected={true} />
         </div>
         {this.renderMenu()}

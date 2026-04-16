@@ -69,7 +69,7 @@ describe("Measure", () => {
           name: "avg_price",
           title: "Average Price",
           expression: "$main.average($price)",
-        } as any).toJS(),
+        } as any).toJS()
       ).to.deep.equal({
         name: "avg_price",
         title: "Average Price",
@@ -92,9 +92,7 @@ describe("Measure", () => {
           },
         },
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map(m =>
-        m.toJS(),
-      );
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "price",
@@ -117,9 +115,7 @@ describe("Measure", () => {
           },
         },
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map(m =>
-        m.toJS(),
-      );
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "price",
@@ -143,9 +139,7 @@ describe("Measure", () => {
         },
       });
 
-      const measures = Measure.measuresFromAttributeInfo(attribute).map(m =>
-        m.toJS(),
-      );
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "price",
@@ -162,9 +156,7 @@ describe("Measure", () => {
         type: "NUMBER",
       });
 
-      const measures = Measure.measuresFromAttributeInfo(attribute).map(m =>
-        m.toJS(),
-      );
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "delta_histogram_p98",
@@ -181,9 +173,7 @@ describe("Measure", () => {
         type: "NUMBER",
       });
 
-      const measures = Measure.measuresFromAttributeInfo(attribute).map(m =>
-        m.toJS(),
-      );
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "delta_quantiles_p98",
@@ -199,9 +189,7 @@ describe("Measure", () => {
         nativeType: "hyperUnique",
         type: "STRING",
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map(m =>
-        m.toJS(),
-      );
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "unique_page",
@@ -217,9 +205,7 @@ describe("Measure", () => {
         nativeType: "thetaSketch",
         type: "STRING",
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map(m =>
-        m.toJS(),
-      );
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "page_theta",
@@ -235,9 +221,7 @@ describe("Measure", () => {
         nativeType: "HLLSketch",
         type: "STRING",
       });
-      const measures = Measure.measuresFromAttributeInfo(attribute).map(m =>
-        m.toJS(),
-      );
+      const measures = Measure.measuresFromAttributeInfo(attribute).map((m) => m.toJS());
       expect(measures).to.deep.equal([
         {
           name: "page_hll",

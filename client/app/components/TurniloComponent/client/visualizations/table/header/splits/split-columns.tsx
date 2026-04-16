@@ -16,11 +16,7 @@
 
 import React from "react";
 import { DataCube } from "../../../../../common/models/data-cube/data-cube";
-import {
-  DimensionSort,
-  Sort,
-  SortDirection,
-} from "../../../../../common/models/sort/sort";
+import { DimensionSort, Sort, SortDirection } from "../../../../../common/models/sort/sort";
 import { Split } from "../../../../../common/models/split/split";
 import { Splits } from "../../../../../common/models/splits/splits";
 import { Corner } from "../../utils/corner";
@@ -34,18 +30,15 @@ interface SplitColumnsHeader {
 }
 
 function sortDirection(split: Split, sort: Sort): SortDirection | null {
-  const isCurrentSort =
-    sort instanceof DimensionSort && split.reference === sort.reference;
+  const isCurrentSort = sort instanceof DimensionSort && split.reference === sort.reference;
   return isCurrentSort ? sort.direction : null;
 }
 
-export const SplitColumnsHeader: React.FunctionComponent<
-  SplitColumnsHeader
-> = ({ sort, splits, dataCube }) => {
+export const SplitColumnsHeader: React.FunctionComponent<SplitColumnsHeader> = ({ sort, splits, dataCube }) => {
   return (
     <Corner>
       <div className="header-split-columns">
-        {splits.splits.toArray().map(split => {
+        {splits.splits.toArray().map((split) => {
           const { reference } = split;
           const title = dataCube.getDimension(reference).title;
           const direction = sortDirection(split, sort);

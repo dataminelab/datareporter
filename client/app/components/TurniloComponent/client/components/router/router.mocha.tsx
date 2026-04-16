@@ -31,15 +31,13 @@ interface FakeProps {
   object?: { label: string };
 }
 
-interface FakeState {
-}
+interface FakeState {}
 
 class Fake extends React.Component<FakeProps, FakeState> {
-
   render() {
     const { itemId, action, object } = this.props;
 
-    const str = `${action || ""}${itemId || ""}${object && object.label || ""}`;
+    const str = `${action || ""}${itemId || ""}${(object && object.label) || ""}`;
 
     return <div className="fakey-fakey">{str}</div>;
   }
@@ -77,7 +75,6 @@ describe("Router", () => {
 
   beforeEach(() => {
     updateHash = (newHash: string) => {
-
       window.location.hash = newHash;
       const spy = sinon.spy();
 
@@ -103,8 +100,10 @@ describe("Router", () => {
         <Route fragment=":itemId" alwaysShowOrphans={true}>
           <div className="pouet-class">baz</div>
           // Should alway be visible
-          <Route transmit={["itemId"]} fragment=":action"><Fake /></Route>
-        </Route>
+          <Route transmit={["itemId"]} fragment=":action">
+            <Fake />
+          </Route>
+        </Route>,
       ];
 
       updateHash("root/bar");
@@ -132,7 +131,7 @@ describe("Router", () => {
     beforeEach(() => {
       node = window.document.createElement("div");
 
-      const pump = (key: string, value: string): { key: string, value: any } => {
+      const pump = (key: string, value: string): { key: string; value: any } => {
         if (key === "action") return { key, value };
         return { key: "object", value: { label: value.toUpperCase() } };
       };
@@ -141,8 +140,10 @@ describe("Router", () => {
         <Route fragment=":itemId" alwaysShowOrphans={true}>
           <div className="pouet-class">baz</div>
           // Should alway be visible
-          <Route transmit={["itemId"]} fragment=":action" inflate={pump}><Fake /></Route>
-        </Route>
+          <Route transmit={["itemId"]} fragment=":action" inflate={pump}>
+            <Fake />
+          </Route>
+        </Route>,
       ];
 
       updateHash("root/bar");
@@ -187,13 +188,19 @@ describe("Router", () => {
 
         <Route fragment="baz">
           <div className="baz-class">baz</div>
-          <Route fragment=":itemId"><Fake /></Route> // Fake is gonna get passed whatever replaces :bazId in the hash
+          <Route fragment=":itemId">
+            <Fake />
+          </Route>{" "}
+          // Fake is gonna get passed whatever replaces :bazId in the hash
         </Route>,
 
         <Route fragment="qux">
           <div className="qux-class">qux</div>
-          <Route fragment=":itemId/:action=edit"><Fake /></Route> // default value for variable
-        </Route>
+          <Route fragment=":itemId/:action=edit">
+            <Fake />
+          </Route>{" "}
+          // default value for variable
+        </Route>,
       ];
 
       updateHash("root/bar");
@@ -201,14 +208,11 @@ describe("Router", () => {
 
     it("initializes to the location", (done: any) => {
       // Timeout because the router waits for a bit before initializing
-      setTimeout(
-        () => {
-          expect((findNode(component) as any).className, "should contain class").to.equal("bar-class");
-          isActiveRoute("#root/bar");
-          done();
-        },
-        2
-      );
+      setTimeout(() => {
+        expect((findNode(component) as any).className, "should contain class").to.equal("bar-class");
+        isActiveRoute("#root/bar");
+        done();
+      }, 2);
     });
 
     it("fixes multiple slashes", () => {
@@ -267,7 +271,6 @@ describe("Router", () => {
   });
 
   describe("without initial location", () => {
-
     beforeEach(() => {
       node = window.document.createElement("div");
 
@@ -282,7 +285,7 @@ describe("Router", () => {
 
         <Route fragment="baz">
           <div className="baz-class">baz</div>
-        </Route>
+        </Route>,
       ];
 
       updateHash("root");
@@ -290,13 +293,10 @@ describe("Router", () => {
 
     it("defaults to the first route", (done: any) => {
       // Timeout because the router waits for a bit before initializing
-      setTimeout(
-        () => {
-          isActiveRoute("#root/foo");
-          done();
-        },
-        2
-      );
+      setTimeout(() => {
+        isActiveRoute("#root/foo");
+        done();
+      }, 2);
     });
 
     it("follows the window.location.hash's changes", () => {

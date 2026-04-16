@@ -16,6 +16,14 @@ export class BigQueryDialect extends SQLDialect {
     P3M: "%Y-%m-%d 00:00:00Z",
   };
 
+  static FIXED_UNIT_BUCKETING: Record<string, string> = {
+    second: "%Y-%m-%d %H:%M:%SZ",
+    minute: "%Y-%m-%d %H:%M:00Z",
+    hour: "%Y-%m-%d %H:00:00Z",
+    day: "%Y-%m-%d 00:00:00Z",
+    week: "%Y-%m-%d 00:00:00Z",
+  };
+
   static CAST_TO_FUNCTION: Record<string, Record<string, string>> = {
     TIME: {
       NUMBER: "TIMESTAMP_MILLIS($$)",
@@ -123,19 +131,47 @@ export class BigQueryDialect extends SQLDialect {
     duration: Duration,
     timezone: Timezone,
   ): string {
-    const bucketFormat = BigQueryDialect.TIME_BUCKETING[duration.toString()];
+    const durationString = duration.toString();
+    const bucketFormat = BigQueryDialect.TIME_BUCKETING[durationString];
+    const spans = duration.valueOf();
+
+    const fixedUnitSpans = ["second", "minute", "hour", "day", "week"];
+    const activeFixedUnitSpans = fixedUnitSpans.filter(
+      span => spans[span as keyof typeof spans],
+    );
+
+    if (activeFixedUnitSpans.length === 1) {
+      const span = activeFixedUnitSpans[0];
+      const spanValue = Number(spans[span as keyof typeof spans]);
+      if (spanValue > 1) {
+        const spanDurationsInSeconds: Record<string, number> = {
+          second: 1,
+          minute: 60,
+          hour: 60 * 60,
+          day: 24 * 60 * 60,
+          week: 7 * 24 * 60 * 60,
+        };
+        const spanInSeconds = spanValue * spanDurationsInSeconds[span];
+        const floorFormat = BigQueryDialect.FIXED_UNIT_BUCKETING[span];
+        return this.walltimeToUTC(
+          `FORMAT_DATETIME('${floorFormat}', CAST(TIMESTAMP_SECONDS(DIV(UNIX_SECONDS(${this.utcToWalltime(operand, timezone)}), ${spanInSeconds}) * ${spanInSeconds}) AS DATETIME))`,
+          timezone,
+        );
+      }
+    }
+
     if (!bucketFormat) throw new Error(`unsupported duration '${duration}'`);
-    if (duration.toString() === "P1W") {
+    if (durationString === "P1W") {
       return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), WEEK))`,
         timezone,
       );
-    } else if (duration.toString() === "P1Y") {
+    } else if (durationString === "P1Y") {
       return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), YEAR))`,
         timezone,
       );
-    } else if (duration.toString() === "P3M") {
+    } else if (durationString === "P3M") {
       return this.walltimeToUTC(
         `FORMAT_DATETIME('${bucketFormat}', DATETIME_TRUNC( CAST(${this.utcToWalltime(operand, timezone)} AS DATETIME), QUARTER))`,
         timezone,

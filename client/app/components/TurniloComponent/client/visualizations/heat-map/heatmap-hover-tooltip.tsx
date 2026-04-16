@@ -18,10 +18,7 @@ import { TooltipWithBounds } from "@vx/tooltip";
 import { Datum } from "plywood";
 import * as React from "react";
 import { Essence } from "../../../common/models/essence/essence";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../common/models/series/concrete-series";
 import { MeasureBubbleContent } from "../../components/measure-bubble-content/measure-bubble-content";
 import { SegmentBubbleContent } from "../../components/segment-bubble/segment-bubble";
 import datumByPosition from "./utils/datum-by-position";
@@ -41,7 +38,7 @@ interface ContentProps {
   series: ConcreteSeries;
 }
 
-const Content: React.SFC<ContentProps> = props => {
+const Content: React.SFC<ContentProps> = (props) => {
   const { showComparison, series, datum } = props;
   if (!showComparison) {
     return <React.Fragment>{series.formatValue(datum)}</React.Fragment>;
@@ -56,7 +53,7 @@ const Content: React.SFC<ContentProps> = props => {
   );
 };
 
-export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = props => {
+export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = (props) => {
   const {
     dataset,
     essence,
@@ -68,20 +65,10 @@ export const HeatmapHoverTooltip: React.SFC<HeatmapHoverTooltip> = props => {
 
   const series = essence.getConcreteSeries().first();
   return (
-    <TooltipWithBounds
-      key={`${row}-${column}`}
-      top={top - scroll.top}
-      left={left - scroll.left}
-    >
+    <TooltipWithBounds key={`${row}-${column}`} top={top - scroll.top} left={left - scroll.left}>
       <SegmentBubbleContent
         title={modalTitle({ row, column }, dataset, essence)}
-        content={
-          <Content
-            datum={datum}
-            showComparison={essence.hasComparison()}
-            series={series}
-          />
-        }
+        content={<Content datum={datum} showComparison={essence.hasComparison()} series={series} />}
       />
     </TooltipWithBounds>
   );

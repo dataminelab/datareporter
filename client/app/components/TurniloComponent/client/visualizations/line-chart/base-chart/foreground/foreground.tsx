@@ -19,11 +19,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { Stage } from "../../../../../common/models/stage/stage";
 import { Nullary } from "../../../../../common/utils/functional/functional";
-import {
-  Interaction,
-  isHighlight,
-  isHover,
-} from "../../interactions/interaction";
+import { Interaction, isHighlight, isHover } from "../../interactions/interaction";
 import { ContinuousScale } from "../../utils/continuous-types";
 import { HighlightModal } from "./highlight-modal";
 import { HoverTooltip } from "./hover-tooltip";
@@ -41,7 +37,7 @@ interface ForegroundProps {
   timezone: Timezone;
 }
 
-export const Foreground: React.SFC<ForegroundProps> = props => {
+export const Foreground: React.SFC<ForegroundProps> = (props) => {
   const {
     stage,
     interaction,
@@ -56,12 +52,7 @@ export const Foreground: React.SFC<ForegroundProps> = props => {
 
   return (
     <React.Fragment>
-      <SelectionOverlay
-        stage={stage}
-        interaction={interaction}
-        timezone={timezone}
-        xScale={xScale}
-      />
+      <SelectionOverlay stage={stage} interaction={interaction} timezone={timezone} xScale={xScale} />
       {isHover(interaction) && (
         <HoverTooltip
           stage={visualisationStage}

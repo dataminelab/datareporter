@@ -7,7 +7,7 @@ function getSeriesColor(options, seriesOptions, seriesIndex, numSeries) {
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   let palette = AllColorPaletteArrays[options.color_scheme];
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-  if (ColorPaletteTypes[options.color_scheme] === 'continuous' && palette.length > numSeries) {
+  if (ColorPaletteTypes[options.color_scheme] === "continuous" && palette.length > numSeries) {
     const step = (palette.length - 1) / (numSeries - 1 || 1);
     const index = Math.round(step * seriesIndex);
     return seriesOptions.color || palette[index % palette.length];
@@ -57,7 +57,7 @@ function prepareBubbleSeries(series, options, { seriesColor, data }) {
   series.mode = "markers";
   series.marker = {
     color: seriesColor,
-    size: map(data, i => i.size * coefficient),
+    size: map(data, (i) => i.size * coefficient),
     sizemode: options.sizemode || "diameter",
   };
   return series;
@@ -89,7 +89,7 @@ function prepareSeries(series, options, numSeries, additionalOptions) {
   const seriesYAxis = getSeriesAxis(series, options);
 
   // Sort by x - `Map` preserves order of items
-  const data = options.sortX ? sortBy(series.data, d => normalizeValue(d.x, options.xAxis.type)) : series.data;
+  const data = options.sortX ? sortBy(series.data, (d) => normalizeValue(d.x, options.xAxis.type)) : series.data;
 
   // For bubble/scatter charts `y` may be any (similar to `x`) - numeric is only bubble size;
   // for other types `y` is always number
@@ -105,7 +105,7 @@ function prepareSeries(series, options, numSeries, additionalOptions) {
   const labelsValuesMap = new Map();
 
   const yErrorValues = [];
-  each(data, row => {
+  each(data, (row) => {
     const x = normalizeValue(row.x, options.xAxis.type); // number/datetime/category
     const y = cleanYValue(row.y, seriesYAxis === "y2" ? options.yAxis[1].type : options.yAxis[0].type); // depends on series type!
     const yError = cleanNumber(row.yError); // always number
@@ -176,7 +176,7 @@ export default function prepareDefaultData(seriesList, options) {
   const additionalOptions = {
     hoverInfoPattern: getHoverInfoPattern(options),
   };
-  const numSeries = seriesList.length
+  const numSeries = seriesList.length;
 
   return map(seriesList, (series, index) => prepareSeries(series, options, numSeries, { ...additionalOptions, index }));
 }

@@ -20,10 +20,12 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src: local("Open Sans"), local("Open Sans Regular"), local("OpenSans-Regular"),
+  src:
+    local("Open Sans"),
+    local("Open Sans Regular"),
+    local("OpenSans-Regular"),
     local("Open-Sans-regular"),
-    url("../lib/fonts/Open-Sans-regular/Open-Sans-regular.woff2")
-      format("woff2"),
+    url("../lib/fonts/Open-Sans-regular/Open-Sans-regular.woff2") format("woff2"),
     url("../lib/fonts/Open-Sans-regular/Open-Sans-regular.woff") format("woff");
 }
 
@@ -32,8 +34,11 @@
   font-weight: 600;
   font-style: normal;
   font-display: swap;
-  src: local("Open Sans SemiBold"), local("OpenSans-SemiBold"),
-    local("Open Sans Semibold"), local("Open-Sans-600"),
+  src:
+    local("Open Sans SemiBold"),
+    local("OpenSans-SemiBold"),
+    local("Open Sans Semibold"),
+    local("Open-Sans-600"),
     url("../lib/fonts/Open-Sans-600/Open-Sans-600.woff2") format("woff2"),
     url("../lib/fonts/Open-Sans-600/Open-Sans-600.woff") format("woff");
 }

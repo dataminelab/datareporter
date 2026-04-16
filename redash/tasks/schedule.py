@@ -16,6 +16,7 @@ from redash.tasks.queries import (
     refresh_schemas,
     remove_ghost_locks,
 )
+from redash.tasks.reports import empty_report_schedules, refresh_reports
 from redash.tasks.worker import Queue
 
 logger = logging.getLogger(__name__)
@@ -56,13 +57,15 @@ def schedule(kwargs):
 
 def periodic_job_definitions():
     jobs = [
-        {"func": refresh_queries, "timeout": 600, "interval": 30, "result_ttl": 600},
+        {"func": refresh_queries, "timeout": 60, "interval": 30, "result_ttl": 600},
+        {"func": refresh_reports, "timeout": 60, "interval": 30, "result_ttl": 600},
         {
             "func": remove_ghost_locks,
             "interval": timedelta(minutes=1),
             "result_ttl": 600,
         },
         {"func": empty_schedules, "interval": timedelta(minutes=60)},
+        {"func": empty_report_schedules, "interval": timedelta(minutes=60)},
         {
             "func": refresh_schemas,
             "interval": timedelta(minutes=settings.SCHEMAS_REFRESH_SCHEDULE),

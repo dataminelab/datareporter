@@ -45,27 +45,18 @@ class IconDiv extends React.Component<TileHeaderIcon, TileHeaderState> {
   render() {
     const { name, svg, onClick, active } = this.props;
     return (
-      <div
-        className={classNames("icon", name, { active })}
-        onClick={onClick}
-        ref={this.ref}
-      >
+      <div className={classNames("icon", name, { active })} onClick={onClick} ref={this.ref}>
         <SvgIcon svg={svg} />
       </div>
     );
   }
 }
 
-export class TileHeader extends React.Component<
-  TileHeaderProps,
-  TileHeaderState
-> {
+export class TileHeader extends React.Component<TileHeaderProps, TileHeaderState> {
   renderIcons() {
     const { icons } = this.props;
     if (!icons || !icons.length) return null;
-    const iconElements = icons.map((icon, index) => (
-      <IconDiv key={index} {...icon} />
-    ));
+    const iconElements = icons.map((icon, index) => <IconDiv key={index} {...icon} />);
     return <div className="icons">{iconElements}</div>;
   }
 
@@ -73,11 +64,7 @@ export class TileHeader extends React.Component<
     const { title, onDragStart } = this.props;
 
     return (
-      <div
-        className="tile-header"
-        draggable={onDragStart ? true : null}
-        onDragStart={onDragStart}
-      >
+      <div className="tile-header" draggable={onDragStart ? true : null} onDragStart={onDragStart}>
         <div className="title">{title}</div>
         {this.renderIcons()}
       </div>

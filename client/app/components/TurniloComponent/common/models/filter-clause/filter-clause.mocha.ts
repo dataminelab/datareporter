@@ -19,12 +19,7 @@ import { expect } from "chai";
 import { Duration, Timezone } from "chronoshift";
 import { List } from "immutable";
 import { DateRange } from "../date-range/date-range";
-import {
-  FilterClause,
-  FixedTimeFilterClause,
-  RelativeTimeFilterClause,
-  TimeFilterPeriod,
-} from "./filter-clause";
+import { FilterClause, FixedTimeFilterClause, RelativeTimeFilterClause, TimeFilterPeriod } from "./filter-clause";
 
 describe("FilterClause", () => {
   describe("evaluate", () => {
@@ -44,13 +39,11 @@ describe("FilterClause", () => {
           new DateRange({
             start: new Date("2016-01-14"),
             end: new Date("2016-01-15"),
-          }),
+          })
         ),
       });
 
-      expect(
-        previousRelative.evaluate(now, maxTime, Timezone.UTC),
-      ).to.be.equivalent(previousFixed);
+      expect(previousRelative.evaluate(now, maxTime, Timezone.UTC)).to.be.equivalent(previousFixed);
     });
 
     it("works with now for current", () => {
@@ -69,13 +62,11 @@ describe("FilterClause", () => {
           new DateRange({
             start: new Date("2016-01-15"),
             end: new Date("2016-01-16"),
-          }),
+          })
         ),
       });
 
-      expect(
-        currentRelative.evaluate(now, maxTime, Timezone.UTC),
-      ).to.be.equivalent(currentFixed);
+      expect(currentRelative.evaluate(now, maxTime, Timezone.UTC)).to.be.equivalent(currentFixed);
     });
 
     it("works with maxTime for latest", () => {
@@ -94,13 +85,11 @@ describe("FilterClause", () => {
           new DateRange({
             end: new Date("2016-01-15T08:23:00Z"),
             start: new Date("2016-01-14T08:23:00Z"),
-          }),
+          })
         ),
       });
 
-      expect(
-        relativeClause.evaluate(now, maxTime, Timezone.UTC),
-      ).to.be.equivalent(fixedClause);
+      expect(relativeClause.evaluate(now, maxTime, Timezone.UTC)).to.be.equivalent(fixedClause);
     });
   });
 });

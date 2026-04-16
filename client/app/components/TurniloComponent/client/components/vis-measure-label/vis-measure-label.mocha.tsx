@@ -34,13 +34,7 @@ const datum: Datum = {
 };
 
 const renderLabel = (showPrevious = false) =>
-  shallow(
-    <VisMeasureLabel
-      datum={datum}
-      series={series}
-      showPrevious={showPrevious}
-    />,
-  );
+  shallow(<VisMeasureLabel datum={datum} series={series} showPrevious={showPrevious} />);
 
 describe("VisMeasureLabel", () => {
   it("renders measure data on label", () => {

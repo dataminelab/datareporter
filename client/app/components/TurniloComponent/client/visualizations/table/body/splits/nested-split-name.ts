@@ -18,10 +18,7 @@ import { PseudoDatum } from "plywood";
 import { Essence } from "../../../../../common/models/essence/essence";
 import { formatSegment } from "../../../../../common/utils/formatter/formatter";
 
-export function nestedSplitName(
-  data: PseudoDatum,
-  { timezone, splits: { splits } }: Essence,
-): string {
+export function nestedSplitName(data: PseudoDatum, { timezone, splits: { splits } }: Essence): string {
   const nest = data.__nest;
   if (nest === 0) return "Total";
   const split = splits.get(nest - 1);

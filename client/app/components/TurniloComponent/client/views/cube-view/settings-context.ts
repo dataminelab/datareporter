@@ -25,14 +25,14 @@ export const SettingsContext = React.createContext<SettingsContextValue | null>(
 
 export function useSettingsContext(): SettingsContextValue {
   const context = useContext(SettingsContext);
-  
+
   if (context === null) {
     throw new Error(
       "useSettingsContext must be used within a SettingsContext.Provider. " +
-      "Make sure the component calling useSettingsContext is wrapped with a SettingsContext.Provider."
+        "Make sure the component calling useSettingsContext is wrapped with a SettingsContext.Provider."
     );
   }
-  
+
   return context;
 }
 

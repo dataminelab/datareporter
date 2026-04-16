@@ -44,7 +44,7 @@ class ModelsConfigResource(BaseResource):
     def get(self, model_id):
         config = ModelConfig.get_model_config(model_id)
         if not config:
-            abort(404)
+            abort(404, message="Model config not found")
         self.record_event({"action": "view", "object_id": model_id, "object_type": "model_config"})
         return config
 

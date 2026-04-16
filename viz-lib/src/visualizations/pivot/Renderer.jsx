@@ -28,7 +28,9 @@ const VALID_OPTIONS = [
 ];
 
 function formatRows({ rows, columns }) {
-  return map(rows, row => mapValues(row, (value, key) => formatColumnValue(value, find(columns, { name: key }).type)));
+  return map(rows, (row) =>
+    mapValues(row, (value, key) => formatColumnValue(value, find(columns, { name: key }).type))
+  );
 }
 
 export default function Renderer({ data, options, onOptionsChange }) {
@@ -39,7 +41,7 @@ export default function Renderer({ data, options, onOptionsChange }) {
     setConfig({ ...options });
   }, [options]);
 
-  const onChange = updatedOptions => {
+  const onChange = (updatedOptions) => {
     const validOptions = pick(updatedOptions, VALID_OPTIONS);
     setConfig({ ...validOptions });
     onOptionsChange(validOptions);
@@ -55,7 +57,8 @@ export default function Renderer({ data, options, onOptionsChange }) {
       data-hide-controls={hideControls || null}
       data-hide-row-totals={hideRowTotals || null}
       data-hide-column-totals={hideColumnTotals || null}
-      data-test="PivotTableVisualization">
+      data-test="PivotTableVisualization"
+    >
       <PivotTableUI {...pick(config, VALID_OPTIONS)} data={dataRows} onChange={onChange} />
     </div>
   );

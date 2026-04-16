@@ -17,10 +17,7 @@
 import * as d3 from "d3";
 import { Datum } from "plywood";
 import * as React from "react";
-import {
-  ConcreteSeries,
-  SeriesDerivation,
-} from "../../../../../common/models/series/concrete-series";
+import { ConcreteSeries, SeriesDerivation } from "../../../../../common/models/series/concrete-series";
 import { Delta } from "../../../../components/delta/delta";
 import { MeasureBackground } from "./measure-background";
 import { MeasureCell } from "./measure-cell";
@@ -36,35 +33,15 @@ interface MeasureValueProps {
   report: any;
 }
 
-export const MeasureValue: React.SFC<MeasureValueProps> = props => {
-  const {
-    series,
-    datum,
-    scale,
-    highlight,
-    showPrevious,
-    cellWidth,
-    lastLevel,
-    report,
-  } = props;
+export const MeasureValue: React.SFC<MeasureValueProps> = (props) => {
+  const { series, datum, scale, highlight, showPrevious, cellWidth, lastLevel, report } = props;
   const colorText = report ? report.colorText : null;
   const colorBody = report ? report.colorBody : null;
   const currentValue = series.selectValue(datum);
 
   const currentCell = (
-    <MeasureCell
-      color={colorText}
-      key={series.reactKey()}
-      width={cellWidth}
-      value={series.formatValue(datum)}
-    >
-      {lastLevel && (
-        <MeasureBackground
-          backgroundColor={colorText}
-          highlight={highlight}
-          width={scale(currentValue)}
-        />
-      )}
+    <MeasureCell color={colorText} key={series.reactKey()} width={cellWidth} value={series.formatValue(datum)}>
+      {lastLevel && <MeasureBackground backgroundColor={colorText} highlight={highlight} width={scale(currentValue)} />}
     </MeasureCell>
   );
 
@@ -81,14 +58,9 @@ export const MeasureValue: React.SFC<MeasureValueProps> = props => {
         color={colorText}
         key={series.reactKey(SeriesDerivation.PREVIOUS)}
         width={cellWidth}
-        value={series.formatValue(datum, SeriesDerivation.PREVIOUS)}
-      >
+        value={series.formatValue(datum, SeriesDerivation.PREVIOUS)}>
         {lastLevel && (
-          <MeasureBackground
-            backgroundColor={colorBody}
-            highlight={highlight}
-            width={scale(previousValue)}
-          />
+          <MeasureBackground backgroundColor={colorBody} highlight={highlight} width={scale(previousValue)} />
         )}
       </MeasureCell>
       <MeasureCell

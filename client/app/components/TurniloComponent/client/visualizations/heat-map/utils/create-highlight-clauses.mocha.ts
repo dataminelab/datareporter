@@ -25,11 +25,7 @@ const essence = EssenceFixtures.wikiHeatmap();
 describe("createHighlightClauses", () => {
   describe("second split", () => {
     it("should create clause for second split if clicked on top-gutter", () => {
-      const clauses = createHighlightClauses(
-        { x: 50, y: 0, part: "top-gutter" },
-        essence,
-        dataset,
-      );
+      const clauses = createHighlightClauses({ x: 50, y: 0, part: "top-gutter" }, essence, dataset);
       expect(clauses).to.be.length(1);
 
       const [clause] = clauses;
@@ -37,22 +33,14 @@ describe("createHighlightClauses", () => {
     });
 
     it("should return empty clause list if clicked outside rendered values", () => {
-      const clauses = createHighlightClauses(
-        { x: 450, y: 0, part: "top-gutter" },
-        essence,
-        dataset,
-      );
+      const clauses = createHighlightClauses({ x: 450, y: 0, part: "top-gutter" }, essence, dataset);
       expect(clauses).to.be.deep.equal([]);
     });
   });
 
   describe("first split", () => {
     it("should create clause for first split if clicked on left-gutter", () => {
-      const clauses = createHighlightClauses(
-        { x: 0, y: 30, part: "left-gutter" },
-        essence,
-        dataset,
-      );
+      const clauses = createHighlightClauses({ x: 0, y: 30, part: "left-gutter" }, essence, dataset);
       expect(clauses).to.be.length(1);
 
       const [clause] = clauses;
@@ -60,22 +48,14 @@ describe("createHighlightClauses", () => {
     });
 
     it("should return empty clause list if clicked outside rendered values", () => {
-      const clauses = createHighlightClauses(
-        { x: 0, y: 150, part: "left-gutter" },
-        essence,
-        dataset,
-      );
+      const clauses = createHighlightClauses({ x: 0, y: 150, part: "left-gutter" }, essence, dataset);
       expect(clauses).to.be.deep.equal([]);
     });
   });
 
   describe("both splits", () => {
     it("should create two clauses if clicked on body", () => {
-      const clauses = createHighlightClauses(
-        { x: 50, y: 30, part: "body" },
-        essence,
-        dataset,
-      );
+      const clauses = createHighlightClauses({ x: 50, y: 30, part: "body" }, essence, dataset);
       expect(clauses).to.be.length(2);
 
       const [first, second] = clauses;
@@ -85,29 +65,17 @@ describe("createHighlightClauses", () => {
 
     describe("clicks outside rendered values", () => {
       it("should return no splits if clicked too far right", () => {
-        const clauses = createHighlightClauses(
-          { x: 450, y: 30, part: "body" },
-          essence,
-          dataset,
-        );
+        const clauses = createHighlightClauses({ x: 450, y: 30, part: "body" }, essence, dataset);
         expect(clauses).to.be.deep.equal([]);
       });
 
       it("should return no splits if clicked too far down", () => {
-        const clauses = createHighlightClauses(
-          { x: 50, y: 230, part: "body" },
-          essence,
-          dataset,
-        );
+        const clauses = createHighlightClauses({ x: 50, y: 230, part: "body" }, essence, dataset);
         expect(clauses).to.be.deep.equal([]);
       });
 
       it("should return no splits if clicked outside rendered values", () => {
-        const clauses = createHighlightClauses(
-          { x: 450, y: 230, part: "body" },
-          essence,
-          dataset,
-        );
+        const clauses = createHighlightClauses({ x: 450, y: 230, part: "body" }, essence, dataset);
         expect(clauses).to.be.deep.equal([]);
       });
     });

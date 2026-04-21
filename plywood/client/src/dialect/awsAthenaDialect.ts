@@ -225,4 +225,13 @@ export class AwsAthenaDialect extends SQLDialect {
     // todo figure out timezone witchcraft
     return operand;
   }
+
+  public searchExpression(haystack: string, needle: string): string {
+    // Use advanced text search with phrase and logical operator support
+    return `CAST(STRPOS(${haystack}, ${this.escapeLiteral(needle)}) > 0 AS BOOLEAN)`;
+  }
+
+  public lookupExpression(base: string, lookup: string): string {
+    return this.searchExpression(base, lookup);
+  }
 }

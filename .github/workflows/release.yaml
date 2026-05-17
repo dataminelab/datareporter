@@ -15,7 +15,7 @@ jobs:
     outputs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
       - id: get-version
@@ -32,17 +32,17 @@ jobs:
     needs:
       - get_version
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
       - name: Docker login
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ${{ secrets.GCR_URL }}
           username: ${{ secrets.GCR_USERNAME }}
           password: ${{ secrets.GCR_PASSWORD }}
       - name: Build and push datareporter
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           push: true
           tags: europe-west1-docker.pkg.dev/datareporter/datareporter/datareporter:${{needs.get_version.outputs.version}}
@@ -53,17 +53,17 @@ jobs:
     needs:
       - get_version
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
       - name: Docker login
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ${{ secrets.GCR_URL }}
           username: ${{ secrets.GCR_USERNAME }}
           password: ${{ secrets.GCR_PASSWORD }}
       - name: Build and push plywood
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           push: true
           context: plywood
@@ -75,7 +75,7 @@ jobs:
       - build_datareporter
       - build_plywood
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
       - name: Tag release

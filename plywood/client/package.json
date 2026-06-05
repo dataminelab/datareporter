@@ -89,7 +89,7 @@
   "devDependencies": {
     "@types/node": "14.18.3",
     "@types/stream-to-array": "^2.3.0",
-    "axios": "0.18.0",
+    "axios": "1.17.0",
     "chai": "4.2.0",
     "concat-with-sourcemaps": "^1.1.0",
     "eslint": "^8.8.0",
@@ -106,7 +106,7 @@
     "mocha": "5.2.0",
     "nodemon": "^2.0.4",
     "pegjs": "0.10.0",
-    "plywood-druid-requester": "2.6.5",
+    "plywood-druid-requester": "2.7.0",
     "plywood-mysql-requester": "2.3.0",
     "plywood-postgres-requester": "1.4.0",
     "prettier": "^2.5.1",

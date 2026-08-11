@@ -109,7 +109,7 @@
     "plywood-druid-requester": "2.6.5",
     "plywood-mysql-requester": "2.3.0",
     "plywood-postgres-requester": "1.4.0",
-    "prettier": "^2.5.1",
+    "prettier": "^3.8.1",
     "stylelint": "^14.3.0",
     "tdi": "^0.6.5",
     "typescript": "^4.5.5"

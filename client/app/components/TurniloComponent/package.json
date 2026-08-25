@@ -67,7 +67,7 @@
     "fs-extra": "11.1.0",
     "helmet": "6.0.0",
     "highlight.js": "11.7.0",
-    "immutable": "4.0.0-rc.9",
+    "immutable": "4.3.8",
     "immutable-class": "0.9.8",
     "js-yaml": "4.1.0",
     "lz-string": "^1.4.4",
